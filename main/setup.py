@@ -3,7 +3,16 @@
 import sabnzbd
 from distutils.core import setup
 
-setup(name = 'SABnzbd',
+# py2exe usage: python setup.py py2exe
+
+try:
+    import py2exe
+    import glob
+except ImportError:
+    py2exe = None
+
+options = dict(
+    name = 'SABnzbd',
       version = sabnzbd.__version__,
       url = 'http://sourceforge.net/projects/sabnzbd',
       author = 'Gregor Kaufmann',
@@ -32,3 +41,26 @@ setup(name = 'SABnzbd',
                               'templates/static/placeholder.txt']),
                     ('share/SABnzbd-' + sabnzbd.__version__ + '/templates/static',
                               ['templates/static/placeholder.txt'])])
+
+if py2exe:
+    options['data_files'] = [
+          ('', ['SABnzbd.ini', 'README.txt', 'LICENSE.txt', 'TODO.txt', 'CHANGELOG.txt', 'UPGRADE.txt']), 
+          ('templates', glob.glob("templates/*.tmpl")),
+          ('templates', ['templates/default.css']),
+          ('templates/static', []),
+          ('downloads', []),
+          ('downloads/Incomplete', []),
+          ('downloads/Complete', []),
+          ('NZB_backups', []),
+          ('NZB_blackhole', []),
+          ('logs', []),
+          ('cache', []),
+          ('par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
+          ('unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
+          ('unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE'])
+        ]
+    options['console'] = ['SABnzbd.py']
+    options['options'] = {"py2exe": {"bundle_files": 1, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
+    
+
+setup(**options)
