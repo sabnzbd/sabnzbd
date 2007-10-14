@@ -1,0 +1,40 @@
+README.NT                                               27 February 2005
+-------------------------------------------------------------------------------
+
+Contents of the UnZip 5.52 distribution archive for Win9x/NT/2K/XP/2K3 (Intel):
+
+    README                      general information
+    LICENSE                     terms and conditions for using Info-Zip code
+    COPYING.OLD                 additional Copyright notes
+    WHERE                       where to get the current Info-ZIP software
+    unzip.txt                   UnZip manual (preformatted unix man page)
+    unzipsfx.txt                UnZipSFX manual (dto.)
+    funzip.txt                  manual for fUnZip
+    zipinfo.txt                 manual for UnZip's ZipInfo mode
+    ziplimit.txt                infos about limitations of Info-Zip's progs
+    README.NT                   this file ...
+    unzip.exe                   UnZip for NT command line utility, MSVC++ 6.0
+    unzipsfx.exe                console mode SFX stub for NT, MSVC++ 6.0
+    funzip.exe                  UnZip "filter" utility
+    SFXWiz32.exe                GUI mode SFX stub for NT, MSVC++ 6.0
+    unzipsfx-gcc.exe            console mode SFX stub for NT, gcc/mingw32
+    SFXWiz32-gcc.exe            GUI mode SFX stub for NT, gcc/mingw32
+
+
+The program executables were compiled with MS Visual C++ 6.0 SP6 (MSC v12.00),
+using the win32/Makefile as supplied in the UnZip 5.52 source distribution
+(with support for ASM_CRC enabled). Additionally, the sfx stubs have been
+compressed by the free exe packer UPX 1.25.
+
+The alternative unzipsfx-gcc.exe and SFXWiz32-gcc.exe stubs were compiled
+by gcc 3.2 using the mingw32 environment. These stubs are significantly
+smaller, but require the presence of the "msvcrt.dll" C runtime DLL.
+Normally, this should not be a problem, since this dll is supplied as part
+of the operating system core for Win2k/XP/2K3 and Windows 98/Me. Older Windows
+systems (Win95/NT4) support this runtime DLL when Internet Explorer 4.0 (or
+newer) is installed. The dll is not supplied in a Win32s environment, but
+this should be a minor problem. (For the text-mode stub this is not a
+problem at all; Win32s cannot be used to run text-mode applications, anyway.)
+
+--------
+Christian Spieler
