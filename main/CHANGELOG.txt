@@ -1,0 +1,404 @@
+-------------------------------------------------------------------------------
+0.2.5
+-------------------------------------------------------------------------------
+added: new config: top_only (only fetch articles from topmost collection in 
+       queue)
+added: more verbose connection info
+added: threaded article decoding
+added: [w32] threaded connecting
+changed: articlecache code cleaned up
+changed: nzbqueue code cleaned up
+changed: decoder code cleaned up
+changed: more fine grained locking
+changed: download thread now independent of disc I/O
+changed: [w32] interpreter upgrade to python-2.5
+changed: recv buffer increased to 32768 bytes
+changed: template changes to support Yarbles v3.newzbin.com gm-script
+changed: f_mode removed (replaced by top_only)
+fixed: adding empty file through addFile
+fixed: display bug when changing server ports through interface
+fixed: absolute paths in templates
+fixed: yenc parse bug
+fixed: racing condition in downloader
+-------------------------------------------------------------------------------
+0.2.4
+-------------------------------------------------------------------------------
+changed: [w32] interpreter upgraded to python-2.5c1
+changed: rss-feed entries with newzxxx in url now fetchable again
+changed: connection timeout doubled (30s to 60s)
+fixed: racing condition in downloader (stuck articles)
+fixed: more rss client bugs
+fixed: removing servers from interface
+-------------------------------------------------------------------------------
+0.2.3
+-------------------------------------------------------------------------------
+changed: rss client no longer using a seperate thread (scheduler used instead)
+changed: matched rss-feed entries without 'newzbin' in url will now be
+         fetched with urlgrabber (=> support for non-newzbin rss-feeds)
+changed: duplicate files now get renamed (instead of overwritten)
+changed: new interface look (credit to Jigal van Hemert)
+fixed: setting create_category_folders and create_group_folders from interface
+fixed: bugs in rss client
+fixed: bugs in urlgrabber
+fixed: bugs in unique dir/file creation
+fixed: history now again using localtime
+fixed: umask should now be applied to all created files (second try)
+-------------------------------------------------------------------------------
+0.2.2
+-------------------------------------------------------------------------------
+added: ability to place downloads into www.newzbin.com categories
+added: new config: create_category_folders
+added: display of total running bytes downloaded
+added: display of newzbin.com nzb quota
+added: file reorganization/managment for each post
+added: cleanup of temporary directories in download_dir
+added: support for zipped nzbs (dirscan_dir and interface upload)
+added: limited dupe handling
+added: (experimental) rss client with v3.newzbin.com rss-feed support
+added: (temporary) filename extraction from subject
+changed: par2 files now queued on top of each post
+changed: [w32] par2 and unrar now run in idle priority
+changed: eta text normalized
+changed: corrupt yenc articles no longer discarded
+changed: improved startup time (if items in queue)
+changed: improved directory creation/handling
+changed: extensions defined in cleanup_list now discarded during download
+fixed: umask should now be applied to all created files
+fixed: [w32] signal handler for bundled exe
+fixed: better filename detection for yenc encoded articles
+fixed: workaround for (some) broken uuencoded articles
+fixed: workaround for various broken nzb files
+fixed: racing condition in nzbqueue
+fixed: file assembly corruption bug
+fixed: yenc decoding (if _yenc module missing)
+fixed: (rare) deadlock causing bug in smartpar algorithm
+fixed: server multiplexing no longer depends on unique servername string
+fixed: average age of post now calculated correctly if invalid files in post
+-------------------------------------------------------------------------------
+0.2.1
+-------------------------------------------------------------------------------
+added: gzipfilter (compresses pages)
+added: new config: send_group
+changed: startup paused now a command line switch
+changed: autoshutdown now toggleable/session-based
+changed: config: autoshutdown removed
+fixed: periodic queue saving
+fixed: nzbgrabber + auto_sort bug
+fixed: f_mode
+fixed: cleanup list display bug
+-------------------------------------------------------------------------------
+0.2.0
+-------------------------------------------------------------------------------
+added: [w32] auto-shutdown ability
+added: signal handlers added
+added: ability to serve static files from $web_dir/static (on ../sabnzbd/static)
+added: ability to change repair/unpack options
+added: new article cache (adjustable memory usage)
+added: new config: cache_limit
+added: new config: schedlines
+added: new config: umask
+added: optional redirect keyword for addID and addURL added
+changed: sabnzbd will startup paused
+changed: authentication mechanism changed (using MultiAuth-0.8)
+changed: scheduler switched from pycron to kronos
+changed: memory usage optimized
+changed: uu decoding speed improved
+changed: config: ram_caching removed
+changed: config: conserve_memory removed
+changed: config: cronlines removed
+changed: various other improvements/tweaks
+fixed: dirscan import errors (if file is upped over a slow connection)
+fixed: will now use a unique dirname for every download/unpackdir (e.g multiple 
+       posts with same dirname)
+fixed: [w32] MemoryError in nzbgrab.py (fixed in python-2.4.3)
+fixed: various minor bugs
+-------------------------------------------------------------------------------
+0.1.8.1
+-------------------------------------------------------------------------------
+fixed: hardcoded paths in setup.py
+fixed: addID + auto_sort bug
+fixed: no longer logging server info
+-------------------------------------------------------------------------------
+0.1.8
+-------------------------------------------------------------------------------
+added: experimental f_mode -> if enabled, SABnzbd will fetch oldest files first
+added: ability to sort queue by average age (manual or automatic)
+added: new config: f_mode
+added: new config: auto_sort
+added: uptime display
+added: age display for each post
+changed: outdated cache files will now be discarded automatically
+changed: now sorting posts by date (for each item) instead of subject
+changed: SABnzbd will now fail to start if web-interface can't be started
+changed: elementtree no longer optional
+changed: stripping whitespace in addID (for easy copy/paste)
+fixed: par2 selection bug
+fixed: stall on duplicate articles
+fixed: incorrect rarset parsing
+fixed: negative download speed stall
+fixed: (possible) fix for ResponseNotReady error (nzbgrab.py)
+-------------------------------------------------------------------------------
+0.1.7.3
+-------------------------------------------------------------------------------
+added: will now automatically remove files with '.1' extension 
+       (if par_cleanup enabled and file was created by par2)
+added: will now log the current bps to the logfile/screen (every 20s)
+fixed: grabbing nzbs stops working on long-living processes
+fixed: UnicodeEncodeError errors in interface.py
+fixed: addURL/URLGrabber bug
+fixed: connection timeout
+fixed: typo in newsunpack.py (could trigger a unknown exception error)
+-------------------------------------------------------------------------------
+0.1.7.2
+-------------------------------------------------------------------------------
+fixed: deadlock when adding multiple nzbs by msgid/url
+fixed: nzb import errors caused by caching directory contents
+fixed: dirscan options fixed
+fixed: adding files by web interface fixed
+-------------------------------------------------------------------------------
+0.1.7.1
+-------------------------------------------------------------------------------
+changed: pause/resume/shutdown interfaces cloned in ../sabnzbd/queue
+changed: removed psyco support (possible memory leak)
+fixed: wrong value in config_server.tmpl
+fixed: error in NzbQueue.decode() (if yenc module is missing)
+fixed: now catching OverflowError in QueuePage.index()
+-------------------------------------------------------------------------------
+0.1.7
+-------------------------------------------------------------------------------
+o) added: force disconnect added
+o) added: will now correctly handle split files
+o) changed: download engine no longer using nntplib (for connecting)
+o) changed: download engine rewritten to work without slots
+o) changed: slots no longer supported -> a server can now either be a fillserver 
+            or a non-fillserver (non-fillservers will always be multiplexed, 
+            fillservers will only get touched if an article is missing on all
+            non-fillservers)
+o) changed: will now prefix folders (in complete_dir) with 
+            "__UNPACK_IN_PROGRESS__" if they are currently in progress
+o) changed: config "nzb_timeout" removed
+o) changed: config "dirscan_opts" changed (opt increased by 1)
+o) changed: download speed will now be reported correctly
+o) changed: multiple nzb/url grabbers can now be active
+o) fixed: logging options will now be applied properly
+o) fixed: a few (possible) racing conditions in downloader.py fixed
+o) fixed: enum() in newsunpack.py could consume all cpu resources
+-------------------------------------------------------------------------------
+0.1.6                     
+-------------------------------------------------------------------------------
+o) added: fetching .nzbs by url
+o) added: /sabnzbd/connections added
+o) added: byte counter added 
+o) added: Auto deleting of .nzb files saved in nzb_backup_dir, see nzb_timeout
+o) added: new config: bandwith_limit
+o) added: new config: cleanup_list -> was del_ext
+o) added: new config: enable_par_cleanup
+o) added: new config: max_log_size
+o) added: new config: log_backups
+o) added: new config: enable_cherrypy_logging
+o) added: new config: nzb_timeout
+o) changed: will now only store compressed nzb image if conserve_memory is 
+            actually enabled
+o) changed: all "buttons" in the interface will now redirect to their root page
+o) changed: unzipping now uses (and depends) on unzip
+o) changed: all unpacking is now recursive (will extract archives within 
+            other archives)
+o) changed: all unpackers will now directly extract to the complete_dir 
+            (if specified)
+o) changed: del_ext removed
+o) fixed: setting bandwith limit works again
+o) fixed: history will no longer reset if config changes are made through the 
+          interface
+o) fixed: fail_on_crc functionality fixed
+o) fixed: .nzb files that failed to be fetched (by msgid or url) will now be
+          automatically removed from the queue again
+o) fixed: files that failed to be parsed will now be removed from queue if 
+          conserve memory is enabled (instead of crashing SABnzbd)
+o) fixed: zombie process bug on linux fixed
+o) fixed: typo in sabnzbd/cron.py
+o) fixed: misc minor bugs
+-------------------------------------------------------------------------------
+0.1.5
+-------------------------------------------------------------------------------
+o) added: ../config/scheduling added
+o) added: ability to (re)move active files (to finished files)
+o) changed: SABnzbd will now perfom some sanity checks before changing config 
+            entries
+o) changed: saving config settings will now automatically apply the settings
+o) changed: removed all manual calls to gc
+o) fixed: dirscanner will now only try to import files with '.nzb' or '.NZB' 
+          extensions
+o) fixed: pause mode will now be kept over applying config changes
+o) fixed: fixed an error that could crash the downloader if a yenc encoded
+          article had a corrupt or malformed header
+o) fixed: config_switches.tmpl dirscan_opts were changed to the right values
+o) fixed: 100% cpu usage when connecting fixed
+o) fixed: will only delete zips if extraction succeeded
+o) fixed: will replace all '.' chars with '_' chars in the directory name
+          to fix a windows specific pathname bug
+-------------------------------------------------------------------------------
+0.1.4
+-------------------------------------------------------------------------------
+o) added: new config: nzb_backup_dir => .nzb files added by dirscanner or
+          nzbgrabber will be saved to this directory
+o) added: new config: conserve_memory => if enabled, .nzb files will be stored 
+          gzipped in memory and only parsed into memory if needed
+o) changed: /config reworked
+o) changed: web_dir is now required to be specified
+o) changed: setting complete_dir is no longer required
+o) changed: all of the flushing code removed => nzb objects will now
+            always stay in memory until removed again
+o) fixed: rar_unpack() will no longer overwrite files
+o) fixed: rar files will now only be deleted if all extractable files are found
+o) fixed: unused articles will now be removed automatically
+o) fixed: unwanted object retention in cron.py fixed
+o) fixed: downloader will no longer "busy wait" if queue is empty and/or paused
+o) fixed: shutdown and restart will now wait for threads in limbo
+o) fixed: SABnzbd should shutdown properly now on *bsd
+o) fixed: displaying diskspace should work properly now on *bsd
+o) fixed: misc minor bugs
+-------------------------------------------------------------------------------
+0.1.3
+-------------------------------------------------------------------------------
+o) added: unzip functionality
+o) added: new config: enable_unzip => enable/disable unzip (default: enabled)
+o) added: new config: enable_unrar => enable/disable unrar (default: enabled)
+o) added: new config: enable_save => enable/disable "periodic" (after every 
+          completed file) queue saving (default: disabled)
+o) added: new config: del_ext => List of extensions that should be deleted after
+          post processing
+o) added: new config: web_dir => Location of (custom) .css and template files
+o) changed: order of unpacking is now: 1)filejoin 2)unzip, 3)unrar
+o) changed: freshend up web-interface (thanks goes to gwynevans)
+o) changed: Ram cache and create group folders are now saved in local variables
+            (Safe to change them while items in the queue)
+o) fixed: moving directories to complete_dir should work properly now
+-------------------------------------------------------------------------------
+0.1.2
+-------------------------------------------------------------------------------
+o) added: new config: complete_dir => completed downloads get moved to this
+          directory
+o) added: new config: enable_psyco => 0/1 to disable/enable psyco
+          (Experimental, disabled by default)
+o) added: new config: enable_filejoin => 0/1 to disable/enable filejoiner
+          (Experimental, disabled by default)
+o) changed: logic of sorting items in queue
+o) fixed: changing download/cache/dirscan directory through interface
+o) fixed: misc minor bugs
+-------------------------------------------------------------------------------
+0.1.1
+-------------------------------------------------------------------------------
+o) added: multiplexing support (multiple servers per slot)
+o) added: seperate history page
+o) added: basic bandwith limiting
+o) changed: repair/unpack/delete now happens in a seperate thread
+o) changed: unrar no longer depends on par2 verify
+o) fixed: more pathname troubles in newsunpack
+o) fixed: history display bugs
+o) fixed: misc minor bugs
+-------------------------------------------------------------------------------
+0.1k
+-------------------------------------------------------------------------------
+o) fixed: sets that need repair will be readded to the queue again
+o) fixed: w32 diskfree implementation should be os agnostic now
+-------------------------------------------------------------------------------
+0.1j
+-------------------------------------------------------------------------------
+o) added: authentication support
+o) added: -1 move option in interface, moves selected item to top
+o) changed: more verbose information in history
+o) changed: config/rescue removed
+o) changed: logfiles will now rollover
+o) fixed: will only delete files after a succeeded par2 check 
+o) fixed: setting unpack opts for the dirscanner actually works now
+o) fixed: par2.exe and unrar.exe processes will now spawn hidden (w32 exclusive)
+-------------------------------------------------------------------------------
+0.1i
+-------------------------------------------------------------------------------
+o) added: (optional) support for elementtree/cElementTree (faster xml parsing/
+          .nzb importing, alot less memory use)
+o) changed: do a gc.collect() after flushing an item to disk
+o) fixed: switching items in queue works properly again
+o) fixed: bug in /config/restart (sabnzbd.nzbq and sabnzbd.downloader 
+          were initialized with wrong variables)
+o) fixed: error in parsing free diskspace (w32 exclusive)
+o) fixed: error in newsunpack while extracting encrypted archives
+o) fixed: fork() stuff fixed (again)
+-------------------------------------------------------------------------------
+0.1h
+-------------------------------------------------------------------------------
+o) added: display free diskspace should work on w32 now too
+o) added: nzb dirscan ability
+o) added: /config/rescue page added, use as last resort if accessing / won't 
+          work
+o) added: w32 build now ships with _yenc module
+o) changed: logging now uses the standard python logging module
+o) changed: new queue implementation, queue now only keeps the two top most
+            items in memory. ram_cache option should be alot more safe now too
+o) changed: /debug page reworked, shows last command received from server
+            (only of idle/busy threads though, see logfile for connection 
+            errors)
+o) changed: merged in changes from grabnzb-0.6
+o) fixed: relative/absolute pathname troubles in sabnzbd.newsunpack
+o) fixed: will now pause on various disk errors (i.e full disk)
+o) fixed: numerous minor bugfixes and changes
+o) fixed: removed unnecessary locks, should result in a minor speedboost
+-------------------------------------------------------------------------------
+0.1g
+-------------------------------------------------------------------------------
+o) added: display free diskspace, only works on posix
+o) added: cronlike scheduler to pause/resume the SABnzbd downloader
+o) added: ability to download to group folders
+o) added: ability to restart (most of) sabnzbd automatically, still need to 
+          restart the bin manually if you want to change the cherrypy port/host
+o) changed: add posts slated for repair at the top of the queue
+o) changed: marked ram_cache as expiremental
+o) fixed: misc minor bugs
+o) fixed: replace characters that don't match '[a-zA-Z0-9\-_\.]' with '_' if 
+          assembly of a file throws an exception
+o) fixed: added more safeguards in assembler thread
+o) fixed: bug in nzbgrabber
+-------------------------------------------------------------------------------
+0.1f
+-------------------------------------------------------------------------------
+o) fixed: sabnzbd.nzbqueue typo (caused crash on crc errors)
+o) fixed: remove stdoutwrapper, not working as intended
+o) fixed: daemon mode forks properly now
+-------------------------------------------------------------------------------
+0.1e
+-------------------------------------------------------------------------------
+o) added: ability to change an items position in queue
+o) added: new config option, failover on yenc crc errors
+o) changed: layout changes in web-interface
+o) fixed: extracting from multiple rar sets if defined in a single par2 set
+o) fixed: bug concerning multiserver handling
+-------------------------------------------------------------------------------
+0.1d
+-------------------------------------------------------------------------------
+o) fixed delete button (oops forgot a </form> tag)
+o) small FAQ added to README.txt
+o) fixed an error that kept appending data to existing files
+   (no more double sized nfo files)
+o) (InitNW) threads that are in a retry loop will shutdown properly now
+o) robustified download engine
+-------------------------------------------------------------------------------
+0.1c
+-------------------------------------------------------------------------------
+o) fixed resuming posts on multi-server setups (previously if you shutdown
+   SABnzbd during a download in a multi-server setup, the download engine
+   sometimes wouldn't restart its work)
+o) <button> element looks ugly in safari, changed to <input type="submit"...>
+o) added /config page to web-interface
+o) setup.py script fixed
+-------------------------------------------------------------------------------
+0.1b
+-------------------------------------------------------------------------------
+o) switched config module to configobj
+o) config file format changed
+o) fixed some startup bugs
+o) added verbose file listing
+o) fixed a major bug that prevented fillserver(s) to start
+-------------------------------------------------------------------------------
+0.1a
+-------------------------------------------------------------------------------
+o) fixed a typo in sabnzbd.assembler

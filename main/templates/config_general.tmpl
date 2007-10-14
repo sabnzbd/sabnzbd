@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>SABnzbd-$version - Uptime: $uptime</title>
+    <link rel="stylesheet" type="text/css" href="../../default.css"/>
+</head>
+<body>
+<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<span class="MainMenu">
+<a href="../">Home</a> |
+<a href="../../queue">Queue</a> |
+<a href="../../history">History</a> |
+<a class="current" href="../">Config</a> |
+<a href="../../connections">Connections</a>
+</span>
+<span class="SubMenu">
+<a class="current" href="./">General</a> | 
+<a href="../directories">Directories</a> | 
+<a href="../switches">Switches</a> | 
+<a href="../server">Servers</a> | 
+<a href="../scheduling">Scheduling</a> | 
+<a href="../rss">RSS</a>
+</span>
+<h2>General configuration</h2>
+<form action="saveGeneral" method="post">
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>SABnzbd server</legend>
+<strong>SABnzbd Host:</strong><br>
+Host SABnzbd should listen on.<br>
+<input type="text" name="host" value=$host>
+<br>
+<br>
+<strong>SABnzbd Port:</strong><br>
+Post SABnzbd should listen on.<br>
+<input type="text" name="port" value=$port>
+<br>
+<br>
+<strong>SABnzbd Username:</strong><br>
+Authentication Username.<br>
+<input type="text" name="username" value=$username>
+<br>
+<br>
+<strong>SABnzbd Password:</strong><br>
+Authentication Password.<br>
+<input type="password" name="password" value=$password>
+</fieldset>
+</div>
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>SABnzbd tuning</legend>
+<strong>SABnzbd Bandwith Limit:</strong><br>
+Slowdown factor, try values between 0.01 and 1.0.<br>
+<input type="text" name="bandwith_limit" value=$bandwith_limit>
+<br>
+<br>
+<strong>SABnzbd Article Cache Limit:</strong><br>
+Cache articles in memory. See SABnzbd.ini<br>
+<input type="text" name="cache_limit" value=$cache_limit>
+<br>
+<br>
+<strong>Cleanup List:</strong><br>
+List of file (extensions) that should be deleted at the cleanup stage.<br>
+For example: ".nfo," or ".nfo, .sfv"<br>
+<input type="text" name="cleanup_list" value="$cleanup_list">
+</fieldset>
+</div>
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>Newzbin settings</legend>
+<strong>OPTIONAL: Newzbin Username:</strong><br>
+Set your www.newzbin.com username here.<br>
+<input type="text" name="username_newzbin" value=$username_newzbin>
+<br>
+<br>
+<strong>OPTIONAL: Newzbin Password:</strong><br>
+Set your www.newzbin.com password here.<br>
+<input type="password" name="password_newzbin" value=$password_newzbin>
+</fieldset>
+</div>
+<p>
+<input type="submit" value="Save Changes">
+</p>
+</form>
+</table>
+<div class="footer">
+<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
+<!--#if int($cache_limit)#-->
+<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#end if#-->
+<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+</div>
+</body>
+</html>

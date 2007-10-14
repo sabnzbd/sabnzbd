@@ -1,0 +1,406 @@
+#!/usr/bin/python -OO
+# Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+"""
+sabnzbd.downloader - download engine
+"""
+
+__NAME__ = 'downloader'
+
+import time
+import select
+import logging
+import sabnzbd
+
+from threading import Thread
+
+from sabnzbd.decoder import Decoder
+from sabnzbd.newswrapper import NewsWrapper
+
+#------------------------------------------------------------------------------
+
+class Server:
+    def __init__(self, host, port, threads, fillserver, username = None, 
+                 password = None):
+        self.host = host
+        self.port = port
+        self.threads = threads
+        self.fillserver = fillserver
+        
+        self.username = username
+        self.password = password
+        
+        self.busy_threads = []
+        self.idle_threads = []
+        
+        for i in range(threads):
+            self.idle_threads.append(NewsWrapper(self, i+1))
+            
+    def __repr__(self):
+        return "%s:%s" % (self.host, self.port)
+            
+#------------------------------------------------------------------------------
+
+class BPSMeter:
+    def __init__(self, bytes_sum = 0):
+        t = time.time()
+        
+        self.start_time = t
+        self.log_time = t
+        self.last_update = t
+        self.bps = 0.0
+        self.bytes_total = 0
+        self.bytes_sum = bytes_sum
+        
+    def update(self, bytes_recvd):
+        self.bytes_total += bytes_recvd
+        self.bytes_sum += bytes_recvd
+        
+        t = time.time()
+        try:
+            self.bps = (self.bps * (self.last_update - self.start_time)
+                        + bytes_recvd) / (t - self.start_time)
+        except:
+            self.bps = 0.0
+            
+        self.last_update = t
+        
+        check_time = t - 20.0
+        
+        if self.start_time < check_time:
+            self.start_time = check_time
+        
+        if self.log_time < check_time:
+            logging.info("[%s] bps: %s", __NAME__, self.bps)
+            self.log_time = t
+            
+        if self.bps < 0.0:
+            logging.debug("[%s] bps < 0 -> reset", __NAME__) 
+            self.reset()
+            
+    def get_sum(self):
+        return self.bytes_sum
+            
+    def reset(self):
+        self.__init__(bytes_sum = self.bytes_sum)
+        
+#------------------------------------------------------------------------------
+
+class Downloader(Thread):
+    def __init__(self, servers, paused = False):
+        Thread.__init__(self)
+        
+        self.paused = paused
+        
+        self.shutdown = False
+        
+        self.force_disconnect = False
+        
+        self.read_fds = {}
+        self.write_fds = {}
+        
+        self.servers = []
+        
+        for server in servers:
+            host = servers[server]['host']
+            port = int(servers[server]['port'])
+            threads = int(servers[server]['connections'])
+            fillserver = bool(int(servers[server]['fillserver']))
+            username = servers[server]['username']
+            password = servers[server]['password']
+            self.servers.append(Server(host, port, threads, fillserver, 
+                                       username, password))
+                    
+        self.servers = tuple(self.servers)
+        
+        self.decoder = Decoder(self.servers)
+        
+    def stop(self):
+        self.shutdown = True
+        
+    def resume(self):
+        logging.info("[%s] Resuming", __NAME__)
+        self.paused = False
+        
+    def pause(self):
+        logging.info("[%s] Pausing", __NAME__)
+        self.paused = True
+        
+    def disconnect(self):
+        self.force_disconnect = True
+        
+    def run(self):        
+        self.decoder.start()
+        
+        while 1:
+            for server in self.servers:
+                for nw in server.busy_threads[:]:
+                    if nw.timeout and time.time() > nw.timeout:
+                        self.__reset_nw(nw, "timed out")
+                        
+                if not server.idle_threads or self.paused or self.shutdown:
+                    continue
+                    
+                if not sabnzbd.has_articles_for(server):
+                    continue
+                    
+                for nw in server.idle_threads[:]:
+                    if nw.timeout:
+                        if time.time() < nw.timeout:
+                            continue
+                        else:
+                            nw.timeout = None
+                            
+                    article = sabnzbd.get_article(server)
+                    
+                    if not article:
+                        break
+                        
+                    else:
+                        server.idle_threads.remove(nw)
+                        server.busy_threads.append(nw)
+                        
+                        nw.article = article
+                        
+                        if nw.connected:
+                            if sabnzbd.SEND_GROUP and nw.article.nzf.nzo.get_group() != nw.group:
+                                logging.info("[%s] Sending group", __NAME__)
+                                self.__send_group(nw)
+                            else:
+                                self.__request_article(nw)
+                            
+                        else:
+                            try:
+                                logging.info("[%s] %s@%s:%s: Initiating connection",
+                                                  __NAME__, nw.thrdnum, server.host,
+                                                  server.port) 
+                                nw.init_connect()
+                                self.write_fds[nw.nntp.sock.fileno()] = nw
+                            except:
+                                logging.exception("[%s] Failed to initialize %s@%s:%s",
+                                                  __NAME__, nw.thrdnum, server.host,
+                                                  server.port)
+                                self.__reset_nw(nw, "failed to initialize")
+                                
+            # Exit-point
+            if self.shutdown:
+                empty = True
+                for server in self.servers:
+                    if server.busy_threads:
+                        empty = False
+                        break
+                        
+                if empty:
+                    self.decoder.stop()
+                    self.decoder.join()
+                    
+                    for server in self.servers:
+                        for nw in server.idle_threads:
+                            nw.hard_reset()
+                            
+                    logging.info("[%s] Shutting down", __NAME__)
+                    break
+                    
+            if self.force_disconnect:
+                for server in self.servers:
+                    for nw in server.idle_threads[:]:
+                        self.__reset_nw(nw, "forcing disconnect")
+                    for nw in server.busy_threads[:]:
+                        self.__reset_nw(nw, "forcing disconnect")
+                        
+                self.force_disconnect = False
+                
+            # => Select
+            readkeys = self.read_fds.keys()
+            writekeys = self.write_fds.keys()
+            
+            if readkeys or writekeys:
+                read, write, error = select.select(readkeys, writekeys, (), 1.0)
+                
+            else:
+                read, write, error = ([], [], [])
+                
+                sabnzbd.reset_bpsmeter()
+                
+                time.sleep(1.0)
+                
+                sabnzbd.CV.acquire()
+                while (not sabnzbd.has_articles() or self.paused) and not \
+                       self.shutdown:
+                    sabnzbd.CV.wait()
+                sabnzbd.CV.release()
+                
+                self.force_disconnect = False
+                
+            for selected in write:
+                nw = self.write_fds[selected]
+                
+                fileno = nw.nntp.sock.fileno()
+                
+                if fileno not in self.read_fds:
+                    self.read_fds[fileno] = nw
+                    
+                if fileno in self.write_fds:
+                    self.write_fds.pop(fileno)
+                    
+            if not read:
+                sabnzbd.update_bytes(0)
+                continue
+                
+            for selected in read:
+                nw = self.read_fds[selected]
+                article = nw.article
+                server = nw.server
+                
+                if article:
+                    nzo = article.nzf.nzo
+                    
+                try:
+                    if sabnzbd.BANDWITH_LIMIT:
+                        time.sleep(sabnzbd.BANDWITH_LIMIT)
+                    bytes, done = nw.recv_chunk()
+                except:
+                    bytes, done = (0, False)
+                    
+                if bytes < 1:
+                    self.__reset_nw(nw, "server closed connection")
+                    continue
+                    
+                else:
+                    sabnzbd.update_bytes(bytes)
+                    
+                    if nzo:
+                        nzo.update_bytes(bytes)
+                        
+                if len(nw.lines) == 1:
+                    if not nw.connected:
+                        done = False
+                        
+                        try:
+                            nw.finish_connect()
+                            logging.debug("[%s] %s@%s:%s last message -> %s", 
+                                         __NAME__, nw.thrdnum, nw.server.host,
+                                         nw.server.port, nw.lines[0])
+                            nw.lines = []
+                            nw.data = ''
+                        except:
+                            logging.exception("[%s] Connecting %s@%s:%s failed", 
+                                              __NAME__, nw.thrdnum, 
+                                              nw.server.host, nw.server.port)
+                            self.__reset_nw(nw, "connecting failed")
+                            
+                        if nw.connected:
+                            logging.info("[%s] Connecting %s@%s:%s finished", 
+                                         __NAME__, nw.thrdnum, nw.server.host,
+                                         nw.server.port)
+                            self.__request_article(nw)
+                            
+                    elif nw.lines[0][:3] in ('211'):
+                        done = False
+                        
+                        logging.debug("[%s] group command ok -> %s", __NAME__, 
+                                      nw.lines)
+                        nw.group = nw.article.nzf.nzo.get_group()
+                        nw.lines = []
+                        nw.data = ''
+                        self.__request_article(nw)
+                        
+                    elif nw.lines[0][:3] in ('411', '423', '430'):
+                        done = True
+                        nw.lines = None
+                        
+                        logging.warning('[%s] Thread %s@%s:%s: Article ' + \
+                                        '%s missing',
+                                        __NAME__, nw.thrdnum, nw.server.host, 
+                                        nw.server.port, article.article)
+                        
+                if done:
+                    logging.info('[%s] Thread %s@%s:%s: %s done',
+                                 __NAME__, nw.thrdnum, server.host, 
+                                 server.port, article.article)
+                    self.decoder.decode(article, nw.lines)
+                    
+                    nw.soft_reset()
+                    server.busy_threads.remove(nw)
+                    server.idle_threads.append(nw)
+                    
+    def __reset_nw(self, nw, errormsg):
+        server = nw.server
+        article = nw.article
+        fileno = None
+        
+        if nw.nntp:
+            fileno = nw.nntp.sock.fileno()
+            
+        logging.warning('[%s] Thread %s@%s:%s: ' + errormsg,
+                         __NAME__, nw.thrdnum, server.host, server.port)
+                         
+        if nw in server.busy_threads:
+            server.busy_threads.remove(nw)
+        if nw not in server.idle_threads:
+            server.idle_threads.append(nw)
+            
+        if fileno and fileno in self.write_fds:
+            self.write_fds.pop(fileno)
+        if fileno and fileno in self.read_fds:
+            self.read_fds.pop(fileno)
+            
+        # Remove this server from try_list
+        if article:
+            article.fetcher = None
+            
+            nzf = article.nzf
+            nzo = nzf.nzo
+            
+            ## Allow all servers to iterate over each nzo/nzf again ##
+            sabnzbd.reset_try_lists(nzf, nzo)
+            
+        nw.hard_reset()
+        
+    def __request_article(self, nw):
+        try:
+            logging.info('[%s] Thread %s@%s:%s: fetching %s',
+                         __NAME__, nw.thrdnum, nw.server.host, 
+                         nw.server.port, nw.article.article)
+                         
+            fileno = nw.nntp.sock.fileno()
+            
+            nw.body()
+            
+            if fileno not in self.read_fds:
+                self.read_fds[fileno] = nw
+        except:
+            logging.exception("[%s] Exception?", __NAME__)
+            self.__reset_nw(nw, "server closed connection")
+            
+    def __send_group(self, nw):
+        try:
+            nzo = nw.article.nzf.nzo
+            _group = nzo.get_group()
+            logging.info('[%s] Thread %s@%s:%s: group <%s>',
+                         __NAME__, nw.thrdnum, nw.server.host, 
+                         nw.server.port, _group)
+            
+            fileno = nw.nntp.sock.fileno()
+            
+            nw.send_group(_group)
+            
+            if fileno not in self.read_fds:
+                self.read_fds[fileno] = nw
+        except:
+            logging.exception("[%s] Exception?", __NAME__)
+            self.__reset_nw(nw, "server closed connection")

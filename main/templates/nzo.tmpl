@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>SABnzbd-$version - Uptime: $uptime</title>
+    <link rel="stylesheet" type="text/css" href="../../default.css"/>
+<script type='text/javascript'>
+function mark_all()
+{
+    var s;
+    var i=0;
+    while(s = document.getElementsByTagName("input")[i++])
+    {
+        if(s.type=='checkbox')
+        {
+            s.checked=true;
+        }
+    }
+}
+</script>
+
+<script type='text/javascript'>
+function unmark_all()
+{
+    var s;
+    var i=0;
+    while(s = document.getElementsByTagName("input")[i++])
+    {
+        if(s.type=='checkbox')
+        {
+            s.checked=false;
+        }
+    }
+}
+</script>
+
+<script type='text/javascript'>
+function invert()
+{
+    var s;
+    var i=0;
+    while(s = document.getElementsByTagName("input")[i++])
+    {
+        if(s.type=='checkbox')
+        {
+            s.checked=!s.checked;
+        }
+    }
+}
+</script>
+</head>
+<body>
+<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<span class="MainMenu">
+<a href="/sabnzbd">Home</a> |
+<a href="../../queue">Queue</a> |
+<a href="../../history">History</a> |
+<a href="../../config">Config</a> |
+<a href="../../connections">Connections</a>
+</span>
+<span class="SubMenu">
+<a href="../../queue/$nzo_id/tog_verbose">Toggle verbosity</a>
+</span>
+<br>
+<br>
+<form action="bulk_operation">
+  <input type="submit" name="action_key" value="Delete">
+  <br>
+  <input type="submit" name="action_key" value="Top">
+  <input type="submit" name="action_key" value="Up">
+  <input type="submit" name="action_key" value="Down">
+  <input type="submit" name="action_key" value="Bottom">
+  <br>
+  selection:<a href='#' onclick='mark_all();' target='_self'>all</a>
+            <a href='#' onclick='unmark_all();' target='_self'>none</a>
+            <a href='#' onclick='invert();' target='_self'>invert</a>
+  <table>
+      <tr><th></th><th>Filename/Subject</th><th>Size</th><th>Age</th></tr>
+      <!--#set $oddLine = False#-->
+      <!--#for $file in $active_files#-->
+          <!--#set $oddLine = not $oddLine#-->
+          <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
+              <td><input type="checkbox" name="$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
+              <td>$file.filename</td>
+              <td>$file.mb MB</td>
+              <td>$file.age</td>
+          </tr>
+      <!--#end for#-->
+  </table>
+</form>
+<div class="footer">
+<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
+<!--#if int($cache_limit)#-->
+<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#end if#-->
+<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+</div>
+</body>
+</html>

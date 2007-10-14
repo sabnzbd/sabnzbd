@@ -1,0 +1,217 @@
+body {
+	background-color: white;
+	color: #808080;
+	font-family: 'Verdana', 'Helvetica', 'Sans-serif', 'sans';
+	font-size: 12px;
+	line-height: 18px;
+	padding: 15px;
+	margin: 0px;
+}
+
+a {
+ text-decoration: none;
+ color: #000000;
+}
+
+form {
+  margin: 0px;
+  padding: 0px;
+  border: none;
+  display: inline:
+}
+legend {
+  font-weight: bold;
+  color: #c32ee4;
+}
+div.EntryBlock {
+  display: inline;
+}
+div.EntryBlock form {
+  display: inline;
+}
+fieldset.EntryFieldSet {
+  vertical-align: top;
+  display: inline;
+  padding: 7px;
+  margin: 5px;
+}
+.MainMenu a {
+	font-weight: bold;
+	color: #4e4e4e;
+	padding: 1px;
+	text-decoration: none;
+	border: 1px solid #eeeeee;
+	margin: 9px;
+}
+
+.SubMenu a {
+	font-weight: bold;
+	color: #000000;
+	padding: 1px;
+	text-decoration: none;
+	border: 1px solid #b5b5b5;
+	margin: 9px;
+}
+a:hover {
+	background-color: #F0E68C;
+}
+
+a.current {
+	color: #fff;
+	border: none;
+	background-color: #b5b5b5;
+	padding: 3px;
+	padding-bottom: 7px;
+}
+a.current:hover {
+	border: none;
+	background-color: #b5b5b5;
+}
+
+
+.block {
+	padding: 10px;
+}
+
+.blockWithBorder {
+	display: block;
+	border-width: thin;
+	border-style: solid;
+	border-color: #b5b5b5;
+	background-color: #eeeeee;
+	padding: 5px;
+}
+
+.MainMenu {
+	display: block;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #b5b5b5;
+	background-color: #eeeeee;
+	padding: 5px;
+
+}
+.SubMenu {
+	display: block;
+	background-color: #b5b5b5;
+	padding: 5px;
+}
+
+table {
+	font-size: 9pt;
+	color: black;
+	margin: 0px;
+}
+td, td {
+  padding: 5px;
+}
+th {
+	background: #b5b5b5;
+	color: white;
+	font-weight: bold;
+}
+
+tr.even{
+	background-color: #cdf;
+}
+
+tr.evenLine {
+	background-color: #eee;
+}
+
+tr.odd {
+	background-color: #99bbff;
+}
+
+tr.oddLine {
+	background-color: #f8f8f8;
+}
+
+tr.active {
+	font-weight: bold;
+}
+
+tr.finished {
+	font-weight: normal;
+}
+
+tr.waiting {
+	font-style: italic;
+}
+
+td.pre {
+	font-size: 13px;
+	font-family: 'courier new',courier,serif;
+	font-weight: bold;
+}
+
+h1 {
+  text-align: left;
+  font-size: 19px;
+  font-weight: normal;
+  border-bottom: 1px solid #b5b5b5;
+  padding-bottom: 0px;
+}
+* html h1 {
+  padding-bottom: 2px;
+}
+h2 {
+  font-size: 18px;
+  font-weight: bold;
+}
+#first {
+	font-size: 33px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold ;
+	color: #c32ee4;
+	text-transform: uppercase;
+	padding-left: 20px;
+}
+
+#second {
+	font-size: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-style: italic;
+	color: #99bbff;
+	text-transform: lowercase;
+}
+
+#catchfrase {
+  display: block;
+  position: relative;
+  top: -18px;
+  float: right;
+  text-align: right;
+  font-size: 10px;
+  font-weight: normal;
+}
+.footer {
+  text-align: center;
+  background-color: #eee;
+  padding-bottom: 5px;
+  margin-top: 20px;
+  border-top: 1px solid #b5b5b5;
+}
+
+#progressBar {
+  background-color: #cdf; 
+  border: 1px solid blue; 
+  height: 6px;
+  width: 90%;
+  margin: 0px;
+  margin-left: auto; 
+  margin-right: auto;
+  padding: 0px;
+  text-align: left;
+}
+
+* html #progressBar {
+  height: 8px;
+  he\ight: 6px;
+}
+
+#percentageBar {
+  position: relative; 
+  background-color: #9bf; 
+  height: 6px;
+}

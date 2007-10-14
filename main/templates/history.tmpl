@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>SABnzbd-$version - Uptime: $uptime</title>
+    <link rel="stylesheet" type="text/css" href="../default.css"/>
+</head>
+<body>
+<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<span class="MainMenu">
+<a href="../">Home</a> |
+<a href="../queue">Queue</a> |
+<a class="current" href="./">History</a> |
+<a href="../config">Config</a> |
+<a href="../connections">Connections</a>
+</span>
+<span class="SubMenu"><a href="./purge">Purge history</a> | <a href="./tog_verbose">Toggle verbosity</a></span>
+<br>
+<p>
+<strong>Bytes Downloaded:</strong> $bytes_beginning GB <strong>- Bytes in History:</strong> $total_bytes GB</strong>
+</p>
+<!--#if $lines#-->
+<table>
+    <tr><th>Completed</th><th>Name</th><th>Loaded</th></tr>
+    <!--#set $odd = False#-->
+    <!--#for $line in $lines #-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->"><td>$line.added</td><td>$line.filename</td><td>$line.loaded</td></tr>
+        <!--#set $oddLine = not False#-->
+        <!--#for $stage in $line.stages#-->
+            <!--#set $oddLine = not $oddLine#-->
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#-->"><td></td><td><dl>
+            <dt>Stage $stage.name</dt>
+            <!--#for $action in $stage.actions#-->
+                 <dd>$action.name: $action.value</dd>
+            <!--#end for#-->
+            </dl></td></tr>
+        <!--#end for#-->
+    <!--#end for#-->
+</table>
+<!--#end if#-->
+<div class="footer">
+<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
+<!--#if int($cache_limit)#-->
+<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#end if#-->
+<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+</div>
+</body>
+</html>

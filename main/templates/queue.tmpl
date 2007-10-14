@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>SABnzbd-$version - Uptime: $uptime</title>
+    <link rel="stylesheet" type="text/css" href="../default.css"/>
+</head>
+<body>
+<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<span class="MainMenu">
+<a href="/sabnzbd">Home</a> |
+<a class="current" href="./">Queue</a> |
+<a href="../history">History</a> |
+<a href="../config">Config</a> |
+<a href="../connections">Connections</a>
+</span>
+<span class="SubMenu">
+<a href="./pause">Pause</a> |
+<a href="./resume">Resume</a> |
+<a href="./sort_by_avg_age">Sort</a> |
+<a href="./tog_verbose">Toggle verbosity</a>
+<!--#if $nt#-->
+|
+<a href="./tog_shutdown">Toggle Shutdown</a>
+<!--#end if#-->
+</span>
+<br>
+<br>
+<!--#if $varExists('slotinfo')#-->
+    <table>
+        <tr><th></th><th></th><th>Mode</th><th>Name</th><th>Remain/Total</th><th>ETA</th><th>AGE</th></tr>
+    <!--#set $odd = False#-->
+    <!--#for $slot in $slotinfo#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->"><td><form action="delete" method="get">
+            <input type="hidden" value="$slot.nzo_id" name="uid">
+            <input type="submit" value="Delete"></form>
+            <td><form><select onchange="location = this.options[this.selectedIndex].value;">
+            <!--#for $i in xrange($noofslots)#-->
+                <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
+            <!--#end for#-->
+            </select></form></td>
+            <td><form><select onchange="location = this.options[this.selectedIndex].value;">
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
+                </select></form>
+            </td>
+            <td><a href="./$slot.nzo_id/">$slot.filename</td>
+            <td class="pre">$slot.mbleft/$slot.mb MB</td>
+            <td>$slot.eta</td>
+            <td>$slot.avg_age</td>
+        </tr>
+        <!--#set $oddLine = False#-->
+        <!--#for $line in $slot.finished#-->
+            <!--#set $oddLine = not $oddLine#-->
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td></td><td></td><td>Finished</td><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+        <!--#end for#-->
+        <!--#set $oddLine = False#-->
+        <!--#for $line in $slot.active#-->
+            <!--#set $oddLine = not $oddLine#-->
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td><a href="./removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id">Remove</a></td><td></td><td>Active</td><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
+        <!--#end for#-->
+        <!--#set $oddLine = False#-->
+        <!--#for $line in $slot.queued#-->
+            <!--#set $oddLine = not $oddLine#-->
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td></td><td></td><td>Waiting</td><td>$line.filename (set: $line.set)</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+        <!--#end for#-->
+    <!--#end for#-->
+    </table>
+<!--#end if#-->
+<div class="footer">
+<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
+<!--#if int($cache_limit)#-->
+<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#end if#-->
+<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+</div>
+</body>
+</html>
