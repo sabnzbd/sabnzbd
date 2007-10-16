@@ -417,7 +417,7 @@ function NOVAction(which) {
 			break;
 		case 'queue_tog_shutdown': // windows only, not actually used because it won't post-process correctly through SABnzbd, it works in NOVA though
 			if ($("queue_tog_shutdown").innerHTML != 'Shutdown!') {
-				if (confirm("Are you fucking sure you want to shut down your computer upon queue completion? SABnzbd probably won't post-process your last downloaded nzb correctly.")) {
+				if (confirm("Are you really sure you want to shut down your computer upon queue completion? SABnzbd probably won't post-process your last downloaded nzb correctly.")) {
 					new Ajax.Request('queue/tog_shutdown',{method:'get'});
 					$("queue_tog_shutdown").innerHTML = 'Shutdown!';
 					$("queue_tog_shutdown").setAttribute("class", "toggled"); 
