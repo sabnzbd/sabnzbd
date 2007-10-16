@@ -24,7 +24,9 @@ class NNTP:
     def __init__(self, host, port, user=None, password=None):
         self.host = host
         self.port = port
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        res = socket.getaddrinfo(self.host, self.port, 0, socket.SOCK_STREAM)
+        af, socktype, proto, canonname, sa = res[0]
+        self.sock = socket.socket(af, socktype, proto)
         self.sock.setblocking(0)
         
         try:
@@ -36,7 +38,7 @@ class NNTP:
                 
             #windows can't connect non-blocking sockets
             elif _errno == errno.EWOULDBLOCK:
-                self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.sock = socket.socket(af, socktype, proto)
                 #self.sock.connect((self.host, self.port))
                 #self.sock.setblocking(0)
                 Thread(target=con, args=(self.sock, self.host, self.port)).start()
