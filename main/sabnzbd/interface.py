@@ -675,7 +675,6 @@ class ConfigSwitches(ProtectedClass):
         config['dirscan_opts'] = int(sabnzbd.CFG['misc']['dirscan_opts'])
         config['top_only'] = int(sabnzbd.CFG['misc']['top_only'])
         config['auto_sort'] = int(sabnzbd.CFG['misc']['auto_sort'])
-        config['restore_name'] = int(sabnzbd.CFG['misc']['restore_name'])
         config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
         
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
@@ -689,7 +688,7 @@ class ConfigSwitches(ProtectedClass):
                      enable_filejoin = None, enable_save = None,
                      send_group = None, fail_on_crc = None, top_only = None,
                      create_group_folders = None, dirscan_opts = None,
-                     enable_par_cleanup = None, auto_sort = None, restore_name = None,
+                     enable_par_cleanup = None, auto_sort = None,
                      create_category_folders = None):
                      
         sabnzbd.CFG['misc']['enable_unrar'] = int(enable_unrar)
@@ -703,7 +702,6 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['enable_par_cleanup'] = int(enable_par_cleanup)
         sabnzbd.CFG['misc']['top_only'] = int(top_only)
         sabnzbd.CFG['misc']['auto_sort'] = int(auto_sort)
-        sabnzbd.CFG['misc']['restore_name'] = int(restore_name)
         sabnzbd.CFG['newzbin']['create_category_folders'] = int(create_category_folders)
         
         return saveAndRestart(self.__root)
@@ -728,6 +726,7 @@ class ConfigGeneral(ProtectedClass):
         config['password'] = sabnzbd.CFG['misc']['password']
         config['bandwith_limit'] = sabnzbd.CFG['misc']['bandwith_limit']
         config['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
+        config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
         config['password_newzbin'] = sabnzbd.CFG['newzbin']['password']
         config['cache_limit'] = sabnzbd.CFG['misc']['cache_limit']
@@ -750,7 +749,7 @@ class ConfigGeneral(ProtectedClass):
     @cherrypy.expose
     def saveGeneral(self, host = None, port = None, username = None, password = None,
                     cronlines = None, username_newzbin = None, password_newzbin = None,
-                    refresh_rate = None,
+                    refresh_rate = None, rss_rate = None,
                     bandwith_limit = None, cleanup_list = None, cache_limit = None):
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
@@ -758,6 +757,7 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['password'] = password
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
+        sabnzbd.CFG['misc']['rss_rate'] = rss_rate
         sabnzbd.CFG['newzbin']['username'] = username_newzbin
         sabnzbd.CFG['newzbin']['password'] = password_newzbin
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)

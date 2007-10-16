@@ -35,9 +35,7 @@
 		<thead>
 			<tr>
 				<th>Name</th>
-<!--#if $varExists('newzbinDetails')#-->
 				<th>Hop</th>
-<!--#endif#-->
 				<th>Completed At</th>
 			</tr>
 		</thead>
@@ -80,7 +78,6 @@
 					</td>
 					
 					
-<!--#if $varExists('newzbinDetails')#-->
 					## "HOP" - POST ID	
 					<td class="textCenter">
 						<script type="text/javascript">
@@ -95,8 +92,7 @@
 							}
 						</script>
 					</td>					
-<!--#endif#-->
-
+					
 					## DATE COMPLETED
 					<td class="textCenter">
 						<small>$line.added</small>

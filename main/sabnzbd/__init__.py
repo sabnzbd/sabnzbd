@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__version__ = "0.2.6"
+__version__ = "0.2.7"
 __configversion__ = 17
 __queueversion__ = 5
 __NAME__ = "sabnzbd"
@@ -262,6 +262,17 @@ def initialize(pause_downloader = False):
     logging.info("refresh_rate: %s", refresh_rate)
     if refresh_rate == 0:
         CFG['misc']['refresh_rate'] = ""
+ 
+    try:
+    	  rss_rate = int(CFG['misc']['rss_rate'])
+    except:
+    	  rss_rate = 1
+    if rss_rate > 4:
+        rss_rate = 4
+    if rss_rate < 1:
+        rss_rate = 1
+    CFG['misc']['rss_rate'] = rss_rate
+    logging.info("rss_rate: %s", rss_rate)
     
     extern_proc = CFG['misc']['extern_proc']
     if extern_proc:
@@ -271,9 +282,6 @@ def initialize(pause_downloader = False):
         else:
             logging.error('External postproc script: %s does not exist', extern_proc)
             return False
-
-    restore_name = bool(int(CFG['misc']['restore_name']))
-    logging.info("restore_name: %s", restore_name)
 
     servers = CFG['servers']
      
@@ -312,7 +320,7 @@ def initialize(pause_downloader = False):
     ############################
     
     need_rsstask = init_RSS()
-    init_SCHED(schedlines, need_rsstask)
+    init_SCHED(schedlines, need_rsstask, rss_rate)
     
     if ARTICLECACHE:
         ARTICLECACHE.__init__(cache_limit)
@@ -336,9 +344,9 @@ def initialize(pause_downloader = False):
         NZBQ = NzbQueue(auto_sort, top_only)
         
     if POSTPROCESSOR:
-        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc, restore_name, POSTPROCESSOR.queue)
+        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc, POSTPROCESSOR.queue)
     else:
-        POSTPROCESSOR = PostProcessor(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc, restore_name)
+        POSTPROCESSOR = PostProcessor(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc)
         NZBQ.__init__stage2__()
         
     if ASSEMBLER:
@@ -603,9 +611,9 @@ def purge_articles(articles):
 ## Misc Wrappers                                                              ##
 ################################################################################
 def add_msgid(msgid, pp):
-    logging.info('[%s] Fetching msgid %s from www.newzbin.com',
+    logging.info('[%s] Fetching msgid %s from v3.newzbin.com',
                  __NAME__, msgid)
-    msg = "fetching msgid %s from www.newzbin.com" % msgid
+    msg = "fetching msgid %s from v3.newzbin.com" % msgid
     
     repair, unpack, delete, script = pp_to_opts(pp)
     
@@ -941,7 +949,7 @@ def search_new_server(servers, article):
 ################################################################################
 RSSTASK_MINUTE = random.randint(0, 59)
 
-def init_SCHED(schedlines, need_rsstask = False):
+def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1):
     global SCHED
     
     if schedlines or need_rsstask:
@@ -969,12 +977,13 @@ def init_SCHED(schedlines, need_rsstask = False):
         if need_rsstask:
             d = range(1, 8)
             
-            m = RSSTASK_MINUTE
-            logging.debug("[%s] RSSTASK_MINUTE: %s", __NAME__, m)
+            ran_m = int(RSSTASK_MINUTE  / rss_rate)
+            logging.debug("[%s] RSSTASK_MINUTE: %s", __NAME__, ran_m)
             
             for h in range(24):
-                SCHED.addDaytimeTask(RSS.run, '', d, None, (h, m), 
-                                     SCHED.PM_SEQUENTIAL, [])
+            	  for m in range(rss_rate):
+                    SCHED.addDaytimeTask(RSS.run, '', d, None, (h, 15*m + ran_m), 
+                                         SCHED.PM_SEQUENTIAL, [])
 ################################################################################
 # RSS                                                                          #
 ################################################################################

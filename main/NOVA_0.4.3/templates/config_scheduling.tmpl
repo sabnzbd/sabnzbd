@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>SABnzbd-$version - Uptime: $uptime</title>
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
+</head>
+<body>
+<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<span class="MainMenu">
+<a href="../../">NOVA</a> |
+<a href="../../connections">Connections</a> |
+<a class="current" href="../../config">Config</a>
+</span>
+<span class="SubMenu">
+<a href="../general">General</a> | 
+<a href="../directories">Directories</a> | 
+<a href="../switches">Switches</a> | 
+<a href="../server">Servers</a> | 
+<a class="current" href="./">Scheduling</a> | 
+<a href="../rss">RSS</a>
+</span>
+<h2>Scheduling configuration</h2>
+<div class="EntryBlock">
+<form action="addSchedule" method="post">
+<fieldset class="EntryFieldSet">
+<legend>Add schedule</legend>
+<select name="minute">
+<!--#for $i in range(60)#-->
+<option value=$i>$i
+<!--#end for#-->
+</select>
+<select name="hour">
+<!--#for $i in range(24)#-->
+<option value=$i>$i
+<!--#end for#-->
+</select>
+<select name="dayofweek">
+<option value="*" selected>*
+<!--#for $i in range(1, 8)#-->
+<option value=$i>$i
+<!--#end for#-->
+</select>
+<select name="action">
+<option value="resume">resume
+<option value="pause">pause
+</select>
+<p><input type="submit" value="Add Schedule"></p>
+</fieldset>
+</form>
+</div>
+<h3>Current Schedules:</h3>
+<div class="EntryBlock>"
+<!--#set $schednum = 0#-->
+<!--#for $line in $schedlines#-->
+<form action="delSchedule" method="post">
+<fieldset class="EntryFieldSet">
+<!--#set $schednum = $schednum+1#-->
+<legend>Task $schednum</legend>
+$line
+<input type="hidden" name="line" value="$line">
+<input type="submit" value="Remove">
+</fieldset>
+</form>
+<!--#end for#-->
+</div>
+<div class="footer">
+<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
+<!--#if int($cache_limit)#-->
+<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#end if#-->
+<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+</div>
+</body>
+</html>

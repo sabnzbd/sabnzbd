@@ -319,9 +319,8 @@ class NzbObject(TryList):
         if match_result:
             self.__dirname = match_result.group(1)
             
-        self.__dirname = sabnzbd.fix_filename(self.__dirname)
-            
-        self.__dirname = self.__dirname.replace('.', '_')
+        # Remove trailing .nzb
+        self.__dirname = self.__dirname.replace('.nzb', '')
         
         if not nzb:
             return
@@ -331,10 +330,6 @@ class NzbObject(TryList):
         except:
             logging.exception("[%s] Trying to fix %s (will take some time)", 
                               __NAME__, filename)
-            for char in nzb[:]:
-                if ord(char) > 127:
-                    nzb = nzb.replace(char, '_')
-            root = XML(nzb)
             
         avg_age = 0
         valids = 0

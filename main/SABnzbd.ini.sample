@@ -40,6 +40,9 @@ __version__ = 017
     ## Scan interval in seconds (default= 1)
     dirscan_speed = 1
 
+	## Set the RSS checking interval to 1/2/3/4 times/hour
+    rss_rate = 1
+
     ## external post-processing
     ## SABnzbd will pass each completed job to an external program
     ## First parameter will have full dir-pathname between quotes

@@ -42,13 +42,12 @@ DIR_LOCK = RLock()
 ## sabnzbd.add_nzo
 ## sabnzbd.cleanup_nzo
 class PostProcessor(Thread):
-    def __init__ (self, download_dir, complete_dir, extern_proc, restore_name, queue = None):
+    def __init__ (self, download_dir, complete_dir, extern_proc, queue = None):
         Thread.__init__(self)
         
         self.download_dir = download_dir
         self.complete_dir = complete_dir
         self.extern_proc = extern_proc
-        self.restore_name= restore_name
         self.queue = queue
         
         if not self.queue:
@@ -166,13 +165,6 @@ class PostProcessor(Thread):
                             except:
                                 logging.exception("[%s] Removing %s failed",
                                                   __NAME__, path)
-
-                if self.restore_name:
-                    root, ext = os.path.splitext(filename)
-                    wpath, wname = os.path.split(workdir)
-                    newdir= wpath + "/" + root
-                    os.rename(workdir, newdir)
-                    logging.info('[%s] Renamed %s to %s', __NAME__, workdir, newdir)
 
                 if scr and self.extern_proc:
                     logging.info('[%s] Running external script %s %s %s', __NAME__, self.extern_proc, workdir, filename)

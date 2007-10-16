@@ -1,6 +1,15 @@
-                                SABnzbd v0.2.6a
+                                SABnzbd v0.2.7
 								
 Patched by ShyPike
+
+v0.2.7:
+changed: Now supports V3.newzbin.com and DirectNzb (by Freaky)
+changed: Always keeps original foldername as derived from NZB file (by DNW)
+         Option "original folder' from 0.2.6 is gone!
+added:   You can now set the RSS checking interval to 1/2/3/4 times/hour
+         Set the proper value in the Configuration.
+changed: Modified versions of Nova_0.3.2 and Nova_0.4.3 included
+         set the proper path in SABnzbd.ini
 
 v0.2.6a:
 Corrected: Feature "download directory is renamed after the original NZB name"
