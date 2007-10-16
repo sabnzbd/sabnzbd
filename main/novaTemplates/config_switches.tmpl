@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+
+
+	<title>SABnzbd $version "Nova" - Switches - Uptime: $uptime</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="author" content="" />
+	<meta name="Copyright" content="" />
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="robots" content="index,follow,noarchive,nosnippet" />
+	<meta name="googlebot" content="index,follow,noarchive,nosnippet" />
+	<meta name="description" content="SABnzbd Nova Theme by Orgnaix Design" />
+	<meta name="keywords" content="SABnzbd theme, nova, orgnaix design" />
+	
+	
+	<link rel="stylesheet" type="text/css" href="../../static/css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="../../static/css/html.css" />
+	<link rel="stylesheet" type="text/css" href="../../static/css/classes.css" />
+	
+	<link rel="shortcut icon" type="image/ico" href="../../static/images/favicon.ico" />
+	
+</head>
+<body>
+
+
+
+<div id="page">
+
+
+	<div id="container">
+
+	
+		<div id="header">
+			
+			<div id="logo">
+				
+			</div>
+	
+			
+			<div id="menu">
+				<ul>
+					<li id="first"><a href="../../" title="Downloads">Downloads</a></li>
+					<li class="on"><a href="../../config" title="Config">Config</a></li>
+					<li><a href="../../connections" title="Connections">Connections</a></li>
+				</ul>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<!-- End Header -->
+
+
+		<div class="clear"></div>
+		<div id="content">
+<!-- ****************************************** BEGIN CONTENT ****************************************** -->
+			
+			
+			<!-- Begin Sub Menu -->
+			<span class="subMenu">
+				<a href="../../config/general">General</a><a href="../../config/directories">Directories</a><a href="../../config/switches" class="current">Switches</a><a href="../../config/server">Servers</a><a href="../../config/scheduling">Scheduling</a><a href="../../config/rss">RSS</a>
+			</span>
+			<!-- End Sub Menu -->
+
+
+
+
+
+<h2>Configuration switches</h2>
+<form action="saveSwitches" method="post">
+<div class="EntryBlock">
+  <fieldset class="EntryFieldSet">
+    <legend>Processing switches</legend>
+    <strong>Enable Unrar:</strong><br>
+    Enable built-in unrar functionality.<br>
+    <input type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Enable Unzip:</strong><br>
+    Enable built-in unzip functionality.<br>
+    <input type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Enable Filejoin:</strong><br>
+    Enable built-in filejoin functionality.<br>
+    <input type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Enable Par Cleanup:</strong><br>
+    Cleanup par files (if verifiying/repairing succeded).<br>
+    <input type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Fail on yenc crc Errors:</strong><br>
+    Use fill servers on yenc crc errors.<br>
+    <input type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Top Only:</strong><br>
+    Only fetch Articles from topmost collection. Enable for less memory usage.<br>
+    <input type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Restore original directory name:</strong><br>
+    Derive folder name from original NZB name (spaces!).<br>
+    <input type="radio" name="restore_name" value="0" <!--#if $restore_name == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="restore_name" value="1" <!--#if $restore_name > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Dirscan Options:</strong><br>
+    Use following post process option on .nzb files imported by the dirscanner.<br>
+    <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
+    <input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
+    <input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
+    <input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
+    <input type="radio" name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "checked=1" else ""#--> /> R+Script
+    <input type="radio" name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "checked=1" else ""#--> /> U+Script
+    <input type="radio" name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "checked=1" else ""#--> /> D+Script
+    <br>
+    <br>
+  </fieldset>
+  <fieldset class="EntryFieldSet">
+    <legend>Other switches</legend>
+    <strong>Enable periodic Save:</strong><br>
+    Enabling will make the queue save it's state after every completed file.<br>
+    <input type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Create group Folders:</strong><br>
+    Place downloads into group folders.<br>
+    <input type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="create_group_folders" value="1" <!--#if $create_group_folders > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Create Category Folders:</strong><br>
+    Place downloads into newzbin.com category folders.<br>
+    <input type="radio" name="create_category_folders" value="0" <!--#if $create_category_folders == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="create_category_folders" value="1" <!--#if $create_category_folders == 1 then "checked=1" else ""#--> /> Root
+    <input type="radio" name="create_category_folders" value="2" <!--#if $create_category_folders == 2 then "checked=1" else ""#--> /> Root+Sub
+    <br>
+    <br>
+    <strong>Send Group</strong><br>
+    Send group command before requesting articles.<br>
+    <input type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Auto Sort:</strong><br>
+    Automatically sort items by (average) age.<br>
+    <input type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+  </fieldset>
+</div>
+<p><input type="submit" value="Save Changes"></p>
+</form>
+
+
+
+<!-- ****************************************** END CONTENT ****************************************** -->
+		<div class="clear"></div>
+		</div>
+		<!-- End Content -->
+	
+	</div>
+	<!-- End Container -->
+
+
+</div>
+<!-- End Page -->
+
+
+
+
+
+</body>
+</html>

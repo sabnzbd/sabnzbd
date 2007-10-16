@@ -15,8 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__version__ = "0.2.5"
-__configversion__ = 16
+__version__ = "0.2.6"
+__configversion__ = 17
 __queueversion__ = 5
 __NAME__ = "sabnzbd"
 
@@ -247,9 +247,36 @@ def initialize(pause_downloader = False):
             logging.error('Directory: %s error accessing', dirscan_dir)
             return False
     logging.info("dirscan_dir: %s", dirscan_dir)
-        
-    servers = CFG['servers']
+            
+    try:
+        dirscan_speed = float(CFG['misc']['dirscan_speed'])
+    except:
+        CFG['misc']['dirscan_speed'] = "1.0"
+        dirscan_speed = 1.0
+    logging.info("dirscan_speed: %s", dirscan_speed)
+
+    try:
+        refresh_rate = int(CFG['misc']['refresh_rate'])
+    except:
+        refresh_rate = 0
+    logging.info("refresh_rate: %s", refresh_rate)
+    if refresh_rate == 0:
+        CFG['misc']['refresh_rate'] = ""
     
+    extern_proc = CFG['misc']['extern_proc']
+    if extern_proc:
+        extern_proc= os.path.abspath(extern_proc)
+        if os.path.exists(extern_proc):
+            logging.info("extern_proc: %s", extern_proc)
+        else:
+            logging.error('External postproc script: %s does not exist', extern_proc)
+            return False
+
+    restore_name = bool(int(CFG['misc']['restore_name']))
+    logging.info("restore_name: %s", restore_name)
+
+    servers = CFG['servers']
+     
     try:
         BANDWITH_LIMIT = float(CFG['misc']['bandwith_limit'])
     except:
@@ -271,7 +298,7 @@ def initialize(pause_downloader = False):
     logging.info("schedlines: %s", schedlines)
     
     dirscan_opts = int(CFG['misc']['dirscan_opts'])
-    dirscan_repair, dirscan_unpack, dirscan_delete = pp_to_opts(dirscan_opts)
+    dirscan_repair, dirscan_unpack, dirscan_delete, dirscan_script = pp_to_opts(dirscan_opts)
     logging.info("dirscan_opts: %s", dirscan_opts)
     
     top_only = bool(int(CFG['misc']['top_only']))
@@ -309,9 +336,9 @@ def initialize(pause_downloader = False):
         NZBQ = NzbQueue(auto_sort, top_only)
         
     if POSTPROCESSOR:
-        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, POSTPROCESSOR.queue)
+        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc, restore_name, POSTPROCESSOR.queue)
     else:
-        POSTPROCESSOR = PostProcessor(DOWNLOAD_DIR, COMPLETE_DIR)
+        POSTPROCESSOR = PostProcessor(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc, restore_name)
         NZBQ.__init__stage2__()
         
     if ASSEMBLER:
@@ -327,8 +354,8 @@ def initialize(pause_downloader = False):
             DOWNLOADER.paused = True
             
     if dirscan_dir:
-        DIRSCANNER = DirScanner(dirscan_dir, dirscan_repair, dirscan_unpack, 
-                                dirscan_delete)
+        DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed, dirscan_repair, dirscan_unpack, 
+                                dirscan_delete, dirscan_script)
                                 
     __INITIALIZED__ = True
     return True
@@ -580,9 +607,9 @@ def add_msgid(msgid, pp):
                  __NAME__, msgid)
     msg = "fetching msgid %s from www.newzbin.com" % msgid
     
-    repair, unpack, delete = pp_to_opts(pp)
+    repair, unpack, delete, script = pp_to_opts(pp)
     
-    future_nzo = NZBQ.generate_future(msg, repair, unpack, delete)
+    future_nzo = NZBQ.generate_future(msg, repair, unpack, delete, script)
     
     # Look for a grabber and reinitialize it
     for grabber in MSGIDGRABBERS:
@@ -599,9 +626,9 @@ def add_url(url, pp):
     
     msg = "Trying to fetch .nzb from %s" % url
     
-    repair, unpack, delete = pp_to_opts(pp)
+    repair, unpack, delete, script = pp_to_opts(pp)
     
-    future_nzo = NZBQ.generate_future(msg, repair, unpack, delete)
+    future_nzo = NZBQ.generate_future(msg, repair, unpack, delete, script)
     
     # Look for a grabber and reinitialize it
     for urlgrabber in URLGRABBERS:
@@ -656,7 +683,7 @@ def backup_nzb(filename, data):
 ################################################################################
 @synchronized_CV
 def add_nzbfile(nzbfile, pp):
-    repair, unpack, delete = pp_to_opts(pp)
+    repair, unpack, delete, script = pp_to_opts(pp)
     
     filename = os.path.basename(nzbfile.filename)
     
@@ -674,12 +701,12 @@ def add_nzbfile(nzbfile, pp):
                 data = zf.read(name)
                 name = os.path.basename(name)
                 if data:
-                    NZBQ.add(NzbObject(name, repair, unpack, delete, data))
+                    NZBQ.add(NzbObject(name, repair, unpack, delete, script, data))
         finally:
             f.close()
     else:
         try:
-            NZBQ.add(NzbObject(filename, repair, unpack, delete, nzbfile.value))
+            NZBQ.add(NzbObject(filename, repair, unpack, delete, script, nzbfile.value))
         except NameError:
             logging.exception("[%s] Error accessing NZBQ?", __NAME__)
         
@@ -850,14 +877,19 @@ def remove_data(_id):
 #        return None
         
 def pp_to_opts(pp):
-    repair, unpack, delete = (False, False, False)
+    repair, unpack, delete, script = (False, False, False, False)
+    if pp > 3:
+    	  script= True
+    	  pp= pp-3
+
     if pp > 0:
         repair = True
         if pp > 1:
             unpack = True
             if pp > 2:
                 delete = True
-    return (repair, unpack, delete)
+                	  
+    return (repair, unpack, delete, script)
     
 PROPER_FILENAME_MATCHER = re.compile(r"[a-zA-Z0-9\-_\.+\(\)]")
 def fix_filename(filename):

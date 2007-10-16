@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+
+
+	<title>SABnzbd $version "Nova" - Scheduling - Uptime: $uptime</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="author" content="" />
+	<meta name="Copyright" content="" />
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="robots" content="index,follow,noarchive,nosnippet" />
+	<meta name="googlebot" content="index,follow,noarchive,nosnippet" />
+	<meta name="description" content="SABnzbd Nova Theme by Orgnaix Design" />
+	<meta name="keywords" content="SABnzbd theme, nova, orgnaix design" />
+	
+	
+	<link rel="stylesheet" type="text/css" href="../../static/css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="../../static/css/html.css" />
+	<link rel="stylesheet" type="text/css" href="../../static/css/classes.css" />
+	
+	<link rel="shortcut icon" type="image/ico" href="../../static/images/favicon.ico" />
+	
+	
+</head>
+<body>
+
+
+
+<div id="page">
+
+
+	<div id="container">
+
+	
+		<div id="header">
+			
+			<div id="logo">
+				
+			</div>
+	
+			
+			<div id="menu">
+				<ul>
+					<li id="first"><a href="../../" title="Downloads">Downloads</a></li>
+					<li class="on"><a href="../../config" title="Config">Config</a></li>
+					<li><a href="../../connections" title="Connections">Connections</a></li>
+				</ul>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<!-- End Header -->
+
+
+		<div class="clear"></div>
+		<div id="content">
+<!-- ****************************************** BEGIN CONTENT ****************************************** -->
+			
+			
+			<!-- Begin Sub Menu -->
+			<span class="subMenu">
+				<a href="../../config/general">General</a><a href="../../config/directories">Directories</a><a href="../../config/switches">Switches</a><a href="../../config/server">Servers</a><a href="../../config/scheduling" class="current">Scheduling</a><a href="../../config/rss">RSS</a>
+			</span>
+			<!-- End Sub Menu -->
+
+
+
+
+		<h2>Scheduling configuration</h2>
+			<div class="EntryBlock">
+				<form action="addSchedule" method="post">
+					<fieldset class="EntryFieldSet">
+						<legend>Add schedule</legend>
+						<select name="minute">
+							<!--#for $i in range(60)#-->
+							<option value=$i>$i
+							<!--#end for#-->
+						</select>
+						<select name="hour">
+							<!--#for $i in range(24)#-->
+							<option value=$i>$i
+							<!--#end for#-->
+						</select>
+						<select name="dayofweek">
+							<option value="*" selected>*
+							<!--#for $i in range(1, 8)#-->
+							<option value=$i>$i
+							<!--#end for#-->
+						</select>
+						<select name="action">
+							<option value="resume">resume
+							<option value="pause">pause
+						</select>
+						<p><input type="submit" value="Add Schedule"></p>
+					</fieldset>
+				</form>
+			</div>
+
+
+
+		<h2>Current Schedules:</h2>
+			<div class="EntryBlock>"
+				<!--#set $schednum = 0#-->
+				<!--#for $line in $schedlines#-->
+				<form action="delSchedule" method="post">
+					<fieldset class="EntryFieldSet">
+						<!--#set $schednum = $schednum+1#-->
+						<legend>Task $schednum</legend>
+						$line
+						<input type="hidden" name="line" value="$line">
+						<input type="submit" value="Remove">
+					</fieldset>
+				</form>
+				<!--#end for#-->
+			</div>
+
+
+
+<!-- ****************************************** END CONTENT ****************************************** -->
+		<div class="clear"></div>
+		</div>
+		<!-- End Content -->
+	
+	</div>
+	<!-- End Container -->
+
+
+</div>
+<!-- End Page -->
+
+
+
+
+
+</body>
+</html>

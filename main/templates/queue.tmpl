@@ -3,9 +3,13 @@
 <head>
     <title>SABnzbd-$version - Uptime: $uptime</title>
     <link rel="stylesheet" type="text/css" href="../default.css"/>
+    <!--#if $refresh_rate#-->
+        <meta http-equiv="refresh" content="$refresh_rate">
+    <!--#end if#-->
+    <link rel="shortcut icon" href="../static/favicon.ico" />
 </head>
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
 <span class="MainMenu">
 <a href="/sabnzbd">Home</a> |
 <a class="current" href="./">Queue</a> |
@@ -44,6 +48,9 @@
                 <option value="change_opts?nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
                 <option value="change_opts?nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
                 <option value="change_opts?nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=4" <!--#if $slot.unpackopts == "4" then "selected" else ""#-->>RS</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=5" <!--#if $slot.unpackopts == "5" then "selected" else ""#-->>US</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=6" <!--#if $slot.unpackopts == "6" then "selected" else ""#-->>DS</option>
                 </select></form>
             </td>
             <td><a href="./$slot.nzo_id/">$slot.filename</td>

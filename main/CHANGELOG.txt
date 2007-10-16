@@ -1,4 +1,37 @@
 -------------------------------------------------------------------------------
+0.2.6 by the shypike
+-------------------------------------------------------------------------------
+added: Dirscan-speed in seconds (configurable).
+changed: Increase server timeout to 120 (required by many providers)
+       Needed to hard-code this. Change it to your required value.
+       The change is in newswrapper.py, line 15.
+added: Option to automatically refresh the Queue web page.
+added: favicon in all templates
+fixed: incorrect handling of server without port-spec
+       (SABnzbd.ini.sample was incorrect)
+added: Automatic refresh for connection-info, useful for troubleshooting.
+added: Added more end-of-download script handling.
+       To each option (R, U and D) a script option is added.
+       After (correct) execution of the R, U or D, a single script is run.
+       The script is specified in the "Directories" configuration.
+       The additional NZB paramater "script" is passed on in each structure and call
+       where now only "repair, unpack, delete" were passed/added.
+       The templates have been modfied to give 3 additional processing choices
+       "R+Script", "U+Script" and "D+Script".
+       "None+Script" would not be very useful and is not implemented.
+added: Add option to restore original folder names, derived from the NZB name,
+       so that spaces and special characters are restored.
+       Need not really be an option, but done so to keep compatibility.
+added: Added special handling for multi-part archives that start with an EXE-file
+       (so self-unpacking archives).
+       You don't want to run the self-unpacker (coming from Internet!),
+       but UnRar does not handle this situation correct.
+       Therefore the script renames the EXE file to RAR and then lets UnRar do its work.
+fixed: Make SABnzbd compatible with the new Newzbin RSS-feed.
+       (Source: http://sourceforge.net/forum/forum.php?thread_id=1795210&forum_id=498261)
+added: NovaTemplate 0.3
+       The original Nova doesn't work, need to be patched.
+------------------------------------------------------------------------------
 0.2.5
 -------------------------------------------------------------------------------
 added: new config: top_only (only fetch articles from topmost collection in 

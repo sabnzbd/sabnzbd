@@ -111,9 +111,9 @@ class NzbQueue(TryList):
                            self.__downloaded_items), QUEUE_FILE_NAME)
     
     @synchronized(NZBQUEUE_LOCK)
-    def generate_future(self, msg, repair, unpack, delete):
+    def generate_future(self, msg, repair, unpack, delete, script):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, repair, unpack, delete, None, True)
+        future_nzo = NzbObject(msg, repair, unpack, delete, script, None, True)
         self.add(future_nzo)
         return future_nzo
     
@@ -125,8 +125,8 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             try:
                 logging.info("[%s] Regenerating item: %s", __NAME__, nzo_id)
-                repair, unpack, delete = future.get_repair_opts()
-                future.__init__(filename, repair, unpack, delete, 
+                repair, unpack, delete, script = future.get_repair_opts()
+                future.__init__(filename, repair, unpack, delete, script,
                                 nzb = data, futuretype = False, 
                                 cat_root = cat_root, cat_tail = cat_tail)
                 future.nzo_id = nzo_id

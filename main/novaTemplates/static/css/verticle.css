@@ -1,0 +1,11 @@
+/* VERTICLE LAYOUT */
+#queue {
+	width: 54%;
+	height: 600px;
+	float: left;
+}
+#history {
+	width: 44%;
+	height: 600px;
+	float: left;
+}

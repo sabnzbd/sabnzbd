@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+	<title>SABnzbd $version "Nova" - Downloads - Uptime: $uptime</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="author" content="Dana Woodman, Organix Design, www.organixdesign.com" />
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="robots" content="index,follow,noarchive,nosnippet" />
+	<meta name="googlebot" content="index,follow,noarchive,nosnippet" />
+	<meta name="description" content="SABnzbd Nova Theme by Orgnaix Design" />
+	<meta name="keywords" content="SABnzbd theme, nova, orgnaix design" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<meta http-equiv="pragma" content="no-cache" />
+	
+	<link rel="stylesheet" type="text/css" href="static/css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="static/css/html.css" />
+	<link rel="stylesheet" type="text/css" href="static/css/classes.css" />
+	
+	<link rel="stylesheet" type="text/css" href="static/css/verticle.css" title="verticle" />
+	<link rel="alternate stylesheet" type="text/css" href="static/css/horizontal.css" title="horizontal" />
+	<link rel="alternate stylesheet" type="text/css" href="static/css/queue.css" title="queue" />
+	<link rel="alternate stylesheet" type="text/css" href="static/css/history.css" title="history" />
+	
+	<link rel="shortcut icon" type="image/ico" href="static/images/favicon.ico" />
+	
+	<script type="text/javascript" src="static/js/mootools.js"></script>
+	<script type="text/javascript" src="static/js/switcher.js"></script>
+	<script type="text/javascript" src="static/js/main.js"></script>
+
+
+</head>
+<body onload="doit();">
+
+<div id="container">
+
+	<div id="header">
+		
+		<div id="logo">
+			&nbsp;
+		</div>
+	
+		<div id="menu">
+			<ul>
+				<li id="first" class="on"><a href="./" title="File Queue &amp; History">Downloads</a></li>
+				<li><a href="./config" title="Your Settings">Config</a></li>
+				<li><a href="./connections" title="Connections">Connections</a></li>
+			</ul>
+		</div>
+		
+		<div class="clear"></div>
+		
+	</div>
+	<!-- End Header -->
+
+
+	<div class="toolBoxCont">
+		
+		<div class="addDl" id="toolbox" style="display: none;">
+		<div class="pad">
+			<!--#if $varExists('newzbinDetails')#-->
+			<form class="addnzb" action="addID" method="get">
+				<p>
+					<label for="id">Add Postid</label>
+					<input type="text" name="id" />
+					<select name="pp">
+					<option value="0">None</option>
+					<option value="1">+Repair</option>
+					<option value="2">+Unpack</option>
+					<option value="3" selected>+Delete</option>
+          <option value="4">R+Script</option>
+          <option value="5">U+Script</option>
+          <option value="6">D+Script</option>
+					</select>
+					<input type="submit" value="Add" />
+				</p>
+			</form>
+			<!--#end if#-->
+			<form class="addnzb" action="addURL" method="get">
+				<p>
+					<label for="url">Add URL</label>
+					<input type="text" name="url" />
+					<select name="pp">
+					<option value="0">None</option>
+					<option value="1">+Repair</option>
+					<option value="2">+Unpack</option>
+					<option value="3" selected>+Delete</option>
+          <option value="4">R+Script</option>
+          <option value="5">U+Script</option>
+          <option value="6">D+Script</option>
+					</select>
+					<input type="submit" value="Add" />
+				</p>
+			</form>
+			<form class="addnzb" action="addFile" method="post" enctype="multipart/form-data">
+				<p>
+					<label for="nzbfile">Add File</label>
+					<input type="file" name="nzbfile" />
+					<select name="pp">
+					<option value="0">None</option>
+					<option value="1">+Repair</option>
+					<option value="2">+Unpack</option>
+					<option value="3" selected>+Delete</option>
+          <option value="4">R+Script</option>
+          <option value="5">U+Script</option>
+          <option value="6">D+Script</option>
+					</select>
+					<input type="submit" value="Add" />
+				</p>
+			</form>
+			
+			<h4>Layout Options</h4>
+			<p>
+			<a href="#" onclick="setActiveStyleSheet('verticle'); return false;" title="View Side by Side Layout: Both Queue and History">Side by Side</a> | 
+			<a href="#" onclick="setActiveStyleSheet('horizontal'); return false;" title="View Top to Bottom Layout: Both Queue and History">Top to Bottom</a> | 
+			<a href="#" onclick="setActiveStyleSheet('queue'); return false;" title="View Only the Queue">Queue Only</a> | 
+			<a href="#" onclick="setActiveStyleSheet('history'); return false;" title="View Only the History">History Only</a>
+			</p>
+		</div></div><!-- end add dl box -->
+
+		<div class="toolbox">			
+			<a title="Toolbox" id="toolboxToggle" class="toolboxToggle">Toolbox <sub><img src="static/images/icon_toolbox.gif"></sub></a>
+		</div>
+		
+		
+	</div><!-- end tool box conatiner -->
+	
+
+	<div class="clear"></div>
+	<div id="content">
+<!-- ****************************************** BEGIN CONTENT ****************************************** -->
+
+
+		
+
+		<div id="downloadInfoWrapper">
+		<div id="downloadInfo">
+			
+			
+		
+			## Makes mbleft and mb into usable variables
+			<!--#set $mbleft2 = float($mbleft) #-->
+			<!--#set $mb2 = float($mb) #-->
+			<!--#set $diskspace1b = float($diskspace1) #-->
+			<!--#set $diskspace1b = $diskspace1b * 1024 #-->
+			
+			## Turns space left to red if there is not much room left
+			<!--#if $diskspace1b < $mbleft2 #-->
+			<!--#set $spaceleftcss = "style='color:red;'" #-->
+			<!--#else if $diskspace1b >= $mbleft2 #-->
+			<!--#set $spaceleftcss = "" #-->
+			<!--#end if#-->
+			<!--#if $diskspace1b < $mbleft2 #-->
+			<!--#set $spaceleftcss2 = "style='color: red;'" #-->
+			<!--#else if $diskspace1b >= $mbleft2 #-->
+			<!--#set $spaceleftcss2 = "" #-->
+			<!--#end if#-->
+	
+	
+			
+			<!-- DIRECTORY INFO -->
+			<div class="directoryInfo">
+				<p>
+					<strong><span id="left">$mbleft</span> <small>MB</small></strong> <small><b>Remaining</b> of </small><strong><span id="total">$mb</span> <small>MB</small></strong> <small><b>Total</b></small> 
+				</p>
+				
+				<!--#if $diskspace1==$diskspace2 #-->
+				<p $spaceleftcss >
+					<strong><span id="freedown">$diskspace1</span> <small>GB</small></strong> <small><b>Free Space</b></small>
+				</p>
+				<!--#else#-->
+				<p $spaceleftcss >
+					<strong><span id="freedown">$diskspace1</span> <small>GB</small></strong> <small><b>GB Free (Download Dir.)</b></small>
+				</p>
+				<p $spaceleftcss2 >
+					<strong><span id="freecomp">$diskspace2</span> <small>GB</small></strong> <small><b>GB Free (Complete Dir.)</b></small>
+				</p>
+				<!--#end if#-->
+				
+				
+				<span id="paused"><!--#if $paused #--><div class="paused">PAUSED</div><!--#end if#--></span>
+				<span id="shutdown"><!--#if $shutdown #--><div class="paused">SHUTDOWN</div><!--#end if#--></span>
+				
+				<!--#if int($cache_limit)#-->
+				<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br />
+				<!--#end if#-->
+			</div>
+			
+			<!-- PROGRESS BOX -->
+			<div class="progressBox">
+
+				
+				## work out the percentage value for the download bar
+				<!--#if $mb2 > 0 #-->
+				<!--#set $percentwidth = ($mb2 - $mbleft2) / $mb2 * 500 #-->
+				<!--#else if $mb2 == 0 #-->
+				<!--#set $percentwidth = 0 #-->
+				<!--#end if#-->
+				
+				## work out time left til download is finished
+				<!--#set $speed = float($kbpersec)#-->
+				<!--#if $speed > 0 #-->
+				<!--#set $mbleft3 = float($mbleft2)*1024 #-->
+				<!--#set $mins = ($mbleft3 / $speed)/60 #-->
+				<!--#set $mins = round($mins, 0) #-->
+				<!--#set $hours = $mins / 60 #-->
+				<!--#set $hours = int($hours) #-->
+				
+				<!--#if $hours > 0 #-->
+				<!--#set $mins = $mins -($hours*60)#-->
+				<!--#set $mins = int($mins) #-->
+				<!--#end if#-->
+				<!--#set $mins = int($mins) #-->
+				## values for when there is no download active
+				<!--#else if $speed == 0 #-->
+				<!--#set $mins = 0 #-->
+				<!--#set $hours = 0 #-->
+				<!--#end if#-->
+				
+				## just a rounded %age workout for display purposes
+				<!--#set $percentwidth2 = $percentwidth / 5 #-->
+				<!--#set $percentwidth2 = int($percentwidth2) #-->
+				
+				
+				
+				## DOWNLOAD BAR
+				<div id="downloadbar">
+					<div id="downloaded" style="width: ${percentwidth2}%;"></div>
+				</div>
+				
+				<div class="percentRemain"><span id="percentdone">${percentwidth2}</span>%</div>
+				
+				<div class="downloadTimeSpeed">
+					<span class="downloadSpeed"><small>Rate:</small> <b><span id="speed">$kbpersec</span> <small>KB/s</small></b></span>
+					<span class="timeRemaining"><b><span id="totaltimeleft"><img src="static/images/hourglass.gif" alt="Ultra calculating..." /></span></b> Till Done</span>
+				</div>
+				
+			</div>
+			<!-- End Progress Box -->
+			 
+		 
+		<div class="clear"></div>
+		</div>
+		<!-- End Download Info -->
+			
+			
+<!--#if $varExists('newzbinDetails')#-->
+		<div class="nzbQuota" title="# nzb downloads from Newzbin within the last week">
+			<i><sup>nzb</sup>quota</i>
+			<b><span id="nzb_quota">$nzb_quota</span></b>			
+		</div>
+<!--#endif#-->
+		
+		</div>
+		
+		
+		<div class="clear"></div>
+
+		
+		<iframe id="queue" src="queue" frameborder=0 marginwidth="0" marginheight="0" hspace="0" vspace="0"></iframe>
+		<iframe id="history" src="history" frameborder=0 marginwidth="0" marginheight="0" hspace="0" vspace="0"></iframe>
+		
+		
+		
+
+		
+<!-- ****************************************** END CONTENT ****************************************** -->
+	<div class="clear"></div>
+	</div>
+	<!-- End Content -->
+
+</div>
+<!-- End Container -->
+
+
+
+
+
+
+<!-- 
+SABNZBDJSON
+{
+	"uptime": "$uptime",
+	"freedown": $diskspace1,
+	"freecomp": $diskspace2,
+	"speed": $kbpersec,
+	"left": $mbleft,
+	"total": $mb,
+	"paused": "$paused",
+	"shutdown": "$shutdown",
+	"nzb_quota": "$nzb_quota",
+	"totaltimeleft": '<img src="static/images/hourglass.gif" alt="Ultra calculating..." />',
+	"percentdone": "%",
+	"downloaded": ""
+	
+}
+-->
+
+
+
+
+
+
+</body>
+</html>

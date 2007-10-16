@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+
+
+	<title>SABnzbd $version "Nova" - General - Uptime: $uptime</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="author" content="" />
+	<meta name="Copyright" content="" />
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="robots" content="index,follow,noarchive,nosnippet" />
+	<meta name="googlebot" content="index,follow,noarchive,nosnippet" />
+	<meta name="description" content="SABnzbd Nova Theme by Orgnaix Design" />
+	<meta name="keywords" content="SABnzbd theme, nova, orgnaix design" />
+	
+	
+	<link rel="stylesheet" type="text/css" href="../../static/css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="../../static/css/html.css" />
+	<link rel="stylesheet" type="text/css" href="../../static/css/classes.css" />
+	
+	<link rel="shortcut icon" type="image/ico" href="../../static/images/favicon.ico" />
+	
+	
+</head>
+<body>
+
+
+
+<div id="page">
+
+
+	<div id="container">
+
+	
+		<div id="header">
+			
+			<div id="logo">
+				
+			</div>
+	
+			
+			<div id="menu">
+				<ul>
+					<li id="first"><a href="../../" title="Downloads">Downloads</a></li>
+					<li class="on"><a href="../../config" title="Config">Config</a></li>
+					<li><a href="../../connections" title="Connections">Connections</a></li>
+				</ul>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<!-- End Header -->
+
+
+		<div class="clear"></div>
+		<div id="content">
+<!-- ****************************************** BEGIN CONTENT ****************************************** -->
+			
+			
+			<!-- Begin Sub Menu -->
+			<span class="subMenu">
+				<a href="../../config/general" class="current">General</a><a href="../../config/directories">Directories</a><a href="../../config/switches">Switches</a><a href="../../config/server">Servers</a><a href="../../config/scheduling">Scheduling</a><a href="../../config/rss">RSS</a>
+			</span>
+			<!-- End Sub Menu -->
+
+
+
+
+<h2>General configuration</h2>
+<form action="saveGeneral" method="post">
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>SABnzbd server</legend>
+<strong>SABnzbd Host:</strong><br>
+Host SABnzbd should listen on.<br>
+<input type="text" name="host" value=$host>
+<br>
+<br>
+<strong>SABnzbd Port:</strong><br>
+Post SABnzbd should listen on.<br>
+<input type="text" name="port" value=$port>
+<br>
+<br>
+<strong>SABnzbd Username:</strong><br>
+Authentication Username.<br>
+<input type="text" name="username" value=$username>
+<br>
+<br>
+<strong>SABnzbd Password:</strong><br>
+Authentication Password.<br>
+<input type="password" name="password" value=$password>
+</fieldset>
+</div>
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>SABnzbd tuning</legend>
+<strong>SABnzbd Bandwith Limit:</strong><br>
+Slowdown factor, try values between 0.01 and 1.0.<br>
+<input type="text" name="bandwith_limit" value=$bandwith_limit>
+<br>
+<br>
+<strong>SABnzbd Article Cache Limit:</strong><br>
+Cache articles in memory. See SABnzbd.ini<br>
+<input type="text" name="cache_limit" value=$cache_limit>
+<br>
+<br>
+<strong>Cleanup List:</strong><br>
+List of file (extensions) that should be deleted at the cleanup stage.<br>
+For example: ".nfo," or ".nfo, .sfv"<br>
+<input type="text" name="cleanup_list" value="$cleanup_list">
+</fieldset>
+</div>
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>Newzbin settings</legend>
+<strong>OPTIONAL: Newzbin Username:</strong><br>
+Set your www.newzbin.com username here.<br>
+<input type="text" name="username_newzbin" value=$username_newzbin>
+<br>
+<br>
+<strong>OPTIONAL: Newzbin Password:</strong><br>
+Set your www.newzbin.com password here.<br>
+<input type="password" name="password_newzbin" value=$password_newzbin>
+</fieldset>
+</div>
+<p>
+<input type="submit" value="Save Changes">
+</p>
+</form>
+</table>
+
+
+
+
+<!-- ****************************************** END CONTENT ****************************************** -->
+		<div class="clear"></div>
+		</div>
+		<!-- End Content -->
+	
+	</div>
+	<!-- End Container -->
+
+
+</div>
+<!-- End Page -->
+
+
+
+
+
+</body>
+</html>

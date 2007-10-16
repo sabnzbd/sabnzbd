@@ -3,6 +3,7 @@
 <head>
     <title>SABnzbd-$version - Uptime: $uptime</title>
     <link rel="stylesheet" type="text/css" href="../../default.css"/>
+    <link rel="shortcut icon" href="../../static/favicon.ico" />
 </head>
 <body>
 <h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
@@ -49,6 +50,11 @@ Authentication Password.<br>
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>SABnzbd tuning</legend>
+<strong>SABnzbd queue auto refresh interval:</strong><br>
+Refresh interval (sec, 0= none)<br>
+<input type="text" name="refresh_rate" value=$refresh_rate>
+<br>
+<br>
 <strong>SABnzbd Bandwith Limit:</strong><br>
 Slowdown factor, try values between 0.01 and 1.0.<br>
 <input type="text" name="bandwith_limit" value=$bandwith_limit>

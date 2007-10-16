@@ -3,6 +3,7 @@
 <head>
     <title>SABnzbd-$version - Uptime: $uptime</title>
     <link rel="stylesheet" type="text/css" href="../../default.css"/>
+    <link rel="shortcut icon" href="../../static/favicon.ico" />
 </head>
 <body>
 <h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
@@ -62,12 +63,21 @@
     <input type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
+    <strong>Restore original directory name:</strong><br>
+    Derive folder name from original NZB name (spaces!).<br>
+    <input type="radio" name="restore_name" value="0" <!--#if $restore_name == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="restore_name" value="1" <!--#if $restore_name > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
     <strong>Dirscan Options:</strong><br>
     Use following post process option on .nzb files imported by the dirscanner.<br>
     <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
     <input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
     <input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
     <input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
+    <input type="radio" name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "checked=1" else ""#--> /> R+Script
+    <input type="radio" name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "checked=1" else ""#--> /> U+Script
+    <input type="radio" name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "checked=1" else ""#--> /> D+Script
     <br>
     <br>
   </fieldset>

@@ -1,4 +1,30 @@
-                                SABnzbd v0.2.5
+                                SABnzbd v0.2.6a
+								
+Patched by ShyPike
+
+v0.2.6a:
+Corrected: Feature "download directory is renamed after the original NZB name"
+           contained an error, ignoring "category" folders.
+
+v0.2.6:
+Added features:
+Option: download directory is renamed after the original NZB name
+        (so no disappearing spaces and specials chars)
+Option: Add post-download script support
+Option: Add scan-speed for the NZB-black hole
+Option: Add auto-refresh to the download page
+        The templates have been modfied to give 3 additional processing choices
+            "R+Script", "U+Script" and "D+Script".
+        "None+Script" would not be very useful and is not implemented.
+Added: Safer handling when self-unpacking RARs have been downloaded
+Added: Option to automatically refresh the Queue web page.
+Added: favicon in all templates
+Added: The fix for the new Newzbin RSS-feed.
+       (From: http://sourceforge.net/forum/forum.php?thread_id=1795210&forum_id=498261)
+Added: NovaTemplate (with patches for the new options)
+Fixed: incorrect handling of server without port-spec
+       (SABnzbd.ini.sample was incorrect)
+Added: Automatic refresh for connection-info, useful for troubleshooting.
 -------------------------------------------------------------------------------
 0) LICENSE
 -------------------------------------------------------------------------------

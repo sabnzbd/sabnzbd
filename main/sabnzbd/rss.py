@@ -62,7 +62,7 @@ class RSSQueue:
             entry_links = []
             new_entry_links = []
             for entry in entries:
-                link = entry['link']
+                link = entry['guid']
                 entry_links.append(link)
                 if new or link not in self.old_entries[uri]:
                     new_entry_links.append(link)
@@ -92,7 +92,7 @@ class RSSQueue:
                                       __NAME__, link)
                                       
                 for entry in entries:
-                    link = entry['link']
+                    link = entry['guid']
                     
                     if link not in new_entry_links:
                         continue

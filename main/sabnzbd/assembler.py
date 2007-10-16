@@ -31,7 +31,7 @@ import cPickle
 import shutil
 
 from sabnzbd.decorators import *
-from sabnzbd.newsunpack import unpack_magic, par2_repair
+from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread, RLock
 from time import sleep
 
@@ -42,11 +42,13 @@ DIR_LOCK = RLock()
 ## sabnzbd.add_nzo
 ## sabnzbd.cleanup_nzo
 class PostProcessor(Thread):
-    def __init__ (self, download_dir, complete_dir, queue = None):
+    def __init__ (self, download_dir, complete_dir, extern_proc, restore_name, queue = None):
         Thread.__init__(self)
         
         self.download_dir = download_dir
         self.complete_dir = complete_dir
+        self.extern_proc = extern_proc
+        self.restore_name= restore_name
         self.queue = queue
         
         if not self.queue:
@@ -65,7 +67,7 @@ class PostProcessor(Thread):
                 break
                 
             try:
-                rep, unp, dele = nzo.get_repair_opts()
+                rep, unp, dele, scr = nzo.get_repair_opts()
                 
                 partable = nzo.get_partable()
                 repairsets = partable.keys()
@@ -75,8 +77,8 @@ class PostProcessor(Thread):
                 workdir = get_path(self.download_dir, nzo)
                 
                 logging.info('[%s] Starting PostProcessing on %s' + \
-                             ' => Repair:%s, Unpack:%s, Delete:%s',
-                             __NAME__, filename, rep, unp, dele)
+                             ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s',
+                             __NAME__, filename, rep, unp, dele, scr)
                              
                 ## Run Stage 1: Repair
                 if rep:
@@ -164,6 +166,17 @@ class PostProcessor(Thread):
                             except:
                                 logging.exception("[%s] Removing %s failed",
                                                   __NAME__, path)
+
+                if self.restore_name:
+                    root, ext = os.path.splitext(filename)
+                    wpath, wname = os.path.split(workdir)
+                    newdir= wpath + "/" + root
+                    os.rename(workdir, newdir)
+                    logging.info('[%s] Renamed %s to %s', __NAME__, workdir, newdir)
+
+                if scr and self.extern_proc:
+                    logging.info('[%s] Running external script %s %s %s', __NAME__, self.extern_proc, workdir, filename)
+                    external_processing(self.extern_proc, workdir, filename)
             except:
                 logging.exception("[%s] Postprocessing of %s failed.", __NAME__,
                                   nzo.get_filename())

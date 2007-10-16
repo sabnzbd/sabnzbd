@@ -12,7 +12,7 @@ from time import time
 
 __NAME__ = "newswrapper"
 
-TIMEOUT_VALUE = 60
+TIMEOUT_VALUE = 120
 
 socket.setdefaulttimeout(TIMEOUT_VALUE)
 

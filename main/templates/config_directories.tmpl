@@ -3,6 +3,7 @@
 <head>
     <title>SABnzbd-$version - Uptime: $uptime</title>
     <link rel="stylesheet" type="text/css" href="../../default.css"/>
+    <link rel="shortcut icon" href="../../static/favicon.ico" />
 </head>
 <body>
 <h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
@@ -40,6 +41,16 @@
     <strong>OPTIONAL: Dirscan Directory:</strong><br>
     Specify a directory to scan for .nzb files.<br>
     <input type="text" name="dirscan_dir" value="$dirscan_dir">
+    <br>
+    <br>
+    <strong>OPTIONAL: Dirscan Speed:</strong><br>
+    Specify number of seconds between scans for .nzb files.<br>
+    <input type="text" name="dirscan_speed" value="$dirscan_speed">
+    <br>
+    <br>
+    <strong>OPTIONAL: External post-processing script:</strong><br>
+    Specify an external post-processing script.<br>
+    <input type="text" name="extern_proc" value="$extern_proc">
   </fieldset>
   <fieldset class="EntryFieldSet">
     <legend>System directories</legend>

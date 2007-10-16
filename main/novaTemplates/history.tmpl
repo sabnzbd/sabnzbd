@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+	<title>SABnzbd $version "Nova" - History - Uptime: $uptime</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta http-equiv="cache-control" content="no-cache" />
+	<meta http-equiv="pragma" content="no-cache" />
+	
+	
+	<link rel="stylesheet" type="text/css" href="../static/css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="../static/css/html.css" />
+	<link rel="stylesheet" type="text/css" href="../static/css/classes.css" />
+	
+	<script type="text/javascript" src="../static/js/history.js"></script>
+	
+
+</head>
+<body onload="doit();">
+
+
+
+	
+
+
+<!-- Begin Sub Menu -->
+<div class="barMenu">
+<b><a href="/sabnzbd/history" target="_blank" title="View History Page">History</a></b><a href="/sabnzbd/history/purge">Purge history</a><a href="/sabnzbd/history/tog_verbose">Toggle verbosity</a>
+</div>	
+
+
+	
+	<!--#if $lines#-->
+	<table cellspacing="0">
+		<thead>
+			<tr>
+				<th>Name</th>
+<!--#if $varExists('newzbinDetails')#-->
+				<th>Hop</th>
+<!--#endif#-->
+				<th>Completed At</th>
+			</tr>
+		</thead>
+		<tbody>
+		
+		
+			
+		
+			<!--#set $odd = False#-->
+			<!--#for $line in $lines #-->
+			<!--#set $odd = not $odd#-->
+			
+				
+				<tr class="<!--#if $odd then "odd" else "even"#--> <!--#if $line.loaded == True then "rowWarning" else ""#-->">
+					
+					
+					## FILE NAME
+					<td>
+						<span id="loaded_$line.filename"></span>
+						<b><span id="name_$line.filename">
+						<script type="text/javascript">
+						var nzbpidchk="$line.filename"
+						var nzbpidchk = (nzbpidchk.substr(0,5));
+							if (nzbpidchk=="msgid")
+							{
+								var strpinsfna="$line.filename"
+								var strpinsfna = strpinsfna.replace(/_/g," ");
+								var strpinsfna = strpinsfna.replace(/.nzb/g,"");
+								document.write(strpinsfna.substr(14))
+							}
+							else
+							{
+								var strpinsfnc="$line.filename"
+								var strpinsfnc = strpinsfnc.replace(/_/g," ");
+								var strpinsfnc = strpinsfnc.replace(/.nzb/g,"");
+								document.write(strpinsfnc)
+							}
+						</script>
+						</span></b>
+					</td>
+					
+					
+<!--#if $varExists('newzbinDetails')#-->
+					## "HOP" - POST ID	
+					<td class="textCenter">
+						<script type="text/javascript">
+							if (nzbpidchk=="msgid")
+							{
+								var strpinsfnb="$line.filename"
+								var strpinsfnb = strpinsfnb.replace(/_/g," "); 
+								document.write("<a href=\"https://v3.newzbin.com/browse/post/",strpinsfnb.substr(6,7),"\" title=\"View Newzbin Post #",strpinsfnb.substr(6,7),"\" target=\"_blank\"><img src=\"../static/images/icon_newzbin.png\" alt=\"Newzbin\" /></a>")}
+							else
+							{
+								document.write("N/A")
+							}
+						</script>
+					</td>					
+<!--#endif#-->
+
+					## DATE COMPLETED
+					<td class="textCenter">
+						<small>$line.added</small>
+					</td>
+				</tr>	
+				
+				
+			
+				
+				
+				## STAGE STATUS
+				<!--#set $oddLine = not False#-->
+				<!--#for $stage in $line.stages#-->
+				<!--#set $oddLine = not $oddLine#-->
+				<!-- ******************* VERBOCITY ******************* -->
+				<tr class="<!--#if $line.loaded == True then "active" else "finished"#-->">
+					<td colspan="3">
+						<!--#for $action in $stage.actions#-->
+						<div>
+							<b class="stageName">$stage.name</b> $action.name: <b>$action.value</b>
+						</div>
+						<!--#end for#-->
+					</td>
+				</tr>
+				<!-- ******************* END VERBOCITY ******************* -->
+				<!--#end for#-->
+				
+			
+			<!--#end for#-->
+		</tbody>
+	</table>
+	<!--#end if#-->
+
+<br /><br />
+<div class="barMenu"><b>Downloaded:</b> <strong>$bytes_beginning <small>GB</small></strong><br />
+<b>In History:</b> <strong>$total_bytes <small>GB</small></strong></div>
+
+<!-- 
+SABNZBDJSON
+{
+
+	"jobs": [
+	<!--#if $varExists('lines')#-->
+	<!--#for $line in $lines#-->
+	{"filename": "$line.filename", "loaded": "$line.loaded", "added": "$line.added"},
+	
+	<!--#end for#-->
+	<!--#end if#-->]
+}
+-->
+
+
+</body>
+</html>

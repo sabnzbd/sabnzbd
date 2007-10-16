@@ -1,10 +1,10 @@
 Metadata-Version: 1.0
 Name: SABnzbd
-Version: 0.2.5
-Summary: SABnzbd-0.2.5
+Version: 0.2.6a
+Summary: SABnzbd-0.2.6a
 Home-page: http://sourceforge.net/projects/sabnzbd
-Author: Gregor Kaufmann
+Author: Gregor Kaufmann (patched by shypike)
 Author-email: tdian@users.sourceforge.net
 License: GNU General Public License 2 (GPL2)
-Description: UNKNOWN
+Description: Fully automated Usenet Binary Downloader
 Platform: posix

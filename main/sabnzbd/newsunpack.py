@@ -77,6 +77,22 @@ else:
                     break
                     
 #------------------------------------------------------------------------------
+def external_processing(extern_proc, complete_dir, filename):
+
+    command = ['%s' % extern_proc, '%s' % complete_dir, '%s' % filename]
+    
+    stup, need_shell, command, creationflags = build_command(command)
+
+    logging.info('[%s] Spawning external command %s', __NAME__, command)        
+    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         startupinfo=stup, creationflags=creationflags)
+                         
+    output = p.stdout.read()
+    p.wait()
+
+
+#------------------------------------------------------------------------------
 
 def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
     xjoinables, xzips, xrars = build_filelists(workdir, workdir_complete)

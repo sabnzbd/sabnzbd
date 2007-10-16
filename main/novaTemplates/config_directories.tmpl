@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+
+
+
+	<title>SABnzbd $version "Nova" - Directories - Uptime: $uptime</title>
+	
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="author" content="" />
+	<meta name="Copyright" content="" />
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<meta name="robots" content="index,follow,noarchive,nosnippet" />
+	<meta name="googlebot" content="index,follow,noarchive,nosnippet" />
+	<meta name="description" content="SABnzbd Nova Theme by Orgnaix Design" />
+	<meta name="keywords" content="SABnzbd theme, nova, orgnaix design" />
+	
+	
+	<link rel="stylesheet" type="text/css" href="../../static/css/layout.css" />
+	<link rel="stylesheet" type="text/css" href="../../static/css/html.css" />
+	<link rel="stylesheet" type="text/css" href="../../static/css/classes.css" />
+	
+	<link rel="shortcut icon" type="image/ico" href="../../static/images/favicon.ico" />
+	
+</head>
+<body>
+
+
+
+<div id="page">
+
+
+	<div id="container">
+
+	
+		<div id="header">
+			
+			<div id="logo">
+				
+			</div>
+	
+			
+			<div id="menu">
+				<ul>
+					<li id="first"><a href="../../" title="Downloads">Downloads</a></li>
+					<li class="on"><a href="../../config" title="Config">Config</a></li>
+					<li><a href="../../connections" title="Connections">Connections</a></li>
+				</ul>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<!-- End Header -->
+
+
+		<div class="clear"></div>
+		<div id="content">
+<!-- ****************************************** BEGIN CONTENT ****************************************** -->
+			
+			
+			<!-- Begin Sub Menu -->
+			<span class="subMenu">
+				<a href="../../config/general">General</a><a href="../../config/directories" class="current">Directories</a><a href="../../config/switches">Switches</a><a href="../../config/server">Servers</a><a href="../../config/scheduling">Scheduling</a><a href="../../config/rss">RSS</a>
+			</span>
+
+
+
+
+<h2>Directory configuration</h2>
+<p><strong><em>NOTE:</em> Directories won't be created automatically.</strong></p>
+<form action="saveDirectories" method="post">
+<div class="EntryBlock">
+  <fieldset class="EntryFieldSet">
+    <legend>User directories</legend>
+    <strong>Download Directory:</strong><br>
+    Location to put downloads to.<br>
+    <input type="text" name="download_dir" value="$download_dir">
+    <br>
+    <br>
+    <strong>Complete Directory:</strong><br>
+    Location to put completed downloads to.<br>
+    <input type="text" name="complete_dir" value="$complete_dir">
+    <br>
+    <br>
+    <strong>OPTIONAL: Dirscan Directory:</strong><br>
+    Specify a directory to scan for .nzb files.<br>
+    <input type="text" name="dirscan_dir" value="$dirscan_dir">
+    <br>
+    <br>
+    <strong>OPTIONAL: Dirscan Speed:</strong><br>
+    Specify number of seconds between scans for .nzb files.<br>
+    <input type="text" name="dirscan_speed" value="$dirscan_speed">
+    <br>
+    <br>
+    <strong>OPTIONAL: External post-processing script:</strong><br>
+    Specify an external post-processing script.<br>
+    <input type="text" name="extern_proc" value="$extern_proc">
+  </fieldset>
+  <fieldset class="EntryFieldSet">
+    <legend>System directories</legend>
+    <strong>Cache Directory:</strong><br>
+    Location of cache directories for SABnzbd.<br>
+    <input type="text" name="cache_dir" value="$cache_dir">
+    <br>
+    <br>
+    <strong>Log Directory:</strong><br>
+    Location of log files for SABnzbd.<br>
+    <input type="text" name="log_dir" value="$log_dir">
+    <br>
+    <br>
+    <strong>Template Directory:</strong><br>
+    Location of the template directory.<br>
+    <input type="text" name="web_dir" value="$web_dir">
+    <br>
+    <br>
+    <strong>OPTIONAL: .nzb Backup Directory:</strong><br>
+    Specify a directory to backup .nzb files to.<br>
+    <input type="text" name="nzb_backup_dir" value="$nzb_backup_dir">
+  </fieldset>
+</div><br>
+<input type="submit" value="Save Changes">
+</form>
+
+
+
+
+
+<!-- ****************************************** END CONTENT ****************************************** -->
+		<div class="clear"></div>
+		</div>
+		<!-- End Content -->
+	
+	</div>
+	<!-- End Container -->
+
+
+</div>
+<!-- End Page -->
+
+
+
+
+
+</body>
+</html>

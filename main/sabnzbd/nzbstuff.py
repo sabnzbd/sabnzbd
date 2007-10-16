@@ -275,7 +275,7 @@ BLAH = '{http://www.newzbin.com/DTD/2003/nzb}'
 NZBFN_MATCHER = re.compile(r"msgid_\d*_(.*).nzb", re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 class NzbObject(TryList):
-    def __init__(self, filename, repair, unpack, delete, nzb = None, 
+    def __init__(self, filename, repair, unpack, delete, script, nzb = None, 
                  futuretype = False, cat_root = None, cat_tail = None):
         TryList.__init__(self)
         
@@ -287,6 +287,7 @@ class NzbObject(TryList):
         self.__repair = repair        # True if we want to repair this set
         self.__unpack = unpack        # True if we want to unpack this set
         self.__delete = delete        # True if we want to delete this set
+        self.__script = script        # True if we want to run external script on this set
         self.__group = None
         self.__avg_date = None
         
@@ -473,7 +474,7 @@ class NzbObject(TryList):
         return (file_done, post_done, reset)
         
     def set_opts(self, pp):
-        self.__repair, self.__unpack, self.__delete = sabnzbd.pp_to_opts(pp)
+        self.__repair, self.__unpack, self.__delete, self.__script = sabnzbd.pp_to_opts(pp)
         
     def set_dirname(self, dirname, created = False):
         self.__dirname = dirname
@@ -678,7 +679,7 @@ class NzbObject(TryList):
         if for_cli:
             avg_date = time.mktime(avg_date.timetuple())
             
-        return (self.__repair, self.__unpack, self.__delete, 
+        return (self.__repair, self.__unpack, self.__delete, self.__script,
                 self.nzo_id, self.__filename, self.__unpackstrht.copy(), 
                 bytes_left_all, self.__bytes, avg_date,
                 finished_files, active_files, queued_files)
@@ -691,7 +692,7 @@ class NzbObject(TryList):
         return self.__unpackstrht.copy()
         
     def get_repair_opts(self):
-        return (self.__repair, self.__unpack, self.__delete)
+        return (self.__repair, self.__unpack, self.__delete, self.__script)
         
     def __build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}

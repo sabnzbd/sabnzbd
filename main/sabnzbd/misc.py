@@ -34,14 +34,16 @@ from sabnzbd import nzbgrab
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
-    def __init__(self, dirscan_dir, repair, unpack, delete):
+    def __init__(self, dirscan_dir, dirscan_speed, repair, unpack, delete, script):
         Thread.__init__(self)
         
         self.dirscan_dir = dirscan_dir
+        self.dirscan_speed = dirscan_speed
         
         self.r = repair
         self.u = unpack
         self.d = delete
+        self.s = script
         
         self.shutdown = False
         
@@ -53,7 +55,13 @@ class DirScanner(Thread):
         logging.info('[%s] Dirscanner starting up', __NAME__)
         
         while not self.shutdown:
-            time.sleep(1.0)
+
+            # Use variable scan delay
+            x = self.dirscan_speed
+            while (x > 0) and not self.shutdown:
+                time.sleep(1.0)
+                x = x - 1
+
             try:
                 files = os.listdir(self.dirscan_dir)
                 
@@ -78,7 +86,7 @@ class DirScanner(Thread):
                                 data = f.read()
                                 f.close()
                                 sabnzbd.add_nzo(NzbObject(filename, self.r, self.u, 
-                                                          self.d, data))
+                                                          self.d, self.s, data))
                                 sabnzbd.backup_nzb(filename, data)
                             else:
                                 zf = zipfile.ZipFile(path)
@@ -88,7 +96,7 @@ class DirScanner(Thread):
                                         name = os.path.basename(name)
                                         if data:
                                             sabnzbd.add_nzo(NzbObject(name, self.r, self.u, 
-                                                                      self.d, data))
+                                                                      self.d, self.s, data))
                                             sabnzbd.backup_nzb(name, data)
                                 finally:
                                     zf.close()

@@ -1,4 +1,4 @@
-__version__ = 016
+__version__ = 017
 
 [misc]
     ## host we should listen on, leave "" for localhost
@@ -37,7 +37,21 @@ __version__ = 016
     ## SABnzbd will consume everything in that dir
     ## while trying to add it to the queue
     dirscan_dir = ""
-    
+    ## Scan interval in seconds (default= 1)
+    dirscan_speed = 1
+
+    ## external post-processing
+    ## SABnzbd will pass each completed job to an external program
+    ## First parameter will have full dir-pathname between quotes
+    ## Second parameter will have original NZB name between quotes
+    extern_proc = 
+
+    ## Restore names
+    ## SABnzbd will rename the "completed" folder to the orginal NZB name
+    ## so that spaces and special chars will be restored.
+    restore_name = 0
+
+
     ## Scheduling options
     ## Syntax: minute hour day action
     ##         1st argument must be 0-59 (minute)
@@ -54,6 +68,9 @@ __version__ = 016
     ## 1 = +Repair
     ## 2 = +Unpack
     ## 3 = +Delete
+    ## 4 = Repair+Script
+    ## 5 = +Unpack+Script
+    ## 6 = +Delete+Script
     dirscan_opts = 1
     
     ## Enable/disable filejoining

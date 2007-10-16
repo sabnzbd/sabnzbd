@@ -282,6 +282,11 @@ class QueuePage(ProtectedClass):
     def index(self):
         info, pnfo_list, bytespersec = build_header()
         
+        if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+            info['newzbinDetails'] = True
+
+        info['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
+        
         info['noofslots'] = len(pnfo_list)
         datestart = datetime.datetime.now()
         
@@ -294,6 +299,7 @@ class QueuePage(ProtectedClass):
             repair = pnfo[PNFO_REPAIR_FIELD]
             unpack = pnfo[PNFO_UNPACK_FIELD]
             delete = pnfo[PNFO_DELETE_FIELD]
+            script = pnfo[PNFO_SCRIPT_FIELD]
             nzo_id = pnfo[PNFO_NZO_ID_FIELD]
             filename = pnfo[PNFO_FILENAME_FIELD]
             bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
@@ -318,7 +324,9 @@ class QueuePage(ProtectedClass):
                     unpackopts += 1
                     if delete:
                         unpackopts += 1
-                        
+            if (unpackopts > 0) & script:
+            	  unpackopts= unpackopts + 3
+            	                          
             slot['unpackopts'] = str(unpackopts)
             slot['filename'] = filename
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
@@ -473,6 +481,9 @@ class HistoryPage(ProtectedClass):
     def index(self):
         history, pnfo_list, bytespersec = build_header()
             
+        if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+            history['newzbinDetails'] = True
+
         history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
         
         history['total_bytes'] = "%.2f" % (total_bytes / GIGI)
@@ -587,6 +598,8 @@ class ConfigDirectories(ProtectedClass):
         config['nzb_backup_dir'] = sabnzbd.CFG['misc']['nzb_backup_dir']
         config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
         config['dirscan_dir'] = sabnzbd.CFG['misc']['dirscan_dir']
+        config['dirscan_speed'] = sabnzbd.CFG['misc']['dirscan_speed']
+        config['extern_proc'] = sabnzbd.CFG['misc']['extern_proc']
             
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
                             searchList=[config],
@@ -597,7 +610,7 @@ class ConfigDirectories(ProtectedClass):
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, complete_dir = None, log_dir = None,
                         cache_dir = None, web_dir = None, nzb_backup_dir = None,
-                        dirscan_dir = None):
+                        dirscan_dir = None, dirscan_speed = None, extern_proc = None):
                         
         if download_dir and not os.access(os.path.abspath(download_dir), os.R_OK + os.W_OK):
             return "Error: can't access download directory."
@@ -631,6 +644,8 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['web_dir'] = web_dir
         sabnzbd.CFG['misc']['log_dir'] = log_dir
         sabnzbd.CFG['misc']['dirscan_dir'] = dirscan_dir
+        sabnzbd.CFG['misc']['dirscan_speed'] = dirscan_speed
+        sabnzbd.CFG['misc']['extern_proc'] = extern_proc
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
         
@@ -660,6 +675,7 @@ class ConfigSwitches(ProtectedClass):
         config['dirscan_opts'] = int(sabnzbd.CFG['misc']['dirscan_opts'])
         config['top_only'] = int(sabnzbd.CFG['misc']['top_only'])
         config['auto_sort'] = int(sabnzbd.CFG['misc']['auto_sort'])
+        config['restore_name'] = int(sabnzbd.CFG['misc']['restore_name'])
         config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
         
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
@@ -673,7 +689,7 @@ class ConfigSwitches(ProtectedClass):
                      enable_filejoin = None, enable_save = None,
                      send_group = None, fail_on_crc = None, top_only = None,
                      create_group_folders = None, dirscan_opts = None,
-                     enable_par_cleanup = None, auto_sort = None, 
+                     enable_par_cleanup = None, auto_sort = None, restore_name = None,
                      create_category_folders = None):
                      
         sabnzbd.CFG['misc']['enable_unrar'] = int(enable_unrar)
@@ -687,6 +703,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['enable_par_cleanup'] = int(enable_par_cleanup)
         sabnzbd.CFG['misc']['top_only'] = int(top_only)
         sabnzbd.CFG['misc']['auto_sort'] = int(auto_sort)
+        sabnzbd.CFG['misc']['restore_name'] = int(restore_name)
         sabnzbd.CFG['newzbin']['create_category_folders'] = int(create_category_folders)
         
         return saveAndRestart(self.__root)
@@ -710,6 +727,7 @@ class ConfigGeneral(ProtectedClass):
         config['username'] = sabnzbd.CFG['misc']['username']
         config['password'] = sabnzbd.CFG['misc']['password']
         config['bandwith_limit'] = sabnzbd.CFG['misc']['bandwith_limit']
+        config['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
         config['password_newzbin'] = sabnzbd.CFG['newzbin']['password']
         config['cache_limit'] = sabnzbd.CFG['misc']['cache_limit']
@@ -731,13 +749,15 @@ class ConfigGeneral(ProtectedClass):
         
     @cherrypy.expose
     def saveGeneral(self, host = None, port = None, username = None, password = None,
-                    cronlines = None, username_newzbin = None, password_newzbin = None, 
+                    cronlines = None, username_newzbin = None, password_newzbin = None,
+                    refresh_rate = None,
                     bandwith_limit = None, cleanup_list = None, cache_limit = None):
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
         sabnzbd.CFG['misc']['username'] = username
         sabnzbd.CFG['misc']['password'] = password
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
+        sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
         sabnzbd.CFG['newzbin']['username'] = username_newzbin
         sabnzbd.CFG['newzbin']['password'] = password_newzbin
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
@@ -794,7 +814,11 @@ class ConfigServer(ProtectedClass):
         
         if host and port and port.isdigit() and connections \
         and connections.isdigit() and fillserver and fillserver.isdigit():
-            oldhost, oldport = server.split(":")
+            try:
+            	 oldhost, oldport = server.split(":")
+            except ValueError:
+            	 oldhost= server
+            	 oldport= "119"
             if not port == oldport:
                 del sabnzbd.CFG['servers'][server]
                 server = host + ":" + port
