@@ -1,4 +1,9 @@
 <!--#set $defaultrefreshrate = 8 #-->
+<!--#if $version == "0.2.7" or $version == "0.2.8" or $version == "0.2.9"#-->
+	<!--#set $sabplus = "T" #-->
+<!--#else#-->
+	<!--#set $sabplus = "F" #-->
+<!--#end if#-->
 <!-- Set the default refresh rate above in seconds. -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -7,6 +12,9 @@
 	<link rel="shortcut icon" type="image/ico" href="static/images/favicon.ico"/>
 	<link rel="stylesheet" type="text/css" media="screen, tv, projection" href="static/stylesheets/nova.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="static/javascripts/lytebox/lytebox.css" />
+	<script type="text/javascript">
+		var sabplus = "$sabplus";
+	</script>
 	<script src="static/javascripts/prototype/prototype.js" type="text/javascript"></script>
 	<script src="static/javascripts/scriptaculous/scriptaculous.js" type="text/javascript"></script>
 	<script src="static/javascripts/lytebox/lytebox.js" type="text/javascript"></script>
@@ -17,11 +25,12 @@
 
 		<!-- BEGIN main menu bar -->
 		<div class="topBar">
-			<div id="logo"><a onclick="Effect.toggle('novabar','blind')" style="cursor: pointer" target="_new">SABnzbd-$version NOVA</a></div>
+			<div id="logo">SABnzbd N<font color="#F89E44">O</font><font color="#FAB875">V</font><font color="#FCD1A6">A</font></div>
 			<div id="topLinks">
 				<a onclick="Effect.toggle('2ndbar','blind')" id="plusnzb" title="Enqueue an nzb">+NZB</a>
-				<a href="connections" title="SABnzbd Connections" rel="lyteframe" rev="width: 740px; height: 380px; scrolling: auto;">Connections</a>
-				<a href="config" title="Configure SABnzbd" rel="lyteframe" rev="width: 740px; height: 380px; scrolling: auto;" style="margin-right:1px;">Config</a>
+				<a onclick="Effect.toggle('novabar','blind')" id="plusnzb" title="NOVA Settings">Options</a>
+				<a href="connections" title="SABnzbd Connections" rel="lyteframe" rev="width: 1000px; height: 500px; scrolling: auto;">Connections</a>
+				<a href="config" title="Configure SABnzbd" rel="lyteframe" rev="width: 1000px; height: 500px; scrolling: auto;" style="margin-right:1px;">Config</a>
 			</div>
 		</div>
 
@@ -29,6 +38,7 @@
 		<!-- BEGIN nova settings menu bar -->
 		<div class="topBar" id="novabar" style="display:none">
 			<div id="topLinks">
+				<span>Refresh Rate:</span>
 				<span>
 					<div id="refresh_track" style="margin-right:auto;margin-left:auto;width:200px;background-color:#D26F0D;height:5px;">
 						<div id="refresh_handle" style="color:#FFCC00;width:5px;height:10px;background-color:#fff;cursor: move;">
@@ -54,7 +64,8 @@
 				<a onclick="NOVAction('Layout_Queue');" title="Switch Layout: Toggle Queue"><img src="static/images/icon-header-queue.png" /></a>
 				<a onclick="NOVAction('Layout_History');" title="Switch Layout: Toggle History"><img src="static/images/icon-header-history.png" /></a>
 				<a onclick="NOVAction('Layout_Stats');"  title="Switch Layout: Toggle Statistics"><img src="static/images/favicon.ico" /></a>
-				<a href="http://sabnzbd.organixdesign.com/" target="_blank" title="Visit Official NOVA Site">Version 0.4.3</a>
+				<a href="http://sabnzbd.organixdesign.com/" target="_blank" title="Visit Official NOVA Site">Version 0.4.4</a>
+				<a onclick="NOVAction('shutdown');" title="Terminate SABnzbd Application">Shutdown SAB</a>
 				
 		</div>
 		</div>
@@ -69,10 +80,12 @@
 						<option value="0" title="Do not post-process the NZB file set">-</option>
 						<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 						<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
-						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-						<option value="4" title="Repair &amp; Run script">R+S</option>
-						<option value="5" title="Repair &amp; Unpack &amp; Run script">U+S</option>
-						<option value="6" title="Repair &amp; Unpack &amp; Delete &amp; Run script">D+S</option>
+						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" <!--#if $sabplus=='F'#-->selected<!--#end if#-->>D</option>
+						<!--#if $sabplus=='T'#-->
+						<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
+			            <option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
+			            <option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
+						<!--#end if#-->
 					</select>
 					<sub><img src="static/images/icon-header-addnzb.png" style="cursor: pointer" onclick="NOVAction('addID')"/></sub>
 				</span>
@@ -83,10 +96,12 @@
 						<option value="0" title="Do not post-process the NZB file set">-</option>
 						<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 						<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
-						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-						<option value="4" title="Repair &amp; Run script">R+S</option>
-						<option value="5" title="Repair &amp; Unpack &amp; Run script">U+S</option>
-						<option value="6" title="Repair &amp; Unpack &amp; Delete &amp; Run script">D+S</option>
+						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" <!--#if $sabplus=='F'#-->selected<!--#end if#-->>D</option>
+						<!--#if $sabplus=='T'#-->
+						<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
+			            <option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
+			            <option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
+						<!--#end if#-->
 					</select>
 				    <sub><img src="static/images/icon-header-addnzb.png" style="cursor: pointer" onclick="NOVAction('addURL')"/></sub>
 				</span>
@@ -97,10 +112,12 @@
 						<option value="0" title="Do not post-process the NZB file set">-</option>
 						<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 						<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
-						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-						<option value="4" title="Repair &amp; Run script">R+S</option>
-						<option value="5" title="Repair &amp; Unpack &amp; Run script">U+S</option>
-						<option value="6" title="Repair &amp; Unpack &amp; Delete &amp; Run script">D+S</option>
+						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" <!--#if $sabplus=='F'#-->selected<!--#end if#-->>D</option>
+						<!--#if $sabplus=='T'#-->
+						<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
+			            <option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
+			            <option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
+						<!--#end if#-->
 					</select>
 				    <input type="submit" value="+" style="font-size:9px;" />
 					</form>
@@ -141,7 +158,7 @@
 				<table cellspacing="0" class="table">
 					<colgroup><col id="name" /><col id="remaining" /><col id="options" /></colgroup>
 					<thead><tr><th colspan="3">
-							<a class="heading">&nbsp;QUEUE&nbsp;&nbsp;</a>
+							<div class="heading">&nbsp;QUEUE&nbsp;&nbsp;</div>
 							<!--#if $nt#--><a id="queue_tog_shutdown" onclick="NOVAction('queue_tog_shutdown')" title="Shutdown Upon Completion">Shutdown</a><!--#end if#-->
 							<a onclick="NOVAction('queue_sort_by_avg_age')" title="Sort .nzbs starting with oldest average file age">SortAge</a>
 							<a id="queue_tog_verbose" onclick="NOVAction('queue_tog_verbose')" title="Toggle Verbosity - When turned on, click down-arrow icon of an nzb to show files">Verbosity</a>
@@ -158,7 +175,7 @@
 					<thead>
 						<tr>
 							<th colspan="2">
-							<a class="heading">&nbsp;HISTORY&nbsp;&nbsp;</a>
+							<div class="heading">&nbsp;HISTORY&nbsp;&nbsp;</div>
 							<a onclick="NOVAction('history_purge')" title="Purge the History (clear its displayed contents)" style="cursor:pointer">Purge</a> 
 							<a id="history_tog_verbose" onclick="NOVAction('history_verbosity')" title="Toggle Verbosity (display post-processing information)" style="cursor:pointer">Verbosity</a>
 							</th>

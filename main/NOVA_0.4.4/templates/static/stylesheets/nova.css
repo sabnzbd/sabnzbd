@@ -115,7 +115,7 @@ div .topBar {
 	color: #F78614;
 	margin-left: 20px;
 	display: inline;
-	font-style: italic;
+	font-size: 135%;
 }
 #logo a {
 	font-size: 140%;
@@ -334,7 +334,7 @@ div .topBar {
 	background: #000000;
 	cursor:pointer;
 }
-.table thead a.heading {
+.table thead div.heading {
 	background: #021D33 url(../images/bg_thead_tr_heading.png) repeat-x left bottom;
 	float: left;
 	padding: 3px;

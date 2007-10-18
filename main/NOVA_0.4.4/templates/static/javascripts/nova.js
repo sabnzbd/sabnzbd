@@ -7,29 +7,18 @@ var lastQueueOrder = new Array();	// know when to reset container ids (to be rep
 // queue drag & drop sort effect
 var myStartEffect = function(element) { new Effect.Opacity(element, {duration:0, from:0.2, to:0.6}); }
 
-// called upon page load
+// called upon page load -- restore previous layout & initiate data updates
 window.onload=function(){
-	// restore previous layout
-	var x = ReadCookie('Layout_Orientation');
-	if (x=='TopToBottom') {
-		$("history_container").style.clear='both';
-		$("queue_container").style.clear='both';
-	} else {
-		$("history_container").style.clear='right';
-		$("queue_container").style.clear='right';
+	if (ReadCookie('Layout_Orientation')=='TopToBottom')
+		$("history_container").style.clear  =   $("queue_container").style.clear 	='both';
+	if (ReadCookie('Layout_Stats')=='hide')		$("dataBar").style.display 			='none';	
+	if (ReadCookie('Layout_Queue')=='hide')		$("queue_container").style.display  ='none';
+	if (ReadCookie('Layout_History')=='hide')	$("history_container").style.display='none';	
+	if (ReadCookie('RefreshRate')) {
+		refreshTime = ReadCookie('RefreshRate');
+		$('refresh_handle').innerHTML='<small>&nbsp;&nbsp;'+refreshTime+'&nbsp;sec</small>';
 	}
-	x = ReadCookie('Layout_Stats');
-	if (x=='hide') $("dataBar").style.display='none';	
-	x = ReadCookie('Layout_Queue');
-	if (x=='hide') $("queue_container").style.display='none';	
-	x = ReadCookie('Layout_History');
-	if (x=='hide') $("history_container").style.display='none';	
-	x = ReadCookie('RefreshRate');
-	if (x) {
-		$('refresh_handle').innerHTML='<small>&nbsp;&nbsp;'+x+'&nbsp;sec</small>';
-		refreshTime = x;
-	}
-	MainLoop();	// initiate data updates
+	MainLoop();
 }
 
 // called every refresh (calls itself)
@@ -42,13 +31,13 @@ function MainLoop(){
 		onSuccess: function(transport){
 			queue = transport.responseText.evalJSON();
 			RefreshQueueOrder();
-			document.title= 'NOVA ' + Math.round(queue.kbpersec) + ' KB/s '+queue.noofslots+' Queued';
 			// main stats
-			$("kbpersec").innerHTML = Math.round(queue.kbpersec);
+			document.title= 'NOVA ' + Math.round(queue.kbpersec) + ' KB/s '+queue.noofslots+' Queued';
 			$("logo").title = "Uptime: "+queue.uptime;
-			$("mbdone").innerHTML = Math.round(queue.mb-queue.mbleft);
-			$("mb").innerHTML = Math.round(queue.mb);
-			$("mbleft").innerHTML = Math.round(queue.mbleft/1024*100)/100;
+			$("kbpersec").innerHTML = Math.round(queue.kbpersec);
+			$("mbdone").innerHTML 	= Math.round(queue.mb-queue.mbleft);
+			$("mb").innerHTML 		= Math.round(queue.mb);
+			$("mbleft").innerHTML 	= Math.round(queue.mbleft/1024*100)/100;
 			$("statusbar").style.width = 
 			$("statusbartext").innerHTML = (queue.mb > 0) ?  Math.round((1-queue.mbleft/queue.mb)*100)+'%' : "0%";
 			if ($("diskspace1").innerHTML !=queue.diskspace1)
@@ -192,10 +181,7 @@ function MainLoop(){
 					var nzb;
 					var verbosity;
 					while (numnodes<histore.lines.length) {			// need more node(s)
-						var nzb = new Element('tr', {className:'odd'}); 
-						var cell = new Element('td', {className:'textLeft'});
-						nzb.appendChild(cell);
-						$("history").appendChild(nzb);
+						$("history").insert('<tr class="odd"><td class="textLeft"></td></tr>');
 						numnodes++;
 					}
 					while (numnodes-->histore.lines.length) 		// need less node(s)
@@ -215,30 +201,40 @@ function MainLoop(){
 							loading = '<img src="static/images/icon-history-postprocessing.gif" title="Post-processing nzb now..." width="16" height="16" style="float: right" alt="... " border="0"/>';
 						// verbosity
 						if (histore.lines[i].stages.length>0) {
-							verbosity=''
+							verbosity='<br/>';
 							for (var j=0; j<histore.lines[i].stages.length; j++) {
-								verbosity += '<br/>';
 								for (var k=0; k<histore.lines[i].stages[j].actions.length; k++) {
 									switch (histore.lines[i].stages[j].actions[k].name.substr(1,3)) {
 										case "PAR":
-											verbosity += '<img src="static/images/icon-history-par2.png" title="'+histore.lines[i].stages[j].actions[k].name+'" />';
+											verbosity += '<img src="static/images/icon-history-par2.png" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';
 											break;
 										case "RAR":
-											verbosity += '<img src="static/images/icon-history-unrar.png" title="'+histore.lines[i].stages[j].actions[k].name+'" />';
+											verbosity += '<img src="static/images/icon-history-unrar.png" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';
 											break;
 										case "ZIP":
-											verbosity += '<img src="static/images/icon-history-unzip.gif" title="'+histore.lines[i].stages[j].actions[k].name+'" />';
+											verbosity += '<img src="static/images/icon-history-unzip.gif" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';
 											break;
 										case "DEL":
-											verbosity += '<img src="static/images/icon-history-cleanup.gif" title="'+histore.lines[i].stages[j].actions[k].name+'" />';
+											verbosity += '<img src="static/images/icon-history-cleanup.gif" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';
 											break;
 										case "FJN":
-											verbosity += '<img src="static/images/icon-history-join.png" title="'+histore.lines[i].stages[j].actions[k].name+'" />';
+											verbosity += '<img src="static/images/icon-history-join.png" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';
 											break;
 										default:
-											verbosity += '<i title="'+histore.lines[i].stages[j].actions[k].name+'" />['+ histore.lines[i].stages[j].actions[k].name.substr(1,3) +']</i>';
+											verbosity += '<i title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />['+ histore.lines[i].stages[j].actions[k].name.substr(1,3) +']</i>';
 									};
-									verbosity += ' <small style="color:blue">'+ histore.lines[i].stages[j].actions[k].value.substr(3) +'</small> ';
+									switch (histore.lines[i].stages[j].actions[k].value.substr(3,8)) {
+										case 'Scanning':
+										case 'Verified':
+										case 'Repaired':
+										case 'Unpacked':
+										case 'Unzipped':
+										case 'Deleted ':
+											break; // clean verbosity
+										default:
+											verbosity += '<sup><small style="color:blue">&nbsp;'+ histore.lines[i].stages[j].actions[k].value.substr(3) +'</small></sup>';
+											break;
+									};
 									if (histore.lines[i].stages[j].actions[k].value.substr(0,9) == "=> ERROR:" || histore.lines[i].stages[j].actions[k].value.substr(0,6) == "=> Not")
 										sick = '<img src="static/images/icon-history-fucked.png" title="Broken nzb set detected!!" width="16" height="16" style="float: right" alt="... " border="0"/>';
 								}
@@ -255,6 +251,8 @@ function MainLoop(){
 }
 
 // determine time left in HH:MM:SS
+// replace this with parsed ETA for queued items
+// will still be necessary for overall ETA
 function TimeLeft (kbpersec, mbleft, mb) { 
 	var timeleft = '&infin;';
 	if (kbpersec >= 1 && mb > 0) {
@@ -279,30 +277,46 @@ function TimeLeft (kbpersec, mbleft, mb) {
 
 // append an empty enqueued nzb container
 function AppendNZBSlot(nzo_id) {
-	var nzb = new Element('tr', {id: nzo_id, className:'odd'});
-	//filename column
-	var cell = new Element('td', {className:'handle', ondblclick:'JumpTopOfQueue(this.parentNode.id)'}).insert('<img src="static/images/icon-queue-order.png" alt=": " title="Drag &amp; Drop to Sort" style="float:left; padding-top:2px;" height="11" /><strong></strong><div style="display:none"></div>');
-	cell.setStyle("cursor: move");
-	nzb.appendChild(cell);
-	//progress column
-	cell=new Element('td', {width:'200px'}).insert('<div class="queueBarOuter"><div class="queueBarInner" style="width: 0.0%;"></div></div><span style="float: right"></span><img title="Time Left (HH:MM:SS)" width="14" height="14" style="float: right" src="static/images/icon-header-timeleft.png" /><img title="Megabytes Remaining" width="14" height="14" style="float: left" src="static/images/icon-header-mbleft.png" /><span title="Megabytes Remaining"></span><div style="display:none"></div>');
-	nzb.appendChild(cell);
-	//options column
-	cell=new Element('td').insert('<img title="Show Files (Waits until next refresh cycle) (Verbosity must be toggled -on-)" onClick="ShowVerbosity(this.parentNode.parentNode.id)" width="16" height="16" src="static/images/icon-queue-1downarrow.png" border="0" style="cursor:pointer; padding-right: 4px; margin-top: 4px"/>'
-					+'<a href="#" target="" title="View Report" style="cursor: pointer"><img src="static/images/icon-blank.png" style="padding-right: 8px;padding-left: 4px;" width="15" height="17" style="float:right" border="0" /></a>'
-					+'<select title="Post-Processing" onchange="ChangeProcessingOption(this.parentNode.parentNode.id,this.selectedIndex);" style="color:#FFF;background-color:#2E76D3;margin-bottom: 4px">'
-						+'<option value="0" title="Do not post-process the NZB file set">-</option>'
-						+'<option value="1" title="Repair the NZB file set with PAR2 files">R</option>'
-						+'<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>'
-						+'<option value="3" title="Repair, Unpack, &amp; Delete the unneeded remainder of the NZB file set">D</option>'
-						+'<option value="4" title="Repair &amp; Run script">R+S</option>'
-						+'<option value="5" title="Repair &amp; Unpack &amp; Run script">U+S</option>'
-						+'<option value="6" title="Repair &amp; Unpack &amp; Delete &amp; Run script">D+S</option>'
-					+'</select>'
-					+'<img title="Drop NZB" onClick="DropNZB(this.parentNode.parentNode.id);" width="16" height="16" src="static/images/icon-queue-drop.png" border="0" style="cursor:pointer; padding-left: 4px; margin-top: 4px"/>'
-					+'<div style="display:none"></div>');
-	nzb.appendChild(cell);
-	$("queue").appendChild(nzb);
+	
+	if (sabplus=='F')	// 0.2.5
+	$("queue").insert('<tr class="odd" id="'+nzo_id+'">'
+						+'<td class="handle" ondblclick="JumpTopOfQueue(this.parentNode.id)" style="cursor:move">'
+							+'<img src="static/images/icon-queue-order.png" alt=": " title="Drag &amp; Drop to Sort" style="float:left; padding-top:2px;" height="11" /><strong></strong><div style="display:none"></div>'
+						+'</td><td width="200px">'
+							+'<div class="queueBarOuter"><div class="queueBarInner" style="width: 0.0%;"></div></div><span style="float: right"></span><img title="Time Left (HH:MM:SS)" width="14" height="14" style="float: right" src="static/images/icon-header-timeleft.png" /><img title="Megabytes Remaining" width="14" height="14" style="float: left" src="static/images/icon-header-mbleft.png" /><span title="Megabytes Remaining"></span><div style="display:none"></div>'
+						+'</td><td>'
+							+'<img title="Show Files (Waits until next refresh cycle) (Verbosity must be toggled -on-)" onClick="ShowVerbosity(this.parentNode.parentNode.id)" width="16" height="16" src="static/images/icon-queue-1downarrow.png" border="0" style="cursor:pointer; margin-right: 4px; margin-top: 4px"/>'
+							+'<a target="" title="View Report" style="cursor: pointer;margin-right: 8px;margin-left: 4px;"><img src="static/images/icon-blank.png" width="15" height="17" border="0" /></a>'
+							+'<select title="Post-Processing" onchange="ChangeProcessingOption(this.parentNode.parentNode.id,this.selectedIndex);" style="color:#FFF;background-color:#2E76D3;margin-bottom: 4px">'
+								+'<option value="0" title="Do not post-process the NZB file set">-</option>'
+								+'<option value="1" title="Repair the NZB file set with PAR2 files">R</option>'
+								+'<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>'
+								+'<option value="3" title="Repair, Unpack, &amp; Delete the unneeded remainder of the NZB file set">D</option>'
+							+'</select>'
+							+'<img title="Drop NZB" onClick="DropNZB(this.parentNode.parentNode.id);" width="16" height="16" src="static/images/icon-queue-drop.png" border="0" style="cursor:pointer; margin-left: 8px; margin-top: 4px"/>'
+							+'<div style="display:none"></div>'
+						+'</td></tr>');
+	else				// 0.2.7+
+	$("queue").insert('<tr class="odd" id="'+nzo_id+'">'
+						+'<td class="handle" ondblclick="JumpTopOfQueue(this.parentNode.id)" style="cursor:move">'
+							+'<img src="static/images/icon-queue-order.png" alt=": " title="Drag &amp; Drop to Sort" style="float:left; padding-top:2px;" height="11" /><strong></strong><div style="display:none"></div>'
+						+'</td><td width="200px">'
+							+'<div class="queueBarOuter"><div class="queueBarInner" style="width: 0.0%;"></div></div><span style="float: right"></span><img title="Time Left (HH:MM:SS)" width="14" height="14" style="float: right" src="static/images/icon-header-timeleft.png" /><img title="Megabytes Remaining" width="14" height="14" style="float: left" src="static/images/icon-header-mbleft.png" /><span title="Megabytes Remaining"></span><div style="display:none"></div>'
+						+'</td><td>'
+							+'<img title="Show Files (Waits until next refresh cycle) (Verbosity must be toggled -on-)" onClick="ShowVerbosity(this.parentNode.parentNode.id)" width="16" height="16" src="static/images/icon-queue-1downarrow.png" border="0" style="cursor:pointer; margin-right: 4px; margin-top: 4px"/>'
+							+'<a target="" title="View Report" style="cursor: pointer;margin-right: 8px;margin-left: 4px;"><img src="static/images/icon-blank.png" width="15" height="17" border="0" /></a>'
+							+'<select title="Post-Processing" onchange="ChangeProcessingOption(this.parentNode.parentNode.id,this.selectedIndex);" style="color:#FFF;background-color:#2E76D3;margin-bottom: 4px">'
+								+'<option value="0" title="Do not post-process the NZB file set">-</option>'
+								+'<option value="1" title="Repair the NZB file set with PAR2 files">R</option>'
+								+'<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>'
+								+'<option value="3" title="Repair, Unpack, &amp; Delete the unneeded remainder of the NZB file set">D</option>'
+								+'<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>'
+					            +'<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>'
+					            +'<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>'
+							+'</select>'
+							+'<img title="Drop NZB" onClick="DropNZB(this.parentNode.parentNode.id);" width="16" height="16" src="static/images/icon-queue-drop.png" border="0" style="cursor:pointer; margin-left: 8px; margin-top: 4px"/>'
+							+'<div style="display:none"></div>'
+						+'</td></tr>');
 }
 
 // called from MainLoop, resets node ids & appends/removes rows
@@ -417,7 +431,7 @@ function NOVAction(which) {
 			break;
 		case 'queue_tog_shutdown': // windows only, not actually used because it won't post-process correctly through SABnzbd, it works in NOVA though
 			if ($("queue_tog_shutdown").innerHTML != 'Shutdown!') {
-				if (confirm("Are you really sure you want to shut down your computer upon queue completion? SABnzbd probably won't post-process your last downloaded nzb correctly.")) {
+				if (confirm("Are you sure you want to shut down YOUR COMPUTER upon queue completion?\nSABnzbd probably won't post-process your last downloaded nzb correctly!")) {
 					new Ajax.Request('queue/tog_shutdown',{method:'get'});
 					$("queue_tog_shutdown").innerHTML = 'Shutdown!';
 					$("queue_tog_shutdown").setAttribute("class", "toggled"); 
@@ -427,6 +441,10 @@ function NOVAction(which) {
 				$("queue_tog_shutdown").innerHTML = 'Shutdown';
 				$("queue_tog_shutdown").setAttribute("class", "untoggled"); 
 			}
+			break;
+		case 'shutdown': // windows only, not actually used because it won't post-process correctly through SABnzbd, it works in NOVA though
+			if (confirm("Are you sure you want to shut down the SABnzbd application?"))
+				window.location = 'shutdown';
 			break;
 		case 'addID': //+nzb
 			new Ajax.Request('addID',{method:'get',

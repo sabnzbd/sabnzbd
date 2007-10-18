@@ -1,6 +1,6 @@
 ================================
-NOVA 0.4.3 README - Sept 16, 2007
-http://sabnzbd.organixdesign.com/
+NOVA 0.4.4 README - Oct 10, 2007
+http://sabnzbd.organixdesign.com
 
 =======
 AUTHORS
@@ -28,23 +28,33 @@ WHAT IS NEW
 * Much much more!
 
 ==================
+NOVA 0.4.4 UPDATES
+* History Verbosity has been drastically cleaned up
+(1) Details are now hidden behind icons (hover icon with cursor to view)
+(2) Exceptions are processing stages & errors
+* Options bar now has its own menu item
+* "Shutdown SAB" feature now in Options (+confirmation)
+* Fixed queue menu width for Windows
+* SABnzbdPlus 0.2.7 compatible (hopefully) - if installed, will use D+ (Delete+Script) as default post-processing option
+
+==================
 NOVA 0.4.3 UPDATES
-Added "Toggle Shutdown" back in + alert box (Windows only)
-Queue & History reverted to NOVA v0.3p2 look
-Queue Verbosity is now a two-step process:
+* Added "Toggle Shutdown" back in + alert box (Windows only)
+* Queue & History reverted to NOVA v0.3p2 look
+* Queue Verbosity is now a two-step process:
 (1) Toggle Verbosity -ON-
 (2) Click the 'v' on an enqueued nzb to see its files
-Double-click nzb filename to jump to top of queue
-Drag & drop on filename column to sort enqueued nzbs
-Queue & History menus no longer get scrunched
-Overall % now stays visible on screen
-Better labeling in Stats & Queue (more wording/icons for explanation)
-"MB downloaded" replaced "MB remaining" in Queue & Stats
-Better "broken nzb set" detection
-Non-Newzbin nzbs won't show a 'View Report' icon anymore
-(Very) minor optimizations - long way to go on this one
-Default refresh rate increased to 8 seconds from 4
-Current version number now visible in NOVA options
+* Double-click nzb filename to jump to top of queue
+* Drag & drop on filename column to sort enqueued nzbs
+* Queue & History menus no longer get scrunched
+* Overall % now stays visible on screen
+* Better labeling in Stats & Queue (more wording/icons for explanation)
+* "MB downloaded" replaced "MB remaining" in Queue & Stats
+* Better "broken nzb set" detection
+* Non-Newzbin nzbs won't show a 'View Report' icon anymore
+* (Very) minor optimizations - long way to go on this one
+* Default refresh rate increased to 8 seconds from 4
+* Current version number now visible in NOVA options
 
 ==================
 NOVA 0.4.2 UPDATES
