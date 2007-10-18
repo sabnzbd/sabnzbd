@@ -38,16 +38,17 @@ options = dict(
                               'templates/config_switches.tmpl',
                               'templates/config_scheduling.tmpl',
                               'templates/config_rss.tmpl',
-                              'templates/static/placeholder.txt']),
+                              'templates/static/placeholder.txt',
+							  'templates/static/favicon.ico']),
                     ('share/SABnzbd-' + sabnzbd.__version__ + '/templates/static',
-                              ['templates/static/placeholder.txt'])])
+                              ['templates/static/placeholder.txt', 'templates/static/placeholder.txt'])])
 
 if py2exe:
     options['data_files'] = [
           ('', ['SABnzbd.ini', 'README.txt', 'LICENSE.txt', 'TODO.txt', 'CHANGELOG.txt', 'UPGRADE.txt']), 
           ('templates', glob.glob("templates/*.tmpl")),
           ('templates', ['templates/default.css']),
-          ('templates/static', []),
+          ('templates/static', glob.glob('templates/static/*.ico')),
           ('downloads', []),
           ('downloads/Incomplete', []),
           ('downloads/Complete', []),
