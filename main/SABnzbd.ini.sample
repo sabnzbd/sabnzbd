@@ -14,29 +14,29 @@ __version__ = 017
     password = ""
     
     ## web file dir for (custom) Cheetah templates and the default.css file
-    web_dir = ""
+    web_dir = ./templates
     
     ## dir to put downloads to, won't be created automatically
-    download_dir = ""
+    download_dir = ./downloads/Incomplete
     
     ## dir to put completed downloads to, won't be created automatically
-    complete_dir = ""
+    complete_dir = ./downloads/Complete
     
     ## If specified, .nzbs fetched by postid (or added by the dirscanner) will 
     ## be backed up to this readable/writeable dir
-    nzb_backup_dir = ""
+    nzb_backup_dir = ./NZB_backups
     
     ## dir to store cache and cookie files, windows users should
     ## leave this at .
-    cache_dir = ""
+    cache_dir = "./cache"
     
     ## location of your log directory, "" to disable logging
-    log_dir = ""
+    log_dir = "./logs"
     
     ## dirscan directory
     ## SABnzbd will consume everything in that dir
     ## while trying to add it to the queue
-    dirscan_dir = ""
+    dirscan_dir = "./NZB_blackhole"
     ## Scan interval in seconds (default= 1)
     dirscan_speed = 1
 
