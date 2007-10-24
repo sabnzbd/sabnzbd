@@ -2,6 +2,11 @@
 								
 Patched by ShyPike
 
+v0.2.x:
+added:   Set minimum diskspace (in MB) for the download directory
+         When diskspace is below threshhold, SABnzbd will pause.
+         You must free diskspace and then resume SABnzbd manually.
+
 v0.2.7:
 changed: Now supports V3.newzbin.com and DirectNzb (by Freaky)
 changed: Always keeps original foldername as derived from NZB file (by DNW)

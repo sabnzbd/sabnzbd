@@ -73,6 +73,7 @@ PASSWORD_NEWZBIN = None
 CACHE_DIR = None
 NZB_BACKUP_DIR = None
 DOWNLOAD_DIR = None
+DOWNLOAD_FREE = None
 COMPLETE_DIR = None
 
 POSTPROCESSOR = None
@@ -126,7 +127,7 @@ def initialize(pause_downloader = False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
-           DIRSCANNER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, \
+           DIRSCANNER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, ARTICLECACHE
            
@@ -186,6 +187,13 @@ def initialize(pause_downloader = False):
     if not CFG['misc']['download_dir']:
         logging.error('No DOWNLOAD_DIR defined!')
         return False
+    
+    try:
+        DOWNLOAD_FREE = int(CFG['misc']['download_free'])
+    except:
+        logging.error('No DOWNLOAD_FREE defined!')
+        DOWNLOAD_FREE = 0
+    logging.debug("DOWNLOAD_FREE -> %s", DOWNLOAD_FREE)
     
     DOWNLOAD_DIR = os.path.abspath(CFG['misc']['download_dir'])
     if not os.path.exists(DOWNLOAD_DIR):

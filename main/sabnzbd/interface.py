@@ -71,6 +71,13 @@ except AttributeError:
         except:
             return 0.0
             
+def CheckFreeSpace():
+    if sabnzbd.DOWNLOAD_FREE > 0:
+        if diskfree(sabnzbd.DOWNLOAD_DIR) < float(sabnzbd.DOWNLOAD_FREE) / 1024.0:
+            logging.info('Too little diskspace forcing PAUSE')
+            sabnzbd.pause_downloader()
+
+            
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
     def beforeMain(self):
@@ -592,6 +599,10 @@ class ConfigDirectories(ProtectedClass):
         config, pnfo_list, bytespersec = build_header()
         
         config['download_dir'] = sabnzbd.CFG['misc']['download_dir']
+        try:
+            config['download_free'] = sabnzbd.CFG['misc']['download_free']
+        except:
+            config['download_free'] = ''
         config['complete_dir'] = sabnzbd.CFG['misc']['complete_dir']
         config['cache_dir'] = sabnzbd.CFG['misc']['cache_dir']
         config['log_dir'] = sabnzbd.CFG['misc']['log_dir']
@@ -608,7 +619,7 @@ class ConfigDirectories(ProtectedClass):
         return template.respond()
         
     @cherrypy.expose
-    def saveDirectories(self, download_dir = None, complete_dir = None, log_dir = None,
+    def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
                         cache_dir = None, web_dir = None, nzb_backup_dir = None,
                         dirscan_dir = None, dirscan_speed = None, extern_proc = None):
                         
@@ -640,6 +651,7 @@ class ConfigDirectories(ProtectedClass):
             return "Error: can't access complete directory."
             
         sabnzbd.CFG['misc']['download_dir'] = download_dir
+        sabnzbd.CFG['misc']['download_free'] = download_free
         sabnzbd.CFG['misc']['cache_dir'] = cache_dir
         sabnzbd.CFG['misc']['web_dir'] = web_dir
         sabnzbd.CFG['misc']['log_dir'] = log_dir

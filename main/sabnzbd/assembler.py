@@ -32,6 +32,7 @@ import shutil
 
 from sabnzbd.decorators import *
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
+from sabnzbd.interface import CheckFreeSpace
 from threading import Thread, RLock
 from time import sleep
 
@@ -208,6 +209,7 @@ class Assembler(Thread):
             
             if nzf:
                 try:
+                    CheckFreeSpace()
                     filename = nzf.get_filename()
                     
                     dupe = nzo.check_for_dupe(nzf)
