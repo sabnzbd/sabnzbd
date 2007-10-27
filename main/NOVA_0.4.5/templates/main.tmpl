@@ -11,13 +11,13 @@
 	<title>NOVA (Loading...?)</title>
 	<link rel="shortcut icon" type="image/ico" href="static/images/favicon.ico"/>
 	<link rel="stylesheet" type="text/css" media="screen, tv, projection" href="static/stylesheets/nova.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="static/javascripts/lytebox/lytebox.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="static/stylesheets/lytebox.css" />
 	<script type="text/javascript">
 		var sabplus = "$sabplus";
 	</script>
-	<script src="static/javascripts/prototype/prototype.js" type="text/javascript"></script>
-	<script src="static/javascripts/scriptaculous/scriptaculous.js" type="text/javascript"></script>
-	<script src="static/javascripts/lytebox/lytebox.js" type="text/javascript"></script>
+	<script src="static/javascripts/prototype.js" type="text/javascript"></script>
+	<script src="static/javascripts/scriptaculous.js" type="text/javascript"></script>
+	<script src="static/javascripts/lytebox.js" type="text/javascript"></script>
 	<script src="static/javascripts/nova.js" type="text/javascript"></script>
 </head>
 <body>
@@ -25,7 +25,7 @@
 
 		<!-- BEGIN main menu bar -->
 		<div class="topBar">
-			<div id="logo">SABnzbd-$version N<font color="#F89E44">O</font><font color="#FAB875">V</font><font color="#FCD1A6">A</font></div>
+			<div id="logo">SABnzbd N<font color="#F89E44">O</font><font color="#FAB875">V</font><font color="#FCD1A6">A</font></div>
 			<div id="topLinks">
 				<a onclick="Effect.toggle('2ndbar','blind')" id="plusnzb" title="Enqueue an nzb">+NZB</a>
 				<a onclick="Effect.toggle('novabar','blind')" id="plusnzb" title="NOVA Settings">Options</a>
@@ -64,7 +64,8 @@
 				<a onclick="NOVAction('Layout_Queue');" title="Switch Layout: Toggle Queue"><img src="static/images/icon-header-queue.png" /></a>
 				<a onclick="NOVAction('Layout_History');" title="Switch Layout: Toggle History"><img src="static/images/icon-header-history.png" /></a>
 				<a onclick="NOVAction('Layout_Stats');"  title="Switch Layout: Toggle Statistics"><img src="static/images/favicon.ico" /></a>
-				<a href="http://sabnzbd.organixdesign.com/" target="_blank" title="Visit Official NOVA Site">Version 0.4.4</a>
+				<a href="http://sourceforge.net/projects/sabnzbdplus/" target="_blank" title="Visit Official SABnzbd+ Site">SAB-$version</a>
+				<a href="http://sabnzbd.organixdesign.com/" target="_blank" title="Visit Official NOVA Site">Nova 0.4.5</a>
 				<a onclick="NOVAction('shutdown');" title="Terminate SABnzbd Application">Shutdown SAB</a>
 				
 		</div>

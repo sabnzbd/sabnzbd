@@ -215,7 +215,7 @@ function MainLoop(){
 											verbosity += '<img src="static/images/icon-history-unzip.gif" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';
 											break;
 										case "DEL":
-											verbosity += '<img src="static/images/icon-history-cleanup.gif" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';
+											verbosity += '<img src="static/images/icon-history-cleanup.png" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';
 											break;
 										case "FJN":
 											verbosity += '<img src="static/images/icon-history-join.png" title="'+histore.lines[i].stages[j].actions[k].value.substr(3)+' :: '+histore.lines[i].stages[j].actions[k].name+'" />';

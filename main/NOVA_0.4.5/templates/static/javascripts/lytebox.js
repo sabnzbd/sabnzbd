@@ -1,17 +1,19 @@
 //***********************************************************************************************************************************/
-//	LyteBox v3.20
+//	LyteBox v3.22
 //
 //	 Author: Markus F. Hay
 //  Website: http://www.dolem.com/lytebox
-//	   Date: July 12, 2007
+//	   Date: October 2, 2007
 //	License: Creative Commons Attribution 3.0 License (http://creativecommons.org/licenses/by/3.0/)
-// Browsers: Tested successfully on WinXP with the following browsers (using no DOCTYPE, Strict DOCTYPE, and Transitional DOCTYPE):
-//				* Firefox: 2.0.0.4, 1.5.0.12
+// Browsers: Tested successfully on WinXP with the following browsers (using no DOCTYPE and Strict/Transitional/Loose DOCTYPES):
+//				* Firefox: 2.0.0.7, 1.5.0.12
 //				* Internet Explorer: 7.0, 6.0 SP2, 5.5 SP2
-//				* Opera: 9.21
+//				* Opera: 9.23
 //
 // Releases: For up-to-date and complete release information, visit http://www.dolem.com/forum/showthread.php?tid=62
-//				* v3.20 (07/11/07)
+//				* v3.22 (10/02/07)
+//				* v3.21 (09/30/07)
+//				* v3.20 (07/12/07)
 //				* v3.10 (05/28/07)
 //				* v3.00 (05/15/07)
 //				* v2.02 (11/13/06)
@@ -28,18 +30,18 @@ function LyteBox() {
 		this.theme				= 'grey';	// themes: grey (default), red, green, blue, gold
 		this.hideFlash			= true;		// controls whether or not Flash objects should be hidden
 		this.outerBorder		= false;		// controls whether to show the outer grey (or theme) border
-		this.resizeSpeed		= 8;		// controls the speed of the image resizing (1=slowest and 10=fastest)
+		this.resizeSpeed		= 10;		// controls the speed of the image resizing (1=slowest and 10=fastest)
 		this.maxOpacity			= 80;		// higher opacity = darker overlay, lower opacity = lighter overlay
 		this.navType			= 1;		// 1 = "Prev/Next" buttons on top left and left (default), 2 = "<< prev | next >>" links next to image number
-		this.autoResize			= true;		// controls whether or not images should be resized if larger than the browser window dimensions
+		this.autoResize			= false;		// controls whether or not images should be resized if larger than the browser window dimensions
 		this.doAnimations		= false;		// controls whether or not "animate" Lytebox, i.e. resize transition between images, fade in/out effects, etc.
 		
 		this.borderSize			= 12;		// if you adjust the padding in the CSS, you will need to update this variable -- otherwise, leave this alone...
 	/*** End Global Configuration ***/
 	
 	/*** Configure Slideshow Options ***/
-		this.slideInterval		= 4000;		// Change value (milliseconds) to increase/decrease the time between "slides" (10000 = 10 seconds)
-		this.showNavigation		= true;		// true to display Next/Prev buttons/text during slideshow, false to hide
+		this.slideInterval		= 0;		// Change value (milliseconds) to increase/decrease the time between "slides" (10000 = 10 seconds)
+		this.showNavigation		= false;		// true to display Next/Prev buttons/text during slideshow, false to hide
 		this.showClose			= true;		// true to display the Close button, false to hide
 		this.showDetails		= true;		// true to display image details (caption, count), false to hide
 		this.showPlayPause		= true;		// true to display pause/play buttons next to close button, false to hide
@@ -81,7 +83,7 @@ function LyteBox() {
 			this.ie = false;
 		/*@end
 	@*/
-	this.ie7 = (this.ie && window.XMLHttpRequest);
+	this.ie7 = (this.ie && window.XMLHttpRequest);	
 	this.initialize();
 }
 LyteBox.prototype.initialize = function() {
@@ -94,6 +96,9 @@ LyteBox.prototype.initialize = function() {
 	var objOverlay = this.doc.createElement("div");
 		objOverlay.setAttribute('id','lbOverlay');
 		objOverlay.setAttribute((this.ie ? 'className' : 'class'), this.theme);
+		if ((this.ie && !this.ie7) || (this.ie7 && this.doc.compatMode == 'BackCompat')) {
+			objOverlay.style.position = 'absolute';
+		}
 		objOverlay.style.display = 'none';
 		objBody.appendChild(objOverlay);
 	var objLytebox = this.doc.createElement("div");
@@ -278,7 +283,7 @@ LyteBox.prototype.start = function(imageLink, doSlide, doFrame) {
 	}
 	this.doc.getElementById('lbClose').onclick = function() { myLytebox.end(); return false; }
 	this.doc.getElementById('lbPause').onclick = function() { myLytebox.togglePlayPause("lbPause", "lbPlay"); return false; }
-	this.doc.getElementById('lbPlay').onclick = function() { myLytebox.togglePlayPause("lbPlay", "lbPause"); return false; }
+	this.doc.getElementById('lbPlay').onclick = function() { myLytebox.togglePlayPause("lbPlay", "lbPause"); return false; }	
 	this.isSlideshow = doSlide;
 	this.isPaused = (this.slideNum != 0 ? true : false);
 	if (this.isSlideshow && this.showPlayPause && this.isPaused) {
@@ -340,7 +345,6 @@ LyteBox.prototype.changeContent = function(imageNum) {
 				//iframe.style.border = b.trim();
 			}
 		}
-		iframe.src = this.frameArray[this.activeFrame][0];		
 		this.resizeContainer(parseInt(iframe.width), parseInt(iframe.height));
 	} else {
 		imgPreloader = new Image();
@@ -449,6 +453,9 @@ LyteBox.prototype.showContent = function() {
 		}
 		this.doc.getElementById('lbImageContainer').style.display = (this.isLyteframe ? 'none' : '');
 		this.doc.getElementById('lbIframeContainer').style.display = (this.isLyteframe ? '' : 'none');
+		try {
+			this.doc.getElementById('lbIframe').src = this.frameArray[this.activeFrame][0];
+		} catch(e) { }
 	} else {
 		this.showContentTimerArray[this.showContentTimerCount++] = setTimeout("myLytebox.showContent()", 200);
 	}
@@ -635,6 +642,9 @@ LyteBox.prototype.end = function(caller) {
 	if (this.isSlideshow) {
 		for (var i = 0; i < this.slideshowIDCount; i++) { window.clearTimeout(this.slideshowIDArray[i]); }
 	}
+	if (this.isLyteframe) {
+		 this.initialize();
+	}
 };
 LyteBox.prototype.checkFrame = function() {
 	if (window.parent.frames[window.name] && (parent.document.getElementsByTagName('frameset').length <= 0)) {
@@ -665,11 +675,13 @@ LyteBox.prototype.appear = function(id, opacity) {
 	object.KhtmlOpacity = (opacity / 100);
 	object.filter = "alpha(opacity=" + (opacity + 10) + ")";
 	if (opacity == 100 && (id == 'lbImage' || id == 'lbIframe')) {
+		try { object.removeAttribute("filter"); } catch(e) {}	/* Fix added for IE Alpha Opacity Filter bug. */
 		this.updateDetails();
 	} else if (opacity >= this.maxOpacity && id == 'lbOverlay') {
 		for (var i = 0; i < this.overlayTimerCount; i++) { window.clearTimeout(this.overlayTimerArray[i]); }
 		return;
 	} else if (opacity >= 100 && id == 'lbDetailsContainer') {
+		try { object.removeAttribute("filter"); } catch(e) {}	/* Fix added for IE Alpha Opacity Filter bug. */
 		for (var i = 0; i < this.imageTimerCount; i++) { window.clearTimeout(this.imageTimerArray[i]); }
 		this.doc.getElementById('lbOverlay').style.height = this.getPageSize()[1] + "px";
 	} else {

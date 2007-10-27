@@ -1,12 +1,12 @@
 ================================
-NOVA 0.4.4 README - Oct 10, 2007
+NOVA 0.4.5 README - Oct 26, 2007
 http://sabnzbd.organixdesign.com
 
 =======
 AUTHORS
-* Nathan Langlois => complete rewrite of NOVA for version 0.4
+* Nathan => complete rewrite of NOVA for version 0.4
 * Dana Woodman => original NOVA + concept design
-* ShyPike => modified for SABnzbd-0.2.7
+* ShyPike => modified for SABnzbd-0.2.7up
 
 ============
 INTRODUCTION
@@ -26,6 +26,13 @@ WHAT IS NEW
 * Special care taken in terms of explanations that pop up when hovering items with your cursor
 * Not to mention all the good parts from NOVA 0.3p2
 * Much much more!
+
+==================
+NOVA 0.4.5 UPDATES
+* Added +Script Dirscan options in Config->Switches for SABnzbdPlus (blackhole directory)
+* New Cleanup icon for History Verbosity
+* Updated integrated components
+* Didn't do any testing, good luck!
 
 ==================
 NOVA 0.4.4 UPDATES
@@ -88,9 +95,4 @@ A: Yes, stay tuned. Our ultimate goal is to allow for straightforward customizat
 
 ==============
 SPECIAL THANKS
-* Pim for the Dutch translation => http://www.pimspage.nl/
-* Prototype Core Team => http://www.prototypejs.org/
-* script.aculo.us => http://script.aculo.us/
-* Lytebox => http://www.dolem.com/lytebox/
-* Nuvola icon set => http://www.icon-king.com/?p=15
 * Everyone in the community who left so much valuable feedback - we appreciate it greatly!

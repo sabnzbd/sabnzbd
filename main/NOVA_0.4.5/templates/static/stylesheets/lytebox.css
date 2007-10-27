@@ -1,4 +1,4 @@
-#lbOverlay { position: absolute; top: 0; left: 0; z-index: 99998; width: 100%; height: 500px; }
+#lbOverlay { position: fixed; top: 0; left: 0; z-index: 99998; width: 100%; height: 500px; }
 	#lbOverlay.grey { background-color: #000000; }
 	#lbOverlay.red { background-color: #330000; }
 	#lbOverlay.green { background-color: #003300; }
@@ -24,26 +24,26 @@
 
 #lbImageContainer, #lbIframeContainer { padding: 10px; }
 #lbLoading {
-	position: absolute; top: 45%; left: 0%; height: 32px; width: 100%; text-align: center; line-height: 0; background: url(images/loading.gif) center no-repeat;
+	position: absolute; top: 45%; left: 0%; height: 32px; width: 100%; text-align: center; line-height: 0; background: url(../images/loading.gif) center no-repeat;
 }
 
 #lbHoverNav { position: absolute; top: 0; left: 0; height: 100%; width: 100%; z-index: 10; }
 #lbImageContainer>#lbHoverNav { left: 0; }
 #lbHoverNav a { outline: none; }
 
-#lbPrev { width: 49%; height: 100%; background: transparent url(images/blank.gif) no-repeat; display: block; left: 0; float: left; }
-	#lbPrev.grey:hover, #lbPrev.grey:visited:hover { background: url(images/prev_grey.gif) left 15% no-repeat; }
-	#lbPrev.red:hover, #lbPrev.red:visited:hover { background: url(images/prev_red.gif) left 15% no-repeat; }
-	#lbPrev.green:hover, #lbPrev.green:visited:hover { background: url(images/prev_green.gif) left 15% no-repeat; }
-	#lbPrev.blue:hover, #lbPrev.blue:visited:hover { background: url(images/prev_blue.gif) left 15% no-repeat; }
-	#lbPrev.gold:hover, #lbPrev.gold:visited:hover { background: url(images/prev_gold.gif) left 15% no-repeat; }
+#lbPrev { width: 49%; height: 100%; background: transparent url(../images/blank.gif) no-repeat; display: block; left: 0; float: left; }
+	#lbPrev.grey:hover, #lbPrev.grey:visited:hover { background: url(../images/prev_grey.gif) left 15% no-repeat; }
+	#lbPrev.red:hover, #lbPrev.red:visited:hover { background: url(../images/prev_red.gif) left 15% no-repeat; }
+	#lbPrev.green:hover, #lbPrev.green:visited:hover { background: url(../images/prev_green.gif) left 15% no-repeat; }
+	#lbPrev.blue:hover, #lbPrev.blue:visited:hover { background: url(../images/prev_blue.gif) left 15% no-repeat; }
+	#lbPrev.gold:hover, #lbPrev.gold:visited:hover { background: url(../images/prev_gold.gif) left 15% no-repeat; }
 	
-#lbNext { width: 49%; height: 100%; background: transparent url(images/blank.gif) no-repeat; display: block; right: 0; float: right; }
-	#lbNext.grey:hover, #lbNext.grey:visited:hover { background: url(images/next_grey.gif) right 15% no-repeat; }
-	#lbNext.red:hover, #lbNext.red:visited:hover { background: url(images/next_red.gif) right 15% no-repeat; }
-	#lbNext.green:hover, #lbNext.green:visited:hover { background: url(images/next_green.gif) right 15% no-repeat; }
-	#lbNext.blue:hover, #lbNext.blue:visited:hover { background: url(images/next_blue.gif) right 15% no-repeat; }
-	#lbNext.gold:hover, #lbNext.gold:visited:hover { background: url(images/next_gold.gif) right 15% no-repeat; }
+#lbNext { width: 49%; height: 100%; background: transparent url(../images/blank.gif) no-repeat; display: block; right: 0; float: right; }
+	#lbNext.grey:hover, #lbNext.grey:visited:hover { background: url(../images/next_grey.gif) right 15% no-repeat; }
+	#lbNext.red:hover, #lbNext.red:visited:hover { background: url(../images/next_red.gif) right 15% no-repeat; }
+	#lbNext.green:hover, #lbNext.green:visited:hover { background: url(../images/next_green.gif) right 15% no-repeat; }
+	#lbNext.blue:hover, #lbNext.blue:visited:hover { background: url(../images/next_blue.gif) right 15% no-repeat; }
+	#lbNext.gold:hover, #lbNext.gold:visited:hover { background: url(../images/next_gold.gif) right 15% no-repeat; }
 
 #lbPrev2, #lbNext2 { text-decoration: none; font-weight: bold; }
 	#lbPrev2.grey, #lbNext2.grey, #lbSpacer.grey { color: #333333; }
@@ -72,22 +72,22 @@
 #lbNavDisplay { float: left; display: block; padding-bottom: 1.0em; }
 
 #lbClose { width: 64px; height: 28px; float: right; margin-bottom: 1px; }
-	#lbClose.grey { background: url(images/close_grey.png) no-repeat; }
-	#lbClose.red { background: url(images/close_red.png) no-repeat; }
-	#lbClose.green { background: url(images/close_green.png) no-repeat; }
-	#lbClose.blue { background: url(images/close_blue.png) no-repeat; }
-	#lbClose.gold { background: url(images/close_gold.png) no-repeat; }
+	#lbClose.grey { background: url(../images/close_grey.png) no-repeat; }
+	#lbClose.red { background: url(../images/close_red.png) no-repeat; }
+	#lbClose.green { background: url(../images/close_green.png) no-repeat; }
+	#lbClose.blue { background: url(../images/close_blue.png) no-repeat; }
+	#lbClose.gold { background: url(../images/close_gold.png) no-repeat; }
 
 #lbPlay { width: 64px; height: 28px; float: right; margin-bottom: 1px; }
-	#lbPlay.grey { background: url(images/play_grey.png) no-repeat; }
-	#lbPlay.red { background: url(images/play_red.png) no-repeat; }
-	#lbPlay.green { background: url(images/play_green.png) no-repeat; }
-	#lbPlay.blue { background: url(images/play_blue.png) no-repeat; }
-	#lbPlay.gold { background: url(images/play_gold.png) no-repeat; }
+	#lbPlay.grey { background: url(../images/play_grey.png) no-repeat; }
+	#lbPlay.red { background: url(../images/play_red.png) no-repeat; }
+	#lbPlay.green { background: url(../images/play_green.png) no-repeat; }
+	#lbPlay.blue { background: url(../images/play_blue.png) no-repeat; }
+	#lbPlay.gold { background: url(../images/play_gold.png) no-repeat; }
 	
 #lbPause { width: 64px; height: 28px; float: right; margin-bottom: 1px; }
-	#lbPause.grey { background: url(images/pause_grey.png) no-repeat; }
-	#lbPause.red { background: url(images/pause_red.png) no-repeat; }
-	#lbPause.green { background: url(images/pause_green.png) no-repeat; }
-	#lbPause.blue { background: url(images/pause_blue.png) no-repeat; }
-	#lbPause.gold { background: url(images/pause_gold.png) no-repeat; }
+	#lbPause.grey { background: url(../images/pause_grey.png) no-repeat; }
+	#lbPause.red { background: url(../images/pause_red.png) no-repeat; }
+	#lbPause.green { background: url(../images/pause_green.png) no-repeat; }
+	#lbPause.blue { background: url(../images/pause_blue.png) no-repeat; }
+	#lbPause.gold { background: url(../images/pause_gold.png) no-repeat; }
