@@ -96,10 +96,10 @@ def email_send(header, message):
         logging.info('[%s] Starting email program %s', __NAME__, command)
 
         if (sabnzbd.EMAIL_ACCOUNT != "") and (sabnzbd.EMAIL_PWD != ""):
-        	  command.append('-xu')
-                  command.append('%s' % sabnzbd.EMAIL_ACCOUNT)
-        	  command.append('-xp')
-                  command.append('%s' % sabnzbd.EMAIL_PWD)
+            command.append('-xu')
+            command.append('%s' % sabnzbd.EMAIL_ACCOUNT)
+            command.append('-xp')
+            command.append('%s' % sabnzbd.EMAIL_PWD)
     
         stup, need_shell, command, creationflags = build_command(command)
 
