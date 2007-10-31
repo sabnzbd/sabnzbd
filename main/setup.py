@@ -12,12 +12,12 @@ except ImportError:
     py2exe = None
 
 options = dict(
-    name = 'SABnzbd',
+    name = 'SABnzbd+',
       version = sabnzbd.__version__,
       url = 'http://sourceforge.net/projects/sabnzbd',
-      author = 'Gregor Kaufmann',
-      author_email = 'tdian@users.sourceforge.net',
-      description = 'SABnzbd-' + str(sabnzbd.__version__),
+      author = 'Gregor Kaufmann & The ShyPike',
+      author_email = 'shypike@users.sourceforge.net',
+      description = 'SABnzbd+ ' + str(sabnzbd.__version__),
       scripts = ['SABnzbd.py'],
       packages = ['sabnzbd', 'sabnzbd.utils', 'sabnzbd.utils.multiauth'],
       platforms = ['posix'],
@@ -58,7 +58,8 @@ if py2exe:
           ('cache', []),
           ('par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
           ('unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
-          ('unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE'])
+          ('unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE']),
+          ('email', glob.glob("win/email/*.*"))
         ]
     options['console'] = ['SABnzbd.py']
     options['options'] = {"py2exe": {"bundle_files": 1, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}

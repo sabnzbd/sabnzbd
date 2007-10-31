@@ -86,6 +86,14 @@ BPSMETER = None
 RSS = None
 SCHED = None
 
+EMAIL_SERVER = None
+EMAIL_TO = None
+EMAIL_FROM = None
+EMAIL_ACCOUNT = None
+EMAIL_PWD = None
+EMAIL_ENDJOB = False
+EMAIL_FULL = False
+
 URLGRABBERS = []
 MSGIDGRABBERS = []
 
@@ -129,12 +137,14 @@ def initialize(pause_downloader = False):
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
-           CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, ARTICLECACHE
+           CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, ARTICLECACHE, \
+           EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
+           EMAIL_ENDJOB, EMAIL_FULL
            
     if __INITIALIZED__:
         return False
         
-    logging.info("Initializing SABnzbd v%s", __version__)
+    logging.info("Initializing SABnzbd+ v%s", __version__)
     
     ###########################
     ## CONFIG Initialization ##
@@ -306,7 +316,47 @@ def initialize(pause_downloader = False):
     except:
         CFG['misc']['cache_limit'] = "0"
         cache_limit = 0
-        
+
+    try:
+    	  EMAIL_SERVER = CFG['misc']['email_server']
+    except:
+    	  EMAIL_SERVER = ""
+    logging.info("Email_server: %s", EMAIL_SERVER)
+    
+    try:
+    	  EMAIL_TO = CFG['misc']['email_to']
+    except:
+    	  EMAIL_TO = ""
+    logging.info("Email_to: %s", EMAIL_TO)
+
+    try:
+    	  EMAIL_FROM = CFG['misc']['email_from']
+    except:
+    	  EMAIL_FROM = ""
+    logging.info("Email_from: %s", EMAIL_FROM)
+
+    try:
+    	  EMAIL_ACCOUNT = CFG['misc']['email_account']
+    except:
+    	  EMAIL_ACCOUNT = ""
+    	  
+    try:
+    	  EMAIL_PWD = CFG['misc']['email_pwd']
+    except:
+    	  EMAIL_PWD = ""
+
+    try:
+    	  EMAIL_ENDJOB = bool(int(CFG['misc']['email_endjob']))
+    except:
+    	  EMAIL_ENDJOB = False
+    logging.debug("EMAIL_ENDJOB -> %s", EMAIL_ENDJOB)
+
+    try:
+    	  EMAIL_FULL = bool(int(CFG['misc']['email_full']))
+    except:
+    	  EMAIL_FULL = False
+    logging.debug("EMAIL_FULL -> %s", EMAIL_FULL)
+
     if not CFG['misc']['schedlines']:
         CFG['misc']['schedlines'] = []
         

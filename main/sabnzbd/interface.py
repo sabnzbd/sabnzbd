@@ -37,6 +37,7 @@ from sabnzbd.utils.multiauth.providers import DictAuthProvider
 from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
+from sabnzbd.email import email_send
 
 from sabnzbd.constants import *
 
@@ -72,10 +73,12 @@ except AttributeError:
             return 0.0
             
 def CheckFreeSpace():
-    if sabnzbd.DOWNLOAD_FREE > 0:
+    if sabnzbd.DOWNLOAD_FREE > 0 and not sabnzbd.paused():
         if diskfree(sabnzbd.DOWNLOAD_DIR) < float(sabnzbd.DOWNLOAD_FREE) / 1024.0:
             logging.info('Too little diskspace forcing PAUSE')
             sabnzbd.pause_downloader()
+            if sabnzbd.EMAIL_FULL:
+                email_send("SABnzbd+ has halted", "SABnzbd+ has halted because diskspace is below the minimum.\n\nSABnzbd+")
 
             
 #------------------------------------------------------------------------------
@@ -178,7 +181,7 @@ class MainPage(ProtectedClass):
     def resume(self):
         sabnzbd.resume_downloader()
         raise cherrypy.HTTPRedirect(self.__root)
-        
+
     @cherrypy.expose
     def debug(self):
         return '''cache_limit: %s<br>
@@ -945,11 +948,14 @@ class ConnectionInfo(ProtectedClass):
         self.__root = '/sabnzbd/connections/'
         
         self.__web_dir = web_dir
+        self.lastmail = None
         
     @cherrypy.expose
     def index(self):
         header, pnfo_list, bytespersec = build_header()
         
+        header['lastmail'] = self.lastmail
+
         header['servers'] = []
         
         for server in sabnzbd.DOWNLOADER.servers[:]:
@@ -993,8 +999,14 @@ class ConnectionInfo(ProtectedClass):
         sabnzbd.disconnect()
         
         raise cherrypy.HTTPRedirect(self.__root)
+
+    @cherrypy.expose
+    def testmail(self):
+        logging.debug("Sending testmail")
+        self.lastmail= email_send("SABnzbd testing email connection", "All is OK")
         
-    
+        raise cherrypy.HTTPRedirect(self.__root)
+        
 def saveAndRestart(redirect_root):
     sabnzbd.CFG.write()
     f = open(sabnzbd.CFG.filename)
@@ -1055,3 +1067,47 @@ def calc_age(date):
         age = "Error"
         
     return age
+
+#------------------------------------------------------------------------------
+
+class ConfigEmail(ProtectedClass):
+    def __init__(self, web_dir):
+        self.roles = ['admins']
+        
+        self.__root = '/sabnzbd/config/email/'
+        
+        self.__web_dir = web_dir
+        
+    @cherrypy.expose
+    def index(self):
+        config, pnfo_list, bytespersec = build_header()
+        
+        config['email_server'] = sabnzbd.CFG['misc']['email_server']
+        config['email_to'] = sabnzbd.CFG['misc']['email_to']
+        config['email_from'] = sabnzbd.CFG['misc']['email_from']
+        config['email_account'] = sabnzbd.CFG['misc']['email_account']
+        config['email_pwd'] = sabnzbd.CFG['misc']['email_pwd']
+        config['email_endjob'] = int(sabnzbd.CFG['misc']['email_endjob'])
+        config['email_full'] = int(sabnzbd.CFG['misc']['email_full'])
+        
+        template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
+                            searchList=[config],
+                            compilerSettings={'directiveStartToken': '<!--#', 
+                                              'directiveEndToken': '#-->'})
+        return template.respond()
+        
+    @cherrypy.expose
+    def saveEmail(self, email_server = None, email_to = None, email_from = None,
+                  email_account = None, email_pwd = None,
+                  email_endjob = None, email_full = None):
+        sabnzbd.CFG['misc']['email_server'] = email_server
+        sabnzbd.CFG['misc']['email_to'] = email_to
+        sabnzbd.CFG['misc']['email_from'] = email_from
+        sabnzbd.CFG['misc']['email_account'] = email_account
+        sabnzbd.CFG['misc']['email_pwd'] = email_pwd
+        sabnzbd.CFG['misc']['email_endjob'] = email_endjob
+        sabnzbd.CFG['misc']['email_full'] = email_full
+        
+        return saveAndRestart(self.__root)
+
+    

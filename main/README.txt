@@ -1,8 +1,7 @@
-                                SABnzbd v0.2.7
+                                SABnzbd v0.2.x
 								
-Patched by ShyPike
-
 v0.2.x:
+added:   Email Notifications
 added:   Set minimum diskspace (in MB) for the download directory
          When diskspace is below threshhold, SABnzbd will pause.
          You must free diskspace and then resume SABnzbd manually.

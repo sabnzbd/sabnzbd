@@ -31,17 +31,20 @@ PAR2_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
+EMAIL_COMMAND = []
 
 if os.name == 'nt':
     PAR2_COMMAND = os.path.abspath('./par2/par2.exe')
     RAR_COMMAND = os.path.abspath('./unrar/UnRAR.exe')
     ZIP_COMMAND = os.path.abspath('./unzip/unzip.exe')
+    EMAIL_COMMAND = [os.path.abspath('./email/sendemail.exe')]
 else:
     lookhere = os.getenv('PATH').split(':')
     findpar2 = ('par2',)
     findrar = ('rar', 'unrar', 'rar3', 'unrar3')
     findnice = ('nice',)
     findzip = ('unzip',)
+    findemail = ('perl',)
     
     for path in lookhere:
         if not PAR2_COMMAND:
@@ -75,7 +78,17 @@ else:
                 if os.access(zip_path, os.X_OK):
                     ZIP_COMMAND = zip_path
                     break
-                    
+
+        if not EMAIL_COMMAND:
+            for _email in findemail:
+                email_path = os.path.join(path, _email)
+                email_path = os.path.abspath(email_path)
+                if os.access(email_path, os.X_OK):
+                    EMAIL_COMMAND = [email_path]
+                    break
+            if EMAIL_COMMAND:
+            	  EMAIL_COMMAND.append(os.path.abspath('./sabnzbd/utils/sendEmail.pl'))
+
 #------------------------------------------------------------------------------
 def external_processing(extern_proc, complete_dir, filename):
 
@@ -90,6 +103,7 @@ def external_processing(extern_proc, complete_dir, filename):
                          
     output = p.stdout.read()
     p.wait()
+    return output
 
 
 #------------------------------------------------------------------------------

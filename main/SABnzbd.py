@@ -70,7 +70,7 @@ def print_help():
     print "  -h   print this message"
     
 def print_version():
-    print "SABnzbd-%s" % sabnzbd.__version__
+    print "SABnzbd+ %s" % sabnzbd.__version__
     
 def daemonize():
     try:
@@ -201,14 +201,14 @@ def main():
         except AttributeError:
             pass
                 
-    logging.info('SABnzbd v%s', sabnzbd.__version__)
+    logging.info('SABnzbd+ v%s', sabnzbd.__version__)
     
     sabnzbd.CFG = cfg
     
     init_ok = sabnzbd.initialize(pause)
     
     if not init_ok:
-        logging.error('Initializing SABnzbd v%s failed, aborting', 
+        logging.error('Initializing SABnzbd+ v%s failed, aborting', 
                       sabnzbd.__version__)
         sys.exit(2)
         
@@ -237,6 +237,11 @@ def main():
     else:
         logging.info("unzip binary... NOT found!")
         
+    if sabnzbd.newsunpack.EMAIL_COMMAND:
+        logging.info("sendemail binary... found!")
+    else:
+        logging.info("sendemail binary... NOT found!")
+        
         
     cherryhost = cfg['misc']['host']
     cherryport = int(cfg['misc']['port'])
@@ -258,11 +263,11 @@ def main():
     if fork and os.name != 'nt':
         daemonize()
         
-    logging.info('Starting SABnzbd v%s', sabnzbd.__version__)
+    logging.info('Starting SABnzbd+ v%s', sabnzbd.__version__)
     try:
         sabnzbd.start()
     except:
-        logging.exception("Failed to start SABnzbd v%s", sabnzbd.__version__)
+        logging.exception("Failed to start SABnzbd+ v%s", sabnzbd.__version__)
         sabnzbd.halt()
     
     cherrylogtoscreen = False
@@ -289,6 +294,7 @@ def main():
     cherrypy.root.sabnzbd.config.server = ConfigServer(web_dir)
     cherrypy.root.sabnzbd.config.scheduling = ConfigScheduling(web_dir)
     cherrypy.root.sabnzbd.config.rss = ConfigRss(web_dir)
+    cherrypy.root.sabnzbd.config.email = ConfigEmail(web_dir)
     cherrypy.root.sabnzbd.connections = ConnectionInfo(web_dir)
     cherrypy.root.sabnzbd.history = HistoryPage(web_dir)
     

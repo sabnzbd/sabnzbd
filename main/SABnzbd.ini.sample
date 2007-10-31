@@ -151,6 +151,18 @@ __version__ = 017
     ## Umask to use for directories/files
     umask = 755
     
+
+## Email notification settings
+    email_server =
+    email_port =
+    email_to =
+    email_from =
+    email_account =
+    email_pwd =
+    email_endjob = 0
+    email_full = 0
+    email_tls = 0
+    
 [logging]
     ## max size of SABnzbd.log (in bytes)
     max_log_size = 5242880

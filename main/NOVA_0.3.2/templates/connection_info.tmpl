@@ -58,6 +58,8 @@
 			
 			<span class="subMenu">
 				<a href="../connections/disconnect" onclick="javascript:return confirm('Disconnect? \n\n This will temporarily disable SABnzbd downloading.')">Force Disconnect</a><a href="../shutdown" title="Terminates Session" onclick="javascript:return confirm('Shutdown Sabnzbd?\n\n This will shut down SABnzbd. You will have to restart SABnzbd to continue downloading.')">Shutdown SABnzbd</a>
+                                <a href="./testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
+
 			</span>
 			
 			## Makes mbleft and mb into usable variables
@@ -113,6 +115,11 @@
 				<!--#end for#-->
 				</ul>
 			<!--#end if#-->
+                        <!--#if $lastmail#-->
+                            <h2>Email test result</h2>
+                                $lastmail
+                        <!--#endif#-->
+
 
 
 
