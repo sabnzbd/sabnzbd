@@ -78,7 +78,7 @@ def CheckFreeSpace():
             logging.info('Too little diskspace forcing PAUSE')
             sabnzbd.pause_downloader()
             if sabnzbd.EMAIL_FULL:
-                email_send("SABnzbd+ has halted", "SABnzbd+ has halted because diskspace is below the minimum.\n\nSABnzbd+")
+                email_send("SABnzbd has halted", "SABnzbd has halted because diskspace is below the minimum.\n\nSABnzbd")
 
             
 #------------------------------------------------------------------------------

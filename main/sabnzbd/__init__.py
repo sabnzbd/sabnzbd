@@ -144,7 +144,7 @@ def initialize(pause_downloader = False):
     if __INITIALIZED__:
         return False
         
-    logging.info("Initializing SABnzbd+ v%s", __version__)
+    logging.info("Initializing SABnzbd v%s", __version__)
     
     ###########################
     ## CONFIG Initialization ##

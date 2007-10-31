@@ -70,7 +70,7 @@ def print_help():
     print "  -h   print this message"
     
 def print_version():
-    print "SABnzbd+ %s" % sabnzbd.__version__
+    print "SABnzbd-%s" % sabnzbd.__version__
     
 def daemonize():
     try:
@@ -201,14 +201,14 @@ def main():
         except AttributeError:
             pass
                 
-    logging.info('SABnzbd+ v%s', sabnzbd.__version__)
+    logging.info('SABnzbd-v%s', sabnzbd.__version__)
     
     sabnzbd.CFG = cfg
     
     init_ok = sabnzbd.initialize(pause)
     
     if not init_ok:
-        logging.error('Initializing SABnzbd+ v%s failed, aborting', 
+        logging.error('Initializing SABnzbd-v%s failed, aborting', 
                       sabnzbd.__version__)
         sys.exit(2)
         
@@ -263,11 +263,11 @@ def main():
     if fork and os.name != 'nt':
         daemonize()
         
-    logging.info('Starting SABnzbd+ v%s', sabnzbd.__version__)
+    logging.info('Starting SABnzbd-v%s', sabnzbd.__version__)
     try:
         sabnzbd.start()
     except:
-        logging.exception("Failed to start SABnzbd+ v%s", sabnzbd.__version__)
+        logging.exception("Failed to start SABnzbd-v%s", sabnzbd.__version__)
         sabnzbd.halt()
     
     cherrylogtoscreen = False

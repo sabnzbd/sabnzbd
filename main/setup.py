@@ -12,12 +12,12 @@ except ImportError:
     py2exe = None
 
 options = dict(
-    name = 'SABnzbd+',
+    name = 'SABnzbd',
       version = sabnzbd.__version__,
       url = 'http://sourceforge.net/projects/sabnzbd',
       author = 'Gregor Kaufmann & The ShyPike',
       author_email = 'shypike@users.sourceforge.net',
-      description = 'SABnzbd+ ' + str(sabnzbd.__version__),
+      description = 'SABnzbd ' + str(sabnzbd.__version__),
       scripts = ['SABnzbd.py'],
       packages = ['sabnzbd', 'sabnzbd.utils', 'sabnzbd.utils.multiauth'],
       platforms = ['posix'],
