@@ -79,27 +79,30 @@ def email_send(header, message):
         os.write(msgfile, message)
         os.close(msgfile)
                   
-        command = sabnzbd.newsunpack.EMAIL_COMMAND
-        command.append('-s')
-        command.append('%s' % sabnzbd.EMAIL_SERVER)
-        command.append('-f')
-        command.append('%s' % sabnzbd.EMAIL_FROM)
-        command.append('-t')
-        command.append('%s' % sabnzbd.EMAIL_TO)
-        command.append('-o')
-        command.append('tls=auto')
-        command.append('-u')
-        command.append('%s' % header)
-        command.append('-o')
-        command.append('message-file=%s' %  msgname )
+        command = []
+        command.extend(sabnzbd.newsunpack.EMAIL_COMMAND)
+        command.extend(['-s',
+                        '%s' % sabnzbd.EMAIL_SERVER,
+                        '-f',
+                        '%s' % sabnzbd.EMAIL_FROM,
+                        '-t',
+                        '%s' % sabnzbd.EMAIL_TO,
+                        '-o',
+                        'tls=auto',
+                        '-u',
+                        '%s' % header,
+                        '-o',
+                        'message-file=%s' %  msgname
+                       ])
 
         logging.info('[%s] Starting email program %s', __NAME__, command)
 
         if (sabnzbd.EMAIL_ACCOUNT != "") and (sabnzbd.EMAIL_PWD != ""):
-            command.append('-xu')
-            command.append('%s' % sabnzbd.EMAIL_ACCOUNT)
-            command.append('-xp')
-            command.append('%s' % sabnzbd.EMAIL_PWD)
+            command.extend(['-xu',
+                            '%s' % sabnzbd.EMAIL_ACCOUNT,
+                            '-xp',
+                            '%s' % sabnzbd.EMAIL_PWD
+                           ])
     
         stup, need_shell, command, creationflags = build_command(command)
 
