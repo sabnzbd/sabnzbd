@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 __version__ = "0.2.7"
-__configversion__ = 17
+__configversion__ = 16
 __queueversion__ = 5
 __NAME__ = "sabnzbd"
 
@@ -50,6 +50,11 @@ NZB_QUOTA = None
 
 CFG = None
 
+OS_VISTA = False
+DIR_HOME = None
+DIR_APPDATA = None
+DIR_LCLDATA = None
+DIR_PROG = None
 FAIL_ON_CRC = False
 CREATE_GROUP_FOLDERS = False
 CREATE_CAT_FOLDERS = False
@@ -124,7 +129,78 @@ def sig_handler(signum = None, frame = None):
         save_state()
     finally:
         os._exit(0)
+
+
+################################################################################
+# Real_Path                                                                    #
+################################################################################
+def real_path(loc, path):
+    if not ((os.name == 'nt' and path[0].isalpha() and path[1] == ':') or \
+            (path[0] == '/' or path[0] == '\\')):
+        path = loc + '/' + path
+    return os.path.normpath(os.path.abspath(path))
+
         
+################################################################################
+# Directory Setup                                                              #
+################################################################################
+def dir_setup(config, cfg_name, def_loc, dir_name):
+    try:
+        my_dir = config['misc'][cfg_name]
+    except:
+        logging.info('No %s defined, setting value to "%s"', cfg_name, dir_name)
+        my_dir = dir_name
+        config['misc'][cfg_name] = my_dir
+    
+    my_dir = real_path(def_loc, my_dir)
+    if not os.path.exists(my_dir):
+        logging.info('%s directory: %s does not exist, try to create it', cfg_name, my_dir)
+        os.makedirs(my_dir)
+    if not os.access(my_dir, os.R_OK + os.W_OK):
+        logging.error('%s directory: %s error accessing', cfg_name, my_dir)
+        return ""
+    logging.info("%s: %s", cfg_name, my_dir)
+    return my_dir
+
+
+################################################################################
+# Check_setting_int                                                            #
+################################################################################
+def check_setting_int(config, cfg_name, item_name, def_val):
+    try:
+        my_val = int(config[cfg_name][item_name])
+    except:
+        my_val = def_val
+        config[cfg_name][item_name] = my_val
+    logging.debug("%s -> %s", item_name, my_val)
+    return my_val
+
+################################################################################
+# Check_setting_float                                                          #
+################################################################################
+def check_setting_float(config, cfg_name, item_name, def_val):
+    try:
+        my_val = float(config[cfg_name][item_name])
+    except:
+        my_val = def_val
+        config[cfg_name][item_name] = my_val
+
+    logging.debug("%s -> %s", item_name, my_val)
+    return my_val
+
+################################################################################
+# Check_setting_str                                                            #
+################################################################################
+def check_setting_str(config, cfg_name, item_name, def_val):
+    try:
+        my_val= config[cfg_name][item_name]
+    except:
+        my_val = def_val
+        config[cfg_name][item_name] = my_val
+
+    logging.debug("%s -> %s", item_name, my_val)
+    return my_val
+
 ################################################################################
 # Initializing                                                                 #
 ################################################################################
@@ -138,6 +214,7 @@ def initialize(pause_downloader = False):
            DIRSCANNER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, ARTICLECACHE, \
+           OS_VISTA, DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL
            
@@ -150,228 +227,112 @@ def initialize(pause_downloader = False):
     ## CONFIG Initialization ##
     ###########################
     
-    USERNAME_NEWZBIN = CFG['newzbin']['username']
-    PASSWORD_NEWZBIN = CFG['newzbin']['password']
+    USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
+    PASSWORD_NEWZBIN = check_setting_str(CFG, 'newzbin', 'password', '')
     
-    FAIL_ON_CRC = bool(int(CFG['misc']['fail_on_crc']))
-    logging.debug("FAIL_ON_CRC -> %s", FAIL_ON_CRC)
+    FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
     
-    CREATE_GROUP_FOLDERS = bool(int(CFG['misc']['create_group_folders']))
-    logging.debug("CREATE_GROUP_FOLDERS -> %s", CREATE_GROUP_FOLDERS)
+    CREATE_GROUP_FOLDERS = bool(check_setting_int(CFG, 'misc', 'create_group_folders', 0))
     
-    DO_FILE_JOIN = bool(int(CFG['misc']['enable_filejoin']))
-    logging.debug("DO_FILE_JOIN -> %s", DO_FILE_JOIN)
+    DO_FILE_JOIN = bool(check_setting_int(CFG, 'misc', 'enable_filejoin', 0))
     
-    DO_UNZIP = bool(int(CFG['misc']['enable_unzip']))
-    logging.debug("DO_UNZIP -> %s", DO_UNZIP)
+    DO_UNZIP = bool(check_setting_int(CFG, 'misc', 'enable_unzip', 1))
     
-    DO_UNRAR = bool(int(CFG['misc']['enable_unrar']))
-    logging.debug("DO_UNRAR -> %s", DO_UNRAR)
+    DO_UNRAR = bool(check_setting_int(CFG, 'misc', 'enable_unrar', 1))
     
-    DO_SAVE = bool(int(CFG['misc']['enable_save']))
-    logging.debug("DO_SAVE -> %s", DO_SAVE)
+    DO_SAVE = bool(check_setting_int(CFG, 'misc', 'enable_save', 1))
     
-    PAR_CLEANUP = bool(int(CFG['misc']['enable_par_cleanup']))
-    logging.debug("PAR_CLEANUP -> %s", PAR_CLEANUP)
+    PAR_CLEANUP = bool(check_setting_int(CFG, 'misc', 'enable_par_cleanup', 1))
     
-    CLEANUP_LIST = CFG['misc']['cleanup_list']
+    CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
     if type(CLEANUP_LIST) != type([]):
         CLEANUP_LIST = []
-    logging.debug("CLEANUP_LIST -> %s", CLEANUP_LIST)
     
-    UMASK = int(CFG['misc']['umask'], 8)
-    logging.debug("UMASK -> %s", UMASK)
+    UMASK = int(check_setting_str(CFG, 'misc', 'umask', '755'), 8)
     
-    SEND_GROUP = bool(int(CFG['misc']['send_group']))
-    logging.debug("SEND_GROUP -> %s", SEND_GROUP)
+    SEND_GROUP = bool(check_setting_int(CFG, 'misc', 'send_group', 0))
     
-    CREATE_CAT_FOLDERS = int(CFG['newzbin']['create_category_folders'])
-    
+    CREATE_CAT_FOLDERS = check_setting_int(CFG, 'newzbin', 'create_category_folders', 0)
+
     if CREATE_CAT_FOLDERS > 1:
         CREATE_CAT_SUB = True
     CREATE_CAT_FOLDERS = bool(CREATE_CAT_FOLDERS)
     
     logging.debug("CREATE_CAT_FOLDERS -> %s", CREATE_CAT_FOLDERS)
     logging.debug("CREATE_CAT_SUB -> %s", CREATE_CAT_SUB)
-    
-    if not CFG['misc']['download_dir']:
-        logging.error('No DOWNLOAD_DIR defined!')
+
+    DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_LCLDATA, "incomplete")
+    if DOWNLOAD_DIR == "":
         return False
-    
-    try:
-        DOWNLOAD_FREE = int(CFG['misc']['download_free'])
-    except:
-        logging.error('No DOWNLOAD_FREE defined!')
-        DOWNLOAD_FREE = 0
-    logging.debug("DOWNLOAD_FREE -> %s", DOWNLOAD_FREE)
-    
-    DOWNLOAD_DIR = os.path.abspath(CFG['misc']['download_dir'])
-    if not os.path.exists(DOWNLOAD_DIR):
-        logging.error('Download directory: %s does not exist', DOWNLOAD_DIR)
+
+    DOWNLOAD_FREE = check_setting_int(CFG, 'misc', 'download_free', 0)
+
+    COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, "usenet")
+    if COMPLETE_DIR == "":
         return False
-    if not os.access(DOWNLOAD_DIR, os.R_OK + os.W_OK):
-        logging.error('Download directory: %s error accessing',
-                      DOWNLOAD_DIR)
+
+    NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, "nzbbackup")
+    if NZB_BACKUP_DIR == "":
         return False
-    logging.info("DOWNLOAD_DIR: %s", DOWNLOAD_DIR)
-    
-    COMPLETE_DIR = CFG['misc']['complete_dir']
-    if COMPLETE_DIR:
-        COMPLETE_DIR = os.path.abspath(COMPLETE_DIR)
-        if not os.path.exists(COMPLETE_DIR):
-            logging.error('Directory: %s does not exist', COMPLETE_DIR)
-            return False
-        if not os.access(COMPLETE_DIR, os.R_OK + os.W_OK):
-            logging.error('Directory: %s error accessing', COMPLETE_DIR)
-            return False
-    logging.info("COMPLETE_DIR: %s", COMPLETE_DIR)
-    
-    NZB_BACKUP_DIR = CFG['misc']['nzb_backup_dir']
-    if NZB_BACKUP_DIR:
-        NZB_BACKUP_DIR = os.path.abspath(NZB_BACKUP_DIR)
-        if not os.path.exists(NZB_BACKUP_DIR):
-            logging.error('Directory: %s does not exist', NZB_BACKUP_DIR)
-            return False
-        if not os.access(NZB_BACKUP_DIR, os.R_OK + os.W_OK):
-            logging.error('Directory: %s error accessing', NZB_BACKUP_DIR)
-            return False
-    logging.info("NZB_BACKUP_DIR: %s", NZB_BACKUP_DIR)
-    
+
     if "samefile" in os.path.__dict__:
         if os.path.samefile(DOWNLOAD_DIR, COMPLETE_DIR):
             logging.error('DOWNLOAD_DIR and COMPLETE_DIR cannot be the same!')
             return True
             
-    if not CFG['misc']['cache_dir']:
-        logging.error('No cache_dir defined!')
+    CACHE_DIR = dir_setup(CFG, "cache_dir", DIR_LCLDATA, "cache")
+    if CACHE_DIR == "":
         return False
-        
-    CACHE_DIR = os.path.abspath(CFG['misc']['cache_dir'])
-    if not os.path.exists(CACHE_DIR):
-        logging.error('Cache directory directory: %s does not exist', CACHE_DIR)
-        return False
-    if not os.access(CACHE_DIR, os.R_OK + os.W_OK):
-        logging.error('Cache directory directory: %s error accessing', CACHE_DIR)
-        return False
-    logging.info("CACHE_DIR: %s", CACHE_DIR)
-    
-    dirscan_dir = CFG['misc']['dirscan_dir']
-    if dirscan_dir:
-        dirscan_dir = os.path.abspath(dirscan_dir)
-        if not os.path.exists(dirscan_dir):
-            logging.error('Directory: %s does not exist', dirscan_dir)
-            return False
-        if not os.access(dirscan_dir, os.R_OK + os.W_OK):
-            logging.error('Directory: %s error accessing', dirscan_dir)
-            return False
-    logging.info("dirscan_dir: %s", dirscan_dir)
-            
-    try:
-        dirscan_speed = float(CFG['misc']['dirscan_speed'])
-    except:
-        CFG['misc']['dirscan_speed'] = "1.0"
-        dirscan_speed = 1.0
-    logging.info("dirscan_speed: %s", dirscan_speed)
 
-    try:
-        refresh_rate = int(CFG['misc']['refresh_rate'])
-    except:
-        refresh_rate = 0
-    logging.info("refresh_rate: %s", refresh_rate)
-    if refresh_rate == 0:
-        CFG['misc']['refresh_rate'] = ""
- 
-    try:
-    	  rss_rate = int(CFG['misc']['rss_rate'])
-    except:
-    	  rss_rate = 1
+    dirscan_dir = dir_setup(CFG, "dirscan_dir", DIR_HOME, "nzb")
+    if dirscan_dir == "":
+        return False
+
+    dirscan_speed = check_setting_int(CFG, 'misc', 'dirscan_speed', 1)
+
+    refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', 0)
+
+    rss_rate = check_setting_int(CFG, 'misc', 'rss_rate', 1)
     if rss_rate > 4:
         rss_rate = 4
     if rss_rate < 1:
         rss_rate = 1
-    CFG['misc']['rss_rate'] = rss_rate
-    logging.info("rss_rate: %s", rss_rate)
     
-    extern_proc = CFG['misc']['extern_proc']
+    extern_proc = check_setting_str(CFG, 'misc', 'extern_proc', '')
     if extern_proc:
         extern_proc= os.path.abspath(extern_proc)
         if os.path.exists(extern_proc):
             logging.info("extern_proc: %s", extern_proc)
         else:
             logging.error('External postproc script: %s does not exist', extern_proc)
-            return False
+            extern_proc = ""
 
-    servers = CFG['servers']
-     
     try:
-        BANDWITH_LIMIT = float(CFG['misc']['bandwith_limit'])
+        servers = CFG['servers']
     except:
-        CFG['misc']['bandwith_limit'] = "0.0"
-        BANDWITH_LIMIT = 0.0
+        servers = ""
+        CFG['servers'] = ''
+
+    BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
         
-    logging.info("BANDWITH_LIMIT: %s", BANDWITH_LIMIT)
-    
-    try:
-        cache_limit = int(CFG['misc']['cache_limit'])
-    except:
-        CFG['misc']['cache_limit'] = "0"
-        cache_limit = 0
-
-    try:
-    	  EMAIL_SERVER = CFG['misc']['email_server']
-    except:
-    	  EMAIL_SERVER = ""
-    logging.info("Email_server: %s", EMAIL_SERVER)
-    
-    try:
-    	  EMAIL_TO = CFG['misc']['email_to']
-    except:
-    	  EMAIL_TO = ""
-    logging.info("Email_to: %s", EMAIL_TO)
-
-    try:
-    	  EMAIL_FROM = CFG['misc']['email_from']
-    except:
-    	  EMAIL_FROM = ""
-    logging.info("Email_from: %s", EMAIL_FROM)
-
-    try:
-    	  EMAIL_ACCOUNT = CFG['misc']['email_account']
-    except:
-    	  EMAIL_ACCOUNT = ""
-    	  
-    try:
-    	  EMAIL_PWD = CFG['misc']['email_pwd']
-    except:
-    	  EMAIL_PWD = ""
-
-    try:
-    	  EMAIL_ENDJOB = bool(int(CFG['misc']['email_endjob']))
-    except:
-    	  EMAIL_ENDJOB = False
-    logging.debug("EMAIL_ENDJOB -> %s", EMAIL_ENDJOB)
-
-    try:
-    	  EMAIL_FULL = bool(int(CFG['misc']['email_full']))
-    except:
-    	  EMAIL_FULL = False
-    logging.debug("EMAIL_FULL -> %s", EMAIL_FULL)
-
-    if not CFG['misc']['schedlines']:
-        CFG['misc']['schedlines'] = []
+    cache_limit = check_setting_int(CFG, 'misc', 'cache_limit', 0)
         
-    schedlines = CFG['misc']['schedlines']
-    logging.info("schedlines: %s", schedlines)
+    EMAIL_SERVER = check_setting_str(CFG, 'misc', 'email_server', '')
+    EMAIL_TO     = check_setting_str(CFG, 'misc', 'email_to', '')
+    EMAIL_FROM   = check_setting_str(CFG, 'misc', 'email_from', '')
+    EMAIL_ACCOUNT= check_setting_str(CFG, 'misc', 'email_account', '')
+    EMAIL_PWD    = check_setting_str(CFG, 'misc', 'email_pwd', '')
+    EMAIL_ENDJOB = bool(check_setting_int(CFG, 'misc', 'email_endjob', 0))
+    EMAIL_FULL   = bool(check_setting_int(CFG, 'misc', 'email_full', 0))
+
+    schedlines = check_setting_str(CFG, 'misc', 'schedlines', '')
     
-    dirscan_opts = int(CFG['misc']['dirscan_opts'])
+    dirscan_opts = check_setting_int(CFG, 'misc', 'dirscan_opts', 1)
     dirscan_repair, dirscan_unpack, dirscan_delete, dirscan_script = pp_to_opts(dirscan_opts)
-    logging.info("dirscan_opts: %s", dirscan_opts)
     
-    top_only = bool(int(CFG['misc']['top_only']))
-    logging.info("top_only: %s", top_only)
+    top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
     
-    auto_sort = bool(int(CFG['misc']['auto_sort']))
-    logging.info("auto_sort: %s", auto_sort)
+    auto_sort = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
     
     ############################
     ## Object initializiation ##

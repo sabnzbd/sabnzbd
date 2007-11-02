@@ -44,3 +44,5 @@ KIBI = float(2 ** 10)
 BYTES_FILE_NAME = 'bytes.sab'
 QUEUE_FILE_NAME = 'queue.sab'
 RSS_FILE_NAME = 'rss.sab'
+
+MY_NAME = 'SABnzbd'

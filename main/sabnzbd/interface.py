@@ -181,7 +181,7 @@ class MainPage(ProtectedClass):
     def resume(self):
         sabnzbd.resume_downloader()
         raise cherrypy.HTTPRedirect(self.__root)
-
+        
     @cherrypy.expose
     def debug(self):
         return '''cache_limit: %s<br>
@@ -295,8 +295,11 @@ class QueuePage(ProtectedClass):
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             info['newzbinDetails'] = True
 
-        info['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
-        
+        if int(sabnzbd.CFG['misc']['refresh_rate']) > 0:
+            info['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
+        else:
+            info['refresh_rate'] = ''
+            
         info['noofslots'] = len(pnfo_list)
         datestart = datetime.datetime.now()
         
@@ -602,18 +605,16 @@ class ConfigDirectories(ProtectedClass):
         config, pnfo_list, bytespersec = build_header()
         
         config['download_dir'] = sabnzbd.CFG['misc']['download_dir']
-        try:
-            config['download_free'] = sabnzbd.CFG['misc']['download_free']
-        except:
-            config['download_free'] = ''
+        config['download_free'] = sabnzbd.CFG['misc']['download_free']
         config['complete_dir'] = sabnzbd.CFG['misc']['complete_dir']
         config['cache_dir'] = sabnzbd.CFG['misc']['cache_dir']
         config['log_dir'] = sabnzbd.CFG['misc']['log_dir']
         config['nzb_backup_dir'] = sabnzbd.CFG['misc']['nzb_backup_dir']
-        config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
         config['dirscan_dir'] = sabnzbd.CFG['misc']['dirscan_dir']
         config['dirscan_speed'] = sabnzbd.CFG['misc']['dirscan_speed']
         config['extern_proc'] = sabnzbd.CFG['misc']['extern_proc']
+        config['my_home'] = sabnzbd.DIR_HOME
+        config['my_lcldata'] = sabnzbd.DIR_LCLDATA
             
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
                             searchList=[config],
@@ -623,7 +624,7 @@ class ConfigDirectories(ProtectedClass):
         
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
-                        cache_dir = None, web_dir = None, nzb_backup_dir = None,
+                        cache_dir = None, nzb_backup_dir = None,
                         dirscan_dir = None, dirscan_speed = None, extern_proc = None):
                         
         if download_dir and not os.access(os.path.abspath(download_dir), os.R_OK + os.W_OK):
@@ -635,11 +636,6 @@ class ConfigDirectories(ProtectedClass):
             return "Error: can't access cache directory."
         if not cache_dir:
             return "Error: cache directory not set."
-            
-        if web_dir and not os.access(os.path.abspath(web_dir), os.R_OK):
-            return "Error: can't access template directory."
-        if not web_dir:
-            return "Error: template directory not set."
             
         if log_dir and not os.access(os.path.abspath(log_dir), os.R_OK + os.W_OK):
             return "Error: can't access log directory."
@@ -656,7 +652,6 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['download_dir'] = download_dir
         sabnzbd.CFG['misc']['download_free'] = download_free
         sabnzbd.CFG['misc']['cache_dir'] = cache_dir
-        sabnzbd.CFG['misc']['web_dir'] = web_dir
         sabnzbd.CFG['misc']['log_dir'] = log_dir
         sabnzbd.CFG['misc']['dirscan_dir'] = dirscan_dir
         sabnzbd.CFG['misc']['dirscan_speed'] = dirscan_speed
@@ -739,6 +734,7 @@ class ConfigGeneral(ProtectedClass):
         config['port'] = sabnzbd.CFG['misc']['port']
         config['username'] = sabnzbd.CFG['misc']['username']
         config['password'] = sabnzbd.CFG['misc']['password']
+        config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
         config['bandwith_limit'] = sabnzbd.CFG['misc']['bandwith_limit']
         config['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
         config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
@@ -762,7 +758,7 @@ class ConfigGeneral(ProtectedClass):
         return template.respond()
         
     @cherrypy.expose
-    def saveGeneral(self, host = None, port = None, username = None, password = None,
+    def saveGeneral(self, host = None, port = None, username = None, password = None, web_dir = None,
                     cronlines = None, username_newzbin = None, password_newzbin = None,
                     refresh_rate = None, rss_rate = None,
                     bandwith_limit = None, cleanup_list = None, cache_limit = None):
@@ -770,6 +766,7 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['port'] = port
         sabnzbd.CFG['misc']['username'] = username
         sabnzbd.CFG['misc']['password'] = password
+        sabnzbd.CFG['misc']['web_dir'] = web_dir
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
         sabnzbd.CFG['misc']['rss_rate'] = rss_rate
@@ -778,6 +775,13 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limit
         
+        if web_dir and not os.access(os.path.abspath(sabnzbd.DIR_PROG+'/'+web_dir), os.R_OK):
+            return "Error: can't access template directory."
+        if web_dir and not os.access(os.path.abspath(sabnzbd.DIR_PROG+'/'+web_dir+'/main.tmpl'), os.R_OK):
+        	  return "Error: not a valid template directory (cannot see main.tmpl)."
+        if not web_dir:
+            return "Error: template directory not set."
+
         return saveAndRestart(self.__root)
         
     
@@ -806,7 +810,12 @@ class ConfigServer(ProtectedClass):
     @cherrypy.expose
     def addServer(self, server = None, host = None, port = None, username = None,
                          password = None, connections = None, fillserver = None):
-        if host and port and port.isdigit() and connections \
+
+        if connections == "":
+            connections = '1'
+        if port == "":
+            port = '119'
+        if host and port and port.isdigit() \
         and connections.isdigit() and fillserver and fillserver.isdigit():
             server = "%s:%s" % (host, port)
             
@@ -827,7 +836,11 @@ class ConfigServer(ProtectedClass):
     def saveServer(self, server = None, host = None, port = None, username = None,
                          password = None, connections = None, fillserver = None):
         
-        if host and port and port.isdigit() and connections \
+        if connections == "":
+            connections = '1'
+        if port == "":
+            port = '119'
+        if host and port and port.isdigit() \
         and connections.isdigit() and fillserver and fillserver.isdigit():
             try:
             	 oldhost, oldport = server.split(":")
@@ -999,14 +1012,14 @@ class ConnectionInfo(ProtectedClass):
         sabnzbd.disconnect()
         
         raise cherrypy.HTTPRedirect(self.__root)
-
+        
     @cherrypy.expose
     def testmail(self):
         logging.debug("Sending testmail")
         self.lastmail= email_send("SABnzbd testing email connection", "All is OK")
         
         raise cherrypy.HTTPRedirect(self.__root)
-        
+    
 def saveAndRestart(redirect_root):
     sabnzbd.CFG.write()
     f = open(sabnzbd.CFG.filename)

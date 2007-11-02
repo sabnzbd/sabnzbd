@@ -31,6 +31,7 @@ PAR2_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
+BROWSER_COMMAND = None
 EMAIL_COMMAND = []
 
 if os.name == 'nt':
@@ -44,6 +45,7 @@ else:
     findrar = ('rar', 'unrar', 'rar3', 'unrar3')
     findnice = ('nice',)
     findzip = ('unzip',)
+    findfox = ('firefox', 'opera', 'epiphany', 'konqueror', 'galeon', 'mozilla', 'lynx',)
     findemail = ('perl',)
     
     for path in lookhere:
@@ -79,6 +81,14 @@ else:
                     ZIP_COMMAND = zip_path
                     break
 
+        if not BROWSER_COMMAND:
+            for _fox in findfox:
+                fox_path = os.path.join(path, _fox)
+                fox_path = os.path.abspath(fox_path)
+                if os.access(fox_path, os.X_OK):
+                    BROWSER_COMMAND = fox_path
+                    break
+
         if not EMAIL_COMMAND:
             for _email in findemail:
                 email_path = os.path.join(path, _email)
@@ -88,7 +98,7 @@ else:
                     break
             if EMAIL_COMMAND:
             	  EMAIL_COMMAND.append(os.path.abspath('./sabnzbd/utils/sendEmail.pl'))
-
+                    
 #------------------------------------------------------------------------------
 def external_processing(extern_proc, complete_dir, filename):
 

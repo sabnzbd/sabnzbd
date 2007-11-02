@@ -1,5 +1,6 @@
 #!/usr/bin/python -OO
 # Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
+#                The ShyPike <shypike@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -38,11 +39,11 @@ import cherrypy
 import getopt
 import sabnzbd
 import signal
+import re
 
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
-
+from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup, real_path
 from sabnzbd.interface import *
-
 from sabnzbd.constants import *
 
 from threading import Thread
@@ -56,22 +57,38 @@ try:
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
     pass
-    
+
+try:
+    from win32com.shell import shell
+except ImportError:
+    pass
+
 #------------------------------------------------------------------------------
             
 def print_help():
-    print "Usage: SABnzbd.py [-f <configfile>]"
+    print "Usage: %s [-f <configfile>]" % __file__
     print
     print "Options:"
-    print "  -f   location of config file"
-    print "  -d   fork daemon process"
-    print "  -p   start paused"
-    print "  -v   print version information"
-    print "  -h   print this message"
+    print "  -f  --config-file= location of config file"
+    if os.name != 'nt':
+        print "  -d  --daemon       fork daemon process"
+    print "  -p  --pause        start in paused mode"
+    print "  -s  --server=      listen on server:port"
+    print "  -n  --nobrowser    do not start a browser"
+    print "  -v  --version      print version information"
+    print "  -h  --help         print this message"
     
 def print_version():
-    print "SABnzbd-%s" % sabnzbd.__version__
-    
+    print "%s-%s" % (MY_NAME, sabnzbd.__version__)
+
+
+def launch_a_browser(host, port):
+    url= "http://%s:%s/sabnzbd" % (host, port)
+    if os.name == 'nt':
+        win32api.ShellExecute(0, "open", url, None, "", 5)
+    else:
+        os.system("%s %s &" %(sabnzbd.newsunpack.BROWSER_COMMAND, url))
+
 def daemonize():
     try:
         pid = os.fork() 
@@ -97,8 +114,11 @@ def daemonize():
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
     
 def main():
+    print
+
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvf:")
+        opts, args = getopt.getopt(sys.argv[1:], "phdvns:f:",
+                     ['pause', 'help', 'daemon', 'nobrowser', 'server=', 'config-file='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -106,22 +126,54 @@ def main():
     fork = False
     pause = False
     f = None
+    cherryhost = ''
+    cherryport = 0
+    nobrowser = False
     
     if os.name == 'nt':
-        f = './SABnzbd.ini'
-        
+    	  sabnzbd.DIR_APPDATA = '%s\\sabnzbd' % os.environ['APPDATA']
+    	  if re.search(sabnzbd.DIR_APPDATA, 'Roaming'):
+    	  	  # Vista
+    	  	  sabnzbd.OS_VISTA = True
+    	  	  sabnzbd.DIR_LCLDATA = os.path.normpath(os.environ['APPDATA']+'/../Local/sabnzbd')
+    	  else:
+    	  	  # Win2000/XP/2003
+    	  	  sabnzbd.DIR_LCLDATA = os.path.normpath(os.environ['APPDATA']+'/../local settings/application data/sabnzbd')
+    	  df = shell.SHGetDesktopFolder()
+    	  pidl = df.ParseDisplayName(0, None, "::{450d8fba-ad25-11d0-98a8-0800361b1103}")[1]
+    	  sabnzbd.DIR_HOME = shell.SHGetPathFromIDList(pidl)
+    else:
+    	  sabnzbd.DIR_APPDATA = '%s/.sabnzbd' % os.environ['HOME']
+    	  sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+    	  sabnzbd.DIR_HOME = os.environ['HOME']
+
+    sabnzbd.DIR_PROG= os.path.normpath(os.path.abspath('.'))
+
+    f = sabnzbd.DIR_APPDATA + '/sabnzbd.ini'
+
     for o, a in opts:
-        if o == '-d' and os.name != 'nt':
+        if (o in ('-d', '--daemon')) and os.name != 'nt':
             fork = True
-        if o == '-h':
+        if o in ('-h', '--help'):
             print_help()
             sys.exit()
-        if o == '-f':
+        if o in ('-f', '--config-file'):
             f = a
-        if o == '-v':
+        if o in ('-s', '--server'):
+            try:
+                (cherryhost, cherryport) = a.split(":", 1)
+            except:
+                cherryhost= ""
+            try:
+                cherryport = int(cherryport)
+            except:
+                cherryport = 0
+        if o in ('-n', '--nobrowser'):
+            nobrowser= True
+        if o in ('-v', '--version'):
             print_version()
             sys.exit()
-        if o == '-p':
+        if o in ('-p', '--pause'):
             pause = True
             
     if not f:
@@ -130,22 +182,36 @@ def main():
     else:
         f = os.path.abspath(f)
         if not os.path.exists(f):
-            print "Error:"
-            print "%s does not exist" % f
-            sys.exit()
+        	  try:
+        	      if not os.path.exists(sabnzbd.DIR_APPDATA):
+        	          os.makedirs(sabnzbd.DIR_APPDATA)
+        	      fp = open(f, "w")
+        	      fp.write("__version__=%s\n[misc]\n[logging]\n[newzbin]\n[servers]\n" % sabnzbd.__configversion__)
+        	      fp.close()
+        	  except:
+        	      print "Error:"
+        	      print "Cannot create file %s" % f
+        	      sys.exit()
+
     try:
         cfg = ConfigObj(f)
-        if int(cfg['__version__']) < sabnzbd.__configversion__:
+        try:
+            my_version = cfg['__version__']
+        except:
+            my_version = sabnzbd.__configversion__
+            cfg['__version__'] = my_version
+        if int(my_version) < sabnzbd.__configversion__:
             print "Error:"
             print "Configfile out of date, please update to latest version"
             sys.exit()
-            
+
     except ConfigObjError, strerror:
         print "Error:"
         print "%s is not a valid configfile" % f
         sys.exit()
         
-    if fork and not cfg['misc']['log_dir']:
+    my_logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
+    if fork and not my_logdir:
         print "Error:"
         print "I refuse to fork without a log directory!"
         sys.exit()
@@ -153,32 +219,33 @@ def main():
     logdir = ""
     format = '%(asctime)s::%(levelname)s::%(message)s'
     
-    if cfg['misc']['log_dir']:
-        logdir = os.path.abspath(cfg['misc']['log_dir'])
-        try:
-            rollover_log = logging.handlers.RotatingFileHandler(\
-                        os.path.join(logdir, 'SABnzbd.log'), 'a+', 
-                        int(cfg['logging']['max_log_size']), 
-                        int(cfg['logging']['log_backups']))
-                        
-            rollover_log.setLevel(logging.DEBUG)
-            rollover_log.setFormatter(logging.Formatter(format))
-            logger = logging.getLogger('')
-            logger.setLevel(logging.DEBUG)
-            logger.addHandler(rollover_log)
-            logging.info("--------------------------------")
-                
-        except IOError:
-            print "Error:"
-            print "Can't write to logfile"
-            sys.exit()
+    
+    logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
+    try:
+        rollover_log = logging.handlers.RotatingFileHandler(\
+                       os.path.join(logdir, 'sabnzbd.log'), 'a+', 
+                       check_setting_int(cfg, 'logging', 'max_log_size', 5242880), 
+                       check_setting_int(cfg, 'logging', 'log_backups', 5))
+                  
+        rollover_log.setLevel(logging.DEBUG)
+        rollover_log.setFormatter(logging.Formatter(format))
+        logger = logging.getLogger('')
+        logger.setLevel(logging.DEBUG)
+        logger.addHandler(rollover_log)
+        logging.info("--------------------------------")
+            
+    except IOError:
+        print "Error:"
+        print "Can't write to logfile"
+        sys.exit()
             
     if fork:
         try:
             sys.stderr.fileno
             sys.stdout.fileno
-            ol_path = os.path.join(cfg['misc']['log_dir'], 
-                                   'SABnzbd.error.log')
+            my_logpath = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
+            ol_path = os.path.join(my_logpath, 
+                                   'sabnzbd.error.log')
             out_log = file(ol_path, 'a+', 0)
             sys.stderr.flush()
             sys.stdout.flush()
@@ -201,15 +268,15 @@ def main():
         except AttributeError:
             pass
                 
-    logging.info('SABnzbd-v%s', sabnzbd.__version__)
+    logging.info('%s-%s', MY_NAME, sabnzbd.__version__)
     
     sabnzbd.CFG = cfg
     
     init_ok = sabnzbd.initialize(pause)
     
     if not init_ok:
-        logging.error('Initializing SABnzbd-v%s failed, aborting', 
-                      sabnzbd.__version__)
+        logging.error('Initializing %s-%s failed, aborting', 
+                      M_NAME, sabnzbd.__version__)
         sys.exit(2)
         
     if sabnzbd.decoder.HAVE_YENC:
@@ -236,25 +303,53 @@ def main():
         logging.info("unzip binary... found!")
     else:
         logging.info("unzip binary... NOT found!")
-        
+
     if sabnzbd.newsunpack.EMAIL_COMMAND:
         logging.info("sendemail binary... found!")
     else:
         logging.info("sendemail binary... NOT found!")
+
+    if os.name != 'nt':
+        if sabnzbd.newsunpack.BROWSER_COMMAND:
+            logging.info("Browser binary: %s found!", sabnzbd.newsunpack.BROWSER_COMMAND)
+        else:
+            logging.info("Browser binary... NOT found!")
         
+    if cherryhost == '':
+        if sabnzbd.OS_VISTA:
+        	  cherryhost = check_setting_str(cfg, 'misc','host', os.environ['COMPUTERNAME'])
+        else:
+            cherryhost = check_setting_str(cfg, 'misc','host', '')
+    else:
+        check_setting_str(cfg, 'misc','host', cherryhost)
         
-    cherryhost = cfg['misc']['host']
-    cherryport = int(cfg['misc']['port'])
-    cherrypylogging = bool(int(cfg['logging']['enable_cherrypy_logging']))
+    if cherryhost == '':
+    	  cherryhost = 'localhost'
+
+    if cherryport == 0:
+        cherryport= check_setting_int(cfg, 'misc', 'port', 8080)
+    else:
+        check_setting_int(cfg, 'misc', 'port', cherryport)
+        
+    cherrypylogging = bool(check_setting_int(cfg, 'logging', 'enable_cherrypy_logging', 1))
     
-    log_dir = os.path.abspath(cfg['misc']['log_dir'])
-    web_dir = os.path.abspath(cfg['misc']['web_dir'])
+    log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
+
+    try:
+        web_dir = cfg['misc']['web_dir']
+    except:
+        web_dir = 'templates'
+        cfg['misc']['web_dir'] = web_dir
+
+    web_dir = real_path(sabnzbd.DIR_PROG, web_dir)
+    logging.info("Web dir is %s", web_dir)
     
-    sabnzbd.interface.USERNAME = cfg['misc']['username']
-    sabnzbd.interface.PASSWORD = cfg['misc']['password']
-    
-    if not os.path.exists(web_dir):
-        logging.error('Web directory: %s does not exist', web_dir)
+    sabnzbd.interface.USERNAME = check_setting_str(cfg, 'misc', 'username', '')
+        
+    sabnzbd.interface.PASSWORD = check_setting_str(cfg, 'misc', 'password', '')
+
+    if not os.path.exists(web_dir + "/main.tmpl"):
+        logging.error('Cannot find web template: %s/%s', web_dir, "main.tmpl")
         sys.exit(1)
     if not os.access(web_dir, os.R_OK):
         logging.error('Web directory: %s error accessing', web_dir)
@@ -263,11 +358,11 @@ def main():
     if fork and os.name != 'nt':
         daemonize()
         
-    logging.info('Starting SABnzbd-v%s', sabnzbd.__version__)
+    logging.info('Starting %s-%s', MY_NAME, sabnzbd.__version__)
     try:
         sabnzbd.start()
     except:
-        logging.exception("Failed to start SABnzbd-v%s", sabnzbd.__version__)
+        logging.exception("Failed to start %s-%s", MY_NAME, sabnzbd.__version__)
         sabnzbd.halt()
     
     cherrylogtoscreen = False
@@ -308,9 +403,12 @@ def main():
                                  '/sabnzbd/default.css': {'staticFilter.on': True, 'staticFilter.file': os.path.join(web_dir, 'default.css')},
                                  '/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir, 'static')}
                            })
-    logging.info('Starting web-interface')
+    logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
     try:
-        cherrypy.server.start()
+        cherrypy.server.start(init_only=True)
+        cherrypy.server.wait()
+        if not nobrowser:
+            launch_a_browser(cherryhost, cherryport)
     except:
         logging.exception("Failed to start web-interface")
         sabnzbd.halt()

@@ -23,7 +23,7 @@ options = dict(
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2)',
       data_files = [('share/doc/SABnzbd-' + sabnzbd.__version__,
-                     ['SABnzbd.ini.sample', 'README.txt', 'LICENSE.txt',
+                     ['README.txt', 'LICENSE.txt',
                       'TODO.txt', 'CHANGELOG.txt', 'UPGRADE.txt']),
                     ('share/SABnzbd-' + sabnzbd.__version__ + '/templates',
                              ['templates/default.css', 'templates/history.tmpl',
@@ -45,7 +45,7 @@ options = dict(
 
 if py2exe:
     options['data_files'] = [
-          ('', ['SABnzbd.ini', 'README.txt', 'LICENSE.txt', 'TODO.txt', 'CHANGELOG.txt', 'UPGRADE.txt']), 
+          ('', ['README.txt', 'LICENSE.txt', 'TODO.txt', 'CHANGELOG.txt', 'UPGRADE.txt']), 
           ('templates', glob.glob("templates/*.tmpl")),
           ('templates', ['templates/default.css']),
           ('templates/static', glob.glob('templates/static/*.ico')),
@@ -61,13 +61,6 @@ if py2exe:
           ('NOVA_0.4.5/templates/static/images', glob.glob("NOVA_0.4.5/templates/static/images/*.*")),
           ('NOVA_0.4.5/templates/static/javascripts', glob.glob("NOVA_0.4.5/templates/static/javascripts/*.*")),
           ('NOVA_0.4.5/templates/static/stylesheets', glob.glob("NOVA_0.4.5/templates/static/stylesheets/*.*")),
-          ('downloads', []),
-          ('downloads/Incomplete', []),
-          ('downloads/Complete', []),
-          ('NZB_backups', []),
-          ('NZB_blackhole', []),
-          ('logs', []),
-          ('cache', []),
           ('par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
           ('unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
           ('unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE']),
