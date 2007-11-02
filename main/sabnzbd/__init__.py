@@ -34,7 +34,7 @@ from threading import RLock, Lock, Condition, Thread
 from sabnzbd.assembler import Assembler, PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
-from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner
+from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue
@@ -131,16 +131,6 @@ def sig_handler(signum = None, frame = None):
         os._exit(0)
 
 
-################################################################################
-# Real_Path                                                                    #
-################################################################################
-def real_path(loc, path):
-    if not ((os.name == 'nt' and path[0].isalpha() and path[1] == ':') or \
-            (path[0] == '/' or path[0] == '\\')):
-        path = loc + '/' + path
-    return os.path.normpath(os.path.abspath(path))
-
-        
 ################################################################################
 # Directory Setup                                                              #
 ################################################################################
@@ -325,7 +315,11 @@ def initialize(pause_downloader = False):
     EMAIL_ENDJOB = bool(check_setting_int(CFG, 'misc', 'email_endjob', 0))
     EMAIL_FULL   = bool(check_setting_int(CFG, 'misc', 'email_full', 0))
 
-    schedlines = check_setting_str(CFG, 'misc', 'schedlines', '')
+    try:
+        schedlines = CFG['misc']['schedlines']
+    except:
+        CFG['misc']['schedlines'] = []
+    schedlines = CFG['misc']['schedlines']
     
     dirscan_opts = check_setting_int(CFG, 'misc', 'dirscan_opts', 1)
     dirscan_repair, dirscan_unpack, dirscan_delete, dirscan_script = pp_to_opts(dirscan_opts)

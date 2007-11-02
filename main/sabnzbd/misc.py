@@ -163,3 +163,13 @@ class URLGrabber(Thread):
         except:
             logging.exception("[%s] Error adding url %s", __NAME__, self.url)
             sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
+
+
+################################################################################
+# Real_Path                                                                    #
+################################################################################
+def real_path(loc, path):
+    if not ((os.name == 'nt' and path[0].isalpha() and path[1] == ':') or \
+            (path[0] == '/' or path[0] == '\\')):
+        path = loc + '/' + path
+    return os.path.normpath(os.path.abspath(path))

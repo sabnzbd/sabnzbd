@@ -38,6 +38,7 @@ from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 from sabnzbd.email import email_send
+from sabnzbd.misc import real_path
 
 from sabnzbd.constants import *
 
@@ -627,26 +628,26 @@ class ConfigDirectories(ProtectedClass):
                         cache_dir = None, nzb_backup_dir = None,
                         dirscan_dir = None, dirscan_speed = None, extern_proc = None):
                         
-        if download_dir and not os.access(os.path.abspath(download_dir), os.R_OK + os.W_OK):
+        if download_dir and not os.access(real_path(sabnzbd.DIR_LCLDATA, download_dir), os.R_OK + os.W_OK):
             return "Error: can't access download directory."
         if not download_dir:
             return "Error: download directory not set."
             
-        if cache_dir and not os.access(os.path.abspath(cache_dir), os.R_OK + os.W_OK):
+        if cache_dir and not os.access(real_path(sabnzbd.DIR_LCLDATA, cache_dir), os.R_OK + os.W_OK):
             return "Error: can't access cache directory."
         if not cache_dir:
             return "Error: cache directory not set."
             
-        if log_dir and not os.access(os.path.abspath(log_dir), os.R_OK + os.W_OK):
+        if log_dir and not os.access(real_path(sabnzbd.DIR_LCLDATA, log_dir), os.R_OK + os.W_OK):
             return "Error: can't access log directory."
             
-        if dirscan_dir and not os.access(os.path.abspath(dirscan_dir), os.R_OK + os.W_OK):
+        if dirscan_dir and not os.access(real_path(sabnzbd.DIR_HOME, dirscan_dir), os.R_OK + os.W_OK):
             return "Error: can't access dirscan directory."
             
-        if complete_dir and not os.access(os.path.abspath(complete_dir), os.R_OK + os.W_OK):
+        if complete_dir and not os.access(real_path(sabnzbd.DIR_HOME, complete_dir), os.R_OK + os.W_OK):
             return "Error: can't access complete directory."
             
-        if nzb_backup_dir and not os.access(os.path.abspath(nzb_backup_dir), os.R_OK + os.W_OK):
+        if nzb_backup_dir and not os.access(real_path(sabnzbd.DIR_LCLDATA, nzb_backup_dir), os.R_OK + os.W_OK):
             return "Error: can't access complete directory."
             
         sabnzbd.CFG['misc']['download_dir'] = download_dir

@@ -34,11 +34,6 @@
     <input type="text" name="complete_dir" value="$complete_dir">
     <br>
     <br>
-    <strong>Minimum free space for Download Directory:</strong><br>
-    Auto-pause when free space is beneath this value (MB).<br>
-    <input type="text" name="download_free" value="$download_free">
-    <br>
-    <br>
     <strong>OPTIONAL: Dirscan Directory:</strong><br>
     Directory to scan for .nzb files.<br>
     <input type="text" name="dirscan_dir" value="$dirscan_dir">
@@ -57,12 +52,17 @@
     <legend>System directories</legend>
     <emp>In "$my_lcldata"</emp><br><br>
     <strong>Download Directory:</strong><br>
-    Location to put downloads in.<br>
+    Location to put unprocessed downloads in.<br>
     <input type="text" name="download_dir" value="$download_dir">
     <br>
     <br>
+    <strong>Minimum free space for Download Directory:</strong><br>
+    Auto-pause when free space is beneath this value (MB).<br>
+    <input type="text" name="download_free" value="$download_free">
+    <br>
+    <br>
     <strong>Cache Directory:</strong><br>
-    Location of cache directories for SABnzbd.<br>
+    Location for temporary storage.<br>
     <input type="text" name="cache_dir" value="$cache_dir">
     <br>
     <br>
