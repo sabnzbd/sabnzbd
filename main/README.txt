@@ -1,48 +1,11 @@
-                                SABnzbd v0.2.x
+                                SABnzbd v0.2.8
 								
-v0.2.x:
-added:   Email Notifications
-added:   Set minimum diskspace (in MB) for the download directory
-         When diskspace is below threshhold, SABnzbd will pause.
-         You must free diskspace and then resume SABnzbd manually.
-
-v0.2.7:
-changed: Now supports V3.newzbin.com and DirectNzb (by Freaky)
-changed: Always keeps original foldername as derived from NZB file (by DNW)
-         Option "original folder' from 0.2.6 is gone!
-added:   You can now set the RSS checking interval to 1/2/3/4 times/hour
-         Set the proper value in the Configuration.
-changed: Modified versions of Nova_0.3.2 and Nova_0.4.4 included
-         set the proper path in SABnzbd.ini
-
-v0.2.6a:
-Corrected: Feature "download directory is renamed after the original NZB name"
-           contained an error, ignoring "category" folders.
-
-v0.2.6:
-Added features:
-Option: download directory is renamed after the original NZB name
-        (so no disappearing spaces and specials chars)
-Option: Add post-download script support
-Option: Add scan-speed for the NZB-black hole
-Option: Add auto-refresh to the download page
-        The templates have been modfied to give 3 additional processing choices
-            "R+Script", "U+Script" and "D+Script".
-        "None+Script" would not be very useful and is not implemented.
-Added: Safer handling when self-unpacking RARs have been downloaded
-Added: Option to automatically refresh the Queue web page.
-Added: favicon in all templates
-Added: The fix for the new Newzbin RSS-feed.
-       (From: http://sourceforge.net/forum/forum.php?thread_id=1795210&forum_id=498261)
-Added: NovaTemplate (with patches for the new options)
-Fixed: incorrect handling of server without port-spec
-       (SABnzbd.ini.sample was incorrect)
-Added: Automatic refresh for connection-info, useful for troubleshooting.
 -------------------------------------------------------------------------------
 0) LICENSE
 -------------------------------------------------------------------------------
 
 Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
+          2007 The ShyPike <shypike@users.sourceforge.net>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -61,7 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 -------------------------------------------------------------------------------
 1) INSTALL
 -------------------------------------------------------------------------------
-SABnzbd-0.2.5-w32 (pre-built binary) users:
+SABnzbd-0.2.8-w32 (pre-built binary) users:
 o) Everything below already included, goto 2)
 
 Preqrequisites:
@@ -97,33 +60,37 @@ o) yenc module >= 0.3      unix:
 
 o) feedparser >= 4.1       http://feedparser.org/
 
-System-wide install is not required, but possible by using the provided
-setup.py script => python setup.py install
-
 -------------------------------------------------------------------------------
 2) CONFIG
 -------------------------------------------------------------------------------
-SABnzbd-0.2.5-w32 users:
+SABnzbd-0.2.8-w32 users:
  See 3)
 
 Everyone else:
- View SABnzbd.ini.sample for all config options, then copy your edited
- SABnzbd.ini to <your_config_dir>/SABnzbd.ini
+ Start SABnzbd from the command line with -h to see the options:
+     python SABnzbd.py -h
+
+ Most people can start with:
+     python SABnzbd.py
+ This will start the program and automatically launch a browser to show you
+ the web-gui.
+ When nothing happens, your port is probably occupied.
+ Try:
+    python SABnzbd.py -s localhost:8088
+ Try substituting 8088 with different values, if you fail to get a result.
+ Note that it may take upto 10 seconds before the browser launches.
  
 -------------------------------------------------------------------------------
 3) USE
 -------------------------------------------------------------------------------
-SABnzbd-0.2.5-w32 users:
+SABnzbd-0.2.8-w32 users:
  Run SABnzbd.exe 
- Point your browser to http://127.0.0.1:8080/sabnzbd
+ The program will start and automatically launch a browser to show you
+ the web-gui (http://localhost:8080/sabnzbd)
  Goto the config page and enter your preferences.
- 
-Everyone else:
- Run "python SABnzbd.py -h" for a list of options.
- 
- Run "python SABnzbd.py -f <your_config_dir>/SABnzbd.ini", 
- Point your browser to http://127.0.0.1:<your_port>/sabnzbd
+ You may need to use the command line switches described in 2)
 
+ 
 -------------------------------------------------------------------------------
 4) CREDITS
 -------------------------------------------------------------------------------

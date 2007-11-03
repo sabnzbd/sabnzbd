@@ -1,10 +1,23 @@
 -------------------------------------------------------------------------------
-0.2.x by the ShyPike
+0.2.8 by the ShyPike
 -------------------------------------------------------------------------------
-added:   Email notifications
+added:   Email notifications (end of job and disk-full)
+         Supports secured email (TLS) for use with gmail.com
 added:   Set minimum diskspace (in MB) for the download directory
          When diskspace is below threshhold, SABnzbd will pause.
          You must free diskspace and then resume SABnzbd manually.
+added:   Auto-launch of browser (starting the web-gui)
+added:   Better handling of INI file
+         You can start without an INI and get usable defaults
+         Default storage in appdata/localdata for Windows
+         Default storage in ~/.sabnzbd for Linux/OSX
+		 Auto creation of directories
+added:   Commandline switches
+         -Regulate logging level (default is minimal)
+         -Override of templates
+         -Override of server:port
+updated: Nova-0.3.2 and Nova-0.4.5 templates
+
 -------------------------------------------------------------------------------
 0.2.7 by the ShyPike (and Freaky and DNW)
 -------------------------------------------------------------------------------

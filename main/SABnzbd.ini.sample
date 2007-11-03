@@ -1,8 +1,8 @@
-__version__ = 017
+__version__ = 016
 
 [misc]
     ## host we should listen on, leave "" for localhost
-    host = ""
+    host = localhost
     
     ## port we should listen on
     port = 8080
@@ -14,24 +14,24 @@ __version__ = 017
     password = ""
     
     ## web file dir for (custom) Cheetah templates and the default.css file
-    web_dir = ./templates
+    web_dir = templates
     
     ## dir to put downloads to, won't be created automatically
-    download_dir = ./downloads/Incomplete
+    download_dir = incomplete
     
     ## dir to put completed downloads to, won't be created automatically
-    complete_dir = ./downloads/Complete
+    complete_dir = complete
     
     ## If specified, .nzbs fetched by postid (or added by the dirscanner) will 
     ## be backed up to this readable/writeable dir
-    nzb_backup_dir = ./NZB_backups
+    nzb_backup_dir = nzb_backups
     
     ## dir to store cache and cookie files, windows users should
     ## leave this at .
-    cache_dir = "./cache"
+    cache_dir = "cache"
     
     ## location of your log directory, "" to disable logging
-    log_dir = "./logs"
+    log_dir = "logs"
     
     ## dirscan directory
     ## SABnzbd will consume everything in that dir
@@ -48,12 +48,6 @@ __version__ = 017
     ## First parameter will have full dir-pathname between quotes
     ## Second parameter will have original NZB name between quotes
     extern_proc = 
-
-    ## Restore names
-    ## SABnzbd will rename the "completed" folder to the orginal NZB name
-    ## so that spaces and special chars will be restored.
-    restore_name = 0
-
 
     ## Scheduling options
     ## Syntax: minute hour day action
@@ -95,7 +89,7 @@ __version__ = 017
     ## 0 = Disabled
     ## 1 = Enabled
     ## Enable this on unstable systems
-    enable_save = 0
+    enable_save = 1
     
     ## Enable/disable
     ## 0 = Disabled
