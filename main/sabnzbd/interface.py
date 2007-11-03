@@ -568,13 +568,8 @@ class ConfigPage(ProtectedClass):
     @cherrypy.expose    
     def index(self):
         config, pnfo_list, bytespersec = build_header()
-        
-        if type(sabnzbd.CFG.filename) is type(''):
-            fn = sabnzbd.CFG.filename
-        else:
-            fn = sabnzbd.CFG.filename.name
-        
-        config['configfn'] = fn
+
+        config['configfn'] = sabnzbd.CFG.filename
             
         template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
                             searchList=[config],

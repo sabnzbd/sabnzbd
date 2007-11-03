@@ -45,6 +45,7 @@ from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup, real_path
 from sabnzbd.interface import *
 from sabnzbd.constants import *
+from sabnzbd.misc import Get_User_ShellFolders
 
 from threading import Thread
 
@@ -55,11 +56,6 @@ signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 try:
     import win32api
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
-except ImportError:
-    pass
-
-try:
-    from win32com.shell import shell
 except ImportError:
     pass
 
@@ -122,26 +118,19 @@ def main():
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
-        
+
     fork = False
     pause = False
     f = None
     cherryhost = ''
     cherryport = 0
     nobrowser = False
-    
+
     if os.name == 'nt':
-    	  sabnzbd.DIR_APPDATA = '%s\\sabnzbd' % os.environ['APPDATA']
-    	  if re.search(sabnzbd.DIR_APPDATA, 'Roaming'):
-    	  	  # Vista
-    	  	  sabnzbd.OS_VISTA = True
-    	  	  sabnzbd.DIR_LCLDATA = os.path.normpath(os.environ['APPDATA']+'/../Local/sabnzbd')
-    	  else:
-    	  	  # Win2000/XP/2003
-    	  	  sabnzbd.DIR_LCLDATA = os.path.normpath(os.environ['APPDATA']+'/../local settings/application data/sabnzbd')
-    	  df = shell.SHGetDesktopFolder()
-    	  pidl = df.ParseDisplayName(0, None, "::{450d8fba-ad25-11d0-98a8-0800361b1103}")[1]
-    	  sabnzbd.DIR_HOME = shell.SHGetPathFromIDList(pidl)
+        specials = Get_User_ShellFolders()
+        sabnzbd.DIR_APPDATA = '%s\\sabnzbd' % specials['AppData']
+        sabnzbd.DIR_LCLDATA = '%s\\sabnzbd' % specials['Local AppData']
+        sabnzbd.DIR_HOME = specials['Personal']
     else:
     	  sabnzbd.DIR_APPDATA = '%s/.sabnzbd' % os.environ['HOME']
     	  sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
@@ -316,10 +305,7 @@ def main():
             logging.info("Browser binary... NOT found!")
         
     if cherryhost == '':
-        if sabnzbd.OS_VISTA:
-        	  cherryhost = check_setting_str(cfg, 'misc','host', os.environ['COMPUTERNAME'])
-        else:
-            cherryhost = check_setting_str(cfg, 'misc','host', '')
+        cherryhost = check_setting_str(cfg, 'misc','host', '')
     else:
         check_setting_str(cfg, 'misc','host', cherryhost)
         
