@@ -1019,7 +1019,7 @@ class ConnectionInfo(ProtectedClass):
         
     @cherrypy.expose
     def testmail(self):
-        logging.debug("Sending testmail")
+        logging.info("Sending testmail")
         self.lastmail= email_send("SABnzbd testing email connection", "All is OK")
         
         raise cherrypy.HTTPRedirect(self.__root)

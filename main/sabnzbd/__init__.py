@@ -143,7 +143,7 @@ def dir_setup(config, cfg_name, def_loc, dir_name):
         config['misc'][cfg_name] = my_dir
     
     my_dir = create_real_path(cfg_name, def_loc, my_dir)
-    logging.info("%s: %s", cfg_name, my_dir)
+    logging.debug("%s: %s", cfg_name, my_dir)
     return my_dir
 
 
@@ -290,9 +290,9 @@ def initialize(pause_downloader = False, clean_up = False):
     if extern_proc:
         extern_proc= os.path.abspath(extern_proc)
         if os.path.exists(extern_proc):
-            logging.info("extern_proc: %s", extern_proc)
+            logging.debug("extern_proc: %s", extern_proc)
         else:
-            logging.error('External postproc script: %s does not exist', extern_proc)
+            logging.warning('External postproc script: %s does not exist', extern_proc)
             extern_proc = ""
 
     try:
@@ -980,7 +980,7 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1):
             elif action_name == 'pause':
                 action = pause_downloader
             else:
-                logging.info("[%s] Unknown action: %s", __NAME__, ACTION) 
+                logging.warning("[%s] Unknown action: %s", __NAME__, ACTION) 
                 
             SCHED.addDaytimeTask(action, '', d, None, (h, m), 
                                  SCHED.PM_SEQUENTIAL, [])

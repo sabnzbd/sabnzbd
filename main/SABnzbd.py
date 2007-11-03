@@ -43,7 +43,7 @@ import re
 import glob
 
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
-from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup, real_path
+from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
 from sabnzbd.constants import *
 from sabnzbd.misc import Get_User_ShellFolders
@@ -73,6 +73,8 @@ def print_help():
     print "  -s  --server=      listen on server:port"
     print "  -n  --nobrowser    do not start a browser"
     print "  -c  --clean        clean the cache and logs"
+    print "  -l  --logging=     set the logging level (0= least, 3= most)"
+    print "  -w  --weblogging   set the cherrypy logging on"
     print "  -v  --version      print version information"
     print "  -h  --help         print this message"
     
@@ -112,11 +114,14 @@ def daemonize():
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
     
 def main():
-    print
+    print '\n%s-%s' % (MY_NAME, sabnzbd.__version__)
+
+    LOGLEVELS = [ logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG ]
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvncs:f:",
-                     ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'server=', 'config-file='])
+        opts, args = getopt.getopt(sys.argv[1:], "phdvnwcl:s:f:",
+                     ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
+                      'weblogging', 'server=', 'config-file='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -126,8 +131,10 @@ def main():
     f = None
     cherryhost = ''
     cherryport = 0
+    cherrypylogging = None
     nobrowser = False
     clean_up = False
+    logging_level = None
 
     if os.name == 'nt':
         specials = Get_User_ShellFolders()
@@ -164,6 +171,16 @@ def main():
             nobrowser= True
         if o in ('-c', '--clean'):
             clean_up= True
+        if o in ('-w', '--weblogging'):
+            cherrypylogging= 1
+        if o in ('-l', '--logging'):
+            try:
+                logging_level = int(a)
+            except:
+                logging_level = -1
+            if logging_level < 0 or logging_level > 3:
+                print_help()
+                sys.exit()
         if o in ('-v', '--version'):
             print_version()
             sys.exit()
@@ -203,7 +220,17 @@ def main():
         print "Error:"
         print "%s is not a valid configfile" % f
         sys.exit()
-        
+
+    if cherrypylogging == None:
+        cherrypylogging = bool(check_setting_int(cfg, 'logging', 'enable_cherrypy_logging', 0))
+    else:
+        cfg['logging']['enable_cherrypy_logging'] = cherrypylogging
+
+    if logging_level == None:
+        logging_level = check_setting_int(cfg, 'logging', 'log_level', 0)
+    else:
+        cfg['logging']['log_level'] = logging_level
+
     my_logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
     if fork and not my_logdir:
         print "Error:"
@@ -226,10 +253,10 @@ def main():
                        check_setting_int(cfg, 'logging', 'max_log_size', 5242880), 
                        check_setting_int(cfg, 'logging', 'log_backups', 5))
                   
-        rollover_log.setLevel(logging.DEBUG)
+        rollover_log.setLevel(LOGLEVELS[logging_level])
         rollover_log.setFormatter(logging.Formatter(format))
         logger = logging.getLogger('')
-        logger.setLevel(logging.DEBUG)
+        logger.setLevel(LOGLEVELS[logging_level])
         logger.addHandler(rollover_log)
         logging.info("--------------------------------")
             
@@ -258,10 +285,10 @@ def main():
             sys.stdout.fileno
             
             console = logging.StreamHandler()
-            console.setLevel(logging.DEBUG)
+            console.setLevel(LOGLEVELS[logging_level])
             console.setFormatter(logging.Formatter(format))
             logger = logging.getLogger('')
-            logger.setLevel(logging.DEBUG)
+            logger.setLevel(LOGLEVELS[logging_level])
             logger.addHandler(console)
         except AttributeError:
             pass
@@ -325,9 +352,7 @@ def main():
         cherryport= check_setting_int(cfg, 'misc', 'port', DEF_PORT)
     else:
         check_setting_int(cfg, 'misc', 'port', cherryport)
-        
-    cherrypylogging = bool(check_setting_int(cfg, 'logging', 'enable_cherrypy_logging', 1))
-    
+
     log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
 
     try:
