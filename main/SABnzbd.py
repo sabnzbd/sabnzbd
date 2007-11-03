@@ -131,17 +131,17 @@ def main():
 
     if os.name == 'nt':
         specials = Get_User_ShellFolders()
-        sabnzbd.DIR_APPDATA = '%s\\sabnzbd' % specials['AppData']
-        sabnzbd.DIR_LCLDATA = '%s\\sabnzbd' % specials['Local AppData']
+        sabnzbd.DIR_APPDATA = '%s\\%s' % (specials['AppData'], DEF_WORKDIR)
+        sabnzbd.DIR_LCLDATA = '%s\\%s' % (specials['Local AppData'], DEF_WORKDIR)
         sabnzbd.DIR_HOME = specials['Personal']
     else:
-    	  sabnzbd.DIR_APPDATA = '%s/.sabnzbd' % os.environ['HOME']
+    	  sabnzbd.DIR_APPDATA = '%s/.%s' % (os.environ['HOME'], DEF_WORKDIR)
     	  sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
     	  sabnzbd.DIR_HOME = os.environ['HOME']
 
     sabnzbd.DIR_PROG= os.path.normpath(os.path.abspath('.'))
 
-    f = sabnzbd.DIR_APPDATA + '/sabnzbd.ini'
+    f = sabnzbd.DIR_APPDATA + '/' + DEF_INI_FILE
 
     for o, a in opts:
         if (o in ('-d', '--daemon')) and os.name != 'nt':
@@ -204,7 +204,7 @@ def main():
         print "%s is not a valid configfile" % f
         sys.exit()
         
-    my_logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
+    my_logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
     if fork and not my_logdir:
         print "Error:"
         print "I refuse to fork without a log directory!"
@@ -214,7 +214,7 @@ def main():
     format = '%(asctime)s::%(levelname)s::%(message)s'
     
     
-    logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
+    logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
     if clean_up:
         xlist= glob.glob(logdir + '/*')
         for x in xlist:
@@ -222,7 +222,7 @@ def main():
 
     try:
         rollover_log = logging.handlers.RotatingFileHandler(\
-                       os.path.join(logdir, 'sabnzbd.log'), 'a+', 
+                       os.path.join(logdir, DEF_LOG_FILE), 'a+', 
                        check_setting_int(cfg, 'logging', 'max_log_size', 5242880), 
                        check_setting_int(cfg, 'logging', 'log_backups', 5))
                   
@@ -242,9 +242,8 @@ def main():
         try:
             sys.stderr.fileno
             sys.stdout.fileno
-            my_logpath = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
-            ol_path = os.path.join(my_logpath, 
-                                   'sabnzbd.error.log')
+            my_logpath = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
+            ol_path = os.path.join(my_logpath, DEF_LOG_ERRFILE)
             out_log = file(ol_path, 'a+', 0)
             sys.stderr.flush()
             sys.stdout.flush()
@@ -320,23 +319,23 @@ def main():
         check_setting_str(cfg, 'misc','host', cherryhost)
         
     if cherryhost == '':
-    	  cherryhost = 'localhost'
+    	  cherryhost = DEF_HOST
 
     if cherryport == 0:
-        cherryport= check_setting_int(cfg, 'misc', 'port', 8080)
+        cherryport= check_setting_int(cfg, 'misc', 'port', DEF_PORT)
     else:
         check_setting_int(cfg, 'misc', 'port', cherryport)
         
     cherrypylogging = bool(check_setting_int(cfg, 'logging', 'enable_cherrypy_logging', 1))
     
-    log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
+    log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
 
     try:
         web_dir = cfg['misc']['web_dir']
     except:
         web_dir = ''
     if not web_dir:
-        web_dir = 'templates'
+        web_dir = DEF_TEMPLATES
     cfg['misc']['web_dir'] = web_dir
 
     web_dir = real_path(sabnzbd.DIR_PROG, web_dir)
@@ -347,7 +346,7 @@ def main():
     sabnzbd.interface.PASSWORD = check_setting_str(cfg, 'misc', 'password', '')
 
     if not os.path.exists(web_dir + "/main.tmpl"):
-        logging.error('Cannot find web template: %s/%s', web_dir, "main.tmpl")
+        logging.error('Cannot find web template: %s/%s', web_dir, DEF_MAIN_TMPL)
         sys.exit(1)
     if not os.access(web_dir, os.R_OK):
         logging.error('Web directory: %s error accessing', web_dir)
@@ -368,7 +367,7 @@ def main():
     
     if cherrypylogging:
         if log_dir: 
-            cherrylogfile = os.path.join(log_dir, "cherrypy.log");
+            cherrylogfile = os.path.join(log_dir, DEF_LOG_CHERRY);
         if not fork:
             try:
                 sys.stderr.fileno

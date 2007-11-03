@@ -245,17 +245,17 @@ def initialize(pause_downloader = False, clean_up = False):
     logging.debug("CREATE_CAT_FOLDERS -> %s", CREATE_CAT_FOLDERS)
     logging.debug("CREATE_CAT_SUB -> %s", CREATE_CAT_SUB)
 
-    DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_LCLDATA, "incomplete")
+    DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_LCLDATA, DEF_DOWNLOAD_DIR)
     if DOWNLOAD_DIR == "":
         return False
 
     DOWNLOAD_FREE = check_setting_int(CFG, 'misc', 'download_free', 0)
 
-    COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, "usenet")
+    COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, DEF_COMPLETE_DIR)
     if COMPLETE_DIR == "":
         return False
 
-    NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, "nzbbackup")
+    NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
     if NZB_BACKUP_DIR == "":
         return False
 

@@ -41,8 +41,24 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-BYTES_FILE_NAME = 'bytes.sab'
-QUEUE_FILE_NAME = 'queue.sab'
-RSS_FILE_NAME = 'rss.sab'
-
 MY_NAME = 'SABnzbd'
+
+BYTES_FILE_NAME  = 'bytes.sab'
+QUEUE_FILE_NAME  = 'queue.sab'
+RSS_FILE_NAME    = 'rss.sab'
+
+DEF_DOWNLOAD_DIR = 'incomplete'
+DEF_COMPLETE_DIR = 'usenet'
+DEF_CACHE_DIR    = 'cache'
+DEF_LOG_DIR      = 'logs'
+DEF_NZB_DIR      = 'nzb_backup'
+DEF_NZBBACK_DIR  = 'nzb'
+DEF_TEMPLATES    = 'templates'
+DEF_MAIN_TMPL    = 'main.tmpl'
+DEF_INI_FILE     = 'sabnzbd.ini'
+DEF_HOST         = 'localhost'
+DEF_PORT         = 8080
+DEF_WORKDIR      = 'sabnzbd'
+DEF_LOG_FILE     = 'sabnzbd.log'
+DEF_LOG_ERRFILE  = 'sabnzbd.error.log'
+DEF_LOG_CHERRY   = 'cherrypy.log'

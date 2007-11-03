@@ -778,12 +778,12 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['cache_limit'] = cache_limit
         
         if not web_dir:
-            web_dir= 'templates'
+            web_dir= DEF_TEMPLATES
         dd = os.path.abspath(sabnzbd.DIR_PROG + '/' + web_dir)
         if dd and not os.access(dd, os.R_OK):
             return "Error: cannot access template directory %s" % dd
-        if dd and not os.access(dd + '/main.tmpl', os.R_OK):
-        	  return "Error: \"%s\" is not a valid template directory (cannot see main.tmpl)." % dd
+        if dd and not os.access(dd + '/' + DEF_MAIN_TMPL, os.R_OK):
+        	  return "Error: \"%s\" is not a valid template directory (cannot see %s)." % (dd, DEF_MAIN_TMPL)
         sabnzbd.CFG['misc']['web_dir'] = web_dir
 
         return saveAndRestart(self.__root)
