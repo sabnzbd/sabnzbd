@@ -66,17 +66,18 @@ def print_help():
     print "Usage: %s [-f <configfile>]" % __file__
     print
     print "Options:"
-    print "  -f  --config-file= location of config file"
+    print "  -f  --config-file <ini>  location of config file"
+    print "  -p  --pause              start in paused mode"
     if os.name != 'nt':
-        print "  -d  --daemon       fork daemon process"
-    print "  -p  --pause        start in paused mode"
-    print "  -s  --server=      listen on server:port"
-    print "  -n  --nobrowser    do not start a browser"
-    print "  -c  --clean        clean the cache and logs"
-    print "  -l  --logging=     set the logging level (0= least, 3= most)"
-    print "  -w  --weblogging=  set the cherrypy logging (0= off, 1= on)"
-    print "  -v  --version      print version information"
-    print "  -h  --help         print this message"
+        print "  -d  --daemon             fork daemon process"
+    print "  -s  --server <srv:port>  listen on server:port"
+    print "  -n  --nobrowser          do not start a browser"
+    print "  -c  --clean              clean the cache and logs"
+    print "  -t  --templates <templ>  template directory"
+    print "  -l  --logging <0..3>     set the logging level (0= least, 3= most)"
+    print "  -w  --weblogging <0..1>  set the cherrypy logging (0= off, 1= on)"
+    print "  -v  --version            print version information"
+    print "  -h  --help               print this message"
     
 def print_version():
     print "%s-%s" % (MY_NAME, sabnzbd.__version__)
@@ -119,9 +120,9 @@ def main():
     LOGLEVELS = [ logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG ]
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvncw:l:s:f:",
+        opts, args = getopt.getopt(sys.argv[1:], "phdvncw:l:s:f:t:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
-                      'weblogging=', 'server=', 'config-file='])
+                      'weblogging=', 'server=', '--templates', 'config-file='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -135,6 +136,7 @@ def main():
     nobrowser = False
     clean_up = False
     logging_level = None
+    web_dir = None
 
     if os.name == 'nt':
         specials = Get_User_ShellFolders()
@@ -158,6 +160,8 @@ def main():
             sys.exit()
         if o in ('-f', '--config-file'):
             f = a
+        if o in ('-t', '--templates'):
+            web_dir = a
         if o in ('-s', '--server'):
             try:
                 (cherryhost, cherryport) = a.split(":", 1)
@@ -361,10 +365,11 @@ def main():
 
     log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
 
-    try:
-        web_dir = cfg['misc']['web_dir']
-    except:
-        web_dir = ''
+    if not web_dir:
+        try:
+            web_dir = cfg['misc']['web_dir']
+        except:
+            web_dir = ''
     if not web_dir:
         web_dir = DEF_TEMPLATES
     cfg['misc']['web_dir'] = web_dir
