@@ -14,8 +14,8 @@ except ImportError:
 options = dict(
     name = 'SABnzbd',
       version = sabnzbd.__version__,
-      url = 'http://sourceforge.net/projects/sabnzbd',
-      author = 'Gregor Kaufmann & The ShyPike',
+      url = 'http://sourceforge.net/projects/sabnzbdplus',
+      author = 'The ShyPike & Gregor Kaufmann',
       author_email = 'shypike@users.sourceforge.net',
       description = 'SABnzbd ' + str(sabnzbd.__version__),
       scripts = ['SABnzbd.py'],
@@ -23,8 +23,7 @@ options = dict(
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2)',
       data_files = [('share/doc/SABnzbd-' + sabnzbd.__version__,
-                     ['README.txt', 'LICENSE.txt',
-                      'TODO.txt', 'CHANGELOG.txt', 'UPGRADE.txt']),
+                     ['README.txt', 'LICENSE.txt', 'CHANGELOG.txt']),
                     ('share/SABnzbd-' + sabnzbd.__version__ + '/templates',
                              ['templates/default.css', 'templates/history.tmpl',
                               'templates/main.tmpl',
@@ -45,7 +44,7 @@ options = dict(
 
 if py2exe:
     options['data_files'] = [
-          ('', ['README.txt', 'LICENSE.txt', 'TODO.txt', 'CHANGELOG.txt', 'UPGRADE.txt']), 
+          ('', ['README.txt', 'LICENSE.txt', 'CHANGELOG.txt']), 
           ('templates', glob.glob("templates/*.tmpl")),
           ('templates', ['templates/default.css']),
           ('templates/static', glob.glob('templates/static/*.ico')),
