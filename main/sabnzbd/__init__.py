@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__version__ = "0.2.7"
+__version__ = "0.2.8test"
 __configversion__ = 16
 __queueversion__ = 5
 __NAME__ = "sabnzbd"
@@ -35,7 +35,7 @@ from threading import RLock, Lock, Condition, Thread
 from sabnzbd.assembler import Assembler, PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
-from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, create_real_path
+from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, create_real_path, save_configfile
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue
@@ -191,7 +191,7 @@ def check_setting_str(config, cfg_name, item_name, def_val):
 INIT_LOCK = Lock()
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader = False, clean_up = False):
+def initialize(pause_downloader = False, clean_up = False, force_save= False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
@@ -325,6 +325,9 @@ def initialize(pause_downloader = False, clean_up = False):
     top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
     
     auto_sort = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
+
+    if force_save:
+        save_configfile(CFG)
     
     ############################
     ## Object initializiation ##

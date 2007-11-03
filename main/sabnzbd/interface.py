@@ -38,7 +38,7 @@ from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 from sabnzbd.email import email_send
-from sabnzbd.misc import real_path, create_real_path
+from sabnzbd.misc import real_path, create_real_path, save_configfile
 
 from sabnzbd.constants import *
 
@@ -1025,14 +1025,7 @@ class ConnectionInfo(ProtectedClass):
         raise cherrypy.HTTPRedirect(self.__root)
     
 def saveAndRestart(redirect_root):
-    sabnzbd.CFG.write()
-    f = open(sabnzbd.CFG.filename)
-    x = f.read()
-    f.close()
-    f = open(sabnzbd.CFG.filename, "w")
-    f.write(x)
-    f.flush()
-    f.close()
+    save_configfile(sabnzbd.CFG)
     sabnzbd.halt()
     init_ok = sabnzbd.initialize()
     if init_ok:

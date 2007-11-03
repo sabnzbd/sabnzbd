@@ -233,3 +233,19 @@ def Get_User_ShellFolders():
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
         return {}
+
+
+################################################################################
+# save_configfile
+#
+################################################################################
+def save_configfile(cfg):
+
+    cfg.write()
+    f = open(cfg.filename)
+    x = f.read()
+    f.close()
+    f = open(cfg.filename, "w")
+    f.write(x)
+    f.flush()
+    f.close()

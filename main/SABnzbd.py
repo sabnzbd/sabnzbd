@@ -74,7 +74,7 @@ def print_help():
     print "  -n  --nobrowser    do not start a browser"
     print "  -c  --clean        clean the cache and logs"
     print "  -l  --logging=     set the logging level (0= least, 3= most)"
-    print "  -w  --weblogging   set the cherrypy logging on"
+    print "  -w  --weblogging=  set the cherrypy logging (0= off, 1= on)"
     print "  -v  --version      print version information"
     print "  -h  --help         print this message"
     
@@ -119,9 +119,9 @@ def main():
     LOGLEVELS = [ logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG ]
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvnwcl:s:f:",
+        opts, args = getopt.getopt(sys.argv[1:], "phdvncw:l:s:f:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
-                      'weblogging', 'server=', 'config-file='])
+                      'weblogging=', 'server=', 'config-file='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -172,7 +172,13 @@ def main():
         if o in ('-c', '--clean'):
             clean_up= True
         if o in ('-w', '--weblogging'):
-            cherrypylogging= 1
+            try:
+                cherrypylogging = int(a)
+            except:
+                cherrypylogging = -1
+            if cherrypylogging < 0 or cherrypylogging > 1:
+                print_help()
+                sys.exit()
         if o in ('-l', '--logging'):
             try:
                 logging_level = int(a)
@@ -297,7 +303,7 @@ def main():
     
     sabnzbd.CFG = cfg
     
-    init_ok = sabnzbd.initialize(pause, clean_up)
+    init_ok = sabnzbd.initialize(pause, clean_up, True)
     
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting', 
