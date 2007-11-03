@@ -275,7 +275,7 @@ def main():
     
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting', 
-                      M_NAME, sabnzbd.__version__)
+                      MY_NAME, sabnzbd.__version__)
         sys.exit(2)
         
     if sabnzbd.decoder.HAVE_YENC:

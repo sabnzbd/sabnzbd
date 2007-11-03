@@ -145,7 +145,10 @@ def dir_setup(config, cfg_name, def_loc, dir_name):
     my_dir = real_path(def_loc, my_dir)
     if not os.path.exists(my_dir):
         logging.info('%s directory: %s does not exist, try to create it', cfg_name, my_dir)
-        os.makedirs(my_dir)
+        try:
+            os.makedirs(my_dir)
+        except:
+            logging.error('Cannot create directory %s', my_dir)
     if not os.access(my_dir, os.R_OK + os.W_OK):
         logging.error('%s directory: %s error accessing', cfg_name, my_dir)
         return ""
