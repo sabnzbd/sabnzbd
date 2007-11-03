@@ -28,6 +28,7 @@ import cPickle
 import zipfile
 import re
 import random
+import glob
 
 from threading import RLock, Lock, Condition, Thread
 
@@ -196,7 +197,7 @@ def check_setting_str(config, cfg_name, item_name, def_val):
 INIT_LOCK = Lock()
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader = False):
+def initialize(pause_downloader = False, clean_up = False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
@@ -272,6 +273,10 @@ def initialize(pause_downloader = False):
     CACHE_DIR = dir_setup(CFG, "cache_dir", DIR_LCLDATA, "cache")
     if CACHE_DIR == "":
         return False
+    if clean_up:
+        xlist= glob.glob(CACHE_DIR + '/*')
+        for x in xlist:
+            os.remove(x)
 
     dirscan_dir = dir_setup(CFG, "dirscan_dir", DIR_HOME, "nzb")
     if dirscan_dir == "":

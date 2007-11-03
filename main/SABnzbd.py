@@ -40,6 +40,7 @@ import getopt
 import sabnzbd
 import signal
 import re
+import glob
 
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup, real_path
@@ -71,6 +72,7 @@ def print_help():
     print "  -p  --pause        start in paused mode"
     print "  -s  --server=      listen on server:port"
     print "  -n  --nobrowser    do not start a browser"
+    print "  -c  --clean        clean the cache and logs"
     print "  -v  --version      print version information"
     print "  -h  --help         print this message"
     
@@ -113,8 +115,8 @@ def main():
     print
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvns:f:",
-                     ['pause', 'help', 'daemon', 'nobrowser', 'server=', 'config-file='])
+        opts, args = getopt.getopt(sys.argv[1:], "phdvncs:f:",
+                     ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'server=', 'config-file='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -125,6 +127,7 @@ def main():
     cherryhost = ''
     cherryport = 0
     nobrowser = False
+    clean_up = False
 
     if os.name == 'nt':
         specials = Get_User_ShellFolders()
@@ -159,6 +162,8 @@ def main():
                 cherryport = 0
         if o in ('-n', '--nobrowser'):
             nobrowser= True
+        if o in ('-c', '--clean'):
+            clean_up= True
         if o in ('-v', '--version'):
             print_version()
             sys.exit()
@@ -210,6 +215,11 @@ def main():
     
     
     logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, 'logs')
+    if clean_up:
+        xlist= glob.glob(logdir + '/*')
+        for x in xlist:
+            os.remove(x)
+
     try:
         rollover_log = logging.handlers.RotatingFileHandler(\
                        os.path.join(logdir, 'sabnzbd.log'), 'a+', 
@@ -261,7 +271,7 @@ def main():
     
     sabnzbd.CFG = cfg
     
-    init_ok = sabnzbd.initialize(pause)
+    init_ok = sabnzbd.initialize(pause, clean_up)
     
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting', 
@@ -395,6 +405,10 @@ def main():
         cherrypy.server.wait()
         if not nobrowser:
             launch_a_browser(cherryhost, cherryport)
+            
+        # Have to keep this running, otherwise logging will terminate
+        while cherrypy.server.ready:
+            time.sleep(3)
     except:
         logging.exception("Failed to start web-interface")
         sabnzbd.halt()
