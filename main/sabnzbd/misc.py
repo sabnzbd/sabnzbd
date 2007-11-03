@@ -176,6 +176,24 @@ def real_path(loc, path):
 
 
 ################################################################################
+# Create_Real_Path                                                             #
+################################################################################
+def create_real_path(name, loc, path):
+    if path:
+        my_dir = real_path(loc, path)
+        if not os.path.exists(my_dir):
+            logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
+            try:
+                os.makedirs(my_dir)
+            except:
+                logging.error('Cannot create directory %s', my_dir)
+        if not os.access(my_dir, os.R_OK + os.W_OK):
+            logging.error('%s directory: %s error accessing', name, my_dir)
+            return ""
+        return my_dir
+
+
+################################################################################
 # Get_User_ShellFolders
 #
 # Return a dictionary with Windows Special Folders

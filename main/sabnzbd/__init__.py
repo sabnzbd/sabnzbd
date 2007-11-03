@@ -35,7 +35,7 @@ from threading import RLock, Lock, Condition, Thread
 from sabnzbd.assembler import Assembler, PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
-from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path
+from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, create_real_path
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue
@@ -142,16 +142,7 @@ def dir_setup(config, cfg_name, def_loc, dir_name):
         my_dir = dir_name
         config['misc'][cfg_name] = my_dir
     
-    my_dir = real_path(def_loc, my_dir)
-    if not os.path.exists(my_dir):
-        logging.info('%s directory: %s does not exist, try to create it', cfg_name, my_dir)
-        try:
-            os.makedirs(my_dir)
-        except:
-            logging.error('Cannot create directory %s', my_dir)
-    if not os.access(my_dir, os.R_OK + os.W_OK):
-        logging.error('%s directory: %s error accessing', cfg_name, my_dir)
-        return ""
+    my_dir = create_real_path(cfg_name, def_loc, my_dir)
     logging.info("%s: %s", cfg_name, my_dir)
     return my_dir
 

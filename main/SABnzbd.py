@@ -334,8 +334,10 @@ def main():
     try:
         web_dir = cfg['misc']['web_dir']
     except:
+        web_dir = ''
+    if not web_dir:
         web_dir = 'templates'
-        cfg['misc']['web_dir'] = web_dir
+    cfg['misc']['web_dir'] = web_dir
 
     web_dir = real_path(sabnzbd.DIR_PROG, web_dir)
     logging.info("Web dir is %s", web_dir)

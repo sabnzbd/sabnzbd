@@ -38,7 +38,7 @@ from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 from sabnzbd.email import email_send
-from sabnzbd.misc import real_path
+from sabnzbd.misc import real_path, create_real_path
 
 from sabnzbd.constants import *
 
@@ -623,27 +623,33 @@ class ConfigDirectories(ProtectedClass):
                         cache_dir = None, nzb_backup_dir = None,
                         dirscan_dir = None, dirscan_speed = None, extern_proc = None):
                         
-        if download_dir and not os.access(real_path(sabnzbd.DIR_LCLDATA, download_dir), os.R_OK + os.W_OK):
-            return "Error: can't access download directory."
-        if not download_dir:
-            return "Error: download directory not set."
+        dd = create_real_path('download_dir', sabnzbd.DIR_LCLDATA, download_dir)
+        if not dd:
+            return "Error: cannot create download directory %s." % dd
             
-        if cache_dir and not os.access(real_path(sabnzbd.DIR_LCLDATA, cache_dir), os.R_OK + os.W_OK):
-            return "Error: can't access cache directory."
-        if not cache_dir:
-            return "Error: cache directory not set."
+        dd = create_real_path('cache_dir', sabnzbd.DIR_LCLDATA, cache_dir)
+        if not dd:
+            return "Error: cannot create cache directory %s." % dd
             
-        if log_dir and not os.access(real_path(sabnzbd.DIR_LCLDATA, log_dir), os.R_OK + os.W_OK):
-            return "Error: can't access log directory."
+        dd = create_real_path('log_dir', sabnzbd.DIR_LCLDATA, log_dir)
+        if not dd:
+            return "Error: cannot create log directory %s." % dd
+
+        dd = create_real_path('dirscan_dir', sabnzbd.DIR_HOME, dirscan_dir)
+        if not dd:
+            return "Error: cannot create dirscan_dir directory %s." % dd
             
-        if dirscan_dir and not os.access(real_path(sabnzbd.DIR_HOME, dirscan_dir), os.R_OK + os.W_OK):
-            return "Error: can't access dirscan directory."
+        dd = create_real_path('complete_dir', sabnzbd.DIR_HOME, complete_dir)
+        if not dd:
+            return "Error: cannot create complete_dir directory %s." % dd
             
-        if complete_dir and not os.access(real_path(sabnzbd.DIR_HOME, complete_dir), os.R_OK + os.W_OK):
-            return "Error: can't access complete directory."
-            
-        if nzb_backup_dir and not os.access(real_path(sabnzbd.DIR_LCLDATA, nzb_backup_dir), os.R_OK + os.W_OK):
-            return "Error: can't access complete directory."
+        dd = create_real_path('nzb_backup_dir', sabnzbd.DIR_LCLDATA, nzb_backup_dir)
+        if not dd:
+            return "Error: cannot create nzb_backup_dir directory %s." % dd
+
+        if extern_proc and not os.access(real_path(sabnzbd.DIR_HOME, extern_proc), os.R_OK):
+            return "Error: cannot find extern_proc %s." % real_path(sabnzbd.DIR_HOME, extern_proc)
+
             
         sabnzbd.CFG['misc']['download_dir'] = download_dir
         sabnzbd.CFG['misc']['download_free'] = download_free
@@ -771,12 +777,14 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limit
         
-        if web_dir and not os.access(os.path.abspath(sabnzbd.DIR_PROG+'/'+web_dir), os.R_OK):
-            return "Error: can't access template directory."
-        if web_dir and not os.access(os.path.abspath(sabnzbd.DIR_PROG+'/'+web_dir+'/main.tmpl'), os.R_OK):
-        	  return "Error: not a valid template directory (cannot see main.tmpl)."
         if not web_dir:
-            return "Error: template directory not set."
+            web_dir= 'templates'
+        dd = os.path.abspath(sabnzbd.DIR_PROG + '/' + web_dir)
+        if dd and not os.access(dd, os.R_OK):
+            return "Error: cannot access template directory %s" % dd
+        if dd and not os.access(dd + '/main.tmpl', os.R_OK):
+        	  return "Error: \"%s\" is not a valid template directory (cannot see main.tmpl)." % dd
+        sabnzbd.CFG['misc']['web_dir'] = web_dir
 
         return saveAndRestart(self.__root)
         
