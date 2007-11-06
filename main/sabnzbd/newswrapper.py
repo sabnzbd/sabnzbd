@@ -12,9 +12,7 @@ from time import time
 
 __NAME__ = "newswrapper"
 
-TIMEOUT_VALUE = 120
-
-socket.setdefaulttimeout(TIMEOUT_VALUE)
+socket.setdefaulttimeout(120)
 
 def con(sock, host, port):
     sock.connect((host, port))
@@ -70,11 +68,11 @@ class NewsWrapper:
         self.pass_ok = False
         
     def init_connect(self):
-        self.nntp = NNTP(self.server.host, self.server.port, 
+        self.nntp = NNTP(self.server.host, self.server.port,
                          self.server.username, self.server.password)
         self.recv = self.nntp.sock.recv
         
-        self.timeout = time() + TIMEOUT_VALUE
+        self.timeout = time() + self.server.timeout
         
     def finish_connect(self):
         if not self.server.username or not self.server.password:
@@ -102,20 +100,20 @@ class NewsWrapper:
             else:
                 self.connected = True
                 
-        self.timeout = time() + TIMEOUT_VALUE
+        self.timeout = time() + self.server.timeout
         
     def body(self):
-        self.timeout = time() + TIMEOUT_VALUE
+        self.timeout = time() + self.server.timeout
         command = 'BODY <%s>\r\n' % (self.article.article)
         self.nntp.sock.sendall(command)
         
     def send_group(self, group):
-        self.timeout = time() + TIMEOUT_VALUE
+        self.timeout = time() + self.server.timeout
         command = 'GROUP %s\r\n' % (group)
         self.nntp.sock.sendall(command)
         
     def recv_chunk(self):
-        self.timeout = time() + TIMEOUT_VALUE
+        self.timeout = time() + self.server.timeout
         chunk = self.recv(32768)
         
         self.data += chunk
@@ -146,4 +144,4 @@ class NewsWrapper:
         self.__init__(self.server, self.thrdnum)
         
         # Wait before resuing this newswrapper
-        self.timeout = time() + TIMEOUT_VALUE
+        self.timeout = time() + self.server.timeout

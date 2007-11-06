@@ -812,9 +812,15 @@ class ConfigServer(ProtectedClass):
         return template.respond()
         
     @cherrypy.expose
-    def addServer(self, server = None, host = None, port = None, username = None,
+    def addServer(self, server = None, host = None, port = None, timeout = None, username = None,
                          password = None, connections = None, fillserver = None):
 
+        if timeout.isdigit():
+            if int(timeout) < 30:
+                timeout = '30'
+        else:
+            timeout = '120'
+            
         if connections == "":
             connections = '1'
         if port == "":
@@ -830,6 +836,7 @@ class ConfigServer(ProtectedClass):
                 sabnzbd.CFG['servers'][server]['port'] = port
                 sabnzbd.CFG['servers'][server]['username'] = username
                 sabnzbd.CFG['servers'][server]['password'] = password
+                sabnzbd.CFG['servers'][server]['timeout'] = timeout
                 sabnzbd.CFG['servers'][server]['connections'] = connections
                 sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
                 return saveAndRestart(self.__root)
@@ -837,9 +844,15 @@ class ConfigServer(ProtectedClass):
         raise cherrypy.HTTPRedirect(self.__root)
         
     @cherrypy.expose
-    def saveServer(self, server = None, host = None, port = None, username = None,
+    def saveServer(self, server = None, host = None, port = None, username = None, timeout = None,
                          password = None, connections = None, fillserver = None):
         
+        if timeout.isdigit():
+            if int(timeout) < 30:
+                timeout = '30'
+        else:
+            timeout = '120'
+
         if connections == "":
             connections = '1'
         if port == "":
@@ -861,6 +874,7 @@ class ConfigServer(ProtectedClass):
             sabnzbd.CFG['servers'][server]['username'] = username
             sabnzbd.CFG['servers'][server]['password'] = password
             sabnzbd.CFG['servers'][server]['connections'] = connections
+            sabnzbd.CFG['servers'][server]['timeout'] = timeout
             sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
             return saveAndRestart(self.__root)
             

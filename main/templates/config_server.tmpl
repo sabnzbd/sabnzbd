@@ -32,6 +32,7 @@
       Port:<br><input type="text" name="port"><br>
       Username:<br><input type="text" name="username"><br>
       Password:<br><input type="password" name="password"><br>
+      Timeout:<br><input type="text" name="timeout"><br>
       Connections:<br><input type="text" name="connections"><br>
       Fillserver:<br><input type="radio" name="fillserver" value="0" "checked=1"> No
                      <input type="radio" name="fillserver" value="1"> Yes
@@ -47,6 +48,7 @@
       Port:<br><input type="text" name="port" value=$servers[$server]['port']><br>
       Username:<br><input type="text" name="username" value=$servers[$server]['username']><br>
       Password:<br><input type="password" name="password" value=$servers[$server]['password']><br>
+      Timeout:<br><input type="text" name="timeout" value=$servers[$server]['timeout']><br>
       Connections:<br><input type="text" name="connections" value=$servers[$server]['connections']><br>
       Fillserver:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
                      <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes

@@ -34,10 +34,11 @@ from sabnzbd.newswrapper import NewsWrapper
 #------------------------------------------------------------------------------
 
 class Server:
-    def __init__(self, host, port, threads, fillserver, username = None, 
+    def __init__(self, host, port, timeout, threads, fillserver, username = None, 
                  password = None):
         self.host = host
         self.port = port
+        self.timeout = timeout
         self.threads = threads
         self.fillserver = fillserver
         
@@ -118,11 +119,12 @@ class Downloader(Thread):
         for server in servers:
             host = servers[server]['host']
             port = int(servers[server]['port'])
+            timeout = int(servers[server]['timeout'])
             threads = int(servers[server]['connections'])
             fillserver = bool(int(servers[server]['fillserver']))
             username = servers[server]['username']
             password = servers[server]['password']
-            self.servers.append(Server(host, port, threads, fillserver, 
+            self.servers.append(Server(host, port, timeout, threads, fillserver, 
                                        username, password))
                     
         self.servers = tuple(self.servers)
