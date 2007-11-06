@@ -30,6 +30,7 @@ from threading import Thread
 
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper
+from sabnzbd.constants import *
 
 #------------------------------------------------------------------------------
 
