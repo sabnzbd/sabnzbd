@@ -125,6 +125,7 @@ class Downloader(Thread):
                 timeout = int(servers[server]['timeout'])
             except:
                 timeout = DEF_TIMEOUT
+                servers[server]['timeout'] = DEF_TIMEOUT
             threads = int(servers[server]['connections'])
             fillserver = bool(int(servers[server]['fillserver']))
             username = servers[server]['username']
