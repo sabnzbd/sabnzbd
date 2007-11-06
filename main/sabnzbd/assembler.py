@@ -141,14 +141,7 @@ class PostProcessor(Thread):
                 for root, dirs, files in os.walk(workdir):
                     for _file in files:
                         path = os.path.join(root, _file)
-                        try:
-                            logging.debug("[%s] Setting umask %s to %s", 
-                                          __NAME__, sabnzbd.UMASK, path)
-                            os.chmod(path, sabnzbd.UMASK)
-                        except:
-                            logging.exception("[%s] Setting umask %s to %s failed", 
-                                              __NAME__, sabnzbd.UMASK, path)
-                                              
+
                 if sabnzbd.CLEANUP_LIST:
                     try:
                         files = os.listdir(workdir)
@@ -306,10 +299,7 @@ def _assemble(nzf, path, dupe):
             
     fout.flush()
     fout.close()
-    try:
-        os.chmod(path, sabnzbd.UMASK)
-    except:
-        pass
+
         
 ################################################################################
 # Dir Creation                                                                 #
@@ -345,7 +335,7 @@ def create_dir(dirpath):
     if not os.path.exists(dirpath):
         logging.info('[%s] Creating directory: %s', __NAME__, dirpath)
         try:
-            os.mkdir(dirpath, sabnzbd.UMASK)
+            os.mkdir(dirpath)
         except:
             logging.exception('[%s] Creating directory %s failed', __NAME__,
                               dirpath)
@@ -363,7 +353,7 @@ def get_unique_path(dirpath, i=0, create_dir=True):
         logging.info('[%s] Creating directory: %s', __NAME__, path)
         try:
             if create_dir:
-                os.mkdir(path, sabnzbd.UMASK)
+                os.mkdir(path)
                 
             return path
         except:

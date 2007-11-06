@@ -70,6 +70,7 @@ def print_help():
     print "  -p  --pause              start in paused mode"
     if os.name != 'nt':
         print "  -d  --daemon             fork daemon process"
+        print "  -u  --umask <octal>      set the umask in octal"
     print "  -s  --server <srv:port>  listen on server:port"
     print "  -n  --nobrowser          do not start a browser"
     print "  -c  --clean              clean the cache and logs"
@@ -101,7 +102,9 @@ def daemonize():
         
     os.chdir("/") 
     os.setsid()
-    os.umask(0)
+    # Make sure I can read my own files
+    prev= os.umask(0)
+    os.umask(prev and int('077',8))
     
     try:
         pid = os.fork()
@@ -120,9 +123,9 @@ def main():
     LOGLEVELS = [ logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG ]
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvncw:l:s:f:t:",
+        opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
-                      'weblogging=', 'server=', '--templates', 'config-file='])
+                      'weblogging=', 'umask=', 'server=', '--templates', 'config-file='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -136,6 +139,7 @@ def main():
     nobrowser = False
     clean_up = False
     logging_level = None
+    umask = None
     web_dir = None
 
     if os.name == 'nt':
@@ -191,6 +195,8 @@ def main():
             if logging_level < 0 or logging_level > 3:
                 print_help()
                 sys.exit()
+        if o in ('-u', '--umask'):
+            umask = a
         if o in ('-v', '--version'):
             print_version()
             sys.exit()
@@ -305,6 +311,17 @@ def main():
                 
     logging.info('%s-%s', MY_NAME, sabnzbd.__version__)
     
+    if umask == None:
+        umask = check_setting_str(cfg, 'misc', 'umask_new', '')
+    if umask:
+        cfg['misc']['umask_new'] = umask
+        try:
+            # Make sure I can read my own files (so "and" with 077)
+            os.umask(int(umask, 8) and int('077', 8))
+            logging.debug("umask has been set to %s", umask)
+        except:
+            logging.debug("Failed to set umask to %s", umask)
+
     sabnzbd.CFG = cfg
     
     init_ok = sabnzbd.initialize(pause, clean_up, True)
@@ -313,7 +330,7 @@ def main():
         logging.error('Initializing %s-%s failed, aborting', 
                       MY_NAME, sabnzbd.__version__)
         sys.exit(2)
-        
+
     if sabnzbd.decoder.HAVE_YENC:
         logging.info("_yenc module... found!")
     else:
