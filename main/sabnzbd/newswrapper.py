@@ -9,10 +9,11 @@ from threading import Thread
 
 from nntplib import NNTPPermanentError
 from time import time
+from sabnzbd.constants import *
 
 __NAME__ = "newswrapper"
 
-socket.setdefaulttimeout(120)
+socket.setdefaulttimeout(DEF_TIMEOUT)
 
 def con(sock, host, port):
     sock.connect((host, port))

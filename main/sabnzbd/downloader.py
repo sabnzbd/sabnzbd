@@ -119,7 +119,11 @@ class Downloader(Thread):
         for server in servers:
             host = servers[server]['host']
             port = int(servers[server]['port'])
-            timeout = int(servers[server]['timeout'])
+            try:
+                # Have to do this, to keep compatible with old INI files
+                timeout = int(servers[server]['timeout'])
+            except:
+                timeout = DEF_TIMEOUT
             threads = int(servers[server]['connections'])
             fillserver = bool(int(servers[server]['fillserver']))
             username = servers[server]['username']

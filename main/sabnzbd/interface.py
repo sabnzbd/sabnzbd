@@ -816,10 +816,10 @@ class ConfigServer(ProtectedClass):
                          password = None, connections = None, fillserver = None):
 
         if timeout.isdigit():
-            if int(timeout) < 30:
-                timeout = '30'
+            if int(timeout) < MIN_TIMEOUT:
+                timeout = MIN_TIMEOUT
         else:
-            timeout = '120'
+            timeout = DEF_TIMEOUT
             
         if connections == "":
             connections = '1'
@@ -851,7 +851,7 @@ class ConfigServer(ProtectedClass):
             if int(timeout) < 30:
                 timeout = '30'
         else:
-            timeout = '120'
+            timeout = DEF_TIMEOUT
 
         if connections == "":
             connections = '1'
