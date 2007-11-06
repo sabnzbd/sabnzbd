@@ -457,7 +457,7 @@ def main():
     try:
         cherrypy.server.start(init_only=True)
         cherrypy.server.wait()
-        if not nobrowser:
+        if (not nobrowser) and (not fork):
             launch_a_browser(cherryhost, cherryport)
             
         # Have to keep this running, otherwise logging will terminate
