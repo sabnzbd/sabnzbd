@@ -1,6 +1,19 @@
 -------------------------------------------------------------------------------
-0.2.8 by the ShyPike
+0.2.8rc2 by the ShyPike
 -------------------------------------------------------------------------------
+added:   Tracker-1827619:
+         Add <table id="SAB_Standard_Queue_Table"> to the queue table of the
+         standard template.
+         This is a trigger for the SABTAB tool to consider this the standard template.
+         Do not put it in other templates!!
+added:   Linux/OSX only.
+         Replace "umask" with "permissions". SABnbzd now sets file permissions
+         first to private (u=rwx, g=, o=).
+         When the download is completed and before user post-processing,
+         SAB chmod-s all files with the specified pattern (e.g. "o=rx, g=rx").
+         Files that have no "u=x" will get no "g=x" or "o=x" bits!
+added:   Timeout parameter per server (seconds, minimum=30, default=120)
+changed: Always suppress browser-start when --daemon option is used (only non-Windows).
 added:   Email notifications (end of job and disk-full)
          Supports secured email (TLS) for use with gmail.com
 added:   Set minimum diskspace (in MB) for the download directory
@@ -11,7 +24,7 @@ added:   Better handling of INI file
          You can start without an INI and get usable defaults
          Default storage in appdata/localdata for Windows
          Default storage in ~/.sabnzbd for Linux/OSX
-		 Auto creation of directories
+         Auto creation of directories
 added:   Commandline switches
          -Regulate logging level (default is minimal)
          -Override of templates
