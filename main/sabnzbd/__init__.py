@@ -69,6 +69,7 @@ SEND_GROUP = False
 
 CLEANUP_LIST = []
 
+UMASK = None
 BANDWITH_LIMIT = 0.0
 
 USERNAME_NEWZBIN = None
@@ -195,7 +196,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
-           COMPLETE_DIR, CACHE_DIR, SEND_GROUP, CREATE_CAT_FOLDERS, \
+           COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, ARTICLECACHE, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
@@ -230,6 +231,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
     if type(CLEANUP_LIST) != type([]):
         CLEANUP_LIST = []
+    
+    UMASK = check_setting_str(CFG, 'misc', 'permissions', '')
     
     SEND_GROUP = bool(check_setting_int(CFG, 'misc', 'send_group', 0))
     

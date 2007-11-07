@@ -70,7 +70,7 @@ def print_help():
     print "  -p  --pause              start in paused mode"
     if os.name != 'nt':
         print "  -d  --daemon             fork daemon process"
-        print "  -u  --umask <octal>      set the umask in octal"
+        print "      --permissions        set the chmod mode (e.g. o=rwx,g=rwx)"
     print "  -s  --server <srv:port>  listen on server:port"
     print "  -n  --nobrowser          do not start a browser"
     print "  -c  --clean              clean the cache and logs"
@@ -102,7 +102,7 @@ def daemonize():
         
     os.chdir("/") 
     os.setsid()
-    # Make sure I can read my own files
+    # Make sure I can read my own files and shut out others
     prev= os.umask(0)
     os.umask(prev and int('077',8))
     
@@ -125,7 +125,7 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
-                      'weblogging=', 'umask=', 'server=', '--templates', 'config-file='])
+                      'weblogging=', 'umask=', 'server=', '--templates', 'permissions=', 'config-file='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -195,7 +195,7 @@ def main():
             if logging_level < 0 or logging_level > 3:
                 print_help()
                 sys.exit()
-        if o in ('-u', '--umask'):
+        if o in ('--permissions'):
             umask = a
         if o in ('-v', '--version'):
             print_version()
@@ -312,15 +312,9 @@ def main():
     logging.info('%s-%s', MY_NAME, sabnzbd.__version__)
     
     if umask == None:
-        umask = check_setting_str(cfg, 'misc', 'umask_new', '')
+        umask = check_setting_str(cfg, 'misc', 'permissions', '')
     if umask:
-        cfg['misc']['umask_new'] = umask
-        try:
-            # Make sure I can read my own files (so "and" with 077)
-            os.umask(int(umask, 8) and int('077', 8))
-            logging.debug("umask has been set to %s", umask)
-        except:
-            logging.debug("Failed to set umask to %s", umask)
+        cfg['misc']['permissions'] = umask
 
     sabnzbd.CFG = cfg
     

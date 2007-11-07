@@ -29,6 +29,7 @@ import logging
 import sabnzbd
 import cPickle
 import shutil
+import re
 
 from sabnzbd.decorators import *
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
@@ -38,6 +39,22 @@ from time import sleep
 from sabnzbd.email import email_endjob, prepare_msg
 
 DIR_LOCK = RLock()
+
+#------------------------------------------------------------------------------
+## perm_script
+## Set permissions correctly for non-Windows
+def perm_script(wdir, umask):
+    
+    DE_X = re.compile(r'x')
+    umask_nox = DE_X.sub('', umask)
+
+    script =  'find \"%s\" \\( -type d -or -perm +x \\) -print0 | xargs -0 chmod %s\n' % (wdir, umask)
+    script += 'find \"%s\" \\( -type f -and -not -perm +x \\) -print0 | xargs -0 chmod %s' % (wdir, umask_nox)
+
+    logging.debug("Setting permissions %s on download result %s", umask, wdir)
+    ret = os.system(script)
+    logging.debug("Setting permissions result is %s", ret)
+
 
 #------------------------------------------------------------------------------
 
@@ -160,6 +177,9 @@ class PostProcessor(Thread):
                             except:
                                 logging.exception("[%s] Removing %s failed",
                                                   __NAME__, path)
+
+                if sabnzbd.UMASK and (os.name != 'nt'):
+                    perm_script(workdir, sabnzbd.UMASK)
 
                 if scr and self.extern_proc:
                     logging.info('[%s] Running external script %s %s %s', __NAME__, self.extern_proc, workdir, filename)
