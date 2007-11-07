@@ -65,20 +65,21 @@ except ImportError:
 def print_help():
     print "Usage: %s [-f <configfile>]" % __file__
     print
+    print "Options marked [*] are stored in the config file"
+    print
     print "Options:"
     print "  -f  --config-file <ini>  location of config file"
-    print "  -p  --pause              start in paused mode"
-    if os.name != 'nt':
-        print "  -d  --daemon             fork daemon process"
-        print "      --permissions        set the chmod mode (e.g. o=rwx,g=rwx)"
-    print "  -s  --server <srv:port>  listen on server:port"
-    print "  -n  --nobrowser          do not start a browser"
-    print "  -c  --clean              clean the cache and logs"
-    print "  -t  --templates <templ>  template directory"
-    print "  -l  --logging <0..3>     set the logging level (0= least, 3= most)"
-    print "  -w  --weblogging <0..1>  set the cherrypy logging (0= off, 1= on)"
-    print "  -v  --version            print version information"
     print "  -h  --help               print this message"
+    print "  -v  --version            print version information"
+    print "  -s  --server <srv:port>  listen on server:port [*]"
+    print "  -t  --templates <templ>  template directory [*]"
+    print "  -l  --logging <0..3>     set logging level (0= least, 3= most) [*]"
+    print "  -w  --weblogging <0..1>  set cherrypy logging (0= off, 1= on) [*]"
+    if os.name != 'nt':
+        print "      --permissions        set the chmod mode (e.g. o=rwx,g=rwx) [*]"
+        print "  -d  --daemon             fork daemon process"
+    print "  -c  --clean              clean queue, cache and logs"
+    print "  -p  --pause              start in paused mode"
     
 def print_version():
     print "%s-%s" % (MY_NAME, sabnzbd.__version__)
