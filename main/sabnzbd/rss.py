@@ -51,6 +51,7 @@ class RSSQueue:
             logging.info("[%s] Parsing %s", __NAME__, uri)
             d = feedparser.parse(uri)
             logging.info("[%s] Done parsing %s", __NAME__, uri)
+            logging.debug("[%s] PARSE RESULT %s", __NAME__, d)
             
             if not d or not d['entries'] or 'bozo_exception' in d:
                 continue
@@ -62,7 +63,10 @@ class RSSQueue:
             entry_links = []
             new_entry_links = []
             for entry in entries:
-                link = entry['guid']
+                try:
+                    link = entry['guid']
+                except:
+                    link = entry['link']
                 entry_links.append(link)
                 if new or link not in self.old_entries[uri]:
                     new_entry_links.append(link)
@@ -92,7 +96,10 @@ class RSSQueue:
                                       __NAME__, link)
                                       
                 for entry in entries:
-                    link = entry['guid']
+                    try:
+                        link = entry['guid']
+                    except:
+                        link = entry['link']
                     
                     if link not in new_entry_links:
                         continue

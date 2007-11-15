@@ -73,7 +73,7 @@ def print_help():
     print "  -v  --version            print version information"
     print "  -s  --server <srv:port>  listen on server:port [*]"
     print "  -t  --templates <templ>  template directory [*]"
-    print "  -l  --logging <0..3>     set logging level (0= least, 3= most) [*]"
+    print "  -l  --logging <0..2>     set logging level (0= least, 2= most) [*]"
     print "  -w  --weblogging <0..1>  set cherrypy logging (0= off, 1= on) [*]"
     if os.name != 'nt':
         print "      --permissions        set the chmod mode (e.g. o=rwx,g=rwx) [*]"
@@ -121,12 +121,12 @@ def daemonize():
 def main():
     print '\n%s-%s' % (MY_NAME, sabnzbd.__version__)
 
-    LOGLEVELS = [ logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG ]
+    LOGLEVELS = [ logging.WARNING, logging.INFO, logging.DEBUG ]
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
-                      'weblogging=', 'umask=', 'server=', '--templates', 'permissions=', 'config-file='])
+                      'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', 'config-file='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -156,6 +156,8 @@ def main():
     sabnzbd.DIR_PROG= os.path.normpath(os.path.abspath('.'))
 
     f = sabnzbd.DIR_APPDATA + '/' + DEF_INI_FILE
+    if not os.path.exists(os.path.abspath(f)):
+        f = sabnzbd.DIR_PROG + '/' + DEF_INI_FILE
 
     for o, a in opts:
         if (o in ('-d', '--daemon')) and os.name != 'nt':
@@ -193,7 +195,7 @@ def main():
                 logging_level = int(a)
             except:
                 logging_level = -1
-            if logging_level < 0 or logging_level > 3:
+            if logging_level < 0 or logging_level > 2:
                 print_help()
                 sys.exit()
         if o in ('--permissions'):
@@ -245,6 +247,8 @@ def main():
 
     if logging_level == None:
         logging_level = check_setting_int(cfg, 'logging', 'log_level', 0)
+        if logging_level > 2:
+            logging_level = 2
     else:
         cfg['logging']['log_level'] = logging_level
 
@@ -265,8 +269,9 @@ def main():
             os.remove(x)
 
     try:
+        sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
         rollover_log = logging.handlers.RotatingFileHandler(\
-                       os.path.join(logdir, DEF_LOG_FILE), 'a+', 
+                       sabnzbd.LOGFILE, 'a+', 
                        check_setting_int(cfg, 'logging', 'max_log_size', 5242880), 
                        check_setting_int(cfg, 'logging', 'log_backups', 5))
                   
@@ -275,6 +280,7 @@ def main():
         logger = logging.getLogger('')
         logger.setLevel(LOGLEVELS[logging_level])
         logger.addHandler(rollover_log)
+        sabnzbd.LOGHANDLER = rollover_log
         logging.info("--------------------------------")
             
     except IOError:
@@ -391,7 +397,7 @@ def main():
     
     sabnzbd.interface.USERNAME = check_setting_str(cfg, 'misc', 'username', '')
         
-    sabnzbd.interface.PASSWORD = check_setting_str(cfg, 'misc', 'password', '')
+    sabnzbd.interface.PASSWORD = check_setting_str(cfg, 'misc', 'password', '', False)
 
     if not os.path.exists(web_dir + "/main.tmpl"):
         logging.error('Cannot find web template: %s/%s', web_dir, DEF_MAIN_TMPL)
@@ -411,11 +417,11 @@ def main():
         sabnzbd.halt()
     
     cherrylogtoscreen = False
-    cherrylogfile = None
+    sabnzbd.WEBLOGFILE = None
     
     if cherrypylogging:
         if log_dir: 
-            cherrylogfile = os.path.join(log_dir, DEF_LOG_CHERRY);
+            sabnzbd.WEBLOGFILE = os.path.join(log_dir, DEF_LOG_CHERRY);
         if not fork:
             try:
                 sys.stderr.fileno
@@ -442,7 +448,7 @@ def main():
                                  'server.socketHost': cherryhost,
                                  'server.socketPort': cherryport,
                                  'server.logToScreen': cherrylogtoscreen,
-                                 'server.logFile': cherrylogfile,
+                                 'server.logFile': sabnzbd.WEBLOGFILE,
                                  'sessionFilter.on': True,
                                  '/sabnzbd/shutdown': {'streamResponse': True},
                                  '/sabnzbd/default.css': {'staticFilter.on': True, 'staticFilter.file': os.path.join(web_dir, 'default.css')},

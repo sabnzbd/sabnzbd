@@ -12,7 +12,8 @@
 <a href="../../queue">Queue</a> |
 <a href="../../history">History</a> |
 <a class="current" href="../">Config</a> |
-<a href="../../connections">Connections</a>
+<a href="../../connections">Connections</a> |
+<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+General" target="_blank">Help</a>
 </span>
 <span class="SubMenu">
 <a class="current" href="./">General</a> | 
@@ -27,23 +28,23 @@
 <form action="saveGeneral" method="post">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-<legend>SABnzbd server</legend>
-<strong>SABnzbd Host:</strong><br>
+<legend>Web server</legend>
+<strong>Host:</strong><br>
 Host SABnzbd should listen on.<br>
 <input type="text" name="host" value=$host>
 <br>
 <br>
-<strong>SABnzbd Port:</strong><br>
+<strong>Port:</strong><br>
 Post SABnzbd should listen on.<br>
 <input type="text" name="port" value=$port>
 <br>
 <br>
-<strong>SABnzbd Username:</strong><br>
+<strong>Web username:</strong><br>
 Authentication Username.<br>
 <input type="text" name="username" value=$username>
 <br>
 <br>
-<strong>SABnzbd Password:</strong><br>
+<strong>Web password:</strong><br>
 Authentication Password.<br>
 <input type="password" name="password" value=$password>
 <br>
@@ -55,24 +56,24 @@ Location of the template directory.<br>
 </div>
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-<legend>SABnzbd tuning</legend>
-<strong>SABnzbd queue auto refresh interval:</strong><br>
-Refresh interval (sec, 0= none)<br>
+<legend>Tuning</legend>
+<strong>Queue auto refresh interval:</strong><br>
+Refresh interval of the queue web-interface page(sec, 0= none)<br>
 <input type="text" name="refresh_rate" value=$refresh_rate>
 <br>
 <br>
-<strong>SABnzbd RSS checking rate:</strong><br>
+<strong>RSS checking rate:</strong><br>
 Checking rate  (times per hour 1, 2, 3, 4)<br>
 <input type="text" name="rss_rate" value=$rss_rate>
 <br>
 <br>
-<strong>SABnzbd Bandwith Limit:</strong><br>
+<strong>Bandwith Limit:</strong><br>
 Slowdown factor, try values between 0.01 and 1.0.<br>
 <input type="text" name="bandwith_limit" value=$bandwith_limit>
 <br>
 <br>
-<strong>SABnzbd Article Cache Limit:</strong><br>
-Cache articles in memory. See SABnzbd.ini<br>
+<strong>Article Cache Limit:</strong><br>
+Cache articles in memory.<br>
 <input type="text" name="cache_limit" value=$cache_limit>
 <br>
 <br>

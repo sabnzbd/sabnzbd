@@ -108,27 +108,33 @@ class DirScanner(Thread):
                                                   __NAME__, path)
             except:
                 logging.exception("Error importing")
+
                 
+#------------------------------------------------------------------------------
+# Thread for newzbin msgid queue
+#
 class MSGIDGrabber(Thread):
-    def __init__(self, nzbun, nzbpw, msgid, future_nzo):
-        Thread.__init__(self)        
+    def __init__(self, nzbun, nzbpw):
+        Thread.__init__(self)
         self.nzbun = nzbun
         self.nzbpw = nzbpw
-        self.msgid = msgid
-        self.future_nzo = future_nzo
+        self.queue = []
+		
+    def grab(self, msgid, nzo):
+        self.queue.append((msgid, nzo))
+        logging.debug("Adding msgid %s to the queue", msgid)
         
     def run(self):
-        try:
-            filename, data, cat_root, cat_tail = nzbgrab.grabnzb(self.msgid, self.nzbun, self.nzbpw)
+        while self.queue:
+            (msgid, nzo) = self.queue.pop(0)
+            logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
+            filename, data, cat_root, cat_tail = nzbgrab.grabnzb(msgid, self.nzbun, self.nzbpw)
             if filename and data:
-                sabnzbd.insert_future_nzo(self.future_nzo, filename, data, cat_root, cat_tail)                        
+                sabnzbd.insert_future_nzo(nzo, filename, data, cat_root, cat_tail)
             else:
-                sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
-        except:
-            logging.exception("[%s] Error fetching msgid %s", 
-                              __NAME__, self.msgid)
-            sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
-            
+                sabnzbd.remove_nzo(nzo.nzo_id, False)
+
+#------------------------------------------------------------------------------          
 class URLGrabber(Thread):
     def __init__(self, url, future_nzo):
         Thread.__init__(self)

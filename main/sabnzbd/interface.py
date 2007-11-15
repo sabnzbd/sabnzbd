@@ -26,6 +26,7 @@ import datetime
 import time
 import cherrypy
 import logging
+import re
 import sabnzbd
 
 from cherrypy.filters.gzipfilter import GzipFilter
@@ -72,7 +73,7 @@ except AttributeError:
             return (secp * byteper * freecl) / GIGI
         except:
             return 0.0
-            
+
 def CheckFreeSpace():
     if sabnzbd.DOWNLOAD_FREE > 0 and not sabnzbd.paused():
         if diskfree(sabnzbd.DOWNLOAD_DIR) < float(sabnzbd.DOWNLOAD_FREE) / 1024.0:
@@ -293,6 +294,7 @@ class QueuePage(ProtectedClass):
     def index(self):
         info, pnfo_list, bytespersec = build_header()
         
+        info['isverbose'] = self.__verbose
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             info['newzbinDetails'] = True
 
@@ -495,6 +497,8 @@ class HistoryPage(ProtectedClass):
     def index(self):
         history, pnfo_list, bytespersec = build_header()
             
+        history['isverbose'] = self.__verbose
+
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             history['newzbinDetails'] = True
 
@@ -985,6 +989,9 @@ class ConnectionInfo(ProtectedClass):
     def index(self):
         header, pnfo_list, bytespersec = build_header()
         
+        header['logfile'] = sabnzbd.LOGFILE
+        header['weblogfile'] = sabnzbd.WEBLOGFILE
+        
         header['lastmail'] = self.lastmail
 
         header['servers'] = []
@@ -1037,7 +1044,19 @@ class ConnectionInfo(ProtectedClass):
         self.lastmail= email_send("SABnzbd testing email connection", "All is OK")
         
         raise cherrypy.HTTPRedirect(self.__root)
-    
+
+    @cherrypy.expose
+    def showlog(self):
+        sabnzbd.LOGHANDLER.flush()
+        return cherrypy.lib.cptools.serveFile(sabnzbd.LOGFILE, disposition='attachment')
+
+    @cherrypy.expose
+    def showweb(self):
+        if sabnzbd.WEBLOGFILE:
+            return cherrypy.lib.cptools.serveFile(sabnzbd.WEBLOGFILE, disposition='attachment')
+        else:
+            return "Web logging is off!"
+
 def saveAndRestart(redirect_root):
     save_configfile(sabnzbd.CFG)
     sabnzbd.halt()
@@ -1078,7 +1097,7 @@ def build_header():
     header['cache_size'] = str(anfo[ANFO_CACHE_SIZE_FIELD])
     header['cache_limit'] = str(anfo[ANFO_CACHE_LIMIT_FIELD])
     
-    header['nzb_quota'] = sabnzbd.nzbgrab.QUOTA
+    header['nzb_quota'] = ''
     
     return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
     
@@ -1093,7 +1112,7 @@ def calc_age(date):
     return age
 
 #------------------------------------------------------------------------------
-
+	
 class ConfigEmail(ProtectedClass):
     def __init__(self, web_dir):
         self.roles = ['admins']
@@ -1124,14 +1143,22 @@ class ConfigEmail(ProtectedClass):
     def saveEmail(self, email_server = None, email_to = None, email_from = None,
                   email_account = None, email_pwd = None,
                   email_endjob = None, email_full = None):
+
+        VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
+
+        if VAL.match(email_to):
+            sabnzbd.CFG['misc']['email_to'] = email_to
+        else:
+            return "Invalid email address %s" % email_to
+        if VAL.match(email_from):
+            sabnzbd.CFG['misc']['email_from'] = email_from
+        else:
+            return "Invalid email address %s" % email_from
+
         sabnzbd.CFG['misc']['email_server'] = email_server
-        sabnzbd.CFG['misc']['email_to'] = email_to
-        sabnzbd.CFG['misc']['email_from'] = email_from
         sabnzbd.CFG['misc']['email_account'] = email_account
         sabnzbd.CFG['misc']['email_pwd'] = email_pwd
         sabnzbd.CFG['misc']['email_endjob'] = email_endjob
         sabnzbd.CFG['misc']['email_full'] = email_full
         
         return saveAndRestart(self.__root)
-
-    

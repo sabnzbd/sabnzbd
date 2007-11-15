@@ -1,4 +1,5 @@
 #!/usr/bin/python -OO
+#!/usr/bin/python -OO
 # Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
@@ -47,8 +48,6 @@ import sabnzbd.nzbgrab
 
 START = datetime.datetime.now()
 
-NZB_QUOTA = None
-
 CFG = None
 
 DIR_HOME = None
@@ -80,10 +79,14 @@ NZB_BACKUP_DIR = None
 DOWNLOAD_DIR = None
 DOWNLOAD_FREE = None
 COMPLETE_DIR = None
+LOGFILE = None
+WEBLOGFILE = None
+LOGHANDLER = None
 
 POSTPROCESSOR = None
 ASSEMBLER = None
 DIRSCANNER = None
+MSGIDGRABBER = None
 ARTICLECACHE = None
 DOWNLOADER = None
 NZBQ = None
@@ -100,7 +103,6 @@ EMAIL_ENDJOB = False
 EMAIL_FULL = False
 
 URLGRABBERS = []
-MSGIDGRABBERS = []
 
 __INITIALIZED__ = False
 
@@ -123,8 +125,7 @@ def synchronized_CV(func):
 ################################################################################
 def sig_handler(signum = None, frame = None):
     if type(signum) != type(None):
-        logging.info('[%s] Signal %s caught, saving and exiting...', __NAME__, 
-                     signum)
+        logging.warning('[%s] Signal %s caught, saving and exiting...', __NAME__, signum)
     try:
         save_state()
     finally:
@@ -175,14 +176,17 @@ def check_setting_float(config, cfg_name, item_name, def_val):
 ################################################################################
 # Check_setting_str                                                            #
 ################################################################################
-def check_setting_str(config, cfg_name, item_name, def_val):
+def check_setting_str(config, cfg_name, item_name, def_val, log = True):
     try:
         my_val= config[cfg_name][item_name]
     except:
         my_val = def_val
         config[cfg_name][item_name] = my_val
 
-    logging.debug("%s -> %s", item_name, my_val)
+    if log:
+        logging.debug("%s -> %s", item_name, my_val)
+    else:
+        logging.debug("%s -> %s", item_name, '******')
     return my_val
 
 ################################################################################
@@ -195,7 +199,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
-           DIRSCANNER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
+           DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
+           LOGFILE, WEBLOGFILE, LOGHANDLER, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, ARTICLECACHE, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , \
@@ -212,7 +217,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     ###########################
     
     USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
-    PASSWORD_NEWZBIN = check_setting_str(CFG, 'newzbin', 'password', '')
+    PASSWORD_NEWZBIN = check_setting_str(CFG, 'newzbin', 'password', '', False)
     
     FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
     
@@ -309,7 +314,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     EMAIL_TO     = check_setting_str(CFG, 'misc', 'email_to', '')
     EMAIL_FROM   = check_setting_str(CFG, 'misc', 'email_from', '')
     EMAIL_ACCOUNT= check_setting_str(CFG, 'misc', 'email_account', '')
-    EMAIL_PWD    = check_setting_str(CFG, 'misc', 'email_pwd', '')
+    EMAIL_PWD    = check_setting_str(CFG, 'misc', 'email_pwd', '', False)
     EMAIL_ENDJOB = bool(check_setting_int(CFG, 'misc', 'email_endjob', 0))
     EMAIL_FULL   = bool(check_setting_int(CFG, 'misc', 'email_full', 0))
 
@@ -378,7 +383,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     if dirscan_dir:
         DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed, dirscan_repair, dirscan_unpack, 
                                 dirscan_delete, dirscan_script)
-                                
+
+    if USERNAME_NEWZBIN:
+        MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+
     __INITIALIZED__ = True
     return True
 
@@ -423,12 +431,12 @@ def halt():
             except:
                 logging.exception('[%s] Joining grabber {%s} failed', __NAME__, grabber)
                 
-        for grabber in MSGIDGRABBERS:
-            logging.debug('Stopping grabber {%s}', grabber)
+        if MSGIDGRABBER:
+            logging.debug('Stopping msgidgrabber')
             try:
-                grabber.join()
+                MSGIDGRABBER.join()
             except:
-                logging.exception('[%s] Joining grabber {%s} failed', __NAME__, grabber)
+                logging.exception('[%s] Joining msgidgrabber failed', __NAME__)
                 
         if DIRSCANNER:
             logging.debug('Stopping dirscanner')
@@ -633,16 +641,13 @@ def add_msgid(msgid, pp):
     
     future_nzo = NZBQ.generate_future(msg, repair, unpack, delete, script)
     
-    # Look for a grabber and reinitialize it
-    for grabber in MSGIDGRABBERS:
-        if not grabber.isAlive():
-            grabber.__init__(USERNAME_NEWZBIN, PASSWORD_NEWZBIN, msgid, future_nzo)
-            grabber.start()
-            return
-            
-    grabber = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN, msgid, future_nzo)
-    grabber.start()
-    
+    MSGIDGRABBER.grab(msgid, future_nzo)
+
+    # Start grabber if asleep
+    if not MSGIDGRABBER.isAlive():
+        MSGIDGRABBER.start()
+
+        
 def add_url(url, pp):
     logging.info('[%s] Fetching %s', __NAME__, url)
     
@@ -989,15 +994,22 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1):
                                  SCHED.PM_SEQUENTIAL, [])
                                  
         if need_rsstask:
-            d = range(1, 8)
+            d = range(1, 8) # all days of the week
             
             ran_m = int(RSSTASK_MINUTE  / rss_rate)
             logging.debug("[%s] RSSTASK_MINUTE: %s", __NAME__, ran_m)
-            
+            if rss_rate > 1:
+                interval = 60 / rss_rate
+            else:
+                interval = 0
+
             for h in range(24):
             	  for m in range(rss_rate):
-                    SCHED.addDaytimeTask(RSS.run, '', d, None, (h, 15*m + ran_m), 
+                    logging.debug("Scheduling RSS task %s %s:%s", d, h, interval*m + ran_m)
+                    SCHED.addDaytimeTask(RSS.run, '', d, None, (h, interval*m + ran_m), 
                                          SCHED.PM_SEQUENTIAL, [])
+
+
 ################################################################################
 # RSS                                                                          #
 ################################################################################

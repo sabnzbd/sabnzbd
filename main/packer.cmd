@@ -1,6 +1,6 @@
 @echo off
 
-set prod=SABnzbd-0.2.8test
+set prod=SABnzbd-0.2.8rc2
 
 ren dist %prod%
 if errorlevel 1 goto error
