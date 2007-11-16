@@ -1170,18 +1170,27 @@ class ConfigEmail(ProtectedClass):
         return saveAndRestart(self.__root)
 
 
+def std_time(when):
+    # Fri, 16 Nov 2007 16:42:01 GMT +0100
+    item  = time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime(when))
+    item += " GMT %+05d" % (-time.timezone/36)
+    return item
+
+
 def rss_history():
 
     rss = RSS()
     rss.channel.title = "SABnzbd History"
     rss.channel.description = "Overview of completed downloads"
     rss.channel.link = "http://sourceforge.net/projects/sabnzbdplus/"
+    rss.channel.language = "en"
 
     if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
         newzbin = True
 
     history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
 
+    youngest = 0
     while history_items:
         added = max(history_items.keys())
         
@@ -1190,9 +1199,9 @@ def rss_history():
         for history_item in history_item_list:
             item = Item()
             filename, unpackstrht, loaded, bytes = history_item
-            # Fri, 16 Nov 2007 16:42:01 GMT +0100
-            item.pubDate  = time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime(added))
-            item.pubDate += " GMT %+05d" % (-time.timezone/36)
+            if added > youngest:
+                youngest = added
+            item.pubDate = std_time(added)
             item.title   = filename.replace('.nzb', '')
             #item.link    = "https://v3.newzbin.com/browse/post/%s/" % msgid
 
@@ -1216,6 +1225,8 @@ def rss_history():
                 stageLine += "</tr>Downloaded %s" % iso_units(bytes)
             item.description = stageLine
             rss.addItem(item)
+            
+    rss.channel.lastBuildDate = std_time(youngest)
+    rss.channel.pubDate = std_time(time.time())
 
     return rss.write()
-
