@@ -353,7 +353,8 @@ class NzbQueue(TryList):
         for hist_item in self.__downloaded_items:
             completed = hist_item.completed
             filename = hist_item.filename
-            bytes_downloaded += hist_item.bytes_downloaded
+            bytes = hist_item.bytes_downloaded
+            bytes_downloaded += bytes
             
             if completed not in history_info:
                 history_info[completed] = []
@@ -365,7 +366,7 @@ class NzbQueue(TryList):
                 unpackstrht = hist_item.unpackstrht
                 loaded = False
                 
-            history_info[completed].append((filename, unpackstrht, loaded))
+            history_info[completed].append((filename, unpackstrht, loaded, bytes))
         return (history_info, bytes_downloaded, sabnzbd.get_bytes())
         
     @synchronized(NZBQUEUE_LOCK)

@@ -27,6 +27,7 @@ import time
 import cherrypy
 import logging
 import re
+from sabnzbd.utils.rsslib import RSS, Item, Namespace
 import sabnzbd
 
 from cherrypy.filters.gzipfilter import GzipFilter
@@ -38,7 +39,7 @@ from sabnzbd.utils.multiauth.providers import DictAuthProvider
 from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
-from sabnzbd.email import email_send
+from sabnzbd.email import email_send, iso_units
 from sabnzbd.misc import real_path, create_real_path, save_configfile
 
 from sabnzbd.constants import *
@@ -73,6 +74,7 @@ except AttributeError:
             return (secp * byteper * freecl) / GIGI
         except:
             return 0.0
+
 
 def CheckFreeSpace():
     if sabnzbd.DOWNLOAD_FREE > 0 and not sabnzbd.paused():
@@ -195,7 +197,13 @@ class MainPage(ProtectedClass):
                   nzf_table: %s<br>
                   article_table: %s<br>
                   try_list: %s''' % sabnzbd.debug()
-                  
+
+    @cherrypy.expose
+    def rss(self, mode = 'history'):
+        if mode == 'history':
+            return rss_history()
+
+                      
 #------------------------------------------------------------------------------
 class NzoPage(ProtectedClass):
     def __init__(self, web_dir, nzo_id):
@@ -507,9 +515,7 @@ class HistoryPage(ProtectedClass):
         history['total_bytes'] = "%.2f" % (total_bytes / GIGI)
         
         history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
-        
-        stagenames = {1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin"}
-        
+
         items = []
         while history_items:
             added = max(history_items.keys())
@@ -517,7 +523,7 @@ class HistoryPage(ProtectedClass):
             history_item_list = history_items.pop(added)
             
             for history_item in history_item_list:
-                filename, unpackstrht, loaded = history_item
+                filename, unpackstrht, loaded, bytes = history_item
                 stages = []
                 item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
                         'filename':filename, 'loaded':loaded, 'stages':stages}
@@ -525,7 +531,7 @@ class HistoryPage(ProtectedClass):
                     stage_keys = unpackstrht.keys()
                     stage_keys.sort()
                     for stage in stage_keys:
-                        stageLine = {'name':stagenames[stage]}
+                        stageLine = {'name':STAGENAMES[stage]}
                         actions = []
                         for action in unpackstrht[stage]:
                             actionLine = {'name':action, 'value':unpackstrht[stage][action]}
@@ -1162,3 +1168,54 @@ class ConfigEmail(ProtectedClass):
         sabnzbd.CFG['misc']['email_full'] = email_full
         
         return saveAndRestart(self.__root)
+
+
+def rss_history():
+
+    rss = RSS()
+    rss.channel.title = "SABnzbd History"
+    rss.channel.description = "Overview of completed downloads"
+    rss.channel.link = "http://sourceforge.net/projects/sabnzbdplus/"
+
+    if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+        newzbin = True
+
+    history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
+
+    while history_items:
+        added = max(history_items.keys())
+        
+        history_item_list = history_items.pop(added)
+
+        for history_item in history_item_list:
+            item = Item()
+            filename, unpackstrht, loaded, bytes = history_item
+            # Fri, 16 Nov 2007 16:42:01 GMT +0100
+            item.pubDate  = time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime(added))
+            item.pubDate += " GMT %+05d" % (-time.timezone/36)
+            item.title   = filename.replace('.nzb', '')
+            #item.link    = "https://v3.newzbin.com/browse/post/%s/" % msgid
+
+            if loaded:
+                stageLine = "Post-processing active.<br>"
+            else:
+                stageLine = ""
+
+            stage_keys = unpackstrht.keys()
+            stage_keys.sort()
+            for stage in stage_keys:
+                stageLine += "<tr><dt>Stage %s</dt>" % STAGENAMES[stage]
+                actions = []
+                for action in unpackstrht[stage]:
+                    actionLine = "<dd>%s %s</dd>" % (action, unpackstrht[stage][action])
+                    actions.append(actionLine)
+                actions.sort()
+                actions.reverse()
+                for act in actions:
+                    stageLine += act
+                stageLine += "</tr>Downloaded %s" % iso_units(bytes)
+            item.description = stageLine
+            rss.addItem(item)
+
+    return rss.write()
+

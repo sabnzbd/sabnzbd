@@ -43,6 +43,8 @@ KIBI = float(2 ** 10)
 
 MY_NAME = 'SABnzbd'
 
+STAGENAMES = {1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin"}
+
 BYTES_FILE_NAME  = 'bytes.sab'
 QUEUE_FILE_NAME  = 'queue.sab'
 RSS_FILE_NAME    = 'rss.sab'

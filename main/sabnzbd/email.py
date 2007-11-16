@@ -29,8 +29,24 @@ import re
 import datetime
 import time
 import tempfile
+from sabnzbd.constants import *
 import sabnzbd
-from newsunpack import build_command
+from sabnzbd.newsunpack import build_command
+
+################################################################################
+# iso_units
+#
+# Return bytes in K/M/G/T/P units.
+################################################################################
+def iso_units(bytes):
+    units = ('', 'K', 'M', 'G', 'T', 'P')
+    n= 0
+    while (float(bytes) > 1023.0) and (n < 6):
+        bytes = float(bytes) / 1024.0
+        n= n+1
+    unit = units[n]
+    return "%.1f %sB" % (bytes, unit)
+
 
 ################################################################################
 # prepare_msg
@@ -42,21 +58,13 @@ from newsunpack import build_command
 ################################################################################
 def prepare_msg(bytes, status, output):
 
-    units = ('', 'K', 'M', 'G', 'T', 'P')
-    n= 0
-    while float(bytes) > 1023.0:
-    	  bytes = float(bytes) / 1024.0
-    	  n= n+1
-    unit = units[n]
-
-    result  = "Downloaded %.1f %sB\n\n" % (bytes, unit)
+    result  = "Downloaded %s\n\n" % iso_units(bytes)
     result += "Results of the job:\n\n"
 
-    stagenames = {1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin"}
     stage_keys = status.keys()
     stage_keys.sort()
     for stage in stage_keys:
-        result += "Stage %s\n" % (stagenames[stage])
+        result += "Stage %s\n" % (STAGENAMES[stage])
         for action in status[stage]:
             result += "    %s %s\n" % (action, status[stage][action])
 
