@@ -26,6 +26,7 @@ import logging
 import sabnzbd
 import cherrypy
 import urllib
+import re
 import zipfile
 
 from threading import *
@@ -255,3 +256,21 @@ def save_configfile(cfg):
     f.write(x)
     f.flush()
     f.close()
+
+
+
+################################################################################
+# SplitFileName
+#
+# Isolate newzbin msgid from filename and remove ".nzb"
+# Return (msgid, nice-name)
+################################################################################
+def SplitFileName(name):
+    NBIN = re.compile("msgid_(\d+) (.+)(\.nzb)")
+    m = NBIN.match(name)
+    if (m):
+        return m.group(2), m.group(1)
+    else:
+        return name.replace('.nzb', ''), ""
+
+

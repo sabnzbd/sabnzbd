@@ -8,9 +8,9 @@ import os
 import re
 import subprocess
 import logging
-import sabnzbd
-
 from time import time
+import sabnzbd
+from sabnzbd.misc import SplitFileName
 
 try:
     from win32con import SW_HIDE
@@ -102,7 +102,9 @@ else:
 #------------------------------------------------------------------------------
 def external_processing(extern_proc, complete_dir, filename):
 
-    command = ['%s' % extern_proc, '%s' % complete_dir, '%s' % filename]
+    name, msgid = SplitFileName(filename)
+    command = ['%s' % extern_proc, '%s' % complete_dir, '%s' % filename, \
+               '%s' % name, '%s' % msgid]
     
     stup, need_shell, command, creationflags = build_command(command)
 

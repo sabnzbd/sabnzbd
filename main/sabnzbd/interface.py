@@ -40,7 +40,7 @@ from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 from sabnzbd.email import email_send, iso_units
-from sabnzbd.misc import real_path, create_real_path, save_configfile
+from sabnzbd.misc import real_path, create_real_path, save_configfile, SplitFileName
 
 from sabnzbd.constants import *
 
@@ -1202,8 +1202,11 @@ def rss_history():
             if added > youngest:
                 youngest = added
             item.pubDate = std_time(added)
-            item.title   = filename.replace('.nzb', '')
-            #item.link    = "https://v3.newzbin.com/browse/post/%s/" % msgid
+            item.title, msgid = SplitFileName(filename)
+            if (msgid):
+                item.link    = "https://v3.newzbin.com/browse/post/%s/" % msgid
+            else:
+                item.link    = "http://localhost/%s" % filename
 
             if loaded:
                 stageLine = "Post-processing active.<br>"
