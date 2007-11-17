@@ -653,9 +653,10 @@ class ConfigDirectories(ProtectedClass):
         if not dd:
             return "Error: cannot create complete_dir directory %s." % dd
             
-        dd = create_real_path('nzb_backup_dir', sabnzbd.DIR_LCLDATA, nzb_backup_dir)
-        if not dd:
-            return "Error: cannot create nzb_backup_dir directory %s." % dd
+        if nzb_backup_dir:
+            dd = create_real_path('nzb_backup_dir', sabnzbd.DIR_LCLDATA, nzb_backup_dir)
+            if not dd:
+                return "Error: cannot create nzb_backup_dir directory %s." % dd
 
         if extern_proc and not os.access(real_path(sabnzbd.DIR_HOME, extern_proc), os.R_OK):
             return "Error: cannot find extern_proc %s." % real_path(sabnzbd.DIR_HOME, extern_proc)

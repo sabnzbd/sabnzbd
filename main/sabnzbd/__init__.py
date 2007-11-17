@@ -260,9 +260,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     if COMPLETE_DIR == "":
         return False
 
-    NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
-    if NZB_BACKUP_DIR == "":
-        return False
+    if CFG['misc']['nzb_backup_dir']:
+        NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
+    else:
+        NZB_BACKUP_DIR = ""
 
     if "samefile" in os.path.__dict__:
         if os.path.samefile(DOWNLOAD_DIR, COMPLETE_DIR):
