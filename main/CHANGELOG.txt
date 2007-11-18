@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
-0.2.8rc2 by the ShyPike
+0.2.8rc3 by the ShyPike
 -------------------------------------------------------------------------------
+added:   newzbin queue (for 5/min limitation)
+added:   Help links to wiki pages on Sourceforge.net
+added:   RSS-feed for History
 added:   Tracker-1827619:
          Add <table id="SAB_Standard_Queue_Table"> to the queue table of the
          standard template.
@@ -30,6 +33,7 @@ added:   Commandline switches
          -Override of templates
          -Override of server:port
 updated: Nova-0.3.2 and Nova-0.4.5 templates
+added:   Lots of other small stuff
 
 -------------------------------------------------------------------------------
 0.2.7 by the ShyPike (and Freaky and DNW)
