@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__version__ = "0.2.8rc3"
+__version__ = "0.2.8rc4"
 __configversion__ = 16
 __queueversion__ = 5
 __NAME__ = "sabnzbd"
@@ -135,16 +135,17 @@ def sig_handler(signum = None, frame = None):
 ################################################################################
 # Directory Setup                                                              #
 ################################################################################
-def dir_setup(config, cfg_name, def_loc, dir_name):
+def dir_setup(config, cfg_name, def_loc, def_name):
     try:
         my_dir = config['misc'][cfg_name]
     except:
-        logging.info('No %s defined, setting value to "%s"', cfg_name, dir_name)
-        my_dir = dir_name
+        logging.info('No %s defined, setting value to "%s"', cfg_name, def_name)
+        my_dir = def_name
         config['misc'][cfg_name] = my_dir
     
-    my_dir = create_real_path(cfg_name, def_loc, my_dir)
-    logging.debug("%s: %s", cfg_name, my_dir)
+    if my_dir:
+        my_dir = create_real_path(cfg_name, def_loc, my_dir)
+        logging.debug("%s: %s", cfg_name, my_dir)
     return my_dir
 
 
@@ -260,10 +261,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     if COMPLETE_DIR == "":
         return False
 
-    if CFG['misc']['nzb_backup_dir']:
-        NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
-    else:
-        NZB_BACKUP_DIR = ""
+    NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
 
     if "samefile" in os.path.__dict__:
         if os.path.samefile(DOWNLOAD_DIR, COMPLETE_DIR):

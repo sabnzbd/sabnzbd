@@ -66,3 +66,4 @@ DEF_LOG_ERRFILE  = 'sabnzbd.error.log'
 DEF_LOG_CHERRY   = 'cherrypy.log'
 DEF_TIMEOUT      = 120
 MIN_TIMEOUT      = 30
+DEF_LOGLEVEL     = 1

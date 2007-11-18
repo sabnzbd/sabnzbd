@@ -156,8 +156,6 @@ def main():
     sabnzbd.DIR_PROG= os.path.normpath(os.path.abspath('.'))
 
     f = sabnzbd.DIR_APPDATA + '/' + DEF_INI_FILE
-    if not os.path.exists(os.path.abspath(f)):
-        f = sabnzbd.DIR_PROG + '/' + DEF_INI_FILE
 
     for o, a in opts:
         if (o in ('-d', '--daemon')) and os.name != 'nt':
@@ -246,7 +244,7 @@ def main():
         cfg['logging']['enable_cherrypy_logging'] = cherrypylogging
 
     if logging_level == None:
-        logging_level = check_setting_int(cfg, 'logging', 'log_level', 0)
+        logging_level = check_setting_int(cfg, 'logging', 'log_level', DEF_LOGLEVEL)
         if logging_level > 2:
             logging_level = 2
     else:

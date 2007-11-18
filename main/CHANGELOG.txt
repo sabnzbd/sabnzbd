@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
-0.2.8rc3 by the ShyPike
+0.2.8rc4 by the ShyPike
 -------------------------------------------------------------------------------
 added:   newzbin queue (for 5/min limitation)
 added:   Help links to wiki pages on Sourceforge.net
