@@ -38,7 +38,8 @@ options = dict(
                               'templates/config_scheduling.tmpl',
                               'templates/config_rss.tmpl',
                               'templates/static/placeholder.txt',
-                              'templates/static/favicon.ico']),
+                              'templates/static/stylesheets/default.css',
+                              'templates/static/images/favicon.ico']),
                     ('share/SABnzbd-' + sabnzbd.__version__ + '/templates/static',
                               ['templates/static/placeholder.txt', 'templates/static/placeholder.txt'])])
 
@@ -46,8 +47,8 @@ if py2exe:
     options['data_files'] = [
           ('', ['README.txt', 'LICENSE.txt', 'CHANGELOG.txt']), 
           ('templates', glob.glob("templates/*.tmpl")),
-          ('templates', ['templates/default.css']),
-          ('templates/static', glob.glob('templates/static/*.ico')),
+          ('templates/static/stylesheets', ['templates/static/stylesheets/default.css']),
+          ('templates/static/images', glob.glob('templates/static/images/*.ico')),
           ('NOVA_0.3.2', glob.glob("NOVA_0.3.2/*.*")),
           ('NOVA_0.3.2/templates', glob.glob("NOVA_0.3.2/templates/*.*")),
           ('NOVA_0.3.2/templates/static', glob.glob("NOVA_0.3.2/templates/static/*.*")),
@@ -60,10 +61,10 @@ if py2exe:
           ('NOVA_0.4.5/templates/static/images', glob.glob("NOVA_0.4.5/templates/static/images/*.*")),
           ('NOVA_0.4.5/templates/static/javascripts', glob.glob("NOVA_0.4.5/templates/static/javascripts/*.*")),
           ('NOVA_0.4.5/templates/static/stylesheets', glob.glob("NOVA_0.4.5/templates/static/stylesheets/*.*")),
-          ('par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
-          ('unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
-          ('unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE']),
-          ('email', glob.glob("win/email/*.*"))
+          ('win/par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
+          ('win/unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
+          ('win/unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE']),
+          ('win/email', glob.glob("win/email/*.*"))
         ]
     options['console'] = ['SABnzbd.py']
     options['options'] = {"py2exe": {"bundle_files": 1, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}

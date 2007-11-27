@@ -32,7 +32,7 @@ import tempfile
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.newsunpack import build_command
-from sabnzbd.misc import SplitFileName
+from sabnzbd.nzbstuff import SplitFileName
 
 ################################################################################
 # iso_units

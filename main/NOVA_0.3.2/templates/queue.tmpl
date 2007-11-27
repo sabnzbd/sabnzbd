@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-	<title>SABnzbd-$version "Nova" - Queue - Queued: $mbleft MB</title>
+	<title>SABnzbd+ $version "Nova" - Queue - Queued: $mbleft MB</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<meta http-equiv="cache-control" content="no-cache" />
 	<meta http-equiv="pragma" content="no-cache" />
@@ -86,21 +86,7 @@
 				<a href="../queue/$slot.nzo_id/" title="View File Set for $slot.filename">
 				<span id="name_$slot.nzo_id">
 					<script type="text/javascript">
-					var nzbpidchk = ("$slot.filename".substr(0,5));
-						if (nzbpidchk=="msgid")
-						{
-							var strpinsfna="$slot.filename"
-							var strpinsfna = strpinsfna.replace(/_/g," ");
-							var strpinsfna = strpinsfna.replace(/.nzb/g,"");
-							document.write(strpinsfna.substr(14))
-						}
-						else
-						{
-							var strpinsfnc="$slot.filename"
-							var strpinsfnc = strpinsfnc.replace(/_/g," ");
-							var strpinsfnc = strpinsfnc.replace(/.nzb/g,"");
-							document.write(strpinsfnc)
-						}
+					   document.write("$slot.filename");
 					</script>
 				</span>
 				</a>
@@ -230,6 +216,7 @@
 				<tr class="active">
 					<td><a href="../queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id">Remove</a></td>
 					<td>$line.filename</td>
+					<td>$line.msgid</td>
 					<td>$line.mbleft/$line.mb MB</td>
 					<td>$line.age</td>
 					<td colspan="3">&nbsp;</td>
@@ -245,6 +232,7 @@
 				<tr class="waiting">
 					<td>Waiting</td>
 					<td>$line.filename (set: $line.set)</td>
+					<td>$line.msgid (set: $line.msgid)</td>
 					<td>$line.mbleft/$line.mb MB<td>$line.age</td>
 					<td colspan="3">&nbsp;</td>
 				</tr>
@@ -280,7 +268,7 @@ SABNZBDJSON
 	"jobs": [
 	<!--#if $varExists('slotinfo')#-->
 	<!--#for $slot in $slotinfo#-->
-	{"id": "$slot.nzo_id", "name": "$slot.filename", "left": $slot.mbleft, "total": $slot.mb, "eta": "$slot.eta", "age": "$slot.avg_age"},
+	{"id": "$slot.nzo_id", "name": "$slot.filename", "msgid": "$slot.msgid", "left": $slot.mbleft, "total": $slot.mb, "eta": "$slot.eta", "age": "$slot.avg_age"},
 	
 	<!--#end for#-->
 	<!--#end if#-->]

@@ -1,11 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd-$version - Queue: $mbleft MB</title>
+    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
 </head>
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
 <span class="MainMenu">
 <a href="/sabnzbd">Home</a> |
 <a href="../../queue">Queue</a> |
@@ -46,27 +46,27 @@ Send email when disk is full and SABnzbd is paused.<br>
 <legend>Email Account Settings</legend>
 <strong>SMTP server:</strong><br>
 Set your ISP's server for outgoing email.<br>
-<input type="text" name="email_server" value=$email_server>
+<input type="text" size="35" name="email_server" value=$email_server>
 <br>
 <br>
 <strong>Email recipient:</strong><br>
 Email address to send the email to.<br>
-<input type="text" name="email_to" value=$email_to>
+<input type="text" size="35" name="email_to" value=$email_to>
 <br>
 <br>
 <strong>Email sender:</strong><br>
 Who should we say sent the email?<br>
-<input type="text" name="email_from" value=$email_from>
+<input type="text" size="35" name="email_from" value=$email_from>
 <br>
 <br>
 <strong>OPTIONAL: Account name:</strong><br>
 For authenticated email, account name.<br>
-<input type="text" name="email_account" value=$email_account>
+<input type="text" size="35" name="email_account" value=$email_account>
 <br>
 <br>
 <strong>OPTIONAL: Account password:</strong><br>
 For authenticated email, password.<br>
-<input type="password" name="email_pwd" value=$email_pwd>
+<input type="password" size="35" name="email_pwd" value=$email_pwd>
 </fieldset>
 </div>
 <p><input type="submit" value="Save Changes"></p>

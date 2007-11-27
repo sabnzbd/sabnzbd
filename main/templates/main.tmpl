@@ -1,12 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd-$version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="default.css"/>
-    <link rel="shortcut icon" href="static/favicon.ico" />
+    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+    <link rel="stylesheet" type="text/css" href="static/stylesheets/default.css"/>
+    <link rel="shortcut icon" href="static/images/favicon.ico" />
 </head>
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
 <span class="MainMenu">
 <a class="current" href="./">Home</a> |
 <a href="./queue">Queue</a> |
@@ -92,5 +92,9 @@
 <div id='SABData' style='visibility: hidden'>
     <b>&nbsp;SAB:</b> <!--#if $paused then "<blink><b>PAUSED</b></blink>" else $kbpersecrnd + " KB/s"#--> <b>Q:</b> $mbleftrnd/$mbrnd MB<b>&nbsp; Comp:</b> $diskspace2 GB 
 </div>
+<!--#if $warning#-->
+    <h2>WARNING</h2>
+    <b>$warning</b>
+<!--#end if#-->
 </body>
 </html>

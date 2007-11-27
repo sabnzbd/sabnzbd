@@ -87,7 +87,7 @@ class BPSMeter:
             self.start_time = check_time
         
         if self.log_time < check_time:
-            logging.info("[%s] bps: %s", __NAME__, self.bps)
+            logging.debug("[%s] bps: %s", __NAME__, self.bps)
             self.log_time = t
             
         if self.bps < 0.0:
@@ -106,7 +106,11 @@ class Downloader(Thread):
     def __init__(self, servers, paused = False):
         Thread.__init__(self)
         
+        # Used for scheduled pausing
         self.paused = paused
+        
+        # Used for reducing speed
+        self.delayed = False
         
         self.shutdown = False
         
@@ -147,7 +151,15 @@ class Downloader(Thread):
     def pause(self):
         logging.info("[%s] Pausing", __NAME__)
         self.paused = True
-        
+
+    def delay(self):
+        logging.info("[%s] Delaying", __NAME__)
+        self.delayed = True
+
+    def undelay(self):
+        logging.info("[%s] Undelaying", __NAME__)
+        self.delayed = False
+
     def disconnect(self):
         self.force_disconnect = True
         
@@ -160,7 +172,7 @@ class Downloader(Thread):
                     if nw.timeout and time.time() > nw.timeout:
                         self.__reset_nw(nw, "timed out")
                         
-                if not server.idle_threads or self.paused or self.shutdown:
+                if not server.idle_threads or self.paused or self.shutdown or self.delayed:
                     continue
                     
                 if not sabnzbd.has_articles_for(server):
@@ -247,7 +259,7 @@ class Downloader(Thread):
                 time.sleep(1.0)
                 
                 sabnzbd.CV.acquire()
-                while (not sabnzbd.has_articles() or self.paused) and not \
+                while (not sabnzbd.has_articles() or self.paused or self.delayed) and not \
                        self.shutdown:
                     sabnzbd.CV.wait()
                 sabnzbd.CV.release()

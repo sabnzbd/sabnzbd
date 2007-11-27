@@ -1,12 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd-$version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="../../default.css"/>
-    <link rel="shortcut icon" href="../../static/favicon.ico" />
+    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
+    <link rel="shortcut icon" href="../../static/images/favicon.ico" />
 </head>
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
 <span class="MainMenu">
 <a href="../../">Home</a> |
 <a href="../../queue">Queue</a> |
@@ -29,12 +29,12 @@
   <form action="addServer" method="post">
     <fieldset class="EntryFieldSet">
       <legend>Add server</legend>
-      Host:<br><input type="text" name="host"><br>
-      Port:<br><input type="text" name="port"><br>
-      Username:<br><input type="text" name="username"><br>
-      Password:<br><input type="password" name="password"><br>
-      Timeout:<br><input type="text" name="timeout"><br>
-      Connections:<br><input type="text" name="connections"><br>
+      Host:<br><input type="text" size="25" name="host"><br>
+      Port:<br><input type="text" size="25" name="port"><br>
+      Username:<br><input type="text" size="25" name="username"><br>
+      Password:<br><input type="password" size="25" name="password"><br>
+      Timeout:<br><input type="text" size="25" name="timeout"><br>
+      Connections:<br><input type="text" size="25" name="connections"><br>
       Fillserver:<br><input type="radio" name="fillserver" value="0" "checked=1"> No
                      <input type="radio" name="fillserver" value="1"> Yes
                  <br>
@@ -45,12 +45,12 @@
   <form action="saveServer" method="post">
     <fieldset class="EntryFieldSet">
       <legend>$server</legend>
-      Host:<br><input type="text" name="host" value=$servers[$server]['host']><br>
-      Port:<br><input type="text" name="port" value=$servers[$server]['port']><br>
-      Username:<br><input type="text" name="username" value=$servers[$server]['username']><br>
-      Password:<br><input type="password" name="password" value=$servers[$server]['password']><br>
-      Timeout:<br><input type="text" name="timeout" value=$servers[$server]['timeout']><br>
-      Connections:<br><input type="text" name="connections" value=$servers[$server]['connections']><br>
+      Host:<br><input type="text" size="25" name="host" value=$servers[$server]['host']><br>
+      Port:<br><input type="text" size="25" name="port" value=$servers[$server]['port']><br>
+      Username:<br><input type="text" size="25" name="username" value=$servers[$server]['username']><br>
+      Password:<br><input type="password" size="25" name="password" value=$servers[$server]['password']><br>
+      Timeout:<br><input type="text" size="25" name="timeout" value=$servers[$server]['timeout']><br>
+      Connections:<br><input type="text" size="25" name="connections" value=$servers[$server]['connections']><br>
       Fillserver:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
                      <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
                  <br>

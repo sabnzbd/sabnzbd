@@ -26,6 +26,8 @@ import datetime
 
 from sabnzbd.trylist import TryList
 
+RE_NEWZBIN = re.compile("msgid_(\d+) (.+)(\.nzb)")
+
 HAVE_CELEMENTTREE = True
 try:
     from xml.etree.cElementTree import XML
@@ -319,8 +321,8 @@ class NzbObject(TryList):
         if match_result:
             self.__dirname = match_result.group(1)
             
-        # Remove trailing .nzb
-        self.__dirname = self.__dirname.replace('.nzb', '')
+        # Remove leading msgid_XXXX and trailing .nzb
+        self.__dirname, msgid = SplitFileName(self.__dirname)
         
         if not nzb:
             return
@@ -739,3 +741,20 @@ def _nzf_cmp(nzf1, nzf2):
         return ret
     else:
         return cmp(nzf1.get_date(), nzf2.get_date())
+
+
+#-------------------------------------------------------------------------------
+
+################################################################################
+# SplitFileName
+#
+# Isolate newzbin msgid from filename and remove ".nzb"
+# Return (nice-name, msg-id)
+################################################################################
+def SplitFileName(name):
+    m = RE_NEWZBIN.match(name)
+    if (m):
+        return m.group(2), m.group(1)
+    else:
+        return name.replace('.nzb', ''), ""
+

@@ -1,4 +1,4 @@
-                                SABnzbd v0.2.8rc4
+                                SABnzbd+ v0.2.8rc6
 								
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -21,79 +21,85 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
--------------------------------------------------------------------------------
-1) INSTALL
--------------------------------------------------------------------------------
-SABnzbd-0.2.8-w32 (pre-built binary) users:
-o) Everything below already included, goto 2)
-
-Preqrequisites:
-- Without these modules, SABnzbd won't work -
-- (Included in w32 build) -
-- Dependencies in [] are not needed with python-2.5 -
-
-[o) Python-2.4.4]          http://www.python.org
-o) Python-2.5              http://www.python.org
-o) CherryPy-2.2.1          http://www.cherrypy.org
-o) cheetah-2.0rc7          http://www.cheetahtemplate.org/
-[o) elementtree >= 1.2.6]  http://effbot.org/downloads/
-- w32 only -
-o) pywin32-208	   	   https://sourceforge.net/projects/pywin32/
-
-Semi-Optional:
-- Required for post processing -
-- (Included in w32 build) -
-o) unrar >= 3.6.6          http://www.rarlab.com/rar_add.htm
-o) unzip >= 5.5.2          http://www.info-zip.org/
-o) par2cmdline >= 0.4      http://parchive.sourceforge.net/
-
-Optional:
-- (Included in w32 build) -
-o) yenc module >= 0.3      unix: 
-                           http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
-                           
-                           w32:
-                           http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip
-                           (crippled version that compiles on w32)
-
-[o) cElementTree >= 1.0.5] http://effbot.org/downloads/
-
-o) feedparser >= 4.1       http://feedparser.org/
 
 -------------------------------------------------------------------------------
-2) CONFIG
+1) INSTALL pre-built Win32 binaries
 -------------------------------------------------------------------------------
-SABnzbd-0.2.8-w32 users:
- See 3)
+Self-unpack the pre-build version to any folder of your liking.
+Start the SABnzbd.exe program.
+Within 5-10 seconds your web browser will start and show the user interface.
+Use the "Help" button in the web-interface to be directed to the Help Wiki
+on SourceForge.net
 
-Everyone else:
- Start SABnzbd from the command line with -h to see the options:
-     python SABnzbd.py -h
 
- Most people can start with:
-     python SABnzbd.py
- This will start the program and automatically launch a browser to show you
- the web-gui.
- When nothing happens, your port is probably occupied.
- Try:
-    python SABnzbd.py -s localhost:8088
- Try substituting 8088 with different values, if you fail to get a result.
- Note that it may take upto 10 seconds before the browser launches.
- 
 -------------------------------------------------------------------------------
-3) USE
+2) INSTALL with only sources
 -------------------------------------------------------------------------------
-SABnzbd-0.2.8-w32 users:
- Run SABnzbd.exe 
- The program will start and automatically launch a browser to show you
- the web-gui (http://localhost:8080/sabnzbd)
- Goto the config page and enter your preferences.
- You may need to use the command line switches described in 2)
+
+You need to have Python installed and some modules.
+
+Unix/Linux/OSX
+    Python-2.4.4            http://www.python.org
+    cElementTree-1.0.5      http://effbot.org/downloads/
+OR
+    Python-2.5.1            http://www.python.org
+
+Windows
+    Python-2.5.1            http://www.activestate.com
+
+Essential modules
+    CherryPy-2.2.1          http://www.cherrypy.org
+    cheetah-2.0.1           http://www.cheetahtemplate.org/
+    elementtree-1.2.6       http://effbot.org/downloads/
+    yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
+                            http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
+    par2cmdline >= 0.4      http://parchive.sourceforge.net/
+
+Optional modules
+    unrar >= 3.6.6          http://www.rarlab.com/rar_add.htm
+    unzip >= 5.5.2          http://www.info-zip.org/
+    feedparser >= 4.1       http://feedparser.org/
+
+
+Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
+Start the program from the commandline:
+    python SABnzbd.py
+Within 5-10 seconds your web browser will start and show the user interface.
+Use the "Help" button in the web-interface to be directed to the Help Wiki
+on SourceForge.net
+
+
+-------------------------------------------------------------------------------
+3) TROUBLESHOOTING
+-------------------------------------------------------------------------------
+
+Your browse may start up pointing to a strange URL like:
+
+    http://sabnzbd-says.__localhost_port_8080_is_not_free__check_documentation__.none/
+
+This means that SABnzbd cannot use the default port 8080 to run its web-server on.
+Try to use another port, you'll need to use the a command window:
+    SABnzbd.exe -s localhost:7777
+or
+    python SABnzbd.py -s localhost:7777
+
+You may of course try other port numbers too.
 
  
 -------------------------------------------------------------------------------
-4) CREDITS
+4) MORE INFORMATION
 -------------------------------------------------------------------------------
+
+Visit the WIKI site:
+    http://sabnzbdplus.wiki.sourceforge.net/
+
+ 
+-------------------------------------------------------------------------------
+5) CREDITS
+-------------------------------------------------------------------------------
+
+o) NOVA3, NOVA4 and Plush alternative web interfaces
+   pairofdimes, Organix Design
 
 o) SABnzbd uses various code from pynewsleecher, newsunpack and grabnzb by: 
    Freddie (freddie@madcowdisease.org) (http://www.madcowdisease.org/mcd)
@@ -118,12 +124,20 @@ o) python yenc module:
    
 o) cElementTree and elementtree:
    http://effbot.org/downloads/
-  
+
+o) sendEmail.exe/pl:
+   Brandon Zehm <caspian@dotconf.net>
+   http://caspian.dotconf.net/
+
 o) Contributors:
-   gwynevans, Jigal van Hemert, ...
-   
+   ShyPike, Freaky, gwynevans, Jigal van Hemert, ...
+
+o) Testers:
+   pairofdimes, rascalli, out2lunch, qwaqwa, duumke
+
+
 -------------------------------------------------------------------------------
-5) FAQ
+6) FAQ
 -------------------------------------------------------------------------------
 o) Q: How can I download a set of *par2/*PAR2 files without activating
       auto-par2 mode?

@@ -79,20 +79,13 @@ function parseInfo(info)
 			else {
 
 
-				var nzbidcheck = job["name"].substr(0,5);
 				var goodname = job["name"];
 				var pidstrip = "N/A";
-				if (nzbidcheck=="msgid") {
-					goodname = goodname.replace(/_/g," ");
-					pidstrip = goodname.substr(6,7); 
-					goodname = goodname.replace(/.nzb/g,"");
-					goodname = goodname.substr(14);
-				} else {
-					goodname = goodname.replace(/_/g," ");
-					goodname = goodname.replace(/.nzb/g,"");
+				if (job["msgid"] != "") {
+				  pidstrip = job["msgid"]
 				}
 				
-				if (document.getElementById("name_"+id).innerHTML != goodname)
+//				if (document.getElementById("name_"+id).innerHTML != goodname)
 					 document.getElementById("name_"+id).innerHTML = goodname;
 				document.getElementById("left_"+id).innerHTML = job["left"].toFixed(2);
 				document.getElementById("total_"+id).innerHTML = job["total"].toFixed(2);
@@ -126,7 +119,7 @@ function parseInfo(info)
 				if (pidstrip == "N/A")
 					document.getElementById("hop_"+id).innerHTML = "N/A";
 				else
-					document.getElementById("hop_"+id).innerHTML = "<a href=\"https://v3.newzbin.com/browse/post/" + pidstrip + "\" title=\"View Newzbin Post #" + pidstrip + "\" target=\"_blank\"><img src=\"../static/images/icon_newzbin.png\" alt=\"Newzbin\" /></a>";
+					document.getElementById("hop_"+id).innerHTML = "<a href=\"https://v3.newzbin.com/browse/post/" + job["msgid"] + "\" title=\"View Newzbin Post #" + pidstrip + "\" target=\"_blank\"><img src=\"../static/images/icon_newzbin.png\" alt=\"Newzbin\" /></a>";
 				
 				
 	

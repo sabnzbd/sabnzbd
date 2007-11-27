@@ -46,7 +46,7 @@ from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
 from sabnzbd.constants import *
-from sabnzbd.misc import Get_User_ShellFolders
+from sabnzbd.misc import Get_User_ShellFolders, save_configfile
 
 from threading import Thread
 
@@ -85,8 +85,12 @@ def print_version():
     print "%s-%s" % (MY_NAME, sabnzbd.__version__)
 
 
-def launch_a_browser(host, port):
-    url= "http://%s:%s/sabnzbd" % (host, port)
+def launch_a_browser(host, port, trouble=""):
+    if not trouble:
+        url = "http://%s:%s/sabnzbd" % (host, port)
+    else:
+        trouble = trouble.replace(' ','_')
+        url = "http://SABNZBD-SAYS.__%s__.NONE" % trouble
     if os.name == 'nt':
         win32api.ShellExecute(0, "open", url, None, "", 5)
     else:
@@ -126,7 +130,8 @@ def main():
     try:
         opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
-                      'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', 'config-file='])
+                      'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', \
+                      'config-file=', 'delay='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -142,6 +147,7 @@ def main():
     logging_level = None
     umask = None
     web_dir = None
+    delay = 0.0
 
     if os.name == 'nt':
         specials = Get_User_ShellFolders()
@@ -155,7 +161,7 @@ def main():
 
     sabnzbd.DIR_PROG= os.path.normpath(os.path.abspath('.'))
 
-    f = sabnzbd.DIR_APPDATA + '/' + DEF_INI_FILE
+    f = sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE
 
     for o, a in opts:
         if (o in ('-d', '--daemon')) and os.name != 'nt':
@@ -203,6 +209,12 @@ def main():
             sys.exit()
         if o in ('-p', '--pause'):
             pause = True
+        if o in ('--delay'):
+            # For debugging of memory leak only!!
+            try:
+                delay = float(a)
+            except:
+                pass
             
     if not f:
         print_help()
@@ -211,8 +223,8 @@ def main():
         f = os.path.abspath(f)
         if not os.path.exists(f):
         	  try:
-        	      if not os.path.exists(sabnzbd.DIR_APPDATA):
-        	          os.makedirs(sabnzbd.DIR_APPDATA)
+        	      if not os.path.exists(sabnzbd.DIR_LCLDATA):
+        	          os.makedirs(sabnzbd.DIR_LCLDATA)
         	      fp = open(f, "w")
         	      fp.write("__version__=%s\n[misc]\n[logging]\n[newzbin]\n[servers]\n" % sabnzbd.__configversion__)
         	      fp.close()
@@ -323,7 +335,7 @@ def main():
 
     sabnzbd.CFG = cfg
     
-    init_ok = sabnzbd.initialize(pause, clean_up, True)
+    init_ok = sabnzbd.initialize(pause, clean_up)
     
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting', 
@@ -367,12 +379,13 @@ def main():
             logging.info("Browser binary... NOT found!")
         
     if cherryhost == '':
-        cherryhost = check_setting_str(cfg, 'misc','host', '')
+        cherryhost = check_setting_str(cfg, 'misc','host', DEF_HOST)
     else:
         check_setting_str(cfg, 'misc','host', cherryhost)
         
     if cherryhost == '':
     	  cherryhost = DEF_HOST
+    cfg['misc']['host'] = cherryhost
 
     if cherryport == 0:
         cherryport= check_setting_int(cfg, 'misc', 'port', DEF_PORT)
@@ -381,6 +394,8 @@ def main():
 
     log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
 
+    sabnzbd.DEBUG_DELAY = delay
+    
     if not web_dir:
         try:
             web_dir = cfg['misc']['web_dir']
@@ -391,22 +406,29 @@ def main():
     cfg['misc']['web_dir'] = web_dir
 
     web_dir = real_path(sabnzbd.DIR_PROG, web_dir)
+    web_main = real_path(web_dir, DEF_MAIN_TMPL)
     logging.info("Web dir is %s", web_dir)
     
     sabnzbd.interface.USERNAME = check_setting_str(cfg, 'misc', 'username', '')
         
     sabnzbd.interface.PASSWORD = check_setting_str(cfg, 'misc', 'password', '', False)
 
-    if not os.path.exists(web_dir + "/main.tmpl"):
-        logging.error('Cannot find web template: %s/%s', web_dir, DEF_MAIN_TMPL)
-        sys.exit(1)
-    if not os.access(web_dir, os.R_OK):
-        logging.error('Web directory: %s error accessing', web_dir)
-        sys.exit(1)
-        
+    if not os.path.exists(web_main):
+        logging.warning('Cannot find web template: %s, trying standard template', web_main)
+        web_dir = real_path(sabnzbd.DIR_PROG, DEF_TEMPLATES)
+        web_main = real_path(web_dir, DEF_MAIN_TMPL)
+        if not os.path.exists(web_main):
+            logging.exception('Cannot find standard template: %s', web_main)
+            if (not nobrowser) and (not fork):
+                launch_a_browser(cherryhost, cherryport, "Cannot find standard web-templates")
+            sys.exit(1)
+
     if fork and os.name != 'nt':
         daemonize()
-        
+
+    # Save the INI file
+    save_configfile(cfg)
+            
     logging.info('Starting %s-%s', MY_NAME, sabnzbd.__version__)
     try:
         sabnzbd.start()
@@ -457,13 +479,16 @@ def main():
         cherrypy.server.start(init_only=True)
         cherrypy.server.wait()
         if (not nobrowser) and (not fork):
-            launch_a_browser(cherryhost, cherryport)
+            launch_a_browser(cherryhost, cherryport, "")
             
         # Have to keep this running, otherwise logging will terminate
         while cherrypy.server.ready:
             time.sleep(3)
     except:
         logging.exception("Failed to start web-interface")
+        if (not nobrowser) and (not fork):
+            launch_a_browser(cherryhost, cherryport,
+                     "%s port %s is not free  Check documentation" % (cherryhost, cherryport))
         sabnzbd.halt()
         
 if __name__ == '__main__':

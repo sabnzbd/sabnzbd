@@ -40,7 +40,8 @@ from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 from sabnzbd.email import email_send, iso_units
-from sabnzbd.misc import real_path, create_real_path, save_configfile, SplitFileName
+from sabnzbd.misc import real_path, create_real_path, save_configfile
+from sabnzbd.nzbstuff import SplitFileName
 
 from sabnzbd.constants import *
 
@@ -132,6 +133,11 @@ class MainPage(ProtectedClass):
         
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             info['newzbinDetails'] = True
+
+        if sabnzbd.CFG['servers']:
+            info['warning'] = ""
+        else:
+            info['warning'] = "No Usenet server defined, please check Config-->Servers"
             
         template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
                             searchList=[info],
@@ -352,7 +358,7 @@ class QueuePage(ProtectedClass):
             	  unpackopts= unpackopts + 3
             	                          
             slot['unpackopts'] = str(unpackopts)
-            slot['filename'] = filename
+            slot['filename'], slot['msgid'] = SplitFileName(filename)
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
             slot['mb'] = "%.2f" % (bytes / MEBI)
             
@@ -524,9 +530,10 @@ class HistoryPage(ProtectedClass):
             
             for history_item in history_item_list:
                 filename, unpackstrht, loaded, bytes = history_item
+                name, msgid = SplitFileName(filename)
                 stages = []
                 item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
-                        'filename':filename, 'loaded':loaded, 'stages':stages}
+                        'msgid':msgid, 'filename':name, 'loaded':loaded, 'stages':stages}
                 if self.__verbose:
                     stage_keys = unpackstrht.keys()
                     stage_keys.sort()
@@ -645,9 +652,10 @@ class ConfigDirectories(ProtectedClass):
         if not dd:
             return "Error: cannot create log directory %s." % dd
 
-        dd = create_real_path('dirscan_dir', sabnzbd.DIR_HOME, dirscan_dir)
-        if not dd:
-            return "Error: cannot create dirscan_dir directory %s." % dd
+        if dirscan_dir:
+            dd = create_real_path('dirscan_dir', sabnzbd.DIR_HOME, dirscan_dir)
+            if not dd:
+                return "Error: cannot create dirscan_dir directory %s." % dd
             
         dd = create_real_path('complete_dir', sabnzbd.DIR_HOME, complete_dir)
         if not dd:
@@ -775,7 +783,11 @@ class ConfigGeneral(ProtectedClass):
                     cronlines = None, username_newzbin = None, password_newzbin = None,
                     refresh_rate = None, rss_rate = None,
                     bandwith_limit = None, cleanup_list = None, cache_limit = None):
-        sabnzbd.CFG['misc']['host'] = host
+        if host:
+            sabnzbd.CFG['misc']['host'] = host
+        else:
+            sabnzbd.CFG['misc']['host'] = DEF_HOST
+
         sabnzbd.CFG['misc']['port'] = port
         sabnzbd.CFG['misc']['username'] = username
         sabnzbd.CFG['misc']['password'] = password
@@ -1054,7 +1066,10 @@ class ConnectionInfo(ProtectedClass):
 
     @cherrypy.expose
     def showlog(self):
-        sabnzbd.LOGHANDLER.flush()
+        try:
+            sabnzbd.LOGHANDLER.flush()
+        except:
+            pass
         return cherrypy.lib.cptools.serveFile(sabnzbd.LOGFILE, disposition='attachment')
 
     @cherrypy.expose
@@ -1191,7 +1206,7 @@ def rss_history():
 
     history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
 
-    youngest = 0
+    youngest = None
     while history_items:
         added = max(history_items.keys())
         
@@ -1207,12 +1222,17 @@ def rss_history():
             if (msgid):
                 item.link    = "https://v3.newzbin.com/browse/post/%s/" % msgid
             else:
-                item.link    = "http://localhost/%s" % filename
+                item.link    = "http://%s:%s/sabnzbd/history" % ( \
+                                sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )
 
             if loaded:
                 stageLine = "Post-processing active.<br>"
             else:
                 stageLine = ""
+                
+            stageLine += "Finished at %s and downloaded %s" % ( \
+                         time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)), \
+                         iso_units(bytes) )
 
             stage_keys = unpackstrht.keys()
             stage_keys.sort()
@@ -1226,7 +1246,7 @@ def rss_history():
                 actions.reverse()
                 for act in actions:
                     stageLine += act
-                stageLine += "</tr>Downloaded %s" % iso_units(bytes)
+                stageLine += "</tr>"
             item.description = stageLine
             rss.addItem(item)
             

@@ -77,12 +77,11 @@ function MainLoop(){
 			for(var i=0; i<queue.noofslots; i++) {
 				var nzb = $(queue.jobs[i].nzo_id);
 				//filename
-				var goodname = queue.jobs[i].filename.replace(/_/g,' ').replace(/.nzb/g,'');
+				var goodname = queue.jobs[i].filename;
 				var hop = "";
-				if (goodname.substr(0,6)=='msgid ') {
+				if (queue.jobs[i].msgid!='') {
 					// newzbin name spruceage
-					hop = "https://v3.newzbin.com/browse/post/"+queue.jobs[i].filename.substr(6,7);
-					goodname = goodname.substr(14);
+					hop = "https://v3.newzbin.com/browse/post/"+queue.jobs[i].msgid;
 				}
 				// filename
 				if (nzb.childNodes[0].childNodes[1].innerHTML != goodname) {
@@ -191,11 +190,8 @@ function MainLoop(){
 						var loading = "";
 						var sick = "";
 						var goodname = histore.lines[i].filename;
-						goodname = goodname.replace(/_/g," ");
-						goodname = goodname.replace(/.nzb/g,"");
-						if (histore.lines[i].filename.substr(0,6)=="msgid_") {
-							hop = '<a href="https://v3.newzbin.com/browse/post/' + histore.lines[i].filename.substr(6,7)+'" style="cursor: pointer" title="View Report" id="hop" target="_blank"><img src="static/images/icon-newzbin.png" width="15" height="17" style="float: right" alt="^N " border="0"/></a>';
-							goodname = goodname.substr(14);
+						if (histore.lines[i].msgid!="") {
+							hop = '<a href="https://v3.newzbin.com/browse/post/' + histore.lines[i].msgid+'" style="cursor: pointer" title="View Report" id="hop" target="_blank"><img src="static/images/icon-newzbin.png" width="15" height="17" style="float: right" alt="^N " border="0"/></a>';
 						}
 						if (histore.lines[i].loaded=="True")
 							loading = '<img src="static/images/icon-history-postprocessing.gif" title="Post-processing nzb now..." width="16" height="16" style="float: right" alt="... " border="0"/>';

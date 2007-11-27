@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 
-	<title>SABnzbd-$version "Nova" - History - Queued: $mbleft MB</title>
+	<title>SABnzbd+ $version "Nova" - History - Queued: $mbleft MB</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<meta http-equiv="cache-control" content="no-cache" />
 	<meta http-equiv="pragma" content="no-cache" />
@@ -57,22 +57,7 @@
 						<span id="loaded_$line.filename"></span>
 						<b><span id="name_$line.filename">
 						<script type="text/javascript">
-						var nzbpidchk="$line.filename"
-						var nzbpidchk = (nzbpidchk.substr(0,5));
-							if (nzbpidchk=="msgid")
-							{
-								var strpinsfna="$line.filename"
-								var strpinsfna = strpinsfna.replace(/_/g," ");
-								var strpinsfna = strpinsfna.replace(/.nzb/g,"");
-								document.write(strpinsfna.substr(14))
-							}
-							else
-							{
-								var strpinsfnc="$line.filename"
-								var strpinsfnc = strpinsfnc.replace(/_/g," ");
-								var strpinsfnc = strpinsfnc.replace(/.nzb/g,"");
-								document.write(strpinsfnc)
-							}
+    						document.write("$line.filename");
 						</script>
 						</span></b>
 					</td>
@@ -81,11 +66,9 @@
 					## "HOP" - POST ID	
 					<td class="textCenter">
 						<script type="text/javascript">
-							if (nzbpidchk=="msgid")
+							if ("$line.msgid"!="")
 							{
-								var strpinsfnb="$line.filename"
-								var strpinsfnb = strpinsfnb.replace(/_/g," "); 
-								document.write("<a href=\"https://v3.newzbin.com/browse/post/",strpinsfnb.substr(6,7),"\" title=\"View Newzbin Post #",strpinsfnb.substr(6,7),"\" target=\"_blank\"><img src=\"../static/images/icon_newzbin.png\" alt=\"Newzbin\" /></a>")}
+								document.write('<a href=\"https://v3.newzbin.com/browse/post/$line.msgid\" title=\"View Newzbin Post #$line.msgid\" target=\"_blank\"><img src=\"../static/images/icon_newzbin.png\" alt=\"Newzbin\" /></a>')}
 							else
 							{
 								document.write("N/A")
@@ -137,7 +120,7 @@ SABNZBDJSON
 	"jobs": [
 	<!--#if $varExists('lines')#-->
 	<!--#for $line in $lines#-->
-	{"filename": "$line.filename", "loaded": "$line.loaded", "added": "$line.added"},
+	{"filename": "$line.filename", "msgid": "$line.msgid", "loaded": "$line.loaded", "added": "$line.added"},
 	
 	<!--#end for#-->
 	<!--#end if#-->]

@@ -1,5 +1,4 @@
 #!/usr/bin/python -OO
-#!/usr/bin/python -OO
 # Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
@@ -16,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__version__ = "0.2.8rc4"
+__version__ = "0.2.8rc6"
 __configversion__ = 16
 __queueversion__ = 5
 __NAME__ = "sabnzbd"
@@ -30,13 +29,14 @@ import zipfile
 import re
 import random
 import glob
+from time import sleep
 
 from threading import RLock, Lock, Condition, Thread
 
 from sabnzbd.assembler import Assembler, PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
-from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, create_real_path, save_configfile
+from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, create_real_path
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue
@@ -70,6 +70,7 @@ CLEANUP_LIST = []
 
 UMASK = None
 BANDWITH_LIMIT = 0.0
+DEBUG_DELAY = 0
 
 USERNAME_NEWZBIN = None
 PASSWORD_NEWZBIN = None
@@ -203,7 +204,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
-           CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, ARTICLECACHE, \
+           CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, ARTICLECACHE, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL
@@ -276,13 +277,15 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         for x in xlist:
             os.remove(x)
 
-    dirscan_dir = dir_setup(CFG, "dirscan_dir", DIR_HOME, "nzb")
-    if dirscan_dir == "":
-        return False
+    try:
+        defdir = CFG['misc']['dirscan_dir']
+    except:
+        defdir = "nzb"
+    dirscan_dir = dir_setup(CFG, "dirscan_dir", DIR_HOME, defdir)
 
-    dirscan_speed = check_setting_int(CFG, 'misc', 'dirscan_speed', 1)
+    dirscan_speed = check_setting_int(CFG, 'misc', 'dirscan_speed', DEF_SCANRATE)
 
-    refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', 0)
+    refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', DEF_QRATE)
 
     rss_rate = check_setting_int(CFG, 'misc', 'rss_rate', 1)
     if rss_rate > 4:
@@ -330,9 +333,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     
     auto_sort = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
 
-    if force_save:
-        save_configfile(CFG)
-    
+
     ############################
     ## Object initializiation ##
     ############################
@@ -411,11 +412,11 @@ def start():
 
 @synchronized(INIT_LOCK)
 def halt():
-    global __INITIALIZED__, SCHED, DIRSCANNER, RSS
+    global __INITIALIZED__, SCHED, DIRSCANNER, RSS, MSGIDGRABBER
     
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
-        
+
         ## Stop Optional Objects ##
         
         if SCHED:
@@ -433,7 +434,8 @@ def halt():
         if MSGIDGRABBER:
             logging.debug('Stopping msgidgrabber')
             try:
-                MSGIDGRABBER.join()
+                if MSGIDGRABBER.isAlive():
+                    MSGIDGRABBER.join()
             except:
                 logging.exception('[%s] Joining msgidgrabber failed', __NAME__)
                 
@@ -763,7 +765,22 @@ def resume_downloader():
         DOWNLOADER.resume()
     except NameError:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
-         
+
+@synchronized_CV
+def delay_downloader():
+    try:
+        DOWNLOADER.delay()
+    except NameError:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+
+@synchronized_CV
+def undelay_downloader():
+    try:
+        DOWNLOADER.undelay()
+    except NameError:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+
+
 ################################################################################
 ## Unsynchronized methods                                                     ##
 ################################################################################
@@ -815,7 +832,14 @@ def paused():
         return DOWNLOADER.paused
     except:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
-        
+
+def delayed():
+    try:
+        return DOWNLOADER.delayed
+    except:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+
+
 ################################################################################
 # Data IO                                                                      #
 ################################################################################
@@ -832,7 +856,7 @@ def get_new_id(prefix):
         logging.exception("[%s] Failure in tempfile.mkstemp", __NAME__)
 
 @synchronized(IO_LOCK)
-def save_data(data, _id, do_pickle = True):
+def save_data(data, _id, do_pickle = True, doze= 0):
     path = os.path.join(CACHE_DIR, _id)
     logging.info("[%s] Saving data for %s in %s", __NAME__, _id, path)
     
@@ -842,6 +866,9 @@ def save_data(data, _id, do_pickle = True):
             cPickle.dump(data, _f, 2)
         else:
             _f.write(data)
+        if doze:
+            # Only for debugging decoder overflow
+            sleep(doze)
         _f.flush()
         _f.close()
     except:

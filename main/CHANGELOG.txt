@@ -1,14 +1,11 @@
 -------------------------------------------------------------------------------
-0.2.8rc4 by the ShyPike
+0.2.8rc6 by the ShyPike
 -------------------------------------------------------------------------------
+fixed:   Fixed memory problem for highspeed-download/slow-disk combination
 added:   newzbin queue (for 5/min limitation)
 added:   Help links to wiki pages on Sourceforge.net
 added:   RSS-feed for History
-added:   Tracker-1827619:
-         Add <table id="SAB_Standard_Queue_Table"> to the queue table of the
-         standard template.
-         This is a trigger for the SABTAB tool to consider this the standard template.
-         Do not put it in other templates!!
+fixed:   Restored compatibility with TV-NZB RSS-feeds.
 added:   Linux/OSX only.
          Replace "umask" with "permissions". SABnbzd now sets file permissions
          first to private (u=rwx, g=, o=).
@@ -16,7 +13,6 @@ added:   Linux/OSX only.
          SAB chmod-s all files with the specified pattern (e.g. "o=rx, g=rx").
          Files that have no "u=x" will get no "g=x" or "o=x" bits!
 added:   Timeout parameter per server (seconds, minimum=30, default=120)
-changed: Always suppress browser-start when --daemon option is used (only non-Windows).
 added:   Email notifications (end of job and disk-full)
          Supports secured email (TLS) for use with gmail.com
 added:   Set minimum diskspace (in MB) for the download directory
@@ -25,18 +21,18 @@ added:   Set minimum diskspace (in MB) for the download directory
 added:   Auto-launch of browser (starting the web-gui)
 added:   Better handling of INI file
          You can start without an INI and get usable defaults
-         Default storage in appdata/localdata for Windows
+         Default storage in localdata/appdata/sabnzbd for Windows
          Default storage in ~/.sabnzbd for Linux/OSX
          Auto creation of directories
 added:   Commandline switches
-         -Regulate logging level (default is minimal)
-         -Override of templates
+         -Regulate logging level (default is errors/warning only)
+         -Override of web interface selection
          -Override of server:port
-updated: Nova-0.3.2 and Nova-0.4.5 templates
+updated: Nova-0.3.2 and Nova-0.4.5 templates and added Plush
 added:   Lots of other small stuff
 
 -------------------------------------------------------------------------------
-0.2.7 by the ShyPike (and Freaky and DNW)
+0.2.7 by the ShyPike (and Freaky)
 -------------------------------------------------------------------------------
 changed: Now supports V3.newzbin.com and DirectNzb (by Freaky)
 changed: Always keeps original foldername as derived from NZB file (by DNW)
@@ -46,7 +42,7 @@ added:   You can now set the RSS checking interval to 1/2/3/4 times/hour
 changed: Modified versions of Nova_0.3.2 and Nova_0.4.4 included
          set the proper path in SABnzbd.ini
 -------------------------------------------------------------------------------
-0.2.6 by the shypike
+0.2.6 by the ShyPike
 -------------------------------------------------------------------------------
 added: Dirscan-speed in seconds (configurable).
 changed: Increase server timeout to 120 (required by many providers)

@@ -10,7 +10,7 @@ import subprocess
 import logging
 from time import time
 import sabnzbd
-from sabnzbd.misc import SplitFileName
+from sabnzbd.nzbstuff import SplitFileName
 
 try:
     from win32con import SW_HIDE
@@ -35,10 +35,10 @@ BROWSER_COMMAND = None
 EMAIL_COMMAND = []
 
 if os.name == 'nt':
-    PAR2_COMMAND = os.path.abspath('./par2/par2.exe')
-    RAR_COMMAND = os.path.abspath('./unrar/UnRAR.exe')
-    ZIP_COMMAND = os.path.abspath('./unzip/unzip.exe')
-    EMAIL_COMMAND = [os.path.abspath('./email/sendemail.exe')]
+    PAR2_COMMAND = os.path.abspath('./win/par2/par2.exe')
+    RAR_COMMAND = os.path.abspath('./win/unrar/UnRAR.exe')
+    ZIP_COMMAND = os.path.abspath('./win/unzip/unzip.exe')
+    EMAIL_COMMAND = [os.path.abspath('./win/email/sendemail.exe')]
 else:
     lookhere = os.getenv('PATH').split(':')
     findpar2 = ('par2',)

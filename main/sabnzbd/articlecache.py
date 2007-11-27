@@ -133,7 +133,7 @@ class ArticleCache:
         if art_id:
             logging.info("[%s] Flushing %s to disk", __NAME__, article)
             logging.debug("[%s] cache_size -> %s", __NAME__, self.__cache_size)
-            sabnzbd.save_data(data, art_id, do_pickle = False)
+            sabnzbd.save_data(data, art_id, do_pickle = False, doze=sabnzbd.DEBUG_DELAY)
         else:
             logging.warning("[%s] Flushing %s failed -> no art_id", 
                             __NAME__, article)

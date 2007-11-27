@@ -26,6 +26,7 @@ import binascii
 import logging
 import re
 import sabnzbd
+from sabnzbd.constants import *
 
 from threading import Thread
 
@@ -56,6 +57,8 @@ class Decoder(Thread):
         
     def decode(self, article, lines):
         self.queue.put((article, lines))
+        if self.queue.qsize() > MAX_DECODE_QUEUE:
+            sabnzbd.delay_downloader()
         
     def stop(self):
         self.queue.put(None)
@@ -65,6 +68,9 @@ class Decoder(Thread):
             art_tup = self.queue.get()
             if not art_tup:
                 break
+
+            if self.queue.qsize() < MIN_DECODE_QUEUE and sabnzbd.delayed():
+                sabnzbd.undelay_downloader()
             
             article, lines = art_tup
             nzf = article.nzf
