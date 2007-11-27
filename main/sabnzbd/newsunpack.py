@@ -31,7 +31,6 @@ PAR2_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
-BROWSER_COMMAND = None
 EMAIL_COMMAND = []
 
 if os.name == 'nt':
@@ -79,14 +78,6 @@ else:
                 zip_path = os.path.abspath(zip_path)
                 if os.access(zip_path, os.X_OK):
                     ZIP_COMMAND = zip_path
-                    break
-
-        if not BROWSER_COMMAND:
-            for _fox in findfox:
-                fox_path = os.path.join(path, _fox)
-                fox_path = os.path.abspath(fox_path)
-                if os.access(fox_path, os.X_OK):
-                    BROWSER_COMMAND = fox_path
                     break
 
         if not EMAIL_COMMAND:

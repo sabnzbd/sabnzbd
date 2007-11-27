@@ -41,6 +41,7 @@ import sabnzbd
 import signal
 import re
 import glob
+import webbrowser
 
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
@@ -91,10 +92,13 @@ def launch_a_browser(host, port, trouble=""):
     else:
         trouble = trouble.replace(' ','_')
         url = "http://SABNZBD-SAYS.__%s__.NONE" % trouble
-    if os.name == 'nt':
-        win32api.ShellExecute(0, "open", url, None, "", 5)
-    else:
-        os.system("%s %s &" %(sabnzbd.newsunpack.BROWSER_COMMAND, url))
+
+    logging.info("Lauching browser with %s", url)
+    try:
+        webbrowser.open(url, 2, 1)
+    except:
+        # Python 2.4 does not support parameter new=2
+        webbrowser.open(url, 1, 1)
 
 def daemonize():
     try:
@@ -372,12 +376,6 @@ def main():
     else:
         logging.info("sendemail binary... NOT found!")
 
-    if os.name != 'nt':
-        if sabnzbd.newsunpack.BROWSER_COMMAND:
-            logging.info("Browser binary: %s found!", sabnzbd.newsunpack.BROWSER_COMMAND)
-        else:
-            logging.info("Browser binary... NOT found!")
-        
     if cherryhost == '':
         cherryhost = check_setting_str(cfg, 'misc','host', DEF_HOST)
     else:
