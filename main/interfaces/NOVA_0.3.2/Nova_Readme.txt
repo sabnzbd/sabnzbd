@@ -5,7 +5,7 @@
 <><>//		SABnzbd "Nova" Theme
 <><>//		Released by: Dana Woodman (nova@organixdesign.com) (www.organixdesign.com)
 <><>//		Version: 0.3 Preview 2
-<><>//          Patched by ShyPike for SABnzbd 0.2.7
+<><>//          Patched by ShyPike for SABnzbd 0.2.8
 <><>//		
 <><>//		Home of this Theme:
 <><>//		http://www.sabnzbd.organixdesign.com

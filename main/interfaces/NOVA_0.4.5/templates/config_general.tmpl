@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css?version=$web_name"/>
 </head>
 <body>
 <h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
@@ -47,9 +47,17 @@ Authentication Password.<br>
 <input type="password" name="password" value=$password>
 <br>
 <br>
-<strong>Template Directory:</strong><br>
-Location of the template directory.<br>
-<input type="text" name="web_dir" value="$web_dir">
+<strong>User interface:</strong><br>
+Choose a user interface (restart required!).<br>
+<select name="web_dir">
+    <!--#for $webline in $web_list#-->
+        <!--#if $webline == $web_dir#-->
+            <option value="$webline" selected>$webline</option>
+        <!--#else#-->
+            <option value="$webline">$webline</option>
+        <!--#end if#-->
+    <!--#end for#-->
+</select>
 </fieldset>
 </div>
 <div class="EntryBlock">

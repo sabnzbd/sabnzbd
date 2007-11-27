@@ -27,6 +27,7 @@ import time
 import cherrypy
 import logging
 import re
+import glob
 from sabnzbd.utils.rsslib import RSS, Item, Namespace
 import sabnzbd
 
@@ -755,13 +756,20 @@ class ConfigGeneral(ProtectedClass):
         config['port'] = sabnzbd.CFG['misc']['port']
         config['username'] = sabnzbd.CFG['misc']['username']
         config['password'] = sabnzbd.CFG['misc']['password']
-        config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
         config['bandwith_limit'] = sabnzbd.CFG['misc']['bandwith_limit']
         config['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
         config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
         config['password_newzbin'] = sabnzbd.CFG['newzbin']['password']
         config['cache_limit'] = sabnzbd.CFG['misc']['cache_limit']
+
+        config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
+        wlist = [DEF_STDINTF]
+        for web in glob.glob(sabnzbd.DIR_INTERFACES + "/*"):
+            rweb= os.path.basename(web)
+            if rweb != DEF_STDINTF and rweb != "_svn" and rweb != ".svn":
+                wlist.append(rweb)
+        config['web_list'] = wlist
         
         if not sabnzbd.CFG['misc']['cleanup_list']:
             config['cleanup_list'] = ','
@@ -801,8 +809,8 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['cache_limit'] = cache_limit
         
         if not web_dir:
-            web_dir= DEF_TEMPLATES
-        dd = os.path.abspath(sabnzbd.DIR_PROG + '/' + web_dir)
+            web_dir= DEF_STDINTF
+        dd = os.path.abspath(sabnzbd.DIR_INTERFACES + '/' + web_dir)
         if dd and not os.access(dd, os.R_OK):
             return "Error: cannot access template directory %s" % dd
         if dd and not os.access(dd + '/' + DEF_MAIN_TMPL, os.R_OK):
@@ -1102,6 +1110,7 @@ def build_header():
     header['diskspace2'] = "%.2f" % diskfree(sabnzbd.COMPLETE_DIR)
     header['shutdown'] = sabnzbd.AUTOSHUTDOWN
     header['nt'] = os.name == 'nt'
+    header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir'])
     
     bytespersec = sabnzbd.bps()
     qnfo = sabnzbd.queue_info()

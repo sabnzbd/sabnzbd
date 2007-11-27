@@ -6,7 +6,7 @@ http://sabnzbd.organixdesign.com
 AUTHORS
 * Nathan => complete rewrite of NOVA for version 0.4
 * Dana Woodman => original NOVA + concept design
-* ShyPike => modified for SABnzbd-0.2.7up
+* ShyPike => modified for SABnzbd-0.2.8
 
 ============
 INTRODUCTION

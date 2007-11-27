@@ -402,10 +402,11 @@ def main():
         except:
             web_dir = ''
     if not web_dir:
-        web_dir = DEF_TEMPLATES
+        web_dir = DEF_STDINTF
     cfg['misc']['web_dir'] = web_dir
 
-    web_dir = real_path(sabnzbd.DIR_PROG, web_dir)
+    sabnzbd.DIR_INTERFACES = real_path(sabnzbd.DIR_PROG, DEF_INTERFACES)
+    web_dir = real_path(sabnzbd.DIR_INTERFACES, web_dir)
     web_main = real_path(web_dir, DEF_MAIN_TMPL)
     logging.info("Web dir is %s", web_dir)
     
@@ -415,7 +416,7 @@ def main():
 
     if not os.path.exists(web_main):
         logging.warning('Cannot find web template: %s, trying standard template', web_main)
-        web_dir = real_path(sabnzbd.DIR_PROG, DEF_TEMPLATES)
+        web_dir = real_path(sabnzbd.DEF_INTERFACES, DEF_STDINTF)
         web_main = real_path(web_dir, DEF_MAIN_TMPL)
         if not os.path.exists(web_main):
             logging.exception('Cannot find standard template: %s', web_main)
@@ -423,6 +424,8 @@ def main():
                 launch_a_browser(cherryhost, cherryport, "Cannot find standard web-templates")
             sys.exit(1)
 
+    web_dir = real_path(web_dir, "templates")
+    
     if fork and os.name != 'nt':
         daemonize()
 
