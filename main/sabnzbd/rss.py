@@ -64,12 +64,15 @@ class RSSQueue:
             new_entry_links = []
             for entry in entries:
                 try:
-                    link = entry['guid']
-                except:
                     link = entry['link']
-                entry_links.append(link)
-                if new or link not in self.old_entries[uri]:
-                    new_entry_links.append(link)
+                    link.index('http')
+                except:
+                    link = entry['guid']
+
+                if link.find('http') >= 0:
+                    entry_links.append(link)
+                    if new or link not in self.old_entries[uri]:
+                        new_entry_links.append(link)
                     
             logging.debug("[%s] new: %s", __NAME__, new)
             logging.debug("[%s] entry_links: %s", __NAME__, entry_links)
@@ -97,11 +100,12 @@ class RSSQueue:
                                       
                 for entry in entries:
                     try:
-                        link = entry['guid']
-                    except:
                         link = entry['link']
-                    
-                    if link not in new_entry_links:
+                        link.index('http')
+                    except:
+                        link = entry['guid']
+    
+                    if (link.find('http') < 0) or (link not in new_entry_links):
                         continue
                         
                     title = entry['title'].lower()
