@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__version__ = "0.2.8rc6"
+__version__ = "0.3.0rc1"
 __configversion__ = 16
 __queueversion__ = 5
 __NAME__ = "sabnzbd"

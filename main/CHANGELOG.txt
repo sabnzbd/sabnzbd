@@ -1,6 +1,12 @@
 -------------------------------------------------------------------------------
-0.2.8rc6 by the ShyPike
+0.3.0rc1 by the ShyPike
 -------------------------------------------------------------------------------
+added:   Drop-down box for choosing the web-gui
+         restructured the templates, they reside in <sabdir>/interfaces
+fixed:   Default 'dirscan_dir' is now empty (inactive)
+changed: 'complete_dir' and 'download_dir' are now both in $HOME/downloads
+added:   Friendly fatal error reports through the web browser
+fixed:   Restored compatibility with yahoo-rss-feeds
 fixed:   Fixed memory problem for highspeed-download/slow-disk combination
 added:   newzbin queue (for 5/min limitation)
 added:   Help links to wiki pages on Sourceforge.net
