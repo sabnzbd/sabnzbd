@@ -41,13 +41,12 @@ import sabnzbd
 import signal
 import re
 import glob
-import webbrowser
 
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
 from sabnzbd.constants import *
-from sabnzbd.misc import Get_User_ShellFolders, save_configfile
+from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser
 
 from threading import Thread
 
@@ -86,19 +85,7 @@ def print_version():
     print "%s-%s" % (MY_NAME, sabnzbd.__version__)
 
 
-def launch_a_browser(host, port, trouble=""):
-    if not trouble:
-        url = "http://%s:%s/sabnzbd" % (host, port)
-    else:
-        trouble = trouble.replace(' ','_')
-        url = "http://SABNZBD-SAYS.__%s__.NONE" % trouble
 
-    logging.info("Lauching browser with %s", url)
-    try:
-        webbrowser.open(url, 2, 1)
-    except:
-        # Python 2.4 does not support parameter new=2
-        webbrowser.open(url, 1, 1)
 
 def daemonize():
     try:
@@ -170,6 +157,7 @@ def main():
     for o, a in opts:
         if (o in ('-d', '--daemon')) and os.name != 'nt':
             fork = True
+            nobrowser = True
         if o in ('-h', '--help'):
             print_help()
             sys.exit()
@@ -337,6 +325,8 @@ def main():
     if umask:
         cfg['misc']['permissions'] = umask
 
+    sabnzbd.DEBUG_DELAY = delay
+    sabnzbd.NO_BROWSER = nobrowser
     sabnzbd.CFG = cfg
     
     init_ok = sabnzbd.initialize(pause, clean_up)
@@ -392,8 +382,6 @@ def main():
 
     log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
 
-    sabnzbd.DEBUG_DELAY = delay
-    
     if not web_dir:
         try:
             web_dir = cfg['misc']['web_dir']
@@ -418,8 +406,7 @@ def main():
         web_main = real_path(web_dir, DEF_MAIN_TMPL)
         if not os.path.exists(web_main):
             logging.exception('Cannot find standard template: %s', web_main)
-            if (not nobrowser) and (not fork):
-                launch_a_browser(cherryhost, cherryport, "Cannot find standard web-templates")
+            launch_a_browser(cherryhost, cherryport, PANIC_TEMPL)
             sys.exit(1)
 
     web_dir = real_path(web_dir, "templates")
@@ -479,17 +466,14 @@ def main():
     try:
         cherrypy.server.start(init_only=True)
         cherrypy.server.wait()
-        if (not nobrowser) and (not fork):
-            launch_a_browser(cherryhost, cherryport, "")
+        launch_a_browser(cherryhost, cherryport)
             
         # Have to keep this running, otherwise logging will terminate
         while cherrypy.server.ready:
             time.sleep(3)
     except:
         logging.exception("Failed to start web-interface")
-        if (not nobrowser) and (not fork):
-            launch_a_browser(cherryhost, cherryport,
-                     "%s port %s is not free  Check documentation" % (cherryhost, cherryport))
+        launch_a_browser(cherryhost, cherryport, PANIC_PORT)
         sabnzbd.halt()
         
 if __name__ == '__main__':

@@ -21,6 +21,7 @@ sabnzbd.nzbqueue - nzb queue
 
 __NAME__ = "nzbqueue"
 
+import sys
 import os
 import logging
 import sabnzbd
@@ -31,6 +32,7 @@ from threading import Thread, RLock
 
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.misc import launch_a_browser
 
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -78,10 +80,12 @@ class NzbQueue(TryList):
             try:
                 queue_vers, nzo_ids, self.__downloaded_items = data
                 if not queue_vers == sabnzbd.__queueversion__:
-                    logging.info("[%s] Outdated queuefile found, discarding", 
+                    logging.exception("[%s] Outdated queuefile found, cannot proceed", 
                                  __NAME__)
                     self.__downloaded_items = []
                     nzo_ids = []
+                    launch_a_browser(0, 0, PANIC_QUEUE)
+                    sys.exit(2)
             except ValueError:
                 logging.exception("[%s] Error loading %s, corrupt file " + \
                                   "detected", __NAME__, QUEUE_FILE_NAME)

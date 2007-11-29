@@ -28,10 +28,13 @@ import cherrypy
 import urllib
 import re
 import zipfile
+import webbrowser
+import tempfile
 
 from threading import *
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd import nzbgrab
+from sabnzbd.constants import *
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
@@ -256,3 +259,92 @@ def save_configfile(cfg):
     f.write(x)
     f.flush()
     f.close()
+
+
+################################################################################
+# Launch a browser for various purposes
+# including panic messages
+#
+################################################################################
+MSG_BAD_NEWS = r'''
+    <html>
+    <head>
+    <title>Problem with %s %s</title>
+    </head>
+    <body>
+    <h1><font color="#0000FF">Welcome to %s %s</font></h1>
+    <p align="center">&nbsp;</p>
+    <p align="center"><font size="5">
+    <blockquote>
+        %s
+    </blockquote>
+    <br>Program did not start!<br>
+    </body>
+</html>
+'''
+
+MSG_BAD_PORT = r'''
+    SABnzbd needs a free tcp/ip port for its internal web server.<br>
+    Port %s on %s was tried , but it is not available.<br>
+    <br>
+    Please restart SABnzbd with a different port number.<br>
+    <br>
+    Open a command prompt and type in (example):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;SABnzbd --server %s:%s<br>
+    <br>
+    If you get this error message again, please try a different number.<br>
+'''
+
+MSG_BAD_QUEUE = r'''
+    SABnzbd detected saved data from an older SABnzbd version<br>
+    but cannot re-use the data of the older program.<br><br>
+    You may want to finish your queue first with the older program.<br><br>
+    After that, start this program with the "--clean" option.<br>
+    This will erase the current queue and history!<br>
+    <br>
+    Open a command prompt and type in:<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;SABnzbd --clean<br>
+    <br>
+'''
+
+MSG_BAD_TEMPL = r'''
+    SABnzbd cannot find its web interface files.<br>
+    Please install the program again.<br>
+    <br>
+'''
+
+
+def panic_message(panic, host, port):
+    if panic == PANIC_PORT:
+        newport = port + 1
+        newport = "%s" % newport
+        msg = MSG_BAD_PORT % (port, host, host, newport)
+    elif panic == PANIC_TEMPL:
+        msg = MSG_BAD_TEMPL
+    else:
+        msg = MSG_BAD_QUEUE
+
+    msg = MSG_BAD_NEWS % (MY_NAME, sabnzbd.__version__, MY_NAME, sabnzbd.__version__, msg)
+        
+    msgfile, url = tempfile.mkstemp(suffix='.html')
+    os.write(msgfile, msg)
+    os.close(msgfile)
+    return url
+
+def launch_a_browser(host, port, panic=PANIC_NONE):
+    """Launch a browser pointing to an URL or a to local errormessage page
+    """
+    if sabnzbd.NO_BROWSER:
+        return
+
+    if panic == PANIC_NONE:
+        url = "http://%s:%s/sabnzbd" % (host, port)
+    else:
+        url = panic_message(panic, host, port)
+
+    logging.info("Lauching browser with %s", url)
+    try:
+        webbrowser.open(url, 2, 1)
+    except:
+        # Python 2.4 does not support parameter new=2
+        webbrowser.open(url, 1, 1)
