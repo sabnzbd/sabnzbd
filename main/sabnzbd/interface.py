@@ -641,7 +641,7 @@ class ConfigDirectories(ProtectedClass):
                         cache_dir = None, nzb_backup_dir = None,
                         dirscan_dir = None, dirscan_speed = None, extern_proc = None):
                         
-        dd = create_real_path('download_dir', sabnzbd.DIR_LCLDATA, download_dir)
+        dd = create_real_path('download_dir', sabnzbd.DIR_HOME, download_dir)
         if not dd:
             return "Error: cannot create download directory %s." % dd
             

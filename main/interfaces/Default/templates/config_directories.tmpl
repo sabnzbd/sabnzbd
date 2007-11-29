@@ -33,6 +33,16 @@
   <fieldset class="EntryFieldSet">
     <legend>User directories</legend>
     <emp>In "$my_home"</emp><br><br>
+    <strong>Download Directory:</strong><br>
+    Location to put unprocessed downloads in.<br>
+    <input type="text" size="40" name="download_dir" value="$download_dir">
+    <br>
+    <br>
+    <strong>Minimum free space for Download Directory:</strong><br>
+    Auto-pause when free space is beneath this value (MB).<br>
+    <input type="text" size="10" name="download_free" value="$download_free">
+    <br>
+    <br>
     <strong>Complete Directory:</strong><br>
     Location to put completed downloads in.<br>
     <input type="text" size="40" name="complete_dir" value="$complete_dir">
@@ -55,16 +65,6 @@
   <fieldset class="EntryFieldSet">
     <legend>System directories</legend>
     <emp>In "$my_lcldata"</emp><br><br>
-    <strong>Download Directory:</strong><br>
-    Location to put unprocessed downloads in.<br>
-    <input type="text" size="40" name="download_dir" value="$download_dir">
-    <br>
-    <br>
-    <strong>Minimum free space for Download Directory:</strong><br>
-    Auto-pause when free space is beneath this value (MB).<br>
-    <input type="text" size="10" name="download_free" value="$download_free">
-    <br>
-    <br>
     <strong>Cache Directory:</strong><br>
     Location for temporary storage.<br>
     <input type="text" size="40" name="cache_dir" value="$cache_dir">

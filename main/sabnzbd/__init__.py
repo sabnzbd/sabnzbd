@@ -254,7 +254,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     logging.debug("CREATE_CAT_FOLDERS -> %s", CREATE_CAT_FOLDERS)
     logging.debug("CREATE_CAT_SUB -> %s", CREATE_CAT_SUB)
 
-    DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_LCLDATA, DEF_DOWNLOAD_DIR)
+    DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
     if DOWNLOAD_DIR == "":
         return False
 
@@ -282,7 +282,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     try:
         defdir = CFG['misc']['dirscan_dir']
     except:
-        defdir = "nzb"
+        defdir = DEF_NZB_DIR
     dirscan_dir = dir_setup(CFG, "dirscan_dir", DIR_HOME, defdir)
 
     dirscan_speed = check_setting_int(CFG, 'misc', 'dirscan_speed', DEF_SCANRATE)
