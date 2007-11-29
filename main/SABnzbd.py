@@ -232,10 +232,6 @@ def main():
         except:
             my_version = sabnzbd.__configversion__
             cfg['__version__'] = my_version
-        if int(my_version) < sabnzbd.__configversion__:
-            print "Error:"
-            print "Configfile out of date, please update to latest version"
-            sys.exit()
 
     except ConfigObjError, strerror:
         print "Error:"
