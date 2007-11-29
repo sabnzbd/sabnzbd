@@ -17,7 +17,7 @@
 
 __version__ = "0.3.0rc1"
 __configversion__ = 18
-__queueversion__ = 5
+__queueversion__ = 6
 __NAME__ = "sabnzbd"
 
 import os
