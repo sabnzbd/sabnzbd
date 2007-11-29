@@ -290,6 +290,9 @@ class NzbObject(TryList):
         self.__unpack = unpack        # True if we want to unpack this set
         self.__delete = delete        # True if we want to delete this set
         self.__script = script        # True if we want to run external script on this set
+        self.__msgid = '0'            # Newzbin msgid
+        self.__extra1 = 'a'           # Spare field for later
+        self.__extra2 = 'b'           # Spare field for later
         self.__group = None
         self.__avg_date = None
         
@@ -677,7 +680,8 @@ class NzbObject(TryList):
             avg_date = time.mktime(avg_date.timetuple())
             
         return (self.__repair, self.__unpack, self.__delete, self.__script,
-                self.nzo_id, self.__filename, self.__unpackstrht.copy(), 
+                self.nzo_id, self.__filename, self.__unpackstrht.copy(),
+                self.__msgid, self.__extra1, self.__extra2,
                 bytes_left_all, self.__bytes, avg_date,
                 finished_files, active_files, queued_files)
                 
