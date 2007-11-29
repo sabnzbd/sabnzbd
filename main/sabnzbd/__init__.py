@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 __version__ = "0.3.0rc1"
-__configversion__ = 16
+__configversion__ = 18
 __queueversion__ = 5
 __NAME__ = "sabnzbd"
 
