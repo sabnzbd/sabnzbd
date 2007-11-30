@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
+    <link rel="shortcut icon" href="../../static/favicon.ico" />
+</head>
+<body>
+<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<span class="MainMenu">
+<a class="current" href="../">Config</a> |
+<a href="../../connections">Connections</a> |
+<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+RSS/" target="_blank">Help</a>
+</span>
+<span class="SubMenu">
+<a href="../general">General</a> | 
+<a href="../directories">Directories</a> | 
+<a href="../switches">Switches</a> | 
+<a href="../server">Servers</a> | 
+<a href="../scheduling">Scheduling</a> | 
+<a class="current" href="./">RSS</a> |
+<a href="../email">Email</a>
+</span>
+<h2>EXPERIMENTAL RSS Configuration</h2>
+<!--#if $have_feedparser#-->
+<div class="EntryBlock">
+  <form action="add_rss_feed" method="get">
+    <fieldset class="EntryFieldSet">
+    <legend>RSS feed settings</legend>
+      <b>RSS-Feed URI:</b><br>
+      <input type="text" name="uri"><br><br>
+      
+      <b>Text Filter:</b><br>
+      (Basic) text based filter. A single '*' matches everything.
+      <br>
+      <input type="text" name="text_filter">
+      <br>
+      <br>
+      
+      <b>Regex Filter:</b><br>
+      Regular Expression filter. Overwrites text filter.
+      <br>
+      <input type="text" name="re_filter">
+      <br>
+      <br>
+      
+      <b>Match Multiple:</b><br>
+      Match this filter more than once?
+      <br>
+      <input type="radio" name="match_multiple" value="0"> No
+      <input type="radio" name="match_multiple" value="1" checked=1> Yes
+      <br>
+      <br>
+      
+      <b>Unpack Opts:</b><br>
+      <input type="radio" name="unpack_opts" value="0"> None
+      <input type="radio" name="unpack_opts" value="1" checked=1> +Repair
+      <input type="radio" name="unpack_opts" value="2"> +Unpack
+      <input type="radio" name="unpack_opts" value="3"> +Delete
+      <input type="radio" name="unpack_opts" value="4"> Repair+Script
+      <input type="radio" name="unpack_opts" value="5"> Unpack+Script
+      <input type="radio" name="unpack_opts" value="6"> Delete+Script
+      <br>
+      <br>
+      
+      <input type="submit" value="Add">
+    </fieldset>
+  </form>
+</div>
+<br>
+<br>
+    <!--#if $varExists('uris') and $uris#-->
+        <table>
+            <tr><th></th><th>URL/Match Name</th></tr>
+            <!--#set $odd = False#-->
+            <!--#for $uri in $uris#-->
+                <!--#set $odd = not $odd#-->
+                <tr class="<!--#if $odd then "odd" else "even"#-->">
+                    <td><a href=./del_rss_feed?uri_id=$str($id($uri))>Remove</a></td>
+                    <td>$uri</td>
+                </tr>
+                <!--#set $oddLine = False#-->
+                <!--#for $filter in $uri_table[$uri][0]#-->
+                    <!--#set $oddLine = not $oddLine#-->
+                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
+                        <td><a href=./del_rss_filter?uri_id=$str($id($uri))&filter_id=$str($id($filter))>Remove</a></td>
+                        <td>Filter: $filter[0]</td>
+                    </tr>
+                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
+                        <td></td>
+                        <td>Unpack-opts: $filter[1]</td>
+                    </tr>
+                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
+                        <td></td>
+                        <td>Match Multiple: $filter[2]</td>
+                    </tr>
+                <!--#end for#-->
+            <!--#end for#-->
+        </table>
+    <!--#end if#-->
+<!--#end if#-->
+<!--#if not $have_feedparser#-->
+    <p>
+        <b>feedparser module missing<b>
+    </p>
+<!--#end if#-->
+<div class="footer">
+<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
+<!--#if int($cache_limit)#-->
+<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#end if#-->
+<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+</div>
+</body>
+</html>

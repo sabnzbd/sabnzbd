@@ -1,0 +1,324 @@
+
+
+
+/* Submenu
+----------------------------------------------------------- */
+body {
+	background-color: white;
+	color: #808080;
+	font-family: 'Verdana', 'Helvetica', 'Sans-serif', 'sans';
+	font-size: 12px;
+	line-height: 18px;
+	padding: 15px;
+	margin: 0px;
+}
+
+
+/* Links
+----------------------------------------------------------- */
+a {
+	text-decoration: none;
+	color: #000000;
+}
+
+
+/* Forms
+----------------------------------------------------------- */
+form {
+	margin: 0px;
+	padding: 0px;
+	border: none;
+	display: inline:
+}
+legend {
+	font-weight: bold;
+	color: #c32ee4;
+}
+
+
+div.EntryBlock {display: inline;}
+div.EntryBlock form {display: inline;}
+fieldset.EntryFieldSet {
+	vertical-align: top;
+	display: inline;
+	padding: 7px;
+	margin: 5px;
+}
+.MainMenu a {
+	font-weight: bold;
+	color: #4e4e4e;
+	padding: 1px;
+	text-decoration: none;
+	border: 1px solid #eeeeee;
+	margin: 9px;
+}
+
+
+/* Submenu
+----------------------------------------------------------- */
+.SubMenu a {
+	font-weight: bold;
+	color: #000000;
+	padding: 1px;
+	text-decoration: none;
+	border: 1px solid #b5b5b5;
+	margin: 9px;
+}
+a:hover {
+	background-color: #F0E68C;
+}
+
+a.current {
+	color: #fff;
+	border: none;
+	background-color: #b5b5b5;
+	padding: 3px;
+	padding-bottom: 7px;
+}
+a.current:hover {
+	border: none;
+	background-color: #b5b5b5;
+}
+
+
+.block {
+	padding: 10px;
+}
+
+.blockWithBorder {
+	display: block;
+	border-width: thin;
+	border-style: solid;
+	border-color: #b5b5b5;
+	background-color: #eeeeee;
+	padding: 5px;
+}
+
+.MainMenu {
+	display: block;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #b5b5b5;
+	background-color: #eeeeee;
+	padding: 5px;
+
+}
+
+/* Submenu
+----------------------------------------------------------- */
+.SubMenu {
+	display: block;
+	background-color: #b5b5b5;
+	padding: 5px;
+}
+
+
+/* Tables
+----------------------------------------------------------- */
+table {
+	font-size: 9pt;
+	color: black;
+	margin: 0px;
+}
+td, td {
+  padding: 5px;
+}
+th {
+	background: #b5b5b5;
+	color: white;
+	font-weight: bold;
+}
+tr.even{background-color: #cdf;}
+tr.evenLine {background-color: #eee;}
+tr.odd {background-color: #99bbff;}
+tr.oddLine {background-color: #f8f8f8;}
+tr.active {font-weight: bold;}
+tr.finished {font-weight: normal;}
+
+tr.waiting {
+	font-style: italic;
+}
+td.pre {
+	font-size: 13px;
+	font-family: 'courier new',courier,serif;
+	font-weight: bold;
+}
+
+
+/* Headings
+----------------------------------------------------------- */
+h1 {
+	text-align: left;
+	font-size: 19px;
+	font-weight: normal;
+	border-bottom: 1px solid #b5b5b5;
+	padding-bottom: 0px;
+}
+* html h1 {padding-bottom: 2px;}
+h2 {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+
+/* 
+----------------------------------------------------------- */
+#first {
+	font-size: 33px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold ;
+	color: #c32ee4;
+	text-transform: uppercase;
+	padding-left: 20px;
+}
+
+#second {
+	font-size: 30px;
+	font-family: Arial, Helvetica, sans-serif;
+	font-style: italic;
+	color: #99bbff;
+	text-transform: lowercase;
+}
+
+#catchfrase {
+	display: block;
+	position: relative;
+	top: -18px;
+	float: right;
+	text-align: right;
+	font-size: 10px;
+	font-weight: normal;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Footer
+----------------------------------------------------------- */
+#footer {
+	text-align: center;
+	background-color: #eee;
+	padding-bottom: 5px;
+	margin-top: 20px;
+	border-top: 1px solid #b5b5b5;
+}
+
+
+/* Overall Progress Bar
+----------------------------------------------------------- */
+#progressBar {
+	background-color: #cdf; 
+	border: 1px solid blue; 
+	height: 6px;
+	width: 90%;
+	margin: 0px;
+	margin-left: auto; 
+	margin-right: auto;
+	padding: 0px;
+	text-align: left;
+}
+
+
+
+/* Percentage Bar
+----------------------------------------------------------- */
+#percentageBar {
+	position: relative; 
+	background-color: #9bf;
+}
+* html #progressBar {
+	height: 8px;
+	he\ight: 6px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	H E L P E R    C L A S S E S
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+
+
+
+/* Text align
+----------------------------------------------------------- */
+.textRight {text-align: right;}
+.textLeft {text-align: left;}
+.textCenter {text-align: center;}
+
+
+/* Display
+----------------------------------------------------------- */
+.clear {clear: both;}
+.noClear {clear: none;}
+.hide {display: none;}
+.show {display: inherit;}
+.visible {display: inherit;}
+.hidden {display: none;}
+.block {display: block;}
+.inline {display: inline;}
+.noStyling {border: none; background: none; text-decoration: none;}
+
+
+/* Column Classes
+----------------------------------------------------------- */
+.col10 {width: 10%; float: left; display: block; margin: 0; padding: 0;}
+.col15 {width: 15%; float: left; display: block; margin: 0; padding: 0;}
+.col20 {width: 20%; float: left; display: block; margin: 0; padding: 0;}
+.col25 {width: 25%; float: left; display: block; margin: 0; padding: 0;}
+.col33 {width: 33%; float: left; display: block; margin: 0; padding: 0;}
+.col40 {width: 40%; float: left; display: block; margin: 0; padding: 0;}
+.col45 {width: 45%; float: left; display: block; margin: 0; padding: 0;}
+.col50 {width: 50%; float: left; display: block; margin: 0; padding: 0;}
+.col55 {width: 55%; float: left; display: block; margin: 0; padding: 0;}
+.col60 {width: 60%; float: left; display: block; margin: 0; padding: 0;}
+.col65 {width: 65%; float: left; display: block; margin: 0; padding: 0;}
+.col66 {width: 66%; float: left; display: block; margin: 0; padding: 0;}
+.col70 {width: 70%; float: left; display: block; margin: 0; padding: 0;}
+.col75 {width: 75%; float: left; display: block; margin: 0; padding: 0;}
+.col80 {width: 80%; float: left; display: block; margin: 0; padding: 0;}
+.col90 {width: 90%; float: left; display: block; margin: 0; padding: 0;}
+.col100 {width: 100%; float: left; display: block; margin: 0; padding: 0;}
+
+
+/* Padding Classes
+----------------------------------------------------------- */
+.pad5 {padding: 5px; margin: 0;}
+.pad10 {padding: 12px; margin: 0;}
+.pad15 {padding: 15px; margin: 0;}
+.pad20 {padding: 20px; margin: 0;}
+.pad25 {padding: 25px; margin: 0;}
+.pad30 {padding: 30px; margin: 0;}
+.pad35 {padding: 35px; margin: 0;}
+.pad40 {padding: 40px; margin: 0;}
+.pad45 {padding: 45px; margin: 0;}
+.pad50 {padding: 50px; margin: 0;}

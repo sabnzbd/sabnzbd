@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
+<html>
+<head>
+
+	<title>SABnzbd+ Plush</title>
+	
+	<!-- Favorite Icon -->
+	<link rel="shortcut icon" type="image/ico" href="static/images/favicon.ico"/>
+	
+	<!-- Stylesheets -->
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/plush.css" media="screen"/>
+	
+	<!-- News Feeds -->
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
+	
+	<!-- Javascript -->
+	<script type="text/javascript" src="static/javascripts/jquery-1.2.1.pack.js"></script>
+	<script type="text/javascript" src="static/javascripts/interface.js"></script>
+	<script type="text/javascript" src="static/javascripts/plush.js"></script>
+
+<style type="text/css">
+
+#topbar {
+	width: 100%;
+	background: #E4E4E4;
+}
+
+#menu {
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+#menu li {
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+#menu a {
+	float: left;
+	display: block;
+	padding: 4px 12px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #990000;
+}
+#menu a:hover {
+	background: #DBDBDB;
+}
+
+
+
+
+#menu:after {
+	content: " ";
+	clear: both;
+	display: block;
+	width: 100%;
+	height: 0;
+	visibility: hidden;
+}
+
+
+</style>
+
+</head>
+<body>
+
+	
+	<!-- Container : Begin -->
+	<div id="container">
+	
+	
+		<!-- Top Bar : Begin -->
+		<div id="topbar">
+		
+			<!-- Logo : Begin -->
+			<div id="logo">
+				<a href="#" title="SABnzbd+ Version: $version | Plush Version: 1.0.20071128">SABnzbd+ Plush</a>
+			</div>
+			<!-- Logo : End -->
+			
+			<!-- Main Menu : Begin -->
+			<ul id="menu">
+				<li><a id="plusnzb" title="Add an NZB now">+NZB</a></li>
+				<li><a id="options" title="View Plush options">Options</a></li>
+				<li><a href="connections" title="View the SABnzbd connection" class="greybox">Connections</a></li>
+				<li><a href="config" title="Configure Sabnzbd" class="greybox">Config</a></li>
+				<li><a href="http://sabnzbdplus.wiki.sourceforge.net/" class="greybox">Help</a></li>
+			</ul>
+			<!-- Main Menu : End -->
+			
+		</div>
+		<!-- Top Bar : End -->
+		
+		
+		<!-- Options Menu : Begin -->
+		<div class="subMenu" id="optionsMenu"><!--  style="display:none" -->
+			<b>Options:</b>
+			<a href="#" title="Choose "><span id="refreshRateDisplay">4</span> Second Refresh</a>
+			<span id="layout_sidebyside" class="sidebyside_icon" title="Layout: Side by Side"></span>
+			<span id="layout_toptobottom" class="toptobottom_icon" title="Layout: Top to Bottom"></span>
+			<a href="#" onclick="if (confirm('Are you sure you want to shut down the SABnzbd application?')) window.location = 'shutdown';" title="Click here to shut down SABnzbd">Shutdown SAB</a>
+			<div class="refreshSlider"><div class="refreshIndicator"></div></div>	
+		</div>
+		<!-- Options Menu : End -->
+		
+		
+		<!-- +NZB Menu : Begin -->
+		<div class="subMenu" id="nzbMenu" style="display: none">
+			<b>Add NZB: &nbsp;</b>
+			<!--#if $varExists('newzbinDetails')#-->
+				<input type="text" id="addID" value="by Report ID" size="12" onfocus="if(value=='by Report ID')value=''" onblur="if(!value)value='by Report ID'" />
+				<select id="addID_pp">
+					<option value="0" title="Do not post-process the NZB file set">-</option>
+					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
+					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
+					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set">D</option>
+					<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
+					<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
+					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
+				</select><span id="addNZBbyID" class="plusnzb_icon"/>&nbsp;&nbsp;&nbsp;
+			<!--#end if#-->
+				<input type="text" id="addURL" value="by URL" size="12" onfocus="if(value=='by URL')value=''" onblur="if(!value)value='by URL'" />
+				<select id="addURL_pp">
+					<option value="0" title="Do not post-process the NZB file set">-</option>
+					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
+					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
+					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set">D</option>
+					<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
+					<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
+					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
+				</select><span id="addNZBbyURL" class="plusnzb_icon"/>&nbsp;&nbsp;&nbsp;
+	
+				<form action="addFile" method="post" enctype="multipart/form-data" style="display:inline">
+				<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" />
+				<select name="pp">
+					<option value="0" title="Do not post-process the NZB file set">-</option>
+					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
+					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
+					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set">D</option>
+					<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
+					<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
+					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
+				</select>
+				<span id="addNZBbyFile" class="plusnzb_icon"/>
+				</form>
+		</div>
+		<!-- +NZB Menu : Begin -->
+		
+		
+		
+		<!-- Queue and History Container : Begin -->
+		<div class="textCenter">
+		
+			<!-- Queue : Begin -->
+			<div id="queue"></div>
+			<!-- Queue : End -->
+			
+			<!-- History : Begin -->
+			<div id="history"></div>
+			<!-- History : End -->
+			
+		</div>
+		<!-- Queue and History Container : End -->
+	
+	
+	
+	</div>
+	<!-- Container : End -->
+	
+</body>
+</html>

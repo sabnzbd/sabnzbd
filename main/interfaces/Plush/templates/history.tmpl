@@ -1,0 +1,75 @@
+<%
+def displayNotices (action):
+	notice = action[3:11]
+	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 ":
+		return '<small class="hvError">&nbsp;' + action[3:] + '&nbsp;</small>'
+%>
+
+
+
+
+<table class="listingTable" cellspacing="0">
+	<thead>
+		<tr>
+			<th class="first">HISTORY <span>$uptime uptime</span></th>
+			<th class="last tools">
+				<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle verbocity off"<!--#else#--> title="Toggle verbocity on"<!--#end if#-->>Verbosity</a> | 
+				<a href="#" title="Purge the history of all files" id="history_purge">Purge</a>
+			</th>
+		</tr>
+	</thead>
+	<tbody id="historyContent">
+	
+	
+
+		
+		<!--#set $odd = False#-->
+		<!--#if $lines#-->
+		<!--#for $line in $lines #-->
+		<!--#set $odd = not $odd#-->
+		<tr<!--#if $odd#--> class="alt"<!--#end if#-->>
+			<td class="first last historyItemTitle" title="Completed at $line.added" colspan="2"<!--#if $line.msgid #-->onClick="window.open('https://v3.newzbin.com/browse/post/$line.msgid/')"<!--#end if#-->>
+				
+				<!--
+				<a href="#" title="View Newzbin Report" target="_blank" class="historyItemInfo">
+					<img src="images/icon_newzbin.png" alt="Info" />
+				</a>
+				-->
+				
+				<span>$line.filename</span>
+				
+				<!--#if $line.loaded #-->
+				<span class="history_loading"/>
+				<!--#end if#-->
+					
+				<!--#if $line.stages#-->
+				<!--#for $stage in $line.stages#-->
+				<!--#for $action in $stage.actions#-->
+				<span title="$action.value | $action.name" class="history_$stage.name">
+					<%=displayNotices(action['value'])%>
+				</span>
+				<!--#end for#-->
+				<!--#end for#-->
+				<!--#end if#-->
+				
+			</td>
+		</tr>
+		<!--#end for#-->
+		<!--#end if#-->
+		
+		
+		
+
+
+			
+	</tbody>
+	<tfoot>
+		<tr>
+			<td class="first">
+				<span><strong>Total in History:</strong> $total_bytes GB</span>
+				<span><strong>Total Downloaded:</strong> $bytes_beginning GB</span>
+			</td>
+			<td class="last"></td>
+		</tr>
+	</tfoot>
+</table>

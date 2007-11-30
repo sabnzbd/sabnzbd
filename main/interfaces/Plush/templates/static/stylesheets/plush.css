@@ -1,0 +1,583 @@
+
+
+/* Body
+-------------------------------------------------------------------------------------------- */
+body {
+	font: 62.5% Arial, Helvetica, sans-serif;
+	text-align: center;
+	margin: 0;
+}
+
+
+/* Images
+-------------------------------------------------------------------------------------------- */
+a {cursor: pointer;}
+a img {border: none;}
+
+
+/* Headings
+-------------------------------------------------------------------------------------------- */
+h3 {
+	font-size: 1.7em;
+	color: #CC0000;
+	font-weight: normal;
+	margin: 5px 0;
+}
+
+
+/* Container
+-------------------------------------------------------------------------------------------- */
+#container {
+	text-align: left;
+	font-size: 1.4em;
+}
+
+
+/* Queue
+-------------------------------------------------------------------------------------------- */
+#queue {
+	float: left;
+	padding: 5px;
+}
+
+
+/* History
+-------------------------------------------------------------------------------------------- */
+#history {
+	float: left;
+	padding: 5px;
+}
+
+
+/* Footer
+-------------------------------------------------------------------------------------------- */
+#footer {clear: both;}
+
+
+
+
+
+/* Listing Table
+-------------------------------------------------------------------------------------------- */
+.listingTable { }
+
+/* Table Heading */
+.listingTable thead {}
+.listingTable thead tr {
+	background: url(../images/bg_listing_table_heading.png) repeat-x left top;
+	color: #333;
+	text-align: left;
+}
+.listingTable  thead  th {
+	padding: 10px 15px 6px 15px;
+	border-bottom: 1px solid #C7C7C7;
+	font-size: 1.1em;
+	color: #C00;
+}
+.listingTable thead th.first { background: transparent  url(../images/bg_listing_table_heading_tl.png) no-repeat left top; }
+.listingTable thead th.first span {
+	margin-left: 25px;
+	font-size: .85em;
+	font-weight: normal;
+	color: #999;
+}
+.listingTable thead th.last { background: transparent  url(../images/bg_listing_table_heading_tr.png) no-repeat right top; }
+
+/* Table Body */
+
+/* Table Rows */
+.listingTable tbody tr {background: #fff url(../images/bg_listing_table_tbody_tr.png) repeat-x left bottom;}
+.listingTable tbody tr.alt {background: #f6f6f6 url(../images/bg_listing_table_tbody_tr_alt.png) repeat-x left bottom;}
+.listingTable tbody tr:hover {
+	background: #e0efff url(../images/bg_listing_table_tbody_tr_hover.png) repeat-x left bottom;
+	color: #000;
+}
+.listingTable tbody tr:hover .itemMBRemain, 
+.listingTable tbody tr:hover .itemTitle a, 
+.listingTable tbody tr:hover .itemTTD {color: #000;}
+.listingTable tbody tr:hover .itemTitle a {background: url(../images/bg_listing_item_bullet_hover.png) no-repeat left center;}
+
+/* Table Data */
+.listingTable tbody .first {border-left: 1px solid #707070;}
+.listingTable tbody .last {border-right: 1px solid #707070;}
+.listingTable tbody td {
+	padding: 3px 5px;
+	white-space: nowrap;
+	text-align: left;
+}
+
+/* Item Title */
+.listingTable tbody .itemTitle {
+	padding-right: 30px;
+	text-align: left;
+	color: #555;
+	font-weight: bold;
+	font-size: 0.9em;
+}
+.listingTable tbody .itemTitle span {
+	padding-left: 20px;
+	background: url(../images/bg_listing_item_bullet.png) no-repeat left center;
+}
+.listingTable tbody tr:hover .itemTitle span {background: url(../images/bg_listing_item_bullet_hover.png) no-repeat left center;}
+.listingTable tbody .itemTitle a:hover {color: #000;}
+
+/* Progress Bar */
+.listingTable tbody .progressBar {
+	width: 154px;
+	height: 19px;
+	background: url(../images/bg_progress_bar_empty.png) no-repeat left top;
+}
+.listingTable tbody .progressBarProgress {
+	background: url(../images/bg_progress_bar_full.png) no-repeat left top;
+	text-align: right;
+	position: relative;
+	height: 19px;
+}
+.listingTable tbody .progressBarProgress span {
+	position: absolute;
+	top: 2px;
+	right: 5px;
+	color: #242424;
+	font-weight: bold;
+	font-size: 0.85em;
+}
+
+/* Time Till Download */
+.listingTable tbody .itemTTD {
+	font-size: 0.9em;
+	font-weight: bold;
+	color: #868686;
+}
+
+/* MB Remaining */
+.listingTable tbody .itemMBRemain { color: #666; }
+.listingTable tbody .itemMBRemain strong {}
+
+/* Table Foot */
+.listingTable tfoot {
+	font-size: .85em;
+	text-align: left;
+}
+.listingTable tfoot tr {background: transparent  url(../images/bg_listing_table_footer.png) repeat-x left bottom;}
+.listingTable tfoot td { padding: 8px 15px; }
+.listingTable tfoot .first {background: transparent  url(../images/bg_listing_table_footer_bl.png) no-repeat left bottom;}
+.listingTable tfoot .first span {margin-left: 20px;}
+.listingTable tfoot .last {
+	text-align: right;
+	font-size: .9em;
+	background: transparent  url(../images/bg_listing_table_footer_br.png) no-repeat right bottom;
+}
+
+
+
+
+
+
+
+
+
+/* Top Bar
+-------------------------------------------------------------------------------------------- */
+#topbar {}
+/* Top Bar content */
+#topbar #topbarContent {
+	padding: 10px;
+	background: #F8F8F8 url(../images/bg_topbar_content.png) repeat-x left top;
+}
+
+/* Total Progress Bar */
+#topbar #totalProgress {}
+#topbar #totalProgress h3 {
+	margin: 0 0 0 10px;
+	padding: 0;
+	color: #CC0000;
+	font-size: 1em;
+	font-weight: bold;
+}
+#topbar #totalProgressBar {
+	width: 300px;
+	height: 37px;
+	background: url(../images/bg_total_progress_bar_empty.png) no-repeat left top;
+}
+#topbar #totalProgressBarProgress {
+	background: url(../images/bg_total_progress_bar_full.png) no-repeat left top;
+	text-align: right;
+	position: relative;
+	height: 37px;
+}
+#topbar #totalProgressBarProgress span {
+	position: absolute;
+	top: 10px;
+	right: 5px;
+	color: #242424;
+	font-weight: bold;
+	font-size: 1.2em;
+}
+
+
+/* Top bar toggle button */
+#topbar #topbarToggle {
+	text-align: right;
+	background: url(../images/bg_topbar_bottom_border.png) repeat-x top left;
+}
+#topbar #topbarToggle a {
+	margin-right: 25px;
+	border: none;
+	text-decoration: none;
+}
+
+
+
+
+
+
+
+.listingTable thead .tools {
+	font-size: 0.8em;
+	text-align: right;
+	color: #CCCCCC;
+}
+.listingTable thead .tools a {
+	color: #666666;
+	text-decoration: none;
+	padding: 4px 10px;
+}
+.listingTable thead .tools a:hover {
+	color: #CC0000;
+	text-decoration: underline;
+}
+.listingTable thead .tools a.active {
+	background: #FF3300;
+	color: #FFFFFF;
+}
+.listingTable thead .tools a:hover.active {
+	text-decoration: none;
+	background: #CC0000;
+}
+
+
+
+
+
+
+
+.listingTable tbody .postProcessing:hover {background-color: none; background-image: none;}
+.listingTable tbody .postProcessing td {padding: 0;}
+.listingTable tbody .postProcessing table {
+	width: 100%;
+	font-size: 0.9em;
+}
+.listingTable .postProcessing table tr {}
+.listingTable .postProcessing table td { padding: 4px 10px; }
+.listingTable .postProcessing .finished { background: #FBF3B3 url(../images/bg_tr_finished.png) repeat-x left bottom; }
+.listingTable .postProcessing .active { background: #DBF5C0 url(../images/bg_tr_active.png) repeat-x left bottom; }
+.listingTable .postProcessing .pending { background: #E6F0F7 url(../images/bg_tr_pending.png) repeat-x left bottom; }
+
+.postProcessing .processItemTitle {}
+.postProcessing .processItemMove a {
+	text-decoration: none;
+	font-weight: bold;
+}
+/* Process Item Status */
+.listingTable .postProcessing .finished .processItemStatus {
+	font-weight: bold;
+	color: #70660E;
+}
+.listingTable .postProcessing .active .processItemStatus {
+	font-weight: bold;
+	color: #355515;
+}
+.listingTable .postProcessing .pending .processItemStatus {
+	font-weight: bold;
+	color: #283E4F;
+}
+
+
+
+
+
+
+#history #historyContent {font-size: .85em;}
+/* History item titles */
+#history .historyItemTitle {}
+#history .historyItemTitle a {
+	text-decoration: none;
+	color: #666666;
+	font-weight: bold;
+}
+#history .historyItemTitle a:hover {}
+/* History item info (newzbin) link */
+#history .historyItemInfo {
+	float: left;
+	margin-right: 15px;
+	padding-left: 5px;
+}
+/* History item status */
+#history .failed { background: #FDE8E8 url(../images/bg_tr_failed.png) repeat-x left bottom; }
+#history .failed .historyItemTitle a { color: #CC0000; }
+
+
+
+
+/* History verbocity */
+#history .historyVerbocity, #history .historyVerbocity:hover { background: #D7D7D7; }
+#history .historyVerbocity table {
+	width: 100%;
+	font-size: 0.9em;
+	color: #000000;
+	border-bottom: 1px none #ADADAD;
+	margin: 5px;
+	border-top: 1px solid #ADADAD;
+	border-right: 1px solid #ADADAD;
+	border-left: 1px solid #ADADAD;
+}
+#history .historyVerbocity table td {
+	padding-left: 30px;
+	border-bottom: 1px solid #ADADAD;
+}
+/* History verbociy status */
+#history .historyVerbocity .verified {background: #F4FBF0 url(../images/icon_check.png) no-repeat 5px center;}
+#history .historyVerbocity .deleted {background: #FFF0F0 url(../images/icon_trash.png) no-repeat 2px center;}
+#history .historyVerbocity .unpacked {background: #FFFBDF url(../images/icon_zip.png) no-repeat 5px center;}
+#history .historyVerbocity .failure {
+	background: #FFEAEA url(../images/icon_exclamation.png) no-repeat 5px center;
+	font-weight: bold;
+	color: #990000;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	G R A Y B O X
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+#GB_overlay {
+	background-image: url(../images/gb_overlay.png); 
+	position: absolute;
+	margin: auto;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	width:  100%;
+	height: 100%;
+}
+* html #GB_overlay {
+	background-color: #000;
+	background-color: transparent;
+	background-image: url(../images/gb_blank.gif);
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/greybox_overlay.png", sizingMethod="scale");
+}
+#GB_window {
+	top: 10px;
+	left: 0px;
+	position: absolute;
+	background: #fff;
+	border: 1px solid #aaa;
+	overflow: auto;
+	width: 400px;
+	height: 400px;
+	z-index: 150;
+}
+#GB_frame {
+	border: 0;
+	overflow: auto;
+	width: 100%;
+	height: 378px;
+}
+#GB_caption {
+	font: 12px bold helvetica, verdana, sans-serif;
+	color: #fff;
+	background: #888;
+	padding: 2px 0 2px 5px;
+	margin: 0;
+	text-align: left;
+}
+#GB_window img {
+	position: absolute;
+	top: 2px;
+	right: 5px;
+	cursor: pointer;
+	cursor: hand;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	H E L P E R    C L A S S E S
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+
+
+
+/* Text align
+----------------------------------------------------------- */
+.textRight {text-align: right;}
+.textLeft {text-align: left;}
+.textCenter {text-align: center;}
+
+
+/* Display
+----------------------------------------------------------- */
+.clear {clear: both;}
+.noClear {clear: none;}
+.hide {display: none;}
+.show {display: inherit;}
+.visible {display: inherit;}
+.hidden {display: none;}
+.block {display: block;}
+.inline {display: inline;}
+.noStyling {border: none; background: none; text-decoration: none;}
+
+
+/* Column Classes
+----------------------------------------------------------- */
+.col10 {width: 10%; float: left; display: block; margin: 0; padding: 0;}
+.col15 {width: 15%; float: left; display: block; margin: 0; padding: 0;}
+.col20 {width: 20%; float: left; display: block; margin: 0; padding: 0;}
+.col25 {width: 25%; float: left; display: block; margin: 0; padding: 0;}
+.col33 {width: 33%; float: left; display: block; margin: 0; padding: 0;}
+.col40 {width: 40%; float: left; display: block; margin: 0; padding: 0;}
+.col45 {width: 45%; float: left; display: block; margin: 0; padding: 0;}
+.col50 {width: 50%; float: left; display: block; margin: 0; padding: 0;}
+.col55 {width: 55%; float: left; display: block; margin: 0; padding: 0;}
+.col60 {width: 60%; float: left; display: block; margin: 0; padding: 0;}
+.col65 {width: 65%; float: left; display: block; margin: 0; padding: 0;}
+.col66 {width: 66%; float: left; display: block; margin: 0; padding: 0;}
+.col70 {width: 70%; float: left; display: block; margin: 0; padding: 0;}
+.col75 {width: 75%; float: left; display: block; margin: 0; padding: 0;}
+.col80 {width: 80%; float: left; display: block; margin: 0; padding: 0;}
+.col90 {width: 90%; float: left; display: block; margin: 0; padding: 0;}
+.col100 {width: 100%; float: left; display: block; margin: 0; padding: 0;}
+
+
+/* Padding Classes
+----------------------------------------------------------- */
+.pad5 {padding: 5px; margin: 0;}
+.pad10 {padding: 12px; margin: 0;}
+.pad15 {padding: 15px; margin: 0;}
+.pad20 {padding: 20px; margin: 0;}
+.pad25 {padding: 25px; margin: 0;}
+.pad30 {padding: 30px; margin: 0;}
+.pad35 {padding: 35px; margin: 0;}
+.pad40 {padding: 40px; margin: 0;}
+.pad45 {padding: 45px; margin: 0;}
+.pad50 {padding: 50px; margin: 0;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.history_Par2 {
+	padding-left: 	16px;
+	margin-left:	1px;
+	background: 	url(../images/hv_par2.png) no-repeat;
+}
+.history_Join {
+	padding-left: 	16px;
+	margin-left:	1px;
+	background: 	url(../images/hv_join.png) no-repeat;
+}
+.history_Unrar {
+	padding-left: 	16px;
+	margin-left:	1px;
+	background: 	url(../images/hv_unrar.png) no-repeat;
+}
+.history_Unzip {
+	padding-left: 	16px;
+	margin-left:	1px;
+	background: 	url(../images/hv_unzip.png) no-repeat;
+}
+.history_loading {
+	padding-left: 	16px;
+	margin-left:	1px;
+	background: 	url(../images/h_postprocessing.gif) no-repeat;
+}
+
+
+
+
+/*******************************
+**  Options Refresh Rate Slider
+**/
+.refreshSlider
+{
+	width: 316px;
+	height: 16px;
+	position: relative;
+	left: 16px;
+	background-color: #074273;
+	z-index: 1;
+	margin-right: auto;
+	margin-left: auto;
+}
+.refreshIndicator
+{
+	width: 40px;
+	height: 16px;
+	background-image: url(../images/o_refresh_handle.png);
+	position: absolute;
+	font-size: 1px;
+	overflow: hidden;
+	border: none;
+	position: relative;
+	z-index: 2;
+	float:left;
+}
