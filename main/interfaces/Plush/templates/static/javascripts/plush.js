@@ -36,7 +36,7 @@ $(document).ready(function() {
 	// set up lightbox floating window
 	$("a.greybox").click(function(){
 		var t = this.title || this.innerHTML || this.href;
-		GB_show(t,this.href,470,600);
+		GB_show(t,this.href,500,700);
 		return false;
     });
 	// set up Main Menu actions

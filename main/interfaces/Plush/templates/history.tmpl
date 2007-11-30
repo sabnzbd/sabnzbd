@@ -27,7 +27,7 @@ def displayNotices (action):
 		<!--#if $lines#-->
 		<!--#for $line in $lines #-->
 		<!--#set $odd = not $odd#-->
-		<tr<!--#if $odd#--> class="alt"<!--#end if#-->>
+		<tr class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 			<td class="first last historyItemTitle" title="Completed at $line.added" colspan="2"<!--#if $line.msgid #-->onClick="window.open('https://v3.newzbin.com/browse/post/$line.msgid/')"<!--#end if#-->>
 				
 				<!--
@@ -67,9 +67,10 @@ def displayNotices (action):
 		<tr>
 			<td class="first">
 				<span><strong>Total in History:</strong> $total_bytes GB</span>
+			</td>
+			<td class="last">
 				<span><strong>Total Downloaded:</strong> $bytes_beginning GB</span>
 			</td>
-			<td class="last"></td>
 		</tr>
 	</tfoot>
 </table>

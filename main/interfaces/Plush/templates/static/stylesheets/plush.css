@@ -1,7 +1,17 @@
+/* ---------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------
+
+		Plush.css
+		By Dana Woodman aka blis102 (dana@organixdesign.com)
+
+------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------- */
+
+
 
 
 /* Body
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 body {
 	font: 62.5% Arial, Helvetica, sans-serif;
 	text-align: center;
@@ -10,13 +20,13 @@ body {
 
 
 /* Images
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 a {cursor: pointer;}
 a img {border: none;}
 
 
 /* Headings
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 h3 {
 	font-size: 1.7em;
 	color: #CC0000;
@@ -26,7 +36,7 @@ h3 {
 
 
 /* Container
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 #container {
 	text-align: left;
 	font-size: 1.4em;
@@ -34,7 +44,7 @@ h3 {
 
 
 /* Queue
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 #queue {
 	float: left;
 	padding: 5px;
@@ -42,7 +52,7 @@ h3 {
 
 
 /* History
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 #history {
 	float: left;
 	padding: 5px;
@@ -50,7 +60,7 @@ h3 {
 
 
 /* Footer
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 #footer {clear: both;}
 
 
@@ -58,7 +68,7 @@ h3 {
 
 
 /* Listing Table
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 .listingTable { }
 
 /* Table Heading */
@@ -95,7 +105,6 @@ h3 {
 .listingTable tbody tr:hover .itemMBRemain, 
 .listingTable tbody tr:hover .itemTitle a, 
 .listingTable tbody tr:hover .itemTTD {color: #000;}
-.listingTable tbody tr:hover .itemTitle a {background: url(../images/bg_listing_item_bullet_hover.png) no-repeat left center;}
 
 /* Table Data */
 .listingTable tbody .first {border-left: 1px solid #707070;}
@@ -114,6 +123,7 @@ h3 {
 	font-weight: bold;
 	font-size: 0.9em;
 }
+.listingTable tbody .itemTitle:hover {cursor: pointer;}
 .listingTable tbody .itemTitle span {
 	padding-left: 20px;
 	background: url(../images/bg_listing_item_bullet.png) no-repeat left center;
@@ -153,15 +163,27 @@ h3 {
 .listingTable tbody .itemMBRemain { color: #666; }
 .listingTable tbody .itemMBRemain strong {}
 
+/* Delete */
+.listingTable tbody .btnDelete {
+	width: 20px;
+	height: 20px;
+	display: block;
+	background: url(../images/icon_delete.png) no-repeat left top;
+}
+.listingTable tbody .btnDelete:hover {
+	background: url(../images/icon_delete_hover.png) no-repeat;
+	cursor: pointer;
+}
+
 /* Table Foot */
 .listingTable tfoot {
 	font-size: .85em;
 	text-align: left;
 }
 .listingTable tfoot tr {background: transparent  url(../images/bg_listing_table_footer.png) repeat-x left bottom;}
-.listingTable tfoot td { padding: 8px 15px; }
+.listingTable tfoot td {padding: 8px 15px;}
+.listingTable tfoot td span {margin-left: 20px;}
 .listingTable tfoot .first {background: transparent  url(../images/bg_listing_table_footer_bl.png) no-repeat left bottom;}
-.listingTable tfoot .first span {margin-left: 20px;}
 .listingTable tfoot .last {
 	text-align: right;
 	font-size: .9em;
@@ -177,7 +199,7 @@ h3 {
 
 
 /* Top Bar
--------------------------------------------------------------------------------------------- */
+----------------------------------------------------------------- */
 #topbar {}
 /* Top Bar content */
 #topbar #topbarContent {
@@ -375,7 +397,7 @@ h3 {
 	height: 100%;
 }
 * html #GB_overlay {
-	background-color: #000;
+	background-color: #fff;
 	background-color: transparent;
 	background-image: url(../images/gb_blank.gif);
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/greybox_overlay.png", sizingMethod="scale");
@@ -398,7 +420,7 @@ h3 {
 	height: 378px;
 }
 #GB_caption {
-	font: 12px bold helvetica, verdana, sans-serif;
+	font: 1.2em bold Verdana, Arial, Helvetica, sans-serif;
 	color: #fff;
 	background: #888;
 	padding: 2px 0 2px 5px;
