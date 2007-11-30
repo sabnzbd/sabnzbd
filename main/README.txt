@@ -99,7 +99,7 @@ Visit the WIKI site:
 -------------------------------------------------------------------------------
 
 o) NOVA3, NOVA4 and Plush alternative web interfaces
-   pairofdimes, Organix Design
+   pairofdimes, blis102 Organix Design
 
 o) SABnzbd uses various code from pynewsleecher, newsunpack and grabnzb by: 
    Freddie (freddie@madcowdisease.org) (http://www.madcowdisease.org/mcd)
