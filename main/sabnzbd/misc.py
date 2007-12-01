@@ -72,11 +72,14 @@ class DirScanner(Thread):
                 for filename in files:
                     path = os.path.join(self.dirscan_dir, filename)
                     root, ext = os.path.splitext(path)
-                    if ext.lower() in ('.nzb', '.zip'):
+                    candidate = ext.lower() in ('.nzb', '.zip')
+                    if candidate:
+                        stat_tuple = os.stat(path)
+                    if candidate and stat_tuple.st_size > 0:
                         try:
                             logging.info('[%s] Trying to import %s', __NAME__, path)
-                            stat_tuple = os.stat(path)
                             
+                            # Wait until the attributes are stable for 1 second
                             while 1:
                                 time.sleep(1.0)
                                 stat_tuple_tmp = os.stat(path)
