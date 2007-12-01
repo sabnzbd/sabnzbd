@@ -5,10 +5,11 @@ Version 1.0.20071128
 ======
 AUTHOR
 * Nathan Langlois
+* Dana Woodman
 
 ============
 INTRODUCTION
-* SABnzbdPlus 0.2.8 required
+* SABnzbdPlus 0.2.8 + required
 
 ========
 BENEFITS
