@@ -11,7 +11,7 @@ def displayNotices (action):
 <table class="listingTable" cellspacing="0">
 	<thead>
 		<tr>
-			<th class="first">HISTORY <span>$uptime uptime</span></th>
+			<th class="first">HISTORY <span>$uptime Uptime</span></th>
 			<th class="last tools">
 				<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle verbocity off"<!--#else#--> title="Toggle verbocity on"<!--#end if#-->>Verbosity</a> | 
 				<a href="#" title="Purge the history of all files" id="history_purge">Purge</a>
@@ -43,6 +43,7 @@ def displayNotices (action):
 				<!--#end if#-->
 					
 				<!--#if $line.stages#-->
+				<br />
 				<!--#for $stage in $line.stages#-->
 				<!--#for $action in $stage.actions#-->
 				<span title="$action.value | $action.name" class="history_$stage.name">
