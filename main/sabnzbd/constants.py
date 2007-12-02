@@ -49,8 +49,6 @@ PANIC_PORT  = 1
 PANIC_TEMPL = 2
 PANIC_QUEUE = 3
 
-MY_NAME = 'SABnzbd'
-
 STAGENAMES = {1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin"}
 
 BYTES_FILE_NAME  = 'bytes.sab'

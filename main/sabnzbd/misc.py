@@ -292,8 +292,8 @@ MSG_BAD_PORT = r'''
     <br>
     Please restart SABnzbd with a different port number.<br>
     <br>
-    Open a command prompt and type in (example):<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;SABnzbd --server %s:%s<br>
+    %s<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>
     If you get this error message again, please try a different number.<br>
 '''
@@ -305,8 +305,8 @@ MSG_BAD_QUEUE = r'''
     After that, start this program with the "--clean" option.<br>
     This will erase the current queue and history!<br>
     <br>
-    Open a command prompt and type in:<br>
-      &nbsp;&nbsp;&nbsp;&nbsp;SABnzbd --clean<br>
+    %s<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;%s --clean<br>
     <br>
 '''
 
@@ -318,16 +318,23 @@ MSG_BAD_TEMPL = r'''
 
 
 def panic_message(panic, host, port):
+
+    if os.name == 'nt':
+        os_str = 'Press Startkey+R and type the line (example):'
+    else:
+        os_str = 'Open a Terminal window and type the line (example):'
+
     if panic == PANIC_PORT:
         newport = port + 1
         newport = "%s" % newport
-        msg = MSG_BAD_PORT % (port, host, host, newport)
+        msg = MSG_BAD_PORT % (port, host, os_str, sabnzbd.MY_FULLNAME, host, newport)
     elif panic == PANIC_TEMPL:
         msg = MSG_BAD_TEMPL
     else:
-        msg = MSG_BAD_QUEUE
+        msg = MSG_BAD_QUEUE % (os_str, sabnzbd.MY_FULLNAME)
 
-    msg = MSG_BAD_NEWS % (MY_NAME, sabnzbd.__version__, MY_NAME, sabnzbd.__version__, msg)
+
+    msg = MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg)
         
     msgfile, url = tempfile.mkstemp(suffix='.html')
     os.write(msgfile, msg)

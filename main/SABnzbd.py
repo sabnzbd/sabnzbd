@@ -82,7 +82,7 @@ def print_help():
     print "  -p  --pause              start in paused mode"
     
 def print_version():
-    print "%s-%s" % (MY_NAME, sabnzbd.__version__)
+    print "%s-%s" % (sabnzbd.MY_NAME, sabnzbd.__version__)
 
 
 
@@ -114,7 +114,10 @@ def daemonize():
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
     
 def main():
-    print '\n%s-%s' % (MY_NAME, sabnzbd.__version__)
+    sabnzbd.MY_NAME = os.path.basename(sys.argv[0]).replace('.py','')
+    sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
+    
+    print '\n%s-%s' % (sabnzbd.MY_FULLNAME, sabnzbd.__version__)
 
     LOGLEVELS = [ logging.WARNING, logging.INFO, logging.DEBUG ]
 
@@ -314,7 +317,7 @@ def main():
         except AttributeError:
             pass
                 
-    logging.info('%s-%s', MY_NAME, sabnzbd.__version__)
+    logging.info('%s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
     
     if umask == None:
         umask = check_setting_str(cfg, 'misc', 'permissions', '')
@@ -329,7 +332,7 @@ def main():
     
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting', 
-                      MY_NAME, sabnzbd.__version__)
+                      sabnzbd.MY_NAME, sabnzbd.__version__)
         sys.exit(2)
 
     if sabnzbd.decoder.HAVE_YENC:
@@ -413,11 +416,11 @@ def main():
     # Save the INI file
     save_configfile(cfg)
             
-    logging.info('Starting %s-%s', MY_NAME, sabnzbd.__version__)
+    logging.info('Starting %s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
     try:
         sabnzbd.start()
     except:
-        logging.exception("Failed to start %s-%s", MY_NAME, sabnzbd.__version__)
+        logging.exception("Failed to start %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
         sabnzbd.halt()
     
     cherrylogtoscreen = False

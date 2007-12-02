@@ -50,6 +50,8 @@ START = datetime.datetime.now()
 
 CFG = None
 
+MY_NAME = None
+MY_FULLNAME = None
 DIR_HOME = None
 DIR_APPDATA = None
 DIR_LCLDATA = None
@@ -207,6 +209,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            LOGFILE, WEBLOGFILE, LOGHANDLER, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, NO_BROWSER, ARTICLECACHE, \
+           MY_NAME, MY_FULLNAME, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL
