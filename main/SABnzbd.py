@@ -46,7 +46,8 @@ from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
 from sabnzbd.constants import *
-from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser
+from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, \
+                         check_latest_version
 
 from threading import Thread
 
@@ -466,7 +467,11 @@ def main():
         cherrypy.server.start(init_only=True)
         cherrypy.server.wait()
         launch_a_browser(cherryhost, cherryport)
-            
+
+        # Now's the time to check for a new version
+        if sabnzbd.VERSION_CHECK:
+            check_latest_version()
+
         # Have to keep this running, otherwise logging will terminate
         while cherrypy.server.ready:
             time.sleep(3)

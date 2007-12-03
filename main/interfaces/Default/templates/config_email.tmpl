@@ -77,7 +77,9 @@ For authenticated email, password.<br>
 <!--#if int($cache_limit)#-->
 <b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
 <!--#end if#-->
-<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+<!--#if $new_release#-->
+    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
+<!--#end if#-->
 </div>
 </body>
 </html>

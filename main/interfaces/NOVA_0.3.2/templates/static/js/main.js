@@ -68,8 +68,6 @@ function parseInfo(info)
 		document.getElementById("speed").innerHTML = info["speed"].toFixed(2);
 		document.getElementById("left").innerHTML = info["left"].toFixed(2);
 		document.getElementById("total").innerHTML = info["total"].toFixed(2);
-		if (info["nzb_quota"])
-			document.getElementById("nzb_quota").innerHTML = info["nzb_quota"];
 		if (info["paused"] == 'True')
 			document.getElementById("paused").innerHTML = '<div class="paused">PAUSED</div>';
 		else

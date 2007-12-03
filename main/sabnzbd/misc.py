@@ -30,11 +30,14 @@ import re
 import zipfile
 import webbrowser
 import tempfile
+import urllib
 
 from threading import *
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd import nzbgrab
 from sabnzbd.constants import *
+
+RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
@@ -358,3 +361,48 @@ def launch_a_browser(host, port, panic=PANIC_NONE):
     except:
         # Python 2.4 does not support parameter new=2
         webbrowser.open(url, 1, 1)
+
+
+
+################################################################################
+# Check latest version
+#
+# Perform an online version check
+# Formula
+# - the online version is always: <major>.<minor>.<bugfix>
+# - the local version is <major>.<minor>.<bugfix>[rc|beta]<cand>
+#
+# The <cand> value for the online version is assumned to be 99.
+# The <cand> value for the local version is 1..98
+# This is done to signal beta|rc users of availability of the final
+# version (which is implicitly 99).
+# People are NOT informed to upgrade to a higher beta|rc version, since these
+# are not in the online version indicator.
+#
+################################################################################
+
+def check_latest_version():
+    try:
+        fn = urllib.urlretrieve('http://sabnzbdplus.sourceforge.net/version/latest')[0]
+        f = open(fn, 'r')
+        data = f.read()
+        f.close()
+    except:
+        return
+
+    latest_label = data.split()[0]
+    url = data.split()[1]
+    m = RE_VERSION.search(latest_label)
+    latest = int(m.group(1))*1000000 + int(m.group(2))*10000 + int(m.group(3))*100 + 99
+    
+    m = RE_VERSION.search(sabnzbd.__version__)
+    current = int(m.group(1))*10000 + int(m.group(2))*10000 + int(m.group(3))*100
+    try:
+        current = current + int(m.group(5))
+    except:
+        current = current + 99
+
+    logging.debug("Checked for a new release, cur= %s, latest= %s (on %s)", current, latest, url)
+
+    if current < latest:
+        sabnzbd.NEW_VERSION = "%s;%s" % (latest_label, url)

@@ -139,7 +139,7 @@ class MainPage(ProtectedClass):
             info['warning'] = ""
         else:
             info['warning'] = "No Usenet server defined, please check Config-->Servers"
-            
+
         template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
                             searchList=[info],
                             compilerSettings={'directiveStartToken': '<!--#', 
@@ -707,6 +707,7 @@ class ConfigSwitches(ProtectedClass):
         config['dirscan_opts'] = int(sabnzbd.CFG['misc']['dirscan_opts'])
         config['top_only'] = int(sabnzbd.CFG['misc']['top_only'])
         config['auto_sort'] = int(sabnzbd.CFG['misc']['auto_sort'])
+        config['check_rel'] = int(sabnzbd.CFG['misc']['check_new_rel'])
         config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
         
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
@@ -721,7 +722,9 @@ class ConfigSwitches(ProtectedClass):
                      send_group = None, fail_on_crc = None, top_only = None,
                      create_group_folders = None, dirscan_opts = None,
                      enable_par_cleanup = None, auto_sort = None,
-                     create_category_folders = None):
+                     create_category_folders = None,
+                     check_rel = None
+                     ):
                      
         sabnzbd.CFG['misc']['enable_unrar'] = int(enable_unrar)
         sabnzbd.CFG['misc']['enable_unzip'] = int(enable_unzip)
@@ -734,6 +737,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['enable_par_cleanup'] = int(enable_par_cleanup)
         sabnzbd.CFG['misc']['top_only'] = int(top_only)
         sabnzbd.CFG['misc']['auto_sort'] = int(auto_sort)
+        sabnzbd.CFG['misc']['check_new_rel'] = int(check_rel)
         sabnzbd.CFG['newzbin']['create_category_folders'] = int(create_category_folders)
         
         return saveAndRestart(self.__root)
@@ -1130,6 +1134,12 @@ def build_header():
     
     header['nzb_quota'] = ''
     
+    if sabnzbd.NEW_VERSION:
+        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION.split(';')
+    else:
+        header['new_release'] = ''
+        header['new_rel_url'] = ''
+
     return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
     
 def calc_age(date):

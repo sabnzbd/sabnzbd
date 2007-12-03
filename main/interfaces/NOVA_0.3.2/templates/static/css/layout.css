@@ -396,10 +396,10 @@
 
 
 /* ----------------------------------------------------
-	NZB QUOTA - Box containing nzb quota, hidden if no nzb quota
+	NEW RELEASE - Box containing new release info, could be hidden
 ---------------------------------------------------- */
 
-.nzbQuota {
+.newRelease {
 	padding: 5px;
 	margin-left: 10px;
 	text-align: center;
@@ -407,14 +407,14 @@
 	border: 1px solid #1F77AB;
 	float: left;
 }
-.nzbQuota i {
+.newRelease i {
 	font-size: 90%;
 	color: #FFFFFF;
 	font-style: normal;
 	font-weight: bold;
 	display: block;
 }
-.nzbQuota b {
+.newRelease b {
 	color: #15557B;
 	font: bold 210% Georgia, "Times New Roman", Times, serif;
 	display: block;

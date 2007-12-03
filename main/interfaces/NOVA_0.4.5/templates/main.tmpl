@@ -23,6 +23,9 @@
 		<div class="topBar">
 			<div id="logo">SABnzbd+ N<font color="#F89E44">O</font><font color="#FAB875">V</font><font color="#FCD1A6">A</font></div>
 			<div id="topLinks">
+			  <!--#if $new_release#-->
+			      <a href="$new_rel_url" target="_blank">New release $new_release available</a>
+			  <!--#end if#-->
 				<a onclick="Effect.toggle('2ndbar','blind')" id="plusnzb" title="Enqueue an nzb">+NZB</a>
 				<a onclick="Effect.toggle('novabar','blind')" id="plusnzb" title="NOVA Settings">Options</a>
 				<a href="connections" title="SABnzbd Connections" rel="lyteframe" rev="width: 1000px; height: 500px; scrolling: auto;">Connections</a>

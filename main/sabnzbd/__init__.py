@@ -36,7 +36,8 @@ from threading import RLock, Lock, Condition, Thread
 from sabnzbd.assembler import Assembler, PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
-from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, create_real_path
+from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, \
+                         create_real_path, check_latest_version
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue
@@ -52,6 +53,8 @@ CFG = None
 
 MY_NAME = None
 MY_FULLNAME = None
+NEW_VERSION = None
+VERSION_CHECK = None
 DIR_HOME = None
 DIR_APPDATA = None
 DIR_LCLDATA = None
@@ -209,7 +212,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            LOGFILE, WEBLOGFILE, LOGHANDLER, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, NO_BROWSER, ARTICLECACHE, \
-           MY_NAME, MY_FULLNAME, \
+           MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL
@@ -225,6 +228,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     
     USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
     PASSWORD_NEWZBIN = check_setting_str(CFG, 'newzbin', 'password', '', False)
+    
+    VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
     
     FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
     
@@ -344,7 +349,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     ############################
     
     need_rsstask = init_RSS()
-    init_SCHED(schedlines, need_rsstask, rss_rate)
+    init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK)
     
     if ARTICLECACHE:
         ARTICLECACHE.__init__(cache_limit)
@@ -914,25 +919,6 @@ def remove_data(_id):
     except:
         pass
         
-################################################################################
-# Misc                                                                         #
-################################################################################
-#def check_for_latest_version():
-#    try:
-#        import urllib
-#        
-#        fn = urllib.urlretrieve('http://sabnzbd.sourceforge.net/sa')[0]
-#        
-#        f = open(fn, 'r')
-#        data = f.read()
-#        f.close()
-#        
-#        latest = data.split()[0]
-#        
-#        return (latest, latest == __version__)
-#        
-#    except:
-#        return None
         
 def pp_to_opts(pp):
     repair, unpack, delete, script = (False, False, False, False)
@@ -999,10 +985,10 @@ def search_new_server(servers, article):
 ################################################################################
 RSSTASK_MINUTE = random.randint(0, 59)
 
-def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1):
+def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck=True):
     global SCHED
     
-    if schedlines or need_rsstask:
+    if schedlines or need_rsstask or need_versioncheck:
         SCHED = ThreadedScheduler()
         
         for schedule in schedlines:
@@ -1039,6 +1025,15 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1):
                     logging.debug("Scheduling RSS task %s %s:%s", d, h, interval*m + ran_m)
                     SCHED.addDaytimeTask(RSS.run, '', d, None, (h, interval*m + ran_m), 
                                          SCHED.PM_SEQUENTIAL, [])
+
+        if need_versioncheck:
+            # Check for new release, once per week on random time
+            m = random.randint(0, 59)
+            h = random.randint(0, 23)
+            d = (random.randint(1, 7), )
+
+            logging.debug("Scheduling VersionCheck day=%s time=%s:%s", d, h, m)
+            SCHED.addDaytimeTask(check_latest_version, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
 
 
 ################################################################################

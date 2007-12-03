@@ -246,10 +246,11 @@
 		<!-- End Download Info -->
 			
 			
-		<div class="nzbQuota" title="# nzb downloads from Newzbin within the last week">
-			<i><sup>nzb</sup>quota</i>
-			<b><span id="nzb_quota">$nzb_quota</span></b>			
-		</div>
+		<!--#if $new_release#-->
+    		<div class="newRelease" title="# New release available">
+		    	<i>New release $new_release on <a href="$new_rel_url" target="_blank">SF.net</a></i>
+    		</div>
+		<!--#end if#-->
 		
 		</div>
 		
@@ -288,7 +289,8 @@ SABNZBDJSON
 	"total": $mb,
 	"paused": "$paused",
 	"shutdown": "$shutdown",
-	"nzb_quota": "$nzb_quota",
+	"new_release": "$new_release",
+	"new_rel_url": "$new_rel_url",
 	"totaltimeleft": '<img src="static/images/hourglass.gif" alt="Ultra calculating..." />',
 	"percentdone": "%",
 	"downloaded": ""
