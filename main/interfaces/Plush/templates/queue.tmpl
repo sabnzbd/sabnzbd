@@ -44,8 +44,10 @@ def drawProgressBar (mbleft, mb):
 	else:
 		imgnum = "4" # red
 	return '<div class="progressBarProgress" style="width: '+str(percentage)+'%;"><span>'+str(percentage)+'%</span></div>'
-
 %> 
+
+
+
 
 
 
@@ -63,7 +65,7 @@ def drawProgressBar (mbleft, mb):
 				<!--#if $nt and $shutdown#-->
 				 | <a id="queue_shutdown" class="active">Shutdown!</a>
 				<!--#else if $nt#-->
-				 | <a id="queue_shutdown" title="Shutdown the Queue">Shutdown</a>
+				 | <a id="queue_shutdown" title="Shutdown the SABnzbd when queue empties (may cause errors with last downloaded file)">Shutdown</a>
 				<!--#end if#-->
 			</th>
 		</tr>
@@ -77,6 +79,9 @@ def drawProgressBar (mbleft, mb):
 <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB remaining to be downloaded
 <%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%> Time left till downloads complete
 $noofslots
+Free in Temp: $diskspace1 GB
+Free in Done: $diskspace2 GB
+Total Remaining: <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB
 -->
 
 
@@ -200,11 +205,7 @@ $noofslots
 	
 	<tfoot>
 		<tr>
-			<td class="first" colspan="5">
-				<span><strong>Total Remaining:</strong> <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB</span>
-				<span><strong>Free in Temp:</strong> $diskspace1 GB</span>
-				<span><strong>Free in Done:</strong> $diskspace2 GB</span>
-			</td>
+			<td class="first" colspan="5"></td>
 			<td class="last"></td>
 		</tr>
 	</tfoot>

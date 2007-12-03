@@ -8,13 +8,14 @@ var refreshRate = 4; // default
 
 // once the DOM is ready, run this
 $(document).ready(function() {
-	/*
 	// refresh rate
 	if (ReadCookie('PlushRefresh')) {
 		refreshRate = ReadCookie('PlushRefresh');
 		$('#refreshRateDisplay').html(refreshRate);
+		SetCookie('PlushRefresh',refreshRate);
+	} else {
+		SetCookie('PlushRefresh',4);	
 	}
-	*/
 	// Queue & History layout restoration
 	if ('sidebyside' == ReadCookie('PlushLayout')) {
 		$("#queue").addClass("queue_sidebyside");
@@ -33,13 +34,13 @@ $(document).ready(function() {
 		SetCookie('PlushLayout','toptobottom');
 	});
 	
-	// set up lightbox floating window
+	// Set up lightbox floating window
 	$("a.greybox").click(function(){
 		var t = this.title || this.innerHTML || this.href;
 		GB_show(t,this.href,500,700);
 		return false;
     });
-	// set up Main Menu actions
+	// Set up Main Menu actions
 	$('#options').bind('click', function() { 
 		$('#options').toggleClass('on');
 		$('#optionsMenu').toggle();
@@ -48,11 +49,11 @@ $(document).ready(function() {
 		$('#plusnzb').toggleClass('on');
 		$('#nzbMenu').toggle();
 	});
-	// set up options refresh rate slider	
+	// Set up options refresh rate slider	
 	$('.refreshSlider').Slider({
 		accept : '.refreshIndicator',
 		fractions : 100,
-		onSlide : function( cordx, cordy, x , y) {
+		onSlide : function(cordx, cordy, x , y) {
 			if (!cordx || cordx==0)
 				cordx = 1;
 			$('#refreshRateDisplay').html(cordx);
@@ -60,7 +61,7 @@ $(document).ready(function() {
 			SetCookie('PlushRefresh',refreshRate);
 		}
 	});
-	// set up +NZB
+	// Set up +NZB
 	$('#addNZBbyID').bind('click', function() { 
 		$.ajax({
 			type: "GET",
@@ -92,7 +93,7 @@ $(document).ready(function() {
 	});
 	
 	
-	// set up Queue Menu actions
+	// Set up Queue Menu actions
 	$('#queue').click(function(event) {
 		if ($(event.target).is('#pause_resume')) {
 			if ($(event.target).attr('class') == 'active')
@@ -115,7 +116,7 @@ $(document).ready(function() {
 	});
 	
 	
-	// set up History Menu actions
+	// Set up History Menu actions
 	$('#history').click(function(event) {
 		if ($(event.target).is('#history_verbosity')) {
 			$('#history').load('history/tog_verbose');

@@ -43,20 +43,84 @@ h3 {
 }
 
 
+/* Top Bar
+----------------------------------------------------------------- */
+#topbar {
+	width: 100%;
+	background: #dadada url(../images/bg_topbar.png) repeat-x left bottom;
+	border-bottom: 1px solid #454545;
+	border-top: 1px solid #333333;
+}
+
+
+/* Logo
+----------------------------------------------------------------- */
+#logo {
+	float: left;
+	padding: 8px 15px;
+	font-weight: bold;
+}
+#logo a {
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+
+/* Menu
+----------------------------------------------------------------- */
+#menu {
+	margin: 0 0 0 30px;
+	padding: 0;
+	list-style: none;
+	float: left;
+}
+#menu li {
+	float: left;
+	margin: 0;
+	padding: 0;
+}
+#menu a {
+	float: left;
+	display: block;
+	padding: 6px 15px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #E8E8E8;
+	margin: 4px;
+	border: 1px solid transparent;
+}
+#menu a:hover {
+	background: #d0d0d0 url(../images/bg_menu_a_hover.png) repeat-x left bottom;
+	color: #fff;
+	border-top: 1px solid #757575;
+	border-right: 1px solid #CECECE;
+	border-bottom: 1px solid #CECECE;
+	border-left: 1px solid #757575;
+}
+
+
+/* Sub Menu
+----------------------------------------------------------------- */
+.subMenu {
+	padding: 6px 20px;
+	background: #c1d3e5 url(../images/bg_subMenu.png) repeat-x left bottom;
+	border-bottom: 1px solid #828282;
+}
+.subMenu#nzbMenu {}
+.subMenu#optionsMenu {
+	background: #F9F5AA url(../images/bg_optionsMenu.png) repeat-x left bottom;
+}
+
 /* Queue
 ----------------------------------------------------------------- */
-#queue {
-	float: left;
-	padding: 5px;
-}
+#queue {padding: 5px;}
+.queue_sidebyside {float: left;}
 
 
 /* History
 ----------------------------------------------------------------- */
-#history {
-	float: left;
-	padding: 5px;
-}
+#history {padding: 5px;}
+.history_sidebyside {float: left;}
 
 
 /* Footer
@@ -521,6 +585,17 @@ h3 {
 
 
 
+/* Clearfix
+----------------------------------------------------------- */
+#topbar:after, 
+.subMenu:after {
+	content: " ";
+	clear: both;
+	display: block;
+	width: 100%;
+	height: 0;
+	visibility: hidden;
+}
 
 
 
@@ -576,22 +651,47 @@ h3 {
 
 
 
-/*******************************
-**  Options Refresh Rate Slider
-**/
-.refreshSlider
-{
+
+
+
+
+
+.layoutContainer {
+	float: left;
+}
+.layoutContainer strong {
+	float: left;
+	margin-top: 3px;
+	margin-right: 8px;
+}
+.layoutContainer img {
+	margin: 3px 4px 0;
+	float: left;
+}
+
+
+
+.sliderContainer {
+	float: left;
+	position: relative;
+	margin: 3px 15px;
+}
+.sliderContainer .refreshTitle {
+	float: left;
+	margin-right: 10px;
+	font-weight: bold;
+	color: #333333;
+}
+.sliderContainer .refreshSlider {
+	display: block;
+	float: left;
 	width: 316px;
 	height: 16px;
 	position: relative;
-	left: 16px;
-	background-color: #074273;
+	background: url(../images/bg_refreshSlider.png) no-repeat left top;
 	z-index: 1;
-	margin-right: auto;
-	margin-left: auto;
 }
-.refreshIndicator
-{
+.refreshIndicator {
 	width: 40px;
 	height: 16px;
 	background-image: url(../images/o_refresh_handle.png);
@@ -602,4 +702,20 @@ h3 {
 	position: relative;
 	z-index: 2;
 	float:left;
+}
+.sliderContainer .refreshRate {
+	float: left;
+	margin-left: 10px;
+}
+
+
+.shutdownContainer {
+	float: left;
+	margin-top: 4px;
+	margin-bottom: 4px;
+}
+.shutdownContainer a {
+	color: #FFFFFF;
+	text-decoration: none;
+	font-weight: bold;
 }
