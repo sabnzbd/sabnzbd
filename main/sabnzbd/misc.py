@@ -30,7 +30,7 @@ import re
 import zipfile
 import webbrowser
 import tempfile
-import urllib
+import Queue
 
 from threading import *
 from sabnzbd.nzbstuff import NzbObject
@@ -128,15 +128,21 @@ class MSGIDGrabber(Thread):
         Thread.__init__(self)
         self.nzbun = nzbun
         self.nzbpw = nzbpw
-        self.queue = []
-		
+        self.queue = Queue.Queue()
+
     def grab(self, msgid, nzo):
-        self.queue.append((msgid, nzo))
         logging.debug("Adding msgid %s to the queue", msgid)
-        
+        self.queue.put((msgid, nzo))
+
+    def stop(self):
+        # Put None on the queue to stop "run"
+        self.queue.put((None, None))
+
     def run(self):
-        while self.queue:
-            (msgid, nzo) = self.queue.pop(0)
+        while 1:
+            (msgid, nzo) = self.queue.get()
+            if not msgid:
+                break
             logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
             filename, data, cat_root, cat_tail = nzbgrab.grabnzb(msgid, self.nzbun, self.nzbpw)
             if filename and data:

@@ -420,6 +420,10 @@ def start():
             logging.debug('[%s] Starting dirscanner', __NAME__)
             DIRSCANNER.start()
 
+        if MSGIDGRABBER:
+            logging.debug('[%s] Starting msgidgrabber', __NAME__)
+            MSGIDGRABBER.start()
+            
 @synchronized(INIT_LOCK)
 def halt():
     global __INITIALIZED__, SCHED, DIRSCANNER, RSS, MSGIDGRABBER
@@ -443,12 +447,13 @@ def halt():
                 
         if MSGIDGRABBER:
             logging.debug('Stopping msgidgrabber')
+            MSGIDGRABBER.stop()
             try:
-                if MSGIDGRABBER.isAlive():
-                    MSGIDGRABBER.join()
+                MSGIDGRABBER.join()
             except:
-                logging.exception('[%s] Joining msgidgrabber failed', __NAME__)
-                
+                pass
+            MSGIDGRABBER = None
+
         if DIRSCANNER:
             logging.debug('Stopping dirscanner')
             DIRSCANNER.stop()
@@ -654,11 +659,7 @@ def add_msgid(msgid, pp):
     
     MSGIDGRABBER.grab(msgid, future_nzo)
 
-    # Start grabber if asleep
-    if not MSGIDGRABBER.isAlive():
-        MSGIDGRABBER.start()
 
-        
 def add_url(url, pp):
     logging.info('[%s] Fetching %s', __NAME__, url)
     
