@@ -26,7 +26,8 @@ import datetime
 
 from sabnzbd.trylist import TryList
 
-RE_NEWZBIN = re.compile("msgid_(\d+) (.+)(\.nzb)")
+RE_NEWZBIN = re.compile(r"msgid_(\d+) (.+)(\.nzb)", re.I)
+RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
 
 HAVE_CELEMENTTREE = True
 try:
@@ -758,7 +759,9 @@ def _nzf_cmp(nzf1, nzf2):
 def SplitFileName(name):
     m = RE_NEWZBIN.match(name)
     if (m):
-        return m.group(2), m.group(1)
-    else:
-        return name.replace('.nzb', ''), ""
+        return m.group(2).rstrip('.'), m.group(1)
+    m = RE_NORMAL.match(name)
+    if (m):
+        return m.group(1).rstrip('.'), ""
+    return "", ""
 
