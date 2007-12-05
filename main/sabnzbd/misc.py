@@ -38,6 +38,8 @@ from sabnzbd import nzbgrab
 from sabnzbd.constants import *
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
+RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
+TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
@@ -412,3 +414,40 @@ def check_latest_version():
 
     if current < latest:
         sabnzbd.NEW_VERSION = "%s;%s" % (latest_label, url)
+
+
+def from_units(val):
+    """ Convert K/M/G/T/P notation to pure integer
+    """
+    val = str(val).strip().upper()
+    if val == "-1":
+        return val
+    m = RE_UNITS.search(val)
+    if m.group(2):
+        val = float(m.group(1))
+        unit = m.group(2)
+        n = 0
+        while unit != TAB_UNITS[n]:
+            val = val * 1024.0
+            n = n+1
+    else:
+        val = m.group(1)
+    return float(val)
+
+
+def to_units(val):
+    """ Convert number to K/M/G/T/P notation
+    """
+    val = str(val).strip()
+    if val == "-1":
+        return val
+    n= 0
+    val = float(val)
+    while (val > 1023.0) and (n < 5):
+        val = val / 1024.0
+        n= n+1
+    unit = TAB_UNITS[n]
+    if unit:
+        return "%.1f %s" % (val, unit)
+    else:
+        return "%.0f" % val

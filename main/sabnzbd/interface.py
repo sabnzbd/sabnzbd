@@ -40,8 +40,8 @@ from sabnzbd.utils.multiauth.providers import DictAuthProvider
 from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
-from sabnzbd.email import email_send, iso_units
-from sabnzbd.misc import real_path, create_real_path, save_configfile
+from sabnzbd.email import email_send
+from sabnzbd.misc import real_path, create_real_path, save_configfile, to_units, from_units
 from sabnzbd.nzbstuff import SplitFileName
 
 from sabnzbd.constants import *
@@ -80,7 +80,7 @@ except AttributeError:
 
 def CheckFreeSpace():
     if sabnzbd.DOWNLOAD_FREE > 0 and not sabnzbd.paused():
-        if diskfree(sabnzbd.DOWNLOAD_DIR) < float(sabnzbd.DOWNLOAD_FREE) / 1024.0:
+        if diskfree(sabnzbd.DOWNLOAD_DIR) < float(sabnzbd.DOWNLOAD_FREE) / GIGI:
             logging.info('Too little diskspace forcing PAUSE')
             sabnzbd.pause_downloader()
             if sabnzbd.EMAIL_FULL:
@@ -619,7 +619,7 @@ class ConfigDirectories(ProtectedClass):
         config, pnfo_list, bytespersec = build_header()
         
         config['download_dir'] = sabnzbd.CFG['misc']['download_dir']
-        config['download_free'] = sabnzbd.CFG['misc']['download_free']
+        config['download_free'] = sabnzbd.CFG['misc']['download_free'].upper()
         config['complete_dir'] = sabnzbd.CFG['misc']['complete_dir']
         config['cache_dir'] = sabnzbd.CFG['misc']['cache_dir']
         config['log_dir'] = sabnzbd.CFG['misc']['log_dir']
@@ -765,7 +765,7 @@ class ConfigGeneral(ProtectedClass):
         config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
         config['password_newzbin'] = sabnzbd.CFG['newzbin']['password']
-        config['cache_limit'] = sabnzbd.CFG['misc']['cache_limit']
+        config['cache_limitstr'] = sabnzbd.CFG['misc']['cache_limit'].upper()
 
         config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
         wlist = [DEF_STDINTF]
@@ -794,7 +794,7 @@ class ConfigGeneral(ProtectedClass):
     def saveGeneral(self, host = None, port = None, username = None, password = None, web_dir = None,
                     cronlines = None, username_newzbin = None, password_newzbin = None,
                     refresh_rate = None, rss_rate = None,
-                    bandwith_limit = None, cleanup_list = None, cache_limit = None):
+                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None):
         if host:
             sabnzbd.CFG['misc']['host'] = host
         else:
@@ -810,7 +810,7 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['newzbin']['username'] = username_newzbin
         sabnzbd.CFG['newzbin']['password'] = password_newzbin
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
-        sabnzbd.CFG['misc']['cache_limit'] = cache_limit
+        sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
         
         if not web_dir:
             web_dir= DEF_STDINTF
@@ -1249,9 +1249,9 @@ def rss_history():
             else:
                 stageLine = ""
                 
-            stageLine += "Finished at %s and downloaded %s" % ( \
+            stageLine += "Finished at %s and downloaded %sB" % ( \
                          time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)), \
-                         iso_units(bytes) )
+                         to_units(bytes) )
 
             stage_keys = unpackstrht.keys()
             stage_keys.sort()

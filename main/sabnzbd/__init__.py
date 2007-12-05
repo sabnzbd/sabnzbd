@@ -37,7 +37,7 @@ from sabnzbd.assembler import Assembler, PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
 from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, \
-                         create_real_path, check_latest_version
+                         create_real_path, check_latest_version, from_units
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue
@@ -266,7 +266,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     if DOWNLOAD_DIR == "":
         return False
 
-    DOWNLOAD_FREE = check_setting_int(CFG, 'misc', 'download_free', 0)
+    DOWNLOAD_FREE = check_setting_str(CFG, 'misc', 'download_free', 0)
+    DOWNLOAD_FREE = int(from_units(DOWNLOAD_FREE))
+    logging.debug("DOWNLOAD_FREE %s", DOWNLOAD_FREE)
 
     COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, DEF_COMPLETE_DIR)
     if COMPLETE_DIR == "":
@@ -320,7 +322,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
         
-    cache_limit = check_setting_int(CFG, 'misc', 'cache_limit', 0)
+    cache_limit = check_setting_str(CFG, 'misc', 'cache_limit', 0)
+    cache_limit = int(from_units(cache_limit))
+    logging.debug("Actual cache limit = %s", cache_limit)
         
     EMAIL_SERVER = check_setting_str(CFG, 'misc', 'email_server', '')
     EMAIL_TO     = check_setting_str(CFG, 'misc', 'email_to', '')

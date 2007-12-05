@@ -33,21 +33,7 @@ from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.newsunpack import build_command
 from sabnzbd.nzbstuff import SplitFileName
-
-################################################################################
-# iso_units
-#
-# Return bytes in K/M/G/T/P units.
-################################################################################
-def iso_units(bytes):
-    units = ('', 'K', 'M', 'G', 'T', 'P')
-    n= 0
-    while (float(bytes) > 1023.0) and (n < 6):
-        bytes = float(bytes) / 1024.0
-        n= n+1
-    unit = units[n]
-    return "%.1f %sB" % (bytes, unit)
-
+from sabnzbd.misc import to_units, from_units
 
 ################################################################################
 # prepare_msg
@@ -59,7 +45,7 @@ def iso_units(bytes):
 ################################################################################
 def prepare_msg(bytes, status, output):
 
-    result  = "Downloaded %s\n\n" % iso_units(bytes)
+    result  = "Downloaded %sB\n\n" % to_units(bytes)
     result += "Results of the job:\n\n"
 
     stage_keys = status.keys()

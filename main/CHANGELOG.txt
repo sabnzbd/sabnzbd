@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 0.3.0rc1 by the ShyPike
 -------------------------------------------------------------------------------
+added:   Allow K/M/G/T/P as units in cache_limit and download_limit
+added:   Online check for new release (at start-up and once a week) (option)
 added:   Drop-down box for choosing the web-gui
          restructured the templates, they reside in <sabdir>/interfaces
 fixed:   Default 'dirscan_dir' is now empty (inactive)
