@@ -266,7 +266,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     if DOWNLOAD_DIR == "":
         return False
 
-    DOWNLOAD_FREE = check_setting_str(CFG, 'misc', 'download_free', 0)
+    DOWNLOAD_FREE = check_setting_str(CFG, 'misc', 'download_free', "0")
     DOWNLOAD_FREE = int(from_units(DOWNLOAD_FREE))
     logging.debug("DOWNLOAD_FREE %s", DOWNLOAD_FREE)
 
@@ -322,7 +322,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
         
-    cache_limit = check_setting_str(CFG, 'misc', 'cache_limit', 0)
+    cache_limit = check_setting_str(CFG, 'misc', 'cache_limit', "0")
     cache_limit = int(from_units(cache_limit))
     logging.debug("Actual cache limit = %s", cache_limit)
         
