@@ -60,16 +60,13 @@ class Scheduler:
     def __delayfunc(self, delay):
         # This delay function is basically a time.sleep() that is
         # divided up, so that we can check the self.running flag while delaying
-        if delay<10:
-            time.sleep(delay)
-        else:
-            period=5
-            while self.running and delay>period:
-                time.sleep(period)
-                delay-=period
-            if not self.running:
-                return
-            time.sleep(delay)
+        period=1
+        while self.running and delay>period:
+            time.sleep(period)
+            delay -= period
+        if not self.running:
+            return
+        time.sleep(delay)
  
     def _acquireLock(self):    pass
     def _releaseLock(self):    pass
