@@ -1,4 +1,4 @@
-                                SABnzbd+ v0.3.0rc1
+                                SABnzbd+ v0.3.0rc2
 								
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -73,9 +73,7 @@ on SourceForge.net
 3) TROUBLESHOOTING
 -------------------------------------------------------------------------------
 
-Your browse may start up pointing to a strange URL like:
-
-    http://sabnzbd-says.__localhost_port_8080_is_not_free__check_documentation__.none/
+Your browser may start up with just an error page.
 
 This means that SABnzbd cannot use the default port 8080 to run its web-server on.
 Try to use another port, you'll need to use the a command window:
