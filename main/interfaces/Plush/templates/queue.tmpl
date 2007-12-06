@@ -74,15 +74,6 @@ def drawProgressBar (mbleft, mb):
 
 
 
-<!--
-<%=int(float(x_kbpersec))%> KBs/sec
-<%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB remaining to be downloaded
-<%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%> Time left till downloads complete
-$noofslots
-Free in Temp: $diskspace1 GB
-Free in Done: $diskspace2 GB
-Total Remaining: <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB
--->
 
 
 
@@ -205,7 +196,13 @@ Total Remaining: <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB
 	
 	<tfoot>
 		<tr>
-			<td class="first" colspan="5"></td>
+			<td class="first" colspan="5">
+<span><strong>Total Time Left:</strong> <%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></span>
+<span><strong>Total Remaining:</strong> <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB</span>
+<span><strong>Free Space (Temp):</strong> $diskspace1 GB</span>
+<span><strong>Free Space (Comp):</strong> $diskspace2 GB</span>
+				
+			</td>
 			<td class="last"></td>
 		</tr>
 	</tfoot>
