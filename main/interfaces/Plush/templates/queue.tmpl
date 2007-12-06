@@ -59,13 +59,13 @@ def drawProgressBar (mbleft, mb):
 		<tr>
 			<th class="first">QUEUE <span id="stats_kbpersec"><%=int(float(x_kbpersec))%> KB/s </span><span style="display:none" id="stats_noofslots">$noofslots</span></th>
 			<th class="last tools" colspan="5">
-				<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle verbosity off"<!--#end if#--> title="Toggle verbosity on">Verbosity</a> | 
-				<a id="pause_resume"<!--#if $paused#--> class="active" title="Un-pause the Queue"<!--#end if#--> title="Pause the Queue">Pause</a> |
-				<a id="queue_sortage" title="Sort by AverageFile Age">Sort by Age</a> 
+				<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#end if#--> title="Toggle Verbosity On">Verbosity</a> | 
+				<a id="pause_resume"<!--#if $paused#--> class="active" title="Resume the Queue"<!--#end if#--> title="Pause the Queue">Pause</a> |
+				<a id="queue_sortage" title="Sort by Average File Age">Sort by Age</a> 
 				<!--#if $nt and $shutdown#-->
-				 | <a id="queue_shutdown" class="active">Shutdown!</a>
+				 | <a id="queue_shutdown" class="active" title="Toggle Shutdown of Computer upon Queue Completion">Shutdown</a>
 				<!--#else if $nt#-->
-				 | <a id="queue_shutdown" title="Shutdown the SABnzbd when queue empties (may cause errors with last downloaded file)">Shutdown</a>
+				 | <a id="queue_shutdown" title="Toggle Shutdown of Computer upon Queue Completion">Shutdown</a>
 				<!--#end if#-->
 			</th>
 		</tr>
