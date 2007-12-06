@@ -111,16 +111,13 @@ h3 {
 	background: #F9F5AA url(../images/bg_optionsMenu.png) repeat-x left bottom;
 }
 
-/* Queue
+/* Queue and History
 ----------------------------------------------------------------- */
-#queue {padding: 5px;}
-.queue_sidebyside {float: left;}
-
-
-/* History
------------------------------------------------------------------ */
-#history {padding: 5px;}
-.history_sidebyside {float: left;}
+#queue, #history {
+	padding: 5px;
+	text-align: center;
+}
+.queue_sidebyside, .history_sidebyside {float: left;}
 
 
 /* Footer
@@ -133,7 +130,9 @@ h3 {
 
 /* Listing Table
 ----------------------------------------------------------------- */
-.listingTable { }
+.listingTable {
+	/* margin: 0 auto; */
+}
 
 /* Table Heading */
 .listingTable thead {}
@@ -253,71 +252,6 @@ h3 {
 	font-size: .9em;
 	background: transparent  url(../images/bg_listing_table_footer_br.png) no-repeat right bottom;
 }
-
-
-
-
-
-
-
-
-
-/* Top Bar
------------------------------------------------------------------ */
-#topbar {}
-/* Top Bar content */
-#topbar #topbarContent {
-	padding: 10px;
-	background: #F8F8F8 url(../images/bg_topbar_content.png) repeat-x left top;
-}
-
-/* Total Progress Bar */
-#topbar #totalProgress {}
-#topbar #totalProgress h3 {
-	margin: 0 0 0 10px;
-	padding: 0;
-	color: #CC0000;
-	font-size: 1em;
-	font-weight: bold;
-}
-#topbar #totalProgressBar {
-	width: 300px;
-	height: 37px;
-	background: url(../images/bg_total_progress_bar_empty.png) no-repeat left top;
-}
-#topbar #totalProgressBarProgress {
-	background: url(../images/bg_total_progress_bar_full.png) no-repeat left top;
-	text-align: right;
-	position: relative;
-	height: 37px;
-}
-#topbar #totalProgressBarProgress span {
-	position: absolute;
-	top: 10px;
-	right: 5px;
-	color: #242424;
-	font-weight: bold;
-	font-size: 1.2em;
-}
-
-
-/* Top bar toggle button */
-#topbar #topbarToggle {
-	text-align: right;
-	background: url(../images/bg_topbar_bottom_border.png) repeat-x top left;
-}
-#topbar #topbarToggle a {
-	margin-right: 25px;
-	border: none;
-	text-decoration: none;
-}
-
-
-
-
-
-
-
 .listingTable thead .tools {
 	font-size: 0.8em;
 	text-align: right;
