@@ -2,14 +2,14 @@
 <html>
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
-    <link rel="shortcut icon" href="../../static/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css?version=$web_name"/>
 </head>
 <body>
 <h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
 <span class="MainMenu">
-<a class="current" href="../">Config</a> |
+<a href="../../">NOVA</a> |
 <a href="../../connections">Connections</a> |
+<a class="current" href="../../config">Config</a> |
 <a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Scheduling" target="_blank">Help</a>
 </span>
 <span class="SubMenu">
@@ -70,7 +70,9 @@ $line
 <!--#if int($cache_limit)#-->
 <b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
 <!--#end if#-->
-<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+<!--#if $new_release#-->
+    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
+<!--#end if#-->
 </div>
 </body>
 </html>

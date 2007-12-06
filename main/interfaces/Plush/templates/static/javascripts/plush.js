@@ -69,7 +69,7 @@ $(document).ready(function() {
 			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
 			success: function(){
     			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_speed').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
+					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
 				});
 			}
 		});
@@ -82,7 +82,7 @@ $(document).ready(function() {
 			data: "id="+$("#addURL").val()+"&pp="+$("#addURL_pp").val(),
 			success: function(){
     			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_speed').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
+					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
 				});
 			}
 		});
@@ -136,7 +136,7 @@ function MainLoop() {
 	
 	// ajax calls
 	$('#queue').load('queue', function(){
-		document.title = 'SAB+ '+$('#stats_speed').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
+		document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
 	});
 	$('#history').load('history');
 
@@ -163,7 +163,7 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			data: "nzo_id="+nzo_id+"&nzf_id="+nzf_id,
 			success: function(){
     			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_speed').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
+					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
 				});
 			}
 		});
@@ -174,7 +174,7 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			data: nzf_id + '=on' + '&' + 'action_key=' + action,
 			success: function(){
     			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_speed').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
+					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
 				});
 			}
 		});

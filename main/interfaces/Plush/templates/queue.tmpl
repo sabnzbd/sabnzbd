@@ -32,7 +32,7 @@ def drawProgressBar (mbleft, mb):
 	mbleft = float(mbleft)
 	mb = float(mb)
 	if mb == 0:
-		return '<span class="progressBar percentImage1"><img title="0%" src="static/images/q_progress.png" style="background-position: -120px 0px;"/></span>'
+		return '<span class="progressBar percentImage1"><img title="0%" src="static/images/bg_progress_bar_empty.png" style="background-position: -120px 0px;"/></span>'
 	percentage = int(100 - mbleft / mb * 100)
 	postion =  int(120 - 120.0 / 100.0 * percentage)
 	if percentage >= 75:
@@ -57,11 +57,11 @@ def drawProgressBar (mbleft, mb):
 <table class="listingTable" cellspacing="0">
 	<thead>
 		<tr>
-			<th class="first">QUEUE <span><%=int(float(x_kbpersec))%> KB/s</span></th>
+			<th class="first">QUEUE <span id="stats_kbpersec"><%=int(float(x_kbpersec))%> KB/s </span><span style="display:none" id="stats_noofslots">$noofslots</span></th>
 			<th class="last tools" colspan="5">
-				<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle verbocity off"<!--#end if#--> title="Toggle verbocity on">Verbosity</a> | 
+				<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle verbosity off"<!--#end if#--> title="Toggle verbosity on">Verbosity</a> | 
 				<a id="pause_resume"<!--#if $paused#--> class="active" title="Un-pause the Queue"<!--#end if#--> title="Pause the Queue">Pause</a> |
-				<a id="queue_sortage" title="Sort by File Age">SortAge</a> 
+				<a id="queue_sortage" title="Sort by AverageFile Age">Sort by Age</a> 
 				<!--#if $nt and $shutdown#-->
 				 | <a id="queue_shutdown" class="active">Shutdown!</a>
 				<!--#else if $nt#-->
@@ -163,10 +163,10 @@ Total Remaining: <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB
 							<td>$line.mbleft of $line.mb MB</td>
 							<td class="processItemMove">
 								<a class="queue_top" title="Move to Top" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Top');">&laquo;</a>
-								<a class="queue_up" title="Move up one space" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Up');">&lt;</a>
-								<a class="queue_down" title="Move down one space" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Down');">&gt;</a>
+								<a class="queue_up" title="Move Up one slot" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Up');">&lt;</a>
+								<a class="queue_down" title="Move Down one slot" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Down');">&gt;</a>
 								<a class="queue_bottom" title="Move to Bottom" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Bottom');">&raquo;</a>
-								<a class="queue_drop" title="Remove item" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Drop');">X</a>
+								<a class="queue_drop" title="Remove File" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Drop');">X</a>
 							</td>
 						</tr>
 						<!--#end for#-->

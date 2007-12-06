@@ -357,6 +357,10 @@ h3 {
 .listingTable .postProcessing table td { padding: 4px 10px; }
 .listingTable .postProcessing .finished { background: #FBF3B3 url(../images/bg_tr_finished.png) repeat-x left bottom; }
 .listingTable .postProcessing .active { background: #DBF5C0 url(../images/bg_tr_active.png) repeat-x left bottom; }
+.listingTable .postProcessing .active:hover { 
+	background: #e0efff url(../images/bg_listing_table_tbody_tr_hover.png) repeat-x left bottom;
+	color: #000;
+}
 .listingTable .postProcessing .pending { background: #E6F0F7 url(../images/bg_tr_pending.png) repeat-x left bottom; }
 
 .postProcessing .processItemTitle {}
@@ -405,9 +409,9 @@ h3 {
 
 
 
-/* History verbocity */
-#history .historyVerbocity, #history .historyVerbocity:hover { background: #D7D7D7; }
-#history .historyVerbocity table {
+/* History verbosity */
+#history .historyVerbosity, #history .historyVerbosity:hover { background: #D7D7D7; }
+#history .historyVerbosity table {
 	width: 100%;
 	font-size: 0.9em;
 	color: #000000;
@@ -417,15 +421,15 @@ h3 {
 	border-right: 1px solid #ADADAD;
 	border-left: 1px solid #ADADAD;
 }
-#history .historyVerbocity table td {
+#history .historyVerbosity table td {
 	padding-left: 30px;
 	border-bottom: 1px solid #ADADAD;
 }
-/* History verbociy status */
-#history .historyVerbocity .verified {background: #F4FBF0 url(../images/icon_check.png) no-repeat 5px center;}
-#history .historyVerbocity .deleted {background: #FFF0F0 url(../images/icon_trash.png) no-repeat 2px center;}
-#history .historyVerbocity .unpacked {background: #FFFBDF url(../images/icon_zip.png) no-repeat 5px center;}
-#history .historyVerbocity .failure {
+/* History verbosity status */
+#history .historyVerbosity .verified {background: #F4FBF0 url(../images/icon_check.png) no-repeat 5px center;}
+#history .historyVerbosity .deleted {background: #FFF0F0 url(../images/icon_trash.png) no-repeat 2px center;}
+#history .historyVerbosity .unpacked {background: #FFFBDF url(../images/icon_zip.png) no-repeat 5px center;}
+#history .historyVerbosity .failure {
 	background: #FFEAEA url(../images/icon_exclamation.png) no-repeat 5px center;
 	font-weight: bold;
 	color: #990000;
@@ -654,6 +658,14 @@ h3 {
 
 
 
+
+
+#layout_sidebyside {
+	cursor: 		pointer;
+}
+#layout_toptobottom {
+	cursor: 		pointer;
+}
 
 
 .layoutContainer {
