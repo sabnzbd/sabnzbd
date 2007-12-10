@@ -1,6 +1,6 @@
 body {
-	background-color: #000;
-	color: #FFF;
+	background-color: white;
+	color: #808080;
 	font-family: 'Verdana', 'Helvetica', 'Sans-serif', 'sans';
 	font-size: 12px;
 	line-height: 18px;
@@ -10,7 +10,7 @@ body {
 
 a {
  text-decoration: none;
- color: #c32ee4;
+ color: #000000;
 }
 
 form {
@@ -187,8 +187,7 @@ h2 {
 }
 .footer {
   text-align: center;
-  background-color: #000;
-border:1px;
+  background-color: #eee;
   padding-bottom: 5px;
   margin-top: 20px;
   border-top: 1px solid #b5b5b5;
