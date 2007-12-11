@@ -894,16 +894,10 @@ class ConfigServer(ProtectedClass):
             port = '119'
         if host and port and port.isdigit() \
         and connections.isdigit() and fillserver and fillserver.isdigit():
-            try:
-            	 oldhost, oldport = server.split(":")
-            except ValueError:
-            	 oldhost= server
-            	 oldport= "119"
-            if not port == oldport:
-                del sabnzbd.CFG['servers'][server]
-                server = host + ":" + port
-                sabnzbd.CFG['servers'][server] = {}
-                
+            del sabnzbd.CFG['servers'][server]
+            server = "%s:%s" % (host, port)
+            sabnzbd.CFG['servers'][server] = {}
+
             sabnzbd.CFG['servers'][server]['host'] = host
             sabnzbd.CFG['servers'][server]['port'] = port
             sabnzbd.CFG['servers'][server]['username'] = username

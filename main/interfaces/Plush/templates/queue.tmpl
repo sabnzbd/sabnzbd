@@ -32,7 +32,7 @@ def drawProgressBar (mbleft, mb):
 	mbleft = float(mbleft)
 	mb = float(mb)
 	if mb == 0:
-		return '<span class="progressBar percentImage1"><img title="0%" src="static/images/bg_progress_bar_empty.png" style="background-position: -120px 0px;"/></span>'
+		return #'<span class="progressBar percentImage1"><img title="0%" src="static/images/bg_progress_bar_empty.png" style="background-position: -120px 0px;"/></span>'
 	percentage = int(100 - mbleft / mb * 100)
 	postion =  int(120 - 120.0 / 100.0 * percentage)
 	if percentage >= 75:
@@ -118,7 +118,7 @@ def drawProgressBar (mbleft, mb):
 				</select>&nbsp;
 			</td>
 			<td class="last itemDelete">
-				<span class="btnDelete" title="Delete this item now" />
+				<span class="btnDelete" title="Delete NZB from Queue" />
 			</td>
 		</tr>
 	
@@ -196,14 +196,14 @@ def drawProgressBar (mbleft, mb):
 	
 	<tfoot>
 		<tr>
-			<td class="first" colspan="5">
-<span><strong>Total Time Left:</strong> <%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></span>
-<span><strong>Total Remaining:</strong> <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB</span>
-<span><strong>Free Space (Temp):</strong> $diskspace1 GB</span>
-<span><strong>Free Space (Comp):</strong> $diskspace2 GB</span>
-				
+			<td class="first" colspan="3">
+				<span><strong>Total Time Left:</strong> <%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></span>
+				<span><strong>Total Remaining:</strong> <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB</span>
 			</td>
-			<td class="last"></td>
+			<td class="last" colspan="3">
+				<span><strong>Free Space (Temp):</strong> $diskspace1 GB</span>
+				<span><strong>Free Space (Comp):</strong> $diskspace2 GB</span>
+			</td>
 		</tr>
 	</tfoot>
 

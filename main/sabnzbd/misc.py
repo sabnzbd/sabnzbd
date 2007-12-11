@@ -21,6 +21,7 @@ sabnzbd.misc - misc classes
 __NAME__ = "sabnzbd.misc"
 
 import os
+import sys
 import time
 import logging
 import sabnzbd
@@ -40,6 +41,12 @@ from sabnzbd.constants import *
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
+
+PANIC_NONE  = 0
+PANIC_PORT  = 1
+PANIC_TEMPL = 2
+PANIC_QUEUE = 3
+PANIC_OTHER = 4
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
@@ -264,16 +271,21 @@ def Get_User_ShellFolders():
 #
 ################################################################################
 def save_configfile(cfg):
-
-    cfg.write()
-    f = open(cfg.filename)
-    x = f.read()
-    f.close()
-    f = open(cfg.filename, "w")
-    f.write(x)
-    f.flush()
-    f.close()
-
+    """Save configuration to disk
+    """
+    try:
+        cfg.write()
+        f = open(cfg.filename)
+        x = f.read()
+        f.close()
+        f = open(cfg.filename, "w")
+        f.write(x)
+        f.flush()
+        f.close()
+    except:
+        Panic('Cannot write to configuration file "%s".' % cfg.filename, \
+              'Make sure file is writable and in a writable folder.')
+        sys.exit(2)
 
 ################################################################################
 # Launch a browser for various purposes
@@ -300,6 +312,7 @@ MSG_BAD_NEWS = r'''
 MSG_BAD_PORT = r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
     Port %s on %s was tried , but it is not available.<br>
+    Some other software uses the port or SABnzbd is already running.<br>
     <br>
     Please restart SABnzbd with a different port number.<br>
     <br>
@@ -310,11 +323,12 @@ MSG_BAD_PORT = r'''
 '''
 
 MSG_BAD_QUEUE = r'''
-    SABnzbd detected saved data from an older SABnzbd version<br>
-    but cannot re-use the data of the older program.<br><br>
-    You may want to finish your queue first with the older program.<br><br>
+    SABnzbd detected saved data from an other SABnzbd version<br>
+    but cannot re-use the data of the other program.<br><br>
+    You may want to finish your queue first with the other program.<br><br>
     After that, start this program with the "--clean" option.<br>
     This will erase the current queue and history!<br>
+    SABnzbd read the file "%s".<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --clean<br>
@@ -322,13 +336,22 @@ MSG_BAD_QUEUE = r'''
 '''
 
 MSG_BAD_TEMPL = r'''
-    SABnzbd cannot find its web interface files.<br>
+    SABnzbd cannot find its web interface files in %s.<br>
     Please install the program again.<br>
     <br>
 '''
 
+MSG_OTHER = r'''
+    SABnzbd detected a fatal error:<br>
+    %s<br><br>
+    %s<br>
+'''
 
-def panic_message(panic, host, port):
+def panic_message(panic, a, b):
+    """Create the panic message from templates
+    """
+    if not sabnzbd.AUTOBROWSER:
+        return
 
     if os.name == 'nt':
         os_str = 'Press Startkey+R and type the line (example):'
@@ -336,13 +359,15 @@ def panic_message(panic, host, port):
         os_str = 'Open a Terminal window and type the line (example):'
 
     if panic == PANIC_PORT:
-        newport = port + 1
+        newport = int(b) + 1
         newport = "%s" % newport
-        msg = MSG_BAD_PORT % (port, host, os_str, sabnzbd.MY_FULLNAME, host, newport)
+        msg = MSG_BAD_PORT % (b, a, os_str, sabnzbd.MY_FULLNAME, a, newport)
     elif panic == PANIC_TEMPL:
-        msg = MSG_BAD_TEMPL
+        msg = MSG_BAD_TEMPL % a
+    elif panic == PANIC_QUEUE:
+        msg = MSG_BAD_QUEUE % (a, os_str, sabnzbd.MY_FULLNAME)
     else:
-        msg = MSG_BAD_QUEUE % (os_str, sabnzbd.MY_FULLNAME)
+        msg = MSG_OTHER % (a, b)
 
 
     msg = MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg)
@@ -352,16 +377,26 @@ def panic_message(panic, host, port):
     os.close(msgfile)
     return url
 
-def launch_a_browser(host, port, panic=PANIC_NONE):
-    """Launch a browser pointing to an URL or a to local errormessage page
-    """
-    if sabnzbd.NO_BROWSER:
-        return
 
-    if panic == PANIC_NONE:
-        url = "http://%s:%s/sabnzbd" % (host, port)
-    else:
-        url = panic_message(panic, host, port)
+def Panic_Port(host, port):
+    launch_a_browser(panic_message(PANIC_PORT, host, port))
+
+def Panic_Queue(name):
+    launch_a_browser(panic_message(PANIC_QUEUE, name, 0))
+
+def Panic_Templ(name):
+    launch_a_browser(panic_message(PANIC_TEMPL, name, 0))
+
+def Panic(reason, remedy=""):
+    print "\nFatal error:\n  %s\n%s" % (reason, remedy)
+    launch_a_browser(panic_message(PANIC_OTHER, reason, remedy))
+
+
+def launch_a_browser(url):
+    """Launch a browser pointing to the URL
+    """
+    if not sabnzbd.AUTOBROWSER:
+        return
 
     logging.info("Lauching browser with %s", url)
     try:
@@ -369,7 +404,6 @@ def launch_a_browser(host, port, panic=PANIC_NONE):
     except:
         # Python 2.4 does not support parameter new=2
         webbrowser.open(url, 1, 1)
-
 
 
 ################################################################################

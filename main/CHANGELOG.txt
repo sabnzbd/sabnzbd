@@ -1,6 +1,25 @@
 -------------------------------------------------------------------------------
+0.3.0rc3 by the ShyPike
+-------------------------------------------------------------------------------
+fixed:   Auto-shutdown will now wait for post-processing to complete
+fixed:   Improvements in the Plush templates
+changed: "--nobrowser" replaced by "--browser 0|1" and stored in the INI file as "auto_browser"
+changed: When an INI file is found in the SABnzbd program directory, use that file and not the one in LocalData
+changed: Data directories will be relative to the location of the INI file
+fixed:   Remove spurious error message in log when browser is launched on Linux
+fixed:   0.0.0.0 is not handled correctly, repair.
+changed: 0.0.0.0 will be default. 'localhost' will be converted to 127.0.0.1
+fixed:   Program only starts when the current directory is the directory where SABnzbd.py/exe is.
+         It should be able to start from any directory.
+fixed:   Parsing of server:host notation made IPV6 compatible
+changed: Panic message in browser for all fatal errors (if enabled)
+fixed:   Repair handling of multiple ports on single Usenet server in Config-->Servers.
+fixed:   Improvments and fixes in Plush
+
+-------------------------------------------------------------------------------
 0.3.0rc2 by the ShyPike
 -------------------------------------------------------------------------------
+added:   Introducing Plush (by pairofdimes and blis102)
 added:   Allow K/M/G/T/P as units in cache_limit and download_limit
 added:   Online check for new release (at start-up and once a week) (option)
 added:   Drop-down box for choosing the web-gui

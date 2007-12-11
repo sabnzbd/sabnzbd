@@ -63,8 +63,7 @@
 			
 			<div class="sliderContainer">
 				<div class="refreshTitle">Refresh Time:</div>
-				<div class="refreshSlider"><div class="refreshIndicator"></div>
-				</div>
+				<div class="refreshSlider"><div class="refreshIndicator"></div></div>
 				<div class="refreshRate">Every <strong><span id="refreshRateDisplay">?</span></strong> Second(s)</div>
 			</div>
 			
@@ -91,6 +90,7 @@
 					<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
 					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
 				</select>
+				<input type="submit" id="addNZBbyID" value="Add" />&nbsp;&nbsp;&nbsp;
 			<!--#end if#-->
 				<input type="text" id="addURL" value="by URL" size="12" onfocus="if(value=='by URL')value=''" onblur="if(!value)value='by URL'" />
 				<select id="addURL_pp">
@@ -102,6 +102,7 @@
 					<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
 					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
 				</select>
+				<input type="submit" id="addNZBbyURL" value="Add" />&nbsp;&nbsp;&nbsp;
 	
 				<form action="addFile" method="post" enctype="multipart/form-data" style="display:inline">
 					<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" />
@@ -114,7 +115,7 @@
 						<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
 						<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
 					</select>
-					<input type="submit" id="addNZBbyFile" value="Add NZB" />
+					<input type="submit" id="addNZBbyFile" value="Add" />
 				</form>
 		</div>
 		<!-- +NZB Menu : Begin -->

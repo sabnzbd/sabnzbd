@@ -52,18 +52,28 @@ if py2exe:
           ('interfaces/Default/templates', glob.glob("interfaces/Default/templates/*.tmpl")),
           ('interfaces/Default/templates/static/stylesheets', ['interfaces/Default/templates/static/stylesheets/default.css']),
           ('interfaces/Default/templates/static/images', glob.glob('interfaces/Default/templates/static/images/*.ico')),
+
           ('interfaces/NOVA_0.3.2', glob.glob("interfaces/NOVA_0.3.2/*.*")),
           ('interfaces/NOVA_0.3.2/templates', glob.glob("interfaces/NOVA_0.3.2/templates/*.*")),
           ('interfaces/NOVA_0.3.2/templates/static', glob.glob("interfaces/NOVA_0.3.2/templates/static/*.*")),
           ('interfaces/NOVA_0.3.2/templates/static/css', glob.glob("interfaces/NOVA_0.3.2/templates/static/css/*.*")),
           ('interfaces/NOVA_0.3.2/templates/static/images', glob.glob("interfaces/NOVA_0.3.2/templates/static/images/*.*")),
           ('interfaces/NOVA_0.3.2/templates/static/js', glob.glob("interfaces/NOVA_0.3.2/templates/static/js/*.*")),
+
           ('interfaces/NOVA_0.4.5', glob.glob("interfaces/NOVA_0.4.5/*.*")),
           ('interfaces/NOVA_0.4.5/templates', glob.glob("interfaces/NOVA_0.4.5/templates/*.*")),
           ('interfaces/NOVA_0.4.5/templates/static', glob.glob("interfaces/NOVA_0.4.5/templates/static/*.*")),
           ('interfaces/NOVA_0.4.5/templates/static/images', glob.glob("interfaces/NOVA_0.4.5/templates/static/images/*.*")),
           ('interfaces/NOVA_0.4.5/templates/static/javascripts', glob.glob("interfaces/NOVA_0.4.5/templates/static/javascripts/*.*")),
           ('interfaces/NOVA_0.4.5/templates/static/stylesheets', glob.glob("interfaces/NOVA_0.4.5/templates/static/stylesheets/*.*")),
+
+          ('interfaces/Plush', glob.glob("interfaces/Plush/*.*")),
+          ('interfaces/Plush/templates', glob.glob("interfaces/Plush/templates/*.*")),
+          ('interfaces/Plush/templates/static', glob.glob("interfaces/Plush/templates/static/*.*")),
+          ('interfaces/Plush/templates/static/images', glob.glob("interfaces/Plush/templates/static/images/*.*")),
+          ('interfaces/Plush/templates/static/javascripts', glob.glob("interfaces/Plush/templates/static/javascripts/*.*")),
+          ('interfaces/Plush/templates/static/stylesheets', glob.glob("interfaces/Plush/templates/static/stylesheets/*.*")),
+
           ('win/par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
           ('win/unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
           ('win/unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE']),

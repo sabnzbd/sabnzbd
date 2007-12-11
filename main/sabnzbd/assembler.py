@@ -80,6 +80,9 @@ class PostProcessor(Thread):
         
     def run(self):
         while 1:
+            if sabnzbd.AUTOSHUTDOWN_GO and self.queue.empty():
+                Thread(target=_system_shutdown).start() 
+
             nzo = self.queue.get()
             if not nzo:
                 break
@@ -405,3 +408,24 @@ def cleanup_empty_directories(path):
                     pass
         if not repeat:
             break
+
+#-------------------------------------------------------------------------------
+
+def _system_shutdown():
+    logging.info("[%s] Performing system shutdown", __NAME__)
+    
+    sabnzbd.halt()
+
+    try:
+        import win32security
+        import win32api
+        import ntsecuritycon
+        
+        flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
+        htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
+        id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
+        newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+        win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
+        win32api.InitiateSystemShutdown("", "", 30, 1, 0)
+    finally:
+        os._exit(0)

@@ -1,4 +1,4 @@
-                                SABnzbd+ v0.3.0rc2
+                                SABnzbd+ v0.3.0rc3
 								
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -131,7 +131,8 @@ o) Contributors:
    ShyPike, Freaky, gwynevans, Jigal van Hemert, ...
 
 o) Testers:
-   pairofdimes, rascalli, out2lunch, qwaqwa, duumke
+   pairofdimes, rascalli, out2lunch, qwaqwa, duumke,
+   blis102, duz, swi-tch
 
 
 -------------------------------------------------------------------------------

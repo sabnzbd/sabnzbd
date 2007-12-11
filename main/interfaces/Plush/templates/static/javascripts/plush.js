@@ -79,7 +79,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "GET",
 			url: "addURL",
-			data: "id="+$("#addURL").val()+"&pp="+$("#addURL_pp").val(),
+			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val(),
 			success: function(){
     			$('#queue').load('queue', function(){
 					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
@@ -226,7 +226,7 @@ function ReadCookie(name) {
 var GB_DONE = false;
 function GB_show(caption, url, height, width) {
   GB_HEIGHT = 600;
-  GB_WIDTH = 750;
+  GB_WIDTH = 820;
   if(!GB_DONE) {
     $(document.body)
       .append("<div id='GB_overlay'></div><div id='GB_window'><div id='GB_caption'></div>"

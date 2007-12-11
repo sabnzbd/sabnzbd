@@ -44,11 +44,6 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-PANIC_NONE  = 0
-PANIC_PORT  = 1
-PANIC_TEMPL = 2
-PANIC_QUEUE = 3
-
 STAGENAMES = {1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin"}
 
 BYTES_FILE_NAME  = 'bytes.sab'
@@ -65,7 +60,7 @@ DEF_INTERFACES   = 'interfaces'
 DEF_STDINTF      = 'Default'
 DEF_MAIN_TMPL    = 'templates/main.tmpl'
 DEF_INI_FILE     = 'sabnzbd.ini'
-DEF_HOST         = 'localhost'
+DEF_HOST         = ''
 DEF_PORT         = 8080
 DEF_WORKDIR      = 'sabnzbd'
 DEF_LOG_FILE     = 'sabnzbd.log'

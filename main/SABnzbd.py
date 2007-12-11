@@ -41,13 +41,14 @@ import sabnzbd
 import signal
 import re
 import glob
+import socket
 
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
 from sabnzbd.constants import *
 from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, \
-                         check_latest_version
+                         check_latest_version, Panic_Templ, Panic_Port, Panic
 
 from threading import Thread
 
@@ -76,6 +77,7 @@ def print_help():
     print "  -t  --templates <templ>  template directory [*]"
     print "  -l  --logging <0..2>     set logging level (0= least, 2= most) [*]"
     print "  -w  --weblogging <0..1>  set cherrypy logging (0= off, 1= on) [*]"
+    print "  -b  --browser <0..1>     auto browser launch (0= off, 1= on) [*]"
     if os.name != 'nt':
         print "      --permissions        set the chmod mode (e.g. o=rwx,g=rwx) [*]"
         print "  -d  --daemon             fork daemon process"
@@ -123,10 +125,10 @@ def main():
     LOGLEVELS = [ logging.WARNING, logging.INFO, logging.DEBUG ]
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:",
+        opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:b:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
                       'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', \
-                      'config-file=', 'delay='])
+                      'browser=', 'config-file=', 'delay='])
     except getopt.GetoptError:
         print_help()
         sys.exit(2)
@@ -134,10 +136,10 @@ def main():
     fork = False
     pause = False
     f = None
-    cherryhost = ''
-    cherryport = 0
+    cherryhost = None
+    cherryport = None
     cherrypylogging = None
-    nobrowser = False
+    sabnzbd.AUTOBROWSER = None
     clean_up = False
     logging_level = None
     umask = None
@@ -154,14 +156,14 @@ def main():
     	  sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
     	  sabnzbd.DIR_HOME = os.environ['HOME']
 
-    sabnzbd.DIR_PROG= os.path.normpath(os.path.abspath('.'))
+    sabnzbd.DIR_PROG= os.path.dirname(sabnzbd.MY_FULLNAME)
+    os.chdir(sabnzbd.DIR_PROG)
 
-    f = sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE
 
     for o, a in opts:
         if (o in ('-d', '--daemon')) and os.name != 'nt':
             fork = True
-            nobrowser = True
+            sabnzbd.AUTOBROWSER = 1
         if o in ('-h', '--help'):
             print_help()
             sys.exit()
@@ -170,16 +172,25 @@ def main():
         if o in ('-t', '--templates'):
             web_dir = a
         if o in ('-s', '--server'):
-            try:
-                (cherryhost, cherryport) = a.split(":", 1)
-            except:
-                cherryhost= ""
+            # Cannot use split, because IPV6 of "a:b:c:port" notation
+            # Split on the last ':'
+            mark = a.rfind(':')
+            if mark < 0:
+               cherryhost = a
+            else:
+               cherryhost = a[0 : mark]
+               cherryport = a[mark+1 :]
             try:
                 cherryport = int(cherryport)
             except:
-                cherryport = 0
+                cherryport = None
         if o in ('-n', '--nobrowser'):
-            nobrowser= True
+            sabnzbd.AUTOBROWSER = 0
+        if o in ('-b', '--browser'):
+            try:
+                sabnzbd.AUTOBROWSER = int(a)
+            except:
+                sabnzbd.AUTOBROWSER = 1
         if o in ('-c', '--clean'):
             clean_up= True
         if o in ('-w', '--weblogging'):
@@ -212,22 +223,32 @@ def main():
             except:
                 pass
             
-    if not f:
-        print_help()
-        sys.exit()
+    # Find out where the INI file is or should be
+    if f:
+        f = os.path.normpath(os.path.abspath(f))
     else:
-        f = os.path.abspath(f)
+        f = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
         if not os.path.exists(f):
-        	  try:
-        	      if not os.path.exists(sabnzbd.DIR_LCLDATA):
-        	          os.makedirs(sabnzbd.DIR_LCLDATA)
-        	      fp = open(f, "w")
-        	      fp.write("__version__=%s\n[misc]\n[logging]\n[newzbin]\n[servers]\n" % sabnzbd.__configversion__)
-        	      fp.close()
-        	  except:
-        	      print "Error:"
-        	      print "Cannot create file %s" % f
-        	      sys.exit()
+            f = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
+
+    # If INI file at non-std location, then use program dir as $HOME
+    if sabnzbd.DIR_LCLDATA != os.path.dirname(f):
+        sabnzbd.DIR_HOME = os.path.dirname(f)
+
+    # All system data dirs are relative to the place we found the INI file
+    sabnzbd.DIR_LCLDATA = os.path.dirname(f)
+
+    if not os.path.exists(f):
+        # No file found, create default INI file
+    	try:
+    	    if not os.path.exists(sabnzbd.DIR_LCLDATA):
+    	        os.makedirs(sabnzbd.DIR_LCLDATA)
+    	    fp = open(f, "w")
+    	    fp.write("__version__=%s\n[misc]\n[logging]\n[newzbin]\n[servers]\n" % sabnzbd.__configversion__)
+    	    fp.close()
+    	except:
+    	    Panic('Cannot create file "%s".' % f, 'Check specified INI file location.')
+            sys.exit()
 
     try:
         cfg = ConfigObj(f)
@@ -238,8 +259,8 @@ def main():
             cfg['__version__'] = my_version
 
     except ConfigObjError, strerror:
-        print "Error:"
-        print "%s is not a valid configfile" % f
+        Panic('"%s" is not a valid configuration file.' % f, \
+              'Specify a correct file or delete this file.')
         sys.exit()
 
     if cherrypylogging == None:
@@ -319,6 +340,11 @@ def main():
             pass
                 
     logging.info('%s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
+
+    if sabnzbd.AUTOBROWSER == None:
+        sabnzbd.AUTOBROWSER = bool(check_setting_int(cfg, 'misc', 'auto_browser', 1))
+    else:
+        cfg['misc']['auto_browser'] = sabnzbd.AUTOBROWSER
     
     if umask == None:
         umask = check_setting_str(cfg, 'misc', 'permissions', '')
@@ -326,7 +352,6 @@ def main():
         cfg['misc']['permissions'] = umask
 
     sabnzbd.DEBUG_DELAY = delay
-    sabnzbd.NO_BROWSER = nobrowser
     sabnzbd.CFG = cfg
     
     init_ok = sabnzbd.initialize(pause, clean_up)
@@ -366,19 +391,27 @@ def main():
     else:
         logging.info("sendemail binary... NOT found!")
 
-    if cherryhost == '':
+    if cherryhost == None:
         cherryhost = check_setting_str(cfg, 'misc','host', DEF_HOST)
     else:
-        check_setting_str(cfg, 'misc','host', cherryhost)
+        cfg['misc']['host'] = cherryhost
         
-    if cherryhost == '':
-    	  cherryhost = DEF_HOST
-    cfg['misc']['host'] = cherryhost
+    if cherryhost == '' or cherryhost == '0.0.0.0':
+        # Empty host means "host address" (specific for CherryPy-2.2.x)
+        # Browser needs real name
+        browserhost = socket.gethostname()
+        cherryhost = ''
+    elif cherryhost == 'localhost':
+        # This to prevent Firefox problems in IPV6-enabled systems
+        cherryhost = '127.0.0.1'
+        browserhost = cherryhost
+    else:
+        browserhost = cherryhost
 
-    if cherryport == 0:
+    if cherryport == None:
         cherryport= check_setting_int(cfg, 'misc', 'port', DEF_PORT)
     else:
-        check_setting_int(cfg, 'misc', 'port', cherryport)
+        cfg['misc']['port'] = cherryport
 
     log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
 
@@ -406,7 +439,7 @@ def main():
         web_main = real_path(web_dir, DEF_MAIN_TMPL)
         if not os.path.exists(web_main):
             logging.exception('Cannot find standard template: %s', web_main)
-            launch_a_browser(cherryhost, cherryport, PANIC_TEMPL)
+            Panic_Templ(web_main)
             sys.exit(1)
 
     web_dir = real_path(web_dir, "templates")
@@ -428,7 +461,7 @@ def main():
     sabnzbd.WEBLOGFILE = None
     
     if cherrypylogging:
-        if log_dir: 
+        if log_dir:
             sabnzbd.WEBLOGFILE = os.path.join(log_dir, DEF_LOG_CHERRY);
         if not fork:
             try:
@@ -462,11 +495,11 @@ def main():
                                  '/sabnzbd/default.css': {'staticFilter.on': True, 'staticFilter.file': os.path.join(web_dir, 'default.css')},
                                  '/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir, 'static')}
                            })
-    logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
+    logging.info('Starting web-interface on %s:%s', browserhost, cherryport)
     try:
         cherrypy.server.start(init_only=True)
         cherrypy.server.wait()
-        launch_a_browser(cherryhost, cherryport)
+        launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
 
         # Now's the time to check for a new version
         if sabnzbd.VERSION_CHECK:
@@ -477,8 +510,8 @@ def main():
             time.sleep(3)
     except:
         logging.exception("Failed to start web-interface")
-        launch_a_browser(cherryhost, cherryport, PANIC_PORT)
+        Panic_Port(browserhost, cherryport)
         sabnzbd.halt()
-        
+
 if __name__ == '__main__':
     main()

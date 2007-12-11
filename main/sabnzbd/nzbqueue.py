@@ -32,7 +32,7 @@ from threading import Thread, RLock
 
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import launch_a_browser
+from sabnzbd.misc import Panic_Queue
 
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -75,20 +75,20 @@ class NzbQueue(TryList):
         nzo_ids = []
         
         data = sabnzbd.load_data(QUEUE_FILE_NAME, remove = False)
-        
+
         if data:
             try:
                 queue_vers, nzo_ids, self.__downloaded_items = data
                 if not queue_vers == sabnzbd.__queueversion__:
-                    logging.exception("[%s] Outdated queuefile found, cannot proceed", 
+                    logging.exception("[%s] Incompatible queuefile found, cannot proceed", 
                                  __NAME__)
                     self.__downloaded_items = []
                     nzo_ids = []
-                    launch_a_browser(0, 0, PANIC_QUEUE)
+                    Panic_Queue(os.path.join(sabnzbd.CACHE_DIR,QUEUE_FILE_NAME))
                     sys.exit(2)
             except ValueError:
                 logging.exception("[%s] Error loading %s, corrupt file " + \
-                                  "detected", __NAME__, QUEUE_FILE_NAME)
+                                  "detected", __NAME__, os.path.join(sabnzbd.CACHE_DIR,QUEUE_FILE_NAME))
                                   
             for nzo_id in nzo_ids:
                 nzo = sabnzbd.load_data(nzo_id, remove = False)
@@ -330,7 +330,7 @@ class NzbQueue(TryList):
             
             # sabnzbd.AUTOSHUTDOWN only True on os.name == 'nt'
             if sabnzbd.AUTOSHUTDOWN and not self.__nzo_list:
-                Thread(target=_system_shutdown).start() 
+                sabnzbd.AUTOSHUTDOWN_GO = True
                 
     @synchronized(NZBQUEUE_LOCK)
     def purge(self):
@@ -404,25 +404,6 @@ class NzbQueue(TryList):
         return "<NzbQueue>"
                 
 #-------------------------------------------------------------------------------
-
-def _system_shutdown():
-    logging.info("[%s] Performing system shutdown", __NAME__)
-    
-    sabnzbd.halt()
-    
-    try:
-        import win32security
-        import win32api
-        import ntsecuritycon
-        
-        flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
-        htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
-        id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
-        newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
-        win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
-        win32api.InitiateSystemShutdown("", "", 30, 1, 0)
-    finally:
-        os._exit(0)
 
 def _nzo_date_cmp(nzo1, nzo2):
     avg_date1 = nzo1.get_avg_date()

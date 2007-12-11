@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__version__ = "0.3.0rc2"
+__version__ = "0.3.0rc3"
 __configversion__ = 18
 __queueversion__ = 6
 __NAME__ = "sabnzbd"
@@ -70,6 +70,7 @@ DO_UNRAR = False
 DO_SAVE = False
 PAR_CLEANUP = False
 AUTOSHUTDOWN = False
+AUTOSHUTDOWN_GO = False # Set when downloader queue is empty and autoshutdown enabled
 SEND_GROUP = False
 
 CLEANUP_LIST = []
@@ -77,7 +78,7 @@ CLEANUP_LIST = []
 UMASK = None
 BANDWITH_LIMIT = 0.0
 DEBUG_DELAY = 0
-NO_BROWSER = False
+AUTOBROWSER = None
 
 USERNAME_NEWZBIN = None
 PASSWORD_NEWZBIN = None
@@ -211,7 +212,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
-           CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, NO_BROWSER, ARTICLECACHE, \
+           CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
@@ -230,7 +231,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     PASSWORD_NEWZBIN = check_setting_str(CFG, 'newzbin', 'password', '', False)
     
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
-    
+
     FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
     
     CREATE_GROUP_FOLDERS = bool(check_setting_int(CFG, 'misc', 'create_group_folders', 0))
