@@ -763,5 +763,7 @@ def SplitFileName(name):
     m = RE_NORMAL.match(name)
     if (m):
         return m.group(1).rstrip('.'), ""
+    else:
+        return name, ""
     return "", ""
 
