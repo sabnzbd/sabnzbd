@@ -1,0 +1,75 @@
+
+<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Servers" id="help">Help</a><h3>Server configuration</h3>
+<div class="EntryBlock">
+ <!--#for $server in $servers#-->
+  <form class="cmxform" id="$servers[$server]['host']$servers[$server]['port']">
+    <fieldset class="EntryFieldSet">
+      <legend>$server</legend>
+ <hr />
+
+
+			<label>Host:</label><input type="text" size="25" name="host" value="$servers[$server]['host']">
+		<br class="clear" />
+
+			<label>Port:</label><input type="text" size="25" name="port" value="$servers[$server]['port']">
+		<br class="clear" />
+
+			<label>Username:</label><input type="text" size="25" name="username" value="$servers[$server]['username']">
+		<br class="clear" />
+
+			<label>Password:</label><input type="password" size="25" name="password" value="$servers[$server]['password']">
+		<br class="clear" />
+
+			<label>Timeout:</label><input type="text" size="25" name="timeout" value="$servers[$server]['timeout']">
+		<br class="clear" />
+
+			<label>Connections:</label><input type="text" size="25" name="connections" value="$servers[$server]['connections']">
+		<br class="clear" />
+
+			<label>Fillserver:</label><input class="radio" type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
+			<input class="radio" type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
+   		<input type="hidden" name="server" value="$server"><br class="clear" />
+
+
+      <p><input type="button" class="submitindent" size="40" value="Save Changes" onclick="javascript:submitconfig('config/server/saveServer','submit$servers[$server]['host']$servers[$server]['port']','$servers[$server]['host']$servers[$server]['port']')">
+<span id="submit$servers[$server]['host']$servers[$server]['port']" class="submitstatus"></span><br class="clear" />
+      <input type="button" class="submitindent" size="40" value="Remove Server" onclick="javascript:submitconfig('config/server/delServer', 'submit2$servers[$server]['host']$servers[$server]['port']','$servers[$server]['host']$servers[$server]['port']','/sabnzbd/config/server','0')">
+<span id="submit2$servers[$server]['host']$servers[$server]['port']" class="submitstatus"></span></p>
+    </fieldset>
+  </form><br class="clear"/>
+<!--#end for#-->
+ <form id="addserver" class="cmxform">
+    <fieldset class="EntryFieldSet">
+      <legend>Add server</legend>
+ <hr />
+
+
+			<label>Host:</label><input type="text" size="25" name="host">
+		<br class="clear" />
+
+			<label>Port:</label><input type="text" size="25" name="port">
+		<br class="clear" />
+
+			<label>Username:</label><input type="text" size="25" name="username">
+		<br class="clear" />
+
+			<label>Password:</label><input type="password" size="25" name="password">
+		<br class="clear" />
+
+			<label>Timeout:</label><input type="text" size="25" name="timeout">
+		<br class="clear" />
+
+			<label>Connections:</label><input type="text" size="25" name="connections">
+		<br class="clear" />
+
+			<label>Fillserver:</label><input class="radio" type="radio" name="fillserver" value="0" "checked=1"> No
+				<input class="radio" type="radio" name="fillserver" value="1"> Yes
+ 		<br class="clear" />
+
+      <p><input type="button" class="submitindent" size="40" value="Add Server" onclick="javascript:submitconfig('config/server/addServer', 'submitstatus3','addserver','/sabnzbd/config/server','0')">
+<span class="submitstatus" id="submitstatus3"></span></p>
+
+</fieldset>
+  </form><br class="clear"/>
+
+</div>

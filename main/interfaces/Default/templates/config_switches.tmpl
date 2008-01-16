@@ -16,11 +16,11 @@
 <a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Switches" target="_blank">Help</a>
 </span>
 <span class="SubMenu">
-<a href="../general">General</a> | 
-<a href="../directories">Directories</a> | 
-<a class="current" href="./">Switches</a> | 
-<a href="../server">Servers</a> | 
-<a href="../scheduling">Scheduling</a> | 
+<a href="../general">General</a> |
+<a href="../directories">Directories</a> |
+<a class="current" href="./">Switches</a> |
+<a href="../server">Servers</a> |
+<a href="../scheduling">Scheduling</a> |
 <a href="../rss">RSS</a> |
 <a href="../email">Email</a>
 </span>
@@ -83,6 +83,12 @@
     Enabling will make the queue save it's state after every completed file.<br>
     <input type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Disconnect on empty queue:</strong><br>
+    Disconnect from Usenet server(s) when queue is empty.<br>
+    <input type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
     <strong>Create group Folders:</strong><br>

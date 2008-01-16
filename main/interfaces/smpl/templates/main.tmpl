@@ -1,0 +1,559 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type"
+        content="text/html; charset=utf-8" />
+
+    <title>SABnzbd-$version - Uptime: $uptime</title>
+    <link rel="stylesheet" type="text/css" href="default.css"/>
+	<link href="rss?mode=history" rel="alternate" type="application/rss+xml" title="SABnzbd+ History" />
+	<link rel="shortcut icon" href="static/images/favicon.ico" />
+	
+	<script type="text/javascript" src="static/MochiKit/MochiKit.js"></script>
+	<script type="text/javascript" src="static/PlotKit/Base.js"></script>
+	<script type="text/javascript" src="static/PlotKit/Layout.js"></script>
+	<script type="text/javascript" src="static/PlotKit/Canvas.js"></script>
+	<script type="text/javascript" src="static/PlotKit/SweetCanvas.js"></script>
+	<!--[if IE]><script type="text/javascript" src="static/excanvas.js"></script><![endif]-->
+
+<!--#set $mbdone = (float($mb) - float($mbleft))#-->
+<!--#set $mbdonesrt = float($mbdone) #-->
+
+
+<!--#set $kbpersec = float($kbpersec)#-->
+<!--#set $kbpersecrnd = str(int($kbpersec))#-->
+<!--#if $paused #-->
+<!--#set $kbpersecrnd = "0"#-->
+<!--#end if#-->	
+
+	<script type="text/javascript">
+	
+	// refresh time in seconds
+	RefreshTime = 5;
+	var jsontimeout;
+	var cookietimeout;
+	var speed = $kbpersecrnd;
+	</script>
+
+
+<script type="text/javascript">
+
+function setCookie(c_name,value,expiredays)
+{
+var exdate=new Date();
+exdate.setDate(exdate.getDate()+expiredays);
+document.cookie=c_name+ "=" +value+
+((expiredays==null) ? "" : ";expires="+exdate.toGMTString());
+}
+
+function getCookie(c_name)
+{
+if (document.cookie.length>0)
+  {
+  c_start=document.cookie.indexOf(c_name + "=");
+  if (c_start!=-1)
+    { 
+    c_start=c_start + c_name.length+1; 
+    c_end=document.cookie.indexOf(";",c_start);
+    if (c_end==-1) c_end=document.cookie.length;
+    return unescape(document.cookie.substring(c_start,c_end));
+    } 
+  }
+return "";
+}
+
+function checkCookie()
+{
+var speedlog = [];
+cook=getCookie('speedlog');
+
+if (cook!=null && cook!="")
+  {
+
+	var speedlog = cook.split(',');
+	for(i=1; i<10; i++) { 
+	   speedlog[i-1] = speedlog[i];
+	}
+
+	speedlog[9] = speed;
+	
+	var speedstr = speedlog.join(',');
+	setCookie('speedlog',speedstr,1);
+		
+	//drawGraph(speedlog);
+	chartReload(speedlog);
+  }
+  else 
+  {
+  setCookie('speedlog','0,0,0,0,0,0,0,0,0,$kbpersecrnd',1);
+    }
+if (RefreshTime>0) {
+	clearTimeout ( cookietimeout );
+	cookietimeout = setTimeout("checkCookie();", RefreshTime*1000)
+}
+}
+
+
+function checkrefresh()
+{
+	refr=getCookie('smplrefresh');
+	element = document.getElementById('refreshrate');
+	if (refr!=null && refr!="")
+	{
+		
+		var refreshtimelist = [2, 3, 5, 10, 15, 30, 60, 180, 300, 0];
+		index = Number(refr);
+		var result = -1;
+		for(i=0; i<10; i++) 
+		{
+			if (refreshtimelist[i]==index) result = i;
+		}
+		if (result<0)result=1;
+		element.selectedIndex = result;
+
+		RefreshTime = Number(refr);
+		//alert(refreshr);
+	}
+	else 
+	{
+
+		refreshr = element.options[element.selectedIndex].value;
+		//alert(refreshr);
+		setCookie('smplrefresh',value,360);		
+	}  
+}
+
+
+function applyrefresh(value)
+{
+RefreshTime = value;
+setCookie('smplrefresh',value,360);
+loadingJSON();
+checkCookie();	
+}
+
+MochiKit.DOM.addLoadEvent(onpageload);
+
+function onpageload() {
+initDynamicTable();
+loadingJSON();
+checkCookie();
+//doit();
+
+checkrefresh();
+}
+
+
+</script>
+
+
+<!--#set $statusstr2 = "Pause"#-->
+<!--#set $pau = "0"#-->
+<!--#if $paused #-->
+<!--#set $pau = "1"#-->
+<!--#set $status = "<span class='paused'>Paused</span>"#-->
+<!--#set $statusstr2 = "Resume"#-->
+<!--#else if float($kbpersecrnd)>0 #-->
+<!--#set $status = "<span class='downloading'>Downloading</span>"#-->
+<!--#else if float($kbpersecrnd) == 0 #-->
+<!--#set $status = "<span class='idle'>Idle</span>"#-->
+<!--#end if#-->
+
+<script type="text/javascript">
+	var status2 = $pau;
+	
+	function toggle()
+	{
+		
+		if (status2 == 1) 
+		{
+			status2 = 0;		
+			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";	
+			document.getElementById("status2").innerHTML = "Pause";
+			doSimpleXMLHttpRequest("/sabnzbd/api?mode=resume");
+
+
+		}
+		else
+		{
+			status2 = 1;
+			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
+			document.getElementById("speed").innerHTML = "0";
+			document.getElementById("status2").innerHTML = "Resume";
+			doSimpleXMLHttpRequest("/sabnzbd/api?mode=pause");
+		
+		}
+	}
+	
+	function deletequeueitem(elem)
+	{
+        val1 = document.getElementById(elem).innerHTML;
+        val1="";
+        kvstr = queryString({uid:elem})
+        //alert(kvstr);
+        //finalurl = url
+       var d = doXHR('queue/delete?'+kvstr, 
+	    {
+		    method:'POST',
+            sendContent:'?asshole='+Math.random()
+	
+	    });        
+		//d = doSimpleXMLHttpRequest('queue/delete', {uid: elem});
+		d.addCallback(reloadqueue);
+		d.addErrback(handleServerError);
+	}
+    function handleServerError(){}
+	var timerId2 = 0;
+
+	//submits an ajax request and loads the retrieved data into the div called "Right". Can queue itself up to repeat the action based on the refresh rate
+	function lr(url, refresh)
+	{
+		
+		if (timerId2) clearTimeout ( timerId2 );
+        
+		//var res = doSimpleXMLHttpRequest(url);
+       var res = doXHR(url, 
+	    {
+		    method:'POST',
+            sendContent:'?asshole='+Math.random()
+	
+	    });
+	    res.addCallback(function (res) 
+	    { 
+	      document.getElementById('Right').innerHTML = res.responseText;
+
+		  if (refresh && RefreshTime>0) timerId2 = setTimeout("lr(\'"+url+"\', 1);", RefreshTime*1000)	
+	    });
+		res.addErrback(handleServerError);			
+	}
+
+	//used when something needs to be submitted in the background, and another page loaded (usually refreshing the current page)
+	function lrdual(url1, url2, refresh)
+	{
+		var d = doSimpleXMLHttpRequest(url1);
+		d.addCallback(function (d)
+        {
+        lr(url2, refresh);
+        });
+		
+	}	
+	
+
+	
+	function changequeuedetails(page)
+	{
+		d = doSimpleXMLHttpRequest(page);
+		d.addCallback(reloadqueue);
+		d.addErrback(handleServerError);		
+	}	
+	
+	function testemail()
+	{
+		d = doSimpleXMLHttpRequest('/sabnzbd/connections/testmail');
+		d.addCallback(function (d)
+        {
+        alert("E-Mail Sent");
+        });
+		d.addErrback(handleServerError);		
+	}	
+	
+	function changequeueoptions(page)
+	{
+		d = doSimpleXMLHttpRequest('queue/'+page);
+	}	
+	
+	function reloadqueue()
+	{
+		var res = doXHR('/sabnzbd/queue', 
+	    {
+		    method:'POST',
+            sendContent:'?asshole='+Math.random()
+	
+	    });  
+		res.addCallback(replaceright);
+		res.addErrback(handleServerError);	
+	}
+	//based from Mochikit documentation - finds all the form values for an element and returns formatted query string
+	function getFormValues(element) 
+	{
+		
+	    kv = MochiKit.DOM.formContents(element);
+	    names = kv[0];
+	    values = kv[1];
+
+		kvstr = queryString(kv)
+	    return kvstr;
+	}
+	
+
+
+
+	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post
+	function submitconfig(extra, saveelement, element, url2, refresh)
+	{
+
+		var values = [];
+		var elementt;
+		if (element) elementt = document.getElementById(element);
+		values = getFormValues(elementt);
+
+		var url = '/sabnzbd/'+extra;
+		var d = doXHR(url, 
+	    {
+		    method:'POST',
+		    sendContent:values,
+		    headers: {"Content-Type":"application/x-www-form-urlencoded"}
+			
+	    });
+		if (saveelement) document.getElementById(saveelement).innerHTML = "<img src='/sabnzbd/static/images/ajax-loader.gif' />";
+	    d.addCallback(function (result) 
+	    { 
+	      if (saveelement) document.getElementById(saveelement).innerHTML = "Saved";
+		  if(url2) lr(url2,refresh);
+	    });
+	
+
+
+	    d.addErrback( function (result) 
+	    { 
+	      //if (saveelement) document.getElementById(saveelement).innerHTML = "Error";
+	    });
+
+	}
+	
+
+
+	var replaceright  = function (res)
+	{
+		document.getElementById('Right').innerHTML = res.responseText;
+	}	
+	
+	
+	
+	
+//loads up the json for the queue page and changes the values in the document
+function loadingJSON(){	
+	if (RefreshTime>0) {
+	clearTimeout ( jsontimeout );
+	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);		
+	}	
+	var url = "/sabnzbd/api?mode=qstatus&output=json";
+	var d = loadJSONDoc(url);
+	var gotMetadata = function (info) 
+	{
+		//alert(info["kbpersec"]);
+		
+		speed = info["kbpersec"].toFixed(0);
+		var paused = info["paused"];		
+		if (paused==true) speed = 0;
+
+		if (paused == true)
+		{
+			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
+						//alert("paused");
+		} else if 	(paused == false && speed>0) 
+		{
+			document.getElementById("status").innerHTML = "<span class='downloading'>Downloading</span>";
+						//alert("down");			
+		} else { 
+			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
+						//alert("idle");			
+		}
+	
+		document.getElementById("speed").innerHTML = speed;
+		document.getElementById("mbleft").innerHTML = info["mbleft"].toFixed(2);
+		document.getElementById("mbtotal").innerHTML = info["mb"].toFixed(2);
+        document.getElementById("ds1").innerHTML = info["diskspace1"].toFixed(2);	        
+		document.getElementById("ds2").innerHTML = info["diskspace2"].toFixed(2);
+        //var perc1 = 1 - (info["jobs"][0]["mbleft"].toFixed(2) / info["jobs"][0]["mb"].toFixed(2))
+        //alert(info["jobs"][0]);
+	   	if (info["jobs"]!="") document.getElementById("downloadinfo").innerHTML = "Downloading: "+info["jobs"][0]["filename"];
+        else document.getElementById("downloadinfo").innerHTML = "";
+        
+	};
+	var metadataFetchFailed = function (err) {
+	  //alert("The metadata for MochiKit.Async could not be fetched :(");
+	};
+	d.addCallbacks(gotMetadata, metadataFetchFailed);
+}	
+	
+	
+	
+	
+//based on plotkit docummentation for dynamic tables	
+   //var dataTable = null;
+   var layout = null;
+   var renderer = null;
+   var options = null;
+   
+   function initDynamicTable(data) {
+       //dataTable = data;
+       options = PlotKit.Base.officeBlue();
+       layout = new Layout("line", options);
+       renderer = new SweetCanvasRenderer('graph', layout, options);
+	   //alert("hi");
+   }
+   
+   function chartReload(data) {
+
+        var colorScheme = "Blue";
+
+        // setup layout options
+        var themeName = "office" + colorScheme;
+        var theme = PlotKit.Base[themeName]();
+        MochiKit.Base.update(options, theme);
+                
+        layout.style = "line";
+        MochiKit.Base.update(layout.options, options);
+        MochiKit.Base.update(renderer.options, options);
+                
+        //layout.addDataset("data", values);        
+		layout.addDataset("sqrt", [[0, data[0]], [1, data[1]], [2, data[2]], [3, data[3]], [4, data[4]], [5, data[5]], [6, data[6]], [7, data[7]], [8, data[8]],[9, data[9]]]);
+
+        // update
+        layout.evaluate();
+        renderer.clear();
+        renderer.render();
+       
+   }	
+	
+	
+</script>
+
+
+</head>
+<body>
+	<div id="Container">
+		<div id="Header">
+			<p class="status">
+				Status: <span id="status">$status</span><br />
+				Speed: <span id="speed">$kbpersecrnd</span> kB/s<br />
+				Queue: <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
+			</p>	
+		<span id="testing">
+			<a href=""><img id="title" src="/sabnzbd/static/sabnzbd_small3.gif" alt="sabnzbd+" /></a>
+			<h2>The automatic usenet download tool</h2>
+		</span>	
+		</div>
+		<div id="Content">
+			<div id="Left">
+				<ul id="menu">
+					<li><a class="current" href="">Home</a></li>
+					<li><a href="javascript:lr('/sabnzbd/queue/',  1);">Queue</a></li>
+					<li><a href="javascript:lr('/sabnzbd/history/', 1);">History</a></li>
+					<li><a href="javascript:lr('/sabnzbd/config/', 0);">Config</a></li>
+					<ul class="secondul">
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/general/', 0);">General</a></li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/directories/', 0);">Directories</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/switches/', 0);">Switches</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/server/', 0);">Servers</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/scheduling/', 0);">Scheduling</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/rss/', 0);">RSS</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/email/', 0);">Email</a></li>
+					</ul>
+					<li><a href="javascript:lr('/sabnzbd/connections/', 1);">Connections</a></li>
+					<li><a class="bold" id="status2" href="javascript:toggle()">$statusstr2</a></li>
+					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
+				</ul> 
+				<center>
+				Incomplete Dir
+				<span id="ds1">$diskspace1</span>GB / ${diskspacetotal1}GB<br />
+				Complete Dir 
+				<span id="ds2">$diskspace2</span>GB / ${diskspacetotal2}GB
+				</center>
+			</div>
+			<div id="Right">
+				<h3>Add new downloads</h3>
+				<!--#if $warning#-->
+				<h2>WARNING</h2>
+				<b>$warning</b>
+				<!--#end if#-->
+				<!--#if $new_release#-->
+			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b>
+				<!--#end if#-->
+				<!--#if $varExists('newzbinDetails')#-->
+				<div class="EntryBlock">
+				    <form class="cmxform" action="addID" method="get">
+				    <fieldset class="EntryFieldSet">
+				      <legend>Add Postid</legend>
+					  <hr />
+				      <input style="width:215px;" type="text" name="id">
+				            <select class="addnewselect" name="pp">
+				            <option value="0">None</option>
+				            <option value="1">+Repair</option>
+				            <option value="2">+Unpack</option>
+				            <option value="3" selected>+Delete</option>
+				            <option value="4">R+Script</option>
+				            <option value="5">U+Script</option>
+				            <option value="6">D+Script</option>						
+				            </select>
+				            
+				            <input class="submitindent2" type="submit" value="Add">
+				      </fieldset>
+				    </form>
+				</div><br class="clear"/>
+				<!--#end if#-->
+				<div class="EntryBlock">
+				    <form class="cmxform" action="addURL" method="get">
+				    <fieldset class="EntryFieldSet">
+				        <legend>Add URL</legend>
+						<hr />
+				    <input style="width:215px;" type="text" name="url">
+				            <select class="addnewselect"  name="pp">
+				            <option value="0">None</option>
+				            <option value="1">+Repair</option>
+				            <option value="2">+Unpack</option>
+				            <option value="3" selected>+Delete</option>
+				            <option value="4">R+Script</option>
+				            <option value="5">U+Script</option>
+				            <option value="6">D+Script</option>						
+				        </select>
+				        
+				        <input class="submitindent2" type="submit" value="Add">
+				    </fieldset>
+				    </form>
+				</div><br class="clear"/>
+				<div class="EntryBlock2">
+				    <form class="cmxform" action="addFile" method="post" enctype="multipart/form-data">
+				    <fieldset class="EntryFieldSet">
+				      <legend>Add File</legend>
+					  <hr />
+				      <input type="file" style="width:221px" name="nzbfile">
+				        <select class="addnewselect" name="pp">
+				            <option value="0">None</option>
+				            <option value="1">+Repair</option>
+				            <option value="2">+Unpack</option>
+				            <option value="3" selected>+Delete</option>
+				            <option value="4">R+Script</option>
+				            <option value="5">U+Script</option>
+				            <option value="6">D+Script</option>						
+				        </select>
+				      <input class="submitindent2" type="submit" value="Add">
+				    </fieldset>
+				    </form>
+				</div>	
+
+			</div>		
+		</div>	
+		<div id="Footer">
+			<div id="divchart"><canvas id="graph" height="100" width="700"></canvas></div>
+			<span id="downloadinfo"></span><br /><br />
+			<p id="versions">Refresh Rate: <select id="refreshrate" onchange="javascript:applyrefresh(this.options[this.selectedIndex].value)">
+				<option value="2" >2 seconds</option>			
+				<option value="3" >3 seconds</option>
+				<option value="5" selected="selected">5 seconds</option>
+				<option value="10" >10 seconds</option>
+				<option value="15" >15 seconds</option>
+				<option value="30" >30 seconds</option>
+				<option value="60" >1 minute</option>
+				<option value="180" >3 minutes</option>
+				<option value="300" >5 minutes</option>
+				<option value="0" >None</option>				
+			</select>
+            <br />sabnzbd version: $version | smpl version: 1.0</a></p>
+		</div>
+	</div>
+</body>
+</html>

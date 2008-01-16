@@ -6,13 +6,20 @@ from distutils.core import setup
 # py2exe usage: python setup.py py2exe
 
 try:
-    import py2exe
     import glob
+    import sys
+    import os
+    import py2exe
 except ImportError:
     py2exe = None
 
+print sys.argv[0]
+
+if (len(sys.argv) < 2) or sys.argv[1] != 'py2exe':
+    py2exe = None
+
 options = dict(
-    name = 'SABnzbd',
+      name = 'SABnzbd',
       version = sabnzbd.__version__,
       url = 'http://sourceforge.net/projects/sabnzbdplus',
       author = 'The ShyPike & Gregor Kaufmann',
@@ -22,50 +29,19 @@ options = dict(
       packages = ['sabnzbd', 'sabnzbd.utils', 'sabnzbd.utils.multiauth'],
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2)',
-      data_files = [('share/doc/SABnzbd-' + sabnzbd.__version__,
-                     ['README.txt', 'LICENSE.txt', 'CHANGELOG.txt', 'Sample-PostProc.sh', 'Sample-PostProc.cmd', 'PKG-INFO']),
-                    ('share/SABnzbd-' + sabnzbd.__version__ + '/templates',
-                             ['interface/Default/README.TXT',
-                              'interface/Default/templates/default.css',
-                              'interface/Default/templates/history.tmpl',
-                              'interface/Default/templates/main.tmpl',
-                              'interface/Default/templates/connection_info.tmpl',
-                              'interface/Default/templates/config.tmpl',
-                              'interface/Default/templates/queue.tmpl',
-                              'interface/Default/templates/nzo.tmpl',
-                              'interface/Default/templates/config_directories.tmpl',
-                              'interface/Default/templates/config_general.tmpl',
-                              'interface/Default/templates/config_server.tmpl',
-                              'interface/Default/templates/config_switches.tmpl',
-                              'interface/Default/templates/config_scheduling.tmpl',
-                              'interface/Default/templates/config_rss.tmpl',
-                              'interface/Default/templates/static/placeholder.txt',
-                              'interface/Default/templates/static/stylesheets/default.css',
-                              'interface/Default/templates/static/images/favicon.ico']),
-                    ('share/SABnzbd-' + sabnzbd.__version__ + '/templates/static',
-                              ['templates/static/placeholder.txt', 'templates/static/placeholder.txt'])])
-
-if py2exe:
-    options['data_files'] = [
-          ('', ['README.txt', 'LICENSE.txt', 'CHANGELOG.txt', 'Sample-PostProc.sh', 'Sample-PostProc.cmd', 'PKG-INFO']), 
-          ('interfaces/Default/README.TXT', ['interfaces/Default/README.TXT']),
+      data_files = [
+          ('', ['README.txt', 'INSTALL.txt', 'LICENSE.txt', 'CHANGELOG.txt', 'ISSUES.txt', 'Sample-PostProc.cmd', 'Sample-PostProc.sh', 'PKG-INFO']),
+          ('interfaces/Default', glob.glob("interfaces/Default/*.*")),
           ('interfaces/Default/templates', glob.glob("interfaces/Default/templates/*.tmpl")),
           ('interfaces/Default/templates/static/stylesheets', ['interfaces/Default/templates/static/stylesheets/default.css']),
           ('interfaces/Default/templates/static/images', glob.glob('interfaces/Default/templates/static/images/*.ico')),
 
-          ('interfaces/NOVA_0.3.2', glob.glob("interfaces/NOVA_0.3.2/*.*")),
-          ('interfaces/NOVA_0.3.2/templates', glob.glob("interfaces/NOVA_0.3.2/templates/*.*")),
-          ('interfaces/NOVA_0.3.2/templates/static', glob.glob("interfaces/NOVA_0.3.2/templates/static/*.*")),
-          ('interfaces/NOVA_0.3.2/templates/static/css', glob.glob("interfaces/NOVA_0.3.2/templates/static/css/*.*")),
-          ('interfaces/NOVA_0.3.2/templates/static/images', glob.glob("interfaces/NOVA_0.3.2/templates/static/images/*.*")),
-          ('interfaces/NOVA_0.3.2/templates/static/js', glob.glob("interfaces/NOVA_0.3.2/templates/static/js/*.*")),
-
-          ('interfaces/NOVA_0.4.5', glob.glob("interfaces/NOVA_0.4.5/*.*")),
-          ('interfaces/NOVA_0.4.5/templates', glob.glob("interfaces/NOVA_0.4.5/templates/*.*")),
-          ('interfaces/NOVA_0.4.5/templates/static', glob.glob("interfaces/NOVA_0.4.5/templates/static/*.*")),
-          ('interfaces/NOVA_0.4.5/templates/static/images', glob.glob("interfaces/NOVA_0.4.5/templates/static/images/*.*")),
-          ('interfaces/NOVA_0.4.5/templates/static/javascripts', glob.glob("interfaces/NOVA_0.4.5/templates/static/javascripts/*.*")),
-          ('interfaces/NOVA_0.4.5/templates/static/stylesheets', glob.glob("interfaces/NOVA_0.4.5/templates/static/stylesheets/*.*")),
+          ('interfaces/smpl', glob.glob("interfaces/smpl/*.*")),
+          ('interfaces/smpl/templates', glob.glob("interfaces/smpl/templates/*.*")),
+          ('interfaces/smpl/templates/static', glob.glob("interfaces/smpl/templates/static/*.*")),
+          ('interfaces/smpl/templates/static/images', glob.glob("interfaces/smpl/templates/static/images/*.*")),
+          ('interfaces/smpl/templates/static/MochiKit', glob.glob("interfaces/smpl/templates/static/MochiKit/*.*")),
+          ('interfaces/smpl/templates/static/PlotKit', glob.glob("interfaces/smpl/templates/static/PlotKit/*.*")),
 
           ('interfaces/Plush', glob.glob("interfaces/Plush/*.*")),
           ('interfaces/Plush/templates', glob.glob("interfaces/Plush/templates/*.*")),
@@ -78,9 +54,62 @@ if py2exe:
           ('win/unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
           ('win/unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE']),
           ('win/email', glob.glob("win/email/*.*"))
-        ]
-    options['console'] = ['SABnzbd.py']
-    options['options'] = {"py2exe": {"bundle_files": 1, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
-    
+      ]
+)
 
-setup(**options)
+if py2exe:
+    options['console'] = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "interfaces/Default/templates/static/images/favicon.ico")] } ]
+    options['options'] = {"py2exe": {"bundle_files": 1, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
+    setup(**options)
+
+    # Make sure that the root files are DOS format
+    for file in options['data_files'][0][1]:
+        os.system("unix2dos --safe dist/%s" % file)
+    os.remove('dist/Sample-PostProc.sh')
+
+else:
+    # Prepare Source distribution package.
+    # Make sure all source files are Unix format
+    import shutil
+
+    root = 'srcdist'
+    root = os.path.normpath(os.path.abspath(root))
+    if not os.path.exists(root):
+        os.mkdir(root)
+
+    # Copy the data files
+    for set in options['data_files']:
+        dest, src = set
+        ndir = root + '/' + dest
+        ndir = os.path.normpath(os.path.abspath(ndir))
+        if not os.path.exists(ndir):
+            os.makedirs(ndir)
+        for file in src:
+            shutil.copy2(file, ndir)
+            front, ext = os.path.splitext(file)
+            base = os.path.basename(file)
+            if ext.lower() in ('.py', '.pl', '.txt', '.html', '.css', '.tmpl', ''):
+                os.system("dos2unix --safe %s" % ndir + '/' + base)
+
+    # Copy the script files
+    for name in options['scripts']:
+        file = os.path.normpath(os.path.abspath(name))
+        shutil.copy2(file, root)
+        base = os.path.basename(file)
+        fullname = os.path.normpath(os.path.abspath(root + '/' + base))
+        os.system("dos2unix --safe %s" % fullname)
+
+    # Copy all content of the packages (but skip backups and pre-compiled stuff)
+    for unit in options['packages']:
+        unitpath = unit.replace('.','/')
+        dest = os.path.normpath(os.path.abspath(root + '/' + unitpath))
+        if not os.path.exists(dest):
+            os.makedirs(dest)
+        for name in glob.glob("%s/*.*" % unitpath):
+            file = os.path.normpath(os.path.abspath(name))
+            front, ext = os.path.splitext(file)
+            base = os.path.basename(file)
+            fullname = os.path.normpath(os.path.abspath(dest + '/' + base))
+            if ext.lower() not in ('.pyc', '.pyo', '.bak'):
+                shutil.copy2(file, dest)
+                os.system("dos2unix --safe %s" % fullname)

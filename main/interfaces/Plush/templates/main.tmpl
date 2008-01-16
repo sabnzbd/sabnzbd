@@ -4,34 +4,27 @@
 
 	<title>SABnzbd+ Plush</title>
 	
-	<!-- Favorite Icon -->
 	<link rel="shortcut icon" type="image/ico" href="static/images/favicon.ico"/>
-	
-	<!-- Stylesheets -->
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
 	<link rel="stylesheet" type="text/css" href="static/stylesheets/plush.css" media="screen"/>
 	
-	<!-- News Feeds -->
-	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
-	
-	<!-- Javascript -->
 	<script type="text/javascript" src="static/javascripts/jquery-1.2.1.pack.js"></script>
 	<script type="text/javascript" src="static/javascripts/interface.js"></script>
 	<script type="text/javascript" src="static/javascripts/plush.js"></script>
+	<script type="text/javascript" src="static/javascripts/jquery.corner.js"></script>
 
 </head>
 <body>
 
-	
 	<!-- Container : Begin -->
 	<div id="container">
-	
 	
 		<!-- Top Bar : Begin -->
 		<div id="topbar">
 		
 			<!-- Logo : Begin -->
 			<div id="logo">
-				<a href="https://sourceforge.net/projects/sabnzbdplus/" title="SABnzbd+ Version: $version | Plush Version: 1.0">SABnzbd+ Plush</a>
+				<a href="https://sourceforge.net/projects/sabnzbdplus/" target="_blank" title="SABnzbd+ Version: $version | Plush Version: 1.0">SABnzbd<sup>+</sup><sub>Plush</sub></a>
 			</div>
 			<!-- Logo : End -->
 			
@@ -39,11 +32,10 @@
 			<ul id="menu">
 				<li><a id="plusnzb" title="Add/Enqueue an NZB">+NZB</a></li>
 				<li><a id="options" title="View Plush Options">Options</a></li>
-				<li><a href="connections" title="View SABnzbd Connections" class="greybox">Connections</a></li>
-				<li><a href="config" title="Configure SABnzbd" class="greybox">Config</a></li>
-				<li><a href="https://sabnzbdplus.wiki.sourceforge.net/" title="Read the SAB+ Wiki" class="greybox">Help</a></li>
+				<li><a href="connections" title="Configure SABnzbd" class="greybox">Config</a></li>
+				<li><a href="https://sabnzbdplus.wiki.sourceforge.net/" target="_blank" title="Read the SAB+ Wiki">Help</a></li>
 			  <!--#if $new_release#-->
-    			  <li><a href="$new_rel_url" target="_blank">New release $new_release available</a></li>
+    			  <li><a href="$new_rel_url" target="_blank"><font color="orange">New Release $new_release Available!</font></a></li>
 			  <!--#end if#-->
 
 			</ul>
@@ -55,22 +47,21 @@
 		
 		<!-- Options Menu : Begin -->
 		<div class="subMenu" id="optionsMenu" style="display:none">
-			<div class="layoutContainer">
-				<strong>Layout:</strong>
-				<img src="static/images/o_sidebyside.png" id="layout_sidebyside" alt="Side by Side" title="Switch Layout: Side by Side" />
-				<img src="static/images/o_topbottom.png" id="layout_toptobottom" alt="Top to Bottom" title="Switch Layout: Top to Bottom" />
-			</div>
-			
+
 			<div class="sliderContainer">
 				<div class="refreshTitle">Refresh Time:</div>
-				<div class="refreshSlider"><div class="refreshIndicator"></div></div>
 				<div class="refreshRate">Every <strong><span id="refreshRateDisplay">?</span></strong> Second(s)</div>
+				<div class="refreshSlider"><div class="refreshIndicator"></div></div>
 			</div>
 			
 			<div class="shutdownContainer">
-				<a onclick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}" title="Click here to shut down SABnzbd">Shutdown SAB</a>
+				<a onclick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){GB_show('Shutdown SABnzbd', 'shutdown', 400, 400);}" title="Click here to shut down SABnzbd">Shutdown&nbsp;SABnzbd+</a>
+			<!--#if $nt#-->
+				 |&nbsp;<a id="queue_shutdown_option" title="Toggle Shutdown of Computer upon Queue Completion">Toggle&nbsp;Shutdown&nbsp;CPU</a>
+			<!--#end if#-->
 			</div>
-			
+
+			<div class="layoutContainer"><strong>Layout:</strong><img src="static/images/o_sidebyside.png" id="layout_sidebyside" alt="Side by Side" title="Switch Layout: Side by Side" />&nbsp;<img src="static/images/o_topbottom.png" id="layout_toptobottom" alt="Top to Bottom" title="Switch Layout: Top to Bottom" /></div>
 			
 		</div>
 		<!-- Options Menu : End -->
@@ -80,42 +71,39 @@
 		<div class="subMenu" id="nzbMenu" style="display: none">
 			<b>Add NZB: &nbsp;</b>
 			<!--#if $varExists('newzbinDetails')#-->
-				<input type="text" id="addID" value="by Report ID" size="12" onfocus="if(value=='by Report ID')value=''" onblur="if(!value)value='by Report ID'" />
-				<select id="addID_pp">
+				<input type="text" id="addID" value="by Report ID" size="12" onfocus="if(value=='by Report ID')value=''" onblur="if(!value)value='by Report ID'" />&nbsp;<select id="addID_pp">
 					<option value="0" title="Do not post-process the NZB file set">-</option>
 					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set">D</option>
-					<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
-					<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
-					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
-				</select>
-				<input type="submit" id="addNZBbyID" value="Add" />&nbsp;&nbsp;&nbsp;
+					<option value="4" title="(+Script) Repair the NZB file set with PAR2 files">R+S</option>
+					<option value="5" title="(+Script) Repair &amp; Unpack the NZB file set">U+S</option>
+					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+S</option>
+				</select>&nbsp;<input type="submit" id="addNZBbyID" value="Add" />&nbsp;&nbsp;&nbsp;
 			<!--#end if#-->
-				<input type="text" id="addURL" value="by URL" size="12" onfocus="if(value=='by URL')value=''" onblur="if(!value)value='by URL'" />
-				<select id="addURL_pp">
+			
+				<!-- ADD BY URL -->
+				<input type="text" id="addURL" value="by URL" size="12" onfocus="if(value=='by URL')value=''" onblur="if(!value)value='by URL'" />&nbsp;<select id="addURL_pp">
 					<option value="0" title="Do not post-process the NZB file set">-</option>
 					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set">D</option>
-					<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
-					<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
-					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
-				</select>
-				<input type="submit" id="addNZBbyURL" value="Add" />&nbsp;&nbsp;&nbsp;
+					<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+S</option>
+					<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+S</option>
+					<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+S</option>
+				</select>&nbsp;<input type="submit" id="addNZBbyURL" value="Add" />&nbsp;&nbsp;&nbsp;
 	
-				<form action="addFile" method="post" enctype="multipart/form-data" style="display:inline">
-					<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" />
-					<select name="pp">
+				<!-- ADD BY FILE UPLOAD -->
+				<form action="addFile" method="post" enctype="multipart/form-data">
+					<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" />&nbsp;<select name="pp">
 						<option value="0" title="Do not post-process the NZB file set">-</option>
 						<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 						<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set">D</option>
-						<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
-						<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
-						<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+</option>
-					</select>
-					<input type="submit" id="addNZBbyFile" value="Add" />
+						<option value="4" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+S</option>
+						<option value="5" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+S</option>
+						<option value="6" title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D+S</option>
+					</select>&nbsp;<input type="submit" id="addNZBbyFile" value="Add" />
 				</form>
 		</div>
 		<!-- +NZB Menu : Begin -->
@@ -125,19 +113,14 @@
 		<!-- Queue and History Container : Begin -->
 		<div class="textCenter">
 
-		
-			<!-- Queue : Begin -->
+			<!-- Queue   -->
 			<div id="queue"></div>
-			<!-- Queue : End -->
 			
-			<!-- History : Begin -->
+			<!-- History -->
 			<div id="history"></div>
-			<!-- History : End -->
 			
 		</div>
 		<!-- Queue and History Container : End -->
-	
-	
 	
 	</div>
 	<!-- Container : End -->

@@ -16,6 +16,7 @@ body {
 	font: 62.5% Arial, Helvetica, sans-serif;
 	text-align: center;
 	margin: 0;
+	cursor: default;
 }
 
 
@@ -38,7 +39,6 @@ h3 {
 /* Container
 ----------------------------------------------------------------- */
 #container {
-	text-align: left;
 	font-size: 1.4em;
 }
 
@@ -50,21 +50,29 @@ h3 {
 	background: #dadada url(../images/bg_topbar.png) repeat-x left bottom;
 	border-bottom: 1px solid #454545;
 	border-top: 1px solid #333333;
+	padding-top:6px;
+	padding-bottom:12px;
 }
 
 
 /* Logo
 ----------------------------------------------------------------- */
 #logo {
-	float: left;
-	padding: 8px 15px;
+	/*float: left;*/
+	padding: 0px 0px;
 	font-weight: bold;
+	display: inline;
 }
 #logo a {
 	color: #FFFFFF;
 	text-decoration: none;
 }
-
+#logo sub {
+	z-index: 11;
+	position: absolute;
+	margin-top:12px;
+	margin-left:-6px;
+}
 
 /* Menu
 ----------------------------------------------------------------- */
@@ -72,17 +80,18 @@ h3 {
 	margin: 0 0 0 30px;
 	padding: 0;
 	list-style: none;
-	float: left;
+/*	float: left;*/
+	display: inline;
 }
 #menu li {
-	float: left;
+/*	float: left;*/
+	display: inline;
 	margin: 0;
 	padding: 0;
 }
 #menu a {
-	float: left;
-	display: block;
-	padding: 6px 15px;
+/*	float: left;*/
+	padding: 4px 15px;
 	font-weight: bold;
 	text-decoration: none;
 	color: #E8E8E8;
@@ -102,12 +111,16 @@ h3 {
 /* Sub Menu
 ----------------------------------------------------------------- */
 .subMenu {
-	padding: 6px 20px;
+	padding: 	6px 20px;
 	background: #c1d3e5 url(../images/bg_subMenu.png) repeat-x left bottom;
 	border-bottom: 1px solid #828282;
 }
-.subMenu#nzbMenu {}
+.subMenu#nzbMenu form {
+	display:	inline;
+}
 .subMenu#optionsMenu {
+	padding-left:12%;
+	padding-right:12%;
 	background: #F9F5AA url(../images/bg_optionsMenu.png) repeat-x left bottom;
 }
 
@@ -116,8 +129,16 @@ h3 {
 #queue, #history {
 	padding: 5px;
 	text-align: center;
+	/*display:table;*/ /* uncomment to center the queue/history in top-to-bottom layout mode (messes up Firefox 2) */
+	margin-left:auto; margin-right:auto;
 }
-.queue_sidebyside, .history_sidebyside {float: left;}
+.queue_sidebyside, .history_sidebyside {display:inline;}
+.queue_sidebyside {
+	float:left;
+}
+.history_sidebyside {
+	float:right;
+}
 
 
 /* Footer
@@ -132,6 +153,7 @@ h3 {
 ----------------------------------------------------------------- */
 .listingTable {
 	/* margin: 0 auto; */
+	margin-top:6px;
 }
 
 /* Table Heading */
@@ -154,6 +176,9 @@ h3 {
 	font-weight: normal;
 	color: #999;
 }
+.listingTable thead th.first span b {
+	color: grey;
+}
 .listingTable thead th.last { background: transparent  url(../images/bg_listing_table_heading_tr.png) no-repeat right top; }
 
 /* Table Body */
@@ -165,8 +190,8 @@ h3 {
 	background: #e0efff url(../images/bg_listing_table_tbody_tr_hover.png) repeat-x left bottom;
 	color: #000;
 }
-.listingTable tbody tr:hover .itemMBRemain, 
-.listingTable tbody tr:hover .itemTitle a, 
+.listingTable tbody tr:hover .itemMBRemain,
+.listingTable tbody tr:hover .itemTitle a,
 .listingTable tbody tr:hover .itemTTD {color: #000;}
 
 /* Table Data */
@@ -242,6 +267,10 @@ h3 {
 .listingTable tfoot {
 	font-size: .85em;
 	text-align: left;
+	color: #999;
+}
+.listingTable tfoot b {
+	color: grey;
 }
 .listingTable tfoot tr {background: transparent  url(../images/bg_listing_table_footer.png) repeat-x left bottom;}
 .listingTable tfoot td {padding: 8px 15px;}
@@ -249,7 +278,6 @@ h3 {
 .listingTable tfoot .first {background: transparent  url(../images/bg_listing_table_footer_bl.png) no-repeat left bottom;}
 .listingTable tfoot .last {
 	text-align: right;
-	font-size: .9em;
 	background: transparent  url(../images/bg_listing_table_footer_br.png) no-repeat right bottom;
 }
 .listingTable thead .tools {
@@ -289,18 +317,19 @@ h3 {
 }
 .listingTable .postProcessing table tr {}
 .listingTable .postProcessing table td { padding: 4px 10px; }
-.listingTable .postProcessing .finished { background: #FBF3B3 url(../images/bg_tr_finished.png) repeat-x left bottom; }
-.listingTable .postProcessing .active { background: #DBF5C0 url(../images/bg_tr_active.png) repeat-x left bottom; }
-.listingTable .postProcessing .active:hover { 
+.listingTable .postProcessing .finished { font-size: 90%; background: #FBF3B3 url(../images/bg_tr_finished.png) repeat-x left bottom; }
+.listingTable .postProcessing .active { font-size: 90%; background: #DBF5C0 url(../images/bg_tr_active.png) repeat-x left bottom; }
+.listingTable .postProcessing .active:hover {
 	background: #e0efff url(../images/bg_listing_table_tbody_tr_hover.png) repeat-x left bottom;
 	color: #000;
 }
-.listingTable .postProcessing .pending { background: #E6F0F7 url(../images/bg_tr_pending.png) repeat-x left bottom; }
+.listingTable .postProcessing .pending { font-size: 90%; background: #E6F0F7 url(../images/bg_tr_pending.png) repeat-x left bottom; }
 
 .postProcessing .processItemTitle {}
 .postProcessing .processItemMove a {
 	text-decoration: none;
 	font-weight: bold;
+	padding:4px;
 }
 /* Process Item Status */
 .listingTable .postProcessing .finished .processItemStatus {
@@ -368,11 +397,9 @@ h3 {
 	font-weight: bold;
 	color: #990000;
 }
-
-
-
-
-
+.hvError {
+	color: blue;
+}
 
 
 
@@ -384,12 +411,157 @@ h3 {
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
+	C O N F I G
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+div.EntryBlock form {
+  display: inline;
+}
+fieldset.EntryFieldSet {
+  vertical-align: top;
+  display: inline;
+  padding: 7px;
+  margin: 5px;
+}
+#config_nav {
+	margin-top: 5px;
+	width: 110px;
+	text-align: left;
+	float: left;
+}
+
+#config_nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+#config_nav li {
+	margin: 0;
+	padding: 3px 0px 3px 10px
+}
+
+#config_nav li a {
+	background-color: #ddd;
+	display: block;
+	padding: 5px 0px 5px 5px;
+	color: #666;
+	text-decoration: none;
+	width: 100%;
+	font-size: 9pt;
+	font-weight: bold;
+}
+
+#config_nav li a:hover {
+	background-color: #ccc;
+	color: #000;
+}
+
+#config_nav #nav_active {
+	background-color: #bbb;
+	color: #000;
+}
+
+#config_nav li a img{
+	vertical-align: -2px;
+	padding-right: 5px;
+}
+
+#config_container {
+	background: #bbb;
+	width: 655px;
+	height: 435px;
+	text-align: left;
+	font-size: 10pt;
+	padding: 10px;
+	padding-left: 20px;
+}
+
+#connections_container {
+	background: #bbb;
+	height: 395px;
+	text-align: left;
+	font-size: 10pt;
+	margin: 10px 10px 0px 10px;
+	padding: 10px;
+}
+
+#config_content {
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+}
+
+.left_links {
+	float: left;
+	margin: 5px 0 0 10px;
+}
+
+.left_links a {
+	display: block;
+	background-color: #ddd;
+	color: #666;
+	text-decoration: none;
+	font-size: 9pt;
+	font-weight: bold;
+	padding: 2px 5px;
+}
+
+.left_links a:hover {
+	background-color: #bbb;
+	color: #000;
+}
+
+.left_links a img {
+	vertical-align: middle;
+	padding-right: 5px;
+}
+
+.config_margin {
+	margin: 5px 10px 0 115px;
+}
+
+.right_links {
+	float: right;
+	margin: 5px 10px 0 0;
+}
+
+.right_links a {
+	display: block;
+	background-color: #ddd;
+	color: #666;
+	text-decoration: none;
+	font-size: 9pt;
+	font-weight: bold;
+	padding: 2px 5px;
+}
+
+.right_links a:hover {
+	background-color: #bbb;
+	color: #000;
+}
+
+.right_links a img {
+	vertical-align: middle;
+	padding-right: 5px;
+}
+
+#save_button {
+	float: right;
+	margin: 6px 10px 0 0;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
 	G R A Y B O X
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 #GB_overlay {
-	background-image: url(../images/gb_overlay.png); 
+	background-image: url(../images/gb_overlay.png);
 	position: absolute;
 	margin: auto;
 	top: 0;
@@ -405,29 +577,30 @@ h3 {
 	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/greybox_overlay.png", sizingMethod="scale");
 }
 #GB_window {
-	top: 10px;
+	top: 50px;
 	left: 0px;
 	position: absolute;
-	background: #fff;
-	border: 1px solid #aaa;
-	overflow: auto;
+	background: #dadada;
+	border: 1px solid #000;
 	width: 400px;
 	height: 400px;
 	z-index: 150;
 }
 #GB_frame {
 	border: 0;
-	overflow: auto;
 	width: 100%;
 	height: 378px;
 }
 #GB_caption {
-	font: 1.2em bold Verdana, Arial, Helvetica, sans-serif;
+	font: 16pt bold Verdana, Arial, Helvetica, sans-serif;
 	color: #fff;
-	background: #888;
-	padding: 2px 0 2px 5px;
+	background: #dadada;
+	background-image: url(../images/config_header.png);
+	height: 34px;
+	padding: 2px 10px 0px 10px;
 	margin: 0;
 	text-align: left;
+	font-weight: bold;
 }
 #GB_window img {
 	position: absolute;
@@ -525,7 +698,7 @@ h3 {
 
 /* Clearfix
 ----------------------------------------------------------- */
-#topbar:after, 
+#topbar:after,
 .subMenu:after {
 	content: " ";
 	clear: both;
@@ -561,26 +734,37 @@ h3 {
 
 
 .history_Par2 {
-	padding-left: 	16px;
-	margin-left:	1px;
+	padding-bottom: 16px;
+	padding-left: 	8px;
+	padding-right: 	8px;
 	background: 	url(../images/hv_par2.png) no-repeat;
 }
 .history_Join {
-	padding-left: 	16px;
-	margin-left:	1px;
+	padding-bottom: 16px;
+	padding-left: 	8px;
+	padding-right: 	8px;
 	background: 	url(../images/hv_join.png) no-repeat;
 }
 .history_Unrar {
-	padding-left: 	16px;
-	margin-left:	1px;
+	padding-bottom: 16px;
+	padding-left: 	8px;
+	padding-right: 	8px;
 	background: 	url(../images/hv_unrar.png) no-repeat;
 }
 .history_Unzip {
-	padding-left: 	16px;
-	margin-left:	1px;
+	padding-bottom: 16px;
+	padding-left: 	8px;
+	padding-right: 	8px;
 	background: 	url(../images/hv_unzip.png) no-repeat;
 }
+.history_Del {
+	padding-bottom: 16px;
+	padding-left: 	8px;
+	padding-right: 	8px;
+	background: 	url(../images/hv_del.png) no-repeat;
+}
 .history_loading {
+	padding-bottom: 16px;
 	padding-left: 	16px;
 	margin-left:	1px;
 	background: 	url(../images/h_postprocessing.gif) no-repeat;
@@ -603,34 +787,31 @@ h3 {
 
 
 .layoutContainer {
-	float: left;
+	display:inline;
+	margin-right:32px;
 }
 .layoutContainer strong {
-	float: left;
 	margin-top: 3px;
 	margin-right: 8px;
 }
 .layoutContainer img {
 	margin: 3px 4px 0;
-	float: left;
 }
 
 
 
 .sliderContainer {
-	float: left;
-	position: relative;
+	display:inline;
 	margin: 3px 15px;
+	float: left;
 }
 .sliderContainer .refreshTitle {
-	float: left;
 	margin-right: 10px;
 	font-weight: bold;
 	color: #333333;
+	display:inline;
 }
 .sliderContainer .refreshSlider {
-	display: block;
-	float: left;
 	width: 316px;
 	height: 16px;
 	position: relative;
@@ -641,27 +822,26 @@ h3 {
 	width: 40px;
 	height: 16px;
 	background-image: url(../images/o_refresh_handle.png);
-	position: absolute;
 	font-size: 1px;
 	overflow: hidden;
 	border: none;
 	position: relative;
 	z-index: 2;
-	float:left;
 }
 .sliderContainer .refreshRate {
-	float: left;
+	display:inline;
 	margin-left: 10px;
 }
 
 
 .shutdownContainer {
-	float: left;
-	margin-top: 4px;
-	margin-bottom: 4px;
+	display:inline;
+	margin: 4px;
+	margin-right: 32px;
+	float: right;
 }
 .shutdownContainer a {
-	color: #FFFFFF;
+	color: #000;
 	text-decoration: none;
 	font-weight: bold;
 }

@@ -1,143 +1,89 @@
-                                SABnzbd+ v0.3.0rc3
-								
--------------------------------------------------------------------------------
-0) LICENSE
--------------------------------------------------------------------------------
+                                SABnzbd+ v0.3.0
 
-Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
-          2007 The ShyPike <shypike@users.sourceforge.net>
+*************************************
+*** This is SABnzbd+ 0.3.0 Final. ***
+*************************************
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Read carefully. Major changes from previous releases.
+New users, also read the file INSTALL.txt
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+There is an extensive Wiki on the use of SABnzbd+ on sf.net:
+http://sabnzbdplus.wiki.sourceforge.net/
 
 
--------------------------------------------------------------------------------
-1) INSTALL pre-built Win32 binaries
--------------------------------------------------------------------------------
-Self-unpack the pre-build version to any folder of your liking.
-Start the SABnzbd.exe program.
-Within 5-10 seconds your web browser will start and show the user interface.
-Use the "Help" button in the web-interface to be directed to the Help Wiki
-on SourceForge.net
+*******************************
+*** Where are my downloads? ***
+*******************************
+Windows:
+    SABnzbd will create a folder in "My Documents", called "Downloads".
+Unix/Linux/OSX:
+    SABnzbd will create a folder in $HOME, called "Downloads".
+This folder contains the folders "incomplete" and "complete".
+"complete" will contain the end result of the downloads.
+(You may change this in the configuration screens.)
 
 
--------------------------------------------------------------------------------
-2) INSTALL with only sources
--------------------------------------------------------------------------------
+**************************************
+*** Upgrading from 0.2.5 and 0.2.7 ***
+**************************************
+If you want, you can copy your existing sabnzbd.ini file to the new program dir.
+This way you keep all your settings.
 
-You need to have Python installed and some modules.
+If you have an unfinished download queue, finish it first with 0.2.5/0.2.7.
+This release cannot re-use the queue!
 
-Unix/Linux/OSX
-    Python-2.4.4            http://www.python.org
-    cElementTree-1.0.5      http://effbot.org/downloads/
-OR
-    Python-2.5.1            http://www.python.org
-
-Windows
-    Python-2.5.1            http://www.activestate.com
-
-Essential modules
-    CherryPy-2.2.1          http://www.cherrypy.org
-    cheetah-2.0.1           http://www.cheetahtemplate.org/
-    elementtree-1.2.6       http://effbot.org/downloads/
-    yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
-                            http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
-    par2cmdline >= 0.4      http://parchive.sourceforge.net/
-
-Optional modules
-    unrar >= 3.6.6          http://www.rarlab.com/rar_add.htm
-    unzip >= 5.5.2          http://www.info-zip.org/
-    feedparser >= 4.1       http://feedparser.org/
+If you have existing RSS jobs, you may want to save the file rss.sab.
+Delete all in the cache directory, EXCEPT rss.sab
 
 
-Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
-Start the program from the commandline:
-    python SABnzbd.py
-Within 5-10 seconds your web browser will start and show the user interface.
-Use the "Help" button in the web-interface to be directed to the Help Wiki
-on SourceForge.net
+*********************
+*** Windows Vista ***
+*********************
+SABnzbd is Vista compatible.
+However, you cannot use it in combination with the ZoneAlarm firewall software.
 
 
--------------------------------------------------------------------------------
-3) TROUBLESHOOTING
--------------------------------------------------------------------------------
+*************************************************
+*** Changes to --daemon mode and Win32 binary ***
+*************************************************
+-d or --daemon will now ignore any user profile data.
+This means that the sabnzbd.ini file must either in the program directory
+where SABnzbd.py or SABnzbd.exe is or that the -f option must be used.
 
-Your browser may start up with just an error page.
-
-This means that SABnzbd cannot use the default port 8080 to run its web-server on.
-Try to use another port, you'll need to use the a command window:
-    SABnzbd.exe -s localhost:7777
-or
-    python SABnzbd.py -s localhost:7777
-
-You may of course try other port numbers too.
-
- 
--------------------------------------------------------------------------------
-4) MORE INFORMATION
--------------------------------------------------------------------------------
-
-Visit the WIKI site:
-    http://sabnzbdplus.wiki.sourceforge.net/
-
- 
--------------------------------------------------------------------------------
-5) CREDITS
--------------------------------------------------------------------------------
-
-o) NOVA3, NOVA4 and Plush alternative web interfaces
-   pairofdimes, blis102 Organix Design
-
-o) SABnzbd uses various code from pynewsleecher, newsunpack and grabnzb by: 
-   Freddie (freddie@madcowdisease.org) (http://www.madcowdisease.org/mcd)
-
-o) SABnzbd interface is served by: 
-   cherrypy (http://www.cherrypy.org/)
-
-o) SABnzbd configfile is interpreted by:
-   pythonutils.configObj (http://www.voidspace.org.uk/python/pythonutils.html)
-   
-o) SABnzbd MS Windows .exe is generated by : 
-   py2exe (http://starship.python.net/crew/theller/py2exe/)
-   
-o) SABnzbd Scheduler:
-   kronos (http://www.razorvine.net/downloads.html)
-   
-o) SABnzbd Authentication:
-   MultiAuth (http://projects.dowski.com/view/multiauth)
-   
-o) python yenc module:
-   http://golug.cc.uniud.it/yenc.html
-   
-o) cElementTree and elementtree:
-   http://effbot.org/downloads/
-
-o) sendEmail.exe/pl:
-   Brandon Zehm <caspian@dotconf.net>
-   http://caspian.dotconf.net/
-
-o) Contributors:
-   ShyPike, Freaky, gwynevans, Jigal van Hemert, ...
-
-o) Testers:
-   pairofdimes, rascalli, out2lunch, qwaqwa, duumke,
-   blis102, duz, swi-tch
+For the Win32-binary, the black console windows disappears immediately.
+For troubleshooting, you can use the --console paramater.
+Open a command prompt and type:
+   SABnzbd.exe --console
 
 
--------------------------------------------------------------------------------
-6) FAQ
--------------------------------------------------------------------------------
-o) Q: How can I download a set of *par2/*PAR2 files without activating
-      auto-par2 mode?
-   A: Select None as your PostProcess option while importing your nzb file.
+*************************************************
+*** Overview of essential changes from 0.2.7: ***
+*************************************************
+* Introducing the "smpl" user interface (by swi-tch)
+* Introducing the "Plush" user interface (by pairofdimes)
+* Windows installer added
+* Old 0.2.5 bug fixed: Sometimes corrupted downloads when using memory cache
+* Old 0.2.5 bug fixed: Auto-shutdown will now wait for post-processing to complete
+* Old 0.2.5 bug fixed: Solve memory overflow caused by high download speeds
+* Old 0.2.5 bug fixed: Win32-bin did not always hide console window
+* Option to disconnect from Usenet servers on empty queue and pause
+* Unix --permissions (replaces old umask)
+* Add "api" functions (for automation support)
+* Better detection of Vista and other IPV6 enabled systems
+* Detection and error message about incompatible firewall(s)
+* Panic message in browser for all fatal errors (if enabled)
+* Queuing of v3.newzbin.com queries (because of 5 queries/minute limitation of newzbin)
+* Email notification of completed jobs and disk-full
+* RSS-feed of the History (so you can monitor with an RSS reader)
+* Automatic launch of a web browser showing SABnzbd's web-interface
+* Automatic pause when download volume is almost full
+* On-line Help pages (SABnzbd web-interface contains links)
+* Automatic setup of working directories
+* Allow normal Windows paths (with "\" characters)
+* Automatic addition of missing keyword in older INI files
+* For Windows, store working data in user-profile (Vista compatible)
+* For Unix, store working data in ~/.sabnzbd
+* Timeout setting per server
+* Set logging levels on the commandline (will be stored in INI-file)
+* Get logging files through the web-gui
+* IPV6 compatible

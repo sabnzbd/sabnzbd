@@ -1,0 +1,240 @@
+;
+; Copyright 2007 swi-tch <swi-tch@users.sourceforge.net>
+;                The ShyPike <shypike@users.sourceforge.net>
+;
+; This program is free software; you can redistribute it and/or
+; modify it under the terms of the GNU General Public License
+; as published by the Free Software Foundation; either version 2
+; of the License, or (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program; if not, write to the Free Software
+; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+!include "MUI2.nsh"
+
+
+Name "${SAB_PRODUCT}"
+OutFile "${SAB_FILE}"
+
+
+; Some default compiler settings (uncomment and change at will):
+; SetCompress auto ; (can be off or force)
+; SetDatablockOptimize on ; (can be off)
+; CRCCheck on ; (can be off)
+; AutoCloseWindow false ; (can be true for the window go away automatically at end)
+; ShowInstDetails hide ; (can be show to have them shown, or nevershow to disable)
+; SetDateSave off ; (can be on to have files restored to their orginal date)
+WindowIcon on
+
+InstallDir "$PROGRAMFILES\SABnzbd"
+InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" ""
+DirText "Select the directory to install SABnzbd+ in:"
+
+  ;Vista redirects $SMPROGRAMS to all users without this
+  RequestExecutionLevel admin
+  FileErrorText "If you have no admin rights, try to install into a user directory."
+
+
+;--------------------------------
+;Variables
+
+  Var MUI_TEMP
+  Var STARTMENU_FOLDER
+;--------------------------------
+;Interface Settings
+
+  !define MUI_ABORTWARNING
+
+  !define MUI_ICON "interfaces/Default/templates/static/images/favicon.ico"
+
+  
+;--------------------------------
+;Pages
+
+  !insertmacro MUI_PAGE_LICENSE "license.txt"
+  !define MUI_COMPONENTSPAGE_NODESC 
+  !insertmacro MUI_PAGE_COMPONENTS
+
+  !insertmacro MUI_PAGE_DIRECTORY
+
+  ;Start Menu Folder Page Configuration
+  !define MUI_STARTMENUPAGE_REGISTRY_ROOT "HKCU"
+  !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\SABnzbd"
+  !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
+  !define MUI_STARTMENUPAGE_DEFAULTFOLDER "SABnzbd"
+	
+  !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
+
+
+  !insertmacro MUI_PAGE_INSTFILES
+  !define MUI_FINISHPAGE_RUN
+  !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
+  !define MUI_FINISHPAGE_RUN_TEXT "Start SABnzbd (hidden)"
+  !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
+  !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
+  !define MUI_FINISHPAGE_LINK "View the SABnzbdPlus Wiki"
+  !define MUI_FINISHPAGE_LINK_LOCATION "http://wiki.sabnzbdplus.com/"
+  !insertmacro MUI_PAGE_FINISH
+
+  !insertmacro MUI_UNPAGE_CONFIRM
+  !define MUI_UNPAGE_COMPONENTSPAGE_NODESC
+  !insertmacro MUI_UNPAGE_COMPONENTS
+  !insertmacro MUI_UNPAGE_INSTFILES
+
+Function LaunchLink
+  ExecShell "" "$INSTDIR\SABnzbd.exe"
+FunctionEnd
+
+Function .onInit
+;make sure sabnzbd.exe isnt running..if so abort
+
+        loop:
+        StrCpy $0 "SABnzbd.exe"
+		KillProc::FindProcesses
+        StrCmp $0 "0" endcheck
+        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Please close "sabnzbd.exe" first' IDOK loop IDCANCEL exitinstall
+        exitinstall:
+        Abort
+        endcheck:
+FunctionEnd
+;--------------------------------
+;Languages
+
+  !insertmacro MUI_LANGUAGE "English"
+
+;--------------------------------
+
+Section "SABnzbd" SecDummy
+SetOutPath "$INSTDIR"
+
+
+; add files / whatever that need to be installed here.
+File /r "dist\*"
+
+                   
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" "" "$INSTDIR"
+WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayName" "SABnzbd (remove only)"
+WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "UninstallString" '"$INSTDIR\uninstall.exe"' 
+;WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayIcon" '"$INSTDIR\need-a-.ico"' 
+; write out uninstaller
+WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+
+    ;Create shortcuts
+    CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - SafeMode.lnk" "$INSTDIR\SABnzbd.exe" "--console"
+    ;CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Online.lnk" "http://sabnzbdplus.wiki.sourceforge.net/Introduction"
+    WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://sabnzbdplus.wiki.sourceforge.net/Introduction"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+    
+
+
+  !insertmacro MUI_STARTMENU_WRITE_END
+
+
+SectionEnd ; end of default section
+
+Section "Desktop Icon" desktop
+    CreateShortCut "$DESKTOP\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
+SectionEnd ; end of desktop icon section
+
+; begin uninstall settings/section
+UninstallText "This will uninstall SABnzbd+ from your system"
+
+Section Uninstall
+;make sure sabnzbd.exe isnt running..if so shut it down
+
+    StrCpy $0 "sabnzbd.exe"
+    DetailPrint "Searching for processes called '$0'"
+    KillProc::FindProcesses
+    StrCmp $1 "-1" wooops
+    DetailPrint "-> Found $0 processes"
+
+    StrCmp $0 "0" completed
+    Sleep 1500
+
+    StrCpy $0 "sabnzbd.exe"
+    DetailPrint "Killing all processes called '$0'"
+    KillProc::KillProcesses
+    StrCmp $1 "-1" wooops
+    DetailPrint "-> Killed $0 processes, failed to kill $1 processes"
+
+    Goto completed
+
+    wooops:
+    DetailPrint "-> Error: Something went wrong :-("
+    Abort
+
+    completed:
+    DetailPrint "Process Killed"
+
+
+    ; add delete commands to delete whatever files/registry keys/etc you installed here.
+    Delete "$INSTDIR\uninstall.exe"
+    DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd"
+    DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd"
+
+    ; Delete installation files are carefully as possible
+    ; Using just rmdir /r "$instdir" is considered unsafe!
+    RMDir /r "$INSTDIR\interfaces\Default"
+    RMDir /r "$INSTDIR\interfaces\Plush"
+    RMDir /r "$INSTDIR\interfaces\smpl"
+    RMDir "$INSTDIR\interfaces"
+    RMDir /r "$INSTDIR\win\email"
+    RMDir /r "$INSTDIR\win\par2"
+    RMDir /r "$INSTDIR\win\unrar"
+    RMDir /r "$INSTDIR\win\unzip"
+    RMDir /r "$INSTDIR\win"
+    Delete "$INSTDIR\CHANGELOG.txt"
+    Delete "$INSTDIR\INSTALL.txt"
+    Delete "$INSTDIR\ISSUES.txt"
+    Delete "$INSTDIR\library.zip"
+    Delete "$INSTDIR\LICENSE.txt"
+    Delete "$INSTDIR\msvcr71.dll"
+    Delete "$INSTDIR\PKG-INFO"
+    Delete "$INSTDIR\README.txt"
+    Delete "$INSTDIR\SABnzbd.exe"
+    Delete "$INSTDIR\Sample-PostProc.cmd"
+    Delete "$INSTDIR\w9xpopen.exe"
+    RMDir "$INSTDIR"
+
+    !insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+
+    Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\Uninstall.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
+    Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
+    RMDir  "$SMPROGRAMS\$MUI_TEMP"
+
+    Delete "$DESKTOP\SABnzbd.lnk"
+
+    DeleteRegKey HKEY_CURRENT_USER  "Software\SABnzbd"
+
+
+SectionEnd ; end of uninstall section
+
+Section "un.Delete Settings" DelSettings
+    Delete "$LOCALAPPDATA\sabnzbd\sabnzbd.ini"
+SectionEnd
+
+
+Section "un.Delete Logs" DelLogs
+    RMDir /r "$LOCALAPPDATA\sabnzbd\logs"
+SectionEnd
+
+
+Section "un.Delete Cache" DelCache
+    RMDir /r "$LOCALAPPDATA\sabnzbd\cache"
+    RMDir "$LOCALAPPDATA\sabnzbd"
+SectionEnd
+
+; eof
+;

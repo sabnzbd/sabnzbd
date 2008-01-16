@@ -68,7 +68,8 @@ def prepare_msg(bytes, status, output):
 #
 ################################################################################
 def email_send(header, message):
-    if (sabnzbd.newsunpack.EMAIL_COMMAND != []) and (sabnzbd.EMAIL_SERVER != "") and (sabnzbd.EMAIL_TO != "") and (sabnzbd.EMAIL_FROM != ""):
+    if sabnzbd.newsunpack.EMAIL_COMMAND and sabnzbd.EMAIL_SERVER and \
+        sabnzbd.EMAIL_TO and sabnzbd.EMAIL_FROM:
 
         msgfile, msgname = tempfile.mkstemp()
         os.write(msgfile, message)
@@ -121,13 +122,11 @@ def email_send(header, message):
 #
 ################################################################################
 def email_endjob(filename, status_text):
-    if (sabnzbd.newsunpack.EMAIL_COMMAND != "") and sabnzbd.EMAIL_ENDJOB and (sabnzbd.EMAIL_SERVER != "") and (sabnzbd.EMAIL_TO != "") and (sabnzbd.EMAIL_FROM != ""):
+    name, msgid = SplitFileName(filename)
+    message  = "Hello,\n\nSABnzbd has downloaded \'%s\'.\n\n" % name
+    message += "Finished at %s\n" % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    message += "%s\n\nEnjoy!\n" % status_text
 
-        name, msgid = SplitFileName(filename)
-        message  = "Hello,\n\nSABnzbd has downloaded \'%s\'.\n\n" % name
-        message += "Finished at %s\n" % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-        message += "%s\n\nEnjoy!\n" % status_text
+    header = "SABnzbd has completed job %s" % name
 
-        header = "SABnzbd has completed job %s" % name
-
-        return email_send(header, message)
+    return email_send(header, message)

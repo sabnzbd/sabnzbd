@@ -1,0 +1,166 @@
+
+<!--#if $paused #-->
+<!--#set $kbpersec = "0"#-->
+<!--#end if#-->	
+
+
+<h3>Queue</h3>
+## work out time left til download is finished
+<!--#set $speed = float($kbpersec)#-->
+
+
+
+<!--#if $speed > 0 #-->
+<!--#set $mbleft3 = float($mbleft)*1024 #-->
+<!--#set $mins = ($mbleft3 / $speed)/60 #-->
+<!--#set $mins = round($mins, 0) #-->
+
+<!--#set $hours = $mins / 60 #-->
+<!--#set $hours = int($hours) #-->
+<!--#if $hours > 0 #-->
+<!--#set $mins = $mins -($hours*60)#-->
+<!--#end if#-->
+<!--#set $mins = int($mins) #-->
+<!--#set $minsold = $mins #-->
+
+## values for when there is no download active
+<!--#else if $speed == 0 #-->
+<!--#set $mins = 0 #-->
+<!--#set $hours = 0 #-->
+<!--#end if#-->
+
+
+
+
+
+<!--#if int($cache_limit)#-->
+<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#end if#-->
+<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+
+
+
+
+<center>
+<a href="javascript:lrdual('/sabnzbd/queue/sort_by_avg_age', '/sabnzbd/queue/','1');" >Sort</a>  |
+<!--<a href="javascript:ap('/sabnzbd/queue/sort_by_avg_age', '1');" >Auto-Sort</a> -->
+<a href="javascript:lrdual('/sabnzbd/queue/tog_verbose', '/sabnzbd/queue/','1');" >Toggle verbosity</a> |
+<a href="javascript:lrdual('/sabnzbd/queue/tog_shutdown', '/sabnzbd/queue/','1');">Turn shutdown <!--#if $shutdown then "off" else "on"#--></a>
+</center>
+<br /><!--#if $varExists('slotinfo') then "" else "<br />"#-->
+<!--#if float($mb)>0 #-->
+<!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
+<!--#if $varExists('slotinfo')#--><!--<div id="progressBartop"><div id="percentageBar" style="width: $perc%"></div></div>-->
+<center>$perc% - <span id="left">$mbleft</span>/<span id="total">$mb</span> MB -
+<!--#end if#-->
+<!--#if $hours>0 #-->
+<span id="hours">$hours</span>hours <!--#end if#--><span id= mins>$mins</span>mins
+</center>
+ <!--#end if#--><table id="queue" class="datagrid">
+	<thead>
+    <tr>
+		<!--<th mochi:format="str"></th>-->
+		<th mochi:format="str" id="order">Order</th>
+		<th mochi:format="str">Name</th>
+		<th mochi:format="str">Percentage</th>
+		<th mochi:format="str">Remain/Total</th>
+		<th mochi:format="str">ETA</th>
+		<th mochi:format="str">Age</th>
+	</tr>
+	</thead>
+	<tfoot class="invisible">
+
+		<tr>
+			<td colspan="0"></td>
+		</tr>
+	</tfoot>
+	<tbody>
+  <!--#if $varExists('slotinfo')#--> 
+    <!--#set $odd = False#-->
+    <!--#for $slot in $slotinfo#-->
+        <!--#set $odd = not $odd#-->
+        <tr id="$slot.nzo_id" class="<!--#if $odd then "odd" else "even"#-->">
+		<!--<td><input type="checkbox" "></td>checked-->
+	<td>
+<form> 
+
+           
+            <select onclick="killTimer(timerId)" onchange="javascript:changequeuedetails('queue/'+this.options[this.selectedIndex].value)">
+            <!--#for $i in xrange($noofslots)#-->
+                <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
+            <!--#end for#-->
+            </select><select onclick="killTimer(timerId2)" onchange="javascript:changequeueoptions(this.options[this.selectedIndex].value)">
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=4" <!--#if $slot.unpackopts == "4" then "selected" else ""#-->>RS</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=5" <!--#if $slot.unpackopts == "5" then "selected" else ""#-->>US</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=6" <!--#if $slot.unpackopts == "6" then "selected" else ""#-->>DS</option>
+				</select>
+            
+			<span class="del"> 
+			<a href="javascript:deletequeueitem('$slot.nzo_id');"><img id="delicon" src="/sabnzbd/static/images/32px-Crystal_Clear_action_stop.png" /></a>
+			</form>
+			</td>		
+		
+		
+		<td>
+            <span class="filename"><a href="/sabnzbd/queue/$slot.nzo_id/"><span id="name_$slot.nzo_id">$slot.filename</span></a></span>
+		
+	<td>
+<!--#if float($slot.mb)>0 #-->
+<!--#set $perc = round( (1-(float($slot.mbleft) / float($slot.mb))) * 100, 2)#-->
+<div id="progressBar"><div id="progress_$slot.nzo_id" style="width: $perc%;   position: relative;   background-color: #9bf;   height: 6px;"><!-- --></div></div>
+<!--#end if#-->
+	</td>
+	<td>
+	<span class="pre"> <span id="left_$slot.nzo_id">$slot.mbleft</span>/<span id="total_$slot.nzo_id">$slot.mb</span> MB</span>
+	</td>
+</span>
+<!--#set $eta = "-"#-->
+<!--#if $speed>0 #-->
+<!--#set $eta = $slot.eta#-->
+<!--#end if#-->
+<td>$eta</td>
+<td>$slot.avg_age</td>
+        </tr>
+        <!--#set $oddLine = False#-->
+        <!--#for $line in $slot.finished#-->
+            <!--#set $oddLine = not $oddLine#-->
+            <tr id="finished" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td>Finished</td><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+        <!--#end for#-->
+        <!--#set $oddLine = False#-->
+        <!--#for $line in $slot.active#-->
+            <!--#set $oddLine = not $oddLine#-->
+            <tr id="active" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td><a href="javascript:changequeuedetails('/sabnzbd/queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id')"><img id="delicon" src="/sabnzbd/static/images/32px-Crystal_Clear_action_stop.png" /></a> Active</td><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
+        <!--#end for#-->
+        <!--#set $oddLine = False#-->
+        <!--#for $line in $slot.queued#-->
+            <!--#set $oddLine = not $oddLine#-->
+            <tr id="waiting" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td>Waiting</td><td>$line.filename (set: $line.set)</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+        <!--#end for#-->
+    <!--#end for#--><!--#end if#-->
+    </table>
+	
+
+<!--
+nzbdStatus
+{
+	"paused": 		"$paused",
+	"kbpersec": 	$kbpersec,
+	"mbleft": 		$mbleft,
+	"mb": 			$mb,
+	"noofslots":	$noofslots,
+	"diskspace1": 	$diskspace1,
+	"diskspace2": 	$diskspace2,
+	<!--#if $varExists('slotinfo')#-->"jobs": [<!--#for $slot in $slotinfo#-->
+	{
+		"filename":	"$slot.filename", 
+		"mbleft":	$slot.mbleft,
+		"mb":		$slot.mb, 
+	},
+	<!--#end for#-->]<!--#end if#-->
+}
+-->
+

@@ -2,55 +2,52 @@
 def displayNotices (action):
 	notice = action[3:11]
 	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 ":
-		return '<small class="hvError">&nbsp;' + action[3:] + '&nbsp;</small>'
+		return '<small class="hvError">&rArr;&nbsp;' + action[3:] + '&nbsp;</small><br/>'
 %>
-
-
-
 
 <table class="listingTable" cellspacing="0">
 	<thead>
 		<tr>
-			<th class="first">HISTORY <span>$uptime Uptime</span></th>
+			<th class="first">HISTORY<span><b>$uptime</b><small>&nbsp;Uptime</small></span></th>
 			<th class="last tools">
-				<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>Verbosity</a> | 
-				<a href="#" title="Clear Out the History Display" id="history_purge">Purge</a>
+				<a id="history_purge" title="Clear Out the History Display">Purge</a>&sdot;<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>&crarr;</a>
 			</th>
 		</tr>
 	</thead>
 	<tbody id="historyContent">
-	
-	
-
 		
-		<!--#set $odd = False#-->
-		<!--#if $lines#-->
-		<!--#for $line in $lines #-->
+	<!--#set $odd = False#-->
+	<!--#if $lines#-->
+	<!--#for $line in $lines #-->
 		<!--#set $odd = not $odd#-->
 		<tr class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
-			<td class="first last historyItemTitle" title="Completed at $line.added" colspan="2"<!--#if $line.msgid #-->onClick="window.open('https://v3.newzbin.com/browse/post/$line.msgid/')"<!--#end if#-->>
-				
-				<!--
-				<a href="#" title="View Newzbin Report" target="_blank" class="historyItemInfo">
-					<img src="images/icon_newzbin.png" alt="Info" />
-				</a>
-				-->
-				
-				<span>$line.filename</span>
+			<td class="first last historyItemTitle" title="Completed at $line.added" colspan="2">
 				
 				<!--#if $line.loaded #-->
-				<span class="history_loading"/>
+					<span class="history_loading"/>
 				<!--#end if#-->
+				
+				
+				<span<!--#if $line.msgid #--> onClick="window.open('https://v3.newzbin.com/browse/post/$line.msgid/')" style="cursor:pointer"<!--#end if#-->>$line.filename</span>
+				
 					
 				<!--#if $line.stages#-->
-				<br />
-				<!--#for $stage in $line.stages#-->
-				<!--#for $action in $stage.actions#-->
-				<span title="$action.value | $action.name" class="history_$stage.name">
-					<%=displayNotices(action['value'])%>
-				</span>
-				<!--#end for#-->
-				<!--#end for#-->
+					<div>
+					<!--#for $stage in $line.stages#-->
+						<!--#for $action in $stage.actions#-->
+							<span title='<%= action['value'][3:] %> | <%= action['name'].replace("'","&rsquo;") %>'>
+<%
+if action['name'][:4]=="[DEL":
+	pp = 'Del'
+else:
+	pp = stage['name']
+%>
+								<b class="history_$pp">&#8203;</b>
+								<%=displayNotices(action['value'])%>
+							</span>
+						<!--#end for#-->
+					<!--#end for#-->
+					</div>
 				<!--#end if#-->
 				
 			</td>
@@ -59,18 +56,14 @@ def displayNotices (action):
 		<!--#end if#-->
 		
 		
-		
-
-
-			
 	</tbody>
 	<tfoot>
 		<tr>
 			<td class="first">
-				<span><strong>Total in History:</strong> $total_bytes GB</span>
+				<span><b>$total_bytes</b><small>&nbsp;GB&nbsp;In&nbsp;History</small></span>
 			</td>
 			<td class="last">
-				<span><strong>Total Downloaded:</strong> $bytes_beginning GB</span>
+				<span><b>$bytes_beginning</b><small>&nbsp;GB&nbsp;Downloaded</small></span>
 			</td>
 		</tr>
 	</tfoot>

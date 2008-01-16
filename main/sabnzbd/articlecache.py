@@ -1,5 +1,6 @@
 #!/usr/bin/python -OO
 # Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
+#           2007 The ShyPike <shypike@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -48,8 +49,10 @@ class ArticleCache:
         nzo = nzf.nzo
         
         if nzf.deleted or nzo.deleted:
-            logging.debug("[%s] %s discarded", __NAME__, article)
-            return
+            # Do not discard this article because the
+            # file might still be processed at this moment!!
+            logging.info("[%s] %s would be discarded", __NAME__, article)
+            # return
         
         saved_articles = article.nzf.nzo.saved_articles
         
@@ -126,8 +129,10 @@ class ArticleCache:
         nzo = nzf.nzo
         
         if nzf.deleted or nzo.deleted:
-            logging.debug("[%s] %s discarded", __NAME__, article)
-            return
+            # Do not discard this article because the
+            # file might still be processed at this moment!!
+            logging.info("[%s] %s would be discarded", __NAME__, article)
+            # return
             
         art_id = article.get_art_id()
         if art_id:

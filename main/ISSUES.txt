@@ -1,0 +1,24 @@
+List of known issues.
+
+Sometimes some delay before first download starts.
+
+The dirscan-dir (aka blackhole) will accept only NZB and ZIP-files containing NZB-s.
+Do not put arbitrary other ZIP files in this directory. They will be deleted.
+
+Memory usage can sometimes have high peaks. This makes using SABnzbd on very low
+memory systems (eg a SAN device) a challenge.
+
+SABnzbd is not compatible with the ZoneAlarm firewall.
+Comodo and the Windows firewall work fine.
+
+The Plush interface is a heavy load on the browser when the queue is very large.
+
+The Plush and SMPL user interfaces may have some issues when used on IE6 or IE7.
+This is mainly due to the fact that Microsoft keeps ignoring HTML standards.
+Also IE6 en IE7 are very much incompatible.
+FireFox 2 is the best browser to use for interfaces other than Default.
+
+Sometimes logging stops. This is a notorious bug in Python logging. SABnzbd will
+function as normal. If you run from sources or use the --console option with the
+Win32-binary, you will see that logging continues in the console window, but
+nothing will be written to the log-files.

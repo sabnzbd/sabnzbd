@@ -17,7 +17,7 @@
 </span>
 <span class="SubMenu">
 <!--#if $paused then "<a href=\"./resume\">Resume</a>" else "<a href=\"./pause\">Pause</a>"#--> |
-<a href="./shutdown">Shutdown</a>
+<a href="./shutdown" onclick="javascript:return confirm('Are you sure you want to shutdown SABnzbd?')">Shutdown</a>
 </span>
 <h2>Add new downloads</h2>
 <!--#if $varExists('newzbinDetails')#-->
@@ -28,12 +28,12 @@
       <input type="text" name="id">
             <select name="pp">
             <option value="0">None</option>
-            <option value="1" selected>+Repair</option>
+            <option value="1">+Repair</option>
             <option value="2">+Unpack</option>
             <option value="3">+Delete</option>
             <option value="4">R+Script</option>
             <option value="5">U+Script</option>
-            <option value="6">D+Script</option>
+            <option value="6" selected>D+Script</option>
             </select>
             <br>
             <input type="submit" value="Add">
@@ -48,12 +48,12 @@
     <input type="text" name="url">
             <select name="pp">
             <option value="0">None</option>
-            <option value="1" selected>+Repair</option>
+            <option value="1">+Repair</option>
             <option value="2">+Unpack</option>
             <option value="3">+Delete</option>
             <option value="4">R+Script</option>
             <option value="5">U+Script</option>
-            <option value="6">D+Script</option>
+            <option value="6" selected>D+Script</option>
         </select>
         <br>
         <input type="submit" value="Add">
@@ -67,12 +67,12 @@
       <input type="file" name="nzbfile">
             <select name="pp">
             <option value="0">None</option>
-            <option value="1" selected>+Repair</option>
+            <option value="1">+Repair</option>
             <option value="2">+Unpack</option>
             <option value="3">+Delete</option>
             <option value="4">R+Script</option>
             <option value="5">U+Script</option>
-            <option value="6">D+Script</option>
+            <option value="6" selected>D+Script</option>
         </select>
         <br>
       <input type="submit" value="Add">
@@ -92,7 +92,7 @@
 <!--#set $mbleftrnd = str(int(float($mbleft)))#-->
 <!--#set $mbrnd = str(int(float($mb)))#-->
 <div id='SABData' style='visibility: hidden'>
-    <b>&nbsp;SAB:</b> <!--#if $paused then "<blink><b>PAUSED</b></blink>" else $kbpersecrnd + " KB/s"#--> <b>Q:</b> $mbleftrnd/$mbrnd MB<b>&nbsp; Comp:</b> $diskspace2 GB 
+    <b>&nbsp;SAB:</b> <!--#if $paused then "<blink><b>PAUSED</b></blink>" else $kbpersecrnd + " KB/s"#--> <b>Q:</b> $mbleftrnd/$mbrnd MB<b>&nbsp; Comp:</b> $diskspace2 GB
 </div>
 <!--#if $warning#-->
     <h2>WARNING</h2>

@@ -6,6 +6,7 @@ def getTimeLeft (mbleft, mb, kbpersec):
 	kbpersec = float(kbpersec)
 	if kbpersec >= 1 and mb > 0:
 		kbleft = mbleft * 1024
+		daysleft = 0
 		hoursleft = 0
 		minsleft = 0
 		secsleft = kbleft / kbpersec
@@ -16,9 +17,16 @@ def getTimeLeft (mbleft, mb, kbpersec):
 		if minsleft >= 60:
 			hoursleft = minsleft/60
 			minsleft = minsleft%60
-		hoursleft = str(int(hoursleft))
+		daysleft = int(hoursleft/24)
+		hoursleft= str(int(hoursleft-daysleft*24))
+		daysleft = str(daysleft)
 		minsleft = str(int(minsleft))
 		secsleft = str(int(secsleft))
+		# figure out days
+		if daysleft == '0':
+			daysleft=''
+		else:
+			daysleft += 'd&sdot;'
 		# add preceding 0s
 		if len(hoursleft) == 1:
 			hoursleft = '0'+hoursleft
@@ -26,29 +34,17 @@ def getTimeLeft (mbleft, mb, kbpersec):
 			minsleft = '0'+minsleft
 		if len(secsleft) == 1:
 			secsleft = '0'+secsleft
-		timeleft = hoursleft+'<big>:</big>'+minsleft+'<big>:</big>'+secsleft
+		timeleft = daysleft+hoursleft+':'+minsleft+':'+secsleft
 	return timeleft
 def drawProgressBar (mbleft, mb):
 	mbleft = float(mbleft)
 	mb = float(mb)
-	if mb == 0:
-		return #'<span class="progressBar percentImage1"><img title="0%" src="static/images/bg_progress_bar_empty.png" style="background-position: -120px 0px;"/></span>'
+	if mb == 0: # don't divide by zero
+		return
 	percentage = int(100 - mbleft / mb * 100)
 	postion =  int(120 - 120.0 / 100.0 * percentage)
-	if percentage >= 75:
-		imgnum = "1" # green
-	elif percentage >= 50:
-		imgnum = "2" # yellow
-	elif percentage >= 25:
-		imgnum = "3" # orange
-	else:
-		imgnum = "4" # red
 	return '<div class="progressBarProgress" style="width: '+str(percentage)+'%;"><span>'+str(percentage)+'%</span></div>'
 %> 
-
-
-
-
 
 
 <!--#set $x_kbpersec = $kbpersec #-->
@@ -57,34 +53,20 @@ def drawProgressBar (mbleft, mb):
 <table class="listingTable" cellspacing="0">
 	<thead>
 		<tr>
-			<th class="first">QUEUE <span id="stats_kbpersec"><%=int(float(x_kbpersec))%> KB/s </span><span style="display:none" id="stats_noofslots">$noofslots</span></th>
+			<th class="first">QUEUE<span><b id="stats_kbpersec"><%=int(float(x_kbpersec))%></b><small>&nbsp;KB/s</small></span><span><b id="stats_eta"><%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></b><small>&nbsp;Left</small><span style="display:none" id="stats_noofslots">$noofslots</span></th>
 			<th class="last tools" colspan="5">
-				<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#end if#--> title="Toggle Verbosity On">Verbosity</a> | 
-				<a id="pause_resume"<!--#if $paused#--> class="active" title="Resume the Queue"<!--#end if#--> title="Pause the Queue">Pause</a> |
-				<a id="queue_sortage" title="Sort by Average File Age">Sort by Age</a> 
-				<!--#if $nt and $shutdown#-->
-				 | <a id="queue_shutdown" class="active" title="Toggle Shutdown of Computer upon Queue Completion">Shutdown</a>
-				<!--#else if $nt#-->
-				 | <a id="queue_shutdown" title="Toggle Shutdown of Computer upon Queue Completion">Shutdown</a>
-				<!--#end if#-->
+			<a id="pause_resume"<!--#if $paused#--> class="active" title="Resume the Queue"<!--#end if#--> title="Pause the Queue">Pause</a>&sdot;<a id="queue_sortage" title="Sort by Average File Age">Sort</a><!--#if $nt and $shutdown#-->&sdot;<a id="#queue_shutdown" title="Shutting down the entire computer upon queue completion" class="active">SHUTDOWN</a><!--#end if#-->&sdot;<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#end if#--> title="Toggle Verbosity On">&crarr;</a>
 			</th>
 		</tr>
 	</thead>
 	<tbody id="queueContent">
 
-
-
-
-
-
-
-
-		<!--#set $odd = False#-->
-		<!--#if $varExists('slotinfo')#-->
-		<!--#for $slot in $slotinfo#-->
+	<!--#set $odd = False#-->
+	<!--#if $varExists('slotinfo')#-->
+	<!--#for $slot in $slotinfo#-->
 		<!--#set $odd = not $odd#-->
 		<tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
-			<td class="first itemTitle" title="Average File Age: $slot.avg_age" onclick="window.location='queue/$slot.nzo_id/';">
+			<td class="first itemTitle" title="Average File Age: $slot.avg_age" onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">
 				<span>$slot.filename</span>
 			</td>
 			<td>
@@ -107,14 +89,14 @@ def drawProgressBar (mbleft, mb):
 				<!--#end for#-->
 				</select>
 				
-				<select class="post-proc" title="Post-Processing Options" onchange="ChangeProcessingOption($slot.nzo_id, this.selectedIndex);">
+				<select class="post-proc" title="Post-Processing Options" onchange="ChangeProcessingOption('$slot.nzo_id', this.options[this.selectedIndex].value);">
 					<option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->title="Do not post-process the NZB file set">-</option>
 					<option value="1" <!--#if $slot.unpackopts == "1" then "selected " else ""#-->title="Repair the NZB file set with PAR2 files">R</option>
 					<option value="2" <!--#if $slot.unpackopts == "2" then "selected " else ""#-->title="Repair &amp; Unpack the NZB file set">U</option>
 					<option value="3" <!--#if $slot.unpackopts == "3" then "selected " else ""#-->title="Repair, Unpack, &amp; Delete the unneeded remainder of the NZB file set">D</option>
-					<option value="4" <!--#if $slot.unpackopts == "4" then "selected " else ""#-->title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">R+</option>
-					<option value="5" <!--#if $slot.unpackopts == "5" then "selected " else ""#-->title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">U+</option>
-					<option value="6" <!--#if $slot.unpackopts == "6" then "selected " else ""#-->title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">D+</option>
+					<option value="4" <!--#if $slot.unpackopts == "4" then "selected " else ""#-->title="(+Script) Repair the NZB file set with PAR2 files">R+S</option>
+					<option value="5" <!--#if $slot.unpackopts == "5" then "selected " else ""#-->title="(+Script) Repair &amp; Unpack the NZB file set">U+S</option>
+					<option value="6" <!--#if $slot.unpackopts == "6" then "selected " else ""#-->title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">D+S</option>
 				</select>&nbsp;
 			</td>
 			<td class="last itemDelete">
@@ -123,16 +105,12 @@ def drawProgressBar (mbleft, mb):
 		</tr>
 	
 	
-	
-	
-	
 		<!--#if $slot.finished or $slot.active or $slot.queued#-->
 		<!-- Post Processing : Begin -->
 		<tr class="postProcessing">
 			<td class="first last" colspan="6">
 				<table cellspacing="0">
 					<tbody>
-					
 					
 						<!--#if $slot.finished#-->
 						<!--#for $line in $slot.finished#-->
@@ -145,7 +123,7 @@ def drawProgressBar (mbleft, mb):
 						<!--#end for#-->
 						<!--#end if#-->
 
-						
+
 						<!--#if $slot.active#-->
 						<!--#for $line in $slot.active#--> 
 						<tr class="active">
@@ -153,11 +131,11 @@ def drawProgressBar (mbleft, mb):
 							<td class="processItemTitle" title="Age: $line.age">$line.filename</td>
 							<td>$line.mbleft of $line.mb MB</td>
 							<td class="processItemMove">
-								<a class="queue_top" title="Move to Top" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Top');">&laquo;</a>
-								<a class="queue_up" title="Move Up one slot" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Up');">&lt;</a>
-								<a class="queue_down" title="Move Down one slot" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Down');">&gt;</a>
-								<a class="queue_bottom" title="Move to Bottom" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Bottom');">&raquo;</a>
-								<a class="queue_drop" title="Remove File" onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Drop');">X</a>
+								<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Top');" class="queue_top">&laquo;</a>
+								<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Up');" class="queue_up">&lsaquo;</a>
+								<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Down');" class="queue_down">&rsaquo;</a>
+								<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Bottom');" class="queue_bottom">&raquo;</a>
+								<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Drop');" class="queue_drop">&otimes;</a>
 							</td>
 						</tr>
 						<!--#end for#-->
@@ -175,7 +153,6 @@ def drawProgressBar (mbleft, mb):
 						<!--#end for#-->
 						<!--#end if#-->	
 						
-						
 					</tbody>
 				</table>
 			</td>
@@ -183,51 +160,24 @@ def drawProgressBar (mbleft, mb):
 		<!-- Post Processing : End -->
 		<!--#end if#-->
 		
-	
-	
-	
-	
-		<!--#end for#-->
-		<!--#end if#-->
-		
+	<!--#end for#-->
+	<!--#end if#-->
 		
 	</tbody>
-	
 	
 	<tfoot>
 		<tr>
 			<td class="first" colspan="3">
-				<span><strong>Total Time Left:</strong> <%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></span>
-				<span><strong>Total Remaining:</strong> <%=int(float(x_mbleft))%> / <%=int(float(x_mb))%> MB</span>
+				<span><b><%=int(float(x_mbleft))%>&nbsp;of&nbsp;<%=int(float(x_mb))%></b><small>&nbsp;MB&nbsp;Remaining</small></span>
 			</td>
 			<td class="last" colspan="3">
-				<span><strong>Free Space (Temp):</strong> $diskspace1 GB</span>
-				<span><strong>Free Space (Comp):</strong> $diskspace2 GB</span>
+				<!--#if $diskspace1 == $diskspace2#-->
+					<span><b>$diskspace1</b><small>&nbsp;GB&nbsp;Free Space</small></span>
+				<!--#else#-->
+					<span><small>Free&nbsp;Space:</small>&nbsp;<b>$diskspace1</b><small>&nbsp;GB&nbsp;(Temp)</small>&nbsp;<b>$diskspace2</b><small>&nbsp;GB&nbsp;(Comp)</small></span>
+				<!--#end if#-->
 			</td>
 		</tr>
 	</tfoot>
 
 </table>
-
-
-
-<!--
-nzbdStatus
-{
-	"paused": 		"$paused",
-	"kbpersec": 	$kbpersec,
-	"mbleft": 		$mbleft,
-	"mb": 			$mb,
-	"noofslots":	$noofslots,
-	"diskspace1": 	$diskspace1,
-	"diskspace2": 	$diskspace2,
-	<!--#if $varExists('slotinfo')#-->"jobs": [<!--#for $slot in $slotinfo#-->
-	{
-		"filename":	"$slot.filename", 
-		"mbleft":	$slot.mbleft,
-		"mb":		$slot.mb, 
-	},
-	<!--#end for#-->]<!--#end if#-->
-}
--->
-

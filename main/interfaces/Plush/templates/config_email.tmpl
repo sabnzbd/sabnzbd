@@ -2,76 +2,103 @@
 <html>
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css?version=$web_name"/>
+	<script type="text/javascript" src="../../static/javascripts/jquery-1.2.1.pack.js"></script>
+	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/plush.css" media="screen"/>
 </head>
+
+<style>
+<!--
+	body {background: #ddd;}
+-->
+</style>
+
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
-<span class="SubMenu">
-<a href="../general">General</a> | 
-<a href="../directories">Directories</a> | 
-<a href="../switches">Switches</a> |
-<a href="../server">Servers</a> | 
-<a href="../scheduling">Scheduling</a> | 
-<a href="../rss">RSS</a> |
-<a class="current" href="./">Email</a> |
-<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Email" target="_blank">Help</a>
-</span>
-<h2>Email Notification</h2>
+
+<div id="config_nav">
+	<ul>
+		<li><a class="config_menu" href="../../connections"><img src="../../static/images/icon_config_connections.png" />Connections</a></li>
+		<li><a class="config_menu" href="../general"><img src="../../static/images/icon_config_general.png" />General</a></li>
+		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
+		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
+		<li><a class="config_menu" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
+		<li><a class="config_menu" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
+		<li><a class="config_menu" id="nav_active" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
+	</ul>
+</div>
+
+<div id="config_container" class="config_margin">
+	<div id="config_content">
+
+<!-- ************************************
+	 		PAGE CONTENT IS BELOW
+     ************************************ -->
+
 <form action="saveEmail" method="post">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Email Options</legend>
 <strong>End-of-job notifications:</strong><br>
-Send email when job is completed.<br>
+<small>Send email when job is completed</small><br>
 <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> No
 <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> /> Yes
 <br>
 <br>
 <strong>Disk full notifications:</strong><br>
-Send email when disk is full and SABnzbd is paused.<br>
+<small>Send email when disk is full and SABnzbd is paused</small><br>
 <input type="radio" name="email_full" value="0" <!--#if $email_full == 0 then "checked=1" else ""#--> /> No
 <input type="radio" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> Yes
 <br>
 <br>
 </fieldset>
-</div>
 <fieldset class="EntryFieldSet">
 <legend>Email Account Settings</legend>
 <strong>SMTP server:</strong><br>
-Set your ISP's server for outgoing email.<br>
-<input type="text" size="35" name="email_server" value=$email_server>
+<small>Set your ISP's server for outgoing email</small><br>
+<input type="text" size="35" name="email_server" value="$email_server">
 <br>
 <br>
 <strong>Email recipient:</strong><br>
-Email address to send the email to.<br>
-<input type="text" size="35" name="email_to" value=$email_to>
+<small>Email address to send the email to</small><br>
+<input type="text" size="35" name="email_to" value="$email_to">
 <br>
 <br>
 <strong>Email sender:</strong><br>
-Who should we say sent the email?<br>
-<input type="text" size="35" name="email_from" value=$email_from>
+<small>Who should we say sent the email?</small><br>
+<input type="text" size="35" name="email_from" value="$email_from">
 <br>
 <br>
 <strong>OPTIONAL: Account name:</strong><br>
-For authenticated email, account name.<br>
-<input type="text" size="35" name="email_account" value=$email_account>
+<small>For authenticated email, account name</small><br>
+<input type="text" size="35" name="email_account" value="$email_account">
 <br>
 <br>
 <strong>OPTIONAL: Account password:</strong><br>
-For authenticated email, password.<br>
-<input type="password" size="35" name="email_pwd" value=$email_pwd>
+<small>For authenticated email, password</small><br>
+<input type="password" size="35" name="email_pwd" value="$email_pwd">
 </fieldset>
 </div>
-<p><input type="submit" value="Save Changes"></p>
-</form>
-<div class="footer">
-<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
-<!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
-<!--#end if#-->
-<!--#if $new_release#-->
-    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
-<!--#end if#-->
+
+<!-- ************************************
+	 		PAGE CONTENT IS ABOVE
+     ************************************ -->
+	</div>
 </div>
+
+<div class="left_links config_margin">
+	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+Email"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+</div>
+
+<input id="save_button" type="submit" value="Save Changes">
+</form>
+
+<script language="javascript">
+	\$('.config_menu').corner("round tl bl");
+	\$('#config_container').corner("round");
+	\$('#help').corner("round");
+	
+</script>
+
 </body>
 </html>

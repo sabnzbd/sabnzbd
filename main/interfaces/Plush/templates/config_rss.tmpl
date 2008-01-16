@@ -2,52 +2,70 @@
 <html>
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css?version=$web_name"/>
+	<script type="text/javascript" src="../../static/javascripts/jquery-1.2.1.pack.js"></script>
+	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/plush.css" media="screen"/>
 </head>
+
+<style>
+<!--
+	body {background: #ddd;}
+-->
+</style>
+
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
-<span class="SubMenu">
-<a href="../general">General</a> | 
-<a href="../directories">Directories</a> | 
-<a href="../switches">Switches</a> | 
-<a href="../server">Servers</a> | 
-<a href="../scheduling">Scheduling</a> | 
-<a class="current" href="./">RSS</a> |
-<a href="../email">Email</a> |
-<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+RSS/" target="_blank">Help</a>
-</span>
-<h2>EXPERIMENTAL RSS Configuration</h2>
+
+<div id="config_nav">
+	<ul>
+		<li><a class="config_menu" href="../../connections"><img src="../../static/images/icon_config_connections.png" />Connections</a></li>
+		<li><a class="config_menu" href="../general"><img src="../../static/images/icon_config_general.png" />General</a></li>
+		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
+		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
+		<li><a class="config_menu" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
+		<li><a class="config_menu" id="nav_active" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
+		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
+	</ul>
+</div>
+
+<div id="config_container" class="config_margin">
+	<div id="config_content">
+
+<!-- ************************************
+	 		PAGE CONTENT IS BELOW
+     ************************************ -->
+
 <!--#if $have_feedparser#-->
 <div class="EntryBlock">
   <form action="add_rss_feed" method="get">
     <fieldset class="EntryFieldSet">
     <legend>RSS feed settings</legend>
       <b>RSS-Feed URI:</b><br>
-      <input type="text" size="100" name="uri"><br><br>
+      <input type="text" size="80" name="uri"><br><br>
       
       <b>Text Filter:</b><br>
-      (Basic) text based filter. A single '*' matches everything.
+      <small>(Basic) text based filter &mdash; A single '*' matches everything</small>
       <br>
-      <input type="text" size="100" name="text_filter">
+      <input type="text" size="80" name="text_filter">
       <br>
       <br>
       
       <b>Regex Filter:</b><br>
-      Regular Expression filter. Overwrites text filter.
+      <small>Regular Expression filter &mdash; Overwrites text filter</small>
       <br>
-      <input type="text" size="100" name="re_filter">
+      <input type="text" size="80" name="re_filter">
       <br>
       <br>
       
       <b>Match Multiple:</b><br>
-      Match this filter more than once?
+      <small>Match this filter more than once?</small>
       <br>
       <input type="radio" name="match_multiple" value="0"> No
       <input type="radio" name="match_multiple" value="1" checked=1> Yes
       <br>
       <br>
       
-      <b>Unpack Opts:</b><br>
+      <b>Unpack Opts:</b><br><small>
       <input type="radio" name="unpack_opts" value="0"> None
       <input type="radio" name="unpack_opts" value="1" checked=1> +Repair
       <input type="radio" name="unpack_opts" value="2"> +Unpack
@@ -56,14 +74,12 @@
       <input type="radio" name="unpack_opts" value="5"> Unpack+Script
       <input type="radio" name="unpack_opts" value="6"> Delete+Script
       <br>
-      <br>
+      <br></small>
       
       <input type="submit" value="Add">
     </fieldset>
   </form>
 </div>
-<br>
-<br>
     <!--#if $varExists('uris') and $uris#-->
         <table>
             <tr><th></th><th>URL/Match Name</th></tr>
@@ -99,14 +115,23 @@
         <b>feedparser module missing<b>
     </p>
 <!--#end if#-->
-<div class="footer">
-<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
-<!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
-<!--#end if#-->
-<!--#if $new_release#-->
-    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
-<!--#end if#-->
+
+<!-- ************************************
+	 		PAGE CONTENT IS ABOVE
+     ************************************ -->
+	</div>
 </div>
+
+<div class="left_links config_margin">
+	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+RSS"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+</div>
+
+<script language="javascript">
+	\$('.config_menu').corner("round tl bl");
+	\$('#config_container').corner("round");
+	\$('#help').corner("round");
+	
+</script>
+
 </body>
 </html>

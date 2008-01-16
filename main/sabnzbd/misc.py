@@ -1,16 +1,17 @@
 #!/usr/bin/python -OO
 # Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
+#           2007 The ShyPike <shypike@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -46,30 +47,31 @@ PANIC_NONE  = 0
 PANIC_PORT  = 1
 PANIC_TEMPL = 2
 PANIC_QUEUE = 3
-PANIC_OTHER = 4
+PANIC_FWALL = 4
+PANIC_OTHER = 5
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
     def __init__(self, dirscan_dir, dirscan_speed, repair, unpack, delete, script):
         Thread.__init__(self)
-        
+
         self.dirscan_dir = dirscan_dir
         self.dirscan_speed = dirscan_speed
-        
+
         self.r = repair
         self.u = unpack
         self.d = delete
         self.s = script
-        
+
         self.shutdown = False
-        
+
     def stop(self):
         logging.info('[%s] Dirscanner shutting down', __NAME__)
         self.shutdown = True
-        
+
     def run(self):
         logging.info('[%s] Dirscanner starting up', __NAME__)
-        
+
         while not self.shutdown:
 
             # Use variable scan delay
@@ -80,7 +82,7 @@ class DirScanner(Thread):
 
             try:
                 files = os.listdir(self.dirscan_dir)
-                
+
                 for filename in files:
                     path = os.path.join(self.dirscan_dir, filename)
                     root, ext = os.path.splitext(path)
@@ -90,7 +92,7 @@ class DirScanner(Thread):
                     if candidate and stat_tuple.st_size > 0:
                         try:
                             logging.info('[%s] Trying to import %s', __NAME__, path)
-                            
+
                             # Wait until the attributes are stable for 1 second
                             while 1:
                                 time.sleep(1.0)
@@ -99,12 +101,12 @@ class DirScanner(Thread):
                                     break
                                 else:
                                     stat_tuple = stat_tuple_tmp
-                                    
+
                             if ext.lower() == '.nzb':
                                 f = open(path, 'rb')
                                 data = f.read()
                                 f.close()
-                                sabnzbd.add_nzo(NzbObject(filename, self.r, self.u, 
+                                sabnzbd.add_nzo(NzbObject(filename, self.r, self.u,
                                                           self.d, self.s, data))
                                 sabnzbd.backup_nzb(filename, data)
                             else:
@@ -114,7 +116,7 @@ class DirScanner(Thread):
                                         data = zf.read(name)
                                         name = os.path.basename(name)
                                         if data:
-                                            sabnzbd.add_nzo(NzbObject(name, self.r, self.u, 
+                                            sabnzbd.add_nzo(NzbObject(name, self.r, self.u,
                                                                       self.d, self.s, data))
                                             sabnzbd.backup_nzb(name, data)
                                 finally:
@@ -123,12 +125,12 @@ class DirScanner(Thread):
                             try:
                                 os.remove(path)
                             except:
-                                logging.exception("[%s] Error removing %s", 
+                                logging.exception("[%s] Error removing %s",
                                                   __NAME__, path)
             except:
                 logging.exception("Error importing")
 
-                
+
 #------------------------------------------------------------------------------
 # Thread for newzbin msgid queue
 #
@@ -159,38 +161,38 @@ class MSGIDGrabber(Thread):
             else:
                 sabnzbd.remove_nzo(nzo.nzo_id, False)
 
-#------------------------------------------------------------------------------          
+#------------------------------------------------------------------------------
 class URLGrabber(Thread):
     def __init__(self, url, future_nzo):
         Thread.__init__(self)
         self.url = url
         self.future_nzo = future_nzo
-    
+
     def run(self):
         try:
             opener = urllib.FancyURLopener({})
             opener.prompt_user_passwd = None
             fn, header = opener.retrieve(self.url)
-            
+
             filename, data = (None, None)
             f = open(fn, 'r')
             data = f.read()
             f.close()
             os.remove(fn)
-            
+
             for tup in header.items():
                 for item in tup:
                     if "filename=" in item:
                         filename = item[item.index("filename=") + 9:]
                         break
-                        
+
             if data:
                 if not filename:
                      filename = os.path.basename(self.url)
                 sabnzbd.insert_future_nzo(self.future_nzo, filename, data)
             else:
                 sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
-                
+
         except:
             logging.exception("[%s] Error adding url %s", __NAME__, self.url)
             sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
@@ -218,11 +220,14 @@ def create_real_path(name, loc, path):
                 os.makedirs(my_dir)
             except:
                 logging.error('Cannot create directory %s', my_dir)
-        if not os.access(my_dir, os.R_OK + os.W_OK):
+                return (False, my_dir)
+        if os.access(my_dir, os.R_OK + os.W_OK):
+            return (True, my_dir)
+        else:
             logging.error('%s directory: %s error accessing', name, my_dir)
-            return ""
-        return my_dir
-
+            return (False, my_dir)
+    else:
+        return (False, "")
 
 ################################################################################
 # Get_User_ShellFolders
@@ -234,14 +239,14 @@ def create_real_path(name, loc, path):
 def Get_User_ShellFolders():
     import _winreg
     dict = {}
- 
+
     # Open registry hive
     try:
         hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
     except WindowsError:
         logging.error("Cannot connect to registry hive HKEY_CURRENT_USER.")
         return dict
- 
+
     # Then open the registry key where Windows stores the Shell Folder locations
     try:
         key = _winreg.OpenKey(hive, "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
@@ -249,11 +254,18 @@ def Get_User_ShellFolders():
         logging.error("Cannot open registry key Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders.")
         _winreg.CloseKey(hive)
         return dict
- 
+
     try:
         for i in range(0, _winreg.QueryInfoKey(key)[1]):
             name, value, val_type = _winreg.EnumValue(key, i)
-            dict[name] = value
+            try:
+                dict[name] = value.encode('latin-1')
+            except:
+                try:
+                    import win32api
+                    dict[name] = win32api.GetShortPathName(value)
+                except:
+                    del dict[name]
             i += 1
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
@@ -285,7 +297,7 @@ def save_configfile(cfg):
     except:
         Panic('Cannot write to configuration file "%s".' % cfg.filename, \
               'Make sure file is writable and in a writable folder.')
-        sys.exit(2)
+        ExitSab(2)
 
 ################################################################################
 # Launch a browser for various purposes
@@ -307,6 +319,14 @@ MSG_BAD_NEWS = r'''
     <br>Program did not start!<br>
     </body>
 </html>
+'''
+
+MSG_BAD_FWALL = r'''
+    SABnzbd is not compatible with some software firewalls.<br>
+    %s<br>
+    Sorry, but we cannot solve this incompatibility right now.<br>
+    Please file a complaint at your firewall supplier.<br>
+    <br>
 '''
 
 MSG_BAD_PORT = r'''
@@ -347,10 +367,10 @@ MSG_OTHER = r'''
     %s<br>
 '''
 
-def panic_message(panic, a, b):
+def panic_message(panic, a=None, b=None):
     """Create the panic message from templates
     """
-    if not sabnzbd.AUTOBROWSER:
+    if (not sabnzbd.AUTOBROWSER) or sabnzbd.DAEMON:
         return
 
     if os.name == 'nt':
@@ -366,17 +386,25 @@ def panic_message(panic, a, b):
         msg = MSG_BAD_TEMPL % a
     elif panic == PANIC_QUEUE:
         msg = MSG_BAD_QUEUE % (a, os_str, sabnzbd.MY_FULLNAME)
+    elif panic == PANIC_FWALL:
+        if a:
+            msg = MSG_BAD_FWALL % "It is likely that you are using ZoneAlarm on Vista.<br>"
+        else:
+            msg = MSG_BAD_FWALL % "<br>"
     else:
         msg = MSG_OTHER % (a, b)
 
 
     msg = MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg)
-        
+
     msgfile, url = tempfile.mkstemp(suffix='.html')
     os.write(msgfile, msg)
     os.close(msgfile)
     return url
 
+
+def Panic_FWall(vista):
+    launch_a_browser(panic_message(PANIC_FWALL, vista))
 
 def Panic_Port(host, port):
     launch_a_browser(panic_message(PANIC_PORT, host, port))
@@ -395,7 +423,7 @@ def Panic(reason, remedy=""):
 def launch_a_browser(url):
     """Launch a browser pointing to the URL
     """
-    if not sabnzbd.AUTOBROWSER:
+    if (not sabnzbd.AUTOBROWSER) or sabnzbd.DAEMON:
         return
 
     logging.info("Lauching browser with %s", url)
@@ -403,7 +431,10 @@ def launch_a_browser(url):
         webbrowser.open(url, 2, 1)
     except:
         # Python 2.4 does not support parameter new=2
-        webbrowser.open(url, 1, 1)
+        try:
+            webbrowser.open(url, 1, 1)
+        except:
+            logging.warning("Cannot launch the browser, probably not found")
 
 
 ################################################################################
@@ -436,7 +467,7 @@ def check_latest_version():
     url = data.split()[1]
     m = RE_VERSION.search(latest_label)
     latest = int(m.group(1))*1000000 + int(m.group(2))*10000 + int(m.group(3))*100 + 99
-    
+
     m = RE_VERSION.search(sabnzbd.__version__)
     current = int(m.group(1))*10000 + int(m.group(2))*10000 + int(m.group(3))*100
     try:
@@ -485,3 +516,23 @@ def to_units(val):
         return "%.1f %s" % (val, unit)
     else:
         return "%.0f" % val
+
+#------------------------------------------------------------------------------
+def SameFile(a, b):
+    """ Return True if both paths are identical """
+
+    if "samefile" in os.path.__dict__:
+        return os.path.samefile(a, b)
+    else:
+        a = os.path.normpath(os.path.abspath(a)).lower()
+        b = os.path.normpath(os.path.abspath(b)).lower()
+        return a == b
+
+#------------------------------------------------------------------------------
+def ExitSab(value):
+    sys.stderr.flush()
+    sys.stdout.flush()
+    if sabnzbd.WAITEXIT and hasattr(sys, "frozen"):
+        print
+        raw_input("Press ENTER to close this window");
+    sys.exit(value)

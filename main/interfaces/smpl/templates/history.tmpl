@@ -1,0 +1,54 @@
+<h3>History <a id="feed" href="rss?mode=history"><img id="rss" src="/sabnzbd/static/feed-icon-14x14.png" alt="rss"/></a></h3>
+<a href="javascript:lrdual('/sabnzbd/history/purge', '/sabnzbd/history/','1');">Purge history</a> | <a href="javascript:lrdual('/sabnzbd/history/tog_verbose', '/sabnzbd/history/','1');">Toggle verbosity</a></span>
+<p>
+<strong>Bytes Downloaded:</strong> $bytes_beginning GB <strong>- Bytes in History:</strong> $total_bytes GB</strong>
+</p>
+
+
+<!--#if $lines#-->
+<table id="sortable_table" class="datagrid">
+	<thead>
+    <tr>
+		<th mochi:format="isodate">Completed</th>
+		<th mochi:format="str">Name</th>
+		<th mochi:format="str">Loaded</th>
+	</tr>
+	</thead>
+	<tfoot class="invisible">
+
+		<tr>
+			<td colspan="0"></td>
+		</tr>
+	</tfoot>
+	<tbody>
+
+    <!--#set $odd = False#-->
+    <!--#for $line in $lines #-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+			<td>$line.added</td>
+			<td>$line.filename</td>
+			<td>$line.loaded</td>
+		</tr>
+        <!--#set $oddLine = not False#-->
+        <!--#for $stage in $line.stages#-->
+            <!--#set $oddLine = not $oddLine#-->
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#-->">
+				<td></td>
+				<td>
+					<dl>
+			            <dt>Stage $stage.name</dt>
+			            <!--#for $action in $stage.actions#-->
+			                 <dd>$action.name: $action.value</dd>
+			            <!--#end for#-->
+		            </dl>
+				</td>
+				<td></td>
+			</tr>
+        <!--#end for#-->
+    <!--#end for#-->
+	</tbody>
+</table>
+<!--#end if#-->
+
+

@@ -1,0 +1,71 @@
+
+<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Directories" id="help">Help</a><h3>Directory configuration</h3>
+<!--action="config/directories/saveDirectories" method="post"-->
+<form class="cmxform" action="">
+<div class="EntryBlock">
+  <fieldset class="EntryFieldSet">
+    <legend>User directories</legend>
+<hr />
+	
+			
+		    <label>Download Directory:</label>
+		    <input type="text" size="40" name="download_dir" value="$download_dir">
+			<span class="tips">Location to put unprocessed downloads in.</span>		    
+		<br class="clear" />
+				    
+		    <label>Minimum free space for Download Directory:</label>
+			<input type="text" size="10" name="download_free" value="$download_free">
+		    <span class="tips">Auto-pause when free space is beneath this value. Follow with K,M,G,T,P E.g 500M 2G</span>  
+		<br class="clear" />
+			    
+		    <label>Complete Directory:</label>
+		    <input type="text" size="40" name="complete_dir" value="$complete_dir">
+		    <span class="tips">Location to put completed downloads in.</span>			
+		<br class="clear" />
+			    
+		    <label>OPTIONAL: Dirscan Directory:</label>
+		    <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
+			<span class="tips">Directory to scan for .nzb files.</span>
+		<br class="clear" />
+			    
+		    <label>OPTIONAL: Dirscan Speed:</label>
+		    <input type="text" size="10" name="dirscan_speed" value="$dirscan_speed">
+			<span class="tips">Number of seconds between scans for .nzb files.</span>
+		<br class="clear" />
+		  
+		    <label>OPTIONAL: External post-processing script:</label>
+		    <input type="text" size="40" name="extern_proc" value="$extern_proc">
+			<span class="tips">Specify an external post-processing script.</span>
+		<br class="clear" />
+				
+</fieldset>
+<fieldset class="EntryFieldSet">
+<legend>System directories</legend>
+<hr />
+<emp>In "$my_lcldata"</emp>
+	<br class="clear" /><br class="clear" />
+		
+		    <label>Cache Directory:</label>
+			<input type="text" size="40" name="cache_dir" value="$cache_dir">
+			<span class="tips">Location for temporary storage.</span>
+		<br class="clear" />
+		   
+		    <label>Log Directory:</label>
+			<input type="text" size="40" name="log_dir" value="$log_dir">
+			<span class="tips">Location of log files for SABnzbd.</span>
+		<br class="clear" />
+		 
+		    <label>OPTIONAL: .nzb Backup Directory:</label>
+			<input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
+			<span class="tips">Specify a directory to backup .nzb files to.</span>
+		<br class="clear" />
+
+
+</fieldset>
+
+</div><br class="clear" />
+<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/directories/saveDirectories', 'submitstatus')">
+<span class="submitstatus" id="submitstatus"></span>
+</form>
+
+

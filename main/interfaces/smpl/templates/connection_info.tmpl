@@ -1,0 +1,20 @@
+
+<h3>Connections</h3>
+<a class="config" href="javascript:lrdual('/sabnzbd/connections/disconnect','/sabnzbd/connections','1');">Force Disconnect</a> |
+<a class="config" href="javascript:testemail();">Test E-Mail</a> |
+<a class="config" href="/sabnzbd/connections/showlog">Show logging</a> |
+<a class="config" href="/sabnzbd/connections/showweb">Show weblogging</a>
+<!--#if $servers#-->
+    <ul>
+    <!--#for $server in $servers#-->
+        <li>
+            $server[0]:$server[1]: $server[2]
+            <ul>
+            <!--#for $thrd in $server[3]#-->
+                <li>Thread #$thrd[0] -> $thrd[1] -> $thrd[2] -> $thrd[3]</li>
+            <!--#end for#-->
+            </ul>
+        </li>
+    <!--#end for#-->
+    </ul>
+<!--#end if#-->

@@ -5,12 +5,12 @@
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -32,7 +32,7 @@ from threading import Thread, RLock
 
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import Panic_Queue
+from sabnzbd.misc import Panic_Queue, ExitSab
 
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -46,83 +46,83 @@ class HistoryItem:
         self.bytes_downloaded = nzo.get_bytes_downloaded()
         self.completed = time.time()
         self.unpackstrht = None
-        
+
     def cleanup(self):
         if self.nzo:
             self.bytes_downloaded = self.nzo.get_bytes_downloaded()
             self.unpackstrht = self.nzo.get_unpackstrht()
             self.completed = time.time()
             self.nzo = None
-            
+
 #-------------------------------------------------------------------------------
 
 NZBQUEUE_LOCK = RLock()
 class NzbQueue(TryList):
     def __init__(self, auto_sort = False, top_only = False):
         TryList.__init__(self)
-        
+
         self.__downloaded_items = []
-        
-        
+
+
         self.__top_only = top_only
         self.__top_nzo = None
-        
+
         self.__nzo_list = []
         self.__nzo_table = {}
-        
+
         self.__auto_sort = auto_sort
-        
+
         nzo_ids = []
-        
+
         data = sabnzbd.load_data(QUEUE_FILE_NAME, remove = False)
 
         if data:
             try:
                 queue_vers, nzo_ids, self.__downloaded_items = data
                 if not queue_vers == sabnzbd.__queueversion__:
-                    logging.exception("[%s] Incompatible queuefile found, cannot proceed", 
+                    logging.exception("[%s] Incompatible queuefile found, cannot proceed",
                                  __NAME__)
                     self.__downloaded_items = []
                     nzo_ids = []
                     Panic_Queue(os.path.join(sabnzbd.CACHE_DIR,QUEUE_FILE_NAME))
-                    sys.exit(2)
+                    ExitSab(2)
             except ValueError:
                 logging.exception("[%s] Error loading %s, corrupt file " + \
                                   "detected", __NAME__, os.path.join(sabnzbd.CACHE_DIR,QUEUE_FILE_NAME))
-                                  
+
             for nzo_id in nzo_ids:
                 nzo = sabnzbd.load_data(nzo_id, remove = False)
                 if nzo:
                     self.add(nzo, save = False)
-                    
+
     def __init__stage2__(self):
         for hist_item in self.__downloaded_items:
             if hist_item.nzo:
                 sabnzbd.postprocess_nzo(hist_item.nzo)
-    
+
     @synchronized(NZBQUEUE_LOCK)
     def save(self):
         """ Save queue """
         logging.info("[%s] Saving queue", __NAME__)
-        
+
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list:
             nzo_ids.append(nzo.nzo_id)
             sabnzbd.save_data(nzo, nzo.nzo_id)
-            
-        sabnzbd.save_data((sabnzbd.__queueversion__, nzo_ids, 
+
+        sabnzbd.save_data((sabnzbd.__queueversion__, nzo_ids,
                            self.__downloaded_items), QUEUE_FILE_NAME)
-    
+
     @synchronized(NZBQUEUE_LOCK)
     def generate_future(self, msg, repair, unpack, delete, script):
         """ Create and return a placeholder nzo object """
         future_nzo = NzbObject(msg, repair, unpack, delete, script, None, True)
         self.add(future_nzo)
         return future_nzo
-    
+
     @synchronized(NZBQUEUE_LOCK)
-    def insert_future(self, future, filename, data, cat_root = None, 
+    def insert_future(self, future, filename, data, cat_root = None,
                       cat_tail = None):
         """ Refresh a placeholder nzo with an actual nzo """
         nzo_id = future.nzo_id
@@ -131,39 +131,39 @@ class NzbQueue(TryList):
                 logging.info("[%s] Regenerating item: %s", __NAME__, nzo_id)
                 repair, unpack, delete, script = future.get_repair_opts()
                 future.__init__(filename, repair, unpack, delete, script,
-                                nzb = data, futuretype = False, 
+                                nzb = data, futuretype = False,
                                 cat_root = cat_root, cat_tail = cat_tail)
                 future.nzo_id = nzo_id
                 self.save()
                 sabnzbd.backup_nzb(filename, data)
-                
+
                 if self.__auto_sort:
                     self.sort_by_avg_age()
-                    
+
                 self.reset_try_list()
             except:
-                logging.exception("[%s] Error while adding %s, removing", __NAME__, 
+                logging.exception("[%s] Error while adding %s, removing", __NAME__,
                                   nzo_id)
                 self.remove(nzo_id, False)
         else:
-            logging.info("[%s] Item %s no longer in queue, omitting", __NAME__, 
+            logging.info("[%s] Item %s no longer in queue, omitting", __NAME__,
                          nzo_id)
-                         
+
     @synchronized(NZBQUEUE_LOCK)
     def change_opts(self, nzo_id, pp):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].set_opts(pp)
-            
+
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, pos = -1, save=True):
         # Reset try_lists
         nzo.reset_try_list()
         self.reset_try_list()
-        
-        
+
+
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.get_new_id('nzo')
-            
+
         if nzo.nzo_id:
             nzo.deleted = False
             self.__nzo_table[nzo.nzo_id] = nzo
@@ -173,17 +173,17 @@ class NzbQueue(TryList):
                 self.__nzo_list.append(nzo)
             if save:
                 self.save()
-                
+
         if self.__auto_sort:
             self.sort_by_avg_age()
-    
+
     @synchronized(NZBQUEUE_LOCK)
     def remove(self, nzo_id, add_to_history = True):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
             self.__nzo_list.remove(nzo)
-            
+
             if add_to_history:
                 # Make sure item is only represented once in history
                 should_add = True
@@ -195,21 +195,21 @@ class NzbQueue(TryList):
                     self.__downloaded_items.append(HistoryItem(nzo))
             else:
                 self.cleanup_nzo(nzo)
-                
+
             sabnzbd.remove_data(nzo_id)
             self.save()
-            
+
     @synchronized(NZBQUEUE_LOCK)
     def remove_nzf(self, nzo_id, nzf_id):
-        if nzo_id in self.__nzo_table:    
+        if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzf = nzo.get_nzf_by_id(nzf_id)
-            
+
             if nzf:
                 post_done = nzo.remove_nzf(nzf)
                 if post_done:
                     self.remove(nzo_id, add_to_history = False)
-                    
+
     @synchronized(NZBQUEUE_LOCK)
     def switch(self, item_id_1, item_id_2):
         item_id_pos1 = -1
@@ -224,39 +224,39 @@ class NzbQueue(TryList):
                 del self.__nzo_list[item_id_pos1]
                 self.__nzo_list.insert(item_id_pos2, item)
                 break
-                
-    @synchronized(NZBQUEUE_LOCK)            
+
+    @synchronized(NZBQUEUE_LOCK)
     def move_up_bulk(self, nzo_id, nzf_ids):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_up_bulk(nzf_ids)
-            
+
     @synchronized(NZBQUEUE_LOCK)
     def move_top_bulk(self, nzo_id, nzf_ids):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_top_bulk(nzf_ids)
-            
+
     @synchronized(NZBQUEUE_LOCK)
     def move_down_bulk(self, nzo_id, nzf_ids):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_down_bulk(nzf_ids)
-    
+
     @synchronized(NZBQUEUE_LOCK)
     def move_bottom_bulk(self, nzo_id, nzf_ids):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
-            
+
     @synchronized(NZBQUEUE_LOCK)
     def sort_by_avg_age(self):
         logging.info("[%s] Sorting by average date...", __NAME__)
         self.__nzo_list.sort(cmp=_nzo_date_cmp)
-        
-        
+
+
     @synchronized(NZBQUEUE_LOCK)
     def reset_try_lists(self, nzf = None, nzo = None):
         nzf.reset_try_list()
         nzo.reset_try_list()
         self.reset_try_list()
-    
+
     @synchronized(NZBQUEUE_LOCK)
     def has_articles_for(self, server):
         if not self.__nzo_list:
@@ -265,7 +265,7 @@ class NzbQueue(TryList):
             return not self.__nzo_list[0].server_in_try_list(server)
         else:
             return not self.server_in_try_list(server)
-            
+
     @synchronized(NZBQUEUE_LOCK)
     def get_article(self, server):
         if self.__top_only:
@@ -273,7 +273,7 @@ class NzbQueue(TryList):
                 article = self.__nzo_list[0].get_article(server)
                 if article:
                     return article
-                    
+
         else:
             for nzo in self.__nzo_list:
                 # Don't try to get an article if server is in try_list of nzo
@@ -281,22 +281,22 @@ class NzbQueue(TryList):
                     article = nzo.get_article(server)
                     if article:
                         return article
-                    
+
             # No articles for this server, block server (until reset issued)
             self.add_to_try_list(server)
-        
+
     @synchronized(NZBQUEUE_LOCK)
     def register_article(self, article):
         nzf = article.nzf
         nzo = nzf.nzo
-        
+
         if nzo.deleted or nzf.deleted:
-            logging.debug("[%s] Discarding article %s, no longer in queue", 
+            logging.debug("[%s] Discarding article %s, no longer in queue",
                           __NAME__, article.article)
             return
-            
+
         file_done, post_done, reset = nzo.remove_article(article)
-        
+
         filename = nzf.get_filename()
         if filename:
             root, ext = os.path.splitext(filename)
@@ -304,38 +304,43 @@ class NzbQueue(TryList):
                 logging.info("[%s] Skipping %s", __NAME__, nzf)
                 file_done, reset = (False, True)
                 post_done = post_done or nzo.remove_nzf(nzf)
-                
+
         if reset:
             self.reset_try_list()
-            
+
         if file_done:
             if sabnzbd.DO_SAVE:
                 sabnzbd.save_data(nzo, nzo.nzo_id)
-                
+
             _type = nzf.get_type()
-            
+
             # Only start decoding if we have a filename and type
             if filename and _type:
                 sabnzbd.assemble_nzf((nzo, nzf))
-                
+
             else:
                 logging.warning('[%s] %s -> Unknown encoding', __NAME__,
                                 filename)
-                                
+
         if post_done:
             self.remove(nzo.nzo_id, True)
-            
+
             # Notify assembler to call postprocessor
             sabnzbd.assemble_nzf((nzo, None))
-            
-            # sabnzbd.AUTOSHUTDOWN only True on os.name == 'nt'
-            if sabnzbd.AUTOSHUTDOWN and not self.__nzo_list:
-                sabnzbd.AUTOSHUTDOWN_GO = True
-                
+
+            if not self.__nzo_list:
+                # Close server connections
+                if sabnzbd.AUTODISCONNECT:
+                    sabnzbd.disconnect()
+
+                # sabnzbd.AUTOSHUTDOWN only True on os.name == 'nt'
+                if sabnzbd.AUTOSHUTDOWN:
+                    sabnzbd.AUTOSHUTDOWN_GO = True
+
     @synchronized(NZBQUEUE_LOCK)
     def purge(self):
         self.__downloaded_items = []
-        
+
     @synchronized(NZBQUEUE_LOCK)
     def queue_info(self, for_cli = False):
         bytes_left = 0
@@ -343,13 +348,13 @@ class NzbQueue(TryList):
         pnfo_list = []
         for nzo in self.__nzo_list:
             pnfo = nzo.gather_info(for_cli = for_cli)
-            
-            bytes += pnfo[PNFO_BYTES_FIELD] 
+
+            bytes += pnfo[PNFO_BYTES_FIELD]
             bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
             pnfo_list.append(pnfo)
-            
+
         return (bytes, bytes_left, pnfo_list)
-                
+
     @synchronized(NZBQUEUE_LOCK)
     def history_info(self):
         history_info = {}
@@ -359,20 +364,20 @@ class NzbQueue(TryList):
             filename = hist_item.filename
             bytes = hist_item.bytes_downloaded
             bytes_downloaded += bytes
-            
+
             if completed not in history_info:
                 history_info[completed] = []
-                
+
             if hist_item.nzo:
                 unpackstrht = hist_item.nzo.get_unpackstrht()
                 loaded = True
             else:
                 unpackstrht = hist_item.unpackstrht
                 loaded = False
-                
+
             history_info[completed].append((filename, unpackstrht, loaded, bytes))
         return (history_info, bytes_downloaded, sabnzbd.get_bytes())
-        
+
     @synchronized(NZBQUEUE_LOCK)
     def is_empty(self):
         empty = True
@@ -381,40 +386,40 @@ class NzbQueue(TryList):
                 empty = False
                 break
         return empty
-        
+
     @synchronized(NZBQUEUE_LOCK)
     def cleanup_nzo(self, nzo):
         nzo.purge_data()
-        
+
         sabnzbd.purge_articles(nzo.saved_articles)
-        
+
         for hist_item in self.__downloaded_items:
             # refresh fields & delete nzo reference
             if hist_item.nzo and hist_item.nzo == nzo:
                 hist_item.cleanup()
-                logging.debug('[%s] %s cleaned up', __NAME__, 
+                logging.debug('[%s] %s cleaned up', __NAME__,
                               nzo.get_filename())
-                              
+
     @synchronized(NZBQUEUE_LOCK)
     def debug(self):
-        return (self.__downloaded_items[:], self.__nzo_list[:], 
+        return (self.__downloaded_items[:], self.__nzo_list[:],
                 self.__nzo_table.copy(), self.try_list[:])
-                
+
     def __repr__(self):
         return "<NzbQueue>"
-                
+
 #-------------------------------------------------------------------------------
 
 def _nzo_date_cmp(nzo1, nzo2):
     avg_date1 = nzo1.get_avg_date()
     avg_date2 = nzo2.get_avg_date()
-    
+
     if avg_date1 == None and avg_date2 == None:
         return 0
-        
+
     if avg_date1 == None:
         avg_date1 = datetime.datetime.now()
     elif avg_date2 == None:
         avg_date2 = datetime.datetime.now()
-        
+
     return cmp(avg_date1, avg_date2)

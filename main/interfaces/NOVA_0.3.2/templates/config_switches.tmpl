@@ -5,7 +5,7 @@
 
 
 	<title>SABnzbd+ $version "Nova" - Switches - Queued: $mbleft MB</title>
-	
+
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<meta name="author" content="" />
 	<meta name="Copyright" content="" />
@@ -14,14 +14,14 @@
 	<meta name="googlebot" content="index,follow,noarchive,nosnippet" />
 	<meta name="description" content="SABnzbd Nova Theme by Orgnaix Design" />
 	<meta name="keywords" content="SABnzbd theme, nova, orgnaix design" />
-	
-	
+
+
 	<link rel="stylesheet" type="text/css" href="../../static/css/layout.css" />
 	<link rel="stylesheet" type="text/css" href="../../static/css/html.css" />
 	<link rel="stylesheet" type="text/css" href="../../static/css/classes.css" />
-	
+
 	<link rel="shortcut icon" type="image/ico" href="../../static/images/favicon.ico" />
-	
+
 </head>
 <body>
 
@@ -32,14 +32,14 @@
 
 	<div id="container">
 
-	
+
 		<div id="header">
-			
+
 			<div id="logo">
-				
+
 			</div>
-	
-			
+
+
 			<div id="menu">
 				<ul>
 					<li id="first"><a href="../../" title="Downloads">Downloads</a></li>
@@ -56,8 +56,8 @@
 		<div class="clear"></div>
 		<div id="content">
 <!-- ****************************************** BEGIN CONTENT ****************************************** -->
-			
-			
+
+
 			<!-- Begin Sub Menu -->
 			<span class="subMenu">
 				<a href="../../config/general">General</a><a href="../../config/directories">Directories</a><a href="../../config/switches" class="current">Switches</a><a href="../../config/server">Servers</a><a href="../../config/scheduling">Scheduling</a><a href="../../config/rss">RSS</a><a href="../../config/email">Email</a>
@@ -129,6 +129,12 @@
     <input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
+    <strong>Disconnect on empty queue:</strong><br>
+    Disconnect from Usenet server(s) when queue is empty.<br>
+    <input type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
     <strong>Create group Folders:</strong><br>
     Place downloads into group folders.<br>
     <input type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
@@ -171,7 +177,7 @@
 		<div class="clear"></div>
 		</div>
 		<!-- End Content -->
-	
+
 	</div>
 	<!-- End Container -->
 

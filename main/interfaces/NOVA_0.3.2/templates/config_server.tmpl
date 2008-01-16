@@ -5,7 +5,7 @@
 
 
 	<title>SABnzbd+ $version "Nova" - Servers - Queued: $mbleft MB</title>
-	
+
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<meta name="author" content="" />
 	<meta name="Copyright" content="" />
@@ -14,14 +14,14 @@
 	<meta name="googlebot" content="index,follow,noarchive,nosnippet" />
 	<meta name="description" content="SABnzbd Nova Theme by Organix Design" />
 	<meta name="keywords" content="SABnzbd theme, nova, organix design" />
-	
-	
+
+
 	<link rel="stylesheet" type="text/css" href="../../static/css/layout.css" />
 	<link rel="stylesheet" type="text/css" href="../../static/css/html.css" />
 	<link rel="stylesheet" type="text/css" href="../../static/css/classes.css" />
-	
+
 	<link rel="shortcut icon" type="image/ico" href="../../static/images/favicon.ico" />
-	
+
 </head>
 <body>
 
@@ -32,14 +32,14 @@
 
 	<div id="container">
 
-	
+
 		<div id="header">
-			
+
 			<div id="logo">
-				
+
 			</div>
-	
-			
+
+
 			<div id="menu">
 				<ul>
 					<li id="first"><a href="../../" title="Downloads">Downloads</a></li>
@@ -56,8 +56,8 @@
 		<div class="clear"></div>
 		<div id="content">
 <!-- ****************************************** BEGIN CONTENT ****************************************** -->
-			
-			
+
+
 			<!-- Begin Sub Menu -->
 			<span class="subMenu">
 				<a href="../../config/general">General</a><a href="../../config/directories">Directories</a><a href="../../config/switches">Switches</a><a href="../../config/server" class="current">Servers</a><a href="../../config/scheduling">Scheduling</a><a href="../../config/rss">RSS</a><a href="../../config/email">Email</a>
@@ -67,9 +67,9 @@
 
 
 		<h2>Server configuration</h2>
-		
+
 		<div class="EntryBlock">
-		
+
 		  <form action="addServer" method="post">
 			<fieldset class="EntryFieldSet">
 			  <legend>Add server</legend>
@@ -85,29 +85,29 @@
 			  <p><input type="submit" value="Add Server"></p>
 			</fieldset>
 		  </form>
-		  
+
 		<!--#for $server in $servers#-->
-		
+
 		  <form action="saveServer" method="post">
 			<fieldset class="EntryFieldSet">
 			  <legend>$server</legend>
-      Host:<br><input type="text" size="25" name="host" value=$servers[$server]['host']><br>
-      Port:<br><input type="text" size="25" name="port" value=$servers[$server]['port']><br>
-      Username:<br><input type="text" size="25" name="username" value=$servers[$server]['username']><br>
-      Password:<br><input type="password" size="25" name="password" value=$servers[$server]['password']><br>
-      Timeout:<br><input type="text" size="25" name="timeout" value=$servers[$server]['timeout']><br>
-      Connections:<br><input type="text" size="25" name="connections" value=$servers[$server]['connections']><br>
+      Host:<br><input type="text" size="25" name="host" value="$servers[$server]['host']"><br>
+      Port:<br><input type="text" size="25" name="port" value="$servers[$server]['port']"><br>
+      Username:<br><input type="text" size="25" name="username" value="$servers[$server]['username']"><br>
+      Password:<br><input type="password" size="25" name="password" value="$servers[$server]['password']"><br>
+      Timeout:<br><input type="text" size="25" name="timeout" value="$servers[$server]['timeout']"><br>
+      Connections:<br><input type="text" size="25" name="connections" value="$servers[$server]['connections']"><br>
 			  Fillserver:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
 							 <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
 						 <br>
-			  <input type="hidden" name="server" value=$server>
+			  <input type="hidden" name="server" value="$server">
 			  <p><input type="submit" value="Save Changes"></p>
 			  <p><input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="Remove Server"></p>
 			</fieldset>
 		  </form>
-		  
+
 		<!--#end for#-->
-		
+
 		</div>
 
 
@@ -117,7 +117,7 @@
 		<div class="clear"></div>
 		</div>
 		<!-- End Content -->
-	
+
 	</div>
 	<!-- End Container -->
 

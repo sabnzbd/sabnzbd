@@ -2,31 +2,49 @@
 <html>
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css?version=$web_name"/>
+	<script type="text/javascript" src="../../static/javascripts/jquery-1.2.1.pack.js"></script>
+	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/plush.css" media="screen"/>
 </head>
+
+<style>
+<!--
+	body {background: #ddd;}
+-->
+</style>
+
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
-<span class="SubMenu">
-<a href="../general">General</a> | 
-<a href="../directories">Directories</a> | 
-<a href="../switches">Switches</a> | 
-<a class="current" href="./">Servers</a> | 
-<a href="../scheduling">Scheduling</a> | 
-<a href="../rss">RSS</a> |
-<a href="../email">Email</a> |
-<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Servers" target="_blank">Help</a>
-</span>
-<h2>Server configuration</h2>
+
+<div id="config_nav">
+	<ul>
+		<li><a class="config_menu" href="../../connections"><img src="../../static/images/icon_config_connections.png" />Connections</a></li>
+		<li><a class="config_menu" href="../general"><img src="../../static/images/icon_config_general.png" />General</a></li>
+		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
+		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
+		<li><a class="config_menu" id="nav_active" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
+		<li><a class="config_menu" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
+		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
+	</ul>
+</div>
+
+<div id="config_container" class="config_margin">
+	<div id="config_content">
+
+<!-- ************************************
+	 		PAGE CONTENT IS BELOW
+     ************************************ -->
+
 <div class="EntryBlock">
   <form action="addServer" method="post">
     <fieldset class="EntryFieldSet">
       <legend>Add server</legend>
-      Host:<br><input type="text" size="25" name="host"><br>
-      Port:<br><input type="text" size="25" name="port"><br>
-      Username:<br><input type="text" size="25" name="username"><br>
-      Password:<br><input type="password" size="25" name="password"><br>
-      Timeout:<br><input type="text" size="25" name="timeout"><br>
-      Connections:<br><input type="text" size="25" name="connections"><br>
+      Host:<br><input type="text" size="24" name="host"><br>
+      Port:<br><input type="text" size="24" name="port"><br>
+      Username:<br><input type="text" size="24" name="username"><br>
+      Password:<br><input type="password" size="24" name="password"><br>
+      Timeout:<br><input type="text" size="24" name="timeout"><br>
+      Connections:<br><input type="text" size="24" name="connections"><br>
       Fillserver:<br><input type="radio" name="fillserver" value="0" "checked=1"> No
                      <input type="radio" name="fillserver" value="1"> Yes
                  <br>
@@ -37,30 +55,39 @@
   <form action="saveServer" method="post">
     <fieldset class="EntryFieldSet">
       <legend>$server</legend>
-      Host:<br><input type="text" size="25" name="host" value=$servers[$server]['host']><br>
-      Port:<br><input type="text" size="25" name="port" value=$servers[$server]['port']><br>
-      Username:<br><input type="text" size="25" name="username" value=$servers[$server]['username']><br>
-      Password:<br><input type="password" size="25" name="password" value=$servers[$server]['password']><br>
-      Timeout:<br><input type="text" size="25" name="timeout" value=$servers[$server]['timeout']><br>
-      Connections:<br><input type="text" size="25" name="connections" value=$servers[$server]['connections']><br>
+      Host:<br><input type="text" size="24" name="host" value="$servers[$server]['host']"/><br/>
+      Port:<br><input type="text" size="24" name="port" value="$servers[$server]['port']"/><br/>
+      Username:<br><input type="text" size="24" name="username" value="$servers[$server]['username']"/><br/>
+      Password:<br><input type="password" size="24" name="password" value="$servers[$server]['password']"/><br/>
+      Timeout:<br><input type="text" size="24" name="timeout" value="$servers[$server]['timeout']"/><br/>
+      Connections:<br><input type="text" size="24" name="connections" value="$servers[$server]['connections']"/><br/>
       Fillserver:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
                      <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
                  <br>
-      <input type="hidden" name="server" value=$server>
+      <input type="hidden" name="server" value="$server"/>
       <p><input type="submit" value="Save Changes"></p>
       <p><input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="Remove Server"></p>
     </fieldset>
   </form>
 <!--#end for#-->
 </div>
-<div class="footer">
-<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
-<!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
-<!--#end if#-->
-<!--#if $new_release#-->
-    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
-<!--#end if#-->
+
+<!-- ************************************
+	 		PAGE CONTENT IS ABOVE
+     ************************************ -->
+	</div>
 </div>
+
+<div class="left_links config_margin">
+	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+Servers"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+</div>
+
+<script language="javascript">
+	\$('.config_menu').corner("round tl bl");
+	\$('#config_container').corner("round");
+	\$('#help').corner("round");
+
+</script>
+
 </body>
 </html>

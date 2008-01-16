@@ -2,39 +2,57 @@
 <html>
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css?version=$web_name"/>
+	<script type="text/javascript" src="../../static/javascripts/jquery-1.2.1.pack.js"></script>
+	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/plush.css" media="screen"/>
 </head>
+
+<style>
+<!--
+	body {background: #ddd;}
+-->
+</style>
+
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
-<span class="SubMenu">
-<a href="../general">General</a> | 
-<a href="../directories">Directories</a> | 
-<a href="../switches">Switches</a> | 
-<a href="../server">Servers</a> | 
-<a class="current" href="./">Scheduling</a> | 
-<a href="../rss">RSS</a> |
-<a href="../email">Email</a> |
-<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Scheduling" target="_blank">Help</a>
-</span>
-<h2>Scheduling configuration</h2>
+
+<div id="config_nav">
+	<ul>
+		<li><a class="config_menu" href="../../connections"><img src="../../static/images/icon_config_connections.png" />Connections</a></li>
+		<li><a class="config_menu" href="../general"><img src="../../static/images/icon_config_general.png" />General</a></li>
+		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
+		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
+		<li><a class="config_menu" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+		<li><a class="config_menu" id="nav_active" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
+		<li><a class="config_menu" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
+		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
+	</ul>
+</div>
+
+<div id="config_container" class="config_margin">
+	<div id="config_content">
+
+<!-- ************************************
+	 		PAGE CONTENT IS BELOW
+     ************************************ -->
+
 <div class="EntryBlock">
 <form action="addSchedule" method="post">
 <fieldset class="EntryFieldSet">
 <legend>Add schedule</legend>
 <select name="minute">
 <!--#for $i in range(60)#-->
-<option value=$i>$i
+<option value="$i">$i
 <!--#end for#-->
 </select>
 <select name="hour">
 <!--#for $i in range(24)#-->
-<option value=$i>$i
+<option value="$i">$i
 <!--#end for#-->
 </select>
 <select name="dayofweek">
 <option value="*" selected>*
 <!--#for $i in range(1, 8)#-->
-<option value=$i>$i
+<option value="$i">$i
 <!--#end for#-->
 </select>
 <select name="action">
@@ -46,7 +64,7 @@
 </form>
 </div>
 <h3>Current Schedules:</h3>
-<div class="EntryBlock>"
+<div class="EntryBlock">
 <!--#set $schednum = 0#-->
 <!--#for $line in $schedlines#-->
 <form action="delSchedule" method="post">
@@ -60,14 +78,23 @@ $line
 </form>
 <!--#end for#-->
 </div>
-<div class="footer">
-<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
-<!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
-<!--#end if#-->
-<!--#if $new_release#-->
-    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
-<!--#end if#-->
+
+<!-- ************************************
+	 		PAGE CONTENT IS ABOVE
+     ************************************ -->
+	</div>
 </div>
+
+<div class="left_links config_margin">
+	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+Scheduling"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+</div>
+
+<script language="javascript">
+	\$('.config_menu').corner("round tl bl");
+	\$('#config_container').corner("round");
+	\$('#help').corner("round");
+	
+</script>
+
 </body>
 </html>

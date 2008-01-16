@@ -16,11 +16,11 @@
 <a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Servers" target="_blank">Help</a>
 </span>
 <span class="SubMenu">
-<a href="../general">General</a> | 
-<a href="../directories">Directories</a> | 
-<a href="../switches">Switches</a> | 
-<a class="current" href="./">Servers</a> | 
-<a href="../scheduling">Scheduling</a> | 
+<a href="../general">General</a> |
+<a href="../directories">Directories</a> |
+<a href="../switches">Switches</a> |
+<a class="current" href="./">Servers</a> |
+<a href="../scheduling">Scheduling</a> |
 <a href="../rss">RSS</a> |
 <a href="../email">Email</a>
 </span>
@@ -45,16 +45,16 @@
   <form action="saveServer" method="post">
     <fieldset class="EntryFieldSet">
       <legend>$server</legend>
-      Host:<br><input type="text" size="25" name="host" value=$servers[$server]['host']><br>
-      Port:<br><input type="text" size="25" name="port" value=$servers[$server]['port']><br>
-      Username:<br><input type="text" size="25" name="username" value=$servers[$server]['username']><br>
-      Password:<br><input type="password" size="25" name="password" value=$servers[$server]['password']><br>
-      Timeout:<br><input type="text" size="25" name="timeout" value=$servers[$server]['timeout']><br>
-      Connections:<br><input type="text" size="25" name="connections" value=$servers[$server]['connections']><br>
+      Host:<br><input type="text" size="25" name="host" value="$servers[$server]['host']"><br>
+      Port:<br><input type="text" size="25" name="port" value="$servers[$server]['port']"><br>
+      Username:<br><input type="text" size="25" name="username" value="$servers[$server]['username']"><br>
+      Password:<br><input type="password" size="25" name="password" value="$servers[$server]['password']"><br>
+      Timeout:<br><input type="text" size="25" name="timeout" value="$servers[$server]['timeout']"><br>
+      Connections:<br><input type="text" size="25" name="connections" value="$servers[$server]['connections']"><br>
       Fillserver:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
                      <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
                  <br>
-      <input type="hidden" name="server" value=$server>
+      <input type="hidden" name="server" value="$server">
       <p><input type="submit" value="Save Changes"></p>
       <p><input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="Remove Server"></p>
     </fieldset>

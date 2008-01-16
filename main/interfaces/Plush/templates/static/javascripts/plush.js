@@ -4,18 +4,18 @@
 	By: Nathan Langlois
    *********************/
 
-var refreshRate = 4; // default
+var refreshRate = 5; // default
 
 // once the DOM is ready, run this
 $(document).ready(function() {
 	// refresh rate
 	if (ReadCookie('PlushRefresh')) {
 		refreshRate = ReadCookie('PlushRefresh');
-		$('#refreshRateDisplay').html(refreshRate);
-		SetCookie('PlushRefresh',refreshRate);
 	} else {
-		SetCookie('PlushRefresh',4);	
+		SetCookie('PlushRefresh',refreshRate);	
 	}
+	$('#refreshRateDisplay').html(refreshRate);
+
 	// Queue & History layout restoration
 	if ('sidebyside' == ReadCookie('PlushLayout')) {
 		$("#queue").addClass("queue_sidebyside");
@@ -68,9 +68,7 @@ $(document).ready(function() {
 			url: "addID",
 			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
 			success: function(){
-    			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
-				});
+    			RefreshTheQueue();
 			}
 		});
 		$("#addID").val('by Report ID');
@@ -81,9 +79,7 @@ $(document).ready(function() {
 			url: "addURL",
 			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val(),
 			success: function(){
-    			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
-				});
+    			RefreshTheQueue();
 			}
 		});
 		$("#addURL").val('by URL');
@@ -91,6 +87,21 @@ $(document).ready(function() {
 	$('#addNZBbyFile').bind('click', function() { 
 		$("form").submit();
 	});
+	
+	// toggle queue shutdown - from options menu
+	if ($('#queue_shutdown_option')) {
+		$('#queue_shutdown_option').bind('click', function() { 
+			if(confirm('Are you sure you want to toggle shutting down your entire computer when the queue downloads have finished?')){
+				$.ajax({
+					type: "GET",
+					url: "queue/tog_shutdown",
+					success: function(){
+		    			RefreshTheQueue();
+					}
+				});
+			}
+		});
+	}
 	
 	
 	// Set up Queue Menu actions
@@ -126,27 +137,33 @@ $(document).ready(function() {
 		}
 	});
 	
-	
+	// initiate refreshes
 	MainLoop();
 	
 	
 });
 
+// calls itself after `refreshRate` seconds
 function MainLoop() {
 	
 	// ajax calls
-	$('#queue').load('queue', function(){
-		document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
-	});
+	RefreshTheQueue();
 	$('#history').load('history');
 
 	// loop
 	setTimeout("MainLoop()",refreshRate*1000);
 }
 
+// in a function since some processes need to refresh the queue outside of MainLoop()
+function RefreshTheQueue() {
+	$('#queue').load('queue', function(){
+		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' Left of '+$('#stats_noofslots').html();
+	});
+}
+
 // change post-processing options within queue
-function ChangeProcessingOption (id,op) {
-	$('#queue').load('queue/change_opts?nzo_id='+id+'&pp='+op);
+function ChangeProcessingOption (nzo_id,op) {
+	$('#queue').load('queue/change_opts?nzo_id='+nzo_id+'&pp='+op);
 }
 
 // change queue order
@@ -163,18 +180,18 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			data: "nzo_id="+nzo_id+"&nzf_id="+nzf_id,
 			success: function(){
     			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
+					document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
 				});
 			}
 		});
-	} else {
+	} else {	// moving top/up/down/bottom (delete is above)
 		$.ajax({
 			type: "GET",
 			url: 'queue/'+nzo_id+'/bulk_operation',
 			data: nzf_id + '=on' + '&' + 'action_key=' + action,
 			success: function(){
     			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_kbpersec').html()+$('#stats_noofslots').html()+' Queued';
+					document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
 				});
 			}
 		});
@@ -201,36 +218,21 @@ function ReadCookie(name) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Greybox Redux
- * Required: http://jquery.com/
  * Written by: John Resig
- * Based on code by: 4mir Salihefendic (http://amix.dk)
- * License: LGPL (read more in LGPL.txt)
+ * License: LGPL
  */
 var GB_DONE = false;
 function GB_show(caption, url, height, width) {
-  GB_HEIGHT = 600;
-  GB_WIDTH = 820;
+
+	// Config's floating window default dimensions:
+    GB_WIDTH  = 810;
+    GB_HEIGHT = 535;
+
   if(!GB_DONE) {
     $(document.body)
       .append("<div id='GB_overlay'></div><div id='GB_window'><div id='GB_caption'></div>"
-        + "<img src='static/images/gb_close.gif' alt='Close window'/></div>");
+        + "<img src='static/images/icon_config_close.png' style='padding-right: 5px;' alt='Close window'/></div>");
     $("#GB_window img").click(GB_hide);
     $("#GB_overlay").click(GB_hide);
     $(window).resize(GB_position);
@@ -245,6 +247,7 @@ function GB_show(caption, url, height, width) {
   //  $("#GB_window").slideDown("slow");
   //else
   $("#GB_window").show();
+  $("#GB_window").corner("round cc:#7f7f7f");
 }
 
 function GB_hide() {
@@ -256,5 +259,5 @@ function GB_position() {
   var w = self.innerWidth || (de&&de.clientWidth) || document.body.clientWidth;
   $("#GB_window").css({width:GB_WIDTH+"px",height:GB_HEIGHT+"px",
     left: ((w - GB_WIDTH)/2)+"px" });
-  $("#GB_frame").css("height",GB_HEIGHT - 32 +"px");
+  $("#GB_frame").css("height",GB_HEIGHT - 42 +"px");
 }
