@@ -328,7 +328,11 @@ class NzbObject(TryList):
 
         # Remove leading msgid_XXXX and trailing .nzb
         self.__dirname, msgid = SplitFileName(self.__dirname)
-
+        if sabnzbd.REPLACE_SPACES:
+            self.__dirname = self.__dirname.replace(' ','_')        
+            logging.info('[%s] Replacing spaces with underscores in %s', __NAME__, self.__dirname)
+        else:
+            logging.info('[%s] Keeping spaces on %s', __NAME__, self.__dirname)     
         if not nzb:
             return
 

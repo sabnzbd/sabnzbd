@@ -792,6 +792,8 @@ class ConfigSwitches(ProtectedClass):
         config['check_rel'] = int(sabnzbd.CFG['misc']['check_new_rel'])
         config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
         config['auto_disconnect'] = int(sabnzbd.CFG['misc']['auto_disconnect'])
+        config['replace_spaces'] = int(sabnzbd.CFG['misc']['replace_spaces'])
+        config['auto_browser'] = int(sabnzbd.CFG['misc']['auto_browser'])
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
                             searchList=[config],
@@ -807,7 +809,9 @@ class ConfigSwitches(ProtectedClass):
                      enable_par_cleanup = None, auto_sort = None,
                      create_category_folders = None,
                      check_rel = None,
-                     auto_disconnect = None
+                     auto_disconnect = None,
+                     replace_spaces = None,
+                     auto_browser = None
                      ):
 
         sabnzbd.CFG['misc']['enable_unrar'] = int(enable_unrar)
@@ -824,6 +828,8 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['check_new_rel'] = int(check_rel)
         sabnzbd.CFG['misc']['auto_disconnect'] = int(auto_disconnect)
         sabnzbd.CFG['newzbin']['create_category_folders'] = int(create_category_folders)
+        sabnzbd.CFG['misc']['replace_spaces'] = int(replace_spaces)
+        sabnzbd.CFG['misc']['auto_browser'] = int(auto_browser)
 
         return saveAndRestart(self.__root)
 
