@@ -40,14 +40,15 @@ padding:0px;
 margin:0px;
 }
 
-#Right {
+#RightContainer {
 width:82%;
 float:left;
 padding:10px 0 10px 10px;
 border-left: 1px dotted #ccc;
 min-height:370px;
 }
-
+#Right{float:left;}
+#Right_bottom{float:left;margin-left:10px;}
 #Content{
 clear:both;
 

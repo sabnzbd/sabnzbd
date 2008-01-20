@@ -34,6 +34,7 @@
 	var jsontimeout;
 	var cookietimeout;
 	var speed = $kbpersecrnd;
+    var gDual = 0
 	</script>
 
 
@@ -205,11 +206,20 @@ checkrefresh();
 	}
     function handleServerError(){}
 	var timerId2 = 0;
+    var timerId3 = 0;
 
 	//submits an ajax request and loads the retrieved data into the div called "Right". Can queue itself up to repeat the action based on the refresh rate
-	function lr(url, refresh)
+	function lr(url, refresh, dual)
 	{
-		
+		gDual = dual
+        if (dual!=2) {
+        document.getElementById('Right').style.width = "100%";
+        document.getElementById('Right_bottom').style.width = "100%";
+        }
+        else {
+        document.getElementById('Right').style.width = "48%";
+        document.getElementById('Right_bottom').style.width = "48%";        
+        }
 		if (timerId2) clearTimeout ( timerId2 );
         
 		//var res = doSimpleXMLHttpRequest(url);
@@ -222,19 +232,44 @@ checkrefresh();
 	    res.addCallback(function (res) 
 	    { 
 	      document.getElementById('Right').innerHTML = res.responseText;
+          if (dual==0) {
+              document.getElementById('Right_bottom').innerHTML = "";
+              clearTimeout ( timerId3 );
+          }
 
-		  if (refresh && RefreshTime>0) timerId2 = setTimeout("lr(\'"+url+"\', 1);", RefreshTime*1000)	
+		  if (refresh && RefreshTime>0) timerId2 = setTimeout("lr(\'"+url+"\', 1, "+dual+");", RefreshTime*1000)	
 	    });
 		res.addErrback(handleServerError);			
 	}
+	function lrb(url, refresh)
+	{
+		
+		if (timerId3) clearTimeout ( timerId3 );
+        
+		//var res = doSimpleXMLHttpRequest(url);
+       var res = doXHR(url, 
+	    {
+		    method:'POST',
+            sendContent:'?asshole='+Math.random()
+	
+	    });
+	    res.addCallback(function (res) 
+	    { 
+	      document.getElementById('Right_bottom').innerHTML = res.responseText;
 
+		  if (refresh && RefreshTime>0) timerId3 = setTimeout("lrb(\'"+url+"\', 1);", RefreshTime*1000)	
+	    });
+		res.addErrback(handleServerError);			
+	}
+ 
 	//used when something needs to be submitted in the background, and another page loaded (usually refreshing the current page)
 	function lrdual(url1, url2, refresh)
 	{
 		var d = doSimpleXMLHttpRequest(url1);
 		d.addCallback(function (d)
         {
-        lr(url2, refresh);
+        if (gDual==0) lr(url2, refresh, gDual);//if link is in right_bottom needs to be lrb(
+        else lrb(url2, refresh, gDual)
         });
 		
 	}	
@@ -440,17 +475,19 @@ function loadingJSON(){
 			<div id="Left">
 				<ul id="menu">
 					<li><a class="current" href="">Home</a></li>
-					<li><a href="javascript:lr('/sabnzbd/queue/',  1);">Queue</a></li>
-					<li><a href="javascript:lr('/sabnzbd/history/', 1);">History</a></li>
-					<li><a href="javascript:lr('/sabnzbd/config/', 0);">Config</a></li>
+					<li><a href="javascript:lr('/sabnzbd/queue/',  1, 0);">Queue</a></li>
+					<li><a href="javascript:lr('/sabnzbd/history/', 1, 0);">History</a></li>
+                    <li><a href="javascript:lr('/sabnzbd/queue/', 1, 1);lrb('/sabnzbd/history/',1);">DualView1</a></li>
+                    <li><a href="javascript:lr('/sabnzbd/queue/', 1, 2);lrb('/sabnzbd/history/',1);">DualView2</a></li>
+					<li><a href="javascript:lr('/sabnzbd/config/', 0, 0);">Config</a></li>
 					<ul class="secondul">
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/general/', 0);">General</a></li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/directories/', 0);">Directories</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/switches/', 0);">Switches</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/server/', 0);">Servers</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/scheduling/', 0);">Scheduling</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/rss/', 0);">RSS</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/email/', 0);">Email</a></li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/general/', 0, 0);">General</a></li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/directories/', 0, 0);">Directories</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/switches/', 0, 0);">Switches</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/server/', 0, 0);">Servers</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/scheduling/', 0, 0);">Scheduling</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/rss/', 0, 0);">RSS</a> </li>
+						<li><a class="config" href="javascript:lr('/sabnzbd/config/email/', 0, 0);">Email</a></li>
 					</ul>
 					<li><a href="javascript:lr('/sabnzbd/connections/', 1);">Connections</a></li>
 					<li><a class="bold" id="status2" href="javascript:toggle()">$statusstr2</a></li>
@@ -463,78 +500,83 @@ function loadingJSON(){
 				<span id="ds2">$diskspace2</span>GB / ${diskspacetotal2}GB
 				</center>
 			</div>
-			<div id="Right">
-				<h3>Add new downloads</h3>
-				<!--#if $warning#-->
-				<h2>WARNING</h2>
-				<b>$warning</b>
-				<!--#end if#-->
-				<!--#if $new_release#-->
-			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b>
-				<!--#end if#-->
-				<!--#if $varExists('newzbinDetails')#-->
-				<div class="EntryBlock">
-				    <form class="cmxform" action="addID" method="get">
-				    <fieldset class="EntryFieldSet">
-				      <legend>Add Postid</legend>
-					  <hr />
-				      <input style="width:215px;" type="text" name="id">
-				            <select class="addnewselect" name="pp">
-				            <option value="0">None</option>
-				            <option value="1">+Repair</option>
-				            <option value="2">+Unpack</option>
-				            <option value="3" selected>+Delete</option>
-				            <option value="4">R+Script</option>
-				            <option value="5">U+Script</option>
-				            <option value="6">D+Script</option>						
-				            </select>
-				            
-				            <input class="submitindent2" type="submit" value="Add">
-				      </fieldset>
-				    </form>
-				</div><br class="clear"/>
-				<!--#end if#-->
-				<div class="EntryBlock">
-				    <form class="cmxform" action="addURL" method="get">
-				    <fieldset class="EntryFieldSet">
-				        <legend>Add URL</legend>
-						<hr />
-				    <input style="width:215px;" type="text" name="url">
-				            <select class="addnewselect"  name="pp">
-				            <option value="0">None</option>
-				            <option value="1">+Repair</option>
-				            <option value="2">+Unpack</option>
-				            <option value="3" selected>+Delete</option>
-				            <option value="4">R+Script</option>
-				            <option value="5">U+Script</option>
-				            <option value="6">D+Script</option>						
-				        </select>
-				        
-				        <input class="submitindent2" type="submit" value="Add">
-				    </fieldset>
-				    </form>
-				</div><br class="clear"/>
-				<div class="EntryBlock2">
-				    <form class="cmxform" action="addFile" method="post" enctype="multipart/form-data">
-				    <fieldset class="EntryFieldSet">
-				      <legend>Add File</legend>
-					  <hr />
-				      <input type="file" style="width:221px" name="nzbfile">
-				        <select class="addnewselect" name="pp">
-				            <option value="0">None</option>
-				            <option value="1">+Repair</option>
-				            <option value="2">+Unpack</option>
-				            <option value="3" selected>+Delete</option>
-				            <option value="4">R+Script</option>
-				            <option value="5">U+Script</option>
-				            <option value="6">D+Script</option>						
-				        </select>
-				      <input class="submitindent2" type="submit" value="Add">
-				    </fieldset>
-				    </form>
-				</div>	
+			<div id="RightContainer">
+                <div id="Right">
+    				<h3>Add new downloads</h3>
+    				<!--#if $warning#-->
+    				<h2>WARNING</h2>
+    				<b>$warning</b>
+    				<!--#end if#-->
+    				<!--#if $new_release#-->
+    			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b>
+    				<!--#end if#-->
+    				<!--#if $varExists('newzbinDetails')#-->
+    				<div class="EntryBlock">
+    				    <form class="cmxform" action="addID" method="get">
+    				    <fieldset class="EntryFieldSet">
+    				      <legend>Add Postid</legend>
+    					  <hr />
+    				      <input style="width:215px;" type="text" name="id">
+    				            <select class="addnewselect" name="pp">
+    				            <option value="0">None</option>
+    				            <option value="1">+Repair</option>
+    				            <option value="2">+Unpack</option>
+    				            <option value="3" selected>+Delete</option>
+    				            <option value="4">R+Script</option>
+    				            <option value="5">U+Script</option>
+    				            <option value="6">D+Script</option>						
+    				            </select>
+    				            
+    				            <input class="submitindent2" type="submit" value="Add">
+    				      </fieldset>
+    				    </form>
+    				</div><br class="clear"/>
+    				<!--#end if#-->
+    				<div class="EntryBlock">
+    				    <form class="cmxform" action="addURL" method="get">
+    				    <fieldset class="EntryFieldSet">
+    				        <legend>Add URL</legend>
+    						<hr />
+    				    <input style="width:215px;" type="text" name="url">
+    				            <select class="addnewselect"  name="pp">
+    				            <option value="0">None</option>
+    				            <option value="1">+Repair</option>
+    				            <option value="2">+Unpack</option>
+    				            <option value="3" selected>+Delete</option>
+    				            <option value="4">R+Script</option>
+    				            <option value="5">U+Script</option>
+    				            <option value="6">D+Script</option>						
+    				        </select>
+    				        
+    				        <input class="submitindent2" type="submit" value="Add">
+    				    </fieldset>
+    				    </form>
+    				</div><br class="clear"/>
+    				<div class="EntryBlock2">
+    				    <form class="cmxform" action="addFile" method="post" enctype="multipart/form-data">
+    				    <fieldset class="EntryFieldSet">
+    				      <legend>Add File</legend>
+    					  <hr />
+    				      <input type="file" style="width:221px" name="nzbfile">
+    				        <select class="addnewselect" name="pp">
+    				            <option value="0">None</option>
+    				            <option value="1">+Repair</option>
+    				            <option value="2">+Unpack</option>
+    				            <option value="3" selected>+Delete</option>
+    				            <option value="4">R+Script</option>
+    				            <option value="5">U+Script</option>
+    				            <option value="6">D+Script</option>						
+    				        </select>
+    				      <input class="submitindent2" type="submit" value="Add">
+    				    </fieldset>
+    				    </form>
+    				</div>	
 
-			</div>		
+    			</div>
+                
+                <div id="Right_bottom">   
+    			</div>   
+    		</div>                
 		</div>	
 		<div id="Footer">
 			<div id="divchart"><canvas id="graph" height="100" width="700"></canvas></div>
