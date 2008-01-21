@@ -1,9 +1,9 @@
 
 <h3>Connections</h3>
-<a class="config" href="javascript:lrdual('/sabnzbd/connections/disconnect','/sabnzbd/connections','1');">Force Disconnect</a> |
-<a class="config" href="javascript:testemail();">Test E-Mail</a> |
-<a class="config" href="/sabnzbd/connections/showlog">Show logging</a> |
-<a class="config" href="/sabnzbd/connections/showweb">Show weblogging</a>
+<a class="config" onClick="lrdual('/sabnzbd/connections/disconnect','/sabnzbd/connections','1',this.parentNode.parentNode.id);">Force Disconnect</a> |
+<a class="config" onClick="testemail();">Test E-Mail</a> |
+<a class="config" href="/sabnzbd/connections/showlog">Download Log File</a> |
+<a class="config" href="/sabnzbd/connections/showweb">Download Web Log File</a>
 <!--#if $servers#-->
     <ul>
     <!--#for $server in $servers#-->

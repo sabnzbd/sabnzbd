@@ -60,14 +60,14 @@
             <!--#for $uri in $uris#-->
                 <!--#set $odd = not $odd#-->
                 <tr class="<!--#if $odd then "odd" else "even"#-->">
-                    <td><a href="javascript:lrdual('/sabnzbd/config/rss/del_rss_feed?uri_id=$str($id($uri))', '/sabnzbd/config/rss','0');">Remove</a></td>
+                    <td><a onClick="lrdual('/sabnzbd/config/rss/del_rss_feed?uri_id=$str($id($uri))', '/sabnzbd/config/rss','0');">Remove</a></td>
                     <td>$uri</td>
                 </tr>
                 <!--#set $oddLine = False#-->
                 <!--#for $filter in $uri_table[$uri][0]#-->
                     <!--#set $oddLine = not $oddLine#-->
                     <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-                        <td><a href="javascript:lrdual('/sabnzbd/config/rss/del_rss_filter?uri_id=$str($id($uri))&filter_id=$str($id($filter))', '/sabnzbd/config/rss','0');">Remove</a></td>
+                        <td><a onClick="lrdual('/sabnzbd/config/rss/del_rss_filter?uri_id=$str($id($uri))&filter_id=$str($id($filter))', '/sabnzbd/config/rss','0');">Remove</a></td>
                         <td>Filter: $filter[0]</td>
                     </tr>
                     <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">

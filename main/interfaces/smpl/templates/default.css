@@ -115,6 +115,7 @@ display:inline;
 
 }
 #rss{border:none;}
+
 a:visited{
 color:#000;
 display:inline;
@@ -127,9 +128,15 @@ margin:0 0 0 8px;
 }
 a {
 color:black;
-
+cursor:pointer;
+text-decoration:underline;
 }
-
+a.config{
+color:#4B4545;
+}
+a:hover{
+color:red;
+}
 div.EntryBlock {
   display: inline;
 }
@@ -146,9 +153,6 @@ fieldset.EntryFieldSet {
 padding-left:10px;
 margin:0px;
 list-style-type: none;
-}
-a.config{
-color:#4B4545;
 }
 .kbs{padding-left:2px;}
 

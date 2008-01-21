@@ -1,11 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" 
-"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-    <title>SABnzbd-$version - Uptime: $uptime</title>
+    <title>SABnzbd+</title>
     <link rel="stylesheet" type="text/css" href="default.css"/>
 	<link href="rss?mode=history" rel="alternate" type="application/rss+xml" title="SABnzbd+ History" />
 	<link rel="shortcut icon" href="static/images/favicon.ico" />
@@ -263,12 +262,12 @@ checkrefresh();
 	}
  
 	//used when something needs to be submitted in the background, and another page loaded (usually refreshing the current page)
-	function lrdual(url1, url2, refresh)
-	{
-		var d = doSimpleXMLHttpRequest(url1);
+	function lrdual(url1, url2, refresh, pnode)
+	{    
+        var d = doSimpleXMLHttpRequest(url1);
 		d.addCallback(function (d)
         {
-        if (gDual==0) lr(url2, refresh, gDual);//if link is in right_bottom needs to be lrb(
+        if (pnode == 'Right') lr(url2, refresh, gDual);//if link is in right_bottom needs to be lrb(
         else lrb(url2, refresh, gDual)
         });
 		
@@ -364,7 +363,23 @@ checkrefresh();
 		document.getElementById('Right').innerHTML = res.responseText;
 	}	
 	
-	
+    function convertSecondsToTime (seconds)
+	{
+		var d = new Date();
+		d.setTime(seconds * 1000);
+		var h = d.getUTCHours() + ((d.getUTCDate()-1) * 24);
+		var m = d.getUTCMinutes();
+		var s = d.getUTCSeconds();
+		if (m < 10)
+		{
+			m = '0' + m;
+		}
+		if (s < 10)
+		{
+			s = '0' + s;
+		}
+		return h + ':' + m + ':' + s;
+	}	
 	
 	
 //loads up the json for the queue page and changes the values in the document
@@ -386,13 +401,19 @@ function loadingJSON(){
 		if (paused == true)
 		{
 			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
+            document.title = "SABnzbd+ - Paused";
 						//alert("paused");
 		} else if 	(paused == false && speed>0) 
 		{
 			document.getElementById("status").innerHTML = "<span class='downloading'>Downloading</span>";
+     		totalTimeRemain = (info["mbleft"] * 1024) / speed;
+    		totalTimeRemain = convertSecondsToTime(totalTimeRemain);     //from nzbdstatus plugin      
+            dltitle = "SABnzbd+ - "+totalTimeRemain+" - "+speed+"kB/s";
+            document.title = dltitle;
 						//alert("down");			
 		} else { 
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
+            document.title = "SABnzbd+ - Idle";
 						//alert("idle");			
 		}
 	
@@ -475,22 +496,22 @@ function loadingJSON(){
 			<div id="Left">
 				<ul id="menu">
 					<li><a class="current" href="">Home</a></li>
-					<li><a href="javascript:lr('/sabnzbd/queue/',  1, 0);">Queue</a></li>
-					<li><a href="javascript:lr('/sabnzbd/history/', 1, 0);">History</a></li>
-                    <li><a href="javascript:lr('/sabnzbd/queue/', 1, 1);lrb('/sabnzbd/history/',1);">DualView1</a></li>
-                    <li><a href="javascript:lr('/sabnzbd/queue/', 1, 2);lrb('/sabnzbd/history/',1);">DualView2</a></li>
-					<li><a href="javascript:lr('/sabnzbd/config/', 0, 0);">Config</a></li>
+					<li><a onClick="lr('/sabnzbd/queue/',  1, 0);">Queue</a></li>
+					<li><a onClick="lr('/sabnzbd/history/', 1, 0);">History</a></li>
+                    <li><a onClick="lr('/sabnzbd/queue/', 1, 1);lrb('/sabnzbd/history/',1);">DualView1</a></li>
+                    <li><a onClick="lr('/sabnzbd/queue/', 1, 2);lrb('/sabnzbd/history/',1);">DualView2</a></li>
+					<li><a onClick="lr('/sabnzbd/config/', 0, 0);">Config</a></li>
 					<ul class="secondul">
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/general/', 0, 0);">General</a></li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/directories/', 0, 0);">Directories</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/switches/', 0, 0);">Switches</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/server/', 0, 0);">Servers</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/scheduling/', 0, 0);">Scheduling</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/rss/', 0, 0);">RSS</a> </li>
-						<li><a class="config" href="javascript:lr('/sabnzbd/config/email/', 0, 0);">Email</a></li>
+						<li><a class="config" onClick="lr('/sabnzbd/config/general/', 0, 0);">General</a></li>
+						<li><a class="config" onClick="lr('/sabnzbd/config/directories/', 0, 0);">Directories</a> </li>
+						<li><a class="config" onClick="lr('/sabnzbd/config/switches/', 0, 0);">Switches</a> </li>
+						<li><a class="config" onClick="lr('/sabnzbd/config/server/', 0, 0);">Servers</a> </li>
+						<li><a class="config" onClick="lr('/sabnzbd/config/scheduling/', 0, 0);">Scheduling</a> </li>
+						<li><a class="config" onClick="lr('/sabnzbd/config/rss/', 0, 0);">RSS</a> </li>
+						<li><a class="config" onClick="lr('/sabnzbd/config/email/', 0, 0);">Email</a></li>
 					</ul>
-					<li><a href="javascript:lr('/sabnzbd/connections/', 1);">Connections</a></li>
-					<li><a class="bold" id="status2" href="javascript:toggle()">$statusstr2</a></li>
+					<li><a onClick="lr('/sabnzbd/connections/', 1, 0);">Connections</a></li>
+					<li><a class="bold" id="status2" onClick="toggle()">$statusstr2</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
 				</ul> 
 				<center>
