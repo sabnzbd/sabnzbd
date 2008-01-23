@@ -78,6 +78,7 @@ WAITEXIT = False
 SEND_GROUP = False
 
 CLEANUP_LIST = []
+IGNORE_LIST = []
 
 UMASK = None
 BANDWITH_LIMIT = 0.0
@@ -213,7 +214,7 @@ INIT_LOCK = Lock()
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader = False, clean_up = False, force_save= False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
-           DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, \
+           DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, IGNORE_LIST, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, AUTODISCONNECT, WAITEXIT, \
@@ -262,6 +263,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     if type(CLEANUP_LIST) != type([]):
         CLEANUP_LIST = []
 
+    IGNORE_LIST = check_setting_str(CFG, 'misc', 'ignore_list', '')
+    if type(IGNORE_LIST) != type([]):
+        IGNORE_LIST = []        
+    
     UMASK = check_setting_str(CFG, 'misc', 'permissions', '')
     try:
         if UMASK:

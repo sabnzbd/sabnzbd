@@ -879,6 +879,15 @@ class ConfigGeneral(ProtectedClass):
 
         else:
             config['cleanup_list'] = listquote.makelist(sabnzbd.CFG['misc']['cleanup_list'])
+            
+        if not sabnzbd.CFG['misc']['ignore_list']:
+            config['ignore_list'] = ','
+
+        elif len(sabnzbd.CFG['misc']['ignore_list']) == 1:
+            config['ignore_list'] = '%s,' % sabnzbd.CFG['misc']['ignore_list'][0]
+
+        else:
+            config['ignore_list'] = listquote.makelist(sabnzbd.CFG['misc']['ignore_list'])
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             searchList=[config],
@@ -890,7 +899,7 @@ class ConfigGeneral(ProtectedClass):
     def saveGeneral(self, host = None, port = None, username = None, password = None, web_dir = None,
                     cronlines = None, username_newzbin = None, password_newzbin = None,
                     refresh_rate = None, rss_rate = None,
-                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None):
+                    bandwith_limit = None, cleanup_list = None, ignore_list = None, cache_limitstr = None):
 
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
@@ -903,6 +912,7 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['newzbin']['username'] = username_newzbin
         sabnzbd.CFG['newzbin']['password'] = password_newzbin
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
+        sabnzbd.CFG['misc']['ignore_list'] = listquote.simplelist(ignore_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
 
         if not web_dir:

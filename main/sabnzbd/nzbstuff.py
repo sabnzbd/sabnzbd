@@ -331,8 +331,7 @@ class NzbObject(TryList):
         if sabnzbd.REPLACE_SPACES:
             self.__dirname = self.__dirname.replace(' ','_')        
             logging.info('[%s] Replacing spaces with underscores in %s', __NAME__, self.__dirname)
-        else:
-            logging.info('[%s] Keeping spaces on %s', __NAME__, self.__dirname)     
+    
         if not nzb:
             return
 
@@ -344,6 +343,7 @@ class NzbObject(TryList):
 
         avg_age = 0
         valids = 0
+        found = 0
         for _file in root:
             if not self.__group:
                 groups = _file.find('%sgroups' % BLAH)
@@ -351,6 +351,17 @@ class NzbObject(TryList):
                     groups = _file.find('groups')
                 self.__group = groups[0].text
             subject = _file.get('subject')
+
+            if sabnzbd.IGNORE_LIST:
+                subj = subject.lower()
+                for ignore in sabnzbd.IGNORE_LIST:
+                    if ignore in subj:
+                        found = 1
+                        break
+
+            if found:
+                break
+
             if isinstance(subject, unicode):
                 subject = subject.encode('utf-8')
 
@@ -391,6 +402,8 @@ class NzbObject(TryList):
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
         self.__files.sort(cmp=_nzf_cmp)
+
+        self.__files.sort(cmp=_nzf_rar)        
 
     ## begin nzo.Mutators #####################################################
     ## excluding nzo.__try_list ###############################################
@@ -755,6 +768,17 @@ def _nzf_cmp(nzf1, nzf2):
         return ret
     else:
         return cmp(nzf1.get_date(), nzf2.get_date())
+
+def _nzf_rar(nzf1, nzf2):
+    subject1 = nzf1.get_subject().lower()
+    subject2 = nzf2.get_subject().lower()
+    if '.rar' in subject1: #some nzbs dont get filename field populated, using subject instead
+        if '.rar' in subject2:
+            return 0 #return 0 if both subject contain rar - used for posts that have filed named **.part01.rar ect..
+        else:
+            return -1
+    else:
+        return 0 #return 0 (no change) if no rar file is found
 
 
 #-------------------------------------------------------------------------------
