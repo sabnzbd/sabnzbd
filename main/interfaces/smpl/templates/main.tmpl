@@ -401,19 +401,19 @@ function loadingJSON(){
 		if (paused == true)
 		{
 			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
-            document.title = "SABnzbd+ - Paused";
+            document.title = "SABnzbd+ | Paused";
 						//alert("paused");
 		} else if 	(paused == false && speed>0) 
 		{
 			document.getElementById("status").innerHTML = "<span class='downloading'>Downloading</span>";
      		totalTimeRemain = (info["mbleft"] * 1024) / speed;
     		totalTimeRemain = convertSecondsToTime(totalTimeRemain);     //from nzbdstatus plugin      
-            dltitle = "SABnzbd+ - "+totalTimeRemain+" - "+speed+"kB/s";
+            dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"kB/s";
             document.title = dltitle;
 						//alert("down");			
 		} else { 
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
-            document.title = "SABnzbd+ - Idle";
+            document.title = "SABnzbd+ | Idle";
 						//alert("idle");			
 		}
 	
