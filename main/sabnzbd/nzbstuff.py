@@ -352,16 +352,6 @@ class NzbObject(TryList):
                 self.__group = groups[0].text
             subject = _file.get('subject')
 
-            if sabnzbd.IGNORE_LIST:
-                subj = subject.lower()
-                for ignore in sabnzbd.IGNORE_LIST:
-                    if ignore in subj:
-                        found = 1
-                        break
-
-            if found:
-                break
-
             if isinstance(subject, unicode):
                 subject = subject.encode('utf-8')
 
@@ -376,14 +366,34 @@ class NzbObject(TryList):
             if not segments:
                 segments = _file.find('segments')
             nzf = NzbFile(date, subject, segments, self)
-
+            
+            found = 0
+            fln = None
             if nzf.valid and nzf.nzf_id:
-                logging.info('[%s] %s added to queue', __NAME__, subject)
-                avg_age += t
-                valids += 1
-                self.__files_table[nzf.nzf_id] = nzf
-                self.__bytes += nzf.bytes()
-                self.__files.append(nzf)
+                
+                if sabnzbd.IGNORE_LIST:
+                    if (nzf.get_filename()):
+                        fln = nzf.get_filename()
+                        fln = fln.lower()  
+                    else:
+                        fln = nzf.get_subject()
+                        fln = fln.lower()  
+                        
+                    for ignore in sabnzbd.IGNORE_LIST:
+                        if ignore in fln:
+                            found = 1
+                            break
+
+                if found:
+                    if nzf.nzf_id:
+                        sabnzbd.remove_data(nzf.nzf_id)
+                else:
+                    logging.info('[%s] %s added to queue', __NAME__, subject)
+                    avg_age += t
+                    valids += 1
+                    self.__files_table[nzf.nzf_id] = nzf
+                    self.__bytes += nzf.bytes()
+                    self.__files.append(nzf)
 
             else:
                 logging.info('[%s] Error importing %s, skipping', __NAME__,
@@ -401,9 +411,7 @@ class NzbObject(TryList):
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
-        self.__files.sort(cmp=_nzf_cmp)
-
-        self.__files.sort(cmp=_nzf_rar)        
+        self.__files.sort(cmp=_nzf_cmp)     
 
     ## begin nzo.Mutators #####################################################
     ## excluding nzo.__try_list ###############################################
@@ -763,22 +771,15 @@ def _nzf_cmp(nzf1, nzf2):
     if 'vol' in subject2 and '.par2' in subject2:
         par2_found += 1
         ret += 1
+        
+    if '.rar' in subject1 and not '.par' in subject2 and not '.rar' in subject2: #some nzbs dont get filename field populated, using subject instead
+        return -1 #nzf1 contained '.rar' nzf2 didnt. Move nzf1 up in the queue
 
     if par2_found == 1:
         return ret
     else:
         return cmp(nzf1.get_date(), nzf2.get_date())
 
-def _nzf_rar(nzf1, nzf2):
-    subject1 = nzf1.get_subject().lower()
-    subject2 = nzf2.get_subject().lower()
-    if '.rar' in subject1: #some nzbs dont get filename field populated, using subject instead
-        if '.rar' in subject2:
-            return 0 #return 0 if both subject contain rar - used for posts that have filed named **.part01.rar ect..
-        else:
-            return -1
-    else:
-        return 0 #return 0 (no change) if no rar file is found
 
 
 #-------------------------------------------------------------------------------
