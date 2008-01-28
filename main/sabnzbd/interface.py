@@ -29,6 +29,8 @@ import cherrypy
 import logging
 import re
 import glob
+from xml.sax.saxutils import escape
+
 from sabnzbd.utils.rsslib import RSS, Item, Namespace
 from sabnzbd.utils.json import JsonWriter
 import sabnzbd
@@ -43,7 +45,8 @@ from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 from sabnzbd.email import email_send
-from sabnzbd.misc import real_path, create_real_path, save_configfile, to_units, from_units, SameFile
+from sabnzbd.misc import real_path, create_real_path, save_configfile, \
+                         to_units, from_units, SameFile, encode_for_xml
 from sabnzbd.nzbstuff import SplitFileName
 
 from sabnzbd.constants import *
@@ -102,6 +105,17 @@ def CheckFreeSpace():
             if sabnzbd.EMAIL_FULL:
                 email_send("SABnzbd has halted", "SABnzbd has halted because diskspace is below the minimum.\n\nSABnzbd")
 
+
+def check_timeout(timeout):
+    """ Check sensible ranges for server timeout """
+    if timeout.isdigit():
+        if int(timeout) < MIN_TIMEOUT:
+            timeout = MIN_TIMEOUT
+        elif int(timeout) > MAX_TIMEOUT:
+            timeout = MAX_TIMEOUT
+    else:
+        timeout = DEF_TIMEOUT
+    return timeout
 
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
@@ -167,8 +181,8 @@ class MainPage(ProtectedClass):
         if id:
             id = id.strip()
 
-        if id and id.isdigit() and pp.isdigit():
-            sabnzbd.add_msgid(int(id), int(pp))
+        if id and (id.isdigit() or len(id)==5) and pp.isdigit():
+            sabnzbd.add_msgid(id, int(pp))
 
         if not redirect:
             redirect = self.__root
@@ -225,6 +239,8 @@ class MainPage(ProtectedClass):
     def rss(self, mode='history'):
         if mode == 'history':
             return rss_history()
+        elif mode == 'warnings':
+            return rss_warnings()
 
 
     @cherrypy.expose
@@ -276,6 +292,14 @@ class MainPage(ProtectedClass):
             if os.name == 'nt':
                 sabnzbd.AUTOSHUTDOWN = bool(name)
                 return 'ok\n'
+            else:
+                return 'not implemented\n'
+
+        elif mode == 'warnings':
+            if output == 'json':
+                return json_warnings()
+            elif output == 'xml':
+                return xml_warnings()
             else:
                 return 'not implemented\n'
 
@@ -956,13 +980,7 @@ class ConfigServer(ProtectedClass):
     def addServer(self, server = None, host = None, port = None, timeout = None, username = None,
                          password = None, connections = None, fillserver = None):
 
-        if timeout.isdigit():
-            if int(timeout) < MIN_TIMEOUT:
-                timeout = MIN_TIMEOUT
-            elif int(timeout) > MAX_TIMEOUT:
-                timeout = MAX_TIMEOUT
-        else:
-            timeout = DEF_TIMEOUT
+        timeout = check_timeout(timeout)
 
         if connections == "":
             connections = '1'
@@ -993,11 +1011,7 @@ class ConfigServer(ProtectedClass):
     def saveServer(self, server = None, host = None, port = None, username = None, timeout = None,
                          password = None, connections = None, fillserver = None):
 
-        if timeout.isdigit():
-            if int(timeout) < 30:
-                timeout = '30'
-        else:
-            timeout = DEF_TIMEOUT
+        timeout = check_timeout(timeout)
 
         if connections == "":
             connections = '1'
@@ -1168,6 +1182,8 @@ class ConnectionInfo(ProtectedClass):
             busy.sort()
             header['servers'].append((server.host, server.port, connected, busy))
 
+        header['warnings'] = sabnzbd.GUIHANDLER.content()
+            
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
                             searchList=[header],
                             compilerSettings={'directiveStartToken': '<!--#',
@@ -1201,6 +1217,12 @@ class ConnectionInfo(ProtectedClass):
             return cherrypy.lib.cptools.serveFile(sabnzbd.WEBLOGFILE, disposition='attachment')
         else:
             return "Web logging is off!"
+
+    @cherrypy.expose
+    def clearwarnings(self):
+        sabnzbd.GUIHANDLER.clear()
+        raise cherrypy.HTTPRedirect(self.__root)
+
 
 def saveAndRestart(redirect_root):
     save_configfile(sabnzbd.CFG)
@@ -1238,7 +1260,7 @@ def build_header():
     try:
         uptime = calc_age(sabnzbd.START)
     except:
-        uptime = "Error"
+        uptime = "-"
 
     header = { 'version':sabnzbd.__version__, 'paused':sabnzbd.paused(),
                'uptime':uptime }
@@ -1284,7 +1306,7 @@ def calc_age(date):
 
         age = str(now - date).split(".")[0]
     except:
-        age = "Error"
+        age = "-"
 
     return age
 
@@ -1414,6 +1436,24 @@ def rss_history():
     return rss.write()
 
 
+def rss_warnings():
+    """ Return an RSS feed with last warnings/errors
+    """
+    rss = RSS()
+    rss.channel.title = "SABnzbd Warnings"
+    rss.channel.description = "Overview of warnings/errors"
+    rss.channel.link = "http://sourceforge.net/projects/sabnzbdplus/"
+    rss.channel.language = "en"
+
+    for warn in sabnzbd.GUIHANDLER.content():
+        item = Item()
+        item.title = warn
+        rss.addItem(item)
+
+    rss.channel.lastBuildDate = std_time(time.time())
+    rss.channel.pubDate = rss.channel.lastBuildDate
+    return rss.write()
+    
 
 def json_qstatus():
     """Build up the queue status as a nested object and output as a JSON object
@@ -1457,7 +1497,8 @@ def xml_qstatus():
         filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
-        jobs.append( { "mb":bytes, "mbleft":bytesleft, "filename":filename, "msgid":msgid } )
+        name = encode_for_xml(escape(filename), 'UTF-8')
+        jobs.append( { "mb":bytes, "mbleft":bytesleft, "filename":name, "msgid":msgid } )
 
     status = {
                "paused" : sabnzbd.paused(),

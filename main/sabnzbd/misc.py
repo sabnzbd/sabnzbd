@@ -30,6 +30,7 @@ import cherrypy
 import urllib
 import re
 import zipfile
+import gzip
 import webbrowser
 import tempfile
 import Queue
@@ -52,6 +53,12 @@ PANIC_OTHER = 5
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
+    """
+    Thread that periodically scans a given directoty and picks up any
+    valid NZB, NZB.GZ ZIP-with-only-NZB and even NZB.GZ named as .NZB
+    Candidates which turned out wrong, will be remembered and skipped in
+    subsequent scans.
+    """
     def __init__(self, dirscan_dir, dirscan_speed, repair, unpack, delete, script):
         Thread.__init__(self)
 
@@ -63,6 +70,7 @@ class DirScanner(Thread):
         self.d = delete
         self.s = script
 
+        self.ignored = []  # Will hold all examined but bad candidates
         self.shutdown = False
 
     def stop(self):
@@ -82,53 +90,95 @@ class DirScanner(Thread):
 
             try:
                 files = os.listdir(self.dirscan_dir)
+            except:
+                logging.exception("Error importing")
+                files = []
 
-                for filename in files:
-                    path = os.path.join(self.dirscan_dir, filename)
-                    root, ext = os.path.splitext(path)
-                    candidate = ext.lower() in ('.nzb', '.zip')
-                    if candidate:
-                        stat_tuple = os.stat(path)
-                    if candidate and stat_tuple.st_size > 0:
-                        try:
-                            logging.info('[%s] Trying to import %s', __NAME__, path)
+            for filename in files:
+                if filename in self.ignored:
+                    continue
 
-                            # Wait until the attributes are stable for 1 second
-                            while 1:
-                                time.sleep(1.0)
-                                stat_tuple_tmp = os.stat(path)
-                                if stat_tuple == stat_tuple_tmp:
-                                    break
-                                else:
-                                    stat_tuple = stat_tuple_tmp
+                path = os.path.join(self.dirscan_dir, filename)
+                root, ext = os.path.splitext(path)
+                ext = ext.lower()
+                candidate = ext in ('.nzb', '.zip', '.gz')
+                if candidate:
+                    stat_tuple = os.stat(path)
+                else:
+                    self.ignored.append(filename)
 
-                            if ext.lower() == '.nzb':
-                                f = open(path, 'rb')
-                                data = f.read()
-                                f.close()
-                                sabnzbd.add_nzo(NzbObject(filename, self.r, self.u,
-                                                          self.d, self.s, data))
-                                sabnzbd.backup_nzb(filename, data)
-                            else:
-                                zf = zipfile.ZipFile(path)
-                                try:
-                                    for name in zf.namelist():
-                                        data = zf.read(name)
-                                        name = os.path.basename(name)
-                                        if data:
-                                            sabnzbd.add_nzo(NzbObject(name, self.r, self.u,
-                                                                      self.d, self.s, data))
-                                            sabnzbd.backup_nzb(name, data)
-                                finally:
-                                    zf.close()
-                        finally:
+                if candidate and stat_tuple.st_size > 0:
+                    logging.info('[%s] Trying to import %s', __NAME__, path)
+
+                    # Wait until the attributes are stable for 1 second
+                    while 1:
+                        time.sleep(1.0)
+                        stat_tuple_tmp = os.stat(path)
+                        if stat_tuple == stat_tuple_tmp:
+                            break
+                        else:
+                            stat_tuple = stat_tuple_tmp
+
+                    # Handle ZIP files, but only when containing just NZB files
+                    if ext == '.zip':
+                        zf = zipfile.ZipFile(path)
+                        ok = True
+                        for name in zf.namelist():
+                            if not name.lower().endswith('.nzb'):
+                                ok = False
+                                break
+                        if ok:
+                            for name in zf.namelist():
+                                data = zf.read(name)
+                                name = os.path.basename(name)
+                                if data:
+                                    sabnzbd.add_nzo(NzbObject(name, self.r, self.u,
+                                                              self.d, self.s, data))
+                            zf.close()
+                            sabnzbd.backup_nzb(filename, data)
                             try:
                                 os.remove(path)
                             except:
-                                logging.exception("[%s] Error removing %s",
-                                                  __NAME__, path)
-            except:
-                logging.exception("Error importing")
+                                logging.exception("[%s] Error removing %s", __NAME__, path)
+                                self.ignored.append(filename)
+                        else:
+                            zf.close()
+                            self.ignored.append(filename)
+
+                    # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
+                    elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
+                        try:
+                            f = open(path, 'rb')
+                            b1 = f.read(1)
+                            b2 = f.read(1)
+                            f.close()
+
+                            if (b1 == '\x1f' and b2 == '\x8b'):
+                                # gzip file or gzip in disguise
+                                name = filename.replace('.nzb.gz', '.nzb')
+                                f = gzip.GzipFile(path, 'rb')
+                            else:
+                                name = filename
+                                f = open(path, 'rb')
+                            data = f.read()
+                            f.close()
+                        except:
+                            logging.warning('[%s] Cannot read %s', __NAME__, path)
+                            self.ignored.append(filename)
+                            continue
+                            
+                        sabnzbd.add_nzo(NzbObject(name, self.r, self.u, self.d, self.s, data))
+                        sabnzbd.backup_nzb(filename, data)
+                        try:
+                            os.remove(path)
+                        except:
+                            logging.exception("[%s] Error removing %s", __NAME__, path)
+                            self.ignored.append(filename)
+                    else:
+                        self.ignored.append(filename)
+
+                if filename in self.ignored:
+                    logging.debug('[%s] Ignoring %s', __NAME__, path)
 
 
 #------------------------------------------------------------------------------
@@ -160,6 +210,11 @@ class MSGIDGrabber(Thread):
                 sabnzbd.insert_future_nzo(nzo, filename, data, cat_root, cat_tail)
             else:
                 sabnzbd.remove_nzo(nzo.nzo_id, False)
+
+            # Keep distance between the grabs
+            time.sleep(5)
+        logging.debug('[%s] Stopping MSGIDGrabber', __NAME__)
+
 
 #------------------------------------------------------------------------------
 class URLGrabber(Thread):
@@ -536,3 +591,31 @@ def ExitSab(value):
         print
         raw_input("Press ENTER to close this window");
     sys.exit(value)
+
+
+#------------------------------------------------------------------------------
+def encode_for_xml(unicode_data, encoding='ascii'):
+    """
+    Encode unicode_data for use as XML or HTML, with characters outside
+    of the encoding converted to XML numeric character references.
+    """
+    try:
+        return unicode_data.encode(encoding, 'xmlcharrefreplace')
+    except ValueError:
+        # ValueError is raised if there are unencodable chars in the
+        # data and the 'xmlcharrefreplace' error handler is not found.
+        # Pre-2.3 Python doesn't support the 'xmlcharrefreplace' error
+        # handler, so we'll emulate it.
+        return _xmlcharref_encode(unicode_data, encoding)
+
+def _xmlcharref_encode(unicode_data, encoding):
+    """Emulate Python 2.3's 'xmlcharrefreplace' encoding error handler."""
+    chars = []
+    # Step through the unicode_data string one character at a time in
+    # order to catch unencodable characters:
+    for char in unicode_data:
+        try:
+            chars.append(char.encode(encoding, 'strict'))
+        except UnicodeError:
+            chars.append('&#%i;' % ord(char))
+    return ''.join(chars)

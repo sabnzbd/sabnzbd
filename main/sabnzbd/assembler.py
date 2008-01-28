@@ -127,6 +127,7 @@ class PostProcessor(Thread):
 
                     if readd:
                         logging.info('[%s] Readded %s to queue', __NAME__, filename)
+                        sabnzbd.AUTOSHUTDOWN_GO = False
                         sabnzbd.add_nzo(nzo, 0)
                         ## Break out
                         continue

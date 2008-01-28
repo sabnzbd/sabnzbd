@@ -100,8 +100,7 @@
     <strong>Create Category Folders:</strong><br>
     Place downloads into newzbin.com category folders.<br>
     <input type="radio" name="create_category_folders" value="0" <!--#if $create_category_folders == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="create_category_folders" value="1" <!--#if $create_category_folders == 1 then "checked=1" else ""#--> /> Root
-    <input type="radio" name="create_category_folders" value="2" <!--#if $create_category_folders == 2 then "checked=1" else ""#--> /> Root+Sub
+    <input type="radio" name="create_category_folders" value="1" <!--#if $create_category_folders == 1 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
     <strong>Send Group</strong><br>
@@ -122,14 +121,14 @@
     <input type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
-    <strong>Replace spaces with underscores in foldernames:</strong><br>
-    Weekly check for new SABnzbd release.<br>
+    <strong>Replace spaces in foldername:</strong><br>
+    Replace spaces with underscores in foldernames.<br>
     <input type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
     <strong>Launch browser on startup:</strong><br>
-    Weekly check for new SABnzbd release.<br>
+    Launch the browser when starting SABnzbd.<br>
     <input type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
     <br>

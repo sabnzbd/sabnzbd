@@ -151,7 +151,7 @@ class Decoder(Thread):
             ## Allow all servers to iterate over this nzo and nzf again ##
             sabnzbd.reset_try_lists(nzf, nzo)
             
-            logging.warning('[%s] %s => found at least one untested server',
+            logging.info('[%s] %s => found at least one untested server',
                             __NAME__, article)
                             
         else:

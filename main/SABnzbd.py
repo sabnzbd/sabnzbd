@@ -76,6 +76,39 @@ def hide_console(hide, path):
 
 
 #------------------------------------------------------------------------------
+class guiHandler(logging.Handler):
+    """
+    Logging handler collects the last warnings/errors/exceptions
+    to be displayed in the web-gui
+    """
+    def __init__(self, size):
+        """
+        Initializes the handler
+        """
+        logging.Handler.__init__(self)
+        self.size = size
+        self.store = []
+
+    def emit(self, record):
+        """
+        Emit a record by adding it to our private queue
+        """
+        if len(self.store) >= self.size:
+            # Loose the oldest record
+            self.store.pop(0)
+        self.store.append(self.format(record))
+
+    def clear(self):
+        self.store = []
+
+    def content(self):
+        """
+        Return an array with last records
+        """
+        return self.store
+
+
+#------------------------------------------------------------------------------
 
 def print_help():
     print
@@ -377,14 +410,13 @@ def main():
         sys.exit()
 
     logdir = ""
-    format = '%(asctime)s::%(levelname)s::%(message)s'
-
 
     logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
     if clean_up:
         xlist= glob.glob(logdir + '/*')
         for x in xlist:
-            os.remove(x)
+            if x.find(RSS_FILE_NAME) < 0:
+                os.remove(x)
 
     try:
         sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
@@ -394,11 +426,22 @@ def main():
                        check_setting_int(cfg, 'logging', 'log_backups', 5))
 
         rollover_log.setLevel(LOGLEVELS[logging_level])
+        format = '%(asctime)s::%(levelname)s::%(message)s'
         rollover_log.setFormatter(logging.Formatter(format))
+        sabnzbd.LOGHANDLER = rollover_log
+
+        gui_log = guiHandler(MAX_WARNINGS)
+        gui_log.setLevel(logging.WARNING)
+        format_gui = '%(asctime)s\n%(levelname)s\n%(message)s'
+        gui_log.setFormatter(logging.Formatter(format_gui))
+        sabnzbd.GUIHANDLER = gui_log
+
         logger = logging.getLogger('')
         logger.setLevel(LOGLEVELS[logging_level])
         logger.addHandler(rollover_log)
-        sabnzbd.LOGHANDLER = rollover_log
+        logger.addHandler(gui_log)
+
+
         logging.info("--------------------------------")
 
     except IOError:

@@ -27,7 +27,7 @@ import datetime
 
 from sabnzbd.trylist import TryList
 
-RE_NEWZBIN = re.compile(r"msgid_(\d+) (.+)(\.nzb)", re.I)
+RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
 
 HAVE_CELEMENTTREE = True
@@ -779,7 +779,6 @@ def _nzf_cmp(nzf1, nzf2):
         return ret
     else:
         return cmp(nzf1.get_date(), nzf2.get_date())
-
 
 
 #-------------------------------------------------------------------------------

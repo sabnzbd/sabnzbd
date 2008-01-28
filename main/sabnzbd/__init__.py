@@ -98,6 +98,7 @@ COMPLETE_DIR = None
 LOGFILE = None
 WEBLOGFILE = None
 LOGHANDLER = None
+GUIHANDLER = None
 
 POSTPROCESSOR = None
 ASSEMBLER = None
@@ -217,7 +218,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, IGNORE_LIST, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
-           LOGFILE, WEBLOGFILE, LOGHANDLER, AUTODISCONNECT, WAITEXIT, \
+           LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AUTODISCONNECT, WAITEXIT, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
@@ -276,14 +277,15 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     SEND_GROUP = bool(check_setting_int(CFG, 'misc', 'send_group', 0))
 
-    CREATE_CAT_FOLDERS = check_setting_int(CFG, 'newzbin', 'create_category_folders', 0)
+    CREATE_CAT_FOLDERS = bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
 
-    if CREATE_CAT_FOLDERS > 1:
-        CREATE_CAT_SUB = True
-    CREATE_CAT_FOLDERS = bool(CREATE_CAT_FOLDERS)
+    # Sub-cats not available on V3.newzbin.com
+    #if CREATE_CAT_FOLDERS > 1:
+    #    CREATE_CAT_SUB = True
+    #CREATE_CAT_FOLDERS = bool(CREATE_CAT_FOLDERS)
 
     logging.debug("CREATE_CAT_FOLDERS -> %s", CREATE_CAT_FOLDERS)
-    logging.debug("CREATE_CAT_SUB -> %s", CREATE_CAT_SUB)
+    #logging.debug("CREATE_CAT_SUB -> %s", CREATE_CAT_SUB)
 
     DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
     if DOWNLOAD_DIR == "":
@@ -1007,7 +1009,7 @@ def search_new_server(servers, article):
         nzo.reset_try_list()
         reset_try_list()
 
-        logging.warning('[%s] %s => found at least one untested server',
+        logging.info('[%s] %s => found at least one untested server',
                         __NAME__, article)
 
     else:

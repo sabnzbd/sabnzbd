@@ -58,6 +58,12 @@
     <h2>Email test result</h2>
     $lastmail
 <!--#end if#-->
+<!--#if $warnings#-->
+    <h2>Last warnings (<a href="./clearwarnings">clear</a>)</h2>
+    <!--#for $warn in $warnings#-->
+        $warn<br/>
+    <!--#end for#-->
+<!--#end if#-->
 
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE

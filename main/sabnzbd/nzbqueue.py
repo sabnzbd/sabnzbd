@@ -156,6 +156,8 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, pos = -1, save=True):
+        sabnzbd.AUTOSHUTDOWN_GO = False
+
         # Reset try_lists
         nzo.reset_try_list()
         self.reset_try_list()
