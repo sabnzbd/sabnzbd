@@ -48,6 +48,8 @@ PANIC_TEMPL = 2
 PANIC_QUEUE = 3
 PANIC_FWALL = 4
 PANIC_OTHER = 5
+PW_PREFIX = '!!!encoded!!!'
+
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
@@ -592,3 +594,37 @@ def _xmlcharref_encode(unicode_data, encoding):
         except UnicodeError:
             chars.append('&#%i;' % ord(char))
     return ''.join(chars)
+
+
+#------------------------------------------------------------------------------
+def encodePassword(pw):
+    """ Encode password in hexadecimal if needed """
+    enc = False
+    if pw:
+        encPW = PW_PREFIX
+        for c in pw:
+            cnum = ord(c)
+            if c == '#' or cnum<33 or cnum>126:
+                enc = True
+            encPW += '%2x' % cnum
+        if enc:
+            return encPW
+    return pw
+
+
+def decodePassword(pw, name):
+    """ Decode hexadecimal encoded password
+        but only decode when prefixed
+    """
+    decPW = ''
+    if pw.startswith(PW_PREFIX):
+        for n in range(len(PW_PREFIX), len(pw), 2):
+            try:
+                ch = chr( int(pw[n] + pw[n+1],16) )
+            except:
+                logging.error('[%s] Incorrectly encoded password %s', __NAME__, name)
+                return ''
+            decPW += ch
+        return decPW
+    else:
+        return pw

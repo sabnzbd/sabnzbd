@@ -39,7 +39,7 @@ from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
-                         create_real_path, check_latest_version, from_units, SameFile
+                         create_real_path, check_latest_version, from_units, SameFile, decodePassword
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue
@@ -242,7 +242,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     ###########################
 
     USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
-    PASSWORD_NEWZBIN = check_setting_str(CFG, 'newzbin', 'password', '', False)
+    PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
 
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
     

@@ -46,7 +46,8 @@ from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 from sabnzbd.email import email_send
 from sabnzbd.misc import real_path, create_real_path, save_configfile, \
-                         to_units, from_units, SameFile, encode_for_xml
+                         to_units, from_units, SameFile, encode_for_xml, \
+                         decodePassword, encodePassword
 from sabnzbd.nzbstuff import SplitFileName
 
 from sabnzbd.constants import *
@@ -877,7 +878,7 @@ class ConfigGeneral(ProtectedClass):
         config['host'] = sabnzbd.CFG['misc']['host']
         config['port'] = sabnzbd.CFG['misc']['port']
         config['username'] = sabnzbd.CFG['misc']['username']
-        config['password'] = sabnzbd.CFG['misc']['password']
+        config['password'] = decodePassword(sabnzbd.CFG['misc']['password'], 'web')
         config['bandwith_limit'] = sabnzbd.CFG['misc']['bandwith_limit']
         config['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
         config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
@@ -923,7 +924,7 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
         sabnzbd.CFG['misc']['username'] = username
-        sabnzbd.CFG['misc']['password'] = password
+        sabnzbd.CFG['misc']['password'] = encodePassword(password)
         sabnzbd.CFG['misc']['web_dir'] = web_dir
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
@@ -962,6 +963,8 @@ class ConfigServer(ProtectedClass):
         config, pnfo_list, bytespersec = build_header()
 
         config['servers'] = sabnzbd.CFG['servers']
+        for svr in config['servers']:
+            config['servers'][svr]['password'] = decodePassword(config['servers'][svr]['password'], 'server')
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
                             searchList=[config],
@@ -992,7 +995,7 @@ class ConfigServer(ProtectedClass):
                 sabnzbd.CFG['servers'][server]['host'] = host
                 sabnzbd.CFG['servers'][server]['port'] = port
                 sabnzbd.CFG['servers'][server]['username'] = username
-                sabnzbd.CFG['servers'][server]['password'] = password
+                sabnzbd.CFG['servers'][server]['password'] = encodePassword(password)
                 sabnzbd.CFG['servers'][server]['timeout'] = timeout
                 sabnzbd.CFG['servers'][server]['connections'] = connections
                 sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
@@ -1022,7 +1025,7 @@ class ConfigServer(ProtectedClass):
             sabnzbd.CFG['servers'][server]['host'] = host
             sabnzbd.CFG['servers'][server]['port'] = port
             sabnzbd.CFG['servers'][server]['username'] = username
-            sabnzbd.CFG['servers'][server]['password'] = password
+            sabnzbd.CFG['servers'][server]['password'] = encodePassword(password)
             sabnzbd.CFG['servers'][server]['connections'] = connections
             sabnzbd.CFG['servers'][server]['timeout'] = timeout
             sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
@@ -1145,7 +1148,7 @@ class ConfigNewzbin(ProtectedClass):
         config, pnfo_list, bytespersec = build_header()
 
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
-        config['password_newzbin'] = sabnzbd.CFG['newzbin']['password']
+        config['password_newzbin'] = decodePassword(sabnzbd.CFG['newzbin']['password'], 'newzbin')
         config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
         config['newzbin_bookmarks'] = int(sabnzbd.CFG['newzbin']['bookmarks'])
         config['newzbin_unbookmark'] = int(sabnzbd.CFG['newzbin']['unbookmark'])
@@ -1165,7 +1168,7 @@ class ConfigNewzbin(ProtectedClass):
                     newzbin_unbookmark = None, bookmark_rate = None):
 
         sabnzbd.CFG['newzbin']['username'] = username_newzbin
-        sabnzbd.CFG['newzbin']['password'] = password_newzbin
+        sabnzbd.CFG['newzbin']['password'] = encodePassword(password_newzbin)
         sabnzbd.CFG['newzbin']['create_category_folders'] = create_category_folders
         sabnzbd.CFG['newzbin']['bookmarks'] = newzbin_bookmarks
         sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark

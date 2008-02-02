@@ -36,7 +36,8 @@ from sabnzbd.interface import *
 from sabnzbd.constants import *
 from sabnzbd.newsunpack import find_programs
 from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, \
-                         check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab
+                         check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
+                         decodePassword
 
 from threading import Thread
 
@@ -610,7 +611,7 @@ def main():
 
     sabnzbd.interface.USERNAME = check_setting_str(cfg, 'misc', 'username', '')
 
-    sabnzbd.interface.PASSWORD = check_setting_str(cfg, 'misc', 'password', '', False)
+    sabnzbd.interface.PASSWORD = decodePassword(check_setting_str(cfg, 'misc', 'password', '', False), 'web')
 
     if not os.path.exists(web_main):
         logging.warning('Cannot find web template: %s, trying standard template', web_main)
