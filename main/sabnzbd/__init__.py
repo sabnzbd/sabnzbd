@@ -45,6 +45,7 @@ from sabnzbd.rss import RSSQueue
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
+from sabnzbd.newzbin import Bookmarks
 
 import sabnzbd.nzbgrab
 
@@ -66,6 +67,9 @@ FAIL_ON_CRC = False
 CREATE_GROUP_FOLDERS = False
 CREATE_CAT_FOLDERS = False
 CREATE_CAT_SUB = False
+NEWZBIN_BOOKMARKS = False
+NEWZBIN_UNBOOKMARK = False
+BOOKMARK_RATE = None
 DO_FILE_JOIN = False
 DO_UNZIP = False
 DO_UNRAR = False
@@ -110,6 +114,7 @@ NZBQ = None
 BPSMETER = None
 RSS = None
 SCHED = None
+BOOKMARKS = None
 
 EMAIL_SERVER = None
 EMAIL_TO = None
@@ -217,10 +222,12 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, IGNORE_LIST, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
-           DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
+           DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
+           NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AUTODISCONNECT, WAITEXIT, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
+           NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
@@ -276,6 +283,16 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         logging.error("Permissions (%s) not correct, use OCTAL notation!", UMASK)
 
     SEND_GROUP = bool(check_setting_int(CFG, 'misc', 'send_group', 0))
+
+    NEWZBIN_BOOKMARKS = bool(check_setting_int(CFG, 'newzbin', 'bookmarks', 0))
+
+    NEWZBIN_UNBOOKMARK = bool(check_setting_int(CFG, 'newzbin', 'unbookmark', 0))
+
+    BOOKMARK_RATE = check_setting_int(CFG, 'newzbin', 'bookmark_rate', 12)
+    if BOOKMARK_RATE < 1:
+        BOOKMARK_RATE = 1
+    if BOOKMARK_RATE > 48:
+        BOOKMARK_RATE = 48
 
     CREATE_CAT_FOLDERS = bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
 
@@ -375,8 +392,11 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     ## Object initializiation ##
     ############################
 
+    if NEWZBIN_BOOKMARKS:
+        BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN, dirscan_opts)
+
     need_rsstask = init_RSS()
-    init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK)
+    init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK, BOOKMARKS, BOOKMARK_RATE)
 
     if ARTICLECACHE:
         ARTICLECACHE.__init__(cache_limit)
@@ -453,7 +473,7 @@ def start():
 
 @synchronized(INIT_LOCK)
 def halt():
-    global __INITIALIZED__, SCHED, DIRSCANNER, RSS, MSGIDGRABBER
+    global __INITIALIZED__, SCHED, DIRSCANNER, RSS, MSGIDGRABBER, BOOKMARKS
 
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
@@ -464,6 +484,10 @@ def halt():
             logging.debug('Stopping scheduler')
             SCHED.stop()
             SCHED = None
+
+        if BOOKMARKS:
+            BOOKMARKS.save()
+            BOOKMARKS = None
 
         for grabber in URLGRABBERS:
             logging.debug('Stopping grabber {%s}', grabber)
@@ -726,6 +750,11 @@ def save_state():
             RSS.save()
         except:
             logging.exception("[%s] Error accessing RSS?", __NAME__)
+            
+    if BOOKMARKS:
+        BOOKMARKS.save()
+
+
 ################################################################################
 ## NZB_LOCK Methods                                                           ##
 ################################################################################
@@ -885,6 +914,18 @@ def delayed():
     except:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
 
+def getBookmarksNow():
+    if BOOKMARKS:
+        BOOKMARKS.run()
+
+def getBookmarksList():
+    if BOOKMARKS:
+        return BOOKMARKS.bookmarksList()
+
+def delete_bookmark(msgid):
+    if BOOKMARKS:
+        BOOKMARKS.del_bookmark(msgid)
+
 
 ################################################################################
 # Data IO                                                                      #
@@ -1021,7 +1062,8 @@ def search_new_server(servers, article):
 ################################################################################
 RSSTASK_MINUTE = random.randint(0, 59)
 
-def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck=True):
+def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck=True, \
+               bookmarks=None, bookmark_rate=1):
     global SCHED
 
     if schedlines or need_rsstask or need_versioncheck:
@@ -1070,6 +1112,18 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
 
             logging.debug("Scheduling VersionCheck day=%s time=%s:%s", d, h, m)
             SCHED.addDaytimeTask(check_latest_version, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
+
+
+        if bookmarks:
+            # Check for newzbin bookmarks
+            d = range(1, 8) # all days of the week
+            interval = int((24*60) / bookmark_rate)
+            ran_m = random.randint(0,interval-1)
+            for n in range(0, 24*60, interval):
+                at = n + ran_m
+                h = int(at/60)
+                m = at - h*60
+                SCHED.addDaytimeTask(bookmarks.run, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
 
 
 ################################################################################

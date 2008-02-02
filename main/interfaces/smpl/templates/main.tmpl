@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="default.css"/>
 	<link href="rss?mode=history" rel="alternate" type="application/rss+xml" title="SABnzbd+ History" />
 	<link rel="shortcut icon" href="static/images/favicon.ico" />
-	
+
 	<script type="text/javascript" src="static/MochiKit/MochiKit.js"></script>
 	<script type="text/javascript" src="static/PlotKit/Base.js"></script>
 	<script type="text/javascript" src="static/PlotKit/Layout.js"></script>
@@ -24,10 +24,10 @@
 <!--#set $kbpersecrnd = str(int($kbpersec))#-->
 <!--#if $paused #-->
 <!--#set $kbpersecrnd = "0"#-->
-<!--#end if#-->	
+<!--#end if#-->
 
 	<script type="text/javascript">
-	
+
 	// refresh time in seconds
 	RefreshTime = 5;
 	var jsontimeout;
@@ -53,12 +53,12 @@ if (document.cookie.length>0)
   {
   c_start=document.cookie.indexOf(c_name + "=");
   if (c_start!=-1)
-    { 
-    c_start=c_start + c_name.length+1; 
+    {
+    c_start=c_start + c_name.length+1;
     c_end=document.cookie.indexOf(";",c_start);
     if (c_end==-1) c_end=document.cookie.length;
     return unescape(document.cookie.substring(c_start,c_end));
-    } 
+    }
   }
 return "";
 }
@@ -72,19 +72,19 @@ if (cook!=null && cook!="")
   {
 
 	var speedlog = cook.split(',');
-	for(i=1; i<10; i++) { 
+	for(i=1; i<10; i++) {
 	   speedlog[i-1] = speedlog[i];
 	}
 
 	speedlog[9] = speed;
-	
+
 	var speedstr = speedlog.join(',');
 	setCookie('speedlog',speedstr,1);
-		
+
 	//drawGraph(speedlog);
 	chartReload(speedlog);
   }
-  else 
+  else
   {
   setCookie('speedlog','0,0,0,0,0,0,0,0,0,$kbpersecrnd',1);
     }
@@ -101,11 +101,11 @@ function checkrefresh()
 	element = document.getElementById('refreshrate');
 	if (refr!=null && refr!="")
 	{
-		
+
 		var refreshtimelist = [2, 3, 5, 10, 15, 30, 60, 180, 300, 0];
 		index = Number(refr);
 		var result = -1;
-		for(i=0; i<10; i++) 
+		for(i=0; i<10; i++)
 		{
 			if (refreshtimelist[i]==index) result = i;
 		}
@@ -115,13 +115,13 @@ function checkrefresh()
 		RefreshTime = Number(refr);
 		//alert(refreshr);
 	}
-	else 
+	else
 	{
 
 		refreshr = element.options[element.selectedIndex].value;
 		//alert(refreshr);
-		setCookie('smplrefresh',value,360);		
-	}  
+		setCookie('smplrefresh',value,360);
+	}
 }
 
 
@@ -130,7 +130,7 @@ function applyrefresh(value)
 RefreshTime = value;
 setCookie('smplrefresh',value,360);
 loadingJSON();
-checkCookie();	
+checkCookie();
 }
 
 MochiKit.DOM.addLoadEvent(onpageload);
@@ -162,14 +162,14 @@ checkrefresh();
 
 <script type="text/javascript">
 	var status2 = $pau;
-	
+
 	function toggle()
 	{
-		
-		if (status2 == 1) 
+
+		if (status2 == 1)
 		{
-			status2 = 0;		
-			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";	
+			status2 = 0;
+			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
 			document.getElementById("status2").innerHTML = "Pause";
 			doSimpleXMLHttpRequest("/sabnzbd/api?mode=resume");
 
@@ -182,10 +182,10 @@ checkrefresh();
 			document.getElementById("speed").innerHTML = "0";
 			document.getElementById("status2").innerHTML = "Resume";
 			doSimpleXMLHttpRequest("/sabnzbd/api?mode=pause");
-		
+
 		}
 	}
-	
+
 	function deletequeueitem(elem)
 	{
         val1 = document.getElementById(elem).innerHTML;
@@ -193,12 +193,12 @@ checkrefresh();
         kvstr = queryString({uid:elem})
         //alert(kvstr);
         //finalurl = url
-       var d = doXHR('queue/delete?'+kvstr, 
+       var d = doXHR('queue/delete?'+kvstr,
 	    {
 		    method:'POST',
             sendContent:'?asshole='+Math.random()
-	
-	    });        
+
+	    });
 		//d = doSimpleXMLHttpRequest('queue/delete', {uid: elem});
 		d.addCallback(reloadqueue);
 		d.addErrback(handleServerError);
@@ -217,71 +217,71 @@ checkrefresh();
         }
         else {
         document.getElementById('Right').style.width = "48%";
-        document.getElementById('Right_bottom').style.width = "48%";        
+        document.getElementById('Right_bottom').style.width = "48%";
         }
 		if (timerId2) clearTimeout ( timerId2 );
-        
+
 		//var res = doSimpleXMLHttpRequest(url);
-       var res = doXHR(url, 
+       var res = doXHR(url,
 	    {
 		    method:'POST',
             sendContent:'?asshole='+Math.random()
-	
+
 	    });
-	    res.addCallback(function (res) 
-	    { 
+	    res.addCallback(function (res)
+	    {
 	      document.getElementById('Right').innerHTML = res.responseText;
           if (dual==0) {
               document.getElementById('Right_bottom').innerHTML = "";
               clearTimeout ( timerId3 );
           }
 
-		  if (refresh && RefreshTime>0) timerId2 = setTimeout("lr(\'"+url+"\', 1, "+dual+");", RefreshTime*1000)	
+		  if (refresh && RefreshTime>0) timerId2 = setTimeout("lr(\'"+url+"\', 1, "+dual+");", RefreshTime*1000)
 	    });
-		res.addErrback(handleServerError);			
+		res.addErrback(handleServerError);
 	}
 	function lrb(url, refresh)
 	{
-		
+
 		if (timerId3) clearTimeout ( timerId3 );
-        
+
 		//var res = doSimpleXMLHttpRequest(url);
-       var res = doXHR(url, 
+       var res = doXHR(url,
 	    {
 		    method:'POST',
             sendContent:'?asshole='+Math.random()
-	
+
 	    });
-	    res.addCallback(function (res) 
-	    { 
+	    res.addCallback(function (res)
+	    {
 	      document.getElementById('Right_bottom').innerHTML = res.responseText;
 
-		  if (refresh && RefreshTime>0) timerId3 = setTimeout("lrb(\'"+url+"\', 1);", RefreshTime*1000)	
+		  if (refresh && RefreshTime>0) timerId3 = setTimeout("lrb(\'"+url+"\', 1);", RefreshTime*1000)
 	    });
-		res.addErrback(handleServerError);			
+		res.addErrback(handleServerError);
 	}
- 
+
 	//used when something needs to be submitted in the background, and another page loaded (usually refreshing the current page)
 	function lrdual(url1, url2, refresh, pnode)
-	{    
+	{
         var d = doSimpleXMLHttpRequest(url1);
 		d.addCallback(function (d)
         {
         if (pnode == 'Right') lr(url2, refresh, gDual);//if link is in right_bottom needs to be lrb(
         else lrb(url2, refresh, gDual)
         });
-		
-	}	
-	
 
-	
+	}
+
+
+
 	function changequeuedetails(page)
 	{
 		d = doSimpleXMLHttpRequest(page);
 		d.addCallback(reloadqueue);
-		d.addErrback(handleServerError);		
-	}	
-	
+		d.addErrback(handleServerError);
+	}
+
 	function testemail()
 	{
 		d = doSimpleXMLHttpRequest('/sabnzbd/connections/testmail');
@@ -289,29 +289,46 @@ checkrefresh();
         {
         alert("E-Mail Sent");
         });
-		d.addErrback(handleServerError);		
-	}	
-	
+		d.addErrback(handleServerError);
+	}
+
+	function showBookmarks()
+	{
+		d = doSimpleXMLHttpRequest('/sabnzbd/config/newzbin/showBookmarks');
+		d.addErrback(handleServerError);
+	}
+
+	function hideBookmarks()
+	{
+		d = doSimpleXMLHttpRequest('/sabnzbd/config/newzbin/hideBookmarks');
+		d.addErrback(handleServerError);
+	}
+
+	function getBookmarks()
+	{
+		d = doSimpleXMLHttpRequest('/sabnzbd/config/newzbin/getBookmarks');
+	}
+
 	function changequeueoptions(page)
 	{
 		d = doSimpleXMLHttpRequest('queue/'+page);
-	}	
-	
+	}
+
 	function reloadqueue()
 	{
-		var res = doXHR('/sabnzbd/queue', 
+		var res = doXHR('/sabnzbd/queue',
 	    {
 		    method:'POST',
             sendContent:'?asshole='+Math.random()
-	
-	    });  
+
+	    });
 		res.addCallback(replaceright);
-		res.addErrback(handleServerError);	
+		res.addErrback(handleServerError);
 	}
 	//based from Mochikit documentation - finds all the form values for an element and returns formatted query string
-	function getFormValues(element) 
+	function getFormValues(element)
 	{
-		
+
 	    kv = MochiKit.DOM.formContents(element);
 	    names = kv[0];
 	    values = kv[1];
@@ -319,7 +336,7 @@ checkrefresh();
 		kvstr = queryString(kv)
 	    return kvstr;
 	}
-	
+
 
 
 
@@ -333,36 +350,36 @@ checkrefresh();
 		values = getFormValues(elementt);
 
 		var url = '/sabnzbd/'+extra;
-		var d = doXHR(url, 
+		var d = doXHR(url,
 	    {
 		    method:'POST',
 		    sendContent:values,
 		    headers: {"Content-Type":"application/x-www-form-urlencoded"}
-			
+
 	    });
 		if (saveelement) document.getElementById(saveelement).innerHTML = "<img src='/sabnzbd/static/images/ajax-loader.gif' />";
-	    d.addCallback(function (result) 
-	    { 
+	    d.addCallback(function (result)
+	    {
 	      if (saveelement) document.getElementById(saveelement).innerHTML = "Saved";
 		  if(url2) lr(url2,refresh);
 	    });
-	
 
 
-	    d.addErrback( function (result) 
-	    { 
+
+	    d.addErrback( function (result)
+	    {
 	      //if (saveelement) document.getElementById(saveelement).innerHTML = "Error";
 	    });
 
 	}
-	
+
 
 
 	var replaceright  = function (res)
 	{
 		document.getElementById('Right').innerHTML = res.responseText;
-	}	
-	
+	}
+
     function convertSecondsToTime (seconds)
 	{
 		var d = new Date();
@@ -379,23 +396,23 @@ checkrefresh();
 			s = '0' + s;
 		}
 		return h + ':' + m + ':' + s;
-	}	
-	
-	
+	}
+
+
 //loads up the json for the queue page and changes the values in the document
-function loadingJSON(){	
+function loadingJSON(){
 	if (RefreshTime>0) {
 	clearTimeout ( jsontimeout );
-	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);		
-	}	
+	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);
+	}
 	var url = "/sabnzbd/api?mode=qstatus&output=json";
 	var d = loadJSONDoc(url);
-	var gotMetadata = function (info) 
+	var gotMetadata = function (info)
 	{
 		//alert(info["kbpersec"]);
-		
+
 		speed = info["kbpersec"].toFixed(0);
-		var paused = info["paused"];		
+		var paused = info["paused"];
 		if (paused==true) speed = 0;
 
 		if (paused == true)
@@ -403,46 +420,46 @@ function loadingJSON(){
 			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
             document.title = "SABnzbd+ | Paused";
 						//alert("paused");
-		} else if 	(paused == false && speed>0) 
+		} else if 	(paused == false && speed>0)
 		{
 			document.getElementById("status").innerHTML = "<span class='downloading'>Downloading</span>";
      		totalTimeRemain = (info["mbleft"] * 1024) / speed;
-    		totalTimeRemain = convertSecondsToTime(totalTimeRemain);     //from nzbdstatus plugin      
+    		totalTimeRemain = convertSecondsToTime(totalTimeRemain);     //from nzbdstatus plugin
             dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"kB/s";
             document.title = dltitle;
-						//alert("down");			
-		} else { 
+						//alert("down");
+		} else {
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
             document.title = "SABnzbd+ | Idle";
-						//alert("idle");			
+						//alert("idle");
 		}
-	
+
 		document.getElementById("speed").innerHTML = speed;
 		document.getElementById("mbleft").innerHTML = info["mbleft"].toFixed(2);
 		document.getElementById("mbtotal").innerHTML = info["mb"].toFixed(2);
-        document.getElementById("ds1").innerHTML = info["diskspace1"].toFixed(2);	        
+        document.getElementById("ds1").innerHTML = info["diskspace1"].toFixed(2);
 		document.getElementById("ds2").innerHTML = info["diskspace2"].toFixed(2);
         //var perc1 = 1 - (info["jobs"][0]["mbleft"].toFixed(2) / info["jobs"][0]["mb"].toFixed(2))
         //alert(info["jobs"][0]);
 	   	if (info["jobs"]!="") document.getElementById("downloadinfo").innerHTML = "Downloading: "+info["jobs"][0]["filename"];
         else document.getElementById("downloadinfo").innerHTML = "";
-        
+
 	};
 	var metadataFetchFailed = function (err) {
 	  //alert("The metadata for MochiKit.Async could not be fetched :(");
 	};
 	d.addCallbacks(gotMetadata, metadataFetchFailed);
-}	
-	
-	
-	
-	
-//based on plotkit docummentation for dynamic tables	
+}
+
+
+
+
+//based on plotkit docummentation for dynamic tables
    //var dataTable = null;
    var layout = null;
    var renderer = null;
    var options = null;
-   
+
    function initDynamicTable(data) {
        //dataTable = data;
        options = PlotKit.Base.officeBlue();
@@ -450,7 +467,7 @@ function loadingJSON(){
        renderer = new SweetCanvasRenderer('graph', layout, options);
 	   //alert("hi");
    }
-   
+
    function chartReload(data) {
 
         var colorScheme = "Blue";
@@ -459,22 +476,22 @@ function loadingJSON(){
         var themeName = "office" + colorScheme;
         var theme = PlotKit.Base[themeName]();
         MochiKit.Base.update(options, theme);
-                
+
         layout.style = "line";
         MochiKit.Base.update(layout.options, options);
         MochiKit.Base.update(renderer.options, options);
-                
-        //layout.addDataset("data", values);        
+
+        //layout.addDataset("data", values);
 		layout.addDataset("sqrt", [[0, data[0]], [1, data[1]], [2, data[2]], [3, data[3]], [4, data[4]], [5, data[5]], [6, data[6]], [7, data[7]], [8, data[8]],[9, data[9]]]);
 
         // update
         layout.evaluate();
         renderer.clear();
         renderer.render();
-       
-   }	
-	
-	
+
+   }
+
+
 </script>
 
 
@@ -486,11 +503,11 @@ function loadingJSON(){
 				Status: <span id="status">$status</span><br />
 				Speed: <span id="speed">$kbpersecrnd</span> kB/s<br />
 				Queue: <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
-			</p>	
+			</p>
 		<span id="testing">
 			<a href=""><img id="title" src="/sabnzbd/static/sabnzbd_small3.gif" alt="sabnzbd+" /></a>
 			<h2>The automatic usenet download tool</h2>
-		</span>	
+		</span>
 		</div>
 		<div id="Content">
 			<div id="Left">
@@ -509,15 +526,16 @@ function loadingJSON(){
 						<li><a class="config" onClick="lr('/sabnzbd/config/scheduling/', 0, 0);">Scheduling</a> </li>
 						<li><a class="config" onClick="lr('/sabnzbd/config/rss/', 0, 0);">RSS</a> </li>
 						<li><a class="config" onClick="lr('/sabnzbd/config/email/', 0, 0);">Email</a></li>
+						<li><a class="config" onClick="lr('/sabnzbd/config/newzbin/', 0, 0);">Newzbin</a></li>
 					</ul>
 					<li><a onClick="lr('/sabnzbd/connections/', 1, 0);">Connections</a></li>
 					<li><a class="bold" id="status2" onClick="toggle()">$statusstr2</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
-				</ul> 
+				</ul>
 				<center>
 				Incomplete Dir
 				<span id="ds1">$diskspace1</span>GB / ${diskspacetotal1}GB<br />
-				Complete Dir 
+				Complete Dir
 				<span id="ds2">$diskspace2</span>GB / ${diskspacetotal2}GB
 				</center>
 			</div>
@@ -545,9 +563,9 @@ function loadingJSON(){
     				            <option value="3" selected>+Delete</option>
     				            <option value="4">R+Script</option>
     				            <option value="5">U+Script</option>
-    				            <option value="6">D+Script</option>						
+    				            <option value="6">D+Script</option>
     				            </select>
-    				            
+
     				            <input class="submitindent2" type="submit" value="Add">
     				      </fieldset>
     				    </form>
@@ -566,9 +584,9 @@ function loadingJSON(){
     				            <option value="3" selected>+Delete</option>
     				            <option value="4">R+Script</option>
     				            <option value="5">U+Script</option>
-    				            <option value="6">D+Script</option>						
+    				            <option value="6">D+Script</option>
     				        </select>
-    				        
+
     				        <input class="submitindent2" type="submit" value="Add">
     				    </fieldset>
     				    </form>
@@ -586,24 +604,24 @@ function loadingJSON(){
     				            <option value="3" selected>+Delete</option>
     				            <option value="4">R+Script</option>
     				            <option value="5">U+Script</option>
-    				            <option value="6">D+Script</option>						
+    				            <option value="6">D+Script</option>
     				        </select>
     				      <input class="submitindent2" type="submit" value="Add">
     				    </fieldset>
     				    </form>
-    				</div>	
+    				</div>
 
     			</div>
-                
-                <div id="Right_bottom">   
-    			</div>   
-    		</div>                
-		</div>	
+
+                <div id="Right_bottom">
+    			</div>
+    		</div>
+		</div>
 		<div id="Footer">
 			<div id="divchart"><canvas id="graph" height="100" width="700"></canvas></div>
 			<span id="downloadinfo"></span><br /><br />
 			<p id="versions">Refresh Rate: <select id="refreshrate" onchange="javascript:applyrefresh(this.options[this.selectedIndex].value)">
-				<option value="2" >2 seconds</option>			
+				<option value="2" >2 seconds</option>
 				<option value="3" >3 seconds</option>
 				<option value="5" selected="selected">5 seconds</option>
 				<option value="10" >10 seconds</option>
@@ -612,7 +630,7 @@ function loadingJSON(){
 				<option value="60" >1 minute</option>
 				<option value="180" >3 minutes</option>
 				<option value="300" >5 minutes</option>
-				<option value="0" >None</option>				
+				<option value="0" >None</option>
 			</select>
             <br />sabnzbd version: $version | smpl version: 1.0</a></p>
 		</div>

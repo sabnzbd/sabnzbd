@@ -5,28 +5,28 @@
 <fieldset class="EntryFieldSet">
 <legend>Web server</legend>
 <hr />
-	
-		
+
+
 			<label for "host">Host:</label>
 			<input type="text" name="host" value=$host>
 			<span class="tips">Host SABnzbd should listen on.</span>
 		<br class="clear" />
-		
+
 			<label for "port">Port:</label>
 			<input type="text" name="port" value=$port>
 			<span class="tips">Post SABnzbd should listen on.</span>
 		<br class="clear" />
-		
+
 			<label for "webuser">Web username:</label>
 			<input type="text" name="username" value=$username>
 			<span class="tips">Authentication Username.</span>
 		<br class="clear" />
-		
+
 			<label for "webpass">Web password:</label>
 			<input type="password" name="password" value=$password>
 			<span class="tips">Authentication Password.</span>
 		<br class="clear" />
-		
+
 			<label for "userinterface">User interface:</label>
 
 			<select name="web_dir" id="webdir">
@@ -40,69 +40,52 @@
 			</select>
 			<span class="tips">Choose a user interface (restart required!).</span>
 		<br class="clear" />
-			
+
 </fieldset>
 
 <fieldset class="EntryFieldSet">
 <legend>Tuning</legend>
 <hr />
-	
-		
+
+
 			<label for "qrefresh">Queue auto refresh interval:</label>
 
 			<input type="text" name="refresh_rate" value="$refresh_rate">
 			<span class="tips">Refresh interval of the queue web-interface page(sec, 0= none)</span>
 		<br class="clear" />
-		
+
 			<label for "rsscheck">RSS checking rate:</label>
 
 			<input type="text" name="rss_rate" value="$rss_rate">
 			<span class="tips">Checking rate  (times per hour 1, 2, 3, 4)</span>
 		<br class="clear" />
-		
+
 			<label for "bandwidth limit">Bandwith Limit:</label>
 			<input type="text" name="bandwith_limit" value="$bandwith_limit">
 			<span class="tips">Slowdown factor, try values between 0.01 and 1.0.</span>
 		<br class="clear" />
-		
+
 			<label for "cachelimit">Article Cache Limit:</label>
 			<input type="text" name="cache_limitstr" value="$cache_limitstr">
 			<span class="tips">Cache articles in memory.</span>
 		<br class="clear" />
-		
+
 			<label for "cleanuplist">Cleanup List:</label>
 
 			<input type="text" name="cleanup_list" value="$cleanup_list">
 			<span class="tips">List of file (extensions) that should be deleted at the cleanup stage.
 			For example: ".nfo," or ".nfo, .sfv"</span>
 		<br class="clear" />
-        
-        
+
+
 			<label for "cleanuplist">Ignore List:</label>
 
 			<input type="text" name="ignore_list" value="$ignore_list">
 			<span class="tips">Stuff inside an nzb to ignore and not add to the queue. For example "-sample, .sample"</span>
 		<br class="clear" />
-					
+
 </fieldset>
 
-
-<fieldset class="EntryFieldSet">
-<legend>Newzbin settings</legend>
-<hr />
-	
-		
-			<label>OPTIONAL: Newzbin Username:</label>
-			<input type="text" name="username_newzbin" value="$username_newzbin">
-			<span class="tips">Set your v3.newzbin.com username here.</span>
-		<br class="clear" />
-		
-			<label>OPTIONAL: Newzbin Password:</label>
-			<input type="password" name="password_newzbin" value="$password_newzbin">
-			<span class="tips">Set your v3.newzbin.com password here.</span>
-		<br class="clear" />
-	
-</fieldset>
 
 <p>
 

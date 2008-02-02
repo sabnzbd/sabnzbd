@@ -660,6 +660,7 @@ def main():
     cherrypy.root.sabnzbd.config.scheduling = ConfigScheduling(web_dir)
     cherrypy.root.sabnzbd.config.rss = ConfigRss(web_dir)
     cherrypy.root.sabnzbd.config.email = ConfigEmail(web_dir)
+    cherrypy.root.sabnzbd.config.newzbin = ConfigNewzbin(web_dir)
     cherrypy.root.sabnzbd.connections = ConnectionInfo(web_dir)
     cherrypy.root.sabnzbd.history = HistoryPage(web_dir)
 

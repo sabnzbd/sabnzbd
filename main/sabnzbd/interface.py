@@ -814,7 +814,6 @@ class ConfigSwitches(ProtectedClass):
         config['top_only'] = int(sabnzbd.CFG['misc']['top_only'])
         config['auto_sort'] = int(sabnzbd.CFG['misc']['auto_sort'])
         config['check_rel'] = int(sabnzbd.CFG['misc']['check_new_rel'])
-        config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
         config['auto_disconnect'] = int(sabnzbd.CFG['misc']['auto_disconnect'])
         config['replace_spaces'] = int(sabnzbd.CFG['misc']['replace_spaces'])
         config['auto_browser'] = int(sabnzbd.CFG['misc']['auto_browser'])
@@ -831,7 +830,6 @@ class ConfigSwitches(ProtectedClass):
                      send_group = None, fail_on_crc = None, top_only = None,
                      create_group_folders = None, dirscan_opts = None,
                      enable_par_cleanup = None, auto_sort = None,
-                     create_category_folders = None,
                      check_rel = None,
                      auto_disconnect = None,
                      replace_spaces = None,
@@ -851,7 +849,6 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['auto_sort'] = int(auto_sort)
         sabnzbd.CFG['misc']['check_new_rel'] = int(check_rel)
         sabnzbd.CFG['misc']['auto_disconnect'] = int(auto_disconnect)
-        sabnzbd.CFG['newzbin']['create_category_folders'] = int(create_category_folders)
         sabnzbd.CFG['misc']['replace_spaces'] = int(replace_spaces)
         sabnzbd.CFG['misc']['auto_browser'] = int(auto_browser)
 
@@ -883,8 +880,6 @@ class ConfigGeneral(ProtectedClass):
         config['bandwith_limit'] = sabnzbd.CFG['misc']['bandwith_limit']
         config['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
         config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
-        config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
-        config['password_newzbin'] = sabnzbd.CFG['newzbin']['password']
         config['cache_limitstr'] = sabnzbd.CFG['misc']['cache_limit'].upper()
 
         config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
@@ -921,8 +916,7 @@ class ConfigGeneral(ProtectedClass):
 
     @cherrypy.expose
     def saveGeneral(self, host = None, port = None, username = None, password = None, web_dir = None,
-                    cronlines = None, username_newzbin = None, password_newzbin = None,
-                    refresh_rate = None, rss_rate = None,
+                    cronlines = None, refresh_rate = None, rss_rate = None,
                     bandwith_limit = None, cleanup_list = None, ignore_list = None, cache_limitstr = None):
 
         sabnzbd.CFG['misc']['host'] = host
@@ -933,8 +927,6 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
         sabnzbd.CFG['misc']['rss_rate'] = rss_rate
-        sabnzbd.CFG['newzbin']['username'] = username_newzbin
-        sabnzbd.CFG['newzbin']['password'] = password_newzbin
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
         sabnzbd.CFG['misc']['ignore_list'] = listquote.simplelist(ignore_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
@@ -1129,6 +1121,69 @@ class ConfigScheduling(ProtectedClass):
         if line and line in sabnzbd.CFG['misc']['schedlines']:
             sabnzbd.CFG['misc']['schedlines'].remove(line)
         return saveAndRestart(self.__root)
+
+#------------------------------------------------------------------------------
+
+class ConfigNewzbin(ProtectedClass):
+    def __init__(self, web_dir):
+        self.roles = ['admins']
+
+        self.__root = '/sabnzbd/config/newzbin/'
+
+        self.__web_dir = web_dir
+        self.bookmarks = []
+
+    @cherrypy.expose
+    def index(self):
+        if sabnzbd.CONFIGLOCK:
+            return Protected()
+
+        config, pnfo_list, bytespersec = build_header()
+
+        config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
+        config['password_newzbin'] = sabnzbd.CFG['newzbin']['password']
+        config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
+        config['newzbin_bookmarks'] = int(sabnzbd.CFG['newzbin']['bookmarks'])
+        config['newzbin_unbookmark'] = int(sabnzbd.CFG['newzbin']['unbookmark'])
+        config['bookmark_rate'] = sabnzbd.BOOKMARK_RATE
+        
+        config['bookmarks_list'] = self.bookmarks
+
+        template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
+                            searchList=[config],
+                            compilerSettings={'directiveStartToken': '<!--#',
+                                              'directiveEndToken': '#-->'})
+        return template.respond()
+
+    @cherrypy.expose
+    def saveNewzbin(self, username_newzbin = None, password_newzbin = None,
+                    create_category_folders = None, newzbin_bookmarks = None,
+                    newzbin_unbookmark = None, bookmark_rate = None):
+
+        sabnzbd.CFG['newzbin']['username'] = username_newzbin
+        sabnzbd.CFG['newzbin']['password'] = password_newzbin
+        sabnzbd.CFG['newzbin']['create_category_folders'] = create_category_folders
+        sabnzbd.CFG['newzbin']['bookmarks'] = newzbin_bookmarks
+        sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
+        sabnzbd.CFG['newzbin']['bookmark_rate'] = bookmark_rate
+        
+        return saveAndRestart(self.__root)
+
+    @cherrypy.expose
+    def getBookmarks(self):
+        sabnzbd.getBookmarksNow()
+        raise cherrypy.HTTPRedirect(self.__root)
+
+    @cherrypy.expose
+    def showBookmarks(self):
+        self.bookmarks = sabnzbd.getBookmarksList()
+        raise cherrypy.HTTPRedirect(self.__root)
+
+    @cherrypy.expose
+    def hideBookmarks(self):
+        self.bookmarks = []
+        raise cherrypy.HTTPRedirect(self.__root)
+
 
 #------------------------------------------------------------------------------
 

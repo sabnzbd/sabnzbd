@@ -38,6 +38,7 @@ from sabnzbd.interface import CheckFreeSpace
 from threading import Thread, RLock
 from time import sleep
 from sabnzbd.email import email_endjob, prepare_msg
+from sabnzbd.nzbstuff import SplitFileName
 
 DIR_LOCK = RLock()
 
@@ -201,6 +202,9 @@ class PostProcessor(Thread):
                     ext_out = ""
                 if sabnzbd.EMAIL_ENDJOB:
                     email_endjob(filename, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), ext_out))
+                if sabnzbd.NEWZBIN_UNBOOKMARK:
+                    name, msgid = SplitFileName(filename)
+                    sabnzbd.delete_bookmark(msgid)
             except:
                 logging.exception("[%s] Postprocessing of %s failed.", __NAME__,
                                   nzo.get_filename())

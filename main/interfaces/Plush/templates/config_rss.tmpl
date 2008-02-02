@@ -25,6 +25,7 @@
 		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
 		<li><a class="config_menu" id="nav_active" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
 		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
+     	<li><a class="config_menu" href="../newzbin"><img src="../static/images/icon_config_newzbin.png" />Newzbin</a></li>
 	</ul>
 </div>
 
@@ -42,21 +43,21 @@
     <legend>RSS feed settings</legend>
       <b>RSS-Feed URI:</b><br>
       <input type="text" size="80" name="uri"><br><br>
-      
+
       <b>Text Filter:</b><br>
       <small>(Basic) text based filter &mdash; A single '*' matches everything</small>
       <br>
       <input type="text" size="80" name="text_filter">
       <br>
       <br>
-      
+
       <b>Regex Filter:</b><br>
       <small>Regular Expression filter &mdash; Overwrites text filter</small>
       <br>
       <input type="text" size="80" name="re_filter">
       <br>
       <br>
-      
+
       <b>Match Multiple:</b><br>
       <small>Match this filter more than once?</small>
       <br>
@@ -64,7 +65,7 @@
       <input type="radio" name="match_multiple" value="1" checked=1> Yes
       <br>
       <br>
-      
+
       <b>Unpack Opts:</b><br><small>
       <input type="radio" name="unpack_opts" value="0"> None
       <input type="radio" name="unpack_opts" value="1" checked=1> +Repair
@@ -75,7 +76,7 @@
       <input type="radio" name="unpack_opts" value="6"> Delete+Script
       <br>
       <br></small>
-      
+
       <input type="submit" value="Add">
     </fieldset>
   </form>
@@ -130,7 +131,7 @@
 	\$('.config_menu').corner("round tl bl");
 	\$('#config_container').corner("round");
 	\$('#help').corner("round");
-	
+
 </script>
 
 </body>
