@@ -37,7 +37,8 @@ from threading import RLock, Lock, Condition, Thread
 from sabnzbd.assembler import Assembler, PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
-from sabnzbd.misc import MSGIDGrabber, URLGrabber, DirScanner, real_path, \
+from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
+from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
                          create_real_path, check_latest_version, from_units, SameFile
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
@@ -45,9 +46,6 @@ from sabnzbd.rss import RSSQueue
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
-from sabnzbd.newzbin import Bookmarks
-
-import sabnzbd.nzbgrab
 
 START = datetime.datetime.now()
 
@@ -103,6 +101,7 @@ LOGFILE = None
 WEBLOGFILE = None
 LOGHANDLER = None
 GUIHANDLER = None
+AMBI_LOCALHOST = False
 
 POSTPROCESSOR = None
 ASSEMBLER = None
@@ -224,7 +223,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
-           LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AUTODISCONNECT, WAITEXIT, \
+           LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, AUTODISCONNECT, WAITEXIT, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
@@ -347,7 +346,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     extern_proc = check_setting_str(CFG, 'misc', 'extern_proc', '')
     if extern_proc:
-        extern_proc= real_path(sabnzbd.DIR_HOME, extern_proc)
+        extern_proc= real_path(DIR_HOME, extern_proc)
         if os.path.exists(extern_proc):
             logging.debug("extern_proc: %s", extern_proc)
         else:
@@ -802,14 +801,21 @@ def add_nzbfile(nzbfile, pp):
                 data = zf.read(name)
                 name = os.path.basename(name)
                 if data:
-                    NZBQ.add(NzbObject(name, repair, unpack, delete, script, data))
+                    try:
+                        nzo = NzbObject(name, repair, unpack, delete, script, data)
+                    except:
+                        nzo = None
+                if nzo:
+                    NZBQ.add(nzo)
         finally:
             f.close()
     else:
         try:
-            NZBQ.add(NzbObject(filename, repair, unpack, delete, script, nzbfile.value))
-        except NameError:
-            logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+            nzo = NzbObject(filename, repair, unpack, delete, script, nzbfile.value)
+        except:
+            nzo = None
+        if nzo:
+            NZBQ.add()
 
 @synchronized_CV
 def add_nzo(nzo, position = -1):
@@ -826,11 +832,13 @@ def insert_future_nzo(future_nzo, filename, data, cat_root = None, cat_tail = No
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
 @synchronized_CV
-def pause_downloader():
+def pause_downloader(save=True):
     try:
         DOWNLOADER.pause()
         if AUTODISCONNECT:
             DOWNLOADER.disconnect()
+        if save:
+            save_state()
     except NameError:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
 
@@ -1134,7 +1142,7 @@ def init_RSS():
 
     need_rsstask = False
 
-    if sabnzbd.rss.HAVE_FEEDPARSER:
+    if rss.HAVE_FEEDPARSER:
         tup = load_data(RSS_FILE_NAME, remove = False)
 
         uris = []

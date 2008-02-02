@@ -26,11 +26,15 @@ import urllib
 import time
 import logging
 import re
+import Queue
 
+from threading import *
 from threading import Lock
 
 import sabnzbd
 from sabnzbd.constants import *
+
+RE_SANITIZE = re.compile(r'\\/><\?\*:|"') # All forbidden file characters
 
 LOCK = Lock()
 
@@ -54,8 +58,146 @@ def synchronized(func):
     return call_func
 
 
+
 ################################################################################
-# 'Public' Methods                                                             #
+# DirectNZB support
+################################################################################
+
+class MSGIDGrabber(Thread):
+    """ Thread for msgid-grabber queue """
+    def __init__(self, nzbun, nzbpw):
+        Thread.__init__(self)
+        self.nzbun = nzbun
+        self.nzbpw = nzbpw
+        self.queue = Queue.Queue()
+
+    def grab(self, msgid, nzo):
+        logging.debug("Adding msgid %s to the queue", msgid)
+        self.queue.put((msgid, nzo))
+
+    def stop(self):
+        # Put None on the queue to stop "run"
+        self.queue.put((None, None))
+
+    def run(self):
+        while 1:
+            (msgid, nzo) = self.queue.get()
+            if not msgid:
+                break
+            logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
+            filename, data, cat_root, cat_tail = _grabnzb(msgid, self.nzbun, self.nzbpw)
+            if filename and data:
+                try:
+                    sabnzbd.insert_future_nzo(nzo, filename, data, cat_root, cat_tail)
+                except:
+                    pass
+            else:
+                if (filename):
+                    # Retry later
+                    self.grab(msgid, nzo)
+                else:
+                    # Fatal error, give up on this one
+                    sabnzbd.remove_nzo(nzo.nzo_id, False)
+
+            # Keep some distance between the grabs
+            time.sleep(2)
+        logging.debug('[%s] Stopping MSGIDGrabber', __NAME__)
+
+
+
+def _grabnzb(msgid, username_newzbin, password_newzbin):
+    """ Grab one msgid from newzbin """
+
+    nothing = (None, None, None, None)
+    retry = ('r', None, None, None)
+
+    while True:
+        logging.info('[%s] Fetching NZB for Newzbin report #%s', __NAME__, msgid)
+     
+        headers = { 'User-Agent': 'SABnzbd', }
+     
+        # Off we go then
+        try:
+            conn = httplib.HTTPConnection('v3.newzbin.com')
+     
+            postdata = { 'username': username_newzbin, 'password': password_newzbin, 'reportid': msgid }
+            postdata = urllib.urlencode(postdata)
+     
+            headers['Content-type'] = 'application/x-www-form-urlencoded'
+     
+            fetchurl = '/api/dnzb/'
+            conn.request('POST', fetchurl, postdata, headers)
+            response = conn.getresponse()
+     
+            # Save debug info if we have to
+            data = response.read()
+     
+            # Get the filename
+            rcode = response.getheader('X-DNZB-RCode')
+            rtext = response.getheader('X-DNZB-RText')
+            report_name = response.getheader('X-DNZB-Name')
+            report_cat  = response.getheader('X-DNZB-Category')
+    
+            cat_root = report_cat
+            cat_tail = 'All' # DNZB has no subcategories
+    
+        except:
+            logging.warning("[%s] Problem accessing Newzbin server (%s %s)", __NAME__, rcode, rtext)
+            return retry
+     
+        # Official return codes:
+        # 200 = OK, NZB content follows
+        # 400 = Bad Request, please supply all parameters
+        #       (this generally means reportid or fileid is missing; missing user/pass gets you a 401)
+        # 401 = Unauthorised, check username/password?
+        # 402 = Payment Required, not Premium
+        # 404 = Not Found, data doesn't exist?
+        #       (only working for reportids, see Technical Limitations)
+        # 450 = Try Later, wait <x> seconds for counter to reset
+        #       (for an explanation of this, see DNZB Rate Limiting)
+        # 500 = Internal Server Error, please report to Administrator
+        # 503 = Service Unavailable, site is currently down
+            
+        if rcode == '450':
+            wait_re = re.compile('wait (\d+) seconds')
+            try:
+                wait = int(wait_re.findall(rtext)[0])
+            except:
+                wait = 60
+            if wait > 60:
+                wait = 60
+            logging.info("Newzbin says we should wait for %s sec", wait)
+            time.sleep(wait+1)
+            continue
+     
+        if rcode in ('401', '402'):
+            logging.warning("[%s] You have no paid Newzbin account", __NAME__)
+            return nothing
+     
+        if rcode in ('400', '404'):
+            logging.error("[%s] Newzbin report %s not found", __NAME__. msgid)
+            return nothing
+     
+        if rcode in ('500', '503'):
+            logging.warning("[%s] Newzbin has a server problem", __NAME__)
+            return retry
+     
+        if rcode != '200':
+            logging.warning("[%s] Newzbin has a server problem", __NAME__)
+            return retry
+     
+        # sanitize report_name
+        newname = RE_SANITIZE.sub('_', report_name)
+        newname = "msgid_%s %s.nzb" % (msgid, newname.strip())
+     
+        logging.info('[%s] Successfully fetched %s %s (%s)', __NAME__, report_cat, report_name, newname)
+     
+        return (newname, data, cat_root, cat_tail)
+    #end
+
+
+################################################################################
+# BookMark support
 ################################################################################
 class Bookmarks:
     """ Get list of bookmarks from www.newzbin.com
@@ -82,7 +224,7 @@ class Bookmarks:
                 
         headers = {
              'Referer': 'https://www.newzbin.com',
-             'User-Agent': 'grabnzb.py',
+             'User-Agent': 'SABnzbd',
         }
         
         # Add our cookie for later attempts

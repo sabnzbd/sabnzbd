@@ -333,14 +333,20 @@ class NzbObject(TryList):
             logging.info('[%s] Replacing spaces with underscores in %s', __NAME__, self.__dirname)
     
         if not nzb:
+            # This is a slot for a future NZB, ready now
             return
 
         try:
             root = XML(nzb)
         except:
-            logging.exception("[%s] Trying to fix %s (will take some time)",
-                              __NAME__, filename)
+            logging.warning("[%s] Incorrect NZB file %s (trying anyway)", __NAME__, filename)
 
+        try:
+            root
+        except:
+            logging.error("[%s] Invalid NZB file %s, skipping", __NAME__, filename)
+            raise ValueError
+            
         avg_age = 0
         valids = 0
         found = 0

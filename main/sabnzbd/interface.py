@@ -101,7 +101,8 @@ def CheckFreeSpace():
     if sabnzbd.DOWNLOAD_FREE > 0 and not sabnzbd.paused():
         if diskfree(sabnzbd.DOWNLOAD_DIR) < float(sabnzbd.DOWNLOAD_FREE) / GIGI:
             logging.info('Too little diskspace forcing PAUSE')
-            sabnzbd.pause_downloader()
+            # Pause downloader, but don't save, since the disk is almost full!
+            sabnzbd.pause_downloader(save=False)
             if sabnzbd.EMAIL_FULL:
                 email_send("SABnzbd has halted", "SABnzbd has halted because diskspace is below the minimum.\n\nSABnzbd")
 
@@ -1011,6 +1012,9 @@ class ConfigServer(ProtectedClass):
             port = '119'
         if host and port and port.isdigit() \
         and connections.isdigit() and fillserver and fillserver.isdigit():
+            if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
+                return badParameterResponse('Warning: LOCALHOST is ambiguous, use numerical IP-address.')
+    
             del sabnzbd.CFG['servers'][server]
             server = "%s:%s" % (host, port)
             sabnzbd.CFG['servers'][server] = {}

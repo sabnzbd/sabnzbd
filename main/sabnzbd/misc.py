@@ -33,11 +33,9 @@ import zipfile
 import gzip
 import webbrowser
 import tempfile
-import Queue
 
 from threading import *
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd import nzbgrab
 from sabnzbd.constants import *
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
@@ -132,8 +130,12 @@ class DirScanner(Thread):
                                 data = zf.read(name)
                                 name = os.path.basename(name)
                                 if data:
-                                    sabnzbd.add_nzo(NzbObject(name, self.r, self.u,
-                                                              self.d, self.s, data))
+                                    try:
+                                        nzo = NzbObject(name, self.r, self.u,self.d, self.s, data)
+                                    except:
+                                        nzo = None
+                                    if nzo:
+                                        sabnzbd.add_nzo(nzo)
                             zf.close()
                             sabnzbd.backup_nzb(filename, data)
                             try:
@@ -166,54 +168,25 @@ class DirScanner(Thread):
                             logging.warning('[%s] Cannot read %s', __NAME__, path)
                             self.ignored.append(filename)
                             continue
+                        
+                        try:
+                            nzo = NzbObject(name, self.r, self.u, self.d, self.s, data)
+                        except:
+                            self.ignored.append(filename)
+                            continue
                             
-                        sabnzbd.add_nzo(NzbObject(name, self.r, self.u, self.d, self.s, data))
+                        sabnzbd.add_nzo(nzo)
                         sabnzbd.backup_nzb(filename, data)
                         try:
                             os.remove(path)
                         except:
-                            logging.exception("[%s] Error removing %s", __NAME__, path)
+                            logging.error("[%s] Error removing %s", __NAME__, path)
                             self.ignored.append(filename)
                     else:
                         self.ignored.append(filename)
 
                 if filename in self.ignored:
                     logging.debug('[%s] Ignoring %s', __NAME__, path)
-
-
-#------------------------------------------------------------------------------
-# Thread for newzbin msgid queue
-#
-class MSGIDGrabber(Thread):
-    def __init__(self, nzbun, nzbpw):
-        Thread.__init__(self)
-        self.nzbun = nzbun
-        self.nzbpw = nzbpw
-        self.queue = Queue.Queue()
-
-    def grab(self, msgid, nzo):
-        logging.debug("Adding msgid %s to the queue", msgid)
-        self.queue.put((msgid, nzo))
-
-    def stop(self):
-        # Put None on the queue to stop "run"
-        self.queue.put((None, None))
-
-    def run(self):
-        while 1:
-            (msgid, nzo) = self.queue.get()
-            if not msgid:
-                break
-            logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
-            filename, data, cat_root, cat_tail = nzbgrab.grabnzb(msgid, self.nzbun, self.nzbpw)
-            if filename and data:
-                sabnzbd.insert_future_nzo(nzo, filename, data, cat_root, cat_tail)
-            else:
-                sabnzbd.remove_nzo(nzo.nzo_id, False)
-
-            # Keep distance between the grabs
-            time.sleep(5)
-        logging.debug('[%s] Stopping MSGIDGrabber', __NAME__)
 
 
 #------------------------------------------------------------------------------

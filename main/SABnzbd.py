@@ -553,6 +553,7 @@ def main():
             pass # Is an APIPA
         elif ip.find(':') >= 0:
             ipv6 = True
+            sabnzbd.AMBI_LOCALHOST = True
             logging.warning("IPV6 has priority on this system, potential Firefox issue")
         elif ip.find('.') >= 0:
             hostip = ip
