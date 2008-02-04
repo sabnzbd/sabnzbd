@@ -58,7 +58,7 @@ This will unlock extra functionality.<br/>
 
 <!--#if $bookmarks_list#-->
 <fieldset class="EntryFieldSet">
-<legend>Processed bookmarks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</legend>
+<legend>Processed bookmarks</legend>
  <hr />
              <!--#for $msgid in $bookmarks_list#-->
                 <a href="https://v3.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
@@ -73,8 +73,8 @@ This will unlock extra functionality.<br/>
 <span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
 <a class="config" onClick="getBookmarks();">Get bookmarks now</a>
 <!--#if $bookmarks_list#-->
-    <a class="config" onClick="hideBookmarks();">Hide processed bookmarks</a>
+    <a class="config" onClick="lr('/sabnzbd/config/newzbin/hideBookmarks');">Hide processed bookmarks</a>
 <!--#else#-->
-    <a class="config" onClick="showBookmarks();">Show processed bookmarks</a>
+    <a class="config" onClick="lr('/sabnzbd/config/newzbin/showBookmarks');">Show processed bookmarks</a>
 <!--#end if#-->
 </form>

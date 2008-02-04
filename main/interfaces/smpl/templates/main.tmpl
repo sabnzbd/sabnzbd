@@ -292,18 +292,6 @@ checkrefresh();
 		d.addErrback(handleServerError);
 	}
 
-	function showBookmarks()
-	{
-		d = doSimpleXMLHttpRequest('/sabnzbd/config/newzbin/showBookmarks');
-		d.addErrback(handleServerError);
-	}
-
-	function hideBookmarks()
-	{
-		d = doSimpleXMLHttpRequest('/sabnzbd/config/newzbin/hideBookmarks');
-		d.addErrback(handleServerError);
-	}
-
 	function getBookmarks()
 	{
 		d = doSimpleXMLHttpRequest('/sabnzbd/config/newzbin/getBookmarks');
