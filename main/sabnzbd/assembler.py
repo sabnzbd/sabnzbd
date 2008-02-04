@@ -393,9 +393,9 @@ def get_unique_path(dirpath, i=0, create_dir=True):
         logging.info('[%s] Creating directory: %s', __NAME__, path)
         try:
             if create_dir:
-                os.mkdir(dirpath)
+                os.mkdir(path)
                 if sabnzbd.UMASK and os.name != 'nt':
-                    os.chmod(dirpath, int(sabnzbd.UMASK, 8) | 00700)
+                    os.chmod(path, int(sabnzbd.UMASK, 8) | 00700)
             return path
         except:
             logging.exception('[%s] Creating directory %s failed', __NAME__,
