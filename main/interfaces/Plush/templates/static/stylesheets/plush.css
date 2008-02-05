@@ -154,6 +154,8 @@ h3 {
 .listingTable {
 	/* margin: 0 auto; */
 	margin-top:6px;
+		width:100%;
+
 }
 
 /* Table Heading */
@@ -211,12 +213,19 @@ h3 {
 	font-weight: bold;
 	font-size: 0.9em;
 }
-.listingTable tbody .itemTitle:hover {cursor: pointer;}
+.listingTable tbody tr:hover .itemTitle {
+	color:black;
+}
 .listingTable tbody .itemTitle span {
 	padding-left: 20px;
 	background: url(../images/bg_listing_item_bullet.png) no-repeat left center;
 }
 .listingTable tbody tr:hover .itemTitle span {background: url(../images/bg_listing_item_bullet_hover.png) no-repeat left center;}
+.listingTable tbody .itemTitle a {
+	color: #555;
+	text-decoration: none;
+	border-bottom: 1px dotted #999;
+}
 .listingTable tbody .itemTitle a:hover {color: #000;}
 
 /* Progress Bar */
@@ -350,7 +359,6 @@ h3 {
 
 
 
-#history #historyContent {font-size: .85em;}
 /* History item titles */
 #history .historyItemTitle {}
 #history .historyItemTitle a {

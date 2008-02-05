@@ -9,6 +9,7 @@ def displayNotices (action):
 	<thead>
 		<tr>
 			<th class="first">HISTORY<span><b>$uptime</b><small>&nbsp;Uptime</small></span></th>
+			<th></th>
 			<th class="last tools">
 				<a id="history_purge" title="Clear Out the History Display">Purge</a>&sdot;<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>&crarr;</a>
 			</th>
@@ -21,16 +22,25 @@ def displayNotices (action):
 	<!--#for $line in $lines #-->
 		<!--#set $odd = not $odd#-->
 		<tr class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
-			<td class="first last historyItemTitle" title="Completed at $line.added" colspan="2">
+			<td class="first itemTTD">
+				$line.added
+			</td>
+			<td class="itemTitle">
 				
 				<!--#if $line.loaded #-->
 					<span class="history_loading"/>
 				<!--#end if#-->
 				
+				<span>
+				<!--#if $line.msgid #-->
+					<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
+				<!--#else#-->
+					$line.filename
+				<!--#end if#-->
+				</span>
 				
-				<span<!--#if $line.msgid #--> onClick="window.open('https://v3.newzbin.com/browse/post/$line.msgid/')" style="cursor:pointer"<!--#end if#-->>$line.filename</span>
-				
-					
+			</td>
+			<td class="last">
 				<!--#if $line.stages#-->
 					<div>
 					<!--#for $stage in $line.stages#-->
@@ -59,7 +69,7 @@ else:
 	</tbody>
 	<tfoot>
 		<tr>
-			<td class="first">
+			<td class="first" colspan="2">
 				<span><b>$total_bytes</b><small>&nbsp;GB&nbsp;In&nbsp;History</small></span>
 			</td>
 			<td class="last">
