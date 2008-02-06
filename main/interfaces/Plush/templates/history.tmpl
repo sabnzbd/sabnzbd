@@ -23,7 +23,7 @@ def displayNotices (action):
 		<!--#set $odd = not $odd#-->
 		<tr class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 			<td class="first itemTTD">
-				$line.added
+				<small>$line.added</small>
 			</td>
 			<td class="itemTitle<!--#if not $line.stages#--> last" colspan="2<!--#end if#-->">
 				

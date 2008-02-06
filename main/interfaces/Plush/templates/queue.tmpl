@@ -53,8 +53,8 @@ def drawProgressBar (mbleft, mb):
 <table class="listingTable" cellspacing="0">
 	<thead>
 		<tr>
-			<th class="first">QUEUE<span><b id="stats_kbpersec"><%=int(float(x_kbpersec))%></b><small>&nbsp;KB/s</small></span><span><b id="stats_eta"><%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></b><small>&nbsp;Left</small><span style="display:none" id="stats_noofslots">$noofslots</span></th>
-			<th class="last tools" colspan="5">
+			<th class="first" colspan="2">QUEUE<span><b id="stats_kbpersec"><%=int(float(x_kbpersec))%></b><small>&nbsp;KBps</small></span><span><b id="stats_eta"><%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></b><small>&nbsp;Left</small><span style="display:none" id="stats_noofslots">$noofslots</span></th>
+			<th class="last tools" colspan="4">
 			<a id="pause_resume"<!--#if $paused#--> class="active" title="Resume the Queue"<!--#end if#--> title="Pause the Queue">Pause</a>&sdot;<a id="queue_sortage" title="Sort by Average File Age">Sort</a><!--#if $nt and $shutdown#-->&sdot;<a id="#queue_shutdown" title="Shutting down the entire computer upon queue completion" class="active">SHUTDOWN</a><!--#end if#-->&sdot;<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#end if#--> title="Toggle Verbosity On">&crarr;</a>
 			</th>
 		</tr>
@@ -67,7 +67,10 @@ def drawProgressBar (mbleft, mb):
 		<!--#set $odd = not $odd#-->
 		<tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
 			<td class="first itemTTD">
-				<!--#if $slot.eta == 'unknown'#-->ETA: <!--#end if#-->$slot.eta
+				<small>
+					<!--#if $slot.eta == 'unknown'#-->ETA: <!--#end if#-->
+					$slot.eta
+				</small>
 			</td>
 			<td class="itemTitle" title="Average File Age: $slot.avg_age" onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">
 				<span><a>$slot.filename</a></span>
