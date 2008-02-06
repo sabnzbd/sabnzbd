@@ -25,10 +25,10 @@ def displayNotices (action):
 			<td class="first itemTTD">
 				$line.added
 			</td>
-			<td class="itemTitle">
+			<td class="itemTitle<!--#if not $line.stages#--> last" colspan="2<!--#end if#-->">
 				
 				<!--#if $line.loaded #-->
-					<span class="history_loading"/>
+					<b class="history_loading"></b>
 				<!--#end if#-->
 				
 				<span>
@@ -40,9 +40,8 @@ def displayNotices (action):
 				</span>
 				
 			</td>
-			<td class="last">
 				<!--#if $line.stages#-->
-					<div>
+				<td class="last">
 					<!--#for $stage in $line.stages#-->
 						<!--#for $action in $stage.actions#-->
 							<span title='<%= action['value'][3:] %> | <%= action['name'].replace("'","&rsquo;") %>'>
@@ -57,10 +56,8 @@ else:
 							</span>
 						<!--#end for#-->
 					<!--#end for#-->
-					</div>
+				</td>
 				<!--#end if#-->
-				
-			</td>
 		</tr>
 		<!--#end for#-->
 		<!--#end if#-->

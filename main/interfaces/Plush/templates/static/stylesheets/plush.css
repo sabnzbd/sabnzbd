@@ -746,36 +746,42 @@ fieldset.EntryFieldSet {
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_par2.png) no-repeat;
+	float:left;
 }
 .history_Join {
 	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_join.png) no-repeat;
+	float:left;
 }
 .history_Unrar {
 	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_unrar.png) no-repeat;
+	float:left;
 }
 .history_Unzip {
 	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_unzip.png) no-repeat;
+	float:left;
 }
 .history_Del {
 	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_del.png) no-repeat;
+	float:left;
 }
 .history_loading {
 	padding-bottom: 16px;
 	padding-left: 	16px;
 	margin-left:	1px;
 	background: 	url(../images/h_postprocessing.gif) no-repeat;
+	float:left;
 }
 
 
