@@ -18,7 +18,15 @@
 
 	<!-- Container : Begin -->
 	<div id="container">
-	
+
+		
+		<img width="18" height="18" src="static/images/icon_config_disconnect.png" alt="Shutdown SAB+" onclick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){GB_show('Shutdown SABnzbd', 'shutdown', 400, 400);}" title="Click here to shut down SABnzbd" style="float:right;display:inline;cursor:pointer"/>
+
+		<!--#if not $nt#-->
+			<img id="queue_shutdown_option" src="static/images/o_shutdown.png" alt="Toggle Queued Shutdown" style="float:right;display:inline;cursor:pointer"/>
+		<!--#end if#-->
+
+		
 		<!-- Top Bar : Begin -->
 		<div id="topbar">
 		
@@ -27,13 +35,14 @@
 				<a href="https://sourceforge.net/projects/sabnzbdplus/" target="_blank" title="SABnzbd+ Version: $version | Plush Version: 1.0">SABnzbd<sup>+</sup><sub>Plush</sub></a>
 			</div>
 			<!-- Logo : End -->
-			
 			<!-- Main Menu : Begin -->
-			<ul id="menu">
+			<ul id="menu" style="display:inline">
 				<li><a id="plusnzb" title="Add/Enqueue an NZB">+NZB</a></li>
 				<li><a id="options" title="View Plush Options">Options</a></li>
 				<li><a href="connections" title="Configure SABnzbd" class="greybox">Config</a></li>
 				<li><a href="https://sabnzbdplus.wiki.sourceforge.net/" target="_blank" title="Read the SAB+ Wiki">Help</a></li>
+
+
 			  <!--#if $new_release#-->
     			  <li><a href="$new_rel_url" target="_blank"><font color="orange">New Release $new_release Available!</font></a></li>
 			  <!--#end if#-->
@@ -54,13 +63,6 @@
 				<div class="refreshSlider"><div class="refreshIndicator"></div></div>
 			</div>
 			
-			<div class="shutdownContainer">
-				<a onclick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){GB_show('Shutdown SABnzbd', 'shutdown', 400, 400);}" title="Click here to shut down SABnzbd">Shutdown&nbsp;SABnzbd+</a>
-			<!--#if $nt#-->
-				 |&nbsp;<a id="queue_shutdown_option" title="Toggle Shutdown of Computer upon Queue Completion">Toggle&nbsp;Shutdown&nbsp;CPU</a>
-			<!--#end if#-->
-			</div>
-
 			<div class="layoutContainer"><strong>Layout:</strong><img src="static/images/o_sidebyside.png" id="layout_sidebyside" alt="Side by Side" title="Switch Layout: Side by Side" />&nbsp;<img src="static/images/o_topbottom.png" id="layout_toptobottom" alt="Top to Bottom" title="Switch Layout: Top to Bottom" /></div>
 			
 		</div>
