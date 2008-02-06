@@ -36,49 +36,49 @@
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
 
-<div class="EntryBlock">
-<form action="addSchedule" method="post">
+<form action="addSchedule" method="post" style="display:inline">
 <fieldset class="EntryFieldSet">
 <legend>Add schedule</legend>
-<select name="minute">
-<!--#for $i in range(60)#-->
-<option value="$i">$i
-<!--#end for#-->
-</select>
-<select name="hour">
+Day of Week:<br/><select name="dayofweek">
+	<option value="*" selected>Every Day</option>
+	<option value="1">Monday</option>
+	<option value="2">Tuesday</option>
+	<option value="3">Wednesday</option>
+	<option value="4">Thursday</option>
+	<option value="5">Friday</option>
+	<option value="6">Saturday</option>
+	<option value="7">Sunday</option>
+</select><br/><br/>
+Time of Day: (HH:MM)<br/><select name="hour">
 <!--#for $i in range(24)#-->
-<option value="$i">$i
+<option value="$i">$i</option>
 <!--#end for#-->
 </select>
-<select name="dayofweek">
-<option value="*" selected>*
-<!--#for $i in range(1, 8)#-->
-<option value="$i">$i
+:<select name="minute">
+<!--#for $i in range(60)#-->
+<option value="$i">$i</option>
 <!--#end for#-->
+</select><br/><br/>
+Action:<br/><select name="action">
+<option value="resume">Resume</option>
+<option value="pause">Pause</option>
 </select>
-<select name="action">
-<option value="resume">resume
-<option value="pause">pause
-</select>
-<p><input type="submit" value="Add Schedule"></p>
+<p><br/><input type="submit" value="Add Schedule"></p>
 </fieldset>
 </form>
-</div>
-<h3>Current Schedules:</h3>
+
+
+<fieldset class="EntryFieldSet">
+<legend>Current Schedules:</legend>
 <div class="EntryBlock">
-<!--#set $schednum = 0#-->
 <!--#for $line in $schedlines#-->
 <form action="delSchedule" method="post">
-<fieldset class="EntryFieldSet">
-<!--#set $schednum = $schednum+1#-->
-<legend>Task $schednum</legend>
-$line
+&bull; $line
 <input type="hidden" name="line" value="$line">
 <input type="submit" value="Remove">
-</fieldset>
-</form>
+</form><br/>
 <!--#end for#-->
-</div>
+</fieldset>
 
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
