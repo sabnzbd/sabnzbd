@@ -67,7 +67,7 @@ def drawProgressBar (mbleft, mb):
 		<!--#set $odd = not $odd#-->
 		<tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
 			<td class="first itemTTD">
-				$slot.eta
+				<!--#if $slot.eta == 'unknown'#-->ETA: <!--#end if#-->$slot.eta
 			</td>
 			<td class="itemTitle" title="Average File Age: $slot.avg_age" onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">
 				<span><a>$slot.filename</a></span>

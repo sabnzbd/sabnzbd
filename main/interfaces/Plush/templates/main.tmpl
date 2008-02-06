@@ -20,10 +20,10 @@
 	<div id="container">
 
 		
-		<img width="18" height="18" src="static/images/icon_config_disconnect.png" alt="Shutdown SAB+" onclick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){GB_show('Shutdown SABnzbd', 'shutdown', 400, 400);}" title="Click here to shut down SABnzbd" style="float:right;display:inline;cursor:pointer"/>
+		<img width="18" height="18" src="static/images/icon_config_disconnect.png" alt="Shutdown SAB+" onclick="if(confirm('Are you sure you want to shut down SABnzbd? :>')){GB_show('Shutdown SABnzbd', 'shutdown', 400, 400);}" title="Shutdown SABnzbd Application?" style="float:right;display:inline;cursor:pointer"/>
 
-		<!--#if not $nt#-->
-			<img id="queue_shutdown_option" src="static/images/o_shutdown.png" alt="Toggle Queued Shutdown" style="float:right;display:inline;cursor:pointer"/>
+		<!--#if $nt#-->
+			<img id="queue_shutdown_option" src="static/images/o_shutdown.png" alt="Toggle Queued Shutdown" title="Toggled Queued Shutdown" style="float:right;display:inline;cursor:pointer"/>
 		<!--#end if#-->
 
 		
