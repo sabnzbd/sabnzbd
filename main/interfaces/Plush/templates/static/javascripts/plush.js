@@ -71,7 +71,7 @@ $(document).ready(function() {
     			RefreshTheQueue();
 			}
 		});
-		$("#addID").val('by Report ID');
+		$("#addID").val('by Newzbin ID/NB32');
 	});
 	$('#addNZBbyURL').bind('click', function() { 
 		$.ajax({
