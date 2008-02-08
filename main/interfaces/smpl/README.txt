@@ -1,10 +1,12 @@
-Smpl - Simple by switch
+SMPL - Simple web-iu by switch - switch@sabnzbd.org
+
+SMPL is licenced under the Creative Commons Public Licence.
+Please see LICENCE.txt or http://creativecommons.org/licenses/by/3.0/ for more information
 ------------------------
-beta 4
+v1.1
 
 Install Instructions
 ------------------------
--Extract the folder "smpl" into your interfaces folder inside of sabnzbd e.g. inside 'c:\SABnzbd-0.3.0\interfaces\'
 -Go to the General config page in sabnzbd eg 'http://localhost:8080/sabnzbd/config/general/'
 -select 'smpl' from the dropdown list under User interface:
 -restart sabnzbd to see the new template
@@ -17,8 +19,7 @@ Credits
 Javascript library - Mochikit http://www.mochikit.com/
 Javascript canvas library - Plotkit http://www.liquidx.net/plotkit/
 Canvas IE support - Excanvas http://sourceforge.net/projects/excanvas/
-using crystal delete icon http://www.everaldo.com/crystal/?action=license
-Some form CSS code - alistapart http://www.alistapart.com/articles/prettyaccessibleforms
+Crystal delete icon - http://www.everaldo.com/crystal/?action=license
 
 
 Changelog 
