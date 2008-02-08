@@ -8,7 +8,7 @@ def displayNotices (action):
 <table class="listingTable" cellspacing="0">
 	<thead>
 		<tr>
-			<th class="first" colspan="2">HISTORY<span><b>$uptime</b><small>&nbsp;Uptime</small></span></th>
+			<th class="first">HISTORY<span><b>$uptime</b><small>&nbsp;Uptime</small></span></th>
 			<th class="last tools">
 				<a id="history_purge" title="Clear Out the History Display">Purge</a>&sdot;<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>&crarr;</a>
 			</th>
@@ -21,10 +21,8 @@ def displayNotices (action):
 	<!--#for $line in $lines #-->
 		<!--#set $odd = not $odd#-->
 		<tr class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
-			<td class="first itemTTD">
+			<td class="first itemTTD itemTitle<!--#if not $line.stages#--> last" colspan="2<!--#end if#-->">
 				<small>$line.added</small>
-			</td>
-			<td class="itemTitle<!--#if not $line.stages#--> last" colspan="2<!--#end if#-->">
 				
 				<!--#if $line.loaded #-->
 					<b class="history_loading"></b>
@@ -37,24 +35,15 @@ def displayNotices (action):
 					$line.filename
 				<!--#end if#-->
 				</span>
-				
 			</td>
 				<!--#if $line.stages#-->
 				<td class="last">
-					<!--#for $stage in $line.stages#-->
-						<!--#for $action in $stage.actions#-->
-							<span title='<%= action['value'][3:] %> | <%= action['name'].replace("'","&rsquo;") %>'>
-<%
+					<!--#for $stage in $line.stages#--><!--#for $action in $stage.actions#--><span title='<%= action['value'][3:] %> | <%= action['name'].replace("'","&rsquo;") %>'><%
 if action['name'][:4]=="[DEL":
 	pp = 'Del'
 else:
 	pp = stage['name']
-%>
-								<b class="history_$pp">&#8203;</b>
-								<%=displayNotices(action['value'])%>
-							</span>
-						<!--#end for#-->
-					<!--#end for#-->
+%><b class="history_$pp">&#8203;</b><%=displayNotices(action['value'])%></span><!--#end for#--><!--#end for#-->
 				</td>
 				<!--#end if#-->
 		</tr>
@@ -65,7 +54,7 @@ else:
 	</tbody>
 	<tfoot>
 		<tr>
-			<td class="first" colspan="2">
+			<td class="first">
 				<span><b>$total_bytes</b><small>&nbsp;GB&nbsp;In&nbsp;History</small></span>
 			</td>
 			<td class="last">

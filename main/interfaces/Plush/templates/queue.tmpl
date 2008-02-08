@@ -54,7 +54,7 @@ def drawProgressBar (mbleft, mb):
 	<thead>
 		<tr>
 			<th class="first" colspan="2">QUEUE<span><b id="stats_kbpersec"><%=int(float(x_kbpersec))%></b><small>&nbsp;KBps</small></span><span><b id="stats_eta"><%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></b><small>&nbsp;Left</small><span style="display:none" id="stats_noofslots">$noofslots</span></th>
-			<th class="last tools" colspan="4">
+			<th class="last tools" colspan="3">
 			<a id="pause_resume"<!--#if $paused#--> class="active" title="Resume the Queue"<!--#end if#--> title="Pause the Queue">Pause</a>&sdot;<a id="queue_sortage" title="Sort by Average File Age">Sort</a><!--#if $nt and $shutdown#-->&sdot;<a id="#queue_shutdown" title="Shutting down the entire computer upon queue completion" class="active">SHUTDOWN</a><!--#end if#-->&sdot;<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#end if#--> title="Toggle Verbosity On">&crarr;</a>
 			</th>
 		</tr>
@@ -66,13 +66,15 @@ def drawProgressBar (mbleft, mb):
 	<!--#for $slot in $slotinfo#-->
 		<!--#set $odd = not $odd#-->
 		<tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
-			<td class="first itemTTD">
+			<td class="first itemTTD itemTitle" title="Average File Age: $slot.avg_age" onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">
 				<small>
-					<!--#if $slot.eta == 'unknown'#-->ETA: <!--#end if#-->
-					$slot.eta
+					<!--#if $slot.index == 0 #-->
+						ETA:&nbsp;<%=getTimeLeft(slot['mbleft'],slot['mb'],x_kbpersec)%>&nbsp;Left&nbsp;&nbsp;
+					<!--#else#-->
+						<!--#if $slot.eta == 'unknown'#-->ETA: <!--#end if#-->
+						$slot.eta
+					<!--#end if#-->
 				</small>
-			</td>
-			<td class="itemTitle" title="Average File Age: $slot.avg_age" onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">
 				<span><a>$slot.filename</a></span>
 			</td>
 			<td>
@@ -111,7 +113,7 @@ def drawProgressBar (mbleft, mb):
 		<!--#if $slot.finished or $slot.active or $slot.queued#-->
 		<!-- Post Processing : Begin -->
 		<tr class="postProcessing">
-			<td class="first last" colspan="6">
+			<td class="first last" colspan="5">
 				<table cellspacing="0">
 					<tbody>
 					
@@ -173,9 +175,9 @@ def drawProgressBar (mbleft, mb):
 			<td class="first" colspan="3">
 				<span><b><%=int(float(x_mbleft))%>&nbsp;of&nbsp;<%=int(float(x_mb))%></b><small>&nbsp;MB&nbsp;Remaining</small></span>
 			</td>
-			<td class="last" colspan="3">
+			<td class="last" colspan="2">
 				<!--#if $diskspace1 == $diskspace2#-->
-					<span><b>$diskspace1</b><small>&nbsp;GB&nbsp;Free Space</small></span>
+					<span><b>$diskspace1</b><small>&nbsp;GB&nbsp;Free&nbsp;Space</small></span>
 				<!--#else#-->
 					<span><small>Free&nbsp;Space:</small>&nbsp;<b>$diskspace1</b><small>&nbsp;GB&nbsp;(Temp)</small>&nbsp;<b>$diskspace2</b><small>&nbsp;GB&nbsp;(Comp)</small></span>
 				<!--#end if#-->

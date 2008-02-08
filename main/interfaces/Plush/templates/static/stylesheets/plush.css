@@ -256,6 +256,7 @@ h3 {
 	color: #868686;
 }
 
+
 /* MB Remaining */
 .listingTable tbody .itemMBRemain { color: #666; }
 .listingTable tbody .itemMBRemain strong {}
@@ -742,46 +743,34 @@ fieldset.EntryFieldSet {
 
 
 .history_Par2 {
-	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_par2.png) no-repeat;
-	float:left;
 }
 .history_Join {
-	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_join.png) no-repeat;
-	float:left;
 }
 .history_Unrar {
-	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_unrar.png) no-repeat;
-	float:left;
 }
 .history_Unzip {
-	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_unzip.png) no-repeat;
-	float:left;
 }
 .history_Del {
-	padding-bottom: 16px;
 	padding-left: 	8px;
 	padding-right: 	8px;
 	background: 	url(../images/hv_del.png) no-repeat;
-	float:left;
 }
 .history_loading {
-	padding-bottom: 16px;
-	padding-left: 	16px;
-	margin-left:	1px;
+	padding-left: 	8px;
+	padding-right: 	8px;
 	background: 	url(../images/h_postprocessing.gif) no-repeat;
-	float:left;
 }
 
 
