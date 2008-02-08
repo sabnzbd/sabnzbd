@@ -24,6 +24,14 @@ Crystal delete icon - http://www.everaldo.com/crystal/?action=license
 
 Changelog 
 ------------------------
+1.0+1.1
+-------------
+-Added newzbin config page
+-Allow displaying of warnings in connection page
+-Added Time-left + Speed/Paused/Idle to the title of the browser tab/window.
+-Added: Combined queue+history views
+-Fixed: Various stuff
+
 beta4
 -------------
 -rewritten all javascript
@@ -55,4 +63,4 @@ beta3
 
 TODO:
 ------------------------
--Make it standards compliant. 
+-Make it standards compliant.
