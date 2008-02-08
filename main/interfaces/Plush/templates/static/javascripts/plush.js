@@ -1,8 +1,3 @@
-/*
-	plush.js
-	SABnzbd+ Plush
-	By: Nathan Langlois
-   *********************/
 
 var refreshRate = 5; // default
 
@@ -218,9 +213,13 @@ function ReadCookie(name) {
 }
 
 
-/* Greybox Redux
+/* the above was written by Nathan Langlois */
+
+/*	the below is from:
+ *
+ * Greybox Redux
  * Written by: John Resig
- * License: LGPL
+ * License: LGPL (see LGPL.txt)
  */
 var GB_DONE = false;
 function GB_show(caption, url, height, width) {

@@ -3,7 +3,7 @@
  *
  * version 1.91 (9/21/2007)
  *
- * Dual licensed under the MIT and GPL licenses:
+ * Dual licensed under the MIT and GPL licenses: (see MIT-LICENSE.txt and GLP-LICENSE.txt)
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  */

@@ -1,16 +1,23 @@
 ==============================
 SABnzbd+ Plush Template README
-Version 1.0 ::: SABnzbd+ 0.3.0
+Version 1.1 for SABnzbd+ 0.3.1
 
 =======
 AUTHORS
-* pairofdimes (NOVA 3,4)
-* Dana Woodman (NOVA 1,2,3,4)
+* Nathan Langlois (pairofdimes; NOVA 3,4)
+* Dana Woodman (blis102; NOVA 1,2,3,4)
 * inpheaux (thanks for the new Config!)
+
+=======
+CONTACT
+* nova@organixdesign.com
+* http://forums.sabnzbd.org/
 
 ============
 INTRODUCTION
-* SABnzbd+ 0.3.0+ required
+* SABnzbd+ 0.3.1+ required
+* SMPL is licenced under the Creative Commons Public License.
+* Please see LICENSE.txt or http://creativecommons.org/licenses/by/3.0/ for more information
 
 ========
 BENEFITS
