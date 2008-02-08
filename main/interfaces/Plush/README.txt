@@ -16,7 +16,7 @@ CONTACT
 ============
 INTRODUCTION
 * SABnzbd+ 0.3.1+ required
-* SMPL is licenced under the Creative Commons Public License.
+* Plush is licenced under the Creative Commons Public License.
 * Please see LICENSE.txt or http://creativecommons.org/licenses/by/3.0/ for more information
 
 ========
