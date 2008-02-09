@@ -169,6 +169,16 @@ def dir_setup(config, cfg_name, def_loc, def_name):
         logging.debug("%s: %s", cfg_name, my_dir)
     return my_dir
 
+################################################################################
+# Check_setting_int                                                            #
+################################################################################
+def minimax(val, low, high):
+    """ Return value forced within range """
+    if val < low:
+        return low
+    if val > high:
+        return high
+    return val
 
 ################################################################################
 # Check_setting_int                                                            #
@@ -245,7 +255,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
 
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
-
+    
     REPLACE_SPACES = bool(check_setting_int(CFG, 'misc', 'replace_spaces', 0))
 
     FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
@@ -272,8 +282,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     IGNORE_LIST = check_setting_str(CFG, 'misc', 'ignore_list', '')
     if type(IGNORE_LIST) != type([]):
-        IGNORE_LIST = []
-
+        IGNORE_LIST = []        
+    
     UMASK = check_setting_str(CFG, 'misc', 'permissions', '')
     try:
         if UMASK:
@@ -288,10 +298,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     NEWZBIN_UNBOOKMARK = bool(check_setting_int(CFG, 'newzbin', 'unbookmark', 0))
 
     BOOKMARK_RATE = check_setting_int(CFG, 'newzbin', 'bookmark_rate', 12)
-    if BOOKMARK_RATE < 1:
-        BOOKMARK_RATE = 1
-    if BOOKMARK_RATE > 48:
-        BOOKMARK_RATE = 48
+    BOOKMARK_RATE = minimax(BOOKMARK_RATE, 1, 48)
 
     CREATE_CAT_FOLDERS = bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
 
@@ -339,10 +346,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', DEF_QRATE)
 
     rss_rate = check_setting_int(CFG, 'misc', 'rss_rate', 1)
-    if rss_rate > 4:
-        rss_rate = 4
-    if rss_rate < 1:
-        rss_rate = 1
+    rss_rate = minimax(rss_rate, 1, 48)
 
     extern_proc = check_setting_str(CFG, 'misc', 'extern_proc', '')
     if extern_proc:
@@ -749,7 +753,7 @@ def save_state():
             RSS.save()
         except:
             logging.exception("[%s] Error accessing RSS?", __NAME__)
-
+            
     if BOOKMARKS:
         BOOKMARKS.save()
 
@@ -1098,19 +1102,15 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
 
         if need_rsstask:
             d = range(1, 8) # all days of the week
+            interval = int((24*60) / rss_rate)
+            ran_m = random.randint(0,interval-1)
+            for n in range(0, 24*60, interval):
+                at = n + ran_m
+                h = int(at/60)
+                m = at - h*60
+                logging.debug("Scheduling RSS task %s %s:%s", d, h, m)
+                SCHED.addDaytimeTask(RSS.run, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
 
-            ran_m = int(RSSTASK_MINUTE  / rss_rate)
-            logging.debug("[%s] RSSTASK_MINUTE: %s", __NAME__, ran_m)
-            if rss_rate > 1:
-                interval = 60 / rss_rate
-            else:
-                interval = 0
-
-            for h in range(24):
-            	  for m in range(rss_rate):
-                    logging.debug("Scheduling RSS task %s %s:%s", d, h, interval*m + ran_m)
-                    SCHED.addDaytimeTask(RSS.run, '', d, None, (h, interval*m + ran_m),
-                                         SCHED.PM_SEQUENTIAL, [])
 
         if need_versioncheck:
             # Check for new release, once per week on random time
@@ -1123,7 +1123,6 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
 
 
         if bookmarks:
-            # Check for newzbin bookmarks
             d = range(1, 8) # all days of the week
             interval = int((24*60) / bookmark_rate)
             ran_m = random.randint(0,interval-1)
@@ -1131,6 +1130,7 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
                 at = n + ran_m
                 h = int(at/60)
                 m = at - h*60
+                logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
                 SCHED.addDaytimeTask(bookmarks.run, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
 
 
