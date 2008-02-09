@@ -1,5 +1,30 @@
 -------------------------------------------------------------------------------
-0.3.0    by the ShyPike, pairofdimes and swi-tch
+0.4.0X by the ShyPike, pairofdimes and switch
+-------------------------------------------------------------------------------
+Lots!
+-------------------------------------------------------------------------------
+0.3.1rc1 by the ShyPike, pairofdimes and switch
+-------------------------------------------------------------------------------
+fixed:   Directory creation error when download-dir already exists, making PAR2 crash
+fixed:   Fix recent incompatibility with newzbin's RSS feeds
+fixed:   Directory scanner (blackhole) now:
+         - Skips ZIP files that don't contain only NZB-files
+         - Handles .nzb.gz files
+         -  Handles .nzb files that are really nzb.gz files (due to browser mis-configuration)
+fixed:   Newzbin category option does not show "sub-cat" anymore (v3.newzbin.com does not have it)
+fixed:   Auto-shutdown now waits for jobs re-entering the queue for additional par2 files
+fixed:   Do not remove RSS definitions when using --clean option.
+fixed:   Vista/Leopard compatible icon
+fixed:   Startup tweak to compensate for NAS-hosted Python problem.
+added:   Show last 10 warnings/errors on the Connections page
+fixed:   Solved the visible "black" window problem
+         - Sometimes SABnzbd's a black console window remained visible
+         - Now there are two versions of SABnzbd:
+              SABnzbd.exe = always invisible
+              SABnzbd-console.exe = always visible
+updated: Plush improvements
+-----------------------------------------------------------------
+0.3.0    by the ShyPike, pairofdimes and switch
 -------------------------------------------------------------------------------
 fixed:   Win32bin version did not always hide its window
 added:   Daemon mode (-d) for Windows, prevents profile access

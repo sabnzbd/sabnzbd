@@ -1,11 +1,11 @@
-                                SABnzbd+ v0.3.0
+                                SABnzbd+ v0.3.1rc1
 
 -------------------------------------------------------------------------------
 0) LICENSE
 -------------------------------------------------------------------------------
 
 Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
-          2007 The ShyPike <shypike@users.sourceforge.net>
+          2008 The ShyPike <shypike@users.sourceforge.net>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

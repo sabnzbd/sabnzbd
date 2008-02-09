@@ -1,7 +1,7 @@
-                                SABnzbd+ v0.3.0
+                                SABnzbd+ v0.4.0X
 
 *************************************
-*** This is SABnzbd+ 0.3.0 Final. ***
+*** This is SABnzbd+ 0.4.0X       ***
 *************************************
 
 Read carefully. Major changes from previous releases.
@@ -21,6 +21,13 @@ Unix/Linux/OSX:
 This folder contains the folders "incomplete" and "complete".
 "complete" will contain the end result of the downloads.
 (You may change this in the configuration screens.)
+
+
+**************************************
+*** Upgrading from 0.3.0           ***
+**************************************
+Just install the new version over the old one.
+If you want to un-install the old version first, keep the data!
 
 
 **************************************
@@ -44,16 +51,14 @@ However, you cannot use it in combination with the ZoneAlarm firewall software.
 
 
 *************************************************
-*** Changes to --daemon mode and Win32 binary ***
+*** Changes to Win32 binary ***
 *************************************************
--d or --daemon will now ignore any user profile data.
-This means that the sabnzbd.ini file must either in the program directory
-where SABnzbd.py or SABnzbd.exe is or that the -f option must be used.
+For the Win32-binary comes now in two flavours.
+SABnzbd.exe will be a completely invisible application,
+except for it's web-interface.
 
-For the Win32-binary, the black console windows disappears immediately.
-For troubleshooting, you can use the --console paramater.
-Open a command prompt and type:
-   SABnzbd.exe --console
+SABnzbd-console.exe will keep a visible black window that
+will show the logging. Use this for troubleshooting only.
 
 
 *************************************************

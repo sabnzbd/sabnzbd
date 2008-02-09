@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set VERSION=0.3.0
+set VERSION=0.3.1rc1
 
 
 rem ***************************
