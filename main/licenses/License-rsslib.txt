@@ -1,0 +1,10 @@
+The module rsslib.py is written by C. Mallory.
+cmallory /a t/ berserk /dot/ o r g
+Home of the module:
+    http://berserk.org/rsslib/
+
+It is covered by the following license.
+
+-----------------------------------------------------------------------------
+You may freely use this code in any way you can think of.
+-----------------------------------------------------------------------------
