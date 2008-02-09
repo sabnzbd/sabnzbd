@@ -34,7 +34,7 @@ options = dict(
       license = 'GNU General Public License 2 (GPL2)',
       data_files = [
           ('', ['README.txt', 'INSTALL.txt', 'LICENSE.txt', 'CHANGELOG.txt', 'ISSUES.txt', 'Sample-PostProc.cmd', 'Sample-PostProc.sh', 'PKG-INFO']),
-          ('licences', glob.glob("licences/*.*")),
+          ('licenses', glob.glob("licenses/*.*")),
           ('interfaces/Default', glob.glob("interfaces/Default/*.*")),
           ('interfaces/Default/templates', glob.glob("interfaces/Default/templates/*.tmpl")),
           ('interfaces/Default/templates/static/stylesheets', ['interfaces/Default/templates/static/stylesheets/default.css']),
