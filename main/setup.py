@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+Win32ConsoleName = 'SABnzbd-console.exe'
+Win32WindowName  = 'SABnzbd.exe'
+
 import sabnzbd
 from distutils.core import setup
 
@@ -31,6 +34,7 @@ options = dict(
       license = 'GNU General Public License 2 (GPL2)',
       data_files = [
           ('', ['README.txt', 'INSTALL.txt', 'LICENSE.txt', 'CHANGELOG.txt', 'ISSUES.txt', 'Sample-PostProc.cmd', 'Sample-PostProc.sh', 'PKG-INFO']),
+          ('licences', glob.glob("licences/*.*")),
           ('interfaces/Default', glob.glob("interfaces/Default/*.*")),
           ('interfaces/Default/templates', glob.glob("interfaces/Default/templates/*.tmpl")),
           ('interfaces/Default/templates/static/stylesheets', ['interfaces/Default/templates/static/stylesheets/default.css']),
@@ -58,14 +62,30 @@ options = dict(
 )
 
 if py2exe:
-    options['console'] = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "interfaces/Default/templates/static/images/favicon.ico")] } ]
+    program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "interfaces/Default/templates/static/images/favicon.ico")] } ]
     options['options'] = {"py2exe": {"bundle_files": 1, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
-    setup(**options)
 
+    # Generate the console-app
+    options['console'] = program
+    setup(**options)
+    try:
+        if os.path.exists("dist/%s" % Win32ConsoleName):
+            os.remove("dist/%s" % Win32ConsoleName)
+        os.rename("dist/%s" % Win32WindowName, "dist/%s" % Win32ConsoleName)
+    except:
+        print "Cannot create dist/%s" % Win32ConsoleName
+        exit(1)
+    
     # Make sure that the root files are DOS format
     for file in options['data_files'][0][1]:
         os.system("unix2dos --safe dist/%s" % file)
     os.remove('dist/Sample-PostProc.sh')
+
+    # Generate the windowed-app (skip datafiles now)
+    del options['console']
+    del options['data_files']
+    options['windows'] = program
+    setup(**options)
 
 else:
     # Prepare Source distribution package.
