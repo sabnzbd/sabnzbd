@@ -8,8 +8,9 @@ rem ***************************
 rem **** Set the filenames ****
 rem ***************************
 set prod=SABnzbd-%VERSION%
-set fileInst=%prod%-setup-win32.exe
-set fileBin=%prod%-win32.zip
+set fileIns=%prod%-win32-setup.exe
+set fileBin=%prod%-win32-bin.zip
+set fileWSr=%prod%-win32-src.zip
 set fileSrc=%prod%-src.zip
 
 
@@ -19,7 +20,7 @@ rem **** Determine what to build ****
 rem *********************************
 if not "%1" == "" goto check1
     echo.
-    echo " Usage: packer.cmd all | inst | bin | src "
+    echo " Usage: packer.cmd all | inst | bin | wsrc |src "
     echo.
     goto end
 :check1
@@ -31,22 +32,23 @@ if not "%1" == "all" goto check2
 if "%1" == "inst" set inst=1
 if "%1" == "src" set src=1
 if "%1" == "bin" set bin=1
+if "%1" == "wsrc" set wsrc=1
 
 
 
-rem ********************************
-rem **** Installer distribution ****
-rem ********************************
+rem **************************************
+rem **** Win32 Installer distribution ****
+rem **************************************
 if "%inst%" == "" goto bin
 del dist\*.ini >nul 2>&1
-"c:\Program Files\NSIS\makensis.exe" /v3 /DSAB_PRODUCT=%prod% /DSAB_FILE=%fileInst% NSIS_Installer.nsi
+"c:\Program Files\NSIS\makensis.exe" /v3 /DSAB_PRODUCT=%prod% /DSAB_FILE=%fileIns% NSIS_Installer.nsi
 if errorlevel 1 goto error
 
 
 
-rem *****************************
-rem **** Binary distribution ****
-rem *****************************
+rem ***********************************
+rem **** Win32 Binary distribution ****
+rem ***********************************
 :bin
 if "%bin%" == "" goto src
 ren dist %prod%
@@ -60,6 +62,22 @@ ren %prod% dist
 if errorlevel 1 goto error
 
 
+rem ***********************************
+rem **** Win32 Source distribution ****
+rem ***********************************
+:wsrc
+if "%wsrc%" == "" goto end
+ren srcdist %prod%
+if errorlevel 1 goto error
+
+if exist %fileSrc% del /q %fileSrc%
+zip -9 -r -X -l %fileSrc% %prod%
+if errorlevel 1 goto error
+
+ren %prod% srcdist
+if errorlevel 1 goto error
+
+
 
 rem *****************************
 rem **** Source distribution ****
@@ -70,7 +88,7 @@ ren srcdist %prod%
 if errorlevel 1 goto error
 
 if exist %fileSrc% del /q %fileSrc%
-zip -9 -r -X %fileSrc% %prod%
+zip -9 -r -X %fileSrc% %prod% -x */win/*
 if errorlevel 1 goto error
 
 ren %prod% srcdist

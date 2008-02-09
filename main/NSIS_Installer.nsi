@@ -1,5 +1,5 @@
 ;
-; Copyright 2007 swi-tch <swi-tch@users.sourceforge.net>
+; Copyright 2008 swi-tch <swi-tch@users.sourceforge.net>
 ;                The ShyPike <shypike@users.sourceforge.net>
 ;
 ; This program is free software; you can redistribute it and/or
@@ -98,7 +98,7 @@ Function .onInit
         StrCpy $0 "SABnzbd.exe"
 		KillProc::FindProcesses
         StrCmp $0 "0" endcheck
-        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Please close "sabnzbd.exe" first' IDOK loop IDCANCEL exitinstall
+        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Please close "SABnzbd.exe" first' IDOK loop IDCANCEL exitinstall
         exitinstall:
         Abort
         endcheck:
@@ -130,7 +130,7 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
     ;Create shortcuts
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
-    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - SafeMode.lnk" "$INSTDIR\SABnzbd.exe" "--console"
+    CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - SafeMode.lnk" "$INSTDIR\SABnzbd-console.exe"
     ;CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Online.lnk" "http://sabnzbdplus.wiki.sourceforge.net/Introduction"
     WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://sabnzbdplus.wiki.sourceforge.net/Introduction"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
@@ -193,6 +193,8 @@ Section Uninstall
     RMDir /r "$INSTDIR\win\unrar"
     RMDir /r "$INSTDIR\win\unzip"
     RMDir /r "$INSTDIR\win"
+    Delete /r "$INSTDIR\licenses\*.txt"
+    RMDir "$INSTDIR\licenses"
     Delete "$INSTDIR\CHANGELOG.txt"
     Delete "$INSTDIR\INSTALL.txt"
     Delete "$INSTDIR\ISSUES.txt"
@@ -202,6 +204,7 @@ Section Uninstall
     Delete "$INSTDIR\PKG-INFO"
     Delete "$INSTDIR\README.txt"
     Delete "$INSTDIR\SABnzbd.exe"
+    Delete "$INSTDIR\SABnzbd-console.exe"
     Delete "$INSTDIR\Sample-PostProc.cmd"
     Delete "$INSTDIR\w9xpopen.exe"
     RMDir "$INSTDIR"

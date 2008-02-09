@@ -1007,6 +1007,10 @@ class ConfigServer(ProtectedClass):
 
             server = "%s:%s" % (host, port)
 
+            msg = check_server(host, port)
+            if msg:
+                return msg
+
             if server not in sabnzbd.CFG['servers']:
                 sabnzbd.CFG['servers'][server] = {}
 
@@ -1089,10 +1093,10 @@ class ConfigRss(ProtectedClass):
 
     @cherrypy.expose
     def add_rss_feed(self, uri = None, text_filter = None, re_filter = None,
-                     unpack_opts = None, match_multiple = None):
+                     unpack_opts=None, match_multiple=None):
         if uri and match_multiple and unpack_opts and (text_filter or re_filter):
-            unpack_opts = int(unpack_opts)
-            match_multiple = bool(int(match_multiple))
+        unpack_opts = int(unpack_opts)
+        match_multiple = bool(int(match_multiple))
             sabnzbd.add_rss_feed(uri, text_filter, re_filter, unpack_opts,
                                  match_multiple)
         return saveAndRestart(self.__root)
