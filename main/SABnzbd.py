@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
-#           2007 The ShyPike <shypike@users.sourceforge.net>
+#           2008 The ShyPike <shypike@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,7 +28,8 @@ import signal
 import re
 import glob
 import socket
-import platform
+if os.name=='nt':
+    import platform
 
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
@@ -50,30 +51,6 @@ try:
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
     pass
-
-#------------------------------------------------------------------------------
-def hide_console(hide, path):
-    if hasattr(sys, "frozen"):
-        if hide:
-            try:
-                import linecache
-                def fake_getline(filename, lineno, module_globals = None):
-                    return ''
-                linecache.getline = fake_getline
-
-                del linecache, fake_getline
-
-                import win32gui
-                # Make sure we can find the window, give it a unique name
-                win32api.SetConsoleTitle('___SABnzbd___')
-
-                # Now hide it, based on the new name
-                win32gui.ShowWindow(win32gui.FindWindow('ConsoleWindowClass','___SABnzbd___'), False)
-
-            except ImportError:
-                pass
-        else:
-            sabnzbd.WAITEXIT = True
 
 
 #------------------------------------------------------------------------------
@@ -118,26 +95,25 @@ def print_help():
     print "Options marked [*] are stored in the config file"
     print
     print "Options:"
-    print "  -f  --config-file <ini>  location of config file"
-    print "  -s  --server <srv:port>  listen on server:port [*]"
-    print "  -t  --templates <templ>  template directory [*]"
+    print "  -f  --config-file <ini>  Location of config file"
+    print "  -s  --server <srv:port>  Listen on server:port [*]"
+    print "  -t  --templates <templ>  Template directory [*]"
     print
-    print "  -l  --logging <0..2>     set logging level (0= least, 2= most) [*]"
-    print "  -w  --weblogging <0..1>  set cherrypy logging (0= off, 1= on) [*]"
+    print "  -l  --logging <0..2>     Set logging level (0= least, 2= most) [*]"
+    print "  -w  --weblogging <0..1>  Set cherrypy logging (0= off, 1= on) [*]"
     print
-    print "  -b  --browser <0..1>     auto browser launch (0= off, 1= on) [*]"
+    print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
     if os.name != 'nt':
-        print "  -d  --daemon             fork daemon process"
-        print "      --permissions        set the chmod mode (e.g. o=rwx,g=rwx) [*]"
+        print "  -d  --daemon             Fork daemon process"
+        print "      --permissions        Set the chmod mode (e.g. o=rwx,g=rwx) [*]"
     else:
         print "  -d  --daemon             Use when run as a service"
-        print "      --console            Keep the console window open and wait on exit"
     print
     print "      --force              Discard web-port timeout (see Wiki!)"
-    print "  -h  --help               print this message"
-    print "  -v  --version            print version information"
+    print "  -h  --help               Print this message"
+    print "  -v  --version            Print version information"
     print "  -c  --clean              Remove queue, cache and logs"
-    print "  -p  --pause              start in paused mode"
+    print "  -p  --pause              Start in paused mode"
 
 def print_version():
     print "%s-%s" % (sabnzbd.MY_NAME, sabnzbd.__version__)
@@ -237,18 +213,33 @@ def GetProfileInfo(vista):
 
 
 def main():
-    sabnzbd.MY_NAME = os.path.basename(sys.argv[0]).replace('.py','')
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
+    sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
+    sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
 
-    print '\n%s-%s [%s]' % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_FULLNAME)
+    # Need console logging for SABnzbd.py and SABnzbd-console.exe
+    consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
 
     LOGLEVELS = [ logging.WARNING, logging.INFO, logging.DEBUG ]
+
+    # Setup primary logging to prevent default console logging
+    gui_log = guiHandler(MAX_WARNINGS)
+    gui_log.setLevel(logging.WARNING)
+    format_gui = '%(asctime)s\n%(levelname)s\n%(message)s'
+    gui_log.setFormatter(logging.Formatter(format_gui))
+    sabnzbd.GUIHANDLER = gui_log
+
+    # Create logger
+    logger = logging.getLogger('')
+    logger.setLevel(logging.WARNING)
+    logger.addHandler(gui_log)
+
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:b:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
                       'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', \
-                      'browser=', 'config-file=', 'delay=', 'force', 'console'])
+                      'browser=', 'config-file=', 'delay=', 'force'])
     except getopt.GetoptError:
         print_help()
         ExitSab(2)
@@ -266,19 +257,16 @@ def main():
     web_dir = None
     delay = 0.0
     vista = False
+    vista64 = False
     force_web = False
-    hide = True
-
-    sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
 
     for o, a in opts:
         if (o in ('-d', '--daemon')):
-            if os.name == 'nt':
-                hide = True
-            else:
+            if os.name != 'nt':
                 fork = True
             sabnzbd.AUTOBROWSER = 0
             sabnzbd.DAEMON = True
+            consoleLogging = False
         if o in ('-h', '--help'):
             print_help()
             ExitSab(0)
@@ -339,15 +327,13 @@ def main():
             #    pass
         if o in ('--force'):
             force_web = True
-        if o in ('--console'):
-            hide = False
 
-    hide_console(hide, sabnzbd.MY_FULLNAME)
 
     # Detect Vista or higher
-    if platform.platform().find('Windows-32bit') >= 0 or \
-       platform.platform().find('Windows-64bit') >= 0 :
-        vista = True
+    if os.name == 'nt':
+        if platform.platform().find('Windows-32bit') >= 0:
+            vista = True
+            vista64 = 'ProgramFiles(x86)' in os.environ
 
     if f:
         # INI file given, simplest case
@@ -430,25 +416,17 @@ def main():
         format = '%(asctime)s::%(levelname)s::%(message)s'
         rollover_log.setFormatter(logging.Formatter(format))
         sabnzbd.LOGHANDLER = rollover_log
-
-        gui_log = guiHandler(MAX_WARNINGS)
-        gui_log.setLevel(logging.WARNING)
-        format_gui = '%(asctime)s\n%(levelname)s\n%(message)s'
-        gui_log.setFormatter(logging.Formatter(format_gui))
-        sabnzbd.GUIHANDLER = gui_log
-
-        logger = logging.getLogger('')
-        logger.setLevel(LOGLEVELS[logging_level])
         logger.addHandler(rollover_log)
-        logger.addHandler(gui_log)
-
-
-        logging.info("--------------------------------")
+        logger.setLevel(LOGLEVELS[logging_level])
 
     except IOError:
         print "Error:"
         print "Can't write to logfile"
         ExitSab(2)
+
+    logging.info('--------------------------------')
+    logging.info('\n%s-%s [%s]', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_FULLNAME)
+
 
     if fork:
         try:
@@ -469,12 +447,11 @@ def main():
             sys.stderr.fileno
             sys.stdout.fileno
 
-            console = logging.StreamHandler()
-            console.setLevel(LOGLEVELS[logging_level])
-            console.setFormatter(logging.Formatter(format))
-            logger = logging.getLogger('')
-            logger.setLevel(LOGLEVELS[logging_level])
-            logger.addHandler(console)
+            if consoleLogging:
+                console = logging.StreamHandler()
+                console.setLevel(LOGLEVELS[logging_level])
+                console.setFormatter(logging.Formatter(format))
+                logger.addHandler(console)
         except AttributeError:
             pass
 

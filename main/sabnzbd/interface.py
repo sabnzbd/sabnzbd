@@ -49,6 +49,7 @@ from sabnzbd.misc import real_path, create_real_path, save_configfile, \
                          to_units, from_units, SameFile, encode_for_xml, \
                          decodePassword, encodePassword
 from sabnzbd.nzbstuff import SplitFileName
+from sabnzbd.newswrapper import GetServerParms
 
 from sabnzbd.constants import *
 
@@ -118,6 +119,19 @@ def check_timeout(timeout):
     else:
         timeout = DEF_TIMEOUT
     return timeout
+
+
+def check_server(host, port):
+    """ Check if server address resolves properly """
+
+    if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
+        return badParameterResponse('Warning: LOCALHOST is ambiguous, use numerical IP-address.')
+        
+    if GetServerParms(host, port):
+        return ""
+    else:
+        return badParameterResponse('Server address "%s:%s" is not valid.' % (host, port))
+
 
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
@@ -987,6 +1001,10 @@ class ConfigServer(ProtectedClass):
 
         if host and port and port.isdigit() \
         and connections.isdigit() and fillserver and fillserver.isdigit():
+            msg = check_server(host, port)
+            if msg:
+                return msg
+
             server = "%s:%s" % (host, port)
 
             if server not in sabnzbd.CFG['servers']:
@@ -1015,8 +1033,9 @@ class ConfigServer(ProtectedClass):
             port = '119'
         if host and port and port.isdigit() \
         and connections.isdigit() and fillserver and fillserver.isdigit():
-            if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
-                return badParameterResponse('Warning: LOCALHOST is ambiguous, use numerical IP-address.')
+            msg = check_server(host, port)
+            if msg:
+                return msg
     
             del sabnzbd.CFG['servers'][server]
             server = "%s:%s" % (host, port)

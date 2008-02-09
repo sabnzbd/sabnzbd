@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
-#           2007 The ShyPike <shypike@users.sourceforge.net>
+#           2008 The ShyPike <shypike@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-__version__ = "0.3.0"
+__version__ = "0.4.0X"
 __configversion__ = 18
 __queueversion__ = 6
 __NAME__ = "sabnzbd"
@@ -245,7 +245,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
 
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
-    
+
     REPLACE_SPACES = bool(check_setting_int(CFG, 'misc', 'replace_spaces', 0))
 
     FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
@@ -272,8 +272,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     IGNORE_LIST = check_setting_str(CFG, 'misc', 'ignore_list', '')
     if type(IGNORE_LIST) != type([]):
-        IGNORE_LIST = []        
-    
+        IGNORE_LIST = []
+
     UMASK = check_setting_str(CFG, 'misc', 'permissions', '')
     try:
         if UMASK:
@@ -749,7 +749,7 @@ def save_state():
             RSS.save()
         except:
             logging.exception("[%s] Error accessing RSS?", __NAME__)
-            
+
     if BOOKMARKS:
         BOOKMARKS.save()
 

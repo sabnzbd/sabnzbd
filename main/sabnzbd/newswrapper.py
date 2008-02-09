@@ -33,6 +33,20 @@ __NAME__ = "newswrapper"
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
+def GetServerParms(host, port):
+    try:
+        # Standard IPV4
+        return socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
+    except:
+        try:
+            # Try IPV6 explicitly
+            return socket.getaddrinfo(host, port, socket.AF_INET6,
+                   socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
+        except:
+            # Nothing found!
+            return None
+
+
 def con(sock, host, port):
     sock.connect((host, port))
     sock.setblocking(0)
@@ -41,7 +55,10 @@ class NNTP:
     def __init__(self, host, port, user=None, password=None):
         self.host = host
         self.port = port
-        res = socket.getaddrinfo(self.host, self.port, 0, socket.SOCK_STREAM)
+        res= GetServerParms(self.host, self.port)
+        if not res:
+			raise socket.error(errno.EADDRNOTAVAIL, "Address not available")
+
         af, socktype, proto, canonname, sa = res[0]
         self.sock = socket.socket(af, socktype, proto)
         self.sock.setblocking(0)

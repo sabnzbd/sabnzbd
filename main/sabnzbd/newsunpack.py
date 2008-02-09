@@ -324,15 +324,22 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
                 actionname = '[DEL-INFO] %s' % rar_set
                 i = 0
                 for rar in rars:
-                    logging.info("[%s] Deleting %s", __NAME__, rar)
+                    # Must translate to cp437 codepage due to a mismatch between
+                    # the way Python and unrar interpret high-ASCII codes
+                    if os.name == 'nt':
+                        urar = rar.decode('cp437')
+                    else:
+                        urar = rar
+
+                    logging.info("[%s] Deleting %s", __NAME__, urar)
                     try:
-                        os.remove(rar)
+                        os.remove(urar)
                         i += 1
                     except OSError:
                         logging.warning("[%s] Deleting %s failed!", __NAME__,
-                                        rar)
+                                        urar)
 
-                    brokenrar = '%s.1' % (rar)
+                    brokenrar = '%s.1' % (urar)
 
                     if os.path.exists(brokenrar):
                         logging.info("[%s] Deleting %s", __NAME__, brokenrar)

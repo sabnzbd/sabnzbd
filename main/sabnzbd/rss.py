@@ -37,6 +37,8 @@ try:
 except ImportError:
     HAVE_FEEDPARSER = False
 
+RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
+
 LOCK = RLock()
 class RSSQueue:
     def __init__(self, uris= [], uri_table = {}, old_entries = {}):
@@ -52,7 +54,6 @@ class RSSQueue:
             logging.info("[%s] Parsing %s", __NAME__, uri)
             d = feedparser.parse(uri)
             logging.info("[%s] Done parsing %s", __NAME__, uri)
-            logging.debug("[%s] PARSE RESULT %s", __NAME__, d)
 
             if not d or not d['entries'] or 'bozo_exception' in d:
                 continue
@@ -64,21 +65,11 @@ class RSSQueue:
             entry_links = []
             new_entry_links = []
             for entry in entries:
-                try:
-                    link = entry['link']
-                    link.index('http')
-                except:
-                    link = entry['guid']
-
-                if link.find('http') >= 0:
+                link = _get_link(uri, entry)
+                if link:
                     entry_links.append(link)
                     if new or link not in self.old_entries[uri]:
                         new_entry_links.append(link)
-
-            logging.debug("[%s] new: %s", __NAME__, new)
-            logging.debug("[%s] entry_links: %s", __NAME__, entry_links)
-            logging.debug("[%s] new_entry_links: %s", __NAME__,
-                          new_entry_links)
 
             self.old_entries[uri] = entry_links
 
@@ -100,16 +91,11 @@ class RSSQueue:
                                       __NAME__, link)
 
                 for entry in entries:
-                    try:
-                        link = entry['link']
-                        link.index('http')
-                    except:
-                        link = entry['guid']
-
-                    if (link.find('http') < 0) or (link not in new_entry_links):
+                    link = _get_link(uri, entry)
+                    if (not link) or (link not in new_entry_links):
                         continue
 
-                    title = entry['title'].lower()
+                    title = entry.title.lower()
 
                     found_match = True
                     if filter_matcher:
@@ -124,14 +110,12 @@ class RSSQueue:
                     if found_match and link not in matched_links:
                         matched_links.append(link)
 
-                        _id = link_to_id(link)
-                        if _id:
-                            logging.info("[%s] Adding %s (%s) to queue",
-                                         __NAME__, _id, title)
-                            sabnzbd.add_msgid(_id, unpack_opts)
+                        m = RE_NEWZBIN.search(link)
+                        if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
+                            logging.info("[%s] Adding %s (%s) to queue", __NAME__, m.group(3), title)
+                            sabnzbd.add_msgid(m.group(3), unpack_opts)
                         else:
-                            logging.info("[%s] Adding %s (%s) to queue",
-                                         __NAME__, link, title)
+                            logging.info("[%s] Adding %s (%s) to queue", __NAME__, link, title)
                             sabnzbd.add_url(link, unpack_opts)
 
                         if not match_multiple:
@@ -205,15 +189,25 @@ class RSSQueue:
         sabnzbd.save_data((self.uris, self.uri_table, self.old_entries),
                           sabnzbd.RSS_FILE_NAME)
 
-def link_to_id(link):
-    _id = None
 
-    link = link.lower()
+def _get_link(uri, entry):
+    """ Retrieve the post link from this entry """
 
-    if 'newzbin' in link or 'newzxxx' in link:
-        if link[-1] == '/':
-            _id = int(os.path.basename(link[:-1]))
-        else:
-            _id = int(os.path.basename(link))
+    uri = uri.lower()
+    if uri.find('newzbin') > 0 or uri.find('newzxxx') > 0:
+        link = entry.link
+        if not (link and link.lower().find('/post/') > 0):
+            # Use alternative link
+            link = entry.links[0].href
+    else:
+        # Try standard link first
+        link = entry.link
+        if not link:
+            link = entry.links[0].href
 
-    return _id
+    if link and link.lower().find('http') >= 0:
+        return link
+    else:
+        logging.warning('[%s]: Empty RSS entry found (%s)', link)
+        return None
+
