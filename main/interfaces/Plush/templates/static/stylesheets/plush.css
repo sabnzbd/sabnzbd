@@ -142,10 +142,10 @@ h3 {
 /* Listing Table
 ----------------------------------------------------------------- */
 .listingTable {
-	/* margin: 0 auto; */
-	margin-top:6px;
-		width:100%;
-
+	margin-top: 6px;
+	/* width:   100%; */ 	/* fullscreen */
+	/* display: table; */ 	/* center queue&history non-FF2 */
+	/* margin:  0 auto; */
 }
 
 /* Table Heading */

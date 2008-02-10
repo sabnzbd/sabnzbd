@@ -52,7 +52,7 @@
 <fieldset class="EntryFieldSet">
 <legend>Options</legend>
 <strong>Create Category Folders:</strong><br>
-Place downloads into newzbin.com category folders.<br>
+<small>Place downloads into newzbin.com category folders.</small><br>
 <input type="radio" name="create_category_folders" value="0" <!--#if $create_category_folders == 0 then "checked=1" else ""#--> /> No
 <input type="radio" name="create_category_folders" value="1" <!--#if $create_category_folders == 1 then "checked=1" else ""#--> /> Yes
 </fieldset>
@@ -60,7 +60,7 @@ Place downloads into newzbin.com category folders.<br>
 <fieldset class="EntryFieldSet">
 <legend>Bookmark processing</legend>
 <strong>Auto fetch bookmarks:</strong><br>
-Automatically get jobs from your bookmarks?<br>
+<small>Automatically get jobs from your bookmarks?</small><br>
 <input type="radio" name="newzbin_bookmarks" value="0" <!--#if $newzbin_bookmarks == 0 then "checked=1" else ""#--> /> No
 <input type="radio" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> /> Yes
 <br>
@@ -74,22 +74,25 @@ Automatically get jobs from your bookmarks?<br>
 <br/>
 <br/>
 <strong>Un-bookmark if download complete:</strong><br>
-Remove from bookmark list, when download is complete.<br>
+<small>Remove from bookmark list, when download is complete.</small><br>
 <input type="radio" name="newzbin_unbookmark" value="0" <!--#if $newzbin_unbookmark == 0 then "checked=1" else ""#--> /> No
 <input type="radio" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> Yes
 <br/>
 <br/>
 <strong>Checking interval:</strong><br>
-Check how often per day (max 48 = every 30 min).<br>
+<small>Check how often per day (max 48 = every 30 min).</small><br>
 <input type="text" name="bookmark_rate" value="$bookmark_rate">
 </fieldset>
+
 <!--#if $bookmarks_list#-->
+	<small>
     <fieldset class="EntryFieldSet">
-    <legend>Processed bookmarks</legend>
-    <!--#for $msgid in $bookmarks_list#-->
-        <a href="https://v3.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
-    <!--#end for#-->
+    	<legend>Processed Bookmarks</legend>
+    	<!--#for $msgid in $bookmarks_list#-->
+        	<a href="https://v3.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
+    	<!--#end for#-->
     </fieldset>
+	</small>
 <!--#end if#-->
 
 

@@ -49,4 +49,4 @@ SPECIAL THANKS
 
 ==========
 TOOLS USED
-* jQuery & Interface JavaScript libraries, Greybox, corner, Nuvola
+* jQuery & Interface JavaScript libraries, Greybox, corner, Nuvola icon set

@@ -56,14 +56,19 @@
     <!--#end for#-->
 <!--#end if#-->
 <!--#if $lastmail#-->
-    <h2>Email test result</h2>
-    $lastmail
+	<fieldset class="EntryFieldSet">
+		<legend>Email test result</legend>
+    	$lastmail
+	</fieldset>
 <!--#end if#-->
+
 <!--#if $warnings#-->
-    <h2>Last warnings (<a href="./clearwarnings">clear</a>)</h2>
-    <!--#for $warn in $warnings#-->
-        $warn<br/>
-    <!--#end for#-->
+	<fieldset class="EntryFieldSet">
+		<legend>Last warnings (<a href="./clearwarnings">clear</a>)</legend>
+    	<!--#for $warn in $warnings#-->
+        	$warn<br/>
+    	<!--#end for#-->
+	</fieldset>
 <!--#end if#-->
 
 <!-- ************************************

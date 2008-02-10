@@ -37,48 +37,55 @@
      ************************************ -->
 
 <form action="addSchedule" method="post" style="display:inline">
-<fieldset class="EntryFieldSet">
-<legend>Add schedule</legend>
-Day of Week:<br/><select name="dayofweek">
-	<option value="*" selected>Every Day</option>
-	<option value="1">Monday</option>
-	<option value="2">Tuesday</option>
-	<option value="3">Wednesday</option>
-	<option value="4">Thursday</option>
-	<option value="5">Friday</option>
-	<option value="6">Saturday</option>
-	<option value="7">Sunday</option>
-</select><br/><br/>
-Time of Day: (HH:MM)<br/><select name="hour">
-<!--#for $i in range(24)#-->
-<option value="$i">$i</option>
-<!--#end for#-->
-</select>
-:<select name="minute">
-<!--#for $i in range(60)#-->
-<option value="$i">$i</option>
-<!--#end for#-->
-</select><br/><br/>
-Action:<br/><select name="action">
-<option value="resume">Resume</option>
-<option value="pause">Pause</option>
-</select>
-<p><br/><input type="submit" value="Add Schedule"></p>
-</fieldset>
+	<fieldset class="EntryFieldSet">
+		<legend>Add Schedule</legend>
+
+		<b>Day of Week:</b><br/>
+		<select name="dayofweek">
+			<option value="*" selected>Every Day</option>
+			<option value="1">Monday</option>
+			<option value="2">Tuesday</option>
+			<option value="3">Wednesday</option>
+			<option value="4">Thursday</option>
+			<option value="5">Friday</option>
+			<option value="6">Saturday</option>
+			<option value="7">Sunday</option>
+		</select><br/><br/>
+
+		<b>Time of Day:</b> (HH:MM)<br/>
+		<select name="hour">
+			<!--#for $i in range(24)#-->
+				<option value="$i">$i</option>
+			<!--#end for#-->
+		</select>:<select name="minute">
+			<!--#for $i in range(60)#-->
+				<option value="$i">$i</option>
+			<!--#end for#-->
+		</select><br/><br/>
+
+		<b>Action:</b><br/>
+		<select name="action">
+			<option value="resume">Resume</option>
+			<option value="pause">Pause</option>
+		</select>
+
+		<p><br/><input type="submit" value="Add Schedule"></p>
+	</fieldset>
 </form>
 
 
+<!--#if $schedlines#-->
 <fieldset class="EntryFieldSet">
-<legend>Current Schedules:</legend>
-<div class="EntryBlock">
-<!--#for $line in $schedlines#-->
-<form action="delSchedule" method="post">
-&bull; $line
-<input type="hidden" name="line" value="$line">
-<input type="submit" value="Remove">
-</form><br/>
-<!--#end for#-->
+	<legend>Current Schedules</legend>
+	<!--#for $line in $schedlines#-->
+		<form action="delSchedule" method="post">
+			&raquo; $line
+			<input type="hidden" name="line" value="$line">
+			<input type="submit" value="Remove">
+		</form><br/>
+	<!--#end for#-->
 </fieldset>
+<!--#end if#-->
 
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE

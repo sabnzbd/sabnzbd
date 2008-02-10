@@ -43,7 +43,7 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
-License along with this library (see the the Nuvola-license.txt file); if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+License along with this library (see the the LGPL.txt file); if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #######**** NOTE THIS ADD-ON ****#######
 The GNU Lesser General Public License or LGPL is written for software libraries
 in the first place. The LGPL has to be considered valid for this artwork
@@ -74,7 +74,7 @@ Kiconedit was used to correct some 16x16 and 22x22 icons.
 LICENSE
 
 Released under GNU Lesser General Public License (LGPL)
-Look at the Nuvola-license.txt file.
+Look at the LGPL.txt file.
 
 CONTACT
 
