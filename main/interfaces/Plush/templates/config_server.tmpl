@@ -46,6 +46,9 @@
       Password:<br><input type="password" size="24" name="password"><br>
       Timeout:<br><input type="text" size="24" name="timeout"><br>
       Connections:<br><input type="text" size="24" name="connections"><br>
+      SSL:<br><input type="radio" name="ssl" value="0" "checked=1"> No
+                     <input type="radio" name="ssl" value="1"> Yes
+                 <br>
       Fillserver:<br><input type="radio" name="fillserver" value="0" "checked=1"> No
                      <input type="radio" name="fillserver" value="1"> Yes
                  <br>
@@ -62,6 +65,9 @@
       Password:<br><input type="password" size="24" name="password" value="$servers[$server]['password']"/><br/>
       Timeout:<br><input type="text" size="24" name="timeout" value="$servers[$server]['timeout']"/><br/>
       Connections:<br><input type="text" size="24" name="connections" value="$servers[$server]['connections']"/><br/>
+      SSL:<br><input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 then "checked=1" else ""#--> /> No
+                     <input type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 then "checked=1" else ""#--> /> Yes
+                 <br>
       Fillserver:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
                      <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
                  <br>

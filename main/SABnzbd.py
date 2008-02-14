@@ -513,6 +513,11 @@ def main():
     else:
         logging.warning("%s... NOT found, cannot EMail!", msg)
 
+    if sabnzbd.newswrapper.HAVE_SSL:
+        logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
+    else:
+        logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optionable)")
+        
     if cherryhost == None:
         cherryhost = check_setting_str(cfg, 'misc','host', DEF_HOST)
     else:

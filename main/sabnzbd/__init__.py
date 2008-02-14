@@ -362,6 +362,13 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     except:
         servers = ""
         CFG['servers'] = ''
+        
+    for server in servers:
+        try:
+            temp = servers[server]['ssl']
+        except:
+            servers[server]['ssl'] = 0
+            CFG['servers'][server]['ssl'] = 0
 
     BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
 

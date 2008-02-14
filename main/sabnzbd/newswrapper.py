@@ -28,6 +28,25 @@ from threading import Thread
 from nntplib import NNTPPermanentError
 from time import time
 from sabnzbd.constants import *
+import sabnzbd
+import logging
+
+try:
+    from OpenSSL import SSL
+    _ssl = SSL
+    del SSL
+    HAVE_SSL = True
+    
+except ImportError:
+    _ssl = None
+    HAVE_SSL = False
+ 
+import threading
+_RLock = threading.RLock
+del threading
+
+import select
+import os
 
 __NAME__ = "newswrapper"
 
@@ -47,12 +66,19 @@ def GetServerParms(host, port):
             return None
 
 
-def con(sock, host, port):
+def con(sock, host, port, sslenabled):
     sock.connect((host, port))
     sock.setblocking(0)
+    if sslenabled and _ssl:
+        while True:
+            try:
+                sock.do_handshake()
+                break
+            except _ssl.WantReadError:
+                select.select([sock], [], [])
 
 class NNTP:
-    def __init__(self, host, port, user=None, password=None):
+    def __init__(self, host, port, sslenabled, user=None, password=None):
         self.host = host
         self.port = port
         res= GetServerParms(self.host, self.port)
@@ -60,25 +86,37 @@ class NNTP:
 			raise socket.error(errno.EADDRNOTAVAIL, "Address not available")
 
         af, socktype, proto, canonname, sa = res[0]
-        self.sock = socket.socket(af, socktype, proto)
-        self.sock.setblocking(0)
-
+        
+        if sslenabled and _ssl:
+            ctx = _ssl.Context(_ssl.SSLv3_METHOD)
+            self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
+        elif sslenabled and not _ssl:
+            logging.exception("[%s] Error importing OpenSSL module. Trying with non-ssl", __NAME__)
+            self.sock = socket.socket(af, socktype, proto)
+        else:
+            self.sock = socket.socket(af, socktype, proto)
+        
         try:
-            self.sock.connect((self.host, self.port))
+            if os.name == 'nt':
+                Thread(target=con, args=(self.sock, self.host, self.port, sslenabled)).start()
+            else: 
+                self.sock.connect((self.host, self.port))
+                self.sock.setblocking(0)
+                if sslenabled and _ssl:
+                    while True:
+                        try:
+                            self.sock.do_handshake()
+                            break
+                        except _ssl.WantReadError:
+                            select.select([self.sock], [], [])
+                            
         except socket.error, (_errno, strerror):
             #expected, do nothing
             if _errno == errno.EINPROGRESS:
                 pass
-
-            #windows can't connect non-blocking sockets
-            elif _errno == errno.EWOULDBLOCK:
-                self.sock = socket.socket(af, socktype, proto)
-                #self.sock.connect((self.host, self.port))
-                #self.sock.setblocking(0)
-                Thread(target=con, args=(self.sock, self.host, self.port)).start()
-
+                
             else:
-                raise socket.error(_errno, strerror)
+                raise socket.error(_errno, strerror)    
 
 class NewsWrapper:
     def __init__(self, server, thrdnum):
@@ -104,7 +142,7 @@ class NewsWrapper:
         self.pass_ok = False
 
     def init_connect(self):
-        self.nntp = NNTP(self.server.host, self.server.port,
+        self.nntp = NNTP(self.server.host, self.server.port, self.server.ssl,
                          self.server.username, self.server.password)
         self.recv = self.nntp.sock.recv
 
@@ -150,7 +188,12 @@ class NewsWrapper:
 
     def recv_chunk(self):
         self.timeout = time() + self.server.timeout
-        chunk = self.recv(32768)
+        while 1:
+            try:
+                chunk = self.recv(32768)
+                break
+            except _ssl.WantReadError:
+                select.select([self.nntp.sock], [], [])
 
         self.data += chunk
         new_lines = self.data.split('\r\n')
@@ -181,3 +224,23 @@ class NewsWrapper:
 
         # Wait before resuing this newswrapper
         self.timeout = time() + self.server.timeout
+
+class SSLConnection:
+    def __init__(self, *args):
+        self._ssl_conn = apply(_ssl.Connection, args)
+        self._lock = _RLock()
+
+    for f in ('get_context', 'pending', 'send', 'write', 'recv', 'read',
+              'renegotiate', 'bind', 'listen', 'connect', 'accept',
+              'setblocking', 'fileno', 'shutdown', 'close', 'get_cipher_list',
+              'getpeername', 'getsockname', 'getsockopt', 'setsockopt',
+              'makefile', 'get_app_data', 'set_app_data', 'state_string',
+              'sock_shutdown', 'get_peer_certificate', 'want_read',
+              'want_write', 'set_connect_state', 'set_accept_state',
+              'connect_ex', 'sendall', 'do_handshake'):
+        exec """def %s(self, *args):
+            self._lock.acquire()
+            try:
+                return apply(self._ssl_conn.%s, args)
+            finally:
+                self._lock.release()\n""" % (f, f)

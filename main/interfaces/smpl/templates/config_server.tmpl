@@ -26,7 +26,11 @@
 			<label>Connections:</label><input type="text" size="25" name="connections" value="$servers[$server]['connections']">
 		<br class="clear" />
 
-			<label>Fillserver:</label><input class="radio" type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
+			<label>SSL:</label><input class="radio" type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 then "checked=1" else ""#--> /> No
+			<input class="radio" type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 then "checked=1" else ""#--> /> Yes
+            <br class="clear" />
+            
+            <label>Fillserver:</label><input class="radio" type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
 			<input class="radio" type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
    		<input type="hidden" name="server" value="$server"><br class="clear" />
 
@@ -62,6 +66,10 @@
 			<label>Connections:</label><input type="text" size="25" name="connections">
 		<br class="clear" />
 
+			<label>SSL:</label><input class="radio" type="radio" name="ssl" value="0" "checked=1"> No
+				<input class="radio" type="radio" name="ssl" value="1"> Yes
+ 		<br class="clear" />
+        
 			<label>Fillserver:</label><input class="radio" type="radio" name="fillserver" value="0" "checked=1"> No
 				<input class="radio" type="radio" name="fillserver" value="1"> Yes
  		<br class="clear" />

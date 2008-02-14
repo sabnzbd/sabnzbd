@@ -988,7 +988,7 @@ class ConfigServer(ProtectedClass):
 
     @cherrypy.expose
     def addServer(self, server = None, host = None, port = None, timeout = None, username = None,
-                         password = None, connections = None, fillserver = None):
+                         password = None, connections = None, ssl = None, fillserver = None):
 
         timeout = check_timeout(timeout)
 
@@ -998,9 +998,12 @@ class ConfigServer(ProtectedClass):
             port = '119'
         if not fillserver:
             fillserver = 0
+        if not ssl:
+            ssl = 0
 
         if host and port and port.isdigit() \
-        and connections.isdigit() and fillserver and fillserver.isdigit():
+        and connections.isdigit() and fillserver and fillserver.isdigit() \
+        and ssl and ssl.isdigit():
             msg = check_server(host, port)
             if msg:
                 return msg
@@ -1021,13 +1024,14 @@ class ConfigServer(ProtectedClass):
                 sabnzbd.CFG['servers'][server]['timeout'] = timeout
                 sabnzbd.CFG['servers'][server]['connections'] = connections
                 sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
+                sabnzbd.CFG['servers'][server]['ssl'] = ssl
                 return saveAndRestart(self.__root)
 
         raise cherrypy.HTTPRedirect(self.__root)
 
     @cherrypy.expose
     def saveServer(self, server = None, host = None, port = None, username = None, timeout = None,
-                         password = None, connections = None, fillserver = None):
+                         password = None, connections = None, fillserver = None, ssl = None):
 
         timeout = check_timeout(timeout)
 
@@ -1035,8 +1039,11 @@ class ConfigServer(ProtectedClass):
             connections = '1'
         if port == "":
             port = '119'
+        if not ssl:
+            ssl = 0
         if host and port and port.isdigit() \
-        and connections.isdigit() and fillserver and fillserver.isdigit():
+        and connections.isdigit() and fillserver and fillserver.isdigit() \
+        and ssl and ssl.isdigit():
             msg = check_server(host, port)
             if msg:
                 return msg
@@ -1052,6 +1059,7 @@ class ConfigServer(ProtectedClass):
             sabnzbd.CFG['servers'][server]['connections'] = connections
             sabnzbd.CFG['servers'][server]['timeout'] = timeout
             sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
+            sabnzbd.CFG['servers'][server]['ssl'] = ssl
             return saveAndRestart(self.__root)
 
         raise cherrypy.HTTPRedirect(self.__root)

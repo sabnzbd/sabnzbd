@@ -35,13 +35,14 @@ from sabnzbd.constants import *
 #------------------------------------------------------------------------------
 
 class Server:
-    def __init__(self, host, port, timeout, threads, fillserver, username = None, 
+    def __init__(self, host, port, timeout, threads, fillserver, ssl, username = None, 
                  password = None):
         self.host = host
         self.port = port
         self.timeout = timeout
         self.threads = threads
         self.fillserver = fillserver
+        self.ssl = ssl
         
         self.username = username
         self.password = password
@@ -140,9 +141,10 @@ class Downloader(Thread):
 
             threads = int(servers[server]['connections'])
             fillserver = bool(int(servers[server]['fillserver']))
+            ssl = bool(int(servers[server]['ssl']))
             username = servers[server]['username']
             password = servers[server]['password']
-            self.servers.append(Server(host, port, timeout, threads, fillserver, 
+            self.servers.append(Server(host, port, timeout, threads, fillserver, ssl,
                                        username, password))
                     
         self.servers = tuple(self.servers)
