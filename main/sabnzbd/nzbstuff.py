@@ -840,6 +840,8 @@ def getTVInfo(match,dirname):
     season = int(match.group(1)) # season#
     epNo = int(match.group(2)) # episode#
     spl = dirname.split('-',2)
+    if epNo < 10:
+        epNo = '0%s' % (epNo)
     try:
         epName = '%s - %s' % (epNo, spl[2].strip())
     except:
