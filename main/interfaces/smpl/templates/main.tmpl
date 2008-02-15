@@ -407,6 +407,8 @@ function loadingJSON(){
 		{
 			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
             document.title = "SABnzbd+ | Paused";
+            document.getElementById("status2").innerHTML = "Resume";
+            status2 = 1
 						//alert("paused");
 		} else if 	(paused == false && speed>0)
 		{
@@ -419,6 +421,8 @@ function loadingJSON(){
 		} else {
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
             document.title = "SABnzbd+ | Idle";
+            document.getElementById("status2").innerHTML = "Pause";
+            status2 = 0
 						//alert("idle");
 		}
 
