@@ -840,6 +840,7 @@ class ConfigSwitches(ProtectedClass):
         config['auto_disconnect'] = int(sabnzbd.CFG['misc']['auto_disconnect'])
         config['replace_spaces'] = int(sabnzbd.CFG['misc']['replace_spaces'])
         config['auto_browser'] = int(sabnzbd.CFG['misc']['auto_browser'])
+        config['ignore_samples'] = int(sabnzbd.CFG['misc']['ignore_samples'])
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
                             searchList=[config],
@@ -856,7 +857,8 @@ class ConfigSwitches(ProtectedClass):
                      check_rel = None,
                      auto_disconnect = None,
                      replace_spaces = None,
-                     auto_browser = None
+                     auto_browser = None,
+                     ignore_samples = None
                      ):
 
         sabnzbd.CFG['misc']['enable_unrar'] = int(enable_unrar)
@@ -874,6 +876,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['auto_disconnect'] = int(auto_disconnect)
         sabnzbd.CFG['misc']['replace_spaces'] = int(replace_spaces)
         sabnzbd.CFG['misc']['auto_browser'] = int(auto_browser)
+        sabnzbd.CFG['misc']['ignore_samples'] = int(ignore_samples)
 
         return saveAndRestart(self.__root)
 
@@ -922,15 +925,6 @@ class ConfigGeneral(ProtectedClass):
         else:
             config['cleanup_list'] = listquote.makelist(sabnzbd.CFG['misc']['cleanup_list'])
             
-        if not sabnzbd.CFG['misc']['ignore_list']:
-            config['ignore_list'] = ','
-
-        elif len(sabnzbd.CFG['misc']['ignore_list']) == 1:
-            config['ignore_list'] = '%s,' % sabnzbd.CFG['misc']['ignore_list'][0]
-
-        else:
-            config['ignore_list'] = listquote.makelist(sabnzbd.CFG['misc']['ignore_list'])
-
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             searchList=[config],
                             compilerSettings={'directiveStartToken': '<!--#',
@@ -940,7 +934,7 @@ class ConfigGeneral(ProtectedClass):
     @cherrypy.expose
     def saveGeneral(self, host = None, port = None, username = None, password = None, web_dir = None,
                     cronlines = None, refresh_rate = None, rss_rate = None,
-                    bandwith_limit = None, cleanup_list = None, ignore_list = None, cache_limitstr = None):
+                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None):
 
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
@@ -951,7 +945,6 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
         sabnzbd.CFG['misc']['rss_rate'] = rss_rate
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
-        sabnzbd.CFG['misc']['ignore_list'] = listquote.simplelist(ignore_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
 
         if not web_dir:

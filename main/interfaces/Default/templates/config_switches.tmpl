@@ -127,7 +127,11 @@
     <input type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>    
+    <br>
+    <strong>Ignore sample files:</strong><br>
+    Filters out sample files from the queue.<br>
+    <input type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes    
   </fieldset>
 </div>
 <p><input type="submit" value="Save Changes"></p>

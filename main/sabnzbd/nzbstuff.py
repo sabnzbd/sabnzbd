@@ -24,6 +24,7 @@ import re
 import logging
 import sabnzbd
 import datetime
+from sabnzbd.constants import *
 
 from sabnzbd.trylist import TryList
 
@@ -373,11 +374,10 @@ class NzbObject(TryList):
                 segments = _file.find('segments')
             nzf = NzbFile(date, subject, segments, self)
             
-            found = 0
-            fln = None
             if nzf.valid and nzf.nzf_id:
-                
-                if sabnzbd.IGNORE_LIST:
+                found = 0
+                fln = None
+                if sabnzbd.IGNORE_SAMPLES:
                     if (nzf.get_filename()):
                         fln = nzf.get_filename()
                         fln = fln.lower()  
@@ -385,13 +385,14 @@ class NzbObject(TryList):
                         fln = nzf.get_subject()
                         fln = fln.lower()  
                         
-                    for ignore in sabnzbd.IGNORE_LIST:
+                    for ignore in IGNORE_SAMPLE_LIST:
                         if ignore in fln:
                             found = 1
                             break
 
                 if found:
                     if nzf.nzf_id:
+                        logging.debug("[%s] Sample file found in file: %s, removing: %s." % (__NAME__,fln,nzf.nzf_id))
                         sabnzbd.remove_data(nzf.nzf_id)
                 else:
                     logging.info('[%s] %s added to queue', __NAME__, subject)
