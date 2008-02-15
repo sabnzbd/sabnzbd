@@ -101,6 +101,9 @@ class BPSMeter:
     def reset(self):
         self.__init__(bytes_sum = self.bytes_sum)
         
+    def get_bps(self):
+        return self.bps
+        
 #------------------------------------------------------------------------------
 
 class Downloader(Thread):
@@ -300,8 +303,6 @@ class Downloader(Thread):
                     nzo = article.nzf.nzo
                     
                 try:
-                    if sabnzbd.BANDWITH_LIMIT:
-                        time.sleep(sabnzbd.BANDWITH_LIMIT)
                     bytes, done = nw.recv_chunk()
                 except:
                     bytes, done = (0, False)
@@ -312,7 +313,18 @@ class Downloader(Thread):
                     
                 else:
                     sabnzbd.update_bytes(bytes)
-                    
+                    if sabnzbd.BANDWITH_LIMIT:
+                        bps = sabnzbd.get_bps()
+                        limit = sabnzbd.BANDWITH_LIMIT * 1024
+                        if bps > limit:
+                            sleeptime = (bps/limit)
+                            if sleeptime > 0 and sleeptime < 20:
+                                logging.debug("[%s] Sleeping %s second(s)", __NAME__, sleeptime)
+                                time.sleep(sleeptime)
+                                
+                                
+
+
                     if nzo:
                         nzo.update_bytes(bytes)
                         

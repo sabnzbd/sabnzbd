@@ -415,6 +415,20 @@ class NzbObject(TryList):
             if sabnzbd.CREATE_CAT_SUB:
                 self.__dirprefix.append(cat_tail)
 
+        if sabnzbd.TV_SORT:
+            match = checkForTVShow(self.__dirname)
+            if match:
+                title, season, epName = getTVInfo(match, self.__dirname)
+                if 'TV' not in self.__dirprefix:
+                    self.__dirprefix.append('TV')
+                self.__dirprefix.append(title)
+                if epName: 
+                    self.__dirprefix.append(season)
+                    self.__dirname = epName
+                else: #if there is no epname or number, use season as dir name
+                    self.__dirname = season
+
+
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
         self.__files.sort(cmp=_nzf_cmp)     
@@ -806,3 +820,47 @@ def SplitFileName(name):
         return name.strip(), ""
     return "", ""
 
+
+def checkForTVShow(filename):
+    regularexpressions = [re.compile('(\d+)x(\d+)'),
+                          re.compile('[Ss](\d+)[\.\-]?[Ee](\d+)')]
+    for regex in regularexpressions:
+        match = regex.search(filename)
+        if match:
+            return match
+    return None
+    
+def getTVInfo(match,dirname):
+    k = match.start()
+    k = dirname[0:k]
+    k = k.replace('.', ' ')
+    k = k.strip().strip('-').strip() 
+    title = k.title() #title
+
+    season = int(match.group(1)) # season#
+    epNo = int(match.group(2)) # episode#
+    spl = dirname.split('-',2)
+    try:
+        epName = '%s - %s' % (epNo, spl[2].strip())
+    except:
+        epName = epNo
+        
+    if sabnzbd.TV_SORT == 1:    #\\TV\\ShowName\\Season 1\\01 - EpName\\
+        season = 'Season %s' % (season) # season# 
+    if sabnzbd.TV_SORT == 2:    #\\TV\\ShowName\\Season 1\\Episode 01 - EpName\\
+        season = 'Season %s' % (season) # season#
+        epName = 'Episode %s' % (epName)
+    elif sabnzbd.TV_SORT == 3:  #\\TV\\ShowName\\1x01 - EpName\\
+        season = '%sx%s' % (season,epName) # season#
+        epName=None
+    elif sabnzbd.TV_SORT == 4:  #\\TV\\ShowName\\s1e01 - EpName\\
+        if season < 10:
+            season = '0%s' % (int(season))
+        season = 'S%sE%s' % (season,epName) # season#
+        epName=None
+    elif sabnzbd.TV_SORT == 5:  #\\TV\\ShowName\\101 - EpName\\
+        season = '%s%s' % (season,epName) # season#
+        epName=None
+
+        
+    return (title, season, epName)

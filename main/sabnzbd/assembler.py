@@ -148,7 +148,7 @@ class PostProcessor(Thread):
                     unpack_magic(nzo, workdir, workdir_complete, dele, (), (), ())
                     logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
 
-                if workdir_complete:
+                if workdir_complete and workdir:
                     for root, dirs, files in os.walk(workdir):
                         for _file in files:
                             path = os.path.join(root, _file)

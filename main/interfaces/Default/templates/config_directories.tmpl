@@ -80,6 +80,21 @@
     Specify a directory to backup .nzb files to.<br>
     <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
   </fieldset>
+  <fieldset class="EntryFieldSet">
+  <legend>Sorting directories</legend>
+            <strong>TV Sorting:</strong><br />
+            Choose a sorting option<br />
+			<select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
+			    <!--#for $tvline in $tvsort_list#-->
+			        <!--#if int($tv_sort) == $i #-->
+			            <option value="$i" selected>$tvline</option>
+			        <!--#else#-->
+			            <option value="$i">$tvline</option>
+			        <!--#end if#-->
+                    <!--#set $i = $i+1 #-->
+			    <!--#end for#-->
+			</select>
+</fieldset>
 </div><br>
 <input type="submit" size="40" value="Save Changes">
 </form>

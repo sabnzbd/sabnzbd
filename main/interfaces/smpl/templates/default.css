@@ -12,7 +12,7 @@ body {
 #Container {
 margin: 0 auto;
 text-align: left;
-width:80%;
+width:90%;
 color:black;
 min-width:700px;
 margin-top:3px;
@@ -31,8 +31,7 @@ display:inline;
 
 }
 #Left {
-width:9%;
-min-width:100px;
+width:100px;
 height:auto;
 float:left;
 line-height: 20px;
@@ -41,14 +40,14 @@ margin:0px;
 }
 
 #RightContainer {
-width:82%;
+width:84%;
 float:left;
 padding:10px 0 10px 10px;
 border-left: 1px dotted #ccc;
 min-height:370px;
 }
-#Right{float:left;}
-#Right_bottom{float:left;margin-left:10px;}
+#Right{float:left;width:100%;}
+#Right_bottom{float:left;margin-left:10px;width:100%;}
 #Content{
 clear:both;
 

@@ -6,8 +6,8 @@
   <fieldset class="EntryFieldSet">
     <legend>User directories</legend>
 <hr />
-	
-			
+<emp>In "$my_home"</emp>
+<br class="clear" /><br class="clear" />			
 		    <label>Download Directory:</label>
 		    <input type="text" size="40" name="download_dir" value="$download_dir">
 			<span class="tips">Location to put unprocessed downloads in.</span>		    
@@ -63,6 +63,24 @@
 
 </fieldset>
 
+<fieldset class="EntryFieldSet">
+<legend>Sorting directories</legend>
+<hr />
+            <label>TV Sorting:</label>
+			<select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
+			    <!--#for $tvline in $tvsort_list#-->
+			        <!--#if int($tv_sort) == $i #-->
+			            <option value="$i" selected>$tvline</option>
+			        <!--#else#-->
+			            <option value="$i">$tvline</option>
+			        <!--#end if#-->
+                    <!--#set $i = $i+1 #-->
+			    <!--#end for#-->
+			</select>
+			<span class="tips">Choose a sorting option</span>
+		<br class="clear" />
+
+</fieldset>
 </div><br class="clear" />
 <input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/directories/saveDirectories', 'submitstatus')">
 <span class="submitstatus" id="submitstatus"></span>

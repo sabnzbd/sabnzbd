@@ -744,6 +744,12 @@ class ConfigDirectories(ProtectedClass):
         config['extern_proc'] = sabnzbd.CFG['misc']['extern_proc']
         config['my_home'] = sabnzbd.DIR_HOME
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
+        
+        config['tv_sort'] = sabnzbd.CFG['misc']['tv_sort']
+        tvSortList = []
+        for tvsort in TVSORTINGLIST:
+            tvSortList.append(tvsort)
+        config['tvsort_list'] = tvSortList
 
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
                             searchList=[config],
@@ -753,7 +759,7 @@ class ConfigDirectories(ProtectedClass):
 
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
-                        cache_dir = None, nzb_backup_dir = None,
+                        cache_dir = None, nzb_backup_dir = None, tv_sort = None,
                         dirscan_dir = None, dirscan_speed = None, extern_proc = None):
 
         (dd, path) = create_real_path('download_dir', sabnzbd.DIR_HOME, download_dir)
@@ -799,6 +805,7 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['extern_proc'] = extern_proc
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
+        sabnzbd.CFG['misc']['tv_sort'] = int(tv_sort)
 
         return saveAndRestart(self.__root)
 
@@ -905,7 +912,7 @@ class ConfigGeneral(ProtectedClass):
             if rweb != DEF_STDINTF and rweb != "_svn" and rweb != ".svn":
                 wlist.append(rweb)
         config['web_list'] = wlist
-
+        
         if not sabnzbd.CFG['misc']['cleanup_list']:
             config['cleanup_list'] = ','
 
@@ -955,6 +962,7 @@ class ConfigGeneral(ProtectedClass):
         if dd and not os.access(dd + '/' + DEF_MAIN_TMPL, os.R_OK):
         	  return badParameterResponse('Error: "%s" is not a valid template directory (cannot see %s).' % (dd, DEF_MAIN_TMPL))
         sabnzbd.CFG['misc']['web_dir'] = web_dir
+        
 
         return saveAndRestart(self.__root)
 
@@ -1560,7 +1568,8 @@ def json_qstatus():
         filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
-        jobs.append( { "mb":bytes, "mbleft":bytesleft, "filename":filename, "msgid":msgid } )
+        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+        jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":filename, "msgid":msgid } )
 
     status = {
                "paused" : sabnzbd.paused(),
@@ -1591,7 +1600,8 @@ def xml_qstatus():
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         name = encode_for_xml(escape(filename), 'UTF-8')
-        jobs.append( { "mb":bytes, "mbleft":bytesleft, "filename":name, "msgid":msgid } )
+        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+        jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":filename, "msgid":msgid } )
 
     status = {
                "paused" : sabnzbd.paused(),
@@ -1617,6 +1627,7 @@ def xml_qstatus():
     status_str += '<jobs>\n'
     for job in jobs:
         status_str += '<job> \n\
+                    <id>%(id)s</id> \n\
                     <msgid>%(msgid)s</msgid> \n\
                     <filename>%(filename)s</filename> \n\
                     <mbleft>%(mbleft)s</mbleft> \n\

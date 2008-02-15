@@ -125,6 +125,8 @@ EMAIL_FULL = False
 
 URLGRABBERS = []
 
+TV_SORT = None
+
 __INITIALIZED__ = False
 
 ################################################################################
@@ -240,7 +242,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL
+           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT
 
     if __INITIALIZED__:
         return False
@@ -370,7 +372,15 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
             servers[server]['ssl'] = 0
             CFG['servers'][server]['ssl'] = 0
 
-    BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
+    try:
+        BANDWITH_LIMIT = check_setting_int(CFG, 'misc', 'bandwith_limit', 0)
+    except:
+        #BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
+        BANDWITH_LIMIT = 0
+        
+    if BANDWITH_LIMIT < 1:
+        BANDWITH_LIMIT = 0
+    
 
     cache_limit = check_setting_str(CFG, 'misc', 'cache_limit', "0")
     cache_limit = int(from_units(cache_limit))
@@ -396,6 +406,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
 
     auto_sort = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
+    
+    TV_SORT = check_setting_int(CFG, 'misc', 'tv_sort', 0)
 
 
     ############################
@@ -899,6 +911,13 @@ def update_bytes(bytes):
 def get_bytes():
     try:
         return BPSMETER.get_sum()
+    except:
+        logging.exception("[%s] Error accessing BPSMETER?", __NAME__)
+        return 0
+        
+def get_bps():
+    try:
+        return BPSMETER.get_bps()
     except:
         logging.exception("[%s] Error accessing BPSMETER?", __NAME__)
         return 0
