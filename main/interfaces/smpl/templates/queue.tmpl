@@ -4,7 +4,7 @@
 <!--#end if#-->	
 
 
-<h3>Queue</h3>
+
 ## work out time left til download is finished
 <!--#set $speed = float($kbpersec)#-->
 
@@ -29,33 +29,26 @@
 <!--#set $hours = 0 #-->
 <!--#end if#-->
 
-
-
-
+<h3>Queue</h3>
+<div id="centerLinks">
+<a onClick="lrdual('/sabnzbd/queue/sort_by_avg_age', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);" >Sort</a>  |
+<a onClick="lrdual('/sabnzbd/queue/tog_verbose', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);" >Toggle verbosity</a> |
+<a onClick="lrdual('/sabnzbd/queue/tog_shutdown', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);">Turn shutdown <!--#if $shutdown then "off" else "on"#--></a>
+</div>
 
 <!--#if int($cache_limit)#-->
 <b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
 <!--#end if#-->
 <!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
 
-
-
-
-<center>
-<a onClick="lrdual('/sabnzbd/queue/sort_by_avg_age', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);" >Sort</a>  |
-<!--<a onClick="ap('/sabnzbd/queue/sort_by_avg_age', '1', this.parentNode.parentNode.id);" >Auto-Sort</a> -->
-<a onClick="lrdual('/sabnzbd/queue/tog_verbose', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);" >Toggle verbosity</a> |
-<a onClick="lrdual('/sabnzbd/queue/tog_shutdown', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);">Turn shutdown <!--#if $shutdown then "off" else "on"#--></a>
-</center>
-<br /><!--#if $varExists('slotinfo') then "" else "<br />"#-->
 <!--#if float($mb)>0 #-->
 <!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
-<!--#if $varExists('slotinfo')#--><!--<div id="progressBartop"><div id="percentageBar" style="width: $perc%"></div></div>-->
+<!--#if $varExists('slotinfo')#-->
 <center>$perc% - <span id="left">$mbleft</span>/<span id="total">$mb</span> MB -
-<!--#end if#-->
 <!--#if $hours>0 #-->
 <span id="hours">$hours</span>hours <!--#end if#--><span id= mins>$mins</span>mins
  <!--#end if#--><br /> </center>
+ <!--#end if#-->
  <table id="queue" class="datagrid">
 
 	<thead>

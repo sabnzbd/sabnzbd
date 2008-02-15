@@ -107,6 +107,14 @@ width:100px;
 font-size:20px;
 display:inline;
 }
+h2{
+font-size:12px;
+margin:0 0 0 8px;
+}
+h3{
+display:inline;
+line-height: 20px;
+}
 #title{
 border:none;
 color:#fff;
@@ -119,11 +127,6 @@ a:visited{
 color:#000;
 display:inline;
 margin-top:-5px;
-}
-h2{
-font-size:12px;
-margin:0 0 0 8px;
-
 }
 a {
 color:black;
@@ -250,4 +253,9 @@ width:99%;
 .submitstatus{
 display:inline;
 padding-left:10px;
+}
+#centerLinks{
+/*display:inline;
+margin-left:20px;*/
+text-align:center;
 }
