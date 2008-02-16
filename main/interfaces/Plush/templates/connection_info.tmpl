@@ -58,16 +58,18 @@
 <!--#if $lastmail#-->
 	<fieldset class="EntryFieldSet">
 		<legend>Email test result</legend>
-    	$lastmail
+		<small>$lastmail</small>
 	</fieldset>
 <!--#end if#-->
 
 <!--#if $warnings#-->
 	<fieldset class="EntryFieldSet">
 		<legend>Last warnings (<a href="./clearwarnings">clear</a>)</legend>
+		<small><ul>
     	<!--#for $warn in $warnings#-->
-        	$warn<br/>
+        	<li>$warn</li>
     	<!--#end for#-->
+		</ul></small>
 	</fieldset>
 <!--#end if#-->
 
