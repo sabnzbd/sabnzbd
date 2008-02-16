@@ -8,7 +8,7 @@
     <ul>
     <!--#for $server in $servers#-->
         <li>
-            $server[0]:$server[1]: $server[2]
+            $server[0]:$server[1]: $server[2] <!--#if int($server[4])#--><img src="static/images/nuvola/kgpg.png" /><!--#end if#-->
             <ul>
             <!--#for $thrd in $server[3]#-->
                 <li>Thread #$thrd[0] -> $thrd[1] -> $thrd[2] -> $thrd[3]</li>

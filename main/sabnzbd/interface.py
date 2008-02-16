@@ -1274,7 +1274,7 @@ class ConnectionInfo(ProtectedClass):
                     connected += 1
 
             busy.sort()
-            header['servers'].append((server.host, server.port, connected, busy))
+            header['servers'].append((server.host, server.port, connected, busy, server.ssl))
 
         header['warnings'] = sabnzbd.GUIHANDLER.content()
             
