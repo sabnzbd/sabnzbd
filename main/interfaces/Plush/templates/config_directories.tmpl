@@ -45,82 +45,75 @@
   <fieldset class="EntryFieldSet">
     <legend>User Directories</legend>
     <small><emp>In "<b style="color:blue">$my_home</b>"</emp><br><br></small>
-	<table border="0" cellpadding="1" cellspacing="0">
-		<tr>
-		    <td><strong>Download Directory:</strong></td>
-		    <td><input type="text" size="35" name="download_dir" value="$download_dir"></td>
-		    <td><small>Location to put unprocessed downloads in</small></td>
-    	</tr>
-		<tr>
-			<td>&raquo; Minimum free space:</td>
-    		<td><input type="text" size="10" name="download_free" value="$download_free"><small> (GB)</small></td>
-    		<td><small>Auto-pause when free space hits this value</small></td>
-    	</tr>
-		<tr>
-    <td><strong>Complete Directory:</strong></td>
-    <td><input type="text" size="35" name="complete_dir" value="$complete_dir"></td>
-    <td><small>Location to put completed downloads in</small></td>
-    	</tr>
-		<tr>
-	<td colspan="3"><strong><br/>OPTIONAL:</strong></td>
-    	</tr>
-		<tr>
-    <td><strong>Dirscan Directory:</strong></td>
-    <td><input type="text" size="35" name="dirscan_dir" value="$dirscan_dir"></td>
-    <td><small>Directory to scan for .nzb files</small></td>
-    	</tr>
-		<tr>
-    <td>&raquo; Dirscan Speed:</td>
-    <td><input type="text" size="10" name="dirscan_speed" value="$dirscan_speed"></td>
-    <td><small># Seconds between scans for .nzb files</small></td>
-    	</tr>
-		<tr>
-    <td><strong>Post-processing script:</strong></td>
-    <td><input type="text" size="35" name="extern_proc" value="$extern_proc"></td>
-    <td><small>Specify an external post-processing script</small></td>
-    	</tr>
-	</table>
+
+	<strong>Download Directory:</strong><br/>
+	<small>Location to put unprocessed downloads in</small><br/>
+	<input type="text" size="40" name="download_dir" value="$download_dir"/><br/>
+		&raquo; Minimum free space:
+  		<input type="text" size="10" name="download_free" value="$download_free"/><small> (GB)</small><br/>
+  		<small>Auto-pause when free space hits this value</small><br/>
+  	<br/>
+	
+    <strong>Complete Directory:</strong><br/>
+    <small>Location to put completed downloads in</small><br/>
+    <input type="text" size="40" name="complete_dir" value="$complete_dir"/><br/>
+    <br/>
+		
+    <strong>OPTIONAL: Dirscan Directory:</strong><br/>
+    <small>Directory to scan for .nzb files</small><br/>
+    <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir"/><br/>
+    	&raquo; Dirscan Speed:
+    	<input type="text" size="10" name="dirscan_speed" value="$dirscan_speed"><br/>
+    	<small>Number of seconds between scans for .nzb files</small><br/>
+    <br/>
+		
+    <strong>OPTIONAL: Post-processing script:</strong><br/>
+    <small>Specify an external post-processing script</small><br/>
+    <input type="text" size="40" name="extern_proc" value="$extern_proc"/><br/>
+    		
   </fieldset>
+
+
   <fieldset class="EntryFieldSet">
+
     <legend>System Directories</legend>
+
     <small><emp>In "<b style="color:blue">$my_lcldata</b>"</emp><br><br></small>
-	<table border="0" cellpadding="1" cellspacing="0">
-		<tr>
-    <td><strong>Cache Directory:</strong></td>
-    <td><input type="text" size="35" name="cache_dir" value="$cache_dir"></td>
-    <td><small>Location for temporary storage</small></td>
-    	</tr>
-		<tr>
-    <td><strong>Log Directory:</strong></td>
-    <td><input type="text" size="35" name="log_dir" value="$log_dir"></td>
-    <td><small>Location of log files for SABnzbd</small></td>
-    	</tr>
-		<tr>
-	<td colspan="3"><strong><br/>OPTIONAL:</strong></td>
-    	</tr>
-		<tr>
-    <td><strong>.nzb Backup Directory:</strong></td>
-    <td><input type="text" size="35" name="nzb_backup_dir" value="$nzb_backup_dir"></td>
-    <td><small>Specify a directory to backup .nzb files to</small></td>
-    	</tr>
-		</table>
+		
+    <strong>Cache Directory:</strong><br/>
+    <small>Location for temporary storage</small><br/>
+    <input type="text" size="40" name="cache_dir" value="$cache_dir"/><br/>
+    <br/>
+		
+    <strong>Log Directory:</strong><br/>
+    <small>Location of log files for SABnzbd</small><br/>
+    <input type="text" size="40" name="log_dir" value="$log_dir"/><br/>
+    <br/>	
+	
+	<strong>OPTIONAL: .nzb Backup Directory:</strong><br/>
+    <small>Specify a directory to backup .nzb files to</small><br/>
+    <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir"/><br/>
+ 		
   </fieldset>
   
-    <fieldset class="EntryFieldSet">
-    <legend>Sorting directories</legend>
-                <td><strong>TV Sorting:</strong></td>
-    			<select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
-    			    <!--#for $tvline in $tvsort_list#-->
-    			        <!--#if int($tv_sort) == $i #-->
-    			            <option value="$i" selected>$tvline</option>
-    			        <!--#else#-->
-    			            <option value="$i">$tvline</option>
-    			        <!--#end if#-->
-                        <!--#set $i = $i+1 #-->
-    			    <!--#end for#-->
-    			</select>
-                <td><small>Choose a sorting option</small></td>
-    </fieldset>
+  <fieldset class="EntryFieldSet">
+ 
+   <legend>Sorting Directories</legend>
+    <strong>TV Sorting:</strong><br/>
+    <small>Choose a sorting option</small><br/>
+	<select name="tv_sort" id="tvsort">
+		<!--#set $i = 0 #-->
+	    <!--#for $tvline in $tvsort_list#-->
+	        <!--#if int($tv_sort) == $i #-->
+	            <option value="$i" selected>$tvline</option>
+	        <!--#else#-->
+	            <option value="$i">$tvline</option>
+	        <!--#end if#-->
+            <!--#set $i = $i+1 #-->
+	    <!--#end for#-->
+	</select><br/>
+
+  </fieldset>
   
 </div>
 <!-- ************************************

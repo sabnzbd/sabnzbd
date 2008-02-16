@@ -420,6 +420,7 @@ div.EntryBlock form {
 fieldset.EntryFieldSet {
   vertical-align: top;
   display: inline;
+  float:left;
   padding: 7px;
   margin: 5px;
 }
