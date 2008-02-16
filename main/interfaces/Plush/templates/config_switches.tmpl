@@ -40,108 +40,116 @@
 <div class="EntryBlock">
   <fieldset class="EntryFieldSet">
     <legend>Processing Switches</legend>
-    <strong>Enable Unrar:</strong><br>
-    <small>Enable built-in unrar functionality</small><br>
-    <input type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Enable Unzip:</strong><br>
-    <small>Enable built-in unzip functionality</small><br>
-    <input type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Enable Filejoin:</strong><br>
-    <small>Enable built-in filejoin functionality</small><br>
-    <input type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Enable Par Cleanup:</strong><br>
-    <small>Cleanup par files (if verifiying/repairing succeded)</small><br>
-    <input type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Fail on yenc crc Errors:</strong><br>
-    <small>Use fill servers on yenc crc errors</small><br>
-    <input type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Top Only:</strong><br>
-    <small>Only fetch Articles from topmost collection<br>(less memory usage)</small><br>
-    <input type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Dirscan Options:</strong><br>
-    <small>Set the post process option on .nzbs placed in the blackhole</small><br><small>
-    <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
-    <input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
-    <input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
-    <input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete<br>
-    <input type="radio" name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "checked=1" else ""#--> /> Repair+Script
-    <input type="radio" name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "checked=1" else ""#--> /> Unpack+Script
-    <input type="radio" name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "checked=1" else ""#--> /> Delete+Script
-    <br>
-    <br></small>
-  </fieldset>
+	<table>
+		<tr><td><strong>Enable Unrar:</strong></td>
+	    	<td><input type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
+	    		<input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes</td>
+	    <tr><td colspan="2"><small>Enable built-in unrar functionality</small></td></tr>
+	    <tr><td colspan="2">&nbsp;</td></tr>
+
+	    <tr><td><strong>Enable Unzip:</strong></td>
+	    	<td><input type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
+	    		<input type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes</td>
+	    </tr><tr><td colspan="2"><small><small>Enable built-in unzip functionality</small></td></tr>
+	    <tr><td colspan="2">&nbsp;</td></tr>
+
+	    <tr><td><strong>Enable Filejoin:</strong></td>
+	    	<td><input type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
+	    		<input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes</td>
+	    </tr><tr><td colspan="2"><small><small>Enable built-in filejoin functionality</small></td></tr>
+	    <tr><td colspan="2">&nbsp;</td></tr>
+
+	    <tr><td><strong>Enable Par Cleanup:</strong></td>
+	    	<td><input type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
+	    		<input type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes</td>
+	    </tr><tr><td colspan="2"><small><small>Cleanup par files (if verifiying/repairing succeded)</small></td></tr>
+	    <tr><td colspan="2">&nbsp;</td></tr>
+
+	    <tr><td><strong>Fail on yenc crc Errors:</strong></td>
+	    	<td><input type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
+	    		<input type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes</td>
+	    </tr><tr><td colspan="2"><small><small>Use fill servers on yenc crc errors</small></td></tr>
+	    <tr><td colspan="2">&nbsp;</td></tr>
+
+	    <tr><td><strong>Top Only:</strong></td>
+	    	<td><input type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
+	    		<input type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes</td>
+	    </tr><tr><td colspan="2"><small><small>Only fetch Articles from topmost collection (less memory usage)</small></td></tr>
+	    <tr><td colspan="2">&nbsp;</td></tr>
+
+	    <tr><td><strong>Dirscan Options:</strong></td>
+			<td><select name="dirscan_opts" id="dirscan_opts">
+		    <option value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#-->> None </option>
+		    <option name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 #-->selected<!--#end if#--> /> +Repair</option>
+		    <option name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 #-->selected<!--#end if#--> /> +Unpack</option>
+		    <option name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 #-->selected<!--#end if#--> /> +Delete</option>
+		    <option name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 #-->selected<!--#end if#--> /> Repair+Script</option>
+		    <option name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 #-->selected<!--#end if#--> /> Unpack+Script</option>
+		    <option name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 #-->selected<!--#end if#--> /> Delete+Script</option>
+		    </select></td>
+	    <tr><td colspan="2"><small><small>Set the post process option on .nzbs placed in the blackhole</small></td></tr>
+	</table>
+</fieldset>
+
+
   <fieldset class="EntryFieldSet">
     <legend>Other Switches</legend>
-    <strong>Enable periodic Save:</strong><br>
-    <small>Saves state of the queue after every completed file</small><br>
-    <input type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Disconnect on empty queue:</strong><br>
-    <small>Disconnect from Usenet server(s) when queue is empty.</small><br>
-    <input type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Create group Folders:</strong><br>
-    <small>Place downloads into group folders</small><br>
-    <input type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="create_group_folders" value="1" <!--#if $create_group_folders > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Send Group</strong><br>
-    <small>Send group command before requesting articles</small><br>
-    <input type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Auto Sort:</strong><br>
-    <small>Automatically sort items by (average) age</small><br>
-    <input type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Check for new release:</strong><br>
-    <small>Weekly check for new SABnzbd release</small><br>
-    <input type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Replace spaces in foldername:</strong><br>
-    <small>Replace spaces with underscores in foldernames.</small><br>
-    <input type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Launch browser on startup:</strong><br>
-    <small>Set whether SABnzbd launches your browser on startup.</small><br>
-    <input type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Ignore sample files:</strong><br>
-    <small>Filters out sample files from the queue.</small><br>
-    <input type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
+	<table>
+
+    <tr><td><strong>Enable periodic Save:</strong></td>
+    	<td><input type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Saves state of the queue after every completed file</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Disconnect on empty queue:</strong></td>
+    	<td><input type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Disconnect from Usenet server(s) when queue is empty.</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Create group Folders:</strong></td>
+    	<td><input type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="create_group_folders" value="1" <!--#if $create_group_folders > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Place downloads into group folders</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Send Group</strong></td>
+    	<td><input type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Send group command before requesting articles</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Auto Sort:</strong></td>
+    	<td><input type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Automatically sort items by (average) age</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Check for new release:</strong></td>
+    	<td><input type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Weekly check for new SABnzbd release</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Replace spaces in foldername:</strong></td>
+    	<td><input type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Replace spaces with underscores in foldernames.</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Launch browser on startup:</strong></td>
+    	<td><input type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Set whether SABnzbd launches your browser on startup.</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Ignore sample files:</strong></td>
+    	<td><input type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
+    		<input type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small>Filters out sample files from the queue.</small></td></tr>
+
+	</table>
   </fieldset>
 </div>
 

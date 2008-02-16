@@ -40,18 +40,18 @@
   <form action="addServer" method="post">
     <fieldset class="EntryFieldSet">
       <legend>Add Server</legend>
-      Host:<br><input type="text" size="24" name="host"><br>
-      Port:<br><input type="text" size="24" name="port"><br>
-      Username:<br><input type="text" size="24" name="username"><br>
-      Password:<br><input type="password" size="24" name="password"><br>
-      Timeout:<br><input type="text" size="24" name="timeout"><br>
-      Connections:<br><input type="text" size="24" name="connections"><br>
-      SSL:<br><input type="radio" name="ssl" value="0" "checked=1"> No
-                     <input type="radio" name="ssl" value="1"> Yes
-                 <br>
-      Fillserver:<br><input type="radio" name="fillserver" value="0" "checked=1"> No
-                     <input type="radio" name="fillserver" value="1"> Yes
-                 <br>
+	<table>
+      <tr><td>Host:</td><td><input type="text" size="28" name="host"></td></tr>
+      <tr><td>Port:</td><td><input type="text" size="6" name="port"></td></tr>
+      <tr><td>Username:</td><td><input type="text" size="28" name="username"></td></tr>
+      <tr><td>Password:</td><td><input type="password" size="28" name="password"></td></tr>
+      <tr><td>Timeout:</td><td><input type="text" size="6" name="timeout"></td></tr>
+      <tr><td>Connections:</td><td><input type="text" size="6" name="connections"></td></tr>
+      <tr><td>SSL:</td><td><input type="radio" name="ssl" value="0" "checked=1"> No
+                     <input type="radio" name="ssl" value="1"> Yes</td></tr>
+      <tr><td>Fillserver:</td><td><input type="radio" name="fillserver" value="0" "checked=1"> No
+                     <input type="radio" name="fillserver" value="1"> Yes</td></tr>
+	</table>
       <p><input type="submit" value="Add Server"></p>
     </fieldset>
   </form>
@@ -59,21 +59,23 @@
   <form action="saveServer" method="post">
     <fieldset class="EntryFieldSet">
       <legend>$server</legend>
-      Host:<br><input type="text" size="24" name="host" value="$servers[$server]['host']"/><br/>
-      Port:<br><input type="text" size="24" name="port" value="$servers[$server]['port']"/><br/>
-      Username:<br><input type="text" size="24" name="username" value="$servers[$server]['username']"/><br/>
-      Password:<br><input type="password" size="24" name="password" value="$servers[$server]['password']"/><br/>
-      Timeout:<br><input type="text" size="24" name="timeout" value="$servers[$server]['timeout']"/><br/>
-      Connections:<br><input type="text" size="24" name="connections" value="$servers[$server]['connections']"/><br/>
-      SSL:<br><input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 then "checked=1" else ""#--> /> No
-                     <input type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 then "checked=1" else ""#--> /> Yes
-                 <br>
-      Fillserver:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
-                     <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
-                 <br>
+	<table>
+      <tr><td>Host:</td><td><input type="text" size="28" name="host" value="$servers[$server]['host']"/></td></tr>
+      <tr><td>Port:</td><td><input type="text" size="6" name="port" value="$servers[$server]['port']"/></td></tr>
+      <tr><td>Username:</td><td><input type="text" size="28" name="username" value="$servers[$server]['username']"/></td></tr>
+      <tr><td>Password:</td><td><input type="password" size="28" name="password" value="$servers[$server]['password']"/></td></tr>
+      <tr><td>Timeout:</td><td><input type="text" size="6" name="timeout" value="$servers[$server]['timeout']"/></td></tr>
+      <tr><td>Connections:</td><td><input type="text" size="6" name="connections" value="$servers[$server]['connections']"/></td></tr>
+      <tr><td>SSL:</td><td><input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 then "checked=1" else ""#--> /> No
+                     <input type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 then "checked=1" else ""#--> /> Yes</td></tr>
+      <tr><td>Fillserver:</td><td><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
+                     <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes</td></tr>
+	</table>
       <input type="hidden" name="server" value="$server"/>
-      <p><input type="submit" value="Save Changes"></p>
-      <p><input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="Remove Server"></p>
+      <p>
+		<input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="Remove Server">
+		<input type="submit" value="Save Changes">
+	  </p>
     </fieldset>
   </form>
 <!--#end for#-->
