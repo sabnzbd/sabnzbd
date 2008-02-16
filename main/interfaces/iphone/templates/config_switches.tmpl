@@ -1,0 +1,110 @@
+
+    <form title="Switches" class="panel" action="saveSwitches" method="POST" selected="true">
+        <h2>Configuration switches</h2>
+         <fieldset>
+            <div class="row">
+    		    <label>Enable Unrar:</label><br/><br/>
+    		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
+    		    <input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
+            </div>
+            <div class="row">            
+    		    <label>Enable Unzip:</label><br/><br/>
+    		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
+    		    <input class="radio" type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes
+            </div>
+            <div class="row"> 
+    		    <label>Enable Filejoin:</label><br/><br/>
+    		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
+    		    <input class="radio" type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
+            </div>
+            <div class="row">
+    		    <label>Enable Par Cleanup:</label><br/><br/>
+    		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
+    		    <input class="radio" type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
+            </div>
+            <div class="row">
+    		    <label>Fail on yenc crc Errors:</label><br/><br/>
+    		    <input style="margin-left:15px;" class="radio" type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
+    		    <input class="radio" type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
+            </div>
+            <div class="row">
+    		    <label>Top Only:</label><br/><br/>
+    		    <input style="margin-left:15px;" class="radio" type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
+    		    <input class="radio" type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
+            </div>
+            <div class="row">
+
+		    <label>Dirscan Options:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
+		    <input class="radio" type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
+		    <input class="radio" type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
+		    <input class="radio" type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
+		    <input class="radio" type="radio" name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "checked=1" else ""#--> /> R+Script
+		    <input class="radio" type="radio" name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "checked=1" else ""#--> /> U+Script
+		    <input class="radio" type="radio" name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "checked=1" else ""#--> /> D+Script
+		</div>
+        </fieldset>       
+        
+        <h2>Other switches</h2>
+         <fieldset>
+            <div class="row">
+ 
+		    <label>Enable periodic Save:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
+		</div>
+            <div class="row">
+
+		    <label>Disconnect on empty queue:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes
+		</div>
+            <div class="row">
+
+		    <label>Create group Folders:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="create_group_folders" value="1" <!--#if $create_group_folders > 0 then "checked=1" else ""#--> /> Yes
+		</div>
+            <div class="row">
+
+		    <label>Send Group</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
+		</div>
+            <div class="row">
+
+		    <label>Auto Sort:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
+ 		</div>
+            <div class="row">
+
+			<label>Check for new release:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes
+ 		</div>
+            <div class="row">
+        
+			<label>Replace spaces in foldername:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes
+ 		</div>
+            <div class="row">   
+
+			<label>Launch browser on startup:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
+ 		</div>
+            <div class="row">   
+
+			<label>Ignore sample files:</label><br/><br/>
+		    <input style="margin-left:15px;" class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
+ 		</div>
+        </fieldset>
+
+        <!--<a class="whiteButton" type="submit" >Search</a>-->
+        <input type="submit" href="#" value="Save Changes">
+    </form>
+
+

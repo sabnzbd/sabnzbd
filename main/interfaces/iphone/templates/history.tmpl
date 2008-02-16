@@ -1,0 +1,36 @@
+
+
+
+ 
+    <ul title="History" selected="true">
+         <li ><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| PAUSED" else ""#--></span> </center></li> 
+        <!--#for $line in $lines #-->
+        <!--#set id = $line.filename.replace(" ","_") #-->
+        <!--#set id = $id.replace("#","_") #-->        
+        <li><a href="#$id">$line.filename</a></li>
+        <!--#end for#-->
+        <li class="group">Tools</li>
+        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>       
+    </ul>
+ 
+    <!--#for $line in $lines #-->
+    <!--#set id = $line.filename.replace(" ","_") #-->   
+    <!--#set id = $id.replace("#","_") #-->        
+    <ul id="$id" title="$line.filename">
+         <li ><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| PAUSED" else ""#--></span> </center></li> 
+        <!--#for $stage in $line.stages#-->
+            <li>$line.filename</li>
+            <li>Stage $stage.name
+            <!--#for $action in $stage.actions#-->
+                 <br />$action.name: $action.value
+            <!--#end for#-->
+            </li>
+        <!--#end for#--> 
+        <li class="group">Tools</li>
+        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>
+    </ul>
+     <!--#end for#-->   
+    
+    
+       
+    

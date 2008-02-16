@@ -658,7 +658,32 @@ def main():
                                  '/sabnzbd/default.css': {'staticFilter.on': True, 'staticFilter.file': os.path.join(web_dir, 'default.css')},
                                  '/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir, 'static')}
                            })
+    iphone_dir = real_path(sabnzbd.DIR_INTERFACES, 'iphone')
+    iphone_dir = real_path(iphone_dir, "templates")
+    
+    cherrypy.root.sabnzbd.i = MainPage(iphone_dir)
+    cherrypy.root.sabnzbd.i.queue = QueuePage(iphone_dir)
+    cherrypy.root.sabnzbd.i.config = ConfigPage(iphone_dir)
+    cherrypy.root.sabnzbd.i.config.general = ConfigGeneral(iphone_dir)
+    cherrypy.root.sabnzbd.i.config.directories = ConfigDirectories(iphone_dir)
+    cherrypy.root.sabnzbd.i.config.switches = ConfigSwitches(iphone_dir)
+    cherrypy.root.sabnzbd.i.config.server = ConfigServer(iphone_dir)
+    cherrypy.root.sabnzbd.i.config.scheduling = ConfigScheduling(iphone_dir)
+    cherrypy.root.sabnzbd.i.config.rss = ConfigRss(iphone_dir)
+    cherrypy.root.sabnzbd.i.config.email = ConfigEmail(iphone_dir)
+    cherrypy.root.sabnzbd.i.config.newzbin = ConfigNewzbin(iphone_dir)
+    cherrypy.root.sabnzbd.i.connections = ConnectionInfo(iphone_dir)
+    cherrypy.root.sabnzbd.i.history = HistoryPage(iphone_dir)
+
+    cherrypy.config.update(updateMap={'/sabnzbd/i/shutdown': {'streamResponse': True},
+                                 '/sabnzbd/i/default.css': {'staticFilter.on': True, 'staticFilter.file': os.path.join(iphone_dir, 'default.css')},
+                                 '/sabnzbd/i/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(iphone_dir, 'static')}
+                           })
+                           
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
+    
+    
+
     try:
         cherrypy.server.start(init_only=True)
         cherrypy.server.wait()

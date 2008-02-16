@@ -1,0 +1,190 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>sabnzbd</title>
+<meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<style type="text/css" media="screen">@import "static/iui/iui.css";</style>
+<script type="application/x-javascript" src="static/iui/iui.js"></script>
+<script type="text/javascript" src="static/mochikit/MochiKit.js"></script>
+
+<script type="text/javascript">
+var RefreshTime = 10;
+var jsontimeout;
+MochiKit.DOM.addLoadEvent(onpageload);
+
+function onpageload() {
+//alert("hi5");
+loadingJSON();
+}
+
+//loads up the json for the queue page and changes the values in the document
+function loadingJSON(){	
+
+	if (RefreshTime>0) {
+	clearTimeout ( jsontimeout );
+	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);		
+	}	
+	var url = "api?mode=qstatus&output=json";
+
+	var d = loadJSONDoc(url);
+	var gotMetadata = function (info) 
+	{
+		//alert(info["kbpersec"]);
+		
+		speed = info["kbpersec"].toFixed(0);
+		var paused = info["paused"];		
+		if (paused==true) speed = 0;
+
+
+
+		var elemsSpeed = [];
+        var elemsMbleft = [];
+        var elemsMbtotal = [];
+        var elemsPaused = [];
+        elemsPaused = getElementsByTagAndClassName("span", "status");
+     
+        elemsSpeed = getElementsByTagAndClassName("span", "speed");
+
+        //.innerHTML = speed;
+        //document.getElementsByClassName("speed").innerHTML = info["mbleft"].toFixed(2);
+        //alert(elemsSpeed[0].innerHTML);
+		elemsMbleft = getElementsByTagAndClassName("span", "mbleft");
+        //.innerHTML = info["mbleft"].toFixed(2);
+		elemsMbtotal = getElementsByTagAndClassName("span", "mbtotal");
+        //.innerHTML = info["mb"].toFixed(2);
+        //var children = elemsSpeed.childNodes;
+        //alert(elemsSpeed.legth);
+        //alert(elemsSpeed.length);
+        for (var i=0; i < elemsSpeed.length; i++)
+        {
+            //alert("hi1");
+            elemsSpeed[i].innerHTML = speed;
+            elemsMbleft[i].innerHTML = info["mbleft"].toFixed(2);
+            elemsMbtotal[i].innerHTML = info["mb"].toFixed(2);
+            
+     		if (paused == true)
+    		{
+    			elemsPaused[i].innerHTML = "<span class='paused'>| Paused</span>";
+    						//alert("paused");
+    		} else if 	(paused == false && speed>0) 
+    		{
+    			elemsPaused[i].innerHTML = "<span class='downloading'>| Downloading</span>";
+    						//alert("down");			
+    		} else { 
+    			elemsPaused[i].innerHTML = "<span class='idle'>| Idle</span>";
+    						//alert("idle");			
+    		}       
+        }
+        //alert("hi2");
+        
+	};
+	var metadataFetchFailed = function (err) {
+	  //alert("The metadata for MochiKit.Async could not be fetched :(");
+	};
+	d.addCallbacks(gotMetadata, metadataFetchFailed);
+    }	
+    
+	function deletequeueitem(elem)
+	{
+        //alert(elem);
+		//document.getElementById(elem).innerHTML = "";
+        node = document.getElementById(elem);
+        node.parentNode.removeChild(node);
+		d = doSimpleXMLHttpRequest('queue/delete', {uid: elem});
+		//d.addCallback(history.go(-1));
+		//d.addErrback(handleServerError);
+	}
+    
+	var status2 = $paused;
+
+	function toggle()
+	{
+
+		if (status2 == 1)
+		{
+			status2 = 0;
+            var elemsPaused = [];
+            var elemsStatus2 = [];
+            elemsPaused = getElementsByTagAndClassName("span", "status");
+            elemsStatus2 = getElementsByTagAndClassName("span", "status2");
+            for (var i=0; i < elemsPaused.length; i++)
+            {
+                elemsPaused[i].innerHTML = "<span class='paused'>| Paused</span>";
+                elemsStatus2[i].innerHTML = "Resume";
+            }
+			doSimpleXMLHttpRequest("api?mode=resume");
+
+
+		}
+		else
+		{
+			status2 = 1;
+            var elemsPaused = [];
+            var elemsStatus2 = [];
+            elemsPaused = getElementsByTagAndClassName("span", "status");
+            elemsStatus2 = getElementsByTagAndClassName("span", "status2");
+            for (var i=0; i < elemsPaused.length; i++)
+            {
+                elemsPaused[i].innerHTML = "<span class='idle'>| Idle</span>";
+                elemsStatus2[i].innerHTML = "Pause";
+            }
+			doSimpleXMLHttpRequest("api?mode=pause");
+
+		}
+	}
+</script>
+
+<style type="text/css">
+
+body > ul > li {
+    font-size: 14px;
+}
+
+body > ul > li > a {
+    padding-left: 54px;
+    padding-right: 40px;
+    min-height: 34px;
+}
+
+
+
+h2 {
+    margin: 10px;
+    color: slateblue;
+}
+
+p {
+    margin: 10px;
+}
+
+.radiolabel{
+margin-bottom:10px;}
+
+//label {width:200px;}
+</style>
+
+</head>
+
+<body>
+    <div class="toolbar">
+        <h1 id="pageTitle"></h1>
+        <a id="backButton" class="button" href="#"></a>
+    </div>
+    
+    <ul title="SABnzbd" selected="true">
+        <li><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| Paused" else ""#--></span> </center></li> 
+        <li><a href="queue/">Queue</a></li>
+        <li><a href="history/">History</a></li>
+        <li><a href="config/">Config</a></li>
+        <li><a href="connections/">Connections</a></li>
+        <li class="group">Tools</li>
+        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>
+    </ul>
+
+</body>
+</html>

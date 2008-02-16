@@ -1,0 +1,257 @@
+body {
+	background-color: #fff;
+	color: #000;
+	font:normal 13px arial;
+	line-height: 18px;
+	padding: 0px;
+	margin: 0px;
+	text-align: center;
+
+}
+#hide{ display:none;}
+#Container {
+margin: 0 auto;
+text-align: left;
+width:80%;
+color:black;
+min-width:700px;
+margin-top:3px;
+}
+
+#Header{
+
+
+}
+#testing{
+display:inline;
+}
+#Content{
+	border-top: 1px dotted #ccc;
+
+
+}
+#Left {
+width:9%;
+min-width:100px;
+height:auto;
+float:left;
+line-height: 20px;
+padding:0px;
+margin:0px;
+}
+
+#Right {
+width:82%;
+float:left;
+padding:10px 0 10px 10px;
+border-left: 1px dotted #ccc;
+min-height:370px;
+}
+
+#Content{
+clear:both;
+
+}
+
+#Footer{
+clear:both;
+border-top: 1px dotted #ccc;
+padding:15px;
+text-align: center;
+}
+
+#menu{
+list-style-type: none;
+padding:10px;
+margin:0px;
+position:relative;
+}
+
+
+
+#progressBar {
+  background-color: #fff; 
+  border: 1px solid #000; 
+  height: 6px;
+  width: 99%;
+  margin: 0px;
+  margin-left: auto; 
+  margin-right: auto;
+  padding: 0px;
+  text-align: left;
+}
+#progressBartop {
+  background-color: #fff; 
+  border: 1px solid #ccc; 
+  height: 14px;
+  width: 99%;
+  margin: 0px;
+  margin-left: auto; 
+  margin-right: auto;
+  padding: 0px;
+  text-align: left;
+}
+#percentageBar {
+  position: relative; 
+  background-color: #4B4545; 
+  height: 100%;
+}
+
+
+h1{
+background-color:#4B4545;
+color:#fff;
+padding:8px;
+width:100px;
+font-size:20px;
+display:inline;
+}
+#title{
+border:none;
+color:#fff;
+display:inline;
+
+}
+#rss{border:none;}
+a:visited{
+color:#000;
+display:inline;
+margin-top:-5px;
+}
+h2{
+font-size:12px;
+margin:0 0 0 8px;
+
+}
+a {
+color:black;
+
+}
+
+div.EntryBlock {
+  display: inline;
+}
+div.EntryBlock form {
+  display: inline;
+}
+fieldset.EntryFieldSet {
+  vertical-align: top;
+  display: inline;
+  padding: 7px;
+  margin: 5px;
+}
+.secondul{
+padding-left:10px;
+margin:0px;
+list-style-type: none;
+}
+a.config{
+color:#4B4545;
+}
+.kbs{padding-left:2px;}
+
+#divchart,#divpie{
+margin: 0 auto;
+}
+.status{float:right;padding:0px;line-height: 22px;margin:0px 0px 10px 0px;}
+
+.paused{background-color:red;padding:2px;}
+.downloading{background-color:#00FF00;padding:2px;}
+.idle{background-color:yellow;padding:2px;}
+.spacer{color:white;margin-top:100px;margin-bottom:100px;}
+
+#divpie2,#divpie3{display:inline;clear:none;}
+#feed{display:inline;text-decoration: none;color:white;}
+.bold{font-weight: bold; }
+
+/*http://www.alistapart.com/articles/prettyaccessibleforms*/
+form.cmxform fieldset {
+  margin-bottom: 10px;
+  width:100%;
+  border:none;
+}
+form.cmxform legend {
+  padding: 0 2px;
+  font-weight: bold;
+}
+form.cmxform label {
+  display: inline-block;
+  line-height: 1.8;
+  vertical-align: top;
+}
+form.cmxform fieldset ol {
+  margin: 0;
+  padding: 0;
+}
+form.cmxform fieldset li {
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+}
+form.cmxform fieldset fieldset {
+  border: none;
+  margin: 3px 0 0;
+}
+form.cmxform fieldset fieldset legend {
+  padding: 0 0 5px;
+  font-weight: normal;
+}
+form.cmxform fieldset fieldset label {
+  display: block;
+  width: auto;
+}
+form.cmxform em {
+  font-weight: bold;
+  font-style: normal;
+  color: #f00;
+}
+form.cmxform label {
+  width: 200px; /* Width of labels */
+  margin-left:10px;
+  margin-right:40px;
+}
+form.cmxform fieldset fieldset label {
+  margin-left: 123px; /* Width plus 3 (html space) */
+}
+form.cmxform input {
+  width:150px;
+}
+form.cmxform input.radio{
+  width:15px;
+}
+#webdir{width:154px}
+.tips{margin-left: 30px;}
+
+hr
+{
+margin-top:-6px;
+margin-bottom:20px;
+color:#ccc;
+background-color:#ccc;
+border:none;
+height:1px;
+/*width:500px;*/
+}
+#queue{width:100%;}
+th{background-color:#4B4545;color:white;}
+tr{background-color:#f5f5f5;}
+#versions{font-size:8pt;}
+#help{float:right;}
+#finished{background-color:#ffd9d9;}
+#active{background-color:#deffd9;}
+#waiting{background-color:#ffffd9;}
+#order{width:110px;}
+#delicon{
+border:none;
+color:#fff;
+display:inline;
+margin:0px;
+padding:0px;
+margin-bottom:-3px;
+}
+#sortable_table{
+width:99%;
+}
+.submitstatus{
+display:inline;
+}

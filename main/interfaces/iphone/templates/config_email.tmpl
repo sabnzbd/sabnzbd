@@ -1,0 +1,63 @@
+
+
+<form title="Email Notification" class="panel" action="saveEmail" method="POST" selected="true" >
+<h2>Email Options</h2>
+<fieldset class="EntryFieldSet">
+        <div class="row"> 
+        
+			<label>End-of-job notifications:</label><br/><br/>
+			<input style="margin-left:15px;" class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> No
+			<input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> /> Yes
+			
+        </div>
+        <div class="row">    
+		
+			<label>Disk full notifications:</label><br/><br/>
+			<input style="margin-left:15px;" class="radio" type="radio" name="email_full" value="0" <!--#if $email_full == 0 then "checked=1" else ""#--> /> No
+			<input class="radio" type="radio" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> Yes
+			
+        </div>  
+		
+</fieldset>
+<h2>Account Settings</h2>
+<fieldset class="EntryFieldSet">
+
+	
+        <div class="row"> 		
+			<label>SMTP server:</label><br/><br/>
+			<input type="text" style="margin:0px;padding:0px;margin-left:15px;" size="25" name="email_server" value="$email_server">
+		
+        </div>
+        <div class="row">    
+		
+			<label>Email recipient:</label><br/><br/>
+
+			<input type="text" style="margin:0px;padding:0px;margin-left:15px;" size="25" name="email_to" value="$email_to">
+        </div>
+        <div class="row">    
+		
+			<label>Email sender:</label><br/><br/>
+			<input type="text" style="margin:0px;padding:0px;margin-left:15px;" size="25" name="email_from" value="$email_from">
+			
+        </div>
+        <div class="row">    
+		
+			<label>OPTIONAL: Account name:</label><br/><br/>
+			<input type="text" style="margin:0px;padding:0px;margin-left:15px;" size="25" name="email_account" value="$email_account">
+			
+        </div>
+        <div class="row">    
+		
+			<label>OPTIONAL: Account password:</label><br/><br/>
+			<input type="password" style="margin:0px;padding:0px;margin-left:15px;" size="25" name="email_pwd" value="$email_pwd">		
+        </div>
+  
+			
+</fieldset>
+
+
+<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/email/saveEmail', 'submitstatus')">
+<span class="submitstatus" id="submitstatus"></span></p>            </div>
+            <div class="row">    
+<a class="config" onClick="testemail();">Test E-Mail</a>
+</form>

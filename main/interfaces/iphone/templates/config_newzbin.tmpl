@@ -1,0 +1,74 @@
+
+<form title="Newzbin" class="panel" action="saveNewzbin" method="POST" selected="true">
+<h2>Account info</h2>
+<fieldset class="EntryFieldSet">
+
+            <div class="row"> 
+            <label>Username:</label><br /><br />
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="username_newzbin" value="$username_newzbin">
+            </div>
+            <div class="row"> 
+
+
+            <label>Password:</label><br /><br />
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="password" name="password_newzbin" value="$password_newzbin">
+            </div>
+
+</fieldset>
+
+<h2>Bookmark processing</h2>
+<fieldset class="EntryFieldSet">
+
+            <div class="row"> 
+            <label>Auto fetch bookmarks:</label><br /><br />
+            <input style="margin-left:15px;" class="radio" type="radio" name="newzbin_bookmarks" value="0" <!--#if $newzbin_bookmarks == 0 then "checked=1" else ""#--> /> No
+            <input class="radio" type="radio" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> /> Yes
+            </div>
+            <div class="row"> 
+
+            <label>Un-bookmark if download complete:</label><br /><br />
+            <input style="margin-left:15px;" class="radio" type="radio" name="newzbin_unbookmark" value="0" <!--#if $newzbin_unbookmark == 0 then "checked=1" else ""#--> /> No
+            <input class="radio" type="radio" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> Yes
+            </div>
+            <div class="row"> 
+
+            <label>Checking interval:</label><br /><br />
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="bookmark_rate" value="$bookmark_rate">
+            </div>
+</fieldset>
+
+<h2>Options</h2>
+<fieldset class="EntryFieldSet">
+
+            <div class="row"> 
+
+            <label>Create Category Folders:</label><br /><br />
+            <input style="margin-left:15px;" class="radio" type="radio" name="create_category_folders" value="0" <!--#if $create_category_folders == 0 then "checked=1" else ""#--> /> No
+            <input class="radio" type="radio" name="create_category_folders" value="1" <!--#if $create_category_folders == 1 then "checked=1" else ""#--> /> Yes
+            </div>
+
+</fieldset>
+
+<!--#if $bookmarks_list#-->
+<fieldset class="EntryFieldSet">
+<h2>Processed bookmarks</h2>
+            <div class="row"> 
+             <!--#for $msgid in $bookmarks_list#-->
+                <a href="https://v3.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
+            <!--#end for#-->
+            </div>
+
+</fieldset>
+<!--#end if#-->
+
+
+
+<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/newzbin/saveNewzbin', 'submitstatus')">
+<span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
+<a class="config" onClick="getBookmarks();">Get bookmarks now</a>
+<!--#if $bookmarks_list#-->
+    <a class="config" onClick="lr('/sabnzbd/config/newzbin/hideBookmarks');">Hide processed bookmarks</a>
+<!--#else#-->
+    <a class="config" onClick="lr('/sabnzbd/config/newzbin/showBookmarks');">Show processed bookmarks</a>
+<!--#end if#-->
+</form>

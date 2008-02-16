@@ -1,0 +1,71 @@
+
+<!--#if $paused #-->
+<!--#set $kbpersec = "0"#-->
+<!--#end if#-->	
+## work out time left til download is finished
+<!--#set $speed = float($kbpersec)#-->
+<!--#if $speed > 0 #-->
+<!--#set $mbleft3 = float($mbleft)*1024 #-->
+<!--#set $mins = ($mbleft3 / $speed)/60 #-->
+<!--#set $mins = round($mins, 0) #-->
+<!--#set $hours = $mins / 60 #-->
+<!--#set $hours = int($hours) #-->
+<!--#if $hours > 0 #-->
+<!--#set $mins = $mins -($hours*60)#-->
+<!--#end if#-->
+<!--#set $mins = int($mins) #-->
+<!--#set $minsold = $mins #-->
+## values for when there is no download active
+<!--#else if $speed == 0 #-->
+<!--#set $mins = 0 #-->
+<!--#set $hours = 0 #-->
+<!--#end if#-->
+
+ <!--#if $varExists('slotinfo')#-->
+ 
+    <ul title="Queue" selected="true">
+        <li ><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| PAUSED" else ""#--></span> </center></li>
+        <!--#for $slot in $slotinfo#-->
+        <!--#set id = $slot.filename.replace(" ","_") #-->   
+        <!--#set id = $id.replace("#","_") #-->
+        <li id="$slot.nzo_id"><a href="#$id">$slot.filename</a></li>
+        <!--#end for#-->
+        <li class="group">Tools</li>
+        <!--<li><a href="queue/" target="_self">Refresh</a></li>-->
+        <li><a href="<!--#if $paused then "resume" else "pause"#-->/" target="_self"><!--#if $paused then "Resume" else "Pause"#--></a></li>        
+    </ul>
+ 
+    <!--#for $slot in $slotinfo#--> 
+    <!--#set id = $slot.filename.replace(" ","_") #-->   
+    <!--#set id = $id.replace("#","_") #-->    
+    <ul id="$id" title="$slot.filename">
+         <li ><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| PAUSED" else ""#--></span> </center></li> 
+        <!--#if float($slot.mb)>0 #-->
+        <!--#set $perc = round( (1-(float($slot.mbleft) / float($slot.mb))) * 100, 2)#-->
+        <li>$slot.filename</li>
+        <li>$perc%</li>
+        <!--#end if#-->        
+        <li>$slot.mbleft/$slot.mb MB</li>
+        <li>ETA: $slot.eta</li>
+        <li>AGE: $slot.avg_age</li>
+        <li><a href="javascript:var dummy=0" onClick="javascript:history.back();deletequeueitem('$slot.nzo_id');">Delete</a></li>
+        
+        <li class="group">Tools</li>
+        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>
+    </ul>
+     <!--#end for#-->   
+    
+    
+       
+    
+    
+ <!--#else#-->
+     <ul title="Queue" selected="true">
+        <li ><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| PAUSED" else ""#--></span> </center></li>  
+
+        <li>Queue is empty</li>
+
+        <li class="group">Tools</li>
+        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>     
+    </ul>
+<!--#end if#-->

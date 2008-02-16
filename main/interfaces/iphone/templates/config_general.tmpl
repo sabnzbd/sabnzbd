@@ -1,0 +1,63 @@
+
+    <form title="General" class="panel" action="config/general/saveGeneral" method="POST" selected="true">
+        <h2>Web server</h2>
+         <fieldset>
+            <div class="row">
+                <label for "host">Host:</label><br /><br />
+                <input style="margin:0px;padding:0px;margin-left:15px;" style="margin:0px;padding:0px;margin-left:15px;" type="text" name="host" value=$host>
+            </div>
+            <div class="row">            
+    			<label for "port">Port:</label><br /><br />
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="port" value=$port>
+            </div>
+            <div class="row">      
+    			<label for "webuser">Web username:</label><br /><br />
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="username" value=$username>
+            </div>
+            <div class="row">      
+    			<label for "webpass">Web password:</label><br /><br />
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="password" name="password" value=$password>
+            </div>
+            <div class="row">      
+    			<label for "userinterface">User interface:</label><br /><br />
+    			<select style="margin:0px;padding:0px;margin-left:15px;" name="web_dir" id="webdir">
+    			    <!--#for $webline in $web_list#-->
+    			        <!--#if $webline == $web_dir#-->
+    			            <option value="$webline" selected>$webline</option>
+    			        <!--#else#-->
+    			            <option value="$webline">$webline</option>
+    			        <!--#end if#-->
+    			    <!--#end for#-->
+    			</select>
+            </div>
+        </fieldset>       
+        
+        <h2>Tuning</h2>
+         <fieldset>
+            <div class="row">
+    			<label for "qrefresh">Queue auto refresh interval:</label><br /><br />
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="refresh_rate" value="$refresh_rate">
+            </div>
+            <div class="row">
+    			<label for "rsscheck">RSS checking rate:</label><br /><br />
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="rss_rate" value="$rss_rate">
+            </div>
+            <div class="row">
+    			<label for "bandwidth limit">Bandwith Limit:</label><br /><br />
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="bandwith_limit" value="$bandwith_limit">
+            </div>
+            <div class="row">
+    			<label for "cachelimit">Article Cache Limit:</label><br /><br />
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="cache_limitstr" value="$cache_limitstr">
+            </div>
+            <div class="row">
+    			<label for "cleanuplist">Cleanup List:</label><br /><br />
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="cleanup_list" value="$cleanup_list">
+            </div>     
+        </fieldset>
+
+        <!--<a class="whiteButton" type="submit" >Search</a>-->
+        <input type="submit" href="#" value="Save Changes">
+    </form>
+
+

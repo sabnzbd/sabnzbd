@@ -1,0 +1,97 @@
+    <ul title="Servers" selected="true">
+                
+        <li><a href="#AddNewServer">Add New Server</a></li>
+        <!--#for $server in $servers#--> 
+        <li><a href="#$servers[$server]['host']$servers[$server]['port']">Edit $servers[$server]['host']:$servers[$server]['port']</a></li>
+        <!--#end for#-->        
+    </ul>
+
+
+ <!--#for $server in $servers#-->
+  <form title="General" class="panel" id="$servers[$server]['host']$servers[$server]['port']">
+<fieldset class="EntryFieldSet">
+      <h2>$server</h2>
+        <div class="row"> 
+			<label>Host:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="host" value="$servers[$server]['host']">
+		</div>
+            <div class="row">
+			<label>Port:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="port" value="$servers[$server]['port']">
+		</div>
+        <div class="row">
+
+			<label>Username:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="username" value="$servers[$server]['username']">
+		</div>
+        <div class="row">
+
+			<label>Password:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="password" size="25" name="password" value="$servers[$server]['password']">
+		</div>
+        <div class="row">
+
+			<label>Timeout:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="timeout" value="$servers[$server]['timeout']">
+		</div>
+        <div class="row">
+
+			<label>Connections:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="connections" value="$servers[$server]['connections']">
+		</div>
+        <div class="row">
+
+			<label>Fillserver:</label><br/><br/>
+            <input class="radio" type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
+			<input class="radio" type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
+   		<input type="hidden" name="server" value="$server">
+        </div>
+
+</fieldset>
+              <input type="submit" href="#" value="Save Changes">
+    </form>
+
+<!--#end for#-->
+ <form title="Add Server" class="panel" id="AddNewServer">
+ <fieldset class="EntryFieldSet">
+    <h2>Add server</h2>
+        <div class="row">
+    			<label>Host:</label><br/><br/>
+                <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="host">
+		</div>
+        <div class="row">
+    			<label>Port:</label><br/><br/>
+                <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="port">
+		</div>
+        <div class="row">
+
+			<label>Username:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="username">
+		</div>
+        <div class="row">
+
+			<label>Password:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="password" size="25" name="password">
+		</div>
+        <div class="row">
+
+			<label>Timeout:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="timeout">
+		</div>
+        <div class="row">
+
+			<label>Connections:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="connections">
+		</div>
+        <div class="row">
+
+			<label>Fillserver:</label><br/><br/>
+            <input style="margin:0px;padding:0px;margin-left:15px;" class="radio" type="radio" name="fillserver" value="0" "checked=1"> No
+				<input class="radio" type="radio" name="fillserver" value="1"> Yes
+ 		</div>
+</fieldset>
+        <input type="submit" href="#" value="Add Server">
+    </form>
+
+
+
