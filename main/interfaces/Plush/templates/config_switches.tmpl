@@ -43,20 +43,17 @@
 	<table>
 		<tr><td><strong>Enable Unrar:</strong></td>
 	    	<td><input type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
-	    		<input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes</td>
-	    <tr><td colspan="2"><small>Enable built-in unrar functionality</small></td></tr>
+	    		<input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes</td></tr>
 	    <tr><td colspan="2">&nbsp;</td></tr>
 
 	    <tr><td><strong>Enable Unzip:</strong></td>
 	    	<td><input type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
-	    		<input type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes</td>
-	    </tr><tr><td colspan="2"><small><small>Enable built-in unzip functionality</small></td></tr>
+	    		<input type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes</td></tr>
 	    <tr><td colspan="2">&nbsp;</td></tr>
 
 	    <tr><td><strong>Enable Filejoin:</strong></td>
 	    	<td><input type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
-	    		<input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes</td>
-	    </tr><tr><td colspan="2"><small><small>Enable built-in filejoin functionality</small></td></tr>
+	    		<input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes</td></tr>
 	    <tr><td colspan="2">&nbsp;</td></tr>
 
 	    <tr><td><strong>Enable Par Cleanup:</strong></td>
@@ -77,7 +74,7 @@
 	    </tr><tr><td colspan="2"><small><small>Only fetch Articles from topmost collection (less memory usage)</small></td></tr>
 	    <tr><td colspan="2">&nbsp;</td></tr>
 
-	    <tr><td><strong>Dirscan Options:</strong></td>
+	    <tr><td><strong>Dirscan Option:</strong></td>
 			<td><select name="dirscan_opts" id="dirscan_opts">
 		    <option value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#-->> None </option>
 		    <option name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 #-->selected<!--#end if#--> /> +Repair</option>
@@ -100,49 +97,41 @@
     	<td><input type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
     		<input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes</td>
     </tr><tr><td colspan="2"><small>Saves state of the queue after every completed file</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr><td><strong>Disconnect on empty queue:</strong></td>
     	<td><input type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
     		<input type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes</td>
     </tr><tr><td colspan="2"><small>Disconnect from Usenet server(s) when queue is empty.</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr><td><strong>Create group Folders:</strong></td>
     	<td><input type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
     		<input type="radio" name="create_group_folders" value="1" <!--#if $create_group_folders > 0 then "checked=1" else ""#--> /> Yes</td>
     </tr><tr><td colspan="2"><small>Place downloads into group folders</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr><td><strong>Send Group</strong></td>
     	<td><input type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
     		<input type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes</td>
     </tr><tr><td colspan="2"><small>Send group command before requesting articles</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr><td><strong>Auto Sort:</strong></td>
     	<td><input type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
     		<input type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes</td>
     </tr><tr><td colspan="2"><small>Automatically sort items by (average) age</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr><td><strong>Check for new release:</strong></td>
     	<td><input type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
     		<input type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes</td>
     </tr><tr><td colspan="2"><small>Weekly check for new SABnzbd release</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr><td><strong>Replace spaces in foldername:</strong></td>
     	<td><input type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
     		<input type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes</td>
     </tr><tr><td colspan="2"><small>Replace spaces with underscores in foldernames.</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr><td><strong>Launch browser on startup:</strong></td>
     	<td><input type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
     		<input type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes</td>
     </tr><tr><td colspan="2"><small>Set whether SABnzbd launches your browser on startup.</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr><td><strong>Ignore sample files:</strong></td>
     	<td><input type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
