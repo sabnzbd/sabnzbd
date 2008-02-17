@@ -58,7 +58,7 @@
 <!--#for $server in $servers#-->
   <form action="saveServer" method="post"size="26">
     <fieldset class="EntryFieldSet">
-      <legend><!--#if int($servers[$server]['ssl']) != 0 #--><img style="float:left" src="../../static/images/icon_config_encrypted.png" title="Encrypted via SSL"/>&sdot;<!--#end if#-->$server</legend>
+      <legend><!--#if int($servers[$server]['ssl']) != 0 #--><img style="float:left" src="../../static/images/icon_config_encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->$server</legend>
 	<table>
       <tr><td>Host:</td><td><input type="text" size="26" name="host" value="$servers[$server]['host']"/></td></tr>
       <tr><td>Port:</td><td><input type="text" size="6" name="port" value="$servers[$server]['port']"/></td></tr>
