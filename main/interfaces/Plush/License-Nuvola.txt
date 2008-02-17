@@ -10,6 +10,7 @@ directory templates/static/images:
     icon_config_directories.png
     icon_config_disconnect.png
     icon_config_email.png
+    icon_config_encrypted.png
     icon_config_general.png
     icon_config_help.png
     icon_config_rss.png
