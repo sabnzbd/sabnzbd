@@ -1,4 +1,14 @@
-<form title="Scheduling" class="panel" action="addSchedule" method="POST" selected="true">
+<ul title="Scheduling" selected="true">
+            
+    <li><a href="#addSchedule">Add New Schedule</a></li>
+    <!--#for $line in $schedlines#-->
+    <!--#set sanitisedLine = $line.replace(' ','_') #-->
+    <li><a href="#$sanitisedLine">$line</a></li>
+    <!--#end for#-->        
+</ul>
+
+
+<form title="Scheduling" id="addSchedule" class="panel" action="javascript:var dummy=0" method="POST">
 <h2>Add schedule</h2>
 <fieldset class="EntryFieldSet">
 
@@ -22,25 +32,26 @@
 <option value="resume">resume
 <option value="pause">pause
 </select>
-<p><input type="button" size="40" value="Add Schedule" onclick="javascript:submitconfig('config/scheduling/addSchedule', 'submitstatus1','schedule', '/sabnzbd/config/scheduling','0')">
+<p><input type="button" size="40" value="Add Schedule" onClick="javascript:history.back();submitconfig('config/scheduling/addSchedule', 'addSchedule')">
 <span class="submitstatus" id="submitstatus1"></span></p>
 </fieldset>
 </form>
-</div>
-<h3>Current Schedules:</h3>
-<div class="EntryBlock>"
+
+
+
 <!--#set $schednum = 0#-->
 <!--#for $line in $schedlines#-->
-<form class="cmxform" id="$line">
-<fieldset class="EntryFieldSet">
+<!--#set sanitisedLine = $line.replace(' ','_') #-->
+<form id="$sanitisedLine" class="cmxform" id="$line">
+
 <!--#set $schednum = $schednum+1#-->
 <legend>Task $schednum</legend>
 $line
 <input type="hidden" name="line" value="$line">
 <p>
-<input type="button" size="40" value="Remove" onclick="javascript:submitconfig('config/scheduling/delSchedule', '$line', '$line', '/sabnzbd/config/scheduling','0')">
+<input type="button" size="40" value="Remove" onClick="javascript:history.back();submitconfig('config/scheduling/delSchedule', '$sanitisedLine', '/sabnzbd/config/scheduling','0')"
 <span style="visibility:hidden" name="$line" class="submitstatus" id="$line"></span></p>
-</fieldset>
+
 </form>
 <!--#end for#-->
 

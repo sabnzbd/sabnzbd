@@ -1,5 +1,5 @@
 
-<form title="Newzbin" class="panel" action="saveNewzbin" method="POST" selected="true">
+<form title="Newzbin" id="Newzbin" class="panel" action="javascript:var dummy=0" method="POST" selected="true">
 <h2>Account info</h2>
 <fieldset class="EntryFieldSet">
 
@@ -63,12 +63,12 @@
 
 
 
-<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/newzbin/saveNewzbin', 'submitstatus')">
+<p><input type="button" size="40" value="Save Changes" onClick="javascript:history.back();submitconfig('config/newzbin/saveNewzbin', 'Newzbin')">
 <span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
 <a class="config" onClick="getBookmarks();">Get bookmarks now</a>
 <!--#if $bookmarks_list#-->
-    <a class="config" onClick="lr('/sabnzbd/config/newzbin/hideBookmarks');">Hide processed bookmarks</a>
+    <a class="config" onClick="lr('config/newzbin/hideBookmarks');">Hide processed bookmarks</a>
 <!--#else#-->
-    <a class="config" onClick="lr('/sabnzbd/config/newzbin/showBookmarks');">Show processed bookmarks</a>
+    <a class="config" onClick="lr('config/newzbin/showBookmarks');">Show processed bookmarks</a>
 <!--#end if#-->
 </form>

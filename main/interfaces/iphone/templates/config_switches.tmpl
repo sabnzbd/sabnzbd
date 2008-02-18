@@ -1,5 +1,5 @@
 
-    <form title="Switches" class="panel" action="saveSwitches" method="POST" selected="true">
+    <form title="Switches" id="Switches" class="panel" action="javascript:var dummy=0" method="POST" selected="true">
         <h2>Configuration switches</h2>
          <fieldset>
             <div class="row">
@@ -104,7 +104,7 @@
         </fieldset>
 
         <!--<a class="whiteButton" type="submit" >Search</a>-->
-        <input type="submit" href="#" value="Save Changes">
+        <input type="submit" action="javascript:var dummy=0" onClick="javascript:history.back();submitconfig('config/switches/saveSwitches', 'Switches')" value="Save Changes">
     </form>
 
 

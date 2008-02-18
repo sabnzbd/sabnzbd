@@ -1,6 +1,6 @@
 
 <!--#if $have_feedparser#-->
-  <form title="RSS" class="panel" action="saveRSS" method="POST" selected="true">
+  <form title="RSS" id="RSS" class="panel" action="javascript:var dummy=0" method="POST" selected="true">
     <h2>RSS feed settings</h2>
     <fieldset class="EntryFieldSet">
 
@@ -42,7 +42,7 @@
 
     </fieldset>
     <p>
-    <input type="button" size="40" value="Add" onclick="javascript:submitconfig('config/rss/add_rss_feed', 'submitstatus')">
+    <input type="button" size="40" value="Add" onClick="javascript:history.back();submitconfig('config/rss/add_rss_feed', 'RSS')">
     </p>
 </form>
 

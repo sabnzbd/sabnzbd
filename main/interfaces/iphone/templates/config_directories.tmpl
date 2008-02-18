@@ -1,5 +1,5 @@
 
-    <form title="Directories" class="panel" action="saveDirectories" method="POST" selected="true">
+    <form title="Directories" id="Directories" class="panel" action="javascript:var dummy=0" method="POST" selected="true">
         <h2>User directories</h2>
          <fieldset>
             <div class="row">
@@ -45,7 +45,7 @@
         </fieldset>
 
         <!--<a class="whiteButton" type="submit" >Search</a>-->
-        <input type="submit" href="#" value="Save Changes">
+        <input type="submit" onClick="javascript:history.back();submitconfig('config/directories/saveDirectories', 'Directories')" value="Save Changes">
     </form>
 
 

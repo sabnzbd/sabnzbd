@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>sabnzbd</title>
+<title>SABnzbd</title>
 <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
 <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
@@ -137,6 +137,52 @@ function loadingJSON(){
 
 		}
 	}
+
+	//based from Mochikit documentation - finds all the form values for an element and returns formatted query string
+	function getFormValues(element)
+	{
+
+	    kv = MochiKit.DOM.formContents(element);
+	    names = kv[0];
+	    values = kv[1];
+
+		kvstr = queryString(kv)
+	    return kvstr;
+	}
+
+    
+    
+	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post
+	function submitconfig(extra, element)
+	{
+		var values = [];
+		var elementt;
+		if (element) elementt = document.getElementById(element);
+		values = getFormValues(elementt);
+		var url = '/sabnzbd/i/'+extra;
+		var d = doXHR(url,
+	    {
+		    method:'POST',
+		    sendContent:values,
+		    headers: {"Content-Type":"application/x-www-form-urlencoded"}
+
+	    });
+		if (saveelement) document.getElementById(saveelement).innerHTML = "<img src='/sabnzbd/static/images/ajax-loader.gif' />";
+	    d.addCallback(function (result)
+	    {
+	      if (saveelement) document.getElementById(saveelement).innerHTML = "Saved";
+		  if(url2) lr(url2,refresh);
+	    });
+
+
+
+	    d.addErrback( function (result)
+	    {
+	      //if (saveelement) document.getElementById(saveelement).innerHTML = "Error";
+	    });
+
+	}
+
 </script>
 
 <style type="text/css">

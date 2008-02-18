@@ -1,6 +1,6 @@
 
 
-<form title="Email Notification" class="panel" action="saveEmail" method="POST" selected="true" >
+<form title="Email Notification" id="Email" class="panel" action="javascript:var dummy=0"  method="POST" selected="true" >
 <h2>Email Options</h2>
 <fieldset class="EntryFieldSet">
         <div class="row"> 
@@ -56,7 +56,7 @@
 </fieldset>
 
 
-<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/email/saveEmail', 'submitstatus')">
+<p><input type="button" size="40" value="Save Changes" onClick="javascript:history.back();submitconfig('config/email/saveEmail', 'Email')">
 <span class="submitstatus" id="submitstatus"></span></p>            </div>
             <div class="row">    
 <a class="config" onClick="testemail();">Test E-Mail</a>
