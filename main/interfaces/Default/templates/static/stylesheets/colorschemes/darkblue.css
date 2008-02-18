@@ -1,0 +1,17 @@
+.SubMenu, .blockWithBorder , a.current, th {
+	background-color: #44577c;
+    color:white;
+}
+
+tr.even, tr.odd {
+background-color: #666666;
+color:white;
+}
+#first, #third {
+color: #44577c;
+}
+
+a.current:hover, a:hover {
+	background-color: black;
+    color:white
+}

@@ -3,6 +3,8 @@
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../static/stylesheets/default.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/stylesheets/defaultcolors.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
     <!--#if $refresh_rate#-->
         <meta http-equiv="refresh" content="$refresh_rate">
     <!--#end if#-->
@@ -30,7 +32,7 @@
 <br>
 <br>
 <!--#if $varExists('slotinfo')#-->
-    <table id="SAB_Standard_Queue_Table">
+    <table id="queueTable">
         <tr><th></th><th></th><th>Mode</th><th>Name</th><th>Remain/Total</th><th>ETA</th><th>AGE</th></tr>
     <!--#set $odd = False#-->
     <!--#for $slot in $slotinfo#-->

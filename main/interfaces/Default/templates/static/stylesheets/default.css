@@ -1,6 +1,4 @@
 body {
-	background-color: white;
-	color: #808080;
 	font-family: 'Verdana', 'Helvetica', 'Sans-serif', 'sans';
 	font-size: 12px;
 	line-height: 18px;
@@ -10,7 +8,6 @@ body {
 
 a {
  text-decoration: none;
- color: #000000;
 }
 
 form {
@@ -19,9 +16,9 @@ form {
   border: none;
   display: inline;
 }
+
 legend {
   font-weight: bold;
-  color: #c32ee4;
 }
 div.EntryBlock {
   display: inline;
@@ -37,35 +34,32 @@ fieldset.EntryFieldSet {
 }
 .MainMenu a {
 	font-weight: bold;
-	color: #4e4e4e;
-	padding: 1px;
+	padding: 3px;
+    padding-bottom: 7px;
 	text-decoration: none;
-	border: 1px solid #eeeeee;
-	margin: 9px;
+	padding-left: 12px;
+    padding-right: 12px;
 }
 
 .SubMenu a {
 	font-weight: bold;
-	color: #000000;
-	padding: 1px;
+	padding: 3px;
+    padding-bottom: 7px;
 	text-decoration: none;
-	border: 1px solid #b5b5b5;
-	margin: 9px;
-}
-a:hover {
-	background-color: #F0E68C;
+	padding-left: 12px;
+    padding-right: 12px;
+    
 }
 
 a.current {
-	color: #fff;
 	border: none;
-	background-color: #b5b5b5;
 	padding: 3px;
 	padding-bottom: 7px;
+	padding-left: 12px;
+    padding-right: 12px;
 }
 a.current:hover {
 	border: none;
-	background-color: #b5b5b5;
 }
 
 
@@ -77,54 +71,28 @@ a.current:hover {
 	display: block;
 	border-width: thin;
 	border-style: solid;
-	border-color: #b5b5b5;
-	background-color: #eeeeee;
 	padding: 5px;
 }
 
 .MainMenu {
 	display: block;
-	border-width: 1px;
-	border-style: solid;
-	border-color: #b5b5b5;
-	background-color: #eeeeee;
 	padding: 5px;
 
 }
 .SubMenu {
 	display: block;
-	background-color: #b5b5b5;
 	padding: 5px;
 }
 
 table {
 	font-size: 9pt;
-	color: black;
 	margin: 0px;
 }
 td, td {
   padding: 5px;
 }
 th {
-	background: #b5b5b5;
-	color: white;
 	font-weight: bold;
-}
-
-tr.even{
-	background-color: #cdf;
-}
-
-tr.evenLine {
-	background-color: #eee;
-}
-
-tr.odd {
-	background-color: #99bbff;
-}
-
-tr.oddLine {
-	background-color: #f8f8f8;
 }
 
 tr.active {
@@ -149,7 +117,6 @@ h1 {
   text-align: left;
   font-size: 19px;
   font-weight: normal;
-  border-bottom: 1px solid #b5b5b5;
   padding-bottom: 0px;
 }
 * html h1 {
@@ -161,18 +128,16 @@ h2 {
 }
 #first {
 	font-size: 33px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: bold ;
-	color: #c32ee4;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold ;
 	text-transform: uppercase;
 	padding-left: 20px;
 }
 
 #second {
 	font-size: 30px;
-  font-family: Arial, Helvetica, sans-serif;
-  font-style: italic;
-	color: #99bbff;
+    font-family: Arial, Helvetica, sans-serif;
+    font-style: italic;
 	text-transform: lowercase;
 }
 
@@ -187,15 +152,11 @@ h2 {
 }
 .footer {
   text-align: center;
-  background-color: #eee;
   padding-bottom: 5px;
   margin-top: 20px;
-  border-top: 1px solid #b5b5b5;
 }
 
 #progressBar {
-  background-color: #cdf; 
-  border: 1px solid blue; 
   height: 6px;
   width: 90%;
   margin: 0px;
@@ -212,6 +173,9 @@ h2 {
 
 #percentageBar {
   position: relative; 
-  background-color: #9bf; 
   height: 6px;
+}
+
+#queueTable, #historyTable {
+width:100%;
 }

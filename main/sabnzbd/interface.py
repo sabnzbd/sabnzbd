@@ -908,13 +908,22 @@ class ConfigGeneral(ProtectedClass):
         config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
         config['cache_limitstr'] = sabnzbd.CFG['misc']['cache_limit'].upper()
 
-        config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
+        wdir = config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
         wlist = [DEF_STDINTF]
         for web in glob.glob(sabnzbd.DIR_INTERFACES + "/*"):
             rweb= os.path.basename(web)
-            if rweb != DEF_STDINTF and rweb != "_svn" and rweb != ".svn":
+            if rweb != DEF_STDINTF and rweb != "_svn" and rweb != ".svn" and ".zip" not in rweb:
                 wlist.append(rweb)
         config['web_list'] = wlist
+        
+        
+        config['color_scheme'] = sabnzbd.CFG['misc']['color_scheme']
+        csslist = []
+        for web in glob.glob(sabnzbd.DIR_INTERFACES + "/" + wdir +"/templates/static/stylesheets/colorschemes/*.css"):
+            rweb= os.path.basename(web)
+            if rweb != "_svn" and rweb != ".svn" and ".zip" not in rweb:
+                csslist.append(rweb)
+        config['css_list'] = csslist
         
         if not sabnzbd.CFG['misc']['cleanup_list']:
             config['cleanup_list'] = ','
@@ -934,7 +943,7 @@ class ConfigGeneral(ProtectedClass):
     @cherrypy.expose
     def saveGeneral(self, host = None, port = None, username = None, password = None, web_dir = None,
                     cronlines = None, refresh_rate = None, rss_rate = None,
-                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None):
+                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None, color_scheme = None):
 
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
@@ -946,6 +955,7 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['rss_rate'] = rss_rate
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
+        sabnzbd.CFG['misc']['color_scheme'] = color_scheme
 
         if not web_dir:
             web_dir= DEF_STDINTF
@@ -955,6 +965,9 @@ class ConfigGeneral(ProtectedClass):
         if dd and not os.access(dd + '/' + DEF_MAIN_TMPL, os.R_OK):
         	  return badParameterResponse('Error: "%s" is not a valid template directory (cannot see %s).' % (dd, DEF_MAIN_TMPL))
         sabnzbd.CFG['misc']['web_dir'] = web_dir
+        
+        if not color_scheme:
+            color_scheme = 'darkblue.css'
         
 
         return saveAndRestart(self.__root)
@@ -1357,7 +1370,7 @@ def build_header():
         uptime = "-"
 
     header = { 'version':sabnzbd.__version__, 'paused':sabnzbd.paused(),
-               'uptime':uptime }
+               'uptime':uptime, 'color_scheme':sabnzbd.COLOR_SCHEME }
 
     header['diskspace1'] = "%.2f" % diskfree(sabnzbd.DOWNLOAD_DIR)
     header['diskspace2'] = "%.2f" % diskfree(sabnzbd.COMPLETE_DIR)

@@ -126,6 +126,7 @@ EMAIL_FULL = False
 URLGRABBERS = []
 
 TV_SORT = None
+COLOR_SCHEME = None
 
 __INITIALIZED__ = False
 
@@ -242,7 +243,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT
+           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT, COLOR_SCHEME
 
     if __INITIALIZED__:
         return False
@@ -406,6 +407,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     auto_sort = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
     
     TV_SORT = check_setting_int(CFG, 'misc', 'tv_sort', 0)
+    
+    COLOR_SCHEME = check_setting_str(CFG, 'misc', 'color_scheme', 'darkblue.css')
 
 
     ############################

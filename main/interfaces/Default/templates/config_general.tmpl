@@ -3,6 +3,8 @@
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/defaultcolors.css"/>
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
     <link rel="shortcut icon" href="../../static/images/favicon.ico" />
 </head>
 <body>
@@ -59,6 +61,19 @@ Choose a user interface (restart required!).<br>
             <option value="$webline" selected>$webline</option>
         <!--#else#-->
             <option value="$webline">$webline</option>
+        <!--#end if#-->
+    <!--#end for#-->
+</select>
+<br>
+<br>
+<strong>Color Scheme:</strong><br>
+Choose a color scheme.<br>
+<select name="color_scheme">
+    <!--#for $cssline in $css_list#-->
+        <!--#if $cssline == $color_scheme#-->
+            <option value="$cssline" selected>$cssline</option>
+        <!--#else#-->
+            <option value="$cssline">$cssline</option>
         <!--#end if#-->
     <!--#end for#-->
 </select>

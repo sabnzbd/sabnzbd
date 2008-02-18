@@ -3,6 +3,8 @@
 <head>
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../static/stylesheets/default.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/stylesheets/defaultcolors.css"/>
+    <link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
     <link rel="shortcut icon" href="../static/images/favicon.ico" />
 </head>
 <body>
@@ -21,7 +23,7 @@
 <strong>Bytes Downloaded:</strong> $bytes_beginning GB <strong>- Bytes in History:</strong> $total_bytes GB</strong>
 </p>
 <!--#if $lines#-->
-<table>
+<table id="historyTable">
     <tr><th>Completed</th><th>Name</th><th>Loaded</th></tr>
     <!--#set $odd = False#-->
     <!--#for $line in $lines #-->
@@ -34,8 +36,11 @@
             <dt>Stage $stage.name</dt>
             <!--#for $action in $stage.actions#-->
                  <dd>$action.name: $action.value</dd>
-            <!--#end for#-->
-            </dl></td></tr>
+			            <!--#end for#-->
+		            </dl>
+				</td>
+				<td></td>
+			</tr>
         <!--#end for#-->
     <!--#end for#-->
 </table>
