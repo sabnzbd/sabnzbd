@@ -15,3 +15,7 @@ a.current:hover, a:hover {
 	background-color: black;
     color:white
 }
+
+td > a {
+color:black
+}
