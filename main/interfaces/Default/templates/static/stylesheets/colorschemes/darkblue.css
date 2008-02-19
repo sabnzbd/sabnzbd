@@ -16,6 +16,6 @@ a.current:hover, a:hover {
     color:white
 }
 
-td > a {
-color:black
+a.remove {
+color:black;
 }
