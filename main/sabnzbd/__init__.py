@@ -839,7 +839,7 @@ def add_nzbfile(nzbfile, pp):
         except:
             nzo = None
         if nzo:
-            NZBQ.add()
+            NZBQ.add(nzo)
 
 @synchronized_CV
 def add_nzo(nzo, position = -1):
