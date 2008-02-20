@@ -414,6 +414,8 @@ function loadingJSON(){
     		totalTimeRemain = convertSecondsToTime(totalTimeRemain);     //from nzbdstatus plugin
             dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"kB/s";
             document.title = dltitle;
+            document.getElementById("status2").innerHTML = "Pause";
+            status2 = 0
 						//alert("down");
 		} else {
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
