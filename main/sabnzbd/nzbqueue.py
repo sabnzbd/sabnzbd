@@ -340,8 +340,20 @@ class NzbQueue(TryList):
                     sabnzbd.AUTOSHUTDOWN_GO = True
 
     @synchronized(NZBQUEUE_LOCK)
-    def purge(self):
-        self.__downloaded_items = []
+    def purge(self, job=None):
+        """ Remove all history items, except the active ones """
+        if job == None:
+            keep = []
+            for hist_item in self.__downloaded_items:
+                if hist_item.nzo:
+                    keep.append(hist_item)
+            self.__downloaded_items = []
+            for hist_item in keep:
+                self.__downloaded_items.append(hist_item)
+            del keep
+        else:
+            self.__downloaded_items.pop(int(job))
+
 
     @synchronized(NZBQUEUE_LOCK)
     def queue_info(self, for_cli = False):
@@ -361,6 +373,7 @@ class NzbQueue(TryList):
     def history_info(self):
         history_info = {}
         bytes_downloaded = 0
+        n = 0
         for hist_item in self.__downloaded_items:
             completed = hist_item.completed
             filename = hist_item.filename
@@ -377,7 +390,8 @@ class NzbQueue(TryList):
                 unpackstrht = hist_item.unpackstrht
                 loaded = False
 
-            history_info[completed].append((filename, unpackstrht, loaded, bytes))
+            history_info[completed].append((filename, unpackstrht, loaded, bytes, n))
+            n = n + 1
         return (history_info, bytes_downloaded, sabnzbd.get_bytes())
 
     @synchronized(NZBQUEUE_LOCK)

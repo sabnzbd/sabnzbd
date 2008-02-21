@@ -258,7 +258,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
 
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
-    
+
     REPLACE_SPACES = bool(check_setting_int(CFG, 'misc', 'replace_spaces', 0))
 
     FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
@@ -284,7 +284,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         CLEANUP_LIST = []
 
     IGNORE_SAMPLES = bool(check_setting_int(CFG, 'misc', 'ignore_samples', 0))
-    
+
     UMASK = check_setting_str(CFG, 'misc', 'permissions', '')
     try:
         if UMASK:
@@ -363,7 +363,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     except:
         servers = ""
         CFG['servers'] = ''
-        
+
     for server in servers:
         try:
             temp = servers[server]['ssl']
@@ -376,10 +376,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     except:
         #BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
         BANDWITH_LIMIT = 0
-        
+
     if BANDWITH_LIMIT < 1:
         BANDWITH_LIMIT = 0
-    
+
 
     cache_limit = check_setting_str(CFG, 'misc', 'cache_limit', "0")
     cache_limit = int(from_units(cache_limit))
@@ -405,9 +405,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
 
     auto_sort = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
-    
+
     TV_SORT = check_setting_int(CFG, 'misc', 'tv_sort', 0)
-    
+
     COLOR_SCHEME = check_setting_str(CFG, 'misc', 'color_scheme', 'darkblue.css')
 
 
@@ -668,9 +668,9 @@ def queue_info(for_cli = False):
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
-def purge_history():
+def purge_history(job=None):
     try:
-        NZBQ.purge()
+        NZBQ.purge(job)
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
@@ -773,7 +773,7 @@ def save_state():
             RSS.save()
         except:
             logging.exception("[%s] Error accessing RSS?", __NAME__)
-            
+
     if BOOKMARKS:
         BOOKMARKS.save()
 
@@ -915,7 +915,7 @@ def get_bytes():
     except:
         logging.exception("[%s] Error accessing BPSMETER?", __NAME__)
         return 0
-        
+
 def get_bps():
     try:
         return BPSMETER.get_bps()

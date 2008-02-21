@@ -126,7 +126,7 @@ def check_server(host, port):
 
     if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
         return badParameterResponse('Warning: LOCALHOST is ambiguous, use numerical IP-address.')
-        
+
     if GetServerParms(host, port):
         return ""
     else:
@@ -642,10 +642,11 @@ class HistoryPage(ProtectedClass):
             history_item_list = history_items.pop(added)
 
             for history_item in history_item_list:
-                filename, unpackstrht, loaded, bytes = history_item
+                filename, unpackstrht, loaded, bytes, nzo = history_item
                 name, msgid = SplitFileName(filename)
                 stages = []
                 item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
+                        'nzo':nzo,
                         'msgid':msgid, 'filename':name, 'loaded':loaded, 'stages':stages}
                 if self.__verbose:
                     stage_keys = unpackstrht.keys()
@@ -674,6 +675,12 @@ class HistoryPage(ProtectedClass):
     @cherrypy.expose
     def purge(self):
         sabnzbd.purge_history()
+        raise cherrypy.HTTPRedirect(self.__root)
+
+    @cherrypy.expose
+    def delete(self, job=None):
+        if job:
+            sabnzbd.purge_history(job)
         raise cherrypy.HTTPRedirect(self.__root)
 
     @cherrypy.expose
@@ -744,7 +751,7 @@ class ConfigDirectories(ProtectedClass):
         config['extern_proc'] = sabnzbd.CFG['misc']['extern_proc']
         config['my_home'] = sabnzbd.DIR_HOME
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
-        
+
         config['tv_sort'] = sabnzbd.CFG['misc']['tv_sort']
         tvSortList = []
         for tvsort in TVSORTINGLIST:
@@ -915,8 +922,8 @@ class ConfigGeneral(ProtectedClass):
             if rweb != DEF_STDINTF and rweb != "_svn" and rweb != ".svn" and ".zip" not in rweb:
                 wlist.append(rweb)
         config['web_list'] = wlist
-        
-        
+
+
         config['color_scheme'] = sabnzbd.CFG['misc']['color_scheme']
         csslist = []
         for web in glob.glob(sabnzbd.DIR_INTERFACES + "/" + wdir +"/templates/static/stylesheets/colorschemes/*.css"):
@@ -924,7 +931,7 @@ class ConfigGeneral(ProtectedClass):
             if rweb != "_svn" and rweb != ".svn" and ".zip" not in rweb:
                 csslist.append(rweb)
         config['css_list'] = csslist
-        
+
         if not sabnzbd.CFG['misc']['cleanup_list']:
             config['cleanup_list'] = ','
 
@@ -933,7 +940,7 @@ class ConfigGeneral(ProtectedClass):
 
         else:
             config['cleanup_list'] = listquote.makelist(sabnzbd.CFG['misc']['cleanup_list'])
-            
+
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             searchList=[config],
                             compilerSettings={'directiveStartToken': '<!--#',
@@ -965,10 +972,10 @@ class ConfigGeneral(ProtectedClass):
         if dd and not os.access(dd + '/' + DEF_MAIN_TMPL, os.R_OK):
         	  return badParameterResponse('Error: "%s" is not a valid template directory (cannot see %s).' % (dd, DEF_MAIN_TMPL))
         sabnzbd.CFG['misc']['web_dir'] = web_dir
-        
+
         if not color_scheme:
             color_scheme = 'darkblue.css'
-        
+
 
         return saveAndRestart(self.__root)
 
@@ -1061,7 +1068,7 @@ class ConfigServer(ProtectedClass):
             msg = check_server(host, port)
             if msg:
                 return msg
-    
+
             del sabnzbd.CFG['servers'][server]
             server = "%s:%s" % (host, port)
             sabnzbd.CFG['servers'][server] = {}
@@ -1198,7 +1205,7 @@ class ConfigNewzbin(ProtectedClass):
         config['newzbin_bookmarks'] = int(sabnzbd.CFG['newzbin']['bookmarks'])
         config['newzbin_unbookmark'] = int(sabnzbd.CFG['newzbin']['unbookmark'])
         config['bookmark_rate'] = sabnzbd.BOOKMARK_RATE
-        
+
         config['bookmarks_list'] = self.bookmarks
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
@@ -1218,7 +1225,7 @@ class ConfigNewzbin(ProtectedClass):
         sabnzbd.CFG['newzbin']['bookmarks'] = newzbin_bookmarks
         sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
         sabnzbd.CFG['newzbin']['bookmark_rate'] = bookmark_rate
-        
+
         return saveAndRestart(self.__root)
 
     @cherrypy.expose
@@ -1290,7 +1297,7 @@ class ConnectionInfo(ProtectedClass):
             header['servers'].append((server.host, server.port, connected, busy, server.ssl))
 
         header['warnings'] = sabnzbd.GUIHANDLER.content()
-            
+
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
                             searchList=[header],
                             compilerSettings={'directiveStartToken': '<!--#',
@@ -1343,7 +1350,7 @@ def saveAndRestart(redirect_root):
 
 def Protected():
     return badParameterResponse("Configuration is locked")
-        
+
 def badParameterResponse(msg):
     """Return a html page with error message and a 'back' button
     """
@@ -1501,7 +1508,7 @@ def rss_history():
 
         for history_item in history_item_list:
             item = Item()
-            filename, unpackstrht, loaded, bytes = history_item
+            filename, unpackstrht, loaded, bytes, nzo = history_item
             if added > youngest:
                 youngest = added
             item.pubDate = std_time(added)
@@ -1560,7 +1567,7 @@ def rss_warnings():
     rss.channel.lastBuildDate = std_time(time.time())
     rss.channel.pubDate = rss.channel.lastBuildDate
     return rss.write()
-    
+
 
 def json_qstatus():
     """Build up the queue status as a nested object and output as a JSON object
@@ -1619,7 +1626,7 @@ def xml_qstatus():
                "diskspace2" : diskfree(sabnzbd.COMPLETE_DIR),
                "jobs" : jobs
              }
-             
+
     status_str= '<?xml version="1.0" encoding="UTF-8" ?> \n\
                 <queue> \n\
                 <paused>%(paused)s</paused> \n\
@@ -1629,7 +1636,7 @@ def xml_qstatus():
                 <noofslots>%(noofslots)s</noofslots> \n\
                 <diskspace1>%(diskspace1)s</diskspace1> \n\
                 <diskspace2>%(diskspace2)s</diskspace2> \n' % status
-    
+
     status_str += '<jobs>\n'
     for job in jobs:
         status_str += '<job> \n\
@@ -1639,11 +1646,11 @@ def xml_qstatus():
                     <mbleft>%(mbleft)s</mbleft> \n\
                     <mb>%(mb)s</mb> \n\
                     </job>\n' % job
-                    
+
     status_str += '</jobs>\n'
- 
+
 
     status_str += '</queue>'
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str    
+    return status_str

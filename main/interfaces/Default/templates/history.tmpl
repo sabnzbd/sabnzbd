@@ -24,15 +24,21 @@
 </p>
 <!--#if $lines#-->
 <table id="historyTable">
-    <tr><th>Completed</th><th>Name</th><th>Loaded</th></tr>
+    <tr><th>Completed</th><th></th><th>Name</th><th>Loaded</th></tr>
     <!--#set $odd = False#-->
     <!--#for $line in $lines #-->
         <!--#set $odd = not $odd#-->
-        <tr class="<!--#if $odd then "odd" else "even"#-->"><td>$line.added</td><td>$line.filename</td><td>$line.loaded</td></tr>
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <td>$line.added</td>
+        <td><form action="delete" method="get">
+            <input type="hidden" value="$line.nzo" name="job">
+            <input type="submit" value="Del"></form>
+        </td>
+        <td>$line.filename</td><td>$line.loaded</td></tr>
         <!--#set $oddLine = not False#-->
         <!--#for $stage in $line.stages#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#-->"><td></td><td><dl>
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#-->"><td></td><td></td><td><dl>
             <dt>Stage $stage.name</dt>
             <!--#for $action in $stage.actions#-->
                  <dd>$action.name: $action.value</dd>
