@@ -31,7 +31,7 @@ import datetime
 from threading import Thread, RLock
 
 from sabnzbd.trylist import TryList
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzbstuff import NzbObject, SplitFileName
 from sabnzbd.misc import Panic_Queue, ExitSab
 
 from sabnzbd.decorators import *
@@ -251,6 +251,10 @@ class NzbQueue(TryList):
     def sort_by_avg_age(self):
         logging.info("[%s] Sorting by average date...", __NAME__)
         self.__nzo_list.sort(cmp=_nzo_date_cmp)
+        
+    def sort_by_name(self):
+        logging.info("[%s] Sorting by name...", __NAME__)
+        self.__nzo_list.sort(cmp=_nzo_name_cmp)
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -439,3 +443,12 @@ def _nzo_date_cmp(nzo1, nzo2):
         avg_date2 = datetime.datetime.now()
 
     return cmp(avg_date1, avg_date2)
+
+def _nzo_name_cmp(nzo1, nzo2):
+    fn1, msgid1 = SplitFileName(nzo1.get_filename())
+    fn2, msgid2 = SplitFileName(nzo2.get_filename())
+    logging.debug("[%s] 1:%s 2:%s", __NAME__, fn1,fn2)
+
+    logging.info("[%s] 3:returning %s", __NAME__, cmp(fn1, fn2))
+    return cmp(fn1, fn2)
+    

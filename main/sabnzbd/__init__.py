@@ -127,6 +127,7 @@ URLGRABBERS = []
 
 TV_SORT = None
 COLOR_SCHEME = None
+auto_sort = None
 
 __INITIALIZED__ = False
 
@@ -243,7 +244,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT, COLOR_SCHEME
+           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT, COLOR_SCHEME, auto_sort
 
     if __INITIALIZED__:
         return False
@@ -408,9 +409,14 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     TV_SORT = check_setting_int(CFG, 'misc', 'tv_sort', 0)
 
-    COLOR_SCHEME = check_setting_str(CFG, 'misc', 'color_scheme', 'darkblue.css')
+    COLOR_SCHEME = check_setting_str(CFG, 'misc', 'color_scheme', '')
 
-
+    '''if COLOR_SCHEME:
+        dd2 = os.path.abspath(DIR_INTERFACES + '/' + web_dir + '/static/stylesheets/colorschemes/' + COLOR_SCHEME)
+        if dd2 and not os.access(dd2, os.R_OK):
+            COLOR_SCHEME = '''''
+    
+    
     ############################
     ## Object initializiation ##
     ############################
@@ -617,6 +623,12 @@ def remove_nzf(nzo_id, nzf_id):
 def sort_by_avg_age():
     try:
         NZBQ.sort_by_avg_age()
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+def sort_by_name():
+    try:
+        NZBQ.sort_by_name()
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 

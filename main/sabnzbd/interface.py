@@ -609,6 +609,11 @@ class QueuePage(ProtectedClass):
     def sort_by_avg_age(self):
         sabnzbd.sort_by_avg_age()
         raise cherrypy.HTTPRedirect(self.__root)
+        
+    @cherrypy.expose
+    def sort_by_name(self):
+        sabnzbd.sort_by_name()
+        raise cherrypy.HTTPRedirect(self.__root)
 
 class HistoryPage(ProtectedClass):
     def __init__(self, web_dir):

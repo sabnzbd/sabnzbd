@@ -446,7 +446,12 @@ class NzbObject(TryList):
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
-        self.__files.sort(cmp=_nzf_cmp)     
+        print 'autosort: %s' % (sabnzbd.auto_sort)
+        if sabnzbd.auto_sort:
+            self.__files.sort(cmp=_nzf_cmp_date)
+        else:
+            print 'no date sort, sorting alphabetically'
+            self.__files.sort(cmp=_nzf_cmp_name)
 
     ## begin nzo.Mutators #####################################################
     ## excluding nzo.__try_list ###############################################
@@ -793,7 +798,7 @@ class NzbObject(TryList):
 
 #-------------------------------------------------------------------------------
 
-def _nzf_cmp(nzf1, nzf2):
+def _nzf_cmp_date(nzf1, nzf2):
     subject1 = nzf1.get_subject().lower()
     subject2 = nzf2.get_subject().lower()
 
@@ -815,6 +820,31 @@ def _nzf_cmp(nzf1, nzf2):
     else:
         return cmp(nzf1.get_date(), nzf2.get_date())
 
+def _nzf_cmp_name(nzf1, nzf2):
+    subject1 = nzf1.get_subject().lower()
+    subject2 = nzf2.get_subject().lower()
+    print '1:%s 2:%s' % (subject1, subject2)
+
+    par2_found = 0
+    ret = 0
+    if 'vol' in subject1 and '.par2' in subject1:
+        par2_found += 1
+        ret -= 1
+
+    if 'vol' in subject2 and '.par2' in subject2:
+        par2_found += 1
+        ret += 1
+        
+    if '.rar' in subject1 and not '.par' in subject2 and not '.rar' in subject2: #some nzbs dont get filename field populated, using subject instead
+        print '1:returning -1'
+        return -1 #nzf1 contained '.rar' nzf2 didnt. Move nzf1 up in the queue
+
+    if par2_found == 1:
+        print '2:Returning:%s' % (ret)
+        return ret
+    else:
+        print '3:Returning:%s' % (cmp(subject1, subject2))
+        return cmp(subject1, subject2)
 
 #-------------------------------------------------------------------------------
 
