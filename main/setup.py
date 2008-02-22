@@ -35,6 +35,7 @@ options = dict(
       data_files = [
           ('', ['README.txt', 'INSTALL.txt', 'LICENSE.txt', 'CHANGELOG.txt', 'ISSUES.txt', 'Sample-PostProc.cmd', 'Sample-PostProc.sh', 'PKG-INFO']),
           ('licenses', glob.glob("licenses/*.*")),
+
           ('interfaces/Default', glob.glob("interfaces/Default/*.*")),
           ('interfaces/Default/templates', glob.glob("interfaces/Default/templates/*.tmpl")),
           ('interfaces/Default/templates/static/stylesheets', ['interfaces/Default/templates/static/stylesheets/default.css']),
@@ -54,6 +55,12 @@ options = dict(
           ('interfaces/Plush/templates/static/javascripts', glob.glob("interfaces/Plush/templates/static/javascripts/*.*")),
           ('interfaces/Plush/templates/static/stylesheets', glob.glob("interfaces/Plush/templates/static/stylesheets/*.*")),
 
+          ('interfaces/iphone', glob.glob("interfaces/iphone/*.*")),
+          ('interfaces/iphone/templates', glob.glob("interfaces/iphone/templates/*.*")),
+          ('interfaces/iphone/templates/static', glob.glob("interfaces/iphone/templates/static/*.*")),
+          ('interfaces/iphone/templates/static/iui', glob.glob("interfaces/iphone/templates/static/iui/*.*")),
+          ('interfaces/iphone/templates/static/MochiKit', glob.glob("interfaces/iphone/templates/static/MochiKit/*.*")),
+
           ('win/par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
           ('win/unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
           ('win/unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE']),
@@ -63,7 +70,8 @@ options = dict(
 
 if py2exe:
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "interfaces/Default/templates/static/images/favicon.ico")] } ]
-    options['options'] = {"py2exe": {"bundle_files": 1, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
+    options['options'] = {"py2exe": {"bundle_files": 3, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
+    options['zipfile'] = 'lib/sabnzbd.zip'
 
     # Generate the console-app
     options['console'] = program
@@ -75,7 +83,7 @@ if py2exe:
     except:
         print "Cannot create dist/%s" % Win32ConsoleName
         exit(1)
-    
+
     # Make sure that the root files are DOS format
     for file in options['data_files'][0][1]:
         os.system("unix2dos --safe dist/%s" % file)

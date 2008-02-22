@@ -53,12 +53,12 @@ DirText "Select the directory to install SABnzbd+ in:"
 
   !define MUI_ICON "interfaces/Default/templates/static/images/favicon.ico"
 
-  
+
 ;--------------------------------
 ;Pages
 
   !insertmacro MUI_PAGE_LICENSE "license.txt"
-  !define MUI_COMPONENTSPAGE_NODESC 
+  !define MUI_COMPONENTSPAGE_NODESC
   !insertmacro MUI_PAGE_COMPONENTS
 
   !insertmacro MUI_PAGE_DIRECTORY
@@ -68,7 +68,7 @@ DirText "Select the directory to install SABnzbd+ in:"
   !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\SABnzbd"
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   !define MUI_STARTMENUPAGE_DEFAULTFOLDER "SABnzbd"
-	
+
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
 
 
@@ -117,11 +117,11 @@ SetOutPath "$INSTDIR"
 ; add files / whatever that need to be installed here.
 File /r "dist\*"
 
-                   
+
 WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" "" "$INSTDIR"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayName" "SABnzbd (remove only)"
-WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "UninstallString" '"$INSTDIR\uninstall.exe"' 
-;WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayIcon" '"$INSTDIR\need-a-.ico"' 
+WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "UninstallString" '"$INSTDIR\uninstall.exe"'
+;WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\SABnzbd" "DisplayIcon" '"$INSTDIR\need-a-.ico"'
 ; write out uninstaller
 WriteUninstaller "$INSTDIR\Uninstall.exe"
 
@@ -134,7 +134,7 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
     ;CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Online.lnk" "http://sabnzbdplus.wiki.sourceforge.net/Introduction"
     WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://sabnzbdplus.wiki.sourceforge.net/Introduction"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
-    
+
 
 
   !insertmacro MUI_STARTMENU_WRITE_END
@@ -187,20 +187,27 @@ Section Uninstall
     RMDir /r "$INSTDIR\interfaces\Default"
     RMDir /r "$INSTDIR\interfaces\Plush"
     RMDir /r "$INSTDIR\interfaces\smpl"
+    RMDir /r "$INSTDIR\interfaces\iPhone"
     RMDir "$INSTDIR\interfaces"
     RMDir /r "$INSTDIR\win\email"
     RMDir /r "$INSTDIR\win\par2"
     RMDir /r "$INSTDIR\win\unrar"
     RMDir /r "$INSTDIR\win\unzip"
     RMDir /r "$INSTDIR\win"
-    Delete /r "$INSTDIR\licenses\*.txt"
+    Delete "$INSTDIR\licenses\*.txt"
     RMDir "$INSTDIR\licenses"
     Delete "$INSTDIR\CHANGELOG.txt"
     Delete "$INSTDIR\INSTALL.txt"
     Delete "$INSTDIR\ISSUES.txt"
-    Delete "$INSTDIR\library.zip"
     Delete "$INSTDIR\LICENSE.txt"
     Delete "$INSTDIR\msvcr71.dll"
+    Delete "$INSTDIR\python25.dll"
+    Delete "$INSTDIR\lib\libeay32.dll"
+    Delete "$INSTDIR\lib\pywintypes25.dll"
+    Delete "$INSTDIR\lib\ssleay32.dll"
+    Delete "$INSTDIR\lib\sabnzbd.zip"
+    Delete "$INSTDIR\lib\*.pyd"
+    RMDir  "$INSTDIR\lib\"
     Delete "$INSTDIR\PKG-INFO"
     Delete "$INSTDIR\README.txt"
     Delete "$INSTDIR\SABnzbd.exe"
