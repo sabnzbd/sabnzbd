@@ -4,7 +4,7 @@ body {
 }
 
 a {
- color: #fff;
+ color: #000;
 }
 
 input, select {
@@ -108,20 +108,28 @@ h1 {
 
 .queuelink{color:black;}
 
-.SubMenu, .blockWithBorder , a.current, th {
-	background-color: #CC0033;
+.SubMenu, .blockWithBorder , a.current, tr.even, tr.odd{
+	background-color: #44577c;
     color:white;
 }
 
-tr.even, tr.odd {
-background-color: #666666;
+th  {
+background-color: #333;
 color:white;
 }
 #first, #third {
-color: #CC0033;
+color: #44577c;
 }
 
 a.current:hover, a:hover {
 	background-color: black;
     color:white
+}
+
+td > a, td > a {
+color:white;
+}
+
+a.remove {
+color:black;
 }

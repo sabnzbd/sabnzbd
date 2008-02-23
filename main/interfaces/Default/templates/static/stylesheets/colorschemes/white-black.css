@@ -1,13 +1,11 @@
 
-
-
-.SubMenu, .blockWithBorder , a.current, th {
+.SubMenu, .blockWithBorder , a.current, tr.even, tr.odd{
 	background-color: #4e4e4e;
     color:white;
 }
 
-tr.even, tr.odd {
-background-color: #4e4e4e;
+th {
+background-color: #333;
 color:white;
 }
 #first, #third {
@@ -19,6 +17,11 @@ a.current:hover, a:hover {
     color:white
 }
 
+td > a, td > a {
+color:white;
+}
+
 a.remove {
 color:black;
 }
+

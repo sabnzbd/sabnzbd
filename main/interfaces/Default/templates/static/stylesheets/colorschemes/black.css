@@ -1,6 +1,6 @@
 body {
 	background-color: #3a3a3a;
-	color: #ccc;
+	color: #888;
 }
 
 a {
@@ -63,21 +63,6 @@ th {
 	color: white;
 }
 
-tr.even{
-	background-color: #232323;
-}
-
-tr.evenLine {
-	background-color: #232323;
-}
-
-tr.odd {
-	background-color: #232323;
-}
-
-tr.oddLine {
-	background-color: #232323;
-}
 
 h1 {
   border-bottom: 1px solid #4e4e4e;
@@ -104,8 +89,13 @@ h1 {
 }
 
 tr.even, tr.odd {
-background-color: #232323;
+background-color: #111;
 color:white;
+}
+
+tr.evenLine, tr.oddLine {
+background-color: #232323;
+color:#666;
 }
 #first, #second, #third {
 color: #000;
@@ -115,4 +105,6 @@ a.current:hover, a:hover {
 	background-color: black;
     color:white
 }
+
+a.remove{color:#888}
 

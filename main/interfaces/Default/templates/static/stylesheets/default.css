@@ -117,7 +117,7 @@ h1 {
   text-align: left;
   font-size: 19px;
   font-weight: normal;
-  padding-bottom: 0px;
+  padding-bottom: 4px;
 }
 * html h1 {
   padding-bottom: 2px;
@@ -178,4 +178,8 @@ h2 {
 
 #queueTable, #historyTable {
 width:100%;
+}
+
+#row_del, #row_order, #row_mode {
+width:75px;
 }
