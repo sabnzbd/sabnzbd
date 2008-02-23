@@ -127,7 +127,6 @@ h3 {
 	padding: 5px;
 	text-align: center;
 	/*display:table;*/ /* uncomment to center the queue/history in top-to-bottom layout mode (messes up Firefox 2) */
-	margin-left:auto; margin-right:auto;
 }
 .queue_sidebyside, .history_sidebyside {display:inline;}
 .queue_sidebyside {
@@ -151,11 +150,11 @@ h3 {
 /* Listing Table
 ----------------------------------------------------------------- */
 .listingTable {
-	width:   100%; 	/* fullscreen */
+	width:   100%;  	/* fullscreen 4:3 */
 	vertical-align: top;
 	padding-left:3px;
 	padding-right:3px;
-	/* display: table; */ 	/* center queue&history non-FF2 */
+	/*display: table; */ 	/* center queue&history non-FF2 */
 	/* margin:  0 auto; */
 }
 
@@ -324,7 +323,7 @@ h3 {
 }
 
 
-.t  {background: url(../images/bg_listing_table_heading.png) 0 0 repeat-x; width: 100%}
+.t  {background: url(../images/bg_listing_table_heading.png) 0 0 repeat-x;}
 .tl {background: url(../images/bg_listing_table_heading_tl.png) 0 0 no-repeat}
 .tr {background: url(../images/bg_listing_table_heading_tr.png) 100% 0 no-repeat; padding:10px}
 .l  {background: url(../images/bg_listing_item_left.png) 0 0 repeat-y;}
