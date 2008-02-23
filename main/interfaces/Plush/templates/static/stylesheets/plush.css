@@ -7,6 +7,13 @@ body {
 	text-align: center;
 	margin: 0;
 	cursor: default;
+	background-color: #EBEBEB;
+	font-family: arial, "lucida console", sans-serif;
+}
+
+select {
+	background-color: #E8F7FD;
+	color: #0B4867;
 }
 
 
@@ -139,41 +146,26 @@ h3 {
 
 
 
+
+
 /* Listing Table
 ----------------------------------------------------------------- */
 .listingTable {
-	margin-top: 6px;
-	/* width:   100%; */ 	/* fullscreen */
+	width:   100%; 	/* fullscreen */
+	vertical-align: top;
+	padding-left:3px;
+	padding-right:3px;
 	/* display: table; */ 	/* center queue&history non-FF2 */
 	/* margin:  0 auto; */
 }
 
-/* Table Heading */
-.listingTable thead {}
-.listingTable thead tr {
-	background: url(../images/bg_listing_table_heading.png) repeat-x left top;
-	color: #333;
-	text-align: left;
-}
-.listingTable  thead  th {
-	padding: 10px 15px 6px 15px;
-	border-bottom: 1px solid #C7C7C7;
+/* Table Body */
+.listingTable tbody {}
+.listingTable tbody tr {
+	padding: 22px 19px 6px 15px;
 	font-size: 1.1em;
 	color: #C00;
 }
-.listingTable thead th.first { background: transparent  url(../images/bg_listing_table_heading_tl.png) no-repeat left top; }
-.listingTable thead th.first span {
-	margin-left: 25px;
-	font-size: .85em;
-	font-weight: normal;
-	color: #999;
-}
-.listingTable thead th.first span b {
-	color: grey;
-}
-.listingTable thead th.last { background: transparent  url(../images/bg_listing_table_heading_tr.png) no-repeat right top; }
-
-/* Table Body */
 
 /* Table Rows */
 .listingTable tbody tr {background: #fff url(../images/bg_listing_table_tbody_tr.png) repeat-x left bottom;}
@@ -187,8 +179,6 @@ h3 {
 .listingTable tbody tr:hover .itemTTD {color: #000;}
 
 /* Table Data */
-.listingTable tbody .first {border-left: 1px solid #707070;}
-.listingTable tbody .last {border-right: 1px solid #707070;}
 .listingTable tbody td {
 	padding: 3px 5px;
 	white-space: nowrap;
@@ -197,10 +187,9 @@ h3 {
 
 /* Item Title */
 .listingTable tbody .itemTitle {
-	padding-right: 30px;
+	padding-right: 20px;
 	text-align: left;
-	color: #555;
-	font-weight: bold;
+	color: #064867;
 	font-size: 0.9em;
 }
 .listingTable tbody tr:hover .itemTitle {
@@ -212,15 +201,17 @@ h3 {
 }
 .listingTable tbody tr:hover .itemTitle span {background: url(../images/bg_listing_item_bullet_hover.png) no-repeat left center;}
 .listingTable tbody .itemTitle a {
-	color: #555;
+	color: #064763;
 	text-decoration: none;
-	border-bottom: 1px dotted #999;
 }
-.listingTable tbody .itemTitle a:hover {color: #000;}
+.listingTable tbody .itemTitle a:hover {
+	color: #000;
+	border-bottom: 1px dotted #000;
+}
 
 /* Progress Bar */
 .listingTable tbody .progressBar {
-	width: 154px;
+	width: 160px;
 	height: 19px;
 	background: url(../images/bg_progress_bar_empty.png) no-repeat left top;
 }
@@ -228,7 +219,9 @@ h3 {
 	background: url(../images/bg_progress_bar_full.png) no-repeat left top;
 	text-align: right;
 	position: relative;
-	height: 19px;
+	height: 16px;
+	border-top:1px solid #6BAAD6;
+	border-left:1px solid #6BAAD6;
 }
 .listingTable tbody .progressBarProgress span {
 	position: absolute;
@@ -241,21 +234,19 @@ h3 {
 
 /* Time Till Download */
 .listingTable tbody .itemTTD {
-	font-size: 0.9em;
-	font-weight: bold;
-	color: #868686;
+	color: #6996AC;
 }
 
 
 /* MB Remaining */
-.listingTable tbody .itemMBRemain { color: #666; }
+.listingTable tbody .itemMBRemain { color: #6996AC; 	font-size: 0.9em;
+}
 .listingTable tbody .itemMBRemain strong {}
 
 /* Delete */
 .listingTable tbody .btnDelete {
 	width: 20px;
 	height: 20px;
-	display: block;
 	background: url(../images/icon_delete.png) no-repeat left top;
 }
 .listingTable tbody .btnDelete:hover {
@@ -263,45 +254,87 @@ h3 {
 	cursor: pointer;
 }
 
-/* Table Foot */
-.listingTable tfoot {
-	font-size: .85em;
-	text-align: left;
-	color: #999;
+
+/* ROUNDED BOXES PLUSH 1.1 */
+
+.roundedTopBar {
+	height:42px;
 }
-.listingTable tfoot b {
-	color: grey;
+.roundedTopBar strong {
+	float:left;
+	margin-top: 10px;
+	margin-left: 25px;
+	font-size: 1.25em;
+	font-weight: bold;
+	color: #064867;
 }
-.listingTable tfoot tr {background: transparent  url(../images/bg_listing_table_footer.png) repeat-x left bottom;}
-.listingTable tfoot td {padding: 8px 15px;}
-.listingTable tfoot td span {margin-left: 20px;}
-.listingTable tfoot .first {background: transparent  url(../images/bg_listing_table_footer_bl.png) no-repeat left bottom;}
-.listingTable tfoot .last {
-	text-align: right;
-	background: transparent  url(../images/bg_listing_table_footer_br.png) no-repeat right bottom;
+.roundedTopBar span {
+	float:left;
+	margin-top: 12px;
+	margin-left: 25px;
+	font-size: 1.0em;
+	font-weight: normal;
+	color: #6996AC;
 }
-.listingTable thead .tools {
-	font-size: 0.8em;
-	text-align: right;
+.roundedTopBar .floatRight {
+	float:right;
+	margin-top: 14px;
+	margin-right: 25px;
 	color: #CCCCCC;
+	font-size: 0.85em;
+	
 }
-.listingTable thead .tools a {
-	color: #666666;
+.roundedTopBar .floatRight a {
+	color: #064867;
 	text-decoration: none;
+	font-weight:bold;
 	padding: 4px 10px;
 }
-.listingTable thead .tools a:hover {
-	color: #CC0000;
+.roundedTopBar .floatRight a:hover {
+	color: #064867;
 	text-decoration: underline;
 }
-.listingTable thead .tools a.active {
-	background: #FF3300;
+.roundedTopBar .floatRight a.active {
+	background: #064867;
 	color: #FFFFFF;
 }
-.listingTable thead .tools a:hover.active {
+.roundedTopBar .floatRight a:hover.active {
 	text-decoration: none;
-	background: #CC0000;
+	background: #91B4E6;
 }
+
+.roundedBotBar {
+	height:41px;
+	color: #999;
+	font-size: 1.0em;
+	text-align: left;
+}
+.roundedBotBar span {
+	color: #6996AC;
+}
+.roundedBotBar .floatLeft {
+	float:left;
+	margin-left:25px;
+	margin-top:10px;
+}
+.roundedBotBar .floatRight {
+	float:right;
+	margin-right:25px;
+	margin-top:10px;
+}
+
+
+.t  {background: url(../images/bg_listing_table_heading.png) 0 0 repeat-x; width: 100%}
+.tl {background: url(../images/bg_listing_table_heading_tl.png) 0 0 no-repeat}
+.tr {background: url(../images/bg_listing_table_heading_tr.png) 100% 0 no-repeat; padding:10px}
+.l  {background: url(../images/bg_listing_item_left.png) 0 0 repeat-y;}
+.r  {background: url(../images/bg_listing_item_right.png) 100% 0 repeat-y}
+.b  {background: url(../images/bg_listing_table_footer.png) 0 100% repeat-x}
+.bl {background: url(../images/bg_listing_table_footer_bl.png) 0 100% no-repeat}
+.br {background: url(../images/bg_listing_table_footer_br.png) 100% 100% no-repeat}
+
+
+
 
 
 
@@ -315,7 +348,7 @@ h3 {
 	width: 100%;
 	font-size: 0.9em;
 }
-.listingTable .postProcessing table tr {}
+.listingTable .postProcessing table tr { color: #000;}
 .listingTable .postProcessing table td { padding: 4px 10px; }
 .listingTable .postProcessing .finished { font-size: 90%; background: #FBF3B3 url(../images/bg_tr_finished.png) repeat-x left bottom; }
 .listingTable .postProcessing .active { font-size: 90%; background: #DBF5C0 url(../images/bg_tr_active.png) repeat-x left bottom; }
@@ -609,8 +642,6 @@ fieldset.EntryFieldSet {
 	cursor: pointer;
 	cursor: hand;
 }
-
-
 
 
 

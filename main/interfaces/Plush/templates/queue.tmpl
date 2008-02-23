@@ -43,22 +43,30 @@ def drawProgressBar (mbleft, mb):
 		return
 	percentage = int(100 - mbleft / mb * 100)
 	postion =  int(120 - 120.0 / 100.0 * percentage)
-	return '<div class="progressBarProgress" style="width: '+str(percentage)+'%;"><span>'+str(percentage)+'%</span></div>'
+	return '<div class="progressBarProgress" style="width: '+str(percentage)+'%;"></div>'
 %> 
 
 
 <!--#set $x_kbpersec = $kbpersec #-->
 <!--#set $x_mbleft = $mbleft #-->
 <!--#set $x_mb = $mb #-->
+<div class="t"><div class="b"><div class="l"><div class="r"><div class="bl"><div class="br"><div class="tl"><div class="tr">
+			
+
+<div class="roundedTopBar">
+	<strong>QUEUE</strong>
+	<span><b id="stats_kbpersec"><%=int(float(x_kbpersec))%></b><small>&nbsp;KB/s</small></span>
+	<span><b id="stats_eta"><%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></b><small>&nbsp;Left</small></span>
+	<span style="display:none" id="stats_noofslots">$noofslots</span>
+	<div class="floatRight">
+		<a id="pause_resume"<!--#if $paused#--> class="active" title="Resume the Queue"<!--#end if#--> title="Pause the Queue">Pause</a>
+		&sdot;<a id="queue_sortage" title="Sort by Average File Age">Sort</a>
+		<!--#if $nt and $shutdown#-->&sdot;<a id="#queue_shutdown" title="Shutting down computer after downloads finish!" class="active">SHUTDOWN</a><!--#end if#-->
+		&sdot;<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>+</a>
+	</div>
+</div>
+		
 <table class="listingTable" cellspacing="0">
-	<thead>
-		<tr>
-			<th class="first" colspan="2">QUEUE<span><b id="stats_kbpersec"><%=int(float(x_kbpersec))%></b><small>&nbsp;KBps</small></span><span><b id="stats_eta"><%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></b><small>&nbsp;Left</small><span style="display:none" id="stats_noofslots">$noofslots</span></th>
-			<th class="last tools" colspan="3">
-			<a id="pause_resume"<!--#if $paused#--> class="active" title="Resume the Queue"<!--#end if#--> title="Pause the Queue">Pause</a>&sdot;<a id="queue_sortage" title="Sort by Average File Age">Sort</a><!--#if $nt and $shutdown#-->&sdot;<a id="#queue_shutdown" title="Shutting down the entire computer upon queue completion" class="active">SHUTDOWN</a><!--#end if#-->&sdot;<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#end if#--> title="Toggle Verbosity On">&crarr;</a>
-			</th>
-		</tr>
-	</thead>
 	<tbody id="queueContent">
 
 	<!--#set $odd = False#-->
@@ -66,7 +74,7 @@ def drawProgressBar (mbleft, mb):
 	<!--#for $slot in $slotinfo#-->
 		<!--#set $odd = not $odd#-->
 		<tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
-			<td class="first itemTTD itemTitle" title="Average File Age: $slot.avg_age" onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">
+			<td class="first itemTTD" title="Average File Age: $slot.avg_age">
 				<small>
 					<!--#if $slot.index == 0 #-->
 						ETA:&nbsp;<%=getTimeLeft(slot['mbleft'],slot['mb'],x_kbpersec)%>&nbsp;Left&nbsp;&nbsp;
@@ -75,7 +83,8 @@ def drawProgressBar (mbleft, mb):
 						$slot.eta
 					<!--#end if#-->
 				</small>
-				<span><a>$slot.filename</a></span>
+			<td class="itemTitle" title="Average File Age: $slot.avg_age">
+				<span><a onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">$slot.filename</a></span>
 			</td>
 			<td>
 				<div class="progressBar percentImage1" id="element1">
@@ -87,13 +96,12 @@ def drawProgressBar (mbleft, mb):
 				<strong>/</strong>
 				<sub><%=int(float(slot['mb']))%> MB</sub>
 			</td>
-			<td>
+			<td class="last itemDelete">				
 				<select onchange="ChangeOrder(this.options[this.selectedIndex].value);">
 				<!--#for $i in xrange($noofslots)#-->
 					<option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>#$i</option>
 				<!--#end for#-->
 				</select>
-				
 				<select class="post-proc" title="Post-Processing Options" onchange="ChangeProcessingOption('$slot.nzo_id', this.options[this.selectedIndex].value);">
 					<option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->title="Do not post-process the NZB file set">-</option>
 					<option value="1" <!--#if $slot.unpackopts == "1" then "selected " else ""#-->title="Repair the NZB file set with PAR2 files">R</option>
@@ -102,10 +110,8 @@ def drawProgressBar (mbleft, mb):
 					<option value="4" <!--#if $slot.unpackopts == "4" then "selected " else ""#-->title="(+Script) Repair the NZB file set with PAR2 files">R+S</option>
 					<option value="5" <!--#if $slot.unpackopts == "5" then "selected " else ""#-->title="(+Script) Repair &amp; Unpack the NZB file set">U+S</option>
 					<option value="6" <!--#if $slot.unpackopts == "6" then "selected " else ""#-->title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">D+S</option>
-				</select>&nbsp;
-			</td>
-			<td class="last itemDelete">
-				<span class="btnDelete" title="Delete NZB from Queue" />
+				</select>
+				<span class="btnDelete" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 			</td>
 		</tr>
 	
@@ -169,20 +175,15 @@ def drawProgressBar (mbleft, mb):
 	<!--#end if#-->
 		
 	</tbody>
-	
-	<tfoot>
-		<tr>
-			<td class="first" colspan="3">
-				<span><b><%=int(float(x_mbleft))%>&nbsp;of&nbsp;<%=int(float(x_mb))%></b><small>&nbsp;MB&nbsp;Remaining</small></span>
-			</td>
-			<td class="last" colspan="2">
-				<!--#if $diskspace1 == $diskspace2#-->
-					<span><b>$diskspace1</b><small>&nbsp;GB&nbsp;Free&nbsp;Space</small></span>
-				<!--#else#-->
-					<span><small>Free&nbsp;Space:</small>&nbsp;<b>$diskspace1</b><small>&nbsp;GB&nbsp;(Temp)</small>&nbsp;<b>$diskspace2</b><small>&nbsp;GB&nbsp;(Comp)</small></span>
-				<!--#end if#-->
-			</td>
-		</tr>
-	</tfoot>
-
 </table>
+
+<div class="roundedBotBar">
+	<span class="floatLeft"><b><%=int(float(x_mbleft))%>&nbsp;of&nbsp;<%=int(float(x_mb))%></b><small>&nbsp;MB&nbsp;Remaining</small></span>
+		<!--#if $diskspace1 == $diskspace2#-->
+			<span class="floatRight"><b>$diskspace1</b><small>&nbsp;GB&nbsp;Free&nbsp;Space</small></span>
+		<!--#else#-->
+			<span class="floatRight"><small>Free&nbsp;Space:</small>&nbsp;<b>$diskspace1</b><small>&nbsp;GB&nbsp;(Temp)</small>&nbsp;<b>$diskspace2</b><small>&nbsp;GB&nbsp;(Comp)</small></span>
+		<!--#end if#-->
+</div>
+
+</div></div></div></div></div></div></div></div>

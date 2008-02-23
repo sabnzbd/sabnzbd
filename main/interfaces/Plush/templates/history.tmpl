@@ -4,16 +4,20 @@ def displayNotices (action):
 	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 ":
 		return '<small class="hvError">&rArr;&nbsp;' + action[3:] + '&nbsp;</small><br/>'
 %>
+<div class="t"><div class="b"><div class="l"><div class="r"><div class="bl"><div class="br"><div class="tl"><div class="tr">
+			
+
+<div class="roundedTopBar">
+	<strong>HISTORY</strong>
+	<span><b>$uptime</b><small>&nbsp;Uptime</small></span>
+	<div class="floatRight">
+		<a id="history_purge" title="Clear Out the History Display">Purge</a>
+		&sdot;<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>+</a>
+	</div>
+</div>
+
 
 <table class="listingTable" cellspacing="0">
-	<thead>
-		<tr>
-			<th class="first">HISTORY<span><b>$uptime</b><small>&nbsp;Uptime</small></span></th>
-			<th class="last tools">
-				<a id="history_purge" title="Clear Out the History Display">Purge</a>&sdot;<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>&crarr;</a>
-			</th>
-		</tr>
-	</thead>
 	<tbody id="historyContent">
 		
 	<!--#set $odd = False#-->
@@ -52,14 +56,9 @@ else:
 		
 		
 	</tbody>
-	<tfoot>
-		<tr>
-			<td class="first">
-				<span><b>$total_bytes</b><small>&nbsp;GB&nbsp;In&nbsp;History</small></span>
-			</td>
-			<td class="last">
-				<span><b>$bytes_beginning</b><small>&nbsp;GB&nbsp;Downloaded</small></span>
-			</td>
-		</tr>
-	</tfoot>
 </table>
+
+<div class="roundedBotBar">
+	<span class="floatLeft"<b>$total_bytes</b><small>&nbsp;GB&nbsp;In&nbsp;History</small></span>
+	<span class="floatRight"><b>$bytes_beginning</b><small>&nbsp;GB&nbsp;Downloaded</small></span>
+</div>
