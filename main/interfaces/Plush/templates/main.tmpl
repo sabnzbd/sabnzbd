@@ -7,12 +7,13 @@
 	<link rel="shortcut icon" type="image/ico" href="static/images/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
 	<link rel="stylesheet" type="text/css" href="static/stylesheets/plush.css" media="screen"/>
-	
+
 	<script type="text/javascript" src="static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="static/javascripts/interface.js"></script>
 	<script type="text/javascript" src="static/javascripts/plush.js"></script>
 	<script type="text/javascript" src="static/javascripts/greybox.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.corner.js"></script>
+	<script type="text/javascript" src="static/javascripts/webtoolkit.aim.js"></script>
 
 </head>
 <body>
@@ -97,7 +98,7 @@
 				</select>&nbsp;<input type="submit" id="addNZBbyURL" value="Add" />&nbsp;&nbsp;&nbsp;
 	
 				<!-- ADD BY FILE UPLOAD -->
-				<form action="addFile" method="post" enctype="multipart/form-data">
+				<form action="addFile" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
 					<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" />&nbsp;<select name="pp">
 						<option value="0" title="Do not post-process the NZB file set">-</option>
 						<option value="1" title="Repair the NZB file set with PAR2 files">R</option>

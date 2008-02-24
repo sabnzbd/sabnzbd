@@ -79,9 +79,6 @@ $(document).ready(function() {
 		});
 		$("#addURL").val('by URL');
 	});
-	$('#addNZBbyFile').bind('click', function() { 
-		$("form").submit();
-	});
 	
 	// toggle queue shutdown - from options menu
 	if ($('#queue_shutdown_option')) {
@@ -192,6 +189,19 @@ function ManipNZF (nzo_id, nzf_id, action) {
 		});
 	}
 }
+
+// ajax file upload
+function startCallback() {
+    // make something useful before submit (onStart)
+    return true;
+}
+
+function completeCallback(response) {
+    // make something useful after (onComplete)
+	RefreshTheQueue();
+	return true;
+}
+
 
 // used to store layout settings
 function SetCookie(name,val) {
