@@ -7,6 +7,7 @@ AUTHORS
 * Nathan Langlois (pairofdimes; NOVA 3,4)
 * Dana Woodman (blis102; NOVA 1,2,3,4)
 * inpheaux (thanks for the new Config!)
+* injectx (new concepts for Plush, including the Aqua theme)
 
 =======
 CONTACT
@@ -33,13 +34,12 @@ SECRETS
 =========
 WISH LIST
 * IE7 compatibility (it's sorta close!)
-* Drag & Drop Queue
-* AJAX NZB upload
 
 ========================
 KNOWN BUGS + RESOLUTIONS
 
 * Post-Processing [-/R/U/D] options in the Queue keep closing / are not saving ( ! )
+* (or) The Queue snaps back when I am dragging & dropping!
 --- This can happen every time the Queue refreshes or is updated
 --- Try quickly performing the action, or slow down the refresh rate, or practice on your timing
 
@@ -49,4 +49,10 @@ SPECIAL THANKS
 
 ==========
 TOOLS USED
-* jQuery & Interface JavaScript libraries, Greybox, corner, Nuvola icon set
+* jQuery			http://jquery.com/
+* Table Drag & Drop	http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin/
+* WebToolkit		http://www.webtoolkit.info/
+* Greybox Redux		http://jquery.com/demo/grey/
+* Nuvola			http://www.icon-king.com/?p=15
+* Interface 		http://interface.eyecon.ro/
+* Corner			http://www.malsup.com/jquery/corner/
