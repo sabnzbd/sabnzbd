@@ -100,21 +100,57 @@ $(document).ready(function() {
 	$('#queue').click(function(event) {
 		if ($(event.target).is('#pause_resume')) {
 			if ($(event.target).attr('class') == 'active')
-				$('#queue').load('queue/resume');
+				$.ajax({
+					type: "GET",
+					url: "queue/resume",
+					success: function(){
+		    			RefreshTheQueue();
+					}
+				});
 			else
-				$('#queue').load('queue/pause');
+				$.ajax({
+					type: "GET",
+					url: "queue/pause",
+					success: function(result){
+		    			RefreshTheQueue(result);
+					}
+				});
 		}
 		else if ($(event.target).is('#queue_verbosity')) {
-			$('#queue').load('queue/tog_verbose');
+			$.ajax({
+				type: "GET",
+				url: "queue/tog_verbose",
+				success: function(){
+	    			RefreshTheQueue();
+				}
+			});
 		}
 		else if ($(event.target).is('#queue_sortage')) {
-			$('#queue').load('queue/sort_by_avg_age');
+			$.ajax({
+				type: "GET",
+				url: "queue/sort_by_avg_age",
+				success: function(){
+	    			RefreshTheQueue();
+				}
+			});
 		}
 		else if ($(event.target).is('#queue_shutdown')) {
-			$('#queue').load('queue/tog_shutdown');
+			$.ajax({
+				type: "GET",
+				url: "queue/tog_shutdown",
+				success: function(){
+	    			RefreshTheQueue();
+				}
+			});
 		}
 		else if ($(event.target).is('.btnDelete')) {
-			$('#queue').load('queue/delete?uid='+$(event.target).parent().parent().attr('id'));
+			$.ajax({
+				type: "GET",
+				url: 'queue/delete?uid='+$(event.target).parent().parent().attr('id'),
+				success: function(){
+	    			RefreshTheQueue();
+				}
+			});
 		}
 	});
 	
@@ -150,17 +186,51 @@ function MainLoop() {
 function RefreshTheQueue() {
 	$('#queue').load('queue', function(){
 		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' Left of '+$('#stats_noofslots').html();
+		$("#queueTable").tableDnD({
+	    	//onDragClass: "myDragClass",
+	    	onDrop: function(table, row) {
+            	var rows = table.tBodies[0].rows;
+				var droppedon = "";
+				
+				if (rows.length < 2)
+					return;
+				
+				if (rows[0].id == row.id)					// dragged to the top, replaced the first one
+					droppedon = rows[1].id;
+				else if (rows[rows.length-1].id == row.id)	// dragged to the bottom, replaced the last one
+					droppedon = rows[rows.length-2].id;
+				else										// search for where it was dropped on
+            		for (var i=0; i<rows.length; i++)
+						if (i>0 && rows[i-1].id == row.id)
+							droppedon = rows[i].id;
+				if (droppedon!="")
+					ChangeOrder("switch?uid1="+row.id+"&uid2="+droppedon);
+	    	}
+		});
 	});
 }
 
 // change post-processing options within queue
 function ChangeProcessingOption (nzo_id,op) {
-	$('#queue').load('queue/change_opts?nzo_id='+nzo_id+'&pp='+op);
+	$.ajax({
+		type: "GET",
+		url: 'queue/change_opts?nzo_id='+nzo_id+'&pp='+op,
+	  	success: function(msg){
+   			return RefreshTheQueue();
+		}
+	});
 }
 
 // change queue order
+// switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id
 function ChangeOrder (result) {
-	$('#queue').load('queue/'+result);
+	$.ajax({
+		type: "GET",
+		url: "queue/"+result,
+	  	success: function(msg){
+   			return RefreshTheQueue();
+		}
+	});
 }
 
 // queue verbosity re-order arrows top/up/down/bottom
@@ -171,9 +241,7 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			url: "queue/removeNzf",
 			data: "nzo_id="+nzo_id+"&nzf_id="+nzf_id,
 			success: function(){
-    			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
-				});
+   				return RefreshTheQueue();
 			}
 		});
 	} else {	// moving top/up/down/bottom (delete is above)
@@ -182,9 +250,7 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			url: 'queue/'+nzo_id+'/bulk_operation',
 			data: nzf_id + '=on' + '&' + 'action_key=' + action,
 			success: function(){
-    			$('#queue').load('queue', function(){
-					document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_noofslots').html()+' Queued';
-				});
+   				return RefreshTheQueue();
 			}
 		});
 	}
