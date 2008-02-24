@@ -62,8 +62,8 @@ $(document).ready(function() {
 			type: "GET",
 			url: "addID",
 			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
-			success: function(){
-    			RefreshTheQueue();
+			success: function(result){
+   				return LoadTheQueue(result);
 			}
 		});
 		$("#addID").val('by Newzbin ID/NB32');
@@ -73,8 +73,8 @@ $(document).ready(function() {
 			type: "GET",
 			url: "addURL",
 			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val(),
-			success: function(){
-    			RefreshTheQueue();
+			success: function(result){
+   				return LoadTheQueue(result);
 			}
 		});
 		$("#addURL").val('by URL');
@@ -87,8 +87,8 @@ $(document).ready(function() {
 				$.ajax({
 					type: "GET",
 					url: "queue/tog_shutdown",
-					success: function(){
-		    			RefreshTheQueue();
+					success: function(result){
+   						return LoadTheQueue(result);
 					}
 				});
 			}
@@ -103,8 +103,8 @@ $(document).ready(function() {
 				$.ajax({
 					type: "GET",
 					url: "queue/resume",
-					success: function(){
-		    			RefreshTheQueue();
+					success: function(result){
+   						return LoadTheQueue(result);
 					}
 				});
 			else
@@ -112,7 +112,7 @@ $(document).ready(function() {
 					type: "GET",
 					url: "queue/pause",
 					success: function(result){
-		    			RefreshTheQueue(result);
+   						return LoadTheQueue(result);
 					}
 				});
 		}
@@ -120,8 +120,8 @@ $(document).ready(function() {
 			$.ajax({
 				type: "GET",
 				url: "queue/tog_verbose",
-				success: function(){
-	    			RefreshTheQueue();
+				success: function(result){
+   					return LoadTheQueue(result);
 				}
 			});
 		}
@@ -129,8 +129,8 @@ $(document).ready(function() {
 			$.ajax({
 				type: "GET",
 				url: "queue/sort_by_avg_age",
-				success: function(){
-	    			RefreshTheQueue();
+				success: function(result){
+   					return LoadTheQueue(result);
 				}
 			});
 		}
@@ -138,8 +138,8 @@ $(document).ready(function() {
 			$.ajax({
 				type: "GET",
 				url: "queue/tog_shutdown",
-				success: function(){
-	    			RefreshTheQueue();
+				success: function(result){
+   					return LoadTheQueue(result);
 				}
 			});
 		}
@@ -147,8 +147,8 @@ $(document).ready(function() {
 			$.ajax({
 				type: "GET",
 				url: 'queue/delete?uid='+$(event.target).parent().parent().attr('id'),
-				success: function(){
-	    			RefreshTheQueue();
+				success: function(result){
+   					return LoadTheQueue(result);
 				}
 			});
 		}
@@ -186,37 +186,50 @@ function MainLoop() {
 function RefreshTheQueue() {
 	$('#queue').load('queue', function(){
 		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' Left of '+$('#stats_noofslots').html();
-		$("#queueTable").tableDnD({
-	    	//onDragClass: "myDragClass",
-	    	onDrop: function(table, row) {
-            	var rows = table.tBodies[0].rows;
-				var droppedon = "";
-				
-				if (rows.length < 2)
-					return;
-				
-				if (rows[0].id == row.id)					// dragged to the top, replaced the first one
-					droppedon = rows[1].id;
-				else if (rows[rows.length-1].id == row.id)	// dragged to the bottom, replaced the last one
-					droppedon = rows[rows.length-2].id;
-				else										// search for where it was dropped on
-            		for (var i=0; i<rows.length; i++)
-						if (i>0 && rows[i-1].id == row.id)
-							droppedon = rows[i].id;
-				if (droppedon!="")
-					ChangeOrder("switch?uid1="+row.id+"&uid2="+droppedon);
-	    	}
-		});
+		InitiateDragAndDrop();
 	});
 }
+
+// refresh the queue with supplied data (like if we already made an AJAX call)
+function LoadTheQueue(result) {
+	$('#queue').html(result);
+	document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' Left of '+$('#stats_noofslots').html();
+	InitiateDragAndDrop();
+}
+
+// called upon every refresh
+function InitiateDragAndDrop() {
+	$("#queueTable").tableDnD({
+    	//onDragClass: "myDragClass",
+    	onDrop: function(table, row) {
+           	var rows = table.tBodies[0].rows;
+			var droppedon = "";
+			
+			if (rows.length < 2)
+				return;
+			
+			if (rows[0].id == row.id)					// dragged to the top, replaced the first one
+				droppedon = rows[1].id;
+			else if (rows[rows.length-1].id == row.id)	// dragged to the bottom, replaced the last one
+				droppedon = rows[rows.length-2].id;
+			else										// search for where it was dropped on
+           		for (var i=0; i<rows.length; i++)
+					if (i>0 && rows[i-1].id == row.id)
+						droppedon = rows[i].id;
+			if (droppedon!="")
+				ChangeOrder("switch?uid1="+row.id+"&uid2="+droppedon);
+    	}
+	});	
+}
+
 
 // change post-processing options within queue
 function ChangeProcessingOption (nzo_id,op) {
 	$.ajax({
 		type: "GET",
 		url: 'queue/change_opts?nzo_id='+nzo_id+'&pp='+op,
-	  	success: function(msg){
-   			return RefreshTheQueue();
+	  	success: function(result){
+   			return LoadTheQueue(result);
 		}
 	});
 }
@@ -227,8 +240,8 @@ function ChangeOrder (result) {
 	$.ajax({
 		type: "GET",
 		url: "queue/"+result,
-	  	success: function(msg){
-   			return RefreshTheQueue();
+	  	success: function(result){
+   			return LoadTheQueue(result);
 		}
 	});
 }
@@ -240,8 +253,8 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			type: "GET",
 			url: "queue/removeNzf",
 			data: "nzo_id="+nzo_id+"&nzf_id="+nzf_id,
-			success: function(){
-   				return RefreshTheQueue();
+			success: function(result){
+   				return LoadTheQueue(result);
 			}
 		});
 	} else {	// moving top/up/down/bottom (delete is above)
@@ -249,8 +262,8 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			type: "GET",
 			url: 'queue/'+nzo_id+'/bulk_operation',
 			data: nzf_id + '=on' + '&' + 'action_key=' + action,
-			success: function(){
-   				return RefreshTheQueue();
+			success: function(result){
+   				return LoadTheQueue(result);
 			}
 		});
 	}
@@ -262,10 +275,9 @@ function startCallback() {
     return true;
 }
 
-function completeCallback(response) {
+function completeCallback(result) {
     // make something useful after (onComplete)
-	RefreshTheQueue();
-	return true;
+	return LoadTheQueue(result);
 }
 
 
