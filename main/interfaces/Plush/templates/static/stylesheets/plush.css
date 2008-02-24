@@ -247,12 +247,21 @@ h3 {
 .listingTable tbody .itemMBRemain strong {}
 
 /* Delete */
-.listingTable tbody .btnDelete {
+.listingTable tbody .btnDeleteQueue {
 	width: 20px;
 	height: 20px;
 	background: url(../images/icon_delete.png) no-repeat left top;
 }
-.listingTable tbody .btnDelete:hover {
+.listingTable tbody .btnDeleteQueue:hover {
+	background: url(../images/icon_delete_hover.png) no-repeat;
+	cursor: pointer;
+}
+.listingTable tbody .btnDeleteHistory {
+	width: 20px;
+	height: 20px;
+	background: url(../images/icon_delete.png) no-repeat left top;
+}
+.listingTable tbody .btnDeleteHistory:hover {
 	background: url(../images/icon_delete_hover.png) no-repeat;
 	cursor: pointer;
 }

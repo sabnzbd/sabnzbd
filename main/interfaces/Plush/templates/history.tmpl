@@ -24,7 +24,7 @@ def displayNotices (action):
 	<!--#if $lines#-->
 	<!--#for $line in $lines #-->
 		<!--#set $odd = not $odd#-->
-		<tr class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
+		<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 			<td class="first itemTTD itemTitle <!--#if $line.loaded #-->nzbLoaded<!--#else#-->nzbBullet<!--#end if#--> <!--#if not $line.stages#--> last" colspan="2<!--#end if#-->">
 				<small>$line.added</small>
 				
@@ -47,6 +47,9 @@ else:
 %><b class="history_$pp">&#8203;</b><%=displayNotices(action['value'])%></span><!--#end for#--><!--#end for#-->
 				</td>
 				<!--#end if#-->
+				<td class="last">
+					<span class="btnDeleteHistory" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+				</td>
 		</tr>
 		<!--#end for#-->
 		<!--#end if#-->

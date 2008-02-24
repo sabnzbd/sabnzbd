@@ -143,7 +143,7 @@ $(document).ready(function() {
 				}
 			});
 		}
-		else if ($(event.target).is('.btnDelete')) {
+		else if ($(event.target).is('.btnDeleteQueue')) {
 			$.ajax({
 				type: "GET",
 				url: 'queue/delete?uid='+$(event.target).parent().parent().attr('id'),
@@ -162,6 +162,15 @@ $(document).ready(function() {
 		}
 		else if ($(event.target).is('#history_purge')) {
 			$('#history').load('history/purge');
+		}
+		else if ($(event.target).is('.btnDeleteHistory')) {
+			$.ajax({
+				type: "GET",
+				url: 'history/delete?job='+$(event.target).parent().parent().attr('id'),
+				success: function(result){
+   					return $('#history').html(result);
+				}
+			});
 		}
 	});
 	
