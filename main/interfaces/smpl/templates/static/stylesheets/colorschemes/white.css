@@ -1,0 +1,87 @@
+body {
+	background-color: #fff;
+	color: #000;
+}
+#Container {
+color:black;
+}
+
+#Content{
+	border-top: 1px dotted #ccc;
+
+
+}
+
+#RightContainer {
+border-left: 1px dotted #ccc;
+}
+
+#Footer{
+border-top: 1px dotted #ccc;
+}
+
+#progressBar {
+  background-color: #fff; 
+  border: 1px solid #000; 
+}
+#progressBartop {
+  background-color: #fff; 
+  border: 1px solid #ccc; 
+}
+#percentageBar {
+  background-color: #4B4545; 
+}
+
+
+h1{
+background-color:#4B4545;
+color:#fff;
+}
+
+#title{
+color:#fff;
+}
+
+a:visited{
+color:#000;
+
+}
+a {
+color:black;
+}
+a.config{
+color:#4B4545;
+}
+a:hover{
+color:red;
+}
+
+.paused{background-color:red;padding:2px;}
+.downloading{background-color:#00FF00;padding:2px;}
+.idle{background-color:yellow;padding:2px;}
+.spacer{color:white;margin-top:100px;margin-bottom:100px;}
+
+#feed{color:white;}
+
+
+
+hr
+{
+color:#ccc;
+background-color:#ccc;
+}
+
+th{background-color:#4B4545;color:white;}
+tr{background-color:#f5f5f5;}
+
+#finished{background-color:#ffd9d9;}
+#active{background-color:#deffd9;}
+#waiting{background-color:#ffffd9;}
+
+#delicon{
+color:#fff;
+}
+
+tr.evenLine, tr.oddLine {
+color:#555;
+}

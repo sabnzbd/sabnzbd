@@ -6,6 +6,9 @@
 
     <title>SABnzbd+</title>
     <link rel="stylesheet" type="text/css" href="static/stylesheets/default.css"/>
+    <!--#if $color_scheme#-->
+        <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#end if#-->
 	<link href="rss?mode=history" rel="alternate" type="application/rss+xml" title="SABnzbd+ History" />
 	<link rel="shortcut icon" href="static/images/favicon.ico" />
 
@@ -168,7 +171,7 @@ checkrefresh();
 			status2 = 0;
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
 			document.getElementById("status2").innerHTML = "Pause";
-			doSimpleXMLHttpRequest("/sabnzbd/api?mode=resume");
+			doSimpleXMLHttpRequest("api?mode=resume");
 
 
 		}
@@ -178,7 +181,7 @@ checkrefresh();
 			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
 			document.getElementById("speed").innerHTML = "0";
 			document.getElementById("status2").innerHTML = "Resume";
-			doSimpleXMLHttpRequest("/sabnzbd/api?mode=pause");
+			doSimpleXMLHttpRequest("api?mode=pause");
 
 		}
 	}
@@ -281,7 +284,7 @@ checkrefresh();
 
 	function testemail()
 	{
-		d = doSimpleXMLHttpRequest('/sabnzbd/connections/testmail');
+		d = doSimpleXMLHttpRequest('connections/testmail');
 		d.addCallback(function (d)
         {
         alert("E-Mail Sent");
@@ -291,7 +294,7 @@ checkrefresh();
 
 	function getBookmarks()
 	{
-		d = doSimpleXMLHttpRequest('/sabnzbd/config/newzbin/getBookmarks');
+		d = doSimpleXMLHttpRequest('config/newzbin/getBookmarks');
 	}
 
 	function changequeueoptions(page)
@@ -301,7 +304,7 @@ checkrefresh();
 
 	function reloadqueue()
 	{
-		var res = doXHR('/sabnzbd/queue',
+		var res = doXHR('queue',
 	    {
 		    method:'POST',
             sendContent:'?asshole='+Math.random()
@@ -334,7 +337,7 @@ checkrefresh();
 		if (element) elementt = document.getElementById(element);
 		values = getFormValues(elementt);
 
-		var url = '/sabnzbd/'+extra;
+		var url = ''+extra;
 		var d = doXHR(url,
 	    {
 		    method:'POST',
@@ -342,7 +345,7 @@ checkrefresh();
 		    headers: {"Content-Type":"application/x-www-form-urlencoded"}
 
 	    });
-		if (saveelement) document.getElementById(saveelement).innerHTML = "<img src='/sabnzbd/static/images/ajax-loader.gif' />";
+		if (saveelement) document.getElementById(saveelement).innerHTML = "<img src='static/images/ajax-loader.gif' />";
 	    d.addCallback(function (result)
 	    {
 	      if (saveelement) document.getElementById(saveelement).innerHTML = "Saved";
@@ -390,7 +393,7 @@ function loadingJSON(){
 	clearTimeout ( jsontimeout );
 	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);
 	}
-	var url = "/sabnzbd/api?mode=qstatus&output=json";
+	var url = "api?mode=qstatus&output=json";
 	var d = loadJSONDoc(url);
 	var gotMetadata = function (info)
 	{
@@ -496,7 +499,7 @@ function loadingJSON(){
 				Queue: <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
 			</p>
 		<span id="testing">
-			<a href=""><img id="title" src="/sabnzbd/static/sabnzbd_small3.gif" alt="sabnzbd+" /></a>
+			<a href=""><img id="title" src="static/sabnzbd_small3.gif" alt="sabnzbd+" /></a>
 			<h2>The automatic usenet download tool</h2>
 		</span>
 		</div>
@@ -504,22 +507,22 @@ function loadingJSON(){
 			<div id="Left">
 				<ul id="menu">
 					<li><a class="current" href="">Home</a></li>
-					<li><a onClick="lr('/sabnzbd/queue/',  1, 0);">Queue</a></li>
-					<li><a onClick="lr('/sabnzbd/history/', 1, 0);">History</a></li>
-                    <li><a onClick="lr('/sabnzbd/queue/', 1, 1);lrb('/sabnzbd/history/',1);">DualView1</a></li>
-                    <li><a onClick="lr('/sabnzbd/queue/', 1, 2);lrb('/sabnzbd/history/',1);">DualView2</a></li>
-					<li><a onClick="lr('/sabnzbd/config/', 0, 0);">Config</a></li>
+					<li><a onClick="lr('queue/',  1, 0);">Queue</a></li>
+					<li><a onClick="lr('history/', 1, 0);">History</a></li>
+                    <li><a onClick="lr('queue/', 1, 1);lrb('history/',1);">DualView1</a></li>
+                    <li><a onClick="lr('queue/', 1, 2);lrb('history/',1);">DualView2</a></li>
+					<li><a onClick="lr('config/', 0, 0);">Config</a></li>
 					<ul class="secondul">
-						<li><a class="config" onClick="lr('/sabnzbd/config/general/', 0, 0);">General</a></li>
-						<li><a class="config" onClick="lr('/sabnzbd/config/directories/', 0, 0);">Directories</a> </li>
-						<li><a class="config" onClick="lr('/sabnzbd/config/switches/', 0, 0);">Switches</a> </li>
-						<li><a class="config" onClick="lr('/sabnzbd/config/server/', 0, 0);">Servers</a> </li>
-						<li><a class="config" onClick="lr('/sabnzbd/config/scheduling/', 0, 0);">Scheduling</a> </li>
-						<li><a class="config" onClick="lr('/sabnzbd/config/rss/', 0, 0);">RSS</a> </li>
-						<li><a class="config" onClick="lr('/sabnzbd/config/email/', 0, 0);">Email</a></li>
-						<li><a class="config" onClick="lr('/sabnzbd/config/newzbin/', 0, 0);">Newzbin</a></li>
+						<li><a class="config" onClick="lr('config/general/', 0, 0);">General</a></li>
+						<li><a class="config" onClick="lr('config/directories/', 0, 0);">Directories</a> </li>
+						<li><a class="config" onClick="lr('config/switches/', 0, 0);">Switches</a> </li>
+						<li><a class="config" onClick="lr('config/server/', 0, 0);">Servers</a> </li>
+						<li><a class="config" onClick="lr('config/scheduling/', 0, 0);">Scheduling</a> </li>
+						<li><a class="config" onClick="lr('config/rss/', 0, 0);">RSS</a> </li>
+						<li><a class="config" onClick="lr('config/email/', 0, 0);">Email</a></li>
+						<li><a class="config" onClick="lr('config/newzbin/', 0, 0);">Newzbin</a></li>
 					</ul>
-					<li><a onClick="lr('/sabnzbd/connections/', 1, 0);">Connections</a></li>
+					<li><a onClick="lr('connections/', 1, 0);">Connections</a></li>
 					<li><a class="bold" id="status2" onClick="toggle()">$statusstr2</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
 				</ul>

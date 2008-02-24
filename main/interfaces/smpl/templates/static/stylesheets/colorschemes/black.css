@@ -1,0 +1,90 @@
+body {
+	background-color: #111;
+	color: #777;
+}
+#Container {
+color:white;
+}
+
+#Content{
+	border-top: 1px dotted #444;
+
+
+}
+
+#RightContainer {
+border-left: 1px dotted #444;
+}
+
+#Footer{
+border-top: 1px dotted #444;
+}
+
+#progressBar {
+  background-color: #fff; 
+  border: 1px solid #000; 
+}
+#progressBartop {
+  background-color: #fff; 
+  border: 1px solid #ccc; 
+}
+#percentageBar {
+  background-color: #4B4545; 
+}
+
+
+h1{
+background-color:#4B4545;
+color:#fff;
+}
+
+#title{
+color:#fff;
+}
+
+
+a, a:visited {
+color:#777;
+}
+a.config{
+color:#4B4545;
+}
+a:hover{
+color:red;
+}
+
+.paused{background-color:red;padding:2px;color:black;}
+.downloading{background-color:#00FF00;padding:2px;color:black;}
+.idle{background-color:yellow;padding:2px;color:black;}
+.spacer{color:white;margin-top:100px;margin-bottom:100px;}
+
+#feed{color:white;}
+
+
+
+hr
+{
+color:#444;
+background-color:#444;
+}
+
+th{background-color:#000;color:white;}
+tr{background-color:#222;}
+
+#finished{background-color:#ffd9d9;}
+#active{background-color:#deffd9;}
+#waiting{background-color:#ffffd9;}
+
+#delicon{
+color:#fff;
+}
+
+input, select {
+background-color:#232323;
+border-color:#3a3a3a;
+color:white;
+}
+
+tr.evenLine, tr.oddLine {
+color:#777;
+}

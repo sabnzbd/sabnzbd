@@ -47,7 +47,7 @@ border-left: 1px dotted #ccc;
 min-height:370px;
 }
 #Right{float:left;width:100%;}
-#Right_bottom{float:left;margin-left:10px;width:100%;}
+#Right_bottom{float:left;width:100%;}
 #Content{
 clear:both;
 
@@ -183,6 +183,13 @@ form.cmxform label,input {
 	width: 150px;
 	float: left;
 	margin-bottom: 15px;
+}
+input.schedulesubmit {
+	display: inline;
+	width: 100px;
+	float: none;
+	margin: 0;
+    margin-left: 3px;;
 }
 .addnewselect{
 	display: block;

@@ -1,9 +1,9 @@
 
 <h3>Connections</h3>
-<a class="config" onClick="lrdual('/sabnzbd/connections/disconnect','/sabnzbd/connections','1', this.parentNode.id);">Force Disconnect</a> |
+<a class="config" onClick="lrdual('connections/disconnect','connections','1', this.parentNode.id);">Force Disconnect</a> |
 <a class="config" onClick="testemail();">Test E-Mail</a> |
-<a class="config" href="/sabnzbd/connections/showlog">Download Log File</a> |
-<a class="config" href="/sabnzbd/connections/showweb">Download Web Log File</a>
+<a class="config" href="connections/showlog">Download Log File</a> |
+<a class="config" href="connections/showweb">Download Web Log File</a>
 <!--#if $servers#-->
     <ul>
     <!--#for $server in $servers#-->
@@ -23,7 +23,7 @@
     $lastmail
 <!--#end if#-->
 <!--#if $warnings#-->
-    <h2>Last warnings (<a class="config" onClick="lrdual('/sabnzbd/connections/clearwarnings','/sabnzbd/connections','1', this.parentNode.id);">Clear</a>)</h2>
+    <h2>Last warnings (<a class="config" onClick="lrdual('connections/clearwarnings','connections','1', this.parentNode.id);">Clear</a>)</h2>
     <!--#for $warn in $warnings#-->
         $warn<br/>
     <!--#end for#-->

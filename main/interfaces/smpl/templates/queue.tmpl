@@ -31,10 +31,10 @@
 
 <h3>Queue</h3>
 <div id="centerLinks">
-<a onClick="lrdual('/sabnzbd/queue/sort_by_name', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);" >Sort by name</a>  |
-<a onClick="lrdual('/sabnzbd/queue/sort_by_avg_age', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);" >Sort by date</a>  |
-<a onClick="lrdual('/sabnzbd/queue/tog_verbose', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);" >Toggle verbosity</a> |
-<a onClick="lrdual('/sabnzbd/queue/tog_shutdown', '/sabnzbd/queue/','1', this.parentNode.parentNode.id);">Turn shutdown <!--#if $shutdown then "off" else "on"#--></a>
+<a onClick="lrdual('queue/sort_by_name', 'queue/','1', this.parentNode.parentNode.id);" >Sort by name</a>  |
+<a onClick="lrdual('queue/sort_by_avg_age', 'queue/','1', this.parentNode.parentNode.id);" >Sort by date</a>  |
+<a onClick="lrdual('queue/tog_verbose', 'queue/','1', this.parentNode.parentNode.id);" >Toggle verbosity</a> |
+<a onClick="lrdual('queue/tog_shutdown', 'queue/','1', this.parentNode.parentNode.id);">Turn shutdown <!--#if $shutdown then "off" else "on"#--></a>
 </div>
 
 <!--#if int($cache_limit)#-->
@@ -95,13 +95,13 @@
 				</select>
             
 			<span class="del"> 
-			<a onClick="deletequeueitem('$slot.nzo_id');"><img id="delicon" src="/sabnzbd/static/images/32px-Crystal_Clear_action_stop.png" /></a>
+			<a onClick="deletequeueitem('$slot.nzo_id');"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a>
 			</form>
 			</td>		
 		
 		
 		<td>
-            <span class="filename"><a href="/sabnzbd/queue/$slot.nzo_id/"><span id="name_$slot.nzo_id">$slot.filename</span></a></span>
+            <span class="filename"><a href="queue/$slot.nzo_id/"><span id="name_$slot.nzo_id">$slot.filename</span></a></span>
 		
 	<td>
 <!--#if float($slot.mb)>0 #-->
@@ -128,7 +128,7 @@
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.active#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="active" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td><a onClick="changequeuedetails('/sabnzbd/queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id')"><img id="delicon" src="/sabnzbd/static/images/32px-Crystal_Clear_action_stop.png" /></a> Active</td><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
+            <tr id="active" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td><a onClick="changequeuedetails('queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id')"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a> Active</td><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.queued#-->
