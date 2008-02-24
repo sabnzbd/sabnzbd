@@ -349,7 +349,7 @@ class NzoPage(ProtectedClass):
     def __init__(self, web_dir, root, nzo_id, prim):
         self.roles = ['admins']
         self.__nzo_id = nzo_id
-        self.__root = '%s/%s/' % (root, nzo_id)
+        self.__root = '%s%s/' % (root, nzo_id)
         self.__web_dir = web_dir
         self.__verbose = False
         self.__prim = prim
