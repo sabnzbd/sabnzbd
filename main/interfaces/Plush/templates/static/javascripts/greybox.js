@@ -28,7 +28,17 @@ function GB_show(caption, url, height, width) {
   //  $("#GB_window").slideDown("slow");
   //else
   $("#GB_window").show();
-  $("#GB_window").corner("round cc:#7f7f7f");
+
+	$("#GB_window").corner({
+		tl: { radius: 15 },
+		tr: { radius: 15 },
+		bl: { radius: 15 },
+		br: { radius: 15 },
+		antiAlias: true,
+		autoPad: false,
+		validTags: ["div"]
+	});
+
 }
 
 function GB_hide() {
@@ -38,7 +48,8 @@ function GB_hide() {
 function GB_position() {
   var de = document.documentElement;
   var w = self.innerWidth || (de&&de.clientWidth) || document.body.clientWidth;
-  $("#GB_window").css({width:GB_WIDTH+"px",height:GB_HEIGHT+"px",
-    left: ((w - GB_WIDTH)/2)+"px" });
+//  $("#GB_window").css({width:GB_WIDTH+"px",height:GB_HEIGHT+"px", left: ((w - GB_WIDTH)/2)+"px" });
+//  $("#GB_frame").css("height",GB_HEIGHT - 42 +"px");
+  $("#GB_window").css({width:GB_WIDTH+"px",height:"515px", left: ((w - GB_WIDTH)/2)+"px" });
   $("#GB_frame").css("height",GB_HEIGHT - 42 +"px");
 }

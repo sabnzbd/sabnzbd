@@ -194,9 +194,13 @@ h3 {
 .listingTable tbody tr:hover .itemTitle {
 	color:black;
 }
-.listingTable tbody .itemTitle span {
+.listingTable tbody .nzbBullet span {
 	padding-left: 20px;
 	background: url(../images/bg_listing_item_bullet.png) no-repeat left center;
+}
+.listingTable tbody .nzbLoaded span {
+	padding-left: 20px;
+	background: url(../images/h_postprocessing.gif) no-repeat left center;
 }
 .listingTable tbody tr:hover .itemTitle span {background: url(../images/bg_listing_item_bullet_hover.png) no-repeat left center;}
 .listingTable tbody .itemTitle a {
@@ -611,9 +615,9 @@ fieldset.EntryFieldSet {
 #GB_window {
 	top: 50px;
 	left: 0px;
+	background: #ddd url(../images/config_header.png);
 	position: absolute;
-	background: #dadada;
-	border: 1px solid #000;
+	border: 2px solid #000;
 	width: 400px;
 	height: 400px;
 	z-index: 150;
@@ -626,22 +630,22 @@ fieldset.EntryFieldSet {
 #GB_caption {
 	font: 16pt bold Verdana, Arial, Helvetica, sans-serif;
 	color: #fff;
-	background: #dadada;
+	/*background: #dadada;
 	background-image: url(../images/config_header.png);
-	height: 34px;
+	height: 34px;*/
 	padding: 2px 10px 0px 10px;
-	margin: 0;
+	margin: -5px 0 0 0;
 	text-align: left;
 	font-weight: bold;
 }
 #GB_window img {
 	position: absolute;
-	top: 2px;
+	top: -5px;
 	right: 5px;
 	cursor: pointer;
 	cursor: hand;
+	z-index: 5;
 }
-
 
 
 
@@ -788,15 +792,6 @@ fieldset.EntryFieldSet {
 	padding-right: 	8px;
 	background: 	url(../images/hv_del.png) no-repeat;
 }
-.history_loading {
-	padding-left: 	8px;
-	padding-right: 	8px;
-	background: 	url(../images/h_postprocessing.gif) no-repeat;
-}
-
-
-
-
 
 
 
