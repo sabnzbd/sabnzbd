@@ -214,11 +214,11 @@ function InitiateDragAndDrop() {
 				return false;
 			
 			// dragged to the top, replaced the first one
-			if (rows[0].id == row.id)					
+			if (rows[0].id == row.id && row.id != rowsBeforeDragAndDrop[0].id)
 				droppedon = rows[1].id;
 				
 			// dragged to the bottom, replaced the last one
-			else if (rows[rows.length-1].id == row.id)	
+			else if (rows[rows.length-1].id == row.id && row.id != rowsBeforeDragAndDrop[rowsBeforeDragAndDrop.length-1].id)	
 				droppedon = rows[rows.length-2].id;
 				
 			// search for where it was dropped on
