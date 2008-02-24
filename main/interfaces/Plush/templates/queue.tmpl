@@ -54,7 +54,7 @@ def drawProgressBar (mbleft, mb):
 			
 
 <div class="roundedTopBar">
-	<strong>QUEUE</strong>
+	<strong>QUEUE&nbsp;&nbsp;</strong>
 	<span><b id="stats_kbpersec"><%=int(float(x_kbpersec))%></b><small>&nbsp;KB/s</small></span>
 	<span><b id="stats_eta"><%=getTimeLeft(x_mbleft,x_mb,x_kbpersec)%></b><small>&nbsp;Left</small></span>
 	<span style="display:none" id="stats_noofslots">$noofslots</span>
@@ -97,11 +97,6 @@ def drawProgressBar (mbleft, mb):
 				<sub><%=int(float(slot['mb']))%> MB</sub>
 			</td>
 			<td class="last itemDelete">				
-				<select onchange="ChangeOrder(this.options[this.selectedIndex].value);">
-				<!--#for $i in xrange($noofslots)#-->
-					<option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>#$i</option>
-				<!--#end for#-->
-				</select>
 				<select class="post-proc" title="Post-Processing Options" onchange="ChangeProcessingOption('$slot.nzo_id', this.options[this.selectedIndex].value);">
 					<option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->title="Do not post-process the NZB file set">-</option>
 					<option value="1" <!--#if $slot.unpackopts == "1" then "selected " else ""#-->title="Repair the NZB file set with PAR2 files">R</option>
@@ -110,6 +105,11 @@ def drawProgressBar (mbleft, mb):
 					<option value="4" <!--#if $slot.unpackopts == "4" then "selected " else ""#-->title="(+Script) Repair the NZB file set with PAR2 files">R+S</option>
 					<option value="5" <!--#if $slot.unpackopts == "5" then "selected " else ""#-->title="(+Script) Repair &amp; Unpack the NZB file set">U+S</option>
 					<option value="6" <!--#if $slot.unpackopts == "6" then "selected " else ""#-->title="(+Script) Repair, Unpack, &amp; Delete the remainder of the NZB file set">D+S</option>
+				</select>
+				<select onchange="ChangeOrder(this.options[this.selectedIndex].value);">
+				<!--#for $i in xrange($noofslots)#-->
+					<option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>#$i</option>
+				<!--#end for#-->
 				</select>
 				<span class="btnDelete" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 			</td>

@@ -185,7 +185,7 @@ function MainLoop() {
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
 	$('#queue').load('queue', function(){
-		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' Left of '+$('#stats_noofslots').html();
+		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' left of '+$('#stats_noofslots').html();
 		InitiateDragAndDrop();
 	});
 }
@@ -193,12 +193,17 @@ function RefreshTheQueue() {
 // refresh the queue with supplied data (like if we already made an AJAX call)
 function LoadTheQueue(result) {
 	$('#queue').html(result);
-	document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' Left of '+$('#stats_noofslots').html();
+	document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' left of '+$('#stats_noofslots').html();
 	InitiateDragAndDrop();
 }
 
+var rowsBeforeDragAndDrop;
+
 // called upon every refresh
 function InitiateDragAndDrop() {
+
+   	rowsBeforeDragAndDrop = $('#queueContent').children();
+
 	$("#queueTable").tableDnD({
     	//onDragClass: "myDragClass",
     	onDrop: function(table, row) {
@@ -206,18 +211,28 @@ function InitiateDragAndDrop() {
 			var droppedon = "";
 			
 			if (rows.length < 2)
-				return;
+				return false;
 			
-			if (rows[0].id == row.id)					// dragged to the top, replaced the first one
+			// dragged to the top, replaced the first one
+			if (rows[0].id == row.id)					
 				droppedon = rows[1].id;
-			else if (rows[rows.length-1].id == row.id)	// dragged to the bottom, replaced the last one
+				
+			// dragged to the bottom, replaced the last one
+			else if (rows[rows.length-1].id == row.id)	
 				droppedon = rows[rows.length-2].id;
-			else										// search for where it was dropped on
-           		for (var i=0; i<rows.length; i++)
-					if (i>0 && rows[i-1].id == row.id)
-						droppedon = rows[i].id;
+				
+			// search for where it was dropped on
+			else if ( rows.length > 2 ) {
+           		for ( var i=1; i < rows.length-1; i++ ) {
+					if ( rows[i].id == row.id  && rows[i-1].id == rowsBeforeDragAndDrop[i].id )
+						droppedon = rows[i-1].id;
+					else if ( rows[i].id == row.id  && rows[i+1].id == rowsBeforeDragAndDrop[i].id )
+						droppedon = rows[i+1].id;
+				}
+			}
 			if (droppedon!="")
-				ChangeOrder("switch?uid1="+row.id+"&uid2="+droppedon);
+				return ChangeOrder("switch?uid1="+row.id+"&uid2="+droppedon);
+			return false;
     	}
 	});	
 }
