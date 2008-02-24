@@ -4,7 +4,9 @@
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/defaultcolors.css"/>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#if $color_scheme#-->
+        <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#end if#-->
     <link rel="shortcut icon" href="../../static/images/favicon.ico" />
 </head>
 <body>
@@ -57,23 +59,38 @@ Authentication Password.<br>
 Choose a user interface (restart required!).<br>
 <select name="web_dir">
     <!--#for $webline in $web_list#-->
-        <!--#if $webline == $web_dir#-->
+        <!--#if $webline.lower() == $web_dir.lower()#-->
             <option value="$webline" selected>$webline</option>
         <!--#else#-->
             <option value="$webline">$webline</option>
         <!--#end if#-->
     <!--#end for#-->
 </select>
+<!--#if $web_colors#-->
 <br>
 <br>
-<strong>Color Scheme:</strong><br>
-Choose a color scheme.<br>
-<select name="color_scheme">
-    <!--#for $cssline in $css_list#-->
-        <!--#if $cssline == $color_scheme#-->
-            <option value="$cssline" selected>$cssline</option>
+<strong>Color schema:</strong><br>
+Choose a color scheme for the current interface.<br>
+<select name="web_color">
+    <!--#for $webline in $web_colors#-->
+        <!--#if $webline.lower() == $web_color.lower()#-->
+            <option value="$webline" selected>$webline</option>
         <!--#else#-->
-            <option value="$cssline">$cssline</option>
+            <option value="$webline">$webline</option>
+        <!--#end if#-->
+    <!--#end for#-->
+</select>
+<!--#end if#-->
+<br>
+<br>
+<strong>Secondary User Interface:</strong><br>
+Choose a secondary user interface (restart required!).<br>
+<select name="web_dir2">
+    <!--#for $webline in $web_list2#-->
+        <!--#if $webline.lower() == $web_dir2.lower()#-->
+            <option value="$webline" selected>$webline</option>
+        <!--#else#-->
+            <option value="$webline">$webline</option>
         <!--#end if#-->
     <!--#end for#-->
 </select>

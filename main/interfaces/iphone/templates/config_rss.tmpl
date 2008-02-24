@@ -8,27 +8,27 @@
       <label>RSS-Feed URI:</label><br /><br />
       <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="28" name="uri">
     </div>
-    <div class="row"> 
-		     
-        <label>Text Filter:</label><br /><br />  
+    <div class="row">
+
+        <label>Text Filter:</label><br /><br />
         <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="28" name="text_filter">
     </div>
-    <div class="row"> 
-		     
+    <div class="row">
+
         <label>Regex Filter:</label><br /><br />
         <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="28" name="re_filter">
     </div>
-    <div class="row"> 
+    <div class="row">
       <label>Match Multiple:</label><br /><br />
 
-      
+
       <input style="margin-left:15px;" class="radio" type="radio" name="match_multiple" value="0"> No
       <input class="radio" type="radio" name="match_multiple" value="1" checked=1> Yes
-       
-      
+
+
  		</div>
-            <div class="row"> 
-		     
+            <div class="row">
+
       <label>Unpack Opts:</label><br /><br />
       <input style="margin-left:15px;" class="radio" type="radio" name="unpack_opts" value="0"> None
       <input class="radio" type="radio" name="unpack_opts" value="1" checked=1> +Repair
@@ -37,8 +37,8 @@
       <input style="margin-left:15px;" class="radio" type="radio" name="unpack_opts" value="4"> Repair+Script
       <input class="radio" type="radio" name="unpack_opts" value="5"> Unpack+Script
       <input class="radio" type="radio" name="unpack_opts" value="6"> Delete+Script
-      
-   
+
+
 
     </fieldset>
     <p>
@@ -55,14 +55,14 @@
             <!--#for $uri in $uris#-->
                 <!--#set $odd = not $odd#-->
                 <tr class="<!--#if $odd then "odd" else "even"#-->">
-                    <td><a onClick="lrdual('/sabnzbd/config/rss/del_rss_feed?uri_id=$str($id($uri))', '/sabnzbd/config/rss','0');">Remove</a></td>
+                    <td><a onClick="lrdual('del_rss_feed?uri_id=$str($id($uri))', '..','0');">Remove</a></td>
                     <td>$uri</td>
                 </tr>
                 <!--#set $oddLine = False#-->
                 <!--#for $filter in $uri_table[$uri][0]#-->
                     <!--#set $oddLine = not $oddLine#-->
                     <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-                        <td><a onClick="lrdual('/sabnzbd/config/rss/del_rss_filter?uri_id=$str($id($uri))&filter_id=$str($id($filter))', '/sabnzbd/config/rss','0');">Remove</a></td>
+                        <td><a onClick="lrdual('del_rss_filter?uri_id=$str($id($uri))&filter_id=$str($id($filter))', '..','0');">Remove</a></td>
                         <td>Filter: $filter[0]</td>
                     </tr>
                     <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">

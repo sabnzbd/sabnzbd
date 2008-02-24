@@ -84,5 +84,5 @@ TVSORTINGLIST = ['None', '\\TV\\ShowName\\Season 1\\01 - EpName\\', \
             '\\TV\\ShowName\\1x01 - EpName\\', \
             '\\TV\\ShowName\\S01E01 - EpName\\', \
             '\\TV\\ShowName\\101 - EpName\\']
-            
+
 IGNORE_SAMPLE_LIST = ['.sample', '-sample', 'sample-']

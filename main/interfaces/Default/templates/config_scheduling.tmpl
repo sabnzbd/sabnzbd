@@ -4,7 +4,9 @@
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/defaultcolors.css"/>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#if $color_scheme#-->
+        <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#end if#-->
     <link rel="shortcut icon" href="../../static/images/favicon.ico" />
 </head>
 <body>
@@ -18,11 +20,11 @@
 <a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Scheduling" target="_blank">Help</a>
 </span>
 <span class="SubMenu">
-<a href="../general">General</a> | 
-<a href="../directories">Directories</a> | 
-<a href="../switches">Switches</a> | 
-<a href="../server">Servers</a> | 
-<a class="current" href="./">Scheduling</a> | 
+<a href="../general">General</a> |
+<a href="../directories">Directories</a> |
+<a href="../switches">Switches</a> |
+<a href="../server">Servers</a> |
+<a class="current" href="./">Scheduling</a> |
 <a href="../rss">RSS</a> |
 <a href="../email">Email</a> |
 <a href="../newzbin">Newzbin</a>

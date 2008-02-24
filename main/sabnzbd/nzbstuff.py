@@ -330,9 +330,9 @@ class NzbObject(TryList):
         # Remove leading msgid_XXXX and trailing .nzb
         self.__dirname, msgid = SplitFileName(self.__dirname)
         if sabnzbd.REPLACE_SPACES:
-            self.__dirname = self.__dirname.replace(' ','_')        
+            self.__dirname = self.__dirname.replace(' ','_')
             logging.info('[%s] Replacing spaces with underscores in %s', __NAME__, self.__dirname)
-    
+
         if not nzb:
             # This is a slot for a future NZB, ready now
             return
@@ -347,7 +347,7 @@ class NzbObject(TryList):
         except:
             logging.error("[%s] Invalid NZB file %s, skipping", __NAME__, filename)
             raise ValueError
-            
+
         avg_age = 0
         valids = 0
         found = 0
@@ -373,18 +373,18 @@ class NzbObject(TryList):
             if not segments:
                 segments = _file.find('segments')
             nzf = NzbFile(date, subject, segments, self)
-            
+
             if nzf.valid and nzf.nzf_id:
                 found = 0
                 fln = None
                 if sabnzbd.IGNORE_SAMPLES:
                     if (nzf.get_filename()):
                         fln = nzf.get_filename()
-                        fln = fln.lower()  
+                        fln = fln.lower()
                     else:
                         fln = nzf.get_subject()
-                        fln = fln.lower()  
-                        
+                        fln = fln.lower()
+
                     for ignore in IGNORE_SAMPLE_LIST:
                         if ignore in fln:
                             found = 1
@@ -423,7 +423,7 @@ class NzbObject(TryList):
                 if 'TV' not in self.__dirprefix:
                     self.__dirprefix.append('TV')
                 self.__dirprefix.append(title)
-                if epName: 
+                if epName:
                     self.__dirprefix.append(season)
                     self.__dirname = epName
                 else: #if there is no epname or number, use season as dir name
@@ -437,17 +437,17 @@ class NzbObject(TryList):
                         if 'TV' not in self.__dirprefix:
                             self.__dirprefix.append('TV')
                         self.__dirprefix.append(title)
-                        if dvd: 
+                        if dvd:
                             self.__dirprefix.append(season)
                             self.__dirname = dvd
                         else: #if there is no dvd field or number, use season as dir name
-                            self.__dirname = season    
+                            self.__dirname = season
 
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
-        print 'autosort: %s' % (sabnzbd.auto_sort)
-        if sabnzbd.auto_sort:
+        print 'autosort: %s' % (sabnzbd.AUTO_SORT)
+        if sabnzbd.AUTO_SORT:
             self.__files.sort(cmp=_nzf_cmp_date)
         else:
             print 'no date sort, sorting alphabetically'
@@ -811,7 +811,7 @@ def _nzf_cmp_date(nzf1, nzf2):
     if 'vol' in subject2 and '.par2' in subject2:
         par2_found += 1
         ret += 1
-        
+
     if '.rar' in subject1 and not '.par' in subject2 and not '.rar' in subject2: #some nzbs dont get filename field populated, using subject instead
         return -1 #nzf1 contained '.rar' nzf2 didnt. Move nzf1 up in the queue
 
@@ -834,7 +834,7 @@ def _nzf_cmp_name(nzf1, nzf2):
     if 'vol' in subject2 and '.par2' in subject2:
         par2_found += 1
         ret += 1
-        
+
     if '.rar' in subject1 and not '.par' in subject2 and not '.rar' in subject2: #some nzbs dont get filename field populated, using subject instead
         print '1:returning -1'
         return -1 #nzf1 contained '.rar' nzf2 didnt. Move nzf1 up in the queue
@@ -880,7 +880,7 @@ def checkForTVShow(filename):
             match2 = regex.search(filename,match1.end())
             return match1, match2
     return None, None
-    
+
 def checkForTVDVD(filename):
     """
     Regular Expression match for TV DVD's such as ShowName - Season 1 [DVD 1]
@@ -889,12 +889,12 @@ def checkForTVDVD(filename):
     regularexpressions = [re.compile('Season (\d+) \[?DVD\s?(\d+)(\/\d)?\]?')]
     for regex in regularexpressions:
         match = regex.search(filename)
-        
+
     if match:
         return match
     return None
 
-    
+
 def getTVInfo(match1, match2,dirname):
     """
     Returns Title, Season and Episode naming from a REGEX match
@@ -902,22 +902,22 @@ def getTVInfo(match1, match2,dirname):
     title = match1.start()
     title = dirname[0:title]
     title = title.replace('.', ' ')
-    title = title.strip().strip('-').strip() 
+    title = title.strip().strip('-').strip()
     title = title.title() # title
 
     season = match1.group(1) # season number
     epNo = int(match1.group(2)) # episode number
-    
+
     if epNo < 10:
         epNo = '0%s' % (epNo)
-        
+
     if match2: #match2 is only present if a second REGEX match has been made
         epNo2 = int(match2.group(2)) # two part episode#
         if int(epNo2) < 10:
             epNo2 = '0%s' % (epNo)
     else:
         epNo2 = ''
-        
+
     spl = dirname[match1.start():].split(' - ',2)
 
     try:
@@ -928,21 +928,21 @@ def getTVInfo(match1, match2,dirname):
         epName = '%s%s - %s' % (epNo, epNo2Temp, spl[1].strip())
     except:
         epName = epNo
-        
+
     if sabnzbd.TV_SORT == 1:    #\\TV\\ShowName\\Season 1\\01 - EpName\\
         if season == 'S' or season == 's':
             season = 'Specials'
         else:
-            season = 'Season %s' % (season) # season# 
-            
+            season = 'Season %s' % (season) # season#
+
     elif sabnzbd.TV_SORT == 2:    #\\TV\\ShowName\\Season 1\\Episode 01 - EpName\\
         if season == 'S' or season == 's':
             season = 'Specials'
             epName = 'Number %s' % (epName)
         else:
-            season = 'Season %s' % (season) # season# 
+            season = 'Season %s' % (season) # season#
             epName = 'Episode %s' % (epName)
-        
+
     elif sabnzbd.TV_SORT == 3:  #\\TV\\ShowName\\1x01 - EpName\\
         season = '%sx%s' % (season,epName) # season#
         epName=None
@@ -958,9 +958,9 @@ def getTVInfo(match1, match2,dirname):
         season = '%s%s' % (season,epName) # season#
         epName=None
 
-        
+
     return (title, season, epName)
-    
+
 def getTVDVDInfo(match,dirname):
     """
     Returns Title, Season and DVD Number naming from a REGEX match
@@ -968,13 +968,13 @@ def getTVDVDInfo(match,dirname):
     title = match.start()
     title = dirname[0:title]
     title = title.replace('.', ' ')
-    title = title.strip().strip('-').strip() 
+    title = title.strip().strip('-').strip()
     title = title.title() # title
     season = int(match.group(1))
-    dvd = match.group(2) # dvd number 
-        
+    dvd = match.group(2) # dvd number
+
     if sabnzbd.TV_SORT == 1 or sabnzbd.TV_SORT == 2:    #\\TV\\ShowName\\Season 1\\DVD 1\\
-        season = 'Season %s' % (season) # season# 
+        season = 'Season %s' % (season) # season#
         dvd = 'DVD %s' % (dvd) # dvd number#
     elif sabnzbd.TV_SORT == 3:  #\\TV\\ShowName\\1xDVD1\\
         season = '%sxDVD%s' % (season,dvd) # season#
@@ -988,6 +988,6 @@ def getTVDVDInfo(match,dirname):
         season = '%sDVD%s' % (season,dvd) # season#
         dvd=None
 
-        
+
     return (title, season, dvd)
 

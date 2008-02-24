@@ -4,7 +4,9 @@
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/defaultcolors.css"/>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#if $color_scheme#-->
+        <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#end if#-->
     <link rel="shortcut icon" href="../../static/images/favicon.ico" />
 <script type='text/javascript'>
 function mark_all()
@@ -54,7 +56,7 @@ function invert()
 <body>
 <h1><span id="first">SAB</span><span id="second">nzbd</span><span id="catchfrase">The automatic usenet download tool</span></h1>
 <span class="MainMenu">
-<a href="/sabnzbd">Home</a> |
+<a href="../">Home</a> |
 <a href="../../queue">Queue</a> |
 <a href="../../history">History</a> |
 <a href="../../config">Config</a> |

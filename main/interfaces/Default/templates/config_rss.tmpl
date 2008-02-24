@@ -4,7 +4,9 @@
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/defaultcolors.css"/>
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#if $color_scheme#-->
+        <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#end if#-->
     <link rel="shortcut icon" href="../../static/images/favicon.ico" />
 </head>
 <body>
@@ -18,11 +20,11 @@
 <a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+RSS/" target="_blank">Help</a>
 </span>
 <span class="SubMenu">
-<a href="../general">General</a> | 
-<a href="../directories">Directories</a> | 
-<a href="../switches">Switches</a> | 
-<a href="../server">Servers</a> | 
-<a href="../scheduling">Scheduling</a> | 
+<a href="../general">General</a> |
+<a href="../directories">Directories</a> |
+<a href="../switches">Switches</a> |
+<a href="../server">Servers</a> |
+<a href="../scheduling">Scheduling</a> |
 <a class="current" href="./">RSS</a> |
 <a href="../email">Email</a> |
 <a href="../newzbin">Newzbin</a>
@@ -35,21 +37,21 @@
     <legend>RSS feed settings</legend>
       <b>RSS-Feed URI:</b><br>
       <input type="text" size="100" name="uri"><br><br>
-      
+
       <b>Text Filter:</b><br>
       (Basic) text based filter. A single '*' matches everything.
       <br>
       <input type="text" size="100" name="text_filter">
       <br>
       <br>
-      
+
       <b>Regex Filter:</b><br>
       Regular Expression filter. Overwrites text filter.
       <br>
       <input type="text" size="100" name="re_filter">
       <br>
       <br>
-      
+
       <b>Match Multiple:</b><br>
       Match this filter more than once?
       <br>
@@ -57,7 +59,7 @@
       <input type="radio" name="match_multiple" value="1" checked=1> Yes
       <br>
       <br>
-      
+
       <b>Unpack Opts:</b><br>
       <input type="radio" name="unpack_opts" value="0"> None
       <input type="radio" name="unpack_opts" value="1" checked=1> +Repair
@@ -68,7 +70,7 @@
       <input type="radio" name="unpack_opts" value="6"> Delete+Script
       <br>
       <br>
-      
+
       <input type="submit" value="Add">
     </fieldset>
   </form>

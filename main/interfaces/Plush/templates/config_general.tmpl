@@ -63,7 +63,20 @@
 <small>Choose a web interface</small><br/>
 <select name="web_dir">
     <!--#for $webline in $web_list#-->
-        <!--#if $webline == $web_dir#-->
+        <!--#if $webline.lower() == $web_dir.lower()#-->
+            <option value="$webline" selected>$webline</option>
+        <!--#else#-->
+            <option value="$webline">$webline</option>
+        <!--#end if#-->
+    <!--#end for#-->
+</select>
+<br/>
+<br/>
+<strong>Secondary User Interface:</strong><br/>
+<small>Choose a secondary web interface</small><br/>
+<select name="web_dir2">
+    <!--#for $webline in $web_list2#-->
+        <!--#if $webline.lower() == $web_dir2.lower()#-->
             <option value="$webline" selected>$webline</option>
         <!--#else#-->
             <option value="$webline">$webline</option>

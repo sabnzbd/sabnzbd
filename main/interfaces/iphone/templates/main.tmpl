@@ -23,21 +23,21 @@ loadingJSON();
 }
 
 //loads up the json for the queue page and changes the values in the document
-function loadingJSON(){	
+function loadingJSON(){
 
 	if (RefreshTime>0) {
 	clearTimeout ( jsontimeout );
-	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);		
-	}	
+	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);
+	}
 	var url = "api?mode=qstatus&output=json";
 
 	var d = loadJSONDoc(url);
-	var gotMetadata = function (info) 
+	var gotMetadata = function (info)
 	{
 		//alert(info["kbpersec"]);
-		
+
 		speed = info["kbpersec"].toFixed(0);
-		var paused = info["paused"];		
+		var paused = info["paused"];
 		if (paused==true) speed = 0;
 
 
@@ -47,7 +47,7 @@ function loadingJSON(){
         var elemsMbtotal = [];
         var elemsPaused = [];
         elemsPaused = getElementsByTagAndClassName("span", "status");
-     
+
         elemsSpeed = getElementsByTagAndClassName("span", "speed");
 
         //.innerHTML = speed;
@@ -66,29 +66,29 @@ function loadingJSON(){
             elemsSpeed[i].innerHTML = speed;
             elemsMbleft[i].innerHTML = info["mbleft"].toFixed(2);
             elemsMbtotal[i].innerHTML = info["mb"].toFixed(2);
-            
+
      		if (paused == true)
     		{
     			elemsPaused[i].innerHTML = "<span class='paused'>| Paused</span>";
     						//alert("paused");
-    		} else if 	(paused == false && speed>0) 
+    		} else if 	(paused == false && speed>0)
     		{
     			elemsPaused[i].innerHTML = "<span class='downloading'>| Downloading</span>";
-    						//alert("down");			
-    		} else { 
+    						//alert("down");
+    		} else {
     			elemsPaused[i].innerHTML = "<span class='idle'>| Idle</span>";
-    						//alert("idle");			
-    		}       
+    						//alert("idle");
+    		}
         }
         //alert("hi2");
-        
+
 	};
 	var metadataFetchFailed = function (err) {
 	  //alert("The metadata for MochiKit.Async could not be fetched :(");
 	};
 	d.addCallbacks(gotMetadata, metadataFetchFailed);
-    }	
-    
+    }
+
 	function deletequeueitem(elem)
 	{
         //alert(elem);
@@ -99,7 +99,7 @@ function loadingJSON(){
 		//d.addCallback(history.go(-1));
 		//d.addErrback(handleServerError);
 	}
-    
+
 	var status2 = $paused;
 
 	function toggle()
@@ -150,8 +150,8 @@ function loadingJSON(){
 	    return kvstr;
 	}
 
-    
-    
+
+
 	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post
 	function submitconfig(extra, element)
 	{
@@ -159,7 +159,7 @@ function loadingJSON(){
 		var elementt;
 		if (element) elementt = document.getElementById(element);
 		values = getFormValues(elementt);
-		var url = '/sabnzbd/i/'+extra;
+		var url = '/sabnzbd/'+extra;
 		var d = doXHR(url,
 	    {
 		    method:'POST',
@@ -221,9 +221,9 @@ margin-bottom:10px;}
         <h1 id="pageTitle"></h1>
         <a id="backButton" class="button" href="#"></a>
     </div>
-    
+
     <ul title="SABnzbd" selected="true">
-        <li><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| Paused" else ""#--></span> </center></li> 
+        <li><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| Paused" else ""#--></span> </center></li>
         <li><a href="queue/">Queue</a></li>
         <li><a href="history/">History</a></li>
         <li><a href="config/">Config</a></li>

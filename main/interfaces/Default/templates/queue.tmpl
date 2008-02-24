@@ -4,7 +4,9 @@
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="../static/stylesheets/default.css"/>
     <link rel="stylesheet" type="text/css" href="../static/stylesheets/defaultcolors.css"/>
-    <link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#if $color_scheme#-->
+        <link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#end if#-->
     <!--#if $refresh_rate#-->
         <meta http-equiv="refresh" content="$refresh_rate">
     <!--#end if#-->
@@ -13,7 +15,7 @@
 <body>
 <h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
 <span class="MainMenu">
-<a href="/sabnzbd">Home</a> |
+<a href="../">Home</a> |
 <a class="current" href="./">Queue</a> |
 <a href="../history">History</a> |
 <a href="../config">Config</a> |

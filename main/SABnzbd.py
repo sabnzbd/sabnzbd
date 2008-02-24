@@ -42,6 +42,8 @@ from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browse
 
 from threading import Thread
 
+cfg = {}
+
 #------------------------------------------------------------------------------
 signal.signal(signal.SIGINT, sabnzbd.sig_handler)
 signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
@@ -98,6 +100,7 @@ def print_help():
     print "  -f  --config-file <ini>  Location of config file"
     print "  -s  --server <srv:port>  Listen on server:port [*]"
     print "  -t  --templates <templ>  Template directory [*]"
+    print "  -2  --template2 <templ>  Secondary template dir [*]"
     print
     print "  -l  --logging <0..2>     Set logging level (0= least, 2= most) [*]"
     print "  -w  --weblogging <0..1>  Set cherrypy logging (0= off, 1= on) [*]"
@@ -156,6 +159,37 @@ def Bail_Out(browserhost, cherryport):
     sabnzbd.halt()
     ExitSab(2)
 
+def Web_Template(key, defweb, wdir):
+    """ Determine a correct web template set,
+        return full template path
+    """
+    if wdir == None:
+        try:
+            wdir = cfg['misc'][key]
+        except:
+            wdir = ''
+    if not wdir:
+        wdir = defweb
+    cfg['misc'][key] = wdir
+    if not wdir:
+        # No default value defined, accept empty path
+        return ''
+
+    full_dir = real_path(sabnzbd.DIR_INTERFACES, wdir)
+    full_main = real_path(full_dir, DEF_MAIN_TMPL)
+    logging.info("Web dir is %s", full_dir)
+
+    if not os.path.exists(full_main):
+        logging.warning('Cannot find web template: %s, trying standard template', full_main)
+        full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
+        full_main = real_path(full_dir, DEF_MAIN_TMPL)
+        if not os.path.exists(full_main):
+            logging.exception('Cannot find standard template: %s', full_dir)
+            Panic_Templ(full_dir)
+            ExitSab(1)
+
+    return real_path(full_dir, "templates")
+
 
 def GetProfileInfo(vista):
     """ Get the default data locations
@@ -213,9 +247,12 @@ def GetProfileInfo(vista):
 
 
 def main():
+    global cfg
+
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
+    sabnzbd.DIR_INTERFACES = real_path(sabnzbd.DIR_PROG, DEF_INTERFACES)
 
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
@@ -236,10 +273,10 @@ def main():
 
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:b:",
+        opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:b:2:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
                       'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', \
-                      'browser=', 'config-file=', 'delay=', 'force'])
+                      'template2', 'browser=', 'config-file=', 'delay=', 'force'])
     except getopt.GetoptError:
         print_help()
         ExitSab(2)
@@ -255,6 +292,7 @@ def main():
     logging_level = None
     umask = None
     web_dir = None
+    web_dir2 = None
     delay = 0.0
     vista = False
     vista64 = False
@@ -274,6 +312,8 @@ def main():
             f = a
         if o in ('-t', '--templates'):
             web_dir = a
+        if o in ('-2', '--template2'):
+            web_dir2 = a
         if o in ('-s', '--server'):
             # Cannot use split, because IPV6 of "a:b:c:port" notation
             # Split on the last ':'
@@ -517,7 +557,7 @@ def main():
         logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
     else:
         logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optionable)")
-        
+
     if cherryhost == None:
         cherryhost = check_setting_str(cfg, 'misc','host', DEF_HOST)
     else:
@@ -577,34 +617,15 @@ def main():
 
     log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
 
-    if not web_dir:
-        try:
-            web_dir = cfg['misc']['web_dir']
-        except:
-            web_dir = ''
-    if not web_dir:
-        web_dir = DEF_STDINTF
-    cfg['misc']['web_dir'] = web_dir
+    web_dir  = Web_Template('web_dir',  DEF_STDINTF,  web_dir)
+    web_dir2 = Web_Template('web_dir2', '', web_dir2)
 
-    sabnzbd.DIR_INTERFACES = real_path(sabnzbd.DIR_PROG, DEF_INTERFACES)
-    web_dir = real_path(sabnzbd.DIR_INTERFACES, web_dir)
-    web_main = real_path(web_dir, DEF_MAIN_TMPL)
-    logging.info("Web dir is %s", web_dir)
+    sabnzbd.WEB_DIR  = web_dir
+    sabnzbd.WEB_DIR2 = web_dir2
 
     sabnzbd.interface.USERNAME = check_setting_str(cfg, 'misc', 'username', '')
 
     sabnzbd.interface.PASSWORD = decodePassword(check_setting_str(cfg, 'misc', 'password', '', False), 'web')
-
-    if not os.path.exists(web_main):
-        logging.warning('Cannot find web template: %s, trying standard template', web_main)
-        web_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
-        web_main = real_path(web_dir, DEF_MAIN_TMPL)
-        if not os.path.exists(web_main):
-            logging.exception('Cannot find standard template: %s', web_main)
-            Panic_Templ(web_main)
-            ExitSab(1)
-
-    web_dir = real_path(web_dir, "templates")
 
     if fork and os.name != 'nt':
         daemonize()
@@ -633,20 +654,7 @@ def main():
             except:
                 cherrylogtoscreen = False
 
-    cherrypy.root = BlahPage()
-    cherrypy.root.sabnzbd = MainPage(web_dir)
-    cherrypy.root.sabnzbd.queue = QueuePage(web_dir)
-    cherrypy.root.sabnzbd.config = ConfigPage(web_dir)
-    cherrypy.root.sabnzbd.config.general = ConfigGeneral(web_dir)
-    cherrypy.root.sabnzbd.config.directories = ConfigDirectories(web_dir)
-    cherrypy.root.sabnzbd.config.switches = ConfigSwitches(web_dir)
-    cherrypy.root.sabnzbd.config.server = ConfigServer(web_dir)
-    cherrypy.root.sabnzbd.config.scheduling = ConfigScheduling(web_dir)
-    cherrypy.root.sabnzbd.config.rss = ConfigRss(web_dir)
-    cherrypy.root.sabnzbd.config.email = ConfigEmail(web_dir)
-    cherrypy.root.sabnzbd.config.newzbin = ConfigNewzbin(web_dir)
-    cherrypy.root.sabnzbd.connections = ConnectionInfo(web_dir)
-    cherrypy.root.sabnzbd.history = HistoryPage(web_dir)
+    cherrypy.tree.mount(LoginPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/'), '/')
 
     cherrypy.config.update(updateMap={'server.environment': 'production',
                                  'server.socketHost': cherryhost,
@@ -654,35 +662,15 @@ def main():
                                  'server.logToScreen': cherrylogtoscreen,
                                  'server.logFile': sabnzbd.WEBLOGFILE,
                                  'sessionFilter.on': True,
-                                 '/sabnzbd/shutdown': {'streamResponse': True},
-                                 '/sabnzbd/default.css': {'staticFilter.on': True, 'staticFilter.file': os.path.join(web_dir, 'default.css')},
-                                 '/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir, 'static')}
+                                 '/sabnzbd': {'streamResponse': True},
+                                 '/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir, 'static')},
+                                 '/sabnzbd/m': {'streamResponse': True},
+                                 '/sabnzbd/m/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir2, 'static')}
                            })
-    iphone_dir = real_path(sabnzbd.DIR_INTERFACES, 'iphone')
-    iphone_dir = real_path(iphone_dir, "templates")
-    
-    cherrypy.root.sabnzbd.i = MainPage(iphone_dir)
-    cherrypy.root.sabnzbd.i.queue = QueuePage(iphone_dir)
-    cherrypy.root.sabnzbd.i.config = ConfigPage(iphone_dir)
-    cherrypy.root.sabnzbd.i.config.general = ConfigGeneral(iphone_dir)
-    cherrypy.root.sabnzbd.i.config.directories = ConfigDirectories(iphone_dir)
-    cherrypy.root.sabnzbd.i.config.switches = ConfigSwitches(iphone_dir)
-    cherrypy.root.sabnzbd.i.config.server = ConfigServer(iphone_dir)
-    cherrypy.root.sabnzbd.i.config.scheduling = ConfigScheduling(iphone_dir)
-    cherrypy.root.sabnzbd.i.config.rss = ConfigRss(iphone_dir)
-    cherrypy.root.sabnzbd.i.config.email = ConfigEmail(iphone_dir)
-    cherrypy.root.sabnzbd.i.config.newzbin = ConfigNewzbin(iphone_dir)
-    cherrypy.root.sabnzbd.i.connections = ConnectionInfo(iphone_dir)
-    cherrypy.root.sabnzbd.i.history = HistoryPage(iphone_dir)
 
-    cherrypy.config.update(updateMap={'/sabnzbd/i/shutdown': {'streamResponse': True},
-                                 '/sabnzbd/i/default.css': {'staticFilter.on': True, 'staticFilter.file': os.path.join(iphone_dir, 'default.css')},
-                                 '/sabnzbd/i/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(iphone_dir, 'static')}
-                           })
-                           
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
-    
-    
+
+
 
     try:
         cherrypy.server.start(init_only=True)

@@ -125,9 +125,12 @@ EMAIL_FULL = False
 
 URLGRABBERS = []
 
+AUTO_SORT = None
 TV_SORT = None
-COLOR_SCHEME = None
-auto_sort = None
+WEB_COLOR = None
+WEB_COLOR2 = None
+WEB_DIR = None
+WEB_DIR2 = None
 
 __INITIALIZED__ = False
 
@@ -244,7 +247,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT, COLOR_SCHEME, auto_sort
+           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT, AUTO_SORT, WEB_COLOR, WEB_COLOR2, WEB_DIR, WEB_DIR2
 
     if __INITIALIZED__:
         return False
@@ -405,18 +408,14 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
 
-    auto_sort = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
+    AUTO_SORT = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
 
     TV_SORT = check_setting_int(CFG, 'misc', 'tv_sort', 0)
 
-    COLOR_SCHEME = check_setting_str(CFG, 'misc', 'color_scheme', '')
+    WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
+    WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
 
-    '''if COLOR_SCHEME:
-        dd2 = os.path.abspath(DIR_INTERFACES + '/' + web_dir + '/static/stylesheets/colorschemes/' + COLOR_SCHEME)
-        if dd2 and not os.access(dd2, os.R_OK):
-            COLOR_SCHEME = '''''
-    
-    
+
     ############################
     ## Object initializiation ##
     ############################
@@ -444,9 +443,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         BPSMETER = BPSMeter(bytes)
 
     if NZBQ:
-        NZBQ.__init__(auto_sort, top_only)
+        NZBQ.__init__(AUTO_SORT, top_only)
     else:
-        NZBQ = NzbQueue(auto_sort, top_only)
+        NZBQ = NzbQueue(AUTO_SORT, top_only)
 
     if POSTPROCESSOR:
         POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc, POSTPROCESSOR.queue)
@@ -625,7 +624,7 @@ def sort_by_avg_age():
         NZBQ.sort_by_avg_age()
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
-        
+
 def sort_by_name():
     try:
         NZBQ.sort_by_name()

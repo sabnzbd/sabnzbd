@@ -146,8 +146,8 @@ class DummyFilter(MultiAuthFilter):
                                                    **rsrc.callable_kwargs)
 
 #------------------------------------------------------------------------------
-class BlahPage:
-    def __init__(self):
+class LoginPage:
+    def __init__(self, web_dir, root, web_dir2=None, root2=None):
         self._cpFilterList = [GzipFilter()]
 
         if USERNAME and PASSWORD:
@@ -157,6 +157,12 @@ class BlahPage:
         else:
             self._cpFilterList.append(DummyFilter('', PROVIDER))
 
+        self.sabnzbd = MainPage(web_dir, root, prim=True)
+        if web_dir2:
+            self.sabnzbd.m = MainPage(web_dir2, root2, prim=False)
+        else:
+            self.sabnzbd.m = NoPage()
+
     @cherrypy.expose
     def index(self):
         return ""
@@ -165,18 +171,33 @@ class BlahPage:
     def unauthorized(self):
         return "<h1>You are not authorized to view this resource</h1>"
 
+
 #------------------------------------------------------------------------------
-class MainPage(ProtectedClass):
-    def __init__(self, web_dir):
-        self.roles = ['admins']
-
-        self.__root = '/sabnzbd/'
-
-        self.__web_dir = web_dir
+class NoPage(ProtectedClass):
+    def __init__(self):
+        pass
 
     @cherrypy.expose
     def index(self):
-        info, pnfo_list, bytespersec = build_header()
+        return badParameterResponse('Error: No secondary interface defined.')
+
+
+#------------------------------------------------------------------------------
+class MainPage(ProtectedClass):
+    def __init__(self, web_dir, root, prim):
+        self.roles = ['admins']
+        self.__root = root
+        self.__web_dir = web_dir
+        self.__prim = prim
+        self.queue = QueuePage(web_dir, root+'queue/', prim)
+        self.history = HistoryPage(web_dir, root+'history/', prim)
+        self.connections = ConnectionInfo(web_dir, root+'connections/', prim)
+        self.config = ConfigPage(web_dir, root+'config/', prim)
+
+
+    @cherrypy.expose
+    def index(self):
+        info, pnfo_list, bytespersec = build_header(self.__prim)
 
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             info['newzbinDetails'] = True
@@ -325,18 +346,18 @@ class MainPage(ProtectedClass):
 
 #------------------------------------------------------------------------------
 class NzoPage(ProtectedClass):
-    def __init__(self, web_dir, nzo_id):
+    def __init__(self, web_dir, root, nzo_id, prim):
         self.roles = ['admins']
-
         self.__nzo_id = nzo_id
-        self.__root = '/sabnzbd/queue/%s/' % nzo_id
+        self.__root = '%s/%s/' % (root, nzo_id)
         self.__web_dir = web_dir
         self.__verbose = False
+        self.__prim = prim
         self.__cached_selection = {} #None
 
     @cherrypy.expose
     def index(self):
-        info, pnfo_list, bytespersec = build_header()
+        info, pnfo_list, bytespersec = build_header(self.__prim)
 
         this_pnfo = None
         for pnfo in pnfo_list:
@@ -406,20 +427,18 @@ class NzoPage(ProtectedClass):
         raise cherrypy.HTTPRedirect(self.__root)
 #------------------------------------------------------------------------------
 class QueuePage(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/queue/'
-
+        self.__root = root
         self.__web_dir = web_dir
-
         self.__verbose = False
+        self.__prim = prim
 
         self.__nzo_pages = []
 
     @cherrypy.expose
     def index(self):
-        info, pnfo_list, bytespersec = build_header()
+        info, pnfo_list, bytespersec = build_header(self.__prim)
 
         info['isverbose'] = self.__verbose
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
@@ -455,7 +474,7 @@ class QueuePage(ProtectedClass):
             nzo_ids.append(nzo_id)
 
             if nzo_id not in self.__dict__:
-                self.__dict__[nzo_id] = NzoPage(self.__web_dir, nzo_id)
+                self.__dict__[nzo_id] = NzoPage(self.__web_dir, self.__root, nzo_id, self.__prim)
                 self.__nzo_pages.append(nzo_id)
 
             slot = {'index':n, 'nzo_id':str(nzo_id)}
@@ -609,25 +628,23 @@ class QueuePage(ProtectedClass):
     def sort_by_avg_age(self):
         sabnzbd.sort_by_avg_age()
         raise cherrypy.HTTPRedirect(self.__root)
-        
+
     @cherrypy.expose
     def sort_by_name(self):
         sabnzbd.sort_by_name()
         raise cherrypy.HTTPRedirect(self.__root)
 
 class HistoryPage(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/history/'
-
+        self.__root = root
         self.__web_dir = web_dir
-
         self.__verbose = True
+        self.__prim = prim
 
     @cherrypy.expose
     def index(self):
-        history, pnfo_list, bytespersec = build_header()
+        history, pnfo_list, bytespersec = build_header(self.__prim)
 
         history['isverbose'] = self.__verbose
 
@@ -700,16 +717,24 @@ class HistoryPage(ProtectedClass):
 
 #------------------------------------------------------------------------------
 class ConfigPage(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
 
-        self.__root = '/sabnzbd/config/'
-
+        self.__root = root
         self.__web_dir = web_dir
+        self.__prim = prim
+        self.directories = ConfigDirectories(web_dir, root+'directories/', prim)
+        self.email = ConfigEmail(web_dir, root+'email/', prim)
+        self.general = ConfigGeneral(web_dir, root+'general/', prim)
+        self.newzbin = ConfigNewzbin(web_dir, root+'newzbin/', prim)
+        self.rss = ConfigRss(web_dir, root+'rss/', prim)
+        self.scheduling = ConfigScheduling(web_dir, root+'scheduling/', prim)
+        self.server = ConfigServer(web_dir, root+'server/', prim)
+        self.switches = ConfigSwitches(web_dir, root+'switches/', prim)
 
     @cherrypy.expose
     def index(self):
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['configfn'] = sabnzbd.CFG.filename
 
@@ -731,19 +756,19 @@ class ConfigPage(ProtectedClass):
 
 #------------------------------------------------------------------------------
 class ConfigDirectories(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
 
-        self.__root = '/sabnzbd/config/directories/'
-
+        self.__root = root
         self.__web_dir = web_dir
+        self.__prim = prim
 
     @cherrypy.expose
     def index(self):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['download_dir'] = sabnzbd.CFG['misc']['download_dir']
         config['download_free'] = sabnzbd.CFG['misc']['download_free'].upper()
@@ -823,19 +848,18 @@ class ConfigDirectories(ProtectedClass):
 
 #------------------------------------------------------------------------------
 class ConfigSwitches(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/config/switches/'
-
+        self.__root = root
         self.__web_dir = web_dir
+        self.__prim = prim
 
     @cherrypy.expose
     def index(self):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['enable_unrar'] = int(sabnzbd.CFG['misc']['enable_unrar'])
         config['enable_unzip'] = int(sabnzbd.CFG['misc']['enable_unzip'])
@@ -895,19 +919,29 @@ class ConfigSwitches(ProtectedClass):
 #------------------------------------------------------------------------------
 
 class ConfigGeneral(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/config/general/'
-
+        self.__root = root
         self.__web_dir = web_dir
+        self.__prim = prim
 
     @cherrypy.expose
     def index(self):
+        def ListColors(web_dir):
+            lst = []
+            dd = os.path.abspath(web_dir + '/static/stylesheets/colorschemes')
+            if (not dd) or (not os.access(dd, os.R_OK)):
+                return lst
+            for color in glob.glob(dd + '/*'):
+                col= os.path.basename(color).replace('.css','')
+                if col != "_svn" and col != ".svn":
+                    lst.append(col)
+            return lst
+
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['configfn'] = sabnzbd.CFG.filename
 
@@ -920,22 +954,26 @@ class ConfigGeneral(ProtectedClass):
         config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
         config['cache_limitstr'] = sabnzbd.CFG['misc']['cache_limit'].upper()
 
-        wdir = config['web_dir'] = sabnzbd.CFG['misc']['web_dir']
         wlist = [DEF_STDINTF]
+        wlist2 = ['None', DEF_STDINTF]
         for web in glob.glob(sabnzbd.DIR_INTERFACES + "/*"):
             rweb= os.path.basename(web)
-            if rweb != DEF_STDINTF and rweb != "_svn" and rweb != ".svn" and ".zip" not in rweb:
+            if rweb != DEF_STDINTF and rweb != "_svn" and rweb != ".svn" and \
+               os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
                 wlist.append(rweb)
+                wlist2.append(rweb)
         config['web_list'] = wlist
+        config['web_list2'] = wlist2
 
+        config['web_dir']  = sabnzbd.CFG['misc']['web_dir']
+        config['web_dir2'] = sabnzbd.CFG['misc']['web_dir2']
 
-        config['color_scheme'] = sabnzbd.CFG['misc']['color_scheme']
-        csslist = []
-        for web in glob.glob(sabnzbd.DIR_INTERFACES + "/" + wdir +"/templates/static/stylesheets/colorschemes/*.css"):
-            rweb= os.path.basename(web)
-            if rweb != "_svn" and rweb != ".svn" and ".zip" not in rweb:
-                csslist.append(rweb)
-        config['css_list'] = csslist
+        if self.__prim:
+            config['web_colors'] = ListColors(sabnzbd.WEB_DIR)
+            config['web_color'] = sabnzbd.WEB_COLOR
+        else:
+            config['web_colors'] = ListColors(sabnzbd.WEB_DIR2)
+            config['web_color'] = sabnzbd.WEB_COLOR2
 
         if not sabnzbd.CFG['misc']['cleanup_list']:
             config['cleanup_list'] = ','
@@ -954,33 +992,31 @@ class ConfigGeneral(ProtectedClass):
 
     @cherrypy.expose
     def saveGeneral(self, host = None, port = None, username = None, password = None, web_dir = None,
+                    web_dir2 = None, web_color = None,
                     cronlines = None, refresh_rate = None, rss_rate = None,
-                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None, color_scheme = None):
+                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None):
+
+        sabnzbd.CFG['misc']['web_dir']  = web_dir
+        if web_dir2 == 'None':
+            sabnzbd.CFG['misc']['web_dir2'] = ''
+        else:
+            sabnzbd.CFG['misc']['web_dir2'] = web_dir2
+
+        if web_color:
+            if self.__prim:
+                sabnzbd.CFG['misc']['web_color'] = web_color
+            else:
+                sabnzbd.CFG['misc']['web_color2'] = web_color
 
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
         sabnzbd.CFG['misc']['username'] = username
         sabnzbd.CFG['misc']['password'] = encodePassword(password)
-        sabnzbd.CFG['misc']['web_dir'] = web_dir
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
         sabnzbd.CFG['misc']['rss_rate'] = rss_rate
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
-        sabnzbd.CFG['misc']['color_scheme'] = color_scheme
-
-        if not web_dir:
-            web_dir= DEF_STDINTF
-        dd = os.path.abspath(sabnzbd.DIR_INTERFACES + '/' + web_dir)
-        if dd and not os.access(dd, os.R_OK):
-            return badParameterResponse('Error: cannot access template directory "%s".' % dd)
-        if dd and not os.access(dd + '/' + DEF_MAIN_TMPL, os.R_OK):
-        	  return badParameterResponse('Error: "%s" is not a valid template directory (cannot see %s).' % (dd, DEF_MAIN_TMPL))
-        sabnzbd.CFG['misc']['web_dir'] = web_dir
-
-        if not color_scheme:
-            color_scheme = 'darkblue.css'
-
 
         return saveAndRestart(self.__root)
 
@@ -988,19 +1024,18 @@ class ConfigGeneral(ProtectedClass):
 #------------------------------------------------------------------------------
 
 class ConfigServer(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/config/server/'
-
+        self.__root = root
         self.__web_dir = web_dir
+        self.__prim = prim
 
     @cherrypy.expose
     def index(self):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['servers'] = sabnzbd.CFG['servers']
         for svr in config['servers']:
@@ -1099,19 +1134,18 @@ class ConfigServer(ProtectedClass):
 #------------------------------------------------------------------------------
 
 class ConfigRss(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/config/rss/'
-
+        self.__root = root
         self.__web_dir = web_dir
+        self.__prim = prim
 
     @cherrypy.expose
     def index(self):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['have_feedparser'] = sabnzbd.rss.HAVE_FEEDPARSER
 
@@ -1150,19 +1184,18 @@ class ConfigRss(ProtectedClass):
 #------------------------------------------------------------------------------
 
 class ConfigScheduling(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/config/scheduling/'
-
+        self.__root = root
         self.__web_dir = web_dir
+        self.__prim = prim
 
     @cherrypy.expose
     def index(self):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['schedlines'] = sabnzbd.CFG['misc']['schedlines']
 
@@ -1189,20 +1222,19 @@ class ConfigScheduling(ProtectedClass):
 #------------------------------------------------------------------------------
 
 class ConfigNewzbin(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/config/newzbin/'
-
+        self.__root = root
         self.__web_dir = web_dir
-        self.bookmarks = []
+        self.__prim = prim
+        self.__bookmarks = []
 
     @cherrypy.expose
     def index(self):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
         config['password_newzbin'] = decodePassword(sabnzbd.CFG['newzbin']['password'], 'newzbin')
@@ -1211,7 +1243,7 @@ class ConfigNewzbin(ProtectedClass):
         config['newzbin_unbookmark'] = int(sabnzbd.CFG['newzbin']['unbookmark'])
         config['bookmark_rate'] = sabnzbd.BOOKMARK_RATE
 
-        config['bookmarks_list'] = self.bookmarks
+        config['bookmarks_list'] = self.__bookmarks
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             searchList=[config],
@@ -1240,34 +1272,33 @@ class ConfigNewzbin(ProtectedClass):
 
     @cherrypy.expose
     def showBookmarks(self):
-        self.bookmarks = sabnzbd.getBookmarksList()
+        self.__bookmarks = sabnzbd.getBookmarksList()
         raise cherrypy.HTTPRedirect(self.__root)
 
     @cherrypy.expose
     def hideBookmarks(self):
-        self.bookmarks = []
+        self.__bookmarks = []
         raise cherrypy.HTTPRedirect(self.__root)
 
 
 #------------------------------------------------------------------------------
 
 class ConnectionInfo(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/connections/'
-
+        self.__root = root
         self.__web_dir = web_dir
-        self.lastmail = None
+        self.__prim = prim
+        self.__lastmail = None
 
     @cherrypy.expose
     def index(self):
-        header, pnfo_list, bytespersec = build_header()
+        header, pnfo_list, bytespersec = build_header(self.__prim)
 
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
 
-        header['lastmail'] = self.lastmail
+        header['lastmail'] = self.__lastmail
 
         header['servers'] = []
 
@@ -1318,7 +1349,7 @@ class ConnectionInfo(ProtectedClass):
     @cherrypy.expose
     def testmail(self):
         logging.info("Sending testmail")
-        self.lastmail= email_send("SABnzbd testing email connection", "All is OK")
+        self.__lastmail= email_send("SABnzbd testing email connection", "All is OK")
 
         raise cherrypy.HTTPRedirect(self.__root)
 
@@ -1375,14 +1406,23 @@ def badParameterResponse(msg):
 ''' % (sabnzbd.__version__, msg)
 
 
-def build_header():
+def build_header(prim):
     try:
         uptime = calc_age(sabnzbd.START)
     except:
         uptime = "-"
 
+    if prim:
+        color = sabnzbd.WEB_COLOR
+    else:
+        color = sabnzbd.WEB_COLOR2
+    if color:
+         color = color + '.css'
+    else:
+        color = ''
+
     header = { 'version':sabnzbd.__version__, 'paused':sabnzbd.paused(),
-               'uptime':uptime, 'color_scheme':sabnzbd.COLOR_SCHEME }
+               'uptime':uptime, 'color_scheme':color }
 
     header['diskspace1'] = "%.2f" % diskfree(sabnzbd.DOWNLOAD_DIR)
     header['diskspace2'] = "%.2f" % diskfree(sabnzbd.COMPLETE_DIR)
@@ -1391,7 +1431,10 @@ def build_header():
 
     header['shutdown'] = sabnzbd.AUTOSHUTDOWN
     header['nt'] = os.name == 'nt'
-    header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir'])
+    if prim:
+        header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir'])
+    else:
+        header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir2'])
 
     bytespersec = sabnzbd.bps()
     qnfo = sabnzbd.queue_info()
@@ -1432,19 +1475,18 @@ def calc_age(date):
 #------------------------------------------------------------------------------
 
 class ConfigEmail(ProtectedClass):
-    def __init__(self, web_dir):
+    def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
-
-        self.__root = '/sabnzbd/config/email/'
-
+        self.__root = root
         self.__web_dir = web_dir
+        self.__prim = prim
 
     @cherrypy.expose
     def index(self):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header()
+        config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['email_server'] = sabnzbd.CFG['misc']['email_server']
         config['email_to'] = sabnzbd.CFG['misc']['email_to']
