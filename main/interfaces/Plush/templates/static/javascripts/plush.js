@@ -63,7 +63,7 @@ $(document).ready(function() {
 			url: "addID",
 			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
 			success: function(result){
-   				return LoadTheQueue(result);
+   				return RefreshTheQueue();
 			}
 		});
 		$("#addID").val('by Newzbin ID/NB32');
@@ -74,7 +74,7 @@ $(document).ready(function() {
 			url: "addURL",
 			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val(),
 			success: function(result){
-   				return LoadTheQueue(result);
+   				return RefreshTheQueue();
 			}
 		});
 		$("#addURL").val('by URL');
@@ -253,8 +253,8 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			type: "GET",
 			url: "queue/removeNzf",
 			data: "nzo_id="+nzo_id+"&nzf_id="+nzf_id,
-			success: function(result){
-   				return LoadTheQueue(result);
+			success: function(result){ // nzo page
+   				return RefreshTheQueue()
 			}
 		});
 	} else {	// moving top/up/down/bottom (delete is above)
@@ -262,8 +262,8 @@ function ManipNZF (nzo_id, nzf_id, action) {
 			type: "GET",
 			url: 'queue/'+nzo_id+'/bulk_operation',
 			data: nzf_id + '=on' + '&' + 'action_key=' + action,
-			success: function(result){
-   				return LoadTheQueue(result);
+			success: function(result){ // nzo page
+   				return RefreshTheQueue();
 			}
 		});
 	}
@@ -274,10 +274,10 @@ function startCallback() {
     // make something useful before submit (onStart)
     return true;
 }
-
+// ajax file upload
 function completeCallback(result) {
     // make something useful after (onComplete)
-	return LoadTheQueue(result);
+	return RefreshTheQueue();
 }
 
 
