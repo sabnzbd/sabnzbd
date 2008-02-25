@@ -9,16 +9,15 @@
 	<link rel="stylesheet" type="text/css" href="static/stylesheets/plush.css" media="screen"/>
 
 	<script type="text/javascript" src="static/javascripts/jquery.pack.js"></script>
-	<script type="text/javascript" src="static/javascripts/interface.js"></script>
-	<script type="text/javascript" src="static/javascripts/plush.js"></script>
 	<script type="text/javascript" src="static/javascripts/greybox.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.curvycorners.packed.js"></script>
 	<script type="text/javascript" src="static/javascripts/webtoolkit.aim.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.tablednd.js"></script>
+	<script type="text/javascript" src="static/javascripts/JQuerySpinBtn.js"></script>
+	<script type="text/javascript" src="static/javascripts/plush.js"></script>
 
 </head>
 <body>
-
 	<!-- Container : Begin -->
 	<div id="container">
 
@@ -60,10 +59,8 @@
 		<!-- Options Menu : Begin -->
 		<div class="subMenu" id="optionsMenu" style="display:none">
 
-			<div class="sliderContainer">
-				<div class="refreshTitle">Refresh Time:</div>
-				<div class="refreshRate">Every <strong><span id="refreshRateDisplay">?</span></strong> Second(s)</div>
-				<div class="refreshSlider"><div class="refreshIndicator"></div></div>
+			<div class="refreshContainer">
+				<strong>Refresh Rate:</strong><input type="text" class="suSpinButton" id="refreshRate-option" size="3" value="?" /> seconds
 			</div>
 			
 			<div class="layoutContainer"><strong>Layout:</strong><img src="static/images/o_topbottom.png" id="layout_toptobottom" alt="Top to Bottom" title="Switch Layout: Top to Bottom" />&nbsp;<img src="static/images/o_sidebyside.png" id="layout_sidebyside" alt="Side by Side" title="Switch Layout: Side by Side" /></div>
@@ -113,7 +110,7 @@
 		</div>
 		<!-- +NZB Menu : End -->
 		
-		
+
 		<!-- Queue   -->
 		<div id="queue" style="display:inline;"></div>
 		

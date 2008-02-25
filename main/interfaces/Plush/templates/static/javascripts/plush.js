@@ -9,7 +9,7 @@ $(document).ready(function() {
 	} else {
 		SetCookie('PlushRefresh',refreshRate);	
 	}
-	$('#refreshRateDisplay').html(refreshRate);
+	$("#refreshRate-option").val(refreshRate);
 
 	// Queue & History layout restoration
 	if ('sidebyside' == ReadCookie('PlushLayout')) {
@@ -44,18 +44,26 @@ $(document).ready(function() {
 		$('#plusnzb').toggleClass('on');
 		$('#nzbMenu').toggle();
 	});
-	// Set up options refresh rate slider	
-	$('.refreshSlider').Slider({
-		accept : '.refreshIndicator',
-		fractions : 100,
-		onSlide : function(cordx, cordy, x , y) {
-			if (!cordx || cordx==0)
-				cordx = 1;
-			$('#refreshRateDisplay').html(cordx);
-			refreshRate = cordx;
-			SetCookie('PlushRefresh',refreshRate);
-		}
-	});
+
+	var myOptions = {
+		min: 1,						// Set lower limit.
+		max: 100,					// Set upper limit.
+		step: 1,					// Set increment size.
+		spinClass: 'spin-button',	// CSS class to style the spinbutton. (Class also specifies url of the up/down button image.)
+		upClass: 'spin-up',			// CSS class for style when mouse over up button.
+		downClass: 'spin-down'		// CSS class for style when mouse over down button.
+	}
+	$("#refreshRate-option").SpinButton(myOptions);
+	$("#refreshRate-option").change( function() { 
+		refreshRate = $("#refreshRate-option").val();
+		SetCookie('PlushRefresh',refreshRate);
+	 });
+	$("#refreshRate-option").click( function() { 
+		refreshRate = $("#refreshRate-option").val();
+		SetCookie('PlushRefresh',refreshRate);
+	 });
+
+		
 	// Set up +NZB
 	$('#addNZBbyID').bind('click', function() { 
 		$.ajax({

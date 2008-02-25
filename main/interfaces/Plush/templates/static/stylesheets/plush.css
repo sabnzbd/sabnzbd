@@ -806,6 +806,7 @@ fieldset.EntryFieldSet {
 
 
 
+
 #layout_sidebyside {
 	cursor: 		pointer;
 }
@@ -814,11 +815,37 @@ fieldset.EntryFieldSet {
 }
 
 
+
+
+
+
+
+.refreshContainer {
+	display:inline;
+	margin-right:32px;
+}
+
+INPUT.spin-button {
+	padding-right:20px;					/* Padding pevents text from covering the up/dn img. Works better in Firefox but also causes textbox to widen by 20px. Arrows can go wonky in IE when text is too long. Perhaps it could be fixed with script that monitored the horiz-scroll position? */
+	background-repeat:no-repeat;		/* Warning: Img may disappear in Firefox if you use 'background-attachment:fixed' ! */
+	background-position:100% 0%;
+	background-image:url(../images/spinbtn_updn.gif);
+}
+
+INPUT.spin-button.spin-up {					/* Change button img when mouse is over the UP-arrow */
+	cursor:pointer;
+	background-position:100% -18px;		/* 18px matches height of 2 visible buttons */
+}
+INPUT.spin-button.spin-down {				/* Change button img when mouse is over the DOWN-arrow */
+	cursor:pointer;
+	background-position:100% -36px;		/* 36px matches height of 2x2 visible buttons */
+}
+
 .layoutContainer {
 	display:inline;
 	margin-right:32px;
 }
-.layoutContainer strong {
+.layoutContainer,.refreshContainer strong {
 	margin-top: 3px;
 	margin-right: 8px;
 }
@@ -826,40 +853,6 @@ fieldset.EntryFieldSet {
 	margin: 3px 4px 0;
 }
 
-
-
-.sliderContainer {
-	display:inline;
-	margin: 3px 15px;
-	float: left;
-}
-.sliderContainer .refreshTitle {
-	margin-right: 10px;
-	font-weight: bold;
-	color: #333333;
-	display:inline;
-}
-.sliderContainer .refreshSlider {
-	width: 316px;
-	height: 16px;
-	position: relative;
-	background: url(../images/bg_refreshSlider.png) no-repeat left top;
-	z-index: 1;
-}
-.refreshIndicator {
-	width: 40px;
-	height: 16px;
-	background-image: url(../images/o_refresh_handle.png);
-	font-size: 1px;
-	overflow: hidden;
-	border: none;
-	position: relative;
-	z-index: 2;
-}
-.sliderContainer .refreshRate {
-	display:inline;
-	margin-left: 10px;
-}
 
 
 .shutdownContainer {
