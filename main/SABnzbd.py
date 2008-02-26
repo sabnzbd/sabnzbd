@@ -556,7 +556,7 @@ def main():
     if sabnzbd.newswrapper.HAVE_SSL:
         logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
     else:
-        logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optionable)")
+        logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optional)")
 
     if cherryhost == None:
         cherryhost = check_setting_str(cfg, 'misc','host', DEF_HOST)
