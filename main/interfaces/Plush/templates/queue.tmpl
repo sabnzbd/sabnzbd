@@ -60,7 +60,8 @@ def drawProgressBar (mbleft, mb):
 	<span style="display:none" id="stats_noofslots">$noofslots</span>
 	<div class="floatRight">
 		<a id="pause_resume"<!--#if $paused#--> class="active" title="Resume the Queue"<!--#end if#--> title="Pause the Queue">Pause</a>
-		&sdot;<a id="queue_sortage" title="Sort by Average File Age">Sort</a>
+		&sdot;<a id="queue_sortage" title="Sort by Average File Age">Sort by Date</a>
+		&sdot;<a id="queue_sortname" title="Sort by Filename">Sort by Name</a>
 		<!--#if $nt and $shutdown#-->&sdot;<a id="#queue_shutdown" title="Shutting down computer after downloads finish!" class="active">SHUTDOWN</a><!--#end if#-->
 		&sdot;<a id="queue_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>+</a>
 	</div>

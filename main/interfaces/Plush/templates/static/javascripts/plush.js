@@ -142,6 +142,15 @@ $(document).ready(function() {
 				}
 			});
 		}
+		else if ($(event.target).is('#queue_sortname')) {
+			$.ajax({
+				type: "GET",
+				url: "queue/sort_by_name",
+				success: function(result){
+   					return LoadTheQueue(result);
+				}
+			});
+		}
 		else if ($(event.target).is('#queue_shutdown')) {
 			$.ajax({
 				type: "GET",
