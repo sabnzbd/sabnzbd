@@ -1,5 +1,6 @@
 #!/usr/bin/python -OO
 # Copyright 2007 The ShyPike <shypike@users.sourceforge.net>
+# Copyright 2008 Maarten Damen <mdamen@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,6 +23,8 @@ sabnzbd.email - Send notification emails
 
 __NAME__ = "email"
 
+from utils import ssmtplib
+import smtplib
 import os
 import logging
 import subprocess
@@ -29,6 +32,7 @@ import re
 import datetime
 import time
 import tempfile
+import socket
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.newsunpack import build_command
@@ -64,57 +68,63 @@ def prepare_msg(bytes, status, output):
 ################################################################################
 # EMAIL_SEND
 #
-# Uses external sendEmail progam
 #
 ################################################################################
 def email_send(header, message):
-    if sabnzbd.newsunpack.EMAIL_COMMAND and sabnzbd.EMAIL_SERVER and \
-        sabnzbd.EMAIL_TO and sabnzbd.EMAIL_FROM:
+    if sabnzbd.EMAIL_SERVER and sabnzbd.EMAIL_TO and sabnzbd.EMAIL_FROM:
+        server = sabnzbd.EMAIL_SERVER.split(':')[0]
+        port   = sabnzbd.EMAIL_SERVER.split(':')[1]
 
-        msgfile, msgname = tempfile.mkstemp()
-        os.write(msgfile, message)
-        os.close(msgfile)
-                  
-        command = []
-        command.extend(sabnzbd.newsunpack.EMAIL_COMMAND)
-        command.extend(['-s',
-                        '%s' % sabnzbd.EMAIL_SERVER,
-                        '-f',
-                        '%s' % sabnzbd.EMAIL_FROM,
-                        '-t',
-                        '%s' % sabnzbd.EMAIL_TO,
-                        '-o',
-                        'tls=auto',
-                        '-u',
-                        '%s' % header,
-                        '-o',
-                        'message-file=%s' %  msgname
-                       ])
+        logging.info("[%s] Connecting to server %s:%s",
+        __NAME__, server, port)
+                     
+        try:
+            mailconn = ssmtplib.SMTP_SSL(server, port)
+            mailconn.ehlo()
+            
+            logging.info("[%s] Connected to server %s:%s",
+            __NAME__, server, port)
+            
+        except Exception, errorcode:
+            if errorcode[0] == 1:
+                
+                # Non SSL mail server
+                logging.info("[%s] Non-SSL mail server detected " \
+                "reconnecting to server %s:%s", __NAME__, server, port)
 
-        logging.info('[%s] Starting email program %s', __NAME__, command)
+                try:
+                    mailconn = smtplib.SMTP(server, port)
+                    mailconn.ehlo()
+                except:
+                    logging.exception("Failed to connect to mail server")
+            else:
+                logging.exception("Failed to connect to mail server")
 
+        # Message header
+        msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % \
+        (sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, header)
+
+        # Authentication
         if (sabnzbd.EMAIL_ACCOUNT != "") and (sabnzbd.EMAIL_PWD != ""):
-            command.extend(['-xu',
-                            '%s' % sabnzbd.EMAIL_ACCOUNT,
-                            '-xp',
-                            '%s' % sabnzbd.EMAIL_PWD
-                           ])
-    
-        stup, need_shell, command, creationflags = build_command(command)
+            try:
+                mailconn.login(sabnzbd.EMAIL_ACCOUNT, sabnzbd.EMAIL_PWD)
+            except:
+                logging.exception("Failed to authenticate to mail server")
 
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             startupinfo=stup, creationflags=creationflags)
-                         
-        output = p.stdout.read()
-        p.wait()
-        os.remove(msgname)
-        if re.search('Email was sent successfully', output):
-            logging.info("[%s] %s", __NAME__, output)
-        else:
-            logging.error("[%s] %s", __NAME__, output)
-        return output
-	  
+        msg += message
+
+        try:
+            mailconn.sendmail(sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, msg)
+        except:
+            logging.exception("Failed to send e-mail")
+            
+        try:
+            mailconn.close()
+        except:
+            logging.exception("Failed to close mail connection")
+
+        logging.info("[%s] Notification e-mail succesfully sent",
+        __NAME__)
 
 ################################################################################
 # EMAIL_ENDJOB
