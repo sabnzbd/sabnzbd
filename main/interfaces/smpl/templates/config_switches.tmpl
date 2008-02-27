@@ -43,6 +43,12 @@
 		    <span class="tips">Only fetch Articles from topmost collection. Enable for less memory usage.</span>
 		<br class="clear" />
 
+		    <label>Safe Post-process:</label>
+		    <input class="radio" type="radio" name="safe_postproc" value="0" <!--#if $safe_postproc == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> Yes
+		    <span class="tips">Only perform post-processing on jobs that passed all PAR2 checks.</span>
+		<br class="clear" />
+
 		    <label>Dirscan Options:</label>
 		    <input class="radio" type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
 		    <input class="radio" type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
@@ -107,7 +113,7 @@
 		    <input class="radio" type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
 		    <span class="tips">Set whether SABnzbd launches your browser on startup.</span>
  		<br class="clear" />
-        
+
 			<label>Ignore sample files:</label>
 		    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
 		    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes

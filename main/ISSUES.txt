@@ -1,11 +1,9 @@
 List of known issues.
 
-Sometimes some delay before first download starts.
-
 Memory usage can sometimes have high peaks. This makes using SABnzbd on very low
 memory systems (eg a SAN device) a challenge.
 
-SABnzbd is not compatible with the ZoneAlarm firewall.
+SABnzbd is not compatible with some ZoneAlarm firewall versions.
 Comodo and the Windows firewall work fine.
 
 The Plush and SMPL user interfaces may have issues when used with IE6 or IE7.

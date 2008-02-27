@@ -202,10 +202,12 @@ class MainPage(ProtectedClass):
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             info['newzbinDetails'] = True
 
-        if sabnzbd.CFG['servers']:
-            info['warning'] = ""
-        else:
-            info['warning'] = "No Usenet server defined, please check Config-->Servers"
+        info['warning'] = ""
+        if not sabnzbd.CFG['servers']:
+            info['warning'] = "No Usenet server defined, please check Config-->Servers<br/>"
+
+        if not sabnzbd.newsunpack.PAR2_COMMAND:
+            info['warning'] += "No PAR2 program found, repairs not possible<br/>"
 
         template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
                             searchList=[info],
@@ -875,6 +877,7 @@ class ConfigSwitches(ProtectedClass):
         config['check_rel'] = int(sabnzbd.CFG['misc']['check_new_rel'])
         config['auto_disconnect'] = int(sabnzbd.CFG['misc']['auto_disconnect'])
         config['replace_spaces'] = int(sabnzbd.CFG['misc']['replace_spaces'])
+        config['safe_postproc'] = int(sabnzbd.CFG['misc']['safe_postproc'])
         config['auto_browser'] = int(sabnzbd.CFG['misc']['auto_browser'])
         config['ignore_samples'] = int(sabnzbd.CFG['misc']['ignore_samples'])
 
@@ -892,6 +895,7 @@ class ConfigSwitches(ProtectedClass):
                      enable_par_cleanup = None, auto_sort = None,
                      check_rel = None,
                      auto_disconnect = None,
+                     safe_postproc = None,
                      replace_spaces = None,
                      auto_browser = None,
                      ignore_samples = None
@@ -910,6 +914,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['auto_sort'] = int(auto_sort)
         sabnzbd.CFG['misc']['check_new_rel'] = int(check_rel)
         sabnzbd.CFG['misc']['auto_disconnect'] = int(auto_disconnect)
+        sabnzbd.CFG['misc']['safe_postproc'] = int(safe_postproc)
         sabnzbd.CFG['misc']['replace_spaces'] = int(replace_spaces)
         sabnzbd.CFG['misc']['auto_browser'] = int(auto_browser)
         sabnzbd.CFG['misc']['ignore_samples'] = int(ignore_samples)

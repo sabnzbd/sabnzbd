@@ -74,6 +74,12 @@
 	    </tr><tr><td colspan="2"><small><small>Only fetch Articles from topmost collection (less memory usage)</small></td></tr>
 	    <tr><td colspan="2">&nbsp;</td></tr>
 
+        <tr><td><strong>Post-process only verified jobs:</strong></td>
+            <td><input type="radio" name="safe_postproc" value="0" <!--#if $safe_postproc == 0 then "checked=1" else ""#--> /> No
+                <input type="radio" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> Yes</td>
+	    </tr><tr><td colspan="2"><small><small>Only perform post-processing on jobs that passed all PAR2 checks.</small></td></tr>
+	    <tr><td colspan="2">&nbsp;</td></tr>
+
 	    <tr><td><strong>Dirscan Option:</strong></td>
 			<td><select name="dirscan_opts" id="dirscan_opts">
 		    <option value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#-->> None </option>

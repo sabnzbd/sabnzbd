@@ -36,7 +36,7 @@ from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
 from sabnzbd.constants import *
 from sabnzbd.newsunpack import find_programs
-from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, \
+from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
                          decodePassword
 
@@ -92,7 +92,7 @@ class guiHandler(logging.Handler):
 
 def print_help():
     print
-    print "Usage: SABnzbd [-f <configfile>] <other options>"
+    print "Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME
     print
     print "Options marked [*] are stored in the config file"
     print
@@ -201,6 +201,11 @@ def GetProfileInfo(vista):
         sabnzbd.DIR_APPDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_LCLDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_HOME = sabnzbd.DIR_PROG
+        if os.name == 'nt':
+            # Ignore Win23 "logoff" signal
+            # This should work, but it doesn't
+            # Instead the signal_handler will ignore the "logoff" signal
+            signal.signal(5, signal.SIG_IGN)
         ok = True
     elif os.name == 'nt':
         specials = Get_User_ShellFolders()
@@ -276,7 +281,7 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:b:2:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
                       'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', \
-                      'template2', 'browser=', 'config-file=', 'delay=', 'force'])
+                      'template2', 'browser=', 'config-file=', 'delay=', 'force', 'version'])
     except getopt.GetoptError:
         print_help()
         ExitSab(2)
@@ -447,9 +452,11 @@ def main():
 
     try:
         sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
+        logsize = check_setting_str(cfg, 'logging', 'max_log_size', '5M')
+        logsize = int(from_units(logsize))
         rollover_log = logging.handlers.RotatingFileHandler(\
                        sabnzbd.LOGFILE, 'a+',
-                       check_setting_int(cfg, 'logging', 'max_log_size', 5242880),
+                       logsize,
                        check_setting_int(cfg, 'logging', 'log_backups', 5))
 
         rollover_log.setLevel(LOGLEVELS[logging_level])
@@ -532,7 +539,7 @@ def main():
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
-        logging.info("par2 binary... NOT found!")
+        logging.error("par2 binary... NOT found!")
 
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("rar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
@@ -569,7 +576,12 @@ def main():
     # Get IP address, but discard APIPA/IPV6
     # If only APIPA's or IPV6 are found, fall back to localhost
     hostip = 'localhost'
-    info = socket.getaddrinfo(socket.gethostname(), None)
+    try:
+        info = socket.getaddrinfo(socket.gethostname(), None)
+    except:
+        # Hostname does not resolve, use 0.0.0.0
+        cherryhost = '0.0.0.0'
+        info = socket.getaddrinfo('localhost', None)
     for item in info:
         ip = item[4][0]
         if ip.find('169.254.') == 0:

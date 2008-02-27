@@ -98,6 +98,7 @@ class PostProcessor(Thread):
                 break
 
             try:
+                result = False
                 rep, unp, dele, scr = nzo.get_repair_opts()
 
                 partable = nzo.get_partable()
@@ -118,13 +119,16 @@ class PostProcessor(Thread):
                     if not repairsets:
                         logging.info("[%s] No par2 sets for %s", __NAME__, filename)
                         nzo.set_unpackstr('=> No par2 sets', '[PAR-INFO]', 1)
+                        result = True
 
                     for _set in repairsets:
                         logging.info("[%s] Running repair on set %s", __NAME__, _set)
                         parfile_nzf = partable[_set]
-                        need_readd = par2_repair(parfile_nzf, nzo, workdir, _set)
+                        need_readd, res = par2_repair(parfile_nzf, nzo, workdir, _set)
                         if need_readd:
                             readd = True
+                        else:
+                            result = result and res
 
                     if readd:
                         logging.info('[%s] Readded %s to queue', __NAME__, filename)
@@ -135,6 +139,9 @@ class PostProcessor(Thread):
 
                     logging.info('[%s] Par2 check finished on %s', __NAME__, filename)
 
+                if not sabnzbd.SAFE_POSTPROC:
+                    result = True
+
                 workdir_complete = None
 
                 if self.complete_dir:
@@ -143,7 +150,7 @@ class PostProcessor(Thread):
                     workdir_complete = get_path(self.complete_dir, nzo)
 
                 ## Run Stage 2: Unpack
-                if unp:
+                if unp and result:
                     logging.info("[%s] Running unpack_magic on %s", __NAME__, filename)
                     unpack_magic(nzo, workdir, workdir_complete, dele, (), (), ())
                     logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
@@ -173,7 +180,7 @@ class PostProcessor(Thread):
                     for _file in files:
                         path = os.path.join(root, _file)
 
-                if sabnzbd.CLEANUP_LIST:
+                if sabnzbd.CLEANUP_LIST and result:
                     try:
                         files = os.listdir(workdir)
                     except:
@@ -195,7 +202,7 @@ class PostProcessor(Thread):
                 if sabnzbd.UMASK and (os.name != 'nt'):
                     perm_script(workdir, sabnzbd.UMASK)
 
-                if scr and self.extern_proc:
+                if result and scr and self.extern_proc:
                     logging.info('[%s] Running external script %s %s %s', __NAME__, self.extern_proc, workdir, filename)
                     ext_out = external_processing(self.extern_proc, workdir, filename)
                 else:

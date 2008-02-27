@@ -1,5 +1,5 @@
 @echo off
-rem Example of a post processing script for SABnzbd 0.2.8
+rem Example of a post processing script for SABnzbd
 
 echo.
 echo Running in directory "%~d0%~p0"

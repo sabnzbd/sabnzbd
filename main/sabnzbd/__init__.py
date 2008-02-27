@@ -102,6 +102,7 @@ WEBLOGFILE = None
 LOGHANDLER = None
 GUIHANDLER = None
 AMBI_LOCALHOST = False
+SAFE_POSTPROC = False
 
 POSTPROCESSOR = None
 ASSEMBLER = None
@@ -152,6 +153,9 @@ def synchronized_CV(func):
 # Signal Handler                                                               #
 ################################################################################
 def sig_handler(signum = None, frame = None):
+    if type(signum) != type(None) and DAEMON and signum==5:
+        # Ignore the "logoff" event when running as a Win32 daemon
+        return True
     if type(signum) != type(None):
         logging.warning('[%s] Signal %s caught, saving and exiting...', __NAME__, signum)
     try:
@@ -241,6 +245,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, AUTODISCONNECT, WAITEXIT, \
+           SAFE_POSTPROC, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
@@ -282,6 +287,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     PAR_CLEANUP = bool(check_setting_int(CFG, 'misc', 'enable_par_cleanup', 1))
 
     CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
+
+    SAFE_POSTPROC = bool(check_setting_int(CFG, 'misc', 'safe_postproc', 0))
 
     CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
     if type(CLEANUP_LIST) != type([]):
@@ -1073,39 +1080,6 @@ def fix_filename(filename):
     filename = ''.join(cst)
     return filename
 
-def search_new_server(servers, article):
-    article.add_to_try_list(article.fetcher)
-
-    new_server_found = False
-    fill_server_found = False
-
-    for server in self.servers:
-        if server not in article.try_list:
-            if server.fillserver:
-                fill_server_found = True
-            else:
-                new_server_found = True
-                break
-
-    # Only found one (or more) fill server(s)
-    if not new_server_found and fill_server_found:
-        article.allow_fill_server = True
-        new_server_found = True
-
-    if new_server_found:
-        article.fetcher = None
-
-        ## Allow all servers to iterate over this nzo and nzf again ##
-        nzf.reset_try_list()
-        nzo.reset_try_list()
-        reset_try_list()
-
-        logging.info('[%s] %s => found at least one untested server',
-                        __NAME__, article)
-
-    else:
-        logging.warning('[%s] %s => missing from all servers, discarding',
-                        __NAME__, article)
 
 ################################################################################
 # SCHED                                                                        #

@@ -77,7 +77,7 @@ DEF_SCANRATE     = 5
 DEF_QRATE        = 0
 MIN_DECODE_QUEUE = 5
 MAX_DECODE_QUEUE = 10
-MAX_WARNINGS     = 10
+MAX_WARNINGS     = 20
 
 TVSORTINGLIST = ['None', '\\TV\\ShowName\\Season 1\\01 - EpName\\', \
             '\\TV\\ShowName\\Season 1\\Episode 01 - EpName\\', \

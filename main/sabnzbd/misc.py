@@ -41,6 +41,7 @@ from sabnzbd.constants import *
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
+RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
 
 PANIC_NONE  = 0
 PANIC_PORT  = 1
@@ -72,6 +73,7 @@ class DirScanner(Thread):
 
         self.ignored = []  # Will hold all examined but bad candidates
         self.shutdown = False
+        self.error_reported = False # Prevents mulitple reporting of missing dirscan-dir
 
     def stop(self):
         logging.info('[%s] Dirscanner shutting down', __NAME__)
@@ -91,7 +93,9 @@ class DirScanner(Thread):
             try:
                 files = os.listdir(self.dirscan_dir)
             except:
-                logging.exception("Error importing")
+                if not self.error_reported:
+                    logging.error("Cannot read dirscan dir %s", self.dirscan_dir)
+                    self.error_reported = True
                 files = []
 
             for filename in files:
@@ -128,9 +132,11 @@ class DirScanner(Thread):
                                 ok = False
                                 break
                         if ok:
+                            self.error_reported = False
                             for name in zf.namelist():
                                 data = zf.read(name)
                                 name = os.path.basename(name)
+                                name = RE_SANITIZE.sub('_', name)
                                 if data:
                                     try:
                                         nzo = NzbObject(name, self.r, self.u,self.d, self.s, data)
@@ -138,8 +144,8 @@ class DirScanner(Thread):
                                         nzo = None
                                     if nzo:
                                         sabnzbd.add_nzo(nzo)
+                                        sabnzbd.backup_nzb(name, data)
                             zf.close()
-                            sabnzbd.backup_nzb(filename, data)
                             try:
                                 os.remove(path)
                             except:
@@ -170,15 +176,16 @@ class DirScanner(Thread):
                             logging.warning('[%s] Cannot read %s', __NAME__, path)
                             self.ignored.append(filename)
                             continue
-                        
+
                         try:
                             nzo = NzbObject(name, self.r, self.u, self.d, self.s, data)
                         except:
                             self.ignored.append(filename)
                             continue
-                            
+
                         sabnzbd.add_nzo(nzo)
-                        sabnzbd.backup_nzb(filename, data)
+                        sabnzbd.backup_nzb(name, data)
+                        self.error_reported = False
                         try:
                             os.remove(path)
                         except:
@@ -512,7 +519,7 @@ def check_latest_version():
 
 
 def from_units(val):
-    """ Convert K/M/G/T/P notation to pure integer
+    """ Convert K/M/G/T/P notation to float
     """
     val = str(val).strip().upper()
     if val == "-1":
@@ -527,7 +534,10 @@ def from_units(val):
             n = n+1
     else:
         val = m.group(1)
-    return float(val)
+    try:
+        return float(val)
+    except:
+        return 0.0
 
 
 def to_units(val):

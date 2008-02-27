@@ -243,7 +243,7 @@ class Downloader(Thread):
                     
                     for server in self.servers:
                         for nw in server.idle_threads:
-                            nw.hard_reset()
+                            nw.hard_reset(wait=False)
                             
                     logging.info("[%s] Shutting down", __NAME__)
                     break
@@ -251,9 +251,9 @@ class Downloader(Thread):
             if self.force_disconnect:
                 for server in self.servers:
                     for nw in server.idle_threads[:]:
-                        self.__reset_nw(nw, "forcing disconnect")
+                        self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False)
                     for nw in server.busy_threads[:]:
-                        self.__reset_nw(nw, "forcing disconnect")
+                        self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False)
                         
                 self.force_disconnect = False
                 
@@ -308,7 +308,7 @@ class Downloader(Thread):
                     bytes, done = (0, False)
                     
                 if bytes < 1:
-                    self.__reset_nw(nw, "server closed connection")
+                    self.__reset_nw(nw, "server closed connection", warn=False, wait=False)
                     continue
                     
                 else:
@@ -380,7 +380,7 @@ class Downloader(Thread):
                     server.busy_threads.remove(nw)
                     server.idle_threads.append(nw)
                     
-    def __reset_nw(self, nw, errormsg):
+    def __reset_nw(self, nw, errormsg, warn=True, wait=True):
         server = nw.server
         article = nw.article
         fileno = None
@@ -388,8 +388,12 @@ class Downloader(Thread):
         if nw.nntp:
             fileno = nw.nntp.sock.fileno()
             
-        logging.warning('[%s] Thread %s@%s:%s: ' + errormsg,
-                         __NAME__, nw.thrdnum, server.host, server.port)
+        if warn:
+            logging.warning('[%s] Thread %s@%s:%s: ' + errormsg,
+                             __NAME__, nw.thrdnum, server.host, server.port)
+        else:
+            logging.info('[%s] Thread %s@%s:%s: ' + errormsg,
+                             __NAME__, nw.thrdnum, server.host, server.port)
                          
         if nw in server.busy_threads:
             server.busy_threads.remove(nw)
@@ -411,7 +415,7 @@ class Downloader(Thread):
             ## Allow all servers to iterate over each nzo/nzf again ##
             sabnzbd.reset_try_lists(nzf, nzo)
             
-        nw.hard_reset()
+        nw.hard_reset(wait)
         
     def __request_article(self, nw):
         try:
@@ -427,7 +431,7 @@ class Downloader(Thread):
                 self.read_fds[fileno] = nw
         except:
             logging.exception("[%s] Exception?", __NAME__)
-            self.__reset_nw(nw, "server closed connection")
+            self.__reset_nw(nw, "server broke off connection")
             
     def __send_group(self, nw):
         try:
@@ -445,4 +449,4 @@ class Downloader(Thread):
                 self.read_fds[fileno] = nw
         except:
             logging.exception("[%s] Exception?", __NAME__)
-            self.__reset_nw(nw, "server closed connection")
+            self.__reset_nw(nw, "server broke off connection")

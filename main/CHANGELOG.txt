@@ -3,9 +3,24 @@
 -------------------------------------------------------------------------------
 Lots!
 -------------------------------------------------------------------------------
-0.3.1rc1 by the ShyPike, pairofdimes and switch
+0.3.2 by ShyPike, pairofdimes and switch
 -------------------------------------------------------------------------------
+added:   Option to do post-processing only on correct jobs
+added:   Show warning on main page when PAR2 program is missing
+fixed:   Remove delay when resuming download
+fixed:   Show last 20 warnings/errors instead of 10
+fixed:   Correct Vista icon
+fixed:   Don't crash anymore on bad NZB files
+fixed:   When hostname in unresolvable, use 0.0.0.0 instead
+fixed:   Prevent multiple warnings if dirscan-dir is missing
+fixed:   Incorrect backup od zipped/gz nzb files
+-------------------------------------------------------------------------------
+0.3.1 by ShyPike, pairofdimes and switch
+-------------------------------------------------------------------------------
+update:  Plush
+update:  Smpl
 fixed:   Directory creation error when download-dir already exists, making PAR2 crash
+fixed:   When run-as-win32-service, stop termination by logoffs
 fixed:   Fix recent incompatibility with newzbin's RSS feeds
 fixed:   Directory scanner (blackhole) now:
          - Skips ZIP files that don't contain only NZB-files
@@ -22,7 +37,11 @@ fixed:   Solved the visible "black" window problem
          - Now there are two versions of SABnzbd:
               SABnzbd.exe = always invisible
               SABnzbd-console.exe = always visible
-updated: Plush improvements
+fixed:   --version problem
+fixed:   Changed some warnings to info level
+fixed:   Added license info on embedded third party modules.
+fixed:   Limit size of newzbin report titles
+fixed:   Logging size now accepts KMGTP notation
 -----------------------------------------------------------------
 0.3.0    by the ShyPike, pairofdimes and switch
 -------------------------------------------------------------------------------

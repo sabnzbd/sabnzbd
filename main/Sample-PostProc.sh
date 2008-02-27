@@ -1,5 +1,5 @@
 #!/bin/sh
-# Example of a post processing script for SABnzbd 0.2.8
+# Example of a post processing script for SABnzbd
 
 echo
 echo Started as $0

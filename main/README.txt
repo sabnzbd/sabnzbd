@@ -24,7 +24,7 @@ This folder contains the folders "incomplete" and "complete".
 
 
 **************************************
-*** Upgrading from 0.3.0           ***
+*** Upgrading from 0.3.x           ***
 **************************************
 Just install the new version over the old one.
 If you want to un-install the old version first, keep the data!
@@ -39,15 +39,12 @@ This way you keep all your settings.
 If you have an unfinished download queue, finish it first with 0.2.5/0.2.7.
 This release cannot re-use the queue!
 
-If you have existing RSS jobs, you may want to save the file rss.sab.
-Delete all in the cache directory, EXCEPT rss.sab
-
 
 *********************
 *** Windows Vista ***
 *********************
 SABnzbd is Vista compatible.
-However, you cannot use it in combination with the ZoneAlarm firewall software.
+However, we have seen issues with some ZoneAlarm firewall versions.
 
 
 *************************************************

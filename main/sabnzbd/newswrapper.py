@@ -213,7 +213,7 @@ class NewsWrapper:
         self.data = ''
         self.lines = []
 
-    def hard_reset(self):
+    def hard_reset(self, wait=True):
         if self.nntp:
             try:
                 self.nntp.sock.close()
@@ -222,8 +222,13 @@ class NewsWrapper:
 
         self.__init__(self.server, self.thrdnum)
 
-        # Wait before resuing this newswrapper
-        self.timeout = time() + self.server.timeout
+        # Wait before re-using this newswrapper
+        if wait:
+            # Reset due to error condition, use server timeout
+            self.timeout = time() + self.server.timeout
+        else:
+            # Reset for internal reasons, just wait 5 sec
+            self.timeout = time() + 5
 
 class SSLConnection:
     def __init__(self, *args):

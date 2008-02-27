@@ -585,7 +585,10 @@ def ZIP_Extract(zipfile, extraction_path):
 #------------------------------------------------------------------------------
 
 def par2_repair(parfile_nzf, nzo, workdir, setname):
+    """ Try to repair a set, return readd or correctness """
     actionname = '[PAR-INFO] %s' % setname
+    result = False
+    readd = False
     try:
         parfile = os.path.join(workdir, parfile_nzf.get_filename())
         nzo.set_unpackstr('=> Scanning "%s"' % parfile, actionname, 1)
@@ -598,6 +601,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                                                       actionname, joinables)
 
         if finished:
+            result = True
             logging.info('[%s] Par verify finished ok on %s!', __NAME__,
                          parfile)
 
@@ -609,7 +613,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             if not readd:
                 # Failed to repair -> remove this set
                 nzo.remove_parset(parfile_nzf.get_setname())
-            return readd
+            return readd, False
 
         if sabnzbd.PAR_CLEANUP:
             actionname = '[DEL-INFO] %s' % setname
@@ -664,14 +668,16 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                     except OSError:
                         logging.warning("[%s] Deleting %s failed!", __NAME__,
                                         filepath)
-            nzo.set_unpackstr("=> Deleted %d file(s)" % i, actionname,
-                              1)
+            nzo.set_unpackstr("=> Deleted %d file(s)" % i, actionname, 1)
     except:
         nzo.set_unpackstr('=> Unknown exception while running par2_repair, ' + \
                           'see logfile', actionname, 1)
         logging.exception('[%s] Unknown exception while' + \
                           ' running par2_repair on set %s',
                            __NAME__, setname)
+    finally:
+        return readd, result
+
 
 def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
     start = time()
@@ -791,6 +797,17 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
 
             logging.info('[%s] %s blocks available', __NAME__, avail_blocks)
 
+
+            force = False
+            if (avail_blocks < needed_blocks) and (avail_blocks > 0):
+                # Tell SAB that we always have enough blocks, so that
+                # it will try to load all pars anyway
+                nzo.set_unpackstr(\
+                     '=> Not enough repair blocks, downloading all available (%d short)' % \
+                     int(needed_blocks - avail_blocks), actionname, 1)
+                needed_blocks = avail_blocks
+                force = True
+
             if avail_blocks >= needed_blocks:
                 added_blocks = 0
                 readd = True
@@ -809,8 +826,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                 logging.info('[%s] Added %s blocks to %s', __NAME__,
                              added_blocks, nzo.get_filename())
 
-                nzo.set_unpackstr('=> trying to fetch %s more blocks...' % \
-                                  added_blocks, actionname, 1)
+                if not force:
+                    nzo.set_unpackstr('=> trying to fetch %s more blocks...' % \
+                                      added_blocks, actionname, 1)
 
             else:
                 nzo.set_unpackstr(\
