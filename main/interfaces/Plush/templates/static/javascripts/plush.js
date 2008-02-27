@@ -69,7 +69,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "GET",
 			url: "addID",
-			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
+			data: "dummy="+Math.random()+"&id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
 			success: function(result){
    				return RefreshTheQueue();
 			}
@@ -94,7 +94,7 @@ $(document).ready(function() {
 			if(confirm('Are you sure you want to toggle shutting down your entire computer when the queue downloads have finished?')){
 				$.ajax({
 					type: "GET",
-					url: "queue/tog_shutdown",
+					url: "queue/tog_shutdown?dummy="+Math.random(),
 					success: function(result){
    						return LoadTheQueue(result);
 					}
@@ -110,7 +110,7 @@ $(document).ready(function() {
 			if ($(event.target).attr('class') == 'active')
 				$.ajax({
 					type: "GET",
-					url: "queue/resume",
+					url: "queue/resume?dummy="+Math.random(),
 					success: function(result){
    						return LoadTheQueue(result);
 					}
@@ -118,7 +118,7 @@ $(document).ready(function() {
 			else
 				$.ajax({
 					type: "GET",
-					url: "queue/pause",
+					url: "queue/pause?dummy="+Math.random(),
 					success: function(result){
    						return LoadTheQueue(result);
 					}
@@ -127,7 +127,7 @@ $(document).ready(function() {
 		else if ($(event.target).is('#queue_verbosity')) {
 			$.ajax({
 				type: "GET",
-				url: "queue/tog_verbose",
+				url: "queue/tog_verbose?dummy="+Math.random(),
 				success: function(result){
    					return LoadTheQueue(result);
 				}
@@ -136,7 +136,7 @@ $(document).ready(function() {
 		else if ($(event.target).is('#queue_sortage')) {
 			$.ajax({
 				type: "GET",
-				url: "queue/sort_by_avg_age",
+				url: "queue/sort_by_avg_age?dummy="+Math.random(),
 				success: function(result){
    					return LoadTheQueue(result);
 				}
@@ -145,7 +145,7 @@ $(document).ready(function() {
 		else if ($(event.target).is('#queue_sortname')) {
 			$.ajax({
 				type: "GET",
-				url: "queue/sort_by_name",
+				url: "queue/sort_by_name?dummy="+Math.random(),
 				success: function(result){
    					return LoadTheQueue(result);
 				}
@@ -154,7 +154,7 @@ $(document).ready(function() {
 		else if ($(event.target).is('#queue_shutdown')) {
 			$.ajax({
 				type: "GET",
-				url: "queue/tog_shutdown",
+				url: "queue/tog_shutdown?dummy="+Math.random(),
 				success: function(result){
    					return LoadTheQueue(result);
 				}
@@ -163,7 +163,7 @@ $(document).ready(function() {
 		else if ($(event.target).is('.btnDeleteQueue')) {
 			$.ajax({
 				type: "GET",
-				url: 'queue/delete?uid='+$(event.target).parent().parent().attr('id'),
+				url: 'queue/delete?dummy='+Math.random()+'&uid='+$(event.target).parent().parent().attr('id'),
 				success: function(result){
    					return LoadTheQueue(result);
 				}
@@ -175,15 +175,15 @@ $(document).ready(function() {
 	// Set up History Menu actions
 	$('#history').click(function(event) {
 		if ($(event.target).is('#history_verbosity')) {
-			$('#history').load('history/tog_verbose');
+			$('#history').load('history/tog_verbose?dummy='+Math.random());
 		}
 		else if ($(event.target).is('#history_purge')) {
-			$('#history').load('history/purge');
+			$('#history').load('history/purge?dummy='+Math.random());
 		}
 		else if ($(event.target).is('.btnDeleteHistory')) {
 			$.ajax({
 				type: "GET",
-				url: 'history/delete?job='+$(event.target).parent().parent().attr('id'),
+				url: 'history/delete?dummy='+Math.random()+'&job='+$(event.target).parent().parent().attr('id'),
 				success: function(result){
    					return $('#history').html(result);
 				}
@@ -202,7 +202,7 @@ function MainLoop() {
 	
 	// ajax calls
 	RefreshTheQueue();
-	$('#history').load('history');
+	$('#history').load('history?dummy='+Math.random());
 
 	// loop
 	setTimeout("MainLoop()",refreshRate*1000);
@@ -210,7 +210,7 @@ function MainLoop() {
 
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
-	$('#queue').load('queue', function(){
+	$('#queue').load('queue?dummy='+Math.random() , function(){
 		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' left of '+$('#stats_noofslots').html();
 		InitiateDragAndDrop();
 	});
@@ -268,7 +268,7 @@ function InitiateDragAndDrop() {
 function ChangeProcessingOption (nzo_id,op) {
 	$.ajax({
 		type: "GET",
-		url: 'queue/change_opts?nzo_id='+nzo_id+'&pp='+op,
+		url: 'queue/change_opts?dummy='+Math.random()+'&nzo_id='+nzo_id+'&pp='+op,
 	  	success: function(result){
    			return LoadTheQueue(result);
 		}
@@ -280,7 +280,7 @@ function ChangeProcessingOption (nzo_id,op) {
 function ChangeOrder (result) {
 	$.ajax({
 		type: "GET",
-		url: "queue/"+result,
+		url: "queue/"+result+"&dummy="+Math.random(),
 	  	success: function(result){
    			return LoadTheQueue(result);
 		}
@@ -293,7 +293,7 @@ function ManipNZF (nzo_id, nzf_id, action) {
 		$.ajax({
 			type: "GET",
 			url: "queue/removeNzf",
-			data: "nzo_id="+nzo_id+"&nzf_id="+nzf_id,
+			data: "nzo_id="+nzo_id+"&nzf_id="+nzf_id+"&dummy="+Math.random(),
 			success: function(result){ // nzo page
    				return RefreshTheQueue()
 			}
