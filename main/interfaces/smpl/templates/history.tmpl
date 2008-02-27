@@ -31,7 +31,7 @@
         <tr id="$line.nzo" class="<!--#if $odd then "odd" else "even"#-->">
 			<td>$line.added</td>
 			<td>$line.filename</td>
-            <td><a onClick="deletehistoryitem('$line.nzo', this.parentNode.parentNode.parentNode.parentNode.parentNode.id);"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a><td>
+            <td><a onClick="deletehistoryitem('$line.nzo', this.parentNode.parentNode.parentNode.parentNode.parentNode.id);"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a></td>
 			<td>$line.loaded</td>
 		</tr>
         <!--#set $oddLine = not False#-->
@@ -48,6 +48,7 @@
 		            </dl>
 				</td>
 				<td></td>
+                <td></td>
 			</tr>
         <!--#end for#-->
     <!--#end for#-->
