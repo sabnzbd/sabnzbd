@@ -164,18 +164,18 @@ checkrefresh();
 
 <script type="text/javascript">
 	var status2 = $pau;
-
+	var timerId2 = 0;
+    var timerId3 = 0;
+    
 	function toggle()
 	{
-
+    //Pause button toggle - XML request and instant word changing for the link and status
 		if (status2 == 1)
 		{
 			status2 = 0;
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
 			document.getElementById("status2").innerHTML = "Pause";
 			doSimpleXMLHttpRequest("api?mode=resume");
-
-
 		}
 		else
 		{
@@ -190,70 +190,55 @@ checkrefresh();
 
 	function deletequeueitem(elem)
 	{
+    //deletes an item from the queue - passed variable is the id (uid) of the queue item to delete(and also the id of the queue element)
         val1 = document.getElementById(elem).innerHTML;
         val1="";
-        kvstr = queryString({uid:elem})
-        //alert(kvstr);
-        //finalurl = url
-       var d = doXHR('queue/delete?'+kvstr,
-	    {
-		    method:'POST',
-            sendContent:'?asshole='+Math.random()
 
-	    });
-		//d = doSimpleXMLHttpRequest('queue/delete', {uid: elem});
-		d.addCallback(reloadqueue);
+		d = doSimpleXMLHttpRequest('queue/delete', {uid: elem, dummy: Math.random()});
+		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
+    
     function handleServerError(){}
-	var timerId2 = 0;
-    var timerId3 = 0;
-
-	//submits an ajax request and loads the retrieved data into the div called "Right". Can queue itself up to repeat the action based on the refresh rate
-	function lr(url, refresh, dual)
+	
+	function lr(url, extra, refresh, dual, pnode)
 	{
-		gDual = dual
-        if (dual!=2) {
-        document.getElementById('Right').style.width = "100%";
-        document.getElementById('Right_bottom').style.width = "100%";
+    //submits an ajax request and loads the retrieved data into the div called "Right". Can queue itself up to repeat the action based on the refresh rate
+		if (dual!=-1)
+        {
+            gDual = dual;
+            if (dual!=2 ) {
+                document.getElementById('Right').style.width = "100%";
+                document.getElementById('Right_bottom').style.width = "100%";
+            }
+            else {
+                document.getElementById('Right').style.width = "48%";
+                document.getElementById('Right_bottom').style.width = "48%";
+            }
         }
-        else {
-        document.getElementById('Right').style.width = "48%";
-        document.getElementById('Right_bottom').style.width = "48%";
+		if (timerId2 && refresh>=0) clearTimeout ( timerId2 );
+        append = '?dummy='+Math.random();
+        if (extra){
+            append = append+'&'+extra;
         }
-		if (timerId2) clearTimeout ( timerId2 );
-
-		//var res = doSimpleXMLHttpRequest(url);
-       var res = doXHR(url,
-	    {
-		    method:'POST',
-            sendContent:'?asshole='+Math.random()
-
-	    });
+		var res = doSimpleXMLHttpRequest(url+append);        
 	    res.addCallback(function (res)
 	    {
-	      document.getElementById('Right').innerHTML = res.responseText;
+	      if (pnode != 'Right_bottom') document.getElementById('Right').innerHTML = res.responseText;
+          else document.getElementById('Right_bottom').innerHTML = res.responseText;
           if (dual==0) {
               document.getElementById('Right_bottom').innerHTML = "";
               clearTimeout ( timerId3 );
           }
-
-		  if (refresh && RefreshTime>0) timerId2 = setTimeout("lr(\'"+url+"\', 1, "+dual+");", RefreshTime*1000)
+		  if (refresh>0 && RefreshTime>0) timerId2 = setTimeout("lr(\'"+url+"\', '', 1, "+dual+");", RefreshTime*1000);
 	    });
 		res.addErrback(handleServerError);
 	}
 	function lrb(url, refresh)
 	{
-
+    //similar to lr() but loads the response in the right_bottom container
 		if (timerId3) clearTimeout ( timerId3 );
-
-		//var res = doSimpleXMLHttpRequest(url);
-       var res = doXHR(url,
-	    {
-		    method:'POST',
-            sendContent:'?asshole='+Math.random()
-
-	    });
+		var res = doSimpleXMLHttpRequest(url+'?dummy='+Math.random());
 	    res.addCallback(function (res)
 	    {
 	      document.getElementById('Right_bottom').innerHTML = res.responseText;
@@ -263,24 +248,23 @@ checkrefresh();
 		res.addErrback(handleServerError);
 	}
 
-	//used when something needs to be submitted in the background, and another page loaded (usually refreshing the current page)
+	
 	function lrdual(url1, url2, refresh, pnode)
 	{
+    //used when something needs to be submitted in the background, and another page loaded (usually refreshing the current page)
         var d = doSimpleXMLHttpRequest(url1);
 		d.addCallback(function (d)
         {
-        if (pnode == 'Right') lr(url2, refresh, gDual);//if link is in right_bottom needs to be lrb(
+        if (pnode == 'Right') lr(url2, '', refresh, gDual);//if link is in right_bottom needs to be lrb(
         else lrb(url2, refresh, gDual)
         });
 
 	}
 
-
-
 	function changequeuedetails(page)
 	{
 		d = doSimpleXMLHttpRequest(page);
-		d.addCallback(reloadqueue);
+		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
 
@@ -351,7 +335,7 @@ checkrefresh();
 	    d.addCallback(function (result)
 	    {
 	      if (saveelement) document.getElementById(saveelement).innerHTML = "Saved";
-		  if(url2) lr(url2,refresh);
+		  if(url2) lr(url2,'',refresh);
 	    });
 
 
@@ -395,7 +379,7 @@ function loadingJSON(){
 	clearTimeout ( jsontimeout );
 	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);
 	}
-	var url = "api?mode=qstatus&output=json";
+	var url = "api?mode=qstatus&output=json&dummy="+Math.random();
 	var d = loadJSONDoc(url);
 	var gotMetadata = function (info)
 	{
@@ -509,22 +493,22 @@ function loadingJSON(){
 			<div id="Left">
 				<ul id="menu">
 					<li><a class="current" href="">Home</a></li>
-					<li><a onClick="lr('queue/',  1, 0);">Queue</a></li>
-					<li><a onClick="lr('history/', 1, 0);">History</a></li>
-                    <li><a onClick="lr('queue/', 1, 1);lrb('history/',1);">DualView1</a></li>
-                    <li><a onClick="lr('queue/', 1, 2);lrb('history/',1);">DualView2</a></li>
-					<li><a onClick="lr('config/', 0, 0);">Config</a></li>
+					<li><a onClick="lr('queue/', '', 1, 0);">Queue</a></li>
+					<li><a onClick="lr('history/','', 1, 0);">History</a></li>
+                    <li><a onClick="lr('queue/','', 1, 1);lrb('history/',1);">DualView1</a></li>
+                    <li><a onClick="lr('queue/','', 1, 2);lrb('history/',1);">DualView2</a></li>
+					<li><a onClick="lr('config/','', 0, 0);">Config</a></li>
 					<ul class="secondul">
-						<li><a class="config" onClick="lr('config/general/', 0, 0);">General</a></li>
-						<li><a class="config" onClick="lr('config/directories/', 0, 0);">Directories</a> </li>
-						<li><a class="config" onClick="lr('config/switches/', 0, 0);">Switches</a> </li>
-						<li><a class="config" onClick="lr('config/server/', 0, 0);">Servers</a> </li>
-						<li><a class="config" onClick="lr('config/scheduling/', 0, 0);">Scheduling</a> </li>
-						<li><a class="config" onClick="lr('config/rss/', 0, 0);">RSS</a> </li>
-						<li><a class="config" onClick="lr('config/email/', 0, 0);">Email</a></li>
+						<li><a class="config" onClick="lr('config/general/','', 0, 0);">General</a></li>
+						<li><a class="config" onClick="lr('config/directories/','', 0, 0);">Directories</a> </li>
+						<li><a class="config" onClick="lr('config/switches/','', 0, 0);">Switches</a> </li>
+						<li><a class="config" onClick="lr('config/server/','', 0, 0);">Servers</a> </li>
+						<li><a class="config" onClick="lr('config/scheduling/','', 0, 0);">Scheduling</a> </li>
+						<li><a class="config" onClick="lr('config/rss/','', 0, 0);">RSS</a> </li>
+						<li><a class="config" onClick="lr('config/email/','', 0, 0);">Email</a></li>
 						<li><a class="config" onClick="lr('config/newzbin/', 0, 0);">Newzbin</a></li>
 					</ul>
-					<li><a onClick="lr('connections/', 1, 0);">Connections</a></li>
+					<li><a onClick="lr('connections/','', 1, 0);">Connections</a></li>
 					<li><a class="bold" id="status2" onClick="toggle()">$statusstr2</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
 				</ul>

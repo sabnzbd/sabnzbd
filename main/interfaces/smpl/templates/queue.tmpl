@@ -31,10 +31,10 @@
 
 <h3>Queue</h3>
 <div id="centerLinks">
-<a onClick="lrdual('queue/sort_by_name', 'queue/','1', this.parentNode.parentNode.id);" >Sort by name</a>  |
-<a onClick="lrdual('queue/sort_by_avg_age', 'queue/','1', this.parentNode.parentNode.id);" >Sort by date</a>  |
-<a onClick="lrdual('queue/tog_verbose', 'queue/','1', this.parentNode.parentNode.id);" >Toggle verbosity</a> |
-<a onClick="lrdual('queue/tog_shutdown', 'queue/','1', this.parentNode.parentNode.id);">Turn shutdown <!--#if $shutdown then "off" else "on"#--></a>
+<a onClick="lr('queue/sort_by_name','', '-1', this.parentNode.parentNode.id);" >Sort by name</a>  |
+<a onClick="lr('queue/sort_by_avg_age','', '-1', this.parentNode.parentNode.id);" >Sort by date</a>  |
+<a onClick="lr('queue/tog_verbose','', '-1', this.parentNode.parentNode.id);" >Toggle verbosity</a> |
+<a onClick="lr('queue/tog_shutdown','', '1', this.parentNode.parentNode.id);">Turn shutdown <!--#if $shutdown then "off" else "on"#--></a>
 </div>
 
 <!--#if int($cache_limit)#-->
