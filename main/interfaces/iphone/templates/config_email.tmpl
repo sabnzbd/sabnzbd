@@ -6,15 +6,15 @@
         <div class="row"> 
         
 			<label>End-of-job notifications:</label><br/><br/>
-			<input style="margin-left:15px;" class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> No
-			<input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="email_endjob" name="email_endjob" value="$email_endjob">
+            <div class="toggle" onclick="toggleValue('email_endjob')" <!--#if $email_endjob > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
 			
         </div>
         <div class="row">    
 		
 			<label>Disk full notifications:</label><br/><br/>
-			<input style="margin-left:15px;" class="radio" type="radio" name="email_full" value="0" <!--#if $email_full == 0 then "checked=1" else ""#--> /> No
-			<input class="radio" type="radio" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="email_full" name="email_full" value="$email_full">
+            <div class="toggle" onclick="toggleValue('email_full')" <!--#if $email_full > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
 			
         </div>  
 		

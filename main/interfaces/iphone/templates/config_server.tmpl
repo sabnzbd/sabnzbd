@@ -42,8 +42,8 @@
         <div class="row">
 
 			<label>Fillserver:</label><br/><br/>
-            <input class="radio" type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
-			<input class="radio" type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="$server" name="fillserver" value="<!--#if int($servers[$server]['fillserver']) != 0 then '1' else '0'#-->">
+            <div class="toggle" onclick="toggleValue('$server')" <!--#if int($servers[$server]['fillserver']) != 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
    		<input type="hidden" name="server" value="$server">
         </div>
 
@@ -86,8 +86,8 @@
         <div class="row">
 
 			<label>Fillserver:</label><br/><br/>
-            <input style="margin:0px;padding:0px;margin-left:15px;" class="radio" type="radio" name="fillserver" value="0" "checked=1"> No
-				<input class="radio" type="radio" name="fillserver" value="1"> Yes
+            <input type="hidden" id="newfillserver" name="fillserver" value="0">
+            <div class="toggle" onclick="toggleValue('newfillserver')"><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
  		</div>
 </fieldset>
         <input type="submit" onClick="javascript:history.back();submitconfig('config/server/addServer', 'AddNewServer')" value="Add Server">

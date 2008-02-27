@@ -21,14 +21,14 @@
 
             <div class="row"> 
             <label>Auto fetch bookmarks:</label><br /><br />
-            <input style="margin-left:15px;" class="radio" type="radio" name="newzbin_bookmarks" value="0" <!--#if $newzbin_bookmarks == 0 then "checked=1" else ""#--> /> No
-            <input class="radio" type="radio" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="newzbin_bookmarks" name="newzbin_bookmarks" value="$newzbin_bookmarks">
+            <div class="toggle" onclick="toggleValue('newzbin_bookmarks')" <!--#if $newzbin_bookmarks > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row"> 
 
             <label>Un-bookmark if download complete:</label><br /><br />
-            <input style="margin-left:15px;" class="radio" type="radio" name="newzbin_unbookmark" value="0" <!--#if $newzbin_unbookmark == 0 then "checked=1" else ""#--> /> No
-            <input class="radio" type="radio" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="newzbin_unbookmark" name="newzbin_unbookmark" value="$newzbin_unbookmark">
+            <div class="toggle" onclick="toggleValue('newzbin_unbookmark')" <!--#if $newzbin_unbookmark > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row"> 
 
@@ -43,8 +43,8 @@
             <div class="row"> 
 
             <label>Create Category Folders:</label><br /><br />
-            <input style="margin-left:15px;" class="radio" type="radio" name="create_category_folders" value="0" <!--#if $create_category_folders == 0 then "checked=1" else ""#--> /> No
-            <input class="radio" type="radio" name="create_category_folders" value="1" <!--#if $create_category_folders == 1 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="create_category_folders" name="create_category_folders" value="$create_category_folders">
+            <div class="toggle" onclick="toggleValue('create_category_folders')" <!--#if $create_category_folders > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
 
 </fieldset>

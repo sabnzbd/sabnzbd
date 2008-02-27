@@ -32,7 +32,7 @@
         <!--#end for#-->
         <li class="group">Tools</li>
         <!--<li><a href="queue/" target="_self">Refresh</a></li>-->
-        <li><a href="<!--#if $paused then "resume" else "pause"#-->/" target="_self"><!--#if $paused then "Resume" else "Pause"#--></a></li>        
+        <li><a href="javascript:var dummy=0" onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>       
     </ul>
  
     <!--#for $slot in $slotinfo#--> 
@@ -51,7 +51,7 @@
         <li><a href="javascript:var dummy=0" onClick="javascript:history.back();deletequeueitem('$slot.nzo_id');">Delete</a></li>
         
         <li class="group">Tools</li>
-        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>
+        <li><a href="javascript:var dummy=0" onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>              
     </ul>
      <!--#end for#-->   
     
@@ -66,6 +66,6 @@
         <li>Queue is empty</li>
 
         <li class="group">Tools</li>
-        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>     
+        <li><a href="javascript:var dummy=0" onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>        
     </ul>
 <!--#end if#-->

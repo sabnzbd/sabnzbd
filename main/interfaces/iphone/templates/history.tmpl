@@ -10,7 +10,7 @@
         <li><a href="#$id">$line.filename</a></li>
         <!--#end for#-->
         <li class="group">Tools</li>
-        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>       
+        <li><a href="javascript:var dummy=0" onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>             
     </ul>
  
     <!--#for $line in $lines #-->
@@ -27,7 +27,7 @@
             </li>
         <!--#end for#--> 
         <li class="group">Tools</li>
-        <li><a onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>
+        <li><a href="javascript:var dummy=0" onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>
     </ul>
      <!--#end for#-->   
     

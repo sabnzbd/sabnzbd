@@ -4,33 +4,34 @@
          <fieldset>
             <div class="row">
     		    <label>Enable Unrar:</label><br/><br/>
-    		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
-    		    <input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
+    		    <input type="hidden" id="enable_unrar" name="enable_unrar" value="$enable_unrar">
+                <div class="toggle" onclick="toggleValue('enable_unrar')" <!--#if $enable_unrar > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+                
             </div>
             <div class="row">
     		    <label>Enable Unzip:</label><br/><br/>
-    		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
-    		    <input class="radio" type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes
+                <input type="hidden" id="enable_unzip" name="enable_unzip" value="$enable_unzip">
+                <div class="toggle" onclick="toggleValue('enable_unzip')" <!--#if $enable_unzip > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row">
     		    <label>Enable Filejoin:</label><br/><br/>
-    		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
-    		    <input class="radio" type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
+                <input type="hidden" id="enable_filejoin" name="enable_filejoin" value="$enable_filejoin">
+                <div class="toggle" onclick="toggleValue('enable_filejoin')" <!--#if $enable_filejoin > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row">
     		    <label>Enable Par Cleanup:</label><br/><br/>
-    		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
-    		    <input class="radio" type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
+                <input type="hidden" id="enable_par_cleanup" name="enable_par_cleanup" value="$enable_par_cleanup">
+                <div class="toggle" onclick="toggleValue('enable_par_cleanup')" <!--#if $enable_par_cleanup > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row">
     		    <label>Fail on yenc crc Errors:</label><br/><br/>
-    		    <input style="margin-left:15px;" class="radio" type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
-    		    <input class="radio" type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
+                <input type="hidden" id="fail_on_crc" name="fail_on_crc" value="$fail_on_crc">
+                <div class="toggle" onclick="toggleValue('fail_on_crc')" <!--#if $fail_on_crc > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row">
     		    <label>Top Only:</label><br/><br/>
-    		    <input style="margin-left:15px;" class="radio" type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
-    		    <input class="radio" type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
+                <input type="hidden" id="top_only" name="top_only" value="$top_only">
+                <div class="toggle" onclick="toggleValue('top_only')" <!--#if $top_only > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row">
     		    <label>Safe Post-Process:</label><br/><br/>
@@ -40,13 +41,16 @@
             <div class="row">
 
 		    <label>Dirscan Options:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
-		    <input class="radio" type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
-		    <input class="radio" type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
-		    <input class="radio" type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
-		    <input class="radio" type="radio" name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "checked=1" else ""#--> /> R+Script
-		    <input class="radio" type="radio" name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "checked=1" else ""#--> /> U+Script
-		    <input class="radio" type="radio" name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "checked=1" else ""#--> /> D+Script
+            
+            <select style="margin:0px;padding:0px;margin-left:15px;" name="dirscan_opts" id="webdir">
+    		    <option name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "selected" else ""#--> /> None</option>
+    		    <option name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "selected" else ""#--> /> +Repair</option>
+    		    <option name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "selected" else ""#--> /> +Unpack</option>
+    		    <option name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "selected" else ""#--> /> +Delete</option>
+    		    <option name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "selected" else ""#--> /> R+Script</option>
+    		    <option name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "selected" else ""#--> /> U+Script</option>
+    		    <option name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "selected" else ""#--> /> D+Script</option>
+            </select>
 		</div>
         </fieldset>
 
@@ -55,56 +59,56 @@
             <div class="row">
 
 		    <label>Enable periodic Save:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="enable_save" name="enable_save" value="$enable_save">
+            <div class="toggle" onclick="toggleValue('enable_save')" <!--#if $enable_save > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
 		</div>
             <div class="row">
 
 		    <label>Disconnect on empty queue:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="auto_disconnect" name="auto_disconnect" value="$auto_disconnect">
+                <div class="toggle" onclick="toggleValue('auto_disconnect')" <!--#if $auto_disconnect > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
 		</div>
             <div class="row">
 
 		    <label>Create group Folders:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="create_group_folders" value="1" <!--#if $create_group_folders > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="create_group_folders" name="create_group_folders" value="$create_group_folders">
+                <div class="toggle" onclick="toggleValue('create_group_folders')" <!--#if $create_group_folders > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
 		</div>
             <div class="row">
 
 		    <label>Send Group</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="send_group" name="send_group" value="$send_group">
+                <div class="toggle" onclick="toggleValue('send_group')" <!--#if $send_group > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
 		</div>
             <div class="row">
 
 		    <label>Auto Sort:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="auto_sort" name="auto_sort" value="$auto_sort">
+                <div class="toggle" onclick="toggleValue('auto_sort')" <!--#if $auto_sort > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
  		</div>
             <div class="row">
 
 			<label>Check for new release:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="check_rel" name="check_rel" value="$check_rel">
+                <div class="toggle" onclick="toggleValue('check_rel')" <!--#if $check_rel > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
  		</div>
             <div class="row">
 
 			<label>Replace spaces in foldername:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="replace_spaces" name="replace_spaces" value="$replace_spaces">
+                <div class="toggle" onclick="toggleValue('replace_spaces')" <!--#if $replace_spaces > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
  		</div>
             <div class="row">
 
 			<label>Launch browser on startup:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="auto_browser" name="auto_browser" value="$auto_browser">
+                <div class="toggle" onclick="toggleValue('auto_browser')" <!--#if $auto_browser > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
  		</div>
             <div class="row">
 
 			<label>Ignore sample files:</label><br/><br/>
-		    <input style="margin-left:15px;" class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
+            <input type="hidden" id="ignore_samples" name="ignore_samples" value="$ignore_samples">
+                <div class="toggle" onclick="toggleValue('ignore_samples')" <!--#if $ignore_samples > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
  		</div>
         </fieldset>
 
