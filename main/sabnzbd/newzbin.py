@@ -175,7 +175,7 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
             return nothing
 
         if rcode in ('400', '404'):
-            logging.error("[%s] Newzbin report %s not found", __NAME__. msgid)
+            logging.error("[%s] Newzbin report %s not found", __NAME__, msgid)
             return nothing
 
         if rcode in ('500', '503'):
