@@ -1,4 +1,5 @@
 The MochiKit is developed by Bob Ippolito (Mochi Media, Inc.).
+Parts are written by Jonathan Gardner and Beau Hartshorne.
 
 The home of this kit is: http://www.mochikit.com/
 
