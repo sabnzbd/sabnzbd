@@ -199,6 +199,17 @@ checkrefresh();
 		d.addErrback(handleServerError);
 	}
     
+	function deletehistoryitem(elem, pnode)
+	{
+    //deletes an item from the history - passed variable is the id (uid) of the history item to delete(and also the id of the history element)
+        val1 = document.getElementById(elem).innerHTML;
+        val1="";
+		d = doSimpleXMLHttpRequest('history/delete', {job: elem, dummy: Math.random()});
+		if (pnode == 'Right_bottom')d.addCallback(replaceright2);
+        else d.addCallback(replaceright);
+		d.addErrback(handleServerError);
+	}
+    
     function handleServerError(){}
 	
 	function lr(url, extra, refresh, dual, pnode)
@@ -352,6 +363,11 @@ checkrefresh();
 	var replaceright  = function (res)
 	{
 		document.getElementById('Right').innerHTML = res.responseText;
+	}
+    
+	var replaceright2  = function (res)
+	{
+		document.getElementById('Right_bottom').innerHTML = res.responseText;
 	}
 
     function convertSecondsToTime (seconds)

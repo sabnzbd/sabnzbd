@@ -13,6 +13,7 @@
     <tr>
 		<th mochi:format="isodate">Completed</th>
 		<th mochi:format="str">Name</th>
+        <th mochi:format="str">Del</th>
 		<th mochi:format="str">Loaded</th>
 	</tr>
 	</thead>
@@ -27,9 +28,10 @@
     <!--#set $odd = False#-->
     <!--#for $line in $lines #-->
         <!--#set $odd = not $odd#-->
-        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <tr id="$line.nzo" class="<!--#if $odd then "odd" else "even"#-->">
 			<td>$line.added</td>
 			<td>$line.filename</td>
+            <td><a onClick="deletehistoryitem('$line.nzo', this.parentNode.parentNode.parentNode.parentNode.parentNode.id);"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a><td>
 			<td>$line.loaded</td>
 		</tr>
         <!--#set $oddLine = not False#-->
