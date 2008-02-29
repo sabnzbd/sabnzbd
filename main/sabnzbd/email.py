@@ -72,8 +72,14 @@ def prepare_msg(bytes, status, output):
 ################################################################################
 def email_send(header, message):
     if sabnzbd.EMAIL_SERVER and sabnzbd.EMAIL_TO and sabnzbd.EMAIL_FROM:
-        server = sabnzbd.EMAIL_SERVER.split(':')[0]
-        port   = sabnzbd.EMAIL_SERVER.split(':')[1]
+
+        # Try to parse port number
+        try:
+            server = sabnzbd.EMAIL_SERVER.split(':')[0]
+            port   = sabnzbd.EMAIL_SERVER.split(':')[1]
+        except:
+            server = sabnzbd.EMAIL_SERVER
+            port   = 25
 
         logging.info("[%s] Connecting to server %s:%s",
         __NAME__, server, port)
