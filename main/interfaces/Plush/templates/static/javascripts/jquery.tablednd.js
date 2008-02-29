@@ -4,7 +4,9 @@
  * Copyright © Denis Howlett <denish@isocra.com>
  * Licensed like jQuery, see http://docs.jquery.com/License.
  *
- * Version 0.2: first public version
+ * Version 0.2: 2008-02-20 First public version
+ * Version 0.3: 2008-02-07 Added onDragStart option
+ *                         Made the scroll amount configurable (default is 5 as before)
  */
 jQuery.tableDnD = {
     /** Keep hold of the current table being dragged */
@@ -28,8 +30,10 @@ jQuery.tableDnD = {
                 onDragStyle: options.onDragStyle,
                 onDropStyle: options.onDropStyle,
 				// Add in the default class for whileDragging
-				onDragClass: options.onDragClass ? options.onDragClass : "tDnD_whileDrag", 
-                onDrop: options.onDrop
+				onDragClass: options.onDragClass ? options.onDragClass : "tDnD_whileDrag",
+                onDrop: options.onDrop,
+                onDragStart: options.onDragStart,
+                scrollAmount: options.scrollAmount ? options.scrollAmount : 5
             };
             // Now make the rows draggable
             jQuery.tableDnD.makeDraggable(this);
@@ -49,15 +53,20 @@ jQuery.tableDnD = {
     makeDraggable: function(table) {
         // Now initialise the rows
         var rows = table.tBodies[0].rows; //getElementsByTagName("tr")
+        var config = table.tableDnDConfig;
         for (var i=0; i<rows.length; i++) {
             // John Tarr: added to ignore rows that I've added the NoDnD attribute to (Category and Header rows)
-            var nodrag = rows[i].getAttribute("NoDrag")
+            var nodrag = rows[i].getAttribute("NoDrag");
             if (nodrag == null || nodrag == "undefined") { //There is no NoDnD attribute on rows I want to drag
                 jQuery(rows[i]).mousedown(function(ev) {
                     if (ev.target.tagName == "TD") {
                         jQuery.tableDnD.dragObject = this;
                         jQuery.tableDnD.currentTable = table;
                         jQuery.tableDnD.mouseOffset = jQuery.tableDnD.getMouseOffset(this, ev);
+                        if (config.onDragStart) {
+                            // Call the onDrop method if there is one
+                            config.onDragStart(table, this);
+                        }
                         return false;
                     }
                 }).css("cursor", "move"); // Store the tableDnD object
@@ -128,8 +137,8 @@ jQuery.tableDnD = {
             // Windows version
             yOffset=document.body.scrollTop;
 	    }
-	    if (mousePos.y-yOffset < 5) {
-	    	window.scrollBy(0, -5);
+	    if (mousePos.y-yOffset < config.scrollAmount) {
+	    	window.scrollBy(0, -config.scrollAmount);
 	    } else {
             var windowHeight = window.innerHeight ? window.innerHeight
                     : document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight;
@@ -213,7 +222,6 @@ jQuery.tableDnD = {
 
 jQuery.fn.extend(
 	{
-//		DraggableDestroy : jQuery.iDrag.destroy,
 		tableDnD : jQuery.tableDnD.build
 	}
 );

@@ -49,10 +49,10 @@ SPECIAL THANKS
 
 ==========
 TOOLS USED
-* jQuery			http://jquery.com/
-* Table Drag & Drop	http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin/
-* WebToolkit		http://www.webtoolkit.info/
-* Greybox Redux		http://jquery.com/demo/grey/
-* Nuvola			http://www.icon-king.com/?p=15
-* Interface 		http://interface.eyecon.ro/
-* Corner			http://www.malsup.com/jquery/corner/
+* jQuery					http://jquery.com/
+* jQuery Table Drag & Drop	http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin/
+* jQuery curvyCorners		http://www.curvycorners.net/
+* jQuery Corner				http://www.malsup.com/jquery/corner/
+* jQuery Greybox Redux		http://jquery.com/demo/grey/
+* WebToolkit				http://www.webtoolkit.info/
+* Nuvola Icon Set			http://www.icon-king.com/?p=15
