@@ -38,7 +38,7 @@ from sabnzbd.constants import *
 from sabnzbd.newsunpack import find_programs
 from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-                         decodePassword
+                         decodePassword, Notify
 
 from threading import Thread
 
@@ -706,6 +706,7 @@ def main():
         Bail_Out(browserhost, cherryport)
 
     launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
+    Notify("SAB_Launched", None)
 
     # Now's the time to check for a new version
     if sabnzbd.VERSION_CHECK:
@@ -714,6 +715,8 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     while cherrypy.server.ready:
         time.sleep(3)
+
+    Notify("SAB_Shutdown", None)
 
 if __name__ == '__main__':
     main()

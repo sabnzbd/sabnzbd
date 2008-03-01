@@ -34,6 +34,13 @@ import gzip
 import webbrowser
 import tempfile
 
+try:
+    # Try to import OSX library
+    import Foundation
+    HAVE_FOUNDATION = True
+except:
+    HAVE_FOUNDATION = False
+
 from threading import *
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.constants import *
@@ -638,3 +645,12 @@ def decodePassword(pw, name):
         return decPW
     else:
         return pw
+
+#------------------------------------------------------------------------------
+def Notify(notificationName, message):
+    """ Send a notification to the OS (OSX-only) """
+    if HAVE_FOUNDATION:
+        pool = Foundation.NSAutoreleasePool.alloc().init()
+        nc = Foundation.NSDistributedNotificationCenter.defaultCenter()
+        nc.postNotificationName_object_(notificationName, message)
+        del pool
