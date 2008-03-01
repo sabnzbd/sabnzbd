@@ -183,3 +183,7 @@ width:100%;
 #row_del, #row_order, #row_mode {
 width:75px;
 }
+
+.verbosity_link{
+padding:4px;
+}

@@ -41,7 +41,7 @@
     <!--#for $slot in $slotinfo#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td><a href="./tog_uid_verbose?uid=$slot.nzo_id">+</a></td>
+        <td><a class="verbosity_link" href="./tog_uid_verbose?uid=$slot.nzo_id"> <!--#if $slot.active then "-" else "+" #--> </a></td>
         <td><form action="delete" method="get">
             <input type="hidden" value="$slot.nzo_id" name="uid">
             <input type="submit" value="Delete"></form>
