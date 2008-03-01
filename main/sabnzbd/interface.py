@@ -353,10 +353,10 @@ class MainPage(ProtectedClass):
                 return xml_warnings()
             else:
                 return 'not implemented\n'
-                
+
         elif mode == 'config':
             if name == 'dllimit': # http://localhost:8080/sabnzbd/api?mode=config&name=dllimit&value=100
-                if value.isdigit(): 
+                if value.isdigit():
                     sabnzbd.CFG['misc']['bandwith_limit'] = value
                     sabnzbd.BANDWITH_LIMIT = value
                     save_configfile(sabnzbd.CFG)
@@ -606,7 +606,7 @@ class QueuePage(ProtectedClass):
     def delete(self, uid = None, dummy = None):
         if uid:
             sabnzbd.remove_nzo(uid, False)
-            
+
         if dummy:
             root = self.__root+'?dummy='+dummy
         else:
@@ -1384,7 +1384,7 @@ class ConfigNewzbin(ProtectedClass):
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
-        config['password_newzbin'] = decodePassword(sabnzbd.CFG['newzbin']['password'], 'newzbin')
+        config['password_newzbin'] = decodePassword(sabnzbd.CFG['newzbin']['password'], 'password_newzbin')
         config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
         config['newzbin_bookmarks'] = int(sabnzbd.CFG['newzbin']['bookmarks'])
         config['newzbin_unbookmark'] = int(sabnzbd.CFG['newzbin']['unbookmark'])
@@ -1667,7 +1667,7 @@ class ConfigEmail(ProtectedClass):
         config['email_to'] = sabnzbd.CFG['misc']['email_to']
         config['email_from'] = sabnzbd.CFG['misc']['email_from']
         config['email_account'] = sabnzbd.CFG['misc']['email_account']
-        config['email_pwd'] = sabnzbd.CFG['misc']['email_pwd']
+        config['email_pwd'] = decodePassword(sabnzbd.CFG['misc']['email_pwd'], 'email')
         config['email_endjob'] = int(sabnzbd.CFG['misc']['email_endjob'])
         config['email_full'] = int(sabnzbd.CFG['misc']['email_full'])
 
@@ -1695,7 +1695,7 @@ class ConfigEmail(ProtectedClass):
 
         sabnzbd.CFG['misc']['email_server'] = email_server
         sabnzbd.CFG['misc']['email_account'] = email_account
-        sabnzbd.CFG['misc']['email_pwd'] = email_pwd
+        sabnzbd.CFG['misc']['email_pwd'] = encodePassword(email_pwd)
         sabnzbd.CFG['misc']['email_endjob'] = email_endjob
         sabnzbd.CFG['misc']['email_full'] = email_full
 

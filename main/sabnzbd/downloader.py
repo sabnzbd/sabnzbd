@@ -30,7 +30,7 @@ from threading import Thread
 
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper
-from sabnzbd.misc import Notify
+from sabnzbd.misc import Notify, decodePassword
 from sabnzbd.constants import *
 
 #------------------------------------------------------------------------------
@@ -147,7 +147,7 @@ class Downloader(Thread):
             fillserver = bool(int(servers[server]['fillserver']))
             ssl = bool(int(servers[server]['ssl']))
             username = servers[server]['username']
-            password = servers[server]['password']
+            password = decodePassword(servers[server]['password'], 'server')
             self.servers.append(Server(host, port, timeout, threads, fillserver, ssl,
                                        username, password))
 

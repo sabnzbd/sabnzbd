@@ -400,7 +400,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     EMAIL_TO     = check_setting_str(CFG, 'misc', 'email_to', '')
     EMAIL_FROM   = check_setting_str(CFG, 'misc', 'email_from', '')
     EMAIL_ACCOUNT= check_setting_str(CFG, 'misc', 'email_account', '')
-    EMAIL_PWD    = check_setting_str(CFG, 'misc', 'email_pwd', '', False)
+    EMAIL_PWD    = decodePassword(check_setting_str(CFG, 'misc', 'email_pwd', '', False), 'email')
     EMAIL_ENDJOB = bool(check_setting_int(CFG, 'misc', 'email_endjob', 0))
     EMAIL_FULL   = bool(check_setting_int(CFG, 'misc', 'email_full', 0))
 
