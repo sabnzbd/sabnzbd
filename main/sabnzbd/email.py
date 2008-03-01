@@ -73,6 +73,7 @@ def prepare_msg(bytes, status, output):
 def email_send(header, message):
     if sabnzbd.EMAIL_SERVER and sabnzbd.EMAIL_TO and sabnzbd.EMAIL_FROM:
 
+        failure = "Email failed"
         server, port = SplitHost(sabnzbd.EMAIL_SERVER)
         if not port:
             port = 25
@@ -93,7 +94,7 @@ def email_send(header, message):
             if errorcode[0] == 1:
 
                 # Non SSL mail server
-                logging.info("[%s] Non-SSL mail server detected " \
+                logging.debug("[%s] Non-SSL mail server detected " \
                              "reconnecting to server %s:%s", __NAME__, server, port)
 
                 try:
@@ -101,8 +102,10 @@ def email_send(header, message):
                     mailconn.ehlo()
                 except:
                     logging.error("[%s] Failed to connect to mail server", __NAME__)
+                    return failure
             else:
                 logging.error("[%s] Failed to connect to mail server", __NAME__)
+                return failure
 
         # Message header
         msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % \
@@ -114,6 +117,7 @@ def email_send(header, message):
                 mailconn.login(sabnzbd.EMAIL_ACCOUNT, sabnzbd.EMAIL_PWD)
             except:
                 logging.error("[%s] Failed to authenticate to mail server", __NAME__)
+                return failure
 
         msg += message
 
@@ -121,13 +125,15 @@ def email_send(header, message):
             mailconn.sendmail(sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, msg)
         except:
             logging.error("[%s] Failed to send e-mail", __NAME__)
+            return failure
 
         try:
             mailconn.close()
         except:
-            logging.error("[%s] Failed to close mail connection", __NAME__)
+            logging.warning("[%s] Failed to close mail connection", __NAME__)
 
         logging.info("[%s] Notification e-mail succesfully sent", __NAME__)
+        return "Email succeeded"
 
 
 ################################################################################
