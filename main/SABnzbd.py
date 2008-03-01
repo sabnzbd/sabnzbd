@@ -570,11 +570,9 @@ def main():
     else:
         cfg['misc']['host'] = cherryhost
 
-    if vista:
-        logging.info("Windows Vista detected, will only use numerical IP")
-
     # Get IP address, but discard APIPA/IPV6
     # If only APIPA's or IPV6 are found, fall back to localhost
+    ipv4 = ipv6 = False
     hostip = 'localhost'
     try:
         info = socket.getaddrinfo(socket.gethostname(), None)
@@ -588,14 +586,20 @@ def main():
             pass # Is an APIPA
         elif ip.find(':') >= 0:
             ipv6 = True
-            sabnzbd.AMBI_LOCALHOST = True
-            logging.warning("IPV6 has priority on this system, potential Firefox issue")
         elif ip.find('.') >= 0:
+            ipv4 = True
             hostip = ip
             break
 
+    if ipv6 and ipv4:
+        sabnzbd.AMBI_LOCALHOST = True
+        logging.warning("IPV6 has priority on this system, potential Firefox issue")
+        localhost = '127.0.0.1'
+    else:
+        localhost = 'localhost'
+
     if cherryhost == '':
-        if vista:
+        if ipv6 and ipv4:
             # To protect Firefox users, use numeric IP
             cherryhost = hostip
             browserhost = hostip
@@ -605,16 +609,19 @@ def main():
     elif cherryhost == '0.0.0.0':
         # Just take the gamble for this
         cherryhost = ''
-        browserhost = 'localhost'
+        browserhost = localhost
     elif cherryhost.find('[') == 0:
         # IPV6
         browserhost = cherryhost
     elif cherryhost.replace('.', '').isdigit():
         # IPV4 numerical
         browserhost = cherryhost
+    elif cherryhost == 'localhost':
+        cherryhost = localhost
+        browserhost = localhost
     else:
         # If on Vista and/or APIPA, use numerical IP, to help FireFoxers
-        if vista and not (cherryhost == 'localhost'):
+        if ipv6 and ipv4:
             cherryhost = hostip
         browserhost = cherryhost
 
