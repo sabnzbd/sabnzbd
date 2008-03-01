@@ -69,7 +69,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "GET",
 			url: "addID",
-			data: "dummy="+Math.random()+"&id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
+			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
 			success: function(result){
    				return RefreshTheQueue();
 			}
