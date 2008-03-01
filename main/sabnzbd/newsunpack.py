@@ -49,7 +49,6 @@ PAR2_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
-EMAIL_COMMAND = []
 
 def find_programs(curdir):
     """Find external programs
@@ -64,16 +63,12 @@ def find_programs(curdir):
         p = os.path.abspath(curdir + '/win/unzip/unzip.exe')
         if os.access(p, os.X_OK):
             sabnzbd.newsunpack.ZIP_COMMAND = p
-        p = os.path.abspath(curdir + '/win/email/sendemail.exe')
-        if os.access(p, os.X_OK):
-            sabnzbd.newsunpack.EMAIL_COMMAND = [p]
     else:
         lookhere = os.getenv('PATH').split(':')
         findpar2 = ('par2',)
         findrar = ('rar', 'unrar', 'rar3', 'unrar3')
         findnice = ('nice',)
         findzip = ('unzip',)
-        findemail = ('perl',)
 
         for path in lookhere:
             if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -107,16 +102,6 @@ def find_programs(curdir):
                     if os.access(zip_path, os.X_OK):
                         sabnzbd.newsunpack.ZIP_COMMAND = zip_path
                         break
-
-            if not sabnzbd.newsunpack.EMAIL_COMMAND:
-                for _email in findemail:
-                    email_path = os.path.join(path, _email)
-                    email_path = os.path.abspath(email_path)
-                    if os.access(email_path, os.X_OK):
-                        sabnzbd.newsunpack.EMAIL_COMMAND = [email_path]
-                        break
-                if sabnzbd.newsunpack.EMAIL_COMMAND:
-                	  sabnzbd.newsunpack.EMAIL_COMMAND.append(os.path.abspath(curdir + '/sabnzbd/utils/sendEmail.pl'))
 
 
 #------------------------------------------------------------------------------

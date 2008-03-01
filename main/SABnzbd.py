@@ -551,15 +551,6 @@ def main():
     else:
         logging.info("unzip binary... NOT found!")
 
-    if os.name == 'nt':
-        msg = "sendemail.exe"
-    else:
-        msg = "Perl interpreter"
-    if sabnzbd.newsunpack.EMAIL_COMMAND:
-        logging.info("%s... found (%s)", msg, sabnzbd.newsunpack.EMAIL_COMMAND)
-    else:
-        logging.warning("%s... NOT found, cannot EMail!", msg)
-
     if sabnzbd.newswrapper.HAVE_SSL:
         logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
     else:
