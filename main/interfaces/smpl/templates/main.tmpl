@@ -322,7 +322,16 @@ checkrefresh();
 	    return kvstr;
 	}
 
-
+    function toggle_verbosity(nzo_id)
+    {
+        append = '&dummy='+Math.random();
+        url = 'queue/tog_uid_verbose?uid='+nzo_id+append;
+		var res = doSimpleXMLHttpRequest(url);        
+	    res.addCallback(function (res)
+	    {
+          document.getElementById('Right').innerHTML = res.responseText;
+        })
+    }
 
 
 	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post

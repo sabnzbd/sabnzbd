@@ -462,6 +462,7 @@ class QueuePage(ProtectedClass):
         self.__root = root
         self.__web_dir = web_dir
         self.__verbose = False
+        self.__verboseList = []
         self.__prim = prim
 
         self.__nzo_pages = []
@@ -536,7 +537,7 @@ class QueuePage(ProtectedClass):
             finished = []
             active = []
             queued = []
-            if self.__verbose:
+            if self.__verbose or self.__verboseList.count(nzo_id):
 
                 date_combined = 0
                 num_dates = 0
@@ -625,6 +626,18 @@ class QueuePage(ProtectedClass):
     @cherrypy.expose
     def tog_verbose(self, dummy = None):
         self.__verbose = not self.__verbose
+        if dummy:
+            root = self.__root+'?dummy='+dummy
+        else:
+            root = self.__root
+        raise cherrypy.HTTPRedirect(root)
+
+    @cherrypy.expose
+    def tog_uid_verbose(self, uid, dummy = None):
+        if self.__verboseList.count(uid):
+            self.__verboseList.remove(uid)
+        else:
+            self.__verboseList.append(uid)
         if dummy:
             root = self.__root+'?dummy='+dummy
         else:
