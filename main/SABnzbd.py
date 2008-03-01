@@ -38,7 +38,7 @@ from sabnzbd.constants import *
 from sabnzbd.newsunpack import find_programs
 from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-                         decodePassword, Notify
+                         decodePassword, Notify, SplitHost
 
 from threading import Thread
 
@@ -320,18 +320,7 @@ def main():
         if o in ('-2', '--template2'):
             web_dir2 = a
         if o in ('-s', '--server'):
-            # Cannot use split, because IPV6 of "a:b:c:port" notation
-            # Split on the last ':'
-            mark = a.rfind(':')
-            if mark < 0:
-               cherryhost = a
-            else:
-               cherryhost = a[0 : mark]
-               cherryport = a[mark+1 :]
-            try:
-                cherryport = int(cherryport)
-            except:
-                cherryport = None
+            (cherryhost, cherryport) = SplitHost(a)
         if o in ('-n', '--nobrowser'):
             sabnzbd.AUTOBROWSER = 0
         if o in ('-b', '--browser'):

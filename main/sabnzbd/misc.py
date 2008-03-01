@@ -654,3 +654,21 @@ def Notify(notificationName, message):
         nc = Foundation.NSDistributedNotificationCenter.defaultCenter()
         nc.postNotificationName_object_(notificationName, message)
         del pool
+
+
+#------------------------------------------------------------------------------
+def SplitHost(srv):
+    """ Split host:port notation, allowing for IPV6 """
+    # Cannot use split, because IPV6 of "a:b:c:port" notation
+    # Split on the last ':'
+    mark = srv.rfind(':')
+    if mark < 0:
+       host = srv
+    else:
+       host = srv[0 : mark]
+       port = srv[mark+1 :]
+    try:
+        port = int(port)
+    except:
+        port = None
+    return (host, port)
