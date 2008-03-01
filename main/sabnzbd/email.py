@@ -6,17 +6,17 @@
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-""" 
+"""
 sabnzbd.email - Send notification emails
 """
 #------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.newsunpack import build_command
 from sabnzbd.nzbstuff import SplitFileName
-from sabnzbd.misc import to_units, from_units
+from sabnzbd.misc import to_units, from_units, SplitHost
 
 ################################################################################
 # prepare_msg
@@ -73,64 +73,58 @@ def prepare_msg(bytes, status, output):
 def email_send(header, message):
     if sabnzbd.EMAIL_SERVER and sabnzbd.EMAIL_TO and sabnzbd.EMAIL_FROM:
 
-        # Try to parse port number
-        try:
-            server = sabnzbd.EMAIL_SERVER.split(':')[0]
-            port   = sabnzbd.EMAIL_SERVER.split(':')[1]
-        except:
-            server = sabnzbd.EMAIL_SERVER
-            port   = 25
+        server, port = SplitHost(sabnzbd.EMAIL_SERVER)
+        if not port:
+            port = 25
 
-        logging.info("[%s] Connecting to server %s:%s",
-        __NAME__, server, port)
-                     
+        logging.info("[%s] Connecting to server %s:%s",__NAME__, server, port)
+
         try:
             mailconn = ssmtplib.SMTP_SSL(server, port)
             mailconn.ehlo()
-            
-            logging.info("[%s] Connected to server %s:%s",
-            __NAME__, server, port)
-            
+
+            logging.info("[%s] Connected to server %s:%s", __NAME__, server, port)
+
         except Exception, errorcode:
             if errorcode[0] == 1:
-                
+
                 # Non SSL mail server
                 logging.info("[%s] Non-SSL mail server detected " \
-                "reconnecting to server %s:%s", __NAME__, server, port)
+                             "reconnecting to server %s:%s", __NAME__, server, port)
 
                 try:
                     mailconn = smtplib.SMTP(server, port)
                     mailconn.ehlo()
                 except:
-                    logging.exception("Failed to connect to mail server")
+                    logging.error("[%s] Failed to connect to mail server", __NAME__)
             else:
-                logging.exception("Failed to connect to mail server")
+                logging.error("[%s] Failed to connect to mail server", __NAME__)
 
         # Message header
         msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % \
-        (sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, header)
+              (sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, header)
 
         # Authentication
         if (sabnzbd.EMAIL_ACCOUNT != "") and (sabnzbd.EMAIL_PWD != ""):
             try:
                 mailconn.login(sabnzbd.EMAIL_ACCOUNT, sabnzbd.EMAIL_PWD)
             except:
-                logging.exception("Failed to authenticate to mail server")
+                logging.error("[%s] Failed to authenticate to mail server", __NAME__)
 
         msg += message
 
         try:
             mailconn.sendmail(sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, msg)
         except:
-            logging.exception("Failed to send e-mail")
-            
+            logging.error("[%s] Failed to send e-mail", __NAME__)
+
         try:
             mailconn.close()
         except:
-            logging.exception("Failed to close mail connection")
+            logging.error("[%s] Failed to close mail connection", __NAME__)
 
-        logging.info("[%s] Notification e-mail succesfully sent",
-        __NAME__)
+        logging.info("[%s] Notification e-mail succesfully sent", __NAME__)
+
 
 ################################################################################
 # EMAIL_ENDJOB
