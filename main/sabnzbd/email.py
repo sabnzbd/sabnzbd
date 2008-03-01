@@ -77,6 +77,10 @@ def email_send(header, message):
         if not port:
             port = 25
 
+        if server.lower().endswith('.gmail.com'):
+            # Force usage of Gmail's SSL port
+            port = 465
+
         logging.info("[%s] Connecting to server %s:%s",__NAME__, server, port)
 
         try:
