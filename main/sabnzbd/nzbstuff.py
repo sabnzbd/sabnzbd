@@ -294,7 +294,7 @@ class NzbObject(TryList):
         self.__delete = delete        # True if we want to delete this set
         self.__script = script        # True if we want to run external script on this set
         self.__msgid = '0'            # Newzbin msgid
-        self.__extra1 = 'a'           # Spare field for later
+        self.__extra1 = cat_root      # Newzbin category
         self.__extra2 = 'b'           # Spare field for later
         self.__group = None
         self.__avg_date = None
@@ -675,6 +675,13 @@ class NzbObject(TryList):
 
     def get_filename(self):
         return self.__filename
+
+    def get_cat(self):
+        if self.__extra1 == 'a':
+            # Compatibility with older queues
+            return ''
+        else:
+            return self.__extra1
 
     def get_group(self):
         return self.__group

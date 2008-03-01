@@ -120,11 +120,11 @@ def find_programs(curdir):
 
 
 #------------------------------------------------------------------------------
-def external_processing(extern_proc, complete_dir, filename):
+def external_processing(extern_proc, complete_dir, filename, cat):
 
     name, msgid = SplitFileName(filename)
     command = ['%s' % extern_proc, '%s' % complete_dir, '%s' % filename, \
-               '%s' % name, '%s' % msgid]
+               '%s' % name, '%s' % msgid, '%s' % cat]
 
     stup, need_shell, command, creationflags = build_command(command)
 

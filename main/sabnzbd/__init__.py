@@ -980,7 +980,7 @@ def getBookmarksList():
         return BOOKMARKS.bookmarksList()
 
 def delete_bookmark(msgid):
-    if BOOKMARKS:
+    if BOOKMARKS and NEWZBIN_BOOKMARKS and NEWZBIN_UNBOOKMARK:
         BOOKMARKS.del_bookmark(msgid)
 
 

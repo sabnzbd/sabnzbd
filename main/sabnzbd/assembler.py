@@ -204,14 +204,15 @@ class PostProcessor(Thread):
 
                 if result and scr and self.extern_proc:
                     logging.info('[%s] Running external script %s %s %s', __NAME__, self.extern_proc, workdir, filename)
-                    ext_out = external_processing(self.extern_proc, workdir, filename)
+                    ext_out = external_processing(self.extern_proc, workdir, filename, nzo.get_cat())
                 else:
                     ext_out = ""
+
                 if sabnzbd.EMAIL_ENDJOB:
                     email_endjob(filename, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), ext_out))
-                if sabnzbd.NEWZBIN_UNBOOKMARK:
-                    name, msgid = SplitFileName(filename)
-                    sabnzbd.delete_bookmark(msgid)
+
+                name, msgid = SplitFileName(filename)
+                sabnzbd.delete_bookmark(msgid)
             except:
                 logging.exception("[%s] Postprocessing of %s failed.", __NAME__,
                                   nzo.get_filename())

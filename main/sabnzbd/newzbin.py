@@ -295,7 +295,8 @@ class Bookmarks:
         return self.bookmarks
 
     def del_bookmark(self, msgid):
-        self.run(msgid)
+        if msgid in self.bookmarks:
+            self.run(msgid)
 
 ################################################################################
 # 'Private' Methods                                                            #
