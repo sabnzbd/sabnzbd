@@ -70,6 +70,7 @@ class MSGIDGrabber(Thread):
         self.nzbun = nzbun
         self.nzbpw = nzbpw
         self.queue = Queue.Queue()
+        self.shutdown = False
 
     def grab(self, msgid, nzo):
         logging.debug("Adding msgid %s to the queue", msgid)
@@ -77,125 +78,140 @@ class MSGIDGrabber(Thread):
 
     def stop(self):
         # Put None on the queue to stop "run"
+        self.shutdown = True
         self.queue.put((None, None))
 
     def run(self):
-        while 1:
-            (msgid, nzo) = self.queue.get()
+        """ Process the queue (including waits and retries) """
+        def sleeper(delay):
+            for n in range(delay):
+                if not self.shutdown:
+                    time.sleep(1.0)
+
+        msgid = None
+        while not self.shutdown:
             if not msgid:
-                break
+                (msgid, nzo) = self.queue.get()
+                if self.shutdown or not msgid:
+                    break
             logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
+
             filename, data, cat_root, cat_tail = _grabnzb(msgid, self.nzbun, self.nzbpw)
             if filename and data:
                 try:
                     sabnzbd.insert_future_nzo(nzo, filename, data, cat_root, cat_tail)
                 except:
-                    pass
+                    sabnzbd.remove_nzo(nzo.nzo_id, False)
+                msgid = None
             else:
-                if (filename):
-                    # Retry later
-                    self.grab(msgid, nzo)
+                if filename:
+                    sleeper(int(filename))
                 else:
                     # Fatal error, give up on this one
                     sabnzbd.remove_nzo(nzo.nzo_id, False)
+                    msgid = None
 
             # Keep some distance between the grabs
-            time.sleep(5)
-        logging.debug('[%s] Stopping MSGIDGrabber', __NAME__)
+            sleeper(5)
 
+        logging.debug('[%s] Stopping MSGIDGrabber', __NAME__)
 
 
 def _grabnzb(msgid, username_newzbin, password_newzbin):
     """ Grab one msgid from newzbin """
 
-    nothing = (None, None, None, None)
-    retry = ('r', None, None, None)
+    nothing  = (None, None, None, None)
+    retry = (300, None, None, None)
 
-    while True:
-        logging.info('[%s] Fetching NZB for Newzbin report #%s', __NAME__, msgid)
+    logging.info('[%s] Fetching NZB for Newzbin report #%s', __NAME__, msgid)
 
-        headers = { 'User-Agent': 'SABnzbd', }
+    headers = { 'User-Agent': 'SABnzbd', }
 
-        # Off we go then
+    # Connect to Newzbin
+    try:
+        conn = httplib.HTTPSConnection('v3.newzbin.com')
+
+        postdata = { 'username': username_newzbin, 'password': password_newzbin, 'reportid': msgid }
+        postdata = urllib.urlencode(postdata)
+
+        headers['Content-type'] = 'application/x-www-form-urlencoded'
+
+        fetchurl = '/api/dnzb/'
+        conn.request('POST', fetchurl, postdata, headers)
+        response = conn.getresponse()
+    except:
+        logging.warning('[%s] Problem accessing Newzbin server, wait 5 min.', __NAME__)
+        return retry
+
+    # Save debug info if we have to
+    data = response.read()
+
+    # Get the filename
+    rcode = response.getheader('X-DNZB-RCode')
+    rtext = response.getheader('X-DNZB-RText')
+    if not (rcode or rtext):
+        logging.error("[%s] Newzbin server changed its protocol", __NAME__)
+        return nothing
+
+    # Official return codes:
+    # 200 = OK, NZB content follows
+    # 400 = Bad Request, please supply all parameters
+    #       (this generally means reportid or fileid is missing; missing user/pass gets you a 401)
+    # 401 = Unauthorised, check username/password?
+    # 402 = Payment Required, not Premium
+    # 404 = Not Found, data doesn't exist?
+    #       (only working for reportids, see Technical Limitations)
+    # 450 = Try Later, wait <x> seconds for counter to reset
+    #       (for an explanation of this, see DNZB Rate Limiting)
+    # 500 = Internal Server Error, please report to Administrator
+    # 503 = Service Unavailable, site is currently down
+
+    if rcode == '450':
+        wait_re = re.compile('wait (\d+) seconds')
         try:
-            conn = httplib.HTTPConnection('v3.newzbin.com')
-
-            postdata = { 'username': username_newzbin, 'password': password_newzbin, 'reportid': msgid }
-            postdata = urllib.urlencode(postdata)
-
-            headers['Content-type'] = 'application/x-www-form-urlencoded'
-
-            fetchurl = '/api/dnzb/'
-            conn.request('POST', fetchurl, postdata, headers)
-            response = conn.getresponse()
-
-            # Save debug info if we have to
-            data = response.read()
-
-            # Get the filename
-            rcode = response.getheader('X-DNZB-RCode')
-            rtext = response.getheader('X-DNZB-RText')
-            report_name = response.getheader('X-DNZB-Name')
-            report_cat  = response.getheader('X-DNZB-Category')
-
-            cat_root = report_cat
-            cat_tail = 'All' # DNZB has no subcategories
-
+            wait = int(wait_re.findall(rtext)[0])
         except:
-            logging.warning("[%s] Problem accessing Newzbin server (%s %s)", __NAME__, rcode, rtext)
-            return retry
+            wait = 60
+        if wait > 60:
+            wait = 60
+        logging.info("Newzbin says we should wait for %s sec", wait)
+        return int(wait+1), None, None, None
 
-        # Official return codes:
-        # 200 = OK, NZB content follows
-        # 400 = Bad Request, please supply all parameters
-        #       (this generally means reportid or fileid is missing; missing user/pass gets you a 401)
-        # 401 = Unauthorised, check username/password?
-        # 402 = Payment Required, not Premium
-        # 404 = Not Found, data doesn't exist?
-        #       (only working for reportids, see Technical Limitations)
-        # 450 = Try Later, wait <x> seconds for counter to reset
-        #       (for an explanation of this, see DNZB Rate Limiting)
-        # 500 = Internal Server Error, please report to Administrator
-        # 503 = Service Unavailable, site is currently down
+    if rcode in ('401', '402'):
+        logging.warning("[%s] You have no paid Newzbin account", __NAME__)
+        return nothing
 
-        if rcode == '450':
-            wait_re = re.compile('wait (\d+) seconds')
-            try:
-                wait = int(wait_re.findall(rtext)[0])
-            except:
-                wait = 60
-            if wait > 60:
-                wait = 60
-            logging.info("Newzbin says we should wait for %s sec", wait)
-            time.sleep(wait+1)
-            continue
+    if rcode in ('400', '404'):
+        logging.error("[%s] Newzbin report %s not found", __NAME__, msgid)
+        return nothing
 
-        if rcode in ('401', '402'):
-            logging.warning("[%s] You have no paid Newzbin account", __NAME__)
-            return nothing
+    if rcode in ('500', '503'):
+        logging.warning('[%s] Newzbin has a server problem (%s, %s), wait 5 min.', __NAME__, rcode, rtext)
+        return retry
 
-        if rcode in ('400', '404'):
-            logging.error("[%s] Newzbin report %s not found", __NAME__, msgid)
-            return nothing
+    if rcode != '200':
+        logging.error('[%s] Newzbin gives undocumented error code (%s, %s)', __NAME__, rcode, rtext)
+        return nothing
 
-        if rcode in ('500', '503'):
-            logging.warning("[%s] Newzbin has a server problem", __NAME__)
-            return retry
+    # Process data
+    report_name = response.getheader('X-DNZB-Name')
+    report_cat  = response.getheader('X-DNZB-Category')
+    if not (report_name and report_cat):
+        logging.error("[%s] Newzbin server fails to give info for %s", __NAME__, msgid)
+        return nothing
 
-        if rcode != '200':
-            logging.warning("[%s] Newzbin has a server problem", __NAME__)
-            return retry
+    cat_root = report_cat
+    cat_tail = 'All' # DNZB has no subcategories
 
-        # sanitize report_name
-        newname = RE_SANITIZE.sub('_', report_name)
-        if len(newname) > 80:
-            newname = "%s[%s]" % (newname[0:70], id(newname))
-        newname = "msgid_%s %s.nzb" % (msgid, newname.strip())
+    # sanitize report_name
+    newname = RE_SANITIZE.sub('_', report_name)
+    if len(newname) > 80:
+        newname = "%s[%s]" % (newname[0:70], id(newname))
+    newname = "msgid_%s %s.nzb" % (msgid, newname.strip())
 
-        logging.info('[%s] Successfully fetched %s %s (%s)', __NAME__, report_cat, report_name, newname)
+    logging.info('[%s] Successfully fetched %s %s (%s)', __NAME__, report_cat, report_name, newname)
 
-        return (newname, data, cat_root, cat_tail)
-    #end
+    return (newname, data, cat_root, cat_tail)
 
 
 ################################################################################
