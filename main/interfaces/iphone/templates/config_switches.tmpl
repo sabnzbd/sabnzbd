@@ -47,11 +47,22 @@
     		    <option name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "selected" else ""#--> /> +Repair</option>
     		    <option name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "selected" else ""#--> /> +Unpack</option>
     		    <option name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "selected" else ""#--> /> +Delete</option>
-    		    <option name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "selected" else ""#--> /> R+Script</option>
-    		    <option name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "selected" else ""#--> /> U+Script</option>
-    		    <option name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "selected" else ""#--> /> D+Script</option>
             </select>
-		</div>
+    		</div>
+            <div class="row">
+
+            <label>User Script:</label><br/><br/>
+            
+          	<select style="margin:0px;padding:0px;margin-left:15px;" name="script" id="script">
+            <!--#for $sc in $script_list#-->
+                <!--#if $sc.lower() == $script.lower()#-->
+                    <option value="$sc" selected>$sc</option>
+                <!--#else#-->
+                    <option value="$sc">$sc</option>
+                <!--#end if#-->
+            <!--#end for#-->
+            </select>
+            </div>
         </fieldset>
 
         <h2>Other switches</h2>

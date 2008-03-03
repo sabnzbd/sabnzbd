@@ -47,7 +47,7 @@ from sabnzbd.misc import to_units, from_units, SplitHost
 # - Decoded status array.
 # - Output from external script
 ################################################################################
-def prepare_msg(bytes, status, output):
+def prepare_msg(bytes, status, script, output):
 
     result  = "Downloaded %sB\n\n" % to_units(bytes)
     result += "Results of the job:\n\n"
@@ -59,8 +59,9 @@ def prepare_msg(bytes, status, output):
         for action in status[stage]:
             result += "    %s %s\n" % (action, status[stage][action])
 
-    if output != "":
-    	  result += "\nExternal processing:\n" + output
+    if script and (output != ""):
+    	  result += "\nExternal processing by %s:\n" % script
+    	  result += output
 
     return result
 

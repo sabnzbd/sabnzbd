@@ -82,9 +82,19 @@
     <input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
     <input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
     <input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
-    <input type="radio" name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "checked=1" else ""#--> /> R+Script
-    <input type="radio" name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "checked=1" else ""#--> /> U+Script
-    <input type="radio" name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "checked=1" else ""#--> /> D+Script
+    <br>
+    <br>
+    <strong>User Script:</strong><br>
+    Use following user script as default for all jobs.<br>
+    <select name="script">
+    <!--#for $sc in $script_list#-->
+        <!--#if $sc.lower() == $script.lower()#-->
+            <option value="$sc" selected>$sc</option>
+        <!--#else#-->
+            <option value="$sc">$sc</option>
+        <!--#end if#-->
+    <!--#end for#-->
+    </select>
     <br>
     <br>
   </fieldset>

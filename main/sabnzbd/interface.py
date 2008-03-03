@@ -132,6 +132,19 @@ def check_server(host, port):
     else:
         return badParameterResponse('Server address "%s:%s" is not valid.' % (host, port))
 
+def ListScripts():
+    """ Return a list of script names """
+    lst = []
+    dd = sabnzbd.SCRIPT_DIR
+    if dd and os.access(dd, os.R_OK):
+        lst = ['None']
+        for script in glob.glob(dd + '/*'):
+            if os.path.isfile(script):
+                sc= os.path.basename(script)
+                if sc != "_svn" and sc != ".svn":
+                    lst.append(sc)
+    return lst
+
 
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
@@ -216,12 +229,14 @@ class MainPage(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def addID(self, id = None, pp = 0, redirect = None):
+    def addID(self, id = None, pp = 0, script=None, redirect = None):
+        if not script:
+            script = sabnzbd.DIRSCAN_SCRIPT
         if id:
             id = id.strip()
 
         if id and (id.isdigit() or len(id)==5) and pp.isdigit():
-            sabnzbd.add_msgid(id, int(pp))
+            sabnzbd.add_msgid(id, int(pp), script)
 
         if not redirect:
             redirect = self.__root
@@ -229,9 +244,11 @@ class MainPage(ProtectedClass):
         raise cherrypy.HTTPRedirect(redirect)
 
     @cherrypy.expose
-    def addURL(self, url = None, pp = 0, redirect = None):
+    def addURL(self, url = None, pp = 0, script=None, redirect = None):
+        if not script:
+            script = sabnzbd.DIRSCAN_SCRIPT
         if url and pp.isdigit():
-            sabnzbd.add_url(url, int(pp))
+            sabnzbd.add_url(url, int(pp), script)
 
         if not redirect:
             redirect = self.__root
@@ -239,9 +256,11 @@ class MainPage(ProtectedClass):
         raise cherrypy.HTTPRedirect(redirect)
 
     @cherrypy.expose
-    def addFile(self, nzbfile, pp = 0, dummy = None):
+    def addFile(self, nzbfile, pp = 0, script=None, dummy = None):
+        if not script:
+            script = sabnzbd.DIRSCAN_SCRIPT
         if pp.isdigit() and nzbfile.filename and nzbfile.value:
-            sabnzbd.add_nzbfile(nzbfile, int(pp))
+            sabnzbd.add_nzbfile(nzbfile, int(pp), script)
         if dummy:
             root = self.__root+'?dummy='+dummy
         else:
@@ -295,7 +314,7 @@ class MainPage(ProtectedClass):
 
 
     @cherrypy.expose
-    def api(self, mode='', name=None, pp=0, output='plain', value = None, dummy = None):
+    def api(self, mode='', name=None, pp=0, script=None, output='plain', value = None, dummy = None):
         """Handler for API over http
         """
         if mode == 'qstatus':
@@ -307,21 +326,21 @@ class MainPage(ProtectedClass):
                 return 'not implemented\n'
         elif mode == 'addfile':
             if pp.isdigit() and name.filename and name.value:
-                sabnzbd.add_nzbfile(name, int(pp))
+                sabnzbd.add_nzbfile(name, int(pp), script)
                 return 'ok\n'
             else:
                 return 'error\n'
 
         elif mode == 'addurl':
             if name and pp.isdigit():
-                sabnzbd.add_url(name, int(pp))
+                sabnzbd.add_url(name, int(pp), script)
                 return 'ok\n'
             else:
                 return 'error\n'
 
         elif mode == 'addid':
             if name and name.isdigit() and pp.isdigit():
-                sabnzbd.add_msgid(int(name), int(pp))
+                sabnzbd.add_msgid(int(name), int(pp), script)
                 return 'ok\n'
             else:
                 return 'error\n'
@@ -483,6 +502,8 @@ class QueuePage(ProtectedClass):
         info['noofslots'] = len(pnfo_list)
         datestart = datetime.datetime.now()
 
+        info['script_list'] = ListScripts()
+
         n = 0
         slotinfo = []
 
@@ -517,10 +538,12 @@ class QueuePage(ProtectedClass):
                     unpackopts += 1
                     if delete:
                         unpackopts += 1
-            if (unpackopts > 0) & script:
-            	  unpackopts= unpackopts + 3
 
             slot['unpackopts'] = str(unpackopts)
+            if script:
+                slot['script'] = script
+            else:
+                slot['script'] = 'None'
             slot['filename'], slot['msgid'] = SplitFileName(filename)
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
             slot['mb'] = "%.2f" % (bytes / MEBI)
@@ -668,6 +691,18 @@ class QueuePage(ProtectedClass):
     def change_opts(self, nzo_id = None, pp = None, dummy = None):
         if nzo_id and pp and pp.isdigit():
             sabnzbd.change_opts(nzo_id, int(pp))
+        if dummy:
+            root = self.__root+'?dummy='+dummy
+        else:
+            root = self.__root
+        raise cherrypy.HTTPRedirect(root)
+
+    @cherrypy.expose
+    def change_script(self, nzo_id = None, script = None, dummy = None):
+        if nzo_id and script:
+            if script == 'None':
+                script = None
+            sabnzbd.change_script(nzo_id, script)
         if dummy:
             root = self.__root+'?dummy='+dummy
         else:
@@ -882,7 +917,7 @@ class ConfigDirectories(ProtectedClass):
         config['nzb_backup_dir'] = sabnzbd.CFG['misc']['nzb_backup_dir']
         config['dirscan_dir'] = sabnzbd.CFG['misc']['dirscan_dir']
         config['dirscan_speed'] = sabnzbd.CFG['misc']['dirscan_speed']
-        config['extern_proc'] = sabnzbd.CFG['misc']['extern_proc']
+        config['script_dir'] = sabnzbd.CFG['misc']['script_dir']
         config['my_home'] = sabnzbd.DIR_HOME
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
 
@@ -901,7 +936,7 @@ class ConfigDirectories(ProtectedClass):
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
                         cache_dir = None, nzb_backup_dir = None, tv_sort = None,
-                        dirscan_dir = None, dirscan_speed = None, extern_proc = None, dummy = None):
+                        dirscan_dir = None, dirscan_speed = None, script_dir = None, dummy = None):
 
         (dd, path) = create_real_path('download_dir', sabnzbd.DIR_HOME, download_dir)
         if not dd:
@@ -929,9 +964,10 @@ class ConfigDirectories(ProtectedClass):
             if not dd:
                 return badParameterResponse('Error: cannot create nzb_backup_dir directory %s".' % path)
 
-        if extern_proc and not os.access(real_path(sabnzbd.DIR_HOME, extern_proc), os.R_OK):
-            return badParameterResponse('Error: cannot find extern_proc "%s".' % \
-                                         real_path(sabnzbd.DIR_HOME, extern_proc))
+        if script_dir:
+            (dd, path) = create_real_path('script_dir', sabnzbd.DIR_HOME, script_dir)
+            if not dd:
+                return badParameterResponse('Error: cannot create script_dir directory "%s".' % path)
 
         #if SameFile(download_dir, complete_dir):
         #    return badParameterResponse('Error: DOWNLOAD_DIR and COMPLETE_DIR should not be the same (%s)!' % path)
@@ -943,7 +979,7 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['log_dir'] = log_dir
         sabnzbd.CFG['misc']['dirscan_dir'] = dirscan_dir
         sabnzbd.CFG['misc']['dirscan_speed'] = dirscan_speed
-        sabnzbd.CFG['misc']['extern_proc'] = extern_proc
+        sabnzbd.CFG['misc']['script_dir'] = script_dir
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
         sabnzbd.CFG['misc']['tv_sort'] = int(tv_sort)
@@ -986,6 +1022,10 @@ class ConfigSwitches(ProtectedClass):
         config['safe_postproc'] = int(sabnzbd.CFG['misc']['safe_postproc'])
         config['auto_browser'] = int(sabnzbd.CFG['misc']['auto_browser'])
         config['ignore_samples'] = int(sabnzbd.CFG['misc']['ignore_samples'])
+        config['script'] = sabnzbd.CFG['misc']['dirscan_script']
+        if not config['script']:
+            config['script'] = 'None'
+        config['script_list'] = ListScripts()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
                             searchList=[config],
@@ -1004,7 +1044,9 @@ class ConfigSwitches(ProtectedClass):
                      safe_postproc = None,
                      replace_spaces = None,
                      auto_browser = None,
-                     ignore_samples = None, dummy = None
+                     ignore_samples = None,
+                     script = None,
+                     dummy = None
                      ):
 
         sabnzbd.CFG['misc']['enable_unrar'] = int(enable_unrar)
@@ -1015,6 +1057,10 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['fail_on_crc'] = int(fail_on_crc)
         sabnzbd.CFG['misc']['create_group_folders'] = int(create_group_folders)
         sabnzbd.CFG['misc']['dirscan_opts'] = int(dirscan_opts)
+        if script == 'None':
+            sabnzbd.CFG['misc']['dirscan_script'] = None
+        else:
+            sabnzbd.CFG['misc']['dirscan_script'] = script
         sabnzbd.CFG['misc']['enable_par_cleanup'] = int(enable_par_cleanup)
         sabnzbd.CFG['misc']['top_only'] = int(top_only)
         sabnzbd.CFG['misc']['auto_sort'] = int(auto_sort)

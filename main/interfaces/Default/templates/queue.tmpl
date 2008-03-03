@@ -36,7 +36,10 @@
 <br>
 <!--#if $varExists('slotinfo')#-->
     <table id="queueTable">
-        <tr> <th></th><th></th><th></th><th>Mode</th><th>Name</th><th>Remain/Total</th><th>ETA</th><th>AGE</th> </tr>
+        <tr> <th></th><th></th><th></th><th>Mode</th>
+            <!--#if $script_list#--><th>Script</th><!--#end if#-->
+            <th>Name</th><th>Remain/Total</th><th>ETA</th><th>AGE</th>
+        </tr>
     <!--#set $odd = False#-->
     <!--#for $slot in $slotinfo#-->
         <!--#set $odd = not $odd#-->
@@ -55,11 +58,16 @@
                 <option value="change_opts?nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
                 <option value="change_opts?nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
                 <option value="change_opts?nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
-                <option value="change_opts?nzo_id=$slot.nzo_id&pp=4" <!--#if $slot.unpackopts == "4" then "selected" else ""#-->>RS</option>
-                <option value="change_opts?nzo_id=$slot.nzo_id&pp=5" <!--#if $slot.unpackopts == "5" then "selected" else ""#-->>US</option>
-                <option value="change_opts?nzo_id=$slot.nzo_id&pp=6" <!--#if $slot.unpackopts == "6" then "selected" else ""#-->>DS</option>
                 </select></form>
             </td>
+            <!--#if $script_list#-->
+            <td><form><select onchange="location = this.options[this.selectedIndex].value;">
+                <!--#for $sc in $script_list#-->
+                    <option value="change_script?nzo_id=$slot.nzo_id&script=$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                <!--#end for#-->
+                </select></form>
+            </td>
+            <!--#end if#-->
             <td><a href="./$slot.nzo_id/">$slot.filename</a></td>
             <td class="pre">$slot.mbleft/$slot.mb MB</td>
             <td>$slot.eta</td>

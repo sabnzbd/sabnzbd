@@ -220,10 +220,11 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
 class Bookmarks:
     """ Get list of bookmarks from www.newzbin.com
     """
-    def __init__(self, username, password, opts):
+    def __init__(self, username, password, opts, script):
         self.username = username
         self.password = password
         self.opts = opts
+        self.script = script
         self.bookmarks = sabnzbd.load_data(BOOKMARK_FILE_NAME)
         if not self.bookmarks:
             self.bookmarks = []
@@ -285,7 +286,7 @@ class Bookmarks:
                         new_bookmarks.append(msgid)
                         if not msgid in self.bookmarks:
                             logging.info("[%s] Found new bookmarked msgid %s", __NAME__, msgid)
-                            sabnzbd.add_msgid(int(msgid), self.opts)
+                            sabnzbd.add_msgid(int(msgid), self.opts, self.script)
             self.bookmarks = new_bookmarks
 
     def save(self):

@@ -86,11 +86,21 @@
 		    <option name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 #-->selected<!--#end if#--> /> +Repair</option>
 		    <option name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 #-->selected<!--#end if#--> /> +Unpack</option>
 		    <option name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 #-->selected<!--#end if#--> /> +Delete</option>
-		    <option name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 #-->selected<!--#end if#--> /> Repair+Script</option>
-		    <option name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 #-->selected<!--#end if#--> /> Unpack+Script</option>
-		    <option name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 #-->selected<!--#end if#--> /> Delete+Script</option>
 		    </select></td>
 	    <tr><td colspan="2"><small><small>Set the post process option on .nzbs placed in the blackhole</small></td></tr>
+
+        <tr><td><strong>User Script:</strong></td>
+            <td><select name="script" id="script">
+            <!--#for $sc in $script_list#-->
+                <!--#if $sc.lower() == $script.lower()#-->
+                    <option value="$sc" selected>$sc</option>
+                <!--#else#-->
+                    <option value="$sc">$sc</option>
+                <!--#end if#-->
+            <!--#end for#-->
+            </select></td>
+	    <tr><td colspan="2"><small><small>Use following user script as default for all jobs</small></td></tr>
+
 	</table>
 </fieldset>
 

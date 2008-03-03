@@ -129,7 +129,8 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             try:
                 logging.info("[%s] Regenerating item: %s", __NAME__, nzo_id)
-                repair, unpack, delete, script = future.get_repair_opts()
+                repair, unpack, delete = future.get_repair_opts()
+                script = future.get_script()
                 future.__init__(filename, repair, unpack, delete, script,
                                 nzb = data, futuretype = False,
                                 cat_root = cat_root, cat_tail = cat_tail)
@@ -153,6 +154,11 @@ class NzbQueue(TryList):
     def change_opts(self, nzo_id, pp):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].set_opts(pp)
+
+    @synchronized(NZBQUEUE_LOCK)
+    def change_script(self, nzo_id, script):
+        if nzo_id in self.__nzo_table:
+            self.__nzo_table[nzo_id].set_script(script)
 
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, pos = -1, save=True):

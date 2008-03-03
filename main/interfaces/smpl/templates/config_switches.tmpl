@@ -54,10 +54,20 @@
 		    <input class="radio" type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
 		    <input class="radio" type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
 		    <input class="radio" type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
-		    <input class="radio" type="radio" name="dirscan_opts" value="4" <!--#if $dirscan_opts == 4 then "checked=1" else ""#--> /> R+Script
-		    <input class="radio" type="radio" name="dirscan_opts" value="5" <!--#if $dirscan_opts == 5 then "checked=1" else ""#--> /> U+Script
-		    <input class="radio" type="radio" name="dirscan_opts" value="6" <!--#if $dirscan_opts == 6 then "checked=1" else ""#--> /> D+Script
 		    <span class="tips">Use following post process option on .nzb files imported by the dirscanner.</span>
+		<br class="clear" />
+
+		    <label>User Script:</label>
+            <select name="script" id="script" class="select">
+            <!--#for $sc in $script_list#-->
+                <!--#if $sc.lower() == $script.lower()#-->
+                    <option value="$sc" selected>$sc</option>
+                <!--#else#-->
+                    <option value="$sc">$sc</option>
+                <!--#end if#-->
+            <!--#end for#-->
+            </select>
+		    <span class="tips">Use following user script as default for all jobs.</span>
 		<br class="clear" />
 
 </fieldset>

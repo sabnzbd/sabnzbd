@@ -292,7 +292,7 @@ class NzbObject(TryList):
         self.__repair = repair        # True if we want to repair this set
         self.__unpack = unpack        # True if we want to unpack this set
         self.__delete = delete        # True if we want to delete this set
-        self.__script = script        # True if we want to run external script on this set
+        self.__script = script        # External script for this set
         self.__msgid = '0'            # Newzbin msgid
         self.__extra1 = cat_root      # Newzbin category
         self.__extra2 = 'b'           # Spare field for later
@@ -545,7 +545,10 @@ class NzbObject(TryList):
         return (file_done, post_done, reset)
 
     def set_opts(self, pp):
-        self.__repair, self.__unpack, self.__delete, self.__script = sabnzbd.pp_to_opts(pp)
+        self.__repair, self.__unpack, self.__delete = sabnzbd.pp_to_opts(pp)
+
+    def set_script(self, script):
+        self.__script = script
 
     def set_dirname(self, dirname, created = False):
         self.__dirname = dirname
@@ -771,7 +774,10 @@ class NzbObject(TryList):
         return self.__unpackstrht.copy()
 
     def get_repair_opts(self):
-        return (self.__repair, self.__unpack, self.__delete, self.__script)
+        return (self.__repair, self.__unpack, self.__delete)
+
+    def get_script(self):
+        return self.__script
 
     def __build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}

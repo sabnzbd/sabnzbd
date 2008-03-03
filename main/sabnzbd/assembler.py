@@ -39,6 +39,7 @@ from threading import Thread, RLock
 from time import sleep
 from sabnzbd.email import email_endjob, prepare_msg
 from sabnzbd.nzbstuff import SplitFileName
+from sabnzbd.misc import real_path
 
 DIR_LOCK = RLock()
 
@@ -71,12 +72,11 @@ def perm_script(wdir, umask):
 ## sabnzbd.add_nzo
 ## sabnzbd.cleanup_nzo
 class PostProcessor(Thread):
-    def __init__ (self, download_dir, complete_dir, extern_proc, queue = None):
+    def __init__ (self, download_dir, complete_dir, queue = None):
         Thread.__init__(self)
 
         self.download_dir = download_dir
         self.complete_dir = complete_dir
-        self.extern_proc = extern_proc
         self.queue = queue
 
         if not self.queue:
@@ -99,7 +99,8 @@ class PostProcessor(Thread):
 
             try:
                 result = False
-                rep, unp, dele, scr = nzo.get_repair_opts()
+                rep, unp, dele = nzo.get_repair_opts()
+                script = nzo.get_script()
 
                 partable = nzo.get_partable()
                 repairsets = partable.keys()
@@ -110,7 +111,7 @@ class PostProcessor(Thread):
 
                 logging.info('[%s] Starting PostProcessing on %s' + \
                              ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s',
-                             __NAME__, filename, rep, unp, dele, scr)
+                             __NAME__, filename, rep, unp, dele, script)
 
                 ## Run Stage 1: Repair
                 if rep:
@@ -202,14 +203,16 @@ class PostProcessor(Thread):
                 if sabnzbd.UMASK and (os.name != 'nt'):
                     perm_script(workdir, sabnzbd.UMASK)
 
-                if result and scr and self.extern_proc:
-                    logging.info('[%s] Running external script %s %s %s', __NAME__, self.extern_proc, workdir, filename)
-                    ext_out = external_processing(self.extern_proc, workdir, filename, nzo.get_cat())
+                if sabnzbd.SCRIPT_DIR and script:
+                    script = real_path(sabnzbd.SCRIPT_DIR, script)
+                if result and script:
+                    logging.info('[%s] Running external script %s %s %s', __NAME__, script, workdir, filename)
+                    ext_out = external_processing(script, workdir, filename, nzo.get_cat())
                 else:
                     ext_out = ""
 
                 if sabnzbd.EMAIL_ENDJOB:
-                    email_endjob(filename, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), ext_out))
+                    email_endjob(filename, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), script, ext_out))
 
                 name, msgid = SplitFileName(filename)
                 sabnzbd.delete_bookmark(msgid)

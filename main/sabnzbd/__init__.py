@@ -97,12 +97,14 @@ NZB_BACKUP_DIR = None
 DOWNLOAD_DIR = None
 DOWNLOAD_FREE = None
 COMPLETE_DIR = None
+SCRIPT_DIR = None
 LOGFILE = None
 WEBLOGFILE = None
 LOGHANDLER = None
 GUIHANDLER = None
 AMBI_LOCALHOST = False
 SAFE_POSTPROC = False
+DIRSCAN_SCRIPT = None
 
 POSTPROCESSOR = None
 ASSEMBLER = None
@@ -245,8 +247,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, AUTODISCONNECT, WAITEXIT, \
-           SAFE_POSTPROC, \
-           COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, \
+           SAFE_POSTPROC, DIRSCAN_SCRIPT, \
+           COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
@@ -334,6 +336,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     if COMPLETE_DIR == "":
         return False
 
+    SCRIPT_DIR = dir_setup(CFG, 'script_dir', DIR_HOME, '')
+
     NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
 
     if SameFile(DOWNLOAD_DIR, COMPLETE_DIR):
@@ -359,15 +363,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     rss_rate = check_setting_int(CFG, 'misc', 'rss_rate', 1)
     rss_rate = minimax(rss_rate, 1, 48)
-
-    extern_proc = check_setting_str(CFG, 'misc', 'extern_proc', '')
-    if extern_proc:
-        extern_proc= real_path(DIR_HOME, extern_proc)
-        if os.path.exists(extern_proc):
-            logging.debug("extern_proc: %s", extern_proc)
-        else:
-            logging.warning('External postproc script: %s does not exist', extern_proc)
-            extern_proc = ""
 
     try:
         servers = CFG['servers']
@@ -411,8 +406,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     schedlines = CFG['misc']['schedlines']
 
     dirscan_opts = check_setting_int(CFG, 'misc', 'dirscan_opts', 1)
-    dirscan_repair, dirscan_unpack, dirscan_delete, dirscan_script = pp_to_opts(dirscan_opts)
-
+    dirscan_repair, dirscan_unpack, dirscan_delete = pp_to_opts(dirscan_opts)
+    DIRSCAN_SCRIPT = check_setting_str(CFG, 'misc', 'dirscan_script', '')
+    
     top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
 
     AUTO_SORT = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
@@ -428,7 +424,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     ############################
 
     if NEWZBIN_BOOKMARKS:
-        BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN, dirscan_opts)
+        BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN, dirscan_opts, DIRSCAN_SCRIPT)
 
     need_rsstask = init_RSS()
     init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK, BOOKMARKS, BOOKMARK_RATE)
@@ -455,9 +451,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         NZBQ = NzbQueue(AUTO_SORT, top_only)
 
     if POSTPROCESSOR:
-        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc, POSTPROCESSOR.queue)
+        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, POSTPROCESSOR.queue)
     else:
-        POSTPROCESSOR = PostProcessor(DOWNLOAD_DIR, COMPLETE_DIR, extern_proc)
+        POSTPROCESSOR = PostProcessor(DOWNLOAD_DIR, COMPLETE_DIR)
         NZBQ.__init__stage2__()
 
     if ASSEMBLER:
@@ -474,7 +470,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     if dirscan_dir:
         DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed, dirscan_repair, dirscan_unpack,
-                                dirscan_delete, dirscan_script)
+                                dirscan_delete, DIRSCAN_SCRIPT)
 
     if USERNAME_NEWZBIN:
         MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
@@ -644,6 +640,12 @@ def change_opts(nzo_id, pp):
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
+def change_script(nzo_id, script):
+    try:
+        NZBQ.change_script(nzo_id, script)
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+
 def get_article(host):
     try:
         return NZBQ.get_article(host)
@@ -740,24 +742,24 @@ def purge_articles(articles):
 ################################################################################
 ## Misc Wrappers                                                              ##
 ################################################################################
-def add_msgid(msgid, pp):
+def add_msgid(msgid, pp, script=None):
     logging.info('[%s] Fetching msgid %s from v3.newzbin.com',
                  __NAME__, msgid)
     msg = "fetching msgid %s from v3.newzbin.com" % msgid
 
-    repair, unpack, delete, script = pp_to_opts(pp)
+    repair, unpack, delete = pp_to_opts(pp)
 
     future_nzo = NZBQ.generate_future(msg, repair, unpack, delete, script)
 
     MSGIDGRABBER.grab(msgid, future_nzo)
 
 
-def add_url(url, pp):
+def add_url(url, pp, script=None):
     logging.info('[%s] Fetching %s', __NAME__, url)
 
     msg = "Trying to fetch .nzb from %s" % url
 
-    repair, unpack, delete, script = pp_to_opts(pp)
+    repair, unpack, delete = pp_to_opts(pp)
 
     future_nzo = NZBQ.generate_future(msg, repair, unpack, delete, script)
 
@@ -818,8 +820,8 @@ def backup_nzb(filename, data):
 ## CV synchronized (notifys downloader)                                       ##
 ################################################################################
 @synchronized_CV
-def add_nzbfile(nzbfile, pp):
-    repair, unpack, delete, script = pp_to_opts(pp)
+def add_nzbfile(nzbfile, pp, script=None):
+    repair, unpack, delete = pp_to_opts(pp)
     filename = nzbfile.filename
 
     if os.name != 'nt':
@@ -1055,11 +1057,7 @@ def remove_data(_id):
 
 
 def pp_to_opts(pp):
-    repair, unpack, delete, script = (False, False, False, False)
-    if pp > 3:
-    	  script= True
-    	  pp= pp-3
-
+    repair, unpack, delete = (False, False, False)
     if pp > 0:
         repair = True
         if pp > 1:
@@ -1067,7 +1065,7 @@ def pp_to_opts(pp):
             if pp > 2:
                 delete = True
 
-    return (repair, unpack, delete, script)
+    return (repair, unpack, delete)
 
 PROPER_FILENAME_MATCHER = re.compile(r"[a-zA-Z0-9\-_\.+\(\)]")
 def fix_filename(filename):
