@@ -78,17 +78,32 @@
 					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-				</select>&nbsp;<input type="submit" id="addNZBbyID" value="Add" />&nbsp;&nbsp;&nbsp;
+				</select>
+				<!--#if $script_list#-->
+            		<select id="addID_script">
+                		<!--#for $sc in $script_list#-->
+                    		<option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                		<!--#end for#-->
+                	</select>
+            	<!--#end if#-->&nbsp;<input type="submit" id="addNZBbyID" value="Add" />&nbsp;&nbsp;&nbsp;
 			<!--#end if#-->
-			
+			<br/>
 				<!-- ADD BY URL -->
 				<input type="text" id="addURL" value="by URL" size="12" onfocus="if(value=='by URL')value=''" onblur="if(!value)value='by URL'" />&nbsp;<select id="addURL_pp">
 					<option value="0" title="Do not post-process the NZB file set">-</option>
 					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-				</select>&nbsp;<input type="submit" id="addNZBbyURL" value="Add" />&nbsp;&nbsp;&nbsp;
-	
+				</select>
+				<!--#if $script_list#-->
+            		<select id="addURL_script">
+                		<!--#for $sc in $script_list#-->
+                    		<option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                		<!--#end for#-->
+                	</select>
+            	<!--#end if#-->
+				&nbsp;<input type="submit" id="addNZBbyURL" value="Add" />&nbsp;&nbsp;&nbsp;
+			<br/>
 				<!-- ADD BY FILE UPLOAD -->
 				<form action="addFile" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
 					<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" />&nbsp;<select name="pp">
@@ -96,7 +111,15 @@
 						<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
 						<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-					</select>&nbsp;<input type="submit" id="addNZBbyFile" value="Add" />
+					</select>
+					<!--#if $script_list#-->
+            			<select name="script">
+                			<!--#for $sc in $script_list#-->
+                    			<option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                			<!--#end for#-->
+                		</select>
+            		<!--#end if#-->
+					&nbsp;<input type="submit" id="addNZBbyFile" value="Add" />
 				</form>
 		</div>
 		<!-- +NZB Menu : End -->

@@ -69,7 +69,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "GET",
 			url: "addID",
-			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val(),
+			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val(),
 			success: function(result){
    				return RefreshTheQueue();
 			}
@@ -80,7 +80,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "GET",
 			url: "addURL",
-			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val(),
+			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val()+"&script="+$("#addURL_script").val(),
 			success: function(result){
    				return RefreshTheQueue();
 			}
