@@ -208,6 +208,20 @@ class NzbQueue(TryList):
             self.save()
 
     @synchronized(NZBQUEUE_LOCK)
+    def remove_all(self):
+        lst = []
+        for nzo_id in self.__nzo_table:
+            lst.append(nzo_id)
+        for nzo_id in lst:
+            nzo = self.__nzo_table.pop(nzo_id)
+            nzo.deleted = True
+            self.__nzo_list.remove(nzo)
+            self.cleanup_nzo(nzo)
+            sabnzbd.remove_data(nzo_id)
+        del lst
+        self.save()
+
+    @synchronized(NZBQUEUE_LOCK)
     def remove_nzf(self, nzo_id, nzf_id):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]

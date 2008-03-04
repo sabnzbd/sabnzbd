@@ -623,6 +623,12 @@ def remove_nzo(nzo_id, add_to_history = True):
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
+def remove_all_nzo():
+    try:
+        NZBQ.remove_all()
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+
 def remove_nzf(nzo_id, nzf_id):
     try:
         NZBQ.remove_nzf(nzo_id, nzf_id)

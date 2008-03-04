@@ -640,6 +640,15 @@ class QueuePage(ProtectedClass):
         raise cherrypy.HTTPRedirect(root)
 
     @cherrypy.expose
+    def delete_queue(self, dummy = None):
+        sabnzbd.remove_all_nzo()
+        if dummy:
+            root = self.__root+'?dummy='+dummy
+        else:
+            root = self.__root
+        raise cherrypy.HTTPRedirect(root)
+
+    @cherrypy.expose
     def removeNzf(self, nzo_id = None, nzf_id = None, dummy = None):
         if nzo_id and nzf_id:
             sabnzbd.remove_nzf(nzo_id, nzf_id)
