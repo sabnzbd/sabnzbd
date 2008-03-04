@@ -89,4 +89,4 @@ TVSORTINGLIST = [ \
             'Episode 1 - EpName']
 
 
-IGNORE_SAMPLE_LIST = ['.sample', '-sample', 'sample-']
+IGNORE_SAMPLE_LIST = ['.sample', '-sample', 'sample-', '~sample']
