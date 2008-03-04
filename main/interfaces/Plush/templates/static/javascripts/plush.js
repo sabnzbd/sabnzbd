@@ -63,6 +63,18 @@ $(document).ready(function() {
 		SetCookie('PlushRefresh',refreshRate);
 	 });
 
+
+	// purge queue
+	$('#queue_purge').bind('click', function() { 
+		$.ajax({
+			type: "GET",
+			url: "queue/purge?dummy="+Math.random(),
+			success: function(result){
+   				return LoadTheQueue(result);
+			}
+		});
+		$("#addID").val('by Newzbin ID/NB32');
+	});
 		
 	// Set up +NZB
 	$('#addNZBbyID').bind('click', function() { 
