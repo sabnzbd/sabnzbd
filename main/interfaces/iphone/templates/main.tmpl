@@ -200,6 +200,13 @@ function loadingJSON(){
             //alert('changed to 0');
         }
 	}
+    
+	function changequeuedetails(page)
+	{
+        append = '&dummy='+Math.random();
+        url = page+append;
+		d = doSimpleXMLHttpRequest(url);
+	}
 
 </script>
 

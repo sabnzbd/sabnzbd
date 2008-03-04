@@ -48,6 +48,20 @@
         <li>$slot.mbleft/$slot.mb MB</li>
         <li>ETA: $slot.eta</li>
         <li>AGE: $slot.avg_age</li>
+        
+            <select onchange="javascript:changequeueoptions(this.options[this.selectedIndex].value)">
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
+                <option value="change_opts?nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
+			</select>
+            <!--#if $script_list#-->            
+                <select onchange="javascript:changequeueoptions('change_script?nzo_id=$slot.nzo_id&script='+this.options[this.selectedIndex].value);">
+                <!--#for $sc in $script_list#-->
+                    <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                <!--#end for#-->
+                </select>
+            <!--#end if#-->
         <li><a href="javascript:var dummy=0" onClick="javascript:history.back();deletequeueitem('$slot.nzo_id');">Delete</a></li>
         
         <li class="group">Tools</li>

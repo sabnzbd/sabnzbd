@@ -138,14 +138,29 @@ checkCookie();
 MochiKit.DOM.addLoadEvent(onpageload);
 
 function onpageload() {
+loadtitle();
 initDynamicTable();
 loadingJSON();
 checkCookie();
+
 //doit();
 
 checkrefresh();
 }
 
+function loadtitle() {
+    url = document.URL
+    if (url.match('#'))
+    {
+        index = url.lastIndexOf('#');
+        url = url.slice(index+1, url.length);
+        url = url.replace('-', '/');
+        if (url == 'dv1'){ lr('queue/','', 1, 1);lrb('history/',1);}
+        else if (url == 'dv2'){ lr('queue/','', 1, 2);lrb('history/',1);}
+        else if (url) {lr(url)}
+    }
+
+}
 
 </script>
 
@@ -274,10 +289,14 @@ checkrefresh();
 
 	function changequeuedetails(page)
 	{
-		d = doSimpleXMLHttpRequest(page);
+        append = '&dummy='+Math.random();
+        url = page+append;
+		d = doSimpleXMLHttpRequest(url);
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
+    
+
 
 	function testemail()
 	{
@@ -510,7 +529,7 @@ function loadingJSON(){
 				Queue: <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
 			</p>
 		<span id="testing">
-			<a href=""><img id="title" src="static/sabnzbd_small3.gif" alt="sabnzbd+" /></a>
+			<a href=""><img id="title" src="static/sabnzbd_small4.gif" alt="sabnzbd+" /></a>
 			<h2>The automatic usenet download tool</h2>
 		</span>
 		</div>
@@ -518,22 +537,22 @@ function loadingJSON(){
 			<div id="Left">
 				<ul id="menu">
 					<li><a class="current" href="">Home</a></li>
-					<li><a onClick="lr('queue/', '', 1, 0);">Queue</a></li>
-					<li><a onClick="lr('history/','', 1, 0);">History</a></li>
-                    <li><a onClick="lr('queue/','', 1, 1);lrb('history/',1);">DualView1</a></li>
-                    <li><a onClick="lr('queue/','', 1, 2);lrb('history/',1);">DualView2</a></li>
-					<li><a onClick="lr('config/','', 0, 0);">Config</a></li>
+					<li><a href="#queue" onClick="lr('queue/', '', 1, 0);">Queue</a></li>
+					<li><a href="#history" onClick="lr('history/','', 1, 0);">History</a></li>
+                    <li><a href="#dv1" onClick="lr('queue/','', 1, 1);lrb('history/',1);">DualView1</a></li>
+                    <li><a href="#dv2" onClick="lr('queue/','', 1, 2);lrb('history/',1);">DualView2</a></li>
+					<li><a href="#config" onClick="lr('config/','', 0, 0);">Config</a></li>
 					<ul class="secondul">
-						<li><a class="config" onClick="lr('config/general/','', 0, 0);">General</a></li>
-						<li><a class="config" onClick="lr('config/directories/','', 0, 0);">Directories</a> </li>
-						<li><a class="config" onClick="lr('config/switches/','', 0, 0);">Switches</a> </li>
-						<li><a class="config" onClick="lr('config/server/','', 0, 0);">Servers</a> </li>
-						<li><a class="config" onClick="lr('config/scheduling/','', 0, 0);">Scheduling</a> </li>
-						<li><a class="config" onClick="lr('config/rss/','', 0, 0);">RSS</a> </li>
-						<li><a class="config" onClick="lr('config/email/','', 0, 0);">Email</a></li>
-						<li><a class="config" onClick="lr('config/newzbin/', 0, 0);">Newzbin</a></li>
+						<li><a class="config" href="#config-general" onClick="lr('config/general/','', 0, 0);">General</a></li>
+						<li><a class="config" href="#config-directories" onClick="lr('config/directories/','', 0, 0);">Directories</a> </li>
+						<li><a class="config" href="#config-switches" onClick="lr('config/switches/','', 0, 0);">Switches</a> </li>
+						<li><a class="config" href="#config-server" onClick="lr('config/server/','', 0, 0);">Servers</a> </li>
+						<li><a class="config" href="#config-scheduling" onClick="lr('config/scheduling/','', 0, 0);">Scheduling</a> </li>
+						<li><a class="config" href="#config-rss" onClick="lr('config/rss/','', 0, 0);">RSS</a> </li>
+						<li><a class="config" href="#config-email" onClick="lr('config/email/','', 0, 0);">Email</a></li>
+						<li><a class="config" href="#config-newzbin" onClick="lr('config/newzbin/', 0, 0);">Newzbin</a></li>
 					</ul>
-					<li><a onClick="lr('connections/','', 1, 0);">Connections</a></li>
+					<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Connections</a></li>
 					<li><a class="bold" id="status2" onClick="toggle()">$statusstr2</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
 				</ul>
@@ -567,6 +586,9 @@ function loadingJSON(){
     				            <option value="1">+Repair</option>
     				            <option value="2">+Unpack</option>
     				            <option value="3" selected>+Delete</option>
+    				            <option value="4">R+Script</option>
+    				            <option value="5">U+Script</option>
+    				            <option value="6">D+Script</option>
     				            </select>
 
     				            <input class="submitindent2" type="submit" value="Add">
@@ -585,6 +607,9 @@ function loadingJSON(){
     				            <option value="1">+Repair</option>
     				            <option value="2">+Unpack</option>
     				            <option value="3" selected>+Delete</option>
+    				            <option value="4">R+Script</option>
+    				            <option value="5">U+Script</option>
+    				            <option value="6">D+Script</option>
     				        </select>
 
     				        <input class="submitindent2" type="submit" value="Add">
@@ -602,6 +627,9 @@ function loadingJSON(){
     				            <option value="1">+Repair</option>
     				            <option value="2">+Unpack</option>
     				            <option value="3" selected>+Delete</option>
+    				            <option value="4">R+Script</option>
+    				            <option value="5">U+Script</option>
+    				            <option value="6">D+Script</option>
     				        </select>
     				      <input class="submitindent2" type="submit" value="Add">
     				    </fieldset>

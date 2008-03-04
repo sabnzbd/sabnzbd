@@ -56,6 +56,7 @@
     <tr>
 		<!--<th mochi:format="str"></th>-->
 		<th mochi:format="str" id="order">Order</th>
+        <!--#if $script_list#--><th>Script</th><!--#end if#-->
 		<th mochi:format="str">Name</th>
 		<th mochi:format="str">Percentage</th>
 		<th mochi:format="str">Remain/Total</th>
@@ -78,25 +79,39 @@
 		<!--<td><input type="checkbox" "></td>checked-->
 	<td>
 <form> 
+			
 
-           
             <select onclick="killTimer(timerId)" onchange="javascript:changequeuedetails('queue/'+this.options[this.selectedIndex].value)">
             <!--#for $i in xrange($noofslots)#-->
                 <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
             <!--#end for#-->
-            </select><select onclick="killTimer(timerId2)" onchange="javascript:changequeueoptions(this.options[this.selectedIndex].value)">
-                <option value="change_opts?nzo_id=$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
-                <option value="change_opts?nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
-                <option value="change_opts?nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
-                <option value="change_opts?nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
-				</select>
-            
-			<span class="del"> 
+            </select>
+            <select onclick="killTimer(timerId2)" onchange="javascript:changequeuedetails('queue/change_opts?nzo_id='+this.options[this.selectedIndex].value)">
+                <option value="$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
+                <option value="$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
+                <option value="$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
+                <option value="$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
+			</select>
+                
+
+            <span class="del"> 
 			<a onClick="deletequeueitem('$slot.nzo_id');"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a>
 			</form>
-			</td>		
-		
-		
+            </td>
+        <!--#if $script_list#-->            
+		<td>
+            
+                <form>
+                <select onchange="javascript:changequeuedetails('queue/change_script?nzo_id=$slot.nzo_id&script='+this.options[this.selectedIndex].value);">
+                <!--#for $sc in $script_list#-->
+                    <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                <!--#end for#-->
+                </select>
+                </form>
+		</td>
+            <!--#end if#-->
+
+        
 		<td>
             <span class="filename"><a onClick="javascript:toggle_verbosity('$slot.nzo_id')"><span id="name_$slot.nzo_id">$slot.filename</span></a></span>
 		
@@ -120,17 +135,17 @@
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.finished#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="finished" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td>Finished</td><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+            <tr id="finished" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td>Finished</td><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.active#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="active" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td><a onClick="changequeuedetails('queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id')"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a> Active</td><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
+            <tr id="active" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td><a onClick="changequeuedetails('queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id')"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a> Active</td><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.queued#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="waiting" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td>Waiting</td><td>$line.filename (set: $line.set)</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+            <tr id="waiting" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td>Waiting</td><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename (set: $line.set)</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
         <!--#end for#-->
     <!--#end for#--><!--#end if#-->
     </table>
