@@ -215,6 +215,8 @@ class MainPage(ProtectedClass):
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             info['newzbinDetails'] = True
 
+        info['script_list'] = ListScripts()
+
         info['warning'] = ""
         if not sabnzbd.CFG['servers']:
             info['warning'] = "No Usenet server defined, please check Config-->Servers<br/>"
