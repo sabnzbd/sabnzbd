@@ -660,8 +660,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         logging.exception('[%s] Unknown exception while' + \
                           ' running par2_repair on set %s',
                            __NAME__, setname)
-    finally:
-        return readd, result
+
+    return readd, result
 
 
 def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
