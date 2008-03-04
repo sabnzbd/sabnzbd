@@ -588,7 +588,7 @@ def getTVInfo(match1, match2,dirname):
             epNo2Temp = '-%s' % (epNo2)
         else:
             epNo2Temp = ''
-        epName = '%s%s - %s' % (epNo, epNo2Temp, spl[1].strip())
+        epName = '%s%s - %s' % (epNo, epNo2Temp, spl[1].strip('_').strip().strip('_'))
     except:
         epName = epNo
         
@@ -623,7 +623,7 @@ def getTVInfo(match1, match2,dirname):
     if sabnzbd.TV_SORT == 1:    #\\TV\\ShowName\\Season 1\\
         unique_dir = False
         foldername = season
-    elif sabnzbd.TV_SORT == 2:#\\TV\\ShowName\\Season 1\\Original DirName
+    elif sabnzbd.TV_SORT == 0:#\\TV\\ShowName\\Season 1\\Original DirName
         foldername = dirname
         
     return (title, season, foldername, unique_dir)
@@ -661,6 +661,9 @@ def getTVDVDInfo(match,match2,dirname):
         foldername = 'DVD %s' % (season,dvd) # season#
         unique_dir = True
         
+    elif sabnzbd.TV_SORT == 0:#\\TV\\ShowName\\Season 1\\Original DirName
+        foldername = dirname
+        
     season = 'Season %s' % (season) # season#
 
     return (title, season, foldername, unique_dir)
@@ -688,6 +691,10 @@ def formatFolders(dirpath, dirname, match1, match2 = None, dvd = False):
     
     try:  
         if title and season and foldername:
+            if new_dirpath.lower().find('tv') > 0:
+                pass
+            else:
+                new_dirpath = create_dir(os.path.join(new_dirpath, 'TV'))
             new_dirpath = create_dir(os.path.join(new_dirpath, title))
             if sabnzbd.TV_SORT_SEASONS and season != foldername:
                 new_dirpath = create_dir(os.path.join(new_dirpath, season))
