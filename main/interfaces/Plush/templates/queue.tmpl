@@ -43,7 +43,7 @@ def drawProgressBar (mbleft, mb):
 		return
 	percentage = int(100 - mbleft / mb * 100)
 	postion =  int(120 - 120.0 / 100.0 * percentage)
-	return '<div class="progressBarProgress" style="width: '+str(percentage)+'%;"></div>'
+	return '<div class="progressBarProgress" style="display:inline; width: '+str(percentage)+'%;"></div>'
 %> 
 
 
@@ -75,6 +75,16 @@ def drawProgressBar (mbleft, mb):
 	<!--#for $slot in $slotinfo#-->
 		<!--#set $odd = not $odd#-->
 		<tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
+			<td class="itemTitle nzbBullet" title="Average File Age: $slot.avg_age">
+				<span><a onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">$slot.filename</a></span>
+			</td>
+			<td class="itemMBRemain">
+				<div class="progressBar percentImage1" id="element1">
+				<sub style="float:right;z-index:301;"><%=int(float(slot['mb']))%></sub>
+				<sup style="float:left;z-index:300;"><strong><%=int(float(slot['mbleft']))%></strong></sup>
+					<%=drawProgressBar(slot['mbleft'],slot['mb'])%>
+				</div>
+			</td>
 			<td class="first itemTTD" title="Average File Age: $slot.avg_age">
 				<small>
 					<!--#if $slot.index == 0 #-->
@@ -84,19 +94,6 @@ def drawProgressBar (mbleft, mb):
 						$slot.eta
 					<!--#end if#-->
 				</small>
-			<td class="itemTitle nzbBullet" title="Average File Age: $slot.avg_age">
-				<span><a onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">$slot.filename</a></span>
-			</td>
-			<td>
-				<div class="progressBar percentImage1" id="element1">
-					<%=drawProgressBar(slot['mbleft'],slot['mb'])%>
-				</div>
-			</td>
-			<td class="itemMBRemain">
-				<sup><strong><%=int(float(slot['mbleft']))%></strong></sup>
-				<strong>/</strong>
-				<sub><%=int(float(slot['mb']))%> MB</sub>
-			</td>
 			<td class="last itemDelete">				
 				<select class="post-proc" title="Post-Processing Options" onchange="ChangeProcessingOption('$slot.nzo_id', this.options[this.selectedIndex].value);">
 					<option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->title="Do not post-process the NZB file set">-</option>
@@ -104,11 +101,21 @@ def drawProgressBar (mbleft, mb):
 					<option value="2" <!--#if $slot.unpackopts == "2" then "selected " else ""#-->title="Repair &amp; Unpack the NZB file set">U</option>
 					<option value="3" <!--#if $slot.unpackopts == "3" then "selected " else ""#-->title="Repair, Unpack, &amp; Delete the unneeded remainder of the NZB file set">D</option>
 				</select>
-				<select onchange="ChangeOrder(this.options[this.selectedIndex].value);">
-				<!--#for $i in xrange($noofslots)#-->
-					<option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>#$i</option>
-				<!--#end for#-->
-				</select>
+				<!--#if $script_list#-->
+            		<select onchange="ChangeProcessingScript('$slot.nzo_id', this.options[this.selectedIndex].value);">
+                		<!--#for $sc in $script_list#-->
+                    		<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                		<!--#end for#-->
+                	</select>
+            	<!--#end if#-->
+				
+				<%
+#				<select onchange="ChangeOrder(this.options[this.selectedIndex].value);">
+#				<!--#for $i in xrange($noofslots)#-->
+#					<option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then #  "selected" else ""#-->>#$i</option>
+#				<!--#end for#-->
+#				</select>
+				%>
 				<span class="btnDeleteQueue" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 			</td>
 		</tr>

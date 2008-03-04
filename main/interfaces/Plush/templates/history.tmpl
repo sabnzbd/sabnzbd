@@ -26,10 +26,8 @@ def displayNotices (action):
 		<!--#set $odd = not $odd#-->
 		<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 			<td class="first itemTTD itemTitle <!--#if $line.loaded #-->nzbLoaded<!--#else#-->nzbBullet<!--#end if#--> <!--#if not $line.stages#--> last" colspan="2<!--#end if#-->">
-				<small>$line.added</small>
-				
-				<span>
-				
+
+				<span title="$line.added">
 				<!--#if $line.msgid #-->
 					<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
 				<!--#else#-->

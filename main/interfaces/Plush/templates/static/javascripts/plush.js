@@ -275,6 +275,17 @@ function ChangeProcessingOption (nzo_id,op) {
 	});
 }
 
+// change post-processing options within queue
+function ChangeProcessingScript (nzo_id,op) {
+	$.ajax({
+		type: "GET",
+		url: 'queue/change_script?dummy='+Math.random()+'&nzo_id='+nzo_id+'&script='+op,
+	  	success: function(result){
+   			return LoadTheQueue(result);
+		}
+	});
+}
+
 // change queue order
 // switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id
 function ChangeOrder (result) {
