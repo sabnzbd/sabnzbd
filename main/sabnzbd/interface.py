@@ -145,6 +145,11 @@ def ListScripts():
                     lst.append(sc)
     return lst
 
+def Raiser(root, dummy):
+    if dummy:
+        root += '?dummy=' + dummy
+    return cherrypy.HTTPRedirect(root)
+
 
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
@@ -264,11 +269,7 @@ class MainPage(ProtectedClass):
             script = sabnzbd.DIRSCAN_SCRIPT
         if pp.isdigit() and nzbfile.filename and nzbfile.value:
             sabnzbd.add_nzbfile(nzbfile, int(pp), script)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def shutdown(self):
@@ -281,20 +282,12 @@ class MainPage(ProtectedClass):
     @cherrypy.expose
     def pause(self, dummy = None):
         sabnzbd.pause_downloader()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def resume(self, dummy = None):
         sabnzbd.resume_downloader()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def debug(self):
@@ -471,12 +464,8 @@ class NzoPage(ProtectedClass):
     @cherrypy.expose
     def tog_verbose(self, dummy = None):
         self.__verbose = not self.__verbose
+        raise Raiser(self.__root, dummy)
 
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
 #------------------------------------------------------------------------------
 class QueuePage(ProtectedClass):
     def __init__(self, web_dir, root, prim):
@@ -563,7 +552,7 @@ class QueuePage(ProtectedClass):
             finished = []
             active = []
             queued = []
-            if self.__verbose or self.__verboseList.count(nzo_id):
+            if self.__verbose or nzo_id in self.__verboseList:
 
                 date_combined = 0
                 num_dates = 0
@@ -616,6 +605,8 @@ class QueuePage(ProtectedClass):
 
         if slotinfo:
             info['slotinfo'] = slotinfo
+        else:
+            self.__verboseList = []
 
         for nzo_id in self.__nzo_pages[:]:
             if nzo_id not in nzo_ids:
@@ -632,40 +623,23 @@ class QueuePage(ProtectedClass):
     def delete(self, uid = None, dummy = None):
         if uid:
             sabnzbd.remove_nzo(uid, False)
-
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def purge(self, dummy = None):
         sabnzbd.remove_all_nzo()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def removeNzf(self, nzo_id = None, nzf_id = None, dummy = None):
         if nzo_id and nzf_id:
             sabnzbd.remove_nzf(nzo_id, nzf_id)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def tog_verbose(self, dummy = None):
         self.__verbose = not self.__verbose
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def tog_uid_verbose(self, uid, dummy = None):
@@ -673,41 +647,25 @@ class QueuePage(ProtectedClass):
             self.__verboseList.remove(uid)
         else:
             self.__verboseList.append(uid)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def tog_shutdown(self, dummy = None):
         if os.name == 'nt':
             sabnzbd.AUTOSHUTDOWN = not sabnzbd.AUTOSHUTDOWN
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def switch(self, uid1 = None, uid2 = None, dummy = None):
         if uid1 and uid2:
             sabnzbd.switch(uid1, uid2)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def change_opts(self, nzo_id = None, pp = None, dummy = None):
         if nzo_id and pp and pp.isdigit():
             sabnzbd.change_opts(nzo_id, int(pp))
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def change_script(self, nzo_id = None, script = None, dummy = None):
@@ -715,11 +673,7 @@ class QueuePage(ProtectedClass):
             if script == 'None':
                 script = None
             sabnzbd.change_script(nzo_id, script)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def shutdown(self):
@@ -732,38 +686,22 @@ class QueuePage(ProtectedClass):
     @cherrypy.expose
     def pause(self, dummy = None):
         sabnzbd.pause_downloader()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def resume(self, dummy = None):
         sabnzbd.resume_downloader()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def sort_by_avg_age(self, dummy = None):
         sabnzbd.sort_by_avg_age()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def sort_by_name(self, dummy = None):
         sabnzbd.sort_by_name()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
 class HistoryPage(ProtectedClass):
     def __init__(self, web_dir, root, prim):
@@ -828,39 +766,23 @@ class HistoryPage(ProtectedClass):
     @cherrypy.expose
     def purge(self, dummy = None):
         sabnzbd.purge_history()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def delete(self, job=None, dummy = None):
         if job:
             sabnzbd.purge_history(job)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def reset(self, dummy = None):
         sabnzbd.reset_byte_counter()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def tog_verbose(self, dummy = None):
         self.__verbose = not self.__verbose
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
 #------------------------------------------------------------------------------
 class ConfigPage(ProtectedClass):
@@ -897,11 +819,7 @@ class ConfigPage(ProtectedClass):
         init_ok = sabnzbd.initialize()
         if init_ok:
             sabnzbd.start()
-            if dummy:
-                root = self.__root+'?dummy='+dummy
-            else:
-                root = self.__root
-            raise cherrypy.HTTPRedirect(root)
+            raise Raiser(self.__root, dummy)
         else:
             return "SABnzbd restart failed! See logfile(s)."
 
@@ -999,11 +917,7 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['enable_tv_sorting'] = int(enable_tv_sorting)
         sabnzbd.CFG['misc']['tv_sort_seasons'] = int(tv_sort_seasons)
 
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
 #------------------------------------------------------------------------------
 class ConfigSwitches(ProtectedClass):
@@ -1086,11 +1000,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['auto_browser'] = int(auto_browser)
         sabnzbd.CFG['misc']['ignore_samples'] = int(ignore_samples)
 
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
 #------------------------------------------------------------------------------
 
@@ -1194,11 +1104,7 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
 
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
 
 #------------------------------------------------------------------------------
@@ -1266,11 +1172,7 @@ class ConfigServer(ProtectedClass):
                 sabnzbd.CFG['servers'][server]['connections'] = connections
                 sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
                 sabnzbd.CFG['servers'][server]['ssl'] = ssl
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
     @cherrypy.expose
     def saveServer(self, server = None, host = None, port = None, username = None, timeout = None,
@@ -1303,21 +1205,13 @@ class ConfigServer(ProtectedClass):
             sabnzbd.CFG['servers'][server]['timeout'] = timeout
             sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
             sabnzbd.CFG['servers'][server]['ssl'] = ssl
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
     @cherrypy.expose
     def delServer(self, *args, **kwargs):
         if 'server' in kwargs and kwargs['server'] in sabnzbd.CFG['servers']:
             del sabnzbd.CFG['servers'][kwargs['server']]
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
 #------------------------------------------------------------------------------
 
@@ -1355,31 +1249,19 @@ class ConfigRss(ProtectedClass):
             match_multiple = bool(int(match_multiple))
             sabnzbd.add_rss_feed(uri, text_filter, re_filter, unpack_opts,
                                  match_multiple)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
     @cherrypy.expose
     def del_rss_feed(self, uri_id = None, dummy = None):
         if uri_id:
             sabnzbd.del_rss_feed(uri_id)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
     @cherrypy.expose
     def del_rss_filter(self, uri_id = None, filter_id = None, dummy = None):
         if uri_id and filter_id:
             sabnzbd.del_rss_filter(uri_id, filter_id)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
 #------------------------------------------------------------------------------
 
@@ -1411,21 +1293,13 @@ class ConfigScheduling(ProtectedClass):
         if minute and hour  and dayofweek and action:
             sabnzbd.CFG['misc']['schedlines'].append('%s %s %s %s' %
                                               (minute, hour, dayofweek, action))
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
     @cherrypy.expose
     def delSchedule(self, line = None, dummy = None):
         if line and line in sabnzbd.CFG['misc']['schedlines']:
             sabnzbd.CFG['misc']['schedlines'].remove(line)
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
 #------------------------------------------------------------------------------
 
@@ -1471,38 +1345,22 @@ class ConfigNewzbin(ProtectedClass):
         sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
         sabnzbd.CFG['newzbin']['bookmark_rate'] = bookmark_rate
 
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
     @cherrypy.expose
     def getBookmarks(self, dummy = None):
         sabnzbd.getBookmarksNow()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def showBookmarks(self, dummy = None):
         self.__bookmarks = sabnzbd.getBookmarksList()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def hideBookmarks(self, dummy = None):
         self.__bookmarks = []
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
 
 #------------------------------------------------------------------------------
@@ -1567,23 +1425,13 @@ class ConnectionInfo(ProtectedClass):
     @cherrypy.expose
     def disconnect(self, dummy = None):
         sabnzbd.disconnect()
-
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def testmail(self, dummy = None):
         logging.info("Sending testmail")
         self.__lastmail= email_send("SABnzbd testing email connection", "All is OK")
-
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def showlog(self):
@@ -1603,20 +1451,16 @@ class ConnectionInfo(ProtectedClass):
     @cherrypy.expose
     def clearwarnings(self, dummy = None):
         sabnzbd.GUIHANDLER.clear()
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        raise cherrypy.HTTPRedirect(root)
+        raise Raiser(self.__root, dummy)
 
 
-def saveAndRestart(redirect_root):
+def saveAndRestart(redirect_root, dummy):
     save_configfile(sabnzbd.CFG)
     sabnzbd.halt()
     init_ok = sabnzbd.initialize()
     if init_ok:
         sabnzbd.start()
-        raise cherrypy.HTTPRedirect(redirect_root)
+        raise Raiser(redirect_root, dummy)
     else:
         return "SABnzbd restart failed! See logfile(s)."
 
@@ -1760,11 +1604,7 @@ class ConfigEmail(ProtectedClass):
         sabnzbd.CFG['misc']['email_endjob'] = email_endjob
         sabnzbd.CFG['misc']['email_full'] = email_full
 
-        if dummy:
-            root = self.__root+'?dummy='+dummy
-        else:
-            root = self.__root
-        return saveAndRestart(root)
+        return saveAndRestart(self.__root, dummy)
 
 
 def std_time(when):
