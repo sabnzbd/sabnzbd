@@ -216,6 +216,7 @@ class MainPage(ProtectedClass):
             info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts()
+        info['script'] = sabnzbd.DIRSCAN_SCRIPT
 
         info['warning'] = ""
         if not sabnzbd.CFG['servers']:
