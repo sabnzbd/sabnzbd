@@ -99,8 +99,22 @@
   <fieldset class="EntryFieldSet">
  
    <legend>Sorting Directories</legend>
-    <strong>TV Sorting:</strong><br/>
-    <small>Choose a sorting option</small><br/>
+   <table>
+    <tr><td><strong>Enable TV Sorting:</strong></td>
+        <td><input type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
+            <input type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small><small>Enable folder sorting.</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    <tr><td><strong>Enable season folders:</strong></td>
+        <td><input type="radio" name="tv_sort_seasons" value="0" <!--#if $tv_sort_seasons == 0 then "checked=1" else ""#--> /> No
+            <input type="radio" name="tv_sort_seasons" value="1" <!--#if $tv_sort_seasons > 0 then "checked=1" else ""#--> /> Yes</td>
+    </tr><tr><td colspan="2"><small><small>Enable sorting into season folders.</small></td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
+
+    </table>
+    <strong>Folder Naming:</strong><br/>
+    <small>Choose a foldernaming option</small><br/>    
 	<select name="tv_sort" id="tvsort">
 		<!--#set $i = 0 #-->
 	    <!--#for $tvline in $tvsort_list#-->

@@ -43,7 +43,39 @@
     			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="nzb_backup_dir" value="$nzb_backup_dir">
             </div>
         </fieldset>
+        
+        <h2>Folder Sorting</h2>
+         <fieldset>
+            <div class="row">
+    		    <label>Enable TV Sorting:</label><br/><br/>
+                <input type="hidden" id="enable_tv_sorting" name="enable_tv_sorting" value="$enable_tv_sorting">
+                <div class="toggle" onclick="toggleValue('enable_tv_sorting')" <!--#if $enable_tv_sorting > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+            </div>
+            <div class="row">
+    		    <label>Enable season folders:</label><br/><br/>
+                <input type="hidden" id="tv_sort_seasons" name="tv_sort_seasons" value="$tv_sort_seasons">
+                <div class="toggle" onclick="toggleValue('tv_sort_seasons')" <!--#if $tv_sort_seasons > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+            </div>
+            
+            <div class="row">
 
+		    <label>Folder Naming:</label><br/><br/>
+            
+			<select style="margin:0px;padding:0px;margin-left:15px;" id="webdir" name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
+			    <!--#for $tvline in $tvsort_list#-->
+			        <!--#if int($tv_sort) == $i #-->
+			            <option value="$i" selected>$tvline</option>
+			        <!--#else#-->
+			            <option value="$i">$tvline</option>
+			        <!--#end if#-->
+                    <!--#set $i = $i+1 #-->
+			    <!--#end for#-->
+			</select>
+    		</div>
+            
+        </fieldset>        
+
+            
         <!--<a class="whiteButton" type="submit" >Search</a>-->
         <input type="submit" onClick="javascript:history.back();submitconfig('config/directories/saveDirectories', 'Directories')" value="Save Changes">
     </form>

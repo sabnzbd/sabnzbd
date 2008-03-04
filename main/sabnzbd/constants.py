@@ -78,11 +78,15 @@ DEF_QRATE        = 0
 MIN_DECODE_QUEUE = 5
 MAX_DECODE_QUEUE = 10
 MAX_WARNINGS     = 20
+            
+TVSORTINGLIST = [ \
+            'Original Name',
+            'No Folder',\
+            '01 - EpName', \
+            '1x01 - EpName', \
+            'S01E01 - EpName', \
+            '101 - EpName', \
+            'Episode 1 - EpName']
 
-TVSORTINGLIST = ['None', '\\TV\\ShowName\\Season 1\\01 - EpName\\', \
-            '\\TV\\ShowName\\Season 1\\Episode 01 - EpName\\', \
-            '\\TV\\ShowName\\1x01 - EpName\\', \
-            '\\TV\\ShowName\\S01E01 - EpName\\', \
-            '\\TV\\ShowName\\101 - EpName\\']
 
 IGNORE_SAMPLE_LIST = ['.sample', '-sample', 'sample-']

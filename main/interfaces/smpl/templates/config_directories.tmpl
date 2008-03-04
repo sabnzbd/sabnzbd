@@ -66,7 +66,21 @@
 <fieldset class="EntryFieldSet">
 <legend>Sorting directories</legend>
 <hr />
-            <label>TV Sorting:</label>
+
+
+		    <label>Enable TV Sorting:</label>
+		    <input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
+		    <span class="tips">Enable folder sorting.</span>
+		<br class="clear" />
+        
+		    <label>Enable season folders:</label>
+		    <input class="radio" type="radio" name="tv_sort_seasons" value="0" <!--#if $tv_sort_seasons == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="tv_sort_seasons" value="1" <!--#if $tv_sort_seasons > 0 then "checked=1" else ""#--> /> Yes
+		    <span class="tips">Enable sorting into season folders.</span>
+		<br class="clear" />
+        
+            <label>Folder Naming:</label>
 			<select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
 			    <!--#for $tvline in $tvsort_list#-->
 			        <!--#if int($tv_sort) == $i #-->
@@ -77,7 +91,7 @@
                     <!--#set $i = $i+1 #-->
 			    <!--#end for#-->
 			</select>
-			<span class="tips">Choose a sorting option</span>
+			<span class="tips">Choose a foldernaming option</span>
 		<br class="clear" />
 
 </fieldset>

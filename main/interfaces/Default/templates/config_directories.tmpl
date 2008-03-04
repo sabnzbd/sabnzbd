@@ -86,19 +86,36 @@
   </fieldset>
   <fieldset class="EntryFieldSet">
   <legend>Sorting directories</legend>
-            <strong>TV Sorting:</strong><br />
-            Choose a sorting option<br />
-			<select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
-			    <!--#for $tvline in $tvsort_list#-->
-			        <!--#if int($tv_sort) == $i #-->
-			            <option value="$i" selected>$tvline</option>
-			        <!--#else#-->
-			            <option value="$i">$tvline</option>
-			        <!--#end if#-->
-                    <!--#set $i = $i+1 #-->
-			    <!--#end for#-->
-			</select>
+  
+    <strong>Enable TV Sorting:</strong><br>
+    Enable folder sorting.<br>
+    <input type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Enable season folders:</strong><br>
+    Enable sorting into season folders.<br>
+    <input type="radio" name="tv_sort_seasons" value="0" <!--#if $tv_sort_seasons == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="tv_sort_seasons" value="1" <!--#if $tv_sort_seasons > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+  
+  
+    <strong>Folder Naming:</strong><br />
+    Choose a foldernaming option<br />
+    <select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
+        <!--#for $tvline in $tvsort_list#-->
+            <!--#if int($tv_sort) == $i #-->
+                <option value="$i" selected>$tvline</option>
+            <!--#else#-->
+                <option value="$i">$tvline</option>
+            <!--#end if#-->
+            <!--#set $i = $i+1 #-->
+        <!--#end for#-->
+    </select>
 </fieldset>
+
+
 </div><br>
 <input type="submit" size="40" value="Save Changes">
 </form>

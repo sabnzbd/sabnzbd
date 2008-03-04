@@ -416,41 +416,16 @@ class NzbObject(TryList):
             if sabnzbd.CREATE_CAT_SUB:
                 self.__dirprefix.append(cat_tail)
 
-        if sabnzbd.TV_SORT:
-            match1, match2 = checkForTVShow(self.__dirname)
-            if match1:
-                title, season, epName = getTVInfo(match1, match2, self.__dirname)
-                if 'TV' not in self.__dirprefix:
-                    self.__dirprefix.append('TV')
-                self.__dirprefix.append(title)
-                if epName:
-                    self.__dirprefix.append(season)
-                    self.__dirname = epName
-                else: #if there is no epname or number, use season as dir name
-                    self.__dirname = season
-            else:
-                dvdmatch = []
-                dvdmatch = checkForTVDVD(self.__dirname)
-                if dvdmatch:
-                    title, season, dvd = getTVDVDInfo(dvdmatch, self.__dirname)
-                    if title and season: #if there is no title or season, it is likely not to be a TV show
-                        if 'TV' not in self.__dirprefix:
-                            self.__dirprefix.append('TV')
-                        self.__dirprefix.append(title)
-                        if dvd:
-                            self.__dirprefix.append(season)
-                            self.__dirname = dvd
-                        else: #if there is no dvd field or number, use season as dir name
-                            self.__dirname = season
+
+                        
 
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
-        print 'autosort: %s' % (sabnzbd.AUTO_SORT)
+
         if sabnzbd.AUTO_SORT:
             self.__files.sort(cmp=_nzf_cmp_date)
         else:
-            print 'no date sort, sorting alphabetically'
             self.__files.sort(cmp=_nzf_cmp_name)
 
     ## begin nzo.Mutators #####################################################
@@ -678,7 +653,7 @@ class NzbObject(TryList):
 
     def get_filename(self):
         return self.__filename
-
+        
     def get_cat(self):
         if self.__extra1 == 'a':
             # Compatibility with older queues
@@ -878,129 +853,4 @@ def SplitFileName(name):
         return name.strip(), ""
     return "", ""
 
-
-def checkForTVShow(filename):
-    """
-    Regular Expression match for TV episodes named either 1x01 or S01E01
-    Returns the MatchObject if a match is made
-    """
-    regularexpressions = [re.compile('(\w+)x(\d+)'),
-                          re.compile('[Ss](\d+)[\.\-]?[Ee](\d+)')]
-    match2 = None
-    for regex in regularexpressions:
-        match1 = regex.search(filename)
-        if match1:
-            match2 = regex.search(filename,match1.end())
-            return match1, match2
-    return None, None
-
-def checkForTVDVD(filename):
-    """
-    Regular Expression match for TV DVD's such as ShowName - Season 1 [DVD 1]
-    Returns the MatchObject if a match is made
-    """
-    regularexpressions = [re.compile('Season (\d+) \[?DVD\s?(\d+)(\/\d)?\]?')]
-    for regex in regularexpressions:
-        match = regex.search(filename)
-
-    if match:
-        return match
-    return None
-
-
-def getTVInfo(match1, match2,dirname):
-    """
-    Returns Title, Season and Episode naming from a REGEX match
-    """
-    title = match1.start()
-    title = dirname[0:title]
-    title = title.replace('.', ' ')
-    title = title.strip().strip('-').strip()
-    title = title.title() # title
-
-    season = match1.group(1) # season number
-    epNo = int(match1.group(2)) # episode number
-
-    if epNo < 10:
-        epNo = '0%s' % (epNo)
-
-    if match2: #match2 is only present if a second REGEX match has been made
-        epNo2 = int(match2.group(2)) # two part episode#
-        if int(epNo2) < 10:
-            epNo2 = '0%s' % (epNo)
-    else:
-        epNo2 = ''
-
-    spl = dirname[match1.start():].split(' - ',2)
-
-    try:
-        if match2:
-            epNo2Temp = '-%s' % (epNo2)
-        else:
-            epNo2Temp = ''
-        epName = '%s%s - %s' % (epNo, epNo2Temp, spl[1].strip())
-    except:
-        epName = epNo
-
-    if sabnzbd.TV_SORT == 1:    #\\TV\\ShowName\\Season 1\\01 - EpName\\
-        if season == 'S' or season == 's':
-            season = 'Specials'
-        else:
-            season = 'Season %s' % (season) # season#
-
-    elif sabnzbd.TV_SORT == 2:    #\\TV\\ShowName\\Season 1\\Episode 01 - EpName\\
-        if season == 'S' or season == 's':
-            season = 'Specials'
-            epName = 'Number %s' % (epName)
-        else:
-            season = 'Season %s' % (season) # season#
-            epName = 'Episode %s' % (epName)
-
-    elif sabnzbd.TV_SORT == 3:  #\\TV\\ShowName\\1x01 - EpName\\
-        season = '%sx%s' % (season,epName) # season#
-        epName=None
-    elif sabnzbd.TV_SORT == 4:  #\\TV\\ShowName\\S1E01 - EpName\\
-        if season == 'S' or season == 's':
-            season = 'S%s' % (epName)
-        else:
-            if int(season) < 10:
-                season = '0%s' % (int(season))
-            season = 'S%sE%s' % (season,epName) # season#
-        epName=None
-    elif sabnzbd.TV_SORT == 5:  #\\TV\\ShowName\\101 - EpName\\
-        season = '%s%s' % (season,epName) # season#
-        epName=None
-
-
-    return (title, season, epName)
-
-def getTVDVDInfo(match,dirname):
-    """
-    Returns Title, Season and DVD Number naming from a REGEX match
-    """
-    title = match.start()
-    title = dirname[0:title]
-    title = title.replace('.', ' ')
-    title = title.strip().strip('-').strip()
-    title = title.title() # title
-    season = int(match.group(1))
-    dvd = match.group(2) # dvd number
-
-    if sabnzbd.TV_SORT == 1 or sabnzbd.TV_SORT == 2:    #\\TV\\ShowName\\Season 1\\DVD 1\\
-        season = 'Season %s' % (season) # season#
-        dvd = 'DVD %s' % (dvd) # dvd number#
-    elif sabnzbd.TV_SORT == 3:  #\\TV\\ShowName\\1xDVD1\\
-        season = '%sxDVD%s' % (season,dvd) # season#
-        dvd=None
-    elif sabnzbd.TV_SORT == 4:  #\\TV\\ShowName\\S01DVD1\\
-        if season < 10:
-            season = '0%s' % (int(season))
-        season = 'S%sDVD%s' % (season,dvd) # season#
-        dvd=None
-    elif sabnzbd.TV_SORT == 5:  #\\TV\\ShowName\\1DVD1\\
-        season = '%sDVD%s' % (season,dvd) # season#
-        dvd=None
-
-
-    return (title, season, dvd)
 

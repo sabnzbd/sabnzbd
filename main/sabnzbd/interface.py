@@ -920,7 +920,8 @@ class ConfigDirectories(ProtectedClass):
         config['script_dir'] = sabnzbd.CFG['misc']['script_dir']
         config['my_home'] = sabnzbd.DIR_HOME
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
-
+        config['enable_tv_sorting'] = sabnzbd.CFG['misc']['enable_tv_sorting']
+        config['tv_sort_seasons'] = sabnzbd.CFG['misc']['tv_sort_seasons']
         config['tv_sort'] = sabnzbd.CFG['misc']['tv_sort']
         tvSortList = []
         for tvsort in TVSORTINGLIST:
@@ -935,7 +936,7 @@ class ConfigDirectories(ProtectedClass):
 
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
-                        cache_dir = None, nzb_backup_dir = None, tv_sort = None,
+                        cache_dir = None, nzb_backup_dir = None, tv_sort = None, enable_tv_sorting = False, tv_sort_seasons = True,
                         dirscan_dir = None, dirscan_speed = None, script_dir = None, dummy = None):
 
         (dd, path) = create_real_path('download_dir', sabnzbd.DIR_HOME, download_dir)
@@ -983,6 +984,8 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
         sabnzbd.CFG['misc']['tv_sort'] = int(tv_sort)
+        sabnzbd.CFG['misc']['enable_tv_sorting'] = int(enable_tv_sorting)
+        sabnzbd.CFG['misc']['tv_sort_seasons'] = int(tv_sort_seasons)
 
         if dummy:
             root = self.__root+'?dummy='+dummy
