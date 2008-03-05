@@ -79,10 +79,6 @@ def email_send(header, message):
         if not port:
             port = 25
 
-        if server.lower().endswith('.gmail.com'):
-            # Force usage of Gmail's SSL port
-            port = 465
-
         logging.info("[%s] Connecting to server %s:%s",__NAME__, server, port)
 
         try:
@@ -107,6 +103,19 @@ def email_send(header, message):
             else:
                 logging.error("[%s] Failed to connect to mail server", __NAME__)
                 return failure
+
+        # TLS support
+        if mailconn.ehlo_resp:
+            m = re.search('STARTTLS', mailconn.ehlo_resp, re.IGNORECASE)
+            if m:
+                logging.debug("[%s] TLS mail server detected")
+
+                try:
+                    mailconn.starttls()
+                    mailconn.ehlo()
+                except:
+                    logging.error("[%s] Failed to initiate TLS connection", __NAME__)
+                    return failure
 
         # Message header
         msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % \
