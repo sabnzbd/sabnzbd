@@ -1126,6 +1126,11 @@ class ConfigServer(ProtectedClass):
         config['servers'] = sabnzbd.CFG['servers']
         for svr in config['servers']:
             config['servers'][svr]['password'] = decodePassword(config['servers'][svr]['password'], 'server')
+            
+        if sabnzbd.newswrapper.HAVE_SSL:
+            config['have_ssl'] = 1
+        else:
+            config['have_ssl'] = 0
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
                             searchList=[config],
