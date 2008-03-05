@@ -41,14 +41,13 @@
 </strong></small></div>
 
 <form action="saveDirectories" method="post">
-<div class="EntryBlock">
   <fieldset class="EntryFieldSet">
     <legend>User Directories</legend>
     <small><emp>In "<b style="color:blue">$my_home</b>"</emp><br><br></small>
 
 	<strong>Download Directory:</strong><br/>
 	<small>Location to put unprocessed downloads in</small><br/>
-	<input type="text" size="40" name="download_dir" value="$download_dir"/><br/>
+	<input type="text" size="35" name="download_dir" value="$download_dir"/><br/>
 		&raquo; Minimum free space:
   		<input type="text" size="10" name="download_free" value="$download_free"/><small> (GB)</small><br/>
   		<small>Auto-pause when free space hits this value</small><br/>
@@ -56,12 +55,12 @@
 	
     <strong>Complete Directory:</strong><br/>
     <small>Location to put completed downloads in</small><br/>
-    <input type="text" size="40" name="complete_dir" value="$complete_dir"/><br/>
+    <input type="text" size="35" name="complete_dir" value="$complete_dir"/><br/>
     <br/>
 		
     <strong>OPTIONAL: Dirscan Directory:</strong><br/>
     <small>Directory to scan for .nzb files</small><br/>
-    <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir"/><br/>
+    <input type="text" size="35" name="dirscan_dir" value="$dirscan_dir"/><br/>
     	&raquo; Dirscan Speed:
     	<input type="text" size="10" name="dirscan_speed" value="$dirscan_speed"><br/>
     	<small>Number of seconds between scans for .nzb files</small><br/>
@@ -69,7 +68,7 @@
 		
     <strong>Directory for user scripts:</strong><br/>
     <small>Directory containing user scripts for post-processing</small><br/>
-    <input type="text" size="40" name="script_dir" value="$script_dir"/><br/>
+    <input type="text" size="35" name="script_dir" value="$script_dir"/><br/>
     		
   </fieldset>
 
@@ -82,17 +81,17 @@
 		
     <strong>Cache Directory:</strong><br/>
     <small>Location for temporary storage</small><br/>
-    <input type="text" size="40" name="cache_dir" value="$cache_dir"/><br/>
+    <input type="text" size="35" name="cache_dir" value="$cache_dir"/><br/>
     <br/>
 		
     <strong>Log Directory:</strong><br/>
     <small>Location of log files for SABnzbd</small><br/>
-    <input type="text" size="40" name="log_dir" value="$log_dir"/><br/>
+    <input type="text" size="35" name="log_dir" value="$log_dir"/><br/>
     <br/>	
 	
 	<strong>OPTIONAL: .nzb Backup Directory:</strong><br/>
     <small>Specify a directory to backup .nzb files to</small><br/>
-    <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir"/><br/>
+    <input type="text" size="35" name="nzb_backup_dir" value="$nzb_backup_dir"/><br/>
  		
   </fieldset>
   
@@ -129,7 +128,6 @@
 
   </fieldset>
   
-</div>
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
      ************************************ -->

@@ -36,15 +36,14 @@
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
 
-<div class="EntryBlock">
   <form action="addServer" method="post">
     <fieldset class="EntryFieldSet">
       <legend>Add Server</legend>
-	<table>
-      <tr><td>Host:</td><td><input type="text" size="26" name="host"></td></tr>
+	<table style="width:200px">
+      <tr><td>Host:</td><td><input type="text" size="22" name="host"></td></tr>
       <tr><td>Port:</td><td><input type="text" size="6" name="port"></td></tr>
-      <tr><td>Username:</td><td><input type="text" size="26" name="username"></td></tr>
-      <tr><td>Password:</td><td><input type="password" size="26" name="password"></td></tr>
+      <tr><td>Username:</td><td><input type="text" size="22" name="username"></td></tr>
+      <tr><td>Password:</td><td><input type="password" size="22" name="password"></td></tr>
       <tr><td>Timeout:</td><td><input type="text" size="6" name="timeout"></td></tr>
       <tr><td>Connections:</td><td><input type="text" size="6" name="connections"></td></tr>
       <tr><td>SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:</td><td><input type="radio" name="ssl" value="0" "checked=1"> No
@@ -56,14 +55,14 @@
     </fieldset>
   </form>
 <!--#for $server in $servers#-->
-  <form action="saveServer" method="post"size="26">
+  <form action="saveServer" method="post"size="22">
     <fieldset class="EntryFieldSet">
       <legend><!--#if int($servers[$server]['ssl']) != 0 #--><img style="float:left" src="../../static/images/icon_config_encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->$server</legend>
-	<table>
-      <tr><td>Host:</td><td><input type="text" size="26" name="host" value="$servers[$server]['host']"/></td></tr>
+	<table style="width:200px">
+      <tr><td>Host:</td><td><input type="text" size="22" name="host" value="$servers[$server]['host']"/></td></tr>
       <tr><td>Port:</td><td><input type="text" size="6" name="port" value="$servers[$server]['port']"/></td></tr>
-      <tr><td>Username:</td><td><input type="text" size="26" name="username" value="$servers[$server]['username']"/></td></tr>
-      <tr><td>Password:</td><td><input type="password" size="26" name="password" value="$servers[$server]['password']"/></td></tr>
+      <tr><td>Username:</td><td><input type="text" size="22" name="username" value="$servers[$server]['username']"/></td></tr>
+      <tr><td>Password:</td><td><input type="password" size="22" name="password" value="$servers[$server]['password']"/></td></tr>
       <tr><td>Timeout:</td><td><input type="text" size="6" name="timeout" value="$servers[$server]['timeout']"/></td></tr>
       <tr><td>Connections:</td><td><input type="text" size="6" name="connections" value="$servers[$server]['connections']"/></td></tr>
       <tr><td>SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:</td><td><input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 or int($have_ssl) == 0 then "checked=1" else ""#--> /> No
@@ -79,7 +78,7 @@
     </fieldset>
   </form>
 <!--#end for#-->
-</div>
+
 
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE

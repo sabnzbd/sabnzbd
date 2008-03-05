@@ -37,10 +37,9 @@
      ************************************ -->
 
 <form action="saveSwitches" method="post">
-<div class="EntryBlock">
   <fieldset class="EntryFieldSet">
     <legend>Processing Switches</legend>
-	<table>
+	<table style="width:200px">
 		<tr><td><strong>Enable Unrar:</strong></td>
 	    	<td><input type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
 	    		<input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes</td></tr>
@@ -102,7 +101,7 @@
 	    <tr><td colspan="2"><small><small>Use following user script as default for all jobs</small></td></tr>
 
 	</table>
-</fieldset>
+  </fieldset>
 
 
   <fieldset class="EntryFieldSet">
@@ -156,7 +155,6 @@
 
 	</table>
   </fieldset>
-</div>
 
 
 <!-- ************************************
