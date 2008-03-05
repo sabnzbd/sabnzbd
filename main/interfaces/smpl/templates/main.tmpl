@@ -529,7 +529,7 @@ function loadingJSON(){
 				Queue: <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
 			</p>
 		<span id="testing">
-			<a href=""><img id="title" src="static/sabnzbd_small4.gif" alt="sabnzbd+" /></a>
+			<a href=""><img id="title" src="static/sabnzbd_small4.png" alt="sabnzbd+" /></a>
 			<h2>The automatic usenet download tool</h2>
 		</span>
 		</div>
@@ -590,7 +590,13 @@ function loadingJSON(){
     				            <option value="5">U+Script</option>
     				            <option value="6">D+Script</option>
     				            </select>
-
+                            <!--#if $script_list#-->
+                            <select name="script">
+                                <!--#for $sc in $script_list#-->
+                                    <option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                                <!--#end for#-->
+                                </select>
+                            <!--#end if#-->
     				            <input class="submitindent2" type="submit" value="Add">
     				      </fieldset>
     				    </form>
@@ -611,7 +617,13 @@ function loadingJSON(){
     				            <option value="5">U+Script</option>
     				            <option value="6">D+Script</option>
     				        </select>
-
+                            <!--#if $script_list#-->
+                            <select name="script">
+                                <!--#for $sc in $script_list#-->
+                                    <option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                                <!--#end for#-->
+                                </select>
+                            <!--#end if#-->
     				        <input class="submitindent2" type="submit" value="Add">
     				    </fieldset>
     				    </form>
@@ -631,6 +643,13 @@ function loadingJSON(){
     				            <option value="5">U+Script</option>
     				            <option value="6">D+Script</option>
     				        </select>
+                            <!--#if $script_list#-->
+                            <select name="script">
+                                <!--#for $sc in $script_list#-->
+                                    <option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                                <!--#end for#-->
+                                </select>
+                            <!--#end if#-->
     				      <input class="submitindent2" type="submit" value="Add">
     				    </fieldset>
     				    </form>
