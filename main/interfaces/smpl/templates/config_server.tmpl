@@ -2,6 +2,7 @@
 <a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Servers" id="help">Help</a><h3>Server configuration</h3>
 <div class="EntryBlock">
  <!--#for $server in $servers#-->
+ <div class="server">
   <form class="cmxform" id="$servers[$server]['host']$servers[$server]['port']">
     <fieldset class="EntryFieldSet">
       <legend>$server</legend>
@@ -41,6 +42,7 @@
 <span id="submit2$servers[$server]['host']$servers[$server]['port']" class="submitstatus"></span></p>
     </fieldset>
   </form><br class="clear"/>
+  </div>
 <!--#end for#-->
  <form id="addserver" class="cmxform">
     <fieldset class="EntryFieldSet">
