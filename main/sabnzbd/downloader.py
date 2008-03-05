@@ -83,7 +83,7 @@ class BPSMeter:
 
         self.last_update = t
 
-        check_time = t - 20.0
+        check_time = t - 1.0
 
         if self.start_time < check_time:
             self.start_time = check_time
@@ -315,19 +315,17 @@ class Downloader(Thread):
                     continue
 
                 else:
-                    sabnzbd.update_bytes(bytes)
                     if sabnzbd.BANDWITH_LIMIT:
                         bps = sabnzbd.get_bps()
+                        bps += bytes
                         limit = sabnzbd.BANDWITH_LIMIT * 1024
                         if bps > limit:
-                            sleeptime = (bps/limit)
-                            if sleeptime > 0 and sleeptime < 20:
-                                logging.debug("[%s] Sleeping %s second(s)", __NAME__, sleeptime)
+                            sleeptime = (bps/limit)-1
+                            if sleeptime > 0 and sleeptime < 10:
+                                #logging.debug("[%s] Sleeping %s second(s) bps:%s limit:%s", __NAME__,sleeptime, bps/1024, limit/1024)
                                 time.sleep(sleeptime)
-
-
-
-
+                    sabnzbd.update_bytes(bytes)
+                    
                     if nzo:
                         nzo.update_bytes(bytes)
 
