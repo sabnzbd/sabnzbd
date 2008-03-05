@@ -198,7 +198,13 @@ input.schedulesubmit {
 	float: left;
 	margin-bottom: 15px;
 }
-
+.scriptselect{
+	display: block;
+	width: 100px;
+    height:22px;
+	float: left;
+	margin-bottom: 15px;
+}
 form.cmxform label {
 	text-align: left;
 	width: 150px;

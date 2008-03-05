@@ -567,13 +567,6 @@ function loadingJSON(){
                 <div id="Right">
     				<h3>Add new downloads</h3>
                     <br/>
-    				<!--#if $warning#-->
-    				<h2>WARNING</h2>
-    				<b>$warning</b><br/>
-    				<!--#end if#-->
-    				<!--#if $new_release#-->
-    			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br/>
-    				<!--#end if#-->
     				<!--#if $varExists('newzbinDetails')#-->
     				<div class="EntryBlock">
     				    <form class="cmxform" action="addID" method="get">
@@ -581,20 +574,20 @@ function loadingJSON(){
     				      <legend>Add Postid</legend>
     					  <hr />
     				      <input style="width:215px;" type="text" name="id">
-    				            <select class="addnewselect" name="pp">
-    				            <option value="0">None</option>
-    				            <option value="1">+Repair</option>
-    				            <option value="2">+Unpack</option>
-    				            <option value="3" selected>+Delete</option>
-    				            <option value="4">R+Script</option>
-    				            <option value="5">U+Script</option>
-    				            <option value="6">D+Script</option>
-    				            </select>
+                                <select class="addnewselect" name="pp">
+                                <option value="0">None</option>
+                                <option value="1">+Repair</option>
+                                <option value="2">+Unpack</option>
+                                <option value="3" selected>+Delete</option>
+                                <option value="4">R+Script</option>
+                                <option value="5">U+Script</option>
+                                <option value="6">D+Script</option>
+                                </select>
                             <!--#if $script_list#-->
-                            <select name="script">
-                                <!--#for $sc in $script_list#-->
-                                    <option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
-                                <!--#end for#-->
+                                <select name="script" class="scriptselect">
+                                    <!--#for $sc in $script_list#-->
+                                        <option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                                    <!--#end for#-->
                                 </select>
                             <!--#end if#-->
     				            <input class="submitindent2" type="submit" value="Add">
@@ -618,7 +611,7 @@ function loadingJSON(){
     				            <option value="6">D+Script</option>
     				        </select>
                             <!--#if $script_list#-->
-                            <select name="script">
+                            <select class="scriptselect" name="script">
                                 <!--#for $sc in $script_list#-->
                                     <option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
                                 <!--#end for#-->
@@ -644,7 +637,7 @@ function loadingJSON(){
     				            <option value="6">D+Script</option>
     				        </select>
                             <!--#if $script_list#-->
-                            <select name="script">
+                            <select class="scriptselect" name="script">
                                 <!--#for $sc in $script_list#-->
                                     <option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
                                 <!--#end for#-->
@@ -653,6 +646,16 @@ function loadingJSON(){
     				      <input class="submitindent2" type="submit" value="Add">
     				    </fieldset>
     				    </form>
+                        
+    				<!--#if $warning#-->
+    				<h2>WARNING</h2>
+    				<b>$warning</b><br/>
+    				<!--#end if#-->
+    				<!--#if $new_release#-->
+    			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br/>
+    				<!--#end if#-->
+                        
+                        
     				</div>
 
     			</div>
