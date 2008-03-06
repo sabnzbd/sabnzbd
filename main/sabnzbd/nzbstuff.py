@@ -655,7 +655,7 @@ class NzbObject(TryList):
         return self.__filename
         
     def get_cat(self):
-        if self.__extra1 == 'a':
+        if self.__extra1 == 'a' or not self.__extra1:
             # Compatibility with older queues
             return ''
         else:
