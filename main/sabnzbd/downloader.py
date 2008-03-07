@@ -88,13 +88,13 @@ class BPSMeter:
         if self.start_time < check_time:
             self.start_time = check_time
 
-        if self.log_time < check_time:
-            logging.debug("[%s] bps: %s", __NAME__, self.bps)
-            self.log_time = t
-
-        if self.bps < 0.0:
+        if self.bps < 0.01:
             logging.debug("[%s] bps < 0 -> reset", __NAME__)
             self.reset()
+            
+        elif self.log_time < check_time:
+            logging.debug("[%s] bps: %s", __NAME__, self.bps)
+            self.log_time = t
 
     def get_sum(self):
         return self.bytes_sum
@@ -113,6 +113,9 @@ class Downloader(Thread):
 
         # Used for scheduled pausing
         self.paused = paused
+        
+        #used for throttling bandwidth and scheduling bandwidth changes
+        self.bandwith_limit = sabnzbd.BANDWITH_LIMIT
 
         # Used for reducing speed
         self.delayed = False
@@ -179,6 +182,10 @@ class Downloader(Thread):
     def disconnect(self):
         self.force_disconnect = True
 
+    def limit_speed(self, value):
+        if value >= 0:
+            self.bandwith_limit = value
+        
     def run(self):
         self.decoder.start()
 
@@ -315,10 +322,10 @@ class Downloader(Thread):
                     continue
 
                 else:
-                    if sabnzbd.BANDWITH_LIMIT:
+                    if self.bandwith_limit:
                         bps = sabnzbd.get_bps()
                         bps += bytes
-                        limit = sabnzbd.BANDWITH_LIMIT * 1024
+                        limit = self.bandwith_limit * 1024
                         if bps > limit:
                             sleeptime = (bps/limit)-1
                             if sleeptime > 0 and sleeptime < 10:

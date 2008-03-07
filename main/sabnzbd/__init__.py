@@ -920,6 +920,15 @@ def undelay_downloader():
     except NameError:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
 
+@synchronized_CV
+def limit_speed(value):
+    try:
+        DOWNLOADER.limit_speed(int(value))
+        logging.info("[%s] Bandwidth limit set to %s", __NAME__, value)
+    except NameError:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+        
+
 
 ################################################################################
 ## Unsynchronized methods                                                     ##
@@ -997,8 +1006,37 @@ def getBookmarksList():
 def delete_bookmark(msgid):
     if BOOKMARKS and NEWZBIN_BOOKMARKS and NEWZBIN_UNBOOKMARK:
         BOOKMARKS.del_bookmark(msgid)
+        
+        
+def system_shutdown():
+    logging.info("[%s] Performing system shutdown", __NAME__)
 
+    Thread(target=halt).start()
 
+    try:
+        import win32security
+        import win32api
+        import ntsecuritycon
+
+        flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
+        htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
+        id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
+        newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+        win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
+        win32api.InitiateSystemShutdown("", "", 30, 1, 0)
+    finally:
+        os._exit(0)
+        
+def shutdown_program():
+    logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
+    #halt() needs to be called as a thread to stop the scheduler complaining about using .join on the same thread.
+    Thread(target=halt).start()
+    #sleep for 2 seconds just to be sure, can probably be removed
+    sleep(2.0)
+    #Is this needed/the right way to exit? Maybe sys.exit() for a cleaner exit.
+    os._exit(0)
+   
+        
 ################################################################################
 # Data IO                                                                      #
 ################################################################################
@@ -1105,7 +1143,14 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
         SCHED = ThreadedScheduler()
 
         for schedule in schedlines:
-            m, h, d, action_name = schedule.split()
+            arguments = []
+            argument_list = None
+            if schedule.count(' ') > 3:
+                m, h, d, action_name, argument_list = schedule.split(' ', 4)
+            else:
+                m, h, d, action_name = schedule.split(' ', 3)
+            if argument_list:
+                arguments = argument_list.split()
             m = int(m)
             h = int(h)
             if d == '*':
@@ -1117,11 +1162,18 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
                 action = resume_downloader
             elif action_name == 'pause':
                 action = pause_downloader
+            elif action_name == 'shutdown':
+                action = shutdown_program
+            elif action_name == 'speedlimit':
+                action = limit_speed
             else:
                 logging.warning("[%s] Unknown action: %s", __NAME__, ACTION)
+                
+            logging.debug("[%s] scheduling action:%s arguments:%s",__NAME__, action, arguments)
 
+            #(action, taskname, initialdelay, interval, processmethod, actionargs)
             SCHED.addDaytimeTask(action, '', d, None, (h, m),
-                                 SCHED.PM_SEQUENTIAL, [])
+                                 SCHED.PM_SEQUENTIAL, arguments)
 
         if need_rsstask:
             d = range(1, 8) # all days of the week

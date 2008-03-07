@@ -34,26 +34,42 @@
 <form action="addSchedule" method="post">
 <fieldset class="EntryFieldSet">
 <legend>Add schedule</legend>
+ <%import time
+t = time.localtime()
+hour = t[3]
+if hour != 23:
+    hour += 1
+else:
+    hour = 0 %>
+<p>Hour:Minute - Day - Action - Value(Optional)</p>
+<select name="hour">
+<!--#for $i in range(24)#-->
+<option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
+<!--#end for#-->
+</select>
+:
 <select name="minute">
 <!--#for $i in range(60)#-->
 <option value="$i">$i
 <!--#end for#-->
 </select>
-<select name="hour">
-<!--#for $i in range(24)#-->
-<option value="$i">$i
-<!--#end for#-->
-</select>
 <select name="dayofweek">
-<option value="*" selected>*
-<!--#for $i in range(1, 8)#-->
-<option value="$i">$i
-<!--#end for#-->
+<option value="*" selected>Daily
+<option value="1">Mondays
+<option value="2">Tuesdays
+<option value="3">Wednesdays
+<option value="4">Thursdays
+<option value="5">Fridays
+<option value="6">Saturdays
+<option value="7">Sundays
 </select>
 <select name="action">
 <option value="resume">resume
 <option value="pause">pause
+<option value="shutdown">shutdown
+<option value="speedlimit">speedlimit
 </select>
+<input type="text" size="20" name="arguments" value="">
 <p><input type="submit" value="Add Schedule"></p>
 </fieldset>
 </form>
@@ -65,8 +81,28 @@
 <form action="delSchedule" method="post">
 <fieldset class="EntryFieldSet">
 <!--#set $schednum = $schednum+1#-->
-<legend>Task $schednum</legend>
-$line
+<% 
+m, h, day, action = line.split(' ', 3)
+if len(m) == 1:
+    m = '0%s' % m
+if day == "*":
+    day="All Days"
+elif day == 1:
+    day='Monday'
+elif day == 2:
+    day='Tuesday'    
+elif day == 3:
+    day='Wednesday'    
+elif day == 4:
+    day='Thursday' 
+elif day == 5:
+    day='Friday'
+elif day == 6:
+    day='Saturday' 
+elif day == 7:
+    day='Sunday'    
+%>
+Task $schednum: <strong>$h:$m</strong> - $day - $action
 <input type="hidden" name="line" value="$line">
 <input type="submit" value="Remove">
 </fieldset>
