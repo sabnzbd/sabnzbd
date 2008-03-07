@@ -313,6 +313,9 @@ class MainPage(ProtectedClass):
     def api(self, mode='', name=None, pp=0, script=None, output='plain', value = None, dummy = None):
         """Handler for API over http
         """
+        if script == None:
+            script = sabnzbd.DIRSCAN_SCRIPT
+
         if mode == 'qstatus':
             if output == 'json':
                 return json_qstatus()
