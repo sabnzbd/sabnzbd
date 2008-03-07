@@ -122,7 +122,9 @@ function checkrefresh()
 
 		refreshr = element.options[element.selectedIndex].value;
 		//alert(refreshr);
+        if (value){
 		setCookie('smplrefresh',value,360);
+        }
 	}
 }
 
@@ -240,7 +242,7 @@ function loadtitle() {
             }
             else {
                 document.getElementById('Container').style.width = "99%";
-                document.getElementById('Right').style.width = "48%";
+                document.getElementById('Right').style.width = "41%";
                 document.getElementById('Right_bottom').style.width = "48%";
             }
         }
