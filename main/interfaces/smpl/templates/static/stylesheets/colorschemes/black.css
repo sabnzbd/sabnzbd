@@ -50,7 +50,7 @@ a.config{
 color:#666;
 }
 a:hover{
-color:red;
+color:blue;
 }
 
 .paused{background-color:red;padding:2px;color:black;}
@@ -71,9 +71,9 @@ background-color:#444;
 th{background-color:#000;color:white;}
 tr{background-color:#222;}
 
-#finished{background-color:#ffd9d9;}
-#active{background-color:#deffd9;}
-#waiting{background-color:#ffffd9;}
+#finished{background-color:#ff5151; color:black;}
+#active{background-color:#4aff5f; color:black;}
+#waiting{background-color:#fff44a; color:black;}
 
 #delicon{
 color:#fff;

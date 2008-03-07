@@ -242,7 +242,6 @@ function loadtitle() {
                 document.getElementById('Right_bottom').style.width = "48%";
             }
         }
-		if (timerId2 && refresh>=0) clearTimeout ( timerId2 );
         append = '?dummy='+Math.random();
         if (extra){
             append = append+'&'+extra;
@@ -250,6 +249,7 @@ function loadtitle() {
 		var res = doSimpleXMLHttpRequest(url+append);        
 	    res.addCallback(function (res)
 	    {
+          if (timerId2 && refresh>=0) clearTimeout ( timerId2 );
 	      if (pnode != 'Right_bottom') document.getElementById('Right').innerHTML = res.responseText;
           else document.getElementById('Right_bottom').innerHTML = res.responseText;
           if (dual==0) {
@@ -356,14 +356,14 @@ function loadtitle() {
 	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post
 	function submitconfig(extra, saveelement, element, url2, refresh)
 	{
-
+        append = '?dummy='+Math.random();
 		var values = [];
 		var elementt;
 		if (element) elementt = document.getElementById(element);
 		values = getFormValues(elementt);
 
 		var url = ''+extra;
-		var d = doXHR(url,
+		var d = doXHR(url+append,
 	    {
 		    method:'POST',
 		    sendContent:values,
