@@ -41,7 +41,7 @@ if hour != 23:
     hour += 1
 else:
     hour = 0 %>
-<p>Hour:Minute - Day - Action - Value(Optional)</p>
+Hour:<br>
 <select name="hour">
 <!--#for $i in range(24)#-->
 <option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
@@ -53,6 +53,7 @@ else:
 <option value="$i">$i
 <!--#end for#-->
 </select>
+<br>Frequency: <br>
 <select name="dayofweek">
 <option value="*" selected>Daily
 <option value="1">Mondays
@@ -63,12 +64,14 @@ else:
 <option value="6">Saturdays
 <option value="7">Sundays
 </select>
+<br>Action:<br> 
 <select name="action">
 <option value="resume">resume
 <option value="pause">pause
 <option value="shutdown">shutdown
 <option value="speedlimit">speedlimit
 </select>
+<br>Arguments:<br> 
 <input type="text" size="20" name="arguments" value="">
 <p><input type="submit" value="Add Schedule"></p>
 </fieldset>
@@ -106,7 +109,7 @@ Task $schednum: <strong>$h:$m</strong> - $day - $action
 <input type="hidden" name="line" value="$line">
 <input type="submit" value="Remove">
 </fieldset>
-</form>
+</form><br />
 <!--#end for#-->
 </div>
 <div class="footer">

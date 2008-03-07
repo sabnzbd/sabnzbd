@@ -83,7 +83,7 @@ CLEANUP_LIST = []
 IGNORE_SAMPLES = False
 
 UMASK = None
-BANDWITH_LIMIT = 0.0
+BANDWITH_LIMIT = 0
 DEBUG_DELAY = 0
 AUTOBROWSER = None
 DAEMON = None
@@ -1160,10 +1160,13 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
 
             if action_name == 'resume':
                 action = resume_downloader
+                arguments = []
             elif action_name == 'pause':
                 action = pause_downloader
+                arguments = []
             elif action_name == 'shutdown':
                 action = shutdown_program
+                arguments = []
             elif action_name == 'speedlimit':
                 action = limit_speed
             else:
