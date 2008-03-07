@@ -459,7 +459,10 @@ class NzoPage(ProtectedClass):
             elif kwargs['action_key'] == 'Bottom':
                 sabnzbd.move_bottom_bulk(self.__nzo_id, nzf_ids)
 
-        raise cherrypy.HTTPRedirect(self.__root)
+        if 'dummy' in kwargs:
+            raise Raiser(self.__root, kwargs['dummy'])
+        else:
+            raise Raiser(self.__root, '')
 
     @cherrypy.expose
     def tog_verbose(self, dummy = None):
@@ -1127,7 +1130,7 @@ class ConfigServer(ProtectedClass):
         config['servers'] = sabnzbd.CFG['servers']
         for svr in config['servers']:
             config['servers'][svr]['password'] = decodePassword(config['servers'][svr]['password'], 'server')
-            
+
         if sabnzbd.newswrapper.HAVE_SSL:
             config['have_ssl'] = 1
         else:
@@ -1217,7 +1220,11 @@ class ConfigServer(ProtectedClass):
     def delServer(self, *args, **kwargs):
         if 'server' in kwargs and kwargs['server'] in sabnzbd.CFG['servers']:
             del sabnzbd.CFG['servers'][kwargs['server']]
-        return saveAndRestart(self.__root, dummy)
+
+        if 'dummy' in kwargs:
+            return saveAndRestart(self.__root, kwargs['dummy'])
+        else:
+            return saveAndRestart(self.__root, '')
 
 #------------------------------------------------------------------------------
 
@@ -1545,7 +1552,7 @@ def build_header(prim):
     else:
         header['new_release'] = ''
         header['new_rel_url'] = ''
-    
+
     header['timeleft'] = calc_timeleft(mbleft, bytespersec)
 
     return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
@@ -1565,7 +1572,7 @@ def calc_timeleft(bytesleft, bps):
         return '%s:%s:%s' % (hours, minutes, seconds)
     except:
         return '0:00:00'
-    
+
 def calc_age(date):
     """
     Calculate the age difference between now and date.
@@ -1574,7 +1581,7 @@ def calc_age(date):
     try:
         now = datetime.datetime.now()
         #age = str(now - date).split(".")[0] #old calc_age
-        
+
         #time difference
         dage = now-date
         seconds = dage.seconds
