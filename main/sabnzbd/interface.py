@@ -542,7 +542,8 @@ class QueuePage(ProtectedClass):
 
             try:
                 datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
-                slot['eta'] = '%s' % datestart.isoformat(' ').split('.')[0]
+                #new eta format: 16:00 Fri 07 Feb
+                slot['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
             except:
                 datestart = datetime.datetime.now()
                 slot['eta'] = 'unknown'
@@ -1544,14 +1545,47 @@ def build_header(prim):
     else:
         header['new_release'] = ''
         header['new_rel_url'] = ''
+    
+    header['timeleft'] = calc_timeleft(mbleft, bytespersec)
 
     return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
 
+def calc_timeleft(bytesleft, bps):
+    """
+    Calculate the time left in the format HH:MM:SS
+    """
+    try:
+        totalseconds = int(bytesleft / bps)
+        minutes, seconds = divmod(totalseconds, 60)
+        hours, minutes = divmod(minutes, 60)
+        if minutes <10:
+            minutes = '0%s' % minutes
+        if seconds <10:
+            seconds = '0%s' % seconds
+        return '%s:%s:%s' % (hours, minutes, seconds)
+    except:
+        return '0:00:00'
+    
 def calc_age(date):
+    """
+    Calculate the age difference between now and date.
+    Value is returned as either days, hours, or minutes.
+    """
     try:
         now = datetime.datetime.now()
-
-        age = str(now - date).split(".")[0]
+        #age = str(now - date).split(".")[0] #old calc_age
+        
+        #time difference
+        dage = now-date
+        seconds = dage.seconds
+        #only one value should be returned
+        #if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
+        if dage.days:
+            age = '%sd' % (dage.days)
+        elif seconds/3600:
+            age = '%sh' % (seconds/3600)
+        else:
+            age = '%sm' % (seconds/60)
     except:
         age = "-"
 
@@ -1724,6 +1758,7 @@ def json_qstatus():
                "noofslots" : len(pnfo_list),
                "diskspace1" : diskfree(sabnzbd.DOWNLOAD_DIR),
                "diskspace2" : diskfree(sabnzbd.COMPLETE_DIR),
+               "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()),
                "jobs" : jobs
              }
     status_str= JsonWriter().write(status)
@@ -1756,6 +1791,7 @@ def xml_qstatus():
                "noofslots" : len(pnfo_list),
                "diskspace1" : diskfree(sabnzbd.DOWNLOAD_DIR),
                "diskspace2" : diskfree(sabnzbd.COMPLETE_DIR),
+               "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()),
                "jobs" : jobs
              }
 
@@ -1767,7 +1803,8 @@ def xml_qstatus():
                 <mb>%(mb)s</mb> \n\
                 <noofslots>%(noofslots)s</noofslots> \n\
                 <diskspace1>%(diskspace1)s</diskspace1> \n\
-                <diskspace2>%(diskspace2)s</diskspace2> \n' % status
+                <diskspace2>%(diskspace2)s</diskspace2> \n\
+                <timeleft>%(timeleft)s</timeleft> \n' % status
 
     status_str += '<jobs>\n'
     for job in jobs:

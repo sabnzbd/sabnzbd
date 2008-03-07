@@ -68,27 +68,27 @@ return "";
 function checkCookie()
 {
 var speedlog = [];
-cook=getCookie('speedlog');
+cook=getCookie('speedlog2');
 
 if (cook!=null && cook!="")
   {
 
 	var speedlog = cook.split(',');
-	for(i=1; i<10; i++) {
+	for(i=1; i<20; i++) {
 	   speedlog[i-1] = speedlog[i];
 	}
 
-	speedlog[9] = speed;
+	speedlog[19] = speed;
 
 	var speedstr = speedlog.join(',');
-	setCookie('speedlog',speedstr,1);
+	setCookie('speedlog2',speedstr,1);
 
 	//drawGraph(speedlog);
 	chartReload(speedlog);
   }
   else
   {
-  setCookie('speedlog','0,0,0,0,0,0,0,0,0,$kbpersecrnd',1);
+  setCookie('speedlog2','0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,$kbpersecrnd',1);
     }
 if (RefreshTime>0) {
 	clearTimeout ( cookietimeout );
@@ -234,10 +234,12 @@ function loadtitle() {
         {
             gDual = dual;
             if (dual!=2 ) {
+                document.getElementById('Container').style.width = "90%";
                 document.getElementById('Right').style.width = "100%";
                 document.getElementById('Right_bottom').style.width = "100%";
             }
             else {
+                document.getElementById('Container').style.width = "99%";
                 document.getElementById('Right').style.width = "48%";
                 document.getElementById('Right_bottom').style.width = "48%";
             }
@@ -398,24 +400,6 @@ function loadtitle() {
 		document.getElementById('Right_bottom').innerHTML = res.responseText;
 	}
 
-    function convertSecondsToTime (seconds)
-	{
-		var d = new Date();
-		d.setTime(seconds * 1000);
-		var h = d.getUTCHours() + ((d.getUTCDate()-1) * 24);
-		var m = d.getUTCMinutes();
-		var s = d.getUTCSeconds();
-		if (m < 10)
-		{
-			m = '0' + m;
-		}
-		if (s < 10)
-		{
-			s = '0' + s;
-		}
-		return h + ':' + m + ':' + s;
-	}
-
 
 //loads up the json for the queue page and changes the values in the document
 function loadingJSON(){
@@ -443,8 +427,7 @@ function loadingJSON(){
 		} else if 	(paused == false && speed>0)
 		{
 			document.getElementById("status").innerHTML = "<span class='downloading'>Downloading</span>";
-     		totalTimeRemain = (info["mbleft"] * 1024) / speed;
-    		totalTimeRemain = convertSecondsToTime(totalTimeRemain);     //from nzbdstatus plugin
+    		totalTimeRemain = info["timeleft"];   
             dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"kB/s";
             document.title = dltitle;
             document.getElementById("status2").innerHTML = "Pause";
@@ -506,7 +489,7 @@ function loadingJSON(){
         MochiKit.Base.update(renderer.options, options);
 
         //layout.addDataset("data", values);
-		layout.addDataset("sqrt", [[0, data[0]], [1, data[1]], [2, data[2]], [3, data[3]], [4, data[4]], [5, data[5]], [6, data[6]], [7, data[7]], [8, data[8]],[9, data[9]]]);
+		layout.addDataset("sqrt", [[0, data[0]], [1, data[1]], [2, data[2]], [3, data[3]], [4, data[4]], [5, data[5]], [6, data[6]], [7, data[7]], [8, data[8]],[9, data[9]],[10, data[10]], [11, data[11]], [12, data[12]], [13, data[13]], [14, data[14]], [15, data[15]], [16, data[16]], [17, data[17]], [18, data[18]],[19, data[19]]]);
 
         // update
         layout.evaluate();
@@ -528,10 +511,12 @@ function loadingJSON(){
 				Speed: <span id="speed">$kbpersecrnd</span> kB/s<br />
 				Queue: <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
 			</p>
-		<span id="testing">
+		<div id="logo">
 			<a href=""><img id="title" src="static/sabnzbd_small4.png" alt="sabnzbd+" /></a>
 			<h2>The automatic usenet download tool</h2>
-		</span>
+		</div>
+            <!-- <div id="divchart"><canvas id="graph" height="70" width="700"></canvas></div> -->
+
 		</div>
 		<div id="Content">
 			<div id="Left">

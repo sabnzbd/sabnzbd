@@ -83,7 +83,7 @@ class BPSMeter:
 
         self.last_update = t
 
-        check_time = t - 1.0
+        check_time = t - 5.0
 
         if self.start_time < check_time:
             self.start_time = check_time

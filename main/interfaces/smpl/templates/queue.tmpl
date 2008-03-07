@@ -1,44 +1,17 @@
-
 <!--#if $paused #-->
 <!--#set $kbpersec = "0"#-->
 <!--#end if#-->	
-
-
-
-## work out time left til download is finished
-<!--#set $speed = float($kbpersec)#-->
-
-
-
-<!--#if $speed > 0 #-->
-<!--#set $mbleft3 = float($mbleft)*1024 #-->
-<!--#set $mins = ($mbleft3 / $speed)/60 #-->
-<!--#set $mins = round($mins, 0) #-->
-
-<!--#set $hours = $mins / 60 #-->
-<!--#set $hours = int($hours) #-->
-<!--#if $hours > 0 #-->
-<!--#set $mins = $mins -($hours*60)#-->
-<!--#end if#-->
-<!--#set $mins = int($mins) #-->
-<!--#set $minsold = $mins #-->
-
-## values for when there is no download active
-<!--#else if $speed == 0 #-->
-<!--#set $mins = 0 #-->
-<!--#set $hours = 0 #-->
-<!--#end if#-->
 
 <h3>Queue</h3>
 <div id="centerLinks">
 <a onClick="lr('queue/sort_by_name','', '-1', this.parentNode.parentNode.id);" >Sort by name</a>  |
 <a onClick="lr('queue/sort_by_avg_age','', '-1', this.parentNode.parentNode.id);" >Sort by date</a>  |
-<a onClick="lr('queue/tog_verbose','', '-1', this.parentNode.parentNode.id);" >Toggle verbosity</a> |
+<a onClick="lr('queue/purge','', '-1', this.parentNode.parentNode.id);" >Delete All</a> |
 <a onClick="lr('queue/tog_shutdown','', '1', this.parentNode.parentNode.id);">Turn shutdown <!--#if $shutdown then "off" else "on"#--></a>
 </div>
 
 <!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<center><b>$cache_art</b>< articles buffered in <b>$cache_size</b> bytes<br>/center>
 <!--#end if#-->
 <!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
 
@@ -46,8 +19,7 @@
 <!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
 <!--#if $varExists('slotinfo')#-->
 <center>$perc% - <span id="left">$mbleft</span>/<span id="total">$mb</span> MB -
-<!--#if $hours>0 #-->
-<span id="hours">$hours</span>hours <!--#end if#--><span id= mins>$mins</span>mins
+$timeleft
  <!--#end if#--><br /> </center>
  <!--#end if#-->
  <table id="queue" class="datagrid">
@@ -125,11 +97,7 @@
 	<span class="pre"> <span id="left_$slot.nzo_id">$slot.mbleft</span>/<span id="total_$slot.nzo_id">$slot.mb</span> MB</span>
 	</td>
 </span>
-<!--#set $eta = "-"#-->
-<!--#if $speed>0 #-->
-<!--#set $eta = $slot.eta#-->
-<!--#end if#-->
-<td>$eta</td>
+<td>$slot.eta</td>
 <td>$slot.avg_age</td>
         </tr>
         <!--#set $oddLine = False#-->
@@ -149,25 +117,3 @@
         <!--#end for#-->
     <!--#end for#--><!--#end if#-->
     </table>
-	
-
-<!--
-nzbdStatus
-{
-	"paused": 		"$paused",
-	"kbpersec": 	$kbpersec,
-	"mbleft": 		$mbleft,
-	"mb": 			$mb,
-	"noofslots":	$noofslots,
-	"diskspace1": 	$diskspace1,
-	"diskspace2": 	$diskspace2,
-	<!--#if $varExists('slotinfo')#-->"jobs": [<!--#for $slot in $slotinfo#-->
-	{
-		"filename":	"$slot.filename", 
-		"mbleft":	$slot.mbleft,
-		"mb":		$slot.mb, 
-	},
-	<!--#end for#-->]<!--#end if#-->
-}
--->
-
