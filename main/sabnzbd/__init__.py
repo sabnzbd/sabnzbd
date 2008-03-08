@@ -320,13 +320,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     CREATE_CAT_FOLDERS = bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
 
-    # Sub-cats not available on V3.newzbin.com
-    #if CREATE_CAT_FOLDERS > 1:
-    #    CREATE_CAT_SUB = True
-    #CREATE_CAT_FOLDERS = bool(CREATE_CAT_FOLDERS)
-
     logging.debug("CREATE_CAT_FOLDERS -> %s", CREATE_CAT_FOLDERS)
-    #logging.debug("CREATE_CAT_SUB -> %s", CREATE_CAT_SUB)
 
     DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
     if DOWNLOAD_DIR == "":
@@ -1027,15 +1021,6 @@ def system_shutdown():
     finally:
         os._exit(0)
         
-def shutdown_program():
-    logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
-    #halt() needs to be called as a thread to stop the scheduler complaining about using .join on the same thread.
-    Thread(target=halt).start()
-    #sleep for 2 seconds just to be sure, can probably be removed
-    sleep(2.0)
-    #Is this needed/the right way to exit? Maybe sys.exit() for a cleaner exit.
-    os._exit(0)
-   
         
 ################################################################################
 # Data IO                                                                      #
