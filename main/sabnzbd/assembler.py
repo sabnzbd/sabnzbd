@@ -258,7 +258,7 @@ class PostProcessor(Thread):
 
                 if sabnzbd.SCRIPT_DIR and script:
                     script = real_path(sabnzbd.SCRIPT_DIR, script)
-                if result and script:
+                if result and script and not script.lower() == 'none':
                     logging.info('[%s] Running external script %s %s %s', __NAME__, script, workdir, filename)
                     ext_out = external_processing(script, workdir, filename, nzo.get_cat())
                 else:
