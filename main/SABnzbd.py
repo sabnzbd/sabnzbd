@@ -21,16 +21,16 @@ import sys
 import logging
 import logging.handlers
 import os
-import cherrypy
 import getopt
-import sabnzbd
 import signal
 import re
 import glob
 import socket
 if os.name=='nt':
     import platform
+import cherrypy
 
+import sabnzbd
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
