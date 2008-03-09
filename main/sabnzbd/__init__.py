@@ -1021,7 +1021,12 @@ def system_shutdown():
     finally:
         os._exit(0)
         
-        
+def shutdown_program():
+    logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
+    Thread(target=halt).start()
+    sleep(2.0)
+    os._exit(0)
+ 
 ################################################################################
 # Data IO                                                                      #
 ################################################################################
