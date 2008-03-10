@@ -46,6 +46,8 @@ from sabnzbd.rss import RSSQueue
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
+from sabnzbd.newsunpack import build_command
+import subprocess
 
 START = datetime.datetime.now()
 
@@ -73,8 +75,12 @@ DO_UNZIP = False
 DO_UNRAR = False
 DO_SAVE = False
 PAR_CLEANUP = False
-AUTOSHUTDOWN = False
-AUTOSHUTDOWN_GO = False # Set when downloader queue is empty and autoshutdown enabled
+
+QUEUECOMPLETE = None #stores the nice name of the action
+QUEUECOMPLETEACTION = None #stores the name of the function to be called
+QUEUECOMPLETEARG = None #stores an extra arguments that need ot be passed
+QUEUECOMPLETEACTION_GO = False # Set when downloader queue is empty and an action is set
+
 AUTODISCONNECT = False
 WAITEXIT = False
 SEND_GROUP = False
@@ -264,7 +270,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         return False
 
     logging.info("Initializing SABnzbd v%s", __version__)
-
+   
     ###########################
     ## CONFIG Initialization ##
     ###########################
@@ -1021,11 +1027,54 @@ def system_shutdown():
     finally:
         os._exit(0)
         
+def system_hibernate():
+    logging.info("[%s] Performing system hybernation", __NAME__)
+    Thread(target=halt).start()
+    try:
+        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState")
+    finally:
+        os._exit(0)
+        
 def shutdown_program():
     logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
     Thread(target=halt).start()
     sleep(2.0)
     os._exit(0)
+    
+def change_queue_complete_action(action):
+    """
+    Action or script to be performed once the queue has been completed
+    Scripts are prefixed with 'script_'
+    """
+    global QUEUECOMPLETE, QUEUECOMPLETEACTION, QUEUECOMPLETEARG
+    
+    _action = None
+    _argument = None
+    if 'script_' in action:
+        #all scripts are labeled script_xxx
+        _action = run_script
+        _argument = action.replace('script_', '')
+    elif action == 'shutdown_pc':
+        _action = system_shutdown
+    elif action == 'hibernate_pc':
+        _action = system_hibernate
+    elif action == 'shutdown_program':
+        _action = shutdown_program
+    
+    #keep the name of the action for matching the current select in queue.tmpl
+    QUEUECOMPLETE = action
+
+    QUEUECOMPLETEACTION = _action
+    QUEUECOMPLETEARG = _argument
+        
+def run_script(script):
+    command = os.path.join(SCRIPT_DIR, script)
+    stup, need_shell, command, creationflags = build_command(command)
+    logging.info('[%s] Spawning external command %s', __NAME__, command)
+    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                         startupinfo=stup, creationflags=creationflags)
+
  
 ################################################################################
 # Data IO                                                                      #

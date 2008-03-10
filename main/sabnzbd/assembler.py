@@ -41,6 +41,9 @@ from sabnzbd.email import email_endjob, prepare_msg
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path
 
+if os.name == 'nt':
+    import subprocess
+
 DIR_LOCK = RLock()
 
 #------------------------------------------------------------------------------
@@ -90,9 +93,18 @@ class PostProcessor(Thread):
 
     def run(self):
         while 1:
-            if sabnzbd.AUTOSHUTDOWN_GO and self.queue.empty():
-                Thread(target=_system_shutdown).start()
-
+            if sabnzbd.QUEUECOMPLETEACTION_GO and self.queue.empty():
+                logging.info("[%s] Queue has finished, launching: %s (%s)", \
+                    __NAME__,sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
+                if sabnzbd.QUEUECOMPLETEARG:
+                    sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
+                else:
+                    Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
+                    
+                sabnzbd.QUEUECOMPLETEACTION = None
+                sabnzbd.QUEUECOMPLETEARG = None
+                sabnzbd.QUEUECOMPLETEACTION_GO = False
+                    
             nzo = self.queue.get()
             if not nzo:
                 break
@@ -133,7 +145,7 @@ class PostProcessor(Thread):
 
                     if readd:
                         logging.info('[%s] Readded %s to queue', __NAME__, filename)
-                        sabnzbd.AUTOSHUTDOWN_GO = False
+                        sabnzbd.QUEUECOMPLETEACTION_GO = False
                         sabnzbd.add_nzo(nzo, 0)
                         ## Break out
                         continue
@@ -503,26 +515,6 @@ def cleanup_empty_directories(path):
 
 #-------------------------------------------------------------------------------
 
-def _system_shutdown():
-    logging.info("[%s] Performing system shutdown", __NAME__)
-
-    sabnzbd.halt()
-
-    try:
-        import win32security
-        import win32api
-        import ntsecuritycon
-
-        flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
-        htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
-        id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
-        newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
-        win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
-        win32api.InitiateSystemShutdown("", "", 30, 1, 0)
-    finally:
-        os._exit(0)
-
-        
         
 def checkForTVShow(filename): #checkfortvshow > formatfolders > gettvinfo
     """

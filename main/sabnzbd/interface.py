@@ -357,13 +357,6 @@ class MainPage(ProtectedClass):
             cherrypy.server.stop()
             raise KeyboardInterrupt()
 
-        elif mode == 'autoshutdown':
-            if os.name == 'nt':
-                sabnzbd.AUTOSHUTDOWN = bool(name)
-                return 'ok\n'
-            else:
-                return 'not implemented\n'
-
         elif mode == 'warnings':
             if output == 'json':
                 return json_warnings()
@@ -372,8 +365,21 @@ class MainPage(ProtectedClass):
             else:
                 return 'not implemented\n'
 
+        elif mode == 'queue':
+            if name == 'change_complete_action': # http://localhost:8080/sabnzbd/api?mode=queue&name=change_complete_action&value=hibernate_pc
+                if value:
+                    sabnzbd.change_queue_complete_action(value)
+                    return 'ok\n'
+                else:
+                    return 'error: Please submit a value\n'
+            elif name == 'purge':
+                sabnzbd.remove_all_nzo()
+                return 'ok\n'
+            else:
+                return 'error: Please submit a value\n'
+                
         elif mode == 'config':
-            if name == 'dllimit': # http://localhost:8080/sabnzbd/api?mode=config&name=dllimit&value=100
+            if name == 'speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
                 if value.isdigit():
                     sabnzbd.CFG['misc']['bandwith_limit'] = value
                     sabnzbd.BANDWITH_LIMIT = value
@@ -657,9 +663,12 @@ class QueuePage(ProtectedClass):
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
-    def tog_shutdown(self, dummy = None):
-        if os.name == 'nt':
-            sabnzbd.AUTOSHUTDOWN = not sabnzbd.AUTOSHUTDOWN
+    def change_queue_complete_action(self, action = None, dummy = None):
+        """
+        Action or script to be performed once the queue has been completed
+        Scripts are prefixed with 'script_'
+        """
+        sabnzbd.change_queue_complete_action(action)
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
@@ -1525,7 +1534,7 @@ def build_header(prim):
     header['diskspacetotal1'] = "%.2f" % disktotal(sabnzbd.DOWNLOAD_DIR)
     header['diskspacetotal2'] = "%.2f" % disktotal(sabnzbd.COMPLETE_DIR)
 
-    header['shutdown'] = sabnzbd.AUTOSHUTDOWN
+    header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = os.name == 'nt'
     if prim:
         header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir'])

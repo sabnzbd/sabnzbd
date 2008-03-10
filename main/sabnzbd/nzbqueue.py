@@ -162,7 +162,7 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, pos = -1, save=True):
-        sabnzbd.AUTOSHUTDOWN_GO = False
+        sabnzbd.QUEUECOMPLETEACTION_GO = False
 
         # Reset try_lists
         nzo.reset_try_list()
@@ -360,8 +360,8 @@ class NzbQueue(TryList):
                     sabnzbd.disconnect()
 
                 # sabnzbd.AUTOSHUTDOWN only True on os.name == 'nt'
-                if sabnzbd.AUTOSHUTDOWN:
-                    sabnzbd.AUTOSHUTDOWN_GO = True
+                if sabnzbd.QUEUECOMPLETEACTION:
+                    sabnzbd.QUEUECOMPLETEACTION_GO = True
 
     @synchronized(NZBQUEUE_LOCK)
     def purge(self, job=None):
