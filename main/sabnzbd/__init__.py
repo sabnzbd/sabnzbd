@@ -516,13 +516,6 @@ def halt():
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
 
-        ## Stop Optional Objects ##
-
-        if SCHED:
-            logging.debug('Stopping scheduler')
-            SCHED.stop()
-            SCHED = None
-
         if BOOKMARKS:
             BOOKMARKS.save()
             BOOKMARKS = None
@@ -581,6 +574,13 @@ def halt():
 
         ## Save State ##
         save_state()
+        
+        ## Stop Optional Objects ##
+        #Scheduler is stopped last so it doesn't break when halt() is launched by the scheduler
+        if SCHED:
+            logging.debug('Stopping scheduler')
+            SCHED.stop()
+            SCHED = None
 
         __INITIALIZED__ = False
 
