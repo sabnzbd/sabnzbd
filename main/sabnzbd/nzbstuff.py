@@ -506,12 +506,9 @@ class NzbObject(TryList):
                 else:
                     pass
             ## No filename in seg 1? Probably not uu or yenc encoded
-            ## Set subject as filename and skip
+            ## Set subject as filename
             else:
                 nzf.set_filename(nzf.get_subject())
-                if not file_done and (nzf in self.__files):
-                    self.__files.remove(nzf)
-                    self.__finished_files.append(nzf)
 
         post_done = False
         if not self.__files:
