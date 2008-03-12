@@ -157,9 +157,24 @@ function loadtitle() {
         index = url.lastIndexOf('#');
         url = url.slice(index+1, url.length);
         url = url.replace('-', '/');
-        if (url == 'dv1'){ lr('queue/','', 1, 1);lrb('history/',1);}
-        else if (url == 'dv2'){ lr('queue/','', 1, 2);lrb('history/',1);}
-        else if (url) {lr(url)}
+        
+        switch(url)
+        {
+        case 'dv1':
+          lr('queue/','', 1, 1);
+          lrb('history/',1);
+          break;    
+        case 'dv2':
+          lr('queue/','', 1, 2);
+          lrb('history/',1);
+          break;
+        case 'queue':
+        case 'history':
+        case 'connections':
+          lr(url,'',1)
+        default:
+          lr(url)
+        }
     }
 
 }
