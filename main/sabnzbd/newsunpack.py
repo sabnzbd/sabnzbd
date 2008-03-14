@@ -407,7 +407,9 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
         line = line.strip()
 
         if line.startswith('Extracting from'):
-            rarfiles.append((re.search(EXTRACTFROM_RE, line).group(1)))
+            filename = (re.search(EXTRACTFROM_RE, line).group(1))
+            if filename not in rarfiles:
+                rarfiles.append(filename)
             curr += 1
             nzo.set_unpackstr('=> Unpacking : %02d/%02d' % (curr, numrars),
                               actionname, 2)
