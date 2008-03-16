@@ -196,7 +196,7 @@ class NzbQueue(TryList):
             if save:
                 self.save()
 
-        if self.__auto_sort:
+        if pos != 0 and self.__auto_sort:
             self.sort_by_avg_age()
 
     @synchronized(NZBQUEUE_LOCK)
