@@ -89,7 +89,6 @@ class BPSMeter:
             self.start_time = check_time
 
         if self.bps < 0.01:
-            logging.debug("[%s] bps < 0 -> reset", __NAME__)
             self.reset()
             
         elif self.log_time < check_time:
