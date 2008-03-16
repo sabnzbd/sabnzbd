@@ -33,6 +33,7 @@ from threading import Lock
 
 import sabnzbd
 from sabnzbd.constants import *
+from sabnzbd.misc import Cat2OptsDef
 
 RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
 
@@ -58,6 +59,28 @@ def synchronized(func):
     return call_func
 
 
+def CatConvert(cat):
+    """ Convert newzbin category to user categories
+        Return unchanged if not found
+    """
+    newcat = cat
+    if cat:
+        found = False
+        cat = cat.lower()
+        for ucat in sabnzbd.CFG['categories']:
+            try:
+                newzbin = sabnzbd.CFG['categories'][ucat]['newzbin']
+            except:
+                newzbin = []
+            for name in newzbin:
+                if name.lower() == cat:
+                    logging.debug('[%s] Convert newzbin-cat "%s" to user-cat "%s"', __NAME__, cat, ucat)
+                    newcat = ucat
+                    found = True
+                    break
+            if found: break
+    return newcat
+                
 
 ################################################################################
 # DirectNZB support
@@ -96,11 +119,14 @@ class MSGIDGrabber(Thread):
                     break
             logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
 
-            filename, data, cat_root, cat_tail = _grabnzb(msgid, self.nzbun, self.nzbpw)
+            filename, data, cat = _grabnzb(msgid, self.nzbun, self.nzbpw)
             if filename and data:
+                cat = CatConvert(cat)                    
                 try:
-                    sabnzbd.insert_future_nzo(nzo, filename, data, cat_root, cat_tail)
+                    cat, name, pp, script = Cat2OptsDef(filename, cat)
+                    sabnzbd.insert_future_nzo(nzo, name, data, pp=pp, script=script, cat=cat)
                 except:
+                    logging.error("[%s] Failed to update newzbin job %s", __NAME__, msgid)
                     sabnzbd.remove_nzo(nzo.nzo_id, False)
                 msgid = None
             else:
@@ -200,8 +226,7 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
         logging.error("[%s] Newzbin server fails to give info for %s", __NAME__, msgid)
         return nothing
 
-    cat_root = report_cat
-    cat_tail = 'All' # DNZB has no subcategories
+    cat = report_cat.lower()
 
     # sanitize report_name
     newname = RE_SANITIZE.sub('_', report_name)
@@ -209,9 +234,9 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
         newname = "%s[%s]" % (newname[0:70], id(newname))
     newname = "msgid_%s %s.nzb" % (msgid, newname.strip())
 
-    logging.info('[%s] Successfully fetched %s %s (%s)', __NAME__, report_cat, report_name, newname)
+    logging.info('[%s] Successfully fetched %s (cat=%s) (%s)', __NAME__, report_name, cat, newname)
 
-    return (newname, data, cat_root, cat_tail)
+    return (newname, data, cat)
 
 
 ################################################################################
@@ -220,11 +245,9 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
 class Bookmarks:
     """ Get list of bookmarks from www.newzbin.com
     """
-    def __init__(self, username, password, opts, script):
+    def __init__(self, username, password):
         self.username = username
         self.password = password
-        self.opts = opts
-        self.script = script
         self.bookmarks = sabnzbd.load_data(BOOKMARK_FILE_NAME)
         if not self.bookmarks:
             self.bookmarks = []
@@ -286,7 +309,7 @@ class Bookmarks:
                         new_bookmarks.append(msgid)
                         if not msgid in self.bookmarks:
                             logging.info("[%s] Found new bookmarked msgid %s", __NAME__, msgid)
-                            sabnzbd.add_msgid(int(msgid), self.opts, self.script)
+                            sabnzbd.add_msgid(int(msgid), sabnzbd.DIRSCAN_PP, sabnzbd.DIRSCAN_SCRIPT)
             self.bookmarks = new_bookmarks
 
     def save(self):

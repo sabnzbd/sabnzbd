@@ -280,21 +280,36 @@ BLAH = '{http://www.newzbin.com/DTD/2003/nzb}'
 NZBFN_MATCHER = re.compile(r"msgid_\d*_(.*).nzb", re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 class NzbObject(TryList):
-    def __init__(self, filename, repair, unpack, delete, script, nzb = None,
-                 futuretype = False, cat_root = None, cat_tail = None):
+    def __init__(self, filename, pp, script, nzb = None,
+                 futuretype = False, cat = None):
         TryList.__init__(self)
+
+        if cat: cat = cat.lower()
+
+        if cat and pp == None:
+            try:
+                pp = sabnzbd.CFG['categories'][cat]['pp']
+            except:
+                pass
+        if cat and script == None:
+            try:
+                script = sabnzbd.CFG['categories'][cat]['script']
+            except:
+                pass
+
+        r, u, d = sabnzbd.pp_to_opts(pp)
 
         self.__filename = filename    # Original filename
         self.__dirname = filename
         self.__created = False        # dirprefixes + dirname created
         self.__bytes = 0              # Original bytesize
         self.__bytes_downloaded = 0   # Downloaded byte
-        self.__repair = repair        # True if we want to repair this set
-        self.__unpack = unpack        # True if we want to unpack this set
-        self.__delete = delete        # True if we want to delete this set
+        self.__repair = r             # True if we want to repair this set
+        self.__unpack = u             # True if we want to unpack this set
+        self.__delete = d             # True if we want to delete this set
         self.__script = script        # External script for this set
         self.__msgid = '0'            # Newzbin msgid
-        self.__extra1 = cat_root      # Newzbin category
+        self.__extra1 = cat           # Newzbin category
         self.__extra2 = 'b'           # Spare field for later
         self.__group = None
         self.__avg_date = None
@@ -411,13 +426,8 @@ class NzbObject(TryList):
         if sabnzbd.CREATE_GROUP_FOLDERS:
             self.__dirprefix.append(self.__group)
 
-        if sabnzbd.CREATE_CAT_FOLDERS and cat_root and cat_tail:
-            self.__dirprefix.append(cat_root)
-            if sabnzbd.CREATE_CAT_SUB:
-                self.__dirprefix.append(cat_tail)
-
-
-                        
+        if sabnzbd.CREATE_CAT_FOLDERS and cat:
+            self.__dirprefix.append(cat)
 
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
@@ -521,6 +531,9 @@ class NzbObject(TryList):
 
     def set_script(self, script):
         self.__script = script
+
+    def set_cat(self, cat):
+        self.__extra1 = cat
 
     def set_dirname(self, dirname, created = False):
         self.__dirname = dirname
@@ -650,7 +663,7 @@ class NzbObject(TryList):
 
     def get_filename(self):
         return self.__filename
-        
+
     def get_cat(self):
         if self.__extra1 == 'a' or not self.__extra1:
             # Compatibility with older queues
@@ -746,10 +759,13 @@ class NzbObject(TryList):
         return self.__unpackstrht.copy()
 
     def get_repair_opts(self):
-        return (self.__repair, self.__unpack, self.__delete)
+        return self.__repair, self.__unpack, self.__delete
 
     def get_script(self):
         return self.__script
+
+    def get_cat(self):
+        return self.__extra1
 
     def __build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}

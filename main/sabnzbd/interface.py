@@ -145,6 +145,18 @@ def ListScripts():
                     lst.append(sc)
     return lst
 
+
+def ListCats():
+    """ Return list of categories """
+    lst = ['None']
+    try:
+        for cat in sabnzbd.CFG['categories']:
+            lst.append(cat)
+    except:
+        lst = []
+    return lst
+
+
 def Raiser(root, dummy):
     if dummy:
         root += '?dummy=' + dummy
@@ -222,6 +234,8 @@ class MainPage(ProtectedClass):
 
         info['script_list'] = ListScripts()
         info['script'] = sabnzbd.DIRSCAN_SCRIPT
+        info['cat'] = 'None'
+        info['cat_list'] = ListCats()
 
         info['warning'] = ""
         if not sabnzbd.CFG['servers']:
@@ -237,14 +251,12 @@ class MainPage(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def addID(self, id = None, pp = 0, script=None, redirect = None):
-        if not script:
-            script = sabnzbd.DIRSCAN_SCRIPT
+    def addID(self, id = None, pp=None, script=None, cat=None, redirect = None):
         if id:
             id = id.strip()
 
-        if id and (id.isdigit() or len(id)==5) and pp.isdigit():
-            sabnzbd.add_msgid(id, int(pp), script)
+        if id and (id.isdigit() or len(id)==5):
+            sabnzbd.add_msgid(id, pp, script, cat)
 
         if not redirect:
             redirect = self.__root
@@ -252,11 +264,9 @@ class MainPage(ProtectedClass):
         raise cherrypy.HTTPRedirect(redirect)
 
     @cherrypy.expose
-    def addURL(self, url = None, pp = 0, script=None, redirect = None):
-        if not script:
-            script = sabnzbd.DIRSCAN_SCRIPT
-        if url and pp.isdigit():
-            sabnzbd.add_url(url, int(pp), script)
+    def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None):
+        if url:
+            sabnzbd.add_url(url, pp, script, cat)
 
         if not redirect:
             redirect = self.__root
@@ -264,11 +274,9 @@ class MainPage(ProtectedClass):
         raise cherrypy.HTTPRedirect(redirect)
 
     @cherrypy.expose
-    def addFile(self, nzbfile, pp = 0, script=None, dummy = None):
-        if not script:
-            script = sabnzbd.DIRSCAN_SCRIPT
-        if pp.isdigit() and nzbfile.filename and nzbfile.value:
-            sabnzbd.add_nzbfile(nzbfile, int(pp), script)
+    def addFile(self, nzbfile, pp=None, script=None, cat=None, dummy = None):
+        if nzbfile.filename and nzbfile.value:
+            sabnzbd.add_nzbfile(nzbfile, pp, script, cat)
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
@@ -310,12 +318,10 @@ class MainPage(ProtectedClass):
 
 
     @cherrypy.expose
-    def api(self, mode='', name=None, pp=0, script=None, output='plain', value = None, dummy = None):
+    def api(self, mode='', name=None, pp=None, script=None, cat=None,
+            output='plain', value = None, dummy = None):
         """Handler for API over http
         """
-        if script == None:
-            script = sabnzbd.DIRSCAN_SCRIPT
-
         if mode == 'qstatus':
             if output == 'json':
                 return json_qstatus()
@@ -324,22 +330,22 @@ class MainPage(ProtectedClass):
             else:
                 return 'not implemented\n'
         elif mode == 'addfile':
-            if pp.isdigit() and name.filename and name.value:
-                sabnzbd.add_nzbfile(name, int(pp), script)
+            if name.filename and name.value:
+                sabnzbd.add_nzbfile(name, pp, script, cat)
                 return 'ok\n'
             else:
                 return 'error\n'
 
         elif mode == 'addurl':
-            if name and pp.isdigit():
-                sabnzbd.add_url(name, int(pp), script)
+            if name:
+                sabnzbd.add_url(name, pp, script, cat)
                 return 'ok\n'
             else:
                 return 'error\n'
 
         elif mode == 'addid':
-            if name and name.isdigit() and pp.isdigit():
-                sabnzbd.add_msgid(int(name), int(pp), script)
+            if name and (name.isdigit() or len(name)==5):
+                sabnzbd.add_msgid(name, pp, script)
                 return 'ok\n'
             else:
                 return 'error\n'
@@ -377,7 +383,7 @@ class MainPage(ProtectedClass):
                 return 'ok\n'
             else:
                 return 'error: Please submit a value\n'
-                
+
         elif mode == 'config':
             if name == 'speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
                 if value.isdigit():
@@ -507,6 +513,7 @@ class QueuePage(ProtectedClass):
         datestart = datetime.datetime.now()
 
         info['script_list'] = ListScripts()
+        info['cat_list'] = ListCats()
 
         n = 0
         slotinfo = []
@@ -519,6 +526,9 @@ class QueuePage(ProtectedClass):
             delete = pnfo[PNFO_DELETE_FIELD]
             script = pnfo[PNFO_SCRIPT_FIELD]
             nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+            cat = pnfo[PNFO_EXTRA_FIELD1]
+            if not cat:
+                cat = 'None'
             filename = pnfo[PNFO_FILENAME_FIELD]
             bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
             bytes = pnfo[PNFO_BYTES_FIELD]
@@ -535,13 +545,7 @@ class QueuePage(ProtectedClass):
 
             slot = {'index':n, 'nzo_id':str(nzo_id)}
             n += 1
-            unpackopts = 0
-            if repair:
-                unpackopts += 1
-                if unpack:
-                    unpackopts += 1
-                    if delete:
-                        unpackopts += 1
+            unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
 
             slot['unpackopts'] = str(unpackopts)
             if script:
@@ -549,6 +553,7 @@ class QueuePage(ProtectedClass):
             else:
                 slot['script'] = 'None'
             slot['filename'], slot['msgid'] = SplitFileName(filename)
+            slot['cat'] = cat
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
             slot['mb'] = "%.2f" % (bytes / MEBI)
 
@@ -689,6 +694,26 @@ class QueuePage(ProtectedClass):
             if script == 'None':
                 script = None
             sabnzbd.change_script(nzo_id, script)
+        raise Raiser(self.__root, dummy)
+
+    @cherrypy.expose
+    def change_cat(self, nzo_id = None, cat = None, dummy = None):
+        if nzo_id and cat:
+            if cat == 'None':
+                cat = None
+            sabnzbd.change_cat(nzo_id, cat)
+            try:
+                script = sabnzbd.CFG['categories'][cat]['script']
+            except:
+                script = sabnzbd.DIRSCAN_SCRIPT
+            try:
+                pp = int(sabnzbd.CFG['categories'][cat]['pp'])
+            except:
+                pp = sabnzbd.DIRSCAN_PP
+
+            sabnzbd.change_script(nzo_id, script)
+            sabnzbd.change_opts(nzo_id, pp)
+
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose

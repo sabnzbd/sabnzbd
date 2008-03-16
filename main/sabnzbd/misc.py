@@ -49,6 +49,7 @@ RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
+RE_CAT = re.compile(r'^{{(\w+)}}(.+)') # Category prefix
 
 PANIC_NONE  = 0
 PANIC_PORT  = 1
@@ -59,6 +60,59 @@ PANIC_OTHER = 5
 PW_PREFIX = '!!!encoded!!!'
 
 
+def Cat2Opts(cat, pp, script):
+    """
+        Derive options from categoty, if option not already defined.
+        Specified options have priority over category-options
+    """
+    if not pp == None:
+        try:
+            pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
+            logging.debug('[%s] Job %s gets options %s', __NAME__, name, pp)
+        except:
+            pp = sabnzbd.DIRSCAN_OPT
+
+    if not script == None:
+        try:
+            script = sabnzbd.CFG['categories'][cat.lower()]['script']
+            logging.debug('[%s] Job %s gets script %s', __NAME__, name, script)
+        except:
+            script = sabnzbd.DIRSCAN_SCRIPT
+
+    return cat, pp, script
+
+
+def Cat2OptsDef(fname, cat=None):
+    """
+        Get options associated with the category.
+        Category options have priority over default options.
+    """
+    pp = sabnzbd.DIRSCAN_PP
+    script = sabnzbd.DIRSCAN_SCRIPT
+    name = fname
+
+    if cat == None:
+        m = RE_CAT.search(fname)
+        if m and m.group(1) and m.group(2):
+            cat = m.group(1).lower()
+            name = m.group(2)
+            logging.debug('[%s] Job %s has category %s', __NAME__, name, cat)
+
+    if cat:
+        try:
+            pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
+            logging.debug('[%s] Job %s gets options %s', __NAME__, name, pp)
+        except:
+            pass
+
+        try:
+            script = sabnzbd.CFG['categories'][cat.lower()]['script']
+            logging.debug('[%s] Job %s gets script %s', __NAME__, name, script)
+        except:
+            pass
+
+    return cat.lower(), name, pp, script
+
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
     """
@@ -67,16 +121,11 @@ class DirScanner(Thread):
     Candidates which turned out wrong, will be remembered and skipped in
     subsequent scans.
     """
-    def __init__(self, dirscan_dir, dirscan_speed, repair, unpack, delete, script):
+    def __init__(self, dirscan_dir, dirscan_speed):
         Thread.__init__(self)
 
         self.dirscan_dir = dirscan_dir
         self.dirscan_speed = dirscan_speed
-
-        self.r = repair
-        self.u = unpack
-        self.d = delete
-        self.s = script
 
         self.ignored = []  # Will hold all examined but bad candidates
         self.shutdown = False
@@ -132,6 +181,8 @@ class DirScanner(Thread):
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext == '.zip':
+                        cat, name, pp, script = Cat2OptsDef(filename)
+
                         zf = zipfile.ZipFile(path)
                         ok = True
                         for name in zf.namelist():
@@ -146,7 +197,7 @@ class DirScanner(Thread):
                                 name = RE_SANITIZE.sub('_', name)
                                 if data:
                                     try:
-                                        nzo = NzbObject(name, self.r, self.u,self.d, self.s, data)
+                                        nzo = NzbObject(name, pp, script, data, cat=cat)
                                     except:
                                         nzo = None
                                     if nzo:
@@ -184,8 +235,10 @@ class DirScanner(Thread):
                             self.ignored.append(filename)
                             continue
 
+                        cat, name, pp, script = Cat2OptsDef(name)
+
                         try:
-                            nzo = NzbObject(name, self.r, self.u, self.d, self.s, data)
+                            nzo = NzbObject(name, pp, script, data, cat=cat)
                         except:
                             self.ignored.append(filename)
                             continue
@@ -233,7 +286,11 @@ class URLGrabber(Thread):
             if data:
                 if not filename:
                      filename = os.path.basename(self.url)
-                sabnzbd.insert_future_nzo(self.future_nzo, filename, data)
+                pp = self.future.nzo.get_opts()
+                script = self.future.nzo.get_script()
+                cat = self.future.nzo.get_cat()
+                cat, name, pp, script = Cat2Opts(cat, pp, script)
+                sabnzbd.insert_future_nzo(self.future_nzo, filename, data, pp=pp, script=script, cat=cat)
             else:
                 sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
 

@@ -176,6 +176,14 @@ def sig_handler(signum = None, frame = None):
         os._exit(0)
 
 
+def CheckSection(sec):
+    """ Check if INI section exists, if not create it """
+    try:
+        CFG[sec]
+    except:
+        CFG[sec] = {}
+
+
 ################################################################################
 # Directory Setup                                                              #
 ################################################################################
@@ -257,7 +265,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, AUTODISCONNECT, WAITEXIT, \
-           SAFE_POSTPROC, DIRSCAN_SCRIPT, \
+           SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_PP, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
@@ -270,10 +278,12 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         return False
 
     logging.info("Initializing SABnzbd v%s", __version__)
-   
+
     ###########################
     ## CONFIG Initialization ##
     ###########################
+
+    CheckSection('categories')
 
     USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
     PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
@@ -409,19 +419,18 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         CFG['misc']['schedlines'] = []
     schedlines = CFG['misc']['schedlines']
 
-    dirscan_opts = check_setting_int(CFG, 'misc', 'dirscan_opts', 1)
-    dirscan_repair, dirscan_unpack, dirscan_delete = pp_to_opts(dirscan_opts)
+    DIRSCAN_PP = check_setting_int(CFG, 'misc', 'dirscan_opts', 1)
     DIRSCAN_SCRIPT = check_setting_str(CFG, 'misc', 'dirscan_script', '')
-    
+
     top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
 
     AUTO_SORT = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
-    
+
     ENABLE_TV_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_tv_sorting', 0)) #tv sorting on/off
     logging.debug("ENABLE_TV_SORTING -> %s", ENABLE_TV_SORTING)
     TV_SORT = check_setting_int(CFG, 'misc', 'tv_sort', 0) #tv sort level
     TV_SORT_SEASONS = bool(check_setting_int(CFG, 'misc', 'tv_sort_seasons', 1)) #sort into season folders
-    
+
     WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
 
@@ -431,7 +440,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     ############################
 
     if NEWZBIN_BOOKMARKS:
-        BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN, dirscan_opts, DIRSCAN_SCRIPT)
+        BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
     need_rsstask = init_RSS()
     init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK, BOOKMARKS, BOOKMARK_RATE)
@@ -476,8 +485,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
             DOWNLOADER.paused = True
 
     if dirscan_dir:
-        DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed, dirscan_repair, dirscan_unpack,
-                                dirscan_delete, DIRSCAN_SCRIPT)
+        DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed)
 
     if USERNAME_NEWZBIN:
         MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
@@ -574,7 +582,7 @@ def halt():
 
         ## Save State ##
         save_state()
-        
+
         ## Stop Optional Objects ##
         #Scheduler is stopped last so it doesn't break when halt() is launched by the scheduler
         if SCHED:
@@ -656,6 +664,12 @@ def change_opts(nzo_id, pp):
 def change_script(nzo_id, script):
     try:
         NZBQ.change_script(nzo_id, script)
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+
+def change_cat(nzo_id, cat):
+    try:
+        NZBQ.change_cat(nzo_id, cat)
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
@@ -755,26 +769,22 @@ def purge_articles(articles):
 ################################################################################
 ## Misc Wrappers                                                              ##
 ################################################################################
-def add_msgid(msgid, pp, script=None):
+def add_msgid(msgid, pp=None, script=None, cat=None):
     logging.info('[%s] Fetching msgid %s from v3.newzbin.com',
                  __NAME__, msgid)
     msg = "fetching msgid %s from v3.newzbin.com" % msgid
 
-    repair, unpack, delete = pp_to_opts(pp)
-
-    future_nzo = NZBQ.generate_future(msg, repair, unpack, delete, script)
+    future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat)
 
     MSGIDGRABBER.grab(msgid, future_nzo)
 
 
-def add_url(url, pp, script=None):
+def add_url(url, pp=None, script=None, cat=None):
     logging.info('[%s] Fetching %s', __NAME__, url)
 
     msg = "Trying to fetch .nzb from %s" % url
 
-    repair, unpack, delete = pp_to_opts(pp)
-
-    future_nzo = NZBQ.generate_future(msg, repair, unpack, delete, script)
+    future_nzo = NZBQ.generate_future(msg, pp, script, cat)
 
     # Look for a grabber and reinitialize it
     for urlgrabber in URLGRABBERS:
@@ -833,8 +843,7 @@ def backup_nzb(filename, data):
 ## CV synchronized (notifys downloader)                                       ##
 ################################################################################
 @synchronized_CV
-def add_nzbfile(nzbfile, pp, script=None):
-    repair, unpack, delete = pp_to_opts(pp)
+def add_nzbfile(nzbfile, pp=None, script=None, cat=None):
     filename = nzbfile.filename
 
     if os.name != 'nt':
@@ -859,7 +868,7 @@ def add_nzbfile(nzbfile, pp, script=None):
                 name = os.path.basename(name)
                 if data:
                     try:
-                        nzo = NzbObject(name, repair, unpack, delete, script, data)
+                        nzo = NzbObject(name, repair, pp, script, data, cat=cat)
                     except:
                         nzo = None
                 if nzo:
@@ -868,7 +877,7 @@ def add_nzbfile(nzbfile, pp, script=None):
             f.close()
     else:
         try:
-            nzo = NzbObject(filename, repair, unpack, delete, script, nzbfile.value)
+            nzo = NzbObject(filename, pp, script, nzbfile.value, cat=cat)
         except:
             nzo = None
         if nzo:
@@ -882,9 +891,9 @@ def add_nzo(nzo, position = -1):
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
 @synchronized_CV
-def insert_future_nzo(future_nzo, filename, data, cat_root = None, cat_tail = None):
+def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None):
     try:
-        NZBQ.insert_future(future_nzo, filename, data, cat_root, cat_tail)
+        NZBQ.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat)
     except NameError:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
@@ -927,7 +936,7 @@ def limit_speed(value):
         logging.info("[%s] Bandwidth limit set to %s", __NAME__, value)
     except NameError:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
-        
+
 
 
 ################################################################################
@@ -1006,8 +1015,8 @@ def getBookmarksList():
 def delete_bookmark(msgid):
     if BOOKMARKS and NEWZBIN_BOOKMARKS and NEWZBIN_UNBOOKMARK:
         BOOKMARKS.del_bookmark(msgid)
-        
-        
+
+
 def system_shutdown():
     logging.info("[%s] Performing system shutdown", __NAME__)
 
@@ -1026,7 +1035,7 @@ def system_shutdown():
         win32api.InitiateSystemShutdown("", "", 30, 1, 0)
     finally:
         os._exit(0)
-        
+
 def system_hibernate():
     logging.info("[%s] Performing system hybernation", __NAME__)
     Thread(target=halt).start()
@@ -1034,20 +1043,20 @@ def system_hibernate():
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState")
     finally:
         os._exit(0)
-        
+
 def shutdown_program():
     logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
     Thread(target=halt).start()
     sleep(2.0)
     os._exit(0)
-    
+
 def change_queue_complete_action(action):
     """
     Action or script to be performed once the queue has been completed
     Scripts are prefixed with 'script_'
     """
     global QUEUECOMPLETE, QUEUECOMPLETEACTION, QUEUECOMPLETEARG
-    
+
     _action = None
     _argument = None
     if 'script_' in action:
@@ -1060,13 +1069,13 @@ def change_queue_complete_action(action):
         _action = system_hibernate
     elif action == 'shutdown_program':
         _action = shutdown_program
-    
+
     #keep the name of the action for matching the current select in queue.tmpl
     QUEUECOMPLETE = action
 
     QUEUECOMPLETEACTION = _action
     QUEUECOMPLETEARG = _argument
-        
+
 def run_script(script):
     command = os.path.join(SCRIPT_DIR, script)
     stup, need_shell, command, creationflags = build_command(command)
@@ -1075,7 +1084,7 @@ def run_script(script):
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
- 
+
 ################################################################################
 # Data IO                                                                      #
 ################################################################################
@@ -1147,7 +1156,12 @@ def remove_data(_id):
 
 
 def pp_to_opts(pp):
-    repair, unpack, delete = (False, False, False)
+    """ Convert numeric processinf options to (repair, unpack, delete) """
+    repair = unpack = delete = False
+    try:
+        pp = int(pp)
+    except:
+        pp = 0
     if pp > 0:
         repair = True
         if pp > 1:
@@ -1156,6 +1170,15 @@ def pp_to_opts(pp):
                 delete = True
 
     return (repair, unpack, delete)
+
+def opts_to_pp(repair, unpack, delete):
+    """ Convert (repair, unpack, delete) to numeric process options """
+    pp = 0
+    if repair: pp += 1
+    if unpack: pp += 1
+    if delete: pp += 1
+    return pp
+
 
 PROPER_FILENAME_MATCHER = re.compile(r"[a-zA-Z0-9\-_\.+\(\)]")
 def fix_filename(filename):
@@ -1210,7 +1233,7 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
                 action = limit_speed
             else:
                 logging.warning("[%s] Unknown action: %s", __NAME__, ACTION)
-                
+
             logging.debug("[%s] scheduling action:%s arguments:%s",__NAME__, action, arguments)
 
             #(action, taskname, initialdelay, interval, processmethod, actionargs)

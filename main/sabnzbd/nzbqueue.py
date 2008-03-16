@@ -115,25 +115,26 @@ class NzbQueue(TryList):
                            self.__downloaded_items), QUEUE_FILE_NAME)
 
     @synchronized(NZBQUEUE_LOCK)
-    def generate_future(self, msg, repair, unpack, delete, script):
+    def generate_future(self, msg, pp=None, script=None, cat=None):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, repair, unpack, delete, script, None, True)
+        future_nzo = NzbObject(msg, pp, script, None, True, cat=cat)
         self.add(future_nzo)
         return future_nzo
 
     @synchronized(NZBQUEUE_LOCK)
-    def insert_future(self, future, filename, data, cat_root = None,
-                      cat_tail = None):
+    def insert_future(self, future, filename, data, pp=None, script=None, cat=None):
         """ Refresh a placeholder nzo with an actual nzo """
         nzo_id = future.nzo_id
         if nzo_id in self.__nzo_table:
             try:
                 logging.info("[%s] Regenerating item: %s", __NAME__, nzo_id)
-                repair, unpack, delete = future.get_repair_opts()
-                script = future.get_script()
-                future.__init__(filename, repair, unpack, delete, script,
-                                nzb = data, futuretype = False,
-                                cat_root = cat_root, cat_tail = cat_tail)
+                r, u, d = future.get_repair_opts()
+                if not r == None:
+                    pp = sabnzbd.opts_to_pp(r, u, d)
+                scr = future.get_script()
+                if scr == None:
+                    scr = script
+                future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=cat)
                 future.nzo_id = nzo_id
                 self.save()
                 sabnzbd.backup_nzb(filename, data)
@@ -159,6 +160,11 @@ class NzbQueue(TryList):
     def change_script(self, nzo_id, script):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].set_script(script)
+
+    @synchronized(NZBQUEUE_LOCK)
+    def change_cat(self, nzo_id, cat):
+        if nzo_id in self.__nzo_table:
+            self.__nzo_table[nzo_id].set_cat(cat)
 
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, pos = -1, save=True):
@@ -271,7 +277,7 @@ class NzbQueue(TryList):
     def sort_by_avg_age(self):
         logging.info("[%s] Sorting by average date...", __NAME__)
         self.__nzo_list.sort(cmp=_nzo_date_cmp)
-        
+
     def sort_by_name(self):
         logging.info("[%s] Sorting by name...", __NAME__)
         self.__nzo_list.sort(cmp=_nzo_name_cmp)
@@ -471,4 +477,4 @@ def _nzo_name_cmp(nzo1, nzo2):
 
     logging.info("[%s] 3:returning %s", __NAME__, cmp(fn1, fn2))
     return cmp(fn1, fn2)
-    
+
