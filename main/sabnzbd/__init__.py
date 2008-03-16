@@ -193,7 +193,11 @@ def dir_setup(config, cfg_name, def_loc, def_name):
     except:
         logging.info('No %s defined, setting value to "%s"', cfg_name, def_name)
         my_dir = def_name
-        config['misc'][cfg_name] = my_dir
+        try:
+            config['misc'][cfg_name] = my_dir
+        except:
+            config['misc'] = {}
+            config['misc'][cfg_name] = my_dir
 
     if my_dir:
         (dd, my_dir) = create_real_path(cfg_name, def_loc, my_dir)
@@ -219,7 +223,11 @@ def check_setting_int(config, cfg_name, item_name, def_val):
         my_val = int(config[cfg_name][item_name])
     except:
         my_val = def_val
-        config[cfg_name][item_name] = my_val
+        try:
+            config[cfg_name][item_name] = my_val
+        except:
+            config[cfg_name] = {}
+            config[cfg_name][item_name] = my_val
     logging.debug("%s -> %s", item_name, my_val)
     return my_val
 
@@ -231,7 +239,11 @@ def check_setting_float(config, cfg_name, item_name, def_val):
         my_val = float(config[cfg_name][item_name])
     except:
         my_val = def_val
-        config[cfg_name][item_name] = my_val
+        try:
+            config[cfg_name][item_name] = my_val
+        except:
+            config[cfg_name] = {}
+            config[cfg_name][item_name] = my_val
 
     logging.debug("%s -> %s", item_name, my_val)
     return my_val
@@ -244,7 +256,11 @@ def check_setting_str(config, cfg_name, item_name, def_val, log = True):
         my_val= config[cfg_name][item_name]
     except:
         my_val = def_val
-        config[cfg_name][item_name] = my_val
+        try:
+            config[cfg_name][item_name] = my_val
+        except:
+            config[cfg_name] = {}
+            config[cfg_name][item_name] = my_val
 
     if log:
         logging.debug("%s -> %s", item_name, my_val)
@@ -283,6 +299,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     ## CONFIG Initialization ##
     ###########################
 
+    CheckSection('misc')
+    CheckSection('logging')
+    CheckSection('newzbin')
+    CheckSection('servers')
     CheckSection('categories')
 
     USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')

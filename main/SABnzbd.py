@@ -393,7 +393,7 @@ def main():
     	    if not os.path.exists(sabnzbd.DIR_LCLDATA):
     	        os.makedirs(sabnzbd.DIR_LCLDATA)
     	    fp = open(f, "w")
-    	    fp.write("__version__=%s\n[misc]\n[logging]\n[newzbin]\n[servers]\n" % sabnzbd.__configversion__)
+    	    fp.write("__version__=%s\n[misc]\n[logging]\n" % sabnzbd.__configversion__)
     	    fp.close()
     	except:
     	    Panic('Cannot create file "%s".' % f, 'Check specified INI file location.')
