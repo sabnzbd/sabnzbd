@@ -825,6 +825,14 @@ class HistoryPage(ProtectedClass):
         self.__verbose = not self.__verbose
         raise Raiser(self.__root, dummy)
 
+    @cherrypy.expose
+    def scriptlog(self, name=None, dummy=None):
+        if name:
+            path = os.path.dirname(sabnzbd.LOGFILE)
+            return ShowFile(name, os.path.join(path, name))
+        else:
+            raise Raiser(self.__root, dummy)
+
 #------------------------------------------------------------------------------
 class ConfigPage(ProtectedClass):
     def __init__(self, web_dir, root, prim):
@@ -1535,6 +1543,32 @@ def badParameterResponse(msg):
 </html>
 ''' % (sabnzbd.__version__, msg)
 
+def ShowFile(name, path):
+    """Return a html page listing a file and a 'back' button
+    """
+    try:
+        f = open(path, "r")
+        msg = f.read()
+        f.close()
+    except:
+        msg = "FILE NOT FOUND\n"
+
+    return '''
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>%s</title>
+</head>
+<body>
+    <FORM><INPUT TYPE="BUTTON" VALUE="Go Back" ONCLICK="history.go(-1)"></FORM>
+    <h3>%s</h3>
+    <code><pre>
+    %s
+    </pre></code><br/><br/>
+</body>
+</html>
+''' % (name, name, escape(msg))
+    
 
 def build_header(prim):
     try:

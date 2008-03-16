@@ -31,6 +31,7 @@ import sabnzbd
 import cPickle
 import shutil
 import re
+from xml.sax.saxutils import escape
 
 from sabnzbd.decorators import *
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
@@ -44,6 +45,23 @@ if os.name == 'nt':
     import subprocess
 
 DIR_LOCK = RLock()
+
+def MakeLogFile(name, content):
+    """ Write 'content' to a logfile named 'name'.log """
+    name = name.replace('.nzb', '.log')
+    path = os.path.dirname(sabnzbd.LOGFILE)
+    path = os.path.join(path, name)
+    try:
+        f = open(path, "w")
+    except:
+        logging.error("[%s] Cannot create logfile %s", __NAME__, path)
+        return "a"
+    f.write(content)
+    f.close()
+    return name
+
+def Quote(msg):
+    return escape(msg).replace(' ','%20')
 
 #------------------------------------------------------------------------------
 ## perm_script
@@ -284,14 +302,20 @@ class PostProcessor(Thread):
                     perm_script(workdir, sabnzbd.UMASK)
 
                 if sabnzbd.SCRIPT_DIR and script and not script.lower() == 'none' and result:
+                    nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
                     script = real_path(sabnzbd.SCRIPT_DIR, script)
                     logging.info('[%s] Running external script %s %s %s', __NAME__, script, workdir, filename)
                     ext_out = external_processing(script, workdir, filename, cat)
+                    fname = MakeLogFile(filename, ext_out)
                 else:
+                    fname = ""
                     ext_out = ""
 
                 if sabnzbd.EMAIL_ENDJOB:
                     email_endjob(filename, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), script, ext_out))
+
+                if fname:
+                    nzo.set_unpackstr('=> <a href="./scriptlog?name=%s">Show script output</a>' % Quote(fname), '[USER-SCRIPT]', 5)
 
                 name, msgid = SplitFileName(filename)
                 sabnzbd.delete_bookmark(msgid)

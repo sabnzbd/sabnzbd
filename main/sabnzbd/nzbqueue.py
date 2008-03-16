@@ -37,6 +37,14 @@ from sabnzbd.misc import Panic_Queue, ExitSab
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 
+def DeleteLog(name):
+    if name:
+        name = name.replace('.nzb', '.log')
+        try:
+            os.remove(os.path.join(os.path.dirname(sabnzbd.LOGFILE), name))
+        except:
+            pass
+
 #-------------------------------------------------------------------------------
 
 class HistoryItem:
@@ -377,13 +385,15 @@ class NzbQueue(TryList):
             for hist_item in self.__downloaded_items:
                 if hist_item.nzo:
                     keep.append(hist_item)
+                else:
+                    DeleteLog(hist_item.filename)
             self.__downloaded_items = []
             for hist_item in keep:
                 self.__downloaded_items.append(hist_item)
             del keep
         else:
-            self.__downloaded_items.pop(int(job))
-
+            hist_item = self.__downloaded_items.pop(int(job))
+            DeleteLog(hist_item.filename)
 
     @synchronized(NZBQUEUE_LOCK)
     def queue_info(self, for_cli = False):

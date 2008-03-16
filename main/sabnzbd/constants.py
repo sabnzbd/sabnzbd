@@ -45,7 +45,7 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-STAGENAMES = {1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin"}
+STAGENAMES = {1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin", 5:"UserScript"}
 
 BYTES_FILE_NAME  = 'bytes.sab'
 QUEUE_FILE_NAME  = 'queue.sab'

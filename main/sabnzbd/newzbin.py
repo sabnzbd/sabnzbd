@@ -70,6 +70,8 @@ def CatConvert(cat):
         for ucat in sabnzbd.CFG['categories']:
             try:
                 newzbin = sabnzbd.CFG['categories'][ucat]['newzbin']
+                if type(newzbin) != type([]):
+                    newzbin = [newzbin] 
             except:
                 newzbin = []
             for name in newzbin:
