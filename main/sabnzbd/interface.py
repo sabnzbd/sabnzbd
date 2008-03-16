@@ -365,9 +365,9 @@ class MainPage(ProtectedClass):
 
         elif mode == 'warnings':
             if output == 'json':
-                return json_warnings()
+                return json_list("warnings", sabnzbd.GUIHANDLER.content())
             elif output == 'xml':
-                return xml_warnings()
+                return xml_list("warnings", "warning", sabnzbd.GUIHANDLER.content())
             else:
                 return 'not implemented\n'
 
@@ -393,6 +393,22 @@ class MainPage(ProtectedClass):
                     return 'ok\n'
                 else:
                     return 'error: Please submit a value\n'
+            else:
+                return 'not implemented\n'
+
+        elif mode == 'get_cats':
+            if output == 'json':
+                return json_list("categories", ListCats())
+            elif output == 'xml':
+                return xml_list("categories", "category", ListCats())
+            else:
+                return 'not implemented\n'
+                        
+        elif mode == 'get_scripts':
+            if output == 'json':
+                return json_list("scripts", GetScripts())
+            elif output == 'xml':
+                return xml_list("scripts", "script", GetScripts())
             else:
                 return 'not implemented\n'
 
@@ -1901,3 +1917,31 @@ def xml_qstatus():
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return status_str
+
+
+
+def json_list(section, lst):
+    """Output a simple list as a JSON object
+    """
+
+    obj = { section : lst }
+    text = JsonWriter().write(obj)
+
+    cherrypy.response.headers['Content-Type'] = "application/json"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return text
+
+
+def xml_list(section, keyw, lst):
+    """Output a simple list as an XML object
+    """
+    text= '<?xml version="1.0" encoding="UTF-8" ?> \n<%s>\n' % section
+
+    for cat in ListCats():
+        text += '<%s>%s</%s>\n' % (keyw, escape(cat), keyw)
+
+    text += '</%s>' % section
+
+    cherrypy.response.headers['Content-Type'] = "text/xml"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return text
