@@ -99,6 +99,7 @@ def Cat2OptsDef(fname, cat=None):
             logging.debug('[%s] Job %s has category %s', __NAME__, name, cat)
 
     if cat:
+        cat = cat.lower()
         try:
             pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
             logging.debug('[%s] Job %s gets options %s', __NAME__, name, pp)
@@ -111,7 +112,7 @@ def Cat2OptsDef(fname, cat=None):
         except:
             pass
 
-    return cat.lower(), name, pp, script
+    return cat, name, pp, script
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
