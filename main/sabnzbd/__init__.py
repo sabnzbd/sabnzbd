@@ -447,7 +447,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     AUTO_SORT = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
 
     ENABLE_TV_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_tv_sorting', 0)) #tv sorting on/off
-    logging.debug("ENABLE_TV_SORTING -> %s", ENABLE_TV_SORTING)
     TV_SORT = check_setting_int(CFG, 'misc', 'tv_sort', 0) #tv sort level
     TV_SORT_SEASONS = bool(check_setting_int(CFG, 'misc', 'tv_sort_seasons', 1)) #sort into season folders
 
