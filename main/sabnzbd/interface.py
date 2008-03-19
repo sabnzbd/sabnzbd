@@ -163,6 +163,15 @@ def Raiser(root, dummy):
     return cherrypy.HTTPRedirect(root)
 
 
+def IntConv(value):
+    """Safe conversion to int"""
+    try:
+        value = int(value)
+    except:
+        value = 0
+    return value
+
+
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
     def beforeMain(self):
@@ -917,9 +926,9 @@ class ConfigDirectories(ProtectedClass):
         config['my_home'] = sabnzbd.DIR_HOME
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
         config['permissions'] = sabnzbd.UMASK
-        config['enable_tv_sorting'] = int(sabnzbd.CFG['misc']['enable_tv_sorting'])
-        config['tv_sort_seasons'] = int(sabnzbd.CFG['misc']['tv_sort_seasons'])
-        config['tv_sort'] = int(sabnzbd.CFG['misc']['tv_sort'])
+        config['enable_tv_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_tv_sorting'])
+        config['tv_sort_seasons'] = IntConv(sabnzbd.CFG['misc']['tv_sort_seasons'])
+        config['tv_sort'] = IntConv(sabnzbd.CFG['misc']['tv_sort'])
         tvSortList = []
         for tvsort in TVSORTINGLIST:
             tvSortList.append(tvsort)
@@ -988,9 +997,9 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
         if permissions: sabnzbd.CFG['misc']['permissions'] = permissions
-        sabnzbd.CFG['misc']['tv_sort'] = int(tv_sort)
-        sabnzbd.CFG['misc']['enable_tv_sorting'] = int(enable_tv_sorting)
-        sabnzbd.CFG['misc']['tv_sort_seasons'] = int(tv_sort_seasons)
+        sabnzbd.CFG['misc']['tv_sort'] = IntConv(tv_sort)
+        sabnzbd.CFG['misc']['enable_tv_sorting'] = IntConv(enable_tv_sorting)
+        sabnzbd.CFG['misc']['tv_sort_seasons'] = IntConv(tv_sort_seasons)
 
         return saveAndRestart(self.__root, dummy)
 
@@ -1009,23 +1018,23 @@ class ConfigSwitches(ProtectedClass):
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['enable_unrar'] = int(sabnzbd.CFG['misc']['enable_unrar'])
-        config['enable_unzip'] = int(sabnzbd.CFG['misc']['enable_unzip'])
-        config['enable_filejoin'] = int(sabnzbd.CFG['misc']['enable_filejoin'])
-        config['enable_save'] = int(sabnzbd.CFG['misc']['enable_save'])
-        config['enable_par_cleanup'] = int(sabnzbd.CFG['misc']['enable_par_cleanup'])
-        config['send_group'] = int(sabnzbd.CFG['misc']['send_group'])
-        config['fail_on_crc'] = int(sabnzbd.CFG['misc']['fail_on_crc'])
-        config['create_group_folders'] = int(sabnzbd.CFG['misc']['create_group_folders'])
-        config['dirscan_opts'] = int(sabnzbd.CFG['misc']['dirscan_opts'])
-        config['top_only'] = int(sabnzbd.CFG['misc']['top_only'])
-        config['auto_sort'] = int(sabnzbd.CFG['misc']['auto_sort'])
-        config['check_rel'] = int(sabnzbd.CFG['misc']['check_new_rel'])
-        config['auto_disconnect'] = int(sabnzbd.CFG['misc']['auto_disconnect'])
-        config['replace_spaces'] = int(sabnzbd.CFG['misc']['replace_spaces'])
-        config['safe_postproc'] = int(sabnzbd.CFG['misc']['safe_postproc'])
-        config['auto_browser'] = int(sabnzbd.CFG['misc']['auto_browser'])
-        config['ignore_samples'] = int(sabnzbd.CFG['misc']['ignore_samples'])
+        config['enable_unrar'] = IntConv(sabnzbd.CFG['misc']['enable_unrar'])
+        config['enable_unzip'] = IntConv(sabnzbd.CFG['misc']['enable_unzip'])
+        config['enable_filejoin'] = IntConv(sabnzbd.CFG['misc']['enable_filejoin'])
+        config['enable_save'] = IntConv(sabnzbd.CFG['misc']['enable_save'])
+        config['enable_par_cleanup'] = IntConv(sabnzbd.CFG['misc']['enable_par_cleanup'])
+        config['send_group'] = IntConv(sabnzbd.CFG['misc']['send_group'])
+        config['fail_on_crc'] = IntConv(sabnzbd.CFG['misc']['fail_on_crc'])
+        config['create_group_folders'] = IntConv(sabnzbd.CFG['misc']['create_group_folders'])
+        config['dirscan_opts'] = IntConv(sabnzbd.CFG['misc']['dirscan_opts'])
+        config['top_only'] = IntConv(sabnzbd.CFG['misc']['top_only'])
+        config['auto_sort'] = IntConv(sabnzbd.CFG['misc']['auto_sort'])
+        config['check_rel'] = IntConv(sabnzbd.CFG['misc']['check_new_rel'])
+        config['auto_disconnect'] = IntConv(sabnzbd.CFG['misc']['auto_disconnect'])
+        config['replace_spaces'] = IntConv(sabnzbd.CFG['misc']['replace_spaces'])
+        config['safe_postproc'] = IntConv(sabnzbd.CFG['misc']['safe_postproc'])
+        config['auto_browser'] = IntConv(sabnzbd.CFG['misc']['auto_browser'])
+        config['ignore_samples'] = IntConv(sabnzbd.CFG['misc']['ignore_samples'])
         config['script'] = sabnzbd.CFG['misc']['dirscan_script']
         if not config['script']:
             config['script'] = 'None'
@@ -1053,27 +1062,27 @@ class ConfigSwitches(ProtectedClass):
                      dummy = None
                      ):
 
-        sabnzbd.CFG['misc']['enable_unrar'] = int(enable_unrar)
-        sabnzbd.CFG['misc']['enable_unzip'] = int(enable_unzip)
-        sabnzbd.CFG['misc']['enable_filejoin'] = int(enable_filejoin)
-        sabnzbd.CFG['misc']['enable_save'] = int(enable_save)
-        sabnzbd.CFG['misc']['send_group'] = int(send_group)
-        sabnzbd.CFG['misc']['fail_on_crc'] = int(fail_on_crc)
-        sabnzbd.CFG['misc']['create_group_folders'] = int(create_group_folders)
-        sabnzbd.CFG['misc']['dirscan_opts'] = int(dirscan_opts)
+        sabnzbd.CFG['misc']['enable_unrar'] = IntConv(enable_unrar)
+        sabnzbd.CFG['misc']['enable_unzip'] = IntConv(enable_unzip)
+        sabnzbd.CFG['misc']['enable_filejoin'] = IntConv(enable_filejoin)
+        sabnzbd.CFG['misc']['enable_save'] = IntConv(enable_save)
+        sabnzbd.CFG['misc']['send_group'] = IntConv(send_group)
+        sabnzbd.CFG['misc']['fail_on_crc'] = IntConv(fail_on_crc)
+        sabnzbd.CFG['misc']['create_group_folders'] = IntConv(create_group_folders)
+        sabnzbd.CFG['misc']['dirscan_opts'] = IntConv(dirscan_opts)
         if script == 'None':
             sabnzbd.CFG['misc']['dirscan_script'] = None
         else:
             sabnzbd.CFG['misc']['dirscan_script'] = script
-        sabnzbd.CFG['misc']['enable_par_cleanup'] = int(enable_par_cleanup)
-        sabnzbd.CFG['misc']['top_only'] = int(top_only)
-        sabnzbd.CFG['misc']['auto_sort'] = int(auto_sort)
-        sabnzbd.CFG['misc']['check_new_rel'] = int(check_rel)
-        sabnzbd.CFG['misc']['auto_disconnect'] = int(auto_disconnect)
-        sabnzbd.CFG['misc']['safe_postproc'] = int(safe_postproc)
-        sabnzbd.CFG['misc']['replace_spaces'] = int(replace_spaces)
-        sabnzbd.CFG['misc']['auto_browser'] = int(auto_browser)
-        sabnzbd.CFG['misc']['ignore_samples'] = int(ignore_samples)
+        sabnzbd.CFG['misc']['enable_par_cleanup'] = IntConv(enable_par_cleanup)
+        sabnzbd.CFG['misc']['top_only'] = IntConv(top_only)
+        sabnzbd.CFG['misc']['auto_sort'] = IntConv(auto_sort)
+        sabnzbd.CFG['misc']['check_new_rel'] = IntConv(check_rel)
+        sabnzbd.CFG['misc']['auto_disconnect'] = IntConv(auto_disconnect)
+        sabnzbd.CFG['misc']['safe_postproc'] = IntConv(safe_postproc)
+        sabnzbd.CFG['misc']['replace_spaces'] = IntConv(replace_spaces)
+        sabnzbd.CFG['misc']['auto_browser'] = IntConv(auto_browser)
+        sabnzbd.CFG['misc']['ignore_samples'] = IntConv(ignore_samples)
 
         return saveAndRestart(self.__root, dummy)
 
@@ -1410,9 +1419,9 @@ class ConfigNewzbin(ProtectedClass):
 
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
         config['password_newzbin'] = decodePassword(sabnzbd.CFG['newzbin']['password'], 'password_newzbin')
-        config['create_category_folders'] = int(sabnzbd.CFG['newzbin']['create_category_folders'])
-        config['newzbin_bookmarks'] = int(sabnzbd.CFG['newzbin']['bookmarks'])
-        config['newzbin_unbookmark'] = int(sabnzbd.CFG['newzbin']['unbookmark'])
+        config['create_category_folders'] = IntConv(sabnzbd.CFG['newzbin']['create_category_folders'])
+        config['newzbin_bookmarks'] = IntConv(sabnzbd.CFG['newzbin']['bookmarks'])
+        config['newzbin_unbookmark'] = IntConv(sabnzbd.CFG['newzbin']['unbookmark'])
         config['bookmark_rate'] = sabnzbd.BOOKMARK_RATE
 
         config['bookmarks_list'] = self.__bookmarks
@@ -1725,8 +1734,8 @@ class ConfigEmail(ProtectedClass):
         config['email_from'] = sabnzbd.CFG['misc']['email_from']
         config['email_account'] = sabnzbd.CFG['misc']['email_account']
         config['email_pwd'] = decodePassword(sabnzbd.CFG['misc']['email_pwd'], 'email')
-        config['email_endjob'] = int(sabnzbd.CFG['misc']['email_endjob'])
-        config['email_full'] = int(sabnzbd.CFG['misc']['email_full'])
+        config['email_endjob'] = IntConv(sabnzbd.CFG['misc']['email_endjob'])
+        config['email_full'] = IntConv(sabnzbd.CFG['misc']['email_full'])
 
         template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
                             searchList=[config],
