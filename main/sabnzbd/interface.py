@@ -1476,9 +1476,9 @@ class ConnectionInfo(ProtectedClass):
                     nzf = article.nzf
                     nzo = nzf.nzo
 
-                    art_name = article.article
-                    nzf_name = nzf.get_filename()
-                    nzo_name = nzo.get_filename()
+                    art_name = escape(article.article)
+                    nzf_name = escape(nzf.get_filename())
+                    nzo_name = escape(nzo.get_filename())
 
                 busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
 
@@ -1488,7 +1488,10 @@ class ConnectionInfo(ProtectedClass):
             busy.sort()
             header['servers'].append((server.host, server.port, connected, busy, server.ssl))
 
-        header['warnings'] = sabnzbd.GUIHANDLER.content()
+        wlist = []
+        for w in sabnzbd.GUIHANDLER.content():
+            wlist.append(escape(w))
+        header['warnings'] = wlist
 
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
                             searchList=[header],
