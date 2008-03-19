@@ -553,13 +553,13 @@ def main():
     # Get IP address, but discard APIPA/IPV6
     # If only APIPA's or IPV6 are found, fall back to localhost
     ipv4 = ipv6 = False
-    hostip = 'localhost'
+    localhost = hostip = 'localhost'
     try:
         info = socket.getaddrinfo(socket.gethostname(), None)
     except:
         # Hostname does not resolve, use 0.0.0.0
         cherryhost = '0.0.0.0'
-        info = socket.getaddrinfo('localhost', None)
+        info = socket.getaddrinfo(localhost, None)
     for item in info:
         ip = item[4][0]
         if ip.find('169.254.') == 0:
@@ -574,9 +574,6 @@ def main():
     if ipv6 and ipv4:
         sabnzbd.AMBI_LOCALHOST = True
         logging.warning("IPV6 has priority on this system, potential Firefox issue")
-        localhost = '127.0.0.1'
-    else:
-        localhost = 'localhost'
 
     if cherryhost == '':
         if ipv6 and ipv4:
@@ -596,7 +593,7 @@ def main():
     elif cherryhost.replace('.', '').isdigit():
         # IPV4 numerical
         browserhost = cherryhost
-    elif cherryhost == 'localhost':
+    elif cherryhost == localhost:
         cherryhost = localhost
         browserhost = localhost
     else:
