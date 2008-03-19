@@ -1265,7 +1265,13 @@ class ConfigServer(ProtectedClass):
                 return msg
 
             del sabnzbd.CFG['servers'][server]
-            server = "%s:%s" % (host, port)
+
+            # Allow IPV6 numerical addresses, '[]' is not compatible with
+            # INI file handling, replace by '{}'
+            ihost = host.replace('[','{')
+            ihost = ihost.replace(']','}')
+            server = "%s:%s" % (ihost, port)
+
             sabnzbd.CFG['servers'][server] = {}
 
             sabnzbd.CFG['servers'][server]['host'] = host
