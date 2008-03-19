@@ -51,6 +51,13 @@
     <strong>Complete Directory:</strong><br>
     Location to put completed downloads in.<br>
     <input type="text" size="40" name="complete_dir" value="$complete_dir">
+    <!--#if not $nt#-->
+        <br>
+        <br>
+        <strong>Permissions for Complete dir:</strong><br>
+        Set permissions pattern for completed files, octal notation only!<br>
+        <input type="text" size="10" name="permissions" value="$permissions">
+    <!--#end if#-->
     <br>
     <br>
     <strong>OPTIONAL: Dirscan Directory:</strong><br>

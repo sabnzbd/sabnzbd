@@ -916,6 +916,7 @@ class ConfigDirectories(ProtectedClass):
         config['script_dir'] = sabnzbd.CFG['misc']['script_dir']
         config['my_home'] = sabnzbd.DIR_HOME
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
+        config['permissions'] = sabnzbd.UMASK
         config['enable_tv_sorting'] = int(sabnzbd.CFG['misc']['enable_tv_sorting'])
         config['tv_sort_seasons'] = int(sabnzbd.CFG['misc']['tv_sort_seasons'])
         config['tv_sort'] = int(sabnzbd.CFG['misc']['tv_sort'])
@@ -932,8 +933,15 @@ class ConfigDirectories(ProtectedClass):
 
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
-                        cache_dir = None, nzb_backup_dir = None, tv_sort = None, enable_tv_sorting = None, tv_sort_seasons = None,
+                        cache_dir = None, nzb_backup_dir = None, permissions=None,
+                        tv_sort = None, enable_tv_sorting = None, tv_sort_seasons = None,
                         dirscan_dir = None, dirscan_speed = None, script_dir = None, dummy = None):
+
+        if permissions:
+            try:
+                int(permissions,8)
+            except:
+                return badParameterResponse('Error: use octal notation for permissions')
 
         (dd, path) = create_real_path('download_dir', sabnzbd.DIR_HOME, download_dir)
         if not dd:
@@ -979,6 +987,7 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['script_dir'] = script_dir
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
+        if permissions: sabnzbd.CFG['misc']['permissions'] = permissions
         sabnzbd.CFG['misc']['tv_sort'] = int(tv_sort)
         sabnzbd.CFG['misc']['enable_tv_sorting'] = int(enable_tv_sorting)
         sabnzbd.CFG['misc']['tv_sort_seasons'] = int(tv_sort_seasons)

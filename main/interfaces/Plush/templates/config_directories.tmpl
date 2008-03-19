@@ -58,6 +58,13 @@
     <input type="text" size="35" name="complete_dir" value="$complete_dir"/><br/>
     <br/>
 		
+    <!--#if not $nt#-->
+        <strong>Permissions:</strong><br/>
+        <small>Set permissions pattern for completed files, octal notation only!</small><br/>
+        <input type="text" size="10" name="permissions" value="$permissions"/><br/>
+        <br/>
+    <!--#end if#-->
+
     <strong>OPTIONAL: Dirscan Directory:</strong><br/>
     <small>Directory to scan for .nzb files</small><br/>
     <input type="text" size="35" name="dirscan_dir" value="$dirscan_dir"/><br/>
