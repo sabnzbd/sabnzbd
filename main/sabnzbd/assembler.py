@@ -141,7 +141,7 @@ class PostProcessor(Thread):
                 break
 
             try:
-                result = False
+                result = True
                 rep, unp, dele = nzo.get_repair_opts()
                 script = nzo.get_script()
                 cat = nzo.get_cat()
@@ -164,7 +164,6 @@ class PostProcessor(Thread):
                     if not repairsets:
                         logging.info("[%s] No par2 sets for %s", __NAME__, filename)
                         nzo.set_unpackstr('=> No par2 sets', '[PAR-INFO]', 1)
-                        result = True
 
                     for _set in repairsets:
                         logging.info("[%s] Running repair on set %s", __NAME__, _set)
