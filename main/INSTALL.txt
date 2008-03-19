@@ -59,7 +59,6 @@ Windows
     Python-2.5.1            http://www.activestate.com
 
 Essential modules
-    CherryPy-2.2.1          http://www.cherrypy.org
     cheetah-2.0.1           http://www.cheetahtemplate.org/
     elementtree-1.2.6       http://effbot.org/downloads/
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
@@ -70,6 +69,9 @@ Optional modules
     unrar >= 3.6.6          http://www.rarlab.com/rar_add.htm
     unzip >= 5.5.2          http://www.info-zip.org/
     feedparser >= 4.1       http://feedparser.org/
+
+Embedded modules (no need to install)
+    CherryPy-2.2.1          http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
@@ -94,6 +96,9 @@ or
 
 You may of course try other port numbers too.
 
+For troubleshooting you can use the program SABnzbd-console.exe.
+This will show a black window where logging information will be shown. This
+may help you solve problems easier.
 
 -------------------------------------------------------------------------------
 5) MORE INFORMATION
@@ -107,8 +112,11 @@ Visit the WIKI site:
 6) CREDITS
 -------------------------------------------------------------------------------
 
-o) NOVA3, NOVA4 and Plush alternative web interfaces
+o) Plush alternative web interface
    pairofdimes, blis102 Organix Design
+
+o) Smpl alternative web interface
+   switch
 
 o) SABnzbd uses various code from pynewsleecher, newsunpack and grabnzb by:
    Freddie (freddie@madcowdisease.org) (http://www.madcowdisease.org/mcd)
@@ -138,9 +146,13 @@ o) sendEmail.exe/pl:
    Brandon Zehm <caspian@dotconf.net>
    http://caspian.dotconf.net/
 
+o) json.py:
+   Patrick D. Logan
+   http://sourceforge.net/projects/json-py
+
 o) Contributors:
    ShyPike, Freaky, gwynevans, Jigal van Hemert, ...
 
 o) Testers:
    pairofdimes, rascalli, out2lunch, qwaqwa, duumke,
-   blis102, duz, swi-tch
+   blis102, duz, switch

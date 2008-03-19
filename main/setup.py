@@ -141,3 +141,8 @@ else:
             if ext.lower() not in ('.pyc', '.pyo', '.bak'):
                 shutil.copy2(file, dest)
                 os.system("dos2unix --safe %s" % fullname)
+
+    # Install CherryPy
+    os.chdir(root)
+    os.system("unzip -o ../CherryPy-2.2.1.zip")
+    os.chdir('..')
