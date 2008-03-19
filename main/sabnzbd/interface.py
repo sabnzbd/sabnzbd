@@ -568,7 +568,8 @@ class QueuePage(ProtectedClass):
                 slot['script'] = script
             else:
                 slot['script'] = 'None'
-            slot['filename'], slot['msgid'] = SplitFileName(filename)
+            fn, slot['msgid'] = SplitFileName(filename)
+            slot['filename'] = escape(fn)
             slot['cat'] = cat
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
             slot['mb'] = "%.2f" % (bytes / MEBI)
@@ -594,7 +595,7 @@ class QueuePage(ProtectedClass):
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
                     if isinstance(fn, unicode):
-                        fn = fn.encode('utf-8')
+                        fn = escape(fn.encode('utf-8'))
 
                     age = calc_age(date)
 
@@ -607,7 +608,7 @@ class QueuePage(ProtectedClass):
                 for tup in active_files:
                     bytes_left, bytes, fn, date, nzf_id = tup
                     if isinstance(fn, unicode):
-                        fn = fn.encode('utf-8')
+                        fn = escape(fn.encode('utf-8'))
 
                     age = calc_age(date)
 
@@ -621,7 +622,7 @@ class QueuePage(ProtectedClass):
                 for tup in queued_files:
                     _set, bytes_left, bytes, fn, date = tup
                     if isinstance(fn, unicode):
-                        fn = fn.encode('utf-8')
+                        fn = escape(fn.encode('utf-8'))
 
                     age = calc_age(date)
 
@@ -795,7 +796,7 @@ class HistoryPage(ProtectedClass):
                 stages = []
                 item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
                         'nzo':nzo,
-                        'msgid':msgid, 'filename':name, 'loaded':loaded, 'stages':stages}
+                        'msgid':msgid, 'filename':escape(name), 'loaded':loaded, 'stages':stages}
                 if self.__verbose:
                     stage_keys = unpackstrht.keys()
                     stage_keys.sort()
