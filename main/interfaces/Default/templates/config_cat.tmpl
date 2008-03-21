@@ -31,7 +31,12 @@
 <a class="current" href="./">Categories</a>
 </span>
 <h2>User defined categories</h2>
-
+Here you define post-processing, based on categories.<br/>
+You can define a "mode", a "script", and a destination directory per category.<br/>
+<!--#if $newzbinDetails#-->
+    You can map categories to Newzbin categories or set the category of a job manually.<br/>
+<!--#end if#-->
+<br/>
     <table id="catTable">
         <tr>
             <th></th>
@@ -47,9 +52,12 @@
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
 
-        <td><form action="delete" method="get">
+        <td><!--#if $slot.name#-->
+            <form action="delete" method="get">
             <input type="hidden" value="$slot.name" name="name">
             <input type="submit" value="X"></form>
+            <!--#end if#-->
+        </td>
 
         <form action="save" method="get">
         <input type="hidden" value="$slot.name" name="name">
