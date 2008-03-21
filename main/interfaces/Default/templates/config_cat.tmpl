@@ -33,7 +33,7 @@
 <h2>User defined categories</h2>
 Here you define post-processing, based on categories.<br/>
 You can define a "mode", a "script", and a destination directory per category.<br/>
-<!--#if $newzbinDetails#-->
+<!--#if $varExists('newzbinDetails')#-->
     You can map categories to Newzbin categories or set the category of a job manually.<br/>
 <!--#end if#-->
 <br/>
@@ -44,7 +44,7 @@ You can define a "mode", a "script", and a destination directory per category.<b
             <th>&nbsp;Mode&nbsp;</th>
             <!--#if $script_list#--><th>Script</th><!--#end if#-->
             <th>Directory</th>
-            <!--#if $newzbinDetails#--><th>NewzBin Categories</th><!--#end if#-->
+            <!--#if $varExists('newzbinDetails')#--><th>NewzBin Categories</th><!--#end if#-->
             <th></th>
         </tr>
     <!--#set $odd = False#-->
@@ -82,7 +82,7 @@ You can define a "mode", a "script", and a destination directory per category.<b
 
         <td><input type="text" size=40 name="dir" value="$slot.dir"></td>
         
-        <!--#if $newzbinDetails#--><td><input type="text" name="newzbin" value="$slot.newzbin"></td><!--#end if#-->
+        <!--#if $varExists('newzbinDetails')#--><td><input type="text" name="newzbin" value="$slot.newzbin"></td><!--#end if#-->
 
         <td><input type="submit" value="Save"></td>
         </form>

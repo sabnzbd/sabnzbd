@@ -250,7 +250,8 @@ class MainPage(ProtectedClass):
     def index(self, dummy = None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
-        info['newzbinDetails'] = sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN
+        if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+            info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts()
         info['script'] = sabnzbd.DIRSCAN_SCRIPT
