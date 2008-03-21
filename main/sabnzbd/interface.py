@@ -172,6 +172,18 @@ def IntConv(value):
     return value
 
 
+def ListHandler(var):
+    """ Return list option as a comma-seperated string """
+    if not var:
+        value = ','
+    elif type(var) == type(''):
+        value = '%s,' % var
+    else:
+        value = listquote.makelist(var)
+    value = value.strip('[]')
+    return value
+
+
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
     def beforeMain(self):
@@ -875,6 +887,8 @@ class ConfigPage(ProtectedClass):
         self.scheduling = ConfigScheduling(web_dir, root+'scheduling/', prim)
         self.server = ConfigServer(web_dir, root+'server/', prim)
         self.switches = ConfigSwitches(web_dir, root+'switches/', prim)
+        self.categories = ConfigCats(web_dir, root+'categories/', prim)
+
 
     @cherrypy.expose
     def index(self, dummy = None):
@@ -1145,14 +1159,7 @@ class ConfigGeneral(ProtectedClass):
             config['web_colors'] = ListColors(sabnzbd.WEB_DIR2)
             config['web_color'] = sabnzbd.WEB_COLOR2
 
-        if not sabnzbd.CFG['misc']['cleanup_list']:
-            config['cleanup_list'] = ','
-
-        elif len(sabnzbd.CFG['misc']['cleanup_list']) == 1:
-            config['cleanup_list'] = '%s,' % sabnzbd.CFG['misc']['cleanup_list'][0]
-
-        else:
-            config['cleanup_list'] = listquote.makelist(sabnzbd.CFG['misc']['cleanup_list'])
+        config['cleanup_list'] = ListHandler(sabnzbd.CFG['misc']['cleanup_list'])
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             searchList=[config],
@@ -1461,6 +1468,101 @@ class ConfigNewzbin(ProtectedClass):
         self.__bookmarks = []
         raise Raiser(self.__root, dummy)
 
+#------------------------------------------------------------------------------
+
+class ConfigCats(ProtectedClass):
+    def __init__(self, web_dir, root, prim):
+        self.roles = ['admins']
+        self.__root = root
+        self.__web_dir = web_dir
+        self.__prim = prim
+
+    @cherrypy.expose
+    def index(self, dummy = None):
+        if sabnzbd.CONFIGLOCK:
+            return Protected()
+
+        config, pnfo_list, bytespersec = build_header(self.__prim)
+
+        if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+            config['newzbinDetails'] = True
+
+        config['script_list'] = ListScripts()
+
+        empty = { 'name':'', 'pp':'0', 'script':'', 'dir':'', 'newzbin':'' }
+        slotinfo = []
+        slotinfo.append(empty)
+        for cat in sabnzbd.CFG['categories']:
+            slot = {}
+            slot['name'] = cat
+            try:
+                slot['pp'] = str(sabnzbd.CFG['categories'][cat]['pp'])
+            except:
+                slot['pp'] = '0'
+            try:
+                slot['script'] = sabnzbd.CFG['categories'][cat]['script']
+            except:
+                slot['script'] = 'None'
+            try:
+                slot['dir'] = sabnzbd.CFG['categories'][cat]['dir']
+            except:
+                slot['dir'] = ''
+            try:
+                slot['newzbin'] = ListHandler(sabnzbd.CFG['categories'][cat]['newzbin'])
+            except:
+                slot['newzbin'] = ','
+            slotinfo.append(slot)
+        config['slotinfo'] = slotinfo
+        
+        template = Template(file=os.path.join(self.__web_dir, 'config_cat.tmpl'),
+                            searchList=[config],
+                            compilerSettings={'directiveStartToken': '<!--#',
+                                              'directiveEndToken': '#-->'})
+        return template.respond()
+
+    @cherrypy.expose
+    def delete(self, name = None, dummy = None):
+        if name:
+            try:
+                del sabnzbd.CFG['categories'][name]
+            except:
+                pass
+        return saveAndRestart(self.__root, dummy)
+
+    @cherrypy.expose
+    def save(self, name=None, newname=None, pp=None, script=None, dir=None, newzbin=None, dummy=None):
+        if newname:
+            if name:
+                try:
+                    del sabnzbd.CFG['categories'][name]
+                except:
+                    pass
+            name = newname.lower()
+            sabnzbd.CFG['categories'][name] = {}
+
+            if pp and pp.isdigit():
+                try:
+                    sabnzbd.CFG['categories'][name]['pp'] = str(pp)
+                except:
+                    pass
+            if script:
+                if script.lower() == 'None':
+                    script = ''
+                try:
+                    sabnzbd.CFG['categories'][name]['script'] = script
+                except:
+                    pass
+            if dir:
+                try:
+                    sabnzbd.CFG['categories'][name]['dir'] = dir
+                except:
+                    pass
+            if newzbin:
+                try:
+                    sabnzbd.CFG['categories'][name]['newzbin'] = listquote.simplelist(newzbin)
+                except:
+                    pass
+        return saveAndRestart(self.__root, dummy)
 
 #------------------------------------------------------------------------------
 
