@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/default.css"/>
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/defaultcolors.css"/>
+    <!--#if $color_scheme#-->
+        <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#end if#-->
+    <link rel="shortcut icon" href="../../static/images/favicon.ico" />
+</head>
+<body>
+<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<span class="MainMenu">
+<a href="../../">Home</a> |
+<a href="../../queue">Queue</a> |
+<a href="../../history">History</a> |
+<a class="current" href="../">Config</a> |
+<a href="../../connections">Connections</a> |
+<a href="http://sabnzbdplus.wiki.sourceforge.net/Configure+Cat/" target="_blank">Help</a>
+</span>
+<span class="SubMenu">
+<a href="../general">General</a> |
+<a href="../directories">Directories</a> |
+<a href="../switches">Switches</a> |
+<a href="../server">Servers</a> |
+<a href="../scheduling">Scheduling</a> |
+<a href="../rss">RSS</a> |
+<a href="../email">Email</a> |
+<a href="../newzbin">Newzbin</a> |
+<a class="current" href="./">Categories</a>
+</span>
+<h2>User defined categories</h2>
+
+    <table id="catTable">
+        <tr>
+            <th></th>
+            <th>Category</th>
+            <th>&nbsp;Mode&nbsp;</th>
+            <!--#if $script_list#--><th>Script</th><!--#end if#-->
+            <th>Directory</th>
+            <!--#if $newzbinDetails#--><th>NewzBin Categories</th><!--#end if#-->
+            <th></th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $slot in $slotinfo#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+
+        <td><form action="delete" method="get">
+            <input type="hidden" value="$slot.name" name="name">
+            <input type="submit" value="X"></form>
+
+        <form action="save" method="get">
+        <input type="hidden" value="$slot.name" name="name">
+        <td><input type="text" name="newname" value="$slot.name"></td>
+
+        <td><select name="pp">
+           <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->></option>
+           <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>R</option>
+           <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>U</option>
+           <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>D</option>
+           </select>
+        </td>
+
+        <!--#if $script_list#-->
+        <td><select name="script">
+            <!--#for $sc in $script_list#-->
+                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+            <!--#end for#-->
+            </select>
+        </td>
+        <!--#end if#-->
+
+        <td><input type="text" size=40 name="dir" value="$slot.dir"></td>
+        
+        <!--#if $newzbinDetails#--><td><input type="text" name="newzbin" value="$slot.newzbin"></td><!--#end if#-->
+
+        <td><input type="submit" value="Save"></td>
+        </form>
+
+    <!--#end for#-->
+    </table>
+
+<div class="footer">
+<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
+<!--#if int($cache_limit)#-->
+<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#end if#-->
+<!--#if $new_release#-->
+    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
+<!--#end if#-->
+</div>
+</body>
+</html>
