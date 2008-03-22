@@ -190,7 +190,7 @@ class PostProcessor(Thread):
 
                 complete_dir = Cat2Dir(cat, self.complete_dir)
                 if complete_dir:
-                    dirname = "_UNPACKING_%s" % nzo.get_dirname()
+                    dirname = "_UNPACKING_%s" % nzo.get_original_dirname()
                     nzo.set_dirname(dirname)
                     workdir_complete = get_path(complete_dir, nzo)
 
@@ -211,27 +211,10 @@ class PostProcessor(Thread):
                     except:
                         logging.exception("[%s] Error removing workdir (%s)",
                                           __NAME__, workdir)
-
-
-                    rep1 = "_UNPACKING_"
-                    rep2 = ""
-                    workdir_final = workdir_complete.replace(rep1,rep2) #Get rid of _UNPACKING_ in foldername
-                    dirname = dirname.replace(rep1,rep2)
-
-                    try: #get rid of .1.2.3 ect from end of foldername
-                        while 1:
-                            if workdir_final[-2] == '.':
-                                workdir_final = workdir_final[:-2]
-                            else:
-                                break
-                        while 1:
-                            if dirname[-2] == '.':
-                                dirname = dirname[:-2]
-                            else:
-                                break
-                    except:
-                        print 'out of range error on workdir_final/dirname!'
-
+                                          
+                    dirname = nzo.get_original_dirname()
+                    workdir_final = Cat2Dir(cat, self.complete_dir)
+                    workdir_final = os.path.join(workdir_final, dirname)
                     nzo.set_dirname(dirname)
 
                     unique_dir = True
@@ -239,7 +222,7 @@ class PostProcessor(Thread):
                         #First check if the show matches TV episode regular expressions. Returns regex match object
                         match1, match2 = checkForTVShow(dirname)
                         if match1:
-                            logging.debug("[%s] Found TV Show - Starting folder sort (%s)", __NAME__, dirname)
+                            logging.debug("[%s] Found TV Show - Starting folder sort (%s : %s)", __NAME__, dirname, workdir_final)
                             #formatFolders will create the neccissary folders for the title/season ect and return the final folderpack (does not create the last folder)
                             workdir_final, unique_dir = formatFolders(workdir_final, dirname, match1, match2)
                         else:
@@ -253,22 +236,29 @@ class PostProcessor(Thread):
 
                     if unique_dir:
                         #If the folder is set to be unique (default true) then it will find itself a unique foldername and create it
-                        workdir_final = get_unique_path(workdir_final, create_dir = True)
+                        workdir_final = move_to_path(workdir_complete, workdir_final, unique_dir)
                     else:
                         #else it just creates the folder. (Does NOT fail if the folder already exists)
                         workdir_final = create_dir(workdir_final)
-                    for root, dirs, files in os.walk(workdir_complete):
-                        #move the contents of workdir_complete (_UNPACKING_) to the final workdir_final folder.
-                        for _file in files:
-                            path = os.path.join(root, _file)
-                            new_path = path.replace(workdir_complete, workdir_final)
-                            move_to_path(path, new_path, unique_dir)
-                    try:
-                        #delete the complete DIR (the folder that starts with '_UNPACKING_')
-                        os.rmdir(workdir_complete)
-                    except:
-                        logging.exception("[%s] Error removing workdir_complete (%s)",
-                                          __NAME__, workdir_complete)
+                        for root, dirs, files in os.walk(workdir_complete):
+                            #move the contents of workdir_complete (_UNPACKING_) to the final workdir_final folder.
+                            for _file in files:
+                                path = os.path.join(root, _file)
+                                new_path = path.replace(workdir_complete, workdir_final)
+                                if not os.path.exists(new_path):
+                                    try:
+                                        os.makedirs(new_path, int(sabnzbd.UMASK, 8) | 00700)
+                                    except:
+                                        logging.exception("[%s] Failed making (%s)",__NAME__,new_path)
+                                move_to_path(path, new_path, unique_dir)
+                                
+                    if os.path.exists(workdir_complete):
+                        try:
+                            #delete the complete DIR (the folder that starts with '_UNPACKING_')
+                            os.rmdir(workdir_complete)
+                        except:
+                            logging.exception("[%s] Error removing workdir_complete (%s)",
+                                              __NAME__, workdir_complete)
 
                     workdir = workdir_final
 
@@ -461,7 +451,6 @@ def get_path(work_dir_root, nzo, filename = None):
     dirprefix = nzo.get_dirprefix()
     dirname = nzo.get_dirname()
     created = nzo.get_dirname_created()
-    #uniquefolder = nzo.get_unique_dir()
 
     for _dir in dirprefix:
         if not _dir:
@@ -479,20 +468,20 @@ def get_path(work_dir_root, nzo, filename = None):
 
     if path and filename:
         path = os.path.join(path, filename)
-
+        
     return path
 
 @synchronized(DIR_LOCK)
 def create_dir(dirpath):
     if not os.path.exists(dirpath):
-        logging.info('[%s] Creating directory: %s', __NAME__, dirpath)
+        logging.info('[%s] Creating directories: %s', __NAME__, dirpath)
         try:
-            os.mkdir(dirpath)
             if sabnzbd.UMASK and os.name != 'nt':
-                os.chmod(dirpath, int(sabnzbd.UMASK, 8) | 00700)
+                os.makedirs(dirpath, int(sabnzbd.UMASK, 8) | 00700)
+            else:
+                os.makedirs(dirpath)
         except:
-            logging.exception('[%s] Creating directory %s failed', __NAME__,
-                              dirpath)
+            logging.exception("[%s] Failed making (%s)",__NAME__,dirpath)
             return None
 
     return dirpath
@@ -522,11 +511,11 @@ def get_unique_path(dirpath, i=0, create_dir=True):
 @synchronized(DIR_LOCK)
 
 def move_to_path(path, new_path, unique = True):
-    logging.debug("[%s] move_to_path |path:%s newpath:%s unique:%s",
-                                              __NAME__,path,new_path, unique)
     if unique:
         new_path = get_unique_path(new_path, create_dir=False)
     if new_path:
+        logging.debug("[%s] move_to_path |path:%s newpath:%s unique:%s",
+                                                  __NAME__,path,new_path, unique)
         try:
             shutil.move(path, new_path)
         except:
@@ -621,7 +610,7 @@ def getTVInfo(match1, match2,dirname):
     except:
         epName = epNo
 
-    if sabnzbd.TV_SORT == 2:  #\\TV\\ShowName\\1 - EpName\\
+    if sabnzbd.TV_SORT == 2:  #\\TV\\ShowName\\01 - EpName\\
         foldername = epName
 
     elif sabnzbd.TV_SORT == 3:  #\\TV\\ShowName\\1x01 - EpName\\
@@ -632,8 +621,8 @@ def getTVInfo(match1, match2,dirname):
             foldername = 'S%s' % (epName)
         else:
             if int(season) < 10:
-                season = '0%s' % (int(season))
-            foldername = 'S%sE%s' % (season,epName) # season#
+                _season = '0%s' % (int(season))
+            foldername = 'S%sE%s' % (_season,epName) # season#
 
     elif sabnzbd.TV_SORT == 5:  #\\TV\\ShowName\\101 - EpName\\
         foldername = '%s%s' % (season,epName) # season#
@@ -670,6 +659,8 @@ def getTVDVDInfo(match,match2,dirname):
     title = title.replace('.', ' ')
     title = title.strip().strip('-').strip()
     title = title.title() # title
+    if "'S" in title: #title() creates an upperclass 'S
+        title.replace("'S", "'s")
     season = int(match.group(1))
     dvd = match.group(2) # dvd number
 
@@ -720,14 +711,13 @@ def formatFolders(dirpath, dirname, match1, match2 = None, dvd = False):
 
     try:
         if title and season and foldername:
-            if new_dirpath.lower().find('tv') > 0:
-                pass
-            else:
-                new_dirpath = create_dir(os.path.join(new_dirpath, 'TV'))
+            #put files inside a folder named 'TV' if not already
+            basepath = os.path.basename(os.path.abspath(new_dirpath))
+            if basepath.lower() != 'tv':
+                new_dirpath = os.path.join(new_dirpath, 'TV')
             new_dirpath = create_dir(os.path.join(new_dirpath, title))
             if sabnzbd.TV_SORT_SEASONS and season != foldername:
-                new_dirpath = create_dir(os.path.join(new_dirpath, season))
-
+                new_dirpath = os.path.join(new_dirpath, season)
             new_dirpath = os.path.join(new_dirpath, foldername)
             return new_dirpath, unique_dir
         else:
@@ -737,3 +727,5 @@ def formatFolders(dirpath, dirname, match1, match2 = None, dvd = False):
         logging.error("[%s] Error creating tv folders. (workdir_final: %s title: %s season: %s foldername %s unique:%s dvd:%s)",
                                               __NAME__, new_dirpath, title,season,foldername, dvd)
         return dirpath, True
+        
+        

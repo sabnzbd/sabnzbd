@@ -301,6 +301,7 @@ class NzbObject(TryList):
 
         self.__filename = filename    # Original filename
         self.__dirname = filename
+        self.__original_dirname = filename
         self.__created = False        # dirprefixes + dirname created
         self.__bytes = 0              # Original bytesize
         self.__bytes_downloaded = 0   # Downloaded byte
@@ -344,8 +345,10 @@ class NzbObject(TryList):
 
         # Remove leading msgid_XXXX and trailing .nzb
         self.__dirname, msgid = SplitFileName(self.__dirname)
+        self.__original_dirname = self.__dirname
         if sabnzbd.REPLACE_SPACES:
             self.__dirname = self.__dirname.replace(' ','_')
+            self.__original_dirname = self.__dirname
             logging.info('[%s] Replacing spaces with underscores in %s', __NAME__, self.__dirname)
 
         if not nzb:
@@ -538,6 +541,10 @@ class NzbObject(TryList):
     def set_dirname(self, dirname, created = False):
         self.__dirname = dirname
         self.__created = created
+        
+        
+    def get_original_dirname(self):
+        return self.__original_dirname
 
     def add_parfile(self, parfile):
         self.__files.append(parfile)
