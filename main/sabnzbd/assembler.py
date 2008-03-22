@@ -213,10 +213,11 @@ class PostProcessor(Thread):
                                           __NAME__, workdir)
                                           
                     dirname = nzo.get_original_dirname()
-                    workdir_final = Cat2Dir(cat, self.complete_dir)
-                    workdir_final = os.path.join(workdir_final, dirname)
                     nzo.set_dirname(dirname)
-
+                    workdir_final = Cat2Dir(cat, self.complete_dir)
+                    workdir_final = addPrefixes(workdir_final, nzo)
+                    workdir_final = os.path.join(workdir_final, dirname)
+                    
                     unique_dir = True
                     if sabnzbd.ENABLE_TV_SORTING:
                         #First check if the show matches TV episode regular expressions. Returns regex match object
@@ -245,9 +246,9 @@ class PostProcessor(Thread):
                             for _file in files:
                                 path = os.path.join(root, _file)
                                 new_path = path.replace(workdir_complete, workdir_final)
-                                if not os.path.exists(new_path):
+                                if not os.path.exists(os.path.dirname(new_path)):
                                     try:
-                                        os.makedirs(new_path, int(sabnzbd.UMASK, 8) | 00700)
+                                        create_dir(os.path.dirname(new_path))
                                     except:
                                         logging.exception("[%s] Failed making (%s)",__NAME__,new_path)
                                 move_to_path(path, new_path, unique_dir)
@@ -448,17 +449,11 @@ def _assemble(nzf, path, dupe):
 @synchronized(DIR_LOCK)
 def get_path(work_dir_root, nzo, filename = None):
     path = work_dir_root
-    dirprefix = nzo.get_dirprefix()
     dirname = nzo.get_dirname()
     created = nzo.get_dirname_created()
 
-    for _dir in dirprefix:
-        if not _dir:
-            continue
-        if not path:
-            break
-        path = create_dir(os.path.join(path, _dir))
-
+    path = create_dir(addPrefixes(path, nzo))
+    
     if path and created:
         path = create_dir(os.path.join(path, dirname))
     elif path:
@@ -541,6 +536,15 @@ def cleanup_empty_directories(path):
 
 #-------------------------------------------------------------------------------
 
+def addPrefixes(path,nzo):
+    dirprefix = nzo.get_dirprefix()
+    for _dir in dirprefix:
+            if not _dir:
+                continue
+            if not path:
+                break
+            path = os.path.join(path, _dir)
+    return path
 
 def checkForTVShow(filename): #checkfortvshow > formatfolders > gettvinfo
     """
