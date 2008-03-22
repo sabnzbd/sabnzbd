@@ -424,7 +424,7 @@ class MainPage(ProtectedClass):
                 return xml_list("categories", "category", ListCats())
             else:
                 return 'not implemented\n'
-                        
+
         elif mode == 'get_scripts':
             if output == 'json':
                 return json_list("scripts", GetScripts())
@@ -1513,7 +1513,7 @@ class ConfigCats(ProtectedClass):
                 slot['newzbin'] = ','
             slotinfo.append(slot)
         config['slotinfo'] = slotinfo
-        
+
         template = Template(file=os.path.join(self.__web_dir, 'config_cat.tmpl'),
                             searchList=[config],
                             compilerSettings={'directiveStartToken': '<!--#',
@@ -1714,7 +1714,7 @@ def ShowFile(name, path):
 </body>
 </html>
 ''' % (name, name, escape(msg))
-    
+
 
 def build_header(prim):
     try:
@@ -1734,6 +1734,7 @@ def build_header(prim):
     header = { 'version':sabnzbd.__version__, 'paused':sabnzbd.paused(),
                'uptime':uptime, 'color_scheme':color }
 
+    header['helpuri'] = 'http://sabnzbdplus.wiki.sourceforge.net'
     header['diskspace1'] = "%.2f" % diskfree(sabnzbd.DOWNLOAD_DIR)
     header['diskspace2'] = "%.2f" % diskfree(sabnzbd.COMPLETE_DIR)
     header['diskspacetotal1'] = "%.2f" % disktotal(sabnzbd.DOWNLOAD_DIR)
