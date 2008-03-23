@@ -195,10 +195,13 @@ class PostProcessor(Thread):
                     workdir_complete = get_path(complete_dir, nzo)
 
                 ## Run Stage 2: Unpack
-                if unp and result:
-                    logging.info("[%s] Running unpack_magic on %s", __NAME__, filename)
-                    unpack_magic(nzo, workdir, workdir_complete, dele, (), (), ())
-                    logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
+                if unp:
+                    if result:
+                        logging.info("[%s] Running unpack_magic on %s", __NAME__, filename)
+                        unpack_magic(nzo, workdir, workdir_complete, dele, (), (), ())
+                        logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
+                    else:
+                        nzo.set_unpackstr('=> No post-processing because of failed verification', '[UNPACK]', 2)
 
                 if workdir_complete and workdir:
                     for root, dirs, files in os.walk(workdir):
