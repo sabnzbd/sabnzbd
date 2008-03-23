@@ -69,7 +69,7 @@ options = dict(
 )
 
 if py2exe:
-    program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "interfaces/Default/templates/static/images/favicon.ico")] } ]
+    program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
     options['options'] = {"py2exe": {"bundle_files": 3, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
     options['zipfile'] = 'lib/sabnzbd.zip'
 
