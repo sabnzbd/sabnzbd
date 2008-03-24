@@ -59,6 +59,11 @@ def synchronized(func):
     return call_func
 
 
+def IsNewzbin(uri):
+    """ Return True if URI points to newzbin.com """
+    return uri.find('newzbin') > 0 or uri.find('newzxxx') > 0
+
+
 def CatConvert(cat):
     """ Convert newzbin category to user categories
         Return unchanged if not found
@@ -203,7 +208,7 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
         if wait > 60:
             wait = 60
         logging.info("Newzbin says we should wait for %s sec", wait)
-        return int(wait+1), None, None, None
+        return int(wait+1), None, None
 
     if rcode in ('401', '402'):
         logging.warning("[%s] You have no paid Newzbin account", __NAME__)
