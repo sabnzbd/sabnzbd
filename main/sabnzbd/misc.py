@@ -62,7 +62,7 @@ PW_PREFIX = '!!!encoded!!!'
 
 def Cat2Opts(cat, pp, script):
     """
-        Derive options from categoty, if option not already defined.
+        Derive options from category, if option not already defined.
         Specified options have priority over category-options
     """
     if not pp == None:
@@ -70,7 +70,7 @@ def Cat2Opts(cat, pp, script):
             pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
             logging.debug('[%s] Job %s gets options %s', __NAME__, name, pp)
         except:
-            pp = sabnzbd.DIRSCAN_OPT
+            pp = sabnzbd.DIRSCAN_PP
 
     if not script == None:
         try:
@@ -268,6 +268,7 @@ class URLGrabber(Thread):
 
     def run(self):
         try:
+            logging.info('[%s] Grabbing URL %s', __NAME__, self.url)
             opener = urllib.FancyURLopener({})
             opener.prompt_user_passwd = None
             fn, header = opener.retrieve(self.url)
@@ -287,10 +288,10 @@ class URLGrabber(Thread):
             if data:
                 if not filename:
                      filename = os.path.basename(self.url)
-                pp = self.future.nzo.get_opts()
-                script = self.future.nzo.get_script()
-                cat = self.future.nzo.get_cat()
-                cat, name, pp, script = Cat2Opts(cat, pp, script)
+                pp = self.future_nzo.get_repair_opts()
+                script = self.future_nzo.get_script()
+                cat = self.future_nzo.get_cat()
+                cat, pp, script = Cat2Opts(cat, pp, script)
                 sabnzbd.insert_future_nzo(self.future_nzo, filename, data, pp=pp, script=script, cat=cat)
             else:
                 sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
