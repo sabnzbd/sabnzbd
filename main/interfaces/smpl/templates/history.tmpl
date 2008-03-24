@@ -11,10 +11,10 @@
 <table id="sortable_table" class="datagrid">
 	<thead>
     <tr>
-		<th mochi:format="isodate">Completed</th>
+		<th mochi:format="isodate">Finished</th>
 		<th mochi:format="str">Name</th>
-        <th mochi:format="str">Del</th>
-		<th mochi:format="str">Loaded</th>
+        <th mochi:format="str">Status</th>
+        <th mochi:format="str"></th>
 	</tr>
 	</thead>
 	<tfoot class="invisible">
@@ -31,8 +31,8 @@
         <tr id="$line.nzo" class="<!--#if $odd then "odd" else "even"#-->">
 			<td>$line.added</td>
 			<td>$line.filename</td>
+            <td>$line.status</td>
             <td><a onClick="deletehistoryitem('$line.nzo', this.parentNode.parentNode.parentNode.parentNode.parentNode.id);"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a></td>
-			<td>$line.loaded</td>
 		</tr>
         <!--#set $oddLine = not False#-->
         <!--#for $stage in $line.stages#-->

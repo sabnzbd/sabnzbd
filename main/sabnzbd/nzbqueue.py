@@ -54,11 +54,13 @@ class HistoryItem:
         self.bytes_downloaded = nzo.get_bytes_downloaded()
         self.completed = time.time()
         self.unpackstrht = None
+        self.status = nzo.get_status()
 
     def cleanup(self):
         if self.nzo:
             self.bytes_downloaded = self.nzo.get_bytes_downloaded()
             self.unpackstrht = self.nzo.get_unpackstrht()
+            self.status = self.nzo.get_status()
             self.completed = time.time()
             self.nzo = None
 
@@ -419,18 +421,23 @@ class NzbQueue(TryList):
             filename = hist_item.filename
             bytes = hist_item.bytes_downloaded
             bytes_downloaded += bytes
-
+            
             if completed not in history_info:
                 history_info[completed] = []
-
+                
             if hist_item.nzo:
                 unpackstrht = hist_item.nzo.get_unpackstrht()
+                status = hist_item.nzo.get_status()
                 loaded = True
             else:
                 unpackstrht = hist_item.unpackstrht
+                try:
+                    status = hist_item.status
+                except:
+                    status = ""
                 loaded = False
-
-            history_info[completed].append((filename, unpackstrht, loaded, bytes, n))
+                
+            history_info[completed].append((filename, unpackstrht, loaded, bytes, n, status))
             n = n + 1
         return (history_info, bytes_downloaded, sabnzbd.get_bytes())
 

@@ -141,7 +141,10 @@ class PostProcessor(Thread):
                 break
 
             try:
+                #log whether repairing succeeded
                 result = True
+                #log whether unpacking encounters an error
+                unp_error = False
                 rep, unp, dele = nzo.get_repair_opts()
                 script = nzo.get_script()
                 cat = nzo.get_cat()
@@ -197,8 +200,10 @@ class PostProcessor(Thread):
                 ## Run Stage 2: Unpack
                 if unp:
                     if result:
+                        #set the current nzo status to "Extracting...". Used in History
+                        nzo.set_status("Extracting...")
                         logging.info("[%s] Running unpack_magic on %s", __NAME__, filename)
-                        unpack_magic(nzo, workdir, workdir_complete, dele, (), (), ())
+                        unp_error = unpack_magic(nzo, workdir, workdir_complete, dele, (), (), ())
                         logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
                     else:
                         nzo.set_unpackstr('=> No post-processing because of failed verification', '[UNPACK]', 2)
@@ -237,7 +242,8 @@ class PostProcessor(Thread):
                                 logging.debug("[%s] Found TV DVD - Starting folder sort (%s)", __NAME__, dirname)
                                 workdir_final, unique_dir = formatFolders(workdir_final, dirname, dvdmatch, dvd = True)
 
-
+                    #set the current nzo status to "Moving...". Used in History
+                    nzo.set_status("Moving...")
                     if unique_dir:
                         #If the folder is set to be unique (default true) then it will find itself a unique foldername and create it
                         workdir_final = move_to_path(workdir_complete, workdir_final, unique_dir)
@@ -295,6 +301,8 @@ class PostProcessor(Thread):
                     perm_script(workdir, sabnzbd.UMASK)
 
                 if sabnzbd.SCRIPT_DIR and script and not script.lower() == 'none' and result:
+                    #set the current nzo status to "Ext Script...". Used in History
+                    nzo.set_status("Running Script...")
                     nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
                     script = real_path(sabnzbd.SCRIPT_DIR, script)
                     logging.info('[%s] Running external script %s %s %s', __NAME__, script, workdir, filename)
@@ -312,10 +320,17 @@ class PostProcessor(Thread):
 
                 name, msgid = SplitFileName(filename)
                 sabnzbd.delete_bookmark(msgid)
+                if result and not unp_error:
+                    #set the current nzo status to "Completed". Used in History
+                    nzo.set_status("Completed")
+                else:
+                    nzo.set_status("Failed")
             except:
                 logging.exception("[%s] Postprocessing of %s failed.", __NAME__,
                                   nzo.get_filename())
                 email_endjob(nzo.get_filename(), "Postprocessing failed.")
+                #set the current nzo status to "Failed". Used in History
+                nzo.set_status("Failed")
             try:
                 logging.info('[%s] Cleaning up %s', __NAME__, filename)
                 sabnzbd.cleanup_nzo(nzo)

@@ -326,6 +326,10 @@ class NzbObject(TryList):
         self.__finished_files = []
 
         self.__unpackstrht = {}
+        
+        #the current status of the nzo eg: 
+        #Queued, Downloading, Repairing, Unpacking, Failed, Complete
+        self.__status = "Queued"
 
         self.__dupe_table = {}
 
@@ -526,6 +530,8 @@ class NzbObject(TryList):
         post_done = False
         if not self.__files:
             post_done = True
+            #set the nzo status to return "Queued"
+            self.set_status("Queued")
 
         return (file_done, post_done, reset)
 
@@ -557,6 +563,16 @@ class NzbObject(TryList):
         if stage not in self.__unpackstrht:
             self.__unpackstrht[stage] = {}
         self.__unpackstrht[stage][action] = msg
+        
+    def set_status(self, status):
+        #sets a string outputting the current status of the job, eg:
+        #Queued, Downloading, Repairing, Unpacking, Failed, Complete
+        self.__status = status
+        
+    def get_status(self):
+        #returns a string of the current history status
+        return self.__status
+        
 
     def get_article(self, server):
         article = None

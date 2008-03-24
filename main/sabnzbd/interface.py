@@ -812,12 +812,13 @@ class HistoryPage(ProtectedClass):
             history_item_list = history_items.pop(added)
 
             for history_item in history_item_list:
-                filename, unpackstrht, loaded, bytes, nzo = history_item
+                filename, unpackstrht, loaded, bytes, nzo, status = history_item
                 name, msgid = SplitFileName(filename)
                 stages = []
                 item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
                         'nzo':nzo,
-                        'msgid':msgid, 'filename':escape(name), 'loaded':loaded, 'stages':stages}
+                        'msgid':msgid, 'filename':escape(name), 'loaded':loaded,
+                        'stages':stages, 'status':status}
                 if self.__verbose:
                     stage_keys = unpackstrht.keys()
                     stage_keys.sort()

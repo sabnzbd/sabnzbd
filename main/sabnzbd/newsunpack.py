@@ -573,6 +573,8 @@ def ZIP_Extract(zipfile, extraction_path):
 
 def par2_repair(parfile_nzf, nzo, workdir, setname):
     """ Try to repair a set, return readd or correctness """
+    #set the current nzo status to "Repairing". Used in History
+    nzo.set_status("Repairing...")
     actionname = '[PAR-INFO] %s' % setname
     result = False
     readd = False
@@ -667,6 +669,9 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
 
 def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
+    
+    #set the current nzo status to "Verifying...". Used in History
+    nzo.set_status("Verifying...")
     start = time()
     command = ['%s' % PAR2_COMMAND, 'r', '%s' % parfile]
 
@@ -792,6 +797,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                 nzo.set_unpackstr(\
                      '=> Not enough repair blocks, downloading all available (%d short)' % \
                      int(needed_blocks - avail_blocks), actionname, 1)
+                nzo.set_status("Failed")
                 needed_blocks = avail_blocks
                 force = True
 
@@ -804,8 +810,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                     extrapar_list = block_table[block_size]
 
                     if extrapar_list:
-                       nzo.add_parfile(extrapar_list.pop())
-                       added_blocks += block_size
+                        nzo.add_parfile(extrapar_list.pop())
+                        added_blocks += block_size
 
                     else:
                         block_table.pop(block_size)
@@ -816,11 +822,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                 if not force:
                     nzo.set_unpackstr('=> trying to fetch %s more blocks...' % \
                                       added_blocks, actionname, 1)
+                    nzo.set_status("Fetching %s blocks..." % added_blocks)
 
             else:
                 nzo.set_unpackstr(\
                      '=> Not enough repair blocks left (have: %s, need: %s)' % \
                      (avail_blocks, needed_blocks), actionname, 1)
+                nzo.set_status("Failed")
 
         elif line.startswith('Repair is possible'):
             start = time()
@@ -832,6 +840,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
             per = float(chunks[-1][:-1])
             nzo.set_unpackstr('=> Repairing : %2d%%' % (per),
                               actionname, 1)
+            nzo.set_status("Repairing...")
 
         elif line.startswith('Repair complete'):
             nzo.set_unpackstr('=> Repaired in %.1fs' % (time() - start),
@@ -844,6 +853,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
             if line.startswith('Verifying source files'):
                 nzo.set_unpackstr('=> Verifying : 01/%02d' % verifytotal,
                                   actionname, 1)
+                nzo.set_status("Verifying...")
 
             elif line.startswith('Scanning:'):
                 pass
@@ -862,6 +872,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                     verifynum += 1
                     nzo.set_unpackstr('=> Verifying : %02d/%02d' % \
                                (verifynum, verifytotal), actionname, 1)
+                    nzo.set_status("Verifying...")
                 datafiles.append(m.group(1))
                 continue
 

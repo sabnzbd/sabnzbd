@@ -26,7 +26,7 @@
 </p>
 <!--#if $lines#-->
 <table id="historyTable">
-    <tr><th>Completed</th><th></th><th>Name</th><th>Loaded</th></tr>
+    <tr><th>Completed</th><th></th><th>Name</th><th>Status</th></tr>
     <!--#set $odd = False#-->
     <!--#for $line in $lines #-->
         <!--#set $odd = not $odd#-->
@@ -36,7 +36,7 @@
             <input type="hidden" value="$line.nzo" name="job">
             <input type="submit" value="Del"></form>
         </td>
-        <td>$line.filename</td><td>$line.loaded</td></tr>
+        <td>$line.filename</td><td>$line.status</td></tr>
         <!--#set $oddLine = not False#-->
         <!--#for $stage in $line.stages#-->
             <!--#set $oddLine = not $oddLine#-->
