@@ -427,9 +427,9 @@ class MainPage(ProtectedClass):
 
         elif mode == 'get_scripts':
             if output == 'json':
-                return json_list("scripts", GetScripts())
+                return json_list("scripts", ListScripts())
             elif output == 'xml':
-                return xml_list("scripts", "script", GetScripts())
+                return xml_list("scripts", "script", ListScripts())
             else:
                 return 'not implemented\n'
 
@@ -2069,7 +2069,7 @@ def xml_list(section, keyw, lst):
     """
     text= '<?xml version="1.0" encoding="UTF-8" ?> \n<%s>\n' % section
 
-    for cat in ListCats():
+    for cat in lst:
         text += '<%s>%s</%s>\n' % (keyw, escape(cat), keyw)
 
     text += '</%s>' % section
