@@ -2007,7 +2007,7 @@ def xml_qstatus():
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         name = encode_for_xml(escape(filename), 'UTF-8')
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-        jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":filename, "msgid":msgid } )
+        jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":name, "msgid":msgid } )
 
     status = {
                "paused" : sabnzbd.paused(),
