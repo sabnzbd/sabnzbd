@@ -96,7 +96,7 @@ def Cat2Dir(cat, defdir):
             ddir = sabnzbd.CFG['categories'][cat]['dir']
         except:
             return defdir
-        ok, ddir = create_real_path(cat, sabnzbd.DIR_HOME, ddir)
+        ok, ddir = create_real_path(cat, sabnzbd.COMPLETE_DIR, ddir)
         if not ok:
             ddir = defdir
     return ddir

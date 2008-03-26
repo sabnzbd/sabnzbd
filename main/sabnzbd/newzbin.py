@@ -59,6 +59,15 @@ def synchronized(func):
     return call_func
 
 
+def InitCats():
+    """ Initialise categories with newzbin categories """
+    cats = ['unknown', 'anime', 'apps', 'books', 'consoles', 'emulation', 'games',
+            'misc', 'movies', 'music', 'pda', 'resources', 'tv']
+    cfg = sabnzbd.CFG['categories']
+    for cat in cats:
+        cfg[cat] = {}
+
+
 def IsNewzbin(uri):
     """ Return True if URI points to newzbin.com """
     return uri.find('newzbin') > 0 or uri.find('newzxxx') > 0

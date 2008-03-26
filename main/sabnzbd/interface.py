@@ -50,6 +50,7 @@ from sabnzbd.misc import real_path, create_real_path, save_configfile, \
                          decodePassword, encodePassword
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.newswrapper import GetServerParms
+from sabnzbd.newzbin import InitCats
 
 from sabnzbd.constants import *
 
@@ -1489,6 +1490,8 @@ class ConfigCats(ProtectedClass):
             config['newzbinDetails'] = True
 
         config['script_list'] = ListScripts()
+        config['have_cats'] = len(sabnzbd.CFG['categories']) > 0
+        config['defdir'] = sabnzbd.COMPLETE_DIR
 
         empty = { 'name':'', 'pp':'0', 'script':'', 'dir':'', 'newzbin':'' }
         slotinfo = []
@@ -1564,6 +1567,12 @@ class ConfigCats(ProtectedClass):
                 except:
                     pass
         return saveAndRestart(self.__root, dummy)
+
+    @cherrypy.expose
+    def init_newzbin(self, dummy = None):
+        InitCats()
+        return saveAndRestart(self.__root, dummy)
+
 
 #------------------------------------------------------------------------------
 
