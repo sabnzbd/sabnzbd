@@ -31,11 +31,14 @@
 <a class="current" href="./">Categories</a>
 </span>
 <h2>User defined categories</h2>
-Here you define post-processing, based on categories.<br/>
-You can define a "mode", a "script", and a destination directory per category.<br/>
+Defines post-processing and storage.<br/>
 <!--#if $varExists('newzbinDetails')#-->
-    You can map categories to Newzbin categories or set the category of a job manually.<br/>
+    The Newzbin column will map listed Newzbin categories to your own.<br/>
+    <!--#if not $have_cats#-->
+        <br/>Click <a href="init_newzbin"><b>HERE</b></a> to setup newzbin categories.<br/><br/>
+    <!--#end if#-->
 <!--#end if#-->
+Relative directories are based on $defdir<br/>
 <br/>
     <table id="catTable">
         <tr>
