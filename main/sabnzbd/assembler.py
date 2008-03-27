@@ -249,7 +249,7 @@ class PostProcessor(Thread):
                         workdir_final = move_to_path(workdir_complete, workdir_final, unique_dir)
                     else:
                         #else it just creates the folder. (Does NOT fail if the folder already exists)
-                        workdir_final = create_dir(workdir_final)
+                        workdir_final = create_dirs(workdir_final)
                         for root, dirs, files in os.walk(workdir_complete):
                             #move the contents of workdir_complete (_UNPACKING_) to the final workdir_final folder.
                             for _file in files:
@@ -257,7 +257,7 @@ class PostProcessor(Thread):
                                 new_path = path.replace(workdir_complete, workdir_final)
                                 if not os.path.exists(os.path.dirname(new_path)):
                                     try:
-                                        create_dir(os.path.dirname(new_path))
+                                        create_dirs(os.path.dirname(new_path))
                                     except:
                                         logging.exception("[%s] Failed making (%s)",__NAME__,new_path)
                                 move_to_path(path, new_path, unique_dir)
@@ -470,10 +470,10 @@ def get_path(work_dir_root, nzo, filename = None):
     dirname = nzo.get_dirname()
     created = nzo.get_dirname_created()
 
-    path = create_dir(addPrefixes(path, nzo))
+    path = create_dirs(addPrefixes(path, nzo))
     
     if path and created:
-        path = create_dir(os.path.join(path, dirname))
+        path = create_dirs(os.path.join(path, dirname))
     elif path:
         path = get_unique_path(os.path.join(path, dirname))
         if path:
@@ -485,7 +485,7 @@ def get_path(work_dir_root, nzo, filename = None):
     return path
 
 @synchronized(DIR_LOCK)
-def create_dir(dirpath):
+def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('[%s] Creating directories: %s', __NAME__, dirpath)
         try:
@@ -506,18 +506,11 @@ def get_unique_path(dirpath, i=0, create_dir=True):
         path = "%s.%s" % (dirpath, i)
 
     if not os.path.exists(path):
-        logging.info('[%s] Creating directory: %s', __NAME__, path)
-        try:
-            if create_dir:
-                os.mkdir(path)
-                if sabnzbd.UMASK and os.name != 'nt':
-                    os.chmod(path, int(sabnzbd.UMASK, 8) | 00700)
-            return path
-        except:
-            logging.exception('[%s] Creating directory %s failed', __NAME__,
-                              path)
-            return None
-
+        if create_dir:
+            create_dirs(path)
+            
+        return path
+    
     else:
         return get_unique_path(dirpath, i=i+1, create_dir=create_dir)
 
@@ -527,7 +520,7 @@ def move_to_path(path, new_path, unique = True):
     if unique:
         new_path = get_unique_path(new_path, create_dir=False)
     if new_path:
-        logging.debug("[%s] move_to_path |path:%s newpath:%s unique:%s",
+        logging.debug("[%s] Moving. Old path:%s new path:%s unique?:%s",
                                                   __NAME__,path,new_path, unique)
         try:
             shutil.move(path, new_path)
@@ -737,7 +730,7 @@ def formatFolders(dirpath, dirname, match1, match2 = None, dvd = False):
             basepath = os.path.basename(os.path.abspath(new_dirpath))
             if basepath.lower() != 'tv':
                 new_dirpath = os.path.join(new_dirpath, 'TV')
-            new_dirpath = create_dir(os.path.join(new_dirpath, title))
+            new_dirpath = create_dirs(os.path.join(new_dirpath, title))
             if sabnzbd.TV_SORT_SEASONS and season != foldername:
                 new_dirpath = os.path.join(new_dirpath, season)
             new_dirpath = os.path.join(new_dirpath, foldername)
