@@ -22,6 +22,7 @@
 		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
 		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
 		<li><a class="config_menu" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+     	<li><a class="config_menu" href="../categories"><img src="../../static/images/icon_config_categories.png" />Categories</a></li>
 		<li><a class="config_menu" id="nav_active" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
 		<li><a class="config_menu" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
 		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
@@ -35,58 +36,89 @@
 <!-- ************************************
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
-
-<form action="addSchedule" method="post" style="display:inline">
-	<fieldset class="EntryFieldSet">
-		<legend>Add Schedule</legend>
-
-		<b>Day of Week:</b><br/>
-		<select name="dayofweek">
-			<option value="*" selected>Every Day</option>
-			<option value="1">Monday</option>
-			<option value="2">Tuesday</option>
-			<option value="3">Wednesday</option>
-			<option value="4">Thursday</option>
-			<option value="5">Friday</option>
-			<option value="6">Saturday</option>
-			<option value="7">Sunday</option>
-		</select><br/><br/>
-
-		<b>Time of Day:</b> (HH:MM)<br/>
-		<select name="hour">
-			<!--#for $i in range(24)#-->
-				<option value="$i">$i</option>
-			<!--#end for#-->
-		</select>:<select name="minute">
-			<!--#for $i in range(60)#-->
-				<option value="$i">$i</option>
-			<!--#end for#-->
-		</select><br/><br/>
-
-		<b>Action:</b><br/>
-		<select name="action">
-			<option value="resume">Resume</option>
-			<option value="pause">Pause</option>
-		</select>
-
-		<p><br/><input type="submit" value="Add Schedule"></p>
-	</fieldset>
-</form>
-
-
-<!--#if $schedlines#-->
+<h2>Scheduling configuration</h2>
+<div class="EntryBlock">
+<form action="addSchedule" method="post">
 <fieldset class="EntryFieldSet">
-	<legend>Current Schedules</legend>
-	<!--#for $line in $schedlines#-->
-		<form action="delSchedule" method="post">
-			&raquo; $line
-			<input type="hidden" name="line" value="$line">
-			<input type="submit" value="Remove">
-		</form><br/>
-	<!--#end for#-->
+<legend>Add schedule</legend>
+ <%import time
+t = time.localtime()
+hour = t[3]
+if hour != 23:
+    hour += 1
+else:
+    hour = 0 %>
+Hour:<br>
+<select name="hour">
+<!--#for $i in range(24)#-->
+<option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
+<!--#end for#-->
+</select>
+:
+<select name="minute">
+<!--#for $i in range(60)#-->
+<option value="$i">$i
+<!--#end for#-->
+</select>
+<br>Frequency: <br>
+<select name="dayofweek">
+<option value="*" selected>Daily
+<option value="1">Mondays
+<option value="2">Tuesdays
+<option value="3">Wednesdays
+<option value="4">Thursdays
+<option value="5">Fridays
+<option value="6">Saturdays
+<option value="7">Sundays
+</select>
+<br>Action:<br> 
+<select name="action">
+<option value="resume">resume
+<option value="pause">pause
+<option value="shutdown">shutdown
+<option value="speedlimit">speedlimit
+</select>
+<br>Arguments:<br> 
+<input type="text" size="20" name="arguments" value="">
+<p><input type="submit" value="Add Schedule"></p>
 </fieldset>
-<!--#end if#-->
-
+</form>
+</div>
+<h3>Current Schedules:</h3>
+<div class="EntryBlock>"
+<!--#set $schednum = 0#-->
+<!--#for $line in $schedlines#-->
+<form action="delSchedule" method="post">
+<fieldset class="EntryFieldSet">
+<!--#set $schednum = $schednum+1#-->
+<% 
+m, h, day, action = line.split(' ', 3)
+if len(m) == 1:
+    m = '0%s' % m
+if day == "*":
+    day="Daily"
+elif day == 1:
+    day='Monday'
+elif day == 2:
+    day='Tuesday'    
+elif day == 3:
+    day='Wednesday'    
+elif day == 4:
+    day='Thursday' 
+elif day == 5:
+    day='Friday'
+elif day == 6:
+    day='Saturday' 
+elif day == 7:
+    day='Sunday'    
+%>
+Task $schednum: <strong>$h:$m</strong> - $day - $action
+<input type="hidden" name="line" value="$line">
+<input type="submit" value="Remove">
+</fieldset>
+</form><br />
+<!--#end for#-->
+</div>
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
      ************************************ -->
@@ -94,7 +126,7 @@
 </div>
 
 <div class="left_links config_margin">
-	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+Scheduling"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+	<a id="help" target="_blank" href="$helpuri/Configure+Scheduling"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
 </div>
 
 <script language="javascript">

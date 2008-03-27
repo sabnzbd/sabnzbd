@@ -104,18 +104,17 @@ def drawProgressBar (mbleft, mb):
 				<!--#if $script_list#-->
             		<select onchange="ChangeProcessingScript('$slot.nzo_id', this.options[this.selectedIndex].value);">
                 		<!--#for $sc in $script_list#-->
-                    		<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                    		<option value="$sc" <!--#if 'bug' == $sc.lower() then "selected" else ""#-->>$sc</option>
                 		<!--#end for#-->
                 	</select>
             	<!--#end if#-->
-				
-				<%
-#				<select onchange="ChangeOrder(this.options[this.selectedIndex].value);">
-#				<!--#for $i in xrange($noofslots)#-->
-#					<option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then #  "selected" else ""#-->>#$i</option>
-#				<!--#end for#-->
-#				</select>
-				%>
+				<!--#if $cat_list#-->
+            		<select onchange="ChangeCategory('$slot.nzo_id', this.options[this.selectedIndex].value);">
+                		<!--#for $ct in $cat_list#-->
+                    		<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+                		<!--#end for#-->
+                	</select>
+            	<!--#end if#-->
 				<span class="btnDeleteQueue" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 			</td>
 		</tr>

@@ -22,6 +22,7 @@
 		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
 		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
 		<li><a class="config_menu" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+     	<li><a class="config_menu" href="../categories"><img src="../../static/images/icon_config_categories.png" />Categories</a></li>
 		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
 		<li><a class="config_menu" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
 		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
@@ -35,32 +36,34 @@
 <!-- ************************************
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
-
-<div style="text-align:center"><small>
-	Config File: <b style="color:blue">$configfn</b>
-</small></div>
+<h2>General configuration</h2>
 <form action="saveGeneral" method="post">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-<legend>Web Server</legend>
-<strong>Manual Restart Required!</strong><br><br>
+<strong>Manual restart needed!</strong><br><br>
+<legend>Web server</legend>
 <strong>Host:</strong><br>
-<small>Host SABnzbd should listen on</small><br>
-<input type="text" name="host" value="$host"/>
+Host SABnzbd should listen on.<br>
+<input type="text" name="host" value="$host">
 <br>
-<strong>Port:</strong> <input type="text" name="port" size="8" value="$port"/>
-<br/>
-<br/>
-<strong>SABnzbd Web UI Access:</strong><br/>
-<small>Authentication <b>Username:</b></small><br/>
-<input type="text" name="username" value="$username"/>
-<br/>
-<small>Authentication <b>Password:</b></small><br/>
-<input type="password" name="password" value="$password"/>
-<br/>
-<br/>
-<strong>User Interface:</strong><br/>
-<small>Choose a web interface</small><br/>
+<br>
+<strong>Port:</strong><br>
+Post SABnzbd should listen on.<br>
+<input type="text" name="port" value="$port">
+<br>
+<br>
+<strong>Web username:</strong><br>
+Authentication Username.<br>
+<input type="text" name="username" value="$username">
+<br>
+<br>
+<strong>Web password:</strong><br>
+Authentication Password.<br>
+<input type="password" name="password" value="$password">
+<br>
+<br>
+<strong>User interface:</strong><br>
+Choose a user interface (restart required!).<br>
 <select name="web_dir">
     <!--#for $webline in $web_list#-->
         <!--#if $webline.lower() == $web_dir.lower()#-->
@@ -70,10 +73,25 @@
         <!--#end if#-->
     <!--#end for#-->
 </select>
-<br/>
-<br/>
-<strong>Secondary User Interface:</strong><br/>
-<small>Choose a secondary web interface</small><br/>
+<!--#if $web_colors#-->
+<br>
+<br>
+<strong>Color schema:</strong><br>
+Choose a color scheme for the current interface.<br>
+<select name="web_color">
+    <!--#for $webline in $web_colors#-->
+        <!--#if $webline.lower() == $web_color.lower()#-->
+            <option value="$webline" selected>$webline</option>
+        <!--#else#-->
+            <option value="$webline">$webline</option>
+        <!--#end if#-->
+    <!--#end for#-->
+</select>
+<!--#end if#-->
+<br>
+<br>
+<strong>Secondary User Interface:</strong><br>
+Choose a secondary user interface (restart required!).<br>
 <select name="web_dir2">
     <!--#for $webline in $web_list2#-->
         <!--#if $webline.lower() == $web_dir2.lower()#-->
@@ -84,37 +102,36 @@
     <!--#end for#-->
 </select>
 </fieldset>
+</div>
+<div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Tuning</legend>
-<!-- // unused by Plush
 <strong>Queue auto refresh interval:</strong><br>
-<small>Refresh interval of the queue web-interface</small><br>
-<input type="text" name="refresh_rate" size="6" value="$refresh_rate"/><small> (sec, 0=none)</small>
+Refresh interval of the queue web-interface page(sec, 0= none)<br>
+<input type="text" name="refresh_rate" value="$refresh_rate">
 <br>
-<br> -->
+<br>
 <strong>RSS checking rate:</strong><br>
-<small>Checking rate&mdash;times per hour</small><br>
-<input type="text" name="rss_rate" size="6" value="$rss_rate"/><small> ( 1, 2, 3, 4 )</small>
+Checking rate  (times per day 1..48)<br>
+<input type="text" name="rss_rate" value="$rss_rate">
 <br>
 <br>
 <strong>Bandwith Limit:</strong><br>
-<small>Download speed limit in kilobytes per second(kB/s).</small><br>
-<input type="text" name="bandwith_limit" size="6" value="$bandwith_limit"/>
+Download speed limit in kilobytes per second(kB/s).<br>
+<input type="text" name="bandwith_limit" value="$bandwith_limit">
 <br>
 <br>
 <strong>Article Cache Limit:</strong><br>
-<small>Cache articles in memory</small><br>
-<input type="text" name="cache_limitstr" value="$cache_limitstr"/>
+Cache articles in memory.<br>
+<input type="text" name="cache_limitstr" value="$cache_limitstr">
 <br>
 <br>
 <strong>Cleanup List:</strong><br>
-<small>File extensions to delete at cleanup stage.</small><br>
-<input type="text" name="cleanup_list" value="$cleanup_list"/><br>
-<small><i>For Example: ".nfo," or ".nfo, .sfv"</i></small>
+List of file (extensions) that should be deleted at the cleanup stage.<br>
+For example: ".nfo," or ".nfo, .sfv"<br>
+<input type="text" name="cleanup_list" value="$cleanup_list">
 </fieldset>
 </div>
-
-
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
      ************************************ -->
@@ -123,7 +140,7 @@
 </div>
 
 <div class="left_links config_margin">
-	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+General"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+	<a id="help" target="_blank" href="$helpuri/Configure+General"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
 </div>
 
 <input id="save_button" type="submit" value="Save Changes"/>

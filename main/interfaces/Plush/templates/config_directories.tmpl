@@ -22,6 +22,7 @@
 		<li><a class="config_menu" id="nav_active" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
 		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
 		<li><a class="config_menu" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+     	<li><a class="config_menu" href="../categories"><img src="../../static/images/icon_config_categories.png" />Categories</a></li>
 		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
 		<li><a class="config_menu" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
 		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
@@ -35,106 +36,101 @@
 <!-- ************************************
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
-
-<div style="text-align:center"><small><strong>
-    <em>NOTE:</em> Directories will be created automatically when Saving.
-</strong></small></div>
-
+<h2>Directory configuration</h2>
+<p><strong>
+    <em>NOTE:</em> Directories will be created automatically when Saving.<br />
+</strong></p>
 <form action="saveDirectories" method="post">
+<div class="EntryBlock">
   <fieldset class="EntryFieldSet">
-    <legend>User Directories</legend>
-    <small><emp>In "<b style="color:blue">$my_home</b>"</emp><br><br></small>
-
-	<strong>Download Directory:</strong><br/>
-	<small>Location to put unprocessed downloads in</small><br/>
-	<input type="text" size="35" name="download_dir" value="$download_dir"/><br/>
-		&raquo; Minimum free space:
-  		<input type="text" size="10" name="download_free" value="$download_free"/><small> (GB)</small><br/>
-  		<small>Auto-pause when free space hits this value</small><br/>
-  	<br/>
-	
-    <strong>Complete Directory:</strong><br/>
-    <small>Location to put completed downloads in</small><br/>
-    <input type="text" size="35" name="complete_dir" value="$complete_dir"/><br/>
-    <br/>
-		
+    <legend>User directories</legend>
+    <emp>In "$my_home"</emp><br><br>
+    <strong>Download Directory:</strong><br>
+    Location to put unprocessed downloads in.<br>
+    <input type="text" size="40" name="download_dir" value="$download_dir">
+    <br>
+    <br>
+    <strong>Minimum free space for Download Directory:</strong><br>
+    Auto-pause when free space is beneath this value.<br>
+    <input type="text" size="10" name="download_free" value="$download_free">
+    <br>
+    <br>
+    <strong>Complete Directory:</strong><br>
+    Location to put completed downloads in.<br>
+    <input type="text" size="40" name="complete_dir" value="$complete_dir">
     <!--#if not $nt#-->
-        <strong>Permissions:</strong><br/>
-        <small>Set permissions pattern for completed files, octal notation only!</small><br/>
-        <input type="text" size="10" name="permissions" value="$permissions"/><br/>
-        <br/>
+        <br>
+        <br>
+        <strong>Permissions for Complete dir:</strong><br>
+        Set permissions pattern for completed files, octal notation only!<br>
+        <input type="text" size="10" name="permissions" value="$permissions">
     <!--#end if#-->
-
-    <strong>OPTIONAL: Dirscan Directory:</strong><br/>
-    <small>Directory to scan for .nzb files</small><br/>
-    <input type="text" size="35" name="dirscan_dir" value="$dirscan_dir"/><br/>
-    	&raquo; Dirscan Speed:
-    	<input type="text" size="10" name="dirscan_speed" value="$dirscan_speed"><br/>
-    	<small>Number of seconds between scans for .nzb files</small><br/>
-    <br/>
-		
-    <strong>Directory for user scripts:</strong><br/>
-    <small>Directory containing user scripts for post-processing</small><br/>
-    <input type="text" size="35" name="script_dir" value="$script_dir"/><br/>
-    		
+    <br>
+    <br>
+    <strong>OPTIONAL: Dirscan Directory:</strong><br>
+    Directory to scan for .nzb files.<br>
+    <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
+    <br>
+    <br>
+    <strong>OPTIONAL: Dirscan Speed:</strong><br>
+    Number of seconds between scans for .nzb files.<br>
+    <input type="text" size="10" name="dirscan_speed" value="$dirscan_speed">
+    <br>
+    <br>
+    <strong>Directory for user scripts:</strong><br>
+    Directory containing user scripts for post-processing.<br>
+    <input type="text" size="40" name="script_dir" value="$script_dir">
   </fieldset>
-
-
   <fieldset class="EntryFieldSet">
-
-    <legend>System Directories</legend>
-
-    <small><emp>In "<b style="color:blue">$my_lcldata</b>"</emp><br><br></small>
-		
-    <strong>Cache Directory:</strong><br/>
-    <small>Location for temporary storage</small><br/>
-    <input type="text" size="35" name="cache_dir" value="$cache_dir"/><br/>
-    <br/>
-		
-    <strong>Log Directory:</strong><br/>
-    <small>Location of log files for SABnzbd</small><br/>
-    <input type="text" size="35" name="log_dir" value="$log_dir"/><br/>
-    <br/>	
-	
-	<strong>OPTIONAL: .nzb Backup Directory:</strong><br/>
-    <small>Specify a directory to backup .nzb files to</small><br/>
-    <input type="text" size="35" name="nzb_backup_dir" value="$nzb_backup_dir"/><br/>
- 		
+    <legend>System directories</legend>
+    <emp>In "$my_lcldata"</emp><br><br>
+    <strong>Cache Directory:</strong><br>
+    Location for temporary storage.<br>
+    <input type="text" size="40" name="cache_dir" value="$cache_dir">
+    <br>
+    <br>
+    <strong>Log Directory:</strong><br>
+    Location of log files for SABnzbd.<br>
+    <input type="text" size="40" name="log_dir" value="$log_dir">
+    <br>
+    <br>
+    <strong>OPTIONAL: .nzb Backup Directory:</strong><br>
+    Specify a directory to backup .nzb files to.<br>
+    <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
   </fieldset>
+  <fieldset class="EntryFieldSet">
+  <legend>Sorting directories</legend>
   
-  <fieldset class="EntryFieldSet">
- 
-   <legend>Sorting Directories</legend>
-   <table>
-    <tr><td><strong>Enable TV Sorting:</strong></td>
-        <td><input type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
-            <input type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes</td>
-    </tr><tr><td colspan="2"><small><small>Enable folder sorting.</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
-
-    <tr><td><strong>Enable season folders:</strong></td>
-        <td><input type="radio" name="tv_sort_seasons" value="0" <!--#if $tv_sort_seasons == 0 then "checked=1" else ""#--> /> No
-            <input type="radio" name="tv_sort_seasons" value="1" <!--#if $tv_sort_seasons > 0 then "checked=1" else ""#--> /> Yes</td>
-    </tr><tr><td colspan="2"><small><small>Enable sorting into season folders.</small></td></tr>
-    <tr><td colspan="2">&nbsp;</td></tr>
-
-    </table>
-    <strong>Folder Naming:</strong><br/>
-    <small>Choose a foldernaming option</small><br/>    
-	<select name="tv_sort" id="tvsort">
-		<!--#set $i = 0 #-->
-	    <!--#for $tvline in $tvsort_list#-->
-	        <!--#if int($tv_sort) == $i #-->
-	            <option value="$i" selected>$tvline</option>
-	        <!--#else#-->
-	            <option value="$i">$tvline</option>
-	        <!--#end if#-->
+    <strong>Enable TV Sorting:</strong><br>
+    Enable folder sorting.<br>
+    <input type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+    <strong>Enable season folders:</strong><br>
+    Enable sorting into season folders.<br>
+    <input type="radio" name="tv_sort_seasons" value="0" <!--#if $tv_sort_seasons == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="tv_sort_seasons" value="1" <!--#if $tv_sort_seasons > 0 then "checked=1" else ""#--> /> Yes
+    <br>
+    <br>
+  
+  
+    <strong>Folder Naming:</strong><br />
+    Choose a foldernaming option<br />
+    <select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
+        <!--#for $tvline in $tvsort_list#-->
+            <!--#if int($tv_sort) == $i #-->
+                <option value="$i" selected>$tvline</option>
+            <!--#else#-->
+                <option value="$i">$tvline</option>
+            <!--#end if#-->
             <!--#set $i = $i+1 #-->
-	    <!--#end for#-->
-	</select><br/>
+        <!--#end for#-->
+    </select>
+</fieldset>
 
-  </fieldset>
-  
+
+</div><br>
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
      ************************************ -->
@@ -142,7 +138,7 @@
 </div>
 
 <div class="left_links config_margin">
-	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+Directories"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+	<a id="help" target="_blank" href="$helpuri/Configure+Directories"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
 </div>
 
 <input id="save_button" type="submit" value="Save Changes">

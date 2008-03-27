@@ -22,6 +22,7 @@
 		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
 		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
 		<li><a class="config_menu" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+     	<li><a class="config_menu" href="../categories"><img src="../../static/images/icon_config_categories.png" />Categories</a></li>
 		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
 		<li><a class="config_menu" id="nav_active" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
 		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
@@ -35,38 +36,38 @@
 <!-- ************************************
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
-
+<h2>EXPERIMENTAL RSS Configuration</h2>
 <!--#if $have_feedparser#-->
 <div class="EntryBlock">
   <form action="add_rss_feed" method="get">
     <fieldset class="EntryFieldSet">
-    <legend>RSS Feed Settings</legend>
+    <legend>RSS feed settings</legend>
       <b>RSS-Feed URI:</b><br>
-      <input type="text" size="70" name="uri"><br><br>
+      <input type="text" size="100" name="uri"><br><br>
 
       <b>Text Filter:</b><br>
-      <small>(Basic) text based filter &mdash; A single '*' matches everything</small>
+      (Basic) text based filter. A single '*' matches everything.
       <br>
-      <input type="text" size="70" name="text_filter">
+      <input type="text" size="100" name="text_filter">
       <br>
       <br>
 
       <b>Regex Filter:</b><br>
-      <small>Regular Expression filter &mdash; Overwrites text filter</small>
+      Regular Expression filter. Overwrites text filter.
       <br>
-      <input type="text" size="70" name="re_filter">
+      <input type="text" size="100" name="re_filter">
       <br>
       <br>
 
       <b>Match Multiple:</b><br>
-      <small>Match this filter more than once?</small>
+      Match this filter more than once?
       <br>
       <input type="radio" name="match_multiple" value="0"> No
       <input type="radio" name="match_multiple" value="1" checked=1> Yes
       <br>
       <br>
 
-      <b>Post-Processing Option:</b><br><small>
+      <b>Unpack Opts:</b><br>
       <input type="radio" name="unpack_opts" value="0"> None
       <input type="radio" name="unpack_opts" value="1" checked=1> +Repair
       <input type="radio" name="unpack_opts" value="2"> +Unpack
@@ -75,12 +76,14 @@
       <input type="radio" name="unpack_opts" value="5"> Unpack+Script
       <input type="radio" name="unpack_opts" value="6"> Delete+Script
       <br>
-      <br></small>
+      <br>
 
       <input type="submit" value="Add">
     </fieldset>
   </form>
 </div>
+<br>
+<br>
     <!--#if $varExists('uris') and $uris#-->
         <table>
             <tr><th></th><th>URL/Match Name</th></tr>
@@ -116,7 +119,6 @@
         <b>feedparser module missing<b>
     </p>
 <!--#end if#-->
-
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
      ************************************ -->
@@ -124,7 +126,7 @@
 </div>
 
 <div class="left_links config_margin">
-	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+RSS"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+	<a id="help" target="_blank" href="$helpuri/Configure+RSS"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
 </div>
 
 <script language="javascript">

@@ -1,9 +1,9 @@
 /*
  * jQuery corner plugin
  *
- * version 1.91 (9/21/2007)
+ * version 1.92 (12/18/2007)
  *
- * Dual licensed under the MIT and GPL licenses: (see MIT-LICENSE.txt and GLP-LICENSE.txt)
+ * Dual licensed under the MIT and GPL licenses:
  *   http://www.opensource.org/licenses/mit-license.php
  *   http://www.gnu.org/licenses/gpl.html
  */
@@ -53,6 +53,8 @@
 (function($) { 
 
 $.fn.corner = function(o) {
+    var ie6 = $.browser.msie && /MSIE 6.0/.test(navigator.userAgent);
+    function sz(el, p) { return parseInt($.css(el,p))||0; };
     function hex2(s) {
         var s = parseInt(s).toString(16);
         return ( s.length < 2 ) ? '0'+s : s;
@@ -142,6 +144,18 @@ $.fn.corner = function(o) {
                         ds.setExpression('width', 'this.parentNode.offsetWidth');
                     else
                         ds.width = '100%';
+                }
+                else if (!bot && $.browser.msie) {
+                    if ($.css(this,'position') == 'static')
+                        this.style.position = 'relative';
+                    ds.position = 'absolute';
+                    ds.top = ds.left = ds.right = ds.padding = ds.margin = '0';
+                    
+                    // fix ie6 problem when blocked element has a border width
+                    var bw = 0;
+                    if (ie6 || !$.boxModel)
+                        bw = sz(this,'borderLeftWidth') + sz(this,'borderRightWidth');
+                    ie6 ? ds.setExpression('width', 'this.parentNode.offsetWidth - '+bw+'+ "px"') : ds.width = '100%';
                 }
                 else {
                     ds.margin = !bot ? '-'+pad.T+'px -'+pad.R+'px '+(pad.T-width)+'px -'+pad.L+'px' : 

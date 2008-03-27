@@ -44,16 +44,7 @@ $(document).ready(function() {
 		$('#plusnzb').toggleClass('on');
 		$('#nzbMenu').toggle();
 	});
-
-	var myOptions = {
-		min: 1,						// Set lower limit.
-		max: 100,					// Set upper limit.
-		step: 1,					// Set increment size.
-		spinClass: 'spin-button',	// CSS class to style the spinbutton. (Class also specifies url of the up/down button image.)
-		upClass: 'spin-up',			// CSS class for style when mouse over up button.
-		downClass: 'spin-down'		// CSS class for style when mouse over down button.
-	}
-	$("#refreshRate-option").SpinButton(myOptions);
+	// Set up Refresh Rate AJAX
 	$("#refreshRate-option").change( function() { 
 		refreshRate = $("#refreshRate-option").val();
 		SetCookie('PlushRefresh',refreshRate);
@@ -62,7 +53,6 @@ $(document).ready(function() {
 		refreshRate = $("#refreshRate-option").val();
 		SetCookie('PlushRefresh',refreshRate);
 	 });
-
 
 	// purge queue
 	$('#queue_purge').bind('click', function() { 
@@ -81,7 +71,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "GET",
 			url: "addID",
-			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val(),
+			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
 			success: function(result){
    				return RefreshTheQueue();
 			}
@@ -92,7 +82,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "GET",
 			url: "addURL",
-			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val()+"&script="+$("#addURL_script").val(),
+			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val()+"&script="+$("#addURL_script").val()+"&cat="+$("#addURL_cat").val(),
 			success: function(result){
    				return RefreshTheQueue();
 			}
@@ -281,6 +271,17 @@ function ChangeProcessingOption (nzo_id,op) {
 	$.ajax({
 		type: "GET",
 		url: 'queue/change_opts?dummy='+Math.random()+'&nzo_id='+nzo_id+'&pp='+op,
+	  	success: function(result){
+   			return LoadTheQueue(result);
+		}
+	});
+}
+
+// change category within queue
+function ChangeCategory (nzo_id,cat) {
+	$.ajax({
+		type: "GET",
+		url: 'queue/change_cat?dummy='+Math.random()+'&nzo_id='+nzo_id+'&cat='+cat,
 	  	success: function(result){
    			return LoadTheQueue(result);
 		}

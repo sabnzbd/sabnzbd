@@ -22,6 +22,7 @@
 		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
 		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
 		<li><a class="config_menu" id="nav_active" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+     	<li><a class="config_menu" href="../categories"><img src="../../static/images/icon_config_categories.png" />Categories</a></li>
 		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
 		<li><a class="config_menu" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
 		<li><a class="config_menu" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
@@ -35,50 +36,49 @@
 <!-- ************************************
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
-
+<h2>Server configuration</h2>
+<div class="EntryBlock">
   <form action="addServer" method="post">
     <fieldset class="EntryFieldSet">
-      <legend>Add Server</legend>
-	<table style="width:200px">
-      <tr><td>Host:</td><td><input type="text" size="22" name="host"></td></tr>
-      <tr><td>Port:</td><td><input type="text" size="6" name="port"></td></tr>
-      <tr><td>Username:</td><td><input type="text" size="22" name="username"></td></tr>
-      <tr><td>Password:</td><td><input type="password" size="22" name="password"></td></tr>
-      <tr><td>Timeout:</td><td><input type="text" size="6" name="timeout"></td></tr>
-      <tr><td>Connections:</td><td><input type="text" size="6" name="connections"></td></tr>
-      <tr><td>SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:</td><td><input type="radio" name="ssl" value="0" "checked=1"> No
-                     <input type="radio" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->> Yes</td></tr>
-      <tr><td>Fillserver:</td><td><input type="radio" name="fillserver" value="0" "checked=1"> No
-                     <input type="radio" name="fillserver" value="1"> Yes</td></tr>
-	</table>
+      <legend>Add server</legend>
+      Host:<br><input type="text" size="25" name="host"><br>
+      Port:<br><input type="text" size="25" name="port"><br>
+      Username:<br><input type="text" size="25" name="username"><br>
+      Password:<br><input type="password" size="25" name="password"><br>
+      Timeout:<br><input type="text" size="25" name="timeout"><br>
+      Connections:<br><input type="text" size="25" name="connections"><br>
+      SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:<br><input type="radio" name="ssl" value="0" "checked=1"> No
+                     <input type="radio" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->> Yes
+                 <br>
+      Fillserver:<br><input type="radio" name="fillserver" value="0" "checked=1"> No
+                     <input type="radio" name="fillserver" value="1"> Yes
+                 <br>
       <p><input type="submit" value="Add Server"></p>
     </fieldset>
   </form>
 <!--#for $server in $servers#-->
-  <form action="saveServer" method="post"size="22">
+  <form action="saveServer" method="post">
     <fieldset class="EntryFieldSet">
-      <legend><!--#if int($servers[$server]['ssl']) != 0 #--><img style="float:left" src="../../static/images/icon_config_encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->$server</legend>
-	<table style="width:200px">
-      <tr><td>Host:</td><td><input type="text" size="22" name="host" value="$servers[$server]['host']"/></td></tr>
-      <tr><td>Port:</td><td><input type="text" size="6" name="port" value="$servers[$server]['port']"/></td></tr>
-      <tr><td>Username:</td><td><input type="text" size="22" name="username" value="$servers[$server]['username']"/></td></tr>
-      <tr><td>Password:</td><td><input type="password" size="22" name="password" value="$servers[$server]['password']"/></td></tr>
-      <tr><td>Timeout:</td><td><input type="text" size="6" name="timeout" value="$servers[$server]['timeout']"/></td></tr>
-      <tr><td>Connections:</td><td><input type="text" size="6" name="connections" value="$servers[$server]['connections']"/></td></tr>
-      <tr><td>SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:</td><td><input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 or int($have_ssl) == 0 then "checked=1" else ""#--> /> No
-                     <input type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /> Yes</td></tr>
-      <tr><td>Fillserver:</td><td><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
-                     <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes</td></tr>
-	</table>
-      <input type="hidden" name="server" value="$server"/>
-      <p>
-		<input type="submit" onclick="if(confirm('Are you sure you want to delete $servers[$server]['host']:$servers[$server]['port']?')){this.form.action='delServer'; this.form.submit(); return false;}" value="Remove Server">
-		<input type="submit" value="Save Changes">
-	  </p>
+      <legend>$server</legend>
+      Host:<br><input type="text" size="25" name="host" value="$servers[$server]['host']"><br>
+      Port:<br><input type="text" size="25" name="port" value="$servers[$server]['port']"><br>
+      Username:<br><input type="text" size="25" name="username" value="$servers[$server]['username']"><br>
+      Password:<br><input type="password" size="25" name="password" value="$servers[$server]['password']"><br>
+      Timeout:<br><input type="text" size="25" name="timeout" value="$servers[$server]['timeout']"><br>
+      Connections:<br><input type="text" size="25" name="connections" value="$servers[$server]['connections']"><br>
+      SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:<br><input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 or int($have_ssl) == 0 then "checked=1" else ""#--> /> No
+                     <input type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /> Yes
+                 <br>
+      Fillserver:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
+                     <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
+                 <br>
+      <input type="hidden" name="server" value="$server">
+      <p><input type="submit" value="Save Changes"></p>
+      <p><input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="Remove Server"></p>
     </fieldset>
   </form>
 <!--#end for#-->
-
+</div>
 
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
@@ -87,7 +87,7 @@
 </div>
 
 <div class="left_links config_margin">
-	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+Servers"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+	<a id="help" target="_blank" href="$helpuri/Configure+Servers"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
 </div>
 
 <script language="javascript">

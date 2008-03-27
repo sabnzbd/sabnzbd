@@ -1,58 +1,47 @@
-==============================
-SABnzbd+ Plush Template README
-Version 1.1 for SABnzbd+ 0.3.1
 
-=======
-AUTHORS
-* Nathan Langlois (pairofdimes; NOVA 3,4)
-* Dana Woodman (blis102; NOVA 1,2,3,4)
-* inpheaux (thanks for the new Config!)
-* injectx (new concepts for Plush, including the Aqua theme)
+====================
+TO DO BEFORE RELEASE
+* pending brand new HTML/CSS layout for main/queue/config
+* Refresh Rate needs to be select menu
+* Queue still needs new options menu thing
+* Queue isn't showing active script (slot.script.lower() 500 internal error)
+* Queue should not refresh inappropriately
+* cleanse Config
 
-=======
-CONTACT
-* nova@organixdesign.com
-* http://forums.sabnzbd.org/
+===========================================================
+== SABnzbd+ Plush 2.0 for SABnzbd+ 0.4.0 | Mar. 26, 2008 ==
+
+====
+NEW!
+* Brand new layout brought to you by injectx & real_scud!
+* The Queue is now drag & drop sortable!
+* Works with Firefox, Internet Explorer, Safari, Opera and the iPhone!
 
 ============
-INTRODUCTION
-* SABnzbd+ 0.3.1+ required
-* Plush is licenced under the Creative Commons Public License.
-* Please see LICENSE.txt or http://creativecommons.org/licenses/by/3.0/ for more information
-
-========
-BENEFITS
-* Fast interface compatible with Firefox, Opera, Safari and the iPhone
-* Safe to use multiple sessions concurrently, i.e. remote sessions
-* Simple to use, featuring an enhanced Configuration
-
-=======
-SECRETS
-* Click NZB name in "Queue" to pop up the files within the NZB set
-* Click NZB name in "History" to hop over to the Newzbin report page (if applicable)
-
-=========
-WISH LIST
-* IE7 compatibility (it's sorta close!)
-
-========================
-KNOWN BUGS + RESOLUTIONS
-
-* Post-Processing [-/R/U/D] options in the Queue keep closing / are not saving ( ! )
-* (or) The Queue snaps back when I am dragging & dropping!
---- This can happen every time the Queue refreshes or is updated
---- Try quickly performing the action, or slow down the refresh rate, or practice on your timing
+ASSEMBLED BY
+* pair of dimes
 
 ==============
 SPECIAL THANKS
-* Everyone in the community who left so much valuable feedback
+* shypike, for making this all happen in the first place
+* switch, for bringing so many new enhancements to the web interfaces
+* injectx (new concept design/imagery)
+* real_scud (created new HTML/CSS layout)
+* inpheaux (Config concept & assembly, SABnzbd+ logo)
+* blis102, for the original Nova & Plush concepts
+* Paul, for giving it a shot
 
 ==========
 TOOLS USED
-* jQuery					http://jquery.com/
-* jQuery Table Drag & Drop	http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin/
-* jQuery curvyCorners		http://www.curvycorners.net/
-* jQuery Corner				http://www.malsup.com/jquery/corner/
-* jQuery Greybox Redux		http://jquery.com/demo/grey/
-* WebToolkit				http://www.webtoolkit.info/
-* Nuvola Icon Set			http://www.icon-king.com/?p=15
+* jQuery                    http://jquery.com/ (LICENSE-MIT & LICENSE-GPL) Copyright (c) 2008 John Resig
+* jQuery Table Drag & Drop  http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin/ (LICENSE-MIT * LICENSE-GPL) Copyright © 1998-2008, Isocra Consulting Ltd.
+* jQuery curvyCorners       http://www.curvycorners.net/ (LICENSE-LGPL) Copyright (c) 2006 Cameron Cooke
+* jQuery Corner             http://www.malsup.com/jquery/corner/ (LICENSE-MIT & LICENSE-GPL) Dave Methvin & Mike Alsup
+* jQuery Greybox Redux      http://jquery.com/demo/grey/ (LICENSE-LGPL) John Resig
+* WebToolkit                http://www.webtoolkit.info/ajax-file-upload.html Copyright (c) 2006-2008 www.webtoolkit.info
+* Nuvola Icon Set           http://www.icon-king.com/?p=15 (LICENSE-LGPL) Copyright (c) 2003-2004 David Vignoni
+[ above applies to (in templates/static/images/): icon_config_*.png; icon_nzo_*.png; o_*.png; hv_*.png; ]
+
+=======
+CONTACT
+* http://forums.sabnzbd.org/ -- contributions welcome!

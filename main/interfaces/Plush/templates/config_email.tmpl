@@ -22,6 +22,7 @@
 		<li><a class="config_menu" href="../directories"><img src="../../static/images/icon_config_directories.png" />Directories</a></li>
 		<li><a class="config_menu" href="../switches"><img src="../../static/images/icon_config_switches.png" />Switches</a></li>
 		<li><a class="config_menu" href="../server"><img src="../../static/images/icon_config_servers.png" />Servers</a></li>
+     	<li><a class="config_menu" href="../categories"><img src="../../static/images/icon_config_categories.png" />Categories</a></li>
 		<li><a class="config_menu" href="../scheduling"><img src="../../static/images/icon_config_scheduling.png" />Scheduling</a></li>
 		<li><a class="config_menu" href="../rss"><img src="../../static/images/icon_config_rss.png" />RSS</a></li>
 		<li><a class="config_menu" id="nav_active" href="../email"><img src="../../static/images/icon_config_email.png" />Email</a></li>
@@ -35,52 +36,52 @@
 <!-- ************************************
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
-
+<h2>Email Notification</h2>
 <form action="saveEmail" method="post">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Email Options</legend>
 <strong>End-of-job notifications:</strong><br>
-<small>Send email when job is completed</small><br>
+Send email when job is completed.<br>
 <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> No
 <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> /> Yes
 <br>
 <br>
 <strong>Disk full notifications:</strong><br>
-<small>Send email when disk is full and SABnzbd is paused</small><br>
+Send email when disk is full and SABnzbd is paused.<br>
 <input type="radio" name="email_full" value="0" <!--#if $email_full == 0 then "checked=1" else ""#--> /> No
 <input type="radio" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> Yes
 <br>
 <br>
 </fieldset>
+</div>
 <fieldset class="EntryFieldSet">
 <legend>Email Account Settings</legend>
 <strong>SMTP server:</strong><br>
-<small>Set your ISP's server for outgoing email</small><br>
+Set your ISP's server for outgoing email.<br>
 <input type="text" size="35" name="email_server" value="$email_server">
 <br>
 <br>
 <strong>Email recipient:</strong><br>
-<small>Email address to send the email to</small><br>
+Email address to send the email to.<br>
 <input type="text" size="35" name="email_to" value="$email_to">
 <br>
 <br>
 <strong>Email sender:</strong><br>
-<small>Who should we say sent the email?</small><br>
+Who should we say sent the email?<br>
 <input type="text" size="35" name="email_from" value="$email_from">
 <br>
 <br>
 <strong>OPTIONAL: Account name:</strong><br>
-<small>For authenticated email, account name</small><br>
+For authenticated email, account name.<br>
 <input type="text" size="35" name="email_account" value="$email_account">
 <br>
 <br>
 <strong>OPTIONAL: Account password:</strong><br>
-<small>For authenticated email, password</small><br>
+For authenticated email, password.<br>
 <input type="password" size="35" name="email_pwd" value="$email_pwd">
 </fieldset>
 </div>
-
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
      ************************************ -->
@@ -88,7 +89,7 @@
 </div>
 
 <div class="left_links config_margin">
-	<a id="help" target="_blank" href="https://sabnzbdplus.wiki.sourceforge.net/Configure+Email"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
+	<a id="help" target="_blank" href="$helpuri/Configure+Email"><img src="../../static/images/icon_config_help.png"> Contextual Help</a>
 </div>
 
 <input id="save_button" type="submit" value="Save Changes">

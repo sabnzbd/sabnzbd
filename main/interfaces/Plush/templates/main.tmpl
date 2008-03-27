@@ -42,7 +42,7 @@
 				<li><a id="plusnzb" title="Add/Enqueue an NZB">+NZB</a></li>
 				<li><a id="options" title="View Plush Options">Options</a></li>
 				<li><a href="connections" title="Configure SABnzbd" class="greybox">Config</a></li>
-				<li><a href="https://sabnzbdplus.wiki.sourceforge.net/" target="_blank" title="Read the SAB+ Wiki">Help</a></li>
+				<li><a href="$helpuri" target="_blank" title="Read the SAB+ Wiki">Help</a></li>
 
 
 			  <!--#if $new_release#-->
@@ -83,6 +83,13 @@
 					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
 				</select>
+        		<!--#if $cat_list#-->
+					<select id="addID_cat">
+                  	<!--#for $ct in $cat_list#-->
+                      	<option value="$ct" <!--#if "$ct" == "$cat" then "selected" else ""#-->>$ct</option>
+                  	<!--#end for#-->
+					</select>
+				<!--#end if#-->
 				<!--#if $script_list#-->
             		<select id="addID_script">
                 		<!--#for $sc in $script_list#-->
@@ -99,6 +106,13 @@
 					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
 				</select>
+        		<!--#if $cat_list#-->
+					<select id="addURL_cat">
+                  	<!--#for $ct in $cat_list#-->
+                      	<option value="$ct" <!--#if "$ct" == "$cat" then "selected" else ""#-->>$ct</option>
+                  	<!--#end for#-->
+					</select>
+				<!--#end if#-->
 				<!--#if $script_list#-->
             		<select id="addURL_script">
                 		<!--#for $sc in $script_list#-->
@@ -116,6 +130,13 @@
 						<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
 						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
 					</select>
+	        		<!--#if $cat_list#-->
+						<select name="cat">
+	                  	<!--#for $ct in $cat_list#-->
+	                      	<option value="$ct" <!--#if "$ct" == "$cat" then "selected" else ""#-->>$ct</option>
+	                  	<!--#end for#-->
+						</select>
+					<!--#end if#-->
 					<!--#if $script_list#-->
             			<select name="script">
                 			<!--#for $sc in $script_list#-->
