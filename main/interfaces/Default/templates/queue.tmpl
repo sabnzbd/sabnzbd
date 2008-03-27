@@ -89,7 +89,7 @@ On queue finish:
             <!--#if $script_list#-->
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
                 <!--#for $sc in $script_list#-->
-                    <option value="change_script?nzo_id=$slot.nzo_id&script=$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                    <option value="change_script?nzo_id=$slot.nzo_id&script=$sc" <!--#if $slot.script == $sc then "selected" else ""#-->>$sc</option>
                 <!--#end for#-->
                 </select></form>
             </td>

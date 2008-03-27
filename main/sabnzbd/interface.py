@@ -565,8 +565,6 @@ class QueuePage(ProtectedClass):
             script = pnfo[PNFO_SCRIPT_FIELD]
             nzo_id = pnfo[PNFO_NZO_ID_FIELD]
             cat = pnfo[PNFO_EXTRA_FIELD1]
-            if not cat:
-                cat = 'None'
             filename = pnfo[PNFO_FILENAME_FIELD]
             bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
             bytes = pnfo[PNFO_BYTES_FIELD]
@@ -586,13 +584,10 @@ class QueuePage(ProtectedClass):
             unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
 
             slot['unpackopts'] = str(unpackopts)
-            if script:
-                slot['script'] = script
-            else:
-                slot['script'] = 'None'
+            slot['script'] = str(script)
             fn, slot['msgid'] = SplitFileName(filename)
             slot['filename'] = escape(fn)
-            slot['cat'] = cat
+            slot['cat'] = str(cat)
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
             slot['mb'] = "%.2f" % (bytes / MEBI)
 
