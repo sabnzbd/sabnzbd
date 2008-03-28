@@ -136,15 +136,17 @@ class NzbFile(TryList):
             partnum = int(segment.get('number'))
 
             if partnum in article_db:
-                logging.info("[%s] Skipping duplicate article (%s)",
-                             __NAME__, segment.text)
+                if segment.text == article_db[partnum][0]:
+                    logging.warning("[%s] Skipping duplicate article (%s)", __NAME__, segment.text)
+                else:
+                    logging.error("[%s] INCORRECT NZB: Duplicate part %s, but different ID-s (%s // %s)",
+                                     __NAME__, partnum, article_db[partnum][0], segment.text)
                 continue
 
             self.__bytes += bytes
             self.__bytes_left += bytes
 
-            if partnum == 1:
-                self.valid = True
+            self.valid = True
 
             article_db[partnum] = (segment.text, bytes)
 
@@ -170,7 +172,8 @@ class NzbFile(TryList):
                 self.__articles.append(article)
                 self.__decodetable[partnum] = article
 
-            self.__initial_article = self.__decodetable[1]
+            # Look for article with lowest number
+            self.__initial_article = self.__decodetable[self.lowest_partnum()]
             self.import_finished = True
 
     def remove_article(self, article):
@@ -178,7 +181,7 @@ class NzbFile(TryList):
         self.__bytes_left -= article.bytes
 
         reset = False
-        if article.partnum == 1 and self.__articles:
+        if article.partnum == self.lowest_partnum() and self.__articles:
             # Issue reset
             self.__initial_article = None
             self.reset_try_list()
@@ -260,6 +263,9 @@ class NzbFile(TryList):
     def completed(self):
         return not bool(self.__articles)
 
+    def lowest_partnum(self):
+        return min(self.__decodetable)
+
     def __getstate__(self):
         odict = self.__dict__.copy()
         del odict['_TryList__try_list']
@@ -276,7 +282,7 @@ class NzbFile(TryList):
 ################################################################################
 # NzbObject                                                                    #
 ################################################################################
-BLAH = '{http://www.newzbin.com/DTD/2003/nzb}'
+DTD = '{http://www.newzbin.com/DTD/2003/nzb}'
 NZBFN_MATCHER = re.compile(r"msgid_\d*_(.*).nzb", re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 class NzbObject(TryList):
@@ -375,7 +381,7 @@ class NzbObject(TryList):
         found = 0
         for _file in root:
             if not self.__group:
-                groups = _file.find('%sgroups' % BLAH)
+                groups = _file.find('%sgroups' % DTD)
                 if not groups:
                     groups = _file.find('groups')
                 self.__group = groups[0].text
@@ -391,7 +397,7 @@ class NzbObject(TryList):
                 t = 1
             date = datetime.datetime.fromtimestamp(t)
 
-            segments = _file.find('%ssegments' % BLAH)
+            segments = _file.find('%ssegments' % DTD)
             if not segments:
                 segments = _file.find('segments')
             nzf = NzbFile(date, subject, segments, self)
@@ -483,7 +489,7 @@ class NzbObject(TryList):
             self.reset_try_list()
 
         ## Special treatment for first part
-        if article.partnum == 1:
+        if article.partnum == nzf.lowest_partnum():
             fn = nzf.get_filename()
             if fn:
                 par2match = re.search(PROBABLY_PAR2_RE, fn)
