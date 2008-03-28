@@ -30,7 +30,7 @@ On queue finish:
 </div>
 
 <!--#if int($cache_limit)#-->
-<center><b>$cache_art</b>< articles buffered in <b>$cache_size</b> bytes<br>/center>
+<center><b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br></center>
 <!--#end if#-->
 <!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
 
@@ -48,6 +48,7 @@ $timeleft
 		<!--<th mochi:format="str"></th>-->
 		<th mochi:format="str" id="order">Order</th>
         <!--#if $script_list#--><th>Script</th><!--#end if#-->
+        <!--#if $cat_list#--><th>Category</th><!--#end if#-->
 		<th mochi:format="str">Name</th>
 		<th mochi:format="str">Percentage</th>
 		<th mochi:format="str">Remain/Total</th>
@@ -100,6 +101,16 @@ $timeleft
                 </select>
                 </form>
 		</td>
+            <!--#end if#-->
+            
+            <!--#if $cat_list#-->
+            <td><form>
+            <select onchange="javascript:changequeuedetails('queue/change_cat?nzo_id=$slot.nzo_id&cat='+this.options[this.selectedIndex].value);">
+                <!--#for $ct in $cat_list#-->
+                    <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+                <!--#end for#-->
+                </select></form>
+            </td>
             <!--#end if#-->
 
         
