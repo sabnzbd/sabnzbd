@@ -24,42 +24,31 @@
 <a href="./shutdown" onclick="javascript:return confirm('Are you sure you want to shutdown SABnzbd?')">Shutdown</a>
 </span>
 <h2>Add new downloads</h2>
-<!--#if $varExists('newzbinDetails')#-->
 <div class="EntryBlock">
     <form action="addID" method="get">
     <fieldset class="EntryFieldSet">
-      <legend>Add Postid</legend>
-      <input type="text" name="id">
-            <select name="pp">
-            <option value="0">None</option>
-            <option value="1">+Repair</option>
-            <option value="2">+Unpack</option>
-            <option value="3" selected>+Delete</option>
-            </select>
-            <br>
-            <input type="submit" value="Add">
-      </fieldset>
-    </form>
-</div>
-<!--#end if#-->
-<div class="EntryBlock">
-    <form action="addURL" method="get">
-    <fieldset class="EntryFieldSet">
-            <legend>Add URL</legend>
-    <input type="text" name="url">
+        <legend>Add <!--#if $varExists('newzbinDetails') then "Report-id / " else ""#-->URL</legend>
+        <input type="text" name="id">
         <!--#if $cat_list#-->
-              <select name="cat">
-                  <!--#for $ct in $cat_list#-->
-                      <option value="$ct" <!--#if "$ct" == "$cat" then "selected" else ""#-->>$ct</option>
-                  <!--#end for#-->
-              </select>
-        <!--#else#-->
-              <select name="pp">
-              <option value="0">None</option>
-              <option value="1">+Repair</option>
-              <option value="2">+Unpack</option>
-              <option value="3" selected>+Delete</option>
-              </select>
+            <select name="cat">
+                <!--#for $ct in $cat_list#-->
+                    <option value="$ct">$ct</option>
+                <!--#end for#-->
+            </select>
+        <!--#end if#-->
+        <select name="pp">
+        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
+        <option value="0">None</option>
+        <option value="1">+Repair</option>
+        <option value="2">+Unpack</option>
+        <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
+        </select>
+        <!--#if $script_list#-->
+            <select name="script">
+            <!--#for $sc in $script_list#-->
+                <option value="$sc">$sc</option>
+            <!--#end for#-->
+            </select>
         <!--#end if#-->
         <br>
         <input type="submit" value="Add">
@@ -69,24 +58,31 @@
 <div class="EntryBlock">
     <form action="addFile" method="post" enctype="multipart/form-data">
     <fieldset class="EntryFieldSet">
-      <legend>Add File</legend>
-      <input type="file" name="nzbfile">
-      <!--#if $cat_list#-->
+        <legend>Add File</legend>
+        <input type="file" name="nzbfile">
+        <!--#if $cat_list#-->
             <select name="cat">
                 <!--#for $ct in $cat_list#-->
-                    <option value="$ct" <!--#if "$ct" == "$cat" then "selected" else ""#-->>$ct</option>
+                    <option value="$ct">$ct</option>
                 <!--#end for#-->
             </select>
-      <!--#else#-->
-            <select name="pp">
-            <option value="0">None</option>
-            <option value="1">+Repair</option>
-            <option value="2">+Unpack</option>
-            <option value="3" selected>+Delete</option>
+        <!--#end if#-->
+        <select name="pp">
+        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
+        <option value="0">None</option>
+        <option value="1">+Repair</option>
+        <option value="2">+Unpack</option>
+        <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
+        </select>
+        <!--#if $script_list#-->
+            <select name="script">
+            <!--#for $sc in $script_list#-->
+                <option value="$sc">$sc</option>
+            <!--#end for#-->
             </select>
-      <!--#end if#-->
+        <!--#end if#-->
         <br>
-      <input type="submit" value="Add">
+        <input type="submit" value="Add">
     </fieldset>
     </form>
 </div>

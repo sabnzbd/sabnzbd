@@ -150,11 +150,10 @@ def ListScripts():
 def ListCats():
     """ Return list of categories """
     lst = ['None']
-    try:
-        for cat in sabnzbd.CFG['categories']:
-            lst.append(cat)
-    except:
-        lst = []
+    for cat in sabnzbd.CFG['categories']:
+        lst.append(cat)
+    if len(lst) < 2:
+        return []
     return lst
 
 
@@ -274,29 +273,35 @@ class MainPage(ProtectedClass):
 
     @cherrypy.expose
     def addID(self, id = None, pp=None, script=None, cat=None, redirect = None):
-        if id:
-            id = id.strip()
+        if pp and pp=="-1": pp = None
 
+        if id: id = id.strip()
         if id and (id.isdigit() or len(id)==5):
             sabnzbd.add_msgid(id, pp, script, cat)
-
+        elif id:
+            sabnzbd.add_url(id, pp, script, cat)
         if not redirect:
             redirect = self.__root
-
         raise cherrypy.HTTPRedirect(redirect)
+
 
     @cherrypy.expose
     def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None):
-        if url:
-            sabnzbd.add_url(url, pp, script, cat)
+        if pp and pp=="-1": pp = None
 
+        if url: url = url.strip()
+        if url and (url.isdigit() or len(url)==5):
+            sabnzbd.add_msgid(url, pp, script, cat)
+        elif url:
+            sabnzbd.add_url(url, pp, script, cat)
         if not redirect:
             redirect = self.__root
-
         raise cherrypy.HTTPRedirect(redirect)
+
 
     @cherrypy.expose
     def addFile(self, nzbfile, pp=None, script=None, cat=None, dummy = None):
+        if pp and pp=="-1": pp = None
         if nzbfile.filename and nzbfile.value:
             sabnzbd.add_nzbfile(nzbfile, pp, script, cat)
         raise Raiser(self.__root, dummy)
