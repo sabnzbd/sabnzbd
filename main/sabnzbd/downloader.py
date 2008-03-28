@@ -25,6 +25,7 @@ import time
 import select
 import logging
 import sabnzbd
+import datetime
 
 from threading import Thread
 
@@ -334,6 +335,8 @@ class Downloader(Thread):
                     
                     if nzo:
                         nzo.update_bytes(bytes)
+                        if not nzo.get_time_started():
+                            nzo.set_time_started(datetime.datetime.now())
 
                 if len(nw.lines) == 1:
                     if not nw.connected:

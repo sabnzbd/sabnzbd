@@ -32,6 +32,7 @@ PNFO_AVG_DATE_FIELD = 12
 PNFO_FINISHED_FILES_FIELD = 13
 PNFO_ACTIVE_FILES_FIELD = 14
 PNFO_QUEUED_FILES_FIELD = 15
+PNFO_STATUS_FIELD = 16
 
 QNFO_BYTES_FIELD = 0
 QNFO_BYTES_LEFT_FIELD = 1
@@ -45,7 +46,7 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-STAGENAMES = {1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin", 5:"UserScript"}
+STAGENAMES = {0:"Download", 1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin", 5:"UserScript"}
 
 BYTES_FILE_NAME  = 'bytes.sab'
 QUEUE_FILE_NAME  = 'queue.sab'

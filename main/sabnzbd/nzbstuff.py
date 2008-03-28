@@ -320,7 +320,7 @@ class NzbObject(TryList):
         self.__extra2 = 'b'           # Spare field for later
         self.__group = None
         self.__avg_date = None
-
+        self.__time_started = 0
         self.__dirprefix = []
 
         self.__partable = {}
@@ -538,6 +538,7 @@ class NzbObject(TryList):
             post_done = True
             #set the nzo status to return "Queued"
             self.set_status("Queued")
+            self.set_download_report()
 
         return (file_done, post_done, reset)
 
@@ -580,6 +581,57 @@ class NzbObject(TryList):
         return self.__status
         
 
+    def set_download_report(self):
+        #get the deltatime since the download started
+        timecompleted = datetime.datetime.now() - self.__time_started
+        
+        seconds = timecompleted.seconds
+        #find the total time including days
+        totaltime = (timecompleted.days/86400) + seconds
+        
+        #format the total time the download took, in days, hours, and minutes, or seconds.
+        completestr = ''
+        if timecompleted.days:
+            completestr += '%s day%s ' % (timecompleted.days, self.s_returner(timecompleted.days))
+        if (seconds/3600) >= 1:
+            completestr += '%s hour%s ' % (seconds/3600, self.s_returner((seconds/3600)))
+            seconds -= (seconds/3600)*3600
+        if (seconds/60) >= 1:
+            completestr += '%s minute%s ' % (seconds/60, self.s_returner((seconds/60)))
+            seconds -= (seconds/60)*60
+        if seconds > 0:
+            completestr += '%s second%s ' % (seconds, self.s_returner(seconds))
+
+        #average speed is simply total_bytes/total_time. This takes into account queue pauses and program shutdowns (ie when the download was 0kB/s)
+        avgspeed = (self.__bytes / 1024) / totaltime
+        #message 1 - total time
+        completemsg = '%s' % (completestr)
+        self.set_unpackstr(completemsg, '[Time-Taken]', 0)
+        #message 2 - average speed
+        completemsg = '%skB/s' % (avgspeed) 
+        self.set_unpackstr(completemsg, '[Avg-Speed]', 0) 
+        
+        
+    def get_time_started(self):
+        try:
+            return self.__time_started
+        except:
+            return 0
+
+        
+    def set_time_started(self, time):
+        try:
+            self.__time_started = time
+        except:
+            pass
+        return
+        
+    def s_returner(self, value):
+        if value > 1:
+            return 's'
+        else:
+            return ''
+    
     def get_article(self, server):
         article = None
         nzf_remove_list = []
@@ -778,7 +830,7 @@ class NzbObject(TryList):
                 self.nzo_id, self.__filename, self.__unpackstrht.copy(),
                 self.__msgid, self.__extra1, self.__extra2,
                 bytes_left_all, self.__bytes, avg_date,
-                finished_files, active_files, queued_files)
+                finished_files, active_files, queued_files, self.__status)
 
     def get_nzf_by_id(self, nzf_id):
         if nzf_id in self.__files_table:
