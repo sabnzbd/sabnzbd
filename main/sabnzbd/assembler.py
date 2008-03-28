@@ -139,6 +139,9 @@ class PostProcessor(Thread):
             nzo = self.queue.get()
             if not nzo:
                 break
+            
+            if sabnzbd.pause_on_post_processing:
+                sabnzbd.pause_downloader()
 
             try:
                 #log whether repairing succeeded
@@ -337,6 +340,9 @@ class PostProcessor(Thread):
             except:
                 logging.exception("[%s] Cleanup of %s failed.", __NAME__,
                                   nzo.get_filename())
+                
+            if sabnzbd.pause_on_post_processing:
+                sabnzbd.resume_downloader()
 
 #------------------------------------------------------------------------------
 ## sabnzbd.pause_downloader

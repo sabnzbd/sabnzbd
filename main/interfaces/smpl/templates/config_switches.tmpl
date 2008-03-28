@@ -129,6 +129,12 @@
 		    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
 		    <span class="tips">Filters out sample files from the queue.</span>
  		<br class="clear" />
+        
+			<label>Pause downloading during post processing:</label>
+		    <input class="radio" type="radio" name="pause_on_post_processing" value="0" <!--#if $pause_on_post_processing == 0 then "checked=1" else ""#--> /> No
+		    <input class="radio" type="radio" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> Yes
+		    <span class="tips">Pauses downloading at the start of post processing and resumes when finished.</span>
+ 		<br class="clear" />
 
  </fieldset>
 

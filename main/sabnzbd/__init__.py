@@ -144,6 +144,7 @@ WEB_COLOR = None
 WEB_COLOR2 = None
 WEB_DIR = None
 WEB_DIR2 = None
+pause_on_post_processing = False
 
 __INITIALIZED__ = False
 
@@ -288,7 +289,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT, TV_SORT_SEASONS, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, WEB_DIR, WEB_DIR2
+           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT, TV_SORT_SEASONS, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
+           WEB_DIR, WEB_DIR2, pause_on_post_processing
 
     if __INITIALIZED__:
         return False
@@ -331,6 +333,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
 
     SAFE_POSTPROC = bool(check_setting_int(CFG, 'misc', 'safe_postproc', 0))
+    
+    pause_on_post_processing = bool(check_setting_int(CFG, 'misc', 'pause_on_post_processing', 0))
 
     CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
     if type(CLEANUP_LIST) != type([]):

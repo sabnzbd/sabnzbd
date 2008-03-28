@@ -1051,6 +1051,7 @@ class ConfigSwitches(ProtectedClass):
         config['safe_postproc'] = IntConv(sabnzbd.CFG['misc']['safe_postproc'])
         config['auto_browser'] = IntConv(sabnzbd.CFG['misc']['auto_browser'])
         config['ignore_samples'] = IntConv(sabnzbd.CFG['misc']['ignore_samples'])
+        config['pause_on_post_processing'] = IntConv(sabnzbd.CFG['misc']['pause_on_post_processing'])
         config['script'] = sabnzbd.CFG['misc']['dirscan_script']
         if not config['script']:
             config['script'] = 'None'
@@ -1074,6 +1075,7 @@ class ConfigSwitches(ProtectedClass):
                      replace_spaces = None,
                      auto_browser = None,
                      ignore_samples = None,
+                     pause_on_post_processing = None,
                      script = None,
                      dummy = None
                      ):
@@ -1099,6 +1101,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['replace_spaces'] = IntConv(replace_spaces)
         sabnzbd.CFG['misc']['auto_browser'] = IntConv(auto_browser)
         sabnzbd.CFG['misc']['ignore_samples'] = IntConv(ignore_samples)
+        sabnzbd.CFG['misc']['pause_on_post_processing'] = IntConv(pause_on_post_processing)
 
         return saveAndRestart(self.__root, dummy)
 
