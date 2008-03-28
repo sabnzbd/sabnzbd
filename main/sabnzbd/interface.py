@@ -1129,7 +1129,7 @@ class ConfigGeneral(ProtectedClass):
         config['host'] = sabnzbd.CFG['misc']['host']
         config['port'] = sabnzbd.CFG['misc']['port']
         config['username'] = sabnzbd.CFG['misc']['username']
-        config['password'] = decodePassword(sabnzbd.CFG['misc']['password'], 'web')
+        config['password'] = '*' * len(decodePassword(sabnzbd.CFG['misc']['password'], 'web'))
         config['bandwith_limit'] = sabnzbd.CFG['misc']['bandwith_limit']
         config['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
         config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
@@ -1185,7 +1185,8 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
         sabnzbd.CFG['misc']['username'] = username
-        sabnzbd.CFG['misc']['password'] = encodePassword(password)
+        if (not password) or (password and password.strip('*')):
+            sabnzbd.CFG['misc']['password'] = encodePassword(password)
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
         sabnzbd.CFG['misc']['rss_rate'] = rss_rate
@@ -1211,9 +1212,19 @@ class ConfigServer(ProtectedClass):
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['servers'] = sabnzbd.CFG['servers']
-        for svr in config['servers']:
-            config['servers'][svr]['password'] = decodePassword(config['servers'][svr]['password'], 'server')
+        new = {}
+        org = sabnzbd.CFG['servers']
+        for svr in org:
+            new[svr] = {}
+            new[svr]['host'] = org[svr]['host']
+            new[svr]['port'] = org[svr]['port']
+            new[svr]['username'] = org[svr]['username']
+            new[svr]['password'] = '*' * len(decodePassword(org[svr]['password'], 'server'))
+            new[svr]['connections'] = org[svr]['connections']
+            new[svr]['timeout'] = org[svr]['timeout']
+            new[svr]['fillserver'] = org[svr]['fillserver']
+            new[svr]['ssl'] = org[svr]['ssl']
+        config['servers'] = new
 
         if sabnzbd.newswrapper.HAVE_SSL:
             config['have_ssl'] = 1
@@ -1285,6 +1296,9 @@ class ConfigServer(ProtectedClass):
             msg = check_server(host, port)
             if msg:
                 return msg
+
+            if password and not password.strip('*'):
+                password = sabnzbd.CFG['servers'][server]['password']
 
             del sabnzbd.CFG['servers'][server]
 
@@ -1422,7 +1436,7 @@ class ConfigNewzbin(ProtectedClass):
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
-        config['password_newzbin'] = decodePassword(sabnzbd.CFG['newzbin']['password'], 'password_newzbin')
+        config['password_newzbin'] = '*' * len(decodePassword(sabnzbd.CFG['newzbin']['password'], 'password_newzbin'))
         config['create_category_folders'] = IntConv(sabnzbd.CFG['newzbin']['create_category_folders'])
         config['newzbin_bookmarks'] = IntConv(sabnzbd.CFG['newzbin']['bookmarks'])
         config['newzbin_unbookmark'] = IntConv(sabnzbd.CFG['newzbin']['unbookmark'])
@@ -1442,7 +1456,8 @@ class ConfigNewzbin(ProtectedClass):
                     newzbin_unbookmark = None, bookmark_rate = None, dummy = None):
 
         sabnzbd.CFG['newzbin']['username'] = username_newzbin
-        sabnzbd.CFG['newzbin']['password'] = encodePassword(password_newzbin)
+        if (not password_newzbin) or (password_newzbin and password_newzbin.strip('*')):
+            sabnzbd.CFG['newzbin']['password'] = encodePassword(password_newzbin)
         sabnzbd.CFG['newzbin']['create_category_folders'] = create_category_folders
         sabnzbd.CFG['newzbin']['bookmarks'] = newzbin_bookmarks
         sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
@@ -1841,7 +1856,7 @@ class ConfigEmail(ProtectedClass):
         config['email_to'] = sabnzbd.CFG['misc']['email_to']
         config['email_from'] = sabnzbd.CFG['misc']['email_from']
         config['email_account'] = sabnzbd.CFG['misc']['email_account']
-        config['email_pwd'] = decodePassword(sabnzbd.CFG['misc']['email_pwd'], 'email')
+        config['email_pwd'] = '*' * len(decodePassword(sabnzbd.CFG['misc']['email_pwd'], 'email'))
         config['email_endjob'] = IntConv(sabnzbd.CFG['misc']['email_endjob'])
         config['email_full'] = IntConv(sabnzbd.CFG['misc']['email_full'])
 
@@ -1869,7 +1884,8 @@ class ConfigEmail(ProtectedClass):
 
         sabnzbd.CFG['misc']['email_server'] = email_server
         sabnzbd.CFG['misc']['email_account'] = email_account
-        sabnzbd.CFG['misc']['email_pwd'] = encodePassword(email_pwd)
+        if (not email_pwd) or (email_pwd and email_pwd.strip('*')):
+            sabnzbd.CFG['misc']['email_pwd'] = encodePassword(email_pwd)
         sabnzbd.CFG['misc']['email_endjob'] = email_endjob
         sabnzbd.CFG['misc']['email_full'] = email_full
 
