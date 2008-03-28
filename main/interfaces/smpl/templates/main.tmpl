@@ -486,7 +486,11 @@ function loadingJSON(){
 
    function initDynamicTable(data) {
        //dataTable = data;
+       <!--#if $color_scheme  == 'black.css'#-->
+       options = PlotKit.Base.officeBlack();
+       <!--#else #-->
        options = PlotKit.Base.officeBlue();
+       <!--#end if #-->
        layout = new Layout("line", options);
        renderer = new SweetCanvasRenderer('graph', layout, options);
 	   //alert("hi");
@@ -494,8 +498,12 @@ function loadingJSON(){
 
    function chartReload(data) {
 
-        var colorScheme = "Blue";
-
+        
+       <!--#if $color_scheme  == 'black.css'#-->
+       var colorScheme = "Black";
+       <!--#else #-->
+       var colorScheme = "Blue";
+       <!--#end if #-->
         // setup layout options
         var themeName = "office" + colorScheme;
         var theme = PlotKit.Base[themeName]();
