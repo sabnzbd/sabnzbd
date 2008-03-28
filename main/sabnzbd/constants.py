@@ -50,7 +50,7 @@ STAGENAMES = {0:"Download", 1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin", 5:"Use
 
 BYTES_FILE_NAME  = 'bytes.sab'
 QUEUE_FILE_NAME  = 'queue.sab'
-RSS_FILE_NAME    = 'rss.sab'
+RSS_FILE_NAME    = 'rss_data.sab'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'
 
 DEF_DOWNLOAD_DIR = 'downloads/incomplete'
@@ -79,7 +79,7 @@ DEF_QRATE        = 0
 MIN_DECODE_QUEUE = 5
 MAX_DECODE_QUEUE = 10
 MAX_WARNINGS     = 20
-            
+
 TVSORTINGLIST = [ \
             'Original Name',
             'No Folder',\

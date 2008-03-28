@@ -303,7 +303,10 @@ class NzbObject(TryList):
             except:
                 pass
 
-        r, u, d = sabnzbd.pp_to_opts(pp)
+        if pp == None and futuretype:
+            r = u = d = None
+        else:
+            r, u, d = sabnzbd.pp_to_opts(pp)
 
         self.__filename = filename    # Original filename
         self.__dirname = filename

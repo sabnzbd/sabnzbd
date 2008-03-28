@@ -1,6 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
-#           2007 The ShyPike <shypike@users.sourceforge.net>
+# Copyright 2008 The ShyPike <shypike@users.sourceforge.net>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,8 +25,10 @@ __NAME__ = "RSS"
 import os
 import re
 import logging
+import time
 import sabnzbd
-
+from sabnzbd.interface import ListFilters
+from sabnzbd.constants import *
 from sabnzbd.decorators import *
 from threading import RLock
 
@@ -39,155 +40,246 @@ except ImportError:
 
 RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
 
+def ListUris():
+    """ Return list of all RSS uris """
+    uris = []
+    for uri in sabnzbd.CFG['rss']:
+        uris.append(uri)
+    return uris
+
+def ConvertFilter(text):
+    """ Return compiled regex.
+        Quote all regex specials, replace '*' by '.*'
+    """
+    txt = text.replace('\\','\\\\')
+    txt = txt.replace('^','\^')
+    txt = txt.replace('$','\$')
+    txt = txt.replace('.','\.')
+    txt = txt.replace('[','\[')
+    txt = txt.replace(']','\]')
+    txt = txt.replace('(','\(')
+    txt = txt.replace(')','\)')
+    txt = txt.replace('+','\+')
+    txt = txt.replace('?','\?')
+    txt = txt.replace('|','\|')
+    txt = txt.replace('{','\{')
+    txt = txt.replace('}','\}')
+    txt = txt.replace('*','.*')
+
+    try:
+        return re.compile(txt, re.I)
+    except:
+        logging.error("[%s] Could not compile regex: %s", __NAME__, text)
+        return None
+
+    
 LOCK = RLock()
 class RSSQueue:
-    def __init__(self, uris= [], uri_table = {}, old_entries = {}):
-        self.uris = uris
-        self.uri_table = uri_table
-        self.old_entries = old_entries
+    def __init__(self):
+        self.jobs = {}
+        try:
+            self.jobs = sabnzbd.load_data(RSS_FILE_NAME, remove = False)
+        except:
+            pass
+        # jobs is a URI-indexed dictionary
+        #    Each element is link-indexed dictionary
+        #        Each element is an array:
+        #           0 = 'D', 'G', 'B' (downloaded, good-match, bad-match)
+        #           1 = Title
+        #           2 = URL or MsgId
+        #           3 = cat
+        #           4 = pp
+        if type(self.jobs) != type({}):
+            self.jobs = {}
+
+        self.__running = False
+
 
     @synchronized(LOCK)
-    def run(self):
-        for uri in self.uris:
-            filter_list, filter_table = self.uri_table[uri]
+    def run_uri(self, uri=None, rematch=False):
+        """ Run the query for one URI and apply filters """
+        if not uri: return
 
-            logging.info("[%s] Parsing %s", __NAME__, uri)
+        newlinks = []
+
+        # Preparations, get options
+        if len(sabnzbd.CFG['categories']):
+            defCat = sabnzbd.CFG['rss'][uri]['cat']
+            haveCat = True
+        else:
+            defCat = sabnzbd.CFG['rss'][uri]['pp']
+            haveCat = False
+
+        enabled = int(sabnzbd.CFG['rss'][uri]['enable'])
+
+        # Preparations, convert filters to regex's
+        filters = ListFilters(uri)
+        regexes = []
+        retypes = []
+        recats = []
+        for n in xrange(len(filters)):
+            recats.append(filters[n][0])
+            retypes.append(filters[n][1])
+            regexes.append(ConvertFilter(filters[n][2]))
+        regcount = len(regexes)
+
+        # Set first if this is the very first scan of this URI
+        # in that case nothing will be downloaded.
+        first = uri not in self.jobs
+        if first:
+            self.jobs[uri] = {}
+
+        jobs = self.jobs[uri]
+
+        if rematch:
+            logging.debug('[%s] Rematching RSS-feed %s', __NAME__, uri)
+            entries = []
+            for x in jobs:
+                if jobs[x][0] != 'D': entries.append(x)
+        else:
+            # Read the RSS feed
+            logging.debug("[%s] Running feedparser on %s", __NAME__, uri)
             d = feedparser.parse(uri)
-            logging.info("[%s] Done parsing %s", __NAME__, uri)
-
+            logging.debug("[%s] Done parsing %s", __NAME__, uri)
             if not d or not d['entries'] or 'bozo_exception' in d:
-                continue
-
+                logging.warning("[%s] Failed to retrieve RSS from %s", __NAME__, uri)
+                return
             entries = d['entries']
 
-            new = not uri in self.old_entries
 
-            entry_links = []
-            new_entry_links = []
-            for entry in entries:
+        # Filter out valid new links
+        for entry in entries:
+            if rematch:
+                link = entry
+            else:
                 link = _get_link(uri, entry)
-                if link:
-                    entry_links.append(link)
-                    if new or link not in self.old_entries[uri]:
-                        new_entry_links.append(link)
+    
+            if link:
+                if rematch:
+                    if link in jobs and jobs[link] != 'D':
+                        title = jobs[link][1]
+                else:
+                    title = entry.title
+                    newlinks.append(link)
 
-            self.old_entries[uri] = entry_links
+                myCat = defCat
 
-            if new or not new_entry_links:
-                continue
-
-            for _filter in filter_list[:]:
-                filter_name, unpack_opts, match_multiple, filter_matcher = _filter
-
-                matched_links = filter_table[filter_name]
-
-                logging.debug("[%s] %s matched_links: %s", __NAME__,
-                              filter_name, matched_links)
-
-                for link in matched_links[:]:
-                    if link not in entry_links:
-                        matched_links.remove(link)
-                        logging.debug("[%s] Purged link (%s) removed",
-                                      __NAME__, link)
-
-                for entry in entries:
-                    link = _get_link(uri, entry)
-                    if (not link) or (link not in new_entry_links):
-                        continue
-
-                    title = entry.title.lower()
-
-                    found_match = True
-                    if filter_matcher:
-                        found_match = re.search(filter_matcher, title)
-                    elif filter_name != '*':
-                        for match_part in filter_name.split():
-                            match_part = match_part.lower()
-                            if match_part not in title:
-                                found_match = False
-                                break
-
-                    if found_match and link not in matched_links:
-                        matched_links.append(link)
-
-                        m = RE_NEWZBIN.search(link)
-                        if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
-                            logging.info("[%s] Adding %s (%s) to queue", __NAME__, m.group(3), title)
-                            sabnzbd.add_msgid(m.group(3), unpack_opts)
-                        else:
-                            logging.info("[%s] Adding %s (%s) to queue", __NAME__, link, title)
-                            sabnzbd.add_url(link, unpack_opts)
-
-                        if not match_multiple:
-                            filter_list.remove(_filter)
+                if link not in jobs or (rematch and jobs[link][0]!='D'):
+                    # Match this title against all filters
+                    logging.debug('[%s] Trying link %s', __NAME__, link)
+                    result = False
+                    for n in xrange(regcount):
+                        found = re.search(regexes[n], title)
+                        if found and retypes[n]=='A':
+                            logging.debug("[%s] Filter matched on rule %d", __NAME__, n)
+                            result = True
+                            if recats[n]: myCat = recats[n]
+                            break
+                        if found and retypes[n]=='R':
+                            logging.debug("[%s] Filter rejected on rule %d", __NAME__, n)
+                            result = False
                             break
 
-        self.save()
+                    if haveCat:
+                        myPp = ''
+                    else:
+                        myPp = myCat
+                        myCat = ''
+
+                    if result:
+                        _HandleLink(jobs, link, title, 'G', myPp, myCat, enabled and not first)
+                    else:
+                        _HandleLink(jobs, link, title, 'B', myPp, myCat, False)
+
+
+        # If links were dropped by feed, remove from our tables too
+        if not rematch:
+            olds  = jobs.keys()
+            for old in olds:
+                if old not in newlinks:
+                    logging.debug("[%s] Purging link %s", __NAME__, old)
+                    del jobs[old]
+
+
+    def run(self):
+        """ Run all the URI's and filters """
+        # Protect against second scheduler call before current
+        # run is completed. Cannot use LOCK, because run_uri
+        # already uses the LOCK.
+
+        if not self.__running:
+            self.__running = True
+            for uri in sabnzbd.CFG['rss']:
+                self.run_uri(uri)
+                # Wait two minutes, else newzbin may get irritated
+                time.sleep(120)
+            self.save()
+            self.__running = False
+
 
     @synchronized(LOCK)
-    def add_feed(self, uri, text_filter, re_filter, unpack_opts, match_multiple):
-        if uri not in self.uris:
-            self.uris.append(uri)
-            self.uri_table[uri] = [[], {}]
-
-        filter_list, filter_table = self.uri_table[uri]
-        filter_name = text_filter
-        filter_matcher = None
-        if re_filter:
-            filter_name = re_filter
+    def show_result(self, uri):
+        if uri in self.jobs:
             try:
-                filter_matcher = re.compile(filter_name, re.I)
+                return self.jobs[uri]
             except:
-                logging.exception("[%s] Error compiling %s", __NAME__,
-                                  filter_name)
-                filter_name = None
-
-        if filter_name:
-            filter_table[filter_name] = []
-            filter_list.append([filter_name, unpack_opts, match_multiple,
-                                filter_matcher])
-            self.run()
-
-        elif not filter_list:
-            self.uris.remove(uri)
-            self.uri_table.pop(uri)
-
-    @synchronized(LOCK)
-    def del_feed(self, uri_id):
-        for uri in self.uris:
-            if uri_id == str(id(uri)):
-                self.uris.remove(uri)
-                self.uri_table.pop(uri)
-                if uri in self.old_entries:
-                    self.old_entries.pop(uri)
-                self.save()
-                break
-
-    @synchronized(LOCK)
-    def del_filter(self, uri_id, filter_id):
-        for uri in self.uris:
-            if uri_id == str(id(uri)):
-                filter_list, filter_table = self.uri_table[uri]
-
-                save = False
-                for _filter in filter_list[:]:
-                    if filter_id == str(id(_filter)):
-                        filter_name, unpack_opts, match_multiple, filter_matcher = _filter
-                        filter_list.remove(_filter)
-                        filter_table.pop(filter_name)
-                        save = True
-                if save:
-                    self.save()
-                break
-
-    @synchronized(LOCK)
-    def get_info(self):
-        return ([uri for uri in self.uris], self.uri_table.copy())
+                return {}
+        else:
+            return {}
 
     @synchronized(LOCK)
     def save(self):
-        sabnzbd.save_data((self.uris, self.uri_table, self.old_entries),
-                          sabnzbd.RSS_FILE_NAME)
+        sabnzbd.save_data(self.jobs, sabnzbd.RSS_FILE_NAME)
+
+    @synchronized(LOCK)
+    def delete(self, uri):
+        if uri in self.jobs:
+            del self.jobs[uri]
+
+    @synchronized(LOCK)
+    def flag_downloaded(self, uri, id):
+        if uri in self.jobs:
+            lst = self.jobs[uri]
+            for link in lst:
+                if lst[link][2] == id:
+                    lst[link][0] = 'D'
+
+
+def _HandleLink(jobs, link, title, flag, pp, cat, download):
+    """ Process one link """
+    m = RE_NEWZBIN.search(link)
+    if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
+        jobs[link] = []
+        if download:
+            jobs[link].append('D')
+            jobs[link].append(title)
+            jobs[link].append('')
+            jobs[link].append('')
+            jobs[link].append('')
+            logging.info("[%s] Adding %s (%s) to queue", __NAME__, m.group(3), title)
+            sabnzbd.add_msgid(m.group(3), pp=pp, cat=cat)
+        else:
+            jobs[link].append(flag)
+            jobs[link].append(title)
+            jobs[link].append(m.group(3))
+            jobs[link].append(cat)
+            jobs[link].append(pp)
+    else:
+        jobs[link] = []
+        if download:
+            jobs[link].append('D')
+            jobs[link].append(title)
+            jobs[link].append('')
+            jobs[link].append('')
+            jobs[link].append('')
+            logging.info("[%s] Adding %s (%s) to queue", __NAME__, link, title)
+            sabnzbd.add_url(link, pp=pp, cat=cat)
+        else:
+            jobs[link].append(flag)
+            jobs[link].append(title)
+            jobs[link].append(link)
+            jobs[link].append(cat)
+            jobs[link].append(pp)
 
 
 def _get_link(uri, entry):
@@ -210,4 +302,3 @@ def _get_link(uri, entry):
     else:
         logging.warning('[%s]: Empty RSS entry found (%s)', link)
         return None
-

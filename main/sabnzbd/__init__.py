@@ -42,7 +42,7 @@ from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
                          create_real_path, check_latest_version, from_units, SameFile, decodePassword
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
-from sabnzbd.rss import RSSQueue
+from sabnzbd.rss import RSSQueue, ListUris
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -306,6 +306,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     CheckSection('newzbin')
     CheckSection('servers')
     CheckSection('categories')
+    CheckSection('rss')
 
     USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
     PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
@@ -1196,6 +1197,8 @@ def pp_to_opts(pp):
 
 def opts_to_pp(repair, unpack, delete):
     """ Convert (repair, unpack, delete) to numeric process options """
+    if repair == None:
+        return None
     pp = 0
     if repair: pp += 1
     if unpack: pp += 1
@@ -1306,32 +1309,29 @@ def init_RSS():
     need_rsstask = False
 
     if rss.HAVE_FEEDPARSER:
-        tup = load_data(RSS_FILE_NAME, remove = False)
 
-        uris = []
-        uri_table = {}
-        old_entries = {}
-        if tup:
-            uris, uri_table, old_entries = tup
-
-        RSS = RSSQueue(uris, uri_table, old_entries)
-        if uris:
+        RSS = RSSQueue()
+        if ListUris():
             need_rsstask = True
 
     return need_rsstask
 
-def add_rss_feed(uri, text_filter, re_filter, unpack_opts, match_multiple):
+def del_rss_feed(uri):
     if RSS:
-        RSS.add_feed(uri, text_filter, re_filter, unpack_opts, match_multiple)
-
-def del_rss_feed(uri_id):
-    if RSS:
-        RSS.del_feed(uri_id)
-
-def del_rss_filter(uri_id, filter_id):
-    if RSS:
-        RSS.del_filter(uri_id, filter_id)
+        RSS.delete(uri)
 
 def get_rss_info():
     if RSS:
         return RSS.get_info()
+
+def run_rss_feed(uri, rematch=False):
+    if RSS:
+        return RSS.run_uri(uri, rematch)
+
+def show_rss_result(uri):
+    if RSS:
+        return RSS.show_result(uri)
+
+def rss_flag_downloaded(uri, id):
+    if RSS:
+        RSS.flag_downloaded(uri, id)
