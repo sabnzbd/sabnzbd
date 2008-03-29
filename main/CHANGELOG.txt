@@ -14,6 +14,11 @@ added:   Optional secundary web-interface on http://host:port/sabnzbd/m
 added:   Selectable colour schemes for SMPL and Default
 added:   History items can be deleted individually
 ------------------------------------------------------------------------------------------------------------------------------
+0.3.4 by ShyPike, pairofdimes and switch
+-------------------------------------------------------------------------------
+fixed:   New option "safe postproc" did not work
+fixed:   Errors/warning screen sometimes causes HTML problems
+------------------------------------------------------------------------------------------------------------------------------
 0.3.3 by ShyPike, pairofdimes and switch
 -------------------------------------------------------------------------------
 fixed:   Improve robustness newzbin report fetching
