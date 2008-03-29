@@ -1981,7 +1981,7 @@ def build_header(prim):
     header = { 'version':sabnzbd.__version__, 'paused':sabnzbd.paused(),
                'uptime':uptime, 'color_scheme':color }
 
-    header['helpuri'] = 'http://sabnzbdplus.wiki.sourceforge.net'
+    header['helpuri'] = 'http://sabnzbd.wikidot.com'
     header['diskspace1'] = "%.2f" % diskfree(sabnzbd.DOWNLOAD_DIR)
     header['diskspace2'] = "%.2f" % diskfree(sabnzbd.COMPLETE_DIR)
     header['diskspacetotal1'] = "%.2f" % disktotal(sabnzbd.DOWNLOAD_DIR)
