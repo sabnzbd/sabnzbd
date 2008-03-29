@@ -47,7 +47,7 @@ else:
 <br class="clear" />
 <label>Arguments:</label>
 <input class="schedulesubmit" type="text" size="20" name="arguments" value="">
-<p><input type="button" size="40" value="Add Schedule" onclick="javascript:submitconfig('config/scheduling/addSchedule', 'submitstatus1','schedule', 'config/scheduling','0')">
+<br class="clear" /><p><input type="button" size="40" value="Add Schedule" onclick="javascript:submitconfig('config/scheduling/addSchedule', 'submitstatus1','schedule', 'config/scheduling','0')">
 <span class="submitstatus" id="submitstatus1"></span></p>
 </fieldset>
 </form>
@@ -56,7 +56,7 @@ else:
 <div class="EntryBlock>"
 <!--#set $schednum = 0#-->
 <!--#for $line in $schedlines#-->
-<form class="cmxform" id="$line">
+<form id="$line">
 
 <!--#set $schednum = $schednum+1#-->
 <% 
@@ -83,7 +83,7 @@ elif day == "7":
 Task $schednum: <strong>$h:$m</strong> - $day - $action
 <input type="hidden" name="line" value="$line">
 
-<input class="schedulesubmit" type="button" size="40" value="Remove" onclick="javascript:submitconfig('config/scheduling/delSchedule', '$line', '$line', 'config/scheduling','0')">
+<input class="schedulesubmit" type="button" size="20" value="Remove" onclick="javascript:submitconfig('config/scheduling/delSchedule', '$line', '$line', 'config/scheduling','0')">
 <span style="visibility:hidden" name="$line" class="submitstatus" id="$line"></span></p>
 
 </form>
