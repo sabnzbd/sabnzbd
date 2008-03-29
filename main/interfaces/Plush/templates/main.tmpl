@@ -6,7 +6,7 @@
 	
 	<link rel="shortcut icon" type="image/ico" href="static/images/favicon.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
-	<link rel="stylesheet" type="text/css" href="static/stylesheets/plush.css" media="screen"/>
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/plush-default.css" media="screen"/>
 
 	<script type="text/javascript" src="static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="static/javascripts/greybox.js"></script>
@@ -15,149 +15,120 @@
 	<script type="text/javascript" src="static/javascripts/jquery.tablednd.js"></script>
 	<script type="text/javascript" src="static/javascripts/JQuerySpinBtn.js"></script>
 	<script type="text/javascript" src="static/javascripts/plush.js"></script>
+	<style>
+	.currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1;}
+	.currentDownload { float: left; margin-left: 3px;}
+	.totalDownload { float:right; margin-right: 3px;}
+	</style>
 
 </head>
 <body>
-	<!-- Container : Begin -->
-	<div id="container">
-
-		
-		<img src="static/images/icon_config_disconnect.png" alt="Shutdown SAB+" onclick="if(confirm('Are you sure you want to shut down SABnzbd?')){GB_show('Shutdown SABnzbd', 'shutdown', 400, 400);}" title="Shutdown SABnzbd Application?" style="float:right;display:inline;cursor:pointer"/>
-
-		<!--#if $nt#-->
-			<img id="queue_shutdown_option" src="static/images/o_shutdown.png" alt="Toggle Queued Shutdown" title="Toggled Queued Shutdown" style="float:right;display:inline;cursor:pointer"/>
-		<!--#end if#-->
-
-		
-		<!-- Top Bar : Begin -->
-		<div id="topbar">
-		
-			<!-- Logo : Begin -->
-			<div id="logo">
-				<a href="https://sourceforge.net/projects/sabnzbdplus/" target="_blank" title="SABnzbd+ Version: $version | Plush Version: 1.0.1">SABnzbd<sup>+</sup><sub>Plush</sub></a>
-			</div>
-			<!-- Logo : End -->
-			<!-- Main Menu : Begin -->
-			<ul id="menu" style="display:inline">
-				<li><a id="plusnzb" title="Add/Enqueue an NZB">+NZB</a></li>
-				<li><a id="options" title="View Plush Options">Options</a></li>
-				<li><a href="connections" title="Configure SABnzbd" class="greybox">Config</a></li>
-				<li><a href="$helpuri" target="_blank" title="Read the SAB+ Wiki">Help</a></li>
-
-
-			  <!--#if $new_release#-->
-    			  <li><a href="$new_rel_url" target="_blank"><font color="orange">New Release $new_release Available!</font></a></li>
-			  <!--#end if#-->
-
-			</ul>
-			<!-- Main Menu : End -->
-			
-		</div>
-		<!-- Top Bar : End -->
-		
-		
-		<!-- Options Menu : Begin -->
-		<div class="subMenu" id="optionsMenu" style="display:none">
-
-			<div class="refreshContainer">
-				<strong>Refresh Rate:</strong><input type="text" class="suSpinButton" id="refreshRate-option" size="3" value="?" /> seconds
-			</div>
-			
-			<div class="layoutContainer"><strong>Layout:</strong><img src="static/images/o_topbottom.png" id="layout_toptobottom" alt="Top to Bottom" title="Switch Layout: Top to Bottom" />&nbsp;<img src="static/images/o_sidebyside.png" id="layout_sidebyside" alt="Side by Side" title="Switch Layout: Side by Side" /></div>
-			
-			<div class="layoutContainer">
-				<input type="button" value="Purge Queue" id="queue_purge"/>
-			</div>
-			
-		</div>
-		<!-- Options Menu : End -->
-		
-		
-		<!-- +NZB Menu : Begin -->
-		<div class="subMenu" id="nzbMenu" style="display: none">
-			<b>Add NZB: &nbsp;</b>
-			<!--#if $varExists('newzbinDetails')#-->
-				<input type="text" id="addID" value="by Newzbin ID/NB32" size="16" onfocus="if(value=='by Newzbin ID/NB32')value=''" onblur="if(!value)value='by Newzbin ID/NB32'" />&nbsp;<select id="addID_pp">
-					<option value="0" title="Do not post-process the NZB file set">-</option>
-					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
-					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
-					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-				</select>
-        		<!--#if $cat_list#-->
-					<select id="addID_cat">
-                  	<!--#for $ct in $cat_list#-->
-                      	<option value="$ct" <!--#if "$ct" == "$cat" then "selected" else ""#-->>$ct</option>
-                  	<!--#end for#-->
-					</select>
-				<!--#end if#-->
-				<!--#if $script_list#-->
-            		<select id="addID_script">
-                		<!--#for $sc in $script_list#-->
-                    		<option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
-                		<!--#end for#-->
-                	</select>
-            	<!--#end if#-->&nbsp;<input type="submit" id="addNZBbyID" value="Add" />&nbsp;&nbsp;&nbsp;
-			<!--#end if#-->
-			<br/>
-				<!-- ADD BY URL -->
-				<input type="text" id="addURL" value="by URL" size="12" onfocus="if(value=='by URL')value=''" onblur="if(!value)value='by URL'" />&nbsp;<select id="addURL_pp">
-					<option value="0" title="Do not post-process the NZB file set">-</option>
-					<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
-					<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
-					<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-				</select>
-        		<!--#if $cat_list#-->
-					<select id="addURL_cat">
-                  	<!--#for $ct in $cat_list#-->
-                      	<option value="$ct" <!--#if "$ct" == "$cat" then "selected" else ""#-->>$ct</option>
-                  	<!--#end for#-->
-					</select>
-				<!--#end if#-->
-				<!--#if $script_list#-->
-            		<select id="addURL_script">
-                		<!--#for $sc in $script_list#-->
-                    		<option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
-                		<!--#end for#-->
-                	</select>
-            	<!--#end if#-->
-				&nbsp;<input type="submit" id="addNZBbyURL" value="Add" />&nbsp;&nbsp;&nbsp;
-			<br/>
-				<!-- ADD BY FILE UPLOAD -->
-				<form action="addFile" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart' : startCallback, 'onComplete' : completeCallback})">
-					<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" />&nbsp;<select name="pp">
-						<option value="0" title="Do not post-process the NZB file set">-</option>
-						<option value="1" title="Repair the NZB file set with PAR2 files">R</option>
-						<option value="2" title="Repair &amp; Unpack the NZB file set">U</option>
-						<option value="3" title="Repair, Unpack, &amp; Delete the remainder of the NZB file set" selected>D</option>
-					</select>
-	        		<!--#if $cat_list#-->
-						<select name="cat">
-	                  	<!--#for $ct in $cat_list#-->
-	                      	<option value="$ct" <!--#if "$ct" == "$cat" then "selected" else ""#-->>$ct</option>
-	                  	<!--#end for#-->
-						</select>
-					<!--#end if#-->
-					<!--#if $script_list#-->
-            			<select name="script">
-                			<!--#for $sc in $script_list#-->
-                    			<option value="$sc" <!--#if $script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
-                			<!--#end for#-->
-                		</select>
-            		<!--#end if#-->
-					&nbsp;<input type="submit" id="addNZBbyFile" value="Add" />
-				</form>
-		</div>
-		<!-- +NZB Menu : End -->
-		
-
-		<!-- Queue   -->
-		<div id="queue" style="display:inline;"></div>
-		
-		<!-- History -->
-		<div id="history" style="display:inline;"></div>
-		
-	</div>
-	<!-- Container : End -->
 	
+	<div id="page-wrap">
+		<div id="hdr-queue">
+			<div id="queue-buttons">
+				<ul>
+					<li class="q_menu_sort"></li>
+					<li class="q_menu_pause"></li>
+					<li class="q_menu_verbose"></li>
+					
+				</ul>
+			</div>
+			<div id="time-left">
+				<p><span>2:10</span> left</p>
+			</div>
+			<ul id="nav">
+		<li><a class="queue_logo"></a>
+			<ul>
+				<li><a class="daddy">Add .NZB</a>
+					<ul>
+						<li><a class="daddy">by Newzbin</a>
+							<ul>
+								<li><a><input type="text" value="enter ID/NB32"/></a></li>
+								<li><a href="#"><select><option>category</option></select><select><option>script</option></select><select><option>D</option></select></a></li>
+								<li><a><input type="submit" value="Add"/></a></li>
+							</ul>
+						</li>
+	
+						<li><a class="daddy">by URL</a>
+							<ul>
+								<li><a><input type="text" value="enter URL"/></a></li>
+								<li><a><select><option>category</option></select><select><option>script</option></select><select><option>D</option></select></a></li>
+								<li><a><input type="submit" value="Add"/></a></li>
+							</ul>
+						</li>
+						<li><a class="daddy">by Upload</a>
+							<ul>
+								<li><a><input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="12" /></a></li>
+								<li><a><select><option>category</option></select><select><option>script</option></select><select><option>D</option></select></a></li>
+								<li><a><input type="submit" value="Add"/></a></li>
+							</ul>
+						</li>
+					</ul>
+				</li>
+				<li><a><select>
+							<option>1 s</option>
+							<option>2 s</option>
+							<option>4 s</option>
+							<option>8 s</option>
+							<option>16s</option>
+							<option>30s</option>
+							<option>1 m</option>
+							<option>2 m</option>
+							<option>15m</option>
+							<option>30m</option>
+						</select> Refresh</a></li>
+				<li><a>Config</a></li>
+				<li><a class="daddy">Shutdown</a>
+					<ul>
+						<li><a>Shutdown SABnzbd</a></li>
+						<li><a>Shutdown Computer<br/><small><i>when Done Downloading</i></small></a></li>
+					</ul>
+				</li>
+				<li><a href="https://sabnzbdplus.wiki.sourceforge.net/" target="_blank">Wiki / Help</a></li>
+			</ul>
+		</li>
+	</ul>
+			<div id="speed">
+				<p><span>810</span> kbs</p>
+			</div>
+			
+			<div class="logo">
+				<h1>Queue</h1>
+			</div>
+			
+		</div>
+
+		<div id="queue-wrap">
+
+			<!-- Queue -->
+			<div id="queue"></div>
+		
+		
+			<!-- History Separator -->
+			<div class="box_banner_history" title="Uptime: uptime">
+				<div class="box_banner_r">
+					<ul class="box_banner_menu">
+						<li class="q_menu_verbose"></li>
+						<li class="h_menu_purge"></li>
+					</ul>
+				</div>
+			</div>
+			<div class="box_banner_hr"></div>
+		
+		
+			<!-- History -->
+			<div id="history"></div>
+		
+		</div>
+		
+		
+		<div id="btm-wrapper">
+			<div class="corner-right"></div>
+			<div class="corner-left"></div>
+		</div>
+	</div>
+
+
 </body>
 </html>

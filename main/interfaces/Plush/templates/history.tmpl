@@ -4,59 +4,61 @@ def displayNotices (action):
 	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 ":
 		return '<small class="hvError">&rArr;&nbsp;' + action[3:] + '&nbsp;</small><br/>'
 %>
-<div class="t"><div class="b"><div class="l"><div class="r"><div class="bl"><div class="br"><div class="tl"><div class="tr">
-			
-
-<div class="roundedTopBar">
-	<strong>HISTORY</strong>
-	<span><b>$uptime</b><small>&nbsp;Uptime</small></span>
-	<div class="floatRight">
-		<a id="history_purge" title="Clear Out the History Display">Purge</a>
-		&sdot;<a id="history_verbosity"<!--#if $isverbose#--> class="active" title="Toggle Verbosity Off"<!--#else#--> title="Toggle Verbosity On"<!--#end if#-->>+</a>
-	</div>
-</div>
 
 
-<table class="listingTable" cellspacing="0">
-	<tbody id="historyContent">
+
 		
-	<!--#set $odd = False#-->
-	<!--#if $lines#-->
-	<!--#for $line in $lines #-->
-		<!--#set $odd = not $odd#-->
-		<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
-			<td class="first itemTTD itemTitle <!--#if $line.loaded #-->nzbLoaded<!--#else#-->nzbBullet<!--#end if#--> <!--#if not $line.stages#--> last" colspan="2<!--#end if#-->">
+		<table class="queueTable">
+		<!--#set $odd = False#-->
+		<!--#if $lines#-->
+		<!--#for $line in $lines #-->
+			<!--#set $odd = not $odd#-->
+			<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 
-				<span title="$line.added">
-				<!--#if $line.msgid #-->
-					<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
-				<!--#else#-->
-					$line.filename
-				<!--#end if#-->
-				</span>
-			</td>
+				<td class="<!--#if $line.loaded #-->nzbLoaded<!--#else#-->historyTitleCheck<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->>
+					<!--#if $line.msgid #-->
+						<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
+					<!--#else#-->
+						$line.filename
+					<!--#end if#-->
+				</td>
+			
+			
 				<!--#if $line.stages#-->
 				<td class="last">
-					<!--#for $stage in $line.stages#--><!--#for $action in $stage.actions#--><span title='<%= action['value'][3:] %> | <%= action['name'].replace("'","&rsquo;") %>'><%
+					<!--#for $stage in $line.stages#-->
+						<!--#for $action in $stage.actions#-->
+							<div title='<%= action['value'][3:] %> | <%= action['name'].replace("'","&rsquo;") %>'><%
 if action['name'][:4]=="[DEL":
 	pp = 'Del'
 else:
 	pp = stage['name']
-%><b class="history_$pp">&#8203;</b><%=displayNotices(action['value'])%></span><!--#end for#--><!--#end for#-->
+%><div class="history_$pp">&#8203;</div><%=displayNotices(action['value'])%></div>
+						<!--#end for#-->
+					<!--#end for#-->
 				</td>
 				<!--#end if#-->
-				<td class="last">
-					<span class="btnDeleteHistory" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+
+
+				<td>
+					<div class="queue_delete" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;&nbsp;</div>
 				</td>
-		</tr>
+
+
+			</tr>
 		<!--#end for#-->
 		<!--#end if#-->
+		</table>
 		
 		
-	</tbody>
-</table>
+		
+		
+		
+		<div class="box_fatbottom">
+			<div class="right_stats"><strong>$bytes_beginning&nbsp;GB</strong>&nbsp;Downloaded</div>
+			<div class="left_stats"><strong>$total_bytes&nbsp;GB</strong>&nbsp;In&nbsp;History</div>
+			<div class="history_logo">&nbsp;</div>
+		</div>
 
-<div class="roundedBotBar">
-	<span class="floatLeft"<b>$total_bytes</b><small>&nbsp;GB&nbsp;In&nbsp;History</small></span>
-	<span class="floatRight"><b>$bytes_beginning</b><small>&nbsp;GB&nbsp;Downloaded</small></span>
-</div>
+
+

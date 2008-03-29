@@ -7,6 +7,7 @@ TO DO BEFORE RELEASE
 * Queue isn't showing active script (slot.script.lower() 500 internal error)
 * Queue should not refresh inappropriately
 * cleanse Config
+* double check Nuvola usage report in README
 
 ===========================================================
 == SABnzbd+ Plush 2.0 for SABnzbd+ 0.4.0 | Mar. 26, 2008 ==

@@ -1,5 +1,14 @@
+	$(function(){
+		$('#hdr-queue').bind("mouseover mouseout", function(){
+			$('.q_menu_sort').toggleClass("show");
+		});
+		$('.box_banner_history').bind("mouseover mouseout", function(){
+			$('.h_menu_purge').toggleClass("show");
+		});
+	});
 
-var refreshRate = 5; // default
+
+var refreshRate = 10; // default
 
 // once the DOM is ready, run this
 $(document).ready(function() {
