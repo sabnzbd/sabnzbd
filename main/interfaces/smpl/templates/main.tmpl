@@ -35,7 +35,8 @@
 	var jsontimeout;
 	var cookietimeout;
 	var speed = $kbpersecrnd;
-    var gDual = 0
+    var gDual = 0;
+    var gUrl;
 	</script>
 
 
@@ -243,10 +244,30 @@ function loadtitle() {
 	}
     
     function handleServerError(){}
+    
+    function killTimer(){
+        clearTimeout (timerId2);
+    }
+    function restartTimer(time){
+        killTimer();
+        timerId2 = setTimeout("startTimer()", time*1000);
+    }
+    
+    function startTimer(url, dual){
+
+        killTimer();
+        if (url) gUrl = url
+        else url = gUrl
+        if (dual) gDual = dual
+        else dual = gDual
+        alert(url);
+        timerId2 = setTimeout("lr(\'"+url+"\', '', 1, "+dual+");", RefreshTime*1000);
+    }
 	
 	function lr(url, extra, refresh, dual, pnode)
 	{
     //submits an ajax request and loads the retrieved data into the div called "Right". Can queue itself up to repeat the action based on the refresh rate
+    
 		if (dual!=-1)
         {
             gDual = dual;
@@ -268,19 +289,20 @@ function loadtitle() {
 		var res = doSimpleXMLHttpRequest(url+append);        
 	    res.addCallback(function (res)
 	    {
-          if (timerId2 && refresh>=0) clearTimeout ( timerId2 );
+          if (timerId2 && refresh>=0) killTimer()
 	      if (pnode != 'Right_bottom') document.getElementById('Right').innerHTML = res.responseText;
           else document.getElementById('Right_bottom').innerHTML = res.responseText;
           if (dual==0) {
               document.getElementById('Right_bottom').innerHTML = "";
               clearTimeout ( timerId3 );
           }
-		  if (refresh>0 && RefreshTime>0) timerId2 = setTimeout("lr(\'"+url+"\', '', 1, "+dual+");", RefreshTime*1000);
+		  if (refresh>0 && RefreshTime>0) startTimer(url, dual);
 	    });
 		res.addErrback(handleServerError);
 	}
 	function lrb(url, refresh)
 	{
+    killTimer()
     //similar to lr() but loads the response in the right_bottom container
 		if (timerId3) clearTimeout ( timerId3 );
 		var res = doSimpleXMLHttpRequest(url+'?dummy='+Math.random());
@@ -296,6 +318,7 @@ function loadtitle() {
 	
 	function lrdual(url1, url2, refresh, pnode)
 	{
+    killTimer()
     //used when something needs to be submitted in the background, and another page loaded (usually refreshing the current page)
         var d = doSimpleXMLHttpRequest(url1);
 		d.addCallback(function (d)
