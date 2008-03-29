@@ -442,6 +442,14 @@ class MainPage(ProtectedClass):
         else:
             return 'not implemented\n'
 
+    @cherrypy.expose
+    def scriptlog(self, name=None, dummy=None):
+        """ Duplicate of scriptlog of History, needed for some skins """
+        if name:
+            path = os.path.dirname(sabnzbd.LOGFILE)
+            return ShowFile(name, os.path.join(path, name))
+        else:
+            raise Raiser(self.__root, dummy)
 
 #------------------------------------------------------------------------------
 class NzoPage(ProtectedClass):
