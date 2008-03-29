@@ -560,7 +560,9 @@ def addPrefixes(path,nzo):
                 continue
             if not path:
                 break
-            path = os.path.join(path, _dir)
+            basepath = os.path.basename(os.path.abspath(path))
+            if _dir != basepath.lower():
+                path = os.path.join(path, _dir)
     return path
 
 def checkForTVShow(filename): #checkfortvshow > formatfolders > gettvinfo
