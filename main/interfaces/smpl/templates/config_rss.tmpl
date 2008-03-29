@@ -1,90 +1,161 @@
 
-<a href="$helpuri/Configure+RSS" id="help">Help</a><h3>EXPERIMENTAL RSS Configuration</h3>
+<h2>RSS Configuration</h2>
 <!--#if $have_feedparser#-->
-<div class="EntryBlock">
-  <form class="cmxform" >
-    <fieldset class="EntryFieldSet">
-    <legend>RSS feed settings</legend>
-<hr />
-	
-			
-      <label>RSS-Feed URI:</label>
-      <input type="text" size="100" name="uri">
- 		<br class="clear" />
-		     
-      <label>Text Filter:</label>  
-      <input type="text" size="100" name="text_filter">
-      <span class="tips">(Basic) text based filter. A single '*' matches everything.</span>
-      
- 		<br class="clear" />
-		     
-      <label>Regex Filter:</label>
 
-      
-      <input type="text" size="100" name="re_filter">
-       <span class="tips">Regular Expression filter. Overwrites text filter.</span>     
-      
- 		<br class="clear" />
-		     
-      <label>Match Multiple:</label>
+<div class="EntryBlock" id="add_rss_feed">
+<fieldset class="EntryFieldSet">
+<legend>New feed URI</legend>
 
-      
-      <input class="radio" type="radio" name="match_multiple" value="0"> No
-      <input class="radio" type="radio" name="match_multiple" value="1" checked=1> Yes
-       <span class="tips">Match this filter more than once?</span>
-      
- 		<br class="clear" />
-		     
-      <label>Unpack Opts:</label>
-      <input class="radio" type="radio" name="unpack_opts" value="0"> None
-      <input class="radio" type="radio" name="unpack_opts" value="1" checked=1> +Repair
-      <input class="radio" type="radio" name="unpack_opts" value="2"> +Unpack
-      <input class="radio" type="radio" name="unpack_opts" value="3"> +Delete
-      <input class="radio" type="radio" name="unpack_opts" value="4"> Repair+Script
-      <input class="radio" type="radio" name="unpack_opts" value="5"> Unpack+Script
-      <input class="radio" type="radio" name="unpack_opts" value="6"> Delete+Script
-      
-   
-
-    </fieldset><br class="clear" />
-      <input type="button" size="40" value="Add" onclick="javascript:submitconfig('config/rss/add_rss_feed', 'submitstatus')">
-<span class="submitstatus" id="submitstatus"></span>
-  </form>
+    <input type="text" size="120" name="uri" value=""/><br/><br/>
+    <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/add_rss_feed', '','add_rss_feed', '1')"   />
+</fieldset>
+</form>
 </div>
-<br class="clear" />
 
-    <!--#if $varExists('uris') and $uris#-->
-        <table>
-            <tr><th></th><th>URL/Match Name</th></tr>
-            <!--#set $odd = False#-->
-            <!--#for $uri in $uris#-->
-                <!--#set $odd = not $odd#-->
-                <tr class="<!--#if $odd then "odd" else "even"#-->">
-                    <td><a onClick="lr('config/rss/del_rss_feed', 'uri_id=$str($id($uri))', '0');">Remove</a></td>
-                    <td>$uri</td>
-                </tr>
-                <!--#set $oddLine = False#-->
-                <!--#for $filter in $uri_table[$uri][0]#-->
-                    <!--#set $oddLine = not $oddLine#-->
-                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-                        <td><a onClick="lr('config/rss/del_rss_filter', 'uri_id=$str($id($uri))&filter_id=$str($id($filter))', '0');">Remove</a></td>
-                        <td>Filter: $filter[0]</td>
-                    </tr>
-                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-                        <td></td>
-                        <td>Unpack-opts: $filter[1]</td>
-                    </tr>
-                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-                        <td></td>
-                        <td>Match Multiple: $filter[2]</td>
-                    </tr>
+<!--#for $uri in $rss#-->
+    <h3>Feed Definition</h3>
+    <div class="EntryBlock" id="update_$uri">
+
+        <fieldset class="EntryFieldSet">
+            <legend>Feed URI</legend>
+
+            <input type="text" size="120" name="uri" value="$uri"/><br/><br/>
+
+            <!--#if $rss[$uri]['pick_cat']#-->
+                <select name="cat">
+                <!--#for $ct in $cat_list#-->
+                    <option value="$ct" <!--#if $ct == $rss[$uri]['cat'] then "selected" else ""#-->>$ct</option>
                 <!--#end for#-->
+                </select>
+            <!--#end if#-->
+            <!--#if $rss[$uri]['pick_pp']#-->
+                <select name="pp">
+                    <option value="0" <!--#if $rss[$uri]['pp'] == "0" then 'selected' else ''#-->>None</option>
+                    <option value="1" <!--#if $rss[$uri]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
+                    <option value="2" <!--#if $rss[$uri]['pp'] == "2" then 'selected' else ''#-->>+Unpack</option>
+                    <option value="3" <!--#if $rss[$uri]['pp'] == "3" then 'selected' else ''#-->>+Delete</option>
+                </select>
+            <!--#end if#-->
+
+            <input type="hidden" name="this_uri" value="$uri">
+            <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', '','update_$uri','1' )"/>
+            <input type="submit" onclick="javascript:submitconfig('config/rss/del_rss_feed', '','update_$uri','1' )" value="Delete"/>
+            <input type="submit" onclick="javascript:submitconfig('config/rss/query_rss_feed', '','update_$uri','2' )" value="Query"/>
+            <input type="submit" onclick="javascript:submitconfig('config/rss/rematch_rss_feed', '','update_$uri','2' )" value="Rematch/Show"/>
+            <!--#if $rss[$uri]['enable']#-->
+                <input type="submit" onclick="javascript:submitconfig('config/rss/disable_rss_feed', '','update_$uri','1' )" value="Stop"/>
+            <!--#else#-->
+                <input type="submit" onclick="javascript:submitconfig('config/rss/enable_rss_feed', '','update_$uri','1' )" value="Start/Download"/>
+            <!--#end if#-->
+        </fieldset>
+
+    </div>
+    <br/>
+
+    <table id="rssTable">
+        <tr>
+            <th></th>
+            <th>Order</th>
+            <th>Type</th>
+            <th>Filter</th>
+            <!--#if $rss[$uri]['pick_cat'] then "<th>Category</th>" else ""#-->
+            <!--#if $rss[$uri]['pick_pp'] then "<th>Mode</th>" else ""#-->
+            <th></th>
+        </tr>
+
+        <tr class="odd" id="new_filter">
+        <td></td>
+        <td></td>
+        <td>
+            <select name="filter_type">
+                <option value="A" selected /> Accept</option>
+                <option value="R" /> Reject</option>
+            </select>
+        </td>
+        <td><input type="text" size="40" name="filter_text" value=""></td>
+        <!--#if $rss[$uri]['pick_cat']#-->
+          <td>
+            <select name="cat">
+            <!--#for $ct in $cat_list#-->
+                <option value="$ct" <!--#if $ct == $rss[$uri]['cat'] then "selected" else ""#-->>$ct</option>
             <!--#end for#-->
-        </table>
-    <!--#end if#-->
-<!--#end if#-->
-<!--#if not $have_feedparser#-->
+            </select>
+          </td>
+        <!--#end if#-->
+        <!--#if $rss[$uri]['pick_pp']#-->
+          <td>
+            <select name="pp">
+                <option value="0" <!--#if $rss[$uri]['pp'] == "0" then 'selected' else ''#-->>None</option>
+                <option value="1" <!--#if $rss[$uri]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
+                <option value="2" <!--#if $rss[$uri]['pp'] == "2" then 'selected' else ''#-->>+Unpack</option>
+                <option value="3" <!--#if $rss[$uri]['pp'] == "3" then 'selected' else ''#-->>+Delete</option>
+            </select>
+          </td>
+        <!--#end if#-->
+        <input type="hidden" value="$rss[$uri]['filtercount']" name="index">
+        <input type="hidden" value="$uri" name="uri">
+        <td><input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','new_filter','1' )"></td>
+        </tr>
+
+
+    <!--#for $filter in $rss[$uri].filters#-->
+        <tr class="odd" id="slot_$filter[3]">
+        <td>
+            <input type="submit" value="X" onclick="javascript:lr('config/rss/del_rss_filter','index=$filter[3]&uri=$uri'" />
+        </td>
+
+        <td>
+        <select onChange="javascript:changequeuedetails('config/rss/'+this.options[this.selectedIndex].value);">
+        <!--#for $i in xrange($rss[$uri]['filtercount'])#-->
+            <option value="pos_rss_filter?uri=$uri&current=$filter[3]&new=$i" <!--#if $i == $filter[3] then "selected" else ""#-->>$i</option>
+        <!--#end for#-->
+        </select>
+        </td>
+
+
+        <td>
+        <select name="filter_type">
+            <option value="A" <!--#if $filter[1] == "A" then "selected" else ""#--> /> Accept</option>
+            <option value="R" <!--#if $filter[1] == "R" then "selected" else ""#--> /> Reject</option>
+        </select>
+        </td>
+
+        <td><input type="text" size="40" name="filter_text" value="$filter[2]"/></td>
+        <!--#if $rss[$uri]['pick_cat']#-->
+          <td>
+            <select name="cat">
+            <!--#for $ct in $cat_list#-->
+                <option value="$ct" <!--#if $ct == $filter[0] then "selected" else ""#-->>$ct</option>
+            <!--#end for#-->
+            </select>
+          </td>
+        <!--#end if#-->
+        <!--#if $rss[$uri]['pick_pp']#-->
+          <td>
+            <select name="pp">
+                <option value="0" <!--#if $filter[0] == "0" then 'selected' else ''#-->>None</option>
+                <option value="1" <!--#if $filter[0] == "1" then 'selected' else ''#-->>+Repair</option>
+                <option value="2" <!--#if $filter[0] == "2" then 'selected' else ''#-->>+Unpack</option>
+                <option value="3" <!--#if $filter[0] == "3" then 'selected' else ''#-->>+Delete</option>
+            </select>
+          </td>
+        <!--#end if#-->
+        <td>
+        <input type="hidden" name="index" value="$filter[3]"/>
+        <input type="hidden" name="uri" value="$uri"/>
+        <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','slot_$filter[3]','1' )"/>
+        </td>
+
+        </tr>
+    <!--#end for#-->
+
+    </table>
+<!--#end for#-->
+
+<!--#else#-->
     <p>
-        <label>feedparser module missing<label>
+        <b>feedparser module missing<b>
     </p>
 <!--#end if#-->
+
+

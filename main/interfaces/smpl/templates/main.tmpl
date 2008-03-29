@@ -393,7 +393,9 @@ function loadtitle() {
 	    d.addCallback(function (result)
 	    {
 	      if (saveelement) document.getElementById(saveelement).innerHTML = "Saved";
-		  if(url2) lr(url2,'',refresh);
+          if(url2 == "1") {replaceright(result);}
+          else if(url2 == "2") {replaceright2(result);}
+		  else if(url2) {lr(url2,'',refresh);}
 	    });
 
 
@@ -576,6 +578,8 @@ function loadingJSON(){
 			</div>
 			<div id="RightContainer">
                 <div id="Right">
+                
+                
     				<h3>Add new downloads</h3>
                     <br/>
     				<!--#if $varExists('newzbinDetails')#-->

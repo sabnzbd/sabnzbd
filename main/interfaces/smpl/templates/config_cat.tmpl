@@ -63,7 +63,7 @@ Relative directories are based on $defdir<br/>
             
             <!--#if $varExists('newzbinDetails')#--><td><input type="text" name="newzbin" value="$slot.newzbin"></td><!--#end if#-->
 
-            <td><input type="submit" value="Save" onclick="javascript:submitconfig('config/categories/save', 'submitstatus','<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'config/categories/save'<!--#end if#-->)">
+            <td><input type="submit" value="Save" onclick="javascript:submitconfig('config/categories/save', 'submitstatus','<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'1'<!--#end if#-->)">
             </td>
 </tr>
 
