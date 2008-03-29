@@ -13,7 +13,7 @@ function GB_show(caption, url, height, width) {
   if(!GB_DONE) {
     $(document.body)
       .append("<div id='GB_overlay'></div><div id='GB_window'><div id='GB_caption'></div>"
-        + "<img src='static/images/icon_config_close.png' style='padding-right: 5px;' alt='Close window'/></div>");
+        + "<img src='static/images/plush_default_config/config_close.png' style='padding-right: 5px;' alt='Close window'/></div>");
     $("#GB_window img").click(GB_hide);
     $("#GB_overlay").click(GB_hide);
     $(window).resize(GB_position);

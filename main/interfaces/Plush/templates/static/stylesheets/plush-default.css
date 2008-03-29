@@ -4,88 +4,6 @@ body {
 	font-family: arial, "lucida console", sans-serif;
 }
 
-.box {
-	border-spacing: 0;
-	margin-left:auto; margin-right:auto;
-	width:90%;
-}
-.box_content {
-	/*background-color: red;*/
-	padding:0px;
-}
-
-.box_tl {
-	background: url(../images/plush_default/box_tl.png) 0 0 no-repeat;
-	width:6px;
-	height:24px;
-}
-.box_tm {
-	background: url(../images/plush_default/box_tm.png) 0 0 repeat-x;
-	height:24px;
-	width:100%;
-}
-.box_tr {
-	background: url(../images/plush_default/box_tr.png) 100% 0 no-repeat;
-	width:6px;
-	height:24px;
-}
-.box_bl {
-	background: url(../images/plush_default/box_bl.png) 0 0 no-repeat;
-	width:6px;
-	height:24px;
-}
-.box_bm {
-	background: url(../images/plush_default/box_bm.png) 0 0 repeat-x;
-	height:24px;
-	width:100%;
-}
-.box_br {
-	background: url(../images/plush_default/box_br.png) 0 0 no-repeat;
-	width:6px;
-	height:24px;
-}
-.box_lt {
-	background: url(../images/plush_default/box_lt.png) 100% 0 no-repeat;
-	width:24px;
-	height:24px;
-}
-.box_lm {
-	background: url(../images/plush_default/box_lm.png) 100% 0 repeat-y;
-	width:24px;
-}
-.box_lb {
-	background: url(../images/plush_default/box_lb.png) 100% 0 no-repeat;
-	width:24px;
-	height:24px;
-}
-.box_rt {
-	background: url(../images/plush_default/box_rt.png) 0 0 no-repeat;
-	width:24px;
-	height:24px;
-}
-.box_rm {
-	background: url(../images/plush_default/box_rm.png) 0 0 repeat-y;
-	width:24px;
-}
-.box_rb {
-	background: url(../images/plush_default/box_rb.png)0 0 no-repeat;
-	width:24px;
-	height:24px;
-}
-
-.box_banner_l {
-	background-image: url(../images/plush_default/q_banner_l.png);
-	background-repeat: no-repeat;
-	padding-left:9px;
-}
-.box_banner_m {
-	background-image: url(../images/plush_default/q_banner_m.png);
-	background-repeat: repeat-x;
-	height:51px;
-}
-
-.box_banner_queue {background-image: url(../images/plush_default/q_banner_title.png); background-repeat: no-repeat; height: 45px;}
-
 
 .box_fatbottom {
 	background: url(../images/plush_default/qh_bottom.png) 0 0 repeat-x;
@@ -229,16 +147,16 @@ body {
 	background-repeat: no-repeat;
 	background-position: left center;
 }
-/*
-.queueTable tr:hover .queueProgressBarContainer {
-	background: url(../images/plush_default/qv_bullet_reverse.png) 0 50% no-repeat;
-} */
-
 .queueProgressBar {
 	background-image: url(../images/plush_default/ql_pbar_full.png);
 	background-repeat: no-repeat;
 	overflow:hidden;
 }
+
+.currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1;}
+.currentDownload { float: left; margin-left: 3px;}
+.totalDownload { float:right; margin-right: 3px;}
+
 
 .options {
 	text-align:right;
@@ -316,7 +234,7 @@ body {
 #nav li {
 	float: left;
 	padding: 0;
-	z-index:10;
+	z-index:10000;
 	/* width: 4em; */
 }
 
@@ -388,3 +306,310 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 #btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
 #btm-wrapper .corner-right { float:right; background-image: url(../images/plush_default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
 #btm-wrapper .corner-left { float:left; background-image: url(../images/plush_default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	C O N F I G
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+div.EntryBlock form {
+  display: inline;
+}
+fieldset.EntryFieldSet {
+  vertical-align: top;
+  display: inline;
+  float:left;
+  padding: 7px;
+  margin: 5px;
+}
+#config_nav {
+	margin-top: 5px;
+	width: 110px;
+	text-align: left;
+	float: left;
+}
+
+#config_nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+#config_nav li {
+	margin: 0;
+	padding: 3px 0px 3px 10px
+}
+
+#config_nav li a {
+	background-color: #ddd;
+	display: block;
+	padding: 5px 0px 5px 5px;
+	color: #666;
+	text-decoration: none;
+	width: 100%;
+	font-size: 9pt;
+	font-weight: bold;
+}
+
+#config_nav li a:hover {
+	background-color: #ccc;
+	color: #000;
+}
+
+#config_nav #nav_active {
+	background-color: #bbb;
+	color: #000;
+}
+
+#config_nav li a img{
+	vertical-align: -2px;
+	padding-right: 5px;
+}
+
+#config_container {
+	background: #bbb;
+	width: 655px;
+	height: 435px;
+	text-align: left;
+	font-size: 10pt;
+	padding: 10px;
+	padding-left: 20px;
+}
+
+#connections_container {
+	background: #bbb;
+	height: 395px;
+	text-align: left;
+	font-size: 10pt;
+	margin: 10px 10px 0px 10px;
+	padding: 10px;
+}
+
+#config_content {
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+}
+
+.left_links {
+	float: left;
+	margin: 5px 0 0 10px;
+}
+
+.left_links a {
+	display: block;
+	background-color: #ddd;
+	color: #666;
+	text-decoration: none;
+	font-size: 9pt;
+	font-weight: bold;
+	padding: 2px 5px;
+}
+
+.left_links a:hover {
+	background-color: #bbb;
+	color: #000;
+}
+
+.left_links a img {
+	vertical-align: middle;
+	padding-right: 5px;
+}
+
+.config_margin {
+	margin: 5px 10px 0 115px;
+}
+
+.right_links {
+	float: right;
+	margin: 5px 10px 0 0;
+}
+
+.right_links a {
+	display: block;
+	background-color: #ddd;
+	color: #666;
+	text-decoration: none;
+	font-size: 9pt;
+	font-weight: bold;
+	padding: 2px 5px;
+}
+
+.right_links a:hover {
+	background-color: #bbb;
+	color: #000;
+}
+
+.right_links a img {
+	vertical-align: middle;
+	padding-right: 5px;
+}
+
+#save_button {
+	float: right;
+	margin: 6px 10px 0 0;
+}
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	G R A Y B O X
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+#GB_overlay {
+	background-image: url(../images/plush_default_config/gb_overlay.png);
+	position: absolute;
+	margin: auto;
+	top: 0;
+	left: 0;
+	z-index: 100;
+	width:  100%;
+	height: 100%;
+}
+* html #GB_overlay {
+	background-color: #fff;
+	background-color: transparent;
+	background-image: url(../images/plush_default_config/gb_blank.gif);
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src="../images/plush_default_config/gb_overlay.png", sizingMethod="scale");
+}
+#GB_window {
+	top: 50px;
+	left: 0px;
+	background: #ddd url(../images/plush_default_config/config_header.png);
+	position: absolute;
+	border: 2px solid #000;
+	width: 400px;
+	height: 400px;
+	z-index: 150;
+}
+#GB_frame {
+	border: 0;
+	width: 100%;
+	height: 378px;
+}
+#GB_caption {
+	font: 16pt bold Verdana, Arial, Helvetica, sans-serif;
+	color: #fff;
+	/*background: #dadada;
+	background-image: url(../images/config_header.png);
+	height: 34px;*/
+	padding: 2px 10px 0px 10px;
+	margin: -5px 0 0 0;
+	text-align: left;
+	font-weight: bold;
+}
+#GB_window img {
+	position: absolute;
+	top: -5px;
+	right: 5px;
+	cursor: pointer;
+	cursor: hand;
+	z-index: 5;
+}
+
+
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	H E L P E R    C L A S S E S
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+
+
+
+/* Text align
+----------------------------------------------------------- */
+.textRight {text-align: right;}
+.textLeft {text-align: left;}
+.textCenter {text-align: center;}
+
+
+/* Display
+----------------------------------------------------------- */
+.clear {clear: both;}
+.noClear {clear: none;}
+.hide {display: none;}
+.show {display: inherit;}
+.visible {display: inherit;}
+.hidden {display: none;}
+.block {display: block;}
+.inline {display: inline;}
+.noStyling {border: none; background: none; text-decoration: none;}
+
+
+/* Column Classes
+----------------------------------------------------------- */
+.col10 {width: 10%; float: left; display: block; margin: 0; padding: 0;}
+.col15 {width: 15%; float: left; display: block; margin: 0; padding: 0;}
+.col20 {width: 20%; float: left; display: block; margin: 0; padding: 0;}
+.col25 {width: 25%; float: left; display: block; margin: 0; padding: 0;}
+.col33 {width: 33%; float: left; display: block; margin: 0; padding: 0;}
+.col40 {width: 40%; float: left; display: block; margin: 0; padding: 0;}
+.col45 {width: 45%; float: left; display: block; margin: 0; padding: 0;}
+.col50 {width: 50%; float: left; display: block; margin: 0; padding: 0;}
+.col55 {width: 55%; float: left; display: block; margin: 0; padding: 0;}
+.col60 {width: 60%; float: left; display: block; margin: 0; padding: 0;}
+.col65 {width: 65%; float: left; display: block; margin: 0; padding: 0;}
+.col66 {width: 66%; float: left; display: block; margin: 0; padding: 0;}
+.col70 {width: 70%; float: left; display: block; margin: 0; padding: 0;}
+.col75 {width: 75%; float: left; display: block; margin: 0; padding: 0;}
+.col80 {width: 80%; float: left; display: block; margin: 0; padding: 0;}
+.col90 {width: 90%; float: left; display: block; margin: 0; padding: 0;}
+.col100 {width: 100%; float: left; display: block; margin: 0; padding: 0;}
+
+
+/* Padding Classes
+----------------------------------------------------------- */
+.pad5 {padding: 5px; margin: 0;}
+.pad10 {padding: 12px; margin: 0;}
+.pad15 {padding: 15px; margin: 0;}
+.pad20 {padding: 20px; margin: 0;}
+.pad25 {padding: 25px; margin: 0;}
+.pad30 {padding: 30px; margin: 0;}
+.pad35 {padding: 35px; margin: 0;}
+.pad40 {padding: 40px; margin: 0;}
+.pad45 {padding: 45px; margin: 0;}
+.pad50 {padding: 50px; margin: 0;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Clearfix
+----------------------------------------------------------- */
+/*
+#topbar:after,
+.subMenu:after {
+	content: " ";
+	clear: both;
+	display: block;
+	width: 100%;
+	height: 0;
+	visibility: hidden;
+}
+*/
+
