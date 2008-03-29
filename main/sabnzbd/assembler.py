@@ -225,8 +225,8 @@ class PostProcessor(Thread):
                                           
                     dirname = nzo.get_original_dirname()
                     nzo.set_dirname(dirname)
-                    workdir_final = Cat2Dir(cat, self.complete_dir)
                     workdir_final = addPrefixes(workdir_final, nzo)
+                    workdir_final = Cat2Dir(cat, self.complete_dir)
                     workdir_final = os.path.join(workdir_final, dirname)
                     
                     unique_dir = True
@@ -735,9 +735,6 @@ def formatFolders(dirpath, dirname, match1, match2 = None, dvd = False):
     try:
         if title and season and foldername:
             #put files inside a folder named 'TV' if not already
-            basepath = os.path.basename(os.path.abspath(new_dirpath))
-            if basepath.lower() != 'tv':
-                new_dirpath = os.path.join(new_dirpath, 'TV')
             new_dirpath = create_dirs(os.path.join(new_dirpath, title))
             if sabnzbd.TV_SORT_SEASONS and season != foldername:
                 new_dirpath = os.path.join(new_dirpath, season)
