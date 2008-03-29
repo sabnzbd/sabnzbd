@@ -25,6 +25,7 @@ import os
 import sys
 import time
 import logging
+import Queue
 import sabnzbd
 import cherrypy
 import urllib
@@ -261,44 +262,63 @@ class DirScanner(Thread):
 
 #------------------------------------------------------------------------------
 class URLGrabber(Thread):
-    def __init__(self, url, future_nzo):
+    def __init__(self):
         Thread.__init__(self)
-        self.url = url
-        self.future_nzo = future_nzo
+        self.queue = Queue.Queue()
+        self.shutdown = False
+
+    def add(self, url, future_nzo):
+        """ Add an URL to the URLGrabber queue """
+        self.queue.put((url, future_nzo))
+
+    def stop(self):
+        logging.info('[%s] URLGrabber shutting down', __NAME__)
+        self.queue.put((None, None))
+        self.shutdown = True
 
     def run(self):
-        try:
-            logging.info('[%s] Grabbing URL %s', __NAME__, self.url)
-            opener = urllib.FancyURLopener({})
-            opener.prompt_user_passwd = None
-            fn, header = opener.retrieve(self.url)
+        logging.info('[%s] URLGrabber starting up', __NAME__)
 
-            filename, data = (None, None)
-            f = open(fn, 'r')
-            data = f.read()
-            f.close()
-            os.remove(fn)
+        while not self.shutdown:
+            (url, future_nzo) = self.queue.get()
+            if not url:
+                continue
 
-            for tup in header.items():
-                for item in tup:
-                    if "filename=" in item:
-                        filename = item[item.index("filename=") + 9:]
-                        break
+            try:
+                logging.info('[%s] Grabbing URL %s', __NAME__, url)
+                opener = urllib.FancyURLopener({})
+                opener.prompt_user_passwd = None
+                fn, header = opener.retrieve(url)
+    
+                filename, data = (None, None)
+                f = open(fn, 'r')
+                data = f.read()
+                f.close()
+                os.remove(fn)
+    
+                for tup in header.items():
+                    for item in tup:
+                        if "filename=" in item:
+                            filename = item[item.index("filename=") + 9:]
+                            break
+    
+                if data:
+                    if not filename:
+                         filename = os.path.basename(url)
+                    pp = future_nzo.get_repair_opts()
+                    script = future_nzo.get_script()
+                    cat = future_nzo.get_cat()
+                    cat, pp, script = Cat2Opts(cat, pp, script)
+                    sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat)
+                else:
+                    sabnzbd.remove_nzo(future_nzo.nzo_id, False)
+    
+            except:
+                logging.exception("[%s] Error adding url %s", __NAME__, url)
+                sabnzbd.remove_nzo(future_nzo.nzo_id, False)
 
-            if data:
-                if not filename:
-                     filename = os.path.basename(self.url)
-                pp = self.future_nzo.get_repair_opts()
-                script = self.future_nzo.get_script()
-                cat = self.future_nzo.get_cat()
-                cat, pp, script = Cat2Opts(cat, pp, script)
-                sabnzbd.insert_future_nzo(self.future_nzo, filename, data, pp=pp, script=script, cat=cat)
-            else:
-                sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
-
-        except:
-            logging.exception("[%s] Error adding url %s", __NAME__, self.url)
-            sabnzbd.remove_nzo(self.future_nzo.nzo_id, False)
+            # Don't pound the website!
+            time.sleep(1.0)
 
 
 ################################################################################

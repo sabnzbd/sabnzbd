@@ -132,7 +132,7 @@ EMAIL_PWD = None
 EMAIL_ENDJOB = False
 EMAIL_FULL = False
 
-URLGRABBERS = []
+URLGRABBER = []
 
 AUTO_SORT = None
 
@@ -279,7 +279,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, IGNORE_SAMPLES, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
-           DIRSCANNER, MSGIDGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
+           DIRSCANNER, MSGIDGRABBER, URLGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, AUTODISCONNECT, WAITEXIT, \
            SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_PP, \
@@ -514,6 +514,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     if USERNAME_NEWZBIN:
         MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
+    URLGRABBER = URLGrabber()
+
     __INITIALIZED__ = True
     return True
 
@@ -541,9 +543,13 @@ def start():
             logging.debug('[%s] Starting msgidgrabber', __NAME__)
             MSGIDGRABBER.start()
 
+        if URLGRABBER:
+            logging.debug('[%s] Starting urlgrabber', __NAME__)
+            URLGRABBER.start()
+
 @synchronized(INIT_LOCK)
 def halt():
-    global __INITIALIZED__, SCHED, DIRSCANNER, RSS, MSGIDGRABBER, BOOKMARKS
+    global __INITIALIZED__, SCHED, DIRSCANNER, RSS, MSGIDGRABBER, URLGRABBER, BOOKMARKS
 
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
@@ -552,12 +558,14 @@ def halt():
             BOOKMARKS.save()
             BOOKMARKS = None
 
-        for grabber in URLGRABBERS:
-            logging.debug('Stopping grabber {%s}', grabber)
+        if URLGRABBER:
+            logging.debug('Stopping URLGrabber')
+            URLGRABBER.stop()
             try:
-                grabber.join()
+                URLGRABBER.join()
             except:
-                logging.exception('[%s] Joining grabber {%s} failed', __NAME__, grabber)
+                pass
+            URLGRABBER = None
 
         if MSGIDGRABBER:
             logging.debug('Stopping msgidgrabber')
@@ -804,23 +812,12 @@ def add_msgid(msgid, pp=None, script=None, cat=None):
 
 
 def add_url(url, pp=None, script=None, cat=None):
-    logging.info('[%s] Fetching %s', __NAME__, url)
+    if URLGRABBER:
+        logging.info('[%s] Fetching %s', __NAME__, url)
+        msg = "Trying to fetch .nzb from %s" % url
+        future_nzo = NZBQ.generate_future(msg, pp, script, cat)
+        URLGRABBER.add(url, future_nzo)
 
-    msg = "Trying to fetch .nzb from %s" % url
-
-    future_nzo = NZBQ.generate_future(msg, pp, script, cat)
-
-    # Look for a grabber and reinitialize it
-    for urlgrabber in URLGRABBERS:
-        if not urlgrabber.isAlive():
-            urlgrabber.__init__(url, future_nzo)
-            urlgrabber.start()
-            return
-
-    urlgrabber = URLGrabber(url, future_nzo)
-    urlgrabber.start()
-
-    URLGRABBERS.append(urlgrabber)
 
 def save_state():
     flush_articles()
