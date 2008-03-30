@@ -133,7 +133,7 @@ body {
 }
 .queueTable a:hover {
 	border-bottom: 1px dotted #606060;
-	cursor: arrow;
+	cursor: pointer;
 }
 .queueTable .eta {
 	text-align: center;
