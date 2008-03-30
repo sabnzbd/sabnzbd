@@ -160,7 +160,7 @@ $(document).ready(function() {
 				}
 			});
 		}
-		else if ($(event.target).is('.btnDeleteQueue')) {
+		else if ($(event.target).is('.queue_delete')) {
 			$.ajax({
 				type: "GET",
 				url: 'queue/delete?dummy='+Math.random()+'&uid='+$(event.target).parent().parent().attr('id'),
@@ -180,7 +180,7 @@ $(document).ready(function() {
 		else if ($(event.target).is('#history_purge')) {
 			$('#history').load('history/purge?dummy='+Math.random());
 		}
-		else if ($(event.target).is('.btnDeleteHistory')) {
+		else if ($(event.target).is('.queue_delete')) {	// history delete
 			$.ajax({
 				type: "GET",
 				url: 'history/delete?dummy='+Math.random()+'&job='+$(event.target).parent().parent().attr('id'),
