@@ -4,7 +4,17 @@ body {
 	font-family: arial, "lucida console", sans-serif;
 }
 
-
+#new_release_notification {
+	text-align: center;
+}
+#new_release_notification a {
+	background-color: darkgreen;
+	font-weight:bold;
+	color:#FFF;
+	text-decoration: none;
+	border-bottom: 1px dashed #FFF;
+	padding:4px;
+}
 .box_fatbottom {
 	background: url(../images/plush_default/qh_bottom.png) 0 0 repeat-x;
 	height:37px;
