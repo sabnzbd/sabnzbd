@@ -24,13 +24,12 @@
 			<div id="queue-buttons">
 				<ul>
 					<li class="q_menu_sort"></li>
-					<li class="q_menu_pause"></li>
 					<li class="q_menu_verbose"></li>
-					
+					<li class="q_menu_pause<!--#if $paused#--> q_menu_paused<!--#end if#-->" id="pause_resume"></li>
 				</ul>
 			</div>
 			<div id="time-left">
-				<p><span>2:10</span> left</p>
+				<p><span id="stats_eta">&hellip;</span>&nbsp;left</p>
 			</div>
 			<ul id="nav">
 		<li><a class="queue_logo"></a>
@@ -118,7 +117,7 @@
 		</li>
 	</ul>
 			<div id="speed">
-				<p><span>810</span> kbs</p>
+				<p><span id="stats_kbpersec">&hellip;</span>&nbsp;kB/s</p>
 			</div>
 			
 			<div class="logo">
@@ -137,7 +136,7 @@
 			<div class="box_banner_history">
 				<div class="box_banner_r">
 					<ul class="box_banner_menu">
-						<li class="q_menu_verbose"></li>
+						<li class="h_menu_verbose"></li>
 						<li class="h_menu_purge"></li>
 					</ul>
 				</div>

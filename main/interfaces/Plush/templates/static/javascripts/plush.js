@@ -1,9 +1,11 @@
 	$(function(){
 		$('#hdr-queue').bind("mouseover mouseout", function(){
 			$('.q_menu_sort').toggleClass("show");
+			$('.q_menu_verbose').toggleClass("show");
 		});
 		$('.box_banner_history').bind("mouseover mouseout", function(){
 			$('.h_menu_purge').toggleClass("show");
+			$('.h_menu_verbose').toggleClass("show");
 		});
 	});
 
@@ -102,29 +104,27 @@ $(document).ready(function() {
 			}
 		});
 	}
-	
+
+	// pause / resume
+	$('#pause_resume').click(function(event) {
+		if ($(event.target).attr('class') == 'q_menu_pause q_menu_paused')
+			$.ajax({
+				type: "GET",
+				url: "queue/resume?dummy="+Math.random(),
+				success: function(result){return LoadTheQueue(result);}
+			});
+		else
+			$.ajax({
+				type: "GET",
+				url: "queue/pause?dummy="+Math.random(),
+				success: function(result){return LoadTheQueue(result);}
+			});
+		$('#pause_resume').toggleClass("q_menu_paused");
+	});
 	
 	// Set up Queue Menu actions
 	$('#queue').click(function(event) {
-		if ($(event.target).is('#pause_resume')) {
-			if ($(event.target).attr('class') == 'active')
-				$.ajax({
-					type: "GET",
-					url: "queue/resume?dummy="+Math.random(),
-					success: function(result){
-   						return LoadTheQueue(result);
-					}
-				});
-			else
-				$.ajax({
-					type: "GET",
-					url: "queue/pause?dummy="+Math.random(),
-					success: function(result){
-   						return LoadTheQueue(result);
-					}
-				});
-		}
-		else if ($(event.target).is('#queue_verbosity')) {
+		if ($(event.target).is('#queue_verbosity')) {
 			$.ajax({
 				type: "GET",
 				url: "queue/tog_verbose?dummy="+Math.random(),

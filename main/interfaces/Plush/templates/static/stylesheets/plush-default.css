@@ -53,11 +53,14 @@ body {
 	float:right;
 }
 .q_menu_pause {
-	background: url(../images/plush_default/q_pause_on.png) 0 0 no-repeat;
+	background: url(../images/plush_default/q_pause.png) 0 0 no-repeat;
 	margin-right:6px;
 	padding-right:24px;
 	padding-bottom:24px;
 	cursor:pointer;
+}
+.q_menu_paused {
+	background: url(../images/plush_default/q_pause_on.png) 0 0 no-repeat;
 }
 .q_menu_sort {
 	
@@ -65,12 +68,13 @@ body {
 	height: 55px;
 }
 .q_menu_sort.show { background: url(../images/plush_default/q_pill_sort.png) 0 0 no-repeat;}
-.q_menu_verbose {
+.q_menu_verbose,.h_menu_verbose {
 	background: url(../images/plush_default/qh_verbosity.png) 0 0 no-repeat;
 	margin-right:6px;
 	padding-right:24px;
 	padding-bottom:24px;
 	cursor:pointer;
+	display:none;
 }
 .h_menu_purge {
 	background: url(../images/plush_default/h_purge.png) 0 0 no-repeat;
