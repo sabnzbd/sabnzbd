@@ -55,9 +55,6 @@ table {
 	color: black;
 	margin: 0px;
 }
-td, td {
-  padding: 5px;
-}
 th {
 	background: #b5b5b5;
 	color: white;
@@ -78,6 +75,11 @@ tr.odd {
 
 tr.oddLine {
 	background-color: #f8f8f8;
+}
+
+tr:hover {
+	background-color: #333333;
+	color: #FFF;
 }
 
 .config_menu {
@@ -123,14 +125,14 @@ tr.oddLine {
 	<div id="config_content">
 
   <table>
-      <tr><th></th><th>Filename/Subject</th><th>Size</th><th>Age</th></tr>
+      <tr><th></th><th>Filename/Subject</th><th>Size (MB)</th><th>Age</th></tr>
       <!--#set $oddLine = False#-->
       <!--#for $file in $active_files#-->
           <!--#set $oddLine = not $oddLine#-->
           <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
               <td><input type="checkbox" name="$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
               <td>$file.filename</td>
-              <td>$file.mb MB</td>
+              <td>$file.mb</td>
               <td>$file.age</td>
           </tr>
       <!--#end for#-->
