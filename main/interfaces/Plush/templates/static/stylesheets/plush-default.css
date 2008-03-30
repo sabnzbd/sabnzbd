@@ -223,6 +223,11 @@ body {
 	padding-left:16px;
 	background: url(../images/plush_default/hv_del.png) 0 50% no-repeat;
 }
+.hv_USE {
+	display:inline;
+	padding-left:16px;
+	background: url(../images/plush_default/hv_userscript.png) 0 50% no-repeat;
+}
 
 
 .hvMessage {
