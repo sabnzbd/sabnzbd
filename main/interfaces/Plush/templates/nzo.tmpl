@@ -129,8 +129,8 @@ tr:hover {
       <!--#set $oddLine = False#-->
       <!--#for $file in $active_files#-->
           <!--#set $oddLine = not $oddLine#-->
-          <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-              <td><input type="checkbox" name="$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
+          <tr id="$file.nzf_id" class="nzf_row <!--#if $oddLine then "oddLine" else "evenLine"#--> active">
+              <td><input type="checkbox" name="$file.nzf_id" id="box-$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
               <td>$file.filename</td>
               <td>$file.mb</td>
               <td>$file.age</td>
@@ -160,6 +160,10 @@ tr:hover {
 <script language="javascript">
 	\$('.config_menu').corner("round tl bl");
 	\$('#config_container').corner("round");
+
+	\$('.nzf_row').click(function(event) {
+		\$('#box-'+\$(event.target).parent().attr('id')).attr('checked', !\$('#box-'+\$(event.target).parent().attr('id')).attr('checked'));
+	});
 </script>
 
 </form>
