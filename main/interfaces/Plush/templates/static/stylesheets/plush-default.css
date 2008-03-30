@@ -172,6 +172,7 @@ body {
 }
 .queue_delete {
 	display:inline;
+	float:right;
 	margin-left:10px;
 	margin-right: 5px;
 }

@@ -26,13 +26,15 @@ def InjectProgressBarPosition (mbleft, mb):
 				</td>
 				<td class="queueProgressBarContainer">
 					<div class="queueProgressBar" style="background-position: <%=InjectProgressBarPosition(slot['mbleft'],slot['mb'])%>">
-						<div class="totalDownload"><%=int(float(slot['mb']))%></div>
-						<div class="currentDownload"><%=int(float(slot['mbleft']))%></div>
+						<div class="totalDownload"><%=int(float(slot['mbleft']))%> left</div>
+						<div class="currentDownload"><%=int(float(slot['mb']))%> MB</div>
 					</div>
 				</td>
 				<td class="eta">$slot.eta</td>
 				<td class="options">
 					
+					<div class="queue_delete" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;</div>
+
 					<!--#if $cat_list#-->
             		<select onchange="ChangeCategory('$slot.nzo_id', this.options[this.selectedIndex].value);">
                 		<!--#for $ct in $cat_list#-->
@@ -54,7 +56,6 @@ def InjectProgressBarPosition (mbleft, mb):
                 	</select>
             		<!--#end if#-->
 		
-					<div class="queue_delete" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;</div>
 				</td>
 			</tr>
 	
