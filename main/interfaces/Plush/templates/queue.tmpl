@@ -39,7 +39,7 @@ def InjectProgressBarPosition (mbleft, mb):
 						<div class="currentDownload"><%=int(float(slot['mb']))%>&nbsp;<small>MB</small></div>
 					</div>
 				</td>
-				<td class="eta">$slot.timeleft&nbsp;left<br/>$slot.eta</td>
+				<td class="eta"><!--#if not $paused#-->$slot.timeleft&nbsp;left<br/>$slot.eta<!--#end if#--></td>
 				<td class="options">
 					
 					<div class="queue_delete" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;</div>
