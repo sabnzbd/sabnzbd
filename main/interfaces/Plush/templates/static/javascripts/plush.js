@@ -10,7 +10,7 @@ $(document).ready(function() {
 		SetCookie('PlushRefresh',refreshRate);	
 	}
 	$("#refreshRate-option").val(refreshRate);
-
+/*
 	// Queue & History layout restoration
 	if ('sidebyside' == ReadCookie('PlushLayout')) {
 		$("#queue").addClass("queue_sidebyside");
@@ -28,7 +28,7 @@ $(document).ready(function() {
 		$("#history").removeClass("history_sidebyside");
 		SetCookie('PlushLayout','toptobottom');
 	});
-	
+*/	
 	// Set up lightbox floating window
 	$("a.greybox").click(function(){
 		var t = this.title || this.innerHTML || this.href;

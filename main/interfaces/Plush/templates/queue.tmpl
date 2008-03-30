@@ -7,14 +7,14 @@ def InjectProgressBarPosition (mbleft, mb):
 	return '-'+str(postion)+'px -1px;'
 %>
 
-
 			<!--#set $x_kbpersec = $kbpersec #-->
 			<!--#set $x_mbleft = $mbleft #-->
 			<!--#set $x_mb = $mb #-->
 			
 <script type="text/javascript">
 	\$('#stats_kbpersec').html('<%=int(float(x_kbpersec))%>');
-	\$('#stats_eta').html('[REQ]');
+	\$('#stats_eta').html('$timeleft');
+	\$('#stats_eta').attr('title','ETA: $eta');
 	var paused = <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
 	if ( paused && \$('#pause_resume').attr('class') != 'q_menu_pause q_menu_paused')
 		\$('#pause_resume').toggleClass("q_menu_paused");
