@@ -39,7 +39,7 @@ body {
 }
 
 .history_logo {
-	background: url(../images/plush_default/sabnzbdplus_plush.png) 50% 50% no-repeat;
+	background: url(../images/plush_default/sabnzbdplus_plush.png) 50% 100% no-repeat;
 }
 
 .box_banner_menu {
@@ -188,17 +188,37 @@ body {
 	cursor:pointer;
 }
 
-.hv_par {
+.hv_Tim {
+	display:inline;
+	padding-left:16px;
+	background: url(../images/plush_default/hv_timetaken.png) 0 50% no-repeat;
+}
+.hv_Avg {
+	display:inline;
+	padding-left:16px;
+	background: url(../images/plush_default/hv_avgspeed.png) 0 50% no-repeat;
+}
+.hv_PAR {
 	display:inline;
 	padding-left:16px;
 	background: url(../images/plush_default/hv_par.png) 0 50% no-repeat;
 }
-.hv_unrar {
+.hv_JOI {
+	display:inline;
+	padding-left:16px;
+	background: url(../images/plush_default/hv_join.png) 0 50% no-repeat;
+}
+.hv_RAR {
 	display:inline;
 	padding-left:16px;
 	background: url(../images/plush_default/hv_unrar.png) 0 50% no-repeat;
 }
-.hv_del {
+.hv_ZIP {
+	display:inline;
+	padding-left:16px;
+	background: url(../images/plush_default/hv_unzip.png) 0 50% no-repeat;
+}
+.hv_DEL {
 	display:inline;
 	padding-left:16px;
 	background: url(../images/plush_default/hv_del.png) 0 50% no-repeat;

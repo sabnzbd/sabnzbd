@@ -1,8 +1,10 @@
 <%
-def displayNotices (action):
+def displayNotices (action, name):
+	if name[1:4] == 'Tim' or name[1:4] == 'Avg':
+		return ''
 	notice = action[3:11]
 	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 ":
-		return '<small class="hvError">&rArr;&nbsp;' + action[3:] + '&nbsp;</small><br/>'
+		return '<span class="hvMessage">&rArr;&nbsp;' + action[3:] + '&nbsp;</span><br/>'
 %>
 
 
@@ -15,7 +17,7 @@ def displayNotices (action):
 			<!--#set $odd = not $odd#-->
 			<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 
-				<td class="<!--#if $line.loaded #-->nzbLoaded<!--#else#-->historyTitleCheck<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->>
+				<td class="<!--#if $line.loaded #-->nzbLoaded<!--#else if $line.status=="Failed"#-->historyTitleCross<!--#else#-->historyTitleCheck<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->>
 					<!--#if $line.msgid #-->
 						<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
 					<!--#else#-->
@@ -28,12 +30,7 @@ def displayNotices (action):
 				<td class="last">
 					<!--#for $stage in $line.stages#-->
 						<!--#for $action in $stage.actions#-->
-							<div title='<%= action['value'][3:] %> | <%= action['name'].replace("'","&rsquo;") %>'><%
-if action['name'][:4]=="[DEL":
-	pp = 'Del'
-else:
-	pp = stage['name']
-%><div class="history_$pp">&#8203;</div><%=displayNotices(action['value'])%></div>
+							<div class="hv_<%=action['name'][1:4]%>" title='<%=action['value']%> | <%= action['name'].replace("'","&rsquo;") %>'>&#8203;</div><%=displayNotices(action['value'],action['name'])%>
 						<!--#end for#-->
 					<!--#end for#-->
 				</td>
