@@ -15,6 +15,12 @@ def InjectProgressBarPosition (mbleft, mb):
 <script type="text/javascript">
 	\$('#stats_kbpersec').html('<%=int(float(x_kbpersec))%>');
 	\$('#stats_eta').html('[REQ]');
+	var paused = <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
+	if ( paused && \$('#pause_resume').attr('class') != 'q_menu_pause q_menu_paused')
+		\$('#pause_resume').toggleClass("q_menu_paused");
+	else if ( !paused && \$('#pause_resume').attr('class') != 'q_menu_pause')
+		\$('#pause_resume').toggleClass("q_menu_paused");
+
 </script>
 
 			<div class="box_banner_hr"></div>
