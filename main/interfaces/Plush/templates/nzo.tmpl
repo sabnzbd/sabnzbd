@@ -55,12 +55,15 @@ table {
 	color: black;
 	margin: 0px;
 }
+tr {
+	cursor:pointer;
+}
 th {
 	background: #b5b5b5;
 	color: white;
 	font-weight: bold;
+	cursor:default;
 }
-
 tr.even{
 	background-color: #cdf;
 }
@@ -85,6 +88,9 @@ tr:hover {
 .config_menu {
 	cursor:default;
 }
+input {
+	cursor:pointer;
+}
 -->
 </style>
 
@@ -95,7 +101,7 @@ tr:hover {
   
 	<ul>
 		<li>
-			<a class="config_menu" onclick="document.location.reload()">
+			<a class="config_menu" onclick="document.location.reload()" style="cursor:pointer">
 				<img src="../../static/images/plush_default_nzo/nzo_reload.png" />Reload</a>
 		</li>
 		<li>
