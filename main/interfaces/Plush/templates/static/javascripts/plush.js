@@ -228,7 +228,7 @@ var rowsBeforeDragAndDrop;
 // called upon every refresh
 function InitiateDragAndDrop() {
 
-   	rowsBeforeDragAndDrop = $('#queueContent').children();
+   	rowsBeforeDragAndDrop = $('#queueTable').children();
 
 	$("#queueTable").tableDnD({
     	//onDragClass: "myDragClass",
