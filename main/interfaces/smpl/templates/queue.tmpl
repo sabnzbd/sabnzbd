@@ -38,7 +38,7 @@ On queue finish:
 <!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
 <!--#if $varExists('slotinfo')#-->
 <center>$perc% - <span id="left">$mbleft</span>/<span id="total">$mb</span> MB -
-$timeleft
+Timeleft:$timeleft ETA:$eta
  <!--#end if#--><br /> </center>
  <!--#end if#-->
  <table id="queueTable" class="datagrid">
@@ -52,6 +52,7 @@ $timeleft
 		<th mochi:format="str">Name</th>
 		<th mochi:format="str">Percentage</th>
 		<th mochi:format="str">Remain/Total</th>
+        <th mochi:format="str">Timeleft</th>
 		<th mochi:format="str">ETA</th>
 		<th mochi:format="str">Age</th>
 	</tr>
@@ -127,6 +128,7 @@ $timeleft
 	<span class="pre"> <span id="left_$slot.nzo_id">$slot.mbleft</span>/<span id="total_$slot.nzo_id">$slot.mb</span> MB</span>
 	</td>
 </span>
+<td>$slot.timeleft</td>
 <td>$slot.eta</td>
 <td>$slot.avg_age</td>
         </tr>

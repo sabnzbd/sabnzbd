@@ -567,6 +567,7 @@ class QueuePage(ProtectedClass):
         info['cat_list'] = ListCats()
 
         n = 0
+        running_bytes = 0
         slotinfo = []
 
         nzo_ids = []
@@ -603,6 +604,10 @@ class QueuePage(ProtectedClass):
             slot['cat'] = str(cat)
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
             slot['mb'] = "%.2f" % (bytes / MEBI)
+            
+            running_bytes += bytesleft
+            
+            slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
 
             try:
                 datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
@@ -2005,12 +2010,12 @@ def build_header(prim):
     bytespersec = sabnzbd.bps()
     qnfo = sabnzbd.queue_info()
 
-    mbleft = qnfo[QNFO_BYTES_LEFT_FIELD]
-    mb = qnfo[QNFO_BYTES_FIELD]
+    bytesleft = qnfo[QNFO_BYTES_LEFT_FIELD]
+    bytes = qnfo[QNFO_BYTES_FIELD]
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
-    header['mbleft']   = "%.2f" % (mbleft / MEBI)
-    header['mb']       = "%.2f" % (mb / MEBI)
+    header['mbleft']   = "%.2f" % (bytesleft / MEBI)
+    header['mb']       = "%.2f" % (bytes / MEBI)
 
     anfo  = sabnzbd.cache_info()
 
@@ -2026,8 +2031,16 @@ def build_header(prim):
         header['new_release'] = ''
         header['new_rel_url'] = ''
 
-    header['timeleft'] = calc_timeleft(mbleft, bytespersec)
-
+    header['timeleft'] = calc_timeleft(bytesleft, bytespersec)
+    
+    try:
+        datestart = datetime.datetime.now() + datetime.timedelta(seconds=bytesleft / bytespersec)
+        #new eta format: 16:00 Fri 07 Feb
+        header['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
+    except:
+        datestart = datetime.datetime.now()
+        header['eta'] = 'unknown'
+                
     return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
 
 def calc_timeleft(bytesleft, bps):
