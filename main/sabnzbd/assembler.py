@@ -225,8 +225,8 @@ class PostProcessor(Thread):
                                           
                     dirname = nzo.get_original_dirname()
                     nzo.set_dirname(dirname)
-                    workdir_final = addPrefixes(workdir_final, nzo)
                     workdir_final = Cat2Dir(cat, self.complete_dir)
+                    workdir_final = addPrefixes(workdir_final, nzo)
                     workdir_final = os.path.join(workdir_final, dirname)
                     
                     unique_dir = True
