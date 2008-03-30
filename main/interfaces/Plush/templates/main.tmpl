@@ -18,7 +18,7 @@
 
 </head>
 <body>
-	
+
 	<div id="page-wrap">
 		<div id="hdr-queue">
 			<div id="queue-buttons">
@@ -99,16 +99,16 @@
 					</ul>
 				</li>
 				<li><a><select>
-							<option value="1">1 s</option>
-							<option value="2">2 s</option>
-							<option value="4">4 s</option>
-							<option value="8">8 s</option>
-							<option value="16">16s</option>
-							<option value="30">30s</option>
-							<option value="60">1 m</option>
-							<option value="120">2 m</option>
-							<option value="900">15m</option>
-							<option value="1800">30m</option>
+							<option value="1">1sec</option>
+							<option value="2">2sec</option>
+							<option value="4">4sec</option>
+							<option value="8">8sec</option>
+							<option value="16">16sec</option>
+							<option value="30">30sec</option>
+							<option value="60">1min</option>
+							<option value="120">2min</option>
+							<option value="900">15min</option>
+							<option value="1800">30min</option>
 						</select>&nbsp;Refresh</a></li>
 				<li><a href="connections" class="greybox">Configuration</a></li>
 				<li><a href="$helpuri" target="_blank">Help + Wiki</a></li>
@@ -156,6 +156,10 @@
 		</div>
 	</div>
 
+<!--#if $warning#-->
+    <h2>WARNING</h2>
+    <b>$warning</b>
+<!--#end if#-->
 
 </body>
 </html>
