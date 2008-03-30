@@ -262,6 +262,11 @@ function loadtitle() {
         else dual = gDual
         timerId2 = setTimeout("lr(\'"+url+"\', '', 1, "+dual+");", RefreshTime*1000);
     }
+    
+    function rssUrlEncode(url, uri ,cat ){
+        var enc_uri = urlEncode(uri)
+        location = url+"?uri="+enc_uri+"&cat="+cat+"&this_uri="+enc_uri
+    }
 	
 	function lr(url, extra, refresh, dual, pnode)
 	{
@@ -277,8 +282,8 @@ function loadtitle() {
             }
             else {
                 document.getElementById('Container').style.width = "99%";
-                document.getElementById('Right').style.width = "41%";
-                document.getElementById('Right_bottom').style.width = "48%";
+                document.getElementById('Right').style.width = "48%";
+                document.getElementById('Right_bottom').style.width = "41%";
             }
         }
         append = '?dummy='+Math.random();
