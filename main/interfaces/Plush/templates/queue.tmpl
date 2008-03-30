@@ -143,10 +143,10 @@ def InjectProgressBarPosition (mbleft, mb):
 				<!--#end if#-->
 			</div>
 			<div class="left_stats">
-				<!--#if x_mb == '0.00'#-->
-				No pending downloads.
-				<!--#else#-->
+				<!--#if $varExists('slotinfo')#-->
 				<strong><%=int(float(x_mbleft))%>&nbsp;of&nbsp;<%=int(float(x_mb))%>&nbsp;MB</strong>&nbsp;Remaining
+				<!--#else#-->
+				No pending downloads
 				<!--#end if#-->
 			</div>
 		</div>

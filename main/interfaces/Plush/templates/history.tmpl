@@ -54,7 +54,13 @@ def displayNotices (action, name):
 		
 		<div class="box_fatbottom">
 			<div class="right_stats"><strong>$bytes_beginning&nbsp;GB</strong>&nbsp;Downloaded</div>
-			<div class="left_stats"><strong>$total_bytes&nbsp;GB</strong>&nbsp;In&nbsp;History</div>
+			<div class="left_stats">
+				<!--#if $lines#-->
+				<strong>$total_bytes&nbsp;GB</strong>&nbsp;In&nbsp;History
+				<!--#else#-->
+				Nothing in history
+				<!--#end if #-->
+			</div>
 			<div class="history_logo">&nbsp;</div>
 		</div>
 
