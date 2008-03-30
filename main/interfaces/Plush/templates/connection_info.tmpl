@@ -4,7 +4,7 @@
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
 	<script type="text/javascript" src="../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../static/javascripts/jquery.corner.js"></script>
-	<link rel="stylesheet" type="text/css" href="../static/stylesheets/plush.css" media="screen"/>
+	<link rel="stylesheet" type="text/css" href="../static/stylesheets/plush-default.css" media="screen"/>
 </head>
 <body>
 
@@ -18,16 +18,16 @@
 
 <div id="config_nav">
 	<ul>
-		<li><a class="config_menu" id="nav_active" href="../connections"><img src="../static/images/icon_config_connections.png" />Connections</a></li>
-		<li><a class="config_menu" href="../config/general"><img src="../static/images/icon_config_general.png" />General</a></li>
-		<li><a class="config_menu" href="../config/directories"><img src="../static/images/icon_config_directories.png" />Directories</a></li>
-		<li><a class="config_menu" href="../config/switches"><img src="../static/images/icon_config_switches.png" />Switches</a></li>
-		<li><a class="config_menu" href="../config/server"><img src="../static/images/icon_config_servers.png" />Servers</a></li>
-     	<li><a class="config_menu" href="../config/categories"><img src="../static/images/icon_config_categories.png" />Categories</a></li>
-		<li><a class="config_menu" href="../config/scheduling"><img src="../static/images/icon_config_scheduling.png" />Scheduling</a></li>
-		<li><a class="config_menu" href="../config/rss"><img src="../static/images/icon_config_rss.png" />RSS</a></li>
-		<li><a class="config_menu" href="../config/email"><img src="../static/images/icon_config_email.png" />Email</a></li>
-     	<li><a class="config_menu" href="../config/newzbin"><img src="../static/images/icon_config_newzbin.png" />Newzbin</a></li>
+		<li><a class="config_menu" id="nav_active" href="../connections"><img src="../static/images/plush_default_config/config_connections.png" />Connections</a></li>
+		<li><a class="config_menu" href="../config/general"><img src="../static/images/plush_default_config/config_general.png" />General</a></li>
+		<li><a class="config_menu" href="../config/directories"><img src="../static/images/plush_default_config/config_directories.png" />Directories</a></li>
+		<li><a class="config_menu" href="../config/switches"><img src="../static/images/plush_default_config/config_switches.png" />Switches</a></li>
+		<li><a class="config_menu" href="../config/server"><img src="../static/images/plush_default_config/config_servers.png" />Servers</a></li>
+     	<li><a class="config_menu" href="../config/categories"><img src="../static/images/plush_default_config/config_categories.png" />Categories</a></li>
+		<li><a class="config_menu" href="../config/scheduling"><img src="../static/images/plush_default_config/config_scheduling.png" />Scheduling</a></li>
+		<li><a class="config_menu" href="../config/rss"><img src="../static/images/plush_default_config/config_rss.png" />RSS</a></li>
+		<li><a class="config_menu" href="../config/email"><img src="../static/images/plush_default_config/config_email.png" />Email</a></li>
+     	<li><a class="config_menu" href="../config/newzbin"><img src="../static/images/plush_default_config/config_newzbin.png" />Newzbin</a></li>
 	</ul>
 </div>
 
@@ -46,7 +46,7 @@
 <!--#if $servers#-->
     <!--#for $server in $servers#-->
 	<fieldset class="EntryFieldSet">
-		<legend><!--#if int($server[4])#--><img style="float:left" src="../static/images/icon_config_encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->$server[0]:$server[1]: $server[2]</legend>
+		<legend><!--#if int($server[4])#--><img style="float:left" src="../static/images/plush_default_config/config_encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->$server[0]:$server[1]: $server[2]</legend>
             <small><ol>
             <!--#for $thrd in $server[3]#-->
                 <li>&rArr; $thrd[1]<br/>&rArr; $thrd[2]<br/>&rArr; $thrd[3]</li>
@@ -83,16 +83,16 @@
 </div>
 
 <div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/GUI+Connections"><img src="../static/images/icon_config_help.png"> Contextual Help</a>
+	<a id="help" target="_blank" href="$helpuri/GUI+Connections"><img src="../static/images/plush_default_config/config_help.png"> Contextual Help</a>
 </div>
 
 
 <div class="right_links">
-	<a id="force_disconnect" href="./disconnect"><img src="../static/images/icon_config_disconnect.png"> Force Disconnect</a>
+	<a id="force_disconnect" href="./disconnect"><img src="../static/images/plush_default_config/config_disconnect.png"> Force Disconnect</a>
 </div>
 
 <div class="right_links">
-	<a id="test_email" href="./testmail" onclick="javascript:return confirm('This will send a test email to your account.')"><img src="../static/images/icon_config_test_email.png"> Test Email</a>
+	<a id="test_email" href="./testmail" onclick="javascript:return confirm('This will send a test email to your account.')"><img src="../static/images/plush_default_config/config_test_email.png"> Test Email</a>
 </div>
 
 <script language="javascript">
