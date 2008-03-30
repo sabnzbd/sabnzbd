@@ -2155,7 +2155,7 @@ def rss_history():
 
         for history_item in history_item_list:
             item = Item()
-            filename, unpackstrht, loaded, bytes, nzo = history_item
+            filename, unpackstrht, loaded, bytes, nzo, status = history_item
             if added > youngest:
                 youngest = added
             item.pubDate = std_time(added)
@@ -2171,7 +2171,8 @@ def rss_history():
             else:
                 stageLine = ""
 
-            stageLine += "Finished at %s and downloaded %sB" % ( \
+            stageLine += "[%s] Finished at %s and downloaded %sB" % ( \
+                         status,
                          time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)), \
                          to_units(bytes) )
 
