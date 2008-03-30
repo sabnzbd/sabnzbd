@@ -145,6 +145,9 @@ body {
 	text-decoration: none;
 	color: #606060;
 }
+.queueTable tr:hover a {
+	color: #000;
+}
 .queueTable a:hover {
 	border-bottom: 1px dotted #606060;
 	cursor: pointer;
