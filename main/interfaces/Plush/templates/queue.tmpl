@@ -26,8 +26,8 @@ def InjectProgressBarPosition (mbleft, mb):
 				</td>
 				<td class="queueProgressBarContainer">
 					<div class="queueProgressBar" style="background-position: <%=InjectProgressBarPosition(slot['mbleft'],slot['mb'])%>">
-						<div class="totalDownload"><%=int(float(slot['mbleft']))%> left</div>
-						<div class="currentDownload"><%=int(float(slot['mb']))%> MB</div>
+						<div class="totalDownload"><%=int(float(slot['mbleft']))%>&nbsp;<small>left</small></div>
+						<div class="currentDownload"><%=int(float(slot['mb']))%>&nbsp;<small>MB</small></div>
 					</div>
 				</td>
 				<td class="eta">$slot.eta</td>
