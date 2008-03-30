@@ -36,7 +36,8 @@
 <!-- ************************************
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
-<h2>General configuration</h2>
+
+
 <form action="saveGeneral" method="post">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
@@ -107,7 +108,7 @@ Choose a secondary user interface (restart required!).<br>
 <fieldset class="EntryFieldSet">
 <legend>Tuning</legend>
 <strong>Queue auto refresh interval:</strong><br>
-Refresh interval of the queue web-interface page(sec, 0= none)<br>
+Refresh interval of the queue<br/>web-interface page(sec, 0= none)<br>
 <input type="text" name="refresh_rate" value="$refresh_rate">
 <br>
 <br>
@@ -117,7 +118,7 @@ Checking rate  (times per day 1..48)<br>
 <br>
 <br>
 <strong>Bandwith Limit:</strong><br>
-Download speed limit in kilobytes per second(kB/s).<br>
+Download speed limit in kilobytes<br/>per second(kB/s).<br>
 <input type="text" name="bandwith_limit" value="$bandwith_limit">
 <br>
 <br>
@@ -127,7 +128,7 @@ Cache articles in memory.<br>
 <br>
 <br>
 <strong>Cleanup List:</strong><br>
-List of file (extensions) that should be deleted at the cleanup stage.<br>
+List of file (extensions) that should<br/>be deleted at the cleanup stage.<br>
 For example: ".nfo," or ".nfo, .sfv"<br>
 <input type="text" name="cleanup_list" value="$cleanup_list">
 </fieldset>

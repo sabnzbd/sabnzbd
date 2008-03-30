@@ -127,6 +127,14 @@ body {
 	padding-left:30px;
 	background: url(../images/plush_default/hl_cross.png) 10px 50% no-repeat;
 }
+.queueTable a {
+	text-decoration: none;
+	color: #606060;
+}
+.queueTable a:hover {
+	border-bottom: 1px dotted #606060;
+	cursor: arrow;
+}
 .queueTable .eta {
 	text-align: center;
 	font-size: 66%;

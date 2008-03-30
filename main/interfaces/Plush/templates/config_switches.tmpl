@@ -37,7 +37,7 @@
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
 
-<h2>Configuration switches</h2>
+
 <form action="saveSwitches" method="post">
 <div class="EntryBlock">
   <fieldset class="EntryFieldSet">
@@ -160,7 +160,13 @@
     Filters out sample files from the queue.<br>
     <input type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
-  </fieldset>
+    <br>
+    <br>
+    <strong>Pause downloading during post processing:</strong><br>
+    Pauses downloading at the start of post processing and resumes when finished.<br>
+    <input type="radio" name="pause_on_post_processing" value="0" <!--#if $pause_on_post_processing == 0 then "checked=1" else ""#--> /> No
+    <input type="radio" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> Yes
+   </fieldset>
 </div>
 
 <!-- ************************************
