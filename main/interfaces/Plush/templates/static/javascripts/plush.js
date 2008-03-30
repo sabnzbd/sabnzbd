@@ -1,14 +1,3 @@
-	$(function(){
-		$('#hdr-queue').bind("mouseover mouseout", function(){
-			$('.q_menu_sort').toggleClass("show");
-			$('.q_menu_verbose').toggleClass("show");
-		});
-		$('.box_banner_history').bind("mouseover mouseout", function(){
-			$('.h_menu_purge').toggleClass("show");
-			$('.h_menu_verbose').toggleClass("show");
-		});
-	});
-
 
 var refreshRate = 10; // default
 
@@ -65,6 +54,16 @@ $(document).ready(function() {
 		SetCookie('PlushRefresh',refreshRate);
 	 });
 
+	// auto show/hide of extra queue options
+	$('#hdr-queue').bind("mouseover mouseout", function(){
+		$('.q_menu_sort').toggleClass("show");
+		//$('.q_menu_verbose').toggleClass("show");
+	});
+	$('.box_banner_history').bind("mouseover mouseout", function(){
+		$('.h_menu_purge').toggleClass("show");
+		$('.h_menu_verbose').toggleClass("show");
+	});
+
 	// purge queue
 	$('#queue_purge').bind('click', function() { 
 		$.ajax({
@@ -76,7 +75,7 @@ $(document).ready(function() {
 		});
 		$("#addID").val('by Newzbin ID/NB32');
 	});
-		
+	
 	// Set up +NZB
 	$('#addID').bind('click', function() { 
 		$.ajax({
@@ -216,7 +215,8 @@ function MainLoop() {
 function RefreshTheQueue() {
 	$('#queue').load('queue?dummy='+Math.random() , function(){
 		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' left of '+$('#stats_noofslots').html();
-		InitiateDragAndDrop();
+		if ($('#stats_noofslots').html()!='0')
+			InitiateDragAndDrop();
 	});
 }
 
@@ -224,7 +224,8 @@ function RefreshTheQueue() {
 function LoadTheQueue(result) {
 	$('#queue').html(result);
 	document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' left of '+$('#stats_noofslots').html();
-	InitiateDragAndDrop();
+	if ($('#stats_noofslots').html()!='0')
+		InitiateDragAndDrop();
 }
 
 var rowsBeforeDragAndDrop;
