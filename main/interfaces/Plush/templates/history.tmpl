@@ -17,7 +17,7 @@ def displayNotices (action, name):
 			<!--#set $odd = not $odd#-->
 			<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 
-				<td class="<!--#if $line.loaded #-->nzbLoaded<!--#else if $line.status=="Failed"#-->historyTitleCross<!--#else#-->historyTitleCheck<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->>
+				<td class="<!--#if $line.loaded #-->historyTitleLoaded<!--#else if $line.status=="Failed"#-->historyTitleCross<!--#else#-->historyTitleCheck<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->>
 					<!--#if $line.msgid #-->
 						<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
 					<!--#else#-->

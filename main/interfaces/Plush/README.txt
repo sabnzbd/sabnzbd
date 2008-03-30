@@ -42,6 +42,7 @@ TOOLS USED
 * WebToolkit                http://www.webtoolkit.info/ajax-file-upload.html Copyright (c) 2006-2008 www.webtoolkit.info
 * Nuvola Icon Set           http://www.icon-king.com/?p=15 (LICENSE-LGPL) Copyright (c) 2003-2004 David Vignoni
 [ above applies to (in templates/static/images/): icon_config_*.png; icon_nzo_*.png; o_*.png; hv_*.png; ]
+* hl_loaded.gif provided by ajaxload.info
 
 =======
 CONTACT

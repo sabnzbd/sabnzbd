@@ -133,6 +133,10 @@ body {
 .queueTable tr:hover .title {
 	background: url(../images/plush_default/ql_grip_on.png) 4px 50% no-repeat;
 }
+.queueTable .historyTitleLoaded {
+	padding-left:30px;
+	background: url(../images/plush_default/hl_loaded.gif) 10px 50% no-repeat;
+}
 .queueTable .historyTitleCheck {
 	padding-left:30px;
 	background: url(../images/plush_default/hl_check.png) 10px 50% no-repeat;
