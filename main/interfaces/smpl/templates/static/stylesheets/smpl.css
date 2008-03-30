@@ -289,3 +289,5 @@ padding-right:50px;
 height:200px;
 width:100%;
 overflow:auto;}
+
+.job_progress{position: relative;   background-color: #9bf;   height: 6px;}

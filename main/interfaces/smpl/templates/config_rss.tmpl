@@ -16,7 +16,9 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 </div>
 
 <!--#for $uri in $rss#-->
-    <h3>Feed Definition</h3>
+<fieldset class="EntryFieldSet">
+    <legend>Feed Definition</legend>
+    <hr />
     <div class="EntryBlock" id="update_$uri">
 
         <fieldset class="EntryFieldSet">
@@ -153,6 +155,8 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#end for#-->
 
     </table>
+    </fieldset>
+    <br class="clear" /> <br class="clear" />
 <!--#end for#-->
 
 <!--#else#-->
