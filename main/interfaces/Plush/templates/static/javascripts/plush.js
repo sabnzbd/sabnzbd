@@ -171,16 +171,20 @@ $(document).ready(function() {
 		}
 	});
 	
+
+	// history verbosity
+	$('.h_menu_verbose').click(function(event) {
+		$('#history').load('history/tog_verbose?dummy='+Math.random());
+	});
+
+	// history purge
+	$('.h_menu_purge').click(function(event) {
+		$('#history').load('history/purge?dummy='+Math.random());
+	});
 	
 	// Set up History Menu actions
 	$('#history').click(function(event) {
-		if ($(event.target).is('#history_verbosity')) {
-			$('#history').load('history/tog_verbose?dummy='+Math.random());
-		}
-		else if ($(event.target).is('#history_purge')) {
-			$('#history').load('history/purge?dummy='+Math.random());
-		}
-		else if ($(event.target).is('.queue_delete')) {	// history delete
+		if ($(event.target).is('.queue_delete')) {	// history delete
 			$.ajax({
 				type: "GET",
 				url: 'history/delete?dummy='+Math.random()+'&job='+$(event.target).parent().parent().attr('id'),
