@@ -4,7 +4,7 @@
 
 	<title>SABnzbd+ Plush</title>
 	
-	<link rel="shortcut icon" type="image/ico" href="static/images/favicon.ico"/>
+	<link rel="shortcut icon" type="image/ico" href="static/images/plush_default/sabnzbdplus.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
 	<link rel="stylesheet" type="text/css" href="static/stylesheets/plush-default.css" media="screen"/>
 
@@ -37,50 +37,83 @@
 			<ul>
 				<li><a class="daddy">Add .NZB</a>
 					<ul>
-						<li><a class="daddy">by Newzbin</a>
+						<li><a class="daddy">by URL<!--#if $varExists('newzbinDetails') then "/Newzbin " else ""#--></a>
 							<ul>
-								<li><a><input type="text" value="enter ID/NB32"/></a></li>
-								<li><a href="#"><select><option>category</option></select><select><option>script</option></select><select><option>D</option></select></a></li>
-								<li><a><input type="submit" value="Add"/></a></li>
-							</ul>
-						</li>
-	
-						<li><a class="daddy">by URL</a>
-							<ul>
-								<li><a><input type="text" value="enter URL"/></a></li>
-								<li><a><select><option>category</option></select><select><option>script</option></select><select><option>D</option></select></a></li>
-								<li><a><input type="submit" value="Add"/></a></li>
+								<li><a><input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(value=='enter URL/ID')value=''" onblur="if(!value)value='enter URL/ID'"/></a></li>
+								<li>
+									<!--#if $cat_list#-->
+        							<select id="addID_cat">
+							        <!--#for $ct in $cat_list#-->
+							        	<option value="$ct">$ct</option>
+							        <!--#end for#-->
+							        </select>
+							        <!--#end if#-->
+							        <select id="addID_pp">
+							        	<option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
+							        	<option value="0">(Skip)</option>
+							        	<option value="1">+Repair</option>
+							        	<option value="2">+Unpack</option>
+							        	<option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
+							        </select>
+							        <!--#if $script_list#-->
+							        <select id="addID_script">
+							        <!--#for $sc in $script_list#-->
+							        	<option value="$sc">$sc</option>
+							        <!--#end for#-->
+							        </select>
+							        <!--#end if#-->
+								</li>
+								<li><a><input type="submit" id="addID" value="Add" style="cursor:pointer"/></a></li>
 							</ul>
 						</li>
 						<li><a class="daddy">by Upload</a>
+							<form action="addFile" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})">
 							<ul>
-								<li><a><input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="12" /></a></li>
-								<li><a><select><option>category</option></select><select><option>script</option></select><select><option>D</option></select></a></li>
-								<li><a><input type="submit" value="Add"/></a></li>
+								<li><a><input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="4" /></a></li>
+								<li>
+						        <!--#if $cat_list#-->
+        				   		<select name="cat">
+						        <!--#for $ct in $cat_list#-->
+						        	<option value="$ct">$ct</option>
+						        <!--#end for#-->
+						        </select>
+						        <!--#end if#-->
+						        <select name="pp">
+						        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
+						        <option value="0">(Skip)</option>
+						        <option value="1">+Repair</option>
+						        <option value="2">+Unpack</option>
+						        <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
+						        </select>
+						        <!--#if $script_list#-->
+						        <select name="script">
+						        <!--#for $sc in $script_list#-->
+						        	<option value="$sc">$sc</option>
+						        <!--#end for#-->
+						        </select>
+						        <!--#end if#-->
+								</li>
+								<li><a><input type="submit" id="addNZBbyFile" value="Add" style="cursor:pointer"/></a></li>
 							</ul>
+							</form>
 						</li>
 					</ul>
 				</li>
 				<li><a><select>
-							<option>1 s</option>
-							<option>2 s</option>
-							<option>4 s</option>
-							<option>8 s</option>
-							<option>16s</option>
-							<option>30s</option>
-							<option>1 m</option>
-							<option>2 m</option>
-							<option>15m</option>
-							<option>30m</option>
-						</select> Refresh</a></li>
-				<li><a>Config</a></li>
-				<li><a class="daddy">Shutdown</a>
-					<ul>
-						<li><a>Shutdown SABnzbd</a></li>
-						<li><a>Shutdown Computer<br/><small><i>when Done Downloading</i></small></a></li>
-					</ul>
-				</li>
-				<li><a href="https://sabnzbdplus.wiki.sourceforge.net/" target="_blank">Wiki / Help</a></li>
+							<option value="1">1 s</option>
+							<option value="2">2 s</option>
+							<option value="4">4 s</option>
+							<option value="8">8 s</option>
+							<option value="16">16s</option>
+							<option value="30">30s</option>
+							<option value="60">1 m</option>
+							<option value="120">2 m</option>
+							<option value="900">15m</option>
+							<option value="1800">30m</option>
+						</select>&nbsp;Refresh</a></li>
+				<li><a href="connections" class="greybox">Configuration</a></li>
+				<li><a href="https://sabnzbdplus.wiki.sourceforge.net/" target="_blank">Help + Wiki</a></li>
+				<li><a style="cursor:pointer" onclick="if(confirm('Sure you want to shut down the SABnzbd application?')){GB_show('Shutdown SABnzbd', 'shutdown', 400, 400);}"><small>Shutdown SABnzbd</small></a></li>
 			</ul>
 		</li>
 	</ul>

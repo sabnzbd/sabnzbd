@@ -76,29 +76,18 @@ $(document).ready(function() {
 	});
 		
 	// Set up +NZB
-	$('#addNZBbyID').bind('click', function() { 
+	$('#addID').bind('click', function() { 
 		$.ajax({
 			type: "GET",
 			url: "addID",
-			data: "id="+$("#addID").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
+			data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
 			success: function(result){
    				return RefreshTheQueue();
 			}
 		});
-		$("#addID").val('by Newzbin ID/NB32');
+		$("#addID_input").val('enter URL/ID');
 	});
-	$('#addNZBbyURL').bind('click', function() { 
-		$.ajax({
-			type: "GET",
-			url: "addURL",
-			data: "url="+$("#addURL").val()+"&pp="+$("#addURL_pp").val()+"&script="+$("#addURL_script").val()+"&cat="+$("#addURL_cat").val(),
-			success: function(result){
-   				return RefreshTheQueue();
-			}
-		});
-		$("#addURL").val('by URL');
-	});
-	
+
 	// toggle queue shutdown - from options menu
 	if ($('#queue_shutdown_option')) {
 		$('#queue_shutdown_option').bind('click', function() { 

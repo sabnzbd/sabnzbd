@@ -203,6 +203,7 @@ body {
 #nav {
 	overflow:hidden; width: 100px; padding: 0; float:left; margin-left: 11%; margin-top: 5px;
 	list-style: none;
+	cursor: default;
 }
 
 #nav ul {
@@ -274,10 +275,11 @@ body {
 	background: orange;
 }
 
-#nav select {
+#nav select, input {
 	border: 0px;
 	background: #333;
 	color: #FFF;
+	display:inline;
 }
 ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 #page-wrap { width: 90%; margin: 0px auto; }
