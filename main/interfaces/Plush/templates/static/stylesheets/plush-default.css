@@ -197,7 +197,12 @@ body {
 	background: url(../images/plush_default/ql_cross_on.png) 50% 50% no-repeat;
 	cursor:pointer;
 }
-
+.history_added {
+	color:#E0E0E0;
+}
+tr:hover .history_added  {
+	color:black;
+}
 .hv_Tim {
 	display:inline;
 	padding-left:16px;
