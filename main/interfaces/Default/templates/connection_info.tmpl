@@ -25,6 +25,12 @@
 <a href="./testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a> |
 <a href="./showlog">Show logging</a> |
 <a href="./showweb">Show Weblogging</a>
+Logging:
+<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value">
+    <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
+    <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
+    <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
+</select>
 </span>
 <h2>Connections</h2>
 <!--#if $servers#-->

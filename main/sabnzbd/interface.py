@@ -1791,6 +1791,7 @@ class ConnectionInfo(ProtectedClass):
 
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
+        header['loglevel'] = str(sabnzbd.LOGLEVEL)
 
         header['lastmail'] = self.__lastmail
 
@@ -1866,6 +1867,16 @@ class ConnectionInfo(ProtectedClass):
     @cherrypy.expose
     def clearwarnings(self, dummy = None):
         sabnzbd.GUIHANDLER.clear()
+        raise Raiser(self.__root, dummy)
+
+    @cherrypy.expose
+    def change_loglevel(self, loglevel=None, dummy = None):
+        loglevel = IntConv(loglevel)
+        if loglevel >= 0 and loglevel < 3:
+            sabnzbd.LOGLEVEL = loglevel
+            sabnzbd.CFG['logging']['log_level'] = loglevel
+            save_configfile(sabnzbd.CFG)
+
         raise Raiser(self.__root, dummy)
 
 

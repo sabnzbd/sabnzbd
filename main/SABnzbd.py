@@ -666,7 +666,7 @@ def main():
 
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
 
-
+    sabnzbd.LOGLEVEL = logging_level
 
     try:
         cherrypy.server.start(init_only=True)
@@ -691,6 +691,9 @@ def main():
 
     # Have to keep this running, otherwise logging will terminate
     while cherrypy.server.ready:
+        if sabnzbd.LOGLEVEL != logging_level:
+            logging_level = sabnzbd.LOGLEVEL
+            logger.setLevel(LOGLEVELS[logging_level])
         time.sleep(3)
 
     Notify("SAB_Shutdown", None)
