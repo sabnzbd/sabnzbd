@@ -8,7 +8,7 @@ function GB_show(caption, url, height, width) {
 
 	// Config's floating window default dimensions:
     GB_WIDTH  = 810;
-    GB_HEIGHT = 535;
+    GB_HEIGHT = 538;
 
   if(!GB_DONE) {
     $(document.body)

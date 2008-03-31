@@ -414,7 +414,7 @@ fieldset.EntryFieldSet {
 
 #config_nav li {
 	margin: 0;
-	padding: 3px 0px 3px 10px
+	padding: 3px 0px 3px 5px;
 }
 
 #config_nav li a {
@@ -441,6 +441,7 @@ fieldset.EntryFieldSet {
 #config_nav li a img{
 	vertical-align: -2px;
 	padding-right: 5px;
+	border-width: 0px;
 }
 
 #config_container {
@@ -491,10 +492,11 @@ fieldset.EntryFieldSet {
 .left_links a img {
 	vertical-align: middle;
 	padding-right: 5px;
+	border-width: 0px;
 }
 
 .config_margin {
-	margin: 5px 10px 0 115px;
+	margin: 5px 10px 0 110px;
 }
 
 .right_links {
@@ -520,6 +522,7 @@ fieldset.EntryFieldSet {
 .right_links a img {
 	vertical-align: middle;
 	padding-right: 5px;
+	border-width: 0px;
 }
 
 #save_button {
