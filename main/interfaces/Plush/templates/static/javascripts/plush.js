@@ -1,15 +1,27 @@
 
-var refreshRate = 10; // default
+var refreshRate = 8; // default
 
 // once the DOM is ready, run this
 $(document).ready(function() {
-	// refresh rate
-	if (ReadCookie('PlushRefresh')) {
-		refreshRate = ReadCookie('PlushRefresh');
-	} else {
-		SetCookie('PlushRefresh',refreshRate);	
-	}
+
+	// restore Refresh rate from cookie
+	if (ReadCookie('Plush2Refresh'))
+		refreshRate = ReadCookie('Plush2Refresh');
+	else
+		SetCookie('Plush2Refresh',refreshRate);
+		
+	// set Refresh rate within main menu	
 	$("#refreshRate-option").val(refreshRate);
+	$("#refreshRate-option").change( function() {
+		reactivate = false;
+		if (refreshRate == 0)
+			reactivate = true;
+		refreshRate = $("#refreshRate-option").val();
+		SetCookie('Plush2Refresh',refreshRate);
+		if (refreshRate > 0 && reactivate)
+			MainLoop();
+	});
+	
 /*
 	// Queue & History layout restoration
 	if ('sidebyside' == ReadCookie('PlushLayout')) {
@@ -28,31 +40,14 @@ $(document).ready(function() {
 		$("#history").removeClass("history_sidebyside");
 		SetCookie('PlushLayout','toptobottom');
 	});
-*/	
+*/
+
 	// Set up lightbox floating window
 	$("a.greybox").click(function(){
 		var t = this.title || this.innerHTML || this.href;
 		GB_show(t,this.href,500,700);
 		return false;
     });
-	// Set up Main Menu actions
-	$('#options').bind('click', function() { 
-		$('#options').toggleClass('on');
-		$('#optionsMenu').toggle();
-	});
-	$('#plusnzb').bind('click', function() { 
-		$('#plusnzb').toggleClass('on');
-		$('#nzbMenu').toggle();
-	});
-	// Set up Refresh Rate AJAX
-	$("#refreshRate-option").change( function() { 
-		refreshRate = $("#refreshRate-option").val();
-		SetCookie('PlushRefresh',refreshRate);
-	 });
-	$("#refreshRate-option").click( function() { 
-		refreshRate = $("#refreshRate-option").val();
-		SetCookie('PlushRefresh',refreshRate);
-	 });
 
 	// auto show/hide of extra queue options
 	$('#hdr-queue').bind("mouseover mouseout", function(){
@@ -208,7 +203,8 @@ function MainLoop() {
 	$('#history').load('history?dummy='+Math.random());
 
 	// loop
-	setTimeout("MainLoop()",refreshRate*1000);
+	if (refreshRate > 0)
+		setTimeout("MainLoop()",refreshRate*1000);
 }
 
 // in a function since some processes need to refresh the queue outside of MainLoop()
