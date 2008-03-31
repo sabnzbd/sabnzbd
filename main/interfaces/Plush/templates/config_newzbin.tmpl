@@ -41,7 +41,7 @@
 If you have an account at v3.newzbin.com, you can enter your account info here.<br/>
 This will unlock extra functionality.<br/>
 <br/>
-<form action="saveNewzbin" method="post">
+<form action="saveNewzbin" method="post" name="fullform">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Account info</legend>
@@ -113,14 +113,18 @@ Place downloads into newzbin.com category folders.<br>
 	<a id="help" target="_blank" href="$helpuri/Configure+Newzbin"><img src="../../static/images/plush_default_config/config_help.png"> Contextual Help</a>
 </div>
 
-<input id="save_button" type="submit" value="Save Changes">
+<div class="right_links">
+	<a id="save" onclick="document.fullform.submit();">
+		<img src="../../static/images/plush_default_config/config_save.png"> Save Changes</a>
+</div>
+
 </form>
 
 <script language="javascript">
 	\$('.config_menu').corner("round tl bl");
 	\$('#config_container').corner("round");
 	\$('#help').corner("round");
-
+	\$('#save').corner("round");
 </script>
 
 </body>
