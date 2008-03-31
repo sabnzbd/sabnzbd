@@ -23,7 +23,7 @@ def InjectProgressBarPosition (mbleft, mb):
 
 			<span style="display:none" id="stats_noofslots">$noofslots</span>
 			
-			<table class="queueTable" id="queueTable">
+			<table class="queueTable" id="queueTable" onMouseOver="skipRefresh=true;" onMouseOut="skipRefresh=false;">
 			<!--#set $odd = False#-->
 			<!--#if $varExists('slotinfo')#-->
 			<!--#for $slot in $slotinfo#-->

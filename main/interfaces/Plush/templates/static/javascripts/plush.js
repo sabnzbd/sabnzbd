@@ -1,5 +1,6 @@
 
 var refreshRate = 8; // default
+var skipRefresh = false;
 
 // once the DOM is ready, run this
 $(document).ready(function() {
@@ -52,7 +53,6 @@ $(document).ready(function() {
 	// auto show/hide of extra queue options
 	$('#hdr-queue').bind("mouseover mouseout", function(){
 		$('.q_menu_sort').toggleClass("show");
-		//$('.q_menu_verbose').toggleClass("show");
 	});
 	$('.box_banner_history').bind("mouseover mouseout", function(){
 		$('.h_menu_purge').toggleClass("show");
@@ -209,6 +209,7 @@ function MainLoop() {
 
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
+	if (skipRefresh) return false; // set within queue <table>
 	$('#queue').load('queue?dummy='+Math.random() , function(){
 		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' left of '+$('#stats_noofslots').html();
 		if ($('#stats_noofslots').html()!='0')
