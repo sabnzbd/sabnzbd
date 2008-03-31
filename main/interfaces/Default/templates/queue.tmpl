@@ -65,7 +65,7 @@ On queue finish:
         <td><a class="verbosity_link" href="./tog_uid_verbose?uid=$slot.nzo_id"> <!--#if $slot.active then "-" else "+" #--> </a></td>
         <td><form action="delete" method="get">
             <input type="hidden" value="$slot.nzo_id" name="uid">
-            <input type="submit" value="Delete"></form>
+            <input type="submit" value="Del"></form>
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
             <!--#for $i in xrange($noofslots)#-->
                 <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
