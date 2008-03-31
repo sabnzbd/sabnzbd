@@ -211,7 +211,6 @@ function MainLoop() {
 function RefreshTheQueue() {
 	if (skipRefresh) return false; // set within queue <table>
 	$('#queue').load('queue?dummy='+Math.random() , function(){
-		document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' left of '+$('#stats_noofslots').html();
 		if ($('#stats_noofslots').html()!='0')
 			InitiateDragAndDrop();
 	});
@@ -220,7 +219,6 @@ function RefreshTheQueue() {
 // refresh the queue with supplied data (like if we already made an AJAX call)
 function LoadTheQueue(result) {
 	$('#queue').html(result);
-	document.title = 'SAB+ '+$('#stats_kbpersec').html()+' KB/s '+$('#stats_eta').html()+' left of '+$('#stats_noofslots').html();
 	if ($('#stats_noofslots').html()!='0')
 		InitiateDragAndDrop();
 }
