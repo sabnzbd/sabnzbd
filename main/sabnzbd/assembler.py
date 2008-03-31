@@ -124,24 +124,26 @@ class PostProcessor(Thread):
 
     def run(self):
         while 1:
-            if sabnzbd.QUEUECOMPLETEACTION_GO and self.queue.empty():
-                logging.info("[%s] Queue has finished, launching: %s (%s)", \
-                    __NAME__,sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
-                if sabnzbd.QUEUECOMPLETEARG:
-                    sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
-                else:
-                    Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
-                    
-                sabnzbd.QUEUECOMPLETEACTION = None
-                sabnzbd.QUEUECOMPLETEARG = None
-                sabnzbd.QUEUECOMPLETEACTION_GO = False
+            if self.queue.empty():
+                sabnzbd.save_state()
+                if sabnzbd.QUEUECOMPLETEACTION_GO:
+                    logging.info("[%s] Queue has finished, launching: %s (%s)", \
+                        __NAME__,sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
+                    if sabnzbd.QUEUECOMPLETEARG:
+                        sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
+                    else:
+                        Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
+                        
+                    sabnzbd.QUEUECOMPLETEACTION = None
+                    sabnzbd.QUEUECOMPLETEARG = None
+                    sabnzbd.QUEUECOMPLETEACTION_GO = False
 
             nzo = self.queue.get()
             if not nzo:
                 break
             
             if sabnzbd.pause_on_post_processing:
-                sabnzbd.pause_downloader()
+                sabnzbd.idle_downloader()
 
             try:
                 #log whether repairing succeeded
@@ -185,6 +187,7 @@ class PostProcessor(Thread):
                         sabnzbd.QUEUECOMPLETEACTION_GO = False
                         sabnzbd.add_nzo(nzo, 0)
                         ## Break out
+                        sabnzbd.unidle_downloader()
                         continue
 
                     logging.info('[%s] Par2 check finished on %s', __NAME__, filename)
@@ -341,8 +344,7 @@ class PostProcessor(Thread):
                 logging.exception("[%s] Cleanup of %s failed.", __NAME__,
                                   nzo.get_filename())
                 
-            if sabnzbd.pause_on_post_processing:
-                sabnzbd.resume_downloader()
+            sabnzbd.unidle_downloader()
 
 #------------------------------------------------------------------------------
 ## sabnzbd.pause_downloader

@@ -951,6 +951,20 @@ def undelay_downloader():
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
 
 @synchronized_CV
+def idle_downloader():
+    try:
+        DOWNLOADER.wait_postproc()
+    except NameError:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+
+@synchronized_CV
+def unidle_downloader():
+    try:
+        DOWNLOADER.resume_postproc()
+    except NameError:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+
+@synchronized_CV
 def limit_speed(value):
     try:
         DOWNLOADER.limit_speed(int(value))

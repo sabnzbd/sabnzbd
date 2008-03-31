@@ -120,6 +120,8 @@ class Downloader(Thread):
         # Used for reducing speed
         self.delayed = False
 
+        self.postproc = False
+
         self.shutdown = False
 
         self.force_disconnect = False
@@ -179,6 +181,14 @@ class Downloader(Thread):
         logging.info("[%s] Undelaying", __NAME__)
         self.delayed = False
 
+    def wait_postproc(self):
+        logging.info("[%s] Waiting for post-processing to finish", __NAME__)
+        self.postproc = True
+
+    def resume_postproc(self):
+        logging.info("[%s] Post-processing finished, resuming download", __NAME__)
+        self.postproc = False
+
     def disconnect(self):
         self.force_disconnect = True
 
@@ -195,7 +205,7 @@ class Downloader(Thread):
                     if nw.timeout and time.time() > nw.timeout:
                         self.__reset_nw(nw, "timed out")
 
-                if not server.idle_threads or self.paused or self.shutdown or self.delayed:
+                if not server.idle_threads or self.paused or self.shutdown or self.delayed or self.postproc:
                     continue
 
                 if not sabnzbd.has_articles_for(server):
@@ -282,7 +292,7 @@ class Downloader(Thread):
                 time.sleep(1.0)
 
                 sabnzbd.CV.acquire()
-                while (not sabnzbd.has_articles() or self.paused or self.delayed) and not \
+                while (not sabnzbd.has_articles() or self.paused or self.delayed or self.postproc) and not \
                        self.shutdown:
                     sabnzbd.CV.wait()
                 sabnzbd.CV.release()
