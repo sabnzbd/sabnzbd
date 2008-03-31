@@ -360,11 +360,18 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 #queue-buttons { float: right; background-image: url(../images/plush_default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
 #queue-buttons li { float:left; }
 #queue-wrap { background-color: #cfcfcf; padding: 0 3px; }
-#speed, #time-left { background-image: url(../images/plush_default/rounded_area_bg.png); width: 68px; height: 12px; padding: 5px 0px; margin-top: 20px; text-align: center;}
+#speed, #time-left {
+	background-image: url(../images/plush_default/rounded_area_bg.png);
+	width: 68px;
+	height: 12px;
+	padding: 5px 0px;
+	margin-top: 20px;
+	text-align: center;
+}
 #speed { float:left; margin-left: 10%; }
 #time-left { float:left; margin-left: 30%; }
 #speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
-#speed span, #time-left span { font-size: 14px; color: #dadada; font-weight: bold; }
+#speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
 #btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
 #btm-wrapper .corner-right { float:right; background-image: url(../images/plush_default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
 #btm-wrapper .corner-left { float:left; background-image: url(../images/plush_default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
