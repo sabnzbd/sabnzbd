@@ -250,6 +250,12 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def switch(self, item_id_1, item_id_2):
+        try:
+            # Allow an index as second parameter, easier for some skins
+            i = int(item_id_2)
+            item_id_2 = self.__nzo_list[i].nzo_id
+        except:
+            pass
         item_id_pos1 = -1
         item_id_pos2 = -1
         for i in xrange(len(self.__nzo_list)):
