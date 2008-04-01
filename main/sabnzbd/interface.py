@@ -1407,7 +1407,7 @@ class ConfigRss(ProtectedClass):
             rss[uri] = {}
             rss[uri]['cat'] = sabnzbd.CFG['rss'][uri]['cat']
             rss[uri]['pp'] = sabnzbd.CFG['rss'][uri]['pp']
-            rss[uri]['enable'] = sabnzbd.CFG['rss'][uri]['enable']
+            rss[uri]['enable'] = IntConv(sabnzbd.CFG['rss'][uri]['enable'])
             rss[uri]['pick_cat'] = config['cat_list'] and not IsNewzbin(uri)
             rss[uri]['pick_pp'] = not config['cat_list']
             filters = ListFilters(uri)
@@ -1541,6 +1541,7 @@ class ConfigRss(ProtectedClass):
             try:
                 uri = kwargs['this_uri']
                 sabnzbd.CFG['rss'][uri]['enable'] = 1
+                save_configfile(sabnzbd.CFG)
                 sabnzbd.run_rss_feed(uri, True)
             except:
                 pass
@@ -1554,6 +1555,7 @@ class ConfigRss(ProtectedClass):
         if 'this_uri' in kwargs:
             try:
                 sabnzbd.CFG['rss'][kwargs['this_uri']]['enable'] = 0
+                save_configfile(sabnzbd.CFG)
             except:
                 pass
         if 'dummy' in kwargs:
