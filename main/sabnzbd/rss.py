@@ -287,10 +287,16 @@ def _get_link(uri, entry):
 
     uri = uri.lower()
     if uri.find('newzbin') > 0 or uri.find('newzxxx') > 0:
-        link = entry.link
+        try:
+            link = entry.link
+        except:
+            link = None
         if not (link and link.lower().find('/post/') > 0):
             # Use alternative link
-            link = entry.links[0].href
+            try:
+                link = entry.links[0].href
+            except:
+                link = None
     else:
         # Try standard link first
         link = entry.link
@@ -300,5 +306,5 @@ def _get_link(uri, entry):
     if link and link.lower().find('http') >= 0:
         return link
     else:
-        logging.warning('[%s]: Empty RSS entry found (%s)', link)
+        logging.warning('[%s]: Empty RSS entry found (%s)', __NAME__, link)
         return None
