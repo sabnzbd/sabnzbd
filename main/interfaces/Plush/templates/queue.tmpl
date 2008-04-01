@@ -149,10 +149,10 @@ def InjectProgressBarPosition (mbleft, mb):
 		<div class="box_fatbottom">
 			<div class="right_stats">
 				<!--#if $diskspace1 == $diskspace2#-->
-				<strong class="stats_incomplete_freespace">$diskspace1&nbsp;GB</strong>&nbsp;Free&nbsp;Space</small></span>
+				<strong class="<!--#if $diskspace1*1024 > $mb #-->stats_incomplete_freespace_needspace" style="color:red<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free&nbsp;Space</small></span>
 				<!--#else#-->
-				<strong class="stats_incomplete_freespace">$diskspace1&nbsp;GB</strong>&nbsp;Free
-				<strong class="stats_complete_freespace">$diskspace2&nbsp;GB</strong>&nbsp;Free&nbsp;Space
+				<strong class="<!--#if $diskspace1*1024 > $mb #-->stats_incomplete_freespace_needspace" style="color:red<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free
+				<strong class="<!--#if $diskspace2*1024 > $mb #-->stats_complete_freespace_needspace" style="color:red<!--#else#-->stats_complete_freespace<!--#end if#-->">$diskspace2&nbsp;GB</strong>&nbsp;Free&nbsp;Space
 				<!--#end if#-->
 			</div>
 			<div class="left_stats">

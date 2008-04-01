@@ -40,12 +40,25 @@ body {
 	padding-left:20px;
 	background: url(../images/plush_default/q_stats_incomplete.png) 0 50% no-repeat;
 }
+.stats_incomplete_freespace_needspace {
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../images/plush_default/q_stats_needspace.png) 0 50% no-repeat;
+}
 .stats_complete_freespace {
 	margin-left:10px;
 	padding-top:8px;
 	padding-bottom:8px;
 	padding-left:20px;
 	background: url(../images/plush_default/q_stats_complete.png) 0 50% no-repeat;
+}
+.stats_complete_freespace_needspace {
+	margin-left:10px;
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../images/plush_default/q_stats_needspace.png) 0 50% no-repeat;
 }
 
 .history_logo {
