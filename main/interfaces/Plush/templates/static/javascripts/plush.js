@@ -246,12 +246,8 @@ function LoadTheQueue(result) {
 		InitiateDragAndDrop();
 }
 
-var rowsBeforeDragAndDrop;
-
 // called upon every refresh
 function InitiateDragAndDrop() {
-
-   	rowsBeforeDragAndDrop = $('#queueTable').children();
 
 	$("#queueTable").tableDnD({
     	//onDragClass: "myDragClass",
@@ -262,25 +258,11 @@ function InitiateDragAndDrop() {
 			if (rows.length < 2)
 				return false;
 			
-			// dragged to the top, replaced the first one
-			if (rows[0].id == row.id && row.id != rowsBeforeDragAndDrop[0].id)
-				droppedon = rows[1].id;
-				
-			// dragged to the bottom, replaced the last one
-			else if (rows[rows.length-1].id == row.id && row.id != rowsBeforeDragAndDrop[rowsBeforeDragAndDrop.length-1].id)	
-				droppedon = rows[rows.length-2].id;
-				
-			// search for where it was dropped on
-			else if ( rows.length > 2 ) {
-           		for ( var i=1; i < rows.length-1; i++ ) {
-					if ( rows[i].id == row.id  && rows[i-1].id == rowsBeforeDragAndDrop[i].id )
-						droppedon = rows[i-1].id;
-					else if ( rows[i].id == row.id  && rows[i+1].id == rowsBeforeDragAndDrop[i].id )
-						droppedon = rows[i+1].id;
-				}
-			}
-			if (droppedon!="")
-				return ChangeOrder("switch?uid1="+row.id+"&uid2="+droppedon);
+			// figure out which position it is at now
+          	for ( var i=0; i < rows.length; i++ )
+				if (rows[i].id == row.id)
+					return ChangeOrder("switch?uid1="+row.id+"&uid2="+i);
+
 			return false;
     	}
 	});	
