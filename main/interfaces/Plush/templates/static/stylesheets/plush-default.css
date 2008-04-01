@@ -344,7 +344,7 @@ tr:hover .history_added  {
 	background: orange;
 }
 
-#nav select, input {
+select, input {
 	border: 0px;
 	background: #333;
 	color: #FFF;
