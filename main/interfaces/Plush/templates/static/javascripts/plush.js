@@ -22,7 +22,14 @@ $(document).ready(function() {
 		if (refreshRate > 0 && reactivate)
 			MainLoop();
 	});
-	
+	$("#onQueueFinish-option").change( function() {
+		$.ajax({
+			type: "GET",
+			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&dummy="+Math.random(),
+		});
+	});
+
+//	change_queue_complete_action?action='+this.options[this.selectedIndex].value
 /*
 	// Queue & History layout restoration
 	if ('sidebyside' == ReadCookie('PlushLayout')) {
