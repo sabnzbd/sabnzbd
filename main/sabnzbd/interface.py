@@ -1818,7 +1818,11 @@ class ConnectionInfo(ProtectedClass):
                     nzo = nzf.nzo
 
                     art_name = escape(article.article)
-                    nzf_name = escape(nzf.get_filename())
+                    #filename field is not always present
+                    try:
+                        nzf_name = escape(nzf.get_filename())
+                    except: #attribute error
+                        nzf_name = escape(nzf.get_subject()) 
                     nzo_name = escape(nzo.get_filename())
 
                 busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
