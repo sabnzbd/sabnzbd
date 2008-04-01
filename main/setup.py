@@ -38,7 +38,7 @@ options = dict(
 
           ('interfaces/Default', glob.glob("interfaces/Default/*.*")),
           ('interfaces/Default/templates', glob.glob("interfaces/Default/templates/*.tmpl")),
-          ('interfaces/Default/templates/static/stylesheets', ['interfaces/Default/templates/static/stylesheets/default.css']),
+          ('interfaces/Default/templates/static/stylesheets', glob.glob("interfaces/Default/templates/static/stylesheets/*.css")),
           ('interfaces/Default/templates/static/images', glob.glob('interfaces/Default/templates/static/images/*.ico')),
 
           ('interfaces/smpl', glob.glob("interfaces/smpl/*.*")),
