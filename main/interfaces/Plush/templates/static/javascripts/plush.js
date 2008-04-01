@@ -1,6 +1,7 @@
 
-var refreshRate = 8; // default
+var refreshRate = 8; // default refresh rate
 var skipRefresh = false;
+var queueSortAge = false;
 
 // once the DOM is ready, run this
 $(document).ready(function() {
@@ -29,7 +30,6 @@ $(document).ready(function() {
 		});
 	});
 
-//	change_queue_complete_action?action='+this.options[this.selectedIndex].value
 /*
 	// Queue & History layout restoration
 	if ('sidebyside' == ReadCookie('PlushLayout')) {
@@ -65,6 +65,22 @@ $(document).ready(function() {
 	$('.box_banner_history').bind("mouseover mouseout", function(){
 		$('.h_menu_purge').toggleClass("show");
 		$('.h_menu_verbose').toggleClass("show");
+	});
+	
+	// sort queue
+	$('.q_menu_sort').click(function(event) {
+		var url;
+		if (queueSortAge = !queueSortAge)
+			url='sort_by_name';
+		else
+			url='sort_by_avg_age';
+		$.ajax({
+			type: "GET",
+			url: "queue/"+url+"?dummy="+Math.random(),
+			success: function(result){
+   				return LoadTheQueue(result);
+			}
+		});
 	});
 
 	// purge queue

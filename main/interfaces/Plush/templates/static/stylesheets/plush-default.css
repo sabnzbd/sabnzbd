@@ -73,9 +73,9 @@ body {
 	background: url(../images/plush_default/q_pause_on.png) 0 0 no-repeat;
 }
 .q_menu_sort {
-	
 	width:55px;
 	height: 55px;
+	cursor:pointer;
 }
 .q_menu_sort.show { background: url(../images/plush_default/q_pill_sort.png) 0 0 no-repeat;}
 .q_menu_verbose,.h_menu_verbose {
