@@ -37,8 +37,8 @@ On queue finish:
 <!--#if float($mb)>0 #-->
 <!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
 <!--#if $varExists('slotinfo')#-->
-<center>$perc% - <span id="left">$mbleft</span>/<span id="total">$mb</span> MB -
-Timeleft:$timeleft ETA:$eta
+<center><strong>$perc%</strong> - <span id="left">$mbleft</span>/<span id="total">$mb</span> MB -
+Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
  <!--#end if#--><br /> </center>
  <!--#end if#-->
  <table id="queueTable" class="datagrid">
