@@ -517,6 +517,10 @@ fieldset.EntryFieldSet {
 	border-width: 0px;
 }
 
+.right_links a {
+	cursor:pointer;
+}
+
 .config_margin {
 	margin: 5px 10px 0 110px;
 }
