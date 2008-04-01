@@ -86,6 +86,15 @@ body {
 	cursor:pointer;
 	display:none;
 }
+.q_menu_purge {
+	background: url(../images/plush_default/h_purge.png) 0 0 no-repeat;
+	margin-right:6px;
+	padding-right:24px;
+	padding-bottom:24px;
+	cursor:pointer;
+	display:none;
+}
+.q_menu_purge.show { display: inline; }
 .h_menu_purge {
 	background: url(../images/plush_default/h_purge.png) 0 0 no-repeat;
 	margin-right:6px;

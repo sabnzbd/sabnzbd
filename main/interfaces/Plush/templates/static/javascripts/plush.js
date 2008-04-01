@@ -53,6 +53,7 @@ $(document).ready(function() {
 	// auto show/hide of extra queue options
 	$('#hdr-queue').bind("mouseover mouseout", function(){
 		$('.q_menu_sort').toggleClass("show");
+		$('.q_menu_purge').toggleClass("show");
 	});
 	$('.box_banner_history').bind("mouseover mouseout", function(){
 		$('.h_menu_purge').toggleClass("show");
@@ -60,7 +61,7 @@ $(document).ready(function() {
 	});
 
 	// purge queue
-	$('#queue_purge').bind('click', function() { 
+	$('.q_menu_purge').click(function(event) {
 		$.ajax({
 			type: "GET",
 			url: "queue/purge?dummy="+Math.random(),
@@ -68,7 +69,6 @@ $(document).ready(function() {
    				return LoadTheQueue(result);
 			}
 		});
-		$("#addID").val('by Newzbin ID/NB32');
 	});
 	
 	// Set up +NZB
