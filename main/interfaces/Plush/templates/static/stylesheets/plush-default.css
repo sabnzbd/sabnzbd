@@ -421,7 +421,7 @@ fieldset.EntryFieldSet {
   margin: 5px;
 }
 #config_nav {
-	margin-top: 5px;
+	margin-top: 20px;
 	width: 110px;
 	text-align: left;
 	float: left;
@@ -468,8 +468,9 @@ fieldset.EntryFieldSet {
 
 #config_container {
 	background: #bbb;
-	width: 655px;
-	height: 435px;
+/*	width: 655px; 
+	height: 435px; */
+	min-height: 435px;
 	text-align: left;
 	font-size: 10pt;
 	padding: 10px;
