@@ -23,7 +23,7 @@ def InjectProgressBarPosition (mbleft, mb):
 			<!--#else#-->
 				document.title = '<!--#echo "%.0f" % float($kbpersec)#--> kB/s | <!--#echo "%.0f" % float($mbleft)#--> MB | $timeleft left';
 			<!--#end if#-->
-			
+/*			
 			<!--#if $paused or $noofslots < 1#-->
 			\$('#time-left').hide();
 			\$('#speed').hide();
@@ -31,7 +31,7 @@ def InjectProgressBarPosition (mbleft, mb):
 			\$('#time-left').show();
 			\$('#speed').show();
 			<!--#end if#-->
-
+*/
 			\$("#onQueueFinish-option").val('$finishaction');
 
 		</script>

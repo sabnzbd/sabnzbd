@@ -201,7 +201,7 @@ body {
 .queueProgressBar {
 	background-image: url(../images/plush_default/ql_pbar_full.png);
 	background-repeat: no-repeat;
-	overflow:hidden;
+/*	overflow:hidden;*/
 }
 
 .currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1;}
