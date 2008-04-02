@@ -49,14 +49,14 @@ $(document).ready(function() {
 		SetCookie('PlushLayout','toptobottom');
 	});
 */
-
+/*
 	// Set up lightbox floating window
 	$("a.greybox").click(function(){
 		var t = this.title || this.innerHTML || this.href;
 		GB_show(t,this.href,500,700);
 		return false;
     });
-
+*/
 	// auto show/hide of extra queue options
 	$('#hdr-queue').bind("mouseover mouseout", function(){
 		$('.q_menu_sort').toggleClass("show");
