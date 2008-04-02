@@ -84,7 +84,7 @@ $(document).ready(function() {
 	});
 
 	// purge queue
-	$('.q_menu_purge').click(function(event) {
+	$('.q_menu_purge').dblclick(function(event) {
 		$.ajax({
 			type: "GET",
 			url: "queue/purge?dummy="+Math.random(),
@@ -195,7 +195,7 @@ $(document).ready(function() {
 	});
 
 	// history purge
-	$('.h_menu_purge').click(function(event) {
+	$('.h_menu_purge').dblclick(function(event) {
 		$('#history').load('history/purge?dummy='+Math.random());
 	});
 	
