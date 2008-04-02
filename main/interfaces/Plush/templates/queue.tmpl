@@ -48,7 +48,7 @@ def InjectProgressBarPosition (mbleft, mb):
 				<tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
 				
 				<td class="title" title="Average File Age: $slot.avg_age">
-					<a onclick="GB_show('Files in <%= slot['filename'].replace("'","&rsquo;") %>', 'queue/$slot.nzo_id/', 1, 1);">$slot.filename</a>
+					<a href="queue/$slot.nzo_id/">$slot.filename</a>
 				</td>
 				<td class="queueProgressBarContainer">
 					<div class="queueProgressBar" style="background-position: <%=InjectProgressBarPosition(slot['mbleft'],slot['mb'])%>">

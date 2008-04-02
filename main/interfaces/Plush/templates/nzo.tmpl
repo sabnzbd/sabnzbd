@@ -48,6 +48,9 @@ function invert()
 </script>
 </head>
 <body>
+<div align="center">
+	<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
+</div>
 
 <style>
 <!--
@@ -107,25 +110,39 @@ input {
 			<a class="config_menu" onclick="document.location.reload()" style="cursor:pointer">
 				<img src="../../static/images/plush_default_nzo/nzo_reload.png" />Reload</a>
 		</li>
+		<br/>
 		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo//nzo_delete.png" />
+			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_delete.png" />
 				<input type="submit" name="action_key" value="Delete" style="width:60px"/></a>
 		</li>
 		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo//nzo_top.png" />
+			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_top.png" />
 				<input type="submit" name="action_key" value="Top" style="width:60px"/></a>
 		</li>
 		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo//nzo_up.png" />
+			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_up.png" />
 				<input type="submit" name="action_key" value="Up" style="width:60px"/></a>
 		</li>
 		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo//nzo_down.png" />
+			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_down.png" />
 				<input type="submit" name="action_key" value="Down" style="width:60px"/></a>
 		</li>
 		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo//nzo_bottom.png" />
+			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_bottom.png" />
 				<input type="submit" name="action_key" value="Bottom" style="width:60px"/></a>
+		</li>
+		<br/>Selection:
+		<li>
+			<a class="config_menu" onclick='mark_all();' style="cursor:pointer"><img src="../../static/images/plush_default_nzo/nzo_select_all.png" />
+				ALL</a>
+		</li>
+		<li>
+			<a class="config_menu" onclick='unmark_all();' style="cursor:pointer"><img src="../../static/images/plush_default_nzo/nzo_select_none.png" />
+				NONE</a>
+		</li>
+		<li>
+			<a class="config_menu" onclick='invert();' style="cursor:pointer"><img src="../../static/images/plush_default_nzo/nzo_select_invert.png" />
+				INVERT</a>
 		</li>
 	</ul>
 </div>
@@ -160,12 +177,7 @@ input {
 
 	</div>
 </div>
-<big><b>
-	Selection: &nbsp;
-	<a style="cursor:pointer" onclick='mark_all();' target='_self'>ALL</a> &sdot;
-	<a style="cursor:pointer" onclick='unmark_all();' target='_self'>NONE</a> &sdot;
-	<a style="cursor:pointer" onclick='invert();' target='_self'>INVERT</a>
-</b></big>
+
 <script language="javascript">
 	\$('.config_menu').corner("round tl bl");
 	\$('#config_container').corner("round");
