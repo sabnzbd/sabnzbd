@@ -1713,6 +1713,8 @@ class ConfigCats(ProtectedClass):
             config['newzbinDetails'] = True
 
         config['script_list'] = ListScripts()
+        config['script_list'].insert(0, 'Default')
+
         config['have_cats'] = len(sabnzbd.CFG['categories']) > 0
         config['defdir'] = sabnzbd.COMPLETE_DIR
 
@@ -1725,19 +1727,20 @@ class ConfigCats(ProtectedClass):
             try:
                 slot['pp'] = str(sabnzbd.CFG['categories'][cat]['pp'])
             except:
-                slot['pp'] = '0'
+                slot['pp'] = ''
             try:
                 slot['script'] = sabnzbd.CFG['categories'][cat]['script']
             except:
-                slot['script'] = 'None'
+                slot['script'] = 'Default'
+            if slot['script'] == '': slot['script'] = 'Default'
             try:
                 slot['dir'] = sabnzbd.CFG['categories'][cat]['dir']
             except:
                 slot['dir'] = ''
-            #try:
-            slot['newzbin'] = List2String(sabnzbd.CFG['categories'][cat]['newzbin'])
-            #except:
-            #    slot['newzbin'] = ''
+            try:
+                slot['newzbin'] = List2String(sabnzbd.CFG['categories'][cat]['newzbin'])
+            except:
+                slot['newzbin'] = ''
             slotinfo.append(slot)
         config['slotinfo'] = slotinfo
 
@@ -1772,9 +1775,8 @@ class ConfigCats(ProtectedClass):
                     sabnzbd.CFG['categories'][name]['pp'] = str(pp)
                 except:
                     pass
-            if script:
-                if script.lower() == 'None':
-                    script = ''
+            if script != None:
+                if not script or script=='Default': script = ''
                 try:
                     sabnzbd.CFG['categories'][name]['script'] = script
                 except:

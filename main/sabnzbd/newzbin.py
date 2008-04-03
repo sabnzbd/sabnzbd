@@ -66,6 +66,7 @@ def InitCats():
     cfg = sabnzbd.CFG['categories']
     for cat in cats:
         cfg[cat] = {}
+        cfg[cat]['newzbin'] = cat
 
 
 def IsNewzbin(uri):

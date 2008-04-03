@@ -306,7 +306,7 @@ class PostProcessor(Thread):
                 if sabnzbd.UMASK and (os.name != 'nt'):
                     perm_script(workdir, sabnzbd.UMASK)
 
-                if sabnzbd.SCRIPT_DIR and script and not script.lower() == 'none' and result:
+                if sabnzbd.SCRIPT_DIR and script and script!='None' and script!='Default' and result:
                     #set the current nzo status to "Ext Script...". Used in History
                     nzo.set_status("Running Script...")
                     nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
