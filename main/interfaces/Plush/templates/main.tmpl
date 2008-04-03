@@ -12,6 +12,7 @@
     <!--#end if#-->
 
 	<script type="text/javascript" src="static/javascripts/jquery.pack.js"></script>
+	<script type="text/javascript" src="static/javascripts/superfish.js"></script>
 	<script type="text/javascript" src="static/javascripts/webtoolkit.aim.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.tablednd.js"></script>
 	<script type="text/javascript" src="static/javascripts/plush.js"></script>
@@ -36,74 +37,74 @@
 			<div id="time-left">
 				<p><span id="stats_eta">&hellip;</span>&nbsp;left</p>
 			</div>
-			<ul id="nav">
+			<ul class="nav">
 		<li><a class="queue_logo"></a>
 			<ul>
-				<li><a class="daddy">Add .NZB</a>
+				<li><a>Add NZB</a>
 					<ul>
-						<li><a class="daddy">by URL<!--#if $varExists('newzbinDetails') then "/Newzbin " else ""#--></a>
+						<li><a>&raquo; URL<!--#if $varExists('newzbinDetails') then "&amp; Newzbin " else ""#--></a>
 							<ul>
 								<li><a><input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(value=='enter URL/ID')value=''" onblur="if(!value)value='enter URL/ID'"/></a></li>
+								<li><a>&raquo;&nbsp;<input type="submit" id="addID" value="Add NZB" style="cursor:pointer"/></a></li>
 								<li>
 									<!--#if $cat_list#-->
-        							<select id="addID_cat" title="Category">
+        							<a><select id="addID_cat" title="Category">
 							        <!--#for $ct in $cat_list#-->
 							        	<option value="$ct">$ct</option>
 							        <!--#end for#-->
-							        </select>
+							        </select></a>
 							        <!--#end if#-->
-							        <select id="addID_pp" title="Post-Processing Option">
+							        <a><select id="addID_pp" title="Post-Processing Option">
 							        	<option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
 							        	<option value="0">(Skip)</option>
 							        	<option value="1">+Repair</option>
 							        	<option value="2">+Unpack</option>
 							        	<option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
-							        </select>
+							        </select></a>
 							        <!--#if $script_list#-->
-							        <select id="addID_script" title="Script">
+							        <a><select id="addID_script" title="Script">
 							        <!--#for $sc in $script_list#-->
 							        	<option value="$sc">$sc</option>
 							        <!--#end for#-->
-							        </select>
+							        </select></a>
 							        <!--#end if#-->
 								</li>
-								<li><a><input type="submit" id="addID" value="Add" style="cursor:pointer"/></a></li>
 							</ul>
 						</li>
-						<li><a class="daddy">by File Upload</a>
+						<li><a>&raquo; File Upload</a>
 							<form action="addFile" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})">
 							<ul>
 								<li><a><input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="4" /></a></li>
+								<li><a>&raquo;&nbsp;<input type="submit" id="addNZBbyFile" value="Add NZB" style="cursor:pointer"/></a></li>
 								<li>
 						        <!--#if $cat_list#-->
-        				   		<select name="cat" title="Category">
+        				   		<a><select name="cat" title="Category">
 						        <!--#for $ct in $cat_list#-->
 						        	<option value="$ct">$ct</option>
 						        <!--#end for#-->
-						        </select>
+						        </select></a>
 						        <!--#end if#-->
-						        <select name="pp" title="Post-Processing Option">
+						        <a><select name="pp" title="Post-Processing Option">
 						        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
 						        <option value="0">(Skip)</option>
 						        <option value="1">+Repair</option>
 						        <option value="2">+Unpack</option>
 						        <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
-						        </select>
+						        </select></a>
 						        <!--#if $script_list#-->
-						        <select name="script" title="Script">
+						        <a><select name="script" title="Script">
 						        <!--#for $sc in $script_list#-->
 						        	<option value="$sc">$sc</option>
 						        <!--#end for#-->
-						        </select>
+						        </select></a>
 						        <!--#end if#-->
 								</li>
-								<li><a><input type="submit" id="addNZBbyFile" value="Add" style="cursor:pointer"/></a></li>
 							</ul>
 							</form>
 						</li>
 					</ul>
 				</li>
-				<li><a><select id="refreshRate-option">
+				<li><a><select id="refreshRate-option" style="cursor:pointer">
 							<option value="1">1s</option>
 							<option value="2">2s</option>
 							<option value="4">4s</option>
@@ -116,9 +117,9 @@
 							<option value="1800">30m</option>
 							<option value="0">No</option>
 						</select>&nbsp;Refresh</a></li>
-				<li><a class="daddy">On Queue Finish</a>
+				<li><a>On Queue Finish</a>
 					<ul><li>
-						<select style="width:130px" id="onQueueFinish-option">
+						<a><select style="width:130px" id="onQueueFinish-option">
 							<option value=""></option>
 							    <optgroup label="Actions">
 							        <!--#if $nt#-->
@@ -136,7 +137,7 @@
 							    <!--#end for#-->
 							    </optgroup>
 							<!--#end if#-->
-						</select>
+						</select></a>
 					</li></ul>
 				</li>
 				<li><a href="connections">Configuration</a></li>

@@ -6,11 +6,43 @@ var queueSortAge = false;
 // once the DOM is ready, run this
 $(document).ready(function() {
 
+
+	$(document).ready(function(){
+		$(".nav").superfish({
+			animation : { opacity:"show", height:"show" },
+		/*	hoverClass	: "sfHover",
+			pathClass	: "overideThisToUse",
+			delay		: 800,
+			animation	: {opacity:"show"},
+			speed		: "normal",
+			oldJquery	: false, // set to true if using jQuery version below 1.2 
+			disableHI	: false, // set to true to disable hoverIntent detection
+			onInit		: function(){},
+			onBeforeShow: function(){},
+			onShow		: function(){},
+			onHide		: function(){} */
+		});
+	});
+
+
+
+
+
+
+
+
+
+
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
 		refreshRate = ReadCookie('Plush2Refresh');
 	else
 		SetCookie('Plush2Refresh',refreshRate);
+		
+		
+		
+		
+		
 		
 	// set Refresh rate within main menu	
 	$("#refreshRate-option").val(refreshRate);

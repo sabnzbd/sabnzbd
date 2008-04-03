@@ -4,6 +4,15 @@ body {
 	font-family: arial, "lucida console", sans-serif;
 }
 
+select, input {
+	border: 0px;
+	background: #333;
+	color: #FFF;
+	display:inline;
+}
+
+ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
+
 #new_release_notification {
 	text-align: center;
 }
@@ -283,90 +292,10 @@ tr:hover .history_added  {
 	font-size: 60%;
 }
 
-/* http://www.htmldog.com/articles/suckerfish/dropdowns/example/ */
 
-#nav {
-	overflow:hidden; width: 100px; padding: 0; float:left; margin-left: 11%; margin-top: 5px;
-	list-style: none;
-	cursor: default;
-}
 
-#nav ul {
-	/* float: left; */
-	text-align: center;
-	list-style: none;
-	line-height: 1;
-	font-weight: bold;
-	padding: 0;
-	border: solid #eda;
-	border-width: 0px;
-}
 
-#nav ul {
-	background: #666;
-}
-#nav a {
-	display: block;
-	/* width: 4em; */
-	color: #FFF;
-	text-decoration: none;
-	padding: 0.25em 0.25em;
-}
 
-#nav a.daddy {
-	background: url(../images/plush_default/ql_bullet.png) center right no-repeat;
-}
-
-#nav li {
-	float: left;
-	padding: 0;
-	z-index:10000;
-	/* width: 4em; */
-}
-
-#nav li ul {
-	text-align: left;
-	position: absolute;
-	left: -999em;
-	height: auto;
-	width: 8em;
-	font-weight: normal;
-	border-width: 0.25em;
-	margin: 0;
-}
-
-#nav li li {
-	padding-right: 1em;
-	width: 7em;
-}
-
-#nav li ul a {
-	width: 8em;
-}
-
-#nav li ul ul {
-	margin: -1.75em 0 0 8em;
-}
-
-#nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul {
-	left: -999em;
-}
-
-#nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul {
-	left: auto;
-}
-
-#nav li:hover, #nav li.sfhover {
-	background: orange;
-}
-
-select, input {
-	border: 0px;
-	background: #333;
-	color: #FFF;
-	display:inline;
-}
-ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 #page-wrap { width: 90%; margin: 0px auto; }
 .box_banner_hr {
 	background: #cfcfcf url(../images/plush_default/qh_seperator.png) 0 0 repeat-x;
@@ -640,17 +569,262 @@ fieldset.EntryFieldSet {
 
 
 
-/* Clearfix
------------------------------------------------------------ */
+
+
+/* This file is commented in great detail for educational purposes. There is also
+ * an uncommented version for use production use here:
+ * http://users.tpg.com.au/j_birch/plugins/superfish/superfish.css
+ */
+
+/**************** ESSENTIAL STYLES ***************/
+/* This first group of styles are most important for the function of Superfish.
+ * The more cosmetic styling rules are grouped together below under the heading
+ * ORIGINAL SKIN.
+ *
+ * Note that this CSS file will create the kind of menu demonstrated on the main
+ * page of the Superfish documentation, ie. top tier of nav is horizontal, with
+ * subsequent tiers vertical.
+ */
+ 
+/* remove any default styles */
+.nav, .nav * {
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+
+/* top ul.nav element */
+.nav {
+	line-height:1.0; /* makes calculating the 'top' value for first submenu easier */
+}
+
+/* nested submenu ul elements */
+.nav ul {
+	position:absolute; /* remove from flow and allow positioning */
+	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
+	width:9.45em; /* VARIABLE. Must have a width for menu items to inherit. Use ems so font scaling does not break design*/
+}
+/* submenu items */
+.nav ul li,
+.nav a { /* this affects top level anchors too */
+	width: 100%;/* stretch submenu items to width of submenu ul width (see .nav ul rules above). When link text runs over more than one line, use padding and an explicit width for the anchor instead of width:100% and text-indent. Example below in the SKIN section */
+	}
+
+
+
+/* all li elements */
+.nav li {
+	float:left; /* must float all li elements. Vertical submenu items are restrained by parent ul width (see .nav ul rules above) */
+	position:relative; /* make child submenu ul position relative to parent li */
+	z-index:99; /* ensure submenus appear above other page items. Increase if needed, but do not exceed thickbox overlay z-index! */
+}
+
+/* all anchor elements */
+.nav a {
+	display:block; /* make IE6 obey width when text-indent is used */
+}
+
+/**** Position of second tier of nav ****/
+.nav li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
+ul.nav li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
+{
+	left:-1px; /* position first submenu directly under parent li */
+	top:2.5em; /* VARIABLE. This is calculated by adding 1em text height to top and bottom anchor element padding (original skin: .75em top + .75em bottom + 1em text height = 2.5em) */
+}
+
+/**** Position of third tier of nav ****/
+ /* Note that this rule must appear here in the code order in order for it to override previous positioning rules so that this and subsequent nested submenus still remain hidden when the parent submenu is shown. Do not group these selectors with other top:-999em rules */
+.nav li:hover li ul,
+.nav li.sfHover li ul {
+	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
+}
+/* DO NOT attempt to group these selectors with similar earlier rules. The code order is important so the rules override previous ones correctly */
+.nav li li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
+ul.nav li li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
+ {
+	left:9.45em; /* VARIABLE. Offset subsequent submenus to the right by the amount you set for the submenu widths (see .nav ul rules above) */
+	top:-1px; /* position subsequent submenus horizontally aligned to parent li */
+}
+
+/**** Position of fourth tier of nav (not used on main demo page. You could delete this block for a three tiered nav) ****/
+ /* Note that this rule must appear here in the code order in order for it to override previous positioning rules so that this and subsequent nested submenus still remain hidden when the parent submenu is shown. Do not group these selectors with other top:-999em rules */
+.nav li li:hover li ul,
+.nav li li.sfHover li ul {
+	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
+}
+/* DO NOT attempt to group these selectors with similar earlier rules. The code order is important so the rules override previous ones correctly */
+.nav li li li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
+ul.nav li li li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
+ {
+	left:9.45em; /* VARIABLE. Offset subsequent submenus to the right by the amount you set for the submenu widths (see .nav ul rules above) */
+	top:-1px; /* position subsequent submenus horizontally aligned to parent li */
+}
+
+/**** Position of further tiers of nav ****/
+/* To add further tiers, you need copy the previous block of code (everything back until the "Position of fourth tier of nav" comment) and paste it in here. Then add an extra li just after .nav in each of the pasted selectors. So the new block will differ from the copied block in the same way that the block for the fourth tier differs from the block for the third tier.*/
+
+
+/**** Very important ****/
+/* this negates the pure CSS hovers so submenu remains hidden and JS controls when and how it appears. This is in turn is overridden by the .sfHover rules above as they have greater specificity */
+/* notice there are three selectors here. You need three for a four tier menu system. If you had a five tier system you would copy the last selector of these three and paste it below to create a fourth selector and add another li just after the .superfish part. On the other hand if you only had a three tiered menu you could delete the third line here and save some file size.*/
+.superfish li:hover ul,
+.superfish li li:hover ul,
+.superfish li li li:hover ul {
+	top: -999em; /* hide submenu in screen-reader and search-engine friendly way */
+}
+
+/* A quick note about issues with submenus appearing under Flash animations. Some say that setting wmode="opaque" or  wmode="transparent" on the embed or object tag is sufficient. This does fix many issues but I find it sometimes helps to also add this CSS: */
+embed, object {
+	position: relative;
+	z-index: 0;
+	}
+
+/******************** ORIGINAL SKIN ******************/
 /*
-#topbar:after,
-.subMenu:after {
-	content: " ";
-	clear: both;
+ * The CSS below is my attempt to extract most of the stuff you need to change in order
+ * to reskin the menu with the appearance you require. However, certain rules above
+ * (indicated with the word "VARIABLE") may also need to be altered to suit the width
+ * and height of your menu items and submenus. For example, if you need wider submenus
+ * eg: .nav ul { width:12em} then you will need to also apply that value
+ * to the left offset of any deeper nested submenus, eg:
+ * .nav li li:hover ul,
+ * ul.nav li li.sfHover ul {
+	 left:12em; top:-1px;
+   }
+ *
+ * Other than that, most of the cosmetic stuff is below:
+ */
+
+.nav {
+	/* if you want to change font-size, do it here as opposed to setting it on deeper nested anchor elements for example,  so that the em unit is the same size for all elements in the menu */
+	float:left; /* necessary if you don't want this element to collapse */
+	cursor:default;
+	margin-left: 35%;
+	margin-top: 4px;
+	padding-left:20px;
+	margin-bottom: -8px;
+}
+.nav ul {
+	margin-top:10px;
+	border:4px solid #EEDDAA;
+}
+.nav li {
+	width:100px; /* affects top level menu items only, as nested li elements have width 100% of their ul parent (see .nav ul rules above)*/
+}
+.nav a {
+	color: white;
+	padding: 0.5em 0; /* note that the top and bottom padding will affect the 'top' value (marked with the word "VARIABLE") of the second tier of nav (see "essential rules" above and alter accordingly) */
+	text-decoration:none;
+	text-indent: 0.85em;
+}
+/* if link text runs over two or more lines, you will want padding in the anchor element instead of relying on text-indent to provide space. The following disabled rule shows how to style the submenu links in this case. Note that the width plus left and right padding must equal the width set above for the submenu (.nav ul) */
+/*
+.nav ul a {
+	width: 7.45em;
+	padding: .75em 1em;
+	text-indent: 0;
+	}
+*/
+.nav li:hover, .nav li.sfHover,
+.nav a:focus, .nav a:hover, .nav a:active {
+	background-color:#FFA500; /* hover highlight */
+}
+.nav li li {
+	background:#333333; /* slightly darker shade for nested submenus */
+}
+.nav ul li ul {
+	margin-top:0px;
+}
+.nav li li li {
+	background:#1D1C1C; /* slightly darker shade for nested submenus */
+}
+.nav input {
+	border: 1px dotted white;
+	padding:4px;
+	font-size: 66%;
+}
+.nav select {
+	font-size: 66%;
+}
+
+
+
+
+
+
+/* OLD VERSION  =============================  http://www.htmldog.com/articles/suckerfish/dropdowns/example/ */
+/*
+#nav {
+	overflow:hidden; width: 100px; padding: 0; float:left; margin-left: 11%; margin-top: 5px;
+	list-style: none;
+	cursor: default;
+}
+
+#nav ul {
+	text-align: center;
+	list-style: none;
+	line-height: 1;
+	font-weight: bold;
+	padding: 0;
+	border: solid #eda;
+	border-width: 0px;
+}
+
+#nav ul {
+	background: #666;
+}
+#nav a {
 	display: block;
-	width: 100%;
-	height: 0;
-	visibility: hidden;
+	color: #FFF;
+	text-decoration: none;
+	padding: 0.25em 0.25em;
+}
+
+#nav a.daddy {
+	background: url(../images/plush_default/ql_bullet.png) center right no-repeat;
+}
+
+#nav li {
+	float: left;
+	padding: 0;
+	z-index:10000;
+}
+
+#nav li ul {
+	text-align: left;
+	position: absolute;
+	left: -999em;
+	height: auto;
+	width: 8em;
+	font-weight: normal;
+	border-width: 0.25em;
+	margin: 0;
+}
+
+#nav li li {
+	padding-right: 1em;
+	width: 7em;
+}
+
+#nav li ul a {
+	width: 8em;
+}
+
+#nav li ul ul {
+	margin: -1.75em 0 0 8em;
+}
+
+#nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul {
+	left: -999em;
+}
+
+#nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul {
+	left: auto;
+}
+
+#nav li:hover, #nav li.sfhover {
+	background: orange;
 }
 */
+
 
