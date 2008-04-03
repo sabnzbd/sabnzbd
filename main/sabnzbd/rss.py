@@ -81,7 +81,7 @@ class RSSQueue:
             self.jobs = sabnzbd.load_data(RSS_FILE_NAME, remove = False)
         except:
             pass
-        # jobs is a URI-indexed dictionary
+        # jobs is a NAME-indexed dictionary
         #    Each element is link-indexed dictionary
         #        Each element is an array:
         #           0 = 'D', 'G', 'B' (downloaded, good-match, bad-match)
@@ -89,6 +89,7 @@ class RSSQueue:
         #           2 = URL or MsgId
         #           3 = cat
         #           4 = pp
+        #           5 = script
         if type(self.jobs) != type({}):
             self.jobs = {}
 
@@ -96,40 +97,43 @@ class RSSQueue:
 
 
     @synchronized(LOCK)
-    def run_uri(self, uri=None, rematch=False):
+    def run_feed(self, feed=None, rematch=False):
         """ Run the query for one URI and apply filters """
-        if not uri: return
+        if not feed: return
 
         newlinks = []
 
         # Preparations, get options
-        if len(sabnzbd.CFG['categories']):
-            defCat = sabnzbd.CFG['rss'][uri]['cat']
-            haveCat = True
-        else:
-            defCat = sabnzbd.CFG['rss'][uri]['pp']
-            haveCat = False
+        cfg = sabnzbd.CFG['rss'][feed]
+        uri = cfg['uri']
+        defCat = cfg['cat']
+        defPP = cfg['pp']
+        defScript = cfg['script']
 
-        enabled = int(sabnzbd.CFG['rss'][uri]['enable'])
+        enabled = int(cfg['enable'])
 
         # Preparations, convert filters to regex's
-        filters = ListFilters(uri)
+        filters = ListFilters(feed)
         regexes = []
-        retypes = []
-        recats = []
+        reTypes = []
+        reCats = []
+        rePPs = []
+        reScripts = []
         for n in xrange(len(filters)):
-            recats.append(filters[n][0])
-            retypes.append(filters[n][1])
-            regexes.append(ConvertFilter(filters[n][2]))
+            reCats.append(filters[n][0])
+            rePPs.append(filters[n][1])
+            reScripts.append(filters[n][2])
+            reTypes.append(filters[n][3])
+            regexes.append(ConvertFilter(filters[n][4]))
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
         # in that case nothing will be downloaded.
-        first = uri not in self.jobs
+        first = feed not in self.jobs
         if first:
-            self.jobs[uri] = {}
+            self.jobs[feed] = {}
 
-        jobs = self.jobs[uri]
+        jobs = self.jobs[feed]
 
         if rematch:
             logging.debug('[%s] Rematching RSS-feed %s', __NAME__, uri)
@@ -163,6 +167,8 @@ class RSSQueue:
                     newlinks.append(link)
 
                 myCat = defCat
+                myPP = ''
+                myScript = ''
 
                 if link not in jobs or (rematch and jobs[link][0]!='D'):
                     # Match this title against all filters
@@ -170,26 +176,25 @@ class RSSQueue:
                     result = False
                     for n in xrange(regcount):
                         found = re.search(regexes[n], title)
-                        if found and retypes[n]=='A':
+                        if found and reTypes[n]=='A':
                             logging.debug("[%s] Filter matched on rule %d", __NAME__, n)
                             result = True
-                            if recats[n]: myCat = recats[n]
+                            if reCats[n]: myCat = reCats[n]
+                            if rePPs[n]: myPP = rePPs[n]
+                            if reScripts[n]: myScript = reScripts[n]
+                            if not myCat:
+                                if not myPP: myPP = defPP
+                                if not myScript: myScript = defScript
                             break
-                        if found and retypes[n]=='R':
+                        if found and reTypes[n]=='R':
                             logging.debug("[%s] Filter rejected on rule %d", __NAME__, n)
                             result = False
                             break
 
-                    if haveCat:
-                        myPp = ''
-                    else:
-                        myPp = myCat
-                        myCat = ''
-
                     if result:
-                        _HandleLink(jobs, link, title, 'G', myPp, myCat, enabled and not first)
+                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, enabled and not first)
                     else:
-                        _HandleLink(jobs, link, title, 'B', myPp, myCat, False)
+                        _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False)
 
 
         # If links were dropped by feed, remove from our tables too
@@ -204,13 +209,13 @@ class RSSQueue:
     def run(self):
         """ Run all the URI's and filters """
         # Protect against second scheduler call before current
-        # run is completed. Cannot use LOCK, because run_uri
+        # run is completed. Cannot use LOCK, because run_feed
         # already uses the LOCK.
 
         if not self.__running:
             self.__running = True
-            for uri in sabnzbd.CFG['rss']:
-                self.run_uri(uri)
+            for feed in sabnzbd.CFG['rss']:
+                self.run_feed(feed)
                 # Wait two minutes, else newzbin may get irritated
                 time.sleep(120)
             self.save()
@@ -218,10 +223,10 @@ class RSSQueue:
 
 
     @synchronized(LOCK)
-    def show_result(self, uri):
-        if uri in self.jobs:
+    def show_result(self, feed):
+        if feed in self.jobs:
             try:
-                return self.jobs[uri]
+                return self.jobs[feed]
             except:
                 return {}
         else:
@@ -232,21 +237,24 @@ class RSSQueue:
         sabnzbd.save_data(self.jobs, sabnzbd.RSS_FILE_NAME)
 
     @synchronized(LOCK)
-    def delete(self, uri):
-        if uri in self.jobs:
-            del self.jobs[uri]
+    def delete(self, feed):
+        if feed in self.jobs:
+            del self.jobs[feed]
 
     @synchronized(LOCK)
-    def flag_downloaded(self, uri, id):
-        if uri in self.jobs:
-            lst = self.jobs[uri]
+    def flag_downloaded(self, feed, id):
+        if feed in self.jobs:
+            lst = self.jobs[feed]
             for link in lst:
                 if lst[link][2] == id:
                     lst[link][0] = 'D'
 
 
-def _HandleLink(jobs, link, title, flag, pp, cat, download):
+def _HandleLink(jobs, link, title, flag, cat, pp, script, download):
     """ Process one link """
+    if script=='': script = None
+    if pp=='': pp = None
+
     m = RE_NEWZBIN.search(link)
     if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
         jobs[link] = []
@@ -256,14 +264,16 @@ def _HandleLink(jobs, link, title, flag, pp, cat, download):
             jobs[link].append('')
             jobs[link].append('')
             jobs[link].append('')
+            jobs[link].append('')
             logging.info("[%s] Adding %s (%s) to queue", __NAME__, m.group(3), title)
-            sabnzbd.add_msgid(m.group(3), pp=pp, cat=cat)
+            sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat)
         else:
             jobs[link].append(flag)
             jobs[link].append(title)
             jobs[link].append(m.group(3))
             jobs[link].append(cat)
             jobs[link].append(pp)
+            jobs[link].append(script)
     else:
         jobs[link] = []
         if download:
@@ -272,14 +282,16 @@ def _HandleLink(jobs, link, title, flag, pp, cat, download):
             jobs[link].append('')
             jobs[link].append('')
             jobs[link].append('')
+            jobs[link].append('')
             logging.info("[%s] Adding %s (%s) to queue", __NAME__, link, title)
-            sabnzbd.add_url(link, pp=pp, cat=cat)
+            sabnzbd.add_url(link, pp=pp, script=script, cat=cat)
         else:
             jobs[link].append(flag)
             jobs[link].append(title)
             jobs[link].append(link)
             jobs[link].append(cat)
             jobs[link].append(pp)
+            jobs[link].append(script)
 
 
 def _get_link(uri, entry):

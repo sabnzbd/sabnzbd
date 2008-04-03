@@ -171,19 +171,26 @@ def IntConv(value):
         value = 0
     return value
 
-
-def ListHandler(var):
-    """ Return list option as a comma-seperated string """
-    if not var:
-        value = ','
-    elif type(var) == type(''):
-        value = '%s,' % var
-    else:
-        value = listquote.makelist(var)
-    value = value.strip('[]')
-    return value
+def IsNone(value):
+    """ Return True if either None, 'None' or '' """
+    return value==None or value=="" or value.lower()=='none'
 
 
+def List2String(lst):
+    """ Return list as a comma-separated string """
+    if type(lst) == type(""):
+        return lst
+    txt = ''
+    r = len(lst)
+    for n in xrange(r):
+        txt += lst[n]
+        if n < r-1: txt += ', '
+
+    return txt
+
+def String2List(txt):
+    """ Return comma-separated string as a list """
+    
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
     def beforeMain(self):
@@ -1177,7 +1184,7 @@ class ConfigGeneral(ProtectedClass):
             config['web_colors'] = ListColors(sabnzbd.WEB_DIR2)
             config['web_color'] = sabnzbd.WEB_COLOR2
 
-        config['cleanup_list'] = ListHandler(sabnzbd.CFG['misc']['cleanup_list'])
+        config['cleanup_list'] = List2String(sabnzbd.CFG['misc']['cleanup_list'])
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             searchList=[config],
@@ -1353,34 +1360,33 @@ class ConfigServer(ProtectedClass):
 
 #------------------------------------------------------------------------------
 
-def ListFilters(uri):
-    """ Make a list of all filters of this uri """
+def ListFilters(feed):
+    """ Make a list of all filters of this feed """
     n = 0
     filters= []
+    cfg = sabnzbd.CFG['rss'][feed]
     while True:
         try:
-            tup = sabnzbd.CFG['rss'][uri]['filter'+str(n)].split('|')
-            tup.append(n)
+            tup = cfg['filter'+str(n)]
             filters.append(tup)
             n = n + 1
         except:
             break
     return filters
 
-def UnlistFilters(uri, filters):
-    """ Convert list to filter list for this uri """
-    cfg = sabnzbd.CFG['rss'][uri]
-    cat = cfg['cat']
-    pp = cfg['pp']
-    del cfg
-    sabnzbd.CFG['rss'][uri] = {}
-    cfg = sabnzbd.CFG['rss'][uri]
-    cfg['cat'] = cat
-    cfg['pp'] = pp
+def UnlistFilters(feed, filters):
+    """ Convert list to filter list for this feed """
+    cfg = sabnzbd.CFG['rss'][feed]
     n = 0
-    for filt in filters:
-        cfg['filter'+str(n)] = '%s|%s|%s' % (filt[0], filt[1], filt[2])
-        n = n + 1
+    while True:
+        try:
+            del cfg['filter'+str(n)]
+            n = n + 1
+        except:
+            break
+
+    for n in xrange(len(filters)):
+        cfg['filter'+str(n)] = filters[n]
 
 
 class ConfigRss(ProtectedClass):
@@ -1400,20 +1406,28 @@ class ConfigRss(ProtectedClass):
         config['have_feedparser'] = sabnzbd.rss.HAVE_FEEDPARSER
 
         config['script_list'] = ListScripts()
+        config['script_list'].insert(0, 'Default')
+
         config['cat_list'] = ListCats()
 
         rss = {}
-        for uri in sabnzbd.CFG['rss']:
-            rss[uri] = {}
-            rss[uri]['cat'] = sabnzbd.CFG['rss'][uri]['cat']
-            rss[uri]['pp'] = sabnzbd.CFG['rss'][uri]['pp']
-            rss[uri]['enable'] = IntConv(sabnzbd.CFG['rss'][uri]['enable'])
-            rss[uri]['pick_cat'] = config['cat_list'] and not IsNewzbin(uri)
-            rss[uri]['pick_pp'] = not config['cat_list']
-            filters = ListFilters(uri)
-            rss[uri]['filters'] = filters
-            rss[uri]['filtercount'] = len(filters)
+        unum = 1
+        for feed in sabnzbd.CFG['rss']:
+            rss[feed] = {}
+            cfg = sabnzbd.CFG['rss'][feed]
+            rss[feed]['uri'] = cfg['uri']
+            rss[feed]['cat'] = cfg['cat']
+            rss[feed]['pp'] = cfg['pp']
+            rss[feed]['script'] = cfg['script']
+            rss[feed]['enable'] = IntConv(cfg['enable'])
+            rss[feed]['pick_cat'] = config['cat_list'] != [] and not IsNewzbin(cfg['uri'])
+            rss[feed]['pick_script'] = config['script_list'] != []
+            filters = ListFilters(feed)
+            rss[feed]['filters'] = filters
+            rss[feed]['filtercount'] = len(filters)
+            unum += 1
         config['rss'] = rss
+        config['feed'] = 'Feed' + str(unum)
 
         template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
                             searchList=[config],
@@ -1422,92 +1436,98 @@ class ConfigRss(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def upd_rss_feed(self, this_uri=None, uri=None, cat=None, pp=None, dummy=None):
-        if this_uri and this_uri != uri:
-            try:
-                data = sabnzbd.CFG['rss'][this_uri].copy()
-                del sabnzbd.CFG['rss'][this_uri]
-                sabnzbd.del_rss_feed(this_uri)
-            except:
-                data = {}
-            sabnzbd.CFG['rss'][uri] = data
-        else:
-            uri = this_uri
-
-        logging.debug('++> CHANGING %s %s %s', uri, cat, pp)
-        if not cat: cat = ''
-        sabnzbd.CFG['rss'][uri]['cat'] = cat
-        if not pp: pp = ''
-        sabnzbd.CFG['rss'][uri]['pp'] = pp
-        sabnzbd.CFG['rss'][uri]['enable'] = 0
-
-        save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
-
-    @cherrypy.expose
-    def add_rss_feed(self, uri=None, dummy=None):
+    def upd_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, dummy=None):
         try:
-            sabnzbd.CFG['rss'][uri]
+            cfg = sabnzbd.CFG['rss'][feed]
         except:
-            sabnzbd.CFG['rss'][uri] = {}
-            sabnzbd.CFG['rss'][uri]['cat'] = ''
-            sabnzbd.CFG['rss'][uri]['pp'] = ''
-            sabnzbd.CFG['rss'][uri]['enable'] = 0
-        save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
-
-    @cherrypy.expose
-    def upd_rss_filter(self, uri=None, index=None, filter_text=None,
-                       filter_type=None, cat=None, pp=None, dummy=None):
-        try:
-            cfg = sabnzbd.CFG['rss'][uri]
-            if not cat: cat = ''
-            if not pp: pp = ''
-            cfg['filter'+str(index)] = '%s|%s|%s' % (cat+pp, filter_type, filter_text)
+            feed = None
+        if feed and uri:
+            cfg['uri'] = uri
+            if IsNone(cat): cat = ''
+            cfg['cat'] = cat
+            if IsNone(pp): pp = ''
+            cfg['pp'] = pp
+            if script==None or script=='Default': script = ''
+            cfg['script'] = script
             cfg['enable'] = 0
-        except:
-            pass
-        save_configfile(sabnzbd.CFG)
+            save_configfile(sabnzbd.CFG)
+
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
-    def pos_rss_filter(self, uri=None, current=None, new=None, dummy=None):
-        if current != new:
-            filters = ListFilters(uri)
-            filter = filters.pop(int(current))
-            filters.insert(int(new), filter)
-            UnlistFilters(uri, filters)
-            sabnzbd.CFG['rss'][uri]['enable'] = 0
+    def add_rss_feed(self, feed=None, uri=None, dummy=None):
+        try:
+            sabnzbd.CFG['rss'][feed]
+        except:
+            sabnzbd.CFG['rss'][feed] = {}
+            cfg = sabnzbd.CFG['rss'][feed]
+            cfg['uri'] = uri
+            cfg['cat'] = ''
+            cfg['pp'] = ''
+            cfg['script'] = ''
+            cfg['enable'] = 0
             save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
-    def del_rss_feed(self, this_uri=None, uri=None, cat=None, pp=None, dummy=None):
+    def upd_rss_filter(self, feed=None, index=None, filter_text=None,
+                       filter_type=None, cat=None, pp=None, script=None, dummy=None):
         try:
-            del sabnzbd.CFG['rss'][this_uri]
-            sabnzbd.del_rss_feed(this_uri)
+            cfg = sabnzbd.CFG['rss'][feed]
         except:
-            pass
+            raise Raiser(self.__root, dummy)
+
+        if IsNone(cat): cat = ''
+        if IsNone(pp): pp = ''
+        if script==None or script=='Default': script = ''
+        cfg['filter'+str(index)] = (cat, pp, script, filter_type, filter_text)
+        cfg['enable'] = 0
         save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
-    def del_rss_filter(self, uri=None, index=None, dummy=None):
-        if uri and index!=None:
-            filters = ListFilters(uri)
+    def pos_rss_filter(self, feed=None, current=None, new=None, dummy=None):
+        if current != new:
+            filters = ListFilters(feed)
+            filter = filters.pop(int(current))
+            filters.insert(int(new), filter)
+            UnlistFilters(feed, filters)
+            sabnzbd.CFG['rss'][feed]['enable'] = 0
+            save_configfile(sabnzbd.CFG)
+        raise Raiser(self.__root, dummy)
+
+    @cherrypy.expose
+    def del_rss_feed(self, *args, **kwargs):
+        if 'feed' in kwargs:
+            feed = kwargs['feed']
+            try:
+                del sabnzbd.CFG['rss'][feed]
+                sabnzbd.del_rss_feed(feed)
+            except:
+                pass
+            save_configfile(sabnzbd.CFG)
+        if 'dummy' in kwargs:
+            raise Raiser(self.__root, kwargs['dummy'])
+        else:
+            raise Raiser(self.__root, '')
+
+    @cherrypy.expose
+    def del_rss_filter(self, feed=None, index=None, dummy=None):
+        if feed and index!=None:
+            filters = ListFilters(feed)
             filter = filters.pop(int(index))
-            UnlistFilters(uri, filters)
-            sabnzbd.CFG['rss'][uri]['enable'] = 0
+            UnlistFilters(feed, filters)
+            sabnzbd.CFG['rss'][feed]['enable'] = 0
             save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def query_rss_feed(self, *args, **kwargs):
-        if 'this_uri' in kwargs:
-            uri = kwargs['this_uri']
-            sabnzbd.CFG['rss'][uri]['enable'] = 0
-            sabnzbd.run_rss_feed(uri)
-            return ShowRssLog(uri)
+        if 'feed' in kwargs:
+            feed = kwargs['feed']
+            sabnzbd.CFG['rss'][feed]['enable'] = 0
+            sabnzbd.run_rss_feed(feed)
+            return ShowRssLog(feed)
         if 'dummy' in kwargs:
             raise Raiser(self.__root, kwargs['dummy'])
         else:
@@ -1515,11 +1535,11 @@ class ConfigRss(ProtectedClass):
 
     @cherrypy.expose
     def rematch_rss_feed(self, *args, **kwargs):
-        if 'this_uri' in kwargs:
-            uri = kwargs['this_uri']
-            sabnzbd.CFG['rss'][uri]['enable'] = 0
-            sabnzbd.run_rss_feed(uri, True)
-            return ShowRssLog(uri)
+        if 'feed' in kwargs:
+            feed = kwargs['feed']
+            sabnzbd.CFG['rss'][feed]['enable'] = 0
+            sabnzbd.run_rss_feed(feed, True)
+            return ShowRssLog(feed)
         if 'dummy' in kwargs:
             raise Raiser(self.__root, kwargs['dummy'])
         else:
@@ -1528,8 +1548,8 @@ class ConfigRss(ProtectedClass):
 
     @cherrypy.expose
     def rsslog(self, *args, **kwargs):
-        if 'this_uri' in kwargs:
-            return ShowRssLog(kwargs['this_uri'])
+        if 'feed' in kwargs:
+            return ShowRssLog(kwargs['feed'])
         if 'dummy' in kwargs:
             raise Raiser(self.__root, kwargs['dummy'])
         else:
@@ -1537,12 +1557,12 @@ class ConfigRss(ProtectedClass):
 
     @cherrypy.expose
     def enable_rss_feed(self, *args, **kwargs):
-        if 'this_uri' in kwargs:
+        if 'feed' in kwargs:
             try:
-                uri = kwargs['this_uri']
-                sabnzbd.CFG['rss'][uri]['enable'] = 1
+                feed = kwargs['feed']
+                sabnzbd.CFG['rss'][feed]['enable'] = 1
                 save_configfile(sabnzbd.CFG)
-                sabnzbd.run_rss_feed(uri, True)
+                sabnzbd.run_rss_feed(feed, True)
             except:
                 pass
         if 'dummy' in kwargs:
@@ -1552,9 +1572,9 @@ class ConfigRss(ProtectedClass):
 
     @cherrypy.expose
     def disable_rss_feed(self, *args, **kwargs):
-        if 'this_uri' in kwargs:
+        if 'feed' in kwargs:
             try:
-                sabnzbd.CFG['rss'][kwargs['this_uri']]['enable'] = 0
+                sabnzbd.CFG['rss'][kwargs['feed']]['enable'] = 0
                 save_configfile(sabnzbd.CFG)
             except:
                 pass
@@ -1564,12 +1584,12 @@ class ConfigRss(ProtectedClass):
             raise Raiser(self.__root, '')
 
     @cherrypy.expose
-    def rss_download(self, uri=None, id=None, cat=None, pp=None, dummy=None):
+    def rss_download(self, feed=None, id=None, cat=None, pp=None, script=None, dummy=None):
         if id and id.isdigit():
-            sabnzbd.add_msgid(id, pp, None, cat)
+            sabnzbd.add_msgid(id, pp, script, cat)
         elif id:
-            sabnzbd.add_url(id, pp, None, cat)
-        sabnzbd.rss_flag_downloaded(uri, id)
+            sabnzbd.add_url(id, pp, script, cat)
+        sabnzbd.rss_flag_downloaded(feed, id)
         raise Raiser(self.__root, dummy)
 
 
@@ -1714,10 +1734,10 @@ class ConfigCats(ProtectedClass):
                 slot['dir'] = sabnzbd.CFG['categories'][cat]['dir']
             except:
                 slot['dir'] = ''
-            try:
-                slot['newzbin'] = ListHandler(sabnzbd.CFG['categories'][cat]['newzbin'])
-            except:
-                slot['newzbin'] = ','
+            #try:
+            slot['newzbin'] = List2String(sabnzbd.CFG['categories'][cat]['newzbin'])
+            #except:
+            #    slot['newzbin'] = ''
             slotinfo.append(slot)
         config['slotinfo'] = slotinfo
 
@@ -1944,11 +1964,11 @@ def ShowFile(name, path):
 ''' % (name, name, escape(msg))
 
 
-def ShowRssLog(uri):
+def ShowRssLog(feed):
     """Return a html page listing an RSS log and a 'back' button
     """
-    jobs = sabnzbd.show_rss_result(uri)
-    quri = escape(uri.replace('/','%2F').replace('?', '%3F'))
+    jobs = sabnzbd.show_rss_result(feed)
+    qfeed = escape(feed.replace('/','%2F').replace('?', '%3F'))
 
     doneStr = ""
     for x in jobs:
@@ -1965,8 +1985,20 @@ def ShowRssLog(uri):
         job = jobs[x]
         if job[0] == 'B':
             name = escape(job[2]).replace('/','%2F').replace('?', '%3F')
-            badStr += '<a href="rss_download?uri=%s&id=%s&cat=%s&pp=%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
-                (quri, name, escape(job[3]), escape(job[4]), encode_for_xml(escape(job[1])))
+            if job[3]:
+                cat = '&cat=' + escape(job[3])
+            else:
+                cat = ''
+            if job[4]:
+                pp = '&pp=' + escape(job[4])
+            else:
+                pp = ''
+            if job[5]:
+                script = '&script=' + escape(job[5])
+            else:
+                script = ''
+            badStr += '<a href="rss_download?feed=%s&id=%s%s%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
+                (qfeed, name, cat, pp, encode_for_xml(escape(job[1])))
 
     return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -1990,7 +2022,7 @@ def ShowRssLog(uri):
     <br/>
 </body>
 </html>
-''' % (escape(uri), escape(uri), goodStr, badStr, doneStr)
+''' % (escape(feed), escape(feed), goodStr, badStr, doneStr)
 
 
 def build_header(prim):

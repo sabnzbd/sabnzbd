@@ -1328,22 +1328,22 @@ def init_RSS():
 
     return need_rsstask
 
-def del_rss_feed(uri):
+def del_rss_feed(feed):
     if RSS:
-        RSS.delete(uri)
+        RSS.delete(feed)
 
 def get_rss_info():
     if RSS:
         return RSS.get_info()
 
-def run_rss_feed(uri, rematch=False):
+def run_rss_feed(feed, rematch=False):
     if RSS:
-        return RSS.run_uri(uri, rematch)
+        return RSS.run_feed(feed, rematch)
 
-def show_rss_result(uri):
+def show_rss_result(feed):
     if RSS:
-        return RSS.show_result(uri)
+        return RSS.show_result(feed)
 
-def rss_flag_downloaded(uri, id):
+def rss_flag_downloaded(feed, id):
     if RSS:
-        RSS.flag_downloaded(uri, id)
+        RSS.flag_downloaded(feed, id)
