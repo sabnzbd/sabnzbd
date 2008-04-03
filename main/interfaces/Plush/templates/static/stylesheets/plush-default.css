@@ -201,10 +201,13 @@ body {
 .queueProgressBar {
 	background-image: url(../images/plush_default/ql_pbar_full.png);
 	background-repeat: no-repeat;
+	height: 15px;
+	width: 121px;
+	margin: 2px 0 0 1px;
 /*	overflow:hidden;*/
 }
 
-.currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1;}
+.currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1; margin-top:2px;}
 .currentDownload { float: left; margin-left: 3px;}
 .totalDownload { float:right; margin-right: 3px;}
 
