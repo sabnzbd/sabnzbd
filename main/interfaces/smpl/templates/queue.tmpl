@@ -135,17 +135,17 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.finished#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="finished" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td>Finished</td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+            <tr id="finished" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td>Finished</td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td></td><td>$line.age</td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.active#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="active" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td><a onClick="changequeuedetails('queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id')"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a> Active</td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
+            <tr id="active" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td><a onClick="changequeuedetails('queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id')"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a> Active</td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td></td><td>$line.age</td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.queued#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="waiting" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td>Waiting</td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename (set: $line.set)</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+            <tr id="waiting" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td>Waiting</td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename (set: $line.set)</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td></td><td>$line.age</td></tr>
         <!--#end for#-->
     <!--#end for#--><!--#end if#-->
     </table>
