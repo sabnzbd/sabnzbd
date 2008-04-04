@@ -7,10 +7,11 @@ var queueSortAge = false;
 $(document).ready(function() {
 
 
-	$(document).ready(function(){
+/*
+// somehow this breaks IE7, and somehow without it it still works...
 		$(".nav").superfish({
 			animation : { opacity:"show", height:"show" },
-		/*	hoverClass	: "sfHover",
+			hoverClass	: "sfHover",
 			pathClass	: "overideThisToUse",
 			delay		: 800,
 			animation	: {opacity:"show"},
@@ -20,29 +21,17 @@ $(document).ready(function() {
 			onInit		: function(){},
 			onBeforeShow: function(){},
 			onShow		: function(){},
-			onHide		: function(){} */
+			onHide		: function(){}
 		});
-	});
 
-
-
-
-
-
-
-
-
+*/
 
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
 		refreshRate = ReadCookie('Plush2Refresh');
 	else
 		SetCookie('Plush2Refresh',refreshRate);
-		
-		
-		
-		
-		
+	
 		
 	// set Refresh rate within main menu	
 	$("#refreshRate-option").val(refreshRate);
@@ -58,37 +47,10 @@ $(document).ready(function() {
 	$("#onQueueFinish-option").change( function() {
 		$.ajax({
 			type: "GET",
-			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&dummy="+Math.random(),
+			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&dummy="+Math.random()
 		});
 	});
 
-/*
-	// Queue & History layout restoration
-	if ('sidebyside' == ReadCookie('PlushLayout')) {
-		$("#queue").addClass("queue_sidebyside");
-		$("#history").addClass("history_sidebyside");
-	}
-
-	// Queue & History layout togglers
-	$('#layout_sidebyside').bind('click', function() { 
-		$("#queue").addClass("queue_sidebyside");
-		$("#history").addClass("history_sidebyside");
-		SetCookie('PlushLayout','sidebyside');
-	});
-	$('#layout_toptobottom').bind('click', function() { 
-		$("#queue").removeClass("queue_sidebyside");
-		$("#history").removeClass("history_sidebyside");
-		SetCookie('PlushLayout','toptobottom');
-	});
-*/
-/*
-	// Set up lightbox floating window
-	$("a.greybox").click(function(){
-		var t = this.title || this.innerHTML || this.href;
-		GB_show(t,this.href,500,700);
-		return false;
-    });
-*/
 	// auto show/hide of extra queue options
 	$('#hdr-queue').bind("mouseover mouseout", function(){
 		$('.q_menu_sort').toggleClass("show");
@@ -173,7 +135,7 @@ $(document).ready(function() {
 	
 	// Set up Queue Menu actions
 	$('#queue').click(function(event) {
-		if ($(event.target).is('#queue_verbosity')) {
+		/*if ($(event.target).is('#queue_verbosity')) {
 			$.ajax({
 				type: "GET",
 				url: "queue/tog_verbose?dummy="+Math.random(),
@@ -182,34 +144,7 @@ $(document).ready(function() {
 				}
 			});
 		}
-		else if ($(event.target).is('#queue_sortage')) {
-			$.ajax({
-				type: "GET",
-				url: "queue/sort_by_avg_age?dummy="+Math.random(),
-				success: function(result){
-   					return LoadTheQueue(result);
-				}
-			});
-		}
-		else if ($(event.target).is('#queue_sortname')) {
-			$.ajax({
-				type: "GET",
-				url: "queue/sort_by_name?dummy="+Math.random(),
-				success: function(result){
-   					return LoadTheQueue(result);
-				}
-			});
-		}
-		else if ($(event.target).is('#queue_shutdown')) {
-			$.ajax({
-				type: "GET",
-				url: "queue/tog_shutdown?dummy="+Math.random(),
-				success: function(result){
-   					return LoadTheQueue(result);
-				}
-			});
-		}
-		else if ($(event.target).is('.queue_delete')) {
+		else*/ if ($(event.target).is('.queue_delete')) {
 			$.ajax({
 				type: "GET",
 				url: 'queue/delete?dummy='+Math.random()+'&uid='+$(event.target).parent().parent().attr('id'),
@@ -346,6 +281,7 @@ function ChangeOrder (result) {
 	});
 }
 
+/*
 // queue verbosity re-order arrows top/up/down/bottom
 function ManipNZF (nzo_id, nzf_id, action) {
 	if (action == 'Drop') {
@@ -368,6 +304,7 @@ function ManipNZF (nzo_id, nzf_id, action) {
 		});
 	}
 }
+*/
 
 // ajax file upload
 function startCallback() {
@@ -381,14 +318,14 @@ function completeCallback(result) {
 }
 
 
-// used to store layout settings
+// used to store refresh rate
 function SetCookie(name,val) {
 	var date = new Date();
 	date.setTime(date.getTime()+(365*24*60*60*1000));
 	document.cookie = name+"="+val+"; expires="+ date.toGMTString() +"; path=/";
 }
 
-// used during initialization to restore layout settings
+// used during initialization to restore refresh rate
 function ReadCookie(name) {
 	var nameEQ = name + "=";
 	var ca = document.cookie.split(';');
@@ -399,3 +336,4 @@ function ReadCookie(name) {
 	}
 	return null;
 }
+
