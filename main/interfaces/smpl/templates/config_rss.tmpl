@@ -1,4 +1,7 @@
-
+<script type="text/javascript" src="../../static/MochiKit/MochiKit.js"></script>
+<script type="text/javascript">
+MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
+</script>
 <h2>RSS Configuration</h2>
 <!--#if $have_feedparser#-->
 
@@ -10,19 +13,16 @@
     <input type="text" size="80" name="uri" value=""/>
     <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/add_rss_feed', '','add_rss_feed', '1')"   />
 </fieldset>
-</form>
 </div>
-
+<br class="clear" />
 <!--#for $feed in $rss#-->
+<br class="clear" />
 <fieldset class="EntryFieldSet">
-    <legend>Feed Definition</legend>
+    <legend>Feed $feed</legend>
     <hr />
     <div class="EntryBlock" id="update_$feed">
 
-        <fieldset class="EntryFieldSet">
-            <legend>Feed $feed</legend>
-
-            <input type="text" size="103" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
+            <input type="text" size="92" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 
             <!--#if $rss[$feed]['pick_cat']#-->
                 <select name="cat">
@@ -112,9 +112,11 @@
             </select>
           </td>
         <!--#end if#-->
+        <td>
         <input type="hidden" value="$rss[$feed]['filtercount']" name="index">
         <input type="hidden" value="$feed" name="feed">
-        <td><input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','new_filter','1' )"></td>
+        <input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','new_filter','1' )">
+        </td>
     </tr>
     
 
