@@ -17,6 +17,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
+if sys.hexversion < 0x020403F0:
+    print "Sorry, requires Python 2.4.3 or higher."
+    exit(1)
 
 import logging
 import logging.handlers
@@ -28,6 +31,13 @@ import glob
 import socket
 if os.name=='nt':
     import platform
+    
+try:
+    from Cheetah.Template import Template
+except:
+    print "Sorry, requires Python module Cheetah 2.0rc7 or higher."
+    exit(1)
+
 import cherrypy
 
 import sabnzbd
