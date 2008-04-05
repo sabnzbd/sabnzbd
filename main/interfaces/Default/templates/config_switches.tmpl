@@ -59,14 +59,14 @@
     <input type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
-    <strong>Fail on yenc crc Errors:</strong><br>
-    Use fill servers on yenc crc errors.<br>
+    <strong>Fail on yEnc crc Errors:</strong><br>
+    Use backup servers on yEnc crc errors.<br>
     <input type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
-    <strong>Top Only:</strong><br>
-    Only fetch Articles from topmost collection. Enable for less memory usage.<br>
+    <strong>Only get articles for top of the queue:</strong><br>
+    Enable for less memory usage.<br/> Disable to prevent slow jobs from blocking the queue<br/>
     <input type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
     <br>
@@ -77,16 +77,16 @@
     <input type="radio" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
-    <strong>Dirscan Options:</strong><br>
-    Use following post process option on .nzb files imported by the dirscanner.<br>
+    <strong>Default post-processing:</strong><br>
+    Used when no post-processing is defined by the category.<br>
     <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
     <input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
     <input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
     <input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
     <br>
     <br>
-    <strong>User Script:</strong><br>
-    Use following user script as default for all jobs.<br>
+    <strong>Default user script:</strong><br>
+    Used when no user script is defined by the category.<br>
     <select name="script">
     <!--#for $sc in $script_list#-->
         <!--#if $sc.lower() == $script.lower()#-->
