@@ -3,7 +3,7 @@
 <div class="EntryBlock">
     <form class="cmxform">
   <fieldset class="EntryFieldSet">
-  <legend>Processing switches</legend>
+  <legend>Processing</legend>
  <hr />
 
 
@@ -22,7 +22,7 @@
 		    <label>Enable Filejoin:</label>
 		    <input class="radio" type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
 		    <input class="radio" type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Enable built-in filejoin functionality.</span>
+		    <span class="tips">Join files ending in .001 .002 ect into one file.</span>
 		<br class="clear" />
 
 		    <label>Enable Par Cleanup:</label>
@@ -31,16 +31,16 @@
 		    <span class="tips">Cleanup par files (if verifiying/repairing succeded).</span>
 		<br class="clear" />
 
-		    <label>Fail on yenc crc Errors:</label>
+		    <label>Fail on yEnc crc Errors:</label>
 		    <input class="radio" type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
 		    <input class="radio" type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Use fill servers on yenc crc errors.</span>
+		    <span class="tips">Use backup servers on yEnc crc errors.</span>
 		<br class="clear" />
 
-		    <label>Top Only:</label>
+		    <label>Only fetch the top-most article:</label>
 		    <input class="radio" type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
 		    <input class="radio" type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Only fetch Articles from topmost collection. Enable for less memory usage.</span>
+		    <span class="tips">Enable for less memory usage. Disable to prevent some jobs from blocking the queue.</span>
 		<br class="clear" />
 
 		    <label>Safe Post-process:</label>
@@ -49,15 +49,15 @@
 		    <span class="tips">Only perform post-processing on jobs that passed all PAR2 checks.</span>
 		<br class="clear" />
 
-		    <label>Dirscan Options:</label>
+		    <label>Default Post-Processing:</label>
 		    <input class="radio" type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
 		    <input class="radio" type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
 		    <input class="radio" type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
 		    <input class="radio" type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
-		    <span class="tips">Use following post process option on .nzb files imported by the dirscanner.</span>
+		    <span class="tips">Use the following post-processing if not defined by a category.</span>
 		<br class="clear" />
 
-		    <label>User Script:</label>
+		    <label>Default User Script:</label>
             <select name="script" id="script" class="select">
             <!--#for $sc in $script_list#-->
                 <!--#if $sc.lower() == $script.lower()#-->
@@ -67,12 +67,12 @@
                 <!--#end if#-->
             <!--#end for#-->
             </select>
-		    <span class="tips">Use following user script as default for all jobs.</span>
+		    <span class="tips">Use the following script if not defined by a category.</span>
 		<br class="clear" />
 
 </fieldset>
 <fieldset class="EntryFieldSet">
-	<legend>Other switches</legend>
+	<legend>Other</legend>
 <hr />
 
 
@@ -100,7 +100,7 @@
 		    <span class="tips">Send group command before requesting articles.</span>
 		<br class="clear" />
 
-		    <label>Auto Sort:</label>
+		    <label>Sort by age:</label>
 		    <input class="radio" type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
 		    <input class="radio" type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
 		    <span class="tips">Automatically sort items by (average) age.</span>

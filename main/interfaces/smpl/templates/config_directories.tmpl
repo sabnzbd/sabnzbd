@@ -1,84 +1,84 @@
 
-<a href="$helpuri/Configure+Directories" id="help">Help</a><h3>Directory configuration</h3>
+<a href="$helpuri/Configure+Directories" id="help">Help</a><h3>Folder configuration</h3>
 <!--action="config/directories/saveDirectories" method="post"-->
 <form class="cmxform" action="">
 <div class="EntryBlock">
   <fieldset class="EntryFieldSet">
-    <legend>User directories</legend>
+    <legend>User Folders</legend>
 <hr />
 <emp>In "$my_home"</emp>
 <br class="clear" /><br class="clear" />			
-		    <label>Download Directory:</label>
+		    <label>Temporary Download Folder:</label>
 		    <input type="text" size="40" name="download_dir" value="$download_dir">
-			<span class="tips">Location to put unprocessed downloads in.</span>		    
+			<span class="tips">Folder to store parts of a queue item as they download.</span>		    
 		<br class="clear" />
 				    
-		    <label>Minimum free space for Download Directory:</label>
+		    <label>Minimum free space for Temporary Download Folder:</label>
 			<input type="text" size="10" name="download_free" value="$download_free">
 		    <span class="tips">Auto-pause when free space is beneath this value. Follow with K,M,G,T,P E.g 500M 2G</span>  
 		<br class="clear" />
 			    
-		    <label>Complete Directory:</label>
+		    <label>Completed Download Folder:</label>
 		    <input type="text" size="40" name="complete_dir" value="$complete_dir">
-		    <span class="tips">Location to put completed downloads in.</span>			
+		    <span class="tips">The default folder for storing completed items. Is overwritten by any categories.</span>			
 		<br class="clear" />
 
         <!--#if not $nt#-->
-		    <label>Permissions:</label>
+		    <label>Permissions for completed downloads:</label>
 		    <input type="text" size="10" name="permissions" value="$permissions">
 		    <span class="tips">Set permissions pattern for completed files, octal notation only!</span>
 		<br class="clear" />
         <!--#end if#-->
 			    
-		    <label>OPTIONAL: Dirscan Directory:</label>
+		    <label>Watched Folder:</label>
 		    <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
-			<span class="tips">Directory to scan for .nzb files.</span>
+			<span class="tips">Folder to monitor for .nzb and .zip files.</span>
 		<br class="clear" />
 			    
-		    <label>OPTIONAL: Dirscan Speed:</label>
+		    <label>Watched Folder Scan Speed:</label>
 		    <input type="text" size="10" name="dirscan_speed" value="$dirscan_speed">
 			<span class="tips">Number of seconds between scans for .nzb files.</span>
 		<br class="clear" />
 		  
-		    <label>Directory for user scripts:</label>
+		    <label>Script Folder:</label>
 		    <input type="text" size="40" name="script_dir" value="$script_dir">
-			<span class="tips">Directory containing user scripts for post-processing.</span>
+			<span class="tips">Directory containing custom scripts that can be run after finished downloads.</span>
 		<br class="clear" />
 				
 </fieldset>
 <fieldset class="EntryFieldSet">
-<legend>System directories</legend>
+<legend>System Folders</legend>
 <hr />
 <emp>In "$my_lcldata"</emp>
 	<br class="clear" /><br class="clear" />
 		
-		    <label>Cache Directory:</label>
+		    <label>Cache Folder:</label>
 			<input type="text" size="40" name="cache_dir" value="$cache_dir">
 			<span class="tips">Location for temporary storage.</span>
 		<br class="clear" />
 		   
-		    <label>Log Directory:</label>
+		    <label>Log Folder:</label>
 			<input type="text" size="40" name="log_dir" value="$log_dir">
 			<span class="tips">Location of log files for SABnzbd.</span>
 		<br class="clear" />
 		 
-		    <label>OPTIONAL: .nzb Backup Directory:</label>
+		    <label>Backup nzb Folder:</label>
 			<input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
-			<span class="tips">Specify a directory to backup .nzb files to.</span>
+			<span class="tips">Specify a directory to keep a backup .nzb in.</span>
 		<br class="clear" />
 
 
 </fieldset>
 
 <fieldset class="EntryFieldSet">
-<legend>Sorting directories</legend>
+<legend>Sorting Folders</legend>
 <hr />
 
 
 		    <label>Enable TV Sorting:</label>
 		    <input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
 		    <input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Enable folder sorting.</span>
+		    <span class="tips">Enable folder sorting for TV episodes and DVD's.</span>
 		<br class="clear" />
         
 		    <label>Enable season folders:</label>
@@ -98,7 +98,7 @@
                     <!--#set $i = $i+1 #-->
 			    <!--#end for#-->
 			</select>
-			<span class="tips">Choose a foldernaming option</span>
+			<span class="tips">Choose a folder naming option</span>
 		<br class="clear" />
 
 </fieldset>
