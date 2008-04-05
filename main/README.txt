@@ -1,14 +1,16 @@
-                                SABnzbd+ v0.4.0X
+                                SABnzbd+ v0.4.0Beta1
 
 *************************************
-*** This is SABnzbd+ 0.4.0X       ***
+*** This is SABnzbd+ 0.4.0Beta1   ***
 *************************************
+
+===>> THIS IS Beta SOFTWARE, DO NOT OVERWRITE OLDER RELEASES  <<===
 
 Read carefully. Major changes from previous releases.
 New users, also read the file INSTALL.txt
 
 There is an extensive Wiki on the use of SABnzbd+ on sf.net:
-http://sabnzbdplus.wiki.sourceforge.net/
+http://sabnzbd.wikidot.com/
 
 
 *******************************
@@ -59,33 +61,17 @@ will show the logging. Use this for troubleshooting only.
 
 
 *************************************************
-*** Overview of essential changes from 0.2.7: ***
+*** Overview of essential changes from 0.3.x: ***
 *************************************************
-* Introducing the "smpl" user interface (by swi-tch)
-* Introducing the "Plush" user interface (by pairofdimes)
-* Windows installer added
-* Old 0.2.5 bug fixed: Sometimes corrupted downloads when using memory cache
-* Old 0.2.5 bug fixed: Auto-shutdown will now wait for post-processing to complete
-* Old 0.2.5 bug fixed: Solve memory overflow caused by high download speeds
-* Old 0.2.5 bug fixed: Win32-bin did not always hide console window
-* Option to disconnect from Usenet servers on empty queue and pause
-* Unix --permissions (replaces old umask)
-* Add "api" functions (for automation support)
-* Better detection of Vista and other IPV6 enabled systems
-* Detection and error message about incompatible firewall(s)
-* Panic message in browser for all fatal errors (if enabled)
-* Queuing of v3.newzbin.com queries (because of 5 queries/minute limitation of newzbin)
-* Email notification of completed jobs and disk-full
-* RSS-feed of the History (so you can monitor with an RSS reader)
-* Automatic launch of a web browser showing SABnzbd's web-interface
-* Automatic pause when download volume is almost full
-* On-line Help pages (SABnzbd web-interface contains links)
-* Automatic setup of working directories
-* Allow normal Windows paths (with "\" characters)
-* Automatic addition of missing keyword in older INI files
-* For Windows, store working data in user-profile (Vista compatible)
-* For Unix, store working data in ~/.sabnzbd
-* Timeout setting per server
-* Set logging levels on the commandline (will be stored in INI-file)
-* Get logging files through the web-gui
-* IPV6 compatible
+Secure NNTP (SSL)
+User-defined categories
+Complete redesign of RSS scanning
+Automatic newzbin bookmark processing
+Intelligent handling of seasons of TV shows
+Streaming-friendly ordering of files
+Automatic removal of samples before downloading
+Major upgrade of Plush and SMPL
+iPhone template
+Optional secundary web-interface on http://host:port/sabnzbd/m
+Selectable colour schemes for SMPL and Default
+Improved bandwidth control

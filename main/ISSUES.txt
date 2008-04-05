@@ -6,13 +6,6 @@ memory systems (eg a SAN device) a challenge.
 SABnzbd is not compatible with some ZoneAlarm firewall versions.
 Comodo and the Windows firewall work fine.
 
-The Plush and SMPL user interfaces may have issues when used with IE6 or IE7.
-This is mainly due to the fact that Microsoft keeps ignoring HTML standards.
-FireFox 2 is the best browser to use for interfaces other than Default.
-
-Plush's side-by-side display of queue and history does not work in FireFox 2.
-The Plush interface is a heavy load on the browser when the queue is very large.
-
 Sometimes logging stops. This is a notorious bug in Python logging. SABnzbd will
 function as normal. If you run from sources or use the --console option with the
 Win32-binary, you will see that logging continues in the console window, but

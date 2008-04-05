@@ -1,4 +1,4 @@
-                                SABnzbd+ v0.4.0X
+                                SABnzbd+ v0.4.0Beta1
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -60,7 +60,6 @@ Windows
 
 Essential modules
     cheetah-2.0.1           http://www.cheetahtemplate.org/
-    elementtree-1.2.6       http://effbot.org/downloads/
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
