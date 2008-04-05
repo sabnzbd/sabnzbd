@@ -21,7 +21,7 @@
 </span>
 <span class="SubMenu">
 <a href="../general">General</a> |
-<a href="../directories">Directories</a> |
+<a href="../directories">Folders</a> |
 <a href="../switches">Switches</a> |
 <a href="../server">Servers</a> |
 <a href="../scheduling">Scheduling</a> |
@@ -38,7 +38,7 @@ Defines post-processing and storage.<br/>
         <br/>Click <a href="init_newzbin"><b>HERE</b></a> to setup newzbin categories.<br/><br/>
     <!--#end if#-->
 <!--#end if#-->
-Relative directories are based on $defdir<br/>
+Relative folders are based on $defdir<br/>
 <br/>
     <table id="catTable">
         <tr>
@@ -46,7 +46,7 @@ Relative directories are based on $defdir<br/>
             <th>Category</th>
             <th>&nbsp;Mode&nbsp;</th>
             <!--#if $script_list#--><th>Script</th><!--#end if#-->
-            <th>Directory</th>
+            <th>Folder</th>
             <!--#if $varExists('newzbinDetails')#--><th>NewzBin Categories</th><!--#end if#-->
             <th></th>
         </tr>
@@ -67,10 +67,11 @@ Relative directories are based on $defdir<br/>
         <td><input type="text" name="newname" value="$slot.name"></td>
 
         <td><select name="pp">
-           <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->></option>
-           <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>R</option>
-           <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>U</option>
-           <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>D</option>
+           <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
+           <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>Download</option>
+           <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>+Repair</option>
+           <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+Unpack</option>
+           <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+Delete</option>
            </select>
         </td>
 
