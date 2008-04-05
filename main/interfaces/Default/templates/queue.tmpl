@@ -26,7 +26,11 @@
 <!--#if $paused then "<a href=\"./resume\">Resume</a>" else "<a href=\"./pause\">Pause</a>"#--> |
 <a href="./sort_by_name">Sort by name</a> |
 <a href="./sort_by_avg_age">Sort by age</a> |
-<a href="./tog_verbose">Toggle verbosity</a>
+<!--#if $isverbose#-->
+    <a href="./tog_verbose">Hide files</a>
+<!--#else#-->
+    <a href="./tog_verbose">Show files</a>
+<!--#end if#-->
 On queue finish:
 <select onChange="location = './change_queue_complete_action?action='+this.options[this.selectedIndex].value">
 <option value=""></option>

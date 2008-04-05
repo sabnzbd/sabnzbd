@@ -48,7 +48,7 @@
     <br>
     <br>
     <strong>Enable Filejoin:</strong><br>
-    Enable built-in filejoin functionality.<br>
+    Join files ending in .001, .002 etc. into one file.<br>
     <input type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
     <br>
@@ -125,7 +125,7 @@
     <input type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
-    <strong>Auto Sort:</strong><br>
+    <strong>Sort by age:</strong><br>
     Automatically sort items by (average) age.<br>
     <input type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
     <input type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
