@@ -261,7 +261,9 @@ class MainPage(ProtectedClass):
             info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts()
+        info['script_list'].insert(0, 'Default')
         info['script'] = sabnzbd.DIRSCAN_SCRIPT
+
         info['cat'] = 'None'
         info['cat_list'] = ListCats()
 
@@ -281,6 +283,7 @@ class MainPage(ProtectedClass):
     @cherrypy.expose
     def addID(self, id = None, pp=None, script=None, cat=None, redirect = None):
         if pp and pp=="-1": pp = None
+        if script and script.lower()=='default': script = None
 
         if id: id = id.strip()
         if id and (id.isdigit() or len(id)==5):
@@ -295,6 +298,7 @@ class MainPage(ProtectedClass):
     @cherrypy.expose
     def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None):
         if pp and pp=="-1": pp = None
+        if script and script.lower()=='default': script = None
 
         if url: url = url.strip()
         if url and (url.isdigit() or len(url)==5):
@@ -309,6 +313,8 @@ class MainPage(ProtectedClass):
     @cherrypy.expose
     def addFile(self, nzbfile, pp=None, script=None, cat=None, dummy = None):
         if pp and pp=="-1": pp = None
+        if script and script.lower()=='default': script = None
+
         if nzbfile.filename and nzbfile.value:
             sabnzbd.add_nzbfile(nzbfile, pp, script, cat)
         raise Raiser(self.__root, dummy)
