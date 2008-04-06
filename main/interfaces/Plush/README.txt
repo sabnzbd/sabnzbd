@@ -15,6 +15,12 @@ SPECIAL THANKS
 * inpheaux, for the Config concept & assembly and SABnzbd+ logo
 * blis102, for the original Nova & Plush concepts
 
+============
+KNOWN ISSUES
+
+* IE7 has several display bugs (though works!), hopefully you can help smooth things out with your testing...
+* If the JavaScript it still slow for you, slow down your refresh rate.
+
 ==========
 TOOLS USED
 
