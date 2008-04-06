@@ -12,27 +12,54 @@
 <h2>Add schedule</h2>
 <fieldset class="EntryFieldSet">
 
-<select name="minute">
-<!--#for $i in range(60)#-->
-<option value="$i">$i
-<!--#end for#-->
-</select>
-<select name="hour">
-<!--#for $i in range(24)#-->
-<option value="$i">$i
-<!--#end for#-->
-</select>
-<select name="dayofweek">
-<option value="*" selected>*
-<!--#for $i in range(1, 8)#-->
-<option value="$i">$i
-<!--#end for#-->
-</select>
-<select name="action">
-<option value="resume">resume
-<option value="pause">pause
-</select>
-<p><input type="button" size="40" value="Add Schedule" onClick="javascript:history.back();submitconfig('config/scheduling/addSchedule', 'addSchedule')">
+ <%import time
+t = time.localtime()
+hour = t[3] 
+if hour != 23:
+    hour += 1
+else:
+    hour = 0 %>
+<div class="row">
+<label>Hour:Minute:</label><br/><br/>
+    <select name="hour">
+    <!--#for $i in range(24)#-->
+    <option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
+    <!--#end for#-->
+    </select>
+    :
+    <select name="minute">
+    <!--#for $i in range(60)#-->
+    <option value="$i">$i
+    <!--#end for#-->
+    </select>
+</div>
+<div class="row">
+    <label>Frequency:</label><br/><br/>
+    <select name="dayofweek">
+    <option value="*" selected>Daily
+    <option value="1">Mondays
+    <option value="2">Tuesdays
+    <option value="3">Wednesdays
+    <option value="4">Thursdays
+    <option value="5">Fridays
+    <option value="6">Saturdays
+    <option value="7">Sundays
+    </select>
+</div>
+<div class="row">
+    <label>Action:</label><br/><br/>
+    <select name="action">
+    <option value="resume">resume
+    <option value="pause">pause
+    <option value="shutdown">shutdown
+    <option value="speedlimit">speedlimit
+    </select>
+</div>
+<div class="row">
+    <label>Arguments:</label><br/><br/>
+    <input class="schedulesubmit" style="margin:0px;padding:0px;margin-left:15px;" type="text" size="20" name="arguments" value="">
+</div>
+    <p><input type="button" size="40" value="Add Schedule" onClick="javascript:history.back();submitconfig('config/scheduling/addSchedule', 'addSchedule')">
 <span class="submitstatus" id="submitstatus1"></span></p>
 </fieldset>
 </form>

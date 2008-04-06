@@ -1,84 +1,37 @@
 
 <!--#if $have_feedparser#-->
-  <form title="RSS" id="RSS" class="panel" action="javascript:var dummy=0" method="POST" selected="true">
+<ul title="RSS" selected="true">
+            
+    <li><a href="#addRSS">Add New RSS</a></li>
+    <!--#for $feed in $rss#-->
+    <!--#set sanitisedLine = $feed.replace(' ','_') #-->
+    <li><a href="#update_$sanitisedLine">$feed</a></li>
+    <!--#end for#-->        
+</ul>
+  <form title="RSS" id="addRSS" class="panel" action="javascript:var dummy=0" method="POST">
     <h2>RSS feed settings</h2>
     <fieldset class="EntryFieldSet">
 
-    <div class="row">
-      <label>RSS-Feed URI:</label><br /><br />
-      <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="28" name="uri">
+    <div class="row" id="add_rss_feed">
+    <label>RSS-Feed name:</label><br /><br />
+    <input type="text" size="10" name="feed" value="$feed"/><br /><br />
+    <label>RSS-Feed URI:</label><br /><br />
+    <input type="text" size="20" name="uri" value=""/><br /><br />
+    <input type="button" size="40" value="Add RSS Feed" onClick="javascript:history.back();submitconfig('config/rss/add_rss_feed', 'add_rss_feed')">
     </div>
-    <div class="row"> 
-		     
-        <label>Text Filter:</label><br /><br />  
-        <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="28" name="text_filter">
-    </div>
-    <div class="row"> 
-		     
-        <label>Regex Filter:</label><br /><br />
-        <input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="28" name="re_filter">
-    </div>
-    <div class="row"> 
-      <label>Match Multiple:</label><br /><br />
-
-                <input type="hidden" id="match_multiple" name="match_multiple" value="1">
-                <div class="toggle" onclick="toggleValue('match_multiple')" toggled="true"><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
-
-      
- 		</div>
-            <div class="row"> 
-		     
-      <label>Unpack Opts:</label><br /><br />
-        <select style="margin:0px;padding:0px;margin-left:15px;" name="unpack_opts" id="webdir">
-            <option name="unpack_opts" value="0"  /> None</option>
-            <option name="unpack_opts" value="1" selected /> +Repair</option>
-            <option name="unpack_opts" value="2" /> +Unpack</option>
-            <option name="unpack_opts" value="3" /> +Delete</option>
-            <option name="unpack_opts" value="4" /> R+Script</option>
-            <option name="unpack_opts" value="5" /> U+Script</option>
-            <option name="unpack_opts" value="6" /> D+Script</option>
-        </select>
-
     </fieldset>
-    <p>
-    <input type="button" size="40" value="Add" onClick="javascript:history.back();submitconfig('config/rss/add_rss_feed', 'RSS')">
-    </p>
 </form>
 
+<!--#for $feed in $rss#-->
+<!--#set sanitisedLine = $feed.replace(' ','_') #-->
+    <div class="EntryBlock" id="update_$sanitisedLine">
+<p>Updating a feed in this skin is currently not available in this beta.</p>
+    </div>
+ 
+<!--#end for#-->
 
-
-    <!--#if $varExists('uris') and $uris#-->
-        <table>
-            <tr><th></th><th>URL/Match Name</th></tr>
-            <!--#set $odd = False#-->
-            <!--#for $uri in $uris#-->
-                <!--#set $odd = not $odd#-->
-                <tr class="<!--#if $odd then "odd" else "even"#-->">
-                    <td><a href="#" onClick="ajax('config/rss/del_rss_feed?uri_id=$str($id($uri))');">Remove</a></td>
-                    <td>$uri</td>
-                </tr>
-                <!--#set $oddLine = False#-->
-                <!--#for $filter in $uri_table[$uri][0]#-->
-                    <!--#set $oddLine = not $oddLine#-->
-                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-                        <td><a href="#" onClick="ajax('config/rss/del_rss_filter?uri_id=$str($id($uri))&filter_id=$str($id($filter))');">Remove</a></td>
-                        <td>Filter: $filter[0]</td>
-                    </tr>
-                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-                        <td></td>
-                        <td>Unpack-opts: $filter[1]</td>
-                    </tr>
-                    <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-                        <td></td>
-                        <td>Match Multiple: $filter[2]</td>
-                    </tr>
-                <!--#end for#-->
-            <!--#end for#-->
-        </table>
-    <!--#end if#-->
-<!--#end if#-->
-<!--#if not $have_feedparser#-->
+<!--#else#-->
     <p>
-        <label>feedparser module missing<label>
+        <b>feedparser module missing<b>
     </p>
 <!--#end if#-->

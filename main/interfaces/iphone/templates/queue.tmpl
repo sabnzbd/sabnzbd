@@ -62,6 +62,14 @@
                 <!--#end for#-->
                 </select>
             <!--#end if#-->
+            <!--#if $cat_list#-->
+            <select onchange="javascript:changequeuedetails('change_cat?nzo_id=$slot.nzo_id&cat='+this.options[this.selectedIndex].value);">
+                <!--#for $ct in $cat_list#-->
+                    <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+                <!--#end for#-->
+                </select></form>
+            </td>
+            <!--#end if#-->
         <li><a href="javascript:var dummy=0" onClick="javascript:history.back();deletequeueitem('$slot.nzo_id');">Delete</a></li>
         
         <li class="group">Tools</li>

@@ -100,7 +100,7 @@ function loadingJSON(){
 		//d.addErrback(handleServerError);
 	}
     
-	var status2 = $paused;
+	var status2 = "$paused";
     function ajax(url)
     {
         doSimpleXMLHttpRequest(url);
@@ -108,9 +108,9 @@ function loadingJSON(){
 	function toggle()
 	{
 
-		if (status2 == 1)
+		if (status2 == "True")
 		{
-			status2 = 0;
+			status2 = "False";
             var elemsPaused = [];
             var elemsStatus2 = [];
             elemsPaused = getElementsByTagAndClassName("span", "status");
@@ -126,7 +126,7 @@ function loadingJSON(){
 		}
 		else
 		{
-			status2 = 1;
+			status2 = "True";
             var elemsPaused = [];
             var elemsStatus2 = [];
             elemsPaused = getElementsByTagAndClassName("span", "status");
