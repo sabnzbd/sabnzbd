@@ -62,7 +62,9 @@ try:
     import win32api
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
-    pass
+    if os.name == 'nt':
+        print "Sorry, requires Python module PyWin32."
+        exit(1)
 
 
 #------------------------------------------------------------------------------
