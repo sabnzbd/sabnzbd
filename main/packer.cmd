@@ -11,7 +11,7 @@ set prod=SABnzbd-%VERSION%
 set fileIns=%prod%-win32-setup.exe
 set fileBin=%prod%-win32-bin.zip
 set fileWSr=%prod%-win32-src.zip
-set fileSrc=%prod%-src.zip
+set fileSrc=%prod%-src
 
 
 
@@ -73,7 +73,7 @@ if errorlevel 1 goto error
 
 if exist %fileWSr% del /q %fileWSr%
 rem First the text files (unix-->dos)
-zip -9 -r -X -l %fileWSr% %prod% -x */win/* */images/*
+zip -9 -r -X -l %fileWSr% %prod% -x */win/* */images/* *licenses/Python*
 rem Second the binary files
 zip -9 -r -X    %fileWSr% %prod% -i */win/* */images/*
 if errorlevel 1 goto error
@@ -91,8 +91,11 @@ if "%src%" == "" goto end
 ren srcdist %prod%
 if errorlevel 1 goto error
 
-if exist %fileSrc% del /q %fileSrc%
-zip -9 -r -X %fileSrc% %prod% -x */win/*
+if exist %fileSrc%.tar del /q %fileSrc%.tar
+if exist %fileSrc%.tar.gz del /q %fileSrc%.tar.gz
+tar -c -f %fileSrc%.tar %prod%
+tar --delete -f %fileSrc%.tar "%prod%/licenses/Python/*" "%prod%/win/*"
+gzip -9 %fileSrc%.tar
 if errorlevel 1 goto error
 
 ren %prod% srcdist

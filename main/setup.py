@@ -35,6 +35,7 @@ options = dict(
       data_files = [
           ('', ['README.txt', 'INSTALL.txt', 'LICENSE.txt', 'CHANGELOG.txt', 'ISSUES.txt', 'Sample-PostProc.cmd', 'Sample-PostProc.sh', 'PKG-INFO']),
           ('licenses', glob.glob("licenses/*.*")),
+          ('licenses/Python', glob.glob("licenses/Python/*.*")),
 
           ('interfaces/Default', glob.glob("interfaces/Default/*.*")),
           ('interfaces/Default/templates', glob.glob("interfaces/Default/templates/*.tmpl")),

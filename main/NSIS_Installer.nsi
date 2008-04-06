@@ -195,6 +195,8 @@ Section Uninstall
     RMDir /r "$INSTDIR\win\unzip"
     RMDir /r "$INSTDIR\win"
     Delete "$INSTDIR\licenses\*.txt"
+    Delete "$INSTDIR\licenses\Python\*.txt"
+    RMDir "$INSTDIR\licenses\Python"
     RMDir "$INSTDIR\licenses"
     Delete "$INSTDIR\CHANGELOG.txt"
     Delete "$INSTDIR\INSTALL.txt"
