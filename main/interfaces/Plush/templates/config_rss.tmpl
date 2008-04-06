@@ -57,11 +57,10 @@
 </div>
 
 <!--#for $feed in $rss#-->
-    <h3>Feed Definition</h3>
     <div class="EntryBlock">
     <form action="upd_rss_feed" method="post">
         <fieldset class="EntryFieldSet">
-            <legend>Feed $feed</legend>
+            <legend>Feed Definition &mdash; $feed</legend>
 
             <input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 
@@ -100,8 +99,11 @@
         </fieldset>
     </form>
     </div>
-    <br/>
 
+
+        <fieldset class="EntryFieldSet">
+            <legend>Feed Filters &mdash; $feed</legend>
+	
     <table>
         <tr>
             <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
@@ -223,6 +225,7 @@
     <!--#end for#-->
 
     </table>
+  </fieldset>
 <!--#end for#-->
 
 <!--#else#-->
