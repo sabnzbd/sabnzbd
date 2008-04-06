@@ -75,8 +75,7 @@ options = dict(
 
           ('win/par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
           ('win/unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
-          ('win/unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE']),
-          ('win/email', glob.glob("win/email/*.*"))
+          ('win/unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE'])
       ]
 )
 

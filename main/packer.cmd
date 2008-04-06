@@ -11,7 +11,7 @@ set prod=SABnzbd-%VERSION%
 set fileIns=%prod%-win32-setup.exe
 set fileBin=%prod%-win32-bin.zip
 set fileWSr=%prod%-win32-src.zip
-set fileSrc=%prod%-src
+set fileSrc=%prod%-src.zip
 
 
 
@@ -91,11 +91,8 @@ if "%src%" == "" goto end
 ren srcdist %prod%
 if errorlevel 1 goto error
 
-if exist %fileSrc%.tar del /q %fileSrc%.tar
-if exist %fileSrc%.tar.gz del /q %fileSrc%.tar.gz
-tar -c -f %fileSrc%.tar %prod%
-tar --delete -f %fileSrc%.tar "%prod%/licenses/Python/*" "%prod%/win/*"
-gzip -9 %fileSrc%.tar
+if exist %fileSrc% del /q %fileSrc%
+zip -9 -r -X %fileSrc% %prod% -x */win/* *licenses/Python*
 if errorlevel 1 goto error
 
 ren %prod% srcdist
