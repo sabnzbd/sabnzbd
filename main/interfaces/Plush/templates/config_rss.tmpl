@@ -43,7 +43,6 @@
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
 
-
 <!--#if $have_feedparser#-->
 
 <div class="EntryBlock">
@@ -58,10 +57,11 @@
 </div>
 
 <!--#for $feed in $rss#-->
+    <h3>Feed Definition</h3>
     <div class="EntryBlock">
     <form action="upd_rss_feed" method="post">
         <fieldset class="EntryFieldSet">
-            <legend>Feed Defintion &mdash; $feed</legend>
+            <legend>Feed $feed</legend>
 
             <input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 
@@ -101,8 +101,6 @@
     </form>
     </div>
     <br/>
-        <fieldset class="EntryFieldSet">
-            <legend>Feed Filter &mdash; $feed</legend>
 
     <table>
         <tr>
@@ -225,7 +223,6 @@
     <!--#end for#-->
 
     </table>
-  </fieldset>
 <!--#end for#-->
 
 <!--#else#-->

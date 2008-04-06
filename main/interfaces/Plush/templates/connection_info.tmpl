@@ -49,6 +49,7 @@ Version:&nbsp;$version&nbsp;&nbsp;|&nbsp;&nbsp;Uptime:&nbsp;$uptime&nbsp;&nbsp;|
     <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
     <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
 </select>
+<!--#if int($cache_limit)#-->&nbsp;&nbsp;|&nbsp;&nbsp;<b>$cache_art</b>&nbsp;articles&nbsp;buffered&nbsp;in&nbsp;<b>$cache_size</b>&nbsp;bytes<!--#end if#-->
 </small></div>
 
 <!--#if $servers#-->
@@ -82,6 +83,8 @@ Version:&nbsp;$version&nbsp;&nbsp;|&nbsp;&nbsp;Uptime:&nbsp;$uptime&nbsp;&nbsp;|
 		</ul></small>
 	</fieldset>
 <!--#end if#-->
+
+
 
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE

@@ -43,7 +43,6 @@
 	 		PAGE CONTENT IS BELOW
      ************************************ -->
 
-
 <div class="EntryBlock">
 <form action="addSchedule" method="post">
 <fieldset class="EntryFieldSet">
@@ -104,19 +103,19 @@ if len(m) == 1:
     m = '0%s' % m
 if day == "*":
     day="Daily"
-elif day == 1:
+elif day == "1":
     day='Monday'
-elif day == 2:
+elif day == "2":
     day='Tuesday'    
-elif day == 3:
+elif day == "3":
     day='Wednesday'    
-elif day == 4:
+elif day == "4":
     day='Thursday' 
-elif day == 5:
+elif day == "5":
     day='Friday'
-elif day == 6:
+elif day == "6":
     day='Saturday' 
-elif day == 7:
+elif day == "7":
     day='Sunday'    
 %>
 Task $schednum: <strong>$h:$m</strong> - $day - $action
@@ -126,6 +125,8 @@ Task $schednum: <strong>$h:$m</strong> - $day - $action
 </form><br />
 <!--#end for#-->
 </div>
+
+
 <!-- ************************************
 	 		PAGE CONTENT IS ABOVE
      ************************************ -->

@@ -47,30 +47,29 @@
 <form action="saveGeneral" method="post" name="fullform">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-<strong>Manual restart needed!</strong><br><br>
-<legend>Web server</legend>
+<legend>Web Server <font color="red">(changes require restart)</font></legend>
 <strong>Host:</strong><br>
 Host SABnzbd should listen on.<br>
 <input type="text" name="host" value="$host">
 <br>
 <br>
 <strong>Port:</strong><br>
-Post SABnzbd should listen on.<br>
+Port SABnzbd should listen on.<br>
 <input type="text" name="port" value="$port">
 <br>
 <br>
-<strong>Web username:</strong><br>
+<strong>Web Username:</strong><br>
 Authentication Username.<br>
 <input type="text" name="username" value="$username">
 <br>
 <br>
-<strong>Web password:</strong><br>
+<strong>Web Password:</strong><br>
 Authentication Password.<br>
 <input type="password" name="password" value="$password">
 <br>
 <br>
-<strong>User interface:</strong><br>
-Choose a user interface (restart required!).<br>
+<strong>Web Interface:</strong><br>
+Choose a skin.<br>
 <select name="web_dir">
     <!--#for $webline in $web_list#-->
         <!--#if $webline.lower() == $web_dir.lower()#-->
@@ -83,8 +82,8 @@ Choose a user interface (restart required!).<br>
 <!--#if $web_colors#-->
 <br>
 <br>
-<strong>Color schema:</strong><br>
-Choose a color scheme for the current interface.<br>
+<strong>Web Interface Schema:</strong><br>
+Choose a color scheme for the skin.<br>
 <select name="web_color">
     <!--#for $webline in $web_colors#-->
         <!--#if $webline.lower() == $web_color.lower()#-->
@@ -97,8 +96,8 @@ Choose a color scheme for the current interface.<br>
 <!--#end if#-->
 <br>
 <br>
-<strong>Secondary User Interface:</strong><br>
-Choose a secondary user interface (restart required!).<br>
+<strong>Secondary Web Interface:</strong><br>
+Activate a secondary skin.<br>
 <select name="web_dir2">
     <!--#for $webline in $web_list2#-->
         <!--#if $webline.lower() == $web_dir2.lower()#-->
@@ -114,7 +113,7 @@ Choose a secondary user interface (restart required!).<br>
 <fieldset class="EntryFieldSet">
 <legend>Tuning</legend>
 <strong>Queue auto refresh interval:</strong><br>
-Refresh interval of the queue<br/>web-interface page(sec, 0= none)<br>
+Refresh interval of the queue web-interface page(sec, 0= none)<br>
 <input type="text" name="refresh_rate" value="$refresh_rate">
 <br>
 <br>
@@ -123,18 +122,18 @@ Checking rate  (times per day 1..48)<br>
 <input type="text" name="rss_rate" value="$rss_rate">
 <br>
 <br>
-<strong>Bandwidth Limit:</strong><br>
-Download speed limit in kilobytes<br/>per second(kB/s).<br>
+<strong>Download speed limit:</strong><br>
+Download speed limit in kilobytes per second(kB/s).<br>
 <input type="text" name="bandwith_limit" value="$bandwith_limit">
 <br>
 <br>
 <strong>Article Cache Limit:</strong><br>
-Cache articles in memory.<br>
+Cache articles in memory (reduce disk access).<br>
 <input type="text" name="cache_limitstr" value="$cache_limitstr">
 <br>
 <br>
 <strong>Cleanup List:</strong><br>
-List of file (extensions) that should<br/>be deleted at the cleanup stage.<br>
+List of file (extensions) that should be deleted after download.<br>
 For example: ".nfo," or ".nfo, .sfv"<br>
 <input type="text" name="cleanup_list" value="$cleanup_list">
 </fieldset>
