@@ -42,7 +42,7 @@
 			<ul>
 				<li><a>Add NZB</a>
 					<ul>
-						<li><a>&raquo; URL<!--#if $varExists('newzbinDetails') then "&amp; Newzbin " else ""#--></a>
+						<li><a>&raquo; URL<!--#if $varExists('newzbinDetails') then "&nbsp;&amp;&nbsp;Newzbin" else ""#--></a>
 							<ul>
 								<li><a><input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(value=='enter URL/ID')value=''" onblur="if(!value)value='enter URL/ID'"/></a></li>
 								<li><a>&raquo;&nbsp;<input type="submit" id="addID" value="Add NZB" style="cursor:pointer"/></a></li>
@@ -105,16 +105,16 @@
 					</ul>
 				</li>
 				<li><a><select id="refreshRate-option">
-							<option value="1">1s</option>
-							<option value="2">2s</option>
-							<option value="4">4s</option>
-							<option value="8">8s</option>
-							<option value="16">16s</option>
-							<option value="30">30s</option>
-							<option value="60">1m</option>
-							<option value="120">2m</option>
-							<option value="900">15m</option>
-							<option value="1800">30m</option>
+							<option value="1">1 sec</option>
+							<option value="2">2 sec</option>
+							<option value="4">4 sec</option>
+							<option value="8">8 sec</option>
+							<option value="16">16 sec</option>
+							<option value="30">30 sec</option>
+							<option value="60">1 min</option>
+							<option value="120">2 min</option>
+							<option value="900">15 min</option>
+							<option value="1800">30 min</option>
 							<option value="0">No</option>
 						</select>&nbsp;Refresh</a></li>
 				<li><a>On Queue Finish</a>
