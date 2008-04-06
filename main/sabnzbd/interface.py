@@ -190,7 +190,7 @@ def List2String(lst):
 
 def String2List(txt):
     """ Return comma-separated string as a list """
-    
+
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
     def beforeMain(self):
@@ -617,9 +617,9 @@ class QueuePage(ProtectedClass):
             slot['cat'] = str(cat)
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
             slot['mb'] = "%.2f" % (bytes / MEBI)
-            
+
             running_bytes += bytesleft
-            
+
             slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
 
             try:
@@ -1259,7 +1259,7 @@ class ConfigServer(ProtectedClass):
             new[svr]['fillserver'] = org[svr]['fillserver']
             new[svr]['ssl'] = org[svr]['ssl']
         config['servers'] = new
-        
+
         if sabnzbd.newswrapper.HAVE_SSL:
             config['have_ssl'] = 1
         else:
@@ -1395,6 +1395,14 @@ def UnlistFilters(feed, filters):
         cfg['filter'+str(n)] = filters[n]
 
 
+
+def GetCfgRss(cfg, keyword):
+    """ Get a keyword from an RSS entry """
+    try:
+        return cfg[keyword]
+    except:
+        return ''
+
 class ConfigRss(ProtectedClass):
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
@@ -1421,12 +1429,12 @@ class ConfigRss(ProtectedClass):
         for feed in sabnzbd.CFG['rss']:
             rss[feed] = {}
             cfg = sabnzbd.CFG['rss'][feed]
-            rss[feed]['uri'] = cfg['uri']
-            rss[feed]['cat'] = cfg['cat']
-            rss[feed]['pp'] = cfg['pp']
-            rss[feed]['script'] = cfg['script']
-            rss[feed]['enable'] = IntConv(cfg['enable'])
-            rss[feed]['pick_cat'] = config['cat_list'] != [] and not IsNewzbin(cfg['uri'])
+            rss[feed]['uri'] = GetCfgRss(cfg, 'uri')
+            rss[feed]['cat'] = GetCfgRss(cfg, 'cat')
+            rss[feed]['pp'] = GetCfgRss(cfg, 'pp')
+            rss[feed]['script'] = GetCfgRss(cfg, 'script')
+            rss[feed]['enable'] = IntConv(GetCfgRss(cfg, 'enable'))
+            rss[feed]['pick_cat'] = config['cat_list'] != [] and not IsNewzbin(GetCfgRss(cfg, 'uri'))
             rss[feed]['pick_script'] = config['script_list'] != []
             filters = ListFilters(feed)
             rss[feed]['filters'] = filters
@@ -1850,7 +1858,7 @@ class ConnectionInfo(ProtectedClass):
                     try:
                         nzf_name = escape(nzf.get_filename())
                     except: #attribute error
-                        nzf_name = escape(nzf.get_subject()) 
+                        nzf_name = escape(nzf.get_subject())
                     nzo_name = escape(nzo.get_filename())
 
                 busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
@@ -2089,7 +2097,7 @@ def build_header(prim):
         header['new_rel_url'] = ''
 
     header['timeleft'] = calc_timeleft(bytesleft, bytespersec)
-    
+
     try:
         datestart = datetime.datetime.now() + datetime.timedelta(seconds=bytesleft / bytespersec)
         #new eta format: 16:00 Fri 07 Feb
@@ -2097,7 +2105,7 @@ def build_header(prim):
     except:
         datestart = datetime.datetime.now()
         header['eta'] = 'unknown'
-                
+
     return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
 
 def calc_timeleft(bytesleft, bps):
