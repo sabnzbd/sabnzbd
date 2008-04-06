@@ -7,7 +7,6 @@ var queueSortAge = false;
 $(document).ready(function() {
 
 
-/*
 // somehow this breaks IE7, and somehow without it it still works...
 		$(".nav").superfish({
 			animation : { opacity:"show", height:"show" },
@@ -17,14 +16,13 @@ $(document).ready(function() {
 			animation	: {opacity:"show"},
 			speed		: "normal",
 			oldJquery	: false, // set to true if using jQuery version below 1.2 
-			disableHI	: false, // set to true to disable hoverIntent detection
+			disableHI	: false /*, // set to true to disable hoverIntent detection
 			onInit		: function(){},
 			onBeforeShow: function(){},
 			onShow		: function(){},
 			onHide		: function(){}
-		});
+*/		});
 
-*/
 
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
