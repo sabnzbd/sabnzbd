@@ -16,10 +16,53 @@ try:
 except ImportError:
     py2exe = None
 
+def PairList(src):
+    """ Given a list of files and dirnames,
+        return a list of (destn-dir, sourcelist) tuples.
+        A file returns (path, [name])
+        A dir returns for its root and each of its subdirs
+            (path, <list-of-file>)
+        Always return paths with Unix slashes.
+        Skip all SVN elements, .bak .pyc .pyo
+    """
+    lst = []
+    for item in src:
+        if item.endswith('/'):
+            for root, dirs, files in os.walk(item.rstrip('/\\')):
+                path = root.replace('\\', '/')
+                if path.find('.svn') < 0 and path.find('_svn') < 0 :
+                    flist = []
+                    for file in files:
+                        if not (file.endswith('.bak') or file.endswith('.pyc') or file.endswith('.pyo')):
+                            flist.append(os.path.join(root, file).replace('\\','/'))
+                    if flist:
+                        lst.append((path, flist))
+        else:
+            path, name = os.path.split(item)
+            items = []
+            items.append(name)
+            lst.append((path, items))
+    return lst
+
+
 print sys.argv[0]
 
 if (len(sys.argv) < 2) or sys.argv[1] != 'py2exe':
     py2exe = None
+
+# List of data elements, directories end with a '/'
+data = [ 'README.txt',
+         'INSTALL.txt',
+         'LICENSE.txt',
+         'CHANGELOG.txt',
+         'ISSUES.txt',
+         'Sample-PostProc.cmd',
+         'Sample-PostProc.sh',
+         'PKG-INFO',
+         'licenses/',
+         'interfaces/',
+         'win/'
+       ]
 
 options = dict(
       name = 'SABnzbd',
@@ -32,52 +75,10 @@ options = dict(
       packages = ['sabnzbd', 'sabnzbd.utils', 'sabnzbd.utils.multiauth'],
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2)',
-      data_files = [
-          ('', ['README.txt', 'INSTALL.txt', 'LICENSE.txt', 'CHANGELOG.txt', 'ISSUES.txt', 'Sample-PostProc.cmd', 'Sample-PostProc.sh', 'PKG-INFO']),
-          ('licenses', glob.glob("licenses/*.*")),
-          ('licenses/Python', glob.glob("licenses/Python/*.*")),
+      data_files = PairList(data)
 
-          ('interfaces/Default', glob.glob("interfaces/Default/*.*")),
-          ('interfaces/Default/templates', glob.glob("interfaces/Default/templates/*.tmpl")),
-          ('interfaces/Default/templates/static/stylesheets', glob.glob("interfaces/Default/templates/static/stylesheets/*.css")),
-          ('interfaces/Default/templates/static/stylesheets/colorschemes', glob.glob("interfaces/Default/templates/static/stylesheets/colorschemes/*.css")),
-          ('interfaces/Default/templates/static/images', glob.glob('interfaces/Default/templates/static/images/*.ico')),
-
-          ('interfaces/smpl', glob.glob("interfaces/smpl/*.*")),
-          ('interfaces/smpl/templates', glob.glob("interfaces/smpl/templates/*.*")),
-          ('interfaces/smpl/templates/static', glob.glob("interfaces/smpl/templates/static/*.*")),
-          ('interfaces/smpl/templates/static/images', glob.glob("interfaces/smpl/templates/static/images/*.*")),
-          ('interfaces/smpl/templates/static/images/nuvola', glob.glob("interfaces/smpl/templates/static/images/nuvola/*.*")),
-          ('interfaces/smpl/templates/static/MochiKit', glob.glob("interfaces/smpl/templates/static/MochiKit/*.*")),
-          ('interfaces/smpl/templates/static/PlotKit', glob.glob("interfaces/smpl/templates/static/PlotKit/*.*")),
-          ('interfaces/smpl/templates/static/excanvas', glob.glob("interfaces/smpl/templates/static/excanvas/*.*")),
-          ('interfaces/smpl/templates/static/stylesheets', glob.glob("interfaces/smpl/templates/static/stylesheets/*.css")),
-          ('interfaces/smpl/templates/static/stylesheets/colorschemes', glob.glob("interfaces/smpl/templates/static/stylesheets/colorschemes/*.css")),
-
-          ('interfaces/Plush', glob.glob("interfaces/Plush/*.*")),
-          ('interfaces/Plush/templates', glob.glob("interfaces/Plush/templates/*.*")),
-          ('interfaces/Plush/licenses', glob.glob("interfaces/Plush/licenses/*.*")),
-          ('interfaces/Plush/templates/static', glob.glob("interfaces/Plush/templates/static/*.*")),
-          ('interfaces/Plush/templates/static/images', glob.glob("interfaces/Plush/templates/static/images/*.*")),
-          ('interfaces/Plush/templates/static/images/plush_default', glob.glob("interfaces/Plush/templates/static/images/plush_default/*.*")),
-          ('interfaces/Plush/templates/static/images/plush_default_config', glob.glob("interfaces/Plush/templates/static/images/plush_default_config/*.*")),
-          ('interfaces/Plush/templates/static/images/plush_default_nzo', glob.glob("interfaces/Plush/templates/static/images/plush_default_nzo/*.*")),
-          ('interfaces/Plush/templates/static/javascripts', glob.glob("interfaces/Plush/templates/static/javascripts/*.*")),
-          ('interfaces/Plush/templates/static/stylesheets', glob.glob("interfaces/Plush/templates/static/stylesheets/*.*")),
-          ('interfaces/Plush/templates/static/stylesheets', glob.glob("interfaces/Plush/templates/static/stylesheets/*.css")),
-          ('interfaces/Plush/templates/static/stylesheets/colorschemes', glob.glob("interfaces/Plush/templates/static/stylesheets/colorschemes/*.css")),
-
-          ('interfaces/iphone', glob.glob("interfaces/iphone/*.*")),
-          ('interfaces/iphone/templates', glob.glob("interfaces/iphone/templates/*.*")),
-          ('interfaces/iphone/templates/static', glob.glob("interfaces/iphone/templates/static/*.*")),
-          ('interfaces/iphone/templates/static/iui', glob.glob("interfaces/iphone/templates/static/iui/*.*")),
-          ('interfaces/iphone/templates/static/MochiKit', glob.glob("interfaces/iphone/templates/static/MochiKit/*.*")),
-
-          ('win/par2', ['win/par2/COPYING', 'win/par2/par2.exe', 'win/par2/README', 'win/par2/src/par2cmdline-0.4.tar.gz']),
-          ('win/unrar', ['win/unrar/license.txt', 'win/unrar/UnRAR.exe']),
-          ('win/unzip', ['win/unzip/LICENSE', 'win/unzip/README', 'win/unzip/README.NT', 'win/unzip/unzip.exe', 'win/unzip/WHERE'])
-      ]
 )
+
 
 if py2exe:
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
