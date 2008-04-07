@@ -34,7 +34,7 @@ LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2008 Joel Birch
 
 jQuery Table Drag & Drop
 http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin/
-LICENSE-MIT & LICENSE-GPL -- Copyright © 1998-2008, Isocra Consulting Ltd.
+LICENSE-MIT & LICENSE-GPL -- Copyright (c) 1998-2008, Isocra Consulting Ltd.
 
 jQuery Corner
 http://www.malsup.com/jquery/corner/
@@ -42,8 +42,8 @@ LICENSE-MIT & LICENSE-GPL -- Dave Methvin & Mike Alsup
 
 WebToolkit
 http://www.webtoolkit.info/ajax-file-upload.html
-Copyright (c) 2006-2008 www.webtoolkit.info
-LICENSE-GPL
+LICENSE-GPL -- Copyright (c) 2006-2008 www.webtoolkit.info
+
 
 Nuvola Icon Set
 http://www.icon-king.com/?p=15
