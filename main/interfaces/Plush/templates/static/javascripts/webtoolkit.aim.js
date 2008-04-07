@@ -2,7 +2,8 @@
 *
 *  AJAX IFRAME METHOD (AIM)
 *  http://www.webtoolkit.info/
-*
+* Released under the GNU GENERAL PUBLIC LICENSE Version 2
+* Please seee licence-gpl.txt for the full licence
 **/
 
 AIM = {
