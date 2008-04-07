@@ -1,11 +1,10 @@
 -------------------------------------------------------------------------------
-0.4.0Beta1  by The SABnzbd-Team
+0.4.0Beta2  by The SABnzbd-Team
 -------------------------------------------------------------------------------
 added:   Secure NNTP (SSL)
 added:   User-defined categories
 changed: Complete redesign of RSS scanning
 added:   User script now receives newzbin category too
-added:   Automatic newzbin bookmark processing
 changed: Embedded email (Perl no longer required for Unix/OSX) (by deam)
 added:   Intelligent handling of seasons of TV shows
 added:   Streaming-friendly ordering of files

@@ -1,7 +1,7 @@
-                                SABnzbd+ v0.4.0Beta1
+                                SABnzbd+ v0.4.0Beta2
 
 *************************************
-*** This is SABnzbd+ 0.4.0Beta1   ***
+*** This is SABnzbd+ 0.4.0Beta2   ***
 *************************************
 
 ===>> THIS IS Beta SOFTWARE, DO NOT OVERWRITE OLDER RELEASES  <<===
@@ -66,7 +66,6 @@ will show the logging. Use this for troubleshooting only.
 Secure NNTP (SSL)
 User-defined categories
 Complete redesign of RSS scanning
-Automatic newzbin bookmark processing
 Intelligent handling of seasons of TV shows
 Streaming-friendly ordering of files
 Automatic removal of samples before downloading
