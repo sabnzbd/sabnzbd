@@ -1694,17 +1694,17 @@ class ConfigNewzbin(ProtectedClass):
 
     @cherrypy.expose
     def getBookmarks(self, dummy = None):
-        sabnzbd.getBookmarksNow()
+        #sabnzbd.getBookmarksNow()
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def showBookmarks(self, dummy = None):
-        self.__bookmarks = sabnzbd.getBookmarksList()
+        #self.__bookmarks = sabnzbd.getBookmarksList()
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def hideBookmarks(self, dummy = None):
-        self.__bookmarks = []
+        #self.__bookmarks = []
         raise Raiser(self.__root, dummy)
 
 #------------------------------------------------------------------------------

@@ -464,8 +464,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     ## Object initializiation ##
     ############################
 
-    if NEWZBIN_BOOKMARKS:
-        BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+    #if NEWZBIN_BOOKMARKS:
+        #BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
     need_rsstask = init_RSS()
     init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK, BOOKMARKS, BOOKMARK_RATE)
