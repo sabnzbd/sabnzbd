@@ -43,6 +43,7 @@ LICENSE-MIT & LICENSE-GPL -- Dave Methvin & Mike Alsup
 WebToolkit
 http://www.webtoolkit.info/ajax-file-upload.html
 Copyright (c) 2006-2008 www.webtoolkit.info
+LICENSE-GPL
 
 Nuvola Icon Set
 http://www.icon-king.com/?p=15
