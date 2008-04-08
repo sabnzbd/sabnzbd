@@ -85,61 +85,7 @@ def InjectProgressBarPosition (mbleft, mb):
 				</td>
 			</tr>
 	
-	
-			<!--#if $slot.finished or $slot.active or $slot.queued#-->
-			<!-- Post Processing : Begin -->
-			<tr class="postProcessing">
-				<td class="first last" colspan="5">
-					<table cellspacing="0">
-						<tbody>
-					
-							<!--#if $slot.finished#-->
-							<!--#for $line in $slot.finished#-->
-							<tr class="finished">
-								<td class="processItemStatus">Finished</td>
-								<td class="processItemTitle" title="Age: $line.age">$line.filename</td>
-								<td>$line.mbleft of $line.mb MB</td>
-								<td></td>
-							</tr>
-							<!--#end for#-->
-							<!--#end if#-->
 
-
-							<!--#if $slot.active#-->
-							<!--#for $line in $slot.active#--> 
-							<tr class="active">
-								<td class="processItemStatus">Active</td>
-								<td class="processItemTitle" title="Age: $line.age">$line.filename</td>
-								<td>$line.mbleft of $line.mb MB</td>
-								<td class="processItemMove">
-									<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Top');" class="queue_top">&laquo;</a>
-									<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Up');" class="queue_up">&lsaquo;</a>
-									<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Down');" class="queue_down">&rsaquo;</a>
-									<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Bottom');" class="queue_bottom">&raquo;</a>
-									<a onclick="ManipNZF('$slot.nzo_id', '$line.nzf_id', 'Drop');" class="queue_drop">&otimes;</a>
-								</td>
-							</tr>
-							<!--#end for#-->
-							<!--#end if#-->
-						
-						
-							<!--#if $slot.queued#-->
-							<!--#for $line in $slot.queued#--> 
-							<tr class="pending">
-								<td class="processItemStatus">Pending</td>
-								<td class="processItemTitle" title="Age: $line.age -- Set: $line.set">$line.filename</td>
-								<td>$line.mbleft of $line.mb MB</td>
-								<td></td>
-							</tr>
-							<!--#end for#-->
-							<!--#end if#-->	
-						
-						</tbody>
-					</table>
-				</td>
-			</tr>
-			<!-- Post Processing : End -->
-			<!--#end if#-->
 		
 		<!--#end for#-->
 		<!--#end if#-->
