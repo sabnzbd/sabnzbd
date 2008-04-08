@@ -6,23 +6,21 @@ var queueSortAge = false;
 // once the DOM is ready, run this
 $(document).ready(function() {
 
-
-// somehow this breaks IE7, and somehow without it it still works...
-		$(".nav").superfish({
-			animation : { opacity:"show", height:"show" },
-			hoverClass	: "sfHover",
-			pathClass	: "overideThisToUse",
-			delay		: 800,
-			animation	: {opacity:"show"},
-			speed		: "normal",
-			oldJquery	: false, // set to true if using jQuery version below 1.2 
-			disableHI	: false /*, // set to true to disable hoverIntent detection
-			onInit		: function(){},
-			onBeforeShow: function(){},
-			onShow		: function(){},
-			onHide		: function(){}
-*/		});
-
+	// main menu
+	$(".nav").superfish({
+		animation : { opacity:"show", height:"show" },
+		hoverClass	: "sfHover",
+		pathClass	: "overideThisToUse",
+		delay		: 800,
+		animation	: {opacity:"show"},
+		speed		: "normal",
+		oldJquery	: false, // set to true if using jQuery version below 1.2 
+		disableHI	: false /*, // set to true to disable hoverIntent detection
+		onInit		: function(){},
+		onBeforeShow: function(){},
+		onShow		: function(){},
+		onHide		: function(){}
+*/	});
 
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
@@ -42,6 +40,8 @@ $(document).ready(function() {
 		if (refreshRate > 0 && reactivate)
 			MainLoop();
 	});
+	
+	// "On Queue Finish" main menu item menu select
 	$("#onQueueFinish-option").change( function() {
 		$.ajax({
 			type: "GET",

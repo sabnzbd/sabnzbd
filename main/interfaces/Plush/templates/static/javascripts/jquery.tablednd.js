@@ -1,12 +1,60 @@
 /**
  * TableDnD plug-in for JQuery, allows you to drag and drop table rows
  * You can set up various options to control how the system will work
- * Copyright � Denis Howlett <denish@isocra.com>
+ * Copyright © Denis Howlett <denish@isocra.com>
  * Licensed like jQuery, see http://docs.jquery.com/License.
  *
+ * Configuration options:
+ * 
+ * onDragStyle
+ *     This is the style that is assigned to the row during drag. There are limitations to the styles that can be
+ *     associated with a row (such as you can't assign a border‚Äîwell you can, but it won't be
+ *     displayed). (So instead consider using onDragClass.) The CSS style to apply is specified as
+ *     a map (as used in the jQuery css(...) function).
+ * onDropStyle
+ *     This is the style that is assigned to the row when it is dropped. As for onDragStyle, there are limitations
+ *     to what you can do. Also this replaces the original style, so again consider using onDragClass which
+ *     is simply added and then removed on drop.
+ * onDragClass
+ *     This class is added for the duration of the drag and then removed when the row is dropped. It is more
+ *     flexible than using onDragStyle since it can be inherited by the row cells and other content. The default
+ *     is class is tDnD_whileDrag. So to use the default, simply customise this CSS class in your
+ *     stylesheet.
+ * onDrop
+ *     Pass a function that will be called when the row is dropped. The function takes 2 parameters: the table
+ *     and the row that was dropped. You can work out the new order of the rows by using
+ *     table.rows.
+ * onDragStart
+ *     Pass a function that will be called when the user starts dragging. The function takes 2 parameters: the
+ *     table and the row which the user has started to drag.
+ * onAllowDrop
+ *     Pass a function that will be called as a row is over another row. If the function returns true, allow 
+ *     dropping on that row, otherwise not. The function takes 2 parameters: the dragged row and the row under
+ *     the cursor. It returns a boolean: true allows the drop, false doesn't allow it.
+ * scrollAmount
+ *     This is the number of pixels to scroll if the user moves the mouse cursor to the top or bottom of the
+ *     window. The page should automatically scroll up or down as appropriate (tested in IE6, IE7, Safari, FF2,
+ *     FF3 beta)
+ * 
+ * Other ways to control behaviour:
+ *
+ * Add class="nodrop" to any rows for which you don't want to allow dropping, and class="nodrag" to any rows
+ * that you don't want to be draggable.
+ *
+ * Inside the onDrop method you can also call $.tableDnD.serialize() this returns a string of the form
+ * <tableID>[]=<rowID1>&<tableID>[]=<rowID2> so that you can send this back to the server. The table must have
+ * an ID as must all the rows.
+ *
+ * Known problems:
+ * - Auto-scoll has some problems with IE7  (it scrolls even when it shouldn't), work-around: set scrollAmount to 0
+ * 
  * Version 0.2: 2008-02-20 First public version
  * Version 0.3: 2008-02-07 Added onDragStart option
  *                         Made the scroll amount configurable (default is 5 as before)
+ * Version 0.4: 2008-03-15 Changed the noDrag/noDrop attributes to nodrag/nodrop classes
+ *                         Added onAllowDrop to control dropping
+ *                         Fixed a bug which meant that you couldn't set the scroll amount in both directions
+ *                         Added serialise method
  */
 jQuery.tableDnD = {
     /** Keep hold of the current table being dragged */
@@ -52,12 +100,13 @@ jQuery.tableDnD = {
     /** This function makes all the rows on the table draggable apart from those marked as "NoDrag" */
     makeDraggable: function(table) {
         // Now initialise the rows
-        var rows = table.tBodies[0].rows; //getElementsByTagName("tr")
+        var rows = table.rows; //getElementsByTagName("tr")
         var config = table.tableDnDConfig;
         for (var i=0; i<rows.length; i++) {
-            // John Tarr: added to ignore rows that I've added the NoDnD attribute to (Category and Header rows)
-            var nodrag = rows[i].getAttribute("NoDrag");
-            if (nodrag == null || nodrag == "undefined") { //There is no NoDnD attribute on rows I want to drag
+            // To make non-draggable rows, add the nodrag class (eg for Category and Header rows) 
+			// inspired by John Tarr and Famic
+            var nodrag = $(rows[i]).hasClass("nodrag");
+            if (! nodrag) { //There is no NoDnD attribute on rows I want to drag
                 jQuery(rows[i]).mousedown(function(ev) {
                     if (ev.target.tagName == "TD") {
                         jQuery.tableDnD.dragObject = this;
@@ -133,17 +182,26 @@ jQuery.tableDnD = {
         var y = mousePos.y - jQuery.tableDnD.mouseOffset.y;
         //auto scroll the window
 	    var yOffset = window.pageYOffset;
-	    if (document.all) {
-            // Windows version
-            yOffset=document.body.scrollTop;
+	 	if (document.all) {
+	        // Windows version
+	        //yOffset=document.body.scrollTop;
+	        if (typeof document.compatMode != 'undefined' &&
+	             document.compatMode != 'BackCompat') {
+	           yOffset = document.documentElement.scrollTop;
+	        }
+	        else if (typeof document.body != 'undefined') {
+	           yOffset=document.body.scrollTop;
+	        }
+
 	    }
-	    if (mousePos.y-yOffset < config.scrollAmount) {
+		    
+		if (mousePos.y-yOffset < config.scrollAmount) {
 	    	window.scrollBy(0, -config.scrollAmount);
 	    } else {
             var windowHeight = window.innerHeight ? window.innerHeight
                     : document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight;
-            if (windowHeight-(mousePos.y-yOffset) < 5) {
-                window.scrollBy(0, 5);
+            if (windowHeight-(mousePos.y-yOffset) < config.scrollAmount) {
+                window.scrollBy(0, config.scrollAmount);
             }
         }
 
@@ -161,8 +219,9 @@ jQuery.tableDnD = {
 			}
             // If we're over a row then move the dragged row to there so that the user sees the
             // effect dynamically
-            var currentRow = jQuery.tableDnD.findDropTargetRow(y);
+            var currentRow = jQuery.tableDnD.findDropTargetRow(dragObj, y);
             if (currentRow) {
+                // TODO worry about what happens when there are multiple TBODIES
                 if (movingDown && jQuery.tableDnD.dragObject != currentRow) {
                     jQuery.tableDnD.dragObject.parentNode.insertBefore(jQuery.tableDnD.dragObject, currentRow.nextSibling);
                 } else if (! movingDown && jQuery.tableDnD.dragObject != currentRow) {
@@ -175,24 +234,38 @@ jQuery.tableDnD = {
     },
 
     /** We're only worried about the y position really, because we can only move rows up and down */
-    findDropTargetRow: function(y) {
-        var rows = jQuery.tableDnD.currentTable.tBodies[0].rows;
+    findDropTargetRow: function(draggedRow, y) {
+        var rows = jQuery.tableDnD.currentTable.rows;
         for (var i=0; i<rows.length; i++) {
             var row = rows[i];
-            // John Tarr added to ignore rows that I've added the NoDnD attribute to (Header rows)
-            var nodrop = row.getAttribute("NoDrop");
-            if (nodrop == null || nodrop == "undefined") {  //There is no NoDnD attribute on rows I want to drag
-                var rowY    = this.getPosition(row).y;
-                var rowHeight = parseInt(row.offsetHeight)/2;
-                if (row.offsetHeight == 0) {
-                    rowY = this.getPosition(row.firstChild).y;
-                    rowHeight = parseInt(row.firstChild.offsetHeight)/2;
+            var rowY    = this.getPosition(row).y;
+            var rowHeight = parseInt(row.offsetHeight)/2;
+            if (row.offsetHeight == 0) {
+                rowY = this.getPosition(row.firstChild).y;
+                rowHeight = parseInt(row.firstChild.offsetHeight)/2;
+            }
+            // Because we always have to insert before, we need to offset the height a bit
+            if ((y > rowY - rowHeight) && (y < (rowY + rowHeight))) {
+                // that's the row we're over
+				// If it's the same as the current row, ignore it
+				if (row == draggedRow) {return null;}
+                var config = jQuery.tableDnD.currentTable.tableDnDConfig;
+                if (config.onAllowDrop) {
+                    if (config.onAllowDrop(draggedRow, row)) {
+                        return row;
+                    } else {
+                        return null;
+                    }
+                } else {
+					// If a row has nodrop class, then don't allow dropping (inspired by John Tarr and Famic)
+                    var nodrop = $(row).hasClass("nodrop");
+                    if (! nodrop) {
+                        return row;
+                    } else {
+                        return null;
+                    }
                 }
-                // Because we always have to insert before, we need to offset the height a bit
-                if ((y > rowY - rowHeight) && (y < (rowY + rowHeight))) {
-                    // that's the row we're over
-                    return row;
-                }
+                return row;
             }
         }
         return null;
@@ -216,8 +289,22 @@ jQuery.tableDnD = {
             }
             jQuery.tableDnD.currentTable = null; // let go of the table too
         }
+    },
+
+    serialize: function() {
+        if (jQuery.tableDnD.currentTable) {
+            var result = "";
+            var tableId = jQuery.tableDnD.currentTable.id;
+            var rows = jQuery.tableDnD.currentTable.rows;
+            for (var i=0; i<rows.length; i++) {
+                if (result.length > 0) result += "&";
+                result += tableId + '[]=' + rows[i].id;
+            }
+            return result;
+        } else {
+            return "Error: No Table id set, you need to set an id on your table and every row";
+        }
     }
-    
 }
 
 jQuery.fn.extend(
