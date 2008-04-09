@@ -1374,7 +1374,11 @@ def ListFilters(feed):
     while True:
         try:
             tup = cfg['filter'+str(n)]
-            filters.append(tup)
+            try:
+                cat, pp, scr, act, txt = tup
+                filters.append(tup)
+            except:
+                logging.warning('[%s] Incorrect filter', __NAME__)
             n = n + 1
         except:
             break
