@@ -10,12 +10,12 @@ $(document).ready(function() {
 	$(".nav").superfish({
 		animation : { opacity:"show", height:"show" },
 		hoverClass	: "sfHover",
-		pathClass	: "overideThisToUse",
 		delay		: 800,
 		animation	: {opacity:"show"},
 		speed		: "normal",
 		oldJquery	: false, // set to true if using jQuery version below 1.2 
 		disableHI	: false /*, // set to true to disable hoverIntent detection
+		pathClass	: "overideThisToUse",
 		onInit		: function(){},
 		onBeforeShow: function(){},
 		onShow		: function(){},
