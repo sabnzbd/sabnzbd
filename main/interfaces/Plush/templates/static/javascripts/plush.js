@@ -52,7 +52,7 @@ $(document).ready(function() {
 	// auto show/hide of extra queue options
 	$('#hdr-queue').bind("mouseover mouseout", function(){
 		$('.q_menu_sort').toggleClass("show");
-		$('.q_menu_purge').toggleClass("show");
+		//$('.q_menu_purge').toggleClass("show");
 	});
 	$('.box_banner_history').bind("mouseover mouseout", function(){
 		$('.h_menu_purge').toggleClass("show");
@@ -76,14 +76,16 @@ $(document).ready(function() {
 	});
 
 	// purge queue
-	$('.q_menu_purge').dblclick(function(event) {
-		$.ajax({
-			type: "GET",
-			url: "queue/purge?dummy="+Math.random(),
-			success: function(result){
-   				return LoadTheQueue(result);
-			}
-		});
+	$('#queue_purge').click(function(event) {
+		if(confirm('Sure you want to clear out your Queue?')){
+			$.ajax({
+				type: "GET",
+				url: "queue/purge?dummy="+Math.random(),
+				success: function(result){
+	   				return LoadTheQueue(result);
+				}
+			});
+		}
 	});
 	
 	// Set up +NZB
