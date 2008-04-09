@@ -167,7 +167,7 @@ def synchronized_CV(func):
 # Signal Handler                                                               #
 ################################################################################
 def sig_handler(signum = None, frame = None):
-    if type(signum) != type(None) and DAEMON and signum==5:
+    if os.name == 'nt' and type(signum) != type(None) and DAEMON and signum==5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if type(signum) != type(None):
