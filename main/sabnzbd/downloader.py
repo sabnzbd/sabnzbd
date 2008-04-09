@@ -244,7 +244,7 @@ class Downloader(Thread):
                                 nw.init_connect()
                                 self.write_fds[nw.nntp.sock.fileno()] = nw
                             except:
-                                logging.exception("[%s] Failed to initialize %s@%s:%s",
+                                logging.error("[%s] Failed to initialize %s@%s:%s",
                                                   __NAME__, nw.thrdnum, server.host,
                                                   server.port)
                                 self.__reset_nw(nw, "failed to initialize")
@@ -360,10 +360,11 @@ class Downloader(Thread):
                             nw.lines = []
                             nw.data = ''
                         except:
-                            logging.exception("[%s] Connecting %s@%s:%s failed",
+                            logging.error("[%s] Connecting %s@%s:%s failed, message=%s",
                                               __NAME__, nw.thrdnum,
-                                              nw.server.host, nw.server.port)
-                            self.__reset_nw(nw, "connecting failed")
+                                              nw.server.host, nw.server.port, nw.lines[0])
+                            # No reset-warning needed, above logging is sufficient
+                            self.__reset_nw(nw, None, warn=False)
 
                         if nw.connected:
                             logging.info("[%s] Connecting %s@%s:%s finished",
@@ -408,10 +409,10 @@ class Downloader(Thread):
         if nw.nntp:
             fileno = nw.nntp.sock.fileno()
 
-        if warn:
+        if warn and errormsg:
             logging.warning('[%s] Thread %s@%s:%s: ' + errormsg,
                              __NAME__, nw.thrdnum, server.host, server.port)
-        else:
+        elif errormsg:
             logging.info('[%s] Thread %s@%s:%s: ' + errormsg,
                              __NAME__, nw.thrdnum, server.host, server.port)
 
@@ -450,7 +451,7 @@ class Downloader(Thread):
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except:
-            logging.exception("[%s] Exception?", __NAME__)
+            logging.error("[%s] Exception?", __NAME__)
             self.__reset_nw(nw, "server broke off connection")
 
     def __send_group(self, nw):
@@ -468,5 +469,5 @@ class Downloader(Thread):
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except:
-            logging.exception("[%s] Exception?", __NAME__)
+            logging.error("[%s] Exception?", __NAME__)
             self.__reset_nw(nw, "server broke off connection")
