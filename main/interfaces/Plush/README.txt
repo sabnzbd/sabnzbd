@@ -54,16 +54,17 @@ plush_default_config/*.png  -- with the exception of config_newzbin.png which is
 plush_default_nzo/*.png
 plush_default/q_stats_needspace.png
 plush_default/hv_userscript.png
-plush_default/hv_unzip.png
-plush_default/hv_timetaken.png
-plush_default/hv_join.png
-plush_default/hv_avgspeed.png
 
 plush_default/hl_loaded.gif provided by ajaxload.info
 
 sabnzbdplus.ico and sabnzbdplus_logo.png thanks to inpheaux.
 
-hv_avgspeed.png and hv_timetaken.png thanks to sbultez.
+Thanks to sbultez for supplying:
+plush_default/hv_avgspeed.png
+plush_default/hv_join.png
+plush_default/hv_unzip.png
+plush_default/hv_timetaken.png
+
 
 All other imagery provided by injectx which in some places was spliced by real_scud.
 
