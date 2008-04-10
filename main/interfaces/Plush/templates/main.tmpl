@@ -108,9 +108,9 @@
 						</li>
 					</ul>
 				</li>
-				<li><a>Special Purpose</a>
+				<li><a>Functions</a>
 					<ul>
-						<li><a><select id="refreshRate-option">
+						<li><a><select id="refreshRate-option" style="font-size:100%;margin-left:-6px;">
 							<option value="1">1 sec</option>
 							<option value="2">2 sec</option>
 							<option value="4">4 sec</option>
@@ -123,9 +123,10 @@
 							<option value="1800">30 min</option>
 							<option value="0">No</option>
 						</select>&nbsp;Refresh</a></li>
-					<li><a>On Queue Finish..</a>
-						<ul><li>
-							<a><select style="width:130px" id="onQueueFinish-option">
+					<li>
+						<a>
+							On Queue Finish..<br/>
+							<select style="margin-left:8px;width:140px;" id="onQueueFinish-option">
 								<option value=""></option>
 								    <optgroup label="Actions">
 								        <!--#if $nt#-->
@@ -143,8 +144,8 @@
 								    <!--#end for#-->
 								    </optgroup>
 								<!--#end if#-->
-							</select></a>
-						</li></ul>
+							</select>
+							</a>
 					</li>
 					<li><a id="queue_purge" style="cursor:pointer">Purge the Queue</a></li>
 				</ul>
