@@ -14,7 +14,7 @@ SPECIAL THANKS
 * real_scud, for creating the new HTML/CSS layout
 * inpheaux, for the Config concept & assembly and SABnzbd+ logo
 * blis102, for the original Nova & Plush concepts
-* sbultez, for creating a couple icons
+* sbultez, for creating numerous history verbosity icons
 
 ============
 KNOWN ISSUES
@@ -60,10 +60,8 @@ plush_default/hl_loaded.gif provided by ajaxload.info
 sabnzbdplus.ico and sabnzbdplus_logo.png thanks to inpheaux.
 
 Thanks to sbultez for supplying:
-plush_default/hv_avgspeed.png
-plush_default/hv_join.png
-plush_default/hv_unzip.png
-plush_default/hv_timetaken.png
+plush_default/hv_*.png
+plush_default/ql_row_on.png
 
 
 All other imagery provided by injectx which in some places was spliced by real_scud.
