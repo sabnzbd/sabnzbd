@@ -52,8 +52,6 @@ LICENSE-LGPL -- Copyright (c) 2003-2004 David Vignoni
 The following images are from the Nuvola icon set (in templates/static/images/):
 plush_default_config/*.png  -- with the exception of config_newzbin.png which is used with permission from Newzbin.com
 plush_default_nzo/*.png
-plush_default/q_stats_needspace.png
-plush_default/hv_userscript.png
 
 plush_default/hl_loaded.gif provided by ajaxload.info
 
@@ -62,6 +60,7 @@ sabnzbdplus.ico and sabnzbdplus_logo.png thanks to inpheaux.
 Thanks to sbultez for supplying:
 plush_default/hv_*.png
 plush_default/ql_row_on.png
+plush_default/q_stats_needspace.png
 
 
 All other imagery provided by injectx which in some places was spliced by real_scud.
