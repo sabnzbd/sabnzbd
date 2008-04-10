@@ -439,11 +439,12 @@ class NzbObject(TryList):
                 if nzf.nzf_id:
                     sabnzbd.remove_data(nzf.nzf_id)
 
-        if sabnzbd.CREATE_GROUP_FOLDERS:
-            self.__dirprefix.append(self.__group)
+        if len(sabnzbd.CFG['categories']) == 0:
+            if sabnzbd.CREATE_GROUP_FOLDERS:
+                self.__dirprefix.append(self.__group)
 
-        if sabnzbd.CREATE_CAT_FOLDERS and cat:
-            self.__dirprefix.append(cat)
+            if sabnzbd.CREATE_CAT_FOLDERS and cat:
+                self.__dirprefix.append(cat)
 
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
