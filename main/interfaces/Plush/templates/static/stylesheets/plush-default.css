@@ -169,11 +169,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .queueTable .historyTitleCheck {
 	padding-left:30px;
-	background: url(../images/plush_default/hl_check.png) 10px 50% no-repeat;
+	background: url(../images/plush_default/hv_ok.png) 10px 50% no-repeat;
 }
 .queueTable .historyTitleCross {
 	padding-left:30px;
-	background: url(../images/plush_default/hl_cross.png) 10px 50% no-repeat;
+	background: url(../images/plush_default/hv_error.png) 10px 50% no-repeat;
 }
 .queueTable a {
 	text-decoration: none;
@@ -271,7 +271,7 @@ tr:hover .history_added  {
 .hv_ZIP {
 	display:inline;
 	padding-left:16px;
-	background: url(../images/plush_default/hv_unrar.png) 0 50% no-repeat;
+	background: url(../images/plush_default/hv_unzip.png) 0 50% no-repeat;
 }
 .hv_DEL {
 	display:inline;
