@@ -1,82 +1,11 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
-	<script type="text/javascript" src="../static/javascripts/jquery.pack.js"></script>
-	<script type="text/javascript" src="../static/javascripts/jquery.corner.js"></script>
-	<link rel="stylesheet" type="text/css" href="../static/stylesheets/plush-default.css" media="screen"/>
-    <!--#if $color_scheme#-->
-    <link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
-    <!--#end if#-->
+	<title>#SABnzbd IRC</title>
 </head>
+<body style="padding:0px; margin:0px;">
 
-<style>
-<!--
-	body {background: #ddd;}
--->
-</style>
-
-<body>
-<div align="center">
-	<a href="../" style="text-decoration:none; color:black">&laquo; go back <img src="../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-
-<div id="config_nav">
-	<ul>
-		<li><a class="config_menu" href="../connections"><img src="../static/images/plush_default_config/config_connections.png" />Connections</a></li>
-		<li><a class="config_menu" href="general"><img src="../static/images/plush_default_config/config_general.png" />General</a></li>
-		<li><a class="config_menu" href="directories"><img src="../static/images/plush_default_config/config_directories.png" />Directories</a></li>
-		<li><a class="config_menu" href="switches"><img src="../static/images/plush_default_config/config_switches.png" />Switches</a></li>
-		<li><a class="config_menu" href="server"><img src="../static/images/plush_default_config/config_servers.png" />Servers</a></li>
-     	<li><a class="config_menu" href="categories"><img src="../static/images/plush_default_config/config_categories.png" />Categories</a></li>
-		<li><a class="config_menu" href="scheduling"><img src="../static/images/plush_default_config/config_scheduling.png" />Scheduling</a></li>
-		<li><a class="config_menu" href="rss"><img src="../static/images/plush_default_config/config_rss.png" />RSS</a></li>
-		<li><a class="config_menu" href="email"><img src="../static/images/plush_default_config/config_email.png" />Email</a></li>
-    	<li><a class="config_menu" href="newzbin"><img src="../static/images/plush_default_config/config_newzbin.png" />Newzbin</a></li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-<!-- ************************************
-	 		PAGE CONTENT IS BELOW
-     ************************************ -->
-
-<h2>Configuration</h2>
-<p>
-<b>Configfile:</b> $configfn
-</p>
-<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
-<!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
-<!--#end if#-->
-<!--#if $new_release#-->
-    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
-<!--#end if#-->
-
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
-
-	</div>
-</div>
-
-<div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/Configure"><img src="../static/images/plush_default_config/config_help.png"> Contextual Help</a>
-</div>
-
-</form>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-	\$('#help').corner("round");
-
-</script>
-
-
-
+	<iframe width="600" height="380" scrolling="no" frameborder="0" src="http://embed.mibbit.com/?server=irc.synirc.net&channel=%23sabnzbd&parseLinks=true&chatOutputShowTimes=true"></iframe>
+	<br/><small>type /nick to change your Nick name, /help, /cs help,<br/>/ns help, /ms help, or /os help for available commands</small>
 
 </body>
 </html>
