@@ -105,12 +105,15 @@ class RSSQueue:
 
         # Preparations, get options
         cfg = sabnzbd.CFG['rss'][feed]
-        uri = cfg['uri']
-        defCat = cfg['cat']
-        defPP = cfg['pp']
-        defScript = cfg['script']
-
-        enabled = int(cfg['enable'])
+        try:
+            uri = cfg['uri']
+            defCat = cfg['cat']
+            defPP = cfg['pp']
+            defScript = cfg['script']
+            enabled = int(cfg['enable'])
+        except:
+            logging.error('[%s] Incorrect RSS feed description "%s"', __NAME__, feed)
+            return
 
         # Preparations, convert filters to regex's
         filters = ListFilters(feed)
