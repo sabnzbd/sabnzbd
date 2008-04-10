@@ -203,6 +203,8 @@ def dir_setup(config, cfg_name, def_loc, def_name):
 
     if my_dir:
         (dd, my_dir) = create_real_path(cfg_name, def_loc, my_dir)
+        if not dd:
+            my_dir = ""
         logging.debug("%s: %s", cfg_name, my_dir)
     return my_dir
 
@@ -366,7 +368,11 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
     if DOWNLOAD_DIR == "":
-        return False
+        # Directory creation failed, retry with default
+        CFG['misc']['download_dir'] = DEF_DOWNLOAD_DIR
+        DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
+        if DOWNLOAD_DIR == "":
+            return False
 
     DOWNLOAD_FREE = check_setting_str(CFG, 'misc', 'download_free', "0")
     DOWNLOAD_FREE = int(from_units(DOWNLOAD_FREE))
@@ -374,7 +380,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, DEF_COMPLETE_DIR)
     if COMPLETE_DIR == "":
-        return False
+        COMPLETE_DIR == DOWNLOAD_DIR
 
     SCRIPT_DIR = dir_setup(CFG, 'script_dir', DIR_HOME, '')
 
