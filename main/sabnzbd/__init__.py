@@ -445,7 +445,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         CFG['misc']['schedlines'] = []
     schedlines = CFG['misc']['schedlines']
 
-    DIRSCAN_PP = check_setting_int(CFG, 'misc', 'dirscan_opts', 1)
+    DIRSCAN_PP = check_setting_int(CFG, 'misc', 'dirscan_opts', 3)
     DIRSCAN_SCRIPT = check_setting_str(CFG, 'misc', 'dirscan_script', '')
 
     top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
