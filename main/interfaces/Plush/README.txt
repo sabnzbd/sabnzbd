@@ -1,6 +1,6 @@
 
 ============================================================
-== SABnzbd+ Plush 2.0 for SABnzbd+ 0.4.0 | April 05, 2008 ==
+== SABnzbd+ Plush 2.0 for SABnzbd+ 0.4.0 | April 10, 2008 ==
 
 ============
 ASSEMBLED BY
@@ -41,17 +41,25 @@ jQuery Corner
 http://www.malsup.com/jquery/corner/
 LICENSE-MIT & LICENSE-GPL -- Dave Methvin & Mike Alsup
 
+jQuery Tooltip
+http://bassistance.de/jquery-plugins/jquery-plugin-tooltip/
+LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2006 - 2008 Jörn Zaefferer
+
+jQuery Dimensions
+http://plugins.jquery.com/project/dimensions
+LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2007 Paul Bakaus and Brandon Aaron
+
+jQuery Live Query
+http://plugins.jquery.com/project/livequery
+LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2007 Brandon Aaron
+
+jQuery bgiframe
+http://plugins.jquery.com/project/bgiframe
+LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2006 Brandon Aaron
+
 WebToolkit
 http://www.webtoolkit.info/ajax-file-upload.html
 LICENSE-GPL -- Copyright (c) 2006-2008 www.webtoolkit.info
-
-
-Nuvola Icon Set
-http://www.icon-king.com/?p=15
-LICENSE-LGPL -- Copyright (c) 2003-2004 David Vignoni
-The following images are from the Nuvola icon set (in templates/static/images/):
-plush_default_config/*.png  -- with the exception of config_newzbin.png which is used with permission from Newzbin.com
-plush_default_nzo/*.png
 
 plush_default/hl_loaded.gif provided by ajaxload.info
 
@@ -62,6 +70,12 @@ plush_default/hv_*.png
 plush_default/ql_row_on.png
 plush_default/q_stats_needspace.png
 
+Nuvola Icon Set
+http://www.icon-king.com/?p=15
+LICENSE-LGPL -- Copyright (c) 2003-2004 David Vignoni
+The following images are from the Nuvola icon set (in templates/static/images/):
+plush_default_config/*.png  -- with the exception of config_newzbin.png which is used with permission from Newzbin.com
+plush_default_nzo/*.png
 
 All other imagery provided by injectx which in some places was spliced by real_scud.
 

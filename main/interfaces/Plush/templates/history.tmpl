@@ -30,7 +30,7 @@ def displayNotices (action, name):
 				<td class="last">
 					<!--#for $stage in $line.stages#-->
 						<!--#for $action in $stage.actions#-->
-							<div class="hv_<%=action['name'][1:4]%>" title='<%=action['value']%> | <%= action['name'].replace("'","&rsquo;") %>'>&#8203;</div><%=displayNotices(action['value'],action['name'])%>
+							<div class="hv_<%=action['name'][1:4]%>" title='<%= action['name'].replace("'","&rsquo;") %><br><%=action['value']%>'>&thinsp;</div><%=displayNotices(action['value'],action['name'])%>
 						<!--#end for#-->
 					<!--#end for#-->
 				</td>
@@ -38,7 +38,7 @@ def displayNotices (action, name):
 
 
 				<td>
-					<div class="queue_delete" title="Delete NZB from Queue">&nbsp;&nbsp;&nbsp;&nbsp;</div>
+					<div class="queue_delete" title="Hide NZB<br>from History">&nbsp;&nbsp;&nbsp;&nbsp;</div>
 					<small class="history_added">$line.added</small>
 				</td>
 

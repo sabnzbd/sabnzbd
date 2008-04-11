@@ -22,6 +22,55 @@ $(document).ready(function() {
 		onHide		: function(){}
 */	});
 
+	$('#history div').livequery(function() {
+        $(this).Tooltip({
+	    	extraClass: "tooltip",
+	    	track: true, 
+			fixPNG: true
+		});
+    });
+	
+	
+	
+	/*
+	$(".queue_delete").tooltip({ 
+	    track: true, 
+	    delay: 0, 
+	    showURL: false, 
+	    showBody: " - ", 
+	    opacity: 0.85 
+	});
+	$("#fancy, #fancy2").tooltip({ 
+    track: true, 
+    delay: 0, 
+    showURL: false, 
+    opacity: 1, 
+    fixPNG: true, 
+    showBody: " - ", 
+    extraClass: "pretty fancy", 
+    top: -15, 
+    left: 5 
+	}); 
+	 $('#pretty').tooltip({ 
+	    track: true, 
+	    delay: 0, 
+	    showURL: false, 
+	    showBody: " - ", 
+	    extraClass: "pretty", 
+	    fixPNG: true, 
+	    opacity: 0.95, 
+	    left: -120 
+	});
+	$('#right a').tooltip({ 
+	    track: true, 
+	    delay: 0, 
+	    showURL: false, 
+	    extraClass: "right" 
+	}); 
+	$('#right2 a').tooltip({ showURL: false });
+	*/
+
+
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
 		refreshRate = ReadCookie('Plush2Refresh');
