@@ -61,14 +61,15 @@ WebToolkit
 http://www.webtoolkit.info/ajax-file-upload.html
 LICENSE-GPL -- Copyright (c) 2006-2008 www.webtoolkit.info
 
-plush_default/hl_loaded.gif provided by ajaxload.info
-
 sabnzbdplus.ico and sabnzbdplus_logo.png thanks to inpheaux.
 
 Thanks to sbultez for supplying:
+plush_default/hl_loaded.gif
 plush_default/hv_*.png
-plush_default/ql_row_on.png
 plush_default/q_stats_needspace.png
+plush_default/ql_cross.png
+plush_default/ql_cross_on.png
+plush_default/ql_row_on.png
 
 Nuvola Icon Set
 http://www.icon-king.com/?p=15
