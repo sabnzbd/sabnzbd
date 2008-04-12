@@ -285,6 +285,7 @@ class NzbFile(TryList):
 DTD = '{http://www.newzbin.com/DTD/2003/nzb}'
 NZBFN_MATCHER = re.compile(r"msgid_\d*_(.*).nzb", re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
+
 class NzbObject(TryList):
     def __init__(self, filename, pp, script, nzb = None,
                  futuretype = False, cat = None):
@@ -307,6 +308,9 @@ class NzbObject(TryList):
             r = u = d = None
         else:
             r, u, d = sabnzbd.pp_to_opts(pp)
+
+        if script == None and not futuretype:
+            script = sabnzbd.DIRSCAN_SCRIPT
 
         self.__filename = filename    # Original filename
         self.__dirname = filename
@@ -439,13 +443,11 @@ class NzbObject(TryList):
                 if nzf.nzf_id:
                     sabnzbd.remove_data(nzf.nzf_id)
 
-        if len(sabnzbd.CFG['categories']) == 0:
-            if sabnzbd.CREATE_GROUP_FOLDERS:
-                self.__dirprefix.append(self.__group)
+        if sabnzbd.CREATE_GROUP_FOLDERS:
+            self.__dirprefix.append(self.__group)
 
-            if sabnzbd.CREATE_CAT_FOLDERS and cat:
-                self.__dirprefix.append(cat)
-
+        if sabnzbd.CREATE_CAT_FOLDERS and cat:
+            self.__dirprefix.append(cat)
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
