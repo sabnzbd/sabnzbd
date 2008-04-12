@@ -25,8 +25,14 @@ $(document).ready(function() {
 
 	// drag & drop that will extend over multiple refreshes (for Queue)
 	$('#queueTable').livequery(function() {
+		
 		InitiateDragAndDrop(); // also called when queue is manually refreshed
+
+		// skip queue refresh on mouseover
+		$('#queueTable').bind("mouseover", function(){ skipRefresh=true; });
+		$('#queueTable').bind("mouseout", function(){ skipRefresh=false; });
     });
+	
 
 	// tooltips that will extend over multiple refreshes (for History)
 	$('#history div').livequery(function() {
@@ -103,6 +109,7 @@ $(document).ready(function() {
 			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&dummy="+Math.random()
 		});
 	});
+
 
 	// auto show/hide of extra queue options
 	$('#hdr-queue').bind("mouseover mouseout", function(){
@@ -276,12 +283,11 @@ function InitiateDragAndDrop() {
     	//onDragClass: "myDragClass",
     	onDrop: function(table, row) {
            	var rows = table.tBodies[0].rows;
-			var droppedon = "";
 			
 			if (rows.length < 2)
 				return false;
 			
-			// figure out which position it is at now
+			// figure out which position dropped row is at now
           	for ( var i=0; i < rows.length; i++ )
 				if (rows[i].id == row.id)
 					return ChangeOrder("switch?uid1="+row.id+"&uid2="+i);
