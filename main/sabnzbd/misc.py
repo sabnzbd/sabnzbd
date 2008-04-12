@@ -34,6 +34,7 @@ import zipfile
 import gzip
 import webbrowser
 import tempfile
+import shutil
 
 try:
     # Try to import OSX library
@@ -43,6 +44,7 @@ except:
     HAVE_FOUNDATION = False
 
 from threading import *
+from sabnzbd.decorators import *
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.constants import *
 
@@ -751,3 +753,110 @@ def SplitHost(srv):
     except:
         port = None
     return (host, port)
+
+
+#------------------------------------------------------------------------------
+# Locked directory operations
+
+DIR_LOCK = RLock()
+
+@synchronized(DIR_LOCK)
+def get_unique_path(dirpath, n=0, create_dir=True):
+    """ Determine a unique folder or filename """
+    path = dirpath
+    if n: path = "%s.%s" % (dirpath, n)
+
+    if not os.path.exists(path):
+        if create_dir: create_dirs(path)
+        return path
+    else:
+        return get_unique_path(dirpath, n=n+1, create_dir=create_dir)
+
+
+@synchronized(DIR_LOCK)
+def create_dirs(dirpath):
+    """ Create directory tree, obeying permissions """
+    if not os.path.exists(dirpath):
+        logging.info('[%s] Creating directories: %s', __NAME__, dirpath)
+        try:
+            if sabnzbd.UMASK and os.name != 'nt':
+                os.makedirs(dirpath, int(sabnzbd.UMASK, 8) | 00700)
+            else:
+                os.makedirs(dirpath)
+        except:
+            logging.exception("[%s] Failed making (%s)",__NAME__,dirpath)
+            return None
+
+    return dirpath
+
+
+@synchronized(DIR_LOCK)
+def move_to_path(path, new_path, unique=True):
+    """ Move a file to a new path, optionally give unique filename """
+    if unique:
+        new_path = get_unique_path(new_path, create_dir=False)
+    if new_path:
+        logging.debug("[%s] Moving. Old path:%s new path:%s unique?:%s",
+                                                  __NAME__,path,new_path, unique)
+        try:
+            # First try cheap rename
+            os.rename(path, new_path)
+        except:
+            # Cannot rename, try copying
+            try:
+                shutil.copyfile(path, new_path)
+                os.remove(path)
+            except:
+                logging.error("[%s] Failed moving %s to %s", __NAME__, path, new_path)
+    return new_path
+
+
+@synchronized(DIR_LOCK)
+def cleanup_empty_directories(path):
+    path = os.path.normpath(path)
+    while 1:
+        repeat = False
+        for root, dirs, files in os.walk(path, topdown=False):
+            if not dirs and not files and root != path:
+                try:
+                    os.rmdir(root)
+                    repeat = True
+                except:
+                    pass
+        if not repeat:
+            break
+
+
+@synchronized(DIR_LOCK)
+def getFilepath(path, nzo, filename):
+    """ Create unique filepath """
+    # This procedure is only used by the Assembler thread
+    # It does no umask setting
+    # It uses the dir_lock for the (rare) case that the
+    # download_dir is equal to the complete_dir.
+    dirname = nzo.get_dirname()
+    created = nzo.get_dirname_created()
+
+    dName = dirname
+    if not created:
+        for n in xrange(200):
+            dName = dirname
+            if n: dName += '.' + str(n)
+            try:
+                os.mkdir(os.path.join(path, dName))
+                break
+            except:
+                pass
+        nzo.set_dirname(dName, created = True)
+
+    fPath = os.path.join(os.path.join(path, dName), filename)
+    n = 0
+    while True:
+        fullPath = fPath
+        if n: fullPath += '.' + str(n)
+        if os.path.exists(fullPath):
+            n = n + 1
+        else:
+            break
+    
+    return fullPath

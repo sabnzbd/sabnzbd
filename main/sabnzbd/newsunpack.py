@@ -105,15 +105,17 @@ def find_programs(curdir):
 
 
 #------------------------------------------------------------------------------
-def external_processing(extern_proc, complete_dir, filename, cat):
+def external_processing(extern_proc, complete_dir, filename, nicename, cat):
 
     name, msgid = SplitFileName(filename)
     command = ['%s' % extern_proc, '%s' % complete_dir, '%s' % filename, \
-               '%s' % name, '%s' % msgid, '%s' % cat]
+               '%s' % nicename, '%s' % msgid, '%s' % cat]
 
     stup, need_shell, command, creationflags = build_command(command)
 
-    logging.info('[%s] Spawning external command %s', __NAME__, command)
+    logging.info('[%s] Running external script %s(%s, %s, %s, %s, %s)', __NAME__, \
+                 extern_proc, complete_dir, filename, nicename, msgid, cat)
+
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)

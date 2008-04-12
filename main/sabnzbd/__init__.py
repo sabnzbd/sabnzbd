@@ -34,7 +34,8 @@ from time import sleep
 
 from threading import RLock, Lock, Condition, Thread
 
-from sabnzbd.assembler import Assembler, PostProcessor
+from sabnzbd.assembler import Assembler
+from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
