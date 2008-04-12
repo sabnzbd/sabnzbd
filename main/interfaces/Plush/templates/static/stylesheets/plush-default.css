@@ -229,6 +229,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	float:right;
 	margin-left:10px;
 	margin-right: 5px;
+	padding-left:16px;
 }
 .queueTable tr:hover .queue_delete {
 	background: url(../images/plush_default/ql_cross.png) 50% 50% no-repeat;

@@ -22,6 +22,13 @@ $(document).ready(function() {
 		onHide		: function(){}
 */	});
 
+
+	// drag & drop that will extend over multiple refreshes (for Queue)
+	$('#queueTable').livequery(function() {
+		InitiateDragAndDrop(); // also called when queue is manually refreshed
+    });
+
+	// tooltips that will extend over multiple refreshes (for History)
 	$('#history div').livequery(function() {
         $(this).Tooltip({
 	    	extraClass: "tooltip",
@@ -29,10 +36,9 @@ $(document).ready(function() {
 			fixPNG: true
 		});
     });
+
 	
-	
-	
-	/*
+	/* // more tooltip options
 	$(".queue_delete").tooltip({ 
 	    track: true, 
 	    delay: 0, 
@@ -249,10 +255,11 @@ function MainLoop() {
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
 	if (skipRefresh) return false; // set within queue <table>
-	$('#queue').load('queue?dummy='+Math.random() , function(){
-		if ($('#stats_noofslots').html()!='0')
-			InitiateDragAndDrop();
-	});
+	$('#queue').load('queue?dummy='+Math.random() /*, function(){
+		// taken care of by livequery plugin
+		//if ($('#stats_noofslots').html()!='0')
+		//	InitiateDragAndDrop();
+	}*/);
 }
 
 // refresh the queue with supplied data (like if we already made an AJAX call)
