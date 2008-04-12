@@ -188,7 +188,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .queueTable .eta {
 	text-align: center;
-	font-size: 66%;
+	font-size: 70%;
 }
 .queueTable select {
 	border:0px;
@@ -215,7 +215,10 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 /*	overflow:hidden;*/
 }
 
-.currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1; margin-top:2px;}
+.currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1; margin-top:2px; font-weight:bold;}
+.currentDownload small, .totalDownload small {
+	font-weight:normal;
+}
 .currentDownload { float: left; margin-left: 3px;}
 .totalDownload { float:right; margin-right: 3px;}
 
