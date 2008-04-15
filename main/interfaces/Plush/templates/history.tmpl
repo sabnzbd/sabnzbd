@@ -10,19 +10,21 @@ def displayNotices (action, name):
 
 
 		
-		<table class="queueTable">
+		<table class="queueTable" cellspacing="0">
 		<!--#set $odd = False#-->
 		<!--#if $lines#-->
 		<!--#for $line in $lines #-->
 			<!--#set $odd = not $odd#-->
 			<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 
-				<td class="<!--#if $line.loaded #-->historyTitleLoaded<!--#else if $line.status=="Failed"#-->historyTitleCross<!--#else#-->historyTitleCheck<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->>
+				<td>
+					<div class="historyTitle <!--#if $line.loaded #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->></div>
 					<!--#if $line.msgid #-->
 						<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
 					<!--#else#-->
 						$line.filename
 					<!--#end if#-->
+					
 				</td>
 			
 			

@@ -5,7 +5,11 @@ var queueSortAge = false;
 
 // once the DOM is ready, run this
 $(document).ready(function() {
-
+	var windowSize = $(document).width();
+	windowSize = windowSize/69;
+	Math.round(windowSize);
+	$(".nav").css("padding-left", windowSize + "%");
+	
 	// main menu
 	$(".nav").superfish({
 		animation : { opacity:"show", height:"show" },

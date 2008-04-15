@@ -140,40 +140,46 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 
 .queueTable {
-	border-spacing: 0;
+	border-collapse: seperate;
 	width: 100%;
+	background-color: #e0e0e0;
 	color: #606060;
+	border-bottom: 1px solid #fff
 }
 .queueTable tr {
-	background: url(../images/plush_default/ql_row.png) 0 0 repeat-x;
-	height: 31px;
+	background-color: #e0e0e0;
+	
 }
 .queueTable tr:hover {
-	background: url(../images/plush_default/ql_row_on.png) 0 0 repeat-x;
+	background-color: #f9f9f9;
 	color: #000;
 }
 .queueTable td {
 	vertical-align: middle;
 	padding:2px 0;
+	border-top: 1px solid #fff;
 }
+.queueTable td.download-title { width: 50%; }
 .queueTable .title {
-	padding-left:30px;
-	background: url(../images/plush_default/ql_grip.png) 4px 50% no-repeat;
+	height: 14px;
+	width: 16px;
+	margin: 2px 8px 0 4px;
+	float:left;
+	background: url(../images/plush_default/ql_grip.png) 0 50% no-repeat;
 }
 .queueTable tr:hover .title {
-	background: url(../images/plush_default/ql_grip_on.png) 4px 50% no-repeat;
+	background: url(../images/plush_default/ql_grip_on.png) 0 50% no-repeat;
 }
-.queueTable .historyTitleLoaded {
-	padding-left:30px;
-	background: url(../images/plush_default/hl_loaded.gif) 10px 50% no-repeat;
+.queueTable .historyTitle { width: 16px; float:left; height: 16px; margin-right: 10px; margin-left: 3px; }
+.queueTable .historyTitle.Loaded, .queueTable .historyTitle.Check, .queueTable .historyTitle.Cross { background-repeat: no-repeat; } 
+.queueTable .historyTitle.Loaded {
+	background-image: url(../images/plush_default/hl_loaded.gif);
 }
-.queueTable .historyTitleCheck {
-	padding-left:30px;
-	background: url(../images/plush_default/hv_ok.png) 7px 50% no-repeat;
+.queueTable .historyTitle.Check {
+	background-image: url(../images/plush_default/hv_ok.png);
 }
-.queueTable .historyTitleCross {
-	padding-left:30px;
-	background: url(../images/plush_default/hv_error.png) 7px 50% no-repeat;
+.queueTable .historyTitle.Cross {
+	background-image: url(../images/plush_default/hv_error.png);
 }
 .queueTable a {
 	text-decoration: none;
@@ -187,6 +193,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	cursor: pointer;
 }
 .queueTable .eta {
+	padding-left:6px;
 	text-align: center;
 	font-size: 70%;
 }
@@ -251,7 +258,9 @@ tr:hover .history_added  {
 .last div {
 	cursor: help;
 	display:inline;
-	padding-left:16px;
+	float:left;
+	width: 16px;
+	margin-right: 2px;
 }
 .hv_Tim {
 	background: url(../images/plush_default/hv_timetaken.png) 0 50% no-repeat;
@@ -307,7 +316,7 @@ tr:hover .history_added  {
 #hdr-queue .logo h1 { text-indent: -9999px; margin: 0; padding: 0;}
 #queue-buttons { float: right; background-image: url(../images/plush_default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
 #queue-buttons li { float:left; }
-#queue-wrap { background-color: #cfcfcf; padding: 0 3px; }
+#queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
 #speed, #time-left {
 	background-image: url(../images/plush_default/rounded_area_bg.png);
 	width: 68px;
@@ -563,7 +572,7 @@ fieldset.EntryFieldSet {
 	border: 1px solid #111;
 	background-color: lightyellow;
 	color:red;
-	font-size:66%;
+	font-size: 11px !important;
 	padding: 5px;
 	opacity: 0.85;
 	text-align: right;
