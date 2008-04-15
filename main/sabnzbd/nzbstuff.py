@@ -291,16 +291,14 @@ class NzbObject(TryList):
                  futuretype = False, cat = None):
         TryList.__init__(self)
 
-        if cat: cat = cat.lower()
-
         if cat and pp == None:
             try:
-                pp = sabnzbd.CFG['categories'][cat]['pp']
+                pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
             except:
                 pass
         if cat and script == None:
             try:
-                script = sabnzbd.CFG['categories'][cat]['script']
+                script = sabnzbd.CFG['categories'][cat.lower()]['script']
             except:
                 pass
 

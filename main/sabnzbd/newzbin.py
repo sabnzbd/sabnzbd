@@ -81,7 +81,6 @@ def CatConvert(cat):
     newcat = cat
     if cat:
         found = False
-        cat = cat.lower()
         for ucat in sabnzbd.CFG['categories']:
             try:
                 newzbin = sabnzbd.CFG['categories'][ucat]['newzbin']
@@ -90,7 +89,7 @@ def CatConvert(cat):
             except:
                 newzbin = []
             for name in newzbin:
-                if name.lower() == cat:
+                if name.lower() == cat.lower():
                     logging.debug('[%s] Convert newzbin-cat "%s" to user-cat "%s"', __NAME__, cat, ucat)
                     newcat = ucat
                     found = True
@@ -243,17 +242,15 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
         logging.error("[%s] Newzbin server fails to give info for %s", __NAME__, msgid)
         return nothing
 
-    cat = report_cat.lower()
-
     # sanitize report_name
     newname = RE_SANITIZE.sub('_', report_name)
     if len(newname) > 80:
         newname = "%s[%s]" % (newname[0:70], id(newname))
     newname = "msgid_%s %s.nzb" % (msgid, newname.strip())
 
-    logging.info('[%s] Successfully fetched %s (cat=%s) (%s)', __NAME__, report_name, cat, newname)
+    logging.info('[%s] Successfully fetched %s (cat=%s) (%s)', __NAME__, report_name, report_cat, newname)
 
-    return (newname, data, cat)
+    return (newname, data, report_cat)
 
 
 ################################################################################
