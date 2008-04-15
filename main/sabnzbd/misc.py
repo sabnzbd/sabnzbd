@@ -133,43 +133,34 @@ class DirScanner(Thread):
 
         self.ignored = []  # Will hold all examined but bad candidates
         self.shutdown = False
-        self.error_reported = False # Prevents mulitple reporting of missing dirscan-dir
+        self.error_reported = False # Prevents mulitple reporting of missing watched folder
 
     def stop(self):
         logging.info('[%s] Dirscanner shutting down', __NAME__)
         self.shutdown = True
 
     def run(self):
-        logging.info('[%s] Dirscanner starting up', __NAME__)
-
-        while not self.shutdown:
-
-            # Use variable scan delay
-            x = self.dirscan_speed
-            while (x > 0) and not self.shutdown:
-                time.sleep(1.0)
-                x = x - 1
-
+        def run_dir(folder, catdir):
             try:
-                files = os.listdir(self.dirscan_dir)
+                files = os.listdir(folder)
             except:
-                if not self.error_reported:
-                    logging.error("Cannot read dirscan dir %s", self.dirscan_dir)
+                if not self.error_reported and not catdir:
+                    logging.error("Cannot read Watched Folder %s", folder)
                     self.error_reported = True
                 files = []
 
             for filename in files:
-                if filename in self.ignored:
+                path = os.path.join(folder, filename)
+                if os.path.isdir(path) or path in self.ignored:
                     continue
 
-                path = os.path.join(self.dirscan_dir, filename)
                 root, ext = os.path.splitext(path)
                 ext = ext.lower()
                 candidate = ext in ('.nzb', '.zip', '.gz')
                 if candidate:
                     stat_tuple = os.stat(path)
                 else:
-                    self.ignored.append(filename)
+                    self.ignored.append(path)
 
                 if candidate and stat_tuple.st_size > 0:
                     logging.info('[%s] Trying to import %s', __NAME__, path)
@@ -185,7 +176,7 @@ class DirScanner(Thread):
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext == '.zip':
-                        cat, name, pp, script = Cat2OptsDef(filename)
+                        cat, name, pp, script = Cat2OptsDef(filename, catdir)
 
                         zf = zipfile.ZipFile(path)
                         ok = True
@@ -212,10 +203,10 @@ class DirScanner(Thread):
                                 os.remove(path)
                             except:
                                 logging.exception("[%s] Error removing %s", __NAME__, path)
-                                self.ignored.append(filename)
+                                self.ignored.append(path)
                         else:
                             zf.close()
-                            self.ignored.append(filename)
+                            self.ignored.append(path)
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
@@ -236,15 +227,15 @@ class DirScanner(Thread):
                             f.close()
                         except:
                             logging.warning('[%s] Cannot read %s', __NAME__, path)
-                            self.ignored.append(filename)
+                            self.ignored.append(path)
                             continue
 
-                        cat, name, pp, script = Cat2OptsDef(name)
+                        cat, name, pp, script = Cat2OptsDef(name, catdir)
 
                         try:
                             nzo = NzbObject(name, pp, script, data, cat=cat)
                         except:
-                            self.ignored.append(filename)
+                            self.ignored.append(path)
                             continue
 
                         sabnzbd.add_nzo(nzo)
@@ -254,12 +245,29 @@ class DirScanner(Thread):
                             os.remove(path)
                         except:
                             logging.error("[%s] Error removing %s", __NAME__, path)
-                            self.ignored.append(filename)
+                            self.ignored.append(path)
                     else:
-                        self.ignored.append(filename)
+                        self.ignored.append(path)
 
-                if filename in self.ignored:
+                if path in self.ignored:
                     logging.debug('[%s] Ignoring %s', __NAME__, path)
+
+
+        logging.info('[%s] Dirscanner starting up', __NAME__)
+
+        while not self.shutdown:
+            # Use variable scan delay
+            x = self.dirscan_speed
+            while (x > 0) and not self.shutdown:
+                time.sleep(1.0)
+                x = x - 1
+
+            run_dir(self.dirscan_dir, None)
+
+            for dd in os.listdir(self.dirscan_dir):
+                dpath = os.path.join(self.dirscan_dir, dd)
+                if os.path.isdir(dpath) and dd.lower() in sabnzbd.CFG['categories']:
+                    run_dir(dpath, dd.lower())
 
 
 #------------------------------------------------------------------------------
