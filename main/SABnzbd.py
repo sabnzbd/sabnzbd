@@ -33,7 +33,9 @@ if os.name=='nt':
     import platform
     
 try:
-    from Cheetah.Template import Template
+    import Cheetah
+    if Cheetah.Version[0] != '2':
+        raise ValueError
 except:
     print "Sorry, requires Python module Cheetah 2.0rc7 or higher."
     exit(1)
