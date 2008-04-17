@@ -41,7 +41,8 @@ from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
-                         create_real_path, check_latest_version, from_units, SameFile, decodePassword
+                         create_real_path, check_latest_version, from_units, SameFile, decodePassword, \
+                         ProcessZipFile, ProcessSingleFile
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue, ListUris
@@ -882,36 +883,22 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None):
         filename = filename.replace('\\', '/')
 
     filename = os.path.basename(filename)
-
     root, ext = os.path.splitext(filename)
 
     logging.info('[%s] Adding %s', __NAME__, filename)
 
+    try:
+        f, path = tempfile.mkstemp(text=False)
+        os.write(f, nzbfile.value)
+        os.close(f)
+    except:
+        logging.error("[%s] Cannot create temp file for %s", __NAME__, filename)
+
     if ext.lower() == '.zip':
-        f = tempfile.TemporaryFile()
-        f.write(nzbfile.value)
-        f.flush()
-        try:
-            zf = zipfile.ZipFile(f)
-            for name in zf.namelist():
-                data = zf.read(name)
-                name = os.path.basename(name)
-                if data:
-                    try:
-                        nzo = NzbObject(name, repair, pp, script, data, cat=cat)
-                    except:
-                        nzo = None
-                if nzo:
-                    NZBQ.add(nzo)
-        finally:
-            f.close()
+        ProcessZipFile(filename, path)
     else:
-        try:
-            nzo = NzbObject(filename, pp, script, nzbfile.value, cat=cat)
-        except:
-            nzo = None
-        if nzo:
-            NZBQ.add(nzo)
+        ProcessSingleFile(filename, path)
+
 
 @synchronized_CV
 def add_nzo(nzo, position = -1):

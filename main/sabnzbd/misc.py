@@ -116,6 +116,82 @@ def Cat2OptsDef(fname, cat=None):
 
     return cat, name, pp, script
 
+
+def ProcessZipFile(filename, path, catdir=None):
+    """ Analyse ZIP file and create job(s).
+        Accepts ZIP files with ONLY nzb files in it.
+    """
+    cat, name, pp, script = Cat2OptsDef(filename, catdir)
+
+    zf = zipfile.ZipFile(path)
+    ok = True
+    for name in zf.namelist():
+        if not name.lower().endswith('.nzb'):
+            ok = False
+            break
+    if ok:
+        for name in zf.namelist():
+            data = zf.read(name)
+            name = os.path.basename(name)
+            name = RE_SANITIZE.sub('_', name)
+            if data:
+                try:
+                    nzo = NzbObject(name, pp, script, data, cat=cat)
+                except:
+                    nzo = None
+                if nzo:
+                    sabnzbd.add_nzo(nzo)
+        zf.close()
+        try:
+            os.remove(path)
+        except:
+            logging.exception("[%s] Error removing %s", __NAME__, path)
+            ok = False
+    else:
+        zf.close()
+
+    return ok
+
+
+def ProcessSingleFile(filename, path, catdir=None):
+    """ Analyse file and create a job from it
+        Supports NZB, NZB.GZ and GZ.NZB-in-disguise
+    """
+    try:
+        f = open(path, 'rb')
+        b1 = f.read(1)
+        b2 = f.read(1)
+        f.close()
+
+        if (b1 == '\x1f' and b2 == '\x8b'):
+            # gzip file or gzip in disguise
+            name = filename.replace('.nzb.gz', '.nzb')
+            f = gzip.GzipFile(path, 'rb')
+        else:
+            name = filename
+            f = open(path, 'rb')
+        data = f.read()
+        f.close()
+    except:
+        logging.warning('[%s] Cannot read %s', __NAME__, path)
+        return False
+
+    cat, name, pp, script = Cat2OptsDef(name, catdir)
+
+    try:
+        nzo = NzbObject(name, pp, script, data, cat=cat)
+    except:
+        return False
+
+    sabnzbd.add_nzo(nzo)
+    try:
+        os.remove(path)
+    except:
+        logging.error("[%s] Error removing %s", __NAME__, path)
+        return False
+
+    return True
+
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
     """
@@ -175,74 +251,17 @@ class DirScanner(Thread):
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext == '.zip':
-                        cat, name, pp, script = Cat2OptsDef(filename, catdir)
-
-                        zf = zipfile.ZipFile(path)
-                        ok = True
-                        for name in zf.namelist():
-                            if not name.lower().endswith('.nzb'):
-                                ok = False
-                                break
-                        if ok:
-                            self.error_reported = False
-                            for name in zf.namelist():
-                                data = zf.read(name)
-                                name = os.path.basename(name)
-                                name = RE_SANITIZE.sub('_', name)
-                                if data:
-                                    try:
-                                        nzo = NzbObject(name, pp, script, data, cat=cat)
-                                    except:
-                                        nzo = None
-                                    if nzo:
-                                        sabnzbd.add_nzo(nzo)
-                            zf.close()
-                            try:
-                                os.remove(path)
-                            except:
-                                logging.exception("[%s] Error removing %s", __NAME__, path)
-                                self.ignored.append(path)
-                        else:
-                            zf.close()
+                        if not ProcessZipFile(filename, path, catdir):
                             self.ignored.append(path)
+                        else:
+                            self.error_reported = False
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
-                        try:
-                            f = open(path, 'rb')
-                            b1 = f.read(1)
-                            b2 = f.read(1)
-                            f.close()
-
-                            if (b1 == '\x1f' and b2 == '\x8b'):
-                                # gzip file or gzip in disguise
-                                name = filename.replace('.nzb.gz', '.nzb')
-                                f = gzip.GzipFile(path, 'rb')
-                            else:
-                                name = filename
-                                f = open(path, 'rb')
-                            data = f.read()
-                            f.close()
-                        except:
-                            logging.warning('[%s] Cannot read %s', __NAME__, path)
+                        if not ProcessSingleFile(filename, path, catdir):
                             self.ignored.append(path)
-                            continue
-
-                        cat, name, pp, script = Cat2OptsDef(name, catdir)
-
-                        try:
-                            nzo = NzbObject(name, pp, script, data, cat=cat)
-                        except:
-                            self.ignored.append(path)
-                            continue
-
-                        sabnzbd.add_nzo(nzo)
-                        self.error_reported = False
-                        try:
-                            os.remove(path)
-                        except:
-                            logging.error("[%s] Error removing %s", __NAME__, path)
-                            self.ignored.append(path)
+                        else:
+                            self.error_reported = False
                     else:
                         self.ignored.append(path)
 
