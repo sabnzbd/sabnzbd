@@ -30,6 +30,7 @@ import zipfile
 import re
 import random
 import glob
+import gzip
 from time import sleep
 
 from threading import RLock, Lock, Condition, Thread
@@ -338,7 +339,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
     CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
 
     SAFE_POSTPROC = bool(check_setting_int(CFG, 'misc', 'safe_postproc', 0))
-    
+
     pause_on_post_processing = bool(check_setting_int(CFG, 'misc', 'pause_on_post_processing', 0))
 
     CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
@@ -859,9 +860,9 @@ NZB_LOCK = Lock()
 def backup_nzb(filename, data):
     if NZB_BACKUP_DIR:
         try:
-            path = os.path.join(NZB_BACKUP_DIR, filename)
+            path = os.path.join(NZB_BACKUP_DIR, filename+'.gz')
             logging.info("[%s] Saving %s", __NAME__, path)
-            _f = open(path, 'w')
+            _f = gzip.GzipFile(path, 'wb')
             _f.write(data)
             _f.flush()
             _f.close()

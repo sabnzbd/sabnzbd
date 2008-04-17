@@ -196,7 +196,6 @@ class DirScanner(Thread):
                                         nzo = None
                                     if nzo:
                                         sabnzbd.add_nzo(nzo)
-                                        sabnzbd.backup_nzb(name, data)
                             zf.close()
                             try:
                                 os.remove(path)
@@ -238,7 +237,6 @@ class DirScanner(Thread):
                             continue
 
                         sabnzbd.add_nzo(nzo)
-                        sabnzbd.backup_nzb(name, data)
                         self.error_reported = False
                         try:
                             os.remove(path)
@@ -298,19 +296,19 @@ class URLGrabber(Thread):
                 opener = urllib.FancyURLopener({})
                 opener.prompt_user_passwd = None
                 fn, header = opener.retrieve(url)
-    
+
                 filename, data = (None, None)
                 f = open(fn, 'r')
                 data = f.read()
                 f.close()
                 os.remove(fn)
-    
+
                 for tup in header.items():
                     for item in tup:
                         if "filename=" in item:
                             filename = item[item.index("filename=") + 9:]
                             break
-    
+
                 if data:
                     if not filename:
                          filename = os.path.basename(url)
@@ -321,7 +319,7 @@ class URLGrabber(Thread):
                     sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat)
                 else:
                     sabnzbd.remove_nzo(future_nzo.nzo_id, False)
-    
+
             except:
                 logging.exception("[%s] Error adding url %s", __NAME__, url)
                 sabnzbd.remove_nzo(future_nzo.nzo_id, False)
@@ -865,5 +863,5 @@ def getFilepath(path, nzo, filename):
             n = n + 1
         else:
             break
-    
+
     return fullPath

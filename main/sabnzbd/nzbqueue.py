@@ -147,7 +147,6 @@ class NzbQueue(TryList):
                 future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=cat)
                 future.nzo_id = nzo_id
                 self.save()
-                sabnzbd.backup_nzb(filename, data)
 
                 if self.__auto_sort:
                     self.sort_by_avg_age()
@@ -427,10 +426,10 @@ class NzbQueue(TryList):
             filename = hist_item.filename
             bytes = hist_item.bytes_downloaded
             bytes_downloaded += bytes
-            
+
             if completed not in history_info:
                 history_info[completed] = []
-                
+
             if hist_item.nzo:
                 unpackstrht = hist_item.nzo.get_unpackstrht()
                 status = hist_item.nzo.get_status()
@@ -442,7 +441,7 @@ class NzbQueue(TryList):
                 except:
                     status = ""
                 loaded = False
-                
+
             history_info[completed].append((filename, unpackstrht, loaded, bytes, n, status))
             n = n + 1
         return (history_info, bytes_downloaded, sabnzbd.get_bytes())

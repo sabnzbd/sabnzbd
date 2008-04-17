@@ -337,8 +337,8 @@ class NzbObject(TryList):
         self.__finished_files = []
 
         self.__unpackstrht = {}
-        
-        #the current status of the nzo eg: 
+
+        #the current status of the nzo eg:
         #Queued, Downloading, Repairing, Unpacking, Failed, Complete
         self.__status = "Queued"
 
@@ -380,6 +380,8 @@ class NzbObject(TryList):
         except:
             logging.error("[%s] Invalid NZB file %s, skipping", __NAME__, filename)
             raise ValueError
+
+        sabnzbd.backup_nzb(filename, nzb)
 
         avg_age = 0
         valids = 0
@@ -558,8 +560,8 @@ class NzbObject(TryList):
     def set_dirname(self, dirname, created = False):
         self.__dirname = dirname
         self.__created = created
-        
-        
+
+
     def get_original_dirname(self):
         return self.__original_dirname
 
@@ -574,25 +576,25 @@ class NzbObject(TryList):
         if stage not in self.__unpackstrht:
             self.__unpackstrht[stage] = {}
         self.__unpackstrht[stage][action] = msg
-        
+
     def set_status(self, status):
         #sets a string outputting the current status of the job, eg:
         #Queued, Downloading, Repairing, Unpacking, Failed, Complete
         self.__status = status
-        
+
     def get_status(self):
         #returns a string of the current history status
         return self.__status
-        
+
 
     def set_download_report(self):
         #get the deltatime since the download started
         timecompleted = datetime.datetime.now() - self.__time_started
-        
+
         seconds = timecompleted.seconds
         #find the total time including days
         totaltime = (timecompleted.days/86400) + seconds
-        
+
         #format the total time the download took, in days, hours, and minutes, or seconds.
         completestr = ''
         if timecompleted.days:
@@ -612,30 +614,30 @@ class NzbObject(TryList):
         completemsg = '%s' % (completestr)
         self.set_unpackstr(completemsg, '[Time-Taken]', 0)
         #message 2 - average speed
-        completemsg = '%skB/s' % (avgspeed) 
-        self.set_unpackstr(completemsg, '[Avg-Speed]', 0) 
-        
-        
+        completemsg = '%skB/s' % (avgspeed)
+        self.set_unpackstr(completemsg, '[Avg-Speed]', 0)
+
+
     def get_time_started(self):
         try:
             return self.__time_started
         except:
             return 0
 
-        
+
     def set_time_started(self, time):
         try:
             self.__time_started = time
         except:
             pass
         return
-        
+
     def s_returner(self, value):
         if value > 1:
             return 's'
         else:
             return ''
-    
+
     def get_article(self, server):
         article = None
         nzf_remove_list = []
