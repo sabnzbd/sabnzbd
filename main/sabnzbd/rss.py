@@ -72,7 +72,7 @@ def ConvertFilter(text):
         logging.error("[%s] Could not compile regex: %s", __NAME__, text)
         return None
 
-    
+
 LOCK = RLock()
 class RSSQueue:
     def __init__(self):
@@ -99,6 +99,14 @@ class RSSQueue:
     @synchronized(LOCK)
     def run_feed(self, feed=None, rematch=False):
         """ Run the query for one URI and apply filters """
+
+        def DupTitle(title):
+            for lk in self.jobs:
+                if lk[0]=='D' and lk[1]==title:
+                    return True
+            return False
+
+
         if not feed: return
 
         newlinks = []
@@ -160,7 +168,7 @@ class RSSQueue:
                 link = entry
             else:
                 link = _get_link(uri, entry)
-    
+
             if link:
                 if rematch:
                     if link in jobs and jobs[link] != 'D':
@@ -168,6 +176,9 @@ class RSSQueue:
                 else:
                     title = entry.title
                     newlinks.append(link)
+
+                if DupTitle(title):
+                    continue
 
                 myCat = defCat
                 myPP = ''
