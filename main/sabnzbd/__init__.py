@@ -31,6 +31,7 @@ import re
 import random
 import glob
 import gzip
+import time
 from time import sleep
 
 from threading import RLock, Lock, Condition, Thread
@@ -517,6 +518,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         DOWNLOADER = Downloader(servers)
         if pause_downloader:
             DOWNLOADER.paused = True
+        else:
+            DOWNLOADER.paused = DeterminePause(schedlines)
 
     if dirscan_dir:
         DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed)
@@ -1230,6 +1233,39 @@ def fix_filename(filename):
 ################################################################################
 RSSTASK_MINUTE = random.randint(0, 59)
 
+def DeterminePause(schedlines):
+    """ Determine what pause/resume state we would have now.
+        Return True if paused mode would be active.
+    """
+
+    most_recent = 24*60
+    mr_action = None
+
+    now = time.localtime()
+    now = int(now[6])*24*60 + int(now[3])*60 + int(now[4])
+    now = now + 2 # Add a 2 minute safety margin
+
+    for schedule in schedlines:
+        m, h, d, action = schedule.split(None, 3)
+        action = action.strip()
+        if d == '*':
+            d = int(now/(24*60))
+        else:
+            d = int(d)-1
+        then = d*24*60 + int(h)*60 + int(m)
+
+        if now >= then:
+            dif = now - then
+        else:
+            dif = 7*24*60 - then + now
+
+        if dif <= most_recent and action in ('pause', 'resume'):
+            most_recent = dif
+            mr_action = action
+
+    return mr_action == 'pause'
+
+
 def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck=True, \
                bookmarks=None, bookmark_rate=1):
     global SCHED
@@ -1240,12 +1276,13 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
         for schedule in schedlines:
             arguments = []
             argument_list = None
-            if schedule.count(' ') > 3:
-                m, h, d, action_name, argument_list = schedule.split(' ', 4)
-            else:
-                m, h, d, action_name = schedule.split(' ', 3)
+            try:
+                m, h, d, action_name = schedule.split()
+            except:
+                m, h, d, action_name, argument_list = schedule.split(None, 4)
             if argument_list:
                 arguments = argument_list.split()
+
             m = int(m)
             h = int(h)
             if d == '*':
