@@ -1775,7 +1775,8 @@ class ConfigCats(ProtectedClass):
                 del sabnzbd.CFG['categories'][name]
             except:
                 pass
-        return saveAndRestart(self.__root, dummy)
+            save_configfile(sabnzbd.CFG)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def save(self, name=None, newname=None, pp=None, script=None, dir=None, newzbin=None, dummy=None):
@@ -1809,12 +1810,14 @@ class ConfigCats(ProtectedClass):
                     sabnzbd.CFG['categories'][name]['newzbin'] = listquote.simplelist(newzbin)
                 except:
                     pass
-        return saveAndRestart(self.__root, dummy)
+            save_configfile(sabnzbd.CFG)
+        raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
     def init_newzbin(self, dummy = None):
         InitCats()
-        return saveAndRestart(self.__root, dummy)
+        save_configfile(sabnzbd.CFG)
+        raise Raiser(self.__root, dummy)
 
 
 #------------------------------------------------------------------------------
