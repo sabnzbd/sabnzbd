@@ -637,20 +637,22 @@ def from_units(val):
     if val == "-1":
         return val
     m = RE_UNITS.search(val)
-    if m.group(2):
-        val = float(m.group(1))
-        unit = m.group(2)
-        n = 0
-        while unit != TAB_UNITS[n]:
-            val = val * 1024.0
-            n = n+1
+    if m:
+        if m.group(2):
+            val = float(m.group(1))
+            unit = m.group(2)
+            n = 0
+            while unit != TAB_UNITS[n]:
+                val = val * 1024.0
+                n = n+1
+        else:
+            val = m.group(1)
+        try:
+            return float(val)
+        except:
+            return 0.0
     else:
-        val = m.group(1)
-    try:
-        return float(val)
-    except:
-        return 0.0
-
+        return 0
 
 def to_units(val):
     """ Convert number to K/M/G/T/P notation
