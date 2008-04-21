@@ -518,8 +518,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         DOWNLOADER = Downloader(servers)
         if pause_downloader:
             DOWNLOADER.paused = True
-        else:
-            DOWNLOADER.paused = DeterminePause(schedlines)
 
     if dirscan_dir:
         DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed)
@@ -528,6 +526,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
         MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
     URLGRABBER = URLGrabber()
+
+    p, s = AnalyseSchedules(schedlines)
+    if p and not DOWNLOADER.paused: DOWNLOADER.paused = p
+    if s: DOWNLOADER.limit_speed = s
 
     __INITIALIZED__ = True
     return True
@@ -1233,37 +1235,54 @@ def fix_filename(filename):
 ################################################################################
 RSSTASK_MINUTE = random.randint(0, 59)
 
-def DeterminePause(schedlines):
+def AnalyseSchedules(schedlines):
     """ Determine what pause/resume state we would have now.
         Return True if paused mode would be active.
     """
 
-    most_recent = 24*60
-    mr_action = None
-
+    events = []
+    paused = None
+    speedlimit = None
     now = time.localtime()
     now = int(now[6])*24*60 + int(now[3])*60 + int(now[4])
     now = now + 2 # Add a 2 minute safety margin
 
     for schedule in schedlines:
-        m, h, d, action = schedule.split(None, 3)
+        parms = None
+        try:
+            m, h, d, action, parms = schedule.split(None, 4)
+        except:
+            try:
+                m, h, d, action = schedule.split(None, 3)
+            except:
+                continue # Bad schedule, ignore
         action = action.strip()
-        if d == '*':
-            d = int(now/(24*60))
-        else:
-            d = int(d)-1
-        then = d*24*60 + int(h)*60 + int(m)
-
+        try:
+            if d == '*':
+                d = int(now/(24*60))
+            else:
+                d = int(d)-1
+            then = d*24*60 + int(h)*60 + int(m)
+        except:
+            continue # Bad schedule, ignore
         if now >= then:
             dif = now - then
         else:
             dif = 7*24*60 - then + now
 
-        if dif <= most_recent and action in ('pause', 'resume'):
-            most_recent = dif
-            mr_action = action
+        events.append((dif, action, parms))
 
-    return mr_action == 'pause'
+    # Reverse sort schedules
+    events.sort(lambda x, y: y[0]-x[0])
+
+    for ev in events:
+        logging.debug('[%s] Schedule check result = %s', __NAME__, ev)
+        action = ev[1]
+        if action == 'pause': paused = True
+        if action == 'resume': paused = False
+        if action == 'speedlimit': speedlimit = int(ev[2])
+
+    return paused, speedlimit
 
 
 def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck=True, \
@@ -1304,7 +1323,7 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
             else:
                 logging.warning("[%s] Unknown action: %s", __NAME__, ACTION)
 
-            logging.debug("[%s] scheduling action:%s arguments:%s",__NAME__, action, arguments)
+            logging.debug("[%s] scheduling action:%s arguments:%s",__NAME__, action_name, arguments)
 
             #(action, taskname, initialdelay, interval, processmethod, actionargs)
             SCHED.addDaytimeTask(action, '', d, None, (h, m),
