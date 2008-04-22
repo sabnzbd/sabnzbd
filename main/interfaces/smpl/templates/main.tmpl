@@ -254,13 +254,14 @@ function loadtitle() {
     }
     
     function startTimer(url, dual){
-
         killTimer();
         if (url) gUrl = url
         else url = gUrl
         if (dual) gDual = dual
         else dual = gDual
-        timerId2 = setTimeout("lr(\'"+url+"\', '', 1, "+dual+");", RefreshTime*1000);
+        timer="lr(\'"+url+"\', '', 1, "+dual+", 'Right')"
+        timerId2 = setTimeout(timer, RefreshTime*1000);
+ 
     }
     
     function rssUrlEncode(url, uri ,cat ){
@@ -271,7 +272,6 @@ function loadtitle() {
 	function lr(url, extra, refresh, dual, pnode)
 	{
     //submits an ajax request and loads the retrieved data into the div called "Right". Can queue itself up to repeat the action based on the refresh rate
-    
 		if (dual!=-1)
         {
             gDual = dual;
@@ -293,7 +293,7 @@ function loadtitle() {
 		var res = doSimpleXMLHttpRequest(url+append);        
 	    res.addCallback(function (res)
 	    {
-          if (timerId2 && refresh>=0) killTimer()
+          if (timerId2 && refresh>=0 && pnode != 'Right_bottom') killTimer()
 	      if (pnode != 'Right_bottom') document.getElementById('Right').innerHTML = res.responseText;
           else document.getElementById('Right_bottom').innerHTML = res.responseText;
           if (dual==0) {
