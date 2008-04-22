@@ -520,7 +520,7 @@ def main():
     sabnzbd.DEBUG_DELAY = delay
     sabnzbd.CFG = cfg
 
-    init_ok = sabnzbd.initialize(pause, clean_up)
+    init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True)
 
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting',

@@ -282,7 +282,7 @@ def check_setting_str(config, cfg_name, item_name, def_val, log = True):
 INIT_LOCK = Lock()
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader = False, clean_up = False, force_save= False):
+def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, IGNORE_SAMPLES, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
@@ -527,9 +527,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False):
 
     URLGRABBER = URLGrabber()
 
-    p, s = AnalyseSchedules(schedlines)
-    if p and not DOWNLOADER.paused: DOWNLOADER.paused = p
-    if s: DOWNLOADER.limit_speed = s
+    if evalSched:
+        p, s = AnalyseSchedules(schedlines)
+        if p and not DOWNLOADER.paused: DOWNLOADER.paused = p
+        if s: DOWNLOADER.limit_speed = s
 
     __INITIALIZED__ = True
     return True

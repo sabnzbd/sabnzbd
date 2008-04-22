@@ -1641,13 +1641,13 @@ class ConfigScheduling(ProtectedClass):
         if minute and hour  and dayofweek and action:
             sabnzbd.CFG['misc']['schedlines'].append('%s %s %s %s %s' %
                                               (minute, hour, dayofweek, action, arguments))
-        return saveAndRestart(self.__root, dummy)
+        return saveAndRestart(self.__root, dummy, evalSched=True)
 
     @cherrypy.expose
     def delSchedule(self, line = None, dummy = None):
         if line and line in sabnzbd.CFG['misc']['schedlines']:
             sabnzbd.CFG['misc']['schedlines'].remove(line)
-        return saveAndRestart(self.__root, dummy)
+        return saveAndRestart(self.__root, dummy, evalSched=True)
 
 #------------------------------------------------------------------------------
 
@@ -1929,10 +1929,10 @@ class ConnectionInfo(ProtectedClass):
         raise Raiser(self.__root, dummy)
 
 
-def saveAndRestart(redirect_root, dummy):
+def saveAndRestart(redirect_root, dummy, evalSched=False):
     save_configfile(sabnzbd.CFG)
     sabnzbd.halt()
-    init_ok = sabnzbd.initialize()
+    init_ok = sabnzbd.initialize(evalSched=evalSched)
     if init_ok:
         sabnzbd.start()
         raise Raiser(redirect_root, dummy)
