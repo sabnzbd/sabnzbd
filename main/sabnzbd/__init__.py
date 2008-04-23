@@ -530,7 +530,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if evalSched:
         p, s = AnalyseSchedules(schedlines)
         if p and not DOWNLOADER.paused: DOWNLOADER.paused = p
-        if s: DOWNLOADER.limit_speed = s
+        if s: DOWNLOADER.limit_speed(s)
 
     __INITIALIZED__ = True
     return True
