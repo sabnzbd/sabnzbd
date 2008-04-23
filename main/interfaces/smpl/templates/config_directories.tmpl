@@ -19,7 +19,7 @@
 		<br class="clear" />
 			    
 		    <label>Completed Download Folder:</label>
-		    <input type="text" size="40" name="complete_dir" value="$complete_dir">
+		    <input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
 		    <span class="tips">The default folder for storing completed items. Is overwritten by any categories.</span>			
 		<br class="clear" />
 
@@ -78,28 +78,84 @@
 		    <label>Enable TV Sorting:</label>
 		    <input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
 		    <input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Enable folder sorting for TV episodes and DVD's.</span>
+		    <span class="tips">Enable sorting and renaming of episodes.</span>
 		<br class="clear" />
-        
-		    <label>Enable season folders:</label>
-		    <input class="radio" type="radio" name="tv_sort_seasons" value="0" <!--#if $tv_sort_seasons == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="tv_sort_seasons" value="1" <!--#if $tv_sort_seasons > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Enable sorting into season folders.</span>
-		<br class="clear" />
-        
-            <label>Folder Naming:</label>
-			<select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
-			    <!--#for $tvline in $tvsort_list#-->
-			        <!--#if int($tv_sort) == $i #-->
-			            <option value="$i" selected>$tvline</option>
-			        <!--#else#-->
-			            <option value="$i">$tvline</option>
-			        <!--#end if#-->
-                    <!--#set $i = $i+1 #-->
-			    <!--#end for#-->
-			</select>
-			<span class="tips">Choose a folder naming option</span>
-		<br class="clear" />
+
+    <table border="1">
+    <tr>
+    <th></th>
+    <th>Pattern</th>
+    <th>Result</th>
+    </tr>
+    <tr>
+    <td rowspan="3">Show Name</td>
+    <td>%sn</td>
+    <td>Show Name</td>
+    </tr>
+    <tr>
+
+    <td>%s.n</td>
+    <td>Show.Name</td>
+    </tr>
+    <tr>
+
+    <td>%s_n</td>
+    <td>Show_Name</td>
+    </tr>
+    <tr>
+    <td rowspan="2">Season Number</td>
+    <td>%s</td>
+    <td>1</td>
+    </tr>
+    <tr>
+
+    <td>%0s</td>
+    <td>01</td>
+    </tr>
+    <tr>
+    <td rowspan="2">Episode Number</td>
+    <td>%e</td>
+    <td>5</td>
+    </tr>
+    <tr>
+
+    <td>%0e</td>
+    <td>05</td>
+    </tr>
+    <tr>
+    <td rowspan="3">Episode Name</td>
+    <td>%en</td>
+    <td>Episode Name</td>
+    </tr>
+    <tr>
+
+    <td>%e.n</td>
+    <td>Episode.Name</td>
+    </tr>
+    <tr>
+
+    <td>%e_n</td>
+    <td>Episode_Name</td>
+    </tr>
+    <tr>
+    <td>File Extension</td>
+    <td>%ext</td>
+    <td>avi</td>
+    </tr>
+    <!--<tr>
+    <td>Original Filename</td>
+    <td>%fn</td>
+    <td>Episode Name</td>
+    </tr>-->
+    </table>
+    <br class="clear" />
+    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
+    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/><br class="clear" />
+    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
+    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
+    <input type="button" onclick="tvClear()" value="Clear"/><br class="clear" />
+    <input type="text" style="width:500px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br class="clear" />
+    <span id="previewtv"></span>
 
 </fieldset>
 </div><br class="clear" />

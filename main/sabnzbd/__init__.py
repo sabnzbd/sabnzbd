@@ -142,8 +142,7 @@ URLGRABBER = []
 AUTO_SORT = None
 
 ENABLE_TV_SORTING = False
-TV_SORT = None
-TV_SORT_SEASONS = True
+TV_SORT_STRING = None
 
 WEB_COLOR = None
 WEB_COLOR2 = None
@@ -296,7 +295,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT, TV_SORT_SEASONS, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
+           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
            WEB_DIR, WEB_DIR2, pause_on_post_processing
 
     if __INITIALIZED__:
@@ -463,8 +462,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     AUTO_SORT = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
 
     ENABLE_TV_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_tv_sorting', 0)) #tv sorting on/off
-    TV_SORT = check_setting_int(CFG, 'misc', 'tv_sort', 0) #tv sort level
-    TV_SORT_SEASONS = bool(check_setting_int(CFG, 'misc', 'tv_sort_seasons', 1)) #sort into season folders
+    TV_SORT_STRING = check_setting_str(CFG, 'misc', 'tv_sort_string', '') #tv sort format
 
     WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')

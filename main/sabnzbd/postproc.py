@@ -40,7 +40,7 @@ from sabnzbd.email import email_endjob, prepare_msg
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          cleanup_empty_directories
-from sabnzbd.tvsort import TVSeasonCheck, TVSeasonMove
+from sabnzbd.tvsort import TVSeasonCheck, TVSeasonMove, TVRenamer
 
 
 #------------------------------------------------------------------------------
@@ -135,33 +135,41 @@ class PostProcessor(Thread):
                 complete_dir = create_dirs(complete_dir)
 
             ## Determine destination directory
-            dirname, unique_dir = TVSeasonCheck(nzo.get_original_dirname())
+            dirname = nzo.get_original_dirname()
+            complete_dir, filename_set, tv_file = TVSeasonCheck(complete_dir, dirname)
             nzo.set_dirname(dirname)
-            workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
-            tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
-            try:
-                os.rename(workdir_complete, tmp_workdir_complete)
-            except:
-                pass # On failure, just use the original name
-
+            if not tv_file:
+                workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
+                tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
+                try:
+                    os.rename(workdir_complete, tmp_workdir_complete)
+                except:
+                    pass # On failure, just use the original name
+            else:
+                tmp_workdir_complete = complete_dir
+                workdir_complete = create_dirs(complete_dir)
+                
             ## Run Stage 2: Unpack
             if flagUnpack:
                 if parResult:
                     #set the current nzo status to "Extracting...". Used in History
                     nzo.set_status("Extracting...")
                     logging.info("[%s] Running unpack_magic on %s", __NAME__, filename)
-                    unpackError = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), ())
+                    unpackError, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), ())
                     logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
+                    if newfiles and tv_file and filename_set: TVRenamer(tmp_workdir_complete, newfiles, filename_set)
                 else:
                     nzo.set_unpackstr('=> No post-processing because of failed verification', '[UNPACK]', 2)
 
+            if tv_file and (unpackError or not parResult): 
+                tmp_workdir_complete = workdir_complete = os.path.join(tmp_workdir_complete, '_FAILED_')
             ## Move any (left-over) files to destination
             nzo.set_status("Moving...")
             for root, dirs, files in os.walk(workdir):
                 for _file in files:
                     path = os.path.join(root, _file)
                     new_path = path.replace(workdir, tmp_workdir_complete)
-                    move_to_path(path, new_path)
+                    move_to_path(path, new_path, unique=False)
 
             ## Remove download folder
             try:
@@ -175,16 +183,14 @@ class PostProcessor(Thread):
 
 
             ## Give destination its final name
-            if not parResult:
-                workdir_complete = prefix(workdir_complete, '_FAILED_')
-            if unique_dir:
+            if not tv_file:
+                if not parResult:
+                    workdir_complete = prefix(workdir_complete, '_FAILED_')
                 try:
                     os.rename(tmp_workdir_complete, workdir_complete)
                     nzo.set_dirname(os.path.basename(workdir_complete))
                 except:
                     logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
-            else:
-                if parResult: TVSeasonMove(nzo, tmp_workdir_complete, workdir_complete)
 
 
             ## Clean up download dir

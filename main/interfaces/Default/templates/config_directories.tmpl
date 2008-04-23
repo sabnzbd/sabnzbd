@@ -8,6 +8,43 @@
         <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
     <!--#end if#-->
     <link rel="shortcut icon" href="../../static/images/favicon.ico" />
+    <script type="text/javascript">
+    function tvAdd(val){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = tv.value + val;
+        previewtv();
+    }
+    function tvSet(val){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = val;
+        previewtv();
+    }
+    function tvClear(){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = '';
+        previewtv();
+    }
+    function previewtv(){
+        var input = document.getElementById('tvfoldername').value;
+        input.toLowerCase()
+        input = input.replace(/%ext/g,'avi');
+        input = input.replace(/%sn/g,'Show Name');
+        input = input.replace(/%\s.n/g,'Show.Name');
+        input = input.replace(/%\s_n/g,'Show_Name');
+        input = input.replace(/%0s/g,'01');
+        input = input.replace(/%s/g,'1');
+        input = input.replace(/%en/g,'Episode Name');
+        input = input.replace(/%e\.n/g,'Episode.Name');
+        input = input.replace(/%e\_n/g,'Episode_Name');
+        input = input.replace(/%0e/g,'05');
+        input = input.replace(/%e/g,'5');
+        var com = document.getElementById('complete_dir').value;
+        var outbox = document.getElementById('previewtv').innerHTML = com+"/"+input;
+    }
+    </script>
+
+    
+    
 </head>
 <body>
 <h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
@@ -51,7 +88,7 @@
     <br>
     <strong>Completed Download Folder:</strong><br>
     (can be overruled by user-defined categories)<br>
-    <input type="text" size="40" name="complete_dir" value="$complete_dir">
+    <input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
     <!--#if not $nt#-->
         <br>
         <br>
@@ -101,27 +138,89 @@
     <input type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
     <br>
     <br>
-    <strong>Enable season folders:</strong><br>
-    Enable sorting into season folders.<br>
-    <input type="radio" name="tv_sort_seasons" value="0" <!--#if $tv_sort_seasons == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="tv_sort_seasons" value="1" <!--#if $tv_sort_seasons > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-  
-  
-    <strong>Folder Naming:</strong><br />
-    Choose a folder naming option<br />
-    <select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
-        <!--#for $tvline in $tvsort_list#-->
-            <!--#if int($tv_sort) == $i #-->
-                <option value="$i" selected>$tvline</option>
-            <!--#else#-->
-                <option value="$i">$tvline</option>
-            <!--#end if#-->
-            <!--#set $i = $i+1 #-->
-        <!--#end for#-->
-    </select>
+    <strong>TV Folder Sorting:</strong><br />
+   
+    <table border="1">
+    <tr>
+    <th></th>
+    <th>Pattern</th>
+    <th>Result</th>
+    </tr>
+    <tr>
+    <td rowspan="3">Show Name</td>
+    <td>%sn</td>
+    <td>Show Name</td>
+    </tr>
+    <tr>
+
+    <td>%s.n</td>
+    <td>Show.Name</td>
+    </tr>
+    <tr>
+
+    <td>%s_n</td>
+    <td>Show_Name</td>
+    </tr>
+    <tr>
+    <td rowspan="2">Season Number</td>
+    <td>%s</td>
+    <td>1</td>
+    </tr>
+    <tr>
+
+    <td>%0s</td>
+    <td>01</td>
+    </tr>
+    <tr>
+    <td rowspan="2">Episode Number</td>
+    <td>%e</td>
+    <td>5</td>
+    </tr>
+    <tr>
+
+    <td>%0e</td>
+    <td>05</td>
+    </tr>
+    <tr>
+    <td rowspan="3">Episode Name</td>
+    <td>%en</td>
+    <td>Episode Name</td>
+    </tr>
+    <tr>
+
+    <td>%e.n</td>
+    <td>Episode.Name</td>
+    </tr>
+    <tr>
+
+    <td>%e_n</td>
+    <td>Episode_Name</td>
+    </tr>
+    <tr>
+    <td>File Extension</td>
+    <td>%ext</td>
+    <td>avi</td>
+    </tr>
+    <!--<tr>
+    <td>Original Filename</td>
+    <td>%fn</td>
+    <td>Episode Name</td>
+    </tr>-->
+    </table>
+    <br />
+    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
+    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/><br />
+    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
+    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br />
+    <input type="button" onclick="tvClear()" value="Clear"/><br />
+    <input type="text" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br />
+    <span id="previewtv"></span>
+    
+    
+    
 </fieldset>
+
+
 
 
 </div><br>

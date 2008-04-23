@@ -131,7 +131,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
     xjoinables, xzips, xrars = build_filelists(workdir, workdir_complete)
 
     rerun = False
-
+    newfiles = None
     error = False
 
     if sabnzbd.DO_FILE_JOIN:
@@ -158,8 +158,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
 
         if do_unrar:
             logging.info('[%s] Unrar starting on %s', __NAME__, workdir)
-            if rar_unpack(nzo, workdir, workdir_complete, dele, xrars):
-                error = True
+            error, newfiles = rar_unpack(nzo, workdir, workdir_complete, dele, xrars)
             logging.info('[%s] Unrar finished on %s', __NAME__, workdir)
 
     if sabnzbd.DO_UNZIP:
@@ -182,7 +181,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
             if z:
                 error = z
 
-    return error
+    return error, newfiles
 
 #------------------------------------------------------------------------------
 # Filejoin Functions
@@ -342,14 +341,14 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
             if not newfiles:
                 errors = True
 
-        return errors
+        return errors, newfiles
     except:
         nzo.set_unpackstr('=> Unknown exception while running rar_unpack, ' + \
                           'see logfile', actionname, 2)
         logging.exception('[%s] Unknown exception while' + \
                           ' running rar_unpack on %s',
                           __NAME__, nzo.get_filename())
-        return True
+        return True, ''
 
 def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
     start = time()

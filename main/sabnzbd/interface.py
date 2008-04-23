@@ -969,13 +969,9 @@ class ConfigDirectories(ProtectedClass):
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
         config['permissions'] = sabnzbd.UMASK
         config['enable_tv_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_tv_sorting'])
-        config['tv_sort_seasons'] = IntConv(sabnzbd.CFG['misc']['tv_sort_seasons'])
-        config['tv_sort'] = IntConv(sabnzbd.CFG['misc']['tv_sort'])
+        config['tv_sort_string'] = sabnzbd.CFG['misc']['tv_sort_string']
         tvSortList = []
-        for tvsort in TVSORTINGLIST:
-            tvSortList.append(tvsort)
-        config['tvsort_list'] = tvSortList
-
+        
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
                             searchList=[config],
                             compilerSettings={'directiveStartToken': '<!--#',
@@ -985,7 +981,7 @@ class ConfigDirectories(ProtectedClass):
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
                         cache_dir = None, nzb_backup_dir = None, permissions=None,
-                        tv_sort = None, enable_tv_sorting = None, tv_sort_seasons = None,
+                        enable_tv_sorting = None, tv_sort_string = None,
                         dirscan_dir = None, dirscan_speed = None, script_dir = None, dummy = None):
 
         if permissions:
@@ -1039,9 +1035,8 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
         if permissions: sabnzbd.CFG['misc']['permissions'] = permissions
-        sabnzbd.CFG['misc']['tv_sort'] = IntConv(tv_sort)
         sabnzbd.CFG['misc']['enable_tv_sorting'] = IntConv(enable_tv_sorting)
-        sabnzbd.CFG['misc']['tv_sort_seasons'] = IntConv(tv_sort_seasons)
+        sabnzbd.CFG['misc']['tv_sort_string'] = tv_sort_string
 
         return saveAndRestart(self.__root, dummy)
 

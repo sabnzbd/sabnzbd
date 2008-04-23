@@ -830,6 +830,8 @@ def move_to_path(path, new_path, unique=True):
         except:
             # Cannot rename, try copying
             try:
+                if not os.path.exists(os.path.dirname(new_path)):
+                    create_dirs(os.path.dirname(new_path))
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:

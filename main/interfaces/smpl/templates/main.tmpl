@@ -41,7 +41,38 @@
 
 
 <script type="text/javascript">
-
+    function tvAdd(val){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = tv.value + val;
+        previewtv();
+    }
+    function tvSet(val){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = val;
+        previewtv();
+    }
+    function tvClear(){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = '';
+        previewtv();
+    }
+    function previewtv(){
+        var input = document.getElementById('tvfoldername').value;
+        input.toLowerCase()
+        input = input.replace(/%ext/g,'avi');
+        input = input.replace(/%sn/g,'Show Name');
+        input = input.replace(/%\s.n/g,'Show.Name');
+        input = input.replace(/%\s_n/g,'Show_Name');
+        input = input.replace(/%0s/g,'01');
+        input = input.replace(/%s/g,'1');
+        input = input.replace(/%en/g,'Episode Name');
+        input = input.replace(/%e\.n/g,'Episode.Name');
+        input = input.replace(/%e\_n/g,'Episode_Name');
+        input = input.replace(/%0e/g,'05');
+        input = input.replace(/%e/g,'5');
+        var com = document.getElementById('complete_dir').value;
+        var outbox = document.getElementById('previewtv').innerHTML = com+"/"+input;
+    }
 function setCookie(c_name,value,expiredays)
 {
 var exdate=new Date();
