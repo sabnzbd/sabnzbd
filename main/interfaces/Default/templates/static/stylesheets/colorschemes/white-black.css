@@ -11,7 +11,9 @@ color:white;
 #first, #third {
 color: #4e4e4e;
 }
-
+a.current {
+    color:black;
+}
 a.current:hover, a:hover {
 	background-color: black;
     color:white
