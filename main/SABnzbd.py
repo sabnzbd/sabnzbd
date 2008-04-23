@@ -229,28 +229,34 @@ def GetProfileInfo(vista):
             sabnzbd.DIR_HOME = specials['Personal']
             ok = True
         except:
-            if vista:
-                try:
+            try:
+                if vista:
                     root = os.environ['AppData']
                     user = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root.replace('\\Roaming', '\\Local'), DEF_WORKDIR)
                     sabnzbd.DIR_HOME    = '%s\\Documents' % user
+                else:
+                    root = os.environ['USERPROFILE']
+                    sabnzbd.DIR_APPDATA = '%s\\%s' % (root, DEF_WORKDIR)
+                    sabnzbd.DIR_HOME = root
+
+                try:
+                    # Conversion to 8bit ASCII required for CherryPy
+                    sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode('latin-1')
+                    sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode('latin-1')
+                    ok = True
+                except:
+                    # If unconvertible characters exist, use MSDOS name
                     try:
-                        # Conversion to 8bit ASCII required for CherryPy
-                        sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode('latin-1')
-                        sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode('latin-1')
+                        sabnzbd.DIR_APPDATA = win32api.GetShortPathName(sabnzbd.DIR_APPDATA)
+                        sabnzbd.DIR_HOME = win32api.GetShortPathName(sabnzbd.DIR_HOME)
                         ok = True
                     except:
-                        # If unconvertible characters exist, use MSDOS name
-                        try:
-                            sabnzbd.DIR_APPDATA = win32api.GetShortPathName(sabnzbd.DIR_APPDATA)
-                            sabnzbd.DIR_HOME = win32api.GetShortPathName(sabnzbd.DIR_HOME)
-                            ok = True
-                        except:
-                            pass
-                    sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
-                except:
-                    pass
+                        pass
+                sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+            except:
+                pass                        
+
     else:
         # Unix/Linux/OSX
     	sabnzbd.DIR_APPDATA = '%s/.%s' % (os.environ['HOME'], DEF_WORKDIR)
