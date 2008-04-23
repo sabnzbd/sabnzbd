@@ -1,17 +1,27 @@
 #!/usr/bin/env python
 
+import sabnzbd
+from sabnzbd.version import __version__
+from distutils.core import setup
+
 Win32ConsoleName = 'SABnzbd-console.exe'
 Win32WindowName  = 'SABnzbd.exe'
 
-import sabnzbd
-from distutils.core import setup
+prod = 'SABnzbd-' + __version__
+fileIns = prod + '-win32-setup.exe'
+fileBin = prod + '-win32-bin.zip'
+fileWSr = prod + '-win32-src.zip'
+fileSrc = prod + '-src.tar.gz'
 
 # py2exe usage: python setup.py py2exe
 
+import glob
+import sys
+import os
+import os
+import tarfile
+
 try:
-    import glob
-    import sys
-    import os
     import py2exe
 except ImportError:
     py2exe = None
@@ -45,10 +55,33 @@ def PairList(src):
     return lst
 
 
+def CreateTar(folder, fname, release):
+    """ Create tar.gz file for source distro """
+    tar = tarfile.open(fname, "w:gz")
+
+    for root, dirs, files in os.walk(folder):
+        for _file in files:
+            path = os.path.join(root, _file)
+            fpath = path.replace('srcdist\\', release+'/').replace('\\', '/')
+            tarinfo = tar.gettarinfo(path, fpath)
+            tarinfo.uid = 0
+            tarinfo.gid = 0
+            if _file in ('SABnzbd.py', 'Sample-PostProc.sh'):
+                tarinfo.mode = 0755
+            else:
+                tarinfo.mode = 0644
+            f= open(path, "rb")
+            tar.addfile(tarinfo, f)
+            f.close()
+    tar.close()
+
+
 print sys.argv[0]
 
-if (len(sys.argv) < 2) or sys.argv[1] != 'py2exe':
-    py2exe = None
+if len(sys.argv) < 2:
+    target = None
+else:
+    target = sys.argv[1]
 
 # List of data elements, directories end with a '/'
 data = [ 'README.txt',
@@ -80,7 +113,8 @@ options = dict(
 )
 
 
-if py2exe:
+if target == 'binary':
+    sys.argv[1] = 'py2exe'
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
     options['options'] = {"py2exe": {"bundle_files": 3, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
     options['zipfile'] = 'lib/sabnzbd.zip'
@@ -107,7 +141,17 @@ if py2exe:
     options['windows'] = program
     setup(**options)
 
-else:
+    os.system('del dist\*.ini >nul 2>&1')
+    os.system('"c:\Program Files\NSIS\makensis.exe" /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
+              (__version__, fileIns))
+
+
+    os.system('if exist %s del /q %s' % (fileBin, fileBin))
+    os.rename('dist', prod)
+    os.system('zip -9 -r -X %s %s' % (fileBin, prod))
+    os.rename(prod, 'dist')
+
+elif target == 'source':
     # Prepare Source distribution package.
     # Make sure all source files are Unix format
     import shutil
@@ -158,3 +202,19 @@ else:
     os.chdir(root)
     os.system("unzip -o ../CherryPy-2.2.1.zip")
     os.chdir('..')
+
+    # Prepare the TAR.GZ pacakge
+    CreateTar('srcdist', fileSrc, prod)
+
+    # Prepare the ZIP for W32 package
+    os.rename('srcdist', prod)
+    os.system('if exist %s del /q %s' % (fileWSr, fileWSr))
+    # First the text files (unix-->dos)
+    os.system('zip -9 -r -X -l %s %s -x */win/* */images/* *licenses/Python*' % (fileWSr, prod))
+    # Second the binary files
+    os.system('zip -9 -r -X %s %s -i */win/* */images/*' % (fileWSr, prod))
+    os.rename(prod, 'srcdist')
+
+else:
+    print 'Usage: setup.py binary|source'
+
