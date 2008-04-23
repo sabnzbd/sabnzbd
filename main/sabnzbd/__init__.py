@@ -1075,11 +1075,11 @@ def system_shutdown():
 
 def system_hibernate():
     logging.info("[%s] Performing system hybernation", __NAME__)
-    Thread(target=halt).start()
     try:
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState")
-    finally:
-        os._exit(0)
+        os.sleep(10)
+    except:
+        logging.error("[%s] Failed to hibernate system", __NAME__)
 
 def shutdown_program():
     logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
