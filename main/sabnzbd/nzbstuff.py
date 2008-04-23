@@ -609,7 +609,10 @@ class NzbObject(TryList):
             completestr += '%s second%s ' % (seconds, self.s_returner(seconds))
 
         #average speed is simply total_bytes/total_time. This takes into account queue pauses and program shutdowns (ie when the download was 0kB/s)
-        avgspeed = (self.__bytes / 1024) / totaltime
+        try:
+            avgspeed = (self.__bytes / 1024) / totaltime
+        except:
+            avgspeed = 0
         #message 1 - total time
         completemsg = '%s' % (completestr)
         self.set_unpackstr(completemsg, '[Time-Taken]', 0)
