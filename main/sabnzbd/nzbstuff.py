@@ -325,7 +325,6 @@ class NzbObject(TryList):
         self.__extra2 = 'b'           # Spare field for later
         self.__group = None
         self.__avg_date = None
-        self.__time_started = 0
         self.__dirprefix = []
 
         self.__partable = {}
@@ -341,6 +340,7 @@ class NzbObject(TryList):
         #the current status of the nzo eg:
         #Queued, Downloading, Repairing, Unpacking, Failed, Complete
         self.__status = "Queued"
+        self.__avg_bps = 0
 
         self.__dupe_table = {}
 
@@ -476,6 +476,10 @@ class NzbObject(TryList):
 
     def update_bytes(self, bytes):
         self.__bytes_downloaded += bytes
+        
+    def update_avg_kbs(self, bps):
+        if bps:
+            self.__avg_bps = (self.__avg_bps + bps) / 2
 
     def remove_nzf(self, nzf):
         if nzf in self.__files:
@@ -588,52 +592,34 @@ class NzbObject(TryList):
 
 
     def set_download_report(self):
-        #get the deltatime since the download started
-        timecompleted = datetime.datetime.now() - self.__time_started
+        if self.__avg_bps and self.__bytes_downloaded:
+            #get the deltatime since the download started
+            timecompleted = datetime.timedelta(seconds=self.__bytes_downloaded / self.__avg_bps)
+    
+            seconds = timecompleted.seconds
+            #find the total time including days
+            totaltime = (timecompleted.days/86400) + seconds
+    
+            #format the total time the download took, in days, hours, and minutes, or seconds.
+            completestr = ''
+            if timecompleted.days:
+                completestr += '%s day%s ' % (timecompleted.days, self.s_returner(timecompleted.days))
+            if (seconds/3600) >= 1:
+                completestr += '%s hour%s ' % (seconds/3600, self.s_returner((seconds/3600)))
+                seconds -= (seconds/3600)*3600
+            if (seconds/60) >= 1:
+                completestr += '%s minute%s ' % (seconds/60, self.s_returner((seconds/60)))
+                seconds -= (seconds/60)*60
+            if seconds > 0:
+                completestr += '%s second%s ' % (seconds, self.s_returner(seconds))
+            avgspeed = (self.__avg_bps / 1024)
+            #message 1 - total time
+            completemsg = '%s' % (completestr)
+            self.set_unpackstr(completemsg, '[Time-Taken]', 0)
+            #message 2 - average speed
+            completemsg = '%0.fkB/s' % (avgspeed)
+            self.set_unpackstr(completemsg, '[Avg-Speed]', 0)
 
-        seconds = timecompleted.seconds
-        #find the total time including days
-        totaltime = (timecompleted.days/86400) + seconds
-
-        #format the total time the download took, in days, hours, and minutes, or seconds.
-        completestr = ''
-        if timecompleted.days:
-            completestr += '%s day%s ' % (timecompleted.days, self.s_returner(timecompleted.days))
-        if (seconds/3600) >= 1:
-            completestr += '%s hour%s ' % (seconds/3600, self.s_returner((seconds/3600)))
-            seconds -= (seconds/3600)*3600
-        if (seconds/60) >= 1:
-            completestr += '%s minute%s ' % (seconds/60, self.s_returner((seconds/60)))
-            seconds -= (seconds/60)*60
-        if seconds > 0:
-            completestr += '%s second%s ' % (seconds, self.s_returner(seconds))
-
-        #average speed is simply total_bytes/total_time. This takes into account queue pauses and program shutdowns (ie when the download was 0kB/s)
-        try:
-            avgspeed = (self.__bytes / 1024) / totaltime
-        except:
-            avgspeed = 0
-        #message 1 - total time
-        completemsg = '%s' % (completestr)
-        self.set_unpackstr(completemsg, '[Time-Taken]', 0)
-        #message 2 - average speed
-        completemsg = '%skB/s' % (avgspeed)
-        self.set_unpackstr(completemsg, '[Avg-Speed]', 0)
-
-
-    def get_time_started(self):
-        try:
-            return self.__time_started
-        except:
-            return 0
-
-
-    def set_time_started(self, time):
-        try:
-            self.__time_started = time
-        except:
-            pass
-        return
 
     def s_returner(self, value):
         if value > 1:

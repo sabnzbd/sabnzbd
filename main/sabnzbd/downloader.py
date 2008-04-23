@@ -345,8 +345,7 @@ class Downloader(Thread):
                     
                     if nzo:
                         nzo.update_bytes(bytes)
-                        if not nzo.get_time_started():
-                            nzo.set_time_started(datetime.datetime.now())
+                        nzo.update_avg_kbs(sabnzbd.get_bps())
 
                 if len(nw.lines) == 1:
                     if not nw.connected:
