@@ -209,7 +209,6 @@ class PostProcessor(Thread):
                 script = os.path.join(sabnzbd.SCRIPT_DIR, script)
                 ext_out = external_processing(script, workdir_complete, filename, dirname, cat)
                 fname = MakeLogFile(filename, ext_out)
-                nzo.set_unpackstr('=> <a href="./scriptlog?name=%s">Show script output</a>' % Quote(fname), '[USER-SCRIPT]', 5)
             else:
                 fname = ""
                 ext_out = ""
@@ -217,6 +216,10 @@ class PostProcessor(Thread):
             ## Email the results
             if sabnzbd.EMAIL_ENDJOB:
                 email_endjob(filename, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), script, ext_out))
+
+            if fname:
+                # Can do this only now, otherwise it would show up in the email
+                nzo.set_unpackstr('=> <a href="./scriptlog?name=%s">Show script output</a>' % Quote(fname), '[USER-SCRIPT]', 5)
 
             ## Remove newzbin bookmark, if any
             name, msgid = SplitFileName(filename)
@@ -288,7 +291,7 @@ def Cat2Dir(cat, defdir):
     ddir = defdir
     if cat:
         try:
-            ddir = sabnzbd.CFG['categories'][cat]['dir']
+            ddir = sabnzbd.CFG['categories'][cat.lower()]['dir']
         except:
             return defdir
         ddir = real_path(sabnzbd.COMPLETE_DIR, ddir)
