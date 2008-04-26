@@ -131,7 +131,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
     xjoinables, xzips, xrars = build_filelists(workdir, workdir_complete)
 
     rerun = False
-    newfiles = None
+    newfiles = []
     error = False
 
     if sabnzbd.DO_FILE_JOIN:
@@ -158,7 +158,9 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
 
         if do_unrar:
             logging.info('[%s] Unrar starting on %s', __NAME__, workdir)
-            error, newfiles = rar_unpack(nzo, workdir, workdir_complete, dele, xrars)
+            error, newf = rar_unpack(nzo, workdir, workdir_complete, dele, xrars)
+            if newf:
+                newfiles.extend(newf)
             logging.info('[%s] Unrar finished on %s', __NAME__, workdir)
 
     if sabnzbd.DO_UNZIP:
@@ -176,10 +178,12 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
             logging.info('[%s] Unzip finished on %s', __NAME__, workdir)
 
     if rerun:
-            z = unpack_magic(nzo, workdir, workdir_complete, dele, xjoinables,
+            z, y = unpack_magic(nzo, workdir, workdir_complete, dele, xjoinables,
                              xzips, xrars)
             if z:
                 error = z
+            if y:
+                newfiles.extend(y)
 
     return error, newfiles
 
