@@ -340,7 +340,8 @@ class NzbObject(TryList):
         #the current status of the nzo eg:
         #Queued, Downloading, Repairing, Unpacking, Failed, Complete
         self.__status = "Queued"
-        self.__avg_bps = 0
+        self.__avg_bps_freq = 0
+        self.__avg_bps_total = 0
 
         self.__dupe_table = {}
 
@@ -479,7 +480,8 @@ class NzbObject(TryList):
         
     def update_avg_kbs(self, bps):
         if bps:
-            self.__avg_bps = (self.__avg_bps + bps) / 2
+            self.__avg_bps_total += bps / 1024
+            self.__avg_bps_freq += 1
 
     def remove_nzf(self, nzf):
         if nzf in self.__files:
@@ -592,9 +594,10 @@ class NzbObject(TryList):
 
 
     def set_download_report(self):
-        if self.__avg_bps and self.__bytes_downloaded:
+        if self.__avg_bps_total and self.__bytes_downloaded and self.__avg_bps_freq:
             #get the deltatime since the download started
-            timecompleted = datetime.timedelta(seconds=self.__bytes_downloaded / self.__avg_bps)
+            avg_bps = self.__avg_bps_total / self.__avg_bps_freq
+            timecompleted = datetime.timedelta(seconds=self.__bytes_downloaded / (avg_bps*1024))
     
             seconds = timecompleted.seconds
             #find the total time including days
@@ -612,12 +615,11 @@ class NzbObject(TryList):
                 seconds -= (seconds/60)*60
             if seconds > 0:
                 completestr += '%s second%s ' % (seconds, self.s_returner(seconds))
-            avgspeed = (self.__avg_bps / 1024)
             #message 1 - total time
             completemsg = '%s' % (completestr)
             self.set_unpackstr(completemsg, '[Time-Taken]', 0)
             #message 2 - average speed
-            completemsg = '%0.fkB/s' % (avgspeed)
+            completemsg = '%0.fkB/s' % (avg_bps)
             self.set_unpackstr(completemsg, '[Avg-Speed]', 0)
 
 
