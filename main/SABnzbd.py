@@ -607,7 +607,7 @@ def main():
         # Just take the gamble for this
         cherryhost = ''
         browserhost = localhost
-    elif cherryhost.find('[') == 0:
+    elif cherryhost.find('[') >= 0 or cherryhost.find(':') >= 0:
         # IPV6
         browserhost = cherryhost
     elif cherryhost.replace('.', '').isdigit():
@@ -621,6 +621,13 @@ def main():
         if ipv6 and ipv4:
             cherryhost = hostip
         browserhost = cherryhost
+
+    # Some systems don't like brackets in numerical ipv6
+    if cherryhost.find('[') >= 0:
+        try:
+            info = socket.getaddrinfo(cherryhost, None)
+        except:
+            cherryhost = cherryhost.strip('[]')
 
     if cherryport == None:
         if os.name == 'nt':
