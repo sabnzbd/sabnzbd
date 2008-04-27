@@ -512,6 +512,13 @@ def main():
             pass
 
     logging.info('%s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
+    if os.name == 'nt':
+        suffix = ''
+        if vista: suffix = ' (=Vista)'
+        if vista64: suffix = ' (=Vista64)'
+        logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
+    else:
+        logging.info('Platform = %s', os.name)
 
     if sabnzbd.AUTOBROWSER == None:
         sabnzbd.AUTOBROWSER = bool(check_setting_int(cfg, 'misc', 'auto_browser', 1))
