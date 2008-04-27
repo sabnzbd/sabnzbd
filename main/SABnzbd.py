@@ -519,6 +519,7 @@ def main():
         logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
     else:
         logging.info('Platform = %s', os.name)
+    logging.info('Python-version = %s', sys.version)
 
     if sabnzbd.AUTOBROWSER == None:
         sabnzbd.AUTOBROWSER = bool(check_setting_int(cfg, 'misc', 'auto_browser', 1))
