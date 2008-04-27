@@ -200,7 +200,7 @@ elif target == 'source':
 
     # Install CherryPy
     os.chdir(root)
-    os.system("unzip -o ../CherryPy-2.2.1.zip")
+    os.system("unzip -o ../CherryPy-2.3.0.zip")
     os.chdir('..')
 
     # Prepare the TAR.GZ pacakge
