@@ -118,7 +118,7 @@ def email_send(header, message):
                     return failure
 
         # Message header
-        msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n" % \
+        msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\nX-Priority: 5\r\nX-MS-Priority: 5\r\n\r\n" % \
               (sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, header)
 
         # Authentication
