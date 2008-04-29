@@ -137,7 +137,7 @@ EMAIL_PWD = None
 EMAIL_ENDJOB = False
 EMAIL_FULL = False
 
-URLGRABBER = []
+URLGRABBER = None
 
 AUTO_SORT = None
 
@@ -473,7 +473,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     ############################
 
     if NEWZBIN_BOOKMARKS:
-        BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+        if BOOKMARKS:
+            BOOKMARKS.__init__(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+        else:
+            BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
     need_rsstask = init_RSS()
     init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK, BOOKMARKS, BOOKMARK_RATE)
@@ -518,12 +521,21 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
             DOWNLOADER.paused = True
 
     if dirscan_dir:
-        DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed)
+        if DIRSCANNER:
+            DIRSCANNER.__init__(dirscan_dir, dirscan_speed)
+        else:
+            DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed)
 
     if USERNAME_NEWZBIN:
-        MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+        if MSGIDGRABBER:
+            MSGIDGRABBER.__init__(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+        else:
+            MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
-    URLGRABBER = URLGrabber()
+    if URLGRABBER:
+        URLGRABBER.__init__()
+    else:
+        URLGRABBER = URLGrabber()
 
     if evalSched:
         p, s = AnalyseSchedules(schedlines)
@@ -535,6 +547,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
 @synchronized(INIT_LOCK)
 def start():
+    global __INITIALIZED__, ASSEMBLER, DOWNLOADER, SCHED, DIRSCANNER, \
+           MSGIDGRABBER, URLGRABBER
+
     if __INITIALIZED__:
         logging.debug('[%s] Starting postprocessor', __NAME__)
         POSTPROCESSOR.start()
@@ -563,14 +578,17 @@ def start():
 
 @synchronized(INIT_LOCK)
 def halt():
-    global __INITIALIZED__, SCHED, DIRSCANNER, RSS, MSGIDGRABBER, URLGRABBER, BOOKMARKS
+    global __INITIALIZED__, BOOKMARKS, URLGRABBER, MSGIDGRABBER, DIRSCANNER, \
+           DOWNLOADER, ASSEMBLER, POSTPROCESSOR, SCHED
 
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
 
+        if RSS:
+            RSS.stop()
+
         if BOOKMARKS:
             BOOKMARKS.save()
-            BOOKMARKS = None
 
         if URLGRABBER:
             logging.debug('Stopping URLGrabber')
@@ -579,7 +597,6 @@ def halt():
                 URLGRABBER.join()
             except:
                 pass
-            URLGRABBER = None
 
         if MSGIDGRABBER:
             logging.debug('Stopping msgidgrabber')
@@ -588,7 +605,6 @@ def halt():
                 MSGIDGRABBER.join()
             except:
                 pass
-            MSGIDGRABBER = None
 
         if DIRSCANNER:
             logging.debug('Stopping dirscanner')
@@ -597,7 +613,6 @@ def halt():
                 DIRSCANNER.join()
             except:
                 pass
-            DIRSCANNER = None
 
         ## Stop Required Objects ##
         logging.debug('Stopping downloader')
@@ -820,7 +835,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None):
                  __NAME__, msgid)
     msg = "fetching msgid %s from v3.newzbin.com" % msgid
 
-    future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat)
+    future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat, url=msgid)
 
     MSGIDGRABBER.grab(msgid, future_nzo)
 
@@ -829,7 +844,7 @@ def add_url(url, pp=None, script=None, cat=None):
     if URLGRABBER:
         logging.info('[%s] Fetching %s', __NAME__, url)
         msg = "Trying to fetch .nzb from %s" % url
-        future_nzo = NZBQ.generate_future(msg, pp, script, cat)
+        future_nzo = NZBQ.generate_future(msg, pp, script, cat, url=url)
         URLGRABBER.add(url, future_nzo)
 
 

@@ -270,6 +270,7 @@ class DirScanner(Thread):
 
 
         logging.info('[%s] Dirscanner starting up', __NAME__)
+        self.shutdown = False
 
         while not self.shutdown:
             # Use variable scan delay
@@ -278,12 +279,13 @@ class DirScanner(Thread):
                 time.sleep(1.0)
                 x = x - 1
 
-            run_dir(self.dirscan_dir, None)
+            if not self.shutdown:
+                run_dir(self.dirscan_dir, None)
 
-            for dd in os.listdir(self.dirscan_dir):
-                dpath = os.path.join(self.dirscan_dir, dd)
-                if os.path.isdir(dpath) and dd.lower() in sabnzbd.CFG['categories']:
-                    run_dir(dpath, dd.lower())
+                for dd in os.listdir(self.dirscan_dir):
+                    dpath = os.path.join(self.dirscan_dir, dd)
+                    if os.path.isdir(dpath) and dd.lower() in sabnzbd.CFG['categories']:
+                        run_dir(dpath, dd.lower())
 
 
 #------------------------------------------------------------------------------
@@ -291,6 +293,8 @@ class URLGrabber(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue.Queue()
+        for tup in sabnzbd.NZBQ.get_urls():
+            self.queue.put(tup)
         self.shutdown = False
 
     def add(self, url, future_nzo):
@@ -304,6 +308,7 @@ class URLGrabber(Thread):
 
     def run(self):
         logging.info('[%s] URLGrabber starting up', __NAME__)
+        self.shutdown = False
 
         while not self.shutdown:
             (url, future_nzo) = self.queue.get()

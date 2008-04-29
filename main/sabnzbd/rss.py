@@ -93,12 +93,16 @@ class RSSQueue:
         if type(self.jobs) != type({}):
             self.jobs = {}
 
+        self.shutdown = False
         self.__running = False
 
+    def stop(self):
+        self.shutdown = True
 
     @synchronized(LOCK)
     def run_feed(self, feed=None, rematch=False):
         """ Run the query for one URI and apply filters """
+        self.shutdown = False
 
         def DupTitle(title):
             for lk in self.jobs:
@@ -164,6 +168,8 @@ class RSSQueue:
 
         # Filter out valid new links
         for entry in entries:
+            if self.shutdown: return
+
             if rematch:
                 link = entry
             else:
@@ -226,12 +232,18 @@ class RSSQueue:
         # run is completed. Cannot use LOCK, because run_feed
         # already uses the LOCK.
 
+        self.shutdown = False
         if not self.__running:
             self.__running = True
             for feed in sabnzbd.CFG['rss']:
                 self.run_feed(feed)
                 # Wait two minutes, else newzbin may get irritated
-                time.sleep(120)
+                for x in xrange(120):
+                    if self.shutdown:
+                        self.__running = False
+                        return
+                    else:
+                        time.sleep(1.0)
             self.save()
             self.__running = False
 

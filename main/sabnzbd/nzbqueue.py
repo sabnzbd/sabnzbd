@@ -125,9 +125,9 @@ class NzbQueue(TryList):
                            self.__downloaded_items), QUEUE_FILE_NAME)
 
     @synchronized(NZBQUEUE_LOCK)
-    def generate_future(self, msg, pp=None, script=None, cat=None):
+    def generate_future(self, msg, pp=None, script=None, cat=None, url=None):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, pp, script, None, True, cat=cat)
+        future_nzo = NzbObject(msg, pp, script, None, True, cat=cat, url=url)
         self.add(future_nzo)
         return future_nzo
 
@@ -144,9 +144,12 @@ class NzbQueue(TryList):
                 scr = future.get_script()
                 if scr == None:
                     scr = script
-                future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=cat)
-                future.nzo_id = nzo_id
-                self.save()
+                try:
+                    future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=cat)
+                    future.nzo_id = nzo_id
+                    self.save()
+                except:
+                    self.remove(nzo_id, False)
 
                 if self.__auto_sort:
                     self.sort_by_avg_age()
@@ -473,6 +476,27 @@ class NzbQueue(TryList):
         return (self.__downloaded_items[:], self.__nzo_list[:],
                 self.__nzo_table.copy(), self.try_list[:])
 
+
+    def get_urls(self):
+        """ Return list of future-types needing URL """
+        lst = []
+        for nzo_id in self.__nzo_table:
+            nzo = self.__nzo_table[nzo_id]
+            url = nzo.get_future()
+            if nzo.futuretype and url.lower().startswith('http'):
+                lst.append((url, nzo))
+        return lst
+
+    def get_msgids(self):
+        """ Return list of future-types needing msgid """
+        lst = []
+        for nzo_id in self.__nzo_table:
+            nzo = self.__nzo_table[nzo_id]
+            msgid = nzo.get_future()
+            if nzo.futuretype and (msgid.isdigit() or len(msgid)==5):
+                lst.append((msgid, nzo))
+        return lst
+        
     def __repr__(self):
         return "<NzbQueue>"
 

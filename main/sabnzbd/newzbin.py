@@ -109,6 +109,8 @@ class MSGIDGrabber(Thread):
         self.nzbun = nzbun
         self.nzbpw = nzbpw
         self.queue = Queue.Queue()
+        for tup in sabnzbd.NZBQ.get_msgids():
+            self.queue.put(tup)
         self.shutdown = False
 
     def grab(self, msgid, nzo):
@@ -127,6 +129,7 @@ class MSGIDGrabber(Thread):
                 if not self.shutdown:
                     time.sleep(1.0)
 
+        self.shutdown = False
         msgid = None
         while not self.shutdown:
             if not msgid:

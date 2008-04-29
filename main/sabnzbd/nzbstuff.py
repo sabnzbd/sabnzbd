@@ -288,7 +288,7 @@ PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 
 class NzbObject(TryList):
     def __init__(self, filename, pp, script, nzb = None,
-                 futuretype = False, cat = None):
+                 futuretype = False, cat = None, url=None):
         TryList.__init__(self)
 
         if cat and pp == None:
@@ -322,7 +322,10 @@ class NzbObject(TryList):
         self.__script = script        # External script for this set
         self.__msgid = '0'            # Newzbin msgid
         self.__extra1 = cat           # Newzbin category
-        self.__extra2 = 'b'           # Spare field for later
+        if futuretype:
+            self.__extra2 = str(url)  # Either newzbin-id or URL queued (future-type only)
+        else:
+            self.__extra2 = 'b'       # Compatibility with older queues
         self.__group = None
         self.__avg_date = None
         self.__dirprefix = []
@@ -844,6 +847,9 @@ class NzbObject(TryList):
 
     def get_cat(self):
         return self.__extra1
+
+    def get_future(self):
+        return self.__extra2
 
     def __build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
