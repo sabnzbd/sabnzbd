@@ -291,3 +291,14 @@ width:100%;
 overflow:auto;}
 
 .job_progress{position: relative;   background-color: #9bf;   height: 6px;}
+
+.normalheight, .doubleheight, .tripleheight, .pattern, .result, .heading1, .heading2, .heading3 {float:left;}
+.normalheight, .doubleheight, .tripleheight, .heading1 {width:125px;}
+.normalheight {}
+.doubleheight {height:30px;}
+.tripleheight {height:60px;}
+.row{clear:left;}
+.pattern, .heading2 {width:70px; background-color:#f5f5f5;}
+.result, .heading3  {width:125px;background-color:#f4f4f4;}
+#Keytable {text-align:center; }
+.heading1, .heading2, .heading3{font-weight:bold; background-color:black; color:white;}

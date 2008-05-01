@@ -187,3 +187,14 @@ width:75px;
 .verbosity_link{
 padding:4px;
 }
+
+.normalheight, .doubleheight, .tripleheight, .pattern, .result, .heading1, .heading2, .heading3 {float:left; border-left:1px }
+.normalheight, .doubleheight, .tripleheight, .heading1 {width:125px;}
+.normalheight {}
+.doubleheight {height:30px;}
+.tripleheight {height:60px;}
+.row{clear:left;}
+.pattern, .heading2 {width:70px}
+.result, .heading3  {width:125px}
+#Keytable {text-align:center;}
+.heading1, .heading2, .heading3{font-weight:bold; background-color:black; color:white;}

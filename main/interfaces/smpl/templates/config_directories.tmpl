@@ -70,94 +70,83 @@
 
 </fieldset>
 
+<br class="clear" />
 <fieldset class="EntryFieldSet">
 <legend>Sorting Folders</legend>
 <hr />
 
-
-		    <label>Enable TV Sorting:</label>
-		    <input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Enable sorting and renaming of episodes.</span>
-		<br class="clear" />
-
-    <table border="1">
-    <tr>
-    <th></th>
-    <th>Pattern</th>
-    <th>Result</th>
-    </tr>
-    <tr>
-    <td rowspan="3">Show Name</td>
-    <td>%sn</td>
-    <td>Show Name</td>
-    </tr>
-    <tr>
-
-    <td>%s.n</td>
-    <td>Show.Name</td>
-    </tr>
-    <tr>
-
-    <td>%s_n</td>
-    <td>Show_Name</td>
-    </tr>
-    <tr>
-    <td rowspan="2">Season Number</td>
-    <td>%s</td>
-    <td>1</td>
-    </tr>
-    <tr>
-
-    <td>%0s</td>
-    <td>01</td>
-    </tr>
-    <tr>
-    <td rowspan="2">Episode Number</td>
-    <td>%e</td>
-    <td>5</td>
-    </tr>
-    <tr>
-
-    <td>%0e</td>
-    <td>05</td>
-    </tr>
-    <tr>
-    <td rowspan="3">Episode Name</td>
-    <td>%en</td>
-    <td>Episode Name</td>
-    </tr>
-    <tr>
-
-    <td>%e.n</td>
-    <td>Episode.Name</td>
-    </tr>
-    <tr>
-
-    <td>%e_n</td>
-    <td>Episode_Name</td>
-    </tr>
-    <tr>
-    <td>File Extension</td>
-    <td>%ext</td>
-    <td>avi</td>
-    </tr>
-    <!--<tr>
-    <td>Original Filename</td>
-    <td>%fn</td>
-    <td>Episode Name</td>
-    </tr>-->
-    </table>
+    <label>Enable TV Sorting:</label>
+    <input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
+    <input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
+    <span class="tips">Enable sorting and renaming of episodes.</span>
     <br class="clear" />
+
+     <div id="Keytable">
+        <div class="row">
+                <span class="heading1">Meaning</span>
+                <span class="heading2">Pattern</span>
+                <span class="heading3">Result</span>
+        </div>
+        <div class="row">
+            <span class="tripleheight">Show Name</span>
+            <span class="pattern">%sn</span>
+            <span class="result">Show Name</span>
+        <br />
+            <span class="pattern">%s.n</span>
+            <span class="result">Show.Name</span>
+        <br />
+            <span class="pattern">%s_n</span>
+            <span class="result">Show_Name</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Season Number</span>
+            <span class="pattern">%s</span>
+            <span class="result">1</span>
+        <br />
+            <span class="pattern">%0s</span>
+            <span class="result">01</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Episode Number</span>
+            <span class="pattern">%e</span>
+            <span class="result">5</span>
+        <br />
+            <span class="pattern">%0e</span>
+            <span class="result">05</span>
+        </div>
+        <div class="row">
+            <span class="tripleheight">Episode Name</span>
+            <span class="pattern">%en</span>
+            <span class="result">Episode Name</span>
+        <br />
+            <span class="pattern">%e.n</span>
+            <span class="result">Episode.Name</span>
+        <br />
+            <span class="pattern">%e_n</span>
+            <span class="result">Episode_Name</span>
+        </div>
+        <div class="row">
+            <span class="normalheight">File Extension</span>
+            <span class="pattern">%ext</span>
+            <span class="result">avi</span>
+        </div>
+        <!--
+        <span class="">Original Filename</span>
+        <span class="">%fn</span>
+        <span class="">Episode Name</span>
+        <br />-->
+    </div><br class="clear" />
+    
     <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
-    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/><br class="clear" />
+    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
     <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
     <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
-    <input type="button" onclick="tvClear()" value="Clear"/><br class="clear" />
+    <input type="button" onclick="tvClear()" value="Clear"/><br class="clear" /><br class="clear" />
     <input type="text" style="width:500px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br class="clear" />
-    <span id="previewtv"></span>
-
+    Example: <span id="previewtv"></span>
 </fieldset>
+
+
 </div><br class="clear" />
 <input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/directories/saveDirectories', 'submitstatus')">
 <span class="submitstatus" id="submitstatus"></span>
