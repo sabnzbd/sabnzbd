@@ -36,11 +36,11 @@ try:
     _ssl = SSL
     del SSL
     HAVE_SSL = True
-    
+
 except ImportError:
     _ssl = None
     HAVE_SSL = False
- 
+
 import threading
 _RLock = threading.RLock
 del threading
@@ -60,7 +60,7 @@ def GetServerParms(host, port):
         try:
             # Try IPV6 explicitly
             return socket.getaddrinfo(host, port, socket.AF_INET6,
-                   socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
+                                      socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
         except:
             # Nothing found!
             return None
@@ -83,10 +83,10 @@ class NNTP:
         self.port = port
         res= GetServerParms(self.host, self.port)
         if not res:
-			raise socket.error(errno.EADDRNOTAVAIL, "Address not available")
+            raise socket.error(errno.EADDRNOTAVAIL, "Address not available")
 
         af, socktype, proto, canonname, sa = res[0]
-        
+
         if sslenabled and _ssl:
             ctx = _ssl.Context(_ssl.SSLv3_METHOD)
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
@@ -95,7 +95,7 @@ class NNTP:
             self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)
-        
+
         try:
             if os.name == 'nt':
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled)).start()
@@ -109,12 +109,12 @@ class NNTP:
                             break
                         except _ssl.WantReadError:
                             select.select([self.sock], [], [])
-                            
+
         except socket.error, (_errno, strerror):
             #expected, do nothing
             if _errno == errno.EINPROGRESS:
                 pass
-                
+
             else:
                 raise socket.error(_errno, strerror)    
 
@@ -244,8 +244,8 @@ class SSLConnection:
               'want_write', 'set_connect_state', 'set_accept_state',
               'connect_ex', 'sendall', 'do_handshake'):
         exec """def %s(self, *args):
-            self._lock.acquire()
-            try:
-                return apply(self._ssl_conn.%s, args)
-            finally:
-                self._lock.release()\n""" % (f, f)
+             self._lock.acquire()
+             try:
+             return apply(self._ssl_conn.%s, args)
+             finally:
+             self._lock.release()\n""" % (f, f)
