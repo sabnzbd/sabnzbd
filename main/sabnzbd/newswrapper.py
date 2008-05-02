@@ -244,8 +244,8 @@ class SSLConnection:
               'want_write', 'set_connect_state', 'set_accept_state',
               'connect_ex', 'sendall', 'do_handshake'):
         exec """def %s(self, *args):
-             self._lock.acquire()
-             try:
-             return apply(self._ssl_conn.%s, args)
-             finally:
-             self._lock.release()\n""" % (f, f)
+            self._lock.acquire()
+            try:
+                return apply(self._ssl_conn.%s, args)
+            finally:
+                self._lock.release()\n""" % (f, f)
