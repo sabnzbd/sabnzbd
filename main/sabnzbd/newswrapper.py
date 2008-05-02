@@ -88,7 +88,7 @@ class NNTP:
         af, socktype, proto, canonname, sa = res[0]
 
         if sslenabled and _ssl:
-            ctx = _ssl.Context(_ssl.SSLv3_METHOD)
+            ctx = _ssl.Context(_ssl.SSLv23_METHOD)
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
             logging.exception("[%s] Error importing OpenSSL module. Trying with non-ssl", __NAME__)
