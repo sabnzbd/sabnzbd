@@ -116,7 +116,7 @@ options = dict(
 if target == 'binary':
     sys.argv[1] = 'py2exe'
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
-    options['options'] = {"py2exe": {"bundle_files": 3, "packages": "xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
+    options['options'] = {"py2exe": {"bundle_files": 3, "packages": "email,xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
     options['zipfile'] = 'lib/sabnzbd.zip'
 
     # Generate the console-app
