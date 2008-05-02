@@ -20,6 +20,8 @@ fixed:   Preserve case of received newzbin categories,
          while still keeping the user-based categories forced to lowercase.
 changed: Set email priority to 5 (=low)
 fixed:   Lots of small bugs and improvements
+changed: Win32 binary release now uses Python 2.5.2, CherryPy 2.3.0,
+         PyOpenSSL 0.7 and OpenSSL 0.9.8g
 -------------------------------------------------------------------------------
 0.4.0Beta2  by The SABnzbd-Team
 -------------------------------------------------------------------------------
