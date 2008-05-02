@@ -1,4 +1,26 @@
 -------------------------------------------------------------------------------
+0.4.0Beta3  by The SABnzbd-Team
+-------------------------------------------------------------------------------
+changed: Lots of improvements in Plush
+changed: Lots of improvements in Smpl
+changed: Complete Bookmark feature by implementing the Newzbin Bookmark-API.
+changed: Determine the pause/resume state and speedlimit from the schedules
+         when starting SABnzbd
+changed: Scan for category-named folders in the Watched Folder.
+changed: Improved post-processing, more efficient file moving
+changed: TV season support improved and extended
+changed: Increase robustness of Newzbin-queue and URL-queue.
+         Queues now survive Save/Restart and full shutdown/restart.
+fixed:   Some systems require [] in numerical IPv6 notation, some don't allow it.
+fixed:   Do not stop SABnzbd after hibernating the system.
+fixed:   More effort to get a usable profile for pre-Vista OS'es.
+fixed:   Prevent RSS processor from downloading exactly identical titles.
+changed: Make backup of all processed NZB files, also store compressed GZ file.
+fixed:   Preserve case of received newzbin categories,
+         while still keeping the user-based categories forced to lowercase.
+changed: Set email priority to 5 (=low)
+fixed:   Lots of small bugs and improvements
+-------------------------------------------------------------------------------
 0.4.0Beta2  by The SABnzbd-Team
 -------------------------------------------------------------------------------
 added:   Secure NNTP (SSL)
