@@ -63,7 +63,7 @@
     <br>
     <strong>Completed Download Folder:</strong><br>
     (can be overruled by user-defined categories)<br>
-    <input type="text" size="40" name="complete_dir" value="$complete_dir">
+    <input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
     <!--#if not $nt#-->
         <br>
         <br>
@@ -104,36 +104,81 @@
     Location where .nzb will be backed up.<br>
     <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
   </fieldset>
-  <fieldset class="EntryFieldSet">
-  <legend>Folder sorting</legend>
-  
-    <strong>Enable TV Sorting:</strong><br>
-    Enable folder sorting.<br>
-    <input type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Enable season folders:</strong><br>
-    Enable sorting into season folders.<br>
-    <input type="radio" name="tv_sort_seasons" value="0" <!--#if $tv_sort_seasons == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="tv_sort_seasons" value="1" <!--#if $tv_sort_seasons > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-  
-  
-    <strong>Folder Naming:</strong><br />
-    Choose a folder naming option<br />
-    <select name="tv_sort" id="tvsort"><!--#set $i = 0 #-->
-        <!--#for $tvline in $tvsort_list#-->
-            <!--#if int($tv_sort) == $i #-->
-                <option value="$i" selected>$tvline</option>
-            <!--#else#-->
-                <option value="$i">$tvline</option>
-            <!--#end if#-->
-            <!--#set $i = $i+1 #-->
-        <!--#end for#-->
-    </select>
+
+<fieldset class="EntryFieldSet">
+<legend>Sorting Folders</legend>
+    <strong>Enable TV Sorting:</strong><br/>
+    <span class="tips">Enable sorting and renaming of episodes.</span><br/>
+    <input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
+    <input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
+    <br class="clear" />
+
+     <div id="Keytable">
+        <div class="row">
+                <span class="heading1">Meaning</span>
+                <span class="heading2">Pattern</span>
+                <span class="heading3">Result</span>
+        </div>
+        <div class="row">
+            <span class="tripleheight">Show Name</span>
+            <span class="pattern">%sn</span>
+            <span class="result">Show Name</span>
+        <br />
+            <span class="pattern">%s.n</span>
+            <span class="result">Show.Name</span>
+        <br />
+            <span class="pattern">%s_n</span>
+            <span class="result">Show_Name</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Season Number</span>
+            <span class="pattern">%s</span>
+            <span class="result">1</span>
+        <br />
+            <span class="pattern">%0s</span>
+            <span class="result">01</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Episode Number</span>
+            <span class="pattern">%e</span>
+            <span class="result">5</span>
+        <br />
+            <span class="pattern">%0e</span>
+            <span class="result">05</span>
+        </div>
+        <div class="row">
+            <span class="tripleheight">Episode Name</span>
+            <span class="pattern">%en</span>
+            <span class="result">Episode Name</span>
+        <br />
+            <span class="pattern">%e.n</span>
+            <span class="result">Episode.Name</span>
+        <br />
+            <span class="pattern">%e_n</span>
+            <span class="result">Episode_Name</span>
+        </div>
+        <div class="row">
+            <span class="normalheight">File Extension</span>
+            <span class="pattern">%ext</span>
+            <span class="result">avi</span>
+        </div>
+        <!--
+        <span class="">Original Filename</span>
+        <span class="">%fn</span>
+        <span class="">Episode Name</span>
+        <br />-->
+    </div><br class="clear" />
+    
+    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
+    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
+    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
+    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
+    <input type="button" onclick="tvClear()" value="Clear"/><br class="clear" /><br class="clear" />
+    <input type="text" style="width:500px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br class="clear" />
+    Example: <span id="previewtv"></span>
 </fieldset>
+
+
 </div>
 
 <!-- ************************************
@@ -158,6 +203,44 @@
 	\$('#config_container').corner("round");
 	\$('#help').corner("round");
 	\$('#save').corner("round");
+</script>
+
+<script type="text/javascript">
+	// switch's TV sort code
+    function tvAdd(val){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = tv.value + val;
+        previewtv();
+    }
+    function tvSet(val){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = val;
+        previewtv();
+    }
+    function tvClear(){
+        var tv = document.getElementById('tvfoldername'); 
+        tv.value = '';
+        previewtv();
+    }
+    function previewtv(){
+            var input = document.getElementById('tvfoldername').value;
+            var slash = "\\";
+            input.toLowerCase()
+            input = input.replace(/%ext/g,'avi');
+            input = input.replace(/%sn/g,'Show Name');
+            input = input.replace(/%\s.n/g,'Show.Name');
+            input = input.replace(/%\s_n/g,'Show_Name');
+            input = input.replace(/%0s/g,'01');
+            input = input.replace(/%s/g,'1');
+            input = input.replace(/%en/g,'Episode Name');
+            input = input.replace(/%e\.n/g,'Episode.Name');
+            input = input.replace(/%e\_n/g,'Episode_Name');
+            input = input.replace(/%0e/g,'05');
+            input = input.replace(/%e/g,'5');
+            var com = document.getElementById('complete_dir').value;
+            if (com.search("/") > 0) slash = "/"
+            var outbox = document.getElementById('previewtv').innerHTML = com+slash+input;
+    }
 </script>
 
 
