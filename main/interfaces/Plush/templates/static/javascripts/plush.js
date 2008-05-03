@@ -306,10 +306,10 @@ function InitiateDragAndDrop() {
 function ChangeProcessingOption (nzo_id,op) {
 	$.ajax({
 		type: "GET",
-		url: 'queue/change_opts?dummy='+Math.random()+'&nzo_id='+nzo_id+'&pp='+op,
+		url: 'queue/change_opts?dummy='+Math.random()+'&nzo_id='+nzo_id+'&pp='+op/*,
 	  	success: function(result){
    			return LoadTheQueue(result);
-		}
+		}*/
 	});
 }
 
@@ -317,10 +317,10 @@ function ChangeProcessingOption (nzo_id,op) {
 function ChangeCategory (nzo_id,cat) {
 	$.ajax({
 		type: "GET",
-		url: 'queue/change_cat?dummy='+Math.random()+'&nzo_id='+nzo_id+'&cat='+cat,
+		url: 'queue/change_cat?dummy='+Math.random()+'&nzo_id='+nzo_id+'&cat='+cat/*,
 	  	success: function(result){
    			return LoadTheQueue(result);
-		}
+		}*/
 	});
 }
 
@@ -328,10 +328,10 @@ function ChangeCategory (nzo_id,cat) {
 function ChangeProcessingScript (nzo_id,op) {
 	$.ajax({
 		type: "GET",
-		url: 'queue/change_script?dummy='+Math.random()+'&nzo_id='+nzo_id+'&script='+op,
+		url: 'queue/change_script?dummy='+Math.random()+'&nzo_id='+nzo_id+'&script='+op/*,
 	  	success: function(result){
    			return LoadTheQueue(result);
-		}
+		}*/
 	});
 }
 
@@ -340,10 +340,10 @@ function ChangeProcessingScript (nzo_id,op) {
 function ChangeOrder (result) {
 	$.ajax({
 		type: "GET",
-		url: "queue/"+result+"&dummy="+Math.random(),
+		url: "queue/"+result+"&dummy="+Math.random()/*,
 	  	success: function(result){
    			return LoadTheQueue(result);
-		}
+		}*/
 	});
 }
 
