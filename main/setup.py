@@ -61,18 +61,20 @@ def CreateTar(folder, fname, release):
 
     for root, dirs, files in os.walk(folder):
         for _file in files:
-            path = os.path.join(root, _file)
-            fpath = path.replace('srcdist\\', release+'/').replace('\\', '/')
-            tarinfo = tar.gettarinfo(path, fpath)
-            tarinfo.uid = 0
-            tarinfo.gid = 0
-            if _file in ('SABnzbd.py', 'Sample-PostProc.sh'):
-                tarinfo.mode = 0755
-            else:
-                tarinfo.mode = 0644
-            f= open(path, "rb")
-            tar.addfile(tarinfo, f)
-            f.close()
+            if root.replace('\\','/').find('/win') < 0:
+                print "ROOT=%s" % root.replace('\\','/')
+                path = os.path.join(root, _file)
+                fpath = path.replace('srcdist\\', release+'/').replace('\\', '/')
+                tarinfo = tar.gettarinfo(path, fpath)
+                tarinfo.uid = 0
+                tarinfo.gid = 0
+                if _file in ('SABnzbd.py', 'Sample-PostProc.sh'):
+                    tarinfo.mode = 0755
+                else:
+                    tarinfo.mode = 0644
+                f= open(path, "rb")
+                tar.addfile(tarinfo, f)
+                f.close()
     tar.close()
 
 
