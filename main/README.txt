@@ -1,7 +1,7 @@
-                                SABnzbd+ v0.4.0Beta3
+                                SABnzbd+ v0.4.0Beta4
 
 *************************************
-*** This is SABnzbd+ 0.4.0Beta3   ***
+*** This is SABnzbd+ 0.4.0Beta4   ***
 *************************************
 
 ===>> THIS IS Beta SOFTWARE, DO NOT OVERWRITE OLDER RELEASES  <<===
