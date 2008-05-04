@@ -49,8 +49,8 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             <input type="hidden" name="feed" value="$feed">
             <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', '','update_$feed','1' )"/>
             <input type="submit" onclick="javascript:submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )" value="Delete"/>
-            <input type="submit" onClick="rssUrlEncode('./config/rss/query_rss_feed', '$feed','$rss[$feed]['cat']')" value="Query"/>
-            <input type="submit" onClick="rssUrlEncode('./config/rss/rematch_rss_feed', '$feed','$rss[$feed]['cat']')" value="Rematch/Show"/>
+            <input type="submit" onClick="javascript:location='./config/rss/query_rss_feed?feed=$feed'" value="Query"/>
+            <input type="submit" onClick="javascript:location='./config/rss/rematch_rss_feed?feed=$feed'" value="Rematch/Show"/>
             <!--#if $rss[$feed]['enable']#-->
                 <input type="submit" onclick="javascript:submitconfig('config/rss/disable_rss_feed', '','update_$feed','1' )" value="Stop"/>
             <!--#else#-->
