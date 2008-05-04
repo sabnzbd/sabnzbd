@@ -133,6 +133,8 @@ class PostProcessor(Thread):
             elif sabnzbd.CREATE_GROUP_FOLDERS:
                 complete_dir = addPrefixes(self.complete_dir, nzo)
                 complete_dir = create_dirs(complete_dir)
+            else:
+                complete_dir = self.complete_dir
 
             ## Determine destination directory
             dirname = nzo.get_original_dirname()
