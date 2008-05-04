@@ -62,7 +62,6 @@ def CreateTar(folder, fname, release):
     for root, dirs, files in os.walk(folder):
         for _file in files:
             if root.replace('\\','/').find('/win') < 0:
-                print "ROOT=%s" % root.replace('\\','/')
                 path = os.path.join(root, _file)
                 fpath = path.replace('srcdist\\', release+'/').replace('\\', '/')
                 tarinfo = tar.gettarinfo(path, fpath)
