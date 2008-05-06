@@ -241,7 +241,7 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
 ################################################################################
 # BookMark support
 ################################################################################
-BOOK_LOCK = RLock()
+BOOK_LOCK = Lock()
 
 class Bookmarks:
     """ Get list of bookmarks from www.newzbin.com
