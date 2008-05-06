@@ -303,8 +303,8 @@ class URLGrabber(Thread):
 
     def stop(self):
         logging.info('[%s] URLGrabber shutting down', __NAME__)
-        self.queue.put((None, None))
         self.shutdown = True
+        self.queue.put((None, None))
 
     def run(self):
         logging.info('[%s] URLGrabber starting up', __NAME__)
