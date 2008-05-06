@@ -29,34 +29,16 @@ import re
 import Queue
 
 from threading import *
-from threading import Lock
 
 import sabnzbd
 from sabnzbd.constants import *
+from sabnzbd.decorators import *
 from sabnzbd.misc import Cat2OptsDef
 
 RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
 
-LOCK = Lock()
-
-COOKIE = None       # Last used cookie
-
 # Regex to find msgid in the Bookmarks page
 RE_BOOKMARK = re.compile(r'<a href="/browse/post/(\d+)/">')
-
-
-################################################################################
-# Decorators                                                                   #
-################################################################################
-def synchronized(func):
-    def call_func(*params, **kparams):
-        LOCK.acquire()
-        try:
-            return func(*params, **kparams)
-        finally:
-            LOCK.release()
-
-    return call_func
 
 
 def InitCats():
@@ -259,6 +241,8 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
 ################################################################################
 # BookMark support
 ################################################################################
+BOOK_LOCK = RLock()
+
 class Bookmarks:
     """ Get list of bookmarks from www.newzbin.com
     """
@@ -268,11 +252,9 @@ class Bookmarks:
         self.bookmarks = sabnzbd.load_data(BOOKMARK_FILE_NAME)
         if not self.bookmarks:
             self.bookmarks = []
-        self.__busy = False # Flag to prevent re-enterance of 'run'
 
+    @synchronized(BOOK_LOCK)
     def run(self, delete=None):
-        if self.__busy: return
-        self.__busy = True
 
         headers = { 'User-Agent': 'SABnzbd', }
     
@@ -336,9 +318,10 @@ class Bookmarks:
                     if not msgid in self.bookmarks:
                         logging.info("[%s] Found new bookmarked msgid %s (%s)", __NAME__, msgid, text)
                         sabnzbd.add_msgid(int(msgid), sabnzbd.DIRSCAN_PP, sabnzbd.DIRSCAN_SCRIPT)
-            self.bookmarks = new_bookmarks
+            self.bookmarks.extend(new_bookmarks)
         self.__busy = False
 
+    @synchronized(BOOK_LOCK)
     def save(self):
         sabnzbd.save_data(self.bookmarks, BOOKMARK_FILE_NAME)
 
@@ -346,5 +329,6 @@ class Bookmarks:
         return self.bookmarks
 
     def del_bookmark(self, msgid):
+        logging.debug('[%s] Try delete newzbin bookmark %s', __NAME__, msgid)
         if msgid in self.bookmarks:
             self.run(msgid)
