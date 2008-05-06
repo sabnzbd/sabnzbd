@@ -365,7 +365,7 @@ def real_path(loc, path):
 ################################################################################
 # Create_Real_Path                                                             #
 ################################################################################
-def create_real_path(name, loc, path):
+def create_real_path(name, loc, path, umask=None):
     if path:
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
@@ -375,6 +375,13 @@ def create_real_path(name, loc, path):
             except:
                 logging.error('Cannot create directory %s', my_dir)
                 return (False, my_dir)
+
+        if os.name != 'nt' and umask:
+            try:
+                os.chmod(my_dir, int(umask, 8) | 0700)
+            except:
+                pass
+
         if os.access(my_dir, os.R_OK + os.W_OK):
             return (True, my_dir)
         else:
@@ -810,13 +817,16 @@ def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('[%s] Creating directories: %s', __NAME__, dirpath)
         try:
-            if sabnzbd.UMASK and os.name != 'nt':
-                os.makedirs(dirpath, int(sabnzbd.UMASK, 8) | 00700)
-            else:
-                os.makedirs(dirpath)
+            os.makedirs(dirpath)
         except:
             logging.exception("[%s] Failed making (%s)",__NAME__,dirpath)
             return None
+
+    if sabnzbd.UMASK and os.name != 'nt':
+        try:
+            os.chmod(dirpath, int(sabnzbd.UMASK, 8) | 0700)
+        except:
+            pass
 
     return dirpath
 

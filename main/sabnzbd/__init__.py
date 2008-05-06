@@ -192,7 +192,7 @@ def CheckSection(sec):
 ################################################################################
 # Directory Setup                                                              #
 ################################################################################
-def dir_setup(config, cfg_name, def_loc, def_name):
+def dir_setup(config, cfg_name, def_loc, def_name, umask=None):
     try:
         my_dir = config['misc'][cfg_name]
     except:
@@ -205,7 +205,7 @@ def dir_setup(config, cfg_name, def_loc, def_name):
             config['misc'][cfg_name] = my_dir
 
     if my_dir:
-        (dd, my_dir) = create_real_path(cfg_name, def_loc, my_dir)
+        (dd, my_dir) = create_real_path(cfg_name, def_loc, my_dir, umask)
         if not dd:
             my_dir = ""
         logging.debug("%s: %s", cfg_name, my_dir)
@@ -381,7 +381,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     DOWNLOAD_FREE = int(from_units(DOWNLOAD_FREE))
     logging.debug("DOWNLOAD_FREE %s", DOWNLOAD_FREE)
 
-    COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, DEF_COMPLETE_DIR)
+    COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, DEF_COMPLETE_DIR, UMASK)
     if COMPLETE_DIR == "":
         COMPLETE_DIR == DOWNLOAD_DIR
 
