@@ -13,13 +13,13 @@
     <!--#end if#-->
 
 	<script type="text/javascript" src="static/javascripts/jquery.pack.js"></script>
-	<script type="text/javascript" src="static/javascripts/superfish.js"></script>
-	<script type="text/javascript" src="static/javascripts/webtoolkit.aim.js"></script>
+	<script type="text/javascript" src="static/javascripts/jquery.superfish.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.tablednd.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.dimensions.pack.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.bgiframe.pack.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.tooltip.pack.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.livequery.pack.js"></script>
+	<script type="text/javascript" src="static/javascripts/webtoolkit.aim.js"></script>
 	<script type="text/javascript" src="static/javascripts/plush.js"></script>
 </head>
 <body>
@@ -50,7 +50,7 @@
 				<li><a>Add NZB</a>
 					<ul>
 						<li><a>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></a>
-								<a><input type="text" id="addID_input" value="enter URL/ID" size="13"  onmouseover="if(this.value=='enter URL/ID')this.value=''" onblur="if(!this.value)this.value='enter URL/ID'" onmouseout="if(!this.value)this.value='enter URL/ID'"/></a>
+								<a><input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(this.value=='enter URL/ID')this.value=''" onblur="if(!this.value)this.value='enter URL/ID'"/></a>
 								<a>&raquo;&nbsp;<input type="submit" id="addID" value="Add NZB" style="cursor:pointer"/></a>
 						</li>
 
