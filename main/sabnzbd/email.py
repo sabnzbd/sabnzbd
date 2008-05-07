@@ -151,12 +151,15 @@ def email_send(header, message):
 #
 #
 ################################################################################
-def email_endjob(filename, status_text):
+def email_endjob(filename, success, status_text):
     name, msgid = SplitFileName(filename)
     message  = "Hello,\n\nSABnzbd has downloaded \'%s\'.\n\n" % name
     message += "Finished at %s\n" % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     message += "%s\n\nEnjoy!\n" % status_text
-
-    header = "SABnzbd has completed job %s" % name
+    
+    if success:
+        header = "SABnzbd has completed job %s" % name
+    else:
+        header = "SABnzbd failed to complete job %s" % name
 
     return email_send(header, message)

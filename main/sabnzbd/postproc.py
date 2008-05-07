@@ -121,6 +121,7 @@ class PostProcessor(Thread):
 
                 logging.info('[%s] Par2 check finished on %s', __NAME__, filename)
 
+            mailResult = parResult
             ## Check if user allows unsafe post-processing
             if not sabnzbd.SAFE_POSTPROC:
                 parResult = True
@@ -217,7 +218,7 @@ class PostProcessor(Thread):
 
             ## Email the results
             if sabnzbd.EMAIL_ENDJOB:
-                email_endjob(filename, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), script, ext_out))
+                email_endjob(filename, mailResult, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), script, ext_out))
 
             if fname:
                 # Can do this only now, otherwise it would show up in the email
