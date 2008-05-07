@@ -879,15 +879,24 @@ NZB_LOCK = Lock()
 @synchronized(NZB_LOCK)
 def backup_nzb(filename, data):
     if NZB_BACKUP_DIR:
+        filename += '.gz'
+        logging.info("[%s] Backing up %s", __NAME__, filename)
+
+        # Need to go to the backup folder to
+        # prevent the pathname being embedded in the GZ file
+        here = os.getcwd()
+        os.chdir(NZB_BACKUP_DIR)
+
         try:
-            path = os.path.join(NZB_BACKUP_DIR, filename+'.gz')
-            logging.info("[%s] Saving %s", __NAME__, path)
-            _f = gzip.GzipFile(path, 'wb')
+            _f = gzip.GzipFile(filename, 'wb')
             _f.write(data)
             _f.flush()
             _f.close()
         except:
-            logging.exception("[%s] Saving %s failed", __NAME__, path)
+            logging.exception("[%s] Saving %s to %s failed", __NAME__, filename, NZB_BACKUP_DIR)
+
+        os.chdir(here)
+
 
 ################################################################################
 ## CV synchronized (notifys downloader)                                       ##
