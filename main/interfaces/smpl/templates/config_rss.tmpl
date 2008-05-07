@@ -75,7 +75,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
         </tr>
     </thead>
     <tbody>
-    <tr id="new_filter">
+    <tr id="$feed+new_filter">
         <td></td>
         <td></td>
         <td>
@@ -115,15 +115,17 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
         <td>
         <input type="hidden" value="$rss[$feed]['filtercount']" name="index">
         <input type="hidden" value="$feed" name="feed">
-        <input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','new_filter','1' )">
+        <input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','$feed+new_filter','1' )">
         </td>
     </tr>
     
 
 
     <!--#set $fnum = 0#-->
+
+    
     <!--#for $filter in $rss[$feed].filters#-->
-    <tr class="odd" id="slot_$filter[3]">
+    <tr class="odd" id="$feed+$fnum">
         <td>
             <input type="submit" value="X" onclick="javascript:lr('config/rss/del_rss_filter','index=$fnum&feed=$feed')" />
         </td>
@@ -176,7 +178,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
         <td>
         <input type="hidden" name="index" value="$fnum"/>
         <input type="hidden" name="feed" value="$feed"/>
-        <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','slot_$filter[3]','1' )"/>
+        <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','$feed+$fnum','1' )"/>
         </td>
 
     </tr>
