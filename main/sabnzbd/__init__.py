@@ -18,7 +18,7 @@
 
 from sabnzbd.version import __version__
 __configversion__ = 18
-__queueversion__ = 6
+__queueversion__ = 7
 __NAME__ = "sabnzbd"
 
 import os

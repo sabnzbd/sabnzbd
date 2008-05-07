@@ -321,11 +321,11 @@ class NzbObject(TryList):
         self.__delete = d             # True if we want to delete this set
         self.__script = script        # External script for this set
         self.__msgid = '0'            # Newzbin msgid
-        self.__extra1 = cat           # Newzbin category
+        self.__cat = cat              # Newzbin category
         if futuretype:
-            self.__extra2 = str(url)  # Either newzbin-id or URL queued (future-type only)
+            self.__url = str(url)     # Either newzbin-id or URL queued (future-type only)
         else:
-            self.__extra2 = 'b'       # Compatibility with older queues
+            self.__url = ''
         self.__group = None
         self.__avg_date = None
         self.__dirprefix = []
@@ -564,7 +564,7 @@ class NzbObject(TryList):
         self.__script = script
 
     def set_cat(self, cat):
-        self.__extra1 = cat
+        self.__cat = cat
 
     def set_dirname(self, dirname, created = False):
         self.__dirname = dirname
@@ -746,11 +746,10 @@ class NzbObject(TryList):
         return self.__filename
 
     def get_cat(self):
-        if self.__extra1 == 'a' or not self.__extra1:
-            # Compatibility with older queues
-            return ''
+        if self.__cat:
+            return self.__cat
         else:
-            return self.__extra1
+            return ''
 
     def get_group(self):
         return self.__group
@@ -828,7 +827,7 @@ class NzbObject(TryList):
 
         return (self.__repair, self.__unpack, self.__delete, self.__script,
                 self.nzo_id, self.__filename, self.__unpackstrht.copy(),
-                self.__msgid, self.__extra1, self.__extra2,
+                self.__msgid, self.__cat, self.__url,
                 bytes_left_all, self.__bytes, avg_date,
                 finished_files, active_files, queued_files, self.__status)
 
@@ -846,10 +845,10 @@ class NzbObject(TryList):
         return self.__script
 
     def get_cat(self):
-        return self.__extra1
+        return self.__cat
 
     def get_future(self):
-        return self.__extra2
+        return self.__url
 
     def __build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
