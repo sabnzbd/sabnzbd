@@ -4,9 +4,10 @@
     <title>SABnzbd+ $version - Queued: $mbleft MB</title>
 	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
-	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/plush-default.css" media="screen"/>
-    <!--#if $color_scheme#-->
+    <!--#if $color_scheme == 'plush-default.css'#-->
     <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	<!--#else#-->
+    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
     <!--#end if#-->
 <script type='text/javascript'>
 function mark_all()

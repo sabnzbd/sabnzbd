@@ -1,0 +1,768 @@
+body {
+	background-color: #B1B1B1;
+	font-family: arial, "lucida console", sans-serif;
+}
+
+select, input {
+	border: 0px;
+	background: #333;
+	color: #FFF;
+	display:inline;
+}
+
+ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
+
+#new_release_notification {
+	text-align: center;
+}
+#new_release_notification a {
+	background-color: darkgreen;
+	font-weight:bold;
+	color:#FFF;
+	text-decoration: none;
+	border-bottom: 1px dashed #FFF;
+	padding:4px;
+}
+.box_fatbottom {
+	background: url(../../images/plush_default/qh_bottom.png) 0 0 repeat-x;
+	height:37px;
+	font-size: 66%;
+	color: #606060;
+	text-align:center;
+}
+.box_fatbottom div {
+	padding:13px 10px 0 10px;
+}
+.box_fatbottom .left_stats {
+	float:left;
+}
+.box_fatbottom .right_stats {
+	float:right;
+}
+.box_fatbottom strong {
+	color: #000;
+}
+.stats_incomplete_freespace {
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../../images/plush_default/q_stats_incomplete.png) 0 50% no-repeat;
+}
+.stats_incomplete_freespace_needspace {
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../../images/plush_default/q_stats_needspace.png) 0 50% no-repeat;
+}
+.stats_complete_freespace {
+	margin-left:10px;
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../../images/plush_default/q_stats_complete.png) 0 50% no-repeat;
+}
+.stats_complete_freespace_needspace {
+	margin-left:10px;
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../../images/plush_default/q_stats_needspace.png) 0 50% no-repeat;
+}
+
+.history_logo {
+	background: url(../../images/plush_default/sabnzbdplus_plush.png) 50% 100% no-repeat;
+}
+
+.box_banner_menu {
+	float:right;
+	list-style:none;
+	display:inline;
+	margin: 10px 0;
+	padding: 0;
+}
+.box_banner_menu li {
+	float:right;
+}
+.q_menu_pause {
+	background: url(../../images/plush_default/q_pause.png) 0 0 no-repeat;
+	margin-right:6px;
+	padding-right:32px;
+	padding-bottom:24px;
+	cursor:pointer;
+}
+.q_menu_paused {
+	background: url(../../images/plush_default/q_pause_on.png) 0 0 no-repeat;
+}
+.q_menu_sort {
+	width:55px;
+	height: 55px;
+	cursor:pointer;
+}
+.q_menu_sort.show { background: url(../../images/plush_default/q_pill_sort.png) 0 0 no-repeat;}
+.q_menu_verbose,.h_menu_verbose {
+	background: url(../../images/plush_default/qh_verbosity.png) 0 50% no-repeat;
+	margin-right:6px;
+	padding-right:28px;
+	padding-bottom:24px;
+	cursor:pointer;
+	display:none;
+}
+.q_menu_purge {
+	background: url(../../images/plush_default/h_purge.png) 0 0 no-repeat;
+	padding-bottom:24px;
+	margin-right:6px;
+	padding-right:24px;
+	cursor:pointer;
+	display:none;
+}
+.q_menu_purge.show { display: inline; }
+.h_menu_purge {
+	background: url(../../images/plush_default/h_purge.png) 0 50% no-repeat;
+	margin-right:6px;
+	padding-right:24px;
+	padding-bottom:24px;
+	cursor:pointer;
+	display:none;
+}
+.h_menu_purge.show { display: inline; }
+.queue_logo {
+	background: url(../../images/plush_default/sabnzbdplus_logo.png) 50% 50% no-repeat;
+	padding-left:240px;
+	padding-right:240px;
+	padding-bottom:50px;
+	width: 90px;
+	height: 40px;
+}
+
+.queue_pill_l {display:inline; background: url(../../images/plush_default/q_pill_l.png) 0 0 no-repeat;padding-left:9px;}
+.queue_pill_m {display:inline; background: url(../../images/plush_default/q_pill_m.png) 0 0 repeat-x; width:100px; }
+.queue_pill_r {display:inline; background: url(../../images/plush_default/q_pill_r.png) 100% 0 no-repeat; height:51px;}
+
+
+.queueTable {
+	border-collapse: seperate;
+	width: 100%;
+	background-color: #e0e0e0;
+	color: #606060;
+	border-bottom: 1px solid #fff
+}
+.queueTable tr {
+	background-color: #e0e0e0;
+	
+}
+.queueTable tr:hover {
+	background-color: #f9f9f9;
+	color: #000;
+}
+.queueTable td {
+	vertical-align: middle;
+	padding:2px 0;
+	border-top: 1px solid #fff;
+}
+.queueTable td.download-title { width: 50%; }
+.queueTable .title {
+	height: 14px;
+	width: 16px;
+	margin: 2px 8px 0 4px;
+	float:left;
+	background: url(../../images/plush_default/ql_grip.png) 0 50% no-repeat;
+}
+.queueTable tr:hover .title {
+	background: url(../../images/plush_default/ql_grip_on.png) 0 50% no-repeat;
+}
+.queueTable .historyTitle { width: 16px; float:left; height: 16px; margin-right: 10px; margin-left: 3px; }
+.queueTable .historyTitle.Loaded, .queueTable .historyTitle.Check, .queueTable .historyTitle.Cross { background-repeat: no-repeat; } 
+.queueTable .historyTitle.Loaded {
+	background-image: url(../../images/plush_default/hl_loaded.gif);
+}
+.queueTable .historyTitle.Check {
+	background-image: url(../../images/plush_default/hv_ok.png);
+}
+.queueTable .historyTitle.Cross {
+	background-image: url(../../images/plush_default/hv_error.png);
+}
+.queueTable a {
+	text-decoration: none;
+	color: #606060;
+}
+.queueTable tr:hover a {
+	color: #000;
+}
+.queueTable a:hover {
+	border-bottom: 1px dotted #606060;
+	cursor: pointer;
+}
+.queueTable .eta {
+	padding-left:6px;
+	text-align: center;
+	font-size: 70%;
+}
+.queueTable select {
+	border:0px;
+	font-size: 66%;
+	background-color: #E0E0E0;
+	color: #606060;
+}
+.queueTable tr:hover select {
+	color: #000;
+}
+
+.queueProgressBarContainer {
+	width:121px;
+	background-image: url(../../images/plush_default/ql_pbar_empty.png);
+	background-repeat: no-repeat;
+	background-position: left center;
+}
+.queueProgressBar {
+	background-image: url(../../images/plush_default/ql_pbar_full.png);
+	background-repeat: no-repeat;
+	height: 15px;
+	width: 121px;
+	margin: 2px 0 0 1px;
+/*	overflow:hidden;*/
+}
+
+.currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1; margin-top:2px; font-weight:bold;}
+.currentDownload small, .totalDownload small {
+	font-weight:normal;
+}
+.currentDownload { float: left; margin-left: 3px;}
+.totalDownload { float:right; margin-right: 3px;}
+
+
+.options {
+	text-align:right;
+	padding-right:8px;
+}
+.queue_delete {
+	display:inline;
+	float:right;
+	margin-left:10px;
+	margin-right: 5px;
+	padding-left:16px;
+}
+.queueTable tr:hover .queue_delete {
+	background: url(../../images/plush_default/ql_cross.png) 50% 50% no-repeat;
+}
+.queueTable td:hover .queue_delete {
+	background: url(../../images/plush_default/ql_cross_on.png) 50% 50% no-repeat;
+	cursor:pointer;
+}
+.history_added {
+	font-size:75%;
+	cursor:default;
+}
+tr:hover .history_added  {
+	color:black;
+}
+.last div {
+	cursor: help;
+	display:inline;
+	float:left;
+	width: 16px;
+	margin-right: 2px;
+}
+.hv_Tim {
+	background: url(../../images/plush_default/hv_timetaken.png) 0 50% no-repeat;
+}
+.hv_Avg {
+	background: url(../../images/plush_default/hv_avgspeed.png) 0 50% no-repeat;
+}
+.hv_PAR {
+	background: url(../../images/plush_default/hv_par.png) 0 50% no-repeat;
+}
+.hv_JOI {
+	background: url(../../images/plush_default/hv_join.png) 0 50% no-repeat;
+}
+.hv_RAR {
+	background: url(../../images/plush_default/hv_unrar.png) 0 50% no-repeat;
+}
+.hv_ZIP {
+	background: url(../../images/plush_default/hv_unzip.png) 0 50% no-repeat;
+}
+.hv_DEL {
+	background: url(../../images/plush_default/hv_del.png) 0 50% no-repeat;
+}
+.hv_USE {
+	display:inline;
+	background: url(../../images/plush_default/hv_userscript.png) 0 50% no-repeat;
+}
+
+
+.hvMessage {
+	font-weight: bold;
+	color: red;
+	font-size: 60%;
+}
+
+
+
+
+
+#page-wrap { width: 90%; margin: 0px auto; }
+.box_banner_hr {
+	background: #cfcfcf url(../../images/plush_default/qh_seperator.png) 0 0 repeat-x;
+	height:4px;
+}
+.box_banner_history {background-image: url(../../images/plush_default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
+.box_banner_r {
+	background-image: url(../../images/plush_default/history_title_bg.png);
+	background-position: left center;
+	background-repeat:no-repeat;
+	height:51px;
+}
+#hdr-queue { background-image: url(../../images/plush_default/queue_bg_tile.png); background-repeat: repeat-x; height: 55px; }
+#hdr-queue .logo { background-image: url(../../images/plush_default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
+#hdr-queue .logo h1 { text-indent: -9999px; margin: 0; padding: 0;}
+#queue-buttons { float: right; background-image: url(../../images/plush_default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
+#queue-buttons li { float:left; }
+#queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
+#speed, #time-left {
+	background-image: url(../../images/plush_default/rounded_area_bg.png);
+	width: 68px;
+	height: 12px;
+	padding: 5px 0px;
+	margin-top: 20px;
+	text-align: center;
+}
+#speed { float:right; margin-right: 10%; }
+#time-left { float:left; margin-left: 8%; }
+#speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
+#speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
+#btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
+#btm-wrapper .corner-right { float:right; background-image: url(../../images/plush_default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
+#btm-wrapper .corner-left { float:left; background-image: url(../../images/plush_default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	C O N F I G
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+div.EntryBlock form {
+  display: inline;
+}
+fieldset.EntryFieldSet {
+  vertical-align: top;
+  display: inline;
+  float:left;
+  padding: 7px;
+  margin: 5px;
+}
+#config_nav {
+	margin-top: 20px;
+	width: 110px;
+	text-align: left;
+	float: left;
+}
+
+#config_nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border: none;
+}
+
+#config_nav li {
+	margin: 0;
+	padding: 3px 0px 3px 5px;
+}
+
+#config_nav li a {
+	background-color: #ddd;
+	display: block;
+	padding: 5px 0px 5px 5px;
+	color: #666;
+	text-decoration: none;
+	width: 100%;
+	font-size: 9pt;
+	font-weight: bold;
+}
+
+#config_nav li a:hover {
+	background-color: #ccc;
+	color: #000;
+}
+
+#config_nav #nav_active {
+	background-color: #bbb;
+	color: #000;
+}
+
+#config_nav li a img{
+	vertical-align: -2px;
+	padding-right: 5px;
+	border-width: 0px;
+}
+
+#config_container {
+	background: #bbb;
+/*	width: 655px; 
+	height: 435px; */
+	min-height: 435px;
+	text-align: left;
+	font-size: 10pt;
+	padding: 10px;
+	padding-left: 20px;
+}
+
+#connections_container {
+	background: #bbb;
+	height: 395px;
+	text-align: left;
+	font-size: 10pt;
+	margin: 10px 10px 0px 10px;
+	padding: 10px;
+}
+
+#config_content {
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+}
+
+.left_links {
+	float: left;
+	margin: 5px 0 0 10px;
+}
+
+.left_links a {
+	display: block;
+	background-color: #ddd;
+	color: #666;
+	text-decoration: none;
+	font-size: 9pt;
+	font-weight: bold;
+	padding: 2px 5px;
+}
+
+.left_links a:hover {
+	background-color: #bbb;
+	color: #000;
+}
+
+.left_links a img {
+	vertical-align: middle;
+	padding-right: 5px;
+	border-width: 0px;
+}
+
+.right_links a {
+	cursor:pointer;
+}
+
+.config_margin {
+	margin: 5px 10px 0 110px;
+}
+
+.right_links {
+	float: right;
+	margin: 5px 10px 0 0;
+}
+
+.right_links a {
+	display: block;
+	background-color: #ddd;
+	color: #666;
+	text-decoration: none;
+	font-size: 9pt;
+	font-weight: bold;
+	padding: 2px 5px;
+}
+
+.right_links a:hover {
+	background-color: #bbb;
+	color: #000;
+}
+
+.right_links a img {
+	vertical-align: middle;
+	padding-right: 5px;
+	border-width: 0px;
+}
+
+#save_button {
+	float: right;
+	margin: 6px 10px 0 0;
+}
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	H E L P E R    C L A S S E S
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+
+
+
+/* Text align
+----------------------------------------------------------- */
+.textRight {text-align: right;}
+.textLeft {text-align: left;}
+.textCenter {text-align: center;}
+
+
+/* Display
+----------------------------------------------------------- */
+.clear {clear: both;}
+.noClear {clear: none;}
+.hide {display: none;}
+.show {display: inherit;}
+.visible {display: inherit;}
+.hidden {display: none;}
+.block {display: block;}
+.inline {display: inline;}
+.noStyling {border: none; background: none; text-decoration: none;}
+
+
+/* Column Classes
+----------------------------------------------------------- */
+.col10 {width: 10%; float: left; display: block; margin: 0; padding: 0;}
+.col15 {width: 15%; float: left; display: block; margin: 0; padding: 0;}
+.col20 {width: 20%; float: left; display: block; margin: 0; padding: 0;}
+.col25 {width: 25%; float: left; display: block; margin: 0; padding: 0;}
+.col33 {width: 33%; float: left; display: block; margin: 0; padding: 0;}
+.col40 {width: 40%; float: left; display: block; margin: 0; padding: 0;}
+.col45 {width: 45%; float: left; display: block; margin: 0; padding: 0;}
+.col50 {width: 50%; float: left; display: block; margin: 0; padding: 0;}
+.col55 {width: 55%; float: left; display: block; margin: 0; padding: 0;}
+.col60 {width: 60%; float: left; display: block; margin: 0; padding: 0;}
+.col65 {width: 65%; float: left; display: block; margin: 0; padding: 0;}
+.col66 {width: 66%; float: left; display: block; margin: 0; padding: 0;}
+.col70 {width: 70%; float: left; display: block; margin: 0; padding: 0;}
+.col75 {width: 75%; float: left; display: block; margin: 0; padding: 0;}
+.col80 {width: 80%; float: left; display: block; margin: 0; padding: 0;}
+.col90 {width: 90%; float: left; display: block; margin: 0; padding: 0;}
+.col100 {width: 100%; float: left; display: block; margin: 0; padding: 0;}
+
+
+/* Padding Classes
+----------------------------------------------------------- */
+.pad5 {padding: 5px; margin: 0;}
+.pad10 {padding: 12px; margin: 0;}
+.pad15 {padding: 15px; margin: 0;}
+.pad20 {padding: 20px; margin: 0;}
+.pad25 {padding: 25px; margin: 0;}
+.pad30 {padding: 30px; margin: 0;}
+.pad35 {padding: 35px; margin: 0;}
+.pad40 {padding: 40px; margin: 0;}
+.pad45 {padding: 45px; margin: 0;}
+.pad50 {padding: 50px; margin: 0;}
+
+
+
+
+
+
+/* jQuery Tooltip Plugin */
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	border: 1px solid #111;
+	background-color: lightyellow;
+	color:red;
+	font-size: 11px !important;
+	padding: 5px;
+	opacity: 0.85;
+	text-align: right;
+	margin-left:-50px;
+}
+#tooltip h3, #tooltip div { margin: 0; }
+
+
+
+
+
+
+
+
+/* This file is commented in great detail for educational purposes. There is also
+ * an uncommented version for use production use here:
+ * http://users.tpg.com.au/j_birch/plugins/superfish/superfish.css
+ */
+
+/**************** ESSENTIAL STYLES ***************/
+/* This first group of styles are most important for the function of Superfish.
+ * The more cosmetic styling rules are grouped together below under the heading
+ * ORIGINAL SKIN.
+ *
+ * Note that this CSS file will create the kind of menu demonstrated on the main
+ * page of the Superfish documentation, ie. top tier of nav is horizontal, with
+ * subsequent tiers vertical.
+ */
+ 
+/* remove any default styles */
+.nav, .nav * {
+	margin:0;
+	padding:0;
+	list-style:none;
+}
+
+/* top ul.nav element */
+.nav {
+	line-height:1.0; /* makes calculating the 'top' value for first submenu easier */
+}
+
+/* nested submenu ul elements */
+.nav ul {
+	position:absolute; /* remove from flow and allow positioning */
+	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
+	width:9.45em; /* VARIABLE. Must have a width for menu items to inherit. Use ems so font scaling does not break design*/
+}
+/* submenu items */
+.nav ul li,
+.nav a { /* this affects top level anchors too */
+	width: 100%;/* stretch submenu items to width of submenu ul width (see .nav ul rules above). When link text runs over more than one line, use padding and an explicit width for the anchor instead of width:100% and text-indent. Example below in the SKIN section */
+	}
+
+
+
+/* all li elements */
+.nav li {
+	float:left; /* must float all li elements. Vertical submenu items are restrained by parent ul width (see .nav ul rules above) */
+	position:relative; /* make child submenu ul position relative to parent li */
+	z-index:99; /* ensure submenus appear above other page items. Increase if needed, but do not exceed thickbox overlay z-index! */
+}
+
+/* all anchor elements */
+.nav a {
+	display:block; /* make IE6 obey width when text-indent is used */
+}
+
+/**** Position of second tier of nav ****/
+.nav li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
+ul.nav li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
+{
+	left:-1px; /* position first submenu directly under parent li */
+	top:2.5em; /* VARIABLE. This is calculated by adding 1em text height to top and bottom anchor element padding (original skin: .75em top + .75em bottom + 1em text height = 2.5em) */
+}
+
+/**** Position of third tier of nav ****/
+ /* Note that this rule must appear here in the code order in order for it to override previous positioning rules so that this and subsequent nested submenus still remain hidden when the parent submenu is shown. Do not group these selectors with other top:-999em rules */
+.nav li:hover li ul,
+.nav li.sfHover li ul {
+	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
+}
+/* DO NOT attempt to group these selectors with similar earlier rules. The code order is important so the rules override previous ones correctly */
+.nav li li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
+ul.nav li li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
+ {
+	left:9.45em; /* VARIABLE. Offset subsequent submenus to the right by the amount you set for the submenu widths (see .nav ul rules above) */
+	top:-1px; /* position subsequent submenus horizontally aligned to parent li */
+}
+
+/**** Position of fourth tier of nav (not used on main demo page. You could delete this block for a three tiered nav) ****/
+ /* Note that this rule must appear here in the code order in order for it to override previous positioning rules so that this and subsequent nested submenus still remain hidden when the parent submenu is shown. Do not group these selectors with other top:-999em rules */
+.nav li li:hover li ul,
+.nav li li.sfHover li ul {
+	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
+}
+/* DO NOT attempt to group these selectors with similar earlier rules. The code order is important so the rules override previous ones correctly */
+.nav li li li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
+ul.nav li li li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
+ {
+	left:9.45em; /* VARIABLE. Offset subsequent submenus to the right by the amount you set for the submenu widths (see .nav ul rules above) */
+	top:-1px; /* position subsequent submenus horizontally aligned to parent li */
+}
+
+/**** Position of further tiers of nav ****/
+/* To add further tiers, you need copy the previous block of code (everything back until the "Position of fourth tier of nav" comment) and paste it in here. Then add an extra li just after .nav in each of the pasted selectors. So the new block will differ from the copied block in the same way that the block for the fourth tier differs from the block for the third tier.*/
+
+
+/**** Very important ****/
+/* this negates the pure CSS hovers so submenu remains hidden and JS controls when and how it appears. This is in turn is overridden by the .sfHover rules above as they have greater specificity */
+/* notice there are three selectors here. You need three for a four tier menu system. If you had a five tier system you would copy the last selector of these three and paste it below to create a fourth selector and add another li just after the .superfish part. On the other hand if you only had a three tiered menu you could delete the third line here and save some file size.*/
+.superfish li:hover ul,
+.superfish li li:hover ul,
+.superfish li li li:hover ul {
+	top: -999em; /* hide submenu in screen-reader and search-engine friendly way */
+}
+
+/* A quick note about issues with submenus appearing under Flash animations. Some say that setting wmode="opaque" or  wmode="transparent" on the embed or object tag is sufficient. This does fix many issues but I find it sometimes helps to also add this CSS: */
+embed, object {
+	position: relative;
+	z-index: 0;
+	}
+
+/******************** ORIGINAL SKIN ******************/
+/*
+ * The CSS below is my attempt to extract most of the stuff you need to change in order
+ * to reskin the menu with the appearance you require. However, certain rules above
+ * (indicated with the word "VARIABLE") may also need to be altered to suit the width
+ * and height of your menu items and submenus. For example, if you need wider submenus
+ * eg: .nav ul { width:12em} then you will need to also apply that value
+ * to the left offset of any deeper nested submenus, eg:
+ * .nav li li:hover ul,
+ * ul.nav li li.sfHover ul {
+	 left:12em; top:-1px;
+   }
+ *
+ * Other than that, most of the cosmetic stuff is below:
+ */
+
+.nav {
+	/* if you want to change font-size, do it here as opposed to setting it on deeper nested anchor elements for example,  so that the em unit is the same size for all elements in the menu */
+	float:left; /* necessary if you don't want this element to collapse */
+	cursor:default;
+	margin-top: 4px;
+	padding-left: 10%;
+	margin-bottom: -8px;
+}
+.nav ul {
+	margin-top:10px;
+	border:4px solid #EEDDAA;
+}
+.nav li {
+	width:100px; /* affects top level menu items only, as nested li elements have width 100% of their ul parent (see .nav ul rules above)*/
+}
+.nav a {
+	color: white;
+	padding: 0.5em 0; /* note that the top and bottom padding will affect the 'top' value (marked with the word "VARIABLE") of the second tier of nav (see "essential rules" above and alter accordingly) */
+	text-decoration:none;
+	text-indent: 0.85em;
+}
+/* if link text runs over two or more lines, you will want padding in the anchor element instead of relying on text-indent to provide space. The following disabled rule shows how to style the submenu links in this case. Note that the width plus left and right padding must equal the width set above for the submenu (.nav ul) */
+/*
+.nav ul a {
+	width: 7.45em;
+	padding: .75em 1em;
+	text-indent: 0;
+	}
+*/
+.nav li:hover, .nav li.sfHover,
+.nav a:focus, .nav a:hover, .nav a:active {
+	background-color:#FFA500; /* hover highlight */
+}
+.nav li li {
+	background:#333333; /* slightly darker shade for nested submenus */
+}
+.nav ul li ul {
+	margin-top:0px;
+}
+.nav li li li {
+	background:#1D1C1C; /* slightly darker shade for nested submenus */
+}
+.nav input {
+	border: 1px dotted white;
+	padding:4px;
+	font-size: 66%;
+}
+.nav select {
+	font-size: 66%;
+	cursor:pointer;
+}
+
+
+
+
