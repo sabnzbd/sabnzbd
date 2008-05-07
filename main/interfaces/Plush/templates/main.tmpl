@@ -49,49 +49,25 @@
 			<ul>
 				<li><a>Add NZB</a>
 					<ul>
-						<li><a>&raquo; URL<!--#if $varExists('newzbinDetails') then "&nbsp;&amp;&nbsp;Newzbin" else ""#--></a>
-							<ul>
-								<li><a><input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(value=='enter URL/ID')value=''" onblur="if(!value)value='enter URL/ID'"/></a></li>
-								<li><a>&raquo;&nbsp;<input type="submit" id="addID" value="Add NZB" style="cursor:pointer"/></a></li>
-								<li>
-									<!--#if $cat_list#-->
-        							<a><select id="addID_cat" title="Category">
-							        <!--#for $ct in $cat_list#-->
-							        	<option value="$ct">$ct</option>
-							        <!--#end for#-->
-							        </select></a>
-							        <!--#end if#-->
-							        <a><select id="addID_pp" title="Post-Processing Option">
-							        	<option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
-							        	<option value="0">(Skip)</option>
-							        	<option value="1">+Repair</option>
-							        	<option value="2">+Unpack</option>
-							        	<option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
-							        </select></a>
-							        <!--#if $script_list#-->
-							        <a><select id="addID_script" title="Script">
-							        <!--#for $sc in $script_list#-->
-							        	<option value="$sc">$sc</option>
-							        <!--#end for#-->
-							        </select></a>
-							        <!--#end if#-->
-								</li>
-							</ul>
+						<li><a>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></a>
+								<a><input type="text" id="addID_input" value="enter URL/ID" size="13"  onmouseover="if(this.value=='enter URL/ID')this.value=''" onblur="if(!this.value)this.value='enter URL/ID'" onmouseout="if(!this.value)this.value='enter URL/ID'"/></a>
+								<a>&raquo;&nbsp;<input type="submit" id="addID" value="Add NZB" style="cursor:pointer"/></a>
 						</li>
-						<li><a>&raquo; File Upload</a>
-							<form action="addFile" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})">
-							<ul>
-								<li><a><input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="4" /></a></li>
-								<li><a>&raquo;&nbsp;<input type="submit" id="addNZBbyFile" value="Add NZB" style="cursor:pointer"/></a></li>
-								<li>
+
+						<form action="addFile" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})">
+						<li><a>&rarr;&nbsp;File Upload</a>
+								<a><input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="4" /></a>
+								<a>&raquo;&nbsp;<input type="submit" id="addNZBbyFile" value="Add NZB" style="cursor:pointer"/></a>
+						</li>
+						<li><a>&rarr;&nbsp;Processing</a>
 						        <!--#if $cat_list#-->
-        				   		<a><select name="cat" title="Category">
+        				   		<a><select id="addID_cat" name="cat" title="Category">
 						        <!--#for $ct in $cat_list#-->
 						        	<option value="$ct">$ct</option>
 						        <!--#end for#-->
 						        </select></a>
 						        <!--#end if#-->
-						        <a><select name="pp" title="Post-Processing Option">
+						        <a><select id="addID_pp" name="pp" title="Post-Processing Option">
 						        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
 						        <option value="0">(Skip)</option>
 						        <option value="1">+Repair</option>
@@ -99,16 +75,14 @@
 						        <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
 						        </select></a>
 						        <!--#if $script_list#-->
-						        <a><select name="script" title="Script">
+						        <a><select id="addID_script" name="script" title="Script">
 						        <!--#for $sc in $script_list#-->
 						        	<option value="$sc">$sc</option>
 						        <!--#end for#-->
 						        </select></a>
 						        <!--#end if#-->
-								</li>
-							</ul>
-							</form>
 						</li>
+						</form>
 					</ul>
 				</li>
 				<li><a>Functions</a>

@@ -336,7 +336,7 @@ function ChangeProcessingScript (nzo_id,op) {
 }
 
 // change queue order
-// switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id
+// ex. ChangeOrder("switch?uid1="+row.id+"&uid2="+i);
 function ChangeOrder (result) {
 	$.ajax({
 		type: "GET",
