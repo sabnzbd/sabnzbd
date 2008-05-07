@@ -117,11 +117,14 @@ def Cat2OptsDef(fname, cat=None):
     return cat, name, pp, script
 
 
-def ProcessZipFile(filename, path, catdir=None):
+def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb files in it.
     """
-    cat, name, pp, script = Cat2OptsDef(filename, catdir)
+    _cat, name, _pp, _script = Cat2OptsDef(filename, catdir)
+    if cat == None: cat = _cat
+    if pp == None: pp = _pp
+    if script == None: script = _script
 
     zf = zipfile.ZipFile(path)
     ok = True
@@ -153,7 +156,7 @@ def ProcessZipFile(filename, path, catdir=None):
     return ok
 
 
-def ProcessSingleFile(filename, path, catdir=None):
+def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
     """
@@ -176,7 +179,10 @@ def ProcessSingleFile(filename, path, catdir=None):
         logging.warning('[%s] Cannot read %s', __NAME__, path)
         return False
 
-    cat, name, pp, script = Cat2OptsDef(name, catdir)
+    _cat, name, _pp, _script = Cat2OptsDef(name, catdir)
+    if cat == None: cat = _cat
+    if pp == None: pp = _pp
+    if script == None: script = _script
 
     try:
         nzo = NzbObject(name, pp, script, data, cat=cat)
@@ -251,14 +257,14 @@ class DirScanner(Thread):
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext == '.zip':
-                        if not ProcessZipFile(filename, path, catdir):
+                        if not ProcessZipFile(filename, path, catdir=catdir):
                             self.ignored.append(path)
                         else:
                             self.error_reported = False
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
-                        if not ProcessSingleFile(filename, path, catdir):
+                        if not ProcessSingleFile(filename, path, catdir=catdir):
                             self.ignored.append(path)
                         else:
                             self.error_reported = False

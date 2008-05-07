@@ -914,9 +914,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None):
         logging.error("[%s] Cannot create temp file for %s", __NAME__, filename)
 
     if ext.lower() == '.zip':
-        ProcessZipFile(filename, path)
+        ProcessZipFile(filename, path, pp, script, cat)
     else:
-        ProcessSingleFile(filename, path)
+        ProcessSingleFile(filename, path, pp, script, cat)
 
 
 @synchronized_CV
