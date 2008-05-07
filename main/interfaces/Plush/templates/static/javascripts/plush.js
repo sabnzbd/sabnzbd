@@ -1,7 +1,7 @@
 
 var refreshRate = 8; // default refresh rate
 var skipRefresh = false;
-var queueSortAge = false;
+var lastQueueSort = 'sort_by_size';
 
 // once the DOM is ready, run this
 $(document).ready(function() {
@@ -127,14 +127,21 @@ $(document).ready(function() {
 	
 	// sort queue
 	$('.q_menu_sort').click(function(event) {
-		var url;
-		if (queueSortAge = !queueSortAge)
-			url='sort_by_name';
-		else
-			url='sort_by_avg_age';
+		switch (lastQueueSort) {
+			case 'sort_by_name':
+				lastQueueSort='sort_by_avg_age';
+				break;
+			case 'sort_by_avg_age':
+				lastQueueSort='sort_by_size';
+				break;
+			default:
+			case 'sort_by_size':
+				lastQueueSort='sort_by_name';
+				break;
+		}
 		$.ajax({
 			type: "GET",
-			url: "queue/"+url+"?dummy="+Math.random(),
+			url: "queue/"+lastQueueSort+"?dummy="+Math.random(),
 			success: function(result){
    				return LoadTheQueue(result);
 			}
