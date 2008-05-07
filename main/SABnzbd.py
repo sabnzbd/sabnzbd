@@ -480,11 +480,6 @@ def main():
         print "Can't write to logfile"
         ExitSab(2)
 
-    logging.info('--------------------------------')
-    logging.info('\n%s-%s [%s] (baseline=%s)', sabnzbd.MY_NAME,
-                 sabnzbd.__version__, sabnzbd.MY_FULLNAME, sabnzbd.__baseline__)
-
-
     if fork:
         try:
             sys.stderr.fileno
@@ -512,7 +507,8 @@ def main():
         except AttributeError:
             pass
 
-    logging.info('%s-%s (baseline=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
+    logging.info('--------------------------------')
+    logging.info('%s-%s (rev=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
     if os.name == 'nt':
         suffix = ''
         if vista: suffix = ' (=Vista)'
