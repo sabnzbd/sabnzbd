@@ -716,6 +716,12 @@ def sort_by_name():
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
+def sort_by_size():
+    try:
+        NZBQ.sort_by_size()
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+
 def change_opts(nzo_id, pp):
     try:
         NZBQ.change_opts(nzo_id, pp)

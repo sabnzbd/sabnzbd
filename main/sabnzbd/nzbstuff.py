@@ -733,6 +733,9 @@ class NzbObject(TryList):
     def get_bytes_downloaded(self):
         return self.__bytes_downloaded
 
+    def get_bytes(self):
+        return self.__bytes
+
     def get_partable(self):
         return self.__partable.copy()
 

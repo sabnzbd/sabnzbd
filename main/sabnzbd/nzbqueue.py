@@ -296,9 +296,15 @@ class NzbQueue(TryList):
         logging.info("[%s] Sorting by average date...", __NAME__)
         self.__nzo_list.sort(cmp=_nzo_date_cmp)
 
+    @synchronized(NZBQUEUE_LOCK)
     def sort_by_name(self):
         logging.info("[%s] Sorting by name...", __NAME__)
         self.__nzo_list.sort(cmp=_nzo_name_cmp)
+
+    @synchronized(NZBQUEUE_LOCK)
+    def sort_by_size(self):
+        logging.info("[%s] Sorting by size...", __NAME__)
+        self.__nzo_list.sort(cmp=_nzo_size_cmp)
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -519,8 +525,7 @@ def _nzo_date_cmp(nzo1, nzo2):
 def _nzo_name_cmp(nzo1, nzo2):
     fn1, msgid1 = SplitFileName(nzo1.get_filename())
     fn2, msgid2 = SplitFileName(nzo2.get_filename())
-    logging.debug("[%s] 1:%s 2:%s", __NAME__, fn1,fn2)
-
-    logging.info("[%s] 3:returning %s", __NAME__, cmp(fn1, fn2))
     return cmp(fn1, fn2)
 
+def _nzo_size_cmp(nzo1, nzo2):
+    return cmp(nzo1.get_bytes(), nzo2.get_bytes())

@@ -809,6 +809,11 @@ class QueuePage(ProtectedClass):
         sabnzbd.sort_by_name()
         raise Raiser(self.__root, dummy)
 
+    @cherrypy.expose
+    def sort_by_size(self, dummy = None):
+        sabnzbd.sort_by_size()
+        raise Raiser(self.__root, dummy)
+
 class HistoryPage(ProtectedClass):
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
