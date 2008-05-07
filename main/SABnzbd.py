@@ -481,7 +481,8 @@ def main():
         ExitSab(2)
 
     logging.info('--------------------------------')
-    logging.info('\n%s-%s [%s]', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_FULLNAME)
+    logging.info('\n%s-%s [%s] (baseline=%s)', sabnzbd.MY_NAME,
+                 sabnzbd.__version__, sabnzbd.MY_FULLNAME, sabnzbd.__baseline__)
 
 
     if fork:
@@ -511,7 +512,7 @@ def main():
         except AttributeError:
             pass
 
-    logging.info('%s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
+    logging.info('%s-%s (baseline=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
     if os.name == 'nt':
         suffix = ''
         if vista: suffix = ' (=Vista)'

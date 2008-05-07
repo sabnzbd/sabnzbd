@@ -1,17 +1,7 @@
 #!/usr/bin/env python
 
 import sabnzbd
-from sabnzbd.version import __version__
 from distutils.core import setup
-
-Win32ConsoleName = 'SABnzbd-console.exe'
-Win32WindowName  = 'SABnzbd.exe'
-
-prod = 'SABnzbd-' + __version__
-fileIns = prod + '-win32-setup.exe'
-fileBin = prod + '-win32-bin.zip'
-fileWSr = prod + '-win32-src.zip'
-fileSrc = prod + '-src.tar.gz'
 
 # py2exe usage: python setup.py py2exe
 
@@ -20,11 +10,61 @@ import sys
 import os
 import os
 import tarfile
+import re
+import subprocess
+
+VERSION_FILE = 'sabnzbd/version.py'
+
+if os.name == 'nt':
+    # Patch this for another location
+    SvnVersion = r'"c:\Program Files\Subversion\bin\svnversion.exe"'
+    SvnRevert =  r'cmd /c "c:\Program Files\Subversion\bin\svn.exe" revert ' + VERSION_FILE
+else:
+    # SVN is assumed to be on the $PATH
+    SvnVersion = 'svnversion'
+    SvnRevert = 'svn revert ' + VERSION_FILE
 
 try:
     import py2exe
 except ImportError:
     py2exe = None
+
+def PatchVersion(name):
+    """ Patch in the SVN baseline number, but only when this is
+        an unmodified checkout
+    """
+    try:
+        pipe = subprocess.Popen(SvnVersion, shell=True, stdout=subprocess.PIPE).stdout
+        svn = pipe.read().strip(' \t\n\r')
+        pipe.close()
+    except:
+        pass
+    
+    if not svn:
+        print "WARNING: Cannot run %s" % SvnVersion
+        svn = 'unknown'
+
+    if not (svn and svn.isdigit()):
+        svn = 'unknown'
+
+    try:
+        ver = open(VERSION_FILE, 'rb')
+        text = ver.read()
+        ver.close()
+    except:
+        print "WARNING: cannot patch " + VERSION_FILE
+        return
+
+    regex = re.compile(r'__baseline__\s+=\s+"\w*"')
+    text = re.sub(r'__baseline__\s*=\s*"[^"]*"', '__baseline__ = "%s"' % svn, text)
+    text = re.sub(r'__version__\s*=\s*"[^"]*"', '__version__ = "%s"' % name, text)
+    try:
+        ver = open(VERSION_FILE, 'wb')
+        ver.write(text)
+        ver.close()
+    except:
+        print "WARNING: cannot patch " + VERSION_FILE
+
 
 def PairList(src):
     """ Given a list of files and dirnames,
@@ -84,6 +124,21 @@ if len(sys.argv) < 2:
 else:
     target = sys.argv[1]
 
+# Derive release name from path
+base, release = os.path.split(os.getcwd())
+
+prod = 'SABnzbd-' + release
+Win32ConsoleName = 'SABnzbd-console.exe'
+Win32WindowName  = 'SABnzbd.exe'
+
+fileIns = prod + '-win32-setup.exe'
+fileBin = prod + '-win32-bin.zip'
+fileWSr = prod + '-win32-src.zip'
+fileSrc = prod + '-src.tar.gz'
+
+PatchVersion(release)
+
+
 # List of data elements, directories end with a '/'
 data = [ 'README.txt',
          'INSTALL.txt',
@@ -100,9 +155,9 @@ data = [ 'README.txt',
 
 options = dict(
       name = 'SABnzbd',
-      version = sabnzbd.__version__,
+      version = release,
       url = 'http://sourceforge.net/projects/sabnzbdplus',
-      author = 'The ShyPike & Gregor Kaufmann',
+      author = 'ShyPike, sw1tch (original work by Gregor Kaufmann)',
       author_email = 'shypike@users.sourceforge.net',
       description = 'SABnzbd ' + str(sabnzbd.__version__),
       scripts = ['SABnzbd.py'],
@@ -115,6 +170,10 @@ options = dict(
 
 
 if target == 'binary':
+    if not py2exe:
+        print "Sorry, only works on Windows!"
+        exit(1)
+
     sys.argv[1] = 'py2exe'
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
     options['options'] = {"py2exe": {"bundle_files": 3, "packages": "email,xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
@@ -144,13 +203,14 @@ if target == 'binary':
 
     os.system('del dist\*.ini >nul 2>&1')
     os.system('"c:\Program Files\NSIS\makensis.exe" /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
-              (__version__, fileIns))
+              (release, fileIns))
 
 
     os.system('if exist %s del /q %s' % (fileBin, fileBin))
     os.rename('dist', prod)
     os.system('zip -9 -r -X %s %s' % (fileBin, prod))
     os.rename(prod, 'dist')
+    os.system(SvnRevert)
 
 elif target == 'source':
     # Prepare Source distribution package.
@@ -216,6 +276,7 @@ elif target == 'source':
     os.system('zip -9 -r -X %s %s -i */win/* */images/*' % (fileWSr, prod))
     os.rename(prod, 'srcdist')
 
+    os.system(SvnRevert)
 else:
     print 'Usage: setup.py binary|source'
 
