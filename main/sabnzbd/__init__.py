@@ -301,8 +301,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if __INITIALIZED__:
         return False
 
-    logging.info("Initializing SABnzbd v%s", __version__)
-
     ###########################
     ## CONFIG Initialization ##
     ###########################
