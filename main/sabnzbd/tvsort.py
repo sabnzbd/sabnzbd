@@ -193,7 +193,7 @@ def checkForTVShow(filename, matcher): #checkfortvshow > formatfolders > gettvin
     return None, None
 
 
-def TVSeasonMove(nzo, workdir, finalname):
+def TVSeasonMove(workdir):
     """ Move content of 'workdir' to 'workdir/..' possibly skipping some files
         If afterwards the directory is not empty, rename it to _JUNK_folder, else remove it.
     """
@@ -203,23 +203,18 @@ def TVSeasonMove(nzo, workdir, finalname):
         for _file in files:
             path = os.path.join(root, _file)
             new_path = os.path.abspath(os.path.join(workdir, '..'))
+            new_path = os.path.join(new_path, _file)
             move_to_path(path, new_path, True)
 
-    if skipped:
-        junk_dir = work_dir.replace('_UNPACK_', '_JUNK_')
-        try:
-            os.rename(work_dir, junk_dir)
-        except:
-            pass
-    else:
-        cleanup_empty_directories(work_dir)
-        try:
-            os.rmdir(work_dir)
-        except:
-            pass
+    cleanup_empty_directories(workdir)
+    try:
+        os.rmdir(workdir)
+    except:
+        pass
+        
+    return (os.path.join(workdir, '..'))
         
 def TVRenamer(path, files, name):
-    #not implemented yet
     for file in files:
         filepath = os.path.join(path, file)
         size = os.stat(filepath).st_size

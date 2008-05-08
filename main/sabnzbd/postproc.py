@@ -150,7 +150,9 @@ class PostProcessor(Thread):
                     pass # On failure, just use the original name
             else:
                 tmp_workdir_complete = complete_dir
+                
                 workdir_complete = create_dirs(complete_dir)
+                tmp_workdir_complete = create_dirs(prefix(os.path.join(workdir_complete, dirname), '_UNPACK_'))
                 
             ## Run Stage 2: Unpack
             if flagUnpack:
@@ -164,8 +166,6 @@ class PostProcessor(Thread):
                 else:
                     nzo.set_unpackstr('=> No post-processing because of failed verification', '[UNPACK]', 2)
 
-            if tv_file and (unpackError or not parResult): 
-                tmp_workdir_complete = workdir_complete = os.path.join(tmp_workdir_complete, '_FAILED_')
             ## Move any (left-over) files to destination
             nzo.set_status("Moving...")
             for root, dirs, files in os.walk(workdir):
@@ -194,6 +194,16 @@ class PostProcessor(Thread):
                     nzo.set_dirname(os.path.basename(workdir_complete))
                 except:
                     logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
+            else:
+                if unpackError or not parResult: 
+                    workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
+                    try:
+                        os.rename(tmp_workdir_complete, workdir_complete)
+                        nzo.set_dirname(os.path.basename(workdir_complete))
+                    except:
+                        logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
+                else:
+                    workdir_complete = TVSeasonMove(tmp_workdir_complete)
 
 
             ## Clean up download dir
