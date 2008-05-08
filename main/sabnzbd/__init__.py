@@ -1245,18 +1245,6 @@ def opts_to_pp(repair, unpack, delete):
     return pp
 
 
-PROPER_FILENAME_MATCHER = re.compile(r"[a-zA-Z0-9\-_\.+\(\)]")
-def fix_filename(filename):
-    cst = []
-    for i in xrange(len(filename)):
-        if PROPER_FILENAME_MATCHER.search(filename[i]):
-            cst.append(filename[i])
-        else:
-            cst.append("_")
-    filename = ''.join(cst)
-    return filename
-
-
 ################################################################################
 # SCHED                                                                        #
 ################################################################################

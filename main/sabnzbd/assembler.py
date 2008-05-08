@@ -30,7 +30,7 @@ import logging
 import sabnzbd
 
 from sabnzbd.interface import CheckFreeSpace
-from sabnzbd.misc import getFilepath
+from sabnzbd.misc import getFilepath, sanitize_filename
 from threading import Thread
 from time import sleep
 if os.name == 'nt':
@@ -66,33 +66,24 @@ class Assembler(Thread):
 
             if nzf:
                 CheckFreeSpace()
-                filename = nzf.get_filename()
+                filename = sanitize_filename(nzf.get_filename())
+                nzf.set_filename(filename)
 
                 dupe = nzo.check_for_dupe(nzf)
 
                 filepath = getFilepath(self.download_dir, nzo, filename)
 
                 if filepath:
-                    logging.info('[%s] Decoding %s %s', __NAME__, filepath,
-                                 nzf.get_type())
+                    logging.info('[%s] Decoding %s %s', __NAME__, filepath, nzf.get_type())
                     try:
                         _assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
                         # 28 == disk full => pause downloader
                         if errno == 28:
+                            logging.error('[%s] Disk full! Forcing Pause', __NAME__)
                             sabnzbd.pause_downloader()
-                            logging.warning('[%s] Disk full! Forcing Pause', __NAME__)
                         else:
-                            logging.error('[%s] Disk error', __NAME__)
-                            fixed_filename = sabnzbd.fix_filename(filename)
-                            if fixed_filename != filename:
-                                logging.info('[%s] Retrying %s with new filename %s',
-                                             __NAME__, filename, fixed_filename)
-                                try:
-                                    filepath = os.path.join(self.download_dir, fixed_filename)
-                                    _assemble(nzf, filepath, dupe)
-                                except IOError:
-                                    logging.error('[%s] Disk error', __NAME__)
+                            logging.error('[%s] Disk error on creating file %s', __NAME__, filepath)
             else:
                 sabnzbd.postprocess_nzo(nzo)
 
@@ -150,4 +141,3 @@ def _assemble(nzf, path, dupe):
 
     fout.flush()
     fout.close()
-

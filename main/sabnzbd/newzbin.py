@@ -33,9 +33,7 @@ from threading import *
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import *
-from sabnzbd.misc import Cat2OptsDef
-
-RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
+from sabnzbd.misc import Cat2OptsDef, sanitize_filename
 
 # Regex to find msgid in the Bookmarks page
 RE_BOOKMARK = re.compile(r'<a href="/browse/post/(\d+)/">')
@@ -228,7 +226,7 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
         return nothing
 
     # sanitize report_name
-    newname = RE_SANITIZE.sub('_', report_name)
+    newname = sanitize_filename(report_name)
     if len(newname) > 80:
         newname = "%s[%s]" % (newname[0:70], id(newname))
     newname = "msgid_%s %s.nzb" % (msgid, newname.strip())

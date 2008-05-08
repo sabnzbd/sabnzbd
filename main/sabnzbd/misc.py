@@ -359,6 +359,17 @@ class URLGrabber(Thread):
 
 
 ################################################################################
+# sanitize_filename                                                            #
+################################################################################
+RE_SANITIZE = re.compile(r'[\\/><\?\*:|~\$\^"]') # All forbidden file characters
+
+def sanitize_filename(name):
+    """ Return filename with illegal chars converted to '_'
+    """
+    return RE_SANITIZE.sub('_', name).strip()
+
+
+################################################################################
 # Real_Path                                                                    #
 ################################################################################
 def real_path(loc, path):
