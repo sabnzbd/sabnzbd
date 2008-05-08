@@ -204,7 +204,7 @@ def TVSeasonMove(workdir):
             path = os.path.join(root, _file)
             new_path = os.path.abspath(os.path.join(workdir, '..'))
             new_path = os.path.join(new_path, _file)
-            move_to_path(path, new_path, True)
+            move_to_path(path, new_path, False)
 
     cleanup_empty_directories(workdir)
     try:
