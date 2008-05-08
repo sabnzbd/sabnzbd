@@ -87,7 +87,7 @@ class Decoder(Thread):
                     data = decode(article, lines)
                     nzf.increase_article_count()
                 except IOError, e:
-                    logging.exception("[%s] Decoding %s failed", __NAME__,
+                    logging.error("[%s] Decoding %s failed", __NAME__,
                                       article)
                     sabnzbd.pause_downloader()
                     
@@ -109,7 +109,7 @@ class Decoder(Thread):
                             register = False
                             
                 except:
-                    logging.exception("[%s] Unknown Error while decoding %s",
+                    logging.error("[%s] Unknown Error while decoding %s",
                                       __NAME__, article)
                                       
             else:

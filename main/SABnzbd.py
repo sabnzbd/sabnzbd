@@ -168,7 +168,7 @@ def daemonize():
 def Bail_Out(browserhost, cherryport):
     """Abort program because of CherryPy troubles
     """
-    logging.exception("Failed to start web-interface")
+    logging.error("Failed to start web-interface")
     Panic_Port(browserhost, cherryport)
     sabnzbd.halt()
     ExitSab(2)

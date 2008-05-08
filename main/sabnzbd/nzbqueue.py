@@ -90,15 +90,14 @@ class NzbQueue(TryList):
             try:
                 queue_vers, nzo_ids, self.__downloaded_items = data
                 if not queue_vers == sabnzbd.__queueversion__:
-                    logging.exception("[%s] Incompatible queuefile found, cannot proceed",
-                                 __NAME__)
+                    logging.error("[%s] Incompatible queuefile found, cannot proceed", __NAME__)
                     self.__downloaded_items = []
                     nzo_ids = []
                     Panic_Queue(os.path.join(sabnzbd.CACHE_DIR,QUEUE_FILE_NAME))
                     ExitSab(2)
             except ValueError:
-                logging.exception("[%s] Error loading %s, corrupt file " + \
-                                  "detected", __NAME__, os.path.join(sabnzbd.CACHE_DIR,QUEUE_FILE_NAME))
+                logging.error("[%s] Error loading %s, corrupt file " + \
+                              "detected", __NAME__, os.path.join(sabnzbd.CACHE_DIR,QUEUE_FILE_NAME))
 
             for nzo_id in nzo_ids:
                 nzo = sabnzbd.load_data(nzo_id, remove = False)
@@ -156,8 +155,7 @@ class NzbQueue(TryList):
 
                 self.reset_try_list()
             except:
-                logging.exception("[%s] Error while adding %s, removing", __NAME__,
-                                  nzo_id)
+                logging.error("[%s] Error while adding %s, removing", __NAME__, nzo_id)
                 self.remove(nzo_id, False)
         else:
             logging.info("[%s] Item %s no longer in queue, omitting", __NAME__,

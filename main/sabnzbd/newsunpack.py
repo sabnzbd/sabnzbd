@@ -262,9 +262,9 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                     actionname = '[DEL-INFO] %s' % os.path.basename(joinable_set)
                     nzo.set_unpackstr("=> Deleted %s file(s)" % i, actionname, 4)
     except:
-        nzo.set_unpackstr('=> Unknown exception while running file_join, ' + \
+        nzo.set_unpackstr('=> Unknown error while running file_join, ' + \
                           'see logfile', actionname, 4)
-        logging.exception('[%s] Unknown exception while' + \
+        logging.error('[%s] Unknown error while' + \
                           ' running file_join on %s',
                           __NAME__, nzo.get_filename())
         return True
@@ -347,9 +347,9 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
 
         return errors, newfiles
     except:
-        nzo.set_unpackstr('=> Unknown exception while running rar_unpack, ' + \
+        nzo.set_unpackstr('=> Unknown error while running rar_unpack, ' + \
                           'see logfile', actionname, 2)
-        logging.exception('[%s] Unknown exception while' + \
+        logging.error('[%s] Unknown error while' + \
                           ' running rar_unpack on %s',
                           __NAME__, nzo.get_filename())
         return True, ''
@@ -549,9 +549,9 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
 
         return unzip_failed
     except:
-        nzo.set_unpackstr('=> Unknown exception while running unzip(): ' + \
+        nzo.set_unpackstr('=> Unknown error while running unzip(): ' + \
                           'see logfile', actionname, 3)
-        logging.exception('[%s] Unknown exception while' + \
+        logging.error('[%s] Unknown error while' + \
                           ' running unzip() on %s',
                           __NAME__, nzo.get_filename())
         return True
@@ -664,9 +664,9 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                                         filepath)
             nzo.set_unpackstr("=> Deleted %d file(s)" % i, actionname, 1)
     except:
-        nzo.set_unpackstr('=> Unknown exception while running par2_repair, ' + \
+        nzo.set_unpackstr('=> Unknown error while running par2_repair, ' + \
                           'see logfile', actionname, 1)
-        logging.exception('[%s] Unknown exception while' + \
+        logging.error('[%s] Unknown error while' + \
                           ' running par2_repair on set %s',
                            __NAME__, setname)
 
@@ -968,7 +968,7 @@ def notrar(f):
         header = _f.read(4)
         _f.close()
     except:
-        logging.exception("[%s] notrar(): reading %s failed", __NAME__, f)
+        logging.error("[%s] notrar(): reading %s failed", __NAME__, f)
         return False
 
     if header != 'Rar!':

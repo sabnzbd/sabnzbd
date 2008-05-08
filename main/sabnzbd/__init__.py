@@ -899,7 +899,7 @@ def backup_nzb(filename, data):
             _f.flush()
             _f.close()
         except:
-            logging.exception("[%s] Saving %s to %s failed", __NAME__, filename, NZB_BACKUP_DIR)
+            logging.error("[%s] Saving %s to %s failed", __NAME__, filename, NZB_BACKUP_DIR)
 
         os.chdir(here)
 
@@ -1163,7 +1163,7 @@ def get_new_id(prefix):
         head, tail = os.path.split(l)
         return tail
     except:
-        logging.exception("[%s] Failure in tempfile.mkstemp", __NAME__)
+        logging.error("[%s] Failure in tempfile.mkstemp", __NAME__)
 
 @synchronized(IO_LOCK)
 def save_data(data, _id, do_pickle = True, doze= 0):
@@ -1182,7 +1182,7 @@ def save_data(data, _id, do_pickle = True, doze= 0):
         _f.flush()
         _f.close()
     except:
-        logging.exception("[%s] Saving %s failed", __NAME__, path)
+        logging.error("[%s] Saving %s failed", __NAME__, path)
 
 @synchronized(IO_LOCK)
 def load_data(_id, remove = True, do_pickle = True):
@@ -1206,7 +1206,7 @@ def load_data(_id, remove = True, do_pickle = True):
         if remove:
             remove_data(_id)
     except:
-        logging.exception("[%s] Loading %s failed", __NAME__, path)
+        logging.error("[%s] Loading %s failed", __NAME__, path)
 
     return data
 

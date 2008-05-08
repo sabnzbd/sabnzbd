@@ -148,7 +148,7 @@ def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
         try:
             os.remove(path)
         except:
-            logging.exception("[%s] Error removing %s", __NAME__, path)
+            logging.error("[%s] Error removing %s", __NAME__, path)
             ok = False
     else:
         zf.close()
@@ -351,7 +351,7 @@ class URLGrabber(Thread):
                     sabnzbd.remove_nzo(future_nzo.nzo_id, False)
 
             except:
-                logging.exception("[%s] Error adding url %s", __NAME__, url)
+                logging.error("[%s] Error adding url %s", __NAME__, url)
                 sabnzbd.remove_nzo(future_nzo.nzo_id, False)
 
             # Don't pound the website!
@@ -825,7 +825,7 @@ def create_dirs(dirpath):
         try:
             os.makedirs(dirpath)
         except:
-            logging.exception("[%s] Failed making (%s)",__NAME__,dirpath)
+            logging.error("[%s] Failed making (%s)",__NAME__,dirpath)
             return None
 
     if sabnzbd.UMASK and os.name != 'nt':
