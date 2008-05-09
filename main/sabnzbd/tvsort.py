@@ -198,12 +198,12 @@ def TVSeasonMove(workdir):
         If afterwards the directory is not empty, rename it to _JUNK_folder, else remove it.
     """
     skipped = False # Keep track of any skipped files
+    path1 = os.path.abspath(os.path.join(workdir, '..')) #move things to the folder below
 
     for root, dirs, files in os.walk(workdir):
         for _file in files:
             path = os.path.join(root, _file)
-            new_path = os.path.abspath(os.path.join(workdir, '..'))
-            new_path = os.path.join(new_path, _file)
+            new_path = path.replace(workdir, path1)
             move_to_path(path, new_path, False)
 
     cleanup_empty_directories(workdir)
