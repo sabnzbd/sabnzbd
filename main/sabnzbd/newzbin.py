@@ -276,7 +276,6 @@ class Bookmarks:
             response = conn.getresponse()
         except:
             logging.warning('[%s] Problem accessing Newzbin server.', __NAME__)
-            self.__busy = False
             return
     
         data = response.read()
@@ -305,18 +304,18 @@ class Bookmarks:
             logging.error('[%s] Newzbin gives undocumented error code (%s)', __NAME__, rcode)
 
         if rcode == '200':
-            new_bookmarks = []
-            for line in data.split('\n'):
-                try:
-                    msgid, size, text = line.split('\t', 2)
-                except:
-                    msgid = size = text = None
-                if msgid:
-                    new_bookmarks.append(msgid)
-                    if not msgid in self.bookmarks:
+            if delete:
+                self.bookmarks.remove(delete)
+            else:
+                for line in data.split('\n'):
+                    try:
+                        msgid, size, text = line.split('\t', 2)
+                    except:
+                        msgid = size = text = None
+                    if msgid and (msgid not in self.bookmarks):
+                        self.bookmarks.append(msgid)
                         logging.info("[%s] Found new bookmarked msgid %s (%s)", __NAME__, msgid, text)
                         sabnzbd.add_msgid(int(msgid), sabnzbd.DIRSCAN_PP, sabnzbd.DIRSCAN_SCRIPT)
-            self.bookmarks.extend(new_bookmarks)
         self.__busy = False
 
     @synchronized(BOOK_LOCK)
