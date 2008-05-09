@@ -321,6 +321,15 @@ class URLGrabber(Thread):
             if not url:
                 continue
 
+            # If nzo entry deleted, give up
+            try:
+                deleted = future_nzo.deleted
+            except:
+                deleted = True
+            if deleted:
+                logging.debug('[%s] Dropping URL %s, job entry missing', __NAME__, url)
+                continue
+
             try:
                 logging.info('[%s] Grabbing URL %s', __NAME__, url)
                 opener = urllib.FancyURLopener({})
@@ -351,8 +360,8 @@ class URLGrabber(Thread):
                     sabnzbd.remove_nzo(future_nzo.nzo_id, False)
 
             except:
-                logging.error("[%s] Error adding url %s", __NAME__, url)
-                sabnzbd.remove_nzo(future_nzo.nzo_id, False)
+                logging.error("[%s] Error adding url %s, will try again", __NAME__, url)
+                self.add(url, future_nzo)
 
             # Don't pound the website!
             time.sleep(1.0)
