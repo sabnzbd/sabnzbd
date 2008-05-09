@@ -282,15 +282,13 @@ def perm_script(wdir, umask):
     from os.path import join
 
     try:
-        umask = int(umask, 8)
+        # Make sure that user R is on
+        umask = int(umask, 8) | int('0400', 8)
     except:
         return
 
     # Remove X bits for files
     umask_file = umask & int('7666', 8)
-
-    # Make sure that user R is on
-    umask_file = umask | int('0400', 8)
 
     # Parse the dir/file tree and set permissions
     for root, dirs, files in os.walk(wdir):
