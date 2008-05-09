@@ -284,10 +284,14 @@ class MainPage(ProtectedClass):
     def addID(self, id = None, pp=None, script=None, cat=None, redirect = None):
         if pp and pp=="-1": pp = None
         if script and script.lower()=='default': script = None
-
+        RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
+        newzbin_url = RE_NEWZBIN_URL.search(id.lower())
+        
         if id: id = id.strip()
         if id and (id.isdigit() or len(id)==5):
             sabnzbd.add_msgid(id, pp, script, cat)
+        elif newzbin_url:
+            sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat)
         elif id:
             sabnzbd.add_url(id, pp, script, cat)
         if not redirect:
