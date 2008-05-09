@@ -15,7 +15,7 @@
 	<link rel="shortcut icon" href="static/images/favicon.ico" />
 
 	<script type="text/javascript" src="static/MochiKit/MochiKit.js"></script>
-	<script type="text/javascript" src="static/PlotKit/Plotkit.js"></script>
+	<script type="text/javascript" src="static/PlotKit/PlotKit.js"></script>
 	<!--[if IE]><script type="text/javascript" src="static/excanvas/excanvas.js"></script><![endif]-->
 
 <!--#set $mbdone = (float($mb) - float($mbleft))#-->
@@ -175,6 +175,7 @@ MochiKit.DOM.addLoadEvent(onpageload);
 
 function onpageload() {
 loadtitle();
+initDynamicTable();
 loadingJSON();
 checkCookie();
 
@@ -545,7 +546,7 @@ function loadingJSON(){
    var renderer = null;
    var options = null;
 
-   function initDynamicTable(data) {
+   function initDynamicTable() {
        //dataTable = data;
        <!--#if $color_scheme  == 'black.css'#-->
        options = PlotKit.Base.officeBlack();
