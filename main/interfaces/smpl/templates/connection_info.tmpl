@@ -4,6 +4,12 @@
 <a class="config" onClick="testemail();">Test E-Mail</a> |
 <a class="config" href="connections/showlog">Download Log File</a> |
 <a class="config" href="connections/showweb">Download Web Log File</a>
+Logging:
+<select onChange="javascript:lr('connections/change_loglevel','loglevel='+this.options[this.selectedIndex].value)">
+    <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
+    <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
+    <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
+</select>
 <!--#if $servers#-->
     <ul>
     <!--#for $server in $servers#-->
