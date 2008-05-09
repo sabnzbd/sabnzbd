@@ -1754,7 +1754,7 @@ class ConfigCats(ProtectedClass):
                 slot['script'] = sabnzbd.CFG['categories'][cat]['script']
             except:
                 slot['script'] = 'Default'
-            if slot['script'] == '': slot['script'] = 'Default'
+            if slot['script'] == '': slot['script'] = 'None'
             try:
                 slot['dir'] = sabnzbd.CFG['categories'][cat]['dir']
             except:
@@ -1798,8 +1798,7 @@ class ConfigCats(ProtectedClass):
                     sabnzbd.CFG['categories'][name]['pp'] = str(pp)
                 except:
                     pass
-            if script != None:
-                if not script or script=='Default': script = ''
+            if script != None and script != 'Default':
                 try:
                     sabnzbd.CFG['categories'][name]['script'] = script
                 except:
