@@ -835,13 +835,17 @@ def purge_articles(articles):
 ## Misc Wrappers                                                              ##
 ################################################################################
 def add_msgid(msgid, pp=None, script=None, cat=None):
-    logging.info('[%s] Fetching msgid %s from v3.newzbin.com',
-                 __NAME__, msgid)
-    msg = "fetching msgid %s from v3.newzbin.com" % msgid
-
-    future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat, url=msgid)
-
-    MSGIDGRABBER.grab(msgid, future_nzo)
+    if MSGIDGRABBER:
+        logging.info('[%s] Fetching msgid %s from v3.newzbin.com',
+                     __NAME__, msgid)
+        msg = "fetching msgid %s from v3.newzbin.com" % msgid
+    
+        future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat, url=msgid)
+    
+        MSGIDGRABBER.grab(msgid, future_nzo)
+    else:
+        logging.error('[%s] Error Fetching msgid %s from v3.newzbin.com - Please make sure your Username and Password are set',
+                             __NAME__, msgid)    
 
 
 def add_url(url, pp=None, script=None, cat=None):
