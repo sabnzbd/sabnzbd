@@ -156,8 +156,9 @@ function checkrefresh()
 
 		refreshr = element.options[element.selectedIndex].value;
 		//alert(refreshr);
-        if (value){
-		setCookie('smplrefresh',value,360);
+        if (refreshr)
+        {
+            setCookie('smplrefresh',refreshr,360);
         }
 	}
 }
@@ -292,7 +293,7 @@ function loadtitle() {
         else url = gUrl
         if (dual) gDual = dual
         else dual = gDual
-        timer="lr(\'"+url+"\', '', 1, "+dual+", 'Right')"
+        timer="lr(\'"+url+"\', '', 1, "+dual+", 'Right')";
         timerId2 = setTimeout(timer, RefreshTime*1000);
  
     }
@@ -333,13 +334,16 @@ function loadtitle() {
               document.getElementById('Right_bottom').innerHTML = "";
               clearTimeout ( timerId3 );
           }
-		  if (refresh>0 && RefreshTime>0) startTimer(url, dual);
+          
+		  if (refresh>0 && RefreshTime>0) {
+          startTimer(url, dual);
+          }
 	    });
 		res.addErrback(handleServerError);
 	}
 	function lrb(url, refresh)
 	{
-    killTimer()
+    //killTimer()
     //similar to lr() but loads the response in the right_bottom container
 		if (timerId3) clearTimeout ( timerId3 );
 		var res = doSimpleXMLHttpRequest(url+'?dummy='+Math.random());
