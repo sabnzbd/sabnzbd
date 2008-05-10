@@ -53,10 +53,10 @@ Unix/Linux/OSX
     Python-2.4.4            http://www.python.org
     cElementTree-1.0.5      http://effbot.org/downloads/
 OR
-    Python-2.5.1            http://www.python.org
+    Python-2.5.2            http://www.python.org
 
 Windows
-    Python-2.5.1            http://www.activestate.com
+    Python-2.5.2            http://www.activestate.com
 
 Essential modules
     cheetah-2.0.1           http://www.cheetahtemplate.org/
@@ -65,10 +65,10 @@ Essential modules
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
 
 Optional modules
-    unrar >= 3.6.6          http://www.rarlab.com/rar_add.htm
-    unzip >= 5.5.2          http://www.info-zip.org/
+    unrar >= 3.70           http://www.rarlab.com/rar_add.htm
+    unzip >= 5.52           http://www.info-zip.org/
     feedparser >= 4.1       http://feedparser.org/
-    pyopenssl => 0.6        http://sourceforge.net/projects/pyopenssl/
+    pyopenssl => 0.7        http://sourceforge.net/projects/pyopenssl/
 
 Unix/Linux/OSX (source)
     openssl => v0.9.8g      http://www.openssl.org/
@@ -77,10 +77,10 @@ Windows (binaries)
                             (You only need libeay32.dll and ssleay32.dll)
 
 Embedded modules (no need to install)
-    CherryPy-2.2.1          http://www.cherrypy.org
+    CherryPy-2.3.0          http://www.cherrypy.org
 
 Embedded modules (no need to install)
-    CherryPy-2.2.1          http://www.cherrypy.org
+    CherryPy-2.3.0          http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
