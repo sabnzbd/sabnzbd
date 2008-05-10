@@ -4,9 +4,23 @@
 *** This is SABnzbd+ 0.4.0Beta5   ***
 *************************************
 
-===>> THIS IS Beta SOFTWARE, DO NOT OVERWRITE OLDER RELEASES  <<===
+============>> THIS IS Beta SOFTWARE <<========================
 
-===>> CANNOT RE-USE OLDER QUEUES <<===
+Only use it when your are prepared to accept bugs and are ready
+for some troubleshooting.
+
+This Beta5 release will not re-use an existing download queue
+from an earlier release.
+It will automatically create a new empty queue and history.
+However, the old queue remains in the cache directory and can
+still be accessed by the previous release.
+Do not run two releases of SABnzbd at the same time on the
+same Cache directory!
+
+!! Using the --clean option will remove both queues !!
+
+==============================================================
+
 
 Read carefully. Major changes from previous releases.
 New users, also read the file INSTALL.txt
