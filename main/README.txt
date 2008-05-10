@@ -1,10 +1,12 @@
-                                SABnzbd+ v0.4.0Beta4
+                                SABnzbd+ v0.4.0Beta5
 
 *************************************
-*** This is SABnzbd+ 0.4.0Beta4   ***
+*** This is SABnzbd+ 0.4.0Beta5   ***
 *************************************
 
 ===>> THIS IS Beta SOFTWARE, DO NOT OVERWRITE OLDER RELEASES  <<===
+
+===>> CANNOT RE-USE OLDER QUEUES <<===
 
 Read carefully. Major changes from previous releases.
 New users, also read the file INSTALL.txt
