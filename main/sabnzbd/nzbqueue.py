@@ -89,7 +89,7 @@ class NzbQueue(TryList):
         if data:
             try:
                 queue_vers, nzo_ids, self.__downloaded_items = data
-                if not queue_vers == sabnzbd.__queueversion__:
+                if not queue_vers == QUEUE_VERSION:
                     logging.error("[%s] Incompatible queuefile found, cannot proceed", __NAME__)
                     self.__downloaded_items = []
                     nzo_ids = []
@@ -120,7 +120,7 @@ class NzbQueue(TryList):
             nzo_ids.append(nzo.nzo_id)
             sabnzbd.save_data(nzo, nzo.nzo_id)
 
-        sabnzbd.save_data((sabnzbd.__queueversion__, nzo_ids,
+        sabnzbd.save_data((QUEUE_VERSION, nzo_ids,
                            self.__downloaded_items), QUEUE_FILE_NAME)
 
     @synchronized(NZBQUEUE_LOCK)

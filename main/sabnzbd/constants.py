@@ -16,6 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+CONFIG_VERSION = 18
+QUEUE_VERSION = 7
+
 PNFO_REPAIR_FIELD = 0
 PNFO_UNPACK_FIELD = 1
 PNFO_DELETE_FIELD = 2
@@ -48,8 +51,8 @@ KIBI = float(2 ** 10)
 
 STAGENAMES = {0:"Download", 1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin", 5:"UserScript"}
 
-BYTES_FILE_NAME  = 'bytes.sab'
-QUEUE_FILE_NAME  = 'queue.sab'
+BYTES_FILE_NAME  = 'bytes%s.sab' % QUEUE_VERSION
+QUEUE_FILE_NAME  = 'queue%s.sab' % QUEUE_VERSION
 RSS_FILE_NAME    = 'rss_data.sab'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'
 

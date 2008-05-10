@@ -413,7 +413,7 @@ def main():
     	    if not os.path.exists(sabnzbd.DIR_LCLDATA):
     	        os.makedirs(sabnzbd.DIR_LCLDATA)
     	    fp = open(f, "w")
-    	    fp.write("__version__=%s\n[misc]\n[logging]\n" % sabnzbd.__configversion__)
+    	    fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
     	    fp.close()
     	except:
     	    Panic('Cannot create file "%s".' % f, 'Check specified INI file location.')
@@ -424,7 +424,7 @@ def main():
         try:
             my_version = cfg['__version__']
         except:
-            my_version = sabnzbd.__configversion__
+            my_version = CONFIG_VERSION
             cfg['__version__'] = my_version
 
     except ConfigObjError, strerror:
