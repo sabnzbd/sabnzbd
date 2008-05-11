@@ -346,6 +346,12 @@ def HandleEmptyQueue():
 
 def CleanUpList(wdir):
     """ Remove all files matching the cleanup list """
+    def CheckItem(item, lst):
+        for k in lst:
+            if k.strip() == item:
+                return True
+        return False
+
     if sabnzbd.CLEANUP_LIST:
         try:
             files = os.listdir(wdir)
@@ -354,7 +360,7 @@ def CleanUpList(wdir):
         for _file in files:
             root, ext = os.path.splitext(_file)
      
-            if ext in sabnzbd.CLEANUP_LIST:
+            if CheckItem(ext, sabnzbd.CLEANUP_LIST):
                 path = os.path.join(wdir, _file)
                 try:
                     logging.info("[%s] Removing unwanted file %s", __NAME__, path)
