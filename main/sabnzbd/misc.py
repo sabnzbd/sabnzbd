@@ -119,7 +119,7 @@ def Cat2OptsDef(fname, cat=None):
 
 def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
     """ Analyse ZIP file and create job(s).
-        Accepts ZIP files with ONLY nzb files in it.
+        Accepts ZIP files with ONLY nzb/nfo/folder files in it.
     """
     _cat, name, _pp, _script = Cat2OptsDef(filename, catdir)
     if cat == None: cat = _cat
@@ -129,21 +129,23 @@ def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
     zf = zipfile.ZipFile(path)
     ok = True
     for name in zf.namelist():
-        if not name.lower().endswith('.nzb'):
+        name = name.lower()
+        if not (name.endswith('.nzb') or name.endswith('.nfo') or name.endswith('/')):
             ok = False
             break
     if ok:
         for name in zf.namelist():
-            data = zf.read(name)
-            name = os.path.basename(name)
-            name = RE_SANITIZE.sub('_', name)
-            if data:
-                try:
-                    nzo = NzbObject(name, pp, script, data, cat=cat)
-                except:
-                    nzo = None
-                if nzo:
-                    sabnzbd.add_nzo(nzo)
+            if name.lower().endswith('.nzb'):
+                data = zf.read(name)
+                name = os.path.basename(name)
+                name = RE_SANITIZE.sub('_', name)
+                if data:
+                    try:
+                        nzo = NzbObject(name, pp, script, data, cat=cat)
+                    except:
+                        nzo = None
+                    if nzo:
+                        sabnzbd.add_nzo(nzo)
         zf.close()
         try:
             os.remove(path)
