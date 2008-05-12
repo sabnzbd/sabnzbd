@@ -631,20 +631,49 @@ def launch_a_browser(url):
 # Check latest version
 #
 # Perform an online version check
-# Formula
-# - the online version is always: <major>.<minor>.<bugfix>
-# - the local version is <major>.<minor>.<bugfix>[rc|beta]<cand>
+# Syntax of online version file:
+#     <current-final-release>
+#     <url-of-current-final-release>
+#     <latest-beta-or-rc>
+# The latter line is only present when a beta/rc is available.
+# Formula for the version numbers (line 1 and 3).
+# - <major>.<minor>.<bugfix>[rc|beta]<cand>
 #
-# The <cand> value for the online version is assumned to be 99.
-# The <cand> value for the local version is 1..98
-# This is done to signal beta|rc users of availability of the final
+# The <cand> value for a final version is assumned to be 99.
+# The <cand> value for the beta/rc version is 1..49, with RC getting
+# a boost of 50.
+# This is done to signal beta/rc users of availability of the final
 # version (which is implicitly 99).
-# People are NOT informed to upgrade to a higher beta|rc version, since these
-# are not in the online version indicator.
+# People will only be informed to upgrade to a higher beta/rc version, if
+# they are already using a beta/rc.
+# RC's are valued higher than Beta's.
 #
 ################################################################################
 
+def ConvertVersion(text):
+    """ Convert version string to numerical value and a testversion indicator """
+    version = 0
+    test = False
+    m = RE_VERSION.search(text)
+    if m:
+        version = int(m.group(1))*1000000 + int(m.group(2))*10000 + int(m.group(3))*100
+        try:
+            if m.group(4).lower() == 'rc':
+                version = version + 50
+            version = version + int(m.group(5))
+            test = True
+        except:
+            version = version + 99
+    return version, test
+    
+
 def check_latest_version():
+    """ Do an online check for the latest version """
+    current, testver = ConvertVersion(sabnzbd.__version__)
+    if not current:
+        logging.debug("[%s] Unsupported release number (%s), will not check", __NAME__, sabnzbd.__version__)
+        return
+
     try:
         fn = urllib.urlretrieve('http://sabnzbdplus.sourceforge.net/version/latest')[0]
         f = open(fn, 'r')
@@ -653,22 +682,30 @@ def check_latest_version():
     except:
         return
 
-    latest_label = data.split()[0]
-    url = data.split()[1]
-    m = RE_VERSION.search(latest_label)
-    latest = int(m.group(1))*1000000 + int(m.group(2))*10000 + int(m.group(3))*100 + 99
-
-    m = RE_VERSION.search(sabnzbd.__version__)
-    current = int(m.group(1))*10000 + int(m.group(2))*10000 + int(m.group(3))*100
     try:
-        current = current + int(m.group(5))
+        latest_label = data.split()[0]
     except:
-        current = current + 99
+        latest_label = ''
+    try:
+        url = data.split()[1]
+    except:
+        url = ''
+    try:
+        latest_testlabel = data.split()[2]
+    except:
+        latest_testlabel = ''
+
+    latest, dummy = ConvertVersion(latest_label) 
+    latest_test, dummy = ConvertVersion(latest_testlabel)
 
     logging.debug("Checked for a new release, cur= %s, latest= %s (on %s)", current, latest, url)
 
-    if current < latest:
+    if testver and current < latest:
         sabnzbd.NEW_VERSION = "%s;%s" % (latest_label, url)
+    elif current < latest:
+        sabnzbd.NEW_VERSION = "%s;%s" % (latest_label, url)
+    elif testver and current < latest_test:
+        sabnzbd.NEW_VERSION = "%s;%s" % (latest_testlabel, url)
 
 
 def from_units(val):
