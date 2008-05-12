@@ -212,7 +212,7 @@ def TVSeasonMove(workdir):
     except:
         pass
         
-    return (os.path.join(workdir, '..'))
+    return path1
         
 def TVRenamer(path, files, name):
     renamed = None
