@@ -219,7 +219,7 @@ def TVRenamer(path, files, name):
     #find the master file to rename
     for file in files:
         filepath = os.path.join(path, file)
-        if os.path.exist(filepath):
+        if os.path.exists(filepath):
             size = os.stat(filepath).st_size
             if size > 130000000:
                 if 'sample' not in file:
