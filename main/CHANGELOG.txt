@@ -8,6 +8,7 @@ fixed:   Queue incompatibility between Beta2 and Beta4 was not detected
          not require the user to erase the old queue. The old queue can even
          be used again by the older release.
          This release uses queue7.sab and bytes7.sab.
+fixed:   Many TV Season support issues.
 fixed:   Unix permissions for job folders now also covers parent folders.
 fixed:   Bookmark function sometimes fails to delete completed bookmarks and
          sometimes repeats downloads
