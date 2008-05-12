@@ -219,19 +219,20 @@ def TVRenamer(path, files, name):
     #find the master file to rename
     for file in files:
         filepath = os.path.join(path, file)
-        size = os.stat(filepath).st_size
-        if size > 130000000:
-            if 'sample' not in file:
-                tmp, ext = os.path.splitext(file)
-                newname = "%s%s" % (name,ext)
-                newpath = os.path.join(path, newname)
-                if not os.path.exists(newpath):
-                    try:
-                        os.rename(filepath,newpath)
-                        renamed = tmp
-                        break
-                    except:
-                        logging.error("[%s] Failed to rename: %s to %s", path, newpath)
+        if os.path.exist(filepath):
+            size = os.stat(filepath).st_size
+            if size > 130000000:
+                if 'sample' not in file:
+                    tmp, ext = os.path.splitext(file)
+                    newname = "%s%s" % (name,ext)
+                    newpath = os.path.join(path, newname)
+                    if not os.path.exists(newpath):
+                        try:
+                            os.rename(filepath,newpath)
+                            renamed = tmp
+                            break
+                        except:
+                            logging.error("[%s] Failed to rename: %s to %s", path, newpath)
                         
     #rename any files that were named the same as the master file
     if renamed: 
