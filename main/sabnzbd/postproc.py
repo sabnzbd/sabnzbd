@@ -273,8 +273,10 @@ def MakeLogFile(name, content):
     return name
 
 def Quote(msg):
-    """ Proper HTML quoting, including spacs """
-    return escape(msg).replace(' ','%20')
+    """ Proper URL quoting, including spaces """
+    for ch in '%=&<> ':
+        msg = msg.replace(ch, hex(ord(ch)).replace('0x','%'))
+    return msg
 
 
 def perm_script(wdir, umask):
