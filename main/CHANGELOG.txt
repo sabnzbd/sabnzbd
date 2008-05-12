@@ -17,6 +17,7 @@ fixed:   Prevent storing of full path in the GZ backup of the NZB
 fixed:   Improvements and bug fixes in Smpl and Plush skins.
 fixed:   Category "default" script was not handled properly.
          Please verify your category settings!
+changed: Allow nzb-zips to contain nfos.
 changed: Show failure of job in email subject line
 added:   Sort-by-size button on the queue page
 -------------------------------------------------------------------------------
