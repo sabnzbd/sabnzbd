@@ -139,6 +139,7 @@ def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
                 data = zf.read(name)
                 name = os.path.basename(name)
                 name = RE_SANITIZE.sub('_', name)
+                name = name.replace('[nzbmatrix.com]','')
                 if data:
                     try:
                         nzo = NzbObject(name, pp, script, data, cat=cat)
