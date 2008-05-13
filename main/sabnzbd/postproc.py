@@ -130,7 +130,10 @@ class PostProcessor(Thread):
             if len(sabnzbd.CFG['categories']):
                 complete_dir = Cat2Dir(cat, self.complete_dir)
             elif sabnzbd.CREATE_CAT_FOLDERS:
-                complete_dir = create_dirs(os.path.join(self.complete_dir, nzo.get_cat()))
+                if nzo.get_cat():
+                    complete_dir = create_dirs(os.path.join(self.complete_dir, nzo.get_cat()))
+                else:
+                    complete_dir = self.complete_dir
             elif sabnzbd.CREATE_GROUP_FOLDERS:
                 complete_dir = addPrefixes(self.complete_dir, nzo)
                 complete_dir = create_dirs(complete_dir)
