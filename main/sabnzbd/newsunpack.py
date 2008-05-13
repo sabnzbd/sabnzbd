@@ -361,7 +361,7 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
                   extraction_path)
 
     ############################################################################
-    command = ['%s' % RAR_COMMAND, 'vb', '-v', '%s' % rarfile]
+    command = ['%s' % RAR_COMMAND, 'vb', '-v', '-p-', '%s' % rarfile]
 
     stup, need_shell, command, creationflags = build_command(command)
 
@@ -372,6 +372,11 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
     output = p.stdout.read()
 
     p.wait()
+
+    if output.find('Encrypted file:  CRC failed') >= 0:
+        nzo.set_unpackstr('=> Archive probably encrypted', actionname, 2)
+        logging.info('[%s] Archive %s probably encrypted, skipping', __NAME__, rarfile)
+        return ((), ())
 
     # List of all files we expect to extract from this archive
     expected_files = []
