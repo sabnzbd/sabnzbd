@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The ShyPike <shypike@users.sourceforge.net>
+# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
