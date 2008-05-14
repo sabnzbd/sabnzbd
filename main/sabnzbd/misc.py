@@ -874,6 +874,27 @@ def get_unique_path(dirpath, n=0, create_dir=True):
         return path
     else:
         return get_unique_path(dirpath, n=n+1, create_dir=create_dir)
+    
+@synchronized(DIR_LOCK)
+def get_unique_filename(path, new_path, i=1):
+    #path = existing path of the file, new_path = destination
+    if os.path.exists(new_path):
+        p, fn = os.path.split(path)
+        name, ext = os.path.splitext(fn)
+        uniq_name = "%s.%s%s" % (name,i,ext)
+        uniq_path = new_path.replace(fn,uniq_name)
+        if os.path.exists(uniq_path):
+            path, uniq_path = get_unique_filename(path, new_path, i=i+1)
+        else:
+            try:
+                os.rename(path, uniq_path)
+                path = path.replace(fn, uniq_name)
+            except:
+                return path, new_path
+        return path, uniq_path
+                    
+    else:
+        return path, new_path
 
 
 @synchronized(DIR_LOCK)

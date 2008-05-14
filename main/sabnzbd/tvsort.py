@@ -29,7 +29,7 @@ import shutil
 import re
 
 import sabnzbd
-from sabnzbd.misc import move_to_path, cleanup_empty_directories
+from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename
 from sabnzbd.constants import tv_episode_match
 
 
@@ -204,6 +204,7 @@ def TVSeasonMove(workdir):
         for _file in files:
             path = os.path.join(root, _file)
             new_path = path.replace(workdir, path1)
+            path, new_path = get_unique_filename(path,new_path)
             move_to_path(path, new_path, False)
 
     cleanup_empty_directories(workdir)
