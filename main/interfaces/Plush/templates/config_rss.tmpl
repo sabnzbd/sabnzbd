@@ -61,7 +61,7 @@
     <div class="EntryBlock">
     <form action="upd_rss_feed" method="post">
         <fieldset class="EntryFieldSet">
-            <legend>Feed Definition &mdash; $feed</legend>
+            <legend style="color:white; background-color:<!--#if $rss[$feed]['enable'] then 'green' else 'blue'#-->">&nbsp;Feed Definition &mdash;&nbsp;$feed&nbsp;</legend>
 
             <input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 
