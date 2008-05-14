@@ -49,7 +49,7 @@
     <div class="EntryBlock">
     <form action="upd_rss_feed" method="post">
         <fieldset class="EntryFieldSet">
-            <legend>Feed $feed</legend>
+            <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->>Feed $feed</legend>
 
             <input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 

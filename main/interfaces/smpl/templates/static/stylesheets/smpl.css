@@ -302,3 +302,5 @@ overflow:auto;}
 .result, .heading3  {width:125px;background-color:#f4f4f4;}
 #Keytable {text-align:center; }
 .heading1, .heading2, .heading3{font-weight:bold; background-color:black; color:white;}
+.feedEnabled{color:green;}
+.feedDisabled{color:red;}

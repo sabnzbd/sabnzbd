@@ -133,3 +133,6 @@ color:white;
 a.remove {
 color:black;
 }
+
+.feedEnabled{color:green;}
+.feedDisabled{color:red;}

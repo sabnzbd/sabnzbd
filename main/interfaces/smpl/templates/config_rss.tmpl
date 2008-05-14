@@ -18,7 +18,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 <!--#for $feed in $rss#-->
 <br class="clear" />
 <fieldset class="EntryFieldSet">
-    <legend>Feed $feed</legend>
+    <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->>Feed $feed</legend>
     <hr />
     <div class="EntryBlock" id="update_$feed">
 
