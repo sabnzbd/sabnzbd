@@ -217,12 +217,15 @@ $(document).ready(function() {
 				}
 			});
 		}
-		else*/ if ($(event.target).is('.queue_delete')) {
+		else*/ 
+		if ($(event.target).is('.queue_delete')) {
+			delid = $(event.target).parent().parent().attr('id');
 			$.ajax({
 				type: "GET",
-				url: 'queue/delete?dummy='+Math.random()+'&uid='+$(event.target).parent().parent().attr('id'),
+				url: 'queue/delete?dummy='+Math.random()+'&uid='+delid,
 				success: function(result){
-   					return LoadTheQueue(result);
+					$('#'+delid).fadeOut("slow", function(){$('#'+delid).remove();});
+					return false;
 				}
 			});
 		}
@@ -254,11 +257,13 @@ $(document).ready(function() {
 	// Set up History Menu actions
 	$('#history').click(function(event) {
 		if ($(event.target).is('.queue_delete')) {	// history delete
+			delid = $(event.target).parent().parent().attr('id');
 			$.ajax({
 				type: "GET",
-				url: 'history/delete?dummy='+Math.random()+'&job='+$(event.target).parent().parent().attr('id'),
+				url: 'history/delete?dummy='+Math.random()+'&job='+delid,
 				success: function(result){
-					return $(event.target).parent().parent().fadeOut("slow");
+					$('#'+delid).fadeOut("slow", function(){$('#'+delid).remove();});
+					return false;
 				}
 			});
 		}
