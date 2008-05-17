@@ -77,9 +77,7 @@
 
 			<div id="queue-buttons">
 				<ul>
-					<li class="q_menu_sort" title="Sort by: (keep clicking) (1) Alphabetically (2) Average File Age (3) Size"></li>
 					<!-- <li class="q_menu_verbose"></li> -->
-					<!-- <li class="q_menu_purge" title="Purge Queue Contents (double-click)"></li> -->
 					<li class="q_menu_pause<!--#if $paused#--> q_menu_paused<!--#end if#-->" title="Pause/Resume the Queue" id="pause_resume"></li>
 				</ul>
 			</div>
@@ -90,7 +88,7 @@
 		<li><a class="queue_logo"></a>
 			<ul>
 				<li><a id="add_nzb_menu_toggle" style="cursor:pointer">Add NZB</a></li>
-				<li><a>Functions</a>
+				<li><a><b style="float:right">&raquo;</b>&nbsp;&nbsp;&nbsp;Functions</a>
 					<ul>
 						<li><a><select id="refreshRate-option" style="font-size:100%;margin-left:-6px;">
 							<option value="1">1 sec</option>
@@ -105,33 +103,40 @@
 							<option value="1800">30 min</option>
 							<option value="0">No</option>
 						</select>&nbsp;Refresh</a></li>
-					<li>
-						<a>
-							On Queue Finish..<br/>
-							<select style="margin-left:8px;width:140px;" id="onQueueFinish-option">
-								<option value=""></option>
-								    <optgroup label="Actions">
-								        <!--#if $nt#-->
-								        <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
-								        <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
-								        <!--#end if#-->
-								        <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
-								    </optgroup>
-								<!--#if $script_list#-->
-								    <optgroup label="Scripts">
-								    <!--#for $sc in $script_list#-->
-								        <!--#if $sc != 'None'#-->
-								        <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
-								        <!--#end if#-->
-								    <!--#end for#-->
-								    </optgroup>
-								<!--#end if#-->
-							</select>
-							</a>
-					</li>
-					<li><a id="queue_purge" style="cursor:pointer">Purge the Queue</a></li>
-				</ul>
-				<li><a href="connections">Configuration</a>
+						<li><a><b style="float:right">&raquo;</b>&nbsp;&nbsp;&nbsp;Sort Queue</a>
+							<ul>
+								<li><a id="sort_by_avg_age" style="cursor:pointer">by Age</a></li>
+								<li><a id="sort_by_name" style="cursor:pointer">by Name</a></li>
+								<li><a id="sort_by_size" style="cursor:pointer">by Size</a></li>
+							</ul>
+						</li>
+						<li>
+							<a>On Queue Finish..<br/>
+								<select style="margin-left:8px;width:140px;" id="onQueueFinish-option">
+									<option value=""></option>
+									    <optgroup label="Actions">
+									        <!--#if $nt#-->
+									        <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
+									        <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
+									        <!--#end if#-->
+									        <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
+									    </optgroup>
+									<!--#if $script_list#-->
+									    <optgroup label="Scripts">
+									    <!--#for $sc in $script_list#-->
+									        <!--#if $sc != 'None'#-->
+									        <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
+									        <!--#end if#-->
+									    <!--#end for#-->
+									    </optgroup>
+									<!--#end if#-->
+								</select>
+								</a>
+						</li>
+						<li><a id="queue_purge" style="cursor:pointer">Purge the Queue</a></li>
+					</ul>
+				</li>
+				<li><a href="connections"><b style="float:right">&raquo;</b>&nbsp;&nbsp;&nbsp;Configuration</a>
 					<ul>
 						<li><a href="connections">Connections</a></li>
 						<li><a href="config/general">General</a></li>
@@ -145,7 +150,7 @@
 						<li><a href="config/newzbin">Newzbin</a></li>
 					</ul>
 				</li>
-				<li><a>Help</a>
+				<li><a><b style="float:right">&raquo;</b>&nbsp;&nbsp;&nbsp;Help</a>
 					<ul>
 						<li><a href="$helpuri" target="_blank">Wiki</a></li>
 						<li><a href="http://forums.sabnzbd.org/" target="_blank">Forums</a></li>

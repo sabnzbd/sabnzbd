@@ -126,23 +126,29 @@ $(document).ready(function() {
 		$('.h_menu_verbose').toggleClass("show");
 	});
 	
-	// sort queue
-	$('.q_menu_sort').click(function(event) {
-		switch (lastQueueSort) {
-			case 'sort_by_name':
-				lastQueueSort='sort_by_avg_age';
-				break;
-			case 'sort_by_avg_age':
-				lastQueueSort='sort_by_size';
-				break;
-			default:
-			case 'sort_by_size':
-				lastQueueSort='sort_by_name';
-				break;
-		}
+	// sort queue (3 options from main menu)
+	$('#sort_by_avg_age').click(function(event) {
 		$.ajax({
 			type: "GET",
-			url: "queue/"+lastQueueSort+"?dummy="+Math.random(),
+			url: "queue/sort_by_avg_age?dummy="+Math.random(),
+			success: function(result){
+   				return LoadTheQueue(result);
+			}
+		});
+	});
+	$('#sort_by_name').click(function(event) {
+		$.ajax({
+			type: "GET",
+			url: "queue/sort_by_name?dummy="+Math.random(),
+			success: function(result){
+   				return LoadTheQueue(result);
+			}
+		});
+	});
+	$('#sort_by_size').click(function(event) {
+		$.ajax({
+			type: "GET",
+			url: "queue/sort_by_size?dummy="+Math.random(),
 			success: function(result){
    				return LoadTheQueue(result);
 			}
