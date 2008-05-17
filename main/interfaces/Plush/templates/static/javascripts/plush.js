@@ -1,7 +1,6 @@
 
 var refreshRate = 8; // default refresh rate
 var skipRefresh = false;
-var lastQueueSort = 'sort_by_size';
 
 // once the DOM is ready, run this
 $(document).ready(function() {
@@ -88,6 +87,10 @@ $(document).ready(function() {
 	*/
 
 
+	// restore Add NZB from cookie
+	if (ReadCookie('Plush2AddNZB') == 'block')
+		$('#add_nzb_menu').css('display','block');
+
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
 		refreshRate = ReadCookie('Plush2Refresh');
@@ -171,6 +174,7 @@ $(document).ready(function() {
 	
 	$('#add_nzb_menu_toggle').bind('click', function() { 
 		$('#add_nzb_menu').toggle();
+		SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display'));
 	});
 	
 	

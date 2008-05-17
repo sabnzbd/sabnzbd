@@ -27,21 +27,23 @@
 <div id="new_release_notification">&nbsp;<a href="$new_rel_url" target="_blank">New release $new_release available!</a>&nbsp;</div>
 <!--#end if#-->
 
-<div align="center" id="add_nzb_menu" style="display:none">
-	<span style="background-color:red">
+<div id="add_nzb_menu" style="display:none">
+	
+	<span class="add_nzb_box_fetch">
 		&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#-->
 		<input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(this.value=='enter URL/ID')this.value=''" onblur="if(!this.value)this.value='enter URL/ID'"/>
 		<input type="submit" id="addID" value="&raquo; Fetch NZB" style="cursor:pointer"/>
 	</span>
 	
 	<form action="addFile" style="display:inline" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})">
-	<span style="background-color:yellow">
+
+	<span class="add_nzb_box_upload">
 		&rarr;&nbsp;File Upload
 		<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="4" />
 		<input type="submit" id="addNZBbyFile" value="&raquo; Upload NZB" style="cursor:pointer"/>
 	</span>
 
-	<span style="background-color:green">
+	<span class="add_nzb_box_processing">
 		&rarr;&nbsp;Processing
 	    <!--#if $cat_list#-->
 			<select id="addID_cat" name="cat" title="Category">
@@ -87,8 +89,8 @@
 			<ul class="nav">
 		<li><a class="queue_logo"></a>
 			<ul>
-				<li><a id="add_nzb_menu_toggle" style="cursor:pointer">Add NZB</a></li>
-				<li><a><b style="float:right">&raquo;</b>&nbsp;&nbsp;&nbsp;Functions</a>
+				<li><a id="add_nzb_menu_toggle" style="cursor:pointer"><b style="float:right">&circ;&nbsp;</b>&nbsp;&nbsp;&nbsp;Add NZB</a></li>
+				<li><a><b style="float:right">&raquo;&nbsp;</b>&nbsp;&nbsp;&nbsp;Functions</a>
 					<ul>
 						<li><a><select id="refreshRate-option" style="font-size:100%;margin-left:-6px;">
 							<option value="1">1 sec</option>
@@ -103,7 +105,7 @@
 							<option value="1800">30 min</option>
 							<option value="0">No</option>
 						</select>&nbsp;Refresh</a></li>
-						<li><a><b style="float:right">&raquo;</b>&nbsp;&nbsp;&nbsp;Sort Queue</a>
+						<li><a><b style="float:right">&raquo;&nbsp;</b>&nbsp;&nbsp;&nbsp;Sort Queue</a>
 							<ul>
 								<li><a id="sort_by_avg_age" style="cursor:pointer">by Age</a></li>
 								<li><a id="sort_by_name" style="cursor:pointer">by Name</a></li>
@@ -136,7 +138,7 @@
 						<li><a id="queue_purge" style="cursor:pointer">Purge the Queue</a></li>
 					</ul>
 				</li>
-				<li><a href="connections"><b style="float:right">&raquo;</b>&nbsp;&nbsp;&nbsp;Configuration</a>
+				<li><a href="connections"><b style="float:right">&raquo;&nbsp;</b>&nbsp;&nbsp;&nbsp;Configuration</a>
 					<ul>
 						<li><a href="connections">Connections</a></li>
 						<li><a href="config/general">General</a></li>
@@ -150,7 +152,7 @@
 						<li><a href="config/newzbin">Newzbin</a></li>
 					</ul>
 				</li>
-				<li><a><b style="float:right">&raquo;</b>&nbsp;&nbsp;&nbsp;Help</a>
+				<li><a><b style="float:right">&raquo;&nbsp;</b>&nbsp;&nbsp;&nbsp;Help</a>
 					<ul>
 						<li><a href="$helpuri" target="_blank">Wiki</a></li>
 						<li><a href="http://forums.sabnzbd.org/" target="_blank">Forums</a></li>

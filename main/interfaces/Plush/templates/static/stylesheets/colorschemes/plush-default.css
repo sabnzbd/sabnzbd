@@ -23,6 +23,29 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	border-bottom: 1px dashed #FFF;
 	padding:4px;
 }
+
+#add_nzb_menu {
+	text-align: center;
+}
+
+#add_nzb_menu span {
+	padding:2px;
+}
+.add_nzb_box_fetch {
+	background-color:pink;
+	border:1px solid red;
+}
+
+.add_nzb_box_upload {
+	background-color:lightyellow;
+	border:1px solid orange;
+}
+
+.add_nzb_box_processing {
+	background-color:lightgreen;
+	border:1px solid green;
+}
+
 .box_fatbottom {
 	background: url(../../images/plush_default/qh_bottom.png) 0 0 repeat-x;
 	height:37px;
