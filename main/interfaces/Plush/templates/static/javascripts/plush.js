@@ -35,6 +35,7 @@ $(document).ready(function() {
 		// skip queue refresh on mouseover
 		$('#queueTable').bind("mouseover", function(){ skipRefresh=true; });
 		$('#queueTable').bind("mouseout", function(){ skipRefresh=false; });
+		$('.box_fatbottom').bind("mouseover mouseout", function(){ skipRefresh=false; });
     });
 	
 
@@ -225,7 +226,6 @@ $(document).ready(function() {
 				url: 'queue/delete?dummy='+Math.random()+'&uid='+delid,
 				success: function(result){
 					$('#'+delid).fadeOut("slow", function(){$('#'+delid).remove();});
-					return false;
 				}
 			});
 		}
@@ -263,7 +263,6 @@ $(document).ready(function() {
 				url: 'history/delete?dummy='+Math.random()+'&job='+delid,
 				success: function(result){
 					$('#'+delid).fadeOut("slow", function(){$('#'+delid).remove();});
-					return false;
 				}
 			});
 		}
