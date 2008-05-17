@@ -162,6 +162,12 @@ $(document).ready(function() {
 		}
 	});
 	
+	
+	$('#add_nzb_menu_toggle').bind('click', function() { 
+		$('#add_nzb_menu').toggle();
+	});
+	
+	
 	// Set up +NZB
 	$('#addID').bind('click', function() { 
 		$.ajax({

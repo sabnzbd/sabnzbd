@@ -27,9 +27,51 @@
 <div id="new_release_notification">&nbsp;<a href="$new_rel_url" target="_blank">New release $new_release available!</a>&nbsp;</div>
 <!--#end if#-->
 
+<div align="center" id="add_nzb_menu" style="display:none">
+	<span style="background-color:red">
+		&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#-->
+		<input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(this.value=='enter URL/ID')this.value=''" onblur="if(!this.value)this.value='enter URL/ID'"/>
+		<input type="submit" id="addID" value="&raquo; Fetch NZB" style="cursor:pointer"/>
+	</span>
+	
+	<form action="addFile" style="display:inline" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})">
+	<span style="background-color:yellow">
+		&rarr;&nbsp;File Upload
+		<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="4" />
+		<input type="submit" id="addNZBbyFile" value="&raquo; Upload NZB" style="cursor:pointer"/>
+	</span>
+
+	<span style="background-color:green">
+		&rarr;&nbsp;Processing
+	    <!--#if $cat_list#-->
+			<select id="addID_cat" name="cat" title="Category">
+	    <!--#for $ct in $cat_list#-->
+	    	<option value="$ct">$ct</option>
+	    <!--#end for#-->
+	    </select>
+	    <!--#end if#-->
+	    <select id="addID_pp" name="pp" title="Post-Processing Option">
+	    <option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
+	    <option value="0">(Skip)</option>
+	    <option value="1">+Repair</option>
+	    <option value="2">+Unpack</option>
+	    <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
+	    </select>
+	    <!--#if $script_list#-->
+	    	<select id="addID_script" name="script" title="Script">
+	    <!--#for $sc in $script_list#-->
+	    	<option value="$sc">$sc</option>
+	    <!--#end for#-->
+	    </select>
+	    <!--#end if#-->
+	</span>
+
+	</form>
+</div>
+
 	<div id="page-wrap">
 		<div id="hdr-queue">
-                        <div class="logo">
+            <div class="logo">
 				<h1>Queue</h1>
 			</div>
 
@@ -47,44 +89,7 @@
 			<ul class="nav">
 		<li><a class="queue_logo"></a>
 			<ul>
-				<li><a>Add NZB</a>
-					<ul>
-						<li><a>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></a>
-								<a><input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(this.value=='enter URL/ID')this.value=''" onblur="if(!this.value)this.value='enter URL/ID'"/></a>
-								<a>&raquo;&nbsp;<input type="submit" id="addID" value="Add NZB" style="cursor:pointer"/></a>
-						</li>
-
-						<form action="addFile" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})">
-						<li><a>&rarr;&nbsp;File Upload</a>
-								<a><input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="4" /></a>
-								<a>&raquo;&nbsp;<input type="submit" id="addNZBbyFile" value="Add NZB" style="cursor:pointer"/></a>
-						</li>
-						<li><a>&rarr;&nbsp;Processing</a>
-						        <!--#if $cat_list#-->
-        				   		<a><select id="addID_cat" name="cat" title="Category">
-						        <!--#for $ct in $cat_list#-->
-						        	<option value="$ct">$ct</option>
-						        <!--#end for#-->
-						        </select></a>
-						        <!--#end if#-->
-						        <a><select id="addID_pp" name="pp" title="Post-Processing Option">
-						        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
-						        <option value="0">(Skip)</option>
-						        <option value="1">+Repair</option>
-						        <option value="2">+Unpack</option>
-						        <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
-						        </select></a>
-						        <!--#if $script_list#-->
-						        <a><select id="addID_script" name="script" title="Script">
-						        <!--#for $sc in $script_list#-->
-						        	<option value="$sc">$sc</option>
-						        <!--#end for#-->
-						        </select></a>
-						        <!--#end if#-->
-						</li>
-						</form>
-					</ul>
-				</li>
+				<li><a id="add_nzb_menu_toggle" style="cursor:pointer">Add NZB</a></li>
 				<li><a>Functions</a>
 					<ul>
 						<li><a><select id="refreshRate-option" style="font-size:100%;margin-left:-6px;">
