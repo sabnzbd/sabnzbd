@@ -231,12 +231,24 @@ $(document).ready(function() {
 
 	// history verbosity
 	$('.h_menu_verbose').click(function(event) {
-		$('#history').load('history/tog_verbose?dummy='+Math.random());
+		$.ajax({
+			type: "GET",
+			url: 'history/tog_verbose?dummy='+Math.random(),
+			success: function(result){
+	 			return $('#history').html(result);
+			}
+		});
 	});
 
 	// history purge
 	$('.h_menu_purge').dblclick(function(event) {
-		$('#history').load('history/purge?dummy='+Math.random());
+		$.ajax({
+			type: "GET",
+			url: 'history/purge?dummy='+Math.random(),
+			success: function(result){
+	 			return $('#history').html(result);
+			}
+		});
 	});
 	
 	// Set up History Menu actions
@@ -246,7 +258,7 @@ $(document).ready(function() {
 				type: "GET",
 				url: 'history/delete?dummy='+Math.random()+'&job='+$(event.target).parent().parent().attr('id'),
 				success: function(result){
-   					return $('#history').html(result);
+					return $(event.target).parent().parent().fadeOut("slow");
 				}
 			});
 		}
@@ -263,7 +275,7 @@ function MainLoop() {
 	
 	// ajax calls
 	RefreshTheQueue();
-	$('#history').load('history?dummy='+Math.random());
+	RefreshTheHistory();
 
 	// loop
 	if (refreshRate > 0)
@@ -273,11 +285,25 @@ function MainLoop() {
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
 	if (skipRefresh) return false; // set within queue <table>
-	$('#queue').load('queue?dummy='+Math.random() /*, function(){
-		// taken care of by livequery plugin
-		//if ($('#stats_noofslots').html()!='0')
-		//	InitiateDragAndDrop();
-	}*/);
+	$.ajax({
+		type: "GET",
+		url: 'queue/?dummy='+Math.random(),
+		success: function(result){
+ 			return $('#queue').html(result);
+		}
+	});
+}
+
+// in a function since some processes need to refresh the queue outside of MainLoop()
+function RefreshTheHistory() {
+	//if (skipRefresh) return false; // set within queue <table>
+	$.ajax({
+		type: "GET",
+		url: 'history/?dummy='+Math.random(),
+		success: function(result){
+ 			return $('#history').html(result);
+		}
+	});
 }
 
 // refresh the queue with supplied data (like if we already made an AJAX call)
