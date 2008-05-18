@@ -467,12 +467,14 @@ fieldset.EntryFieldSet {
 #config_nav li a {
 	background-color: #ddd;
 	display: block;
-	padding: 5px 0px 5px 5px;
+	padding: 8px 0px 5px 25px;
 	color: #666;
 	text-decoration: none;
 	width: 100%;
 	font-size: 9pt;
 	font-weight: bold;
+	background-position: 5px 50%;
+	background-repeat:no-repeat;
 }
 
 #config_nav li a:hover {
@@ -480,7 +482,7 @@ fieldset.EntryFieldSet {
 	color: #000;
 }
 
-#config_nav #nav_active {
+#config_nav .nav_active {
 	background-color: #bbb;
 	color: #000;
 }
@@ -490,6 +492,97 @@ fieldset.EntryFieldSet {
 	padding-right: 5px;
 	border-width: 0px;
 }
+#config_nav_connections {
+	background-image: url(../../images/plush_default_config/config_connections.png);
+}
+#config_nav_general {
+	background-image: url(../../images/plush_default_config/config_general.png);
+}
+#config_nav_directories {
+	background-image: url(../../images/plush_default_config/config_directories.png);
+}
+#config_nav_switches {
+	background-image: url(../../images/plush_default_config/config_switches.png);
+}
+#config_nav_server {
+	background-image: url(../../images/plush_default_config/config_servers.png);
+}
+#config_nav_categories {
+	background-image: url(../../images/plush_default_config/config_categories.png);
+}
+#config_nav_scheduling {
+	background-image: url(../../images/plush_default_config/config_scheduling.png);
+}
+#config_nav_rss {
+	background-image: url(../../images/plush_default_config/config_rss.png);
+}
+#config_nav_email {
+	background-image: url(../../images/plush_default_config/config_email.png);
+}
+#config_nav_newzbin {
+	background-image: url(../../images/plush_default_config/config_newzbin.png);
+}
+#help {
+	background-image: url(../../images/plush_default_config/config_help.png);
+	padding: 6px;
+	padding-left:36px;
+}
+#help {
+	background-image: url(../../images/plush_default_config/config_help.png);
+	padding: 6px;
+	padding-left:36px;
+}
+#force_disconnect {
+	background-image: url(../../images/plush_default_config/config_disconnect.png);
+	padding: 6px;
+	padding-left:36px;
+}
+#test_email {
+	background-image: url(../../images/plush_default_config/config_test_email.png);
+	padding: 6px;
+	padding-left:36px;
+}
+#save {
+	background-image: url(../../images/plush_default_config/config_save.png);
+	padding: 6px;
+	padding-left:36px;
+}
+
+
+#config_nzo_reload {
+	background-image: url(../../images/plush_default_nzo/nzo_reload.png);
+	cursor:pointer;
+}
+#config_nzo_delete {
+	background-image: url(../../images/plush_default_nzo/nzo_delete.png);
+}
+#config_nzo_top {
+	background-image: url(../../images/plush_default_nzo/nzo_top.png);
+}
+#config_nzo_up {
+	background-image: url(../../images/plush_default_nzo/nzo_up.png);
+}
+#config_nzo_down {
+	background-image: url(../../images/plush_default_nzo/nzo_down.png);
+}
+#config_nzo_bottom {
+	background-image: url(../../images/plush_default_nzo/nzo_bottom.png);
+}
+#config_nzo_select_all {
+	background-image: url(../../images/plush_default_nzo/nzo_select_all.png);
+	cursor:pointer;
+}
+#config_nzo_select_none {
+	background-image: url(../../images/plush_default_nzo/nzo_select_none.png);
+	cursor:pointer;
+}
+#config_nzo_select_invert {
+	background-image: url(../../images/plush_default_nzo/nzo_select_invert.png);
+	cursor:pointer;
+}
+
+
+
 
 #config_container {
 	background: #bbb;

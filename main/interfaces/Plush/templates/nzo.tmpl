@@ -1,195 +1,152 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
 	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
-<script type='text/javascript'>
-function mark_all()
-{
-    var s;
-    var i=0;
-    while(s = document.getElementsByTagName("input")[i++])
-    {
-        if(s.type=='checkbox')
-        {
-            s.checked=true;
-        }
-    }
-}
-function unmark_all()
-{
-    var s;
-    var i=0;
-    while(s = document.getElementsByTagName("input")[i++])
-    {
-        if(s.type=='checkbox')
-        {
-            s.checked=false;
-        }
-    }
-}
-function invert()
-{
-    var s;
-    var i=0;
-    while(s = document.getElementsByTagName("input")[i++])
-    {
-        if(s.type=='checkbox')
-        {
-            s.checked=!s.checked;
-        }
-    }
-}
-</script>
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
+	<script type='text/javascript'>
+		function mark_all(){
+			var s;
+			var i=0;
+			while(s = document.getElementsByTagName("input")[i++])
+				if(s.type=='checkbox')
+				s.checked=true;
+		}
+		function unmark_all(){
+			var s;
+			var i=0;
+			while(s = document.getElementsByTagName("input")[i++])
+				if(s.type=='checkbox')
+					s.checked=false;
+		}
+		function invert(){
+			var s;
+			var i=0;
+			while(s = document.getElementsByTagName("input")[i++])
+			if(s.type=='checkbox')
+				s.checked=!s.checked;
+		}
+	</script>
+	
+	<style>
+		body {background: #ddd;}
+		table {
+			font-size: 9pt;
+			color: black;
+			margin: 0px;
+		}
+		tr {
+			cursor:pointer;
+		}
+		th {
+			background: #b5b5b5;
+			color: white;
+			font-weight: bold;
+			cursor:default;
+		}
+		tr.even{
+			background-color: #cdf;
+		}
+		tr.evenLine {
+			background-color: #eee;
+		}
+		tr.odd {
+			background-color: #99bbff;
+		}
+		tr.oddLine {
+			background-color: #f8f8f8;
+		}
+		tr:hover {
+			background-color: #333333;
+			color: #FFF;
+		}
+		.config_menu {
+			cursor:default;
+		}
+		input {
+			cursor:pointer;
+		}
+		.config_menu input {
+			width:60px;
+		}
+	</style>
+	
 </head>
 <body>
-<div align="center">
-	<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-
-<style>
-<!--
-	body {background: #ddd;}
-
-table {
-	font-size: 9pt;
-	color: black;
-	margin: 0px;
-}
-tr {
-	cursor:pointer;
-}
-th {
-	background: #b5b5b5;
-	color: white;
-	font-weight: bold;
-	cursor:default;
-}
-tr.even{
-	background-color: #cdf;
-}
-
-tr.evenLine {
-	background-color: #eee;
-}
-
-tr.odd {
-	background-color: #99bbff;
-}
-
-tr.oddLine {
-	background-color: #f8f8f8;
-}
-
-tr:hover {
-	background-color: #333333;
-	color: #FFF;
-}
-
-.config_menu {
-	cursor:default;
-}
-input {
-	cursor:pointer;
-}
--->
-</style>
-
-<body>
-<form action="bulk_operation">
-
-<div id="config_nav">
-  
-	<ul>
-		<li>
-			<a class="config_menu" onclick="document.location.reload()" style="cursor:pointer">
-				<img src="../../static/images/plush_default_nzo/nzo_reload.png" />Reload</a>
-		</li>
-		<br/>
-		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_delete.png" />
-				<input type="submit" name="action_key" value="Delete" style="width:60px"/></a>
-		</li>
-		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_top.png" />
-				<input type="submit" name="action_key" value="Top" style="width:60px"/></a>
-		</li>
-		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_up.png" />
-				<input type="submit" name="action_key" value="Up" style="width:60px"/></a>
-		</li>
-		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_down.png" />
-				<input type="submit" name="action_key" value="Down" style="width:60px"/></a>
-		</li>
-		<li>
-			<a class="config_menu"><img src="../../static/images/plush_default_nzo/nzo_bottom.png" />
-				<input type="submit" name="action_key" value="Bottom" style="width:60px"/></a>
-		</li>
-		<br/>Selection:
-		<li>
-			<a class="config_menu" onclick='mark_all();' style="cursor:pointer"><img src="../../static/images/plush_default_nzo/nzo_select_all.png" />
-				ALL</a>
-		</li>
-		<li>
-			<a class="config_menu" onclick='unmark_all();' style="cursor:pointer"><img src="../../static/images/plush_default_nzo/nzo_select_none.png" />
-				NONE</a>
-		</li>
-		<li>
-			<a class="config_menu" onclick='invert();' style="cursor:pointer"><img src="../../static/images/plush_default_nzo/nzo_select_invert.png" />
-				INVERT</a>
-		</li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-  <table>
-      <tr><th></th><th>Filename/Subject</th><th>Size (MB)</th><th>Age</th></tr>
-      <!--#set $oddLine = False#-->
-      <!--#for $file in $active_files#-->
-          <!--#set $oddLine = not $oddLine#-->
-          <tr id="$file.nzf_id" class="nzf_row <!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-              <td><input type="checkbox" name="$file.nzf_id" id="box-$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
-              <td>$file.filename</td>
-              <td>$file.mb</td>
-              <td>$file.age</td>
-          </tr>
-      <!--#end for#-->
-  </table>
-<div class="footer">
-<!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
-<!--#end if#-->
-<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
-</div>
-
-
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
-
+	
+	<div align="center">
+		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
-</div>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-
-	\$('.nzf_row').click(function(event) {
-		\$('#box-'+\$(event.target).parent().attr('id')).attr('checked', !\$('#box-'+\$(event.target).parent().attr('id')).attr('checked'));
-	});
-</script>
-
-</form>
-
+	
+	<form action="bulk_operation">
+	
+	<div id="config_nav">
+		<ul>
+			<li><a class="config_menu" id="config_nzo_reload" onclick="document.location.reload()">Reload</a></li>
+			<br/>
+			<li><a class="config_menu" id="config_nzo_delete"><input type="submit" name="action_key" value="Delete" /></a></li>
+			<li><a class="config_menu" id="config_nzo_top"><input type="submit" name="action_key" value="Top" /></a></li>
+			<li><a class="config_menu" id="config_nzo_up"><input type="submit" name="action_key" value="Up" /></a></li>
+			<li><a class="config_menu" id="config_nzo_down"><input type="submit" name="action_key" value="Down" /></a></li>
+			<li><a class="config_menu" id="config_nzo_bottom"><input type="submit" name="action_key" value="Bottom" /></a></li>
+			<br/>Selection:
+			<li><a class="config_menu" id="config_nzo_select_all" onclick='mark_all();'>ALL</a></li>
+			<li><a class="config_menu" id="config_nzo_select_none" onclick='unmark_all();'>NONE</a></li>
+			<li><a class="config_menu" id="config_nzo_select_invert" onclick='invert();'>INVERT</a></li>
+		</ul>
+	</div>
+	
+	<div id="config_container" class="config_margin">
+		<div id="config_content">
+			
+	<!-- ************************************
+				PAGE CONTENT IS BELOW
+		************************************ -->
+			
+			<table>
+				<tr><th></th><th>Filename/Subject</th><th>Size (MB)</th><th>Age</th></tr>
+				<!--#set $oddLine = False#-->
+				<!--#for $file in $active_files#-->
+					<!--#set $oddLine = not $oddLine#-->
+					<tr id="$file.nzf_id" class="nzf_row <!--#if $oddLine then "oddLine" else "evenLine"#--> active">
+						<td><input type="checkbox" name="$file.nzf_id" id="box-$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
+						<td>$file.filename</td>
+						<td>$file.mb</td>
+						<td>$file.age</td>
+					</tr>
+				<!--#end for#-->
+			</table>
+		
+			<div class="footer">
+				<!--#if int($cache_limit)#--><b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br><!--#end if#-->
+				<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
+			</div>
+			
+	<!-- ************************************
+				PAGE CONTENT IS ABOVE
+		************************************ -->
+			
+		</div>
+	</div>
+	
+	<script language="javascript">
+		\$('.config_menu').corner("round tl bl");
+		\$('#config_container').corner("round");
+		
+		\$('.nzf_row').click(function(event) {
+			\$('#box-'+\$(event.target).parent().attr('id')).attr('checked', !\$('#box-'+\$(event.target).parent().attr('id')).attr('checked'));
+		});
+	</script>
+	
+	</form>
+	
 </body>
 </html>
-
