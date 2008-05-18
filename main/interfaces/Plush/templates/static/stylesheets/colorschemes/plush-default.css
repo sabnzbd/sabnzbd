@@ -94,6 +94,15 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 
 
+
+#stats_noofslots {
+	display:none;
+}
+
+
+
+
+
 .box_fatbottom {
 	background: url(../../images/plush_default/qh_bottom.png) 0 0 repeat-x;
 	height:37px;
@@ -106,9 +115,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .box_fatbottom .left_stats {
 	float:left;
+	padding-left:40px;
 }
 .box_fatbottom .right_stats {
 	float:right;
+	padding-right:40px;
 }
 .box_fatbottom strong {
 	color: #000;
@@ -124,6 +135,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding-bottom:8px;
 	padding-left:20px;
 	background: url(../../images/plush_default/q_stats_needspace.png) 0 50% no-repeat;
+	color:red;
 }
 .stats_complete_freespace {
 	margin-left:10px;
@@ -138,6 +150,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding-bottom:8px;
 	padding-left:20px;
 	background: url(../../images/plush_default/q_stats_needspace.png) 0 50% no-repeat;
+	color:red;
 }
 
 .history_logo {
@@ -217,7 +230,8 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	width: 100%;
 	background-color: #e0e0e0;
 	color: #606060;
-	border-bottom: 1px solid #fff
+	border-bottom: 1px solid #fff;
+	border-spacing: 0px;
 }
 .queueTable tr {
 	background-color: #e0e0e0;
@@ -352,6 +366,9 @@ tr:hover .history_added  {
 }
 .hv_ZIP {
 	background: url(../../images/plush_default/hv_unzip.png) 0 50% no-repeat;
+}
+.hv_UNP { /* unpack */
+	background: url(../../images/plush_default/hv_unrar.png) 0 50% no-repeat;
 }
 .hv_DEL {
 	background: url(../../images/plush_default/hv_del.png) 0 50% no-repeat;

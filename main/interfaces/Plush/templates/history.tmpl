@@ -7,64 +7,52 @@ def displayNotices (action, name):
 		return '<span class="hvMessage">&rArr;&nbsp;' + action[3:] + '&nbsp;</span>'
 %>
 
-
-
-		
-		<table class="queueTable" cellspacing="0">
-		<!--#set $odd = False#-->
-		<!--#if $lines#-->
-		<!--#for $line in $lines #-->
-			<!--#set $odd = not $odd#-->
-			<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
-
-				<td>
-					<div class="historyTitle <!--#if $line.loaded #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->></div>
-					<!--#if $line.msgid #-->
-						<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
-					<!--#else#-->
-						$line.filename
-					<!--#end if#-->
-					
-				</td>
-			
-			
-				<!--#if $line.stages#-->
-				<td class="last">
-					<!--#for $stage in $line.stages#-->
-						<!--#for $action in $stage.actions#-->
-							<div class="hv_<%=action['name'][1:4]%>" title='<%= action['name'].replace("'","&rsquo;") %><br><%=action['value']%>'>&thinsp;</div><%=displayNotices(action['value'],action['name'])%>
-						<!--#end for#-->
-					<!--#end for#-->
-				</td>
-				<!--#end if#-->
-
-
-				<td>
-					<div class="queue_delete" title="Hide NZB<br>from History">&nbsp;&nbsp;&nbsp;&nbsp;</div>
-					<small class="history_added">$line.added</small>
-				</td>
-
-
-			</tr>
-		<!--#end for#-->
+<table class="queueTable">
+<!--#set $odd = False#-->
+<!--#if $lines#-->
+<!--#for $line in $lines #-->
+	<!--#set $odd = not $odd#-->
+	<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
+	
+	<td>
+		<div class="historyTitle <!--#if $line.loaded #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->></div>
+		<!--#if $line.msgid #-->
+		<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
+		<!--#else#-->
+		$line.filename
 		<!--#end if#-->
-		</table>
-		
-		
-		
-		
-		
-		<div class="box_fatbottom">
-			<div class="right_stats"><strong>$bytes_beginning&nbsp;GB</strong>&nbsp;Downloaded</div>
-			<div class="left_stats">
-				<!--#if $lines#-->
-				<strong>$total_bytes&nbsp;GB</strong>&nbsp;In&nbsp;History
-				<!--#else#-->
-				Nothing to see here
-				<!--#end if #-->
-			</div>
-			<div class="history_logo">&nbsp;</div>
-		</div>
+	</td>
+	
+	<!--#if $line.stages#-->
+	<td class="last">
+		<!--#for $stage in $line.stages#-->
+			<!--#for $action in $stage.actions#-->
+				<div class="hv_<%=action['name'][1:4]%>" title='<%= action['name'].replace("'","&rsquo;") %><br><%=action['value']%>'>&thinsp;</div><%=displayNotices(action['value'],action['name'])%>
+			<!--#end for#-->
+		<!--#end for#-->
+	</td>
+	<!--#end if#-->
+	
+	<td>
+		<div class="queue_delete" title="Hide NZB<br>from History">&nbsp;&nbsp;&nbsp;&nbsp;</div>
+		<small class="history_added">$line.added</small>
+	</td>
+	
+	</tr>
+<!--#end for#-->
+<!--#end if#-->
+</table>
 
-
-
+<div class="box_fatbottom">
+	<div class="right_stats">
+		<strong>$bytes_beginning&nbsp;GB</strong>&nbsp;Downloaded
+	</div>
+	<div class="left_stats">
+		<!--#if $lines#-->
+		<strong>$total_bytes&nbsp;GB</strong>&nbsp;In&nbsp;History
+		<!--#else#-->
+		Nothing to see here
+		<!--#end if #-->
+	</div>
+	<div class="history_logo">&nbsp;</div>
+</div>

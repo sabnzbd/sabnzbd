@@ -30,7 +30,27 @@ $(document).ready(function() {
 	$('#queueTable').livequery(function() {
 		
 		InitiateDragAndDrop(); // also called when queue is manually refreshed
-
+		
+		// processing option changes
+		$('#queueTable .proc_category').change(function(){
+			$.ajax({
+				type: "GET",
+				url: 'queue/change_cat?dummy='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&cat='+$(this).val()
+			});
+		});
+		$('#queueTable .proc_option').change(function(){
+			$.ajax({
+				type: "GET",
+				url: 'queue/change_opts?dummy='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&pp='+$(this).val()
+			});
+		});
+		$('#queueTable .proc_script').change(function(){
+			$.ajax({
+				type: "GET",
+				url: 'queue/change_script?dummy='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&script='+$(this).val()
+			});
+		});
+		
 		// skip queue refresh on mouseover
 		$('#queueTable').bind("mouseover", function(){ skipRefresh=true; });
 		$('#queueTable').bind("mouseout", function(){ skipRefresh=false; });
@@ -370,69 +390,27 @@ function LoadTheQueue(result) {
 
 // called upon every refresh
 function InitiateDragAndDrop() {
-
 	$("#queueTable").tableDnD({
-    	//onDragClass: "myDragClass",
-    	onDrop: function(table, row) {
-           	var rows = table.tBodies[0].rows;
+		//onDragClass: "myDragClass",
+		onDrop: function(table, row) {
+			var rows = table.tBodies[0].rows;
 			
 			if (rows.length < 2)
 				return false;
 			
 			// figure out which position dropped row is at now
-          	for ( var i=0; i < rows.length; i++ )
+			for ( var i=0; i < rows.length; i++ )
 				if (rows[i].id == row.id)
-					return ChangeOrder("switch?uid1="+row.id+"&uid2="+i);
-
+					return $.ajax({
+						type: "GET",
+						url: "queue/switch?uid1="+row.id+"&uid2="+i+"&dummy="+Math.random()/*,
+					  	success: function(result){
+				   			return LoadTheQueue(result);
+						}*/
+					});
 			return false;
-    	}
+		}
 	});	
-}
-
-
-// change post-processing options within queue
-function ChangeProcessingOption (nzo_id,op) {
-	$.ajax({
-		type: "GET",
-		url: 'queue/change_opts?dummy='+Math.random()+'&nzo_id='+nzo_id+'&pp='+op/*,
-	  	success: function(result){
-   			return LoadTheQueue(result);
-		}*/
-	});
-}
-
-// change category within queue
-function ChangeCategory (nzo_id,cat) {
-	$.ajax({
-		type: "GET",
-		url: 'queue/change_cat?dummy='+Math.random()+'&nzo_id='+nzo_id+'&cat='+cat/*,
-	  	success: function(result){
-   			return LoadTheQueue(result);
-		}*/
-	});
-}
-
-// change post-processing options within queue
-function ChangeProcessingScript (nzo_id,op) {
-	$.ajax({
-		type: "GET",
-		url: 'queue/change_script?dummy='+Math.random()+'&nzo_id='+nzo_id+'&script='+op/*,
-	  	success: function(result){
-   			return LoadTheQueue(result);
-		}*/
-	});
-}
-
-// change queue order
-// ex. ChangeOrder("switch?uid1="+row.id+"&uid2="+i);
-function ChangeOrder (result) {
-	$.ajax({
-		type: "GET",
-		url: "queue/"+result+"&dummy="+Math.random()/*,
-	  	success: function(result){
-   			return LoadTheQueue(result);
-		}*/
-	});
 }
 
 /*
