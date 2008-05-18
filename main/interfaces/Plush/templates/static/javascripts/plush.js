@@ -47,6 +47,14 @@ $(document).ready(function() {
 		});
     });
 
+	// set up more tooltips for main screen
+	$('.tip').Tooltip({
+    	extraClass: "tooltip",
+    	track: true, 
+		fixPNG: true
+	});
+    
+
 	
 	/* // more tooltip options
 	$(".queue_delete").tooltip({ 
@@ -90,7 +98,9 @@ $(document).ready(function() {
 	// restore Add NZB from cookie
 	if (ReadCookie('Plush2AddNZB') == 'block')
 		$('#add_nzb_menu').css('display','block');
-
+	else
+		$('#add_nzb_menu').css('display','none');
+	
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
 		refreshRate = ReadCookie('Plush2Refresh');
@@ -157,7 +167,7 @@ $(document).ready(function() {
 			}
 		});
 	});
-
+	
 	// purge queue
 	$('#queue_purge').click(function(event) {
 		if(confirm('Sure you want to clear out your Queue?')){
@@ -171,14 +181,13 @@ $(document).ready(function() {
 		}
 	});
 	
-	
+	// "Add NZB" horiz. bar toggler from main menu
 	$('#add_nzb_menu_toggle').bind('click', function() { 
 		$('#add_nzb_menu').toggle();
 		SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display'));
 	});
 	
-	
-	// Set up +NZB
+	// Set up +NZB by URL/Newzbin Report ID
 	$('#addID').bind('click', function() { 
 		$.ajax({
 			type: "GET",
@@ -190,7 +199,19 @@ $(document).ready(function() {
 		});
 		$("#addID_input").val('enter URL/ID');
 	});
-
+	$('#addID_input').val('enter URL/ID').focus( function(){
+		if ($(this).val()=="enter URL/ID")
+			$(this).val('');
+	}).blur( function(){
+		if (!$(this).val())
+			$(this).val('enter URL/ID');
+	});
+	
+	// set up +NZB by file upload
+	$('#uploadNZBForm').submit( function(){
+		return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})
+	});
+	
 	// toggle queue shutdown - from options menu
 	if ($('#queue_shutdown_option')) {
 		$('#queue_shutdown_option').bind('click', function() { 
@@ -199,16 +220,27 @@ $(document).ready(function() {
 					type: "GET",
 					url: "queue/tog_shutdown?dummy="+Math.random(),
 					success: function(result){
-   						return LoadTheQueue(result);
+						return LoadTheQueue(result);
 					}
 				});
 			}
 		});
 	}
-
+	
+	// set up "Help -> IRC" from main menu
+	$('#help_irc').click( function(){
+		window.open("config","newWindow","status=no,toolbar=no,scrollbars=no,width=600,height=380,top=100,left=100");
+	});
+	
+	// set up "shutdown sabnzbd" from main menu
+	$('#shutdown_sabnzbd').click( function(){
+		if(confirm('Sure you want to shut down the SABnzbd application?'))
+			window.location='shutdown';
+	});
+	
 	// pause / resume
 	$('#pause_resume').click(function(event) {
-		if ($(event.target).attr('class') == 'q_menu_pause q_menu_paused')
+		if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
 			$.ajax({
 				type: "GET",
 				url: "queue/resume?dummy="+Math.random(),
@@ -220,7 +252,10 @@ $(document).ready(function() {
 				url: "queue/pause?dummy="+Math.random(),
 				success: function(result){return LoadTheQueue(result);}
 			});
-		$('#pause_resume').toggleClass("q_menu_paused");
+		if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused')
+			$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
+		else
+			$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
 	});
 	
 	// Set up Queue Menu actions

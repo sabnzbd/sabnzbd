@@ -1,17 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
 <html>
 <head>
-
 	<title>SABnzbd+ Plush</title>
-	
 	<link rel="shortcut icon" type="image/ico" href="static/images/plush_default/sabnzbdplus.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
-
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
 	<script type="text/javascript" src="static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.superfish.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.tablednd.js"></script>
@@ -21,181 +20,185 @@
 	<script type="text/javascript" src="static/javascripts/jquery.livequery.pack.js"></script>
 	<script type="text/javascript" src="static/javascripts/webtoolkit.aim.js"></script>
 	<script type="text/javascript" src="static/javascripts/plush.js"></script>
+	
 </head>
 <body>
-<!--#if $new_release#-->
-<div id="new_release_notification">&nbsp;<a href="$new_rel_url" target="_blank">New release $new_release available!</a>&nbsp;</div>
-<!--#end if#-->
-
-<div id="add_nzb_menu" style="display:none">
 	
-	<span class="add_nzb_box_fetch">
-		&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#-->
-		<input type="text" id="addID_input" value="enter URL/ID" size="13"  onfocus="if(this.value=='enter URL/ID')this.value=''" onblur="if(!this.value)this.value='enter URL/ID'"/>
-		<input type="submit" id="addID" value="&raquo; Fetch NZB" style="cursor:pointer"/>
-	</span>
+	<!--#if $new_release#-->
+	<div id="new_release_notification">&nbsp;<a href="$new_rel_url" target="_blank">New release $new_release available!</a>&nbsp;</div>
+	<!--#end if#-->
 	
-	<form action="addFile" style="display:inline" method="post" enctype="multipart/form-data" onsubmit="return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})">
-
-	<span class="add_nzb_box_upload">
-		&rarr;&nbsp;File Upload
-		<input type="file" name="nzbfile" title="Enqueue nzb by File Upload" size="4" />
-		<input type="submit" id="addNZBbyFile" value="&raquo; Upload NZB" style="cursor:pointer"/>
-	</span>
-
-	<span class="add_nzb_box_processing">
-		&rarr;&nbsp;Processing
-	    <!--#if $cat_list#-->
-			<select id="addID_cat" name="cat" title="Category">
-	    <!--#for $ct in $cat_list#-->
-	    	<option value="$ct">$ct</option>
-	    <!--#end for#-->
-	    </select>
-	    <!--#end if#-->
-	    <select id="addID_pp" name="pp" title="Post-Processing Option">
-	    <option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
-	    <option value="0">(Skip)</option>
-	    <option value="1">+Repair</option>
-	    <option value="2">+Unpack</option>
-	    <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
-	    </select>
-	    <!--#if $script_list#-->
-	    	<select id="addID_script" name="script" title="Script">
-	    <!--#for $sc in $script_list#-->
-	    	<option value="$sc">$sc</option>
-	    <!--#end for#-->
-	    </select>
-	    <!--#end if#-->
-	</span>
-
-	</form>
-</div>
-
+	<!--#if $warning#-->
+	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
+	<!--#end if#-->
+	
+	<div id="add_nzb_menu">
+		
+		<span class="add_nzb_box_fetch">
+			&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#-->
+			<input type="text" id="addID_input" />
+			<input type="submit" id="addID" value="&laquo; FETCH NZB" />
+		</span>
+		
+		<form action="addFile" id="uploadNZBForm" method="post" enctype="multipart/form-data">
+		
+		<span class="add_nzb_box_upload">
+			&rarr;&nbsp;File Upload
+			<input type="file" name="nzbfile" size="4" />
+			<input type="submit" id="addNZBbyFile" value="&laquo; UPLOAD NZB" />
+		</span>
+		
+		<span class="add_nzb_box_processing">
+			&rarr;&nbsp;Processing
+			<!--#if $cat_list#-->
+			<select id="addID_cat" name="cat" title="Category" class="tip">
+			<!--#for $ct in $cat_list#-->
+				<option value="$ct">$ct</option>
+			<!--#end for#-->
+			</select>
+			<!--#end if#-->
+			<select id="addID_pp" name="pp" title="Post-Processing Option" class="tip">
+				<option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
+				<option value="0">(Skip)</option>
+				<option value="1">+Repair</option>
+				<option value="2">+R+Unpack</option>
+				<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
+			</select>
+			<!--#if $script_list#-->
+			<select id="addID_script" name="script" title="Script" class="tip">
+			<!--#for $sc in $script_list#-->
+				<option value="$sc">$sc</option>
+			<!--#end for#-->
+			</select>
+			<!--#end if#-->
+			
+		</span>
+		
+		</form>
+		
+	</div>
+	
 	<div id="page-wrap">
+		
 		<div id="hdr-queue">
-            <div class="logo">
+			
+			<div class="logo">
 				<h1>Queue</h1>
 			</div>
-
+			
 			<div id="queue-buttons">
 				<ul>
-					<!-- <li class="q_menu_verbose"></li> -->
-					<li class="q_menu_pause<!--#if $paused#--> q_menu_paused<!--#end if#-->" title="Pause/Resume the Queue" id="pause_resume"></li>
+					<li class="tip q_menu_pause <!--#if $paused then 'q_menu_paused' else 'q_menu_unpaused'#-->" title="Pause/Resume<br/>the&nbsp;Queue" id="pause_resume"></li>
 				</ul>
 			</div>
+			
 			<div id="time-left">
 				<p><span id="stats_eta">&hellip;</span>&nbsp;left</p>
 			</div>
+			
 			<ul class="nav">
-		<li><a class="queue_logo"></a>
-			<ul>
-				<li><a id="add_nzb_menu_toggle" style="cursor:pointer"><b style="float:right">&circ;&nbsp;</b>&nbsp;&nbsp;&nbsp;Add NZB</a></li>
-				<li><a><b style="float:right">&raquo;&nbsp;</b>&nbsp;&nbsp;&nbsp;Functions</a>
+				<li><a class="queue_logo"></a>
 					<ul>
-						<li><a><select id="refreshRate-option" style="font-size:100%;margin-left:-6px;">
-							<option value="1">1 sec</option>
-							<option value="2">2 sec</option>
-							<option value="4">4 sec</option>
-							<option value="8">8 sec</option>
-							<option value="16">16 sec</option>
-							<option value="30">30 sec</option>
-							<option value="60">1 min</option>
-							<option value="120">2 min</option>
-							<option value="900">15 min</option>
-							<option value="1800">30 min</option>
-							<option value="0">No</option>
-						</select>&nbsp;Refresh</a></li>
-						<li><a><b style="float:right">&raquo;&nbsp;</b>&nbsp;&nbsp;&nbsp;Sort Queue</a>
+						<li><a id="add_nzb_menu_toggle"><em>&circ;</em>&nbsp;&nbsp;&nbsp;Add&nbsp;NZB&nbsp;<small>[Toggle]</small></a></li>
+						<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Functions</a>
 							<ul>
-								<li><a id="sort_by_avg_age" style="cursor:pointer">by Age</a></li>
-								<li><a id="sort_by_name" style="cursor:pointer">by Name</a></li>
-								<li><a id="sort_by_size" style="cursor:pointer">by Size</a></li>
+								<li><a><select id="refreshRate-option">
+										<option value="1">1 sec</option>
+										<option value="2">2 sec</option>
+										<option value="4">4 sec</option>
+										<option value="8">8 sec</option>
+										<option value="16">16 sec</option>
+										<option value="30">30 sec</option>
+										<option value="60">1 min</option>
+										<option value="120">2 min</option>
+										<option value="900">15 min</option>
+										<option value="1800">30 min</option>
+										<option value="0">No</option>
+									</select>&nbsp;Refresh</a>
+								</li>
+								<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Sort Queue</a>
+									<ul>
+										<li><a id="sort_by_avg_age">by Average Age</a></li>
+										<li><a id="sort_by_name">by Name</a></li>
+										<li><a id="sort_by_size">by Size</a></li>
+									</ul>
+								</li>
+								<li><a>On Queue Finish..<br/>
+										<select id="onQueueFinish-option">
+											<option value=""></option>
+											<optgroup label="Actions">
+												<option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
+												<!--#if $nt#-->
+												<option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
+												<option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
+												<!--#end if#-->
+											</optgroup>
+											<!--#if $script_list#-->
+											<optgroup label="Scripts">
+												<!--#for $sc in $script_list#-->
+												<!--#if $sc != 'None'#-->
+												<option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
+												<!--#end if#-->
+												<!--#end for#-->
+											</optgroup>
+											<!--#end if#-->
+										</select>
+									</a>
+								</li>
+								<li><a id="queue_purge">Purge the Queue</a></li>
 							</ul>
 						</li>
-						<li>
-							<a>On Queue Finish..<br/>
-								<select style="margin-left:8px;width:140px;" id="onQueueFinish-option">
-									<option value=""></option>
-									    <optgroup label="Actions">
-									        <!--#if $nt#-->
-									        <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
-									        <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
-									        <!--#end if#-->
-									        <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
-									    </optgroup>
-									<!--#if $script_list#-->
-									    <optgroup label="Scripts">
-									    <!--#for $sc in $script_list#-->
-									        <!--#if $sc != 'None'#-->
-									        <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
-									        <!--#end if#-->
-									    <!--#end for#-->
-									    </optgroup>
-									<!--#end if#-->
-								</select>
-								</a>
+						<li><a href="connections"><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Configuration</a>
+							<ul>
+								<li><a href="connections">Connections</a></li>
+								<li><a href="config/general">General</a></li>
+								<li><a href="config/directories">Directories</a></li>
+								<li><a href="config/switches">Switches</a></li>
+								<li><a href="config/server">Servers</a></li>
+								<li><a href="config/categories">Categories</a></li>
+								<li><a href="config/scheduling">Scheduling</a></li>
+								<li><a href="config/rss">RSS</a></li>
+								<li><a href="config/email">Email</a></li>
+								<li><a href="config/newzbin">Newzbin</a></li>
+							</ul>
 						</li>
-						<li><a id="queue_purge" style="cursor:pointer">Purge the Queue</a></li>
+						<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Help</a>
+							<ul>
+								<li><a href="$helpuri" target="_blank" title="Open Official Manual" class="tip">Wiki</a></li>
+								<li><a href="http://forums.sabnzbd.org" target="_blank" title="Open Official Message Board" class="tip">Forums</a></li>
+								<li><a id="help_irc" title="Load Built-In Chat Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip">IRC</a></li>
+							</ul>
+						</li>
+						<li><a id="shutdown_sabnzbd">Shutdown <small>SABnzbd</small></a></li>
 					</ul>
 				</li>
-				<li><a href="connections"><b style="float:right">&raquo;&nbsp;</b>&nbsp;&nbsp;&nbsp;Configuration</a>
-					<ul>
-						<li><a href="connections">Connections</a></li>
-						<li><a href="config/general">General</a></li>
-						<li><a href="config/directories">Directories</a></li>
-						<li><a href="config/switches">Switches</a></li>
-						<li><a href="config/server">Servers</a></li>
-						<li><a href="config/categories">Categories</a></li>
-						<li><a href="config/scheduling">Scheduling</a></li>
-						<li><a href="config/rss">RSS</a></li>
-						<li><a href="config/email">Email</a></li>
-						<li><a href="config/newzbin">Newzbin</a></li>
-					</ul>
-				</li>
-				<li><a><b style="float:right">&raquo;&nbsp;</b>&nbsp;&nbsp;&nbsp;Help</a>
-					<ul>
-						<li><a href="$helpuri" target="_blank">Wiki</a></li>
-						<li><a href="http://forums.sabnzbd.org/" target="_blank">Forums</a></li>
-						<li><a style="cursor:pointer" onclick='newWind=window.open
-   ("config","newWindow","status=no,toolbar=no,scrollbars=no,width=600,height=380,top=100,left=100")'>IRC</a></li>
-					</ul>
-				</li>
-
-				<li><a style="cursor:pointer" onclick="if(confirm('Sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown <small>SABnzbd</small></a></li>
 			</ul>
-		</li>
-	</ul>
+			
 			<div id="speed">
 				<p><span id="stats_kbpersec">&hellip;</span>&nbsp;kB/s</p>
 			</div>
 			
-			<!-- <div class="logo">
-				<h1>Queue</h1>
-			</div> -->
-			
 		</div>
-
+		
 		<div id="queue-wrap">
-
-			<!-- Queue -->
-			<div id="queue"></div>
-		
-		
-			<!-- History Separator -->
+			
+			<!-- Queue ( queue.tmpl )-->
+			<div id="queue">Getting loaded..</div>
+			
+			<!-- History Menu/Banner -->
 			<div class="box_banner_history">
 				<div class="box_banner_r">
 					<ul class="box_banner_menu">
-						<li class="h_menu_verbose" title="Toggle History Verbosity"></li>
-						<li class="h_menu_purge" title="Purge History Contents &mdash; NOT active NZBs (double-click)"></li>
+						<li class="h_menu_verbose tip" title="Toggle&nbsp;History<br/>Verbosity"></li>
+						<li class="h_menu_purge tip" title="Purge&nbsp;History<br/>[double-click])<br/><small>(NOT&nbsp;active&nbsp;NZBs)<br/>(NOT&nbsp;files)</small>"></li>
 					</ul>
 				</div>
 			</div>
 			<div class="box_banner_hr"></div>
-		
-		
-			<!-- History -->
-			<div id="history"></div>
-		
+			
+			<!-- History ( history.tmpl ) -->
+			<div id="history">Getting loaded..</div>
+			
 		</div>
 		
 		
@@ -203,12 +206,8 @@
 			<div class="corner-right"></div>
 			<div class="corner-left"></div>
 		</div>
+		
 	</div>
-
-<!--#if $warning#-->
-    <h2>WARNING</h2>
-    <b>$warning</b>
-<!--#end if#-->
-
+	
 </body>
 </html>

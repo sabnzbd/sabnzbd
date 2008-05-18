@@ -45,6 +45,54 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	background-color:lightgreen;
 	border:1px solid green;
 }
+#addID_input {
+	text-align:right;
+}
+#addID {
+	cursor:pointer;
+}
+#uploadNZBForm {
+	display:inline;
+}
+#addNZBbyFile {
+	cursor:pointer;
+}
+#add_nzb_menu_toggle {
+	cursor:pointer;
+}
+#refreshRate-option {
+	font-size:100%;
+	margin-left:-6px;
+}
+#onQueueFinish-option {
+	margin-left:8px;
+	width:140px;
+}
+#sort_by_avg_age {
+	cursor:pointer;
+}
+#sort_by_name {
+	cursor:pointer;
+}
+#sort_by_size {
+	cursor:pointer;
+}
+#queue_purge {
+	cursor:pointer;
+}
+#help_irc {
+	cursor:pointer;
+}
+#shutdown_sabnzbd {
+	cursor:pointer;
+}
+#warning_message {
+	text-align:center;
+	background-color: red;
+	color: white;
+}
+
+
 
 .box_fatbottom {
 	background: url(../../images/plush_default/qh_bottom.png) 0 0 repeat-x;
@@ -107,11 +155,13 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	float:right;
 }
 .q_menu_pause {
-	background: url(../../images/plush_default/q_pause.png) 0 0 no-repeat;
 	margin-right:6px;
 	padding-right:32px;
 	padding-bottom:24px;
 	cursor:pointer;
+}
+.q_menu_unpaused {
+	background: url(../../images/plush_default/q_pause.png) 0 0 no-repeat;
 }
 .q_menu_paused {
 	background: url(../../images/plush_default/q_pause_on.png) 0 0 no-repeat;
@@ -784,6 +834,12 @@ embed, object {
 .nav select {
 	font-size: 66%;
 	cursor:pointer;
+}
+
+.nav em {
+	float:right;
+	font-weight:bold;
+	padding-right:4px;
 }
 
 
