@@ -522,6 +522,10 @@ fieldset.EntryFieldSet {
 #config_nav_newzbin {
 	background-image: url(../../images/plush_default_config/config_newzbin.png);
 }
+.left_links a, .right_links a {
+	background-position: 5px 50%;
+	background-repeat:no-repeat;
+}
 #help {
 	background-image: url(../../images/plush_default_config/config_help.png);
 	padding: 6px;
