@@ -1,103 +1,112 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
+	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
 	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
+	<style>
+	<!--
+		body {background: #ddd;}
+	-->
+	</style>
 </head>
-
-<style>
-<!--
-	body {background: #ddd;}
--->
-</style>
-
 <body>
-<div align="center">
-	<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-
-<div id="config_nav">
-	<ul>
-		<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
-		<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
-		<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
-		<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
-		<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
-		<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
-		<li><a class="config_menu nav_active" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
-		<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
-		<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
-		<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-<!-- ************************************
-	 		PAGE CONTENT IS BELOW
-     ************************************ -->
-
-<div class="EntryBlock">
-<form action="addSchedule" method="post">
-<fieldset class="EntryFieldSet">
-<legend>Add schedule</legend>
- <%import time
+	
+	<div align="center">
+		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
+	</div>
+	
+	<div id="config_nav">
+		<ul>
+			<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
+			<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
+			<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
+			<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
+			<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
+			<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
+			<li><a class="config_menu nav_active" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
+			<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
+			<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
+			<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
+		</ul>
+	</div>
+	
+	<div id="config_container" class="config_margin">
+		<div id="config_content">
+			
+<!--************************************
+			PAGE CONTENT IS BELOW
+	************************************ -->
+			
+			<div class="EntryBlock">
+			<form action="addSchedule" method="post">
+			<fieldset class="EntryFieldSet">
+				
+				<legend>Add schedule</legend>
+<%import time
 t = time.localtime()
 hour = t[3]
 if hour != 23:
     hour += 1
 else:
     hour = 0 %>
-Hour:<br>
-<select name="hour">
-<!--#for $i in range(24)#-->
-<option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
-<!--#end for#-->
-</select>
-:
-<select name="minute">
-<!--#for $i in range(60)#-->
-<option value="$i">$i
-<!--#end for#-->
-</select>
-<br>Frequency: <br>
-<select name="dayofweek">
-<option value="*" selected>Daily
-<option value="1">Mondays
-<option value="2">Tuesdays
-<option value="3">Wednesdays
-<option value="4">Thursdays
-<option value="5">Fridays
-<option value="6">Saturdays
-<option value="7">Sundays
-</select>
-<br>Action:<br> 
-<select name="action">
-<option value="resume">resume
-<option value="pause">pause
-<option value="shutdown">shutdown
-<option value="speedlimit">speedlimit
-</select>
-<br>Arguments:<br> 
-<input type="text" size="20" name="arguments" value="">
-<p><input type="submit" value="Add Schedule"></p>
-</fieldset>
-</form>
-</div>
-<h3>Current Schedules:</h3>
-<div class="EntryBlock>"
-<!--#set $schednum = 0#-->
-<!--#for $line in $schedlines#-->
-<form action="delSchedule" method="post">
-<fieldset class="EntryFieldSet">
-<!--#set $schednum = $schednum+1#-->
+				Hour:<br/>
+				<select name="hour">
+				<!--#for $i in range(24)#-->
+					<option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
+				<!--#end for#-->
+				</select>
+				:
+				<select name="minute">
+				<!--#for $i in range(60)#-->
+					<option value="$i">$i
+				<!--#end for#-->
+				</select>
+				
+				<br/>Frequency: <br/>
+				<select name="dayofweek">
+					<option value="*" selected>Daily
+					<option value="1">Mondays
+					<option value="2">Tuesdays
+					<option value="3">Wednesdays
+					<option value="4">Thursdays
+					<option value="5">Fridays
+					<option value="6">Saturdays
+					<option value="7">Sundays
+				</select>
+				
+				<br/>Action:<br/> 
+				<select name="action">
+					<option value="resume">resume
+					<option value="pause">pause
+					<option value="shutdown">shutdown
+					<option value="speedlimit">speedlimit
+				</select>
+				
+				<br/>Arguments:<br/> 
+				<input type="text" size="20" name="arguments" value=""/>
+				<p><input type="submit" value="Add Schedule"/></p>
+				
+			</fieldset>
+			</form>
+			</div>
+			
+			<h3>Current Schedules:</h3>
+			<div class="EntryBlock>"
+			<!--#set $schednum = 0#-->
+			<!--#for $line in $schedlines#-->
+			<form action="delSchedule" method="post">
+			<fieldset class="EntryFieldSet">
+				<!--#set $schednum = $schednum+1#-->
 <% 
 m, h, day, action = line.split(' ', 3)
 if len(m) == 1:
@@ -119,31 +128,32 @@ elif day == "6":
 elif day == "7":
     day='Sunday'    
 %>
-Task $schednum: <strong>$h:$m</strong> - $day - $action
-<input type="hidden" name="line" value="$line">
-<input type="submit" value="Remove">
-</fieldset>
-</form><br />
-<!--#end for#-->
-</div>
-
-
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
+				Task $schednum: <strong>$h:$m</strong> - $day - $action
+				
+				<input type="hidden" name="line" value="$line"/>
+				<input type="submit" value="Remove"/>
+				
+			</fieldset>
+			</form><br />
+			<!--#end for#-->
+			</div>
+			
+<!--************************************
+			PAGE CONTENT IS ABOVE
+	************************************ -->
+			
+		</div>
 	</div>
-</div>
-
-<div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/Configure+Scheduling">Scheduling Help</a>
-</div>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-	\$('#help').corner("round");
-
-</script>
-
+	
+	<div class="left_links config_margin">
+		<a id="help" target="_blank" href="$helpuri/Configure+Scheduling">Scheduling Help</a>
+	</div>
+	
+	<script language="javascript">
+		\$('.config_menu').corner("round tl bl");
+		\$('#config_container').corner("round");
+		\$('#help').corner("round");
+	</script>
+	
 </body>
 </html>

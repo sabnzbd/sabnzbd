@@ -1,131 +1,145 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
+	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
 	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
+	<style>
+	<!--
+		body {background: #ddd;}
+	-->
+	</style>
+	
 </head>
-
-<style>
-<!--
-	body {background: #ddd;}
--->
-</style>
-
 <body>
-<div align="center">
-	<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-
-<div id="config_nav">
-	<ul>
-		<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
-		<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
-		<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
-		<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
-		<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
-		<li><a class="config_menu nav_active" id="config_nav_categories" href="../categories">Categories</a></li>
-		<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
-		<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
-		<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
-		<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-<!-- ************************************
-	 		PAGE CONTENT IS BELOW
-     ************************************ -->
-
-Defines post-processing and storage.<br/>
-<!--#if $varExists('newzbinDetails')#-->
-    The Newzbin column will map listed Newzbin categories to your own.<br/>
-    <!--#if not $have_cats#-->
-        <br/>Click <a href="init_newzbin"><b>HERE</b></a> to setup newzbin categories.<br/><br/>
-    <!--#end if#-->
-<!--#end if#-->
-Relative folders are based on $defdir<br/>
-<br/>
-    <table id="catTable">
-        <tr>
-            <th></th>
-            <th>Category</th>
-            <th>&nbsp;Mode&nbsp;</th>
-            <!--#if $script_list#--><th>Script</th><!--#end if#-->
-            <th>Folder</th>
-            <!--#if $varExists('newzbinDetails')#--><th>NewzBin Categories</th><!--#end if#-->
-            <th></th>
-        </tr>
-    <!--#set $odd = False#-->
-    <!--#for $slot in $slotinfo#-->
-        <!--#set $odd = not $odd#-->
-        <tr class="<!--#if $odd then "odd" else "even"#-->">
-
-        <td><!--#if $slot.name#-->
-            <form action="delete" method="get">
-            <input type="hidden" value="$slot.name" name="name">
-            <input type="submit" value="X"></form>
-            <!--#end if#-->
-        </td>
-
-        <form action="save" method="get">
-        <input type="hidden" value="$slot.name" name="name">
-        <td><input type="text" name="newname" value="$slot.name"></td>
-
-        <td><select name="pp">
-           <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
-           <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>Download</option>
-           <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>+Repair</option>
-           <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+Unpack</option>
-           <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+Delete</option>
-           </select>
-        </td>
-
-        <!--#if $script_list#-->
-        <td><select name="script">
-            <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
-            <!--#end for#-->
-            </select>
-        </td>
-        <!--#end if#-->
-
-        <td><input type="text" size=40 name="dir" value="$slot.dir"></td>
-        
-        <!--#if $varExists('newzbinDetails')#--><td><input type="text" name="newzbin" value="$slot.newzbin"></td><!--#end if#-->
-
-        <td><input type="submit" value="Save"></td>
-        </form>
-
-    <!--#end for#-->
-    </table>
-
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
+	
+	<div align="center">
+		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
-</div>
-
-<div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/configure-categories">Categories Help</a>
-</div>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-	\$('#help').corner("round");
-
-</script>
-
-
-
-
+	
+	<div id="config_nav">
+		<ul>
+			<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
+			<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
+			<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
+			<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
+			<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
+			<li><a class="config_menu nav_active" id="config_nav_categories" href="../categories">Categories</a></li>
+			<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
+			<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
+			<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
+			<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
+		</ul>
+	</div>
+	
+	<div id="config_container" class="config_margin">
+		<div id="config_content">
+			
+<!--************************************
+			PAGE CONTENT IS BELOW
+	************************************ -->
+			
+			Defines post-processing and storage.<br/>
+			<!--#if $varExists('newzbinDetails')#-->
+				The Newzbin column will map listed Newzbin categories to your own.<br/>
+				<!--#if not $have_cats#--><br/>Click <a href="init_newzbin"><b>HERE</b></a> to setup newzbin categories.<br/><br/><!--#end if#-->
+			<!--#end if#-->
+			Relative folders are based on $defdir<br/><br/>
+			
+			<table id="catTable">
+				<tr>
+					<th></th>
+					<th>Category</th>
+					<th>&nbsp;Mode&nbsp;</th>
+					<!--#if $script_list#-->
+					<th>Script</th>
+					<!--#end if#-->
+					<th>Folder</th>
+					<!--#if $varExists('newzbinDetails')#-->
+					<th>NewzBin Categories</th>
+					<!--#end if#-->
+					<th></th>
+				</tr>
+				
+				<!--#set $odd = False#-->
+				<!--#for $slot in $slotinfo#-->
+				<!--#set $odd = not $odd#-->
+				<tr class="<!--#if $odd then "odd" else "even"#-->">
+					
+					<td>
+						<!--#if $slot.name#-->
+						<form action="delete" method="get">
+							<input type="hidden" value="$slot.name" name="name"/>
+							<input type="submit" value="X"/>
+						</form>
+						<!--#end if#-->
+					</td>
+					
+					<form action="save" method="get">
+					<input type="hidden" value="$slot.name" name="name"/>
+					
+					<td><input type="text" name="newname" value="$slot.name"/></td>
+					
+					<td>
+						<select name="pp">
+							<option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
+							<option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>Download</option>
+							<option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>+Repair</option>
+							<option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+Unpack</option>
+							<option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+Delete</option>
+						</select>
+					</td>
+					
+					<!--#if $script_list#-->
+					<td>
+						<select name="script">
+						<!--#for $sc in $script_list#-->
+							<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+						<!--#end for#-->
+						</select>
+					</td>
+					<!--#end if#-->
+					
+					<td><input type="text" size=40 name="dir" value="$slot.dir"/></td>
+					
+					<!--#if $varExists('newzbinDetails')#-->
+					<td><input type="text" name="newzbin" value="$slot.newzbin"/></td>
+					<!--#end if#-->
+					
+					<td><input type="submit" value="Save"/></td>
+					
+					</form>
+					
+				</tr>
+				<!--#end for#-->
+				
+			</table>
+			
+<!--************************************
+			PAGE CONTENT IS ABOVE
+	************************************ -->
+			
+		</div>
+	</div>
+	
+	<div class="left_links config_margin">
+		<a id="help" target="_blank" href="$helpuri/configure-categories">Categories Help</a>
+	</div>
+	
+	<script language="javascript">
+		\$('.config_menu').corner("round tl bl");
+		\$('#config_container').corner("round");
+		\$('#help').corner("round");
+	</script>
+	
 </body>
 </html>

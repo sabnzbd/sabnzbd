@@ -1,170 +1,177 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
+	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
 	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
+	<style>
+	<!--
+		body {background: #ddd;}
+	-->
+	</style>
+	
 </head>
-
-<style>
-<!--
-	body {background: #ddd;}
--->
-</style>
-
 <body>
-<div align="center">
-	<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-
-<div id="config_nav">
-	<ul>
-		<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
-		<li><a class="config_menu nav_active" id="config_nav_general" href="../general">General</a></li>
-		<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
-		<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
-		<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
-		<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
-		<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
-		<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
-		<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
-		<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-<!-- ************************************
-	 		PAGE CONTENT IS BELOW
-     ************************************ -->
-
-
-<form action="saveGeneral" method="post" name="fullform">
-<div class="EntryBlock">
-<fieldset class="EntryFieldSet">
-<legend>Web Server <font color="red">(changes require restart)</font></legend>
-<strong>Host:</strong><br>
-Host SABnzbd should listen on.<br>
-<input type="text" name="host" value="$host">
-<br>
-<br>
-<strong>Port:</strong><br>
-Port SABnzbd should listen on.<br>
-<input type="text" name="port" value="$port">
-<br>
-<br>
-<strong>Web Username:</strong><br>
-Authentication Username.<br>
-<input type="text" name="username" value="$username">
-<br>
-<br>
-<strong>Web Password:</strong><br>
-Authentication Password.<br>
-<input type="password" name="password" value="$password">
-<br>
-<br>
-<strong>Web Interface:</strong><br>
-Choose a skin.<br>
-<select name="web_dir">
-    <!--#for $webline in $web_list#-->
-        <!--#if $webline.lower() == $web_dir.lower()#-->
-            <option value="$webline" selected>$webline</option>
-        <!--#else#-->
-            <option value="$webline">$webline</option>
-        <!--#end if#-->
-    <!--#end for#-->
-</select>
-<!--#if $web_colors#-->
-<br>
-<br>
-<strong>Web Interface Schema:</strong><br>
-Choose a color scheme for the skin.<br>
-<select name="web_color">
-    <!--#for $webline in $web_colors#-->
-        <!--#if $webline.lower() == $web_color.lower()#-->
-            <option value="$webline" selected>$webline</option>
-        <!--#else#-->
-            <option value="$webline">$webline</option>
-        <!--#end if#-->
-    <!--#end for#-->
-</select>
-<!--#end if#-->
-<br>
-<br>
-<strong>Secondary Web Interface:</strong><br>
-Activate a secondary skin.<br>
-<select name="web_dir2">
-    <!--#for $webline in $web_list2#-->
-        <!--#if $webline.lower() == $web_dir2.lower()#-->
-            <option value="$webline" selected>$webline</option>
-        <!--#else#-->
-            <option value="$webline">$webline</option>
-        <!--#end if#-->
-    <!--#end for#-->
-</select>
-</fieldset>
-</div>
-<div class="EntryBlock">
-<fieldset class="EntryFieldSet">
-<legend>Tuning</legend>
-<strong>Queue auto refresh interval:</strong><br>
-Refresh interval of the queue web-interface page(sec, 0= none)<br>
-<input type="text" name="refresh_rate" value="$refresh_rate">
-<br>
-<br>
-<strong>RSS checking rate:</strong><br>
-Checking rate  (times per day 1..48)<br>
-<input type="text" name="rss_rate" value="$rss_rate">
-<br>
-<br>
-<strong>Download speed limit:</strong><br>
-Download speed limit in kilobytes per second(kB/s).<br>
-<input type="text" name="bandwith_limit" value="$bandwith_limit">
-<br>
-<br>
-<strong>Article Cache Limit:</strong><br>
-Cache articles in memory (reduce disk access).<br>
-<input type="text" name="cache_limitstr" value="$cache_limitstr">
-<br>
-<br>
-<strong>Cleanup List:</strong><br>
-List of file (extensions) that should be deleted after download.<br>
-For example: ".nfo," or ".nfo, .sfv"<br>
-<input type="text" name="cleanup_list" value="$cleanup_list">
-</fieldset>
-</div>
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
-
+	
+	<div align="center">
+		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
-</div>
-
-<div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/Configure+General">General Config Help</a>
-</div>
-
-<div class="right_links">
-	<a id="save" onclick="document.fullform.submit();">Save Changes</a>
-</div>
-
-</form>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-	\$('#help').corner("round");
-	\$('#save').corner("round");
-</script>
-
-
-
-
+	
+	<div id="config_nav">
+		<ul>
+			<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
+			<li><a class="config_menu nav_active" id="config_nav_general" href="../general">General</a></li>
+			<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
+			<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
+			<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
+			<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
+			<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
+			<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
+			<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
+			<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
+		</ul>
+	</div>
+	
+	<div id="config_container" class="config_margin">
+		<div id="config_content">
+			
+<!--************************************
+			PAGE CONTENT IS BELOW
+	************************************ -->
+			
+			<form action="saveGeneral" method="post" name="fullform">
+			<div class="EntryBlock">
+			<fieldset class="EntryFieldSet">
+				
+				<legend>Web Server <font color="red">(changes require restart)</font></legend>
+				
+				<strong>Host:</strong><br/>
+				Host SABnzbd should listen on.<br/>
+				<input type="text" name="host" value="$host"/>
+				
+				<br/><br/>
+				<strong>Port:</strong><br/>
+				Port SABnzbd should listen on.<br/>
+				<input type="text" name="port" value="$port"/>
+				
+				<br/><br/>
+				<strong>Web Username:</strong><br/>
+				Authentication Username.<br/>
+				<input type="text" name="username" value="$username"/>
+				
+				<br/><br/>
+				<strong>Web Password:</strong><br/>
+				Authentication Password.<br/>
+				<input type="password" name="password" value="$password"/>
+				
+				<br/><br/>
+				<strong>Web Interface:</strong><br/>
+				Choose a skin.<br/>
+				<select name="web_dir">
+				<!--#for $webline in $web_list#-->
+				<!--#if $webline.lower() == $web_dir.lower()#-->
+					<option value="$webline" selected>$webline</option>
+				<!--#else#-->
+					<option value="$webline">$webline</option>
+				<!--#end if#-->
+				<!--#end for#-->
+				</select>
+				
+				<!--#if $web_colors#-->
+				<br/><br/>
+				<strong>Web Interface Schema:</strong><br/>
+				Choose a color scheme for the skin.<br/>
+				<select name="web_color">
+				<!--#for $webline in $web_colors#-->
+				<!--#if $webline.lower() == $web_color.lower()#-->
+					<option value="$webline" selected>$webline</option>
+				<!--#else#-->
+					<option value="$webline">$webline</option>
+				<!--#end if#-->
+				<!--#end for#-->
+				</select>
+				<!--#end if#-->
+				
+				<br/><br/>
+				<strong>Secondary Web Interface:</strong><br/>
+				Activate a secondary skin.<br/>
+				<select name="web_dir2">
+				<!--#for $webline in $web_list2#-->
+				<!--#if $webline.lower() == $web_dir2.lower()#-->
+					<option value="$webline" selected>$webline</option>
+				<!--#else#-->
+					<option value="$webline">$webline</option>
+				<!--#end if#-->
+				<!--#end for#-->
+				</select>
+				
+			</fieldset>
+			</div>
+			
+			<div class="EntryBlock">
+			<fieldset class="EntryFieldSet">
+				
+				<legend>Tuning</legend>
+				<strong>Queue auto refresh interval:</strong><br/>
+				Refresh interval of the queue web-interface page(sec, 0= none)<br/>
+				<input type="text" name="refresh_rate" value="$refresh_rate"/>
+				
+				<br/><br/>
+				<strong>RSS checking rate:</strong><br/>
+				Checking rate  (times per day 1..48)<br/>
+				<input type="text" name="rss_rate" value="$rss_rate"/>
+				
+				<br/><br/>
+				<strong>Download speed limit:</strong><br/>
+				Download speed limit in kilobytes per second(kB/s).<br/>
+				<input type="text" name="bandwith_limit" value="$bandwith_limit"/>
+				
+				<br/><br/>
+				<strong>Article Cache Limit:</strong><br/>
+				Cache articles in memory (reduce disk access).<br/>
+				<input type="text" name="cache_limitstr" value="$cache_limitstr"/>
+				
+				<br/><br/>
+				<strong>Cleanup List:</strong><br/>
+				List of file (extensions) that should be deleted after download.<br/>
+				For example: ".nfo," or ".nfo, .sfv"<br/>
+				<input type="text" name="cleanup_list" value="$cleanup_list"/>
+				
+			</fieldset>
+			</div>
+			
+<!--************************************
+			PAGE CONTENT IS ABOVE
+	************************************ -->
+			
+		</div>
+	</div>
+	
+	<div class="left_links config_margin">
+		<a id="help" target="_blank" href="$helpuri/Configure+General">General Config Help</a>
+	</div>
+	
+	<div class="right_links">
+		<a id="save" onclick="document.fullform.submit();">Save Changes</a>
+	</div>
+	
+	</form>
+	
+	<script language="javascript">
+		\$('.config_menu').corner("round tl bl");
+		\$('#config_container').corner("round");
+		\$('#help').corner("round");
+		\$('#save').corner("round");
+	</script>
+	
 </body>
 </html>

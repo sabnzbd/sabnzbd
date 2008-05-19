@@ -1,119 +1,129 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
+	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
 	<script type="text/javascript" src="../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../static/javascripts/jquery.corner.js"></script>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
+	<link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
+	<style>
+	<!--
+		body {background: #ddd;}
+	-->
+	</style>
+	
 </head>
 <body>
-
-<style>
-<!--
-	body {background: #ddd;}
--->
-</style>
-
-<body>
-<div align="center">
-	<a href="../" style="text-decoration:none; color:black">&laquo; go back <img src="../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-<div id="config_nav">
-	<ul>
-		<li><a class="config_menu nav_active" id="config_nav_connections" href="../connections">Connections</a></li>
-		<li><a class="config_menu" id="config_nav_general" href="../config/general">General</a></li>
-		<li><a class="config_menu" id="config_nav_directories" href="../config/directories">Directories</a></li>
-		<li><a class="config_menu" id="config_nav_switches" href="../config/switches">Switches</a></li>
-		<li><a class="config_menu" id="config_nav_server" href="../config/server">Servers</a></li>
-		<li><a class="config_menu" id="config_nav_categories" href="../config/categories">Categories</a></li>
-		<li><a class="config_menu" id="config_nav_scheduling" href="../config/scheduling">Scheduling</a></li>
-		<li><a class="config_menu" id="config_nav_rss" href="../config/rss">RSS</a></li>
-		<li><a class="config_menu" id="config_nav_email" href="../config/email">Email</a></li>
-		<li><a class="config_menu" id="config_nav_newzbin" href="../config/newzbin">Newzbin</a></li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-<!-- ************************************
-	 		PAGE CONTENT IS BELOW
-     ************************************ -->
-
-<div style="text-align:center"><small>
-Version:&nbsp;$version&nbsp;&nbsp;|&nbsp;&nbsp;Uptime:&nbsp;$uptime&nbsp;&nbsp;|&nbsp;&nbsp;<a href="./showlog">Show&nbsp;Logging</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="./showweb">Show&nbsp;Weblogging</a>&nbsp;&nbsp;|&nbsp;&nbsp;Logging:&nbsp;<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value" style="font-size:x-small">
-    <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
-    <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
-    <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
-</select>
-<!--#if int($cache_limit)#-->&nbsp;&nbsp;|&nbsp;&nbsp;<b>$cache_art</b>&nbsp;articles&nbsp;buffered&nbsp;in&nbsp;<b>$cache_size</b>&nbsp;bytes<!--#end if#-->
-</small></div>
-
-<!--#if $servers#-->
-    <!--#for $server in $servers#-->
-	<fieldset class="EntryFieldSet">
-		<legend><!--#if int($server[4])#--><img style="float:left" src="../static/images/plush_default_config/config_encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->$server[0]:$server[1]: $server[2]</legend>
-            <small><ol>
-            <!--#for $thrd in $server[3]#-->
-                <li>&rArr; $thrd[1]<br/>&rArr; $thrd[2]<br/>&rArr; $thrd[3]</li>
-            <!--#end for#-->
-            </ol></small>
-        </li>
-	</fieldset>
-    <!--#end for#-->
-<!--#end if#-->
-
-<!--#if $lastmail#-->
-	<fieldset class="EntryFieldSet">
-		<legend>Email test result</legend>
-		<small>$lastmail</small>
-	</fieldset>
-<!--#end if#-->
-
-<!--#if $warnings#-->
-	<fieldset class="EntryFieldSet">
-		<legend>Lastest Warnings <small>(<a href="./clearwarnings">clear</a>)</small></legend>
-		<small><ul>
-    	<!--#for $warn in $warnings#-->
-        	<li>$warn</li>
-    	<!--#end for#-->
-		</ul></small>
-	</fieldset>
-<!--#end if#-->
-
-
-
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
-
+	
+	<div align="center">
+		<a href="../" style="text-decoration:none; color:black">&laquo; go back <img src="../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
-</div>
-
-<div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/GUI+Connections">Connections Help</a>
-</div>
-
-
-<div class="right_links">
-	<a id="force_disconnect" href="./disconnect">Force Disconnect</a>
-</div>
-
-<div class="right_links">
-	<a id="test_email" href="./testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
-</div>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-	\$('#help').corner("round");
-
-	\$('#test_email').corner("round");
-	\$('#force_disconnect').corner("round");
-</script>
+	
+	<div id="config_nav">
+		<ul>
+			<li><a class="config_menu nav_active" id="config_nav_connections" href="../connections">Connections</a></li>
+			<li><a class="config_menu" id="config_nav_general" href="../config/general">General</a></li>
+			<li><a class="config_menu" id="config_nav_directories" href="../config/directories">Directories</a></li>
+			<li><a class="config_menu" id="config_nav_switches" href="../config/switches">Switches</a></li>
+			<li><a class="config_menu" id="config_nav_server" href="../config/server">Servers</a></li>
+			<li><a class="config_menu" id="config_nav_categories" href="../config/categories">Categories</a></li>
+			<li><a class="config_menu" id="config_nav_scheduling" href="../config/scheduling">Scheduling</a></li>
+			<li><a class="config_menu" id="config_nav_rss" href="../config/rss">RSS</a></li>
+			<li><a class="config_menu" id="config_nav_email" href="../config/email">Email</a></li>
+			<li><a class="config_menu" id="config_nav_newzbin" href="../config/newzbin">Newzbin</a></li>
+		</ul>
+	</div>
+	
+	<div id="config_container" class="config_margin">
+		<div id="config_content">
+			
+	<!--************************************
+				PAGE CONTENT IS BELOW
+		************************************ -->
+			
+			<div style="text-align:center"><small>
+				Version:&nbsp;$version&nbsp;&nbsp;|&nbsp;&nbsp;Uptime:&nbsp;$uptime&nbsp;&nbsp;|&nbsp;&nbsp;
+				<a href="./showlog">Show&nbsp;Logging</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="./showweb">Show&nbsp;Weblogging</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+				Logging:&nbsp;
+				<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value" style="font-size:x-small">
+					<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
+					<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
+					<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
+				</select>
+				<!--#if int($cache_limit)#-->&nbsp;&nbsp;|&nbsp;&nbsp;<b>$cache_art</b>&nbsp;articles&nbsp;buffered&nbsp;in&nbsp;<b>$cache_size</b>&nbsp;bytes<!--#end if#-->
+			</small></div>
+			
+			<!--#if $servers#-->
+				<!--#for $server in $servers#-->
+				<fieldset class="EntryFieldSet">
+					<legend>
+						<!--#if int($server[4])#--><img style="float:left" src="../static/images/plush_default_config/config_encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->
+						$server[0]:$server[1]: $server[2]
+					</legend>
+					<small><ol>
+					<!--#for $thrd in $server[3]#-->
+						<li>&rArr; $thrd[1]<br/>&rArr; $thrd[2]<br/>&rArr; $thrd[3]</li>
+					<!--#end for#-->
+					</ol></small>
+				</fieldset>
+			    <!--#end for#-->
+			<!--#end if#-->
+			
+			<!--#if $lastmail#-->
+				<fieldset class="EntryFieldSet">
+					<legend>Email test result</legend>
+					<small>$lastmail</small>
+				</fieldset>
+			<!--#end if#-->
+			
+			<!--#if $warnings#-->
+				<fieldset class="EntryFieldSet">
+					<legend>
+						Lastest Warnings
+						<small>(<a href="./clearwarnings">clear</a>)</small>
+					</legend>
+					<small><ul>
+					<!--#for $warn in $warnings#-->
+						<li>$warn</li>
+					<!--#end for#-->
+					</ul></small>
+				</fieldset>
+			<!--#end if#-->
+			
+<!--************************************
+			PAGE CONTENT IS ABOVE
+	************************************ -->
+		
+		</div>
+	</div>
+	
+	<div class="left_links config_margin">
+		<a id="help" target="_blank" href="$helpuri/GUI+Connections">Connections Help</a>
+	</div>
+	
+	<div class="right_links">
+		<a id="force_disconnect" href="./disconnect">Force Disconnect</a>
+	</div>
+	
+	<div class="right_links">
+		<a id="test_email" href="./testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
+	</div>
+	
+	<script language="javascript">
+		\$('.config_menu').corner("round tl bl");
+		\$('#config_container').corner("round");
+		\$('#help').corner("round");
+		
+		\$('#test_email').corner("round");
+		\$('#force_disconnect').corner("round");
+	</script>
+	
 </body>
 </html>

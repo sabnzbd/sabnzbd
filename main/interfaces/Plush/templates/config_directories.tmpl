@@ -1,250 +1,251 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
+	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
 	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
+	<style>
+	<!--
+		body {background: #ddd;}
+	-->
+	</style>
+	
 </head>
-
-<style>
-<!--
-	body {background: #ddd;}
--->
-</style>
-
 <body>
-<div align="center">
-	<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-
-<div id="config_nav">
-	<ul>
-		<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
-		<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
-		<li><a class="config_menu nav_active" id="config_nav_directories" href="../directories">Directories</a></li>
-		<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
-		<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
-		<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
-		<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
-		<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
-		<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
-		<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-<!-- ************************************
-	 		PAGE CONTENT IS BELOW
-     ************************************ -->
-
-<p><strong>
-    <em>NOTE:</em> Folders will be created automatically when Saving.<br />
-</strong></p>
-<form action="saveDirectories" method="post" name="fullform">
-<div class="EntryBlock">
-  <fieldset class="EntryFieldSet">
-    <legend>User Folders</legend>
-    <emp>In "$my_home"</emp><br><br>
-    <strong>Temporary Download Folder:</strong><br>
-    Location to store unprocessed downloads.<br>
-    <input type="text" size="40" name="download_dir" value="$download_dir">
-    <br>
-    <br>
-    <strong>Minimum free space for Temporary Download Folder:</strong><br>
-    Auto-pause when free space is beneath this value.<br>
-    <input type="text" size="10" name="download_free" value="$download_free">
-    <br>
-    <br>
-    <strong>Completed Download Folder:</strong><br>
-    (can be overruled by user-defined categories)<br>
-    <input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
-    <!--#if not $nt#-->
-        <br>
-        <br>
-        <strong>Permissions for completed downloads:</strong><br>
-        Set permissions pattern for completed files, octal notation only!<br>
-        <input type="text" size="10" name="permissions" value="$permissions">
-    <!--#end if#-->
-    <br>
-    <br>
-    <strong>Watched Folder:</strong><br>
-    Folder to monitor for .nzb and .zip files.<br>
-    <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
-    <br>
-    <br>
-    <strong>Watched Folder scan speed:</strong><br>
-    Number of seconds between scans for .nzb files.<br>
-    <input type="text" size="10" name="dirscan_speed" value="$dirscan_speed">
-    <br>
-    <br>
-    <strong>Folder containing the user scripts:</strong><br>
-    Folder containing user scripts for post-processing.<br>
-    <input type="text" size="40" name="script_dir" value="$script_dir">
-  </fieldset>
-  <fieldset class="EntryFieldSet">
-    <legend>System folders</legend>
-    <emp>In "$my_lcldata"</emp><br><br>
-    <strong>Cache folder:</strong><br>
-    Location for temporary storage.<br>
-    <input type="text" size="40" name="cache_dir" value="$cache_dir">
-    <br>
-    <br>
-    <strong>Log folder:</strong><br>
-    Location of log files for SABnzbd.<br>
-    <input type="text" size="40" name="log_dir" value="$log_dir">
-    <br>
-    <br>
-    <strong>Backup folder for .nzb:</strong><br>
-    Location where .nzb will be backed up.<br>
-    <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
-  </fieldset>
-
-<fieldset class="EntryFieldSet">
-<legend>Sorting Folders</legend>
-    <strong>Enable TV Sorting:</strong><br/>
-    <span class="tips">Enable sorting and renaming of episodes.</span><br/>
-    <input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
-    <input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
-    <br class="clear" />
-
-     <div id="Keytable">
-        <div class="row">
-                <span class="heading1">Meaning</span>
-                <span class="heading2">Pattern</span>
-                <span class="heading3">Result</span>
-        </div>
-        <div class="row">
-            <span class="tripleheight">Show Name</span>
-            <span class="pattern">%sn</span>
-            <span class="result">Show Name</span>
-        <br />
-            <span class="pattern">%s.n</span>
-            <span class="result">Show.Name</span>
-        <br />
-            <span class="pattern">%s_n</span>
-            <span class="result">Show_Name</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Season Number</span>
-            <span class="pattern">%s</span>
-            <span class="result">1</span>
-        <br />
-            <span class="pattern">%0s</span>
-            <span class="result">01</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Episode Number</span>
-            <span class="pattern">%e</span>
-            <span class="result">5</span>
-        <br />
-            <span class="pattern">%0e</span>
-            <span class="result">05</span>
-        </div>
-        <div class="row">
-            <span class="tripleheight">Episode Name</span>
-            <span class="pattern">%en</span>
-            <span class="result">Episode Name</span>
-        <br />
-            <span class="pattern">%e.n</span>
-            <span class="result">Episode.Name</span>
-        <br />
-            <span class="pattern">%e_n</span>
-            <span class="result">Episode_Name</span>
-        </div>
-        <div class="row">
-            <span class="normalheight">File Extension</span>
-            <span class="pattern">%ext</span>
-            <span class="result">avi</span>
-        </div>
-        <!--
-        <span class="">Original Filename</span>
-        <span class="">%fn</span>
-        <span class="">Episode Name</span>
-        <br />-->
-    </div><br class="clear" />
-    
-    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
-    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
-    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
-    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
-    <input type="button" onclick="tvClear()" value="Clear"/><br class="clear" /><br class="clear" />
-    <input type="text" style="width:500px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br class="clear" />
-    Example: <span id="previewtv"></span>
-</fieldset>
-
-
-</div>
-
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
+	
+	<div align="center">
+		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
-</div>
-
-<div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/Configure+Directories">Directories Help</a>
-</div>
-
-<div class="right_links">
-	<a id="save" onclick="document.fullform.submit();">Save Changes</a>
-</div>
-
-</form>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-	\$('#help').corner("round");
-	\$('#save').corner("round");
-</script>
-
-<script type="text/javascript">
-	// switch's TV sort code
-    function tvAdd(val){
-        var tv = document.getElementById('tvfoldername'); 
-        tv.value = tv.value + val;
-        previewtv();
-    }
-    function tvSet(val){
-        var tv = document.getElementById('tvfoldername'); 
-        tv.value = val;
-        previewtv();
-    }
-    function tvClear(){
-        var tv = document.getElementById('tvfoldername'); 
-        tv.value = '';
-        previewtv();
-    }
-    function previewtv(){
-            var input = document.getElementById('tvfoldername').value;
-            var slash = "\\";
-            input.toLowerCase()
-            input = input.replace(/%ext/g,'avi');
-            input = input.replace(/%sn/g,'Show Name');
-            input = input.replace(/%\s.n/g,'Show.Name');
-            input = input.replace(/%\s_n/g,'Show_Name');
-            input = input.replace(/%0s/g,'01');
-            input = input.replace(/%s/g,'1');
-            input = input.replace(/%en/g,'Episode Name');
-            input = input.replace(/%e\.n/g,'Episode.Name');
-            input = input.replace(/%e\_n/g,'Episode_Name');
-            input = input.replace(/%0e/g,'05');
-            input = input.replace(/%e/g,'5');
-            var com = document.getElementById('complete_dir').value;
-            if (com.search("/") > 0) slash = "/"
-            var outbox = document.getElementById('previewtv').innerHTML = com+slash+input;
-    }
-</script>
-
-
-
-
+	
+	<div id="config_nav">
+		<ul>
+			<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
+			<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
+			<li><a class="config_menu nav_active" id="config_nav_directories" href="../directories">Directories</a></li>
+			<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
+			<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
+			<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
+			<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
+			<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
+			<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
+			<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
+		</ul>
+	</div>
+	
+	<div id="config_container" class="config_margin">
+		<div id="config_content">
+			
+<!--************************************
+			PAGE CONTENT IS BELOW
+	************************************ -->
+			
+			<p><strong><em>NOTE:</em> Folders will be created automatically when Saving.</strong></p>
+			
+			<form action="saveDirectories" method="post" name="fullform">
+			<div class="EntryBlock">
+			<fieldset class="EntryFieldSet">
+				
+				<legend>User Folders</legend>
+				<emp>In "$my_home"</emp>
+				
+				<br/><br/>
+				<strong>Temporary Download Folder:</strong><br/>
+				Location to store unprocessed downloads.<br/>
+				<input type="text" size="40" name="download_dir" value="$download_dir">
+				
+				<br/><br/>
+				<strong>Minimum free space for Temporary Download Folder:</strong><br/>
+				Auto-pause when free space is beneath this value.<br/>
+				<input type="text" size="10" name="download_free" value="$download_free">
+				
+				<br/>
+				<strong>Completed Download Folder:</strong><br/>
+				(can be overruled by user-defined categories)<br/>
+				<input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
+				
+				<!--#if not $nt#-->
+				<br/>
+				<strong>Permissions for completed downloads:</strong><br/>
+				Set permissions pattern for completed files, octal notation only!<br/>
+				<input type="text" size="10" name="permissions" value="$permissions">
+				<!--#end if#-->
+				
+				<br/>
+				<strong>Watched Folder:</strong><br/>
+				Folder to monitor for .nzb and .zip files.<br/>
+				<input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
+				
+				<br/>
+				<strong>Watched Folder scan speed:</strong><br/>
+				Number of seconds between scans for .nzb files.<br/>
+				<input type="text" size="10" name="dirscan_speed" value="$dirscan_speed">
+				
+				<br/>
+				<strong>Folder containing the user scripts:</strong><br/>
+				Folder containing user scripts for post-processing.<br/>
+				<input type="text" size="40" name="script_dir" value="$script_dir">
+			</fieldset>
+			
+			<fieldset class="EntryFieldSet">
+				
+				<legend>System folders</legend>
+				<emp>In "$my_lcldata"</emp><br/><br/>
+				
+				<strong>Cache folder:</strong><br/>
+				Location for temporary storage.<br/>
+				<input type="text" size="40" name="cache_dir" value="$cache_dir">
+				
+				<br/><br/>
+				<strong>Log folder:</strong><br/>
+				Location of log files for SABnzbd.<br/>
+				<input type="text" size="40" name="log_dir" value="$log_dir">
+				
+				<br/><br/>
+				<strong>Backup folder for .nzb:</strong><br/>
+				Location where .nzb will be backed up.<br/>
+				<input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
+			</fieldset>
+			
+			<fieldset class="EntryFieldSet">
+				
+				<legend>Sorting Folders</legend>
+				
+				<strong>Enable TV Sorting:</strong><br/>
+				<span class="tips">Enable sorting and renaming of episodes.</span><br/>
+				<input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
+				<input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
+				<br class="clear" />
+				
+				<div id="Keytable">
+					<div class="row">
+						<span class="heading1">Meaning</span>
+						<span class="heading2">Pattern</span>
+						<span class="heading3">Result</span>
+					</div>
+					<div class="row">
+						<span class="tripleheight">Show Name</span>
+						<span class="pattern">%sn</span>
+						<span class="result">Show Name</span>
+						<br/>
+						<span class="pattern">%s.n</span>
+						<span class="result">Show.Name</span>
+						<br/>
+						<span class="pattern">%s_n</span>
+						<span class="result">Show_Name</span>
+					</div>
+					<div class="row">
+						<span class="doubleheight">Season Number</span>
+						<span class="pattern">%s</span>
+						<span class="result">1</span>
+						<br/>
+						<span class="pattern">%0s</span>
+						<span class="result">01</span>
+					</div>
+					<div class="row">
+						<span class="doubleheight">Episode Number</span>
+						<span class="pattern">%e</span>
+						<span class="result">5</span>
+						<br/>
+						<span class="pattern">%0e</span>
+						<span class="result">05</span>
+					</div>
+					<div class="row">
+						<span class="tripleheight">Episode Name</span>
+						<span class="pattern">%en</span>
+						<span class="result">Episode Name</span>
+						<br />
+						<span class="pattern">%e.n</span>
+						<span class="result">Episode.Name</span>
+						<br />
+						<span class="pattern">%e_n</span>
+						<span class="result">Episode_Name</span>
+					</div>
+					<div class="row">
+						<span class="normalheight">File Extension</span>
+						<span class="pattern">%ext</span>
+						<span class="result">avi</span>
+					</div>
+				</div><br class="clear" />
+				
+				<input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
+				<input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
+				<input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
+				<input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
+				<input type="button" onclick="tvClear()" value="Clear"/><br class="clear" /><br class="clear" />
+				<input type="text" style="width:500px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br class="clear" />
+				Example: <span id="previewtv"></span>
+				
+			</fieldset>
+			</div>
+			
+<!--************************************
+			PAGE CONTENT IS ABOVE
+	************************************ -->
+			
+		</div>
+	</div>
+	
+	<div class="left_links config_margin">
+		<a id="help" target="_blank" href="$helpuri/Configure+Directories">Directories Help</a>
+	</div>
+	
+	<div class="right_links">
+		<a id="save" onclick="document.fullform.submit();">Save Changes</a>
+	</div>
+	
+	</form>
+	
+	<script language="javascript">
+		\$('.config_menu').corner("round tl bl");
+		\$('#config_container').corner("round");
+		\$('#help').corner("round");
+		\$('#save').corner("round");
+		
+		// switch's TV sort code
+		function tvAdd(val){
+			var tv = document.getElementById('tvfoldername'); 
+			tv.value = tv.value + val;
+			previewtv();
+		}
+		function tvSet(val){
+			var tv = document.getElementById('tvfoldername'); 
+			tv.value = val;
+			previewtv();
+		}
+		function tvClear(){
+			var tv = document.getElementById('tvfoldername'); 
+			tv.value = '';
+			previewtv();
+		}
+		function previewtv(){
+			var input = document.getElementById('tvfoldername').value;
+			var slash = "\\";
+			input.toLowerCase()
+			input = input.replace(/%ext/g,'avi');
+			input = input.replace(/%sn/g,'Show Name');
+			input = input.replace(/%\s.n/g,'Show.Name');
+			input = input.replace(/%\s_n/g,'Show_Name');
+			input = input.replace(/%0s/g,'01');
+			input = input.replace(/%s/g,'1');
+			input = input.replace(/%en/g,'Episode Name');
+			input = input.replace(/%e\.n/g,'Episode.Name');
+			input = input.replace(/%e\_n/g,'Episode_Name');
+			input = input.replace(/%0e/g,'05');
+			input = input.replace(/%e/g,'5');
+			var com = document.getElementById('complete_dir').value;
+			if (com.search("/") > 0) slash = "/"
+			var outbox = document.getElementById('previewtv').innerHTML = com+slash+input;
+		}
+	</script>
+	
 </body>
 </html>

@@ -1,108 +1,118 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
+	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
 	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
+	<style>
+	<!--
+		body {background: #ddd;}
+	-->
+	</style>
+	
 </head>
-
-<style>
-<!--
-	body {background: #ddd;}
--->
-</style>
-
 <body>
-<div align="center">
-	<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-
-<div id="config_nav">
-	<ul>
-		<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
-		<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
-		<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
-		<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
-		<li><a class="config_menu nav_active" id="config_nav_server" href="../server">Servers</a></li>
-		<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
-		<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
-		<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
-		<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
-		<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-<!-- ************************************
-	 		PAGE CONTENT IS BELOW
-     ************************************ -->
-
-<div class="EntryBlock">
-  <form action="addServer" method="post">
-    <fieldset class="EntryFieldSet">
-      <legend>Add server</legend>
-      Host:<br><input type="text" size="25" name="host"><br>
-      Port:<br><input type="text" size="25" name="port"><br>
-      Username:<br><input type="text" size="25" name="username"><br>
-      Password:<br><input type="password" size="25" name="password"><br>
-      Timeout:<br><input type="text" size="25" name="timeout" value="120"><br>
-      Connections:<br><input type="text" size="25" name="connections"><br>
-      SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:<br><input type="radio" name="ssl" value="0" "checked=1"> No
-                     <input type="radio" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->> Yes
-                 <br>
-      Backup server:<br><input type="radio" name="fillserver" value="0" "checked=1"> No
-                     <input type="radio" name="fillserver" value="1"> Yes
-                 <br>
-      <p><input type="submit" value="Add Server"></p>
-    </fieldset>
-  </form>
-<!--#for $server in $servers#-->
-  <form action="saveServer" method="post">
-    <fieldset class="EntryFieldSet">
-      <legend>$server</legend>
-      Host:<br><input type="text" size="25" name="host" value="$servers[$server]['host']"><br>
-      Port:<br><input type="text" size="25" name="port" value="$servers[$server]['port']"><br>
-      Username:<br><input type="text" size="25" name="username" value="$servers[$server]['username']"><br>
-      Password:<br><input type="password" size="25" name="password" value="$servers[$server]['password']"><br>
-      Timeout:<br><input type="text" size="25" name="timeout" value="$servers[$server]['timeout']"><br>
-      Connections:<br><input type="text" size="25" name="connections" value="$servers[$server]['connections']"><br>
-      SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:<br><input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 or int($have_ssl) == 0 then "checked=1" else ""#--> /> No
-                     <input type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /> Yes
-                 <br>
-      Backup server:<br><input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
-                     <input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes
-                 <br>
-      <input type="hidden" name="server" value="$server">
-      <p><input type="submit" value="Save Changes"></p>
-      <p><input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="Remove Server"></p>
-    </fieldset>
-  </form>
-<!--#end for#-->
-</div>
-
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
+	
+	<div align="center">
+		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
-</div>
-
-<div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/Configure+Servers">Servers Help</a>
-</div>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-	\$('#help').corner("round");
-
-</script>
-
+	
+	<div id="config_nav">
+		<ul>
+			<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
+			<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
+			<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
+			<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
+			<li><a class="config_menu nav_active" id="config_nav_server" href="../server">Servers</a></li>
+			<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
+			<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
+			<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
+			<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
+			<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
+		</ul>
+	</div>
+	
+	<div id="config_container" class="config_margin">
+		<div id="config_content">
+			
+<!--************************************
+			PAGE CONTENT IS BELOW
+	************************************ -->
+			
+			<div class="EntryBlock">
+				
+			<form action="addServer" method="post">
+			<fieldset class="EntryFieldSet">
+				
+				<legend>Add server</legend>
+				Host:<br/><input type="text" size="25" name="host"/><br/>
+				Port:<br/><input type="text" size="25" name="port"/><br/>
+				Username:<br/><input type="text" size="25" name="username"/><br/>
+				Password:<br/><input type="password" size="25" name="password"/><br/>
+				Timeout:<br/><input type="text" size="25" name="timeout" value="120/"><br/>
+				Connections:<br/><input type="text" size="25" name="connections"/><br/>
+				SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:<br/>
+					<input type="radio" name="ssl" value="0" "checked=1"/> No 
+					<input type="radio" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/> Yes<br/>
+				Backup server:<br/>
+					<input type="radio" name="fillserver" value="0" "checked=1"/> No
+					<input type="radio" name="fillserver" value="1"/> Yes<br/>
+				<p><input type="submit" value="Add Server"/></p>
+				
+			</fieldset>
+			</form>
+			
+			<!--#for $server in $servers#-->
+			<form action="saveServer" method="post">
+			<fieldset class="EntryFieldSet">
+				
+				<legend>$server</legend>
+				Host:<br/><input type="text" size="25" name="host" value="$servers[$server]['host']"/><br/>
+				Port:<br/><input type="text" size="25" name="port" value="$servers[$server]['port']"/><br/>
+				Username:<br/><input type="text" size="25" name="username" value="$servers[$server]['username']"/><br/>
+				Password:<br/><input type="password" size="25" name="password" value="$servers[$server]['password']"/><br/>
+				Timeout:<br/><input type="text" size="25" name="timeout" value="$servers[$server]['timeout']"/><br/>
+				Connections:<br/><input type="text" size="25" name="connections" value="$servers[$server]['connections']"/><br/>
+				SSL<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->:<br/>
+					<input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 or int($have_ssl) == 0 then "checked=1" else ""#--> /> No
+					<input type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /> Yes<br/>
+				Backup server:<br/>
+					<input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> /> No
+					<input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /> Yes<br/>
+				<input type="hidden" name="server" value="$server"/>
+				<p><input type="submit" value="Save Changes"/></p>
+				<p><input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="Remove Server"/></p>
+				
+			</fieldset>
+			</form>
+			<!--#end for#-->
+			
+			</div>
+			
+<!--************************************
+			PAGE CONTENT IS ABOVE
+	************************************ -->
+			
+		</div>
+	</div>
+	
+	<div class="left_links config_margin">
+		<a id="help" target="_blank" href="$helpuri/Configure+Servers">Servers Help</a>
+	</div>
+	
+	<script language="javascript">
+		\$('.config_menu').corner("round tl bl");
+		\$('#config_container').corner("round");
+		\$('#help').corner("round");
+	</script>
+	
 </body>
 </html>

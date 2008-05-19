@@ -1,209 +1,214 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
+	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
+	
 	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
-    <!--#if $color_scheme == 'plush-default.css'#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	
+	<!--#if $color_scheme == 'plush-default.css'#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
 	<!--#else#-->
-    <link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
-    <!--#end if#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/plush-default.css"/>
+	<!--#end if#-->
+	
+	<style>
+	<!--
+		body {background: #ddd;}
+	-->
+	</style>
+	
 </head>
-
-<style>
-<!--
-	body {background: #ddd;}
--->
-</style>
-
 <body>
-<div align="center">
-	<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
-</div>
-
-<div id="config_nav">
-	<ul>
-		<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
-		<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
-		<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
-		<li><a class="config_menu nav_active" id="config_nav_switches" href="../switches">Switches</a></li>
-		<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
-		<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
-		<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
-		<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
-		<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
-		<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
-	</ul>
-</div>
-
-<div id="config_container" class="config_margin">
-	<div id="config_content">
-
-<!-- ************************************
-	 		PAGE CONTENT IS BELOW
-     ************************************ -->
-
-
-<form action="saveSwitches" method="post" name="fullform">
-<div class="EntryBlock">
-  <fieldset class="EntryFieldSet">
-    <legend>Processing switches</legend>
-    <strong>Enable Unrar:</strong><br>
-    Enable built-in unrar functionality.<br>
-    <input type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Enable Unzip:</strong><br>
-    Enable built-in unzip functionality.<br>
-    <input type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Enable Filejoin:</strong><br>
-    Join files ending in .001, .002 etc. into one file.<br>
-    <input type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Enable Par Cleanup:</strong><br>
-    Cleanup par files (if verifiying/repairing succeded).<br>
-    <input type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Fail on yEnc crc Errors:</strong><br>
-    Use backup servers on yEnc crc errors.<br>
-    <input type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Only get articles for top of the queue:</strong><br>
-    Enable for less memory usage.<br/> Disable to prevent slow jobs from blocking the queue<br/>
-    <input type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Post-process only verified jobs:</strong><br>
-    Only perform post-processing on jobs that passed all PAR2 checks.<br>
-    <input type="radio" name="safe_postproc" value="0" <!--#if $safe_postproc == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Default post-processing:</strong><br>
-    Used when no post-processing is defined by the category.<br>
-    <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
-    <input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
-    <input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
-    <input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
-    <br>
-    <br>
-    <strong>Default user script:</strong><br>
-    Used when no user script is defined by the category.<br>
-    <select name="script">
-    <!--#for $sc in $script_list#-->
-        <!--#if $sc.lower() == $script.lower()#-->
-            <option value="$sc" selected>$sc</option>
-        <!--#else#-->
-            <option value="$sc">$sc</option>
-        <!--#end if#-->
-    <!--#end for#-->
-    </select>
-    <br>
-    <br>
-  </fieldset>
-  <fieldset class="EntryFieldSet">
-    <legend>Other switches</legend>
-    <strong>Enable periodic Save:</strong><br>
-    Enabling will make the queue save it's state after every completed file.<br>
-    <input type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Disconnect on empty queue:</strong><br>
-    Disconnect from Usenet server(s) when queue is empty.<br>
-    <input type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Create group Folders:</strong><br>
-    Place downloads into group folders.<br>
-    <input type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="create_group_folders" value="1" <!--#if $create_group_folders > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Send Group</strong><br>
-    Send group command before requesting articles.<br>
-    <input type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Sort by age:</strong><br>
-    Automatically sort items by (average) age.<br>
-    <input type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Check for new release:</strong><br>
-    Weekly check for new SABnzbd release.<br>
-    <input type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Replace spaces in foldername:</strong><br>
-    Replace spaces with underscores in foldernames.<br>
-    <input type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Launch browser on startup:</strong><br>
-    Launch the browser when starting SABnzbd.<br>
-    <input type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Ignore sample files:</strong><br>
-    Filters out sample files from the queue.<br>
-    <input type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
-    <br>
-    <br>
-    <strong>Pause downloading during post processing:</strong><br>
-    Pauses downloading at the start of post processing and resumes when finished.<br>
-    <input type="radio" name="pause_on_post_processing" value="0" <!--#if $pause_on_post_processing == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> Yes
-  </fieldset>
-</div>
-<!-- ************************************
-	 		PAGE CONTENT IS ABOVE
-     ************************************ -->
-
+	
+	<div align="center">
+		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
-</div>
-
-<div class="left_links config_margin">
-	<a id="help" target="_blank" href="$helpuri/Configure+Switches">Switches Help</a>
-</div>
-
-<div class="right_links">
-	<a id="save" onclick="document.fullform.submit();">Save Changes</a>
-</div>
-
-</form>
-
-<script language="javascript">
-	\$('.config_menu').corner("round tl bl");
-	\$('#config_container').corner("round");
-	\$('#help').corner("round");
-	\$('#save').corner("round");
-</script>
-
-
-
-
+	
+	<div id="config_nav">
+		<ul>
+			<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
+			<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
+			<li><a class="config_menu" id="config_nav_directories" href="../directories">Directories</a></li>
+			<li><a class="config_menu nav_active" id="config_nav_switches" href="../switches">Switches</a></li>
+			<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
+			<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
+			<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
+			<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
+			<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
+			<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
+		</ul>
+	</div>
+	
+	<form action="saveSwitches" method="post" name="fullform">
+	
+	<div id="config_container" class="config_margin">
+		<div id="config_content">
+			
+<!--************************************
+			PAGE CONTENT IS BELOW
+	************************************ -->
+			
+			<div class="EntryBlock">
+			<fieldset class="EntryFieldSet">
+				
+				<legend>Processing switches</legend>
+				
+				<strong>Enable Unrar:</strong><br/>
+				Enable built-in unrar functionality.<br/>
+				<input type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Enable Unzip:</strong><br/>
+				Enable built-in unzip functionality.<br/>
+				<input type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Enable Filejoin:</strong><br/>
+				Join files ending in .001, .002 etc. into one file.<br/>
+				<input type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Enable Par Cleanup:</strong><br/>
+				Cleanup par files (if verifiying/repairing succeded).<br/>
+				<input type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Fail on yEnc crc Errors:</strong><br/>
+				Use backup servers on yEnc crc errors.<br/>
+				<input type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Only get articles for top of the queue:</strong><br/>
+				Enable for less memory usage.<br/> Disable to prevent slow jobs from blocking the queue<br/>
+				<input type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Post-process only verified jobs:</strong><br/>
+				Only perform post-processing on jobs that passed all PAR2 checks.<br/>
+				<input type="radio" name="safe_postproc" value="0" <!--#if $safe_postproc == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Default post-processing:</strong><br/>
+				Used when no post-processing is defined by the category.<br/>
+				<input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
+				<input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
+				<input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
+				<input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
+				
+				<br/><br/>
+				<strong>Default user script:</strong><br/>
+				Used when no user script is defined by the category.<br/>
+				<select name="script">
+				<!--#for $sc in $script_list#-->
+				<!--#if $sc.lower() == $script.lower()#-->
+					<option value="$sc" selected>$sc</option>
+				<!--#else#-->
+					<option value="$sc">$sc</option>
+				<!--#end if#-->
+				<!--#end for#-->
+				</select>
+				
+			</fieldset>
+			
+			<fieldset class="EntryFieldSet">
+				
+				<legend>Other switches</legend>
+				
+				<strong>Enable periodic Save:</strong><br/>
+				Enabling will make the queue save it's state after every completed file.<br/>
+				<input type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Disconnect on empty queue:</strong><br/>
+				Disconnect from Usenet server(s) when queue is empty.<br/>
+				<input type="radio" name="auto_disconnect" value="0" <!--#if $auto_disconnect == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Create group Folders:</strong><br/>
+				Place downloads into group folders.<br/>
+				<input type="radio" name="create_group_folders" value="0" <!--#if $create_group_folders == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="create_group_folders" value="1" <!--#if $create_group_folders > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Send Group</strong><br/>
+				Send group command before requesting articles.<br/>
+				<input type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Sort by age:</strong><br/>
+				Automatically sort items by (average) age.<br/>
+				<input type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Check for new release:</strong><br/>
+				Weekly check for new SABnzbd release.<br/>
+				<input type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Replace spaces in foldername:</strong><br/>
+				Replace spaces with underscores in foldernames.<br/>
+				<input type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Launch browser on startup:</strong><br/>
+				Launch the browser when starting SABnzbd.<br/>
+				<input type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Ignore sample files:</strong><br/>
+				Filters out sample files from the queue.<br/>
+				<input type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
+				
+				<br/><br/>
+				<strong>Pause downloading during post processing:</strong><br/>
+				Pauses downloading at the start of post processing and resumes when finished.<br/>
+				<input type="radio" name="pause_on_post_processing" value="0" <!--#if $pause_on_post_processing == 0 then "checked=1" else ""#--> /> No
+				<input type="radio" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> Yes
+				
+			</fieldset>
+			</div>
+			
+<!--************************************
+			PAGE CONTENT IS ABOVE
+	************************************ -->
+			
+		</div>
+	</div>
+	
+	<div class="left_links config_margin">
+		<a id="help" target="_blank" href="$helpuri/Configure+Switches">Switches Help</a>
+	</div>
+	
+	<div class="right_links">
+		<a id="save" onclick="document.fullform.submit();">Save Changes</a>
+	</div>
+	
+	</form>
+	
+	<script language="javascript">
+		\$('.config_menu').corner("round tl bl");
+		\$('#config_container').corner("round");
+		\$('#help').corner("round");
+		\$('#save').corner("round");
+	</script>
+	
 </body>
 </html>
-
-
 
