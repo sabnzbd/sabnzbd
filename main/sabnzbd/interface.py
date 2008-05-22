@@ -1226,7 +1226,7 @@ class ConfigGeneral(ProtectedClass):
             sabnzbd.CFG['misc']['password'] = encodePassword(password)
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
-        sabnzbd.CFG['misc']['rss_rate'] = rss_rate
+        sabnzbd.CFG['misc']['rss_rate'] = sabnzbd.minimax(rss_rate, 15, 24*60)
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
 
@@ -1457,7 +1457,7 @@ class ConfigRss(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def upd_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, dummy=None):
+    def upd_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, dummy=None):
         try:
             cfg = sabnzbd.CFG['rss'][feed]
         except:
@@ -1470,9 +1470,19 @@ class ConfigRss(ProtectedClass):
             cfg['pp'] = pp
             if script==None or script=='Default': script = ''
             cfg['script'] = script
-            cfg['enable'] = 0
+            cfg['enable'] = IntConv(enable)
             save_configfile(sabnzbd.CFG)
 
+        raise Raiser(self.__root, dummy)
+
+    @cherrypy.expose
+    def toggle_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, dummy=None):
+        try:
+            cfg = sabnzbd.CFG['rss'][feed]
+        except:
+            feed = None
+        if feed:
+            cfg['enable'] = int(not int(cfg['enable']))
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
@@ -1543,66 +1553,28 @@ class ConfigRss(ProtectedClass):
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
-    def query_rss_feed(self, *args, **kwargs):
+    def download_rss_feed(self, *args, **kwargs):
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            sabnzbd.CFG['rss'][feed]['enable'] = 0
-            sabnzbd.run_rss_feed(feed)
-            return ShowRssLog(feed)
+            sabnzbd.run_rss_feed(feed, download=True)
+            sabnzbd.CFG['rss'][feed]['enable'] = 1
+            return ShowRssLog(feed, False)
         if 'dummy' in kwargs:
             raise Raiser(self.__root, kwargs['dummy'])
         else:
             raise Raiser(self.__root, '')
 
     @cherrypy.expose
-    def rematch_rss_feed(self, *args, **kwargs):
+    def test_rss_feed(self, *args, **kwargs):
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            sabnzbd.CFG['rss'][feed]['enable'] = 0
-            sabnzbd.run_rss_feed(feed, True)
-            return ShowRssLog(feed)
+            sabnzbd.run_rss_feed(feed, download=False)
+            return ShowRssLog(feed, True)
         if 'dummy' in kwargs:
             raise Raiser(self.__root, kwargs['dummy'])
         else:
             raise Raiser(self.__root, '')
 
-
-    @cherrypy.expose
-    def rsslog(self, *args, **kwargs):
-        if 'feed' in kwargs:
-            return ShowRssLog(kwargs['feed'])
-        if 'dummy' in kwargs:
-            raise Raiser(self.__root, kwargs['dummy'])
-        else:
-            raise Raiser(self.__root, '')
-
-    @cherrypy.expose
-    def enable_rss_feed(self, *args, **kwargs):
-        if 'feed' in kwargs:
-            try:
-                feed = kwargs['feed']
-                sabnzbd.CFG['rss'][feed]['enable'] = 1
-                save_configfile(sabnzbd.CFG)
-                sabnzbd.run_rss_feed(feed, True)
-            except:
-                pass
-        if 'dummy' in kwargs:
-            raise Raiser(self.__root, kwargs['dummy'])
-        else:
-            raise Raiser(self.__root, '')
-
-    @cherrypy.expose
-    def disable_rss_feed(self, *args, **kwargs):
-        if 'feed' in kwargs:
-            try:
-                sabnzbd.CFG['rss'][kwargs['feed']]['enable'] = 0
-                save_configfile(sabnzbd.CFG)
-            except:
-                pass
-        if 'dummy' in kwargs:
-            raise Raiser(self.__root, kwargs['dummy'])
-        else:
-            raise Raiser(self.__root, '')
 
     @cherrypy.expose
     def rss_download(self, feed=None, id=None, cat=None, pp=None, script=None, dummy=None):
@@ -1695,7 +1667,7 @@ class ConfigNewzbin(ProtectedClass):
         sabnzbd.CFG['newzbin']['create_category_folders'] = create_category_folders
         sabnzbd.CFG['newzbin']['bookmarks'] = newzbin_bookmarks
         sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
-        sabnzbd.CFG['newzbin']['bookmark_rate'] = bookmark_rate
+        sabnzbd.CFG['newzbin']['bookmark_rate'] = sabnzbd.minimax(bookmark_rate, 15, 24*60)
 
         return saveAndRestart(self.__root, dummy)
 
@@ -1989,7 +1961,7 @@ def ShowFile(name, path):
 ''' % (name, name, escape(msg))
 
 
-def ShowRssLog(feed):
+def ShowRssLog(feed, all):
     """Return a html page listing an RSS log and a 'back' button
     """
     jobs = sabnzbd.show_rss_result(feed)
@@ -2025,7 +1997,8 @@ def ShowRssLog(feed):
             badStr += '<a href="rss_download?feed=%s&id=%s%s%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
                 (qfeed, name, cat, pp, encode_for_xml(escape(job[1])))
 
-    return '''
+    if all:
+        return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
@@ -2048,6 +2021,24 @@ def ShowRssLog(feed):
 </body>
 </html>
 ''' % (escape(feed), escape(feed), goodStr, badStr, doneStr)
+    else:
+        return '''
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>%s</title>
+</head>
+<body>
+    <form>
+    <input type="submit" onclick="this.form.action='.'; this.form.submit(); return false;" value="Back"/>
+    </form>
+    <h3>%s</h3>
+    <b>Downloaded so far</b><br/>
+    %s
+    <br/>
+</body>
+</html>
+''' % (escape(feed), escape(feed), doneStr)
 
 
 def build_header(prim):

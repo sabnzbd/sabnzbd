@@ -215,6 +215,10 @@ def dir_setup(config, cfg_name, def_loc, def_name, umask=None):
 ################################################################################
 def minimax(val, low, high):
     """ Return value forced within range """
+    try:
+        val = int(val)
+    except:
+        val = 0
     if val < low:
         return low
     if val > high:
@@ -359,8 +363,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     NEWZBIN_UNBOOKMARK = bool(check_setting_int(CFG, 'newzbin', 'unbookmark', 0))
 
-    BOOKMARK_RATE = check_setting_int(CFG, 'newzbin', 'bookmark_rate', 12)
-    BOOKMARK_RATE = minimax(BOOKMARK_RATE, 1, 48)
+    BOOKMARK_RATE = check_setting_int(CFG, 'newzbin', 'bookmark_rate', 60)
+    BOOKMARK_RATE = minimax(BOOKMARK_RATE, 15, 24*60)
 
     CREATE_CAT_FOLDERS = bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
 
@@ -407,8 +411,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', DEF_QRATE)
 
-    rss_rate = check_setting_int(CFG, 'misc', 'rss_rate', 1)
-    rss_rate = minimax(rss_rate, 1, 48)
+    rss_rate = check_setting_int(CFG, 'misc', 'rss_rate', 60)
+    rss_rate = minimax(rss_rate, 15, 24*60)
 
     try:
         servers = CFG['servers']
@@ -1303,8 +1307,8 @@ def AnalyseSchedules(schedlines):
     return paused, speedlimit
 
 
-def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck=True, \
-               bookmarks=None, bookmark_rate=1):
+def init_SCHED(schedlines, need_rsstask = False, rss_rate = 60, need_versioncheck=True, \
+               bookmarks=None, bookmark_rate=60):
     global SCHED
 
     if schedlines or need_rsstask or need_versioncheck:
@@ -1349,7 +1353,7 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
 
         if need_rsstask:
             d = range(1, 8) # all days of the week
-            interval = int((24*60) / rss_rate)
+            interval = rss_rate
             ran_m = random.randint(0,interval-1)
             for n in range(0, 24*60, interval):
                 at = n + ran_m
@@ -1371,7 +1375,7 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 1, need_versioncheck
 
         if bookmarks:
             d = range(1, 8) # all days of the week
-            interval = int((24*60) / bookmark_rate)
+            interval = bookmark_rate
             ran_m = random.randint(0,interval-1)
             for n in range(0, 24*60, interval):
                 at = n + ran_m
@@ -1405,9 +1409,9 @@ def get_rss_info():
     if RSS:
         return RSS.get_info()
 
-def run_rss_feed(feed, rematch=False):
+def run_rss_feed(feed, download):
     if RSS:
-        return RSS.run_feed(feed, rematch)
+        return RSS.run_feed(feed, download)
 
 def show_rss_result(feed):
     if RSS:

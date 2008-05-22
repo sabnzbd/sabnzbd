@@ -100,7 +100,7 @@ class RSSQueue:
         self.shutdown = True
 
     @synchronized(LOCK)
-    def run_feed(self, feed=None, rematch=False):
+    def run_feed(self, feed=None, download=False):
         """ Run the query for one URI and apply filters """
         self.shutdown = False
 
@@ -122,7 +122,6 @@ class RSSQueue:
             defCat = cfg['cat']
             defPP = cfg['pp']
             defScript = cfg['script']
-            enabled = int(cfg['enable'])
         except:
             logging.error('[%s] Incorrect RSS feed description "%s"', __NAME__, feed)
             return
@@ -150,38 +149,25 @@ class RSSQueue:
 
         jobs = self.jobs[feed]
 
-        if rematch:
-            logging.debug('[%s] Rematching RSS-feed %s', __NAME__, uri)
-            entries = []
-            for x in jobs:
-                if jobs[x][0] != 'D': entries.append(x)
-        else:
-            # Read the RSS feed
-            logging.debug("[%s] Running feedparser on %s", __NAME__, uri)
-            d = feedparser.parse(uri)
-            logging.debug("[%s] Done parsing %s", __NAME__, uri)
-            if not d or not d['entries'] or 'bozo_exception' in d:
-                logging.warning("[%s] Failed to retrieve RSS from %s", __NAME__, uri)
-                return
-            entries = d['entries']
+        # Read the RSS feed
+        logging.debug("[%s] Running feedparser on %s", __NAME__, uri)
+        d = feedparser.parse(uri)
+        logging.debug("[%s] Done parsing %s", __NAME__, uri)
+        if not d or not d['entries'] or 'bozo_exception' in d:
+            logging.warning("[%s] Failed to retrieve RSS from %s", __NAME__, uri)
+            return
+        entries = d['entries']
 
 
         # Filter out valid new links
         for entry in entries:
             if self.shutdown: return
 
-            if rematch:
-                link = entry
-            else:
-                link = _get_link(uri, entry)
+            link = _get_link(uri, entry)
 
             if link:
-                if rematch:
-                    if link in jobs and jobs[link] != 'D':
-                        title = jobs[link][1]
-                else:
-                    title = entry.title
-                    newlinks.append(link)
+                title = entry.title
+                newlinks.append(link)
 
                 if DupTitle(title):
                     continue
@@ -190,7 +176,7 @@ class RSSQueue:
                 myPP = ''
                 myScript = ''
 
-                if link not in jobs or (rematch and jobs[link][0]!='D'):
+                if (link not in jobs) or (jobs[link][0]!='D'):
                     # Match this title against all filters
                     logging.debug('[%s] Trying link %s', __NAME__, link)
                     result = False
@@ -212,18 +198,17 @@ class RSSQueue:
                             break
 
                     if result:
-                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, enabled and not first)
+                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, download and not first)
                     else:
                         _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False)
 
 
         # If links were dropped by feed, remove from our tables too
-        if not rematch:
-            olds  = jobs.keys()
-            for old in olds:
-                if old not in newlinks:
-                    logging.debug("[%s] Purging link %s", __NAME__, old)
-                    del jobs[old]
+        olds  = jobs.keys()
+        for old in olds:
+            if old not in newlinks:
+                logging.debug("[%s] Purging link %s", __NAME__, old)
+                del jobs[old]
 
 
     def run(self):
@@ -236,14 +221,15 @@ class RSSQueue:
         if not self.__running:
             self.__running = True
             for feed in sabnzbd.CFG['rss']:
-                self.run_feed(feed)
-                # Wait two minutes, else newzbin may get irritated
-                for x in xrange(120):
-                    if self.shutdown:
-                        self.__running = False
-                        return
-                    else:
-                        time.sleep(1.0)
+                if int(sabnzbd.CFG['rss'][feed]['enable']):
+                    self.run_feed(feed, download=True)
+                    # Wait two minutes, else sites may get irritated
+                    for x in xrange(120):
+                        if self.shutdown:
+                            self.__running = False
+                            return
+                        else:
+                            time.sleep(1.0)
             self.save()
             self.__running = False
 

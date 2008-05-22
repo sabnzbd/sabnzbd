@@ -75,16 +75,12 @@
                 </select>
             <!--#end if#-->
 
-            <input type="hidden" name="feed" value="$feed">
+            <input type="hidden" name="feed" value="$feed"/>
+            <input type="checkbox" onclick="this.form.action='toggle_rss_feed';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled<br/>
             <input type="submit" value="Save"/>
             <input type="submit" onclick="this.form.action='del_rss_feed';  this.form.submit(); return false;" value="Delete"/>
-            <input type="submit" onclick="this.form.action='query_rss_feed'; this.form.submit(); return false;" value="Query"/>
-            <input type="submit" onclick="this.form.action='rematch_rss_feed'; this.form.submit(); return false;" value="Rematch/Show"/>
-            <!--#if $rss[$feed]['enable']#-->
-                <input type="submit" onclick="this.form.action='disable_rss_feed'; this.form.submit(); return false;" value="Stop"/>
-            <!--#else#-->
-                <input type="submit" onclick="this.form.action='enable_rss_feed'; this.form.submit(); return false;" value="Start/Download"/>
-            <!--#end if#-->
+            <input type="submit" onclick="this.form.action='test_rss_feed'; this.form.submit(); return false;" value="Preview"/>
+            <input type="submit" onclick="this.form.action='download_rss_feed'; this.form.submit(); return false;" value="Download"/>
         </fieldset>
     </form>
     </div>
