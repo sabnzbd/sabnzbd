@@ -39,7 +39,7 @@ from sabnzbd.assembler import Assembler
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
-from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
+from sabnzbd.newzbin import Bookmarks, MSGIDGrabber, InitCats
 from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
                          create_real_path, check_latest_version, from_units, SameFile, decodePassword, \
                          ProcessZipFile, ProcessSingleFile
@@ -184,8 +184,10 @@ def CheckSection(sec):
     """ Check if INI section exists, if not create it """
     try:
         CFG[sec]
+        return True
     except:
         CFG[sec] = {}
+        return False
 
 
 ################################################################################
@@ -312,8 +314,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     CheckSection('logging')
     CheckSection('newzbin')
     CheckSection('servers')
-    CheckSection('categories')
     CheckSection('rss')
+    catsDefined = CheckSection('categories')
 
     USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
     PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
@@ -324,7 +326,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
 
-    CREATE_GROUP_FOLDERS = bool(check_setting_int(CFG, 'misc', 'create_group_folders', 0))
+    CREATE_GROUP_FOLDERS = False #bool(check_setting_int(CFG, 'misc', 'create_group_folders', 0))
 
     DO_FILE_JOIN = bool(check_setting_int(CFG, 'misc', 'enable_filejoin', 0))
 
@@ -366,9 +368,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     BOOKMARK_RATE = check_setting_int(CFG, 'newzbin', 'bookmark_rate', 60)
     BOOKMARK_RATE = minimax(BOOKMARK_RATE, 15, 24*60)
 
-    CREATE_CAT_FOLDERS = bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
-
-    logging.debug("CREATE_CAT_FOLDERS -> %s", CREATE_CAT_FOLDERS)
+    CREATE_CAT_FOLDERS = False #bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
 
     DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
     if DOWNLOAD_DIR == "":
@@ -468,6 +468,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
 
+    if not catsDefined:
+        InitCats()
 
     ############################
     ## Object initializiation ##

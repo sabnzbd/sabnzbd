@@ -41,12 +41,14 @@ RE_BOOKMARK = re.compile(r'<a href="/browse/post/(\d+)/">')
 
 def InitCats():
     """ Initialise categories with newzbin categories """
-    cats = ['unknown', 'anime', 'apps', 'books', 'consoles', 'emulation', 'games',
-            'misc', 'movies', 'music', 'pda', 'resources', 'tv']
+    cats = ['Unknown', 'Anime', 'Apps', 'Books', 'Consoles', 'Emulation', 'Games',
+            'Misc', 'Movies', 'Music', 'PDA', 'Resources', 'TV']
     cfg = sabnzbd.CFG['categories']
     for cat in cats:
-        cfg[cat] = {}
-        cfg[cat]['newzbin'] = cat
+        lcat = cat.lower()
+        cfg[lcat] = {}
+        cfg[lcat]['newzbin'] = cat
+        cfg[lcat]['dir'] = cat
 
 
 def IsNewzbin(uri):
