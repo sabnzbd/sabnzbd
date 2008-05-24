@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------------
-0.4.0RC1  by The SABnzbd-Team
+0.4.0Beta6  by The SABnzbd-Team
 -------------------------------------------------------------------------------
+changed: Remove group-based folders
+changed: Remove newzbin-based folders (use user-defined categories instead)
+chaged:  RSS feed user interface simplified.
 fixed:   Handle password-protected archives better
 fixed:   "newzbin category" option fails when no newzbin category
          is available for the job.
