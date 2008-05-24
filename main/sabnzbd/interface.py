@@ -2239,7 +2239,10 @@ def rss_history():
             item.pubDate = std_time(added)
             item.title, msgid = SplitFileName(filename)
             if (msgid):
-                item.link    = "https://v3.newzbin.com/browse/post/%s/" % msgid
+                if sabnzbd.newswrapper.HAVE_SSL:
+                    item.link    = "https://v3.newzbin.com/browse/post/%s/" % msgid
+                else:
+                    item.link    = "http://v3.newzbin.com/browse/post/%s/" % msgid
             else:
                 item.link    = "http://%s:%s/sabnzbd/history" % ( \
                                 sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )

@@ -34,6 +34,7 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import *
 from sabnzbd.misc import Cat2OptsDef, sanitize_filename
+import sabnzbd.newswrapper
 
 # Regex to find msgid in the Bookmarks page
 RE_BOOKMARK = re.compile(r'<a href="/browse/post/(\d+)/">')
@@ -156,7 +157,10 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
 
     # Connect to Newzbin
     try:
-        conn = httplib.HTTPSConnection('v3.newzbin.com')
+        if sabnzbd.newswrapper.HAVE_SSL:
+            conn = httplib.HTTPSConnection('v3.newzbin.com')
+        else:
+            conn = httplib.HTTPConnection('v3.newzbin.com')
 
         postdata = { 'username': username_newzbin, 'password': password_newzbin, 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
@@ -260,7 +264,10 @@ class Bookmarks:
     
         # Connect to Newzbin
         try:
-            conn = httplib.HTTPSConnection('v3.newzbin.com')
+            if sabnzbd.newswrapper.HAVE_SSL:
+                conn = httplib.HTTPSConnection('v3.newzbin.com')
+            else:
+                conn = httplib.HTTPConnection('v3.newzbin.com')
 
             if delete:
                 logging.info('[%s] Deleting Newzbin bookmark %s', __NAME__, delete)
