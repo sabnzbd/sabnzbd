@@ -1111,10 +1111,18 @@ def system_shutdown():
 def system_hibernate():
     logging.info("[%s] Performing system hybernation", __NAME__)
     try:
-        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState")
+        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
         os.sleep(10)
     except:
         logging.error("[%s] Failed to hibernate system", __NAME__)
+
+def system_standby():
+    logging.info("[%s] Performing system standby", __NAME__)
+    try:
+        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
+        os.sleep(10)
+    except:
+        logging.error("[%s] Failed to standby system", __NAME__)
 
 def shutdown_program():
     logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
@@ -1139,6 +1147,8 @@ def change_queue_complete_action(action):
         _action = system_shutdown
     elif action == 'hibernate_pc':
         _action = system_hibernate
+    elif action == 'standby_pc':
+        _action = system_standby
     elif action == 'shutdown_program':
         _action = shutdown_program
 

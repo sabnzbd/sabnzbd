@@ -14,6 +14,7 @@ On queue finish:
     <optgroup label="Actions">
         <!--#if $nt#-->
         <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
+        <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>Standby PC</option>
         <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
         <!--#end if#-->
         <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
