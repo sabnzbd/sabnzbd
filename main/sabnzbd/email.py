@@ -87,7 +87,7 @@ def email_send(header, message):
             logging.info("[%s] Connected to server %s:%s", __NAME__, server, port)
 
         except Exception, errorcode:
-            if errorcode[0] == 1:
+            if errorcode[0]:
 
                 # Non SSL mail server
                 logging.debug("[%s] Non-SSL mail server detected " \
