@@ -127,7 +127,7 @@ $(document).ready(function() {
 	else
 		SetCookie('Plush2Refresh',refreshRate);
 	
-		
+	
 	// set Refresh rate within main menu	
 	$("#refreshRate-option").val(refreshRate);
 	$("#refreshRate-option").change( function() {
@@ -146,17 +146,6 @@ $(document).ready(function() {
 			type: "GET",
 			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&dummy="+Math.random()
 		});
-	});
-
-
-	// auto show/hide of extra queue options
-	$('#hdr-queue').bind("mouseover mouseout", function(){
-		$('.q_menu_sort').toggleClass("show");
-		//$('.q_menu_purge').toggleClass("show");
-	});
-	$('.box_banner_history').bind("mouseover mouseout", function(){
-		$('.h_menu_purge').toggleClass("show");
-		$('.h_menu_verbose').toggleClass("show");
 	});
 	
 	// sort queue (3 options from main menu)
@@ -302,7 +291,6 @@ $(document).ready(function() {
 		}
 	});
 	
-
 	// history verbosity
 	$('.h_menu_verbose').click(function(event) {
 		$.ajax({
@@ -313,7 +301,7 @@ $(document).ready(function() {
 			}
 		});
 	});
-
+	
 	// history purge
 	$('.h_menu_purge').dblclick(function(event) {
 		$.ajax({
