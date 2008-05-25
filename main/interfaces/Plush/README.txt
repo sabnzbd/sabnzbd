@@ -1,69 +1,80 @@
 
-============================================================
-== SABnzbd+ Plush 2.0 for SABnzbd+ 0.4.0 | April 10, 2008 ==
+================================================
+== Plush 2.0 for SABnzbd+ 0.4.0 | May 24 2008 ==
 
 ============
 ASSEMBLED BY
-* pair of dimes (see LICENSE-CC.txt)
+* pairofdimes
+See LICENSE-CC
 
 ==============
 SPECIAL THANKS
-* shypike, for making this all happen in the first place
-* switch, for bringing so many new enhancements to the web interfaces
-* injectx, for the new concept design and imagery
-* real_scud, for creating the new HTML/CSS layout
-* inpheaux, for the Config concept & assembly and SABnzbd+ logo
-* blis102, for the original Nova & Plush concepts
-* sbultez, for creating numerous history verbosity icons
+* shypike for making this all happen in the first place
+* switch for bringing so many new enhancements to the web interfaces
+* injectx for the new concept design and imagery
+* real_scud for creating the new HTML/CSS layout
+* inpheaux for the Config concept & assembly and SABnzbd+ logo
+* blis102 for the original Nova & Plush concepts
+* sbultez for creating numerous post-processing icons
 
 ============
 KNOWN ISSUES
-
-* IE7 has several display bugs (though works!), hopefully you can help smooth things out with your testing...
-* If the JavaScript it still slow for you, slow down your refresh rate.
+* Slow down your refresh if it gets slow
 
 ==========
 TOOLS USED
 
-jQuery
-http://jquery.com/
-LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2008 John Resig
-
-jQuery Superfish
-http://users.tpg.com.au/j_birch/plugins/superfish/
-LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2008 Joel Birch
-
-jQuery Table Drag & Drop
-http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin/
-LICENSE-MIT & LICENSE-GPL -- Copyright (c) 1998-2008, Isocra Consulting Ltd.
+jQuery BGiFrame
+http://plugins.jquery.com/project/bgiframe
+Copyright (c) 2006 Brandon Aaron
+See LICENSE-MIT & LICENSE-GPL
 
 jQuery Corner
-http://www.malsup.com/jquery/corner/
-LICENSE-MIT & LICENSE-GPL -- Dave Methvin & Mike Alsup
-
-jQuery Tooltip
-http://bassistance.de/jquery-plugins/jquery-plugin-tooltip/
-LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2006 - 2008 Jörn Zaefferer
+http://www.malsup.com/jquery/corner
+Dave Methvin & Mike Alsup
+See LICENSE-MIT & LICENSE-GPL
 
 jQuery Dimensions
 http://plugins.jquery.com/project/dimensions
-LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2007 Paul Bakaus and Brandon Aaron
+Copyright (c) 2007 Paul Bakaus & Brandon Aaron
+See LICENSE-MIT & LICENSE-GPL
 
 jQuery Live Query
 http://plugins.jquery.com/project/livequery
-LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2007 Brandon Aaron
+Copyright (c) 2007 Brandon Aaron
+See LICENSE-MIT & LICENSE-GPL
 
-jQuery bgiframe
-http://plugins.jquery.com/project/bgiframe
-LICENSE-MIT & LICENSE-GPL -- Copyright (c) 2006 Brandon Aaron
+jQuery
+http://jquery.com
+Copyright (c) 2008 John Resig
+See LICENSE-MIT & LICENSE-GPL
+
+jQuery Superfish
+http://users.tpg.com.au/j_birch/plugins/superfish
+Copyright (c) 2008 Joel Birch
+See LICENSE-MIT & LICENSE-GPL
+
+jQuery Table Drag & Drop
+http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin
+Copyright (c) 1998-2008 Isocra Consulting Ltd.
+See LICENSE-MIT & LICENSE-GPL
+
+jQuery Tooltip
+http://bassistance.de/jquery-plugins/jquery-plugin-tooltip
+Copyright (c) 2006-2008 Jörn Zaefferer
+See LICENSE-MIT & LICENSE-GPL
 
 WebToolkit
 http://www.webtoolkit.info/ajax-file-upload.html
-LICENSE-GPL -- Copyright (c) 2006-2008 www.webtoolkit.info
+Copyright (c) 2006-2008 www.webtoolkit.info
+See LICENSE-GPL
 
-sabnzbdplus.ico and sabnzbdplus_logo.png thanks to inpheaux.
+Thanks goes out to inpheaux for supplying:
+Complete Config Skin
+sabnzbdplus_logo.png
+sabnzbdplus.ico
 
-Thanks to sbultez for supplying:
+Thanks goes out to sbultez for supplying:
 plush_default/hl_loaded.gif
 plush_default/hv_*.png
 plush_default/q_stats_needspace.png
@@ -73,13 +84,15 @@ plush_default/ql_row_on.png
 
 Nuvola Icon Set
 http://www.icon-king.com/?p=15
-LICENSE-LGPL -- Copyright (c) 2003-2004 David Vignoni
-The following images are from the Nuvola icon set (in templates/static/images/):
-plush_default_config/*.png  -- with the exception of config_newzbin.png which is used with permission from Newzbin.com
-plush_default_nzo/*.png
+Copyright (c) 2003-2004 David Vignoni
+See LICENSE-LGPL
+The following images are from the Nuvola icon set (in ):
+templates/static/images/plush_default_nzo/*.png
+templates/static/images/plush_default_config/*.png
+(with the exception of config_newzbin.png which is used with permission of Newzbin)
 
-All other imagery provided by injectx which in some places was spliced by real_scud.
+All other imagery provided by injectx and real_scud; thank you both for the skin.
 
 =======
 CONTACT
-* http://forums.sabnzbd.org/ -- contributions welcome.
+* http://forums.sabnzbd.org contributions welcome
