@@ -218,16 +218,16 @@ class PostProcessor(Thread):
                 perm_script(workdir_complete, sabnzbd.UMASK)
 
             ## Run the user script
+            fname = ""
+            ext_out = ""
             if sabnzbd.SCRIPT_DIR and script and script!='None' and script!='Default' and parResult:
                 #set the current nzo status to "Ext Script...". Used in History
-                nzo.set_status("Running Script...")
-                nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
                 script = os.path.join(sabnzbd.SCRIPT_DIR, script)
-                ext_out = external_processing(script, workdir_complete, filename, dirname, cat)
-                fname = MakeLogFile(filename, ext_out)
-            else:
-                fname = ""
-                ext_out = ""
+                if os.path.exists(script):
+                    nzo.set_status("Running Script...")
+                    nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
+                    ext_out = external_processing(script, workdir_complete, filename, dirname, cat)
+                    fname = MakeLogFile(filename, ext_out)
 
             ## Email the results
             if sabnzbd.EMAIL_ENDJOB:
