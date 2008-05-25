@@ -205,6 +205,13 @@ def Web_Template(key, defweb, wdir):
     return real_path(full_dir, "templates")
 
 
+def CheckColor(color, web_dir):
+    """ Check existence of color-scheme """
+    if color and os.path.exists(os.path.join(web_dir,'static/stylesheets/colorschemes/'+color+'.css')):
+        return color
+    else:
+        return ''
+
 def GetProfileInfo(vista):
     """ Get the default data locations
     """
@@ -650,6 +657,9 @@ def main():
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
+
+    sabnzbd.WEB_COLOR  = CheckColor(sabnzbd.WEB_COLOR,  web_dir)
+    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.WEB_COLOR2, web_dir)
 
     sabnzbd.interface.USERNAME = check_setting_str(cfg, 'misc', 'username', '')
 
