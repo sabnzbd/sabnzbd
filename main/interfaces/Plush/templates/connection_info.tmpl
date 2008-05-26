@@ -4,7 +4,7 @@
 	
 	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
 	
-	<script type="text/javascript" src="../static/javascripts/jquery.pack.js"></script>
+	<script type="text/javascript" src="../static/javascripts/jquery.js"></script>
 	<script type="text/javascript" src="../static/javascripts/jquery.corner.js"></script>
 	
 	<!--#if $color_scheme == 'plush-default.css'#-->
@@ -23,7 +23,7 @@
 <body>
 	
 	<div align="center">
-		<a href="../" style="text-decoration:none; color:black">&laquo; go back <img src="../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
+		<a href="../" style="text-decoration:none; color:black">&laquo; go back <img src="../static/images/plush-default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
 	
 	<div id="config_nav">
@@ -64,7 +64,7 @@
 				<!--#for $server in $servers#-->
 				<fieldset class="EntryFieldSet">
 					<legend>
-						<!--#if int($server[4])#--><img style="float:left" src="../static/images/plush_default_config/config_encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->
+						<!--#if int($server[4])#--><img style="float:left" src="../static/images/plush-default/config/encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->
 						$server[0]:$server[1]: $server[2]
 					</legend>
 					<small><ol>

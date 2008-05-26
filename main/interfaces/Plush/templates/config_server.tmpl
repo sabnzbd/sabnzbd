@@ -3,7 +3,7 @@
 <head>
 	
 	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
-	<script type="text/javascript" src="../../static/javascripts/jquery.pack.js"></script>
+	<script type="text/javascript" src="../../static/javascripts/jquery.js"></script>
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
 	
 	<!--#if $color_scheme == 'plush-default.css'#-->
@@ -22,7 +22,7 @@
 <body>
 	
 	<div align="center">
-		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush_default/sabnzbdplus_logo.png" border="0"/></a>
+		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush-default/sabnzbdplus_logo.png" border="0"/></a>
 	</div>
 	
 	<div id="config_nav">
@@ -74,7 +74,7 @@
 			<form action="saveServer" method="post">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>$server</legend>
+				<legend><!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#--><img style="float:left" src="../../static/images/plush-default/config/encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->$server</legend>
 				Host:<br/><input type="text" size="25" name="host" value="$servers[$server]['host']"/><br/>
 				Port:<br/><input type="text" size="25" name="port" value="$servers[$server]['port']"/><br/>
 				Username:<br/><input type="text" size="25" name="username" value="$servers[$server]['username']"/><br/>
