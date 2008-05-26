@@ -71,24 +71,24 @@ See LICENSE-GPL
 
 Thanks goes out to inpheaux for supplying:
 Complete Config Skin
-sabnzbdplus_logo.png
-sabnzbdplus.ico
+templates/static/images/plush-default/sabnzbdplus_logo.png
+templates/static/images/plush-default/sabnzbdplus.ico
 
 Thanks goes out to sbultez for supplying:
-plush_default/hl_loaded.gif
-plush_default/hv_*.png
-plush_default/q_stats_needspace.png
-plush_default/ql_cross.png
-plush_default/ql_cross_on.png
-plush_default/ql_row_on.png
+templates/static/images/plush-default/hl_loaded.gif
+templates/static/images/plush-default/hv_*.png
+templates/static/images/plush-default/q_stats_needspace.png
+templates/static/images/plush-default/ql_cross.png
+templates/static/images/plush-default/ql_cross_on.png
+templates/static/images/plush-default/ql_row_on.png
 
 Nuvola Icon Set
 http://www.icon-king.com/?p=15
 Copyright (c) 2003-2004 David Vignoni
 See LICENSE-LGPL
 The following images are from the Nuvola icon set (in ):
-templates/static/images/plush_default_nzo/*.png
-templates/static/images/plush_default_config/*.png
+templates/static/images/plush-default/nzo/*.png
+templates/static/images/plush-default/config/*.png
 (with the exception of config_newzbin.png which is used with permission of Newzbin)
 
 All other imagery provided by injectx and real_scud; thank you both for the skin.
