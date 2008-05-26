@@ -27,6 +27,9 @@ from sabnzbd.decorators import *
 
 from threading import Lock
 
+# TryList keeps track of which servers have been tried for
+# a specific article
+
 TRYLIST_LOCK = Lock()
 class TryList:
     def __init__(self):
@@ -34,10 +37,12 @@ class TryList:
         
     @synchronized(TRYLIST_LOCK)
     def server_in_try_list(self, server):
+        """ Return whether specified server has been tried """
         return (server in self.__try_list)
     
     @synchronized(TRYLIST_LOCK)
     def add_to_try_list(self, server):
+        """ Register server as having been tried already """
         if server not in self.__try_list:
             logging.debug("[%s] Appending %s to %s.__try_list",
                           __NAME__, server, self)
@@ -45,6 +50,7 @@ class TryList:
             
     @synchronized(TRYLIST_LOCK)
     def remove_from_try_list(self, server):
+        """ Server is no longer listed as tried """
         if server in self.__try_list:
             logging.debug("[%s] Removing %s from %s.__try_list", 
                           __NAME__, server, self)
@@ -52,6 +58,7 @@ class TryList:
             
     @synchronized(TRYLIST_LOCK)
     def reset_try_list(self):
+        """ Clean the list """
         if self.__try_list:
             logging.debug("[%s] Reseting %s.__try_list", 
                           __NAME__, self)

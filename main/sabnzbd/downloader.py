@@ -36,6 +36,26 @@ from sabnzbd.constants import *
 
 #------------------------------------------------------------------------------
 
+def GetParm(server, keyword):
+    """ Get named server parameter in a safe way """
+    try:
+        value = server[keyword]
+    except:
+        value = ''
+    server[keyword] = value
+    return value
+
+def GetParmInt(server, keyword, default):
+    """ Get integer server parameter in a safe way """
+    value = GetParm(server, keyword)
+    try:
+        value = int(value)
+    except:
+        value = default
+    server[keyword] = value
+    return value
+
+
 class Server:
     def __init__(self, host, port, timeout, threads, fillserver, ssl, username = None,
                  password = None):
@@ -132,29 +152,23 @@ class Downloader(Thread):
         self.servers = []
 
         for server in servers:
-            host = servers[server]['host']
-            port = int(servers[server]['port'])
-            try:
-                # Have to do this, to keep compatible with old INI files
-                timeout = int(servers[server]['timeout'])
-            except:
-                timeout = DEF_TIMEOUT
+            srv = servers[server]
+            enabled = True #bool(GetParmInt(srv, 'enable', 1))
+            host = GetParm(srv, 'host')
+            port = GetParmInt(srv, 'port', 119)
+            timeout = GetParmInt(srv, 'timeout', 60)
+            timeout = sabnzbd.minimax(timeout, MIN_TIMEOUT, MAX_TIMEOUT)
+            srv['timeout'] = timeout
 
-            # Limit timeout to sensible values
-            if timeout < MIN_TIMEOUT:
-                timeout = MIN_TIMEOUT
-            if timeout > MAX_TIMEOUT:
-                timeout = MAX_TIMEOUT
+            threads = GetParmInt(srv, 'connections', 1)
+            fillserver = bool(GetParmInt(srv, 'fillserver', 0))
+            ssl = bool(GetParmInt(srv, 'ssl', 0))
+            username = GetParm(srv, 'username')
+            password = decodePassword(GetParm(srv, 'password'), 'server')
 
-            servers[server]['timeout'] = timeout
-
-            threads = int(servers[server]['connections'])
-            fillserver = bool(int(servers[server]['fillserver']))
-            ssl = bool(int(servers[server]['ssl']))
-            username = servers[server]['username']
-            password = decodePassword(servers[server]['password'], 'server')
-            self.servers.append(Server(host, port, timeout, threads, fillserver, ssl,
-                                       username, password))
+            if enabled and host and port and threads:
+                self.servers.append(Server(host, port, timeout, threads, fillserver, ssl,
+                                           username, password))
 
         self.servers = tuple(self.servers)
 

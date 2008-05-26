@@ -415,19 +415,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     rss_rate = minimax(rss_rate, 15, 24*60)
 
     try:
-        servers = CFG['servers']
-    except:
-        servers = ""
-        CFG['servers'] = ''
-
-    for server in servers:
-        try:
-            temp = servers[server]['ssl']
-        except:
-            servers[server]['ssl'] = 0
-            CFG['servers'][server]['ssl'] = 0
-
-    try:
         BANDWITH_LIMIT = check_setting_int(CFG, 'misc', 'bandwith_limit', 0)
     except:
         #BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
@@ -517,9 +504,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         ASSEMBLER = Assembler(DOWNLOAD_DIR)
 
     if DOWNLOADER:
-        DOWNLOADER.__init__(servers, DOWNLOADER.paused)
+        DOWNLOADER.__init__(CFG['servers'], DOWNLOADER.paused)
     else:
-        DOWNLOADER = Downloader(servers)
+        DOWNLOADER = Downloader(CFG['servers'])
         if pause_downloader:
             DOWNLOADER.paused = True
 
