@@ -381,6 +381,21 @@ def sanitize_filename(name):
 
 
 ################################################################################
+# DirPermissions                                                               #
+################################################################################
+def DirPermissions(path, umask):
+    """ Adjust permissions for the complete path """
+    if os.name != 'nt' and umask:
+        while path and path != '/':
+            try:
+                os.chmod(path, int(umask, 8) | 0700)
+            except:
+                logging.warning("[%s] Failed to set permissions on %s", __NAME__, path)
+
+            path, junk = os.path.split(path)
+
+
+################################################################################
 # Real_Path                                                                    #
 ################################################################################
 def real_path(loc, path):
@@ -404,11 +419,7 @@ def create_real_path(name, loc, path, umask=None):
                 logging.error('Cannot create directory %s', my_dir)
                 return (False, my_dir)
 
-        if os.name != 'nt' and umask:
-            try:
-                os.chmod(my_dir, int(umask, 8) | 0700)
-            except:
-                pass
+        DirPermissions(my_dir, umask)
 
         if os.access(my_dir, os.R_OK + os.W_OK):
             return (True, my_dir)
@@ -908,11 +919,7 @@ def create_dirs(dirpath):
             logging.error("[%s] Failed making (%s)",__NAME__,dirpath)
             return None
 
-    if sabnzbd.UMASK and os.name != 'nt':
-        try:
-            os.chmod(dirpath, int(sabnzbd.UMASK, 8) | 0700)
-        except:
-            pass
+    DirPermissions(dirpath, sabnzbd.UMASK)
 
     return dirpath
 
