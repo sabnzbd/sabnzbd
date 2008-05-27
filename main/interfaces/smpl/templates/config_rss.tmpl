@@ -45,17 +45,12 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
                 <!--#end for#-->
                 </select>
             <!--#end if#-->
-
-            <input type="hidden" name="feed" value="$feed">
-            <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', '','update_$feed','1' )"/>
+            <input type="hidden" name="feed" value="$feed"/>
+            <input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled<br/>
+            <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', '','update_$feed','1' )" />
             <input type="submit" onclick="javascript:submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )" value="Delete"/>
-            <input type="submit" onClick="javascript:location='./config/rss/query_rss_feed?feed=$feed'" value="Query"/>
-            <input type="submit" onClick="javascript:location='./config/rss/rematch_rss_feed?feed=$feed'" value="Rematch/Show"/>
-            <!--#if $rss[$feed]['enable']#-->
-                <input type="submit" onclick="javascript:submitconfig('config/rss/disable_rss_feed', '','update_$feed','1' )" value="Stop"/>
-            <!--#else#-->
-                <input type="submit" onclick="javascript:submitconfig('config/rss/enable_rss_feed', '','update_$feed','1' )" value="Start/Download"/>
-            <!--#end if#-->
+            <input type="submit" onClick="javascript:location='./config/rss/test_rss_feed?feed=$feed'" value="Preview"/>
+            <input type="submit" onClick="javascript:location='./config/rss/download_rss_feed?feed=$feed'" value="Download"/>
         </fieldset>
 
     </div>
