@@ -39,7 +39,7 @@ from threading import Thread, RLock
 from sabnzbd.email import email_endjob, prepare_msg
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         cleanup_empty_directories
+                         cleanup_empty_directories, get_unique_filename
 from sabnzbd.tvsort import TVSeasonCheck, TVSeasonMove, TVRenamer
 
 
@@ -175,6 +175,7 @@ class PostProcessor(Thread):
                 for _file in files:
                     path = os.path.join(root, _file)
                     new_path = path.replace(workdir, tmp_workdir_complete)
+                    path, new_path = get_unique_filename(path,new_path)
                     move_to_path(path, new_path, unique=False)
 
             ## Remove download folder
