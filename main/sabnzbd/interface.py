@@ -1497,6 +1497,7 @@ class ConfigRss(ProtectedClass):
             cfg['pp'] = ''
             cfg['script'] = ''
             cfg['enable'] = 0
+            cfg['filter0'] = ('', '', '', 'A', '*')
             save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, dummy)
 
@@ -1557,7 +1558,6 @@ class ConfigRss(ProtectedClass):
         if 'feed' in kwargs:
             feed = kwargs['feed']
             sabnzbd.run_rss_feed(feed, download=True)
-            sabnzbd.CFG['rss'][feed]['enable'] = 1
             return ShowRssLog(feed, False)
         if 'dummy' in kwargs:
             raise Raiser(self.__root, kwargs['dummy'])
