@@ -59,8 +59,8 @@ def prepare_msg(bytes, status, script, output):
             result += "    %s %s\n" % (action, status[stage][action])
 
     if script and (output != ""):
-    	  result += "\nExternal processing by %s:\n" % script
-    	  result += output
+        result += "\nExternal processing by %s:\n" % script
+        result += output
 
     return result
 
@@ -91,7 +91,7 @@ def email_send(header, message):
 
                 # Non SSL mail server
                 logging.debug("[%s] Non-SSL mail server detected " \
-                             "reconnecting to server %s:%s", __NAME__, server, port)
+                              "reconnecting to server %s:%s", __NAME__, server, port)
 
                 try:
                     mailconn = smtplib.SMTP(server, port)
@@ -118,7 +118,7 @@ def email_send(header, message):
 
         # Message header
         msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\nX-Priority: 5\r\nX-MS-Priority: 5\r\n\r\n" % \
-              (sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, header)
+            (sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, header)
 
         # Authentication
         if (sabnzbd.EMAIL_ACCOUNT != "") and (sabnzbd.EMAIL_PWD != ""):
@@ -155,7 +155,7 @@ def email_endjob(filename, success, status_text):
     message  = "Hello,\n\nSABnzbd has downloaded \'%s\'.\n\n" % name
     message += "Finished at %s\n" % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
     message += "%s\n\nEnjoy!\n" % status_text
-    
+
     if success:
         header = "SABnzbd has completed job %s" % name
     else:

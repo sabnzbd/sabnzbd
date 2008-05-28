@@ -858,10 +858,10 @@ def SplitHost(srv):
     # Split on the last ':'
     mark = srv.rfind(':')
     if mark < 0:
-       host = srv
+        host = srv
     else:
-       host = srv[0 : mark]
-       port = srv[mark+1 :]
+        host = srv[0 : mark]
+        port = srv[mark+1 :]
     try:
         port = int(port)
     except:
