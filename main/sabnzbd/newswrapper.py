@@ -64,24 +64,34 @@ def GetServerParms(host, port):
             return None
 
 
-def con(sock, host, port, sslenabled):
-    sock.connect((host, port))
-    sock.setblocking(0)
-    if sslenabled and _ssl:
-        while True:
-            try:
-                sock.do_handshake()
-                break
-            except _ssl.WantReadError:
-                select.select([sock], [], [])
+def con(sock, host, port, sslenabled, nntp):
+    try:
+        sock.connect((host, port))
+        sock.setblocking(0)
+        if sslenabled and _ssl:
+            while True:
+                try:
+                    sock.do_handshake()
+                    break
+                except _ssl.WantReadError:
+                    select.select([sock], [], [])
+    except socket.error, e:
+        try:
+            (_errno, strerror) = e
+            #expected, do nothing
+            if _errno == errno.EINPROGRESS:
+                pass
+        finally:
+            nntp.error(e)
 
 class NNTP:
-    def __init__(self, host, port, sslenabled, user=None, password=None):
+    def __init__(self, host, port, sslenabled, nntp, user=None, password=None):
         self.host = host
         self.port = port
+        self.nntp = nntp
         res= GetServerParms(self.host, self.port)
         if not res:
-            raise socket.error(errno.EADDRNOTAVAIL, "Address not available")
+            raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
         af, socktype, proto, canonname, sa = res[0]
 
@@ -89,14 +99,14 @@ class NNTP:
             ctx = _ssl.Context(_ssl.SSLv23_METHOD)
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
-            logging.error("[%s] Error importing OpenSSL module. Trying with non-ssl", __NAME__)
+            logging.error("[%s] Error importing OpenSSL module. Connecting with NON-SSL", __NAME__)
             self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)
 
         try:
             if os.name == 'nt':
-                Thread(target=con, args=(self.sock, self.host, self.port, sslenabled)).start()
+                Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, self)).start()
             else: 
                 self.sock.connect((self.host, self.port))
                 self.sock.setblocking(0)
@@ -108,13 +118,20 @@ class NNTP:
                         except _ssl.WantReadError:
                             select.select([self.sock], [], [])
 
-        except socket.error, (_errno, strerror):
-            #expected, do nothing
-            if _errno == errno.EINPROGRESS:
-                pass
-
-            else:
-                raise socket.error(_errno, strerror)    
+        except socket.error, e:
+            try:
+                (_errno, strerror) = e
+                #expected, do nothing
+                if _errno == errno.EINPROGRESS:
+                    pass
+            finally:
+                self.error(e)
+                
+    def error(self, error):
+        msg = "Failed to connect: %s" % (error)
+        logging.error("[%s] %s %s@%s:%s",
+                          __NAME__, msg, self.nntp.thrdnum, self.host,
+                          self.port)
 
 class NewsWrapper:
     def __init__(self, server, thrdnum):
@@ -140,7 +157,7 @@ class NewsWrapper:
         self.pass_ok = False
 
     def init_connect(self):
-        self.nntp = NNTP(self.server.host, self.server.port, self.server.ssl,
+        self.nntp = NNTP(self.server.host, self.server.port, self.server.ssl, self,
                          self.server.username, self.server.password)
         self.recv = self.nntp.sock.recv
 
