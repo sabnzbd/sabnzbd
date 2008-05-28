@@ -10,8 +10,8 @@ color:white;
 #first, #third {
 color: #44577c;
 }
-a.current {
-    color:black;
+.SubMenu a.current {
+    color:#ccc;
 }
 a.current:hover, a:hover {
 	background-color: black;

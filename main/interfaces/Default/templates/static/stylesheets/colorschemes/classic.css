@@ -61,7 +61,7 @@ a.current:hover, a:hover {
 	background-color: black;
     color:white
 }
-a.current{
+.SubMenu a.current{
 color:white;
 }
 

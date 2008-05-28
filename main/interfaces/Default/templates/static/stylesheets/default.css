@@ -58,6 +58,11 @@ a.current {
 	padding-left: 12px;
     padding-right: 12px;
 }
+
+a.current {
+	color:white;
+}
+
 a.current:hover {
 	border: none;
 }
@@ -215,6 +220,7 @@ http://htmldog.com/articles/suckerfish/dropdowns/
 #nav a {
 	display: block;
 	width: 4em;
+    padding-bottom:0;
 }
 
 

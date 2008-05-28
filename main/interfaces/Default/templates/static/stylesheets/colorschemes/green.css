@@ -10,8 +10,8 @@ th{
 background-color: #333;
 color:white;
 }
-a.current {
-    color:black;
+.SubMenu a.current {
+    color:#444;
 }
 a.current:hover, a:hover {
 	background-color: black;

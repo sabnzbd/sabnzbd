@@ -10,7 +10,7 @@ th {
 background-color: #000;
 color:white;
 }
-a.current {
+.SubMenu a.current {
     color:black;
 }
 a.current:hover, a:hover {
