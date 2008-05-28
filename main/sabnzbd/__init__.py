@@ -1076,6 +1076,7 @@ def system_shutdown():
     logging.info("[%s] Performing system shutdown", __NAME__)
 
     Thread(target=halt).start()
+    os.sleep(10)
 
     try:
         import win32security
