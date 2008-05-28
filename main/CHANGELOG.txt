@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 0.4.0Beta6  by The SABnzbd-Team
 -------------------------------------------------------------------------------
+changed: Remove option "disconnect-on-pause" (always disconnect now)
 changed: Remove group-based folders
 changed: Remove newzbin-based folders (use user-defined categories instead)
 chaged:  RSS feed user interface simplified.

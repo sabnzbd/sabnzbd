@@ -84,7 +84,6 @@ QUEUECOMPLETEACTION = None #stores the name of the function to be called
 QUEUECOMPLETEARG = None #stores an extra arguments that need ot be passed
 QUEUECOMPLETEACTION_GO = False # Set when downloader queue is empty and an action is set
 
-AUTODISCONNECT = False
 WAITEXIT = False
 SEND_GROUP = False
 
@@ -292,7 +291,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, MSGIDGRABBER, URLGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
-           LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, AUTODISCONNECT, WAITEXIT, \
+           LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
            SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_PP, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
@@ -335,8 +334,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     DO_UNRAR = bool(check_setting_int(CFG, 'misc', 'enable_unrar', 1))
 
     DO_SAVE = bool(check_setting_int(CFG, 'misc', 'enable_save', 1))
-
-    AUTODISCONNECT = bool(check_setting_int(CFG, 'misc', 'auto_disconnect', 0))
 
     PAR_CLEANUP = bool(check_setting_int(CFG, 'misc', 'enable_par_cleanup', 1))
 
@@ -946,8 +943,7 @@ def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None
 def pause_downloader(save=True):
     try:
         DOWNLOADER.pause()
-        if AUTODISCONNECT:
-            DOWNLOADER.disconnect()
+        DOWNLOADER.disconnect()
         if save:
             save_state()
     except NameError:

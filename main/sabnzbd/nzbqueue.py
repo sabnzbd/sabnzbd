@@ -384,8 +384,7 @@ class NzbQueue(TryList):
 
             if not self.__nzo_list:
                 # Close server connections
-                if sabnzbd.AUTODISCONNECT:
-                    sabnzbd.disconnect()
+                sabnzbd.disconnect()
 
                 # sabnzbd.AUTOSHUTDOWN only True on os.name == 'nt'
                 if sabnzbd.QUEUECOMPLETEACTION:
