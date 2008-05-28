@@ -1202,7 +1202,7 @@ class ConfigGeneral(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def saveGeneral(self, host = None, port = None, username = None, password = None, web_dir = None,
+    def saveGeneral(self, host = None, port = None, web_username = None, web_password = None, web_dir = None,
                     web_dir2 = None, web_color = None,
                     cronlines = None, refresh_rate = None, rss_rate = None,
                     bandwith_limit = None, cleanup_list = None, cache_limitstr = None, dummy = None):
@@ -1221,9 +1221,9 @@ class ConfigGeneral(ProtectedClass):
 
         sabnzbd.CFG['misc']['host'] = host
         sabnzbd.CFG['misc']['port'] = port
-        sabnzbd.CFG['misc']['username'] = username
-        if (not password) or (password and password.strip('*')):
-            sabnzbd.CFG['misc']['password'] = encodePassword(password)
+        sabnzbd.CFG['misc']['username'] = web_username
+        if (not web_password) or (web_password and web_password.strip('*')):
+            sabnzbd.CFG['misc']['password'] = encodePassword(web_password)
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
         sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
         sabnzbd.CFG['misc']['rss_rate'] = sabnzbd.minimax(rss_rate, 15, 24*60)
