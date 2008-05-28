@@ -4,6 +4,7 @@
 changed: Force logging level to maximum for non-Final releases.
 changed: Remove option "disconnect-on-pause" (always disconnect now)
 changed: Remove group-based folders
+fixed:   Set permissions for full folder paths
 changed: Remove newzbin-based folders (use user-defined categories instead)
 chaged:  RSS feed user interface simplified.
 fixed:   Handle password-protected archives better
