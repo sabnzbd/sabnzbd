@@ -84,6 +84,8 @@ Choose a color scheme for the skin.<br>
     <!--#for $webline in $web_colors#-->
         <!--#if $webline.lower() == $web_color.lower()#-->
             <option value="$webline" selected>$webline</option>
+        <!--#else if not $web_color.lower() and $webline.lower() == 'darkblue'#-->
+            <option value="$webline" selected>$webline</option>
         <!--#else#-->
             <option value="$webline">$webline</option>
         <!--#end if#-->

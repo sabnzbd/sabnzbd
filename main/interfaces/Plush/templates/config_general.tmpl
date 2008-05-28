@@ -94,6 +94,8 @@
 				<!--#for $webline in $web_colors#-->
 				<!--#if $webline.lower() == $web_color.lower()#-->
 					<option value="$webline" selected>$webline</option>
+                <!--#else if not $web_color.lower() and $webline.lower() == 'plush-default'#-->
+                    <option value="$webline" selected>$webline</option>
 				<!--#else#-->
 					<option value="$webline">$webline</option>
 				<!--#end if#-->

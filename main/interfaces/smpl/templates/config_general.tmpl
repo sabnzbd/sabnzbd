@@ -33,6 +33,8 @@
 			    <!--#for $webline in $web_list#-->
 			        <!--#if $webline.lower() == $web_dir.lower()#-->
 			            <option value="$webline" selected>$webline</option>
+                    <!--#else if not $web_color.lower() and $webline.lower() == 'white'#-->
+                        <option value="$webline" selected>$webline</option>
 			        <!--#else#-->
 			            <option value="$webline">$webline</option>
 			        <!--#end if#-->
