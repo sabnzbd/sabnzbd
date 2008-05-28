@@ -33,8 +33,6 @@
 			    <!--#for $webline in $web_list#-->
 			        <!--#if $webline.lower() == $web_dir.lower()#-->
 			            <option value="$webline" selected>$webline</option>
-                    <!--#else if not $web_color.lower() and $webline.lower() == 'white'#-->
-                        <option value="$webline" selected>$webline</option>
 			        <!--#else#-->
 			            <option value="$webline">$webline</option>
 			        <!--#end if#-->
@@ -48,6 +46,8 @@
             <select name="web_color" class="select">
                 <!--#for $webline in $web_colors#-->
                     <!--#if $webline.lower() == $web_color.lower()#-->
+                        <option value="$webline" selected>$webline</option>
+                    <!--#else if not $web_color.lower() and $webline.lower() == 'white'#-->
                         <option value="$webline" selected>$webline</option>
                     <!--#else#-->
                         <option value="$webline">$webline</option>
