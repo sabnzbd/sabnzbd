@@ -390,7 +390,7 @@ def DirPermissions(path, umask):
             try:
                 os.chmod(path, int(umask, 8) | 0700)
             except:
-                logging.warning("[%s] Failed to set permissions on %s", __NAME__, path)
+                pass
 
             path, junk = os.path.split(path)
 
@@ -415,11 +415,10 @@ def create_real_path(name, loc, path, umask=None):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             try:
                 os.makedirs(my_dir)
+                DirPermissions(my_dir, umask)
             except:
                 logging.error('Cannot create directory %s', my_dir)
                 return (False, my_dir)
-
-        DirPermissions(my_dir, umask)
 
         if os.access(my_dir, os.R_OK + os.W_OK):
             return (True, my_dir)
@@ -915,11 +914,10 @@ def create_dirs(dirpath):
         logging.info('[%s] Creating directories: %s', __NAME__, dirpath)
         try:
             os.makedirs(dirpath)
+            DirPermissions(dirpath, sabnzbd.UMASK)
         except:
             logging.error("[%s] Failed making (%s)",__NAME__,dirpath)
             return None
-
-    DirPermissions(dirpath, sabnzbd.UMASK)
 
     return dirpath
 
