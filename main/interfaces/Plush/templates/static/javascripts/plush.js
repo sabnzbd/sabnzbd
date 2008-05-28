@@ -4,8 +4,12 @@ var skipRefresh = false;
 
 // once the DOM is ready, run this
 $(document).ready(function() {
-	var windowSize = $(document).width();
-	windowSize = windowSize/69;
+    //the value below did not work in opera 9.50b2
+    //var windowSize = $(document).width();
+	var windowSize = document.body.clientWidth;
+    //used the the centering of the list, provides a left offset depending on the browser width
+    // not sure what value it should be set to
+	windowSize = windowSize/80;
 	Math.round(windowSize);
 	$(".nav").css("padding-left", windowSize + "%");
 	
