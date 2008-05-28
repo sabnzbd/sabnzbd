@@ -198,3 +198,45 @@ padding:4px;
 .result, .heading3  {width:125px}
 #Keytable {text-align:center;}
 .heading1, .heading2, .heading3{font-weight:bold; background-color:black; color:white;}
+
+
+
+/*
+Son of Suckerfish Dropdowns
+By Patrick Griffiths and Dan Webb.
+http://htmldog.com/articles/suckerfish/dropdowns/
+*/
+#nav, #nav ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+
+#nav a {
+	display: block;
+	width: 4em;
+}
+
+
+#nav li ul {
+	position: absolute;
+	width: 6em;
+	left: -999em;
+    background-color:white;
+    
+}
+
+#nav li:hover ul {
+	left: auto;
+}
+
+#nav li:hover ul, #nav li.sfhover ul {
+	left: auto;
+}
+
+#nav{
+display:inline-block;
+}
+/*
+Son of Suckerfish Dropdowns END
+*/
