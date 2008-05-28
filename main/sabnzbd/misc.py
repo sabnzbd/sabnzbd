@@ -663,7 +663,7 @@ def launch_a_browser(url):
 def ConvertVersion(text):
     """ Convert version string to numerical value and a testversion indicator """
     version = 0
-    test = False
+    test = True
     m = RE_VERSION.search(text)
     if m:
         version = int(m.group(1))*1000000 + int(m.group(2))*10000 + int(m.group(3))*100
@@ -671,9 +671,9 @@ def ConvertVersion(text):
             if m.group(4).lower() == 'rc':
                 version = version + 50
             version = version + int(m.group(5))
-            test = True
         except:
             version = version + 99
+            test = False
     return version, test
     
 

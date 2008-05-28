@@ -50,7 +50,7 @@ from sabnzbd.constants import *
 from sabnzbd.newsunpack import find_programs
 from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-                         decodePassword, Notify, SplitHost
+                         decodePassword, Notify, SplitHost, ConvertVersion
 
 from threading import Thread
 
@@ -416,14 +416,14 @@ def main():
 
     if not os.path.exists(f):
         # No file found, create default INI file
-    	try:
-    	    if not os.path.exists(sabnzbd.DIR_LCLDATA):
-    	        os.makedirs(sabnzbd.DIR_LCLDATA)
-    	    fp = open(f, "w")
-    	    fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
-    	    fp.close()
-    	except:
-    	    Panic('Cannot create file "%s".' % f, 'Check specified INI file location.')
+        try:
+            if not os.path.exists(sabnzbd.DIR_LCLDATA):
+                os.makedirs(sabnzbd.DIR_LCLDATA)
+            fp = open(f, "w")
+            fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
+            fp.close()
+        except:
+            Panic('Cannot create file "%s".' % f, 'Check specified INI file location.')
             ExitSab(1)
 
     try:
@@ -450,6 +450,11 @@ def main():
             logging_level = 2
     else:
         cfg['logging']['log_level'] = logging_level
+
+    ver, testRelease = ConvertVersion(sabnzbd.__version__)
+    if testRelease:
+        logging_level = 2
+        cherrypylogging = True
 
     my_logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
     if fork and not my_logdir:
@@ -524,6 +529,9 @@ def main():
     else:
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
+
+    if testRelease:
+        logging.info('Test release, setting maximum logging levels')
 
     if sabnzbd.AUTOBROWSER == None:
         sabnzbd.AUTOBROWSER = bool(check_setting_int(cfg, 'misc', 'auto_browser', 1))
@@ -700,6 +708,7 @@ def main():
                                  'server.logToScreen': cherrylogtoscreen,
                                  'server.logFile': sabnzbd.WEBLOGFILE,
                                  'sessionFilter.on': True,
+                                 'server.show_tracebacks': testRelease,
                                  '/sabnzbd': {'streamResponse': True},
                                  '/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir, 'static')},
                                  '/sabnzbd/m': {'streamResponse': True},
@@ -733,7 +742,7 @@ def main():
 
     # Have to keep this running, otherwise logging will terminate
     while cherrypy.server.ready:
-        if sabnzbd.LOGLEVEL != logging_level:
+        if (not testRelease) and sabnzbd.LOGLEVEL != logging_level:
             logging_level = sabnzbd.LOGLEVEL
             logger.setLevel(LOGLEVELS[logging_level])
         time.sleep(3)
