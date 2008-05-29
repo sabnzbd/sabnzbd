@@ -241,7 +241,11 @@ http://htmldog.com/articles/suckerfish/dropdowns/
 }
 
 #nav{
-display:inline-block;
+display: inline;
+display: -moz-inline-box;
+display: inline-block;
+width:100px;
+
 }
 /*
 Son of Suckerfish Dropdowns END
