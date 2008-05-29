@@ -383,17 +383,33 @@ def sanitize_filename(name):
 ################################################################################
 # DirPermissions                                                               #
 ################################################################################
-def DirPermissions(path, umask):
-    """ Adjust permissions for the complete path """
-    if os.name != 'nt' and umask:
-        while path and path != '/':
-            try:
-                os.chmod(path, int(umask, 8) | 0700)
-            except:
-                pass
-
-            path, junk = os.path.split(path)
-
+def CreateAllDirs(path, umask=None):
+    """ Create all required path elements and set umask on all
+        Return True if last elelent could be made or exists """
+    result = True
+    if os.name == 'nt':
+        try:
+            os.makedirs(path)
+        except:
+            result = False
+    else:
+        list = []
+        list.extend(path.split('/'))
+        path = ''
+        for d in list:
+            if d:
+                path += '/' + d
+                if not os.path.exists(path):
+                    try:
+                        os.mkdir(path)
+                        result = True
+                    except:
+                        result = False
+                try:
+                    if umask: os.chmod(path, int(umask, 8) | 0700)
+                except:
+                    pass
+    return result
 
 ################################################################################
 # Real_Path                                                                    #
@@ -413,11 +429,8 @@ def create_real_path(name, loc, path, umask=None):
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
-            try:
-                os.makedirs(my_dir)
-                DirPermissions(my_dir, umask)
-            except:
-                logging.error('Cannot create directory %s', my_dir)
+            if not CreateAllDirs(my_dir, umask):
+                logging.error('[%s] Cannot create directory %s', __NAME__, my_dir)
                 return (False, my_dir)
 
         if os.access(my_dir, os.R_OK + os.W_OK):
@@ -912,13 +925,9 @@ def create_dirs(dirpath):
     """ Create directory tree, obeying permissions """
     if not os.path.exists(dirpath):
         logging.info('[%s] Creating directories: %s', __NAME__, dirpath)
-        try:
-            os.makedirs(dirpath)
-            DirPermissions(dirpath, sabnzbd.UMASK)
-        except:
+        if not CreateAllDirs(dirpath, sabnzbd.UMASK):
             logging.error("[%s] Failed making (%s)",__NAME__,dirpath)
             return None
-
     return dirpath
 
 
