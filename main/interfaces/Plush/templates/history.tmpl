@@ -12,7 +12,7 @@ def displayNotices (action, name):
 <!--#if $lines#-->
 <!--#for $line in $lines #-->
 	<!--#set $odd = not $odd#-->
-	<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
+	<tr id="nzo_$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 	
 	<td>
 		<div class="historyTitle <!--#if $line.loaded #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->></div>
@@ -27,7 +27,7 @@ def displayNotices (action, name):
 	<td class="last">
 		<!--#for $stage in $line.stages#-->
 			<!--#for $action in $stage.actions#-->
-				<div class="hv_<%=action['name'][1:4]%>" title='<%= action['name'].replace("'","&rsquo;") %><br><%=action['value']%>'>&thinsp;</div><%=displayNotices(action['value'],action['name'])%>
+				<div class="hv_<%=action['name'][1:4]%>" title='<%= action['name'].replace("'","&rsquo;") %><br><%=action['value']%>'>&thinsp;&nbsp;</div><%=displayNotices(action['value'],action['name'])%>
 			<!--#end for#-->
 		<!--#end for#-->
 	</td>
