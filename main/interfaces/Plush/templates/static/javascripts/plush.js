@@ -1,35 +1,24 @@
-
 var refreshRate = 8; // default refresh rate
 var skipRefresh = false;
 
 // once the DOM is ready, run this
-$(document).ready(function() {
-    //the value below did not work in opera 9.50b2
-    //var windowSize = $(document).width();
+$(document).ready(function(){
+	
+	//used the the centering of the list, provides a left offset depending on the browser width
 	var windowSize = document.body.clientWidth;
-    //used the the centering of the list, provides a left offset depending on the browser width
-    // not sure what value it should be set to
 	windowSize = windowSize/80;
 	Math.round(windowSize);
 	$(".nav").css("padding-left", windowSize + "%");
 	
 	// main menu
 	$(".nav").superfish({
-		animation : { opacity:"show", height:"show" },
+		animation	: { opacity:"show", height:"show" },
 		hoverClass	: "sfHover",
 		delay		: 800,
 		animation	: {opacity:"show"},
-		speed		: "normal",
-		oldJquery	: false, // set to true if using jQuery version below 1.2 
-		disableHI	: false /*, // set to true to disable hoverIntent detection
-		pathClass	: "overideThisToUse",
-		onInit		: function(){},
-		onBeforeShow: function(){},
-		onShow		: function(){},
-		onHide		: function(){}
-*/	});
-
-
+		speed		: "normal"
+	});
+	
 	// drag & drop that will extend over multiple refreshes (for Queue)
 	$('#queueTable').livequery(function() {
 		
@@ -59,66 +48,24 @@ $(document).ready(function() {
 		$('#queueTable').bind("mouseover", function(){ skipRefresh=true; });
 		$('#queueTable').bind("mouseout", function(){ skipRefresh=false; });
 		$('.box_fatbottom').bind("mouseover mouseout", function(){ skipRefresh=false; });
-    });
+	});
 	
-
 	// tooltips that will extend over multiple refreshes (for History)
 	$('#history div').livequery(function() {
-        $(this).Tooltip({
-	    	extraClass: "tooltip",
-	    	track: true, 
-			fixPNG: true
+		$(this).Tooltip({
+			extraClass:	"tooltip",
+			track:		true, 
+			fixPNG:		true
 		});
-    });
-
+	});
+	
 	// set up more tooltips for main screen
 	$('.tip').Tooltip({
-    	extraClass: "tooltip",
-    	track: true, 
-		fixPNG: true
+			extraClass:	"tooltip",
+			track:		true, 
+			fixPNG:		true
 	});
-    
-
 	
-	/* // more tooltip options
-	$(".queue_delete").tooltip({ 
-	    track: true, 
-	    delay: 0, 
-	    showURL: false, 
-	    showBody: " - ", 
-	    opacity: 0.85 
-	});
-	$("#fancy, #fancy2").tooltip({ 
-    track: true, 
-    delay: 0, 
-    showURL: false, 
-    opacity: 1, 
-    fixPNG: true, 
-    showBody: " - ", 
-    extraClass: "pretty fancy", 
-    top: -15, 
-    left: 5 
-	}); 
-	 $('#pretty').tooltip({ 
-	    track: true, 
-	    delay: 0, 
-	    showURL: false, 
-	    showBody: " - ", 
-	    extraClass: "pretty", 
-	    fixPNG: true, 
-	    opacity: 0.95, 
-	    left: -120 
-	});
-	$('#right a').tooltip({ 
-	    track: true, 
-	    delay: 0, 
-	    showURL: false, 
-	    extraClass: "right" 
-	}); 
-	$('#right2 a').tooltip({ showURL: false });
-	*/
-
-
 	// restore Add NZB from cookie
 	if (ReadCookie('Plush2AddNZB') == 'block')
 		$('#add_nzb_menu').css('display','block');
@@ -130,7 +77,6 @@ $(document).ready(function() {
 		refreshRate = ReadCookie('Plush2Refresh');
 	else
 		SetCookie('Plush2Refresh',refreshRate);
-	
 	
 	// set Refresh rate within main menu	
 	$("#refreshRate-option").val(refreshRate);
@@ -158,7 +104,7 @@ $(document).ready(function() {
 			type: "GET",
 			url: "queue/sort_by_avg_age?dummy="+Math.random(),
 			success: function(result){
-   				return LoadTheQueue(result);
+				return LoadTheQueue(result);
 			}
 		});
 	});
@@ -167,7 +113,7 @@ $(document).ready(function() {
 			type: "GET",
 			url: "queue/sort_by_name?dummy="+Math.random(),
 			success: function(result){
-   				return LoadTheQueue(result);
+				return LoadTheQueue(result);
 			}
 		});
 	});
@@ -176,7 +122,7 @@ $(document).ready(function() {
 			type: "GET",
 			url: "queue/sort_by_size?dummy="+Math.random(),
 			success: function(result){
-   				return LoadTheQueue(result);
+				return LoadTheQueue(result);
 			}
 		});
 	});
@@ -188,7 +134,7 @@ $(document).ready(function() {
 				type: "GET",
 				url: "queue/purge?dummy="+Math.random(),
 				success: function(result){
-	   				return LoadTheQueue(result);
+					return LoadTheQueue(result);
 				}
 			});
 		}
@@ -207,7 +153,7 @@ $(document).ready(function() {
 			url: "addID",
 			data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
 			success: function(result){
-   				return RefreshTheQueue();
+				return RefreshTheQueue();
 			}
 		});
 		$("#addID_input").val('enter URL/ID');
@@ -222,7 +168,7 @@ $(document).ready(function() {
 	
 	// set up +NZB by file upload
 	$('#uploadNZBForm').submit( function(){
-		return AIM.submit(this, {'onStart': startCallback, 'onComplete': completeCallback})
+		return AIM.submit(this, {'onComplete': RefreshTheQueue})
 	});
 	
 	// toggle queue shutdown - from options menu
@@ -273,16 +219,6 @@ $(document).ready(function() {
 	
 	// Set up Queue Menu actions
 	$('#queue').click(function(event) {
-		/*if ($(event.target).is('#queue_verbosity')) {
-			$.ajax({
-				type: "GET",
-				url: "queue/tog_verbose?dummy="+Math.random(),
-				success: function(result){
-   					return LoadTheQueue(result);
-				}
-			});
-		}
-		else*/ 
 		if ($(event.target).is('.queue_delete')) {
 			delid = $(event.target).parent().parent().attr('id');
 			$.ajax({
@@ -301,7 +237,7 @@ $(document).ready(function() {
 			type: "GET",
 			url: 'history/tog_verbose?dummy='+Math.random(),
 			success: function(result){
-	 			return $('#history').html(result);
+				return $('#history').html(result);
 			}
 		});
 	});
@@ -312,7 +248,7 @@ $(document).ready(function() {
 			type: "GET",
 			url: 'history/purge?dummy='+Math.random(),
 			success: function(result){
-	 			return $('#history').html(result);
+				return $('#history').html(result);
 			}
 		});
 	});
@@ -334,7 +270,6 @@ $(document).ready(function() {
 	// initiate refreshes
 	MainLoop();
 	
-	
 });
 
 // calls itself after `refreshRate` seconds
@@ -343,7 +278,7 @@ function MainLoop() {
 	// ajax calls
 	RefreshTheQueue();
 	RefreshTheHistory();
-
+	
 	// loop
 	if (refreshRate > 0)
 		setTimeout("MainLoop()",refreshRate*1000);
@@ -356,19 +291,18 @@ function RefreshTheQueue() {
 		type: "GET",
 		url: 'queue/?dummy='+Math.random(),
 		success: function(result){
- 			return $('#queue').html(result);
+			return $('#queue').html(result);
 		}
 	});
 }
 
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheHistory() {
-	//if (skipRefresh) return false; // set within queue <table>
 	$.ajax({
 		type: "GET",
 		url: 'history/?dummy='+Math.random(),
 		success: function(result){
- 			return $('#history').html(result);
+			return $('#history').html(result);
 		}
 	});
 }
@@ -383,7 +317,6 @@ function LoadTheQueue(result) {
 // called upon every refresh
 function InitiateDragAndDrop() {
 	$("#queueTable").tableDnD({
-		//onDragClass: "myDragClass",
 		onDrop: function(table, row) {
 			var rows = table.tBodies[0].rows;
 			
@@ -395,52 +328,12 @@ function InitiateDragAndDrop() {
 				if (rows[i].id == row.id)
 					return $.ajax({
 						type: "GET",
-						url: "queue/switch?uid1="+row.id+"&uid2="+i+"&dummy="+Math.random()/*,
-					  	success: function(result){
-				   			return LoadTheQueue(result);
-						}*/
+						url: "queue/switch?uid1="+row.id+"&uid2="+i+"&dummy="+Math.random()
 					});
 			return false;
 		}
 	});	
 }
-
-/*
-// queue verbosity re-order arrows top/up/down/bottom
-function ManipNZF (nzo_id, nzf_id, action) {
-	if (action == 'Drop') {
-		$.ajax({
-			type: "GET",
-			url: "queue/removeNzf",
-			data: "nzo_id="+nzo_id+"&nzf_id="+nzf_id+"&dummy="+Math.random(),
-			success: function(result){ // nzo page
-   				return RefreshTheQueue()
-			}
-		});
-	} else {	// moving top/up/down/bottom (delete is above)
-		$.ajax({
-			type: "GET",
-			url: 'queue/'+nzo_id+'/bulk_operation',
-			data: nzf_id + '=on' + '&' + 'action_key=' + action,
-			success: function(result){ // nzo page
-   				return RefreshTheQueue();
-			}
-		});
-	}
-}
-*/
-
-// ajax file upload
-function startCallback() {
-    // make something useful before submit (onStart)
-    return true;
-}
-// ajax file upload
-function completeCallback(result) {
-    // make something useful after (onComplete)
-	return RefreshTheQueue();
-}
-
 
 // used to store refresh rate
 function SetCookie(name,val) {
@@ -460,4 +353,3 @@ function ReadCookie(name) {
 	}
 	return null;
 }
-

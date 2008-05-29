@@ -1,25 +1,27 @@
 
 ================================================
-== Plush 2.0 for SABnzbd+ 0.4.0 | May 24 2008 ==
+== Plush 2.0 for SABnzbd+ 0.4.0 | May 29 2008 ==
 
 ============
 ASSEMBLED BY
-* pairofdimes
-See LICENSE-CC
+
+pairofdimes (see LICENSE-CC.txt)
 
 ==============
 SPECIAL THANKS
-* shypike for making this all happen in the first place
-* switch for bringing so many new enhancements to the web interfaces
-* injectx for the new concept design and imagery
-* real_scud for creating the new HTML/CSS layout
-* inpheaux for the Config concept & assembly and SABnzbd+ logo
-* blis102 for the original Nova & Plush concepts
-* sbultez for creating numerous post-processing icons
+
+shypike for making this all happen in the first place
+switch for bringing so many new enhancements to the web interfaces
+injectx for the new concept design and imagery
+real_scud for creating the new HTML/CSS layout
+inpheaux for the Config concept & assembly and SABnzbd+ logo
+blis102 for the original Nova & Plush concepts
+sbultez for creating numerous post-processing icons
 
 ============
 KNOWN ISSUES
-* Slow down your refresh if it gets slow
+
+Slow down your refresh rate if it gets slow!
 
 ==========
 TOOLS USED
@@ -89,10 +91,11 @@ See LICENSE-LGPL
 The following images are from the Nuvola icon set (in ):
 templates/static/images/plush-default/nzo/*.png
 templates/static/images/plush-default/config/*.png
-(with the exception of config_newzbin.png which is used with permission of Newzbin)
+( with the exception of config_newzbin.png which is used with permission of Newzbin.com )
 
 All other imagery provided by injectx and real_scud; thank you both for the skin.
 
 =======
 CONTACT
-* http://forums.sabnzbd.org contributions welcome
+
+http://forums.sabnzbd.org contributions welcome
