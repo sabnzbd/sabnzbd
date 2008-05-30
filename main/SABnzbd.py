@@ -667,7 +667,9 @@ def main():
     sabnzbd.WEB_DIR2 = web_dir2
 
     sabnzbd.WEB_COLOR  = CheckColor(sabnzbd.WEB_COLOR,  web_dir)
-    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.WEB_COLOR2, web_dir)
+    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.WEB_COLOR2, web_dir2)
+    cfg['misc']['web_color']  = sabnzbd.WEB_COLOR
+    cfg['misc']['web_color2'] = sabnzbd.WEB_COLOR2
 
     sabnzbd.interface.USERNAME = check_setting_str(cfg, 'misc', 'username', '')
 
