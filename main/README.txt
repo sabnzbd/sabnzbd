@@ -1,16 +1,16 @@
-                                SABnzbd+ v0.4.0Beta5
+                                SABnzbd+ v0.4.0rc1
 
 *************************************
-*** This is SABnzbd+ 0.4.0Beta5   ***
+*** This is SABnzbd+ 0.4.0rc1     ***
 *************************************
 
-============>> THIS IS Beta SOFTWARE <<========================
+============>> THIS IS RELEASE CANDIDATE SOFTWARE <<===============
 
 Only use it when your are prepared to accept bugs and are ready
 for some troubleshooting.
 
-This Beta5 release will not re-use an existing download queue
-from an earlier release.
+This RC1 release will not re-use an existing download queue
+from an earlier release than 0.4.0Beta5.
 It will automatically create a new empty queue and history.
 However, the old queue remains in the cache directory and can
 still be accessed by the previous release.

@@ -1,4 +1,4 @@
-                                SABnzbd+ v0.4.0Beta5
+                                SABnzbd+ v0.4.0rc1
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -62,6 +62,7 @@ Essential modules
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
+                            http://chuchusoft.com/par2_tbb/index.html (multi-core)
 
 Optional modules
     unrar >= 3.70           http://www.rarlab.com/rar_add.htm
