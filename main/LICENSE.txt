@@ -5,7 +5,7 @@ under certain conditions. It is licensed under the
 GNU GENERAL PUBLIC LICENSE Version 2.
 
 
-=====================================================================
+
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
