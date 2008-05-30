@@ -1,6 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2005 Gregor Kaufmann <tdian@users.sourceforge.net>
-#           2008 The ShyPike <shypike@users.sourceforge.net>
+# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -133,7 +132,16 @@ def print_help():
     print "  -p  --pause              Start in paused mode"
 
 def print_version():
-    print "%s-%s" % (sabnzbd.MY_NAME, sabnzbd.__version__)
+    print """
+%s-%s
+
+Copyright (C) 2008, The SABnzbd-Team <team@sabnzbd.org>
+SABnzbd comes with ABSOLUTELY NO WARRANTY.
+This is free software, and you are welcome to redistribute it
+under certain conditions. It is licensed under the
+GNU GENERAL PUBLIC LICENSE Version 2.
+
+""" % (sabnzbd.MY_NAME, sabnzbd.__version__)
 
 
 
