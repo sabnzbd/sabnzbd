@@ -87,93 +87,96 @@
 				</ul>
 			</div>
 			
-			<div id="time-left">
-				<p><span id="stats_eta">&hellip;</span>&nbsp;left</p>
-			</div>
-			
-			<ul class="nav">
-				<li><a class="queue_logo"></a>
-					<ul>
-						<li><a id="add_nzb_menu_toggle"><em>&circ;</em>&nbsp;&nbsp;&nbsp;Add&nbsp;NZB&nbsp;<small>[Toggle]</small></a></li>
-						<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Functions</a>
-							<ul>
-								<li><a><select id="refreshRate-option">
-										<option value="1">1 sec</option>
-										<option value="2">2 sec</option>
-										<option value="4">4 sec</option>
-										<option value="8">8 sec</option>
-										<option value="16">16 sec</option>
-										<option value="30">30 sec</option>
-										<option value="60">1 min</option>
-										<option value="120">2 min</option>
-										<option value="900">15 min</option>
-										<option value="1800">30 min</option>
-										<option value="0">No</option>
-									</select>&nbsp;Refresh</a>
-								</li>
-								<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Sort Queue</a>
-									<ul>
-										<li><a id="sort_by_avg_age">by Average Age</a></li>
-										<li><a id="sort_by_name">by Name</a></li>
-										<li><a id="sort_by_size">by Size</a></li>
-									</ul>
-								</li>
-								<li><a>On Queue Finish..<br/>
-										<select id="onQueueFinish-option">
-											<option value=""></option>
-											<optgroup label="Actions">
-												<option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
-												<!--#if $nt#-->
-												<option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
-												<option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>Standby PC</option>
-												<option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
+			<div class="centerpiece">
+				
+				<div id="time-left">
+					<p><span id="stats_eta">&hellip;</span>&nbsp;left</p>
+				</div>
+				
+				<ul class="nav">
+					<li><a class="queue_logo"></a>
+						<ul>
+							<li><a id="add_nzb_menu_toggle"><em>&circ;</em>&nbsp;&nbsp;&nbsp;Add&nbsp;NZB&nbsp;<small>[Toggle]</small></a></li>
+							<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Functions</a>
+								<ul>
+									<li><a><select id="refreshRate-option">
+											<option value="1">1 sec</option>
+											<option value="2">2 sec</option>
+											<option value="4">4 sec</option>
+											<option value="8">8 sec</option>
+											<option value="16">16 sec</option>
+											<option value="30">30 sec</option>
+											<option value="60">1 min</option>
+											<option value="120">2 min</option>
+											<option value="900">15 min</option>
+											<option value="1800">30 min</option>
+											<option value="0">No</option>
+										</select>&nbsp;Refresh</a>
+									</li>
+									<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Sort Queue</a>
+										<ul>
+											<li><a id="sort_by_avg_age">by Average Age</a></li>
+											<li><a id="sort_by_name">by Name</a></li>
+											<li><a id="sort_by_size">by Size</a></li>
+										</ul>
+									</li>
+									<li><a>On Queue Finish..<br/>
+											<select id="onQueueFinish-option">
+												<option value=""></option>
+												<optgroup label="Actions">
+													<option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
+													<!--#if $nt#-->
+													<option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
+													<option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>Standby PC</option>
+													<option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
+													<!--#end if#-->
+												</optgroup>
+												<!--#if $script_list#-->
+												<optgroup label="Scripts">
+													<!--#for $sc in $script_list#-->
+													<!--#if $sc != 'None'#-->
+													<option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
+													<!--#end if#-->
+													<!--#end for#-->
+												</optgroup>
 												<!--#end if#-->
-											</optgroup>
-											<!--#if $script_list#-->
-											<optgroup label="Scripts">
-												<!--#for $sc in $script_list#-->
-												<!--#if $sc != 'None'#-->
-												<option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
-												<!--#end if#-->
-												<!--#end for#-->
-											</optgroup>
-											<!--#end if#-->
-										</select>
-									</a>
-								</li>
-								<li><a id="queue_purge">Purge the Queue</a></li>
-							</ul>
-						</li>
-						<li><a href="connections"><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Configuration</a>
-							<ul>
-								<li><a href="connections">Connections</a></li>
-								<li><a href="config/general">General</a></li>
-								<li><a href="config/directories">Directories</a></li>
-								<li><a href="config/switches">Switches</a></li>
-								<li><a href="config/server">Servers</a></li>
-								<li><a href="config/categories">Categories</a></li>
-								<li><a href="config/scheduling">Scheduling</a></li>
-								<li><a href="config/rss">RSS</a></li>
-								<li><a href="config/email">Email</a></li>
-								<li><a href="config/newzbin">Newzbin</a></li>
-							</ul>
-						</li>
-						<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Help</a>
-							<ul>
-								<li><a href="$helpuri" target="_blank" title="Open Official Manual" class="tip">Wiki</a></li>
-								<li><a href="http://forums.sabnzbd.org" target="_blank" title="Open Official Message Board" class="tip">Forums</a></li>
-								<li><a id="help_irc" title="Load Built-In Chat Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip">IRC</a></li>
-							</ul>
-						</li>
-						<li><a id="shutdown_sabnzbd">Shutdown <small>SABnzbd</small></a></li>
-					</ul>
-				</li>
-			</ul>
-			
-			<div id="speed">
-				<p><span id="stats_kbpersec">&hellip;</span>&nbsp;kB/s</p>
+											</select>
+										</a>
+									</li>
+									<li><a id="queue_purge">Purge the Queue</a></li>
+								</ul>
+							</li>
+							<li><a href="connections"><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Configuration</a>
+								<ul>
+									<li><a href="connections">Connections</a></li>
+									<li><a href="config/general">General</a></li>
+									<li><a href="config/directories">Directories</a></li>
+									<li><a href="config/switches">Switches</a></li>
+									<li><a href="config/server">Servers</a></li>
+									<li><a href="config/categories">Categories</a></li>
+									<li><a href="config/scheduling">Scheduling</a></li>
+									<li><a href="config/rss">RSS</a></li>
+									<li><a href="config/email">Email</a></li>
+									<li><a href="config/newzbin">Newzbin</a></li>
+								</ul>
+							</li>
+							<li><a><em>&raquo;</em>&nbsp;&nbsp;&nbsp;Help</a>
+								<ul>
+									<li><a href="$helpuri" target="_blank" title="Open Official Manual" class="tip">Wiki</a></li>
+									<li><a href="http://forums.sabnzbd.org" target="_blank" title="Open Official Message Board" class="tip">Forums</a></li>
+									<li><a id="help_irc" title="Load Built-In Chat Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip">IRC</a></li>
+								</ul>
+							</li>
+							<li><a id="shutdown_sabnzbd">Shutdown <small>SABnzbd</small></a></li>
+						</ul>
+					</li>
+				</ul>
+				
+				<div id="speed">
+					<p><span id="stats_kbpersec">&hellip;</span>&nbsp;kB/s</p>
+				</div>
+				
 			</div>
-			
 		</div>
 		
 		<div id="queue-wrap">
@@ -186,7 +189,7 @@
 				<div class="box_banner_r">
 					<ul class="box_banner_menu">
 						<li class="h_menu_verbose show tip" title="Toggle&nbsp;History<br/>Verbosity"></li>
-						<li class="h_menu_purge show tip" title="Purge&nbsp;History<br/>[double-click])<br/><small>(NOT&nbsp;active&nbsp;NZBs)<br/>(NOT&nbsp;files)</small>"></li>
+						<li class="h_menu_purge show tip" title="Purge&nbsp;History<br/>[double-click]<br/><small>(NOT&nbsp;active&nbsp;NZBs)<br/>(NOT&nbsp;files)</small>"></li>
 					</ul>
 				</div>
 			</div>

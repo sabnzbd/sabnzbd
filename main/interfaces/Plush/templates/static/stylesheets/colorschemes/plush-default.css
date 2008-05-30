@@ -415,8 +415,8 @@ tr:hover .history_added  {
 	margin-top: 20px;
 	text-align: center;
 }
-#speed { float:right; margin-right: 10%; }
-#time-left { float:left; margin-left: 8%; }
+#time-left { float:left; margin-right:22px;}
+#speed { float:left; margin-left:72px; }
 #speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
 #speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
 #btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
@@ -424,7 +424,11 @@ tr:hover .history_added  {
 #btm-wrapper .corner-left { float:left; background-image: url(../../images/plush-default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
 
 
-
+.centerpiece {
+	width:400px;
+	margin-left:auto;
+	margin-right:auto;
+}
 
 
 
