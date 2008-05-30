@@ -186,11 +186,6 @@ $(document).ready(function(){
 		});
 	}
 	
-	// set up "Help -> IRC" from main menu
-	$('#help_irc').click( function(){
-		window.open("config","newWindow","status=no,toolbar=no,scrollbars=no,width=600,height=380,top=100,left=100");
-	});
-	
 	// set up "shutdown sabnzbd" from main menu
 	$('#shutdown_sabnzbd').click( function(){
 		if(confirm('Sure you want to shut down the SABnzbd application?'))
