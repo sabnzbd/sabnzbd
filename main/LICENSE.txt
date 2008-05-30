@@ -1,22 +1,3 @@
-=============================================================================
-
-(c) Copyright 2007-2008 by "The SABnzbd-team".
-
-The SABnzbd-team is:
-
-Current team:
-    ShyPike <shypike@sabnzbd.org>
-    sw1tch <switch@sabnzbd.org>
-    pairofdimes <pairofdimes@users.sourceforge.net>
-    deam <deam@users.sourceforge.net>
-    inpheaux <inpheaux@users.sourceforge.net>
-Honorary member (and original author)
-    Gregor Kaufmann <tdian@users.sourceforge.net>
-
-This software is covered by the following license.
-
-
-=============================================================================
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
