@@ -24,6 +24,14 @@ $(document).ready(function(){
 		
 		InitiateDragAndDrop(); // also called when queue is manually refreshed
 		
+		$('#queueTable .title').dblclick(function(){
+			$(this).parent().parent().prependTo('#queueTable');
+			$.ajax({
+				type: "GET",
+				url: "queue/switch?uid1="+$(this).parent().parent().attr('id')+"&uid2=0&dummy="+Math.random()
+			});
+		});
+		
 		// processing option changes
 		$('#queueTable .proc_category').change(function(){
 			$.ajax({
