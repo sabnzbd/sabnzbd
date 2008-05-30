@@ -44,6 +44,9 @@
 <!--************************************
 			PAGE CONTENT IS BELOW
 	************************************ -->
+			<div align=center>
+				<small><i>Config:</i></small> <font color=blue>$configfn</font>
+			</div>
 			
 			<form action="saveGeneral" method="post" name="fullform">
 			<div class="EntryBlock">
@@ -91,8 +94,8 @@
 				<!--#for $webline in $web_colors#-->
 				<!--#if $webline.lower() == $web_color.lower()#-->
 					<option value="$webline" selected>$webline</option>
-                <!--#else if not $web_color.lower() and $webline.lower() == 'plush-default'#-->
-                    <option value="$webline" selected>$webline</option>
+				<!--#else if not $web_color.lower() and $webline.lower() == 'plush-default'#-->
+					<option value="$webline" selected>$webline</option>
 				<!--#else#-->
 					<option value="$webline">$webline</option>
 				<!--#end if#-->
