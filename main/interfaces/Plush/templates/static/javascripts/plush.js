@@ -4,6 +4,9 @@ var skipRefresh = false;
 // once the DOM is ready, run this
 $(document).ready(function(){
 	
+	// IE6 png transparency issues
+	$('img[@src$=.png], div.history_logo, a.queue_logo, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
+	
 	//used the the centering of the list, provides a left offset depending on the browser width
 	var windowSize = document.body.clientWidth;
 	windowSize = windowSize/80;
@@ -56,6 +59,7 @@ $(document).ready(function(){
 		$('#queueTable').bind("mouseover", function(){ skipRefresh=true; });
 		$('#queueTable').bind("mouseout", function(){ skipRefresh=false; });
 		$('.box_fatbottom').bind("mouseover mouseout", function(){ skipRefresh=false; });
+		
 	});
 	
 	// tooltips that will extend over multiple refreshes (for History)

@@ -41,6 +41,11 @@ http://plugins.jquery.com/project/dimensions
 Copyright (c) 2007 Paul Bakaus & Brandon Aaron
 See LICENSE-MIT & LICENSE-GPL
 
+jQuery ifixpng
+http://jquery.khurshid.com/ifixpng.php
+Copyright (c) 2007 Kush M.
+See LICENSE-MIT & LICENSE-GPL
+
 jQuery Live Query
 http://plugins.jquery.com/project/livequery
 Copyright (c) 2007 Brandon Aaron
