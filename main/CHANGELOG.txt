@@ -7,7 +7,8 @@ changed: Remove option "disconnect-on-pause" (always disconnect now)
 changed: Remove group-based folders
 changed: Remove newzbin-based folders (use user-defined categories instead)
 fixed:   Set permissions for full folder paths
-chaged:  RSS feed user interface simplified.
+changed: RSS feed user interface simplified.
+changed: RSS and Bookmark scanrates: interval in minutes
 fixed:   Handle password-protected archives better
          (no hangups any more, but a message in history)
 fixed:   Servers that were set to 0 connections (to stop them)

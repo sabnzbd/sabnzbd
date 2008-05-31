@@ -1,10 +1,10 @@
 Metadata-Version: 1.0
 Name: SABnzbd+
-Version: 0.4.0Beta5
-Summary: SABnzbd-0.4.0Beta5
+Version: 0.4.0RC1
+Summary: SABnzbd-0.4.0RC1
 Home-page: http://sourceforge.net/projects/sabnzbdplus
-Author: ShyPike, sw1tch (original work by Gregor Kaufmann)
-Author-email: shypike@users.sourceforge.net
+Author: The SABnzbd Team
+Author-email: team@sabnzbd.org
 License: GNU General Public License 2 (GPL2)
 Description: Fully automated Usenet Binary Downloader
 Platform: posix

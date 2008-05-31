@@ -6,8 +6,20 @@
 
 ============>> THIS IS RELEASE CANDIDATE SOFTWARE <<===============
 
-Only use it when your are prepared to accept bugs and are ready
-for some troubleshooting.
+It should be complete and have no serious problems, however
+we can use your help to determine the actual quality.
+
+Important **changes** from previous versions:
+
+- RSS setup is simplified (see Wiki)
+- RSS and Bookmark rates are now in minutes between scans
+  so no longer times per day!
+- Group-based folder feature has been removed
+- Newzbin-category based folder feature has been removed
+  Use the user-defined categories instead, which is much
+  more flexible.
+- The Windows binary distribution now comes with a PAR2
+  program that supports a multi-core CPU.
 
 This RC1 release will not re-use an existing download queue
 from an earlier release than 0.4.0Beta5.
