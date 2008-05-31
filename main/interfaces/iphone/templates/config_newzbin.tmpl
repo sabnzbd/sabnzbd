@@ -37,31 +37,6 @@
             </div>
 </fieldset>
 
-<h2>Options</h2>
-<fieldset class="EntryFieldSet">
-
-            <div class="row"> 
-
-            <label>Create Category Folders:</label><br /><br />
-            <input type="hidden" id="create_category_folders" name="create_category_folders" value="$create_category_folders">
-            <div class="toggle" onclick="toggleValue('create_category_folders')" <!--#if $create_category_folders > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
-            </div>
-
-</fieldset>
-
-<!--#if $bookmarks_list#-->
-<fieldset class="EntryFieldSet">
-<h2>Processed bookmarks</h2>
-            <div class="row"> 
-             <!--#for $msgid in $bookmarks_list#-->
-                <a href="https://v3.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
-            <!--#end for#-->
-            </div>
-
-</fieldset>
-<!--#end if#-->
-
-
 
 <p><input type="button" size="40" value="Save Changes" onClick="javascript:history.back();submitconfig('config/newzbin/saveNewzbin', 'Newzbin')">
 <span class="submitstatus" id="submitstatus"></span></p><br class="clear" />

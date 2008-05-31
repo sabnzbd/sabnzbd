@@ -8,7 +8,7 @@
 
 
  <!--#for $server in $servers#-->
-  <form title="General" class="panel" action="javascript:var dummy=0" id="$servers[$server]['host']$servers[$server]['port']">
+  <form title="$servers[$server]['host']$servers[$server]['port']" class="panel" action="javascript:var dummy=0" id="$servers[$server]['host']$servers[$server]['port']">
 <fieldset class="EntryFieldSet">
       <h2>$server</h2>
         <div class="row"> 
@@ -41,11 +41,20 @@
 		</div>
         <div class="row">
 
-			<label>Fillserver:</label><br/><br/>
+			<label>SSL:</label><br/><br/>
+            <input type="hidden" id="$server" name="ssl" value="<!--#if int($servers[$server]['ssl']) != 0 then '1' else '0'#-->">
+            <div class="toggle" onclick="toggleValue('$server')" <!--#if int($servers[$server]['ssl']) != 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+        </div>
+        
+        <div class="row">
+
+			<label>Backup-Server:</label><br/><br/>
             <input type="hidden" id="$server" name="fillserver" value="<!--#if int($servers[$server]['fillserver']) != 0 then '1' else '0'#-->">
             <div class="toggle" onclick="toggleValue('$server')" <!--#if int($servers[$server]['fillserver']) != 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
    		<input type="hidden" name="server" value="$server">
         </div>
+        
+        
 
 </fieldset>
               <input type="submit" onClick="javascript:history.back();submitconfig('config/server/saveServer', '$servers[$server]['host']$servers[$server]['port']')" value="Save Changes">
