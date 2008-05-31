@@ -4,7 +4,7 @@ def displayNotices (action, name):
 		return ''
 	notice = action[3:11]
 	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 ":
-		return '<span class="hvMessage">&rArr;&nbsp;' + action[3:] + '&nbsp;</span>'
+		return '<span class="hvMessage">&rArr;&nbsp;' + action[3:] + '&nbsp;</span><br/>'
 %>
 
 <table class="queueTable">
@@ -12,7 +12,7 @@ def displayNotices (action, name):
 <!--#if $lines#-->
 <!--#for $line in $lines #-->
 	<!--#set $odd = not $odd#-->
-	<tr id="nzo_$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
+	<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 	
 	<td>
 		<div class="historyTitle <!--#if $line.loaded #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->></div>
