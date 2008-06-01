@@ -28,6 +28,7 @@ import Queue
 import logging
 import sabnzbd
 import shutil
+import urllib
 import re
 from xml.sax.saxutils import escape
 if os.name == 'nt':
@@ -236,7 +237,7 @@ class PostProcessor(Thread):
 
             if fname:
                 # Can do this only now, otherwise it would show up in the email
-                nzo.set_unpackstr('=> <a href="./scriptlog?name=%s">Show script output</a>' % Quote(fname), '[USER-SCRIPT]', 5)
+                nzo.set_unpackstr('=> <a href="./scriptlog?name=%s">Show script output</a>' % urllib.quote(fname), '[USER-SCRIPT]', 5)
 
             ## Remove newzbin bookmark, if any
             name, msgid = SplitFileName(filename)
@@ -275,13 +276,6 @@ def MakeLogFile(name, content):
     f.write(content)
     f.close()
     return name
-
-def Quote(msg):
-    """ Do full quoting for a filename argument in a URL """
-    new = []
-    for ch in msg:
-        new.append(hex(ord(ch)+256).replace('0x1','%'))
-    return ''.join(new)
 
 
 def perm_script(wdir, umask):
