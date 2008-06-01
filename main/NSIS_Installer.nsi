@@ -202,6 +202,7 @@ Section Uninstall
     Delete "$INSTDIR\INSTALL.txt"
     Delete "$INSTDIR\ISSUES.txt"
     Delete "$INSTDIR\LICENSE.txt"
+    Delete "$INSTDIR\COPYRIGHT.txt"
     Delete "$INSTDIR\msvcr71.dll"
     Delete "$INSTDIR\python25.dll"
     Delete "$INSTDIR\lib\libeay32.dll"
