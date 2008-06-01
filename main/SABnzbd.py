@@ -718,7 +718,7 @@ def main():
                                  'server.logToScreen': cherrylogtoscreen,
                                  'server.logFile': sabnzbd.WEBLOGFILE,
                                  'sessionFilter.on': True,
-                                 'server.show_tracebacks': testRelease,
+                                 'server.show_tracebacks': True,
                                  '/sabnzbd': {'streamResponse': True},
                                  '/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir, 'static')},
                                  '/sabnzbd/m': {'streamResponse': True},
