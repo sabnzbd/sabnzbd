@@ -277,10 +277,11 @@ def MakeLogFile(name, content):
     return name
 
 def Quote(msg):
-    """ Proper URL quoting, including spaces """
-    for ch in '%=&<> ':
-        msg = msg.replace(ch, hex(ord(ch)).replace('0x','%'))
-    return msg
+    """ Do full quoting for a filename argument in a URL """
+    new = []
+    for ch in msg:
+        new.append(hex(ord(ch)+256).replace('0x1','%'))
+    return ''.join(new)
 
 
 def perm_script(wdir, umask):
