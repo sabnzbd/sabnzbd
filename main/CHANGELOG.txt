@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
-0.4.0rc1  by The SABnzbd-Team
+0.4.0rc2  by The SABnzbd-Team
 -------------------------------------------------------------------------------
 changed: Windows binary distribution now uses a multi-core PAR2 program.
 changed: Force logging level to maximum for non-Final releases.
@@ -17,6 +17,10 @@ fixed:   Use http for newzbin if SSL is not available
 added:   "Standby" is now an end-of-queue option.
 changed: Improved Plush skin
 changed: Improved Smpl skin
+-------------------------------------------------------------------------------
+0.4.0rc1  by The SABnzbd-Team
+-------------------------------------------------------------------------------
+         withdrawn
 -------------------------------------------------------------------------------
 0.4.0Beta5  by The SABnzbd-Team
 -------------------------------------------------------------------------------
