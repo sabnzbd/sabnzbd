@@ -1070,7 +1070,7 @@ class ConfigSwitches(ProtectedClass):
         config['enable_par_cleanup'] = IntConv(sabnzbd.CFG['misc']['enable_par_cleanup'])
         config['send_group'] = IntConv(sabnzbd.CFG['misc']['send_group'])
         config['fail_on_crc'] = IntConv(sabnzbd.CFG['misc']['fail_on_crc'])
-        config['create_group_folders'] = IntConv(sabnzbd.CFG['misc']['create_group_folders'])
+        #config['create_group_folders'] = IntConv(sabnzbd.CFG['misc']['create_group_folders'])
         config['dirscan_opts'] = IntConv(sabnzbd.CFG['misc']['dirscan_opts'])
         config['top_only'] = IntConv(sabnzbd.CFG['misc']['top_only'])
         config['auto_sort'] = IntConv(sabnzbd.CFG['misc']['auto_sort'])
@@ -1115,7 +1115,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['enable_save'] = IntConv(enable_save)
         sabnzbd.CFG['misc']['send_group'] = IntConv(send_group)
         sabnzbd.CFG['misc']['fail_on_crc'] = IntConv(fail_on_crc)
-        sabnzbd.CFG['misc']['create_group_folders'] = IntConv(create_group_folders)
+        #sabnzbd.CFG['misc']['create_group_folders'] = IntConv(create_group_folders)
         sabnzbd.CFG['misc']['dirscan_opts'] = IntConv(dirscan_opts)
         if script == 'None':
             sabnzbd.CFG['misc']['dirscan_script'] = None
@@ -1643,7 +1643,7 @@ class ConfigNewzbin(ProtectedClass):
 
         config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
         config['password_newzbin'] = '*' * len(decodePassword(sabnzbd.CFG['newzbin']['password'], 'password_newzbin'))
-        config['create_category_folders'] = IntConv(sabnzbd.CFG['newzbin']['create_category_folders'])
+        #config['create_category_folders'] = IntConv(sabnzbd.CFG['newzbin']['create_category_folders'])
         config['newzbin_bookmarks'] = IntConv(sabnzbd.CFG['newzbin']['bookmarks'])
         config['newzbin_unbookmark'] = IntConv(sabnzbd.CFG['newzbin']['unbookmark'])
         config['bookmark_rate'] = sabnzbd.BOOKMARK_RATE
@@ -1664,7 +1664,7 @@ class ConfigNewzbin(ProtectedClass):
         sabnzbd.CFG['newzbin']['username'] = username_newzbin
         if (not password_newzbin) or (password_newzbin and password_newzbin.strip('*')):
             sabnzbd.CFG['newzbin']['password'] = encodePassword(password_newzbin)
-        sabnzbd.CFG['newzbin']['create_category_folders'] = create_category_folders
+        #sabnzbd.CFG['newzbin']['create_category_folders'] = create_category_folders
         sabnzbd.CFG['newzbin']['bookmarks'] = newzbin_bookmarks
         sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
         sabnzbd.CFG['newzbin']['bookmark_rate'] = sabnzbd.minimax(bookmark_rate, 15, 24*60)
