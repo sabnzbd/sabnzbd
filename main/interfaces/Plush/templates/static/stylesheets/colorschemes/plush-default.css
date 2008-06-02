@@ -59,11 +59,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 #refreshRate-option {
 	font-size:100%;
-	margin-left:-6px;
 }
 #onQueueFinish-option {
 	margin-left:8px;
 	width:140px;
+	font-size:100%;
 }
 #sort_by_avg_age {
 	cursor:pointer;
@@ -926,16 +926,17 @@ embed, object {
 }
 .nav ul {
 	margin-top:10px;
-	border:4px solid #EEDDAA;
+	border:4px solid #FFBC00;
 }
 .nav li {
 	width:100px; /* affects top level menu items only, as nested li elements have width 100% of their ul parent (see .nav ul rules above)*/
 }
 .nav a {
-	color: white;
+	color: black;
 	padding: 0.5em 0; /* note that the top and bottom padding will affect the 'top' value (marked with the word "VARIABLE") of the second tier of nav (see "essential rules" above and alter accordingly) */
 	text-decoration:none;
 	text-indent: 0.85em;
+	font-size:75%;
 }
 /* if link text runs over two or more lines, you will want padding in the anchor element instead of relying on text-indent to provide space. The following disabled rule shows how to style the submenu links in this case. Note that the width plus left and right padding must equal the width set above for the submenu (.nav ul) */
 /*
@@ -950,13 +951,13 @@ embed, object {
 	background-color:#FFA500; /* hover highlight */
 }
 .nav li li {
-	background:#333333; /* slightly darker shade for nested submenus */
+	background:lightyellow; /* slightly darker shade for nested submenus */
 }
 .nav ul li ul {
 	margin-top:0px;
 }
 .nav li li li {
-	background:#1D1C1C; /* slightly darker shade for nested submenus */
+	background:lightyellow; /* slightly darker shade for nested submenus */
 }
 .nav input {
 	border: 1px dotted white;
