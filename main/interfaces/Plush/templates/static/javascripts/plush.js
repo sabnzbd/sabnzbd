@@ -7,12 +7,6 @@ $(document).ready(function(){
 	// IE6 png transparency issues
 	$('img[@src$=.png], div.history_logo, a.queue_logo, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
 	
-	//used the the centering of the list, provides a left offset depending on the browser width
-	var windowSize = document.body.clientWidth;
-	windowSize = windowSize/80;
-	Math.round(windowSize);
-	$(".nav").css("padding-left", windowSize + "%");
-	
 	// main menu
 	$(".nav").superfish({
 		animation	: { opacity:"show", height:"show" },
