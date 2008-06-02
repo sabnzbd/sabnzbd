@@ -32,18 +32,18 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding:2px;
 }
 .add_nzb_box_fetch {
-	background-color:pink;
-	border:1px solid red;
+	background-color:lightyellow;
+	border:1px solid #FFBC00;
 }
 
 .add_nzb_box_upload {
 	background-color:lightyellow;
-	border:1px solid orange;
+	border:1px solid #FFBC00;
 }
 
 .add_nzb_box_processing {
-	background-color:lightgreen;
-	border:1px solid green;
+	background-color:lightyellow;
+	border:1px solid #FFBC00;
 }
 #addID_input {
 	text-align:right;
@@ -55,9 +55,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	display:inline;
 }
 #addNZBbyFile {
-	cursor:pointer;
-}
-#add_nzb_menu_toggle {
 	cursor:pointer;
 }
 #refreshRate-option {
@@ -430,7 +427,28 @@ tr:hover .history_added  {
 	margin-right:auto;
 }
 
+#add_nzb_menu_toggle {
+	text-align: right;
+	width: 90%;
+	margin: 0px auto;
+	padding-right:24px;
+}
 
+#add_nzb_menu_toggle em {
+	color: #FFBC00;
+}
+
+#add_nzb_menu_toggle a {
+	font-size: 75%;
+	color: white;
+	font-weight:bold;
+	border-bottom: 1px dotted #FFBC00;
+	text-decoration: none;
+	cursor: pointer;
+}
+#add_nzb_menu_toggle a:hover {
+	border-bottom: 1px solid #FFBC00;
+}
 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------

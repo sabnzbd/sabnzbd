@@ -28,22 +28,15 @@
 	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
 	<!--#end if#-->
 	
+	<div id="add_nzb_menu_toggle">
+		<em>&raquo;</em> <a>Add NZB</a>
+	</div>
+	
 	<div id="add_nzb_menu">
 		
-		<span class="add_nzb_box_fetch">
-			<small>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></small>
-			<input type="text" id="addID_input" size="14" />
-			<input type="submit" id="addID" value="&laquo; FETCH NZB" />
-		</span>
-		
+
 		<form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="mode" value="addfile" />
-		
-		<span class="add_nzb_box_upload">
-			<small>&rarr;&nbsp;File Upload</small>
-			<input type="file" name="name" size="4" />
-			<input type="submit" id="addNZBbyFile" value="&laquo; UPLOAD NZB" />
-		</span>
 		
 		<span class="add_nzb_box_processing">
 			<small>&rarr;&nbsp;Processing</small>
@@ -71,7 +64,19 @@
 			
 		</span>
 		
+		<span class="add_nzb_box_upload">
+			<small>&rarr;&nbsp;File Upload</small>
+			<input type="file" name="name" size="4" />
+			<input type="submit" id="addNZBbyFile" value="&laquo; UPLOAD NZB" />
+		</span>
+		
 		</form>
+		
+		<span class="add_nzb_box_fetch">
+			<small>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></small>
+			<input type="text" id="addID_input" size="14" />
+			<input type="submit" id="addID" value="&laquo; FETCH NZB" />
+		</span>
 		
 	</div>
 	
@@ -98,7 +103,6 @@
 				<ul class="nav">
 					<li><a class="queue_logo"></a>
 						<ul>
-							<li><a id="add_nzb_menu_toggle">Add&nbsp;NZB&nbsp;<small>[Toggle]</small></a></li>
 							<li><a>Functions</a>
 								<ul>
 									<li><a><select id="refreshRate-option">
