@@ -49,22 +49,26 @@ def ListUris():
 
 def ConvertFilter(text):
     """ Return compiled regex.
-        Quote all regex specials, replace '*' by '.*'
+        If string starts with re: it's a real regex
+        else quote all regex specials, replace '*' by '.*'
     """
-    txt = text.replace('\\','\\\\')
-    txt = txt.replace('^','\^')
-    txt = txt.replace('$','\$')
-    txt = txt.replace('.','\.')
-    txt = txt.replace('[','\[')
-    txt = txt.replace(']','\]')
-    txt = txt.replace('(','\(')
-    txt = txt.replace(')','\)')
-    txt = txt.replace('+','\+')
-    txt = txt.replace('?','\?')
-    txt = txt.replace('|','\|')
-    txt = txt.replace('{','\{')
-    txt = txt.replace('}','\}')
-    txt = txt.replace('*','.*')
+    if text[:3].lower() == 're:':
+        txt = text[3:]
+    else:
+        txt = text.replace('\\','\\\\')
+        txt = txt.replace('^','\^')
+        txt = txt.replace('$','\$')
+        txt = txt.replace('.','\.')
+        txt = txt.replace('[','\[')
+        txt = txt.replace(']','\]')
+        txt = txt.replace('(','\(')
+        txt = txt.replace(')','\)')
+        txt = txt.replace('+','\+')
+        txt = txt.replace('?','\?')
+        txt = txt.replace('|','\|')
+        txt = txt.replace('{','\{')
+        txt = txt.replace('}','\}')
+        txt = txt.replace('*','.*')
 
     try:
         return re.compile(txt, re.I)

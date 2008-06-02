@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+0.4.0    by The SABnzbd-Team
+-------------------------------------------------------------------------------
+changed: RSS filters prefixed with "re:" are
+         Python-style regular expressions
+-------------------------------------------------------------------------------
 0.4.0rc2  by The SABnzbd-Team
 -------------------------------------------------------------------------------
 changed: Windows binary distribution now uses a multi-core PAR2 program.
