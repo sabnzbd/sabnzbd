@@ -59,6 +59,9 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 #refreshRate-option {
 	font-size:100%;
+	text-align: right;
+}
+#refreshRate-option option {
 }
 #onQueueFinish-option {
 	margin-left:8px;
