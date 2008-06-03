@@ -222,12 +222,10 @@ $(document).ready(function(){
 	$('#queue').click(function(event) {
 		if ($(event.target).is('.queue_delete')) {
 			delid = $(event.target).parent().parent().attr('id');
+			$('#'+delid).remove();
 			$.ajax({
 				type: "GET",
-				url: 'queue/delete?dummy='+Math.random()+'&uid='+delid,
-				success: function(result){
-					$('#'+delid).fadeOut("slow", function(){$('#'+delid).remove();});
-				}
+				url: 'queue/delete?dummy='+Math.random()+'&uid='+delid
 			});
 		}
 	});
@@ -258,12 +256,10 @@ $(document).ready(function(){
 	$('#history').click(function(event) {
 		if ($(event.target).is('.queue_delete')) {	// history delete
 			delid = $(event.target).parent().parent().attr('id');
+			$('#'+delid).remove();
 			$.ajax({
 				type: "GET",
-				url: 'history/delete?dummy='+Math.random()+'&job='+delid,
-				success: function(result){
-					$('#'+delid).fadeOut("slow", function(){$('#'+delid).remove();});
-				}
+				url: 'history/delete?dummy='+Math.random()+'&job='+delid
 			});
 		}
 	});
