@@ -5,7 +5,10 @@
 	<link rel="shortcut icon" type="image/ico" href="static/images/plush-default/sabnzbdplus.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
 	
-	<link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/<!--#if $color_scheme then $color_scheme else "plush-default.css"#-->"/>
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/plush-default.css"/>
+	<!--#if $color_scheme#-->
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme"/>
+	<!--#end if#-->
 	
 	<script type="text/javascript" src="static/javascripts/jquery.js"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.superfish.js"></script>

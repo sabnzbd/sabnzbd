@@ -104,7 +104,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 
 .box_fatbottom {
-	background: url(../../images/plush-default/qh_bottom.png) 0 0 repeat-x;
+	background: url(../images/plush-default/qh_bottom.png) 0 0 repeat-x;
 	height:37px;
 	font-size: 66%;
 	color: #606060;
@@ -128,13 +128,13 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding-top:8px;
 	padding-bottom:8px;
 	padding-left:20px;
-	background: url(../../images/plush-default/q_stats_incomplete.png) 0 50% no-repeat;
+	background: url(../images/plush-default/q_stats_incomplete.png) 0 50% no-repeat;
 }
 .stats_incomplete_freespace_needspace {
 	padding-top:8px;
 	padding-bottom:8px;
 	padding-left:20px;
-	background: url(../../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
+	background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
 	color:red;
 }
 .stats_complete_freespace {
@@ -142,19 +142,19 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding-top:8px;
 	padding-bottom:8px;
 	padding-left:20px;
-	background: url(../../images/plush-default/q_stats_complete.png) 0 50% no-repeat;
+	background: url(../images/plush-default/q_stats_complete.png) 0 50% no-repeat;
 }
 .stats_complete_freespace_needspace {
 	margin-left:10px;
 	padding-top:8px;
 	padding-bottom:8px;
 	padding-left:20px;
-	background: url(../../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
+	background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
 	color:red;
 }
 
 .history_logo {
-	background: url(../../images/plush-default/sabnzbdplus_plush.png) 50% 100% no-repeat;
+	background: url(../images/plush-default/sabnzbdplus_plush.png) 50% 100% no-repeat;
 }
 
 .box_banner_menu {
@@ -174,19 +174,19 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	cursor:pointer;
 }
 .q_menu_unpaused {
-	background: url(../../images/plush-default/q_pause.png) 0 0 no-repeat;
+	background: url(../images/plush-default/q_pause.png) 0 0 no-repeat;
 }
 .q_menu_paused {
-	background: url(../../images/plush-default/q_pause_on.png) 0 0 no-repeat;
+	background: url(../images/plush-default/q_pause_on.png) 0 0 no-repeat;
 }
 .q_menu_sort {
 	width:55px;
 	height: 55px;
 	cursor:pointer;
 }
-.q_menu_sort.show { background: url(../../images/plush-default/q_pill_sort.png) 0 0 no-repeat;}
+.q_menu_sort.show { background: url(../images/plush-default/q_pill_sort.png) 0 0 no-repeat;}
 .q_menu_verbose,.h_menu_verbose {
-	background: url(../../images/plush-default/qh_verbosity.png) 0 100% no-repeat;
+	background: url(../images/plush-default/qh_verbosity.png) 0 100% no-repeat;
 	margin-right:6px;
 	padding-right:28px;
 	padding-bottom:24px;
@@ -194,7 +194,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	display:none;
 }
 .q_menu_purge {
-	background: url(../../images/plush-default/h_purge.png) 0 0 no-repeat;
+	background: url(../images/plush-default/h_purge.png) 0 0 no-repeat;
 	padding-bottom:24px;
 	margin-right:6px;
 	padding-right:24px;
@@ -203,7 +203,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .q_menu_purge.show { display: inline; }
 .h_menu_purge {
-	background: url(../../images/plush-default/h_purge.png) 0 100% no-repeat;
+	background: url(../images/plush-default/h_purge.png) 0 100% no-repeat;
 	margin-right:6px;
 	padding-right:24px;
 	padding-bottom:24px;
@@ -212,7 +212,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .h_menu_purge.show { display: inline; }
 .queue_logo {
-	background: url(../../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
+	background: url(../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
 	padding-left:240px;
 	padding-right:240px;
 	padding-bottom:50px;
@@ -220,9 +220,9 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	height: 40px;
 }
 
-.queue_pill_l {display:inline; background: url(../../images/plush-default/q_pill_l.png) 0 0 no-repeat;padding-left:9px;}
-.queue_pill_m {display:inline; background: url(../../images/plush-default/q_pill_m.png) 0 0 repeat-x; width:100px; }
-.queue_pill_r {display:inline; background: url(../../images/plush-default/q_pill_r.png) 100% 0 no-repeat; height:51px;}
+.queue_pill_l {display:inline; background: url(../images/plush-default/q_pill_l.png) 0 0 no-repeat;padding-left:9px;}
+.queue_pill_m {display:inline; background: url(../images/plush-default/q_pill_m.png) 0 0 repeat-x; width:100px; }
+.queue_pill_r {display:inline; background: url(../images/plush-default/q_pill_r.png) 100% 0 no-repeat; height:51px;}
 
 
 .queueTable {
@@ -252,21 +252,21 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	width: 16px;
 	margin: 2px 8px 0 4px;
 	float:left;
-	background: url(../../images/plush-default/ql_grip.png) 0 50% no-repeat;
+	background: url(../images/plush-default/ql_grip.png) 0 50% no-repeat;
 }
 .queueTable tr:hover .title {
-	background: url(../../images/plush-default/ql_grip_on.png) 0 50% no-repeat;
+	background: url(../images/plush-default/ql_grip_on.png) 0 50% no-repeat;
 }
 .queueTable .historyTitle { width: 16px; float:left; height: 16px; margin-right: 10px; margin-left: 3px; }
 .queueTable .historyTitle.Loaded, .queueTable .historyTitle.Check, .queueTable .historyTitle.Cross { background-repeat: no-repeat; } 
 .queueTable .historyTitle.Loaded {
-	background-image: url(../../images/plush-default/hl_loaded.gif);
+	background-image: url(../images/plush-default/hl_loaded.gif);
 }
 .queueTable .historyTitle.Check {
-	background-image: url(../../images/plush-default/hv_ok.png);
+	background-image: url(../images/plush-default/hv_ok.png);
 }
 .queueTable .historyTitle.Cross {
-	background-image: url(../../images/plush-default/hv_error.png);
+	background-image: url(../images/plush-default/hv_error.png);
 }
 .queueTable a {
 	text-decoration: none;
@@ -296,12 +296,12 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 .queueProgressBarContainer {
 	width:121px;
-	background-image: url(../../images/plush-default/ql_pbar_empty.png);
+	background-image: url(../images/plush-default/ql_pbar_empty.png);
 	background-repeat: no-repeat;
 	background-position: left center;
 }
 .queueProgressBar {
-	background-image: url(../../images/plush-default/ql_pbar_full.png);
+	background-image: url(../images/plush-default/ql_pbar_full.png);
 	background-repeat: no-repeat;
 	height: 15px;
 	width: 121px;
@@ -329,10 +329,10 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding-left:16px;
 }
 .queueTable tr:hover .queue_delete {
-	background: url(../../images/plush-default/ql_cross.png) 50% 50% no-repeat;
+	background: url(../images/plush-default/ql_cross.png) 50% 50% no-repeat;
 }
 .queueTable td:hover .queue_delete {
-	background: url(../../images/plush-default/ql_cross_on.png) 50% 50% no-repeat;
+	background: url(../images/plush-default/ql_cross_on.png) 50% 50% no-repeat;
 	cursor:pointer;
 }
 .history_added {
@@ -350,32 +350,32 @@ tr:hover .history_added  {
 	margin-right: 2px;
 }
 .hv_Tim {
-	background: url(../../images/plush-default/hv_timetaken.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_timetaken.png) 0 50% no-repeat;
 }
 .hv_Avg {
-	background: url(../../images/plush-default/hv_avgspeed.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_avgspeed.png) 0 50% no-repeat;
 }
 .hv_PAR {
-	background: url(../../images/plush-default/hv_par.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_par.png) 0 50% no-repeat;
 }
 .hv_JOI {
-	background: url(../../images/plush-default/hv_join.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_join.png) 0 50% no-repeat;
 }
 .hv_RAR {
-	background: url(../../images/plush-default/hv_unrar.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat;
 }
 .hv_ZIP {
-	background: url(../../images/plush-default/hv_unzip.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_unzip.png) 0 50% no-repeat;
 }
 .hv_UNP { /* unpack */
-	background: url(../../images/plush-default/hv_unrar.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat;
 }
 .hv_DEL {
-	background: url(../../images/plush-default/hv_del.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_del.png) 0 50% no-repeat;
 }
 .hv_USE {
 	display:inline;
-	background: url(../../images/plush-default/hv_userscript.png) 0 50% no-repeat;
+	background: url(../images/plush-default/hv_userscript.png) 0 50% no-repeat;
 }
 
 
@@ -391,24 +391,24 @@ tr:hover .history_added  {
 
 #page-wrap { width: 90%; margin: 0px auto; }
 .box_banner_hr {
-	background: #cfcfcf url(../../images/plush-default/qh_seperator.png) 0 0 repeat-x;
+	background: #cfcfcf url(../images/plush-default/qh_seperator.png) 0 0 repeat-x;
 	height:4px;
 }
-.box_banner_history {background-image: url(../../images/plush-default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
+.box_banner_history {background-image: url(../images/plush-default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
 .box_banner_r {
-	background-image: url(../../images/plush-default/history_title_bg.png);
+	background-image: url(../images/plush-default/history_title_bg.png);
 	background-position: left center;
 	background-repeat:no-repeat;
 	height:51px;
 }
-#hdr-queue { background-image: url(../../images/plush-default/queue_bg_tile.png); background-repeat: repeat-x; height: 55px; }
-#hdr-queue .logo { background-image: url(../../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
+#hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-repeat: repeat-x; height: 55px; }
+#hdr-queue .logo { background-image: url(../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
 #hdr-queue .logo h1 { text-indent: -9999px; margin: 0; padding: 0;}
-#queue-buttons { float: right; background-image: url(../../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
+#queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
 #queue-buttons li { float:left; }
 #queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
 #speed, #time-left {
-	background-image: url(../../images/plush-default/rounded_area_bg.png);
+	background-image: url(../images/plush-default/rounded_area_bg.png);
 	width: 68px;
 	height: 12px;
 	padding: 5px 0px;
@@ -420,8 +420,8 @@ tr:hover .history_added  {
 #speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
 #speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
 #btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
-#btm-wrapper .corner-right { float:right; background-image: url(../../images/plush-default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
-#btm-wrapper .corner-left { float:left; background-image: url(../../images/plush-default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
+#btm-wrapper .corner-right { float:right; background-image: url(../images/plush-default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
+#btm-wrapper .corner-left { float:left; background-image: url(../images/plush-default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
 
 
 .centerpiece {
@@ -518,91 +518,91 @@ fieldset.EntryFieldSet {
 	border-width: 0px;
 }
 #config_nav_connections {
-	background-image: url(../../images/plush-default/config/connections.png);
+	background-image: url(../images/plush-default/config/connections.png);
 }
 #config_nav_general {
-	background-image: url(../../images/plush-default/config/general.png);
+	background-image: url(../images/plush-default/config/general.png);
 }
 #config_nav_directories {
-	background-image: url(../../images/plush-default/config/directories.png);
+	background-image: url(../images/plush-default/config/directories.png);
 }
 #config_nav_switches {
-	background-image: url(../../images/plush-default/config/switches.png);
+	background-image: url(../images/plush-default/config/switches.png);
 }
 #config_nav_server {
-	background-image: url(../../images/plush-default/config/servers.png);
+	background-image: url(../images/plush-default/config/servers.png);
 }
 #config_nav_categories {
-	background-image: url(../../images/plush-default/config/categories.png);
+	background-image: url(../images/plush-default/config/categories.png);
 }
 #config_nav_scheduling {
-	background-image: url(../../images/plush-default/config/scheduling.png);
+	background-image: url(../images/plush-default/config/scheduling.png);
 }
 #config_nav_rss {
-	background-image: url(../../images/plush-default/config/rss.png);
+	background-image: url(../images/plush-default/config/rss.png);
 }
 #config_nav_email {
-	background-image: url(../../images/plush-default/config/email.png);
+	background-image: url(../images/plush-default/config/email.png);
 }
 #config_nav_newzbin {
-	background-image: url(../../images/plush-default/config/newzbin.png);
+	background-image: url(../images/plush-default/config/newzbin.png);
 }
 .left_links a, .right_links a {
 	background-position: 5px 50%;
 	background-repeat:no-repeat;
 }
 #help {
-	background-image: url(../../images/plush-default/config/help.png);
+	background-image: url(../images/plush-default/config/help.png);
 	padding: 6px;
 	padding-left:36px;
 	margin-bottom:40px;
 }
 #force_disconnect {
-	background-image: url(../../images/plush-default/config/disconnect.png);
+	background-image: url(../images/plush-default/config/disconnect.png);
 	padding: 6px;
 	padding-left:36px;
 }
 #test_email {
-	background-image: url(../../images/plush-default/config/test_email.png);
+	background-image: url(../images/plush-default/config/test_email.png);
 	padding: 6px;
 	padding-left:36px;
 }
 #save {
-	background-image: url(../../images/plush-default/config/save.png);
+	background-image: url(../images/plush-default/config/save.png);
 	padding: 6px;
 	padding-left:36px;
 }
 
 
 #config_nzo_reload {
-	background-image: url(../../images/plush-default/nzo/reload.png);
+	background-image: url(../images/plush-default/nzo/reload.png);
 	cursor:pointer;
 }
 #config_nzo_delete {
-	background-image: url(../../images/plush-default/nzo/delete.png);
+	background-image: url(../images/plush-default/nzo/delete.png);
 }
 #config_nzo_top {
-	background-image: url(../../images/plush-default/nzo/top.png);
+	background-image: url(../images/plush-default/nzo/top.png);
 }
 #config_nzo_up {
-	background-image: url(../../images/plush-default/nzo/up.png);
+	background-image: url(../images/plush-default/nzo/up.png);
 }
 #config_nzo_down {
-	background-image: url(../../images/plush-default/nzo/down.png);
+	background-image: url(../images/plush-default/nzo/down.png);
 }
 #config_nzo_bottom {
-	background-image: url(../../images/plush-default/nzo/bottom.png);
+	background-image: url(../images/plush-default/nzo/bottom.png);
 }
 #config_nzo_select_all {
-	background-image: url(../../images/plush-default/nzo/select_all.png);
+	background-image: url(../images/plush-default/nzo/select_all.png);
 	cursor:pointer;
 }
 #config_nzo_select_none {
-	background-image: url(../../images/plush-default/nzo/select_none.png);
+	background-image: url(../images/plush-default/nzo/select_none.png);
 	cursor:pointer;
 }
 #config_nzo_select_invert {
-	background-image: url(../../images/plush-default/nzo/select_invert.png);
+	background-image: url(../images/plush-default/nzo/select_invert.png);
 	cursor:pointer;
 }
 

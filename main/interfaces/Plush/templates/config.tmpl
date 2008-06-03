@@ -8,7 +8,10 @@
 	<script type="text/javascript" src="../static/javascripts/jquery.js"></script>
 	<script type="text/javascript" src="../static/javascripts/jquery.corner.js"></script>
 	
-	<link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/<!--#if $color_scheme then $color_scheme else "plush-default.css"#-->"/>
+	<link rel="stylesheet" type="text/css" href="../static/stylesheets/plush-default.css"/>
+	<!--#if $color_scheme#-->
+	<link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
+	<!--#end if#-->
 	
 	<style>
 	<!--
