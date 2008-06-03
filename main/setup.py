@@ -28,22 +28,28 @@ import os
 import tarfile
 import re
 import subprocess
-
-VERSION_FILE = 'sabnzbd/version.py'
-
-if os.name == 'nt':
-    # Patch this for another location
-    SvnVersion = r'"c:\Program Files\Subversion\bin\svnversion.exe"'
-    SvnRevert =  r'cmd /c "c:\Program Files\Subversion\bin\svn.exe" revert ' + VERSION_FILE
-else:
-    # SVN is assumed to be on the $PATH
-    SvnVersion = 'svnversion'
-    SvnRevert = 'svn revert ' + VERSION_FILE
-
 try:
     import py2exe
 except ImportError:
     py2exe = None
+
+VERSION_FILE = 'sabnzbd/version.py'
+
+def CheckPath(name):
+    if os.name == 'nt':
+        sep = ';'
+        ext = '.exe'
+    else:
+        sep = ':'
+        ext = ''
+
+    for path in os.environ['PATH'].split(sep):
+        full = os.path.join(path, name+ext)
+        if os.path.exists(full):
+            return name+ext
+    print "Sorry, cannot find %s%s in the path" % (name, ext)
+    return None
+
 
 def PatchVersion(name):
     """ Patch in the SVN baseline number, but only when this is
@@ -133,13 +139,80 @@ def CreateTar(folder, fname, release):
                 f.close()
     tar.close()
 
+def Dos2Unix(name):
+    """ Read file, remove \r and write back """
+    base, ext = os.path.splitext(name)
+    if ext.lower() not in ('.py', '.txt', '.css', '.js', '.tmpl', '.sh', '.cmd'):
+        return
+
+    print name
+    try:
+        f = open(name, 'rb')
+        data = f.read()
+        f.close()
+    except:
+        print "File %s does not exist" % name
+        exit(1)
+    data = data.replace('\r', '')
+    try:
+        f = open(name, 'wb')
+        f.write(data)
+        f.close()
+    except:
+        print "Cannot write to file %s" % name
+        exit(1)
+
+
+def Unix2Dos(name):
+    """ Read file, remove \r, replace \n by \r\n and write back """
+    base, ext = os.path.splitext(name)
+    if ext.lower() not in ('.py', '.txt', '.css', '.js', '.tmpl', '.sh', '.cmd'):
+        return
+
+    print name
+    try:
+        f = open(name, 'rb')
+        data = f.read()
+        f.close()
+    except:
+        print "File %s does not exist" % name
+        exit(1)
+    data = data.replace('\r', '')
+    data = data.replace('\n', '\r\n')
+    try:
+        f = open(name, 'wb')
+        f.write(data)
+        f.close()
+    except:
+        print "Cannot write to file %s" % name
+        exit(1)
+
 
 print sys.argv[0]
+print
+
+SvnVersion = CheckPath('svnversion')
+SvnRevert = CheckPath('svn')
+ZipCmd = CheckPath('zip')
+UnZipCmd = CheckPath('unzip')
+if os.name == 'nt':
+    NSIS = CheckPath('makensis')
+else:
+    NSIS = '-'
+
+if not (SvnVersion and SvnRevert and ZipCmd and UnZipCmd and NSIS):
+    exit(1)
+
+SvnRevert =  SvnRevert + ' revert ' + VERSION_FILE
 
 if len(sys.argv) < 2:
     target = None
 else:
     target = sys.argv[1]
+
+if target not in ('source', 'binary'):
+    print 'Usage: setup.py binary|source'
+    exit(1)
 
 # Derive release name from path
 base, release = os.path.split(os.getcwd())
@@ -210,7 +283,7 @@ if target == 'binary':
 
     # Make sure that the root files are DOS format
     for file in options['data_files'][0][1]:
-        os.system("unix2dos --safe dist/%s" % file)
+        Unix2Dos("dist/%s" % file)
     os.remove('dist/Sample-PostProc.sh')
 
     # Generate the windowed-app (skip datafiles now)
@@ -220,7 +293,7 @@ if target == 'binary':
     setup(**options)
 
     os.system('del dist\*.ini >nul 2>&1')
-    os.system('"c:\Program Files\NSIS\makensis.exe" /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
+    os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
               (release, fileIns))
 
 
@@ -230,7 +303,7 @@ if target == 'binary':
     os.rename(prod, 'dist')
     os.system(SvnRevert)
 
-elif target == 'source':
+else:
     # Prepare Source distribution package.
     # Make sure all source files are Unix format
     import shutil
@@ -249,10 +322,7 @@ elif target == 'source':
             os.makedirs(ndir)
         for file in src:
             shutil.copy2(file, ndir)
-            front, ext = os.path.splitext(file)
-            base = os.path.basename(file)
-            if ext.lower() in ('.py', '.pl', '.txt', '.html', '.css', '.tmpl', ''):
-                os.system("dos2unix --safe %s" % ndir + '/' + base)
+            Dos2Unix(ndir + '/' + os.path.basename(file))
 
     # Copy the script files
     for name in options['scripts']:
@@ -260,7 +330,7 @@ elif target == 'source':
         shutil.copy2(file, root)
         base = os.path.basename(file)
         fullname = os.path.normpath(os.path.abspath(root + '/' + base))
-        os.system("dos2unix --safe %s" % fullname)
+        Dos2Unix(fullname)
 
     # Copy all content of the packages (but skip backups and pre-compiled stuff)
     for unit in options['packages']:
@@ -275,7 +345,7 @@ elif target == 'source':
             fullname = os.path.normpath(os.path.abspath(dest + '/' + base))
             if ext.lower() not in ('.pyc', '.pyo', '.bak'):
                 shutil.copy2(file, dest)
-                os.system("dos2unix --safe %s" % fullname)
+                Dos2Unix(fullname)
 
     # Install CherryPy
     os.chdir(root)
@@ -289,12 +359,10 @@ elif target == 'source':
     os.rename('srcdist', prod)
     os.system('if exist %s del /q %s' % (fileWSr, fileWSr))
     # First the text files (unix-->dos)
-    os.system('zip -9 -r -X -l %s %s -x */win/* */images/* *licenses/Python*' % (fileWSr, prod))
+    os.system('zip -9 -r -X -l %s %s -i *.py *.txt *.css *.js *.tmpl *.cmd -x *licenses/Python*' % (fileWSr, prod))
     # Second the binary files
-    os.system('zip -9 -r -X %s %s -i */win/* */images/*' % (fileWSr, prod))
+    os.system('zip -9 -r -X %s %s -x *.py *.txt *.css *.js *.tmpl *.cmd *licenses/Python*' % (fileWSr, prod))
     os.rename(prod, 'srcdist')
 
     os.system(SvnRevert)
-else:
-    print 'Usage: setup.py binary|source'
 
