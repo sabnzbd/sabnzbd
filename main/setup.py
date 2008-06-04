@@ -35,6 +35,15 @@ except ImportError:
 
 VERSION_FILE = 'sabnzbd/version.py'
 
+def DeleteFiles(name):
+    ''' Delete one file or set of files from wild-card spec '''
+    for f in glob.glob(name):
+        try:
+            os.remove(f)
+        except:
+            print "Cannot remove file %s" % f
+            exit(1)
+
 def CheckPath(name):
     if os.name == 'nt':
         sep = ';'
@@ -284,7 +293,7 @@ if target == 'binary':
     # Make sure that the root files are DOS format
     for file in options['data_files'][0][1]:
         Unix2Dos("dist/%s" % file)
-    os.remove('dist/Sample-PostProc.sh')
+    DeleteFiles('dist/Sample-PostProc.sh')
 
     # Generate the windowed-app (skip datafiles now)
     del options['console']
@@ -292,12 +301,12 @@ if target == 'binary':
     options['windows'] = program
     setup(**options)
 
-    os.system('del dist\*.ini >nul 2>&1')
+    DeleteFiles('*.ini')
     os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
               (release, fileIns))
 
 
-    os.system('if exist %s del /q %s' % (fileBin, fileBin))
+    DeleteFiles(fileBin)
     os.rename('dist', prod)
     os.system('zip -9 -r -X %s %s' % (fileBin, prod))
     os.rename(prod, 'dist')
@@ -357,7 +366,7 @@ else:
 
     # Prepare the ZIP for W32 package
     os.rename('srcdist', prod)
-    os.system('if exist %s del /q %s' % (fileWSr, fileWSr))
+    DeleteFiles(fileWSr)
     # First the text files (unix-->dos)
     os.system('zip -9 -r -X -l %s %s -i *.py *.txt *.css *.js *.tmpl *.cmd -x *licenses/Python*' % (fileWSr, prod))
     # Second the binary files
