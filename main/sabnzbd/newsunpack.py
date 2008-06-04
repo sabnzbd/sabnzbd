@@ -685,7 +685,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
     start = time()
 
     if sabnzbd.PAR_OPTION:
-        command = [str(PAR2_COMMAND), str(sabnzbd.PAR_OPTION.strip()), 'r', str(parfile)]
+        command = [str(PAR2_COMMAND), 'r', str(sabnzbd.PAR_OPTION.strip()), str(parfile)]
     else:
         command = [str(PAR2_COMMAND), 'r', str(parfile)]
 
