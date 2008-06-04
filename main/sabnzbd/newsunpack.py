@@ -683,7 +683,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
     #set the current nzo status to "Verifying...". Used in History
     nzo.set_status("Verifying...")
     start = time()
-    command = ['%s' % PAR2_COMMAND, 'r', '%s' % parfile]
+
+    if sabnzbd.PAR_OPTION:
+        command = [str(PAR2_COMMAND), str(sabnzbd.PAR_OPTION.strip()), 'r', str(parfile)]
+    else:
+        command = [str(PAR2_COMMAND), 'r', str(parfile)]
 
     for joinable in joinables:
         command.append(joinable)

@@ -1063,6 +1063,8 @@ class ConfigSwitches(ProtectedClass):
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
+        config['nt'] = os.name == 'nt'
+        config['par_option'] = sabnzbd.CFG['misc']['par_option']
         config['enable_unrar'] = IntConv(sabnzbd.CFG['misc']['enable_unrar'])
         config['enable_unzip'] = IntConv(sabnzbd.CFG['misc']['enable_unzip'])
         config['enable_filejoin'] = IntConv(sabnzbd.CFG['misc']['enable_filejoin'])
@@ -1093,7 +1095,7 @@ class ConfigSwitches(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def saveSwitches(self, enable_unrar = None, enable_unzip = None,
+    def saveSwitches(self, par_option=None, enable_unrar = None, enable_unzip = None,
                      enable_filejoin = None, enable_save = None,
                      send_group = None, fail_on_crc = None, top_only = None,
                      create_group_folders = None, dirscan_opts = None,
@@ -1109,6 +1111,7 @@ class ConfigSwitches(ProtectedClass):
                      dummy = None
                      ):
 
+        sabnzbd.CFG['misc']['par_option'] = par_option
         sabnzbd.CFG['misc']['enable_unrar'] = IntConv(enable_unrar)
         sabnzbd.CFG['misc']['enable_unzip'] = IntConv(enable_unzip)
         sabnzbd.CFG['misc']['enable_filejoin'] = IntConv(enable_filejoin)

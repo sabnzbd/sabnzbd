@@ -78,6 +78,7 @@ DO_UNZIP = False
 DO_UNRAR = False
 DO_SAVE = False
 PAR_CLEANUP = False
+PAR_OPTION = ''
 
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
@@ -287,7 +288,7 @@ INIT_LOCK = Lock()
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
-           DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, CLEANUP_LIST, IGNORE_SAMPLES, \
+           DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, PAR_OPTION, CLEANUP_LIST, IGNORE_SAMPLES, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, MSGIDGRABBER, URLGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
@@ -336,6 +337,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     DO_SAVE = bool(check_setting_int(CFG, 'misc', 'enable_save', 1))
 
     PAR_CLEANUP = bool(check_setting_int(CFG, 'misc', 'enable_par_cleanup', 1))
+
+    PAR_OPTION = check_setting_str(CFG, 'misc', 'par_option', '')
 
     CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
 
