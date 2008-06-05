@@ -443,11 +443,14 @@ class NzbObject(TryList):
                 if nzf.nzf_id:
                     sabnzbd.remove_data(nzf.nzf_id)
 
-        if sabnzbd.CREATE_GROUP_FOLDERS:
-            self.__dirprefix.append(self.__group)
+        if self.__cat == None:
+            self.__cat = CatConvert(self.__group)
 
-        if sabnzbd.CREATE_CAT_FOLDERS and cat:
-            self.__dirprefix.append(cat)
+        #if sabnzbd.CREATE_GROUP_FOLDERS:
+        self.__dirprefix.append(self.__group)
+
+        #if sabnzbd.CREATE_CAT_FOLDERS and cat:
+        #    self.__dirprefix.append(cat)
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
@@ -726,6 +729,12 @@ class NzbObject(TryList):
     def get_dirprefix(self):
         return self.__dirprefix[:]
 
+    def get_group(self):
+        if self.__dirprefix:
+            return self.__dirprefix[0]
+        else:
+            return ''
+
     def get_bytes_downloaded(self):
         return self.__bytes_downloaded
 
@@ -945,3 +954,28 @@ def SplitFileName(name):
     return "", ""
 
 
+def CatConvert(cat):
+    """ Convert newzbin-category/group-name to user categories
+        Return unchanged if not found
+    """
+    newcat = cat
+    if cat:
+        found = False
+        for ucat in sabnzbd.CFG['categories']:
+            try:
+                newzbin = sabnzbd.CFG['categories'][ucat]['newzbin']
+                if type(newzbin) != type([]):
+                    newzbin = [newzbin] 
+            except:
+                newzbin = []
+            for name in newzbin:
+                if name.lower() == cat.lower():
+                    if name.find('.') < 0:
+                        logging.debug('[%s] Convert newzbin-cat "%s" to user-cat "%s"', __NAME__, cat, ucat)
+                    else:
+                        logging.debug('[%s] Convert group "%s" to user-cat "%s"', __NAME__, cat, ucat)
+                    newcat = ucat
+                    found = True
+                    break
+            if found: break
+    return newcat

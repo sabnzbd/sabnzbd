@@ -146,14 +146,21 @@ def ListScripts():
     return lst
 
 
-def ListCats():
+def ListCats(default=False):
     """ Return list of categories """
-    lst = ['None']
+    content = False
+    if default:
+        lst = ['Default', 'None']
+    else:
+        lst = ['None']
+
     for cat in sabnzbd.CFG['categories']:
+        content = True
         lst.append(cat)
-    if len(lst) < 2:
+    if content:
+        return lst
+    else:
         return []
-    return lst
 
 
 def Raiser(root, dummy):
@@ -263,8 +270,8 @@ class MainPage(ProtectedClass):
         info['script_list'].insert(0, 'Default')
         info['script'] = sabnzbd.DIRSCAN_SCRIPT
 
-        info['cat'] = 'None'
-        info['cat_list'] = ListCats()
+        info['cat'] = 'Default'
+        info['cat_list'] = ListCats(True)
 
         info['warning'] = ""
         if not sabnzbd.CFG['servers']:
@@ -283,6 +290,8 @@ class MainPage(ProtectedClass):
     def addID(self, id = None, pp=None, script=None, cat=None, redirect = None):
         if pp and pp=="-1": pp = None
         if script and script.lower()=='default': script = None
+        if cat and cat.lower()=='default': cat = None
+
         RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
         newzbin_url = RE_NEWZBIN_URL.search(id.lower())
         
@@ -302,6 +311,7 @@ class MainPage(ProtectedClass):
     def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None):
         if pp and pp=="-1": pp = None
         if script and script.lower()=='default': script = None
+        if cat and cat.lower()=='default': cat = None
 
         if url: url = url.strip()
         if url and (url.isdigit() or len(url)==5):

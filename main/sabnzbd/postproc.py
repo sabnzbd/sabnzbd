@@ -79,6 +79,7 @@ class PostProcessor(Thread):
             ## Get the job flags
             flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
             script = nzo.get_script()
+            group = nzo.get_group()
             cat = nzo.get_cat()
 
             ## Collect the par files
@@ -230,7 +231,7 @@ class PostProcessor(Thread):
                 if os.path.exists(script):
                     nzo.set_status("Running Script...")
                     nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
-                    ext_out = external_processing(script, workdir_complete, filename, dirname, cat)
+                    ext_out = external_processing(script, workdir_complete, filename, dirname, cat, group)
                     fname = MakeLogFile(filename, ext_out)
 
             ## Email the results

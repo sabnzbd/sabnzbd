@@ -34,6 +34,7 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import *
 from sabnzbd.misc import Cat2OptsDef, sanitize_filename
+from sabnzbd.nzbstuff import CatConvert
 import sabnzbd.newswrapper
 
 # Regex to find msgid in the Bookmarks page
@@ -57,29 +58,6 @@ def IsNewzbin(uri):
     return uri.find('newzbin') > 0 or uri.find('newzxxx') > 0
 
 
-def CatConvert(cat):
-    """ Convert newzbin category to user categories
-        Return unchanged if not found
-    """
-    newcat = cat
-    if cat:
-        found = False
-        for ucat in sabnzbd.CFG['categories']:
-            try:
-                newzbin = sabnzbd.CFG['categories'][ucat]['newzbin']
-                if type(newzbin) != type([]):
-                    newzbin = [newzbin] 
-            except:
-                newzbin = []
-            for name in newzbin:
-                if name.lower() == cat.lower():
-                    logging.debug('[%s] Convert newzbin-cat "%s" to user-cat "%s"', __NAME__, cat, ucat)
-                    newcat = ucat
-                    found = True
-                    break
-            if found: break
-    return newcat
-                
 
 ################################################################################
 # DirectNZB support
