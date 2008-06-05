@@ -192,8 +192,9 @@ class PostProcessor(Thread):
 
             ## Give destination its final name
             if not tv_file:
-                if not parResult:
-                    workdir_complete = prefix(workdir_complete, '_FAILED_')
+                if unpackError or not parResult:
+                    workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
+                    workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
                 try:
                     os.rename(tmp_workdir_complete, workdir_complete)
                     nzo.set_dirname(os.path.basename(workdir_complete))
@@ -202,6 +203,7 @@ class PostProcessor(Thread):
             else:
                 if unpackError or not parResult: 
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
+                    workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
                     try:
                         os.rename(tmp_workdir_complete, workdir_complete)
                         nzo.set_dirname(os.path.basename(workdir_complete))
