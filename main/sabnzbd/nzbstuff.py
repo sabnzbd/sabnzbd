@@ -423,15 +423,12 @@ class NzbObject(TryList):
                         fln = nzf.get_subject()
                         fln = fln.lower()
 
-                    for ignore in IGNORE_SAMPLE_LIST:
-                        if ignore in fln:
-                            found = 1
-                            break
-
+                    sample = re.compile('(^|[\W_])sample\d*[\W_]')
+                    found = sample.search(fln)
+                    
                 if found:
-                    if nzf.nzf_id:
-                        logging.debug("[%s] Sample file found in file: %s, removing: %s." % (__NAME__,fln,nzf.nzf_id))
-                        sabnzbd.remove_data(nzf.nzf_id)
+                    logging.debug("[%s] Sample file found in file: %s, removing: %s." % (__NAME__,fln,nzf.nzf_id))
+                    sabnzbd.remove_data(nzf.nzf_id)
                 else:
                     logging.info('[%s] %s added to queue', __NAME__, subject)
                     avg_age += t

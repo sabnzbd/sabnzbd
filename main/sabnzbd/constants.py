@@ -82,7 +82,6 @@ MIN_DECODE_QUEUE = 5
 MAX_DECODE_QUEUE = 10
 MAX_WARNINGS     = 20
 
-IGNORE_SAMPLE_LIST = ['.sample', '-sample', 'sample-', '~sample', '_sample']
 
 tv_episode_match = ['(\w+)x(\d+)',# 1x01
                       '[Ss](\d+)[\.\-]?[Ee](\d+)'] # S01E01
