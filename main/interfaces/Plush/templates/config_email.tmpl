@@ -16,6 +16,7 @@
 	<style>
 	<!--
 		body {background: #ddd;}
+		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;}
 	-->
 	</style>
 	
@@ -54,14 +55,14 @@
 				
 				<legend>Email Options</legend>
 				
-				<strong>End-of-job notifications:</strong><br/>
-				Send email when job is completed.<br/>
+				<strong>End-of-Job Notifications:</strong><br/>
+				<small>Send email when job is completed.</small><br/>
 				<input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> No
 				<input type="radio" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> /> Yes
 				
 				<br/><br/>
-				<strong>Disk full notifications:</strong><br/>
-				Send email when disk is full and SABnzbd is paused.<br/>
+				<strong>Disk Full Notifications:</strong><br/>
+				<small>Send email when disk is full and SABnzbd is paused.</small><br/>
 				<input type="radio" name="email_full" value="0" <!--#if $email_full == 0 then "checked=1" else ""#--> /> No
 				<input type="radio" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> Yes
 				
@@ -72,28 +73,28 @@
 				
 				<legend>Email Account Settings</legend>
 				
-				<strong>SMTP server:</strong><br/>
-				Set your ISP's server for outgoing email.<br/>
+				<strong>SMTP Server:</strong><br/>
+				<small>Set your ISP's server for outgoing email.</small><br/>
 				<input type="text" size="35" name="email_server" value="$email_server"/>
 				
 				<br/><br/>
-				<strong>Email recipient:</strong><br/>
-				Email address to send the email to.<br/>
+				<strong>Email Recipient:</strong><br/>
+				<small>Email address to send the email to.</small><br/>
 				<input type="text" size="35" name="email_to" value="$email_to"/>
 				
 				<br/><br/>
-				<strong>Email sender:</strong><br/>
-				Who should we say sent the email?<br/>
+				<strong>Email Sender:</strong><br/>
+				<small>Who should we say sent the email?</small><br/>
 				<input type="text" size="35" name="email_from" value="$email_from"/>
 				
 				<br/><br/>
-				<strong>OPTIONAL: Account name:</strong><br/>
-				For authenticated email, account name.<br/>
+				<strong>OPTIONAL: Account Name:</strong><br/>
+				<small>For authenticated email, account name.</small><br/>
 				<input type="text" size="35" name="email_account" value="$email_account"/>
 				
 				<br/><br/>
-				<strong>OPTIONAL: Account password:</strong><br/>
-				For authenticated email, password.<br/>
+				<strong>OPTIONAL: Account Password:</strong><br/>
+				<small>For authenticated email, password.</small><br/>
 				<input type="password" size="35" name="email_pwd" value="$email_pwd"/>
 				
 			</fieldset>

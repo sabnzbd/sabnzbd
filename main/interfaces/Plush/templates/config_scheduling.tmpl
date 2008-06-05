@@ -16,6 +16,7 @@
 	<style>
 	<!--
 		body {background: #ddd;}
+		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;}
 	-->
 	</style>
 </head>
@@ -51,7 +52,7 @@
 			<form action="addSchedule" method="post">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>Add schedule</legend>
+				<legend>&raquo;&nbsp;Add&nbsp;Schedule&nbsp;</legend>
 <%import time
 t = time.localtime()
 hour = t[3]
@@ -59,53 +60,75 @@ if hour != 23:
     hour += 1
 else:
     hour = 0 %>
-				Hour:<br/>
-				<select name="hour">
-				<!--#for $i in range(24)#-->
-					<option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
-				<!--#end for#-->
-				</select>
-				:
-				<select name="minute">
-				<!--#for $i in range(60)#-->
-					<option value="$i">$i
-				<!--#end for#-->
-				</select>
+
+				<table>
+					<tr><td align=right>
+						Hour : Minute:
+					</td><td>
+						<select name="hour">
+						<!--#for $i in range(24)#-->
+							<option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
+						<!--#end for#-->
+						</select>
+						:
+						<select name="minute">
+						<!--#for $i in range(60)#-->
+							<option value="$i">$i
+						<!--#end for#-->
+						</select>
+					</td></tr>
+					
+					<tr><td align=right>
+						Frequency:
+					</td><td>
+						<select name="dayofweek">
+							<option value="*" selected>Daily
+							<option value="1">Mondays
+							<option value="2">Tuesdays
+							<option value="3">Wednesdays
+							<option value="4">Thursdays
+							<option value="5">Fridays
+							<option value="6">Saturdays
+							<option value="7">Sundays
+						</select>
+					</td></tr>
+					
+					<tr><td align=right>
+						Action:
+					</td><td>
+						<select name="action">
+							<option value="resume">resume
+							<option value="pause">pause
+							<option value="shutdown">shutdown
+							<option value="speedlimit">speedlimit
+						</select>
+					</td></tr>
+					
+					<tr><td align=right>
+						Arguments:
+					</td><td>
+						<input type="text" size="20" name="arguments" value=""/>
+					</td></tr>
+					
+					<tr><td>
+					</td><td>
+						<br/><input type="submit" value="&oplus; Add Schedule"/>
+					</td></tr>
+					
+				</table>
 				
-				<br/>Frequency: <br/>
-				<select name="dayofweek">
-					<option value="*" selected>Daily
-					<option value="1">Mondays
-					<option value="2">Tuesdays
-					<option value="3">Wednesdays
-					<option value="4">Thursdays
-					<option value="5">Fridays
-					<option value="6">Saturdays
-					<option value="7">Sundays
-				</select>
 				
-				<br/>Action:<br/> 
-				<select name="action">
-					<option value="resume">resume
-					<option value="pause">pause
-					<option value="shutdown">shutdown
-					<option value="speedlimit">speedlimit
-				</select>
-				
-				<br/>Arguments:<br/> 
-				<input type="text" size="20" name="arguments" value=""/>
-				<p><input type="submit" value="Add Schedule"/></p>
 				
 			</fieldset>
 			</form>
 			</div>
 			
-			<h3>Current Schedules:</h3>
 			<div class="EntryBlock>"
+			<fieldset class="EntryFieldSet">
+			<legend>&raquo;&nbsp;Current&nbsp;Schedules&nbsp;</legend>
 			<!--#set $schednum = 0#-->
 			<!--#for $line in $schedlines#-->
 			<form action="delSchedule" method="post">
-			<fieldset class="EntryFieldSet">
 				<!--#set $schednum = $schednum+1#-->
 <% 
 m, h, day, action = line.split(' ', 3)
@@ -128,14 +151,14 @@ elif day == "6":
 elif day == "7":
     day='Sunday'    
 %>
-				Task $schednum: <strong>$h:$m</strong> - $day - $action
+				<u>Schedule #$schednum:</u> <strong>$h:$m</strong> &sdot; $day &sdot; $action
 				
-				<input type="hidden" name="line" value="$line"/>
-				<input type="submit" value="Remove"/>
+				&sdot;<input type="hidden" name="line" value="$line"/>
+				<input type="submit" value="X"/>
 				
-			</fieldset>
 			</form><br />
 			<!--#end for#-->
+			</fieldset>
 			</div>
 			
 <!--************************************

@@ -16,6 +16,7 @@
 	<style>
 	<!--
 		body {background: #ddd;}
+		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;}
 	-->
 	</style>
 	
@@ -48,24 +49,23 @@
 				PAGE CONTENT IS BELOW
 		************************************ -->
 			
-			<div style="text-align:center"><small>
+			<div style="text-align:center">
 				Version:&nbsp;$version&nbsp;&nbsp;|&nbsp;&nbsp;Uptime:&nbsp;$uptime&nbsp;&nbsp;|&nbsp;&nbsp;
 				<a href="./showlog">Show&nbsp;Logging</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="./showweb">Show&nbsp;Weblogging</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-				Logging:&nbsp;
-				<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value" style="font-size:x-small">
+				Logging:&nbsp;<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value" style="font-size:x-small">
 					<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
 					<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
 					<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
 				</select>
 				<!--#if int($cache_limit)#-->&nbsp;&nbsp;|&nbsp;&nbsp;<b>$cache_art</b>&nbsp;articles&nbsp;buffered&nbsp;in&nbsp;<b>$cache_size</b>&nbsp;bytes<!--#end if#-->
-			</small></div>
-			
+			</div>
+			<hr width="50%" />
 			<!--#if $servers#-->
 				<!--#for $server in $servers#-->
 				<fieldset class="EntryFieldSet">
 					<legend>
-						<!--#if int($server[4])#--><img style="float:left" src="../static/images/plush-default/config/encrypted.png" title="Encrypted via SSL"/>&nbsp;<!--#end if#-->
-						$server[0]:$server[1]: $server[2]
+						<!--#if int($server[4])#--><img style="float:left" src="../static/images/plush-default/config/encrypted.png" title="Encrypted via SSL"/><!--#else#-->&raquo;<!--#end if#-->
+						$server[0]:$server[1]:$server[2]&nbsp;
 					</legend>
 					<small><ol>
 					<!--#for $thrd in $server[3]#-->
@@ -78,16 +78,15 @@
 			
 			<!--#if $lastmail#-->
 				<fieldset class="EntryFieldSet">
-					<legend>Email test result</legend>
+					<legend style="background-color:darkblue;">&raquo; Email Test Result&nbsp;</legend>
 					<small>$lastmail</small>
 				</fieldset>
 			<!--#end if#-->
 			
 			<!--#if $warnings#-->
 				<fieldset class="EntryFieldSet">
-					<legend>
-						Lastest Warnings
-						<small>(<a href="./clearwarnings">clear</a>)</small>
+					<legend style="background-color:darkred;">&raquo; Lastest Warnings
+						<small>(<a href="./clearwarnings" style="color:white">clear</a>)&nbsp;</small>
 					</legend>
 					<small><ul>
 					<!--#for $warn in $warnings#-->

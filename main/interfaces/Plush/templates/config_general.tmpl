@@ -16,6 +16,7 @@
 	<style>
 	<!--
 		body {background: #ddd;}
+		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;}
 	-->
 	</style>
 	
@@ -49,37 +50,44 @@
 	************************************ -->
 			
 			<div align=center>
-				<small><i>Config:</i></small> <font color=blue>$configfn</font>
+				<small><i>Config File:</i></small> <font color=blue>$configfn</font>
 			</div>
 			
 			<form action="saveGeneral" method="post" name="fullform">
 			<div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>Web Server <font color="red">(changes require restart)</font></legend>
+				<legend>&raquo;&nbsp;Web&nbsp;Server&nbsp;</legend>
 				
+				<font color="white" style="background-color:darkred">&nbsp;Changes require manual SABnzbd restart!&nbsp;</font>
+				
+				<br/><br/>
+				<table cellpadding=2>
+				<tr><td>
 				<strong>Host:</strong><br/>
-				Host SABnzbd should listen on.<br/>
+				<small>Host SABnzbd should listen on.</small><br/>
 				<input type="text" name="host" value="$host"/>
 				
-				<br/><br/>
+				</td><td>
 				<strong>Port:</strong><br/>
-				Port SABnzbd should listen on.<br/>
-				<input type="text" name="port" value="$port"/>
+				<small>Port SABnzbd should listen on.</small><br/>
+				<input type="text" name="port" size=8 value="$port"/>
 				
-				<br/><br/>
+				</td></tr><tr><td colspan=2><hr/></td></tr><tr><td>
 				<strong>Web Username:</strong><br/>
-				Authentication Username.<br/>
+				<small>Authentication Username.</small><br/>
 				<input type="text" name="web_username" value="$username"/>
 				
-				<br/><br/>
+				</td><td>
 				<strong>Web Password:</strong><br/>
-				Authentication Password.<br/>
+				<small>Authentication Password.</small><br/>
 				<input type="password" name="web_password" value="$password"/>
+				</td></tr>
+				</td></tr><tr><td colspan=2><hr/></td></tr><tr><td>
+				</table>
 				
-				<br/><br/>
 				<strong>Web Interface:</strong><br/>
-				Choose a skin.<br/>
+				<small>Choose a skin.</small><br/>
 				<select name="web_dir">
 				<!--#for $webline in $web_list#-->
 				<!--#if $webline.lower() == $web_dir.lower()#-->
@@ -93,7 +101,7 @@
 				<!--#if $web_colors#-->
 				<br/><br/>
 				<strong>Web Interface Schema:</strong><br/>
-				Choose a color scheme for the skin.<br/>
+				<small>Choose a color scheme for the skin.</small><br/>
 				<select name="web_color">
 				<!--#for $webline in $web_colors#-->
 				<!--#if $webline.lower() == $web_color.lower()#-->
@@ -109,7 +117,7 @@
 				
 				<br/><br/>
 				<strong>Secondary Web Interface:</strong><br/>
-				Activate a secondary skin.<br/>
+				<small>Activate a secondary skin.</small><br/>
 				<select name="web_dir2">
 				<!--#for $webline in $web_list2#-->
 				<!--#if $webline.lower() == $web_dir2.lower()#-->
@@ -126,31 +134,32 @@
 			<div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>Tuning</legend>
-				<strong>Queue auto refresh interval:</strong><br/>
-				Refresh interval of the queue web-interface page(sec, 0= none)<br/>
-				<input type="text" name="refresh_rate" value="$refresh_rate"/>
+				<legend>&raquo;&nbsp;Tuning&nbsp;</legend>
+				<strong>Queue Auto-Refresh Interval:</strong><br/>
+				<small>Not used in Plush!
+				<br/>Refresh interval of the queue web-interface page.</small><br/>
+				<input type="text" name="refresh_rate" value="$refresh_rate" size=8 /> (sec, 0= none)
 				
 				<br/><br/>
-				<strong>RSS checking interval:</strong><br/>
-				In minutes (at least 15 min).<br/>
-				<input type="text" name="rss_rate" value="$rss_rate"/>
+				<strong>RSS Checking Interval:</strong><br/>
+				<small>In minutes.</small><br/>
+				<input type="text" name="rss_rate" value="$rss_rate" size=8 /> (at least 15 min)
 				
 				<br/><br/>
-				<strong>Download speed limit:</strong><br/>
-				Download speed limit in kilobytes per second(kB/s).<br/>
-				<input type="text" name="bandwith_limit" value="$bandwith_limit"/>
+				<strong>Download Speed Limit:</strong><br/>
+				<small>Download speed limit in kilobytes per second.</small><br/>
+				<input type="text" name="bandwith_limit" value="$bandwith_limit" size=8 /> (kB/s)
 				
 				<br/><br/>
 				<strong>Article Cache Limit:</strong><br/>
-				Cache articles in memory (reduce disk access).<br/>
-				<input type="text" name="cache_limitstr" value="$cache_limitstr"/>
+				<small>Cache articles in memory (reduce disk access).</small><br/>
+				<input type="text" name="cache_limitstr" value="$cache_limitstr" size=8 />
 				
 				<br/><br/>
 				<strong>Cleanup List:</strong><br/>
-				List of file (extensions) that should be deleted after download.<br/>
-				For example: ".nfo," or ".nfo, .sfv"<br/>
-				<input type="text" name="cleanup_list" value="$cleanup_list"/>
+				<small>List of file extensions that should be deleted after download.<br/>
+				For example: ".nfo," or ".nfo, .sfv"</small><br/>
+				<input type="text" name="cleanup_list" value="$cleanup_list" size=40 />
 				
 			</fieldset>
 			</div>

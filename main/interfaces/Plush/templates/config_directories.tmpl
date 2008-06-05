@@ -16,11 +16,12 @@
 	<style>
 	<!--
 		body {background: #ddd;}
+		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;}
 	-->
 	</style>
 	
 </head>
-<body>
+<body onload="previewtv()">
 	
 	<div align="center">
 		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush-default/sabnzbdplus_logo.png" border="0"/></a>
@@ -48,141 +49,124 @@
 			PAGE CONTENT IS BELOW
 	************************************ -->
 			
-			<p><strong><em>NOTE:</em> Folders will be created automatically when Saving.</strong></p>
+			<div align="center"><em>NOTE:</em> Folders will be created automatically when Saving.</div>
 			
 			<form action="saveDirectories" method="post" name="fullform">
 			<div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>User Folders</legend>
-				<emp>In "$my_home"</emp>
+				<legend>&raquo;&nbsp;User&nbsp;Folders&nbsp;</legend>
+				<strong style="color:white;background-color:blue">&nbsp;In&nbsp;"$my_home"&nbsp;</strong>
 				
 				<br/><br/>
 				<strong>Temporary Download Folder:</strong><br/>
-				Location to store unprocessed downloads.<br/>
+				<small>Location to store unprocessed downloads.</small><br/>
 				<input type="text" size="40" name="download_dir" value="$download_dir">
 				
 				<br/><br/>
-				<strong>Minimum free space for Temporary Download Folder:</strong><br/>
-				Auto-pause when free space is beneath this value.<br/>
+				<strong>Minimum Free Space for Temp. Download Folder:</strong><br/>
+				<small>Auto-pause when free space is beneath this value.</small><br/>
 				<input type="text" size="10" name="download_free" value="$download_free">
 				
-				<br/>
+				<br/><br/>
 				<strong>Completed Download Folder:</strong><br/>
-				(can be overruled by user-defined categories)<br/>
+				<small>(can be overruled by user-defined categories)</small><br/>
 				<input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
 				
 				<!--#if not $nt#-->
-				<br/>
-				<strong>Permissions for completed downloads:</strong><br/>
-				Set permissions pattern for completed files, octal notation only!<br/>
+				<br/><br/>
+				<strong>Permissions for Completed Downloads:</strong><br/>
+				<small>Set permissions pattern for completed files, octal notation only!</small><br/>
 				<input type="text" size="10" name="permissions" value="$permissions">
 				<!--#end if#-->
 				
-				<br/>
+				<br/><br/>
 				<strong>Watched Folder:</strong><br/>
-				Folder to monitor for .nzb and .zip files.<br/>
+				<small>Folder to monitor for .nzb and .zip files.</small><br/>
 				<input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
 				
-				<br/>
-				<strong>Watched Folder scan speed:</strong><br/>
-				Number of seconds between scans for .nzb files.<br/>
+				<br/><br/>
+				<strong>Watched Folder Scan Speed:</strong><br/>
+				<small>Number of seconds between scans for .nzb files.</small><br/>
 				<input type="text" size="10" name="dirscan_speed" value="$dirscan_speed">
 				
-				<br/>
-				<strong>Folder containing the user scripts:</strong><br/>
-				Folder containing user scripts for post-processing.<br/>
+				<br/><br/>
+				<strong>Folder Containing the User Scripts:</strong><br/>
+				<small>Folder containing user scripts for post-processing.</small><br/>
 				<input type="text" size="40" name="script_dir" value="$script_dir">
 			</fieldset>
 			
 			<fieldset class="EntryFieldSet">
 				
-				<legend>System folders</legend>
-				<emp>In "$my_lcldata"</emp><br/><br/>
+				<legend>&raquo;&nbsp;System&nbsp;Folders&nbsp;</legend>
+				<strong style="color:white;background-color:blue;">&nbsp;In&nbsp;"$my_lcldata"&nbsp;</strong><br/><br/>
 				
-				<strong>Cache folder:</strong><br/>
-				Location for temporary storage.<br/>
+				<strong>Cache Folder:</strong><br/>
+				<small>Location for temporary storage.</small><br/>
 				<input type="text" size="40" name="cache_dir" value="$cache_dir">
 				
 				<br/><br/>
-				<strong>Log folder:</strong><br/>
-				Location of log files for SABnzbd.<br/>
+				<strong>Log Folder:</strong><br/>
+				<small>Location of log files for SABnzbd.</small><br/>
 				<input type="text" size="40" name="log_dir" value="$log_dir">
 				
 				<br/><br/>
-				<strong>Backup folder for .nzb:</strong><br/>
-				Location where .nzb will be backed up.<br/>
+				<strong>Backup Folder for .nzb:</strong><br/>
+				<small>Location where .nzb will be backed up.</small><br/>
 				<input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
 			</fieldset>
 			
 			<fieldset class="EntryFieldSet">
 				
-				<legend>Sorting Folders</legend>
+				<legend>&raquo;&nbsp;Sorting&nbsp;Folders&nbsp;</legend>
 				
 				<strong>Enable TV Sorting:</strong><br/>
-				<span class="tips">Enable sorting and renaming of episodes.</span><br/>
+				<small>Enable sorting and renaming of episodes.</small><br/>
 				<input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
 				<input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
 				<br class="clear" />
 				
-				<div id="Keytable">
-					<div class="row">
-						<span class="heading1">Meaning</span>
-						<span class="heading2">Pattern</span>
-						<span class="heading3">Result</span>
-					</div>
-					<div class="row">
-						<span class="tripleheight">Show Name</span>
-						<span class="pattern">%sn</span>
-						<span class="result">Show Name</span>
-						<br/>
-						<span class="pattern">%s.n</span>
-						<span class="result">Show.Name</span>
-						<br/>
-						<span class="pattern">%s_n</span>
-						<span class="result">Show_Name</span>
-					</div>
-					<div class="row">
-						<span class="doubleheight">Season Number</span>
-						<span class="pattern">%s</span>
-						<span class="result">1</span>
-						<br/>
-						<span class="pattern">%0s</span>
-						<span class="result">01</span>
-					</div>
-					<div class="row">
-						<span class="doubleheight">Episode Number</span>
-						<span class="pattern">%e</span>
-						<span class="result">5</span>
-						<br/>
-						<span class="pattern">%0e</span>
-						<span class="result">05</span>
-					</div>
-					<div class="row">
-						<span class="tripleheight">Episode Name</span>
-						<span class="pattern">%en</span>
-						<span class="result">Episode Name</span>
-						<br />
-						<span class="pattern">%e.n</span>
-						<span class="result">Episode.Name</span>
-						<br />
-						<span class="pattern">%e_n</span>
-						<span class="result">Episode_Name</span>
-					</div>
-					<div class="row">
-						<span class="normalheight">File Extension</span>
-						<span class="pattern">%ext</span>
-						<span class="result">avi</span>
-					</div>
-				</div><br class="clear" />
+				<br/><b>Parsing Method:</b><br/>
 				
-				<input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
-				<input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
-				<input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
-				<input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
-				<input type="button" onclick="tvClear()" value="Clear"/><br class="clear" /><br class="clear" />
 				<input type="text" style="width:500px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br class="clear" />
-				Example: <span id="previewtv"></span>
+				<small>(ex: <span id="previewtv"></span>)</small><br class="clear" />
+				
+				<br/><b>&raquo; Presets:</b><br/>
+				<input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
+				<input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
+				<input type="button" onclick="tvClear()" value="Clear"/>
+				<br class="clear" />
+				<input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
+				<input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
+				
+				
+				<br/><b>&raquo; Legend:</b><br/>
+				
+				<table>
+				<tr><td>
+				<u>Show Name:</u><br/>
+					&nbsp;&nbsp;&nbsp;%sn <small>(ex: Show Name)</small><br/>
+					&nbsp;&nbsp;&nbsp;%s.n <small>(ex: Show.Name)</small><br/>
+					&nbsp;&nbsp;&nbsp;%s_n <small>(ex: Show_Name)</small><br/>
+				</td><td>
+				<u>Episode Name:</u><br/>
+					&nbsp;&nbsp;&nbsp;%en <small>(ex: Episode Name)</small><br/>
+					&nbsp;&nbsp;&nbsp;%e.n <small>(ex: Episode.Name)</small><br/>
+					&nbsp;&nbsp;&nbsp;%e_n <small>(ex: Episode_Name)</small><br/>
+				</td><td valign=top>
+				<u>File Extension:</u><br/>
+					&nbsp;&nbsp;&nbsp;%ext <small>(ex: avi)</small><br/>
+				<br class="clear" />
+				</td></tr><tr><td>
+				<u>Season Number:</u><br/>
+					&nbsp;&nbsp;&nbsp;%s <small>(ex: 1)</small><br/>
+					&nbsp;&nbsp;&nbsp;%0s <small>(ex: 01)</small><br/>
+				</td><td>
+				<u>Episode Number:</u><br/>
+					&nbsp;&nbsp;&nbsp;%e <small>(ex: 5)</small><br/>
+					&nbsp;&nbsp;&nbsp;%0e <small>(ex: 05)</small><br/>
+				</td><td></td></tr>
+				</table>
 				
 			</fieldset>
 			</div>

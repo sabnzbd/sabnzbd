@@ -16,6 +16,7 @@
 	<style>
 	<!--
 		body {background: #ddd;}
+		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;}
 	-->
 	</style>
 	
@@ -48,21 +49,23 @@
 			PAGE CONTENT IS BELOW
 	************************************ -->
 	
-	If you have an account at v3.newzbin.com, you can enter your account info here.<br/>This will unlock extra functionality.<br/><br/>
+			<small>If you have an account at <a href="https://v3.newzbin.com" target="_blakn">v3.newzbin.com</a>, you can enter your account info here; this will unlock extra functionality.</small><br/><br/>
 	
 			<form action="saveNewzbin" method="post" name="fullform">
 			<div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>Account info</legend>
+				<legend>&raquo; Newzbin Account Info&nbsp;</legend>
+				
+				<strong style="color:white;background-color:darkgreen;">&nbsp;Optional!&nbsp;</strong><br/><br/>
 				
 				<strong>Username:</strong><br/>
-				Set your username here.<br/>
+				<small>Set your Newzbin username here.</small><br/>
 				<input type="text" name="username_newzbin" value="$username_newzbin"/>
 				
 				<br/><br/>
 				<strong>Password:</strong><br/>
-				Set your password here.<br/>
+				<small>Set your Newzbin password here.</small><br/>
 				<input type="password" name="password_newzbin" value="$password_newzbin"/>
 				
 			</fieldset>
@@ -71,33 +74,33 @@
 			<div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>Bookmark processing</legend>
+				<legend>Bookmark Processing</legend>
 				
-				<strong>Auto fetch bookmarks:</strong><br/>
-				Automatically get jobs from your bookmarks?<br/>
+				<strong>Auto Fetch Bookmarks:</strong><br/>
+				<small>Automatically get jobs from your bookmarks?</small><br/>
 				<input type="radio" name="newzbin_bookmarks" value="0" <!--#if $newzbin_bookmarks == 0 then "checked=1" else ""#--> /> No
 				<input type="radio" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> /> Yes
 				
 				<br/>
-				<a href="getBookmarks">Get bookmarks now</a>
+				<a href="getBookmarks">Get Bookmarks Now</a>
 				
 				<br/>
 				<!--#if $bookmarks_list#-->
-				<a href="hideBookmarks">Hide processed bookmarks</a>
+				<a href="hideBookmarks">Hide Processed Bookmarks</a>
 				<!--#else#-->
-				<a href="showBookmarks">Show processed bookmarks</a>
+				<a href="showBookmarks">Show Processed Bookmarks</a>
 				<!--#end if#-->
 				
 				<br/><br/>
-				<strong>Un-bookmark if download complete:</strong><br/>
-				Remove from bookmark list, when download is complete.<br/>
+				<strong>Un-bookmark If Download Complete:</strong><br/>
+				<small>Remove from bookmark list, when download is complete.</small><br/>
 				<input type="radio" name="newzbin_unbookmark" value="0" <!--#if $newzbin_unbookmark == 0 then "checked=1" else ""#--> /> No
 				<input type="radio" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> Yes
 				
 				<br/><br/>
-				<strong>Checking interval:</strong><br/>
-				In minutes (at least 15 min).<br/>
-				<input type="text" name="bookmark_rate" value="$bookmark_rate"/>
+				<strong>Checking Interval:</strong><br/>
+				<small>In minutes.</small><br/>
+				<input type="text" name="bookmark_rate" value="$bookmark_rate"/> (at least 15 min)
 				
 			</fieldset>
 			</div>
