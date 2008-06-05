@@ -347,12 +347,14 @@ class URLGrabber(Thread):
                 for tup in header.items():
                     for item in tup:
                         if "filename=" in item:
-                            filename = item[item.index("filename=") + 9:]
+                            filename = item[item.index("filename=") + 9:].strip('"')
                             break
 
                 if data:
                     if not filename:
-                         filename = os.path.basename(url)
+                        filename = os.path.basename(url)
+                    else:
+                        filename = sanitize_filename(filename)
                     pp = future_nzo.get_repair_opts()
                     script = future_nzo.get_script()
                     cat = future_nzo.get_cat()
