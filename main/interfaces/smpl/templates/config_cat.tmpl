@@ -20,7 +20,7 @@ Relative folders are based on $defdir<br/>
             <th>Mode</th>
             <!--#if $script_list#--><th>Script</th><!--#end if#-->
             <th>Folder</th>
-            <!--#if $varExists('newzbinDetails')#--><th>NewzBin Categories</th><!--#end if#-->
+            <th><!--#if $varExists('newzbinDetails') then "NewzBin/Groups" else "Groups"#--></th>
             <th></th>
         </tr>
     </thead>
@@ -60,9 +60,9 @@ Relative folders are based on $defdir<br/>
             </td>
             <!--#end if#-->
 
-            <td><input type="text" size=40 name="dir" value="$slot.dir"></td>
+            <td><input type="text" size=35 name="dir" value="$slot.dir"></td>
             
-            <!--#if $varExists('newzbinDetails')#--><td><input type="text" name="newzbin" value="$slot.newzbin"></td><!--#end if#-->
+            <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"></td>
 
             <td><input type="submit" value="Save" onclick="javascript:submitconfig('config/categories/save', 'submitstatus','<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'1'<!--#end if#-->)">
             </td>
