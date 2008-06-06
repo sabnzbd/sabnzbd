@@ -115,6 +115,7 @@ LOGLEVEL = None
 AMBI_LOCALHOST = False
 SAFE_POSTPROC = False
 DIRSCAN_SCRIPT = None
+DIRSCAN_DIR = None
 
 POSTPROCESSOR = None
 ASSEMBLER = None
@@ -405,7 +406,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         defdir = CFG['misc']['dirscan_dir']
     except:
         defdir = DEF_NZB_DIR
-    dirscan_dir = dir_setup(CFG, "dirscan_dir", DIR_HOME, defdir)
+    DIRSCAN_DIR = dir_setup(CFG, "dirscan_dir", DIR_HOME, defdir)
 
     dirscan_speed = check_setting_int(CFG, 'misc', 'dirscan_speed', DEF_SCANRATE)
 
@@ -510,17 +511,15 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         if pause_downloader:
             DOWNLOADER.paused = True
 
-    if dirscan_dir:
-        if DIRSCANNER:
-            DIRSCANNER.__init__(dirscan_dir, dirscan_speed)
-        else:
-            DIRSCANNER = DirScanner(dirscan_dir, dirscan_speed)
+    if DIRSCANNER:
+        DIRSCANNER.__init__(DIRSCAN_DIR, dirscan_speed)
+    elif DIRSCAN_DIR:
+        DIRSCANNER = DirScanner(DIRSCAN_DIR, dirscan_speed)
 
-    if USERNAME_NEWZBIN:
-        if MSGIDGRABBER:
-            MSGIDGRABBER.__init__(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
-        else:
-            MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+    if MSGIDGRABBER:
+        MSGIDGRABBER.__init__(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+    elif USERNAME_NEWZBIN:
+        MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
     if URLGRABBER:
         URLGRABBER.__init__()
@@ -538,7 +537,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 @synchronized(INIT_LOCK)
 def start():
     global __INITIALIZED__, ASSEMBLER, DOWNLOADER, SCHED, DIRSCANNER, \
-           MSGIDGRABBER, URLGRABBER
+           MSGIDGRABBER, URLGRABBER, DIRSCAN_DIR, USERNAME_NEWZBIN
 
     if __INITIALIZED__:
         logging.debug('[%s] Starting postprocessor', __NAME__)
@@ -554,11 +553,11 @@ def start():
             logging.debug('[%s] Starting scheduler', __NAME__)
             SCHED.start()
 
-        if DIRSCANNER:
+        if DIRSCANNER and DIRSCAN_DIR:
             logging.debug('[%s] Starting dirscanner', __NAME__)
             DIRSCANNER.start()
 
-        if MSGIDGRABBER:
+        if MSGIDGRABBER and USERNAME_NEWZBIN:
             logging.debug('[%s] Starting msgidgrabber', __NAME__)
             MSGIDGRABBER.start()
 
