@@ -203,14 +203,12 @@ $(document).ready(function(){
 		if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
 			$.ajax({
 				type: "GET",
-				url: "queue/resume?dummy="+Math.random(),
-				success: function(result){return LoadTheQueue(result);}
+				url: "api?mode=resume&dummy="+Math.random()
 			});
 		else
 			$.ajax({
 				type: "GET",
-				url: "queue/pause?dummy="+Math.random(),
-				success: function(result){return LoadTheQueue(result);}
+				url: "api?mode=pause&dummy="+Math.random()
 			});
 		if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused')
 			$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
