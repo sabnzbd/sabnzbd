@@ -281,7 +281,7 @@ function MainLoop() {
 
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
-	if (skipRefresh) return false; // set within queue <table>
+	if (skipRefresh) return $('#skipped_refresh').fadeIn("slow").fadeOut("slow"); // set within queue <table>
 	$.ajax({
 		type: "GET",
 		url: 'queue/?dummy='+Math.random(),

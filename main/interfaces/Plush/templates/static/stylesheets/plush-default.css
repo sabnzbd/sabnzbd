@@ -424,6 +424,10 @@ tr:hover .history_added  {
 #btm-wrapper .corner-right { float:right; background-image: url(../images/plush-default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
 #btm-wrapper .corner-left { float:left; background-image: url(../images/plush-default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
 
+#skipped_refresh {
+	color:darkgreen;
+	font-weight:bold;
+}
 
 .centerpiece {
 	width:400px;
