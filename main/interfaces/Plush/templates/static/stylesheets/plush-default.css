@@ -1,6 +1,7 @@
 body {
 	background-color: #B1B1B1;
 	font-family: arial, "lucida console", sans-serif;
+	opacity: .9999;
 }
 
 select, input {

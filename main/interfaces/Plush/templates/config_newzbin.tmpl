@@ -9,8 +9,8 @@
 	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js"></script>
 	
 	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/plush-default.css"/>
-	<!--#if $color_scheme#-->
-	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme"/>
+	<!--#if $color_scheme and $color_scheme != "plush-default.css" and $color_scheme != "plush_default.css" and $color_scheme != "default.css" and $color_scheme != "modern.css" and $color_scheme != "Modern.css"#-->
+	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme?$version"/>
 	<!--#end if#-->
 	
 	<style>
@@ -78,24 +78,24 @@
 				
 				<strong>Auto Fetch Bookmarks:</strong><br/>
 				<small>Automatically get jobs from your bookmarks?</small><br/>
-				<input type="radio" name="newzbin_bookmarks" value="0" <!--#if $newzbin_bookmarks == 0 then "checked=1" else ""#--> /> No
-				<input type="radio" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> /> Yes
+				<input type="radio" name="newzbin_bookmarks" value="0" <!--#if $newzbin_bookmarks == 0 then "checked=1" else ""#--> /> <font color=darkred>No</font>
+				<input type="radio" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> /> <font color=darkgreen>Yes</font>
 				
-				<br/>
-				<a href="getBookmarks">Get Bookmarks Now</a>
+				<br/><br/>
+				&raquo; <a href="getBookmarks">Get Bookmarks Now</a>
 				
 				<br/>
 				<!--#if $bookmarks_list#-->
-				<a href="hideBookmarks">Hide Processed Bookmarks</a>
+				&raquo; <a href="hideBookmarks">Hide Processed Bookmarks</a>
 				<!--#else#-->
-				<a href="showBookmarks">Show Processed Bookmarks</a>
+				&raquo; <a href="showBookmarks">Show Processed Bookmarks</a>
 				<!--#end if#-->
 				
 				<br/><br/>
 				<strong>Un-bookmark If Download Complete:</strong><br/>
 				<small>Remove from bookmark list, when download is complete.</small><br/>
-				<input type="radio" name="newzbin_unbookmark" value="0" <!--#if $newzbin_unbookmark == 0 then "checked=1" else ""#--> /> No
-				<input type="radio" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> Yes
+				<input type="radio" name="newzbin_unbookmark" value="0" <!--#if $newzbin_unbookmark == 0 then "checked=1" else ""#--> /> <font color=darkred>No</font>
+				<input type="radio" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> <font color=darkgreen>Yes</font>
 				
 				<br/><br/>
 				<strong>Checking Interval:</strong><br/>
