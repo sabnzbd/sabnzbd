@@ -220,7 +220,7 @@ $(document).ready(function(){
 	$('#queue').click(function(event) {
 		if ($(event.target).is('.queue_delete')) {
 			delid = $(event.target).parent().parent().attr('id');
-			$('#'+delid).remove();
+			$('#'+delid).fadeOut('fast');
 			$.ajax({
 				type: "GET",
 				url: 'queue/delete?dummy='+Math.random()+'&uid='+delid
@@ -254,7 +254,7 @@ $(document).ready(function(){
 	$('#history').click(function(event) {
 		if ($(event.target).is('.queue_delete')) {	// history delete
 			delid = $(event.target).parent().parent().attr('id');
-			$('#'+delid).remove();
+			$('#'+delid).fadeOut('fast');
 			$.ajax({
 				type: "GET",
 				url: 'history/delete?dummy='+Math.random()+'&job='+delid
