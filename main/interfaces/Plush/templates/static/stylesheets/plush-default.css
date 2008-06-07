@@ -555,24 +555,24 @@ fieldset.EntryFieldSet {
 
 #configbox_server_encrypted		{ background-image: url(../images/plush-default/config/encrypted.png); }
 #configbox_server_decrypted		{ background-image: url(../images/plush-default/config/decrypted.png); }
-#configbox_latest_warnings		{ background-image: url(../images/plush-default/config/messagebox_warning.png); }
-#configbox_web_server			{ background-image: url(../images/plush-default/config/server.png); }
-#configbox_tuning				{ background-image: url(../images/plush-default/config/piano.png); }
-#configbox_user_folders			{ background-image: url(../images/plush-default/config/folder_download.png); }
-#configbox_system_folders		{ background-image: url(../images/plush-default/config/folder_tar.png); }
-#configbox_sorting_folders		{ background-image: url(../images/plush-default/config/tv.png); }
-#configbox_processing_switches	{ background-image: url(../images/plush-default/config/configure.png); }
-#configbox_other_switches		{ background-image: url(../images/plush-default/config/ark_options.png); }
-#configbox_add_server			{ background-image: url(../images/plush-default/config/kgpg_term.png); }
-#configbox_add_schedule			{ background-image: url(../images/plush-default/config/klipper.png); }
-#configbox_current_schedules	{ background-image: url(../images/plush-default/config/ksysv.png); }
-#configbox_new_feed_url			{ background-image: url(../images/plush-default/config/news_subscribe.png); }
-#configbox_feed_definition		{ background-image: url(../images/plush-default/config/knode.png); }
-#configbox_email_options		{ background-image: url(../images/plush-default/config/mail_generic.png); }
-#configbox_email_account_settings{background-image: url(../images/plush-default/config/mail_find.png); }
-#configbox_newzbin_account_info	{ background-image: url(../images/plush-default/config/kgpg.png); }
-#configbox_bookmark_processing	{ background-image: url(../images/plush-default/config/bookmarks_list_add.png); }
-#configbox_processed_bookmarks	{ background-image: url(../images/plush-default/config/attach.png); }
+#configbox_latest_warnings		{ background-image: url(../images/plush-default/config/latest_warnings.png); }
+#configbox_web_server			{ background-image: url(../images/plush-default/config/web_server.png); }
+#configbox_tuning				{ background-image: url(../images/plush-default/config/tuning.png); }
+#configbox_user_folders			{ background-image: url(../images/plush-default/config/user_folders.png); }
+#configbox_system_folders		{ background-image: url(../images/plush-default/config/system_folders.png); }
+#configbox_sorting_folders		{ background-image: url(../images/plush-default/config/sorting_folders.png); }
+#configbox_processing_switches	{ background-image: url(../images/plush-default/config/processing_switches.png); }
+#configbox_other_switches		{ background-image: url(../images/plush-default/config/other_switches.png); }
+#configbox_add_server			{ background-image: url(../images/plush-default/config/add_server.png); }
+#configbox_add_schedule			{ background-image: url(../images/plush-default/config/add_schedule.png); }
+#configbox_current_schedules	{ background-image: url(../images/plush-default/config/current_schedules.png); }
+#configbox_new_feed_url			{ background-image: url(../images/plush-default/config/new_feed_url.png); }
+#configbox_feed_definition		{ background-image: url(../images/plush-default/config/feed_definition.png); }
+#configbox_email_options		{ background-image: url(../images/plush-default/config/email_options.png); }
+#configbox_email_account_settings{background-image: url(../images/plush-default/config/email_account_settings.png); }
+#configbox_newzbin_account_info	{ background-image: url(../images/plush-default/config/newzbin_account_info.png); }
+#configbox_bookmark_processing	{ background-image: url(../images/plush-default/config/bookmark_processing.png); }
+#configbox_processed_bookmarks	{ background-image: url(../images/plush-default/config/processed_bookmarks.png); }
 
 /* FF2 to rescue */
 .sucker {width:120px;font-weight:bold;}
