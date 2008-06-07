@@ -221,7 +221,6 @@ class RSSQueue:
         # run is completed. Cannot use LOCK, because run_feed
         # already uses the LOCK.
 
-        self.shutdown = False
         if not self.__running:
             self.__running = True
             for feed in sabnzbd.CFG['rss']:
