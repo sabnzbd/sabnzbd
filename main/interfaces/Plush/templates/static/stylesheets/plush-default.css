@@ -61,6 +61,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 #refreshRate-option {
 	font-size:100%;
 	text-align: right;
+	width:85px;
 }
 #refreshRate-option option {
 }
@@ -105,7 +106,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 
 .box_fatbottom {
-	background: url(../images/plush-default/qh_bottom.png) 0 0 repeat-x;
 	height:37px;
 	font-size: 66%;
 	color: #606060;
@@ -116,11 +116,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .box_fatbottom .left_stats {
 	float:left;
-	padding-left:40px;
+	padding-left:30px;
 }
 .box_fatbottom .right_stats {
 	float:right;
-	padding-right:40px;
+	padding-right:30px;
 }
 .box_fatbottom strong {
 	color: #000;
