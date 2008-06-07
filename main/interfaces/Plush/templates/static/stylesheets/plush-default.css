@@ -63,6 +63,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	text-align: right;
 	width:85px;
 }
+#maxSpeed-option {
+	font-size:100%;
+	padding:2px;
+	width: 40px;
+}
 #refreshRate-option option {
 }
 #onQueueFinish-option {

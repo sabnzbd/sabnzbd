@@ -96,6 +96,14 @@ $(document).ready(function(){
 			MainLoop();
 	});
 	
+	// "KB/s Max Speed" main menu input
+	$("#maxSpeed-option").change( function() {
+		$.ajax({
+			type: "GET",
+			url: "api?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&dummy="+Math.random()
+		});
+	});
+	
 	// "On Queue Finish" main menu item menu select
 	$("#onQueueFinish-option").change( function() {
 		$.ajax({

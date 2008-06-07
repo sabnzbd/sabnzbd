@@ -13,6 +13,8 @@ def InjectProgressBarPosition (mbleft, mb):
 	\$('#stats_eta').html('$timeleft');
 	\$('#stats_eta').attr('title','ETA: $eta');
 	
+	if (\$("#maxSpeed-option").val() != '$speedlimit')
+		\$("#maxSpeed-option").val('$speedlimit');
 	if (\$("#onQueueFinish-option").val() != '$finishaction')
 		\$("#onQueueFinish-option").val('$finishaction');
 	
