@@ -294,7 +294,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            DIRSCANNER, MSGIDGRABBER, URLGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
-           SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_PP, \
+           SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_DIR, DIRSCAN_PP, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
@@ -1090,7 +1090,8 @@ def system_shutdown():
     logging.info("[%s] Performing system shutdown", __NAME__)
 
     Thread(target=halt).start()
-    os.sleep(10)
+    while __INITIALIZED__:
+        sleep(1.0)
 
     try:
         import win32security
@@ -1400,16 +1401,11 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 60, need_versionchec
 ################################################################################
 def init_RSS():
     global RSS
-
-    need_rsstask = False
-
     if rss.HAVE_FEEDPARSER:
-
         RSS = RSSQueue()
-        if ListUris():
-            need_rsstask = True
-
-    return need_rsstask
+        return True
+    else:
+        return False
 
 def del_rss_feed(feed):
     if RSS:
