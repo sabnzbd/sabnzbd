@@ -1313,7 +1313,7 @@ def AnalyseSchedules(schedlines):
         action = ev[1]
         if action == 'pause': paused = True
         if action == 'resume': paused = False
-        if action == 'speedlimit': speedlimit = int(ev[2])
+        if action == 'speedlimit' and ev[2]!=None: speedlimit = int(ev[2])
 
     return paused, speedlimit
 
@@ -1351,8 +1351,10 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 60, need_versionchec
             elif action_name == 'shutdown':
                 action = shutdown_program
                 arguments = []
-            elif action_name == 'speedlimit':
+            elif action_name == 'speedlimit' and arguments != []:
                 action = limit_speed
+            elif action_name == 'speedlimit':
+                continue
             else:
                 logging.warning("[%s] Unknown action: %s", __NAME__, ACTION)
 

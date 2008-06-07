@@ -1626,8 +1626,12 @@ class ConfigScheduling(ProtectedClass):
     def addSchedule(self, minute = None, hour = None, dayofweek = None,
                     action = None, arguments = None, dummy = None):
         if minute and hour  and dayofweek and action:
-            sabnzbd.CFG['misc']['schedlines'].append('%s %s %s %s %s' %
+            try:
+                if action == 'speedlimit': int(arguments)
+                sabnzbd.CFG['misc']['schedlines'].append('%s %s %s %s %s' %
                                               (minute, hour, dayofweek, action, arguments))
+            except:
+                pass
         return saveAndRestart(self.__root, dummy, evalSched=True)
 
     @cherrypy.expose
