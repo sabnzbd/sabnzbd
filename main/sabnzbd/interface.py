@@ -429,6 +429,8 @@ class MainPage(ProtectedClass):
         elif mode == 'config':
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
                 if value.isdigit():
+                    try: value = int(value)
+                    except: return 'error: Please submit a value\n'
                     sabnzbd.CFG['misc']['bandwith_limit'] = value
                     sabnzbd.BANDWITH_LIMIT = value
                     save_configfile(sabnzbd.CFG)
@@ -2074,7 +2076,7 @@ def build_header(prim):
     header['diskspace2'] = "%.2f" % diskfree(sabnzbd.COMPLETE_DIR)
     header['diskspacetotal1'] = "%.2f" % disktotal(sabnzbd.DOWNLOAD_DIR)
     header['diskspacetotal2'] = "%.2f" % disktotal(sabnzbd.COMPLETE_DIR)
-    header['speedlimit'] = "%d" % sabnzbd.BANDWITH_LIMIT
+    header['speedlimit'] = "%s" % sabnzbd.BANDWITH_LIMIT
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = os.name == 'nt'
