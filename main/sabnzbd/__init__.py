@@ -826,6 +826,10 @@ def purge_articles(articles):
 ## Misc Wrappers                                                              ##
 ################################################################################
 def add_msgid(msgid, pp=None, script=None, cat=None):
+    if pp and pp=="-1": pp = None
+    if script and script.lower()=='default': script = None
+    if cat and cat.lower()=='default': cat = None
+
     if MSGIDGRABBER:
         logging.info('[%s] Fetching msgid %s from v3.newzbin.com',
                      __NAME__, msgid)
@@ -840,6 +844,10 @@ def add_msgid(msgid, pp=None, script=None, cat=None):
 
 
 def add_url(url, pp=None, script=None, cat=None):
+    if pp and pp=="-1": pp = None
+    if script and script.lower()=='default': script = None
+    if cat and cat.lower()=='default': cat = None
+
     if URLGRABBER:
         logging.info('[%s] Fetching %s', __NAME__, url)
         msg = "Trying to fetch .nzb from %s" % url
@@ -902,6 +910,10 @@ def backup_nzb(filename, data):
 ################################################################################
 @synchronized_CV
 def add_nzbfile(nzbfile, pp=None, script=None, cat=None):
+    if pp and pp=="-1": pp = None
+    if script and script.lower()=='default': script = None
+    if cat and cat.lower()=='default': cat = None
+
     filename = nzbfile.filename
 
     if os.name != 'nt':

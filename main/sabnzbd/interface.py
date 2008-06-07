@@ -288,10 +288,6 @@ class MainPage(ProtectedClass):
 
     @cherrypy.expose
     def addID(self, id = None, pp=None, script=None, cat=None, redirect = None):
-        if pp and pp=="-1": pp = None
-        if script and script.lower()=='default': script = None
-        if cat and cat.lower()=='default': cat = None
-
         RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
         newzbin_url = RE_NEWZBIN_URL.search(id.lower())
         
@@ -309,10 +305,6 @@ class MainPage(ProtectedClass):
 
     @cherrypy.expose
     def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None):
-        if pp and pp=="-1": pp = None
-        if script and script.lower()=='default': script = None
-        if cat and cat.lower()=='default': cat = None
-
         if url: url = url.strip()
         if url and (url.isdigit() or len(url)==5):
             sabnzbd.add_msgid(url, pp, script, cat)
@@ -325,9 +317,6 @@ class MainPage(ProtectedClass):
 
     @cherrypy.expose
     def addFile(self, nzbfile, pp=None, script=None, cat=None, dummy = None):
-        if pp and pp=="-1": pp = None
-        if script and script.lower()=='default': script = None
-
         if nzbfile.filename and nzbfile.value:
             sabnzbd.add_nzbfile(nzbfile, pp, script, cat)
         raise Raiser(self.__root, dummy)
