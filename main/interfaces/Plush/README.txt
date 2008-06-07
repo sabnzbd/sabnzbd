@@ -1,11 +1,12 @@
 
 ================================================
-== Plush 2.0 for SABnzbd+ 0.4.0 | May 29 2008 ==
+== Plush 2.0 for SABnzbd+ 0.4.0 | June 7 2008 ==
 
 ============
 ASSEMBLED BY
 
-pairofdimes (see LICENSE-CC.txt)
+pairofdimes
+See LICENSE-CC.txt
 
 ==============
 SPECIAL THANKS
