@@ -1,7 +1,7 @@
-                                SABnzbd+ v0.4.0rc2
+                                SABnzbd+ v0.4.0rc3
 
 *************************************
-*** This is SABnzbd+ 0.4.0rc2     ***
+*** This is SABnzbd+ 0.4.0rc3     ***
 *************************************
 
 ============>> THIS IS RELEASE CANDIDATE SOFTWARE <<===============
@@ -15,13 +15,16 @@ Important **changes** from previous versions:
 - RSS and Bookmark rates are now in minutes between scans
   so no longer times per day!
 - Group-based folder feature has been removed
+  but now you can use groupnames in user-categories
+  and you get the groupname as a script parameter
 - Newzbin-category based folder feature has been removed
   Use the user-defined categories instead, which is much
   more flexible.
 - The Windows binary distribution now comes with a PAR2
   program that supports a multi-core CPU.
+  You can tune the performance of PAR2 (Config->Switches)
 
-This RC1 release will not re-use an existing download queue
+This RC3 release will not re-use an existing download queue
 from an earlier release than 0.4.0Beta5.
 It will automatically create a new empty queue and history.
 However, the old queue remains in the cache directory and can
@@ -56,19 +59,16 @@ This folder contains the folders "incomplete" and "complete".
 **************************************
 *** Upgrading from 0.3.x           ***
 **************************************
-Just install the new version over the old one.
-If you want to un-install the old version first, keep the data!
-
+Do not install the new version over the old one.
+Remove old one first or install seperately.
+You can re-use your sabnzbd.ini file.
+You cannot re-use an unfinished download queue or keep
+the download history.
 
 **************************************
 *** Upgrading from 0.2.5 and 0.2.7 ***
 **************************************
-If you want, you can copy your existing sabnzbd.ini file to the new program dir.
-This way you keep all your settings.
-
-If you have an unfinished download queue, finish it first with 0.2.5/0.2.7.
-This release cannot re-use the queue!
-
+See 0.3.x
 
 *********************
 *** Windows Vista ***

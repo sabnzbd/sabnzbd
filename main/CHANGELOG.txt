@@ -1,8 +1,13 @@
 -------------------------------------------------------------------------------
-0.4.0    by The SABnzbd-Team
+0.4.0rc3  by The SABnzbd-Team
 -------------------------------------------------------------------------------
-changed: RSS filters prefixed with "re:" are
+changed: RSS filters prefixed with "re:" are now
          Python-style regular expressions
+changed: Send group as extra user script parameter
+changed: Allow groups as selectors in user-categories
+fixed:   Retrieve NZB from URL sometimes fails (due to extra quotes)
+changed: Allow user to set tuning parameters for PAR2
+fixed:   Plush and Smpl problems.
 -------------------------------------------------------------------------------
 0.4.0rc2  by The SABnzbd-Team
 -------------------------------------------------------------------------------
