@@ -557,12 +557,12 @@ fieldset.EntryFieldSet {
 #configbox_server_decrypted		{ background-image: url(../images/plush-default/config/decrypted.png); }
 #configbox_latest_warnings		{ background-image: url(../images/plush-default/config/messagebox_warning.png); }
 #configbox_web_server			{ background-image: url(../images/plush-default/config/server.png); }
-#configbox_tuning				{ background-image: url(../images/plush-default/config/kcontrol.png); }
+#configbox_tuning				{ background-image: url(../images/plush-default/config/piano.png); }
 #configbox_user_folders			{ background-image: url(../images/plush-default/config/folder_download.png); }
 #configbox_system_folders		{ background-image: url(../images/plush-default/config/folder_tar.png); }
 #configbox_sorting_folders		{ background-image: url(../images/plush-default/config/tv.png); }
-#configbox_processing_switches	{ background-image: url(../images/plush-default/config/view_multicolumn.png); }
-#configbox_other_switches		{ background-image: url(../images/plush-default/config/view_icon.png); }
+#configbox_processing_switches	{ background-image: url(../images/plush-default/config/configure.png); }
+#configbox_other_switches		{ background-image: url(../images/plush-default/config/ark_options.png); }
 #configbox_add_server			{ background-image: url(../images/plush-default/config/kgpg_term.png); }
 #configbox_add_schedule			{ background-image: url(../images/plush-default/config/klipper.png); }
 #configbox_current_schedules	{ background-image: url(../images/plush-default/config/ksysv.png); }
