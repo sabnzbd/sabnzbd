@@ -112,6 +112,16 @@ FunctionEnd
 Section "SABnzbd" SecDummy
 SetOutPath "$INSTDIR"
 
+IfFileExists $INSTDIR\sabnzbd.exe 0 endWarnExist
+    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Warning: overwriting an existing installation is not recommended' IDOK endWarnExist IDCANCEL 0
+    Abort
+endWarnExist:
+
+IfFileExists "$LOCALAPPDATA\sabnzbd\cache\queue.sab" 0 endWarnCache
+    IfFileExists "$LOCALAPPDATA\sabnzbd\cache\queue7.sab" endWarnCache 0
+        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Warning: do not re-use an older download queue' IDOK endWarnCache IDCANCEL 0
+        Abort
+endWarnCache:
 
 ; add files / whatever that need to be installed here.
 File /r "dist\*"
