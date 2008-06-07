@@ -99,22 +99,20 @@
 				<br/><br/>
 				<strong>Checking Interval:</strong><br/>
 				<small>In minutes.</small><br/>
-				<input type="text" name="bookmark_rate" value="$bookmark_rate"/> (at least 15 min)
+				<input type="text" name="bookmark_rate" value="$bookmark_rate"/><small>&nbsp;(at&nbsp;least&nbsp;15&nbsp;min)</small>
 				
 			</fieldset>
 			</div>
 			
-			<!--#if $bookmarks_list#-->
 			<fieldset class="EntryFieldSet">
 				
-				<legend>Processed bookmarks</legend>
+				<legend id="configbox_processed_bookmarks">Processed Bookmarks</legend>
 				
 				<!--#for $msgid in $bookmarks_list#-->
-				<a href="https://v3.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a>&nbsp;
+				<a href="https://v3.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a><br/>
 				<!--#end for#-->
 				
 			</fieldset>
-			<!--#end if#-->
 			
 			
 <!--************************************

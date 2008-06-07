@@ -572,7 +572,7 @@ fieldset.EntryFieldSet {
 #configbox_email_account_settings{background-image: url(../images/plush-default/config/mail_find.png); }
 #configbox_newzbin_account_info	{ background-image: url(../images/plush-default/config/kgpg.png); }
 #configbox_bookmark_processing	{ background-image: url(../images/plush-default/config/bookmarks_list_add.png); }
-
+#configbox_processed_bookmarks	{ background-image: url(../images/plush-default/config/attach.png); }
 
 /* FF2 to rescue */
 .sucker {width:120px;font-weight:bold;}
