@@ -64,8 +64,7 @@
 				<!--#for $server in $servers#-->
 				<fieldset class="EntryFieldSet">
 					<legend>
-						<!--#if int($server[4])#--><img style="float:left" src="../static/images/plush-default/config/encrypted.png" title="Encrypted via SSL"/><!--#else#-->&raquo;<!--#end if#-->
-						$server[0]:$server[1]:$server[2]&nbsp;
+						<!--#if int($server[4])#--><img style="float:left" src="../static/images/plush-default/config/encrypted.png" title="Encrypted via SSL"/><!--#else#-->&raquo;<!--#end if#-->&nbsp;$server[0]:$server[1]:$server[2]&nbsp;
 					</legend>
 					<small><ol>
 					<!--#for $thrd in $server[3]#-->
