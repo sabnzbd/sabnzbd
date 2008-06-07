@@ -64,11 +64,11 @@
 				<fieldset class="EntryFieldSet">
 					<legend id="<!--#if int($server[4])#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server[0]:$server[1]:$server[2]
 					</legend>
-					<small><ol>
+					<small><!--#if $server[3]#--><ol>
 					<!--#for $thrd in $server[3]#-->
 						<li>&rArr; $thrd[1]<br/>&rArr; $thrd[2]<br/>&rArr; $thrd[3]</li>
 					<!--#end for#-->
-					</ol></small>
+					</ol><!--#else#-->No connections<!--#end if#--></small>
 				</fieldset>
 			    <!--#end for#-->
 			<!--#end if#-->
