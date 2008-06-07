@@ -574,7 +574,8 @@ fieldset.EntryFieldSet {
 #configbox_bookmark_processing	{ background-image: url(../images/plush-default/config/bookmarks_list_add.png); }
 
 
-
+/* FF2 to rescue */
+.sucker {width:120px;font-weight:bold;}
 .tucker {width:300px;font-weight:bold;}
 
 .left_links a, .right_links a {
