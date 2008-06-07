@@ -16,7 +16,6 @@
 	<style>
 	<!--
 		body {background: #ddd;}
-		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;border: 1px solid white;}
 	-->
 	</style>
 	
@@ -63,8 +62,7 @@
 			<!--#if $servers#-->
 				<!--#for $server in $servers#-->
 				<fieldset class="EntryFieldSet">
-					<legend>
-						<!--#if int($server[4])#--><img style="float:left" src="../static/images/plush-default/config/encrypted.png" title="Encrypted via SSL"/><!--#else#-->&raquo;<!--#end if#-->&nbsp;$server[0]:$server[1]:$server[2]&nbsp;
+					<legend id="<!--#if int($server[4])#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server[0]:$server[1]:$server[2]
 					</legend>
 					<small><ol>
 					<!--#for $thrd in $server[3]#-->
@@ -77,14 +75,14 @@
 			
 			<!--#if $lastmail#-->
 				<fieldset class="EntryFieldSet">
-					<legend style="background-color:darkblue;">&raquo; Email Test Result&nbsp;</legend>
+					<legend id="configbox_email_options" style="background-color:darkblue;">Email Test Result</legend>
 					<small>$lastmail</small>
 				</fieldset>
 			<!--#end if#-->
 			
 			<!--#if $warnings#-->
 				<fieldset class="EntryFieldSet">
-					<legend style="background-color:darkred;">&raquo; Lastest Warnings
+					<legend id="configbox_latest_warnings" style="background-color:darkred;">Latest Warnings
 						<small>(<a href="./clearwarnings" style="color:white">clear</a>)&nbsp;</small>
 					</legend>
 					<small><ul>

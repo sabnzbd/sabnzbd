@@ -16,7 +16,6 @@
 	<style>
 	<!--
 		body {background: #ddd;}
-		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;border: 1px solid white;}
 	-->
 	</style>
 </head>
@@ -52,7 +51,7 @@
 			<form action="addSchedule" method="post">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>&raquo;&nbsp;Add&nbsp;Schedule&nbsp;</legend>
+				<legend id="configbox_add_schedule">Add&nbsp;Schedule</legend>
 <%import time
 t = time.localtime()
 hour = t[3]
@@ -125,7 +124,7 @@ else:
 			
 			<div class="EntryBlock>"
 			<fieldset class="EntryFieldSet">
-			<legend>&raquo;&nbsp;Current&nbsp;Schedules&nbsp;</legend>
+			<legend id="configbox_current_schedules">Current&nbsp;Schedules</legend>
 			<!--#set $schednum = 0#-->
 			<!--#for $line in $schedlines#-->
 			<form action="delSchedule" method="post">

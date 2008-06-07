@@ -16,7 +16,6 @@
 	<style>
 	<!--
 		body {background: #ddd;}
-		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;border: 1px solid white;}
 	-->
 	</style>
 	
@@ -54,7 +53,7 @@
 			<div class="EntryBlock">
 			<form action="add_rss_feed" method="post">
 			<fieldset class="EntryFieldSet">
-			<legend>&raquo;&nbsp;New&nbsp;Feed&nbsp;URL&nbsp;</legend>
+			<legend id="configbox_new_feed_url">New&nbsp;Feed&nbsp;URL</legend>
 				<input type="text" size="10" name="feed" value="$feed"/>&nbsp;
 				<input type="text" size="104" name="uri" value=""/><br/><br/>
 				<input type="submit" value="&raquo; Save"/>
@@ -67,7 +66,7 @@
 				<form action="upd_rss_feed" method="post">
 				<fieldset class="EntryFieldSet">
 					
-					<legend style="color:white; background-color:<!--#if $rss[$feed]['enable'] then 'green' else 'blue'#-->">&raquo;&nbsp;Feed&nbsp;Definition&nbsp;&mdash;&nbsp;$feed&nbsp;</legend>
+					<legend id="configbox_feed_definition" style="color:white; background-color:<!--#if $rss[$feed]['enable'] then 'green' else 'blue'#-->">Feed&nbsp;Definition&nbsp;&mdash;&nbsp;$feed</legend>
 					
 					<input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 					

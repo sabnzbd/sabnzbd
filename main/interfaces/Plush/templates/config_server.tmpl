@@ -16,7 +16,6 @@
 	<style>
 	<!--
 		body {background: #ddd;}
-		legend {padding:2px;font-weight:bold;color:white;background-color:#333;font-size:150%;border: 1px solid white;}
 	-->
 	</style>
 	
@@ -54,7 +53,7 @@
 			<form action="addServer" method="post">
 			<fieldset class="EntryFieldSet">
 				
-				<legend>&raquo;&nbsp;Add&nbsp;Server&nbsp;</legend>
+				<legend id="configbox_add_server">Add&nbsp;Server</legend>
 				
 				<table cellpadding=2>
 					<tr><td align=right>Host:</td><td><input type="text" size="25" name="host"/></td></tr>
@@ -91,7 +90,7 @@
 			<form action="saveServer" method="post">
 			<fieldset class="EntryFieldSet">
 				
-				<legend><!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#--><img style="float:left" src="../../static/images/plush-default/config/encrypted.png" title="Encrypted via SSL"/><!--#else#-->&raquo;<!--#end if#-->&nbsp;$server&nbsp;</legend>
+				<legend id="<!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server</legend>
 				
 				<table cellpadding=2>
 					<tr><td align=right>Host:</td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>

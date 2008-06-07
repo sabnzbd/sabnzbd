@@ -528,36 +528,55 @@ fieldset.EntryFieldSet {
 	padding-right: 5px;
 	border-width: 0px;
 }
-#config_nav_connections {
-	background-image: url(../images/plush-default/config/connections.png);
+#config_nav_connections	{ background-image: url(../images/plush-default/config/connections.png); }
+#config_nav_general		{ background-image: url(../images/plush-default/config/general.png); }
+#config_nav_directories	{ background-image: url(../images/plush-default/config/directories.png); }
+#config_nav_switches	{ background-image: url(../images/plush-default/config/switches.png); }
+#config_nav_server		{ background-image: url(../images/plush-default/config/servers.png); }
+#config_nav_categories	{ background-image: url(../images/plush-default/config/categories.png); }
+#config_nav_scheduling	{ background-image: url(../images/plush-default/config/scheduling.png); }
+#config_nav_rss 		{ background-image: url(../images/plush-default/config/rss.png); }
+#config_nav_email		{ background-image: url(../images/plush-default/config/email.png); }
+#config_nav_newzbin		{ background-image: url(../images/plush-default/config/newzbin.png); }
+
+
+#config_content legend {
+	background-position: 2% 50%;
+	background-repeat: no-repeat;
+	border: 1px solid white;
+	padding:0px;
+	padding-left:32px;
+	padding-right:4px;
+	font-size:150%;
+	font-weight:bold;
+	color:white;
+	background-color:#333;
 }
-#config_nav_general {
-	background-image: url(../images/plush-default/config/general.png);
-}
-#config_nav_directories {
-	background-image: url(../images/plush-default/config/directories.png);
-}
-#config_nav_switches {
-	background-image: url(../images/plush-default/config/switches.png);
-}
-#config_nav_server {
-	background-image: url(../images/plush-default/config/servers.png);
-}
-#config_nav_categories {
-	background-image: url(../images/plush-default/config/categories.png);
-}
-#config_nav_scheduling {
-	background-image: url(../images/plush-default/config/scheduling.png);
-}
-#config_nav_rss {
-	background-image: url(../images/plush-default/config/rss.png);
-}
-#config_nav_email {
-	background-image: url(../images/plush-default/config/email.png);
-}
-#config_nav_newzbin {
-	background-image: url(../images/plush-default/config/newzbin.png);
-}
+
+#configbox_server_encrypted		{ background-image: url(../images/plush-default/config/encrypted.png); }
+#configbox_server_decrypted		{ background-image: url(../images/plush-default/config/decrypted.png); }
+#configbox_latest_warnings		{ background-image: url(../images/plush-default/config/messagebox_warning.png); }
+#configbox_web_server			{ background-image: url(../images/plush-default/config/server.png); }
+#configbox_tuning				{ background-image: url(../images/plush-default/config/kcontrol.png); }
+#configbox_user_folders			{ background-image: url(../images/plush-default/config/folder_download.png); }
+#configbox_system_folders		{ background-image: url(../images/plush-default/config/folder_tar.png); }
+#configbox_sorting_folders		{ background-image: url(../images/plush-default/config/tv.png); }
+#configbox_processing_switches	{ background-image: url(../images/plush-default/config/view_multicolumn.png); }
+#configbox_other_switches		{ background-image: url(../images/plush-default/config/view_icon.png); }
+#configbox_add_server			{ background-image: url(../images/plush-default/config/kgpg_term.png); }
+#configbox_add_schedule			{ background-image: url(../images/plush-default/config/klipper.png); }
+#configbox_current_schedules	{ background-image: url(../images/plush-default/config/ksysv.png); }
+#configbox_new_feed_url			{ background-image: url(../images/plush-default/config/news_subscribe.png); }
+#configbox_feed_definition		{ background-image: url(../images/plush-default/config/knode.png); }
+#configbox_email_options		{ background-image: url(../images/plush-default/config/mail_generic.png); }
+#configbox_email_account_settings{background-image: url(../images/plush-default/config/mail_find.png); }
+#configbox_newzbin_account_info	{ background-image: url(../images/plush-default/config/kgpg.png); }
+#configbox_bookmark_processing	{ background-image: url(../images/plush-default/config/bookmarks_list_add.png); }
+
+
+
+.tucker {width:300px;font-weight:bold;}
+
 .left_links a, .right_links a {
 	background-position: 5px 50%;
 	background-repeat:no-repeat;
@@ -710,6 +729,8 @@ fieldset.EntryFieldSet {
 	float: right;
 	margin: 6px 10px 0 0;
 }
+
+
 
 
 
