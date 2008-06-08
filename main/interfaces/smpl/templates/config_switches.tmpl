@@ -7,11 +7,6 @@
  <hr />
 
 
-		    <label>Extra PAR2 parameters:</label>
-		    <input type="text" name="par_option" value="$par_option"/>
-		    <span class="tips">Read the Wiki Help on this!"</span>
-		<br class="clear" />
-
 		    <label>Enable Unrar:</label>
 		    <input class="radio" type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
 		    <input class="radio" type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
@@ -73,6 +68,12 @@
             <!--#end for#-->
             </select>
 		    <span class="tips">Use the following script if not defined by a category.</span>
+		<br class="clear" />
+		
+
+		    <label>Extra PAR2 parameters:</label>
+		    <input type="text" name="par_option" value="$par_option"/>
+		    <span class="tips">See the wiki for usage.</span>
 		<br class="clear" />
 
 </fieldset>
