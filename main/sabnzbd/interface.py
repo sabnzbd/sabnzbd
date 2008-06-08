@@ -433,6 +433,7 @@ class MainPage(ProtectedClass):
                     except: return 'error: Please submit a value\n'
                     sabnzbd.CFG['misc']['bandwith_limit'] = value
                     sabnzbd.BANDWITH_LIMIT = value
+                    sabnzbd.limit_speed(value)
                     save_configfile(sabnzbd.CFG)
                     return 'ok\n'
                 else:
