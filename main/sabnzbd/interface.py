@@ -267,7 +267,8 @@ class MainPage(ProtectedClass):
             info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts()
-        info['script_list'].insert(0, 'Default')
+        if info['script_list']:
+            info['script_list'].insert(0, 'Default')
         info['script'] = sabnzbd.DIRSCAN_SCRIPT
 
         info['cat'] = 'Default'
