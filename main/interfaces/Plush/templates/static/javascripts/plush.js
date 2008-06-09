@@ -1,5 +1,6 @@
 var refreshRate = 8; // default refresh rate
 var skipRefresh = false;
+var focusedOnSpeedChanger = false;
 
 // once the DOM is ready, run this
 $(document).ready(function(){
@@ -97,6 +98,12 @@ $(document).ready(function(){
 	});
 	
 	// "KB/s Max Speed" main menu input
+	$("#maxSpeed-option").focus( function() {
+		focusedOnSpeedChanger = true;
+	});
+	$("#maxSpeed-option").blur( function() {
+		focusedOnSpeedChanger = false;
+	});
 	$("#maxSpeed-option").change( function() {
 		$.ajax({
 			type: "GET",
