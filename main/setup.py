@@ -200,17 +200,12 @@ def Unix2Dos(name):
 print sys.argv[0]
 print
 
-SvnVersion = 'ok'
-SvnRevert = 'ok'
-#SvnVersion = CheckPath('svnversion')
-#SvnRevert = CheckPath('svn')
-#ZipCmd = CheckPath('zip')
-#UnZipCmd = CheckPath('unzip')
-ZipCmd = 'unzip.exe'
-UnZipCmd = 'unzip.exe'
+SvnVersion = CheckPath('svnversion')
+SvnRevert = CheckPath('svn')
+ZipCmd = CheckPath('zip')
+UnZipCmd = CheckPath('unzip')
 if os.name == 'nt':
-    #NSIS = CheckPath('makensis')
-	NSIS = 'makensis.exe'
+    NSIS = CheckPath('makensis')
 else:
     NSIS = '-'
 
