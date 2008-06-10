@@ -2204,23 +2204,30 @@ class ConfigEmail(ProtectedClass):
                   email_account = None, email_pwd = None,
                   email_endjob = None, email_full = None, dummy = None):
 
+        sabnzbd.CFG['misc']['email_endjob'] = email_endjob
+        sabnzbd.CFG['misc']['email_full'] = email_full
+
+        off = not (email_endjob or email_full)
+        
         VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
 
-        if VAL.match(email_to):
+        if (off and not email_to) or VAL.match(email_to):
             sabnzbd.CFG['misc']['email_to'] = email_to
         else:
             return badParameterResponse('Invalid email address "%s"' % email_to)
-        if VAL.match(email_from):
+        if (off and not email_from) or VAL.match(email_from):
             sabnzbd.CFG['misc']['email_from'] = email_from
         else:
             return badParameterResponse('Invalid email address "%s"' % email_from)
 
-        sabnzbd.CFG['misc']['email_server'] = email_server
+        if email_server or off:
+            sabnzbd.CFG['misc']['email_server'] = email_server
+        else:
+            return badParameterResponse('Need a server address')
+
         sabnzbd.CFG['misc']['email_account'] = email_account
         if (not email_pwd) or (email_pwd and email_pwd.strip('*')):
             sabnzbd.CFG['misc']['email_pwd'] = encodePassword(email_pwd)
-        sabnzbd.CFG['misc']['email_endjob'] = email_endjob
-        sabnzbd.CFG['misc']['email_full'] = email_full
 
         return saveAndRestart(self.__root, dummy)
 
