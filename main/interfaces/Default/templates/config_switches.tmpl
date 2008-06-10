@@ -43,47 +43,26 @@
 <div class="EntryBlock">
   <fieldset class="EntryFieldSet">
     <legend>Processing switches</legend>
-    <strong>Enable Unrar:</strong><br>
+    <label><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> <strong>Enable Unrar</strong></label><br>
     Enable built-in unrar functionality.<br>
-    <input type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Enable Unzip:</strong><br>
+    <label><input type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> <strong>Enable Unzip</strong></label><br>
     Enable built-in unzip functionality.<br>
-    <input type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Enable Filejoin:</strong><br>
+    <label><input type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> <strong>Enable Filejoin</strong></label><br>
     Join files ending in .001, .002 etc. into one file.<br>
-    <input type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Enable Par Cleanup:</strong><br>
+    <label><input type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> <strong>Enable Par Cleanup</strong></label><br>
     Cleanup par files (if verifiying/repairing succeded).<br>
-    <input type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Fail on yEnc crc Errors:</strong><br>
+    <label><input type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> <strong>Fail on yEnc crc Errors</strong></label><br>
     Use backup servers on yEnc crc errors.<br>
-    <input type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Only get articles for top of the queue:</strong><br>
+    <label><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> <strong>Only get articles for top of the queue</strong></label><br>
     Enable for less memory usage.<br/> Disable to prevent slow jobs from blocking the queue<br/>
-    <input type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Post-process only verified jobs:</strong><br>
+    <label><input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> <strong>Post-process only verified jobs</strong></label><br>
     Only perform post-processing on jobs that passed all PAR2 checks.<br>
-    <input type="radio" name="safe_postproc" value="0" <!--#if $safe_postproc == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> Yes
-    <br>
     <br>
     <strong>Default post-processing:</strong><br>
     Used when no post-processing is defined by the category.<br>
@@ -114,52 +93,29 @@
   </fieldset>
   <fieldset class="EntryFieldSet">
     <legend>Other switches</legend>
-    <strong>Enable periodic Save:</strong><br>
+    <label><input type="checkbox" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> <strong>Enable periodic Save</strong></label><br>
     Enabling will make the queue save it's state after every completed file.<br>
-    <input type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Send Group</strong><br>
+    <label><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> <strong>Send Group</strong></label><br>
     Send group command before requesting articles.<br>
-    <input type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Sort by age:</strong><br>
+    <label><input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> <strong>Sort by age</strong></label><br>
     Automatically sort items by (average) age.<br>
-    <input type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Check for new release:</strong><br>
+    <label><input type="checkbox" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> <strong>Check for new release</strong></label><br>
     Weekly check for new SABnzbd release.<br>
-    <input type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Replace spaces in foldername:</strong><br>
+    <label><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> <strong>Replace spaces in foldername</strong></label><br>
     Replace spaces with underscores in foldernames.<br>
-    <input type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Launch browser on startup:</strong><br>
+    <label><input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> <strong>Launch browser on startup</strong></label><br>
     Launch the browser when starting SABnzbd.<br>
-    <input type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Ignore sample files:</strong><br>
+    <label><input type="checkbox" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> <strong>Ignore sample files</strong></label><br>
     Filters out sample files from the queue.<br>
-    <input type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
     <br>
-    <br>
-    <strong>Pause downloading during post processing:</strong><br>
+    <label><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> <strong>Pause downloading during post processing</strong></label><br>
     Pauses downloading at the start of post processing and resumes when finished.<br>
-    <input type="radio" name="pause_on_post_processing" value="0" <!--#if $pause_on_post_processing == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> Yes
   </fieldset>
 </div>
 <p><input type="submit" value="Save Changes"></p>

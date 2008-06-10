@@ -142,11 +142,8 @@
   <fieldset class="EntryFieldSet">
   <legend>Folder sorting</legend>
   
-    <strong>Enable TV Sorting:</strong><br>
+    <label><input type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable TV Sorting:</strong></label><br>
     Enable folder sorting.<br>
-    <input type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
-    <input type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
-    <br>
     <br>
     <strong>TV Folder Sorting:</strong><br />
    

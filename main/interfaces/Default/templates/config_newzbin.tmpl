@@ -59,11 +59,8 @@ Set your password here.<br>
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Bookmark processing</legend>
-<strong>Auto fetch bookmarks:</strong><br>
+<label><input type="checkbox" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> <strong>Auto fetch bookmarks:</strong></label><br>
 Automatically get jobs from your bookmarks?<br>
-<input type="radio" name="newzbin_bookmarks" value="0" <!--#if $newzbin_bookmarks == 0 then "checked=1" else ""#--> /> No
-<input type="radio" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> /> Yes
-<br>
 <a href="getBookmarks">Get bookmarks now</a>
 <br>
 <!--#if $bookmarks_list#-->
@@ -73,11 +70,8 @@ Automatically get jobs from your bookmarks?<br>
 <!--#end if#-->
 <br/>
 <br/>
-<strong>Un-bookmark if download complete:</strong><br>
+<label><input type="checkbox" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> <strong>Un-bookmark if download complete:</strong><label><br>
 Remove from bookmark list, when download is complete.<br>
-<input type="radio" name="newzbin_unbookmark" value="0" <!--#if $newzbin_unbookmark == 0 then "checked=1" else ""#--> /> No
-<input type="radio" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> Yes
-<br/>
 <br/>
 <strong>Checking interval:</strong><br>
 In minutes (at least 15 min).<br>
