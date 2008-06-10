@@ -1730,7 +1730,7 @@ class ConfigCats(ProtectedClass):
         config['have_cats'] = len(sabnzbd.CFG['categories']) > 0
         config['defdir'] = sabnzbd.COMPLETE_DIR
 
-        empty = { 'name':'', 'pp':'0', 'script':'', 'dir':'', 'newzbin':'' }
+        empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'' }
         slotinfo = []
         slotinfo.append(empty)
         for cat in sabnzbd.CFG['categories']:
