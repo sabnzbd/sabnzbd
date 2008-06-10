@@ -1299,13 +1299,12 @@ class ConfigServer(ProtectedClass):
         if port == "":
             port = '119'
         if not fillserver:
-            fillserver = 0
+            fillserver = '0'
         if not ssl:
-            ssl = 0
-
+            ssl = '0'
         if host and port and port.isdigit() \
-        and connections.isdigit() and fillserver and fillserver.isdigit() \
-        and ssl and ssl.isdigit():
+        and connections.isdigit() and fillserver.isdigit() \
+        and ssl.isdigit():
             msg = check_server(host, port)
             if msg:
                 return msg
@@ -1340,7 +1339,9 @@ class ConfigServer(ProtectedClass):
         if port == "":
             port = '119'
         if not ssl:
-            ssl = 0
+            ssl = '0'
+        if not fillserver:
+            fillserver = '0'
         if host and port and port.isdigit() \
         and connections.isdigit() and fillserver and fillserver.isdigit() \
         and ssl and ssl.isdigit():
