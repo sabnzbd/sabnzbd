@@ -69,12 +69,10 @@
 				<tr><td align=right><div class="sucker">#&nbsp;Connections:</div></td><td><input type="text" size="5" name="connections"/></td></tr>
 				<tr><td align=right><div class="sucker">Timeout:</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>(seconds)</small></td></tr>
 				<tr><td align=right><div class="sucker">SSL&nbsp;Encrypted?</div><!--#if int($have_ssl) == 0 then "(disabled)" else ""#--></td><td>
-					<input type="radio" name="ssl" value="0" "checked=1"/>&nbsp;No
-					<input type="radio" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>&nbsp;Yes<br/>
+					<input type="checkbox" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
 				</td></tr>
 				<tr><td align=right><div class="sucker">Backup&nbsp;Server?</div></td><td>
-					<input type="radio" name="fillserver" value="0" "checked=1"/>&nbsp;No
-					<input type="radio" name="fillserver" value="1"/>&nbsp;Yes<br/>
+					<input type="checkbox" name="fillserver" value="1"/>
 				</td></tr>
 				
 				<tr><td></td><td>
@@ -115,15 +113,13 @@
 					<td align=right><div class="sucker">SSL&nbsp;Encrypted?</div></td>
 					<td>
 						<!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->
-					<input type="radio" name="ssl" value="0" <!--#if int($servers[$server]['ssl']) == 0 or int($have_ssl) == 0 then "checked=1" else ""#--> />&nbsp;No
-					<input type="radio" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />&nbsp;Yes
+					<input type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
 					</td>
 				</tr>
 				<tr>
 					<td align=right><div class="sucker">Backup&nbsp;Server?</div></td>
 					<td>
-						<input type="radio" name="fillserver" value="0" <!--#if int($servers[$server]['fillserver']) == 0 then "checked=1" else ""#--> />&nbsp;No
-					<input type="radio" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />&nbsp;Yes
+						<input type="checkbox" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />
 					</td>
 				</tr>
 				</table>

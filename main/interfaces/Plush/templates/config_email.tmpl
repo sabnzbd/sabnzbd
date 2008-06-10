@@ -54,16 +54,15 @@
 				
 				<legend id="configbox_email_options">Email&nbsp;Options</legend>
 				
+				<input type="checkbox" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> />
 				<strong>End-of-Job Notifications:</strong><br/>
 				<small>Send email when job is completed.</small><br/>
-				<input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> No
-				<input type="radio" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> /> Yes
 				
-				<br/><br/>
+				<br/>
+				<input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
 				<strong>Disk Full Notifications:</strong><br/>
 				<small>Send email when disk is full and SABnzbd is paused.</small><br/>
-				<input type="radio" name="email_full" value="0" <!--#if $email_full == 0 then "checked=1" else ""#--> /> No
-				<input type="radio" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> Yes
+				
 				
 			</fieldset>
 			</div>

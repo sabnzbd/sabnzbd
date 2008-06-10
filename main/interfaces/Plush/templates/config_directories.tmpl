@@ -48,7 +48,7 @@
 			PAGE CONTENT IS BELOW
 	************************************ -->
 			
-			<div align="center"><em>NOTE:</em> Folders will be created automatically when Saving.</div>
+			<div align="center"><small><em>NOTE:</em> Folders will be created automatically when Saving.</small></div>
 			
 			<form action="saveDirectories" method="post" name="fullform">
 			<div class="EntryBlock">
@@ -119,16 +119,15 @@
 				
 				<legend id="configbox_sorting_folders">Sorting&nbsp;Folders</legend>
 				
+				<input type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> />
 				<strong>Enable TV Sorting:</strong><br/>
-				<small>Enable sorting and renaming of episodes.</small><br/>
-				<input class="radio" type="radio" name="enable_tv_sorting" value="0" <!--#if $enable_tv_sorting == 0 then "checked=1" else ""#--> /> No
-				<input class="radio" type="radio" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> Yes
+				<small>Enable sorting and renaming of episodes. (see below)</small><br/>
 				<br class="clear" />
 				
-				<br/><b>&raquo; Parsing Method:</b><br/>
+				<b>&raquo; Parsing Method:</b><br/>
 				
 				<input type="text" style="width:500px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br class="clear" />
-				<small>(ex: <span id="previewtv"></span>)</small><br class="clear" />
+				<small>ex: <span id="previewtv"></span></small><br class="clear" />
 				
 				<br/><b>&raquo; Presets:</b><br/>
 				<input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
