@@ -831,15 +831,15 @@ def add_msgid(msgid, pp=None, script=None, cat=None):
     if cat and cat.lower()=='default': cat = None
 
     if MSGIDGRABBER:
-        logging.info('[%s] Fetching msgid %s from v3.newzbin.com',
+        logging.info('[%s] Fetching msgid %s from www.newzbin.com',
                      __NAME__, msgid)
-        msg = "fetching msgid %s from v3.newzbin.com" % msgid
+        msg = "fetching msgid %s from www.newzbin.com" % msgid
     
         future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat, url=msgid)
     
         MSGIDGRABBER.grab(msgid, future_nzo)
     else:
-        logging.error('[%s] Error Fetching msgid %s from v3.newzbin.com - Please make sure your Username and Password are set',
+        logging.error('[%s] Error Fetching msgid %s from www.newzbin.com - Please make sure your Username and Password are set',
                              __NAME__, msgid)    
 
 

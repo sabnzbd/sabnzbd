@@ -136,9 +136,9 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
     # Connect to Newzbin
     try:
         if sabnzbd.newswrapper.HAVE_SSL:
-            conn = httplib.HTTPSConnection('v3.newzbin.com')
+            conn = httplib.HTTPSConnection('www.newzbin.com')
         else:
-            conn = httplib.HTTPConnection('v3.newzbin.com')
+            conn = httplib.HTTPConnection('www.newzbin.com')
 
         postdata = { 'username': username_newzbin, 'password': password_newzbin, 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
@@ -243,9 +243,9 @@ class Bookmarks:
         # Connect to Newzbin
         try:
             if sabnzbd.newswrapper.HAVE_SSL:
-                conn = httplib.HTTPSConnection('v3.newzbin.com')
+                conn = httplib.HTTPSConnection('www.newzbin.com')
             else:
-                conn = httplib.HTTPConnection('v3.newzbin.com')
+                conn = httplib.HTTPConnection('www.newzbin.com')
 
             if delete:
                 logging.info('[%s] Deleting Newzbin bookmark %s', __NAME__, delete)

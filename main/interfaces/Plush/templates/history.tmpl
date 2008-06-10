@@ -17,7 +17,7 @@ def displayNotices (action, name):
 	<td>
 		<div class="historyTitle <!--#if $line.loaded #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->></div>
 		<!--#if $line.msgid #-->
-		<a href="https://v3.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
+		<a href="https://www.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
 		<!--#else#-->
 		$line.filename
 		<!--#end if#-->
