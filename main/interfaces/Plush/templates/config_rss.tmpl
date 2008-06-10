@@ -95,13 +95,15 @@
 					<!--#end if#-->
 					
 					<input type="hidden" name="feed" value="$feed"/>
+					&nbsp;&sdot;&nbsp;
 					<input type="checkbox" onclick="this.form.action='toggle_rss_feed';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled
-					&nbsp;&nbsp;|&nbsp;&nbsp;
+					&nbsp;&sdot;&nbsp;
 					<input type="submit" onclick="this.form.action='test_rss_feed'; this.form.submit(); return false;" value="Preview"/>
+					&nbsp;&sdot;&nbsp;
 					<input type="submit" onclick="this.form.action='download_rss_feed'; this.form.submit(); return false;" value="Download"/>
-					&nbsp;&nbsp;|&nbsp;&nbsp;
+					&nbsp;&sdot;&nbsp;
 					<input type="submit" value="&raquo; Save"/>
-					&nbsp;&nbsp;|&nbsp;&nbsp;
+					&nbsp;&sdot;&nbsp;
 					<input type="submit" onclick="this.form.action='del_rss_feed';  this.form.submit(); return false;" value="&otimes; Delete"/>
 
 				</fieldset>
@@ -248,7 +250,7 @@
 					<!--#end for#-->
 					
 				</table>
-				<hr/><hr/>
+				<hr/>
 				
 			<!--#end for#-->
 			<!--#else#-->
