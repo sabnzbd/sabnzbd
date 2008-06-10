@@ -163,7 +163,7 @@ $(document).ready(function(){
 	
 	// "Add NZB" horiz. bar toggler from main menu
 	$('#add_nzb_menu_toggle').bind('click', function() { 
-		$('#add_nzb_menu').toggle();
+		$('#add_nzb_menu').slideToggle("fast");
 		SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display'));
 	});
 	
