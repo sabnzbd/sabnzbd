@@ -83,7 +83,6 @@
 				<input type="password" name="web_password" value="$password"/>
 				</td></tr>
 				</td></tr><tr><td colspan=2><hr/></td></tr><tr><td>
-				</table>
 				
 				<strong>Web Interface:</strong><br/>
 				<small>Choose a skin.</small><br/>
@@ -97,8 +96,23 @@
 				<!--#end for#-->
 				</select>
 				
+				</td><td>
+				<strong>Secondary Web Interface:</strong><br/>
+				<small>Activate a secondary skin.</small><br/>
+				<select name="web_dir2">
+				<!--#for $webline in $web_list2#-->
+				<!--#if $webline.lower() == $web_dir2.lower()#-->
+					<option value="$webline" selected>$webline</option>
+				<!--#else#-->
+					<option value="$webline">$webline</option>
+				<!--#end if#-->
+				<!--#end for#-->
+				</select>
+				</td></tr>
+				</table>
+				
 				<!--#if $web_colors#-->
-				<br/><br/>
+				<br/>
 				<strong>(Active) Web Interface Schema:</strong><br/>
 				<small>Choose a color scheme for currently loaded skin.</small><br/>
 				<select name="web_color">
@@ -113,20 +127,7 @@
 				<!--#end for#-->
 				</select>
 				<!--#end if#-->
-				
-				<br/><br/>
-				<strong>Secondary Web Interface:</strong><br/>
-				<small>Activate a secondary skin.</small><br/>
-				<select name="web_dir2">
-				<!--#for $webline in $web_list2#-->
-				<!--#if $webline.lower() == $web_dir2.lower()#-->
-					<option value="$webline" selected>$webline</option>
-				<!--#else#-->
-					<option value="$webline">$webline</option>
-				<!--#end if#-->
-				<!--#end for#-->
-				</select>
-				
+								
 			</fieldset>
 			</div>
 			
