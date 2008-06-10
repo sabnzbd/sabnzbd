@@ -7,49 +7,42 @@
  <hr />
 
 
-		    <label>Enable Unrar:</label>
-		    <input class="radio" type="radio" name="enable_unrar" value="0" <!--#if $enable_unrar == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> Yes
-			<span class="tips">Enable built-in unrar functionality.</span>
+		    <label><span class="label">Enable Unrar:</span>
+		    <input class="radio" type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar == 1 then "checked=1" else ""#--> />
+			<span class="tips">Enable built-in unrar functionality.</span></label>
 		<br class="clear" />
 
-		    <label>Enable Unzip:</label>
-		    <input class="radio" type="radio" name="enable_unzip" value="0" <!--#if $enable_unzip == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Enable built-in unzip functionality.</span>
+		    <label><span class="label">Enable Unzip:</span>
+		    <input class="radio" type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> 
+		    <span class="tips">Enable built-in unzip functionality.</span></label>
 		<br class="clear" />
 
-		    <label>Enable Filejoin:</label>
-		    <input class="radio" type="radio" name="enable_filejoin" value="0" <!--#if $enable_filejoin == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Join files ending in .001 .002 ect into one file.</span>
+		    <label><span class="label">Enable Filejoin:</span>
+		    <input class="radio" type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Join files ending in .001 .002 ect into one file.</span></label>
 		<br class="clear" />
 
-		    <label>Enable Par Cleanup:</label>
-		    <input class="radio" type="radio" name="enable_par_cleanup" value="0" <!--#if $enable_par_cleanup == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Cleanup par files (if verifiying/repairing succeded).</span>
+		    <label><span class="label">Enable Par Cleanup:</span>
+		    <input class="radio" type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Cleanup par files (if verifiying/repairing succeded).</span></label>
 		<br class="clear" />
 
-		    <label>Fail on yEnc crc Errors:</label>
-		    <input class="radio" type="radio" name="fail_on_crc" value="0" <!--#if $fail_on_crc == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Use backup servers on yEnc crc errors.</span>
+		    <label><span class="label">Fail on yEnc crc Errors:</span>
+		    <input class="radio" type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Use backup servers on yEnc crc errors.</span></label>
 		<br class="clear" />
 
-		    <label>Only fetch the top-most article:</label>
-		    <input class="radio" type="radio" name="top_only" value="0" <!--#if $top_only == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Enable for less memory usage. Disable to prevent some jobs from blocking the queue.</span>
+		    <label><span class="label">Only fetch the top-most article:</span>
+		    <input class="radio" type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Enable for less memory usage. Disable to prevent some jobs from blocking the queue.</span></label>
 		<br class="clear" />
 
-		    <label>Safe Post-process:</label>
-		    <input class="radio" type="radio" name="safe_postproc" value="0" <!--#if $safe_postproc == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Only perform post-processing on jobs that passed all PAR2 checks.</span>
+		    <label><span class="label">Safe Post-process:</span>
+		    <input class="radio" type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Only perform post-processing on jobs that passed all PAR2 checks.</span></label>
 		<br class="clear" />
 
-		    <label>Default Post-Processing:</label>
+		    <span class="label">Default Post-Processing:</span>
 		    <input class="radio" type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
 		    <input class="radio" type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
 		    <input class="radio" type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
@@ -57,7 +50,7 @@
 		    <span class="tips">Use the following post-processing if not defined by a category.</span>
 		<br class="clear" />
 
-		    <label>Default User Script:</label>
+		    <span class="label">Default User Script:</span>
             <select name="script" id="script" class="select">
             <!--#for $sc in $script_list#-->
                 <!--#if $sc.lower() == $script.lower()#-->
@@ -71,9 +64,9 @@
 		<br class="clear" />
 		
 
-		    <label>Extra PAR2 parameters:</label>
+		    <span class="label">Extra PAR2 parameters:</span>
 		    <input type="text" name="par_option" value="$par_option"/>
-		    <span class="tips">See the wiki for usage.</span>
+		    <span class="tips">See the wiki for usage.</span></label>
 		<br class="clear" />
 
 </fieldset>
@@ -82,51 +75,43 @@
 <hr />
 
 
-		    <label>Enable periodic Save:</label>
-		    <input class="radio" type="radio" name="enable_save" value="0" <!--#if $enable_save == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Enabling will make the queue save it's state after every completed file.</span>
+		    <label><span class="label">Enable periodic Save:</span>
+		    <input class="radio" type="checkbox" name="enable_save" value="1" <!--#if $enable_save > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Enabling will make the queue save it's state after every completed file.</span></label>
 		<br class="clear" />
 
-		    <label>Send Group</label>
-		    <input class="radio" type="radio" name="send_group" value="0" <!--#if $send_group == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Send group command before requesting articles.</span>
+		    <label><span class="label">Send Group</span>
+		    <input class="radio" type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Send group command before requesting articles.</span></label>
 		<br class="clear" />
 
-		    <label>Sort by age:</label>
-		    <input class="radio" type="radio" name="auto_sort" value="0" <!--#if $auto_sort == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Automatically sort items by (average) age.</span>
+		    <label><span class="label">Sort by age:</span>
+		    <input class="radio" type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Automatically sort items by (average) age.</span></label>
  		<br class="clear" />
 
-			<label>Check for new release:</label>
-		    <input class="radio" type="radio" name="check_rel" value="0" <!--#if $check_rel == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Weekly check for new SABnzbd release.</span>
+			<label><span class="label">Check for new release:</span>
+		    <input class="radio" type="checkbox" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Weekly check for new SABnzbd release.</span></label>
  		<br class="clear" />
 
-			<label>Replace spaces in foldername:</label>
-		    <input class="radio" type="radio" name="replace_spaces" value="0" <!--#if $replace_spaces == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Replaces spaces in foldernames with underscores.</span>
+			<label><span class="label">Replace spaces in foldername:</span>
+		    <input class="radio" type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Replaces spaces in foldernames with underscores.</span></label>
  		<br class="clear" />
 
-			<label>Launch browser on startup:</label>
-		    <input class="radio" type="radio" name="auto_browser" value="0" <!--#if $auto_browser == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> Yes
-		    <span class="tips">Set whether SABnzbd launches your browser on startup.</span>
+			<label><span class="label">Launch browser on startup:</span>
+		    <input class="radio" type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Set whether SABnzbd launches your browser on startup.</span></label>
  		<br class="clear" />
 
-			<label>Ignore sample files:</label>
-		    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> Yes
+			<label><span class="label">Ignore sample files:</span>
+		    <input class="radio" type="checkbox" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /></label>
 		    <span class="tips">Filters out sample files from the queue.</span>
  		<br class="clear" />
         
-			<label>Pause downloading during post processing:</label>
-		    <input class="radio" type="radio" name="pause_on_post_processing" value="0" <!--#if $pause_on_post_processing == 0 then "checked=1" else ""#--> /> No
-		    <input class="radio" type="radio" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> Yes
+			<label><span class="label">Pause downloading during post processing:</span>
+		    <input class="radio" type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></label>
 		    <span class="tips">Pauses downloading at the start of post processing and resumes when finished.</span>
  		<br class="clear" />
 

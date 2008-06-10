@@ -180,7 +180,7 @@ fieldset {
   width:100%;
   border:none;
 }
-form.cmxform label,form.cmxform input {
+form.cmxform .label,form.cmxform input {
 	display: block;
 	width: 150px;
 	float: left;
@@ -207,7 +207,7 @@ input.schedulesubmit {
 	float: left;
 	margin-bottom: 15px;
 }
-form.cmxform label {
+form.cmxform .label {
 	text-align: left;
 	width: 150px;
 	padding-right: 20px;

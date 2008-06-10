@@ -7,27 +7,27 @@
 <hr />
 
 
-			<label for "host">Host:</label>
+			<label for "host" class="label">Host:</label>
 			<input type="text" name="host" value=$host>
 			<span class="tips">Host SABnzbd should listen on.</span>
 		<br class="clear" />
 
-			<label for "port">Port:</label>
+			<label for "port" class="label">Port:</label>
 			<input type="text" name="port" value=$port>
 			<span class="tips">Post SABnzbd should listen on.</span>
 		<br class="clear" />
 
-			<label for "webuser">Web username:</label>
+			<label for "webuser" class="label">Web username:</label>
 			<input type="text" name="web_username" value=$username>
 			<span class="tips">Authentication Username.</span>
 		<br class="clear" />
 
-			<label for "webpass">Web password:</label>
+			<label for "webpass" class="label">Web password:</label>
 			<input type="password" name="web_password" value=$password>
 			<span class="tips">Authentication Password.</span>
 		<br class="clear" />
 
-			<label for "userinterface">Main Skin:</label>
+			<label for "userinterface" class="label">Main Skin:</label>
 
 			<select name="web_dir" id="webdir" class="select">
 			    <!--#for $webline in $web_list#-->
@@ -42,7 +42,7 @@
 		<br class="clear" />
         
             <!--#if $web_colors#-->
-            <label for "colorscheme">Color schema:</label>
+            <label for "colorscheme" class="label">Color schema:</label>
             <select name="web_color" class="select">
                 <!--#for $webline in $web_colors#-->
                     <!--#if $webline.lower() == $web_color.lower()#-->
@@ -58,7 +58,7 @@
             <!--#end if#-->
             <br class="clear" />
             
-			<label for "userinterface">Secondary Skin:</label>
+			<label for "userinterface" class="label">Secondary Skin:</label>
 
 			<select name="web_dir2" id="webdir2" class="select">
 			    <!--#for $webline in $web_list2#-->
@@ -79,29 +79,29 @@
 <hr />
 
 
-			<label for "qrefresh">Queue auto refresh interval:</label>
+			<label for "qrefresh" class="label">Queue auto refresh interval:</label>
 
 			<input type="text" name="refresh_rate" value="$refresh_rate">
 			<span class="tips">Refresh interval of the queue web-interface page(sec, 0= none)</span>
 		<br class="clear" />
 
-			<label for "rsscheck">RSS checking interval:</label>
+			<label for "rsscheck" class="label">RSS checking interval:</label>
 
 			<input type="text" name="rss_rate" value="$rss_rate">
 			<span class="tips">Checking interval (minutes, at least 15))</span>
 		<br class="clear" />
 
-			<label for "bandwidth limit">Download Speed Limit:</label>
+			<label for "bandwidth limit" class="label">Download Speed Limit:</label>
 			<input type="text" name="bandwith_limit" value="$bandwith_limit">
 			<span class="tips">Download speed limit in kilobytes per second(kB/s).</span>
 		<br class="clear" />
 
-			<label for "cachelimit">Article Cache Limit:</label>
+			<label for "cachelimit" class="label">Article Cache Limit:</label>
 			<input type="text" name="cache_limitstr" value="$cache_limitstr">
 			<span class="tips">Cache articles in memory (reduce disk access).</span>
 		<br class="clear" />
 
-			<label for "cleanuplist">Cleanup List:</label>
+			<label for "cleanuplist" class="label">Cleanup List:</label>
 
 			<input type="text" name="cleanup_list" value="$cleanup_list">
 			<span class="tips">List of file (extensions) that should be deleted after download.

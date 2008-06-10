@@ -7,18 +7,14 @@
  <hr />
 	
 		
-			<label>End-of-job notifications:</label>
-
-			<input class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> No
-			<input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> /> Yes
-			<span class="tips">Send email when job is completed.</span>
+			<label><span class="label">End-of-job notifications:</span>
+			<input class="radio" type="checkbox" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> />
+			<span class="tips">Send email when job is completed.</span></label>
 		<br class="clear" />
 		
-			<label>Disk full notifications:</label>
-
-			<input class="radio" type="radio" name="email_full" value="0" <!--#if $email_full == 0 then "checked=1" else ""#--> /> No
-			<input class="radio" type="radio" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> Yes
-			<span class="tips">Send email when disk is full and SABnzbd is paused.</span>
+			<label><span class="label">Disk full notifications:</span>
+			<input class="radio" type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
+			<span class="tips">Send email when disk is full and SABnzbd is paused.</span></label>
 		<br class="clear" />
 		
 </fieldset>
@@ -28,31 +24,31 @@
 <hr />
 	
 		
-			<label>SMTP server:</label>
+			<label class="label">SMTP server:</label>
 
 			<input type="text" size="35" name="email_server" value="$email_server">
 			<span class="tips">Set your ISP's server for outgoing email.</span>
             <br class="clear" />
 		
-			<label>Email recipient:</label>
+			<label class="label">Email recipient:</label>
 
 			<input type="text" size="35" name="email_to" value="$email_to">
 			<span class="tips">Email address to send the email to.</span>
             <br class="clear" />
 		
-			<label>Email sender:</label>
+			<label class="label">Email sender:</label>
 
 			<input type="text" size="35" name="email_from" value="$email_from">
 			<span class="tips">Email address the message appears to come from.</span>
             <br class="clear" />
 		
-			<label>OPTIONAL: Account name:</label>
+			<label class="label">OPTIONAL: Account name:</label>
 
 			<input type="text" size="35" name="email_account" value="$email_account">
 			<span class="tips">For authenticated email, account name.</span>
             <br class="clear" />
 		
-			<label>OPTIONAL: Account password:</label>
+			<label class="label">OPTIONAL: Account password:</label>
 
 			<input type="password" size="35" name="email_pwd" value="$email_pwd">
 			<span class="tips">For authenticated email, password.	</span>		

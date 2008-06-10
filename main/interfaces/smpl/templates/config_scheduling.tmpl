@@ -13,7 +13,7 @@ if hour != 23:
     hour += 1
 else:
     hour = 0 %>
-<label>Hour:Minute:</label>
+<label class="label">Hour:Minute:</label>
 <select name="hour">
 <!--#for $i in range(24)#-->
 <option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
@@ -26,7 +26,7 @@ else:
 <!--#end for#-->
 </select>
 <br class="clear" />
-<label>Frequency:</label>
+<label class="label">Frequency:</label>
 <select name="dayofweek">
 <option value="*" selected>Daily
 <option value="1">Mondays
@@ -38,7 +38,7 @@ else:
 <option value="7">Sundays
 </select>
 <br class="clear" />
-<label>Action:</label>
+<label class="label">Action:</label>
 <select name="action">
 <option value="resume">resume
 <option value="pause">pause
@@ -46,7 +46,7 @@ else:
 <option value="speedlimit">speedlimit
 </select>
 <br class="clear" />
-<label>Arguments:</label>
+<label class="label">Arguments:</label>
 <input class="schedulesubmit" type="text" size="20" name="arguments" value="">
 <br class="clear" /><p><input type="button" size="40" value="Add Schedule" onclick="javascript:submitconfig('config/scheduling/addSchedule', 'submitstatus1','schedule', 'config/scheduling','0')">
 <span class="submitstatus" id="submitstatus1"></span></p>

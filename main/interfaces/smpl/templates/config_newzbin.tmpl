@@ -10,13 +10,13 @@ This will unlock extra functionality.<br/>
 <fieldset class="EntryFieldSet">
 <legend>Account info</legend>
  <hr />
-            <label>Username:</label>
+            <label class="label">Username:</label>
             <input type="text" name="username_newzbin" value="$username_newzbin">
             <span class="tips">Set your username here.</span>
         <br class="clear" />
 
 
-            <label>Password:</label>
+            <label class="label">Password:</label>
             <input type="password" name="password_newzbin" value="$password_newzbin">
             <span class="tips">Set your password here.</span>
         <br class="clear" />
@@ -26,19 +26,18 @@ This will unlock extra functionality.<br/>
 <fieldset class="EntryFieldSet">
 <legend>Bookmark processing</legend>
  <hr />
-            <label>Auto fetch bookmarks:</label>
-            <input class="radio" type="radio" name="newzbin_bookmarks" value="0" <!--#if $newzbin_bookmarks == 0 then "checked=1" else ""#--> /> No
-            <input class="radio" type="radio" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> /> Yes
-            <span class="tips">Automatically get jobs from your bookmarks?</span>
+            
+            <label><span class="label">Auto fetch bookmarks:</span>
+			<input class="radio" type="checkbox" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> />
+            <span class="tips">Automatically get jobs from your bookmarks?</span></label>
         <br class="clear" />
 
-            <label>Un-bookmark if download complete:</label>
-            <input class="radio" type="radio" name="newzbin_unbookmark" value="0" <!--#if $newzbin_unbookmark == 0 then "checked=1" else ""#--> /> No
-            <input class="radio" type="radio" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> /> Yes
-            <span class="tips">Remove from bookmark list, when download is complete.</span>
+            <label><span class="label">Un-bookmark if download complete:</span>
+            <input class="radio" type="checkbox" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> />
+            <span class="tips">Remove from bookmark list, when download is complete.</span></label>
         <br class="clear" />
 
-            <label>Checking interval:</label>
+            <label class="label">Checking interval:</label>
             <input type="text" name="bookmark_rate" value="$bookmark_rate">
             <span class="tips">In minutes (at least 15 min).</span>
         <br class="clear" />
