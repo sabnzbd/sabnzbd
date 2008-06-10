@@ -74,7 +74,7 @@ def con(sock, host, port, sslenabled, nntp):
                     sock.do_handshake()
                     break
                 except _ssl.WantReadError:
-                    select.select([sock], [], [])
+                    select.select([sock], [], [], 1.0)
     except socket.error, e:
         try:
             (_errno, strerror) = e
@@ -116,7 +116,7 @@ class NNTP:
                             self.sock.do_handshake()
                             break
                         except _ssl.WantReadError:
-                            select.select([self.sock], [], [])
+                            select.select([self.sock], [], [], 1.0)
 
         except socket.error, e:
             try:
@@ -208,7 +208,7 @@ class NewsWrapper:
                 chunk = self.recv(32768)
                 break
             except _ssl.WantReadError:
-                select.select([self.nntp.sock], [], [])
+                select.select([self.nntp.sock], [], [], 1.0)
 
         self.data += chunk
         new_lines = self.data.split('\r\n')
