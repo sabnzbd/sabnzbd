@@ -27,6 +27,12 @@ import time
 import logging
 import re
 import Queue
+import socket
+try:
+    socket.ssl
+    _HAVE_SSL = True
+except:
+    _HAVE_SSL = False
 
 from threading import *
 
@@ -135,7 +141,7 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
 
     # Connect to Newzbin
     try:
-        if sabnzbd.newswrapper.HAVE_SSL:
+        if _HAVE_SSL:
             conn = httplib.HTTPSConnection('www.newzbin.com')
         else:
             conn = httplib.HTTPConnection('www.newzbin.com')
@@ -242,7 +248,7 @@ class Bookmarks:
     
         # Connect to Newzbin
         try:
-            if sabnzbd.newswrapper.HAVE_SSL:
+            if _HAVE_SSL:
                 conn = httplib.HTTPSConnection('www.newzbin.com')
             else:
                 conn = httplib.HTTPConnection('www.newzbin.com')
