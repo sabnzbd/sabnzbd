@@ -850,7 +850,7 @@ def add_url(url, pp=None, script=None, cat=None):
 
     if URLGRABBER:
         logging.info('[%s] Fetching %s', __NAME__, url)
-        msg = "Trying to fetch .nzb from %s" % url
+        msg = "Trying to fetch NZB from %s" % url
         future_nzo = NZBQ.generate_future(msg, pp, script, cat, url=url)
         URLGRABBER.add(url, future_nzo)
 

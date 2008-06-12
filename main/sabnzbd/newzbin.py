@@ -39,7 +39,7 @@ from threading import *
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import *
-from sabnzbd.misc import Cat2OptsDef, sanitize_filename
+from sabnzbd.misc import Cat2OptsDef, sanitize_filename, BadFetch
 from sabnzbd.nzbstuff import CatConvert
 import sabnzbd.newswrapper
 
@@ -120,7 +120,7 @@ class MSGIDGrabber(Thread):
                     sleeper(int(filename))
                 else:
                     # Fatal error, give up on this one
-                    sabnzbd.remove_nzo(nzo.nzo_id, False)
+                    BadFetch(nzo, msgid)
                     msgid = None
 
             # Keep some distance between the grabs

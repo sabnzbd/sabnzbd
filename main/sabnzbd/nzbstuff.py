@@ -27,7 +27,7 @@ from sabnzbd.constants import *
 
 from sabnzbd.trylist import TryList
 
-RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)", re.I)
+RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
 
 HAVE_CELEMENTTREE = True
@@ -569,6 +569,8 @@ class NzbObject(TryList):
         self.__dirname = dirname
         self.__created = created
 
+    def set_filename(self, filename):
+        self.__filename = filename
 
     def get_original_dirname(self):
         return self.__original_dirname
@@ -849,6 +851,12 @@ class NzbObject(TryList):
     def get_repair_opts(self):
         return self.__repair, self.__unpack, self.__delete
 
+    def get_pp(self):
+        if self.__repair == None:
+            return None
+        else:
+            return sabnzbd.opts_to_pp(self.__repair, self.__unpack, self.__delete)
+
     def get_script(self):
         return self.__script
 
@@ -943,16 +951,19 @@ def _nzf_cmp_name(nzf1, nzf2):
 # Return (nice-name, msg-id)
 ################################################################################
 def SplitFileName(name):
-    m = RE_NEWZBIN.match(name)
-    if (m):
-        return m.group(2).rstrip('.').strip(), m.group(1)
-    m = RE_NORMAL.match(name)
-    if (m):
-        return m.group(1).rstrip('.').strip(), ""
+    name = name.strip()
+    if name.find('://') < 0:
+        m = RE_NEWZBIN.match(name)
+        if (m):
+            return m.group(2).rstrip('.').strip(), m.group(1)
+        m = RE_NORMAL.match(name)
+        if (m):
+            return m.group(1).rstrip('.').strip(), ""
+        else:
+            return name.strip(), ""
+        return "", ""
     else:
         return name.strip(), ""
-    return "", ""
-
 
 def CatConvert(cat):
     """ Convert newzbin-category/group-name to user categories

@@ -361,11 +361,10 @@ class URLGrabber(Thread):
                     cat, pp, script = Cat2Opts(cat, pp, script)
                     sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat)
                 else:
-                    sabnzbd.remove_nzo(future_nzo.nzo_id, False)
+                    BadFetch(future_nzo, url)
 
             except:
-                logging.error("[%s] Error adding url %s, will try again", __NAME__, url)
-                self.add(url, future_nzo)
+                BadFetch(future_nzo, url)
 
             # Don't pound the website!
             time.sleep(1.0)
@@ -1005,3 +1004,36 @@ def getFilepath(path, nzo, filename):
             break
 
     return fullPath
+
+
+def BadFetch(nzo, url):
+    """ Create History entry for failed URL Fetch """
+    logging.error("[%s] Error getting url %s", __NAME__, url)
+
+    pp = nzo.get_pp()
+    if pp:
+        pp = '&pp=%s' % pp
+    else:
+        pp = ''
+    cat = nzo.get_cat()
+    if cat:
+        cat = '&cat=%s' % cat
+    else:
+        cat = ''
+    script = nzo.get_script()
+    if script:
+        script = '&script=%s' % script
+    else:
+        script = ''
+
+    nzo.set_status("Failed")
+
+    if url.find('://') < 0:
+        nzo.set_filename('Failed to fetch newzbin report %s' % url)
+    else:
+        nzo.set_filename('Failed to fetch NZB from %s' % url)
+
+    nzo.set_unpackstr('=> Failed, <a href="./retry?url=%s%s%s%s">Try again</a>' % \
+                     (urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)),
+                     '[URL Fetch]', 0)
+    sabnzbd.remove_nzo(nzo.nzo_id, True)

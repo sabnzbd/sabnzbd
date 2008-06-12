@@ -478,6 +478,19 @@ class MainPage(ProtectedClass):
         else:
             raise Raiser(self.__root, dummy)
 
+    @cherrypy.expose
+    def retry(self, url=None, pp=None, cat=None, script=None, dummy=None):
+        """ Duplicate of retry of History, needed for some skins """
+        if url: url = url.strip()
+        if url and (url.isdigit() or len(url)==5):
+            sabnzbd.add_msgid(url, pp, script, cat)
+        elif url:
+            sabnzbd.add_url(url, pp, script, cat)
+        if url:
+            return ShowOK(url)
+        else:
+            raise Raiser(self.__root, dummy)
+
 #------------------------------------------------------------------------------
 class NzoPage(ProtectedClass):
     def __init__(self, web_dir, root, nzo_id, prim):
@@ -915,6 +928,18 @@ class HistoryPage(ProtectedClass):
         if name:
             path = os.path.dirname(sabnzbd.LOGFILE)
             return ShowFile(name, os.path.join(path, name))
+        else:
+            raise Raiser(self.__root, dummy)
+
+    @cherrypy.expose
+    def retry(self, url=None, pp=None, cat=None, script=None, dummy=None):
+        if url: url = url.strip()
+        if url and (url.isdigit() or len(url)==5):
+            sabnzbd.add_msgid(url, pp, script, cat)
+        elif url:
+            sabnzbd.add_url(url, pp, script, cat)
+        if url:
+            return ShowOK(url)
         else:
             raise Raiser(self.__root, dummy)
 
@@ -1978,6 +2003,23 @@ def ShowFile(name, path):
 </body>
 </html>
 ''' % (name, name, escape(msg))
+
+
+def ShowOK(url):
+    return '''
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>%s</title>
+</head>
+<body>
+    <FORM><INPUT TYPE="BUTTON" VALUE="Go Back" ONCLICK="history.go(-1)"></FORM>
+    <br/><br/>
+    Job %s was re-added to the queue.
+    <br/><br/>
+</body>
+</html>
+''' % (escape(url), escape(url))
 
 
 def ShowRssLog(feed, all):
