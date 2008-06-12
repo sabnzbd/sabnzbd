@@ -419,8 +419,8 @@ tr:hover .history_added  {
 	margin-top: 20px;
 	text-align: center;
 }
-#time-left { float:left; margin-right:38px;}
-#speed { float:left; margin-left:72px; }
+#speed { float:left; margin-right:38px;}
+#time-left { float:left; margin-left:72px; }
 #speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
 #speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
 #btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
