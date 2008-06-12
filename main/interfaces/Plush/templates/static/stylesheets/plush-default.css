@@ -424,8 +424,8 @@ tr:hover .history_added  {
 	margin-top: 20px;
 	text-align: center;
 }
-#speed { float:left; margin-right:38px;}
-#time-left { float:left; margin-left:72px; }
+#speed { float:left; margin-right:8px;}
+#time-left { float:left; margin-left:42px; }
 #speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
 #speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
 #btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
@@ -438,11 +438,10 @@ tr:hover .history_added  {
 }
 
 .centerpiece {
-	width:400px;
+	width:320px;
 	margin-left:auto;
 	margin-right:auto;
 }
-
 
 #add_nzb_menu_toggle_title {
 	display:inline;

@@ -100,7 +100,7 @@ def InjectProgressBarPosition (mbleft, mb):
 		<!--#if $diskspace1 == $diskspace2#-->
 		<strong class="<!--#if float($diskspace1) < float($mb)/1024 #-->stats_incomplete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free&nbsp;Space</small></span>
 		<!--#else#-->
-		<strong class="<!--#if float($diskspace1) < float($mb)/1024 #-->stats_incomplete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free
+		<strong class="<!--#if float($diskspace1) < float($mb)/1024 #-->stats_incomplete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free&nbsp;(Temp)
 		<strong class="<!--#if float($diskspace2) < float($mb)/1024 #-->stats_complete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_complete_freespace<!--#end if#-->">$diskspace2&nbsp;GB</strong>&nbsp;Free&nbsp;Space
 		<!--#end if#-->
 	</div>
