@@ -1001,13 +1001,17 @@ embed, object {
 	font-size: 66%;
 	cursor:pointer;
 }
-
 .nav em {
 	float:right;
 	font-weight:bold;
 	padding-right:4px;
 }
-
-
-
+.navbullet {
+	background-image: url(../images/plush-default/ql_bullet.png);
+	background-position: right center;
+	background-repeat:no-repeat;
+}
+.navbullet:hover {
+	background-image: url(../images/plush-default/ql_bullet_on.png);
+}
 
