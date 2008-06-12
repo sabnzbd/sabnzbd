@@ -23,6 +23,8 @@
 </head>
 <body>
 	
+	<div id="add_nzb_menu_toggle_upper">&nbsp;</div>
+	
 	<!--#if $new_release#-->
 	<div id="new_release_notification">&nbsp;<a href="$new_rel_url" target="_blank">New release $new_release available!</a>&nbsp;</div>
 	<!--#end if#-->
@@ -31,57 +33,56 @@
 	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
 	<!--#end if#-->
 	
-	<div id="add_nzb_menu_toggle">
-		<em>&raquo;</em> <a>Add NZB</a>
-	</div>
 	
 	<div id="add_nzb_menu" style="display:hidden">
 		
-
 		<form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="mode" value="addfile" />
 		
-		<span class="add_nzb_box_processing">
-			<small>&rarr;&nbsp;Processing</small>
-			<!--#if $cat_list#-->
-			<select id="addID_cat" name="cat" title="Category" class="tip">
-			<!--#for $ct in $cat_list#-->
-				<option value="$ct">$ct</option>
-			<!--#end for#-->
-			</select>
-			<!--#end if#-->
-			<select id="addID_pp" name="pp" title="Post-Processing Option" class="tip">
-				<option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
-				<option value="0">(Skip)</option>
-				<option value="1">+Repair</option>
-				<option value="2">+R+Unpack</option>
-				<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
-			</select>
-			<!--#if $script_list#-->
-			<select id="addID_script" name="script" title="Script" class="tip">
-			<!--#for $sc in $script_list#-->
-				<option value="$sc">$sc</option>
-			<!--#end for#-->
-			</select>
-			<!--#end if#-->
-			
-		</span>
+		<div id="add_nzb_menu_toggle_title">
+			<em>&raquo;</em> <a>Add NZB</a>
+		</div>
+		
+		<span class="add_nzb_box">
+		
+		<small>&rarr;&nbsp;Processing</small>
+		<!--#if $cat_list#-->
+		<select id="addID_cat" name="cat" title="Category" class="tip">
+		<!--#for $ct in $cat_list#-->
+			<option value="$ct">$ct</option>
+		<!--#end for#-->
+		</select>
+		<!--#end if#-->
+		<select id="addID_pp" name="pp" title="Post-Processing Option" class="tip">
+			<option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
+			<option value="0">(Skip)</option>
+			<option value="1">+Repair</option>
+			<option value="2">+R+Unpack</option>
+			<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
+		</select>
+		<!--#if $script_list#-->
+		<select id="addID_script" name="script" title="Script" class="tip">
+		<!--#for $sc in $script_list#-->
+			<option value="$sc">$sc</option>
+		<!--#end for#-->
+		</select>
+		<!--#end if#-->
+		
 		<br/>
 		
-		<span class="add_nzb_box_upload">
-			<small>&rarr;&nbsp;File Upload</small>
-			<input type="file" name="name" size="24" />
-			<input type="submit" id="addNZBbyFile" value="&laquo; UPLOAD NZB" />
-		</span>
+		<small>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></small>
+		<input type="text" id="addID_input" size="24" />
+		<input type="submit" id="addID" value="&laquo; FETCH NZB" />
+		
+		&nbsp;&nbsp;
+		
+		<small>&rarr;&nbsp;File Upload</small>
+		<input type="file" name="name" size="24" />
+		<input type="submit" id="addNZBbyFile" value="&laquo; UPLOAD NZB" />
 		
 		</form>
 		
-		<span class="add_nzb_box_fetch">
-			<small>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></small>
-			<input type="text" id="addID_input" size="24" />
-			<input type="submit" id="addID" value="&laquo; FETCH NZB" />
 		</span>
-		
 	</div>
 	
 	<div id="page-wrap">
@@ -94,6 +95,7 @@
 			
 			<div id="queue-buttons">
 				<ul>
+					<li class="tip q_menu_addnzb q_menu_addnzb_off" title="Toggle&nbsp;'Add&nbsp;NZB'&nbsp;" id="add_nzb_menu_toggle"></li>
 					<li class="tip q_menu_pause <!--#if $paused then 'q_menu_paused' else 'q_menu_unpaused'#-->" title="Pause/Resume" id="pause_resume"></li>
 				</ul>
 			</div>
@@ -199,8 +201,8 @@
 			<div class="box_banner_history">
 				<div class="box_banner_r">
 					<ul class="box_banner_menu">
-						<li class="h_menu_verbose show tip" title="Toggle&nbsp;Details"></li>
 						<li class="h_menu_purge show tip" title="Purge&nbsp;Listings<br/>[double-click]"></li>
+						<li class="h_menu_verbose show tip" title="Toggle&nbsp;Details"></li>
 					</ul>
 				</div>
 			</div>

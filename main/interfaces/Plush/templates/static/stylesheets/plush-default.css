@@ -30,21 +30,13 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 
 #add_nzb_menu span {
-	padding:2px;
+	padding:1px;
 }
-.add_nzb_box_fetch {
+.add_nzb_box {
 	background-color:lightyellow;
-	border:1px solid #FFBC00;
-}
-
-.add_nzb_box_upload {
-	background-color:lightyellow;
-	border:1px solid #FFBC00;
-}
-
-.add_nzb_box_processing {
-	background-color:lightyellow;
-	border:1px solid #FFBC00;
+	border-top:1px solid #FFBC00;
+	border-bottom:1px solid #FFBC00;
+	cursor:default;
 }
 #addID {
 	cursor:pointer;
@@ -183,6 +175,18 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .q_menu_paused {
 	background: url(../images/plush-default/q_pause_on.png) 0 0 no-repeat;
 }
+.q_menu_addnzb {
+	padding-bottom:24px;
+	margin-right:6px;
+	padding-right:28px;
+	cursor:pointer;
+}
+.q_menu_addnzb_on {
+	background: url(../images/plush-default/qh_verbosity.png) 0 0 no-repeat;
+}
+.q_menu_addnzb_off {
+	background: url(../images/plush-default/qh_verbosity.png) 0 0 no-repeat;
+}
 .q_menu_sort {
 	width:55px;
 	height: 55px;
@@ -199,9 +203,9 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .q_menu_purge {
 	background: url(../images/plush-default/h_purge.png) 0 0 no-repeat;
-	padding-bottom:24px;
 	margin-right:6px;
-	padding-right:24px;
+	padding-right:28px;
+	padding-bottom:24px;
 	cursor:pointer;
 	display:none;
 }
@@ -209,7 +213,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .h_menu_purge {
 	background: url(../images/plush-default/h_purge.png) 0 100% no-repeat;
 	margin-right:6px;
-	padding-right:24px;
+	padding-right:28px;
 	padding-bottom:24px;
 	cursor:pointer;
 	display:none;
@@ -438,26 +442,23 @@ tr:hover .history_added  {
 	margin-right:auto;
 }
 
-#add_nzb_menu_toggle {
-	text-align: right;
-	width: 90%;
-	margin: 0px auto;
-	padding-right:24px;
-}
 
-#add_nzb_menu_toggle em {
+#add_nzb_menu_toggle_title {
+	display:inline;
+	text-align:left;
+}
+#add_nzb_menu_toggle_title em {
 	color: #FFBC00;
 }
-
-#add_nzb_menu_toggle a {
+#add_nzb_menu_toggle_title a {
 	font-size: 75%;
 	color: white;
 	font-weight:bold;
 	border-bottom: 1px dotted #FFBC00;
 	text-decoration: none;
-	cursor: pointer;
+	cursor: default;
 }
-#add_nzb_menu_toggle a:hover {
+#add_nzb_menu_toggle_title a:hover {
 	border-bottom: 1px solid #FFBC00;
 }
 
