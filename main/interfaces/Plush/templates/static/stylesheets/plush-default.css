@@ -407,9 +407,10 @@ tr:hover .history_added  {
 	background-image: url(../images/plush-default/history_title_bg.png);
 	background-position: left center;
 	background-repeat:no-repeat;
-	height:51px;
+	height:52px;
+	margin-left:1px;
 }
-#hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-repeat: repeat-x; height: 55px; }
+#hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
 #hdr-queue .logo { background-image: url(../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
 #hdr-queue .logo h1 { text-indent: -9999px; margin: 0; padding: 0;}
 #queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
