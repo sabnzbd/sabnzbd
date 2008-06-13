@@ -5,9 +5,21 @@ changed: RSS filters prefixed with "re:" are now
          Python-style regular expressions
 changed: Send group as extra user script parameter
 changed: Allow groups as selectors in user-categories
-fixed:   Retrieve NZB from URL sometimes fails (due to extra quotes)
 changed: Allow user to set tuning parameters for PAR2
+changed: Replaced all yes/no radio buttons with checkboxes.
+fixed:   Retrieve NZB from URL sometimes fails (due to extra quotes)
 fixed:   Plush and Smpl problems.
+fixed:   Dirscanner crashed on missing network drive
+fixed:   Only warn about ipv6 when browser does not use localhost
+fixed:   Failed URL/Newzbin fetches now go to History to be retried manually
+fixed:   Some shutdown improvements
+fixed:   Improve check if https is usable
+fixed:   Download will now resume after broken internet connection
+         although speed will still look to be stuck to last speed.
+fixed:   Replace all v3.newzbin.com refs by www.newzbin.com
+fixed:   Plush did not pass default job parms correctly
+fixed:   URL-fetches had problems when filename was embedded in quotes
+fixed:   Numerous Smpl and Plush touch-ups
 -------------------------------------------------------------------------------
 0.4.0rc2  by The SABnzbd-Team
 -------------------------------------------------------------------------------
