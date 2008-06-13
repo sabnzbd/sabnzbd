@@ -424,8 +424,9 @@ def CreateAllDirs(path, umask=None):
 # Real_Path                                                                    #
 ################################################################################
 def real_path(loc, path):
-    if not ((os.name == 'nt' and path[0].isalpha() and path[1] == ':') or \
-            (path[0] == '/' or path[0] == '\\')):
+    if not ((os.name == 'nt' and len(path)>1 and path[0].isalpha() and path[1] == ':') or \
+            (path and (path[0] == '/' or path[0] == '\\'))
+           ):
         path = loc + '/' + path
     return os.path.normpath(os.path.abspath(path))
 
