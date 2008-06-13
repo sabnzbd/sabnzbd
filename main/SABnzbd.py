@@ -619,10 +619,6 @@ def main():
             hostip = ip
             break
 
-    if ipv6 and ipv4:
-        sabnzbd.AMBI_LOCALHOST = True
-        logging.warning("IPV6 has priority on this system, potential Firefox issue")
-
     if cherryhost == '':
         if ipv6 and ipv4:
             # To protect Firefox users, use numeric IP
@@ -656,6 +652,12 @@ def main():
             info = socket.getaddrinfo(cherryhost, None)
         except:
             cherryhost = cherryhost.strip('[]')
+
+    if ipv6 and ipv4 and \
+        (browserhost not in ('localhost', '127.0.0.1', '[::1]', '::1')):
+        sabnzbd.AMBI_LOCALHOST = True
+        logging.warning("IPV6 has priority on this system, potential Firefox issue")
+
 
     if cherryport == None:
         if os.name == 'nt':
