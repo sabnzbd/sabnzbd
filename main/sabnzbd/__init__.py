@@ -531,6 +531,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         if p and not DOWNLOADER.paused: DOWNLOADER.paused = p
         if s: DOWNLOADER.limit_speed(s)
 
+    logging.info('All processes started')
+
     __INITIALIZED__ = True
     return True
 
@@ -639,6 +641,8 @@ def halt():
             logging.debug('Stopping scheduler')
             SCHED.stop()
             SCHED = None
+
+        logging.info('All processes stopped')
 
         __INITIALIZED__ = False
 
@@ -1126,7 +1130,8 @@ def system_standby():
 def shutdown_program():
     logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
     Thread(target=halt).start()
-    sleep(2.0)
+    while __INITIALIZED__:
+        sleep(1.0)
     os._exit(0)
 
 def change_queue_complete_action(action):
