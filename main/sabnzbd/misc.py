@@ -290,7 +290,15 @@ class DirScanner(Thread):
             if not self.shutdown:
                 run_dir(self.dirscan_dir, None)
 
-                for dd in os.listdir(self.dirscan_dir):
+                try:
+                    list = os.listdir(self.dirscan_dir)
+                except:
+                    if not self.error_reported:
+                        logging.error("Cannot read Watched Folder %s", folder)
+                        self.error_reported = True
+                    list = []
+
+                for dd in list:
                     dpath = os.path.join(self.dirscan_dir, dd)
                     if os.path.isdir(dpath) and dd.lower() in sabnzbd.CFG['categories']:
                         run_dir(dpath, dd.lower())

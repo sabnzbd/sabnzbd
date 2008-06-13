@@ -408,6 +408,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         defdir = DEF_NZB_DIR
     DIRSCAN_DIR = dir_setup(CFG, "dirscan_dir", DIR_HOME, defdir)
 
+    # If dirscan_dir cannot be created, set a proper value anyway.
+    # Maybe it's a network path that's temporarily missing.
+    if not DIRSCAN_DIR: DIRSCAN_DIR = real_path(DIR_HOME, defdir)
+
     dirscan_speed = check_setting_int(CFG, 'misc', 'dirscan_speed', DEF_SCANRATE)
 
     refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', DEF_QRATE)
