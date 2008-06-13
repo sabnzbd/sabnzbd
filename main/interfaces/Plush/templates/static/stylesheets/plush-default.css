@@ -960,7 +960,7 @@ embed, object {
 }
 .nav ul {
 	margin-top:10px;
-	border:2px solid #99CC99;
+	border:2px solid #FFA500;
 }
 .nav li {
 	width:100px; /* affects top level menu items only, as nested li elements have width 100% of their ul parent (see .nav ul rules above)*/
@@ -982,19 +982,19 @@ embed, object {
 */
 .nav li:hover, .nav li.sfHover,
 .nav a:focus, .nav a:hover, .nav a:active {
-	background-color:#CCFFCC; /* hover highlight */
+	background-color:#FFA500; /* hover highlight */
 }
 .nav a:hover {
 	text-decoration:underline;
 }
 .nav li li {
-	background:lightyellow; /* slightly darker shade for nested submenus */
+	background:#FFFFE0; /* slightly darker shade for nested submenus */
 }
 .nav ul li ul {
 	margin-top:0px;
 }
 .nav li li li {
-	background:lightyellow; /* slightly darker shade for nested submenus */
+	background:#FFFFE0; /* slightly darker shade for nested submenus */
 }
 .nav input {
 	border: 1px dotted white;
