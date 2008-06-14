@@ -840,6 +840,16 @@ class QueuePage(ProtectedClass):
     def sort_by_size(self, dummy = None):
         sabnzbd.sort_by_size()
         raise Raiser(self.__root, dummy)
+    
+    @cherrypy.expose
+    def set_speedlimit(self, dummy = None, value=None):
+        try: value = int(value)
+        except: return 'error: Please submit a value\n'
+        sabnzbd.CFG['misc']['bandwith_limit'] = value
+        sabnzbd.BANDWITH_LIMIT = value
+        sabnzbd.limit_speed(value)
+        save_configfile(sabnzbd.CFG)
+        raise Raiser(self.__root, dummy)
 
 class HistoryPage(ProtectedClass):
     def __init__(self, web_dir, root, prim):
@@ -2252,6 +2262,7 @@ class ConfigEmail(ProtectedClass):
         off = not (email_endjob or email_full)
         
         VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
+        
 
         if (off and not email_to) or VAL.match(email_to):
             sabnzbd.CFG['misc']['email_to'] = email_to
