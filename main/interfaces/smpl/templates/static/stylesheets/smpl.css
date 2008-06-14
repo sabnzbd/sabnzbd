@@ -34,7 +34,7 @@ display:inline;
 width:9%;
 height:auto;
 float:left;
-line-height: 20px;
+
 padding:0px;
 margin:0px;
 }
@@ -304,3 +304,5 @@ overflow:auto;}
 .heading1, .heading2, .heading3{font-weight:bold; background-color:black; color:white;}
 .feedEnabled{color:green;}
 .feedDisabled{color:red;}
+#speedbox{width:36px;display:inline;}
+#small{font-size:10px;}
