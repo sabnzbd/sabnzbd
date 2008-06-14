@@ -3,7 +3,7 @@ SMPL - Simple web-iu by switch - switch@sabnzbd.org
 SMPL is licenced under the Creative Commons Public Licence.
 Please see LICENCE.txt or http://creativecommons.org/licenses/by/3.0/ for more information
 ------------------------
-v1.1
+v1.2
 
 Install Instructions
 ------------------------

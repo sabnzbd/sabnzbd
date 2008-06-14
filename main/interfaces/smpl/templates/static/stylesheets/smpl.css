@@ -7,6 +7,7 @@ body {
 	margin: 0px;
 	text-align: center;
 
+
 }
 #hide{ display:none;}
 #Container {
@@ -16,12 +17,9 @@ width:90%;
 color:black;
 min-width:700px;
 margin-top:3px;
-}
-
-#Header{
-
 
 }
+
 #testing{
 display:inline;
 }
@@ -31,18 +29,19 @@ display:inline;
 
 }
 #Left {
-width:9%;
-height:auto;
+width:100px;
+height:100%;
 float:left;
-
+border-right: 1px dotted #ccc;
 padding:0px;
 margin:0px;
 }
+#Content{width:100%;margin:0;padding:0;}
 
 #RightContainer {
-width:89%;
+
 /*height:600px;*/
-float:left;
+margin-left: 100px;
 padding:10px 0 10px 10px;
 border-left: 1px dotted #ccc;
 /*overflow:auto;*/
@@ -244,7 +243,7 @@ border:none;
 height:1px;
 /*width:500px;*/
 }
-#queueTable,#catTable, #rssTable{width:100%;}
+#queueTable,#catTable, #rssTable, #historyTable{width:100%;}
 th{background-color:#4B4545;color:white;}
 tr{background-color:#f5f5f5;}
 #versions{font-size:8pt;}
