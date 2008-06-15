@@ -192,8 +192,12 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
         logging.info("Newzbin says we should wait for %s sec", wait)
         return int(wait+1), None, None
 
-    if rcode in ('401', '402'):
-        logging.warning("[%s] You have no paid Newzbin account", __NAME__)
+    if rcode in ('402'):
+        logging.warning("[%s] You have no credit on your Newzbin account", __NAME__)
+        return nothing
+    
+    if rcode in ('401'):
+        logging.warning("[%s] Unauthorised, check your newzbin username/password", __NAME__)
         return nothing
 
     if rcode in ('400', '404'):
@@ -289,8 +293,10 @@ class Bookmarks:
     
         if rcode == '204':
             logging.debug("[%s] No bookmarks set", __NAME__)
-        elif rcode in ('401', '402', '403'):
-            logging.warning("[%s] You have no paid Newzbin account", __NAME__)
+        elif rcode in ('401', '403'):
+            logging.warning("[%s] Unauthorised, check your newzbin username/password", __NAME__)
+        elif rcode in ('402'):
+            logging.warning("[%s] You have no credit on your Newzbin account", __NAME__)
         elif rcode in ('500', '503'):
             logging.warning('[%s] Newzbin has a server problem (%s).', __NAME__, rcode)
         elif rcode != '200':
