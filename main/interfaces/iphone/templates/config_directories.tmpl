@@ -43,7 +43,22 @@
     			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="nzb_backup_dir" value="$nzb_backup_dir">
             </div>
         </fieldset>
-        
+		
+		
+        <h2>System Directories</h2>
+         <fieldset>
+            <div class="row">
+    		    <label>Enable TV sorting:</label><br/><br/>
+                <input type="hidden" id="enable_par_cleanup" name="enable_tv_sorting" value="$enable_tv_sorting">
+                <div class="toggle" onclick="toggleValue('enable_tv_sorting')" <!--#if $enable_tv_sorting > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+            </div>
+            <div class="row">
+                <label>TV Sort String:</label><br/><br/>
+    			<input style="margin:0px;padding:0px;margin-left:15px;" type="text" size="25" name="tv_sort_string" value="$tv_sort_string">
+            </div>
+        </fieldset>
+		
+
  
 
             

@@ -11,7 +11,7 @@
 <style type="text/css" media="screen">@import "static/iui/iui.css";</style>
 <script type="application/x-javascript" src="static/iui/iui.js"></script>
 <script type="text/javascript" src="static/mochikit/MochiKit.js"></script>
-
+<link rel="apple-touch-icon" href="static/apple-touch-icon.png"/>
 <script type="text/javascript">
 var RefreshTime = 10;
 var jsontimeout;
@@ -249,12 +249,76 @@ margin-bottom:10px;}
     
     <ul title="SABnzbd" selected="true">
         <li><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| Paused" else ""#--></span> </center></li> 
+		<li><a href="#Add">Add</a></li>
         <li><a href="queue/">Queue</a></li>
         <li><a href="history/">History</a></li>
         <li><a href="config/">Config</a></li>
         <li><a href="connections/">Connections</a></li>
         <li class="group">Tools</li>
         <li><a href="javascript:var dummy=0" onClick="javascript:toggle()"><span class="status2"><!--#if $paused then "Resume" else "Pause"#--></span></a></li>
+    </ul>
+	
+    <ul title="Add new nzb" id="Add">
+        <li><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| Paused" else ""#--></span> </center></li> 
+		
+			
+		
+    <form title="AddNew" id="AddNew" class="panel" action="javascript:var dummy=0" method="POST" selected="true">
+        <h2>Add <!--#if $varExists('newzbinDetails') then "Report-ID / " else ""#-->URL</h2>
+         <fieldset>
+            <div class="row">
+    		    <label><!--#if $varExists('newzbinDetails') then "Report-ID / " else ""#-->URL:</label><br/><br/>
+    		    <input style="margin:0px;padding:0px;margin-left:15px;" type="text" name="id" value="">	    
+            </div>
+				<!--#if $cat_list#-->
+			<div class="row">
+				<label>Category:</label><br/><br/>
+
+					<select name="cat" style="margin-left:16px;">
+						<!--#for $ct in $cat_list#-->
+							<option value="$ct">$ct</option>
+						<!--#end for#-->
+					</select class="addnewselect" >
+
+            </div>
+				<!--#end if#-->	
+			<div class="row">
+				<label>Post-Processing:</label><br/><br/>
+				<select name="pp" style="margin-left:16px;">
+				<option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
+				<option value="0">None</option>
+				<option value="1">+Repair</option>
+				<option value="2">+Unpack</option>
+				<option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
+				</select>
+            </div>
+				<!--#if $script_list#-->		
+			<div class="row">
+				<label>Script:</label><br/><br/>
+
+					<select name="script" style="margin-left:16px;">
+					<!--#for $sc in $script_list#-->
+						<option value="$sc">$sc</option>
+					<!--#end for#-->
+					</select>
+
+            </div>
+				<!--#end if#-->
+			
+			
+        </fieldset>     
+	<input type="submit" onClick="javascript:history.back();submitconfig('addID', 'AddNew')" value="Save Changes">
+    </form>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
     </ul>
 
 </body>
