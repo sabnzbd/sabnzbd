@@ -74,7 +74,7 @@ $(document).ready(function(){
 	});
 	
 	// restore Add NZB from cookie
-	if (ReadCookie('Plush2AddNZB') == 'block')
+	if (ReadCookie('Plush2AddNZB') != 'block')
 		$('#add_nzb_menu').css('display','block');
 	else
 		$('#add_nzb_menu').css('display','none');
@@ -162,9 +162,8 @@ $(document).ready(function(){
 	});
 	
 	// "Add NZB" horiz. bar toggler from main menu
-	$('#add_nzb_menu_toggle,#add_nzb_menu_toggle_upper').bind('click', function() { 
-		$('#add_nzb_menu').toggle();
-		SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display'));
+	$('#add_nzb_menu_toggle,#add_nzb_menu_toggle_upper').bind('click', function() {
+		$('#add_nzb_menu').slideToggle("fast", SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display')) );
 	});
 	
 	// Set up +NZB by URL/Newzbin Report ID
