@@ -1045,4 +1045,4 @@ def BadFetch(nzo, url):
     nzo.set_unpackstr('=> Failed, <a href="./retry?url=%s%s%s%s">Try again</a>' % \
                      (urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)),
                      '[URL Fetch]', 0)
-    sabnzbd.remove_nzo(nzo.nzo_id, True)
+    sabnzbd.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)

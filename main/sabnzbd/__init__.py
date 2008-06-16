@@ -687,9 +687,9 @@ def move_bottom_bulk(nzo_id, nzf_ids):
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
-def remove_nzo(nzo_id, add_to_history = True):
+def remove_nzo(nzo_id, add_to_history = True, unload=False):
     try:
-        NZBQ.remove(nzo_id, add_to_history)
+        NZBQ.remove(nzo_id, add_to_history, unload)
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 

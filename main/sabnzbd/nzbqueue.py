@@ -202,7 +202,7 @@ class NzbQueue(TryList):
             self.sort_by_avg_age()
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove(self, nzo_id, add_to_history = True):
+    def remove(self, nzo_id, add_to_history = True, unload=False):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
@@ -216,7 +216,9 @@ class NzbQueue(TryList):
                         should_add = False
                         break
                 if should_add:
-                    self.__downloaded_items.append(HistoryItem(nzo))
+                    hist = HistoryItem(nzo)
+                    self.__downloaded_items.append(hist)
+                    if unload: hist.cleanup()
             else:
                 self.cleanup_nzo(nzo)
 
