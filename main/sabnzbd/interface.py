@@ -1084,7 +1084,7 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['cache_dir'] = cache_dir
         sabnzbd.CFG['misc']['log_dir'] = log_dir
         sabnzbd.CFG['misc']['dirscan_dir'] = dirscan_dir
-        sabnzbd.CFG['misc']['dirscan_speed'] = dirscan_speed
+        sabnzbd.CFG['misc']['dirscan_speed'] = sabnzbd.minimax(dirscan_speed, 1, 3600)
         sabnzbd.CFG['misc']['script_dir'] = script_dir
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
