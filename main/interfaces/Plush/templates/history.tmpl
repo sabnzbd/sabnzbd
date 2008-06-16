@@ -4,7 +4,7 @@ def displayNotices (action, name):
 		return ''
 	notice = action[3:11]
 	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 ":
-		return '<span class="hvMessage">&rArr;&nbsp;' + action[3:] + '&nbsp;</span><br/>'
+		return '<span class="hvMessage">&raquo;&nbsp;' + action[3:] + '&nbsp;</span><br/>'
 %>
 
 <table class="queueTable">
