@@ -7,6 +7,7 @@ changed: Send group as extra user script parameter
 changed: Allow groups as selectors in user-categories
 changed: Allow user to set tuning parameters for PAR2
 changed: Replaced all yes/no radio buttons with checkboxes.
+added:   Speedlimit box on the Queue page
 fixed:   Retrieve NZB from URL sometimes fails (due to extra quotes)
 fixed:   Plush and Smpl problems.
 fixed:   Dirscanner crashed on missing network drive

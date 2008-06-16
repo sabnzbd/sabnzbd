@@ -6,6 +6,8 @@
 
 ============>> THIS IS RELEASE CANDIDATE SOFTWARE <<===============
 
+READ THE "ISSUES.txt" file too!
+
 It should be complete and have no serious problems, however
 we can use your help to determine the actual quality.
 
