@@ -1,6 +1,6 @@
 
-================================================
-== Plush 2.0 for SABnzbd+ 0.4.0 | June 7 2008 ==
+=================================================
+== Plush 2.0 for SABnzbd+ 0.4.0 | June 16 2008 ==
 
 ============
 ASSEMBLED BY
@@ -16,8 +16,8 @@ switch for bringing so many new enhancements to the web interfaces
 injectx for the new concept design and imagery
 real_scud for creating the new HTML/CSS layout
 inpheaux for the Config concept & assembly and SABnzbd+ logo
-blis102 for the original Nova & Plush concepts
 sbultez for creating numerous post-processing icons
+blis102 for the original Nova & Plush concepts
 
 ============
 KNOWN ISSUES
@@ -89,7 +89,7 @@ Nuvola Icon Set
 http://www.icon-king.com/?p=15
 Copyright (c) 2003-2004 David Vignoni
 See LICENSE-LGPL
-The following images are from the Nuvola icon set (in ):
+The following images are from the Nuvola icon set:
 templates/static/images/plush-default/nzo/*.png
 templates/static/images/plush-default/config/*.png
 ( with the exception of config_newzbin.png which is used with permission of Newzbin.com )
