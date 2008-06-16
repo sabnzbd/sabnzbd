@@ -232,7 +232,7 @@ $(document).ready(function(){
 	
 	// Set up Queue Menu actions
 	$('#queue').click(function(event) {
-		if ($(event.target).is('.queue_delete')) {
+		if ($(event.target).is('.queue_delete') && confirm('Delete NZB? Are you sure?') ) {
 			delid = $(event.target).parent().parent().attr('id');
 			$('#'+delid).fadeOut('fast');
 			$.ajax({
