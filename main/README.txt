@@ -1,7 +1,7 @@
-                                SABnzbd+ v0.4.0rc3
+                                SABnzbd+ v0.4.0rc4
 
 *************************************
-*** This is SABnzbd+ 0.4.0rc3     ***
+*** This is SABnzbd+ 0.4.0rc4     ***
 *************************************
 
 ============>> THIS IS RELEASE CANDIDATE SOFTWARE <<===============

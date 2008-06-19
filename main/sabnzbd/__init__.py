@@ -405,6 +405,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     try:
         defdir = CFG['misc']['dirscan_dir']
     except:
+        CFG['misc']['dirscan_dir'] = ''
         defdir = ''
     if defdir:
         DIRSCAN_DIR = dir_setup(CFG, "dirscan_dir", DIR_HOME, defdir)
