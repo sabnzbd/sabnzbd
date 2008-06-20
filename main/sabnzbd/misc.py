@@ -786,11 +786,17 @@ def SameFile(a, b):
     """ Return True if both paths are identical """
 
     if "samefile" in os.path.__dict__:
-        return os.path.samefile(a, b)
+        try:
+            return os.path.samefile(a, b)
+        except:
+            return False
     else:
-        a = os.path.normpath(os.path.abspath(a)).lower()
-        b = os.path.normpath(os.path.abspath(b)).lower()
-        return a == b
+        try:
+            a = os.path.normpath(os.path.abspath(a)).lower()
+            b = os.path.normpath(os.path.abspath(b)).lower()
+            return a == b
+        except:
+            return False
 
 #------------------------------------------------------------------------------
 def ExitSab(value):
