@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 0.4.0Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
+fixed:   In Plush replace Config->Directories by Config->Folders to conform
+         to other skins and documentation.
 fixed:   Crash on Linux when "download" or "complete" folders are
          unmounted volumes
 -------------------------------------------------------------------------------
