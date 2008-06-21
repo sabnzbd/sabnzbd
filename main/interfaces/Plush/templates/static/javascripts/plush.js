@@ -6,7 +6,7 @@ var focusedOnSpeedChanger = false;
 $(document).ready(function(){
 	
 	// IE6 png transparency issues
-	$('img[@src$=.png], div.history_logo, a.queue_logo, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
+	$('img[@src$=.png], div.history_logo, a.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
 	
 	// main menu
 	$(".nav").superfish({
