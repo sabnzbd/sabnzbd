@@ -52,12 +52,12 @@
 			Defines post-processing and storage.&nbsp;&nbsp;|&nbsp;&nbsp;
 			<!--#if $varExists('newzbinDetails')#-->
 			The Newzbin column will map listed Newzbin categories to your own.&nbsp;&nbsp;|&nbsp;&nbsp;
-			<!--#if not $have_cats#-->
-			Click <a href="init_newzbin"><b>HERE</b></a> to setup newzbin categories.&nbsp;&nbsp;|&nbsp;&nbsp;
-			<!--#end if#-->
 			<!--#end if#-->
 			Relative folders are based on:</small>
 			<font color=blue>$defdir</font><br/>
+			<!--#if not $have_cats#-->
+			<small>Click <a href="init_newzbin"><b>HERE</b></a> to setup Newzbin categories.</small><br/>
+			<!--#end if#-->
 			</div>
 			
 			<table id="catTable">
