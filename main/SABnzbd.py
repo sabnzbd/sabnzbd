@@ -566,7 +566,7 @@ def main():
     if sabnzbd.decoder.HAVE_YENC:
         logging.info("_yenc module... found!")
     else:
-        logging.info("_yenc module... NOT found!")
+        logging.warning("_yenc module... NOT found!")
 
     if sabnzbd.nzbstuff.HAVE_CELEMENTTREE:
         logging.info("celementtree module... found!")
@@ -581,12 +581,12 @@ def main():
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("rar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
     else:
-        logging.info("rar binary... NOT found")
+        logging.error("rar binary... NOT found")
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
     else:
-        logging.info("unzip binary... NOT found!")
+        logging.error("unzip binary... NOT found!")
 
     if sabnzbd.newswrapper.HAVE_SSL:
         logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
