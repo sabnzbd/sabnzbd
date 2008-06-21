@@ -17,6 +17,7 @@ injectx for the new concept design and imagery
 real_scud for creating the new HTML/CSS layout
 inpheaux for the Config concept & assembly and SABnzbd+ logo
 sbultez for creating numerous post-processing icons
+rAf styling up the add/main menu
 blis102 for the original Nova & Plush concepts
 
 ============

@@ -7,7 +7,7 @@ body {
 select, input {
 	border: 0px;
 	background: #333;
-	color: #FFF;
+	color: #FFDF00;
 	display:inline;
 }
 
@@ -25,18 +25,28 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding:4px;
 }
 
+.add_nzb_item {
+	display:inline-block;
+}
+
 #add_nzb_menu {
 	text-align: center;
 }
 
-#add_nzb_menu span {
-	padding:1px;
+#add_nzb_menu div {
+	color: #606060;
+	padding: 5px;
+	display: inline-block;
+	width: 80%;
 }
-.add_nzb_box {
-	background-color:lightyellow;
-	border-top:1px solid #FFBC00;
-	border-bottom:1px solid #FFBC00;
+
+#add_nzb_box {
+	background-color:#E0E0E0;
+	border-right: 4px solid #CFCFCF;
 	cursor:default;
+	border-left: 4px solid #CFCFCF;
+	border-top: 4px solid #CFCFCF;
+	line-height: 25px;
 }
 #addID {
 	cursor:pointer;
@@ -444,8 +454,8 @@ tr:hover .history_added  {
 }
 
 #add_nzb_menu_toggle_title {
-	display:inline;
-	text-align:left;
+	display: block;
+	text-align: center;
 }
 #add_nzb_menu_toggle_title em {
 	color: #FFBC00;
@@ -960,7 +970,7 @@ embed, object {
 }
 .nav ul {
 	margin-top:10px;
-	border:2px solid #FFA500;
+	border:2px solid #CFCFCF;
 }
 .nav li {
 	width:100px; /* affects top level menu items only, as nested li elements have width 100% of their ul parent (see .nav ul rules above)*/
@@ -982,19 +992,19 @@ embed, object {
 */
 .nav li:hover, .nav li.sfHover,
 .nav a:focus, .nav a:hover, .nav a:active {
-	background-color:#FFA500; /* hover highlight */
+	background-color:#FFDF00; /* hover highlight */
 }
 .nav a:hover {
 	text-decoration:underline;
 }
 .nav li li {
-	background:#FFFFE0; /* slightly darker shade for nested submenus */
+	background:#E0E0E0; /* slightly darker shade for nested submenus */
 }
 .nav ul li ul {
 	margin-top:0px;
 }
 .nav li li li {
-	background:#FFFFE0; /* slightly darker shade for nested submenus */
+	background:#E0E0E0; /* slightly darker shade for nested submenus */
 }
 .nav input {
 	border: 1px dotted white;
