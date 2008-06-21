@@ -32,7 +32,10 @@
 	<!--#if $warning#-->
 	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
 	<!--#end if#-->
-	
+
+    <!--#if $have_warnings#-->
+    <div id="warning_message"><h2><a href="./connections">WARNINGS!</a></h2></div>
+	<!--#end if#-->
 	
 	<div id="add_nzb_menu" style="display:hidden">
 		

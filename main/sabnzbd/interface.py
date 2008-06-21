@@ -2136,6 +2136,7 @@ def build_header(prim):
     header['diskspacetotal1'] = "%.2f" % disktotal(sabnzbd.DOWNLOAD_DIR)
     header['diskspacetotal2'] = "%.2f" % disktotal(sabnzbd.COMPLETE_DIR)
     header['speedlimit'] = "%s" % sabnzbd.BANDWITH_LIMIT
+    header['have_warnings'] = not sabnzbd.GUIHANDLER.empty()
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = os.name == 'nt'

@@ -94,6 +94,9 @@ class guiHandler(logging.Handler):
     def clear(self):
         self.store = []
 
+    def empty(self):
+        return not self.store
+
     def content(self):
         """
         Return an array with last records
