@@ -94,8 +94,14 @@ class guiHandler(logging.Handler):
     def clear(self):
         self.store = []
 
-    def empty(self):
-        return not self.store
+    def count(self):
+        return len(self.store)
+
+    def last(self):
+        if self.store:
+            return self.store[len(self.store)-1]
+        else:
+            return ""
 
     def content(self):
         """

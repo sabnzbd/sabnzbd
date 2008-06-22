@@ -721,8 +721,8 @@ function loadingJSON(){
     				<h2>WARNING</h2>
     				<b>$warning</b><br/>
     				<!--#end if#-->
-    				<!--#if $have_warnings#-->
-    				<h2><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings!</a></h2>
+    				<!--#if $have_warnings != "0"#-->
+    				<h2><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings($have_warnings)!</a></h2>
     				<!--#end if#-->
     				<!--#if $new_release#-->
     			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br/>

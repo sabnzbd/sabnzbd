@@ -141,8 +141,8 @@ Speed Limit:
 <!--#if $new_release#-->
     <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
 <!--#end if#-->
-<!--#if $have_warnings#-->
-    <strong><a href="../connections">WARNINGS!</a></strong>
+<!--#if $have_warnings != "0"#-->
+    <strong><a href="../connections">WARNINGS($have_warnings)!</a></strong>
 <!--#end if#-->
 </div>
 </body>
