@@ -533,6 +533,8 @@ function loadingJSON(){
         //alert(info["jobs"][0]);
 	   	if (info["jobs"]!="") document.getElementById("downloadinfo").innerHTML = "Downloading: "+info["jobs"][0]["filename"];
         else document.getElementById("downloadinfo").innerHTML = "";
+		document.getElementById("have_warnings").innerHTML = info["have_warnings"];
+		
 
 	};
 	var metadataFetchFailed = function (err) {
@@ -630,6 +632,7 @@ function loadingJSON(){
                         <li><a class="config" href="#config-categories" onClick="lr('config/categories/', '', 0, 0);">Categories</a></li>
 					</ul>
 					<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Connections</a></li>
+    				<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings(<span id="have_warnings">$have_warnings</span>)</a></li>
 					<li><a class="bold" id="status2" onClick="toggle()">$statusstr2</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
                     <br/>
@@ -720,9 +723,6 @@ function loadingJSON(){
     				<!--#if $warning#-->
     				<h2>WARNING</h2>
     				<b>$warning</b><br/>
-    				<!--#end if#-->
-    				<!--#if $have_warnings != "0"#-->
-    				<h2><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings($have_warnings)!</a></h2>
     				<!--#end if#-->
     				<!--#if $new_release#-->
     			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br/>
