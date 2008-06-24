@@ -575,7 +575,10 @@ def main():
     if sabnzbd.decoder.HAVE_YENC:
         logging.info("_yenc module... found!")
     else:
-        logging.warning("_yenc module... NOT found!")
+        if hasattr(sys, "frozen"):
+            logging.warning("_yenc module... NOT found!")
+        else:
+            logging.info("_yenc module... NOT found!")
 
     if sabnzbd.nzbstuff.HAVE_CELEMENTTREE:
         logging.info("celementtree module... found!")
