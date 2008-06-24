@@ -381,16 +381,17 @@ class NzbQueue(TryList):
         if post_done:
             self.remove(nzo.nzo_id, True)
 
-            # Notify assembler to call postprocessor
-            sabnzbd.assemble_nzf((nzo, None))
-
             if not self.__nzo_list:
                 # Close server connections
                 sabnzbd.disconnect()
 
-                # sabnzbd.AUTOSHUTDOWN only True on os.name == 'nt'
+                # Sets the end-of-queue back on if disabled
+                # adding an nzb and re-adding for more blocks disables it
                 if sabnzbd.QUEUECOMPLETEACTION:
                     sabnzbd.QUEUECOMPLETEACTION_GO = True
+                    
+            # Notify assembler to call postprocessor
+            sabnzbd.assemble_nzf((nzo, None))
 
     @synchronized(NZBQUEUE_LOCK)
     def purge(self, job=None):

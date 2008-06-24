@@ -82,8 +82,8 @@ PAR_OPTION = ''
 
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
-QUEUECOMPLETEARG = None #stores an extra arguments that need ot be passed
-QUEUECOMPLETEACTION_GO = False # Set when downloader queue is empty and an action is set
+QUEUECOMPLETEARG = None #stores an extra arguments that need to be passed
+QUEUECOMPLETEACTION_GO = False # Booleen value whether to run an action or not at the queue end.
 
 WAITEXIT = False
 SEND_GROUP = False
