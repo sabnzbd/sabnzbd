@@ -35,8 +35,8 @@
             </div>
             <div class="row">
     		    <label>Safe Post-Process:</label><br/><br/>
-    		    <input style="margin-left:15px;" class="radio" type="radio" name="safe_postproc" value="0" <!--#if $safe_postproc == 0 then "checked=1" else ""#--> /> No
-    		    <input class="radio" type="radio" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> Yes
+                <input type="hidden" id="fail_on_crc" name="safe_postproc" value="$safe_postproc">
+                <div class="toggle" onclick="toggleValue('safe_postproc')" <!--#if $safe_postproc > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row">
 
