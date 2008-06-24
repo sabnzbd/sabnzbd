@@ -2,13 +2,7 @@ List of known issues.
 
 *** Still under investigation ***
 
-- When the Internet connection breaks down, SABnzbd will still show
-  "downloading" and show a constant speed.
-  This problem only occurs when at least one connection uses SSL.
-  When the Internet connection is restored, downloadign will proceed
-  after some minutes (depending on the time-outs you set).
-
-- Shutdown-PC-on-empty-queue is reported to be unreliable.
+- Shutdown-PC-on-empty-queue is reported to fail sometimes.
   We have not been able to reproduce the problem. Also we do not know
   whether the problem is that end-of-queue is not detected or that
   the shutdown itself does not work.
@@ -16,21 +10,34 @@ List of known issues.
 
 *** Known problems ***
 
+- The "Watched Folder" sometimes fails to delete the NZB files it has
+  processed. This happens when other software still accesses these files.
+  Some third-party utilities supporting SABnzbd are known to do this.
+  We cannot solve this problem, because the Operating System (read Windows)
+  prevents the removal.
+
+- When the Internet connection breaks down, SABnzbd will still show
+  "downloading" and show a constant speed.
+  This problem only occurs when at least one connection uses SSL.
+  When the Internet connection is restored, downloading will proceed
+  after some minutes (depending on the time-outs you set).
+
 - When you have aggressive power managment on (like automatic standby)
   the PC will go into standby despite the fact that SABnzbd is still
   busy downloading. Blame Windows for this.
   In a later release we will try to add code to report to Windows that
   SABnzbd is active.
 
-- Deleted jobs will leave downloaded files behind in the "incomplete" folder.
+- Jobs deleted from the queue will leave downloaded files behind
+  in the "incomplete" folder.
   You will have to remove these files manually.
 
 - Memory usage can sometimes have high peaks. This makes using SABnzbd on very low
   memory systems (eg a SAN device) a challenge.
-  On some NAS/SAN systems you may have to downgrade CherryPy to 2.2.1.
+ 
+- On some NAS/SAN systems you may have to downgrade CherryPy to 2.2.1.
   Remove the "cherrypy" directory inside SABnzbd and install an older
   CherryPy as a Python module.
-
 
 - SABnzbd is not compatible with some ZoneAlarm firewall versions.
   Comodo and the Windows firewall work fine.
