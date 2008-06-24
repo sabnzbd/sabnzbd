@@ -668,8 +668,10 @@ def main():
     if ipv6 and ipv4 and \
         (browserhost not in ('localhost', '127.0.0.1', '[::1]', '::1')):
         sabnzbd.AMBI_LOCALHOST = True
-        logging.warning("IPV6 has priority on this system, potential Firefox issue")
+        logging.info("IPV6 has priority on this system, potential Firefox issue")
 
+    if ipv6 and ipv4 and cherryhost == '' and os.name == 'nt':
+        logging.warning("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
 
     if cherryport == None:
         if os.name == 'nt':
