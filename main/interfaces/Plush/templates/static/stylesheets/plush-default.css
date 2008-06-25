@@ -479,6 +479,32 @@ tr:hover .history_added  {
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
+#config_go_back {
+	text-align:center;
+	background-position: 50% 50%;
+	background-repeat:no-repeat;
+	background-image: url(../images/plush-default/sabnzbdplus_logo.png);
+	padding:1px;
+}
+#config_go_back div {
+	margin:auto;
+	padding-top:22px;
+	padding-left:20px;
+	width:80px;
+}
+#config_go_back a {
+	margin-left:-20px;
+	padding-left:40px;
+	padding-right:10px;
+	padding-top:30px;
+	text-decoration:none;
+	color:black;
+	font-size:66%;
+	border-bottom: 1px dotted black;
+}
+#config_go_back a:hover {
+	border-bottom: 1px solid black;
+}
 div.EntryBlock form {
   display: inline;
 }
