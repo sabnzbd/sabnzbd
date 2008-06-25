@@ -13,6 +13,39 @@ select, input {
 
 ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
+#config_menu_upper {
+	text-align: center;
+	font-size: 66%;
+	padding-bottom:6px;
+}
+#config_menu_upper ul {
+	padding-left:20px;
+}
+#config_menu_upper li {
+	display:inline;
+	padding-right:20px;
+}
+#config_menu_upper a {
+	color:black;
+	text-decoration:none;
+	border-bottom: 1px dotted grey;
+}
+#config_menu_upper a:hover {
+	border-bottom: 1px solid black;
+}
+#add_nzb_menu_toggle_upper {
+	cursor:pointer;
+	text-align:center;
+	font-size: 66%;
+	color:#CCC;
+}
+#add_nzb_menu_toggle_upper:hover span {
+	color:black;
+	border-left: 1px dotted black;
+	border-right: 1px dotted black;
+	padding-left:4px;
+	padding-right:4px;
+}
 #new_release_notification {
 	text-align: center;
 }
