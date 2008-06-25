@@ -38,8 +38,6 @@
 		</ul>
 	</div>
 	
-	<div id="add_nzb_menu_toggle_upper"><span>Toggle Add NZB Menu</span></div>
-	
 	<!--#if $new_release#-->
 	<div id="new_release_notification">&nbsp;<a href="$new_rel_url" target="_blank">New release $new_release available!</a>&nbsp;</div>
 	<!--#end if#-->
@@ -47,12 +45,12 @@
 	<!--#if $warning#-->
 	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
 	<!--#end if#-->
-
-    <!--#if $have_warnings#-->
-    <!-- <div id="warning_message"><h2><a href="./connections">WARNINGS!</a></h2></div> -->
+	
+	<!--#if $have_warnings#-->
+	<!-- <div id="warning_message"><h2><a href="./connections">WARNINGS!</a></h2></div> -->
 	<!--#end if#-->
 	
-	
+	<div id="add_nzb_menu_toggle_upper"><span>Toggle Add NZB Menu</span></div>
 	<div id="add_nzb_menu" style="display:hidden">
 		
 		<form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
@@ -116,7 +114,6 @@
 			
 			<div id="queue-buttons">
 				<ul>
-					<!--<li class="tip q_menu_addnzb q_menu_addnzb_off" title="Toggle&nbsp;&lsquo;Add&nbsp;NZB&rsquo;&nbsp;" id="add_nzb_menu_toggle"></li>-->
 					<li class="tip q_menu_pause <!--#if $paused then 'q_menu_paused' else 'q_menu_unpaused'#-->" title="Pause&nbsp;&frasl;&nbsp;Resume" id="pause_resume"></li>
 				</ul>
 			</div>
