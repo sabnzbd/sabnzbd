@@ -533,10 +533,9 @@ tr:hover .history_added  {
 	text-decoration:none;
 	color:black;
 	font-size:66%;
-	border-bottom: 1px dotted black;
 }
 #config_go_back a:hover {
-	border-bottom: 1px solid black;
+	border-bottom: 1px dotted black;
 }
 div.EntryBlock form {
   display: inline;
