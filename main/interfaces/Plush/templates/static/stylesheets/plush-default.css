@@ -150,7 +150,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	text-align:center;
 }
 .box_fatbottom div {
-	padding:14px 22px 0 22px;
+	padding:12px 16px 0 20px;
 	cursor:default;
 }
 .box_fatbottom .left_stats {
