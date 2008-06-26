@@ -2,8 +2,9 @@ body {
 	background-color: #B1B1B1;
 	font-family: arial, "lucida console", sans-serif;
 	opacity: .9999;
+	text-align: center;
+	margin:0px 0px; padding:0px;
 }
-
 select, input {
 	border: 0px;
 	background: #333;
@@ -33,13 +34,13 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 #config_menu_upper a:hover {
 	border-bottom: 1px solid black;
 }
-#add_nzb_menu_toggle_upper {
+#add_nzb_menu_toggle_upper{
 	cursor:pointer;
 	text-align:center;
 	font-size: 66%;
 	color:#CCC;
 }
-#add_nzb_menu_toggle_upper:hover span {
+#add_nzb_menu_toggle_upper:hover span{
 	color:black;
 	border-left: 1px dotted black;
 	border-right: 1px dotted black;
@@ -57,35 +58,29 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	border-bottom: 1px dashed #FFF;
 	padding:4px;
 }
-
 .add_nzb_item {
 	display:inline-block;
-}
-
-#add_nzb_menu {
 	text-align: center;
 }
-
-#add_nzb_menu div {
+#add_nzb_menu {
+	text-align: center;
 	color: #606060;
-	padding: 5px;
-	display: inline-block;
-	width: 80%;
-}
-
-#add_nzb_box {
 	background-color:#E0E0E0;
-	border-right: 4px solid #CFCFCF;
 	cursor:default;
+	border-right: 4px solid #CFCFCF;
 	border-left: 4px solid #CFCFCF;
 	border-top: 4px solid #CFCFCF;
 	line-height: 25px;
+	width: 90%;
+	margin:0px auto;
+	vertical-align: middle;
+}
+#uploadNZBForm {
+	display: inline;
+	height:10px;
 }
 #addID {
 	cursor:pointer;
-}
-#uploadNZBForm {
-	display:inline;
 }
 #addNZBbyFile {
 	cursor:pointer;
@@ -439,7 +434,7 @@ tr:hover .history_added  {
 
 
 
-#page-wrap { width: 90%; margin: 0px auto; }
+#page-wrap { width: 95%; margin: 0px auto; }
 .box_banner_hr {
 	background: #cfcfcf url(../images/plush-default/qh_seperator.png) 0 0 repeat-x;
 	height:4px;

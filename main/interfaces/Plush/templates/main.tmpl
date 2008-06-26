@@ -51,13 +51,11 @@
 	<!--#end if#-->
 	
 	<div id="add_nzb_menu_toggle_upper"><span>Add NZB</span></div>
+
 	<div id="add_nzb_menu" style="display:hidden">
 		
 		<form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="mode" value="addfile" />
-		
-		<div id="add_nzb_box">
-		
 		<span class="add_nzb_item">
 			<small>&rarr;&nbsp;NZB&nbsp;Processing</small>
 			<!--#if $cat_list#-->
@@ -82,7 +80,7 @@
 			</select>
 			<!--#end if#-->
 		</span>
-		
+		&nbsp;&nbsp;
 		<span class="add_nzb_item">
 			<span class="add_nzb_item">
 				<small>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></small>
@@ -98,10 +96,8 @@
 				<input type="submit" id="addNZBbyFile" value="&raquo; UPLOAD NZB" />
 			</span>
 		</span>
-		
 		</form>
 		
-		</div>
 	</div>
 	
 	<div id="page-wrap">
