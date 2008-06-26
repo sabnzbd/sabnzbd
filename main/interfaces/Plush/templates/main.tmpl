@@ -25,10 +25,17 @@
 	
 	<div id="config_menu_upper">
 		<ul>
-		<!--#if not $new_release#--><li>
+		<!--#if $new_release#--><li>
 			<a href="$new_rel_url" target="_blank"><b style="color:darkgreen">New release $new_release available!</b></a>
 		</li><!--#end if#-->
-		<li><a href="connections">Connections</a></li>
+		<li>
+			<a href="connections">
+				<!--#if $have_warnings != '0' #-->
+				<b style="color:darkred" title="$last_warning" class="tip">$have_warnings Warning<!--#if $have_warnings != '1' #-->s<!--#end if#-->!</b>
+				<!--#end if#-->
+				Connections
+			</a>
+		</li>
 		<li><a href="config/general">General</a></li>
 		<li><a href="config/directories">Folders</a></li>
 		<li><a href="config/switches">Switches</a></li>
@@ -44,10 +51,6 @@
 	
 	<!--#if $warning#-->
 	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
-	<!--#end if#-->
-	
-	<!--#if $have_warnings#-->
-	<!-- <div id="warning_message"><h2><a href="./connections">WARNINGS!</a></h2></div> -->
 	<!--#end if#-->
 	
 	<div id="add_nzb_menu_toggle_upper"><span>Add NZB</span></div>
