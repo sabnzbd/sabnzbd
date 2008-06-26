@@ -76,7 +76,7 @@ BOOKMARK_RATE = None
 DO_FILE_JOIN = False
 DO_UNZIP = False
 DO_UNRAR = False
-DO_SAVE = False
+DO_SAVE = True
 PAR_CLEANUP = False
 PAR_OPTION = ''
 
@@ -335,7 +335,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     DO_UNRAR = bool(check_setting_int(CFG, 'misc', 'enable_unrar', 1))
 
-    DO_SAVE = bool(check_setting_int(CFG, 'misc', 'enable_save', 1))
+    DO_SAVE = True #bool(check_setting_int(CFG, 'misc', 'enable_save', 1))
 
     PAR_CLEANUP = bool(check_setting_int(CFG, 'misc', 'enable_par_cleanup', 1))
 
