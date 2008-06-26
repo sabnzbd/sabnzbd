@@ -25,6 +25,9 @@
 	
 	<div id="config_menu_upper">
 		<ul>
+		<!--#if not $new_release#--><li>
+			<a href="$new_rel_url" target="_blank"><b style="color:darkgreen">New release $new_release available!</b></a>
+		</li><!--#end if#-->
 		<li><a href="connections">Connections</a></li>
 		<li><a href="config/general">General</a></li>
 		<li><a href="config/directories">Folders</a></li>
@@ -38,9 +41,6 @@
 		</ul>
 	</div>
 	
-	<!--#if $new_release#-->
-	<div id="new_release_notification">&nbsp;<a href="$new_rel_url" target="_blank">New release $new_release available!</a>&nbsp;</div>
-	<!--#end if#-->
 	
 	<!--#if $warning#-->
 	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>

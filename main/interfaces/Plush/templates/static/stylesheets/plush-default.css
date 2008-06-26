@@ -47,16 +47,8 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding-left:4px;
 	padding-right:4px;
 }
-#new_release_notification {
-	text-align: center;
-}
-#new_release_notification a {
-	background-color: darkgreen;
-	font-weight:bold;
-	color:#FFF;
-	text-decoration: none;
-	border-bottom: 1px dashed #FFF;
-	padding:4px;
+.new_release_link {
+	color: darkgreen;
 }
 .add_nzb_item {
 	display:inline-block;
