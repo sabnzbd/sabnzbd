@@ -25,17 +25,13 @@
 	
 	<div id="config_menu_upper">
 		<ul>
-		<!--#if $new_release#--><li>
-			<a href="$new_rel_url" target="_blank"><b style="color:darkgreen">New release $new_release available!</b></a>
-		</li><!--#end if#-->
-		<li>
-			<a href="connections">
-				<!--#if $have_warnings != '0' #-->
-				<b style="color:darkred" title="$last_warning" class="tip">$have_warnings Warning<!--#if $have_warnings != '1' #-->s<!--#end if#-->!</b>
-				<!--#end if#-->
-				Connections
-			</a>
-		</li>
+		<!--#if $new_release#-->
+		<li><a href="$new_rel_url" target="_blank"><b style="color:darkgreen"><blink>New release $new_release available !</blink></b></a></li>
+		<!--#end if#-->
+		<!--#if $have_warnings != '0' #-->
+		<li><a href="connections" style="border-bottom:0px;"><b style="color:darkred" title="$last_warning" class="tip"><blink>$have_warnings Warning<!--#if $have_warnings != '1' #-->s<!--#end if#--> !</blink></b></a></li>
+		<!--#end if#-->
+		<li><a href="connections">Connections</a></li>
 		<li><a href="config/general">General</a></li>
 		<li><a href="config/directories">Folders</a></li>
 		<li><a href="config/switches">Switches</a></li>
@@ -48,13 +44,12 @@
 		</ul>
 	</div>
 	
-	
 	<!--#if $warning#-->
 	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
 	<!--#end if#-->
 	
 	<div id="add_nzb_menu_toggle_upper"><span>Add NZB</span></div>
-
+	
 	<div id="add_nzb_menu" style="display:hidden">
 		
 		<form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
