@@ -860,7 +860,7 @@ class HistoryPage(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, limit=None, dummy = None):
         history, pnfo_list, bytespersec = build_header(self.__prim)
 
         history['isverbose'] = self.__verbose
@@ -873,6 +873,11 @@ class HistoryPage(ProtectedClass):
         history['total_bytes'] = "%.2f" % (total_bytes / GIGI)
 
         history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
+        
+        if limit:
+            history['limit'] = limit
+        else:
+            history['limit'] = ''
 
         items = []
         while history_items:
