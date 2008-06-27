@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
 <html>
 <head>
+	
 	<title>SABnzbd+ Plush</title>
 	<link rel="shortcut icon" type="image/ico" href="static/images/plush-default/sabnzbdplus.ico"/>
 	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
@@ -207,7 +208,10 @@
 			<div class="box_banner_hr"></div>
 			
 			<!-- History ( history.tmpl ) -->
-			<div id="history"><small><i>..loading..</i></small></div>
+			<div id="history">
+				<small><i>..loading..</i></small>
+				<input type=hidden id=history_view_preference value="" />
+			</div>
 			
 		</div>
 		
@@ -218,6 +222,8 @@
 		</div>
 		
 	</div>
+	
+	<br/><br/><br/><br/>
 	
 </body>
 </html>

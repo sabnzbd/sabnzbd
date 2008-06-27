@@ -1,6 +1,7 @@
 var refreshRate = 8; // default refresh rate
 var skipRefresh = false;
 var focusedOnSpeedChanger = false;
+var history_view_preference = 15;
 
 // once the DOM is ready, run this
 $(document).ready(function(){
@@ -59,11 +60,19 @@ $(document).ready(function(){
 	
 	// tooltips that will extend over multiple refreshes (for History)
 	$('#history div').livequery(function() {
+		
+		$('#history_view_preference').change(function(){
+			history_view_preference = $('#history_view_preference').val();
+			SetCookie('history_view_preference',history_view_preference);
+			RefreshTheHistory();
+		});
+		
 		$(this).Tooltip({
 			extraClass:	"tooltip",
 			track:		true, 
 			fixPNG:		true
 		});
+		
 	});
 	
 	// set up more tooltips for main screen
@@ -78,6 +87,10 @@ $(document).ready(function(){
 		$('#add_nzb_menu').css('display','block');
 	else
 		$('#add_nzb_menu').css('display','none');
+	
+	// restore history view preference
+	if (ReadCookie('history_view_preference'))
+		history_view_preference = ReadCookie('history_view_preference');
 	
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
@@ -307,9 +320,13 @@ function RefreshTheQueue() {
 
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheHistory() {
+	var limit = history_view_preference;
+	if ($('#history_view_preference').val() != "")
+		var limit = $('#history_view_preference').val()
+	
 	$.ajax({
 		type: "GET",
-		url: 'history/?dummy='+Math.random(),
+		url: 'history/?limit='+limit+'&dummy='+Math.random(),
 		success: function(result){
 			return $('#history').html(result);
 		}
