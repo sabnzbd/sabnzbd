@@ -102,7 +102,7 @@ except AttributeError:
 def CheckFreeSpace():
     if sabnzbd.DOWNLOAD_FREE > 0 and not sabnzbd.paused():
         if diskfree(sabnzbd.DOWNLOAD_DIR) < float(sabnzbd.DOWNLOAD_FREE) / GIGI:
-            logging.info('Too little diskspace forcing PAUSE')
+            logging.warning('Too little diskspace forcing PAUSE')
             # Pause downloader, but don't save, since the disk is almost full!
             sabnzbd.pause_downloader(save=False)
             if sabnzbd.EMAIL_FULL:
@@ -588,7 +588,7 @@ class QueuePage(ProtectedClass):
         self.__nzo_pages = []
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, limit=None, dummy=None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
         info['isverbose'] = self.__verbose
@@ -605,6 +605,7 @@ class QueuePage(ProtectedClass):
 
         info['script_list'] = ListScripts()
         info['cat_list'] = ListCats()
+        info['limit'] = IntConv(limit)
 
         n = 0
         running_bytes = 0
@@ -860,7 +861,7 @@ class HistoryPage(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, limit=None, dummy = None):
+    def index(self, limit=None, dummy=None):
         history, pnfo_list, bytespersec = build_header(self.__prim)
 
         history['isverbose'] = self.__verbose
@@ -874,10 +875,7 @@ class HistoryPage(ProtectedClass):
 
         history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
         
-        if limit:
-            history['limit'] = limit
-        else:
-            history['limit'] = ''
+        history['limit'] = IntConv(limit)
 
         items = []
         while history_items:
