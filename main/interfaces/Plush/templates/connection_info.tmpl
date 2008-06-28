@@ -16,6 +16,7 @@
 	<style>
 	<!--
 		body {background: #ddd;}
+		ol li {list-style-type:decimal;}
 	-->
 	</style>
 	
@@ -85,7 +86,7 @@
 					</legend>
 					<small><ul>
 					<!--#for $warn in $warnings#-->
-						<li>$warn</li>
+						<li><pre>$warn</pre></li>
 					<!--#end for#-->
 					</ul></small>
 				</fieldset>
