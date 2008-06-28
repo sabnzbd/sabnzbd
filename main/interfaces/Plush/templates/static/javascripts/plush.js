@@ -1,6 +1,7 @@
 var refreshRate = 8; // default refresh rate
 var skipRefresh = false;
 var focusedOnSpeedChanger = false;
+var queue_view_preference = 15;
 var history_view_preference = 15;
 
 // once the DOM is ready, run this
@@ -20,6 +21,12 @@ $(document).ready(function(){
 	
 	// drag & drop that will extend over multiple refreshes (for Queue)
 	$('#queueTable').livequery(function() {
+		
+		$('#queue_view_preference').change(function(){
+			queue_view_preference = $('#queue_view_preference').val();
+			SetCookie('queue_view_preference',queue_view_preference);
+			RefreshTheQueue();
+		});
 		
 		InitiateDragAndDrop(); // also called when queue is manually refreshed
 		
@@ -88,7 +95,9 @@ $(document).ready(function(){
 	else
 		$('#add_nzb_menu').css('display','none');
 	
-	// restore history view preference
+	// restore queue/history view preferences
+	if (ReadCookie('queue_view_preference'))
+		queue_view_preference = ReadCookie('queue_view_preference');
 	if (ReadCookie('history_view_preference'))
 		history_view_preference = ReadCookie('history_view_preference');
 	
@@ -309,9 +318,12 @@ function MainLoop() {
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
 	if (skipRefresh) return $('#skipped_refresh').fadeIn("slow").fadeOut("slow"); // set within queue <table>
+	var limit = queue_view_preference;
+	if ($('#queue_view_preference').val() != "")
+		var limit = $('#queue_view_preference').val()
 	$.ajax({
 		type: "GET",
-		url: 'queue/?dummy='+Math.random(),
+		url: 'queue/?limit='+limit+'&dummy='+Math.random(),
 		success: function(result){
 			return $('#queue').html(result);
 		}
@@ -323,7 +335,6 @@ function RefreshTheHistory() {
 	var limit = history_view_preference;
 	if ($('#history_view_preference').val() != "")
 		var limit = $('#history_view_preference').val()
-	
 	$.ajax({
 		type: "GET",
 		url: 'history/?limit='+limit+'&dummy='+Math.random(),
