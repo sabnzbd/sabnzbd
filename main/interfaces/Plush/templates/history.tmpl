@@ -10,11 +10,10 @@ def displayNotices (action, name):
 <a name="HIST"></a>
 <table class="queueTable">
 <!--#set $cur = 0#-->
-<!--#set $max = int($limit)#-->
 <!--#set $odd = False#-->
 <!--#if $lines#-->
 <!--#for $line in $lines #-->
-	<!--#if $max == 0 or ($max == -1 and ($line.status=="Failed" or $line.loaded) ) or $cur < $max#-->
+	<!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.loaded) ) or $cur < $limit#-->
 	<!--#set $cur = $cur + 1#-->
 	<!--#set $odd = not $odd#-->
 	<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
@@ -58,12 +57,12 @@ def displayNotices (action, name):
 	</div>
 	<div class="left_stats">
 		<small>Showing:</small>&nbsp;<select id="history_view_preference">
-			<option value="0"<!--#if $max==0#--> selected<!--#end if#-->>Everything</option>
-			<option value="5"<!--#if $max==5#--> selected<!--#end if#-->>Latest 5</option>
-			<option value="15"<!--#if $max==15#--> selected<!--#end if#-->>Latest 15</option>
-			<option value="25"<!--#if $max==25#--> selected<!--#end if#-->>Latest 25</option>
-			<option value="50"<!--#if $max==25#--> selected<!--#end if#-->>Latest 50</option>
-			<option value="-1"<!--#if $max==-1#--> selected<!--#end if#-->>Active/Failed Only</option>
+			<option value="0"<!--#if $limit==0#--> selected<!--#end if#-->>Everything</option>
+			<option value="5"<!--#if $limit==5#--> selected<!--#end if#-->>Latest 5</option>
+			<option value="15"<!--#if $limit==15#--> selected<!--#end if#-->>Latest 15</option>
+			<option value="25"<!--#if $limit==25#--> selected<!--#end if#-->>Latest 25</option>
+			<option value="50"<!--#if $limit==25#--> selected<!--#end if#-->>Latest 50</option>
+			<option value="-1"<!--#if $limit==-1#--> selected<!--#end if#-->>Active/Failed Only</option>
 		</select>
 	</div>
 	<div class="history_logo">&nbsp;</div>
