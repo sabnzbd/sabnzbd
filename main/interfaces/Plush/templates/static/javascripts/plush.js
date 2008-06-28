@@ -1,4 +1,4 @@
-var refreshRate = 8; // default refresh rate
+var refreshRate = 30; // default refresh rate
 var skipRefresh = false;
 var focusedOnSpeedChanger = false;
 var queue_view_preference = 15;
@@ -147,7 +147,8 @@ $(document).ready(function(){
 			type: "GET",
 			url: "queue/sort_by_avg_age?dummy="+Math.random(),
 			success: function(result){
-				return LoadTheQueue(result);
+				//return LoadTheQueue(result);
+				return RefreshTheQueue();
 			}
 		});
 	});
@@ -156,7 +157,8 @@ $(document).ready(function(){
 			type: "GET",
 			url: "queue/sort_by_name?dummy="+Math.random(),
 			success: function(result){
-				return LoadTheQueue(result);
+				//return LoadTheQueue(result);
+				return RefreshTheQueue();
 			}
 		});
 	});
@@ -165,7 +167,8 @@ $(document).ready(function(){
 			type: "GET",
 			url: "queue/sort_by_size?dummy="+Math.random(),
 			success: function(result){
-				return LoadTheQueue(result);
+				//return LoadTheQueue(result);
+				return RefreshTheQueue();
 			}
 		});
 	});
@@ -177,7 +180,8 @@ $(document).ready(function(){
 				type: "GET",
 				url: "queue/purge?dummy="+Math.random(),
 				success: function(result){
-					return LoadTheQueue(result);
+					//return LoadTheQueue(result);
+					return RefreshTheQueue();
 				}
 			});
 		}
@@ -216,12 +220,13 @@ $(document).ready(function(){
 	// toggle queue shutdown - from options menu
 	if ($('#queue_shutdown_option')) {
 		$('#queue_shutdown_option').bind('click', function() { 
-			if(confirm('Are you sure you want to toggle shutting down your entire computer when the queue downloads have finished?')){
+			if(confirm('Are you sure you want to shut down your *computer* when the downloads have finished?')){
 				$.ajax({
 					type: "GET",
 					url: "queue/tog_shutdown?dummy="+Math.random(),
 					success: function(result){
-						return LoadTheQueue(result);
+						//return LoadTheQueue(result);
+						return RefreshTheQueue();
 					}
 				});
 			}
@@ -270,7 +275,7 @@ $(document).ready(function(){
 			type: "GET",
 			url: 'history/tog_verbose?dummy='+Math.random(),
 			success: function(result){
-				return $('#history').html(result);
+				return RefreshTheHistory();//$('#history').html(result);
 			}
 		});
 	});
@@ -345,11 +350,11 @@ function RefreshTheHistory() {
 }
 
 // refresh the queue with supplied data (like if we already made an AJAX call)
-function LoadTheQueue(result) {
+/*function LoadTheQueue(result) {
 	$('#queue').html(result);
 	if ($('#stats_noofslots').html()!='0')
 		InitiateDragAndDrop();
-}
+}*/
 
 // called upon every refresh
 function InitiateDragAndDrop() {
