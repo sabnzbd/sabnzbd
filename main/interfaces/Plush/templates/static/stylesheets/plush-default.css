@@ -13,24 +13,24 @@ select, input {
 
 ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
-#config_menu_upper {
+.menu_upper_lower {
 	text-align: center;
 	font-size: 66%;
 	padding-bottom:6px;
 }
-#config_menu_upper ul {
+.menu_upper_lower ul {
 	padding-left:20px;
 }
-#config_menu_upper li {
+.menu_upper_lower li {
 	display:inline;
 	padding-right:20px;
 }
-#config_menu_upper a {
+.menu_upper_lower a {
 	color:black;
 	text-decoration:none;
 	border-bottom: 1px dotted grey;
 }
-#config_menu_upper a:hover {
+.menu_upper_lower a:hover {
 	border-bottom: 1px solid black;
 }
 #add_nzb_menu_toggle_upper{
