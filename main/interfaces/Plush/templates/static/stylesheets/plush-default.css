@@ -272,7 +272,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .queueTable tr {
 	background-color: #e0e0e0;
-	
 }
 .queueTable tr:hover {
 	background-color: #f9f9f9;
@@ -281,7 +280,8 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .queueTable td {
 	vertical-align: middle;
 	padding:2px 0;
-	border-top: 1px solid #fff;
+	border-top: 1px solid #FFF;
+	border-bottom: 1px solid #B1B1B1;
 }
 .queueTable td.download-title { width: 50%; }
 .queueTable .title {
