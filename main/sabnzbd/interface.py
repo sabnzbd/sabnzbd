@@ -861,7 +861,7 @@ class HistoryPage(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, limit=None, dummy=None):
+    def index(self, dummy2=None, dummy=None):
         history, pnfo_list, bytespersec = build_header(self.__prim)
 
         history['isverbose'] = self.__verbose
@@ -875,7 +875,7 @@ class HistoryPage(ProtectedClass):
 
         history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
         
-        history['limit'] = IntConv(limit)
+        history['limit'] = IntConv(dummy2)
 
         items = []
         while history_items:
