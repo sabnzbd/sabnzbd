@@ -337,9 +337,13 @@ class Downloader(Thread):
                     nzo = article.nzf.nzo
 
                 try:
-                    bytes, done = nw.recv_chunk()
+                    bytes, done, skip = nw.recv_chunk()
                 except:
-                    bytes, done = (0, False)
+                    bytes, done, skip = (0, False, False)
+                    
+                if skip:
+                    sabnzbd.update_bytes(0)
+                    continue
 
                 if bytes < 1:
                     self.__reset_nw(nw, "server closed connection", warn=False, wait=False)

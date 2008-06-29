@@ -208,7 +208,7 @@ class NewsWrapper:
                 chunk = self.recv(32768)
                 break
             except _ssl.WantReadError:
-                select.select([self.nntp.sock], [], [], 1.0)
+                return (0, False, True)
 
         self.data += chunk
         new_lines = self.data.split('\r\n')
@@ -218,9 +218,9 @@ class NewsWrapper:
 
         if self.lines and self.lines[-1] == '.':
             self.lines = self.lines[1:-1]
-            return (len(chunk), True)
+            return (len(chunk), True, False)
         else:
-            return (len(chunk), False)
+            return (len(chunk), False, False)
 
     def soft_reset(self):
         self.timeout = None
