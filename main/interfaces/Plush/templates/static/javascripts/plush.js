@@ -328,7 +328,7 @@ function RefreshTheQueue() {
 		var limit = $('#queue_view_preference').val()
 	$.ajax({
 		type: "GET",
-		url: 'queue/?limit='+limit+'&dummy='+Math.random(),
+		url: 'queue/?dummy2='+limit+'&dummy='+Math.random(),
 		success: function(result){
 			return $('#queue').html(result);
 		}
@@ -342,7 +342,7 @@ function RefreshTheHistory() {
 		var limit = $('#history_view_preference').val()
 	$.ajax({
 		type: "GET",
-		url: 'history/?limit='+limit+'&dummy='+Math.random(),
+		url: 'history/?dummy2='+limit+'&dummy='+Math.random(),
 		success: function(result){
 			return $('#history').html(result);
 		}
