@@ -7,7 +7,7 @@ body {
 select, input {
 	border: 0px;
 	background: #333;
-	color: #FFDF00;
+	color:#FFFF99;
 	display:inline;
 }
 
@@ -26,12 +26,14 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding-right:20px;
 }
 .menu_upper_lower a {
-	color:black;
+	color:white;
 	text-decoration:none;
-	border-bottom: 1px dotted grey;
+	font-weight: bold;
+	border-bottom: 1px dotted white;
 }
 .menu_upper_lower a:hover {
-	border-bottom: 1px solid black;
+	border-bottom: 1px solid white;
+	background-color: grey;
 }
 #add_nzb_menu_toggle_upper{
 	cursor:pointer;
