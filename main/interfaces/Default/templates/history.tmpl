@@ -1,32 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
-    <link rel="stylesheet" type="text/css" href="../static/stylesheets/default.css"/>
-    <link rel="stylesheet" type="text/css" href="../static/stylesheets/defaultcolors.css"/>
-    <!--#if $color_scheme#-->
-        <link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme"/>
-    <!--#end if#-->
-    <link rel="shortcut icon" href="../static/images/favicon.ico" />
-</head>
-<body>
-<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
-<span class="MainMenu">
-<a href="../">Home</a> |
-<a href="../queue">Queue</a> |
-<a class="current" href="./">History</a> |
-<a href="../config">Config</a> |
-<a href="../connections">Connections</a> |
-<ul id="nav">
-	<li><a href="$helpuri/GUI+History" target="_blank">Help</a>
-		<ul>
-			<li><a href="$helpuri/GUI+History" target="_blank">Wiki</a></li>
-			<li><a href="http://forums.sabnzbd.org" target="_blank">Forums</a></li>
-			<li><a href="http://embed.mibbit.com/?server=irc.synirc.net&channel=%23sabnzbd&parseLinks=true&chatOutputShowTimes=true" target="_blank">IRC</a></li>
-		</ul>
-	</li>
-</ul>
-</span>
+<!--#set global $topmenu="history"#-->
+<!--#set global $statpath=".."#-->
+<!--#include "interfaces/Default/templates/inc_top.tmpl"#-->
+
 <span class="SubMenu"><a href="./purge">Purge history</a> |
     <!--#if $isverbose#-->
         <a href="./tog_verbose">Hide details</a>
@@ -34,6 +9,7 @@
         <a href="./tog_verbose">Show details</a>
     <!--#end if#-->
 </span>
+
 <br>
 <p>
 <strong>Bytes Downloaded:</strong> $bytes_beginning GB <strong>- Bytes in History:</strong> $total_bytes GB</strong>
@@ -67,14 +43,5 @@
     <!--#end for#-->
 </table>
 <!--#end if#-->
-<div class="footer">
-<!--#if $shutdown then "<b>SHUTDOWN</b> - " else ""#--><b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB <!--#if $paused then "- <b>PAUSED</b>" else ""#--><br>
-<!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
-<!--#end if#-->
-<!--#if $new_release#-->
-    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br>
-<!--#end if#-->
-</div>
-</body>
-</html>
+
+<!--#include "interfaces/Default/templates/inc_bottom.tmpl"#-->

@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+    <link rel="stylesheet" type="text/css" href="$statpath/static/stylesheets/default.css"/>
+    <link rel="stylesheet" type="text/css" href="$statpath/static/stylesheets/defaultcolors.css"/>
+    <!--#if $color_scheme#-->
+        <link rel="stylesheet" type="text/css" href="$statpath/static/stylesheets/colorschemes/$color_scheme"/>
+    <!--#end if#-->
+    <!--#if $varExists('have_refresh') and $have_refresh#-->
+        <meta http-equiv="refresh" content="$have_refresh">
+    <!--#end if#-->
+    <link rel="shortcut icon" href="$statpath/static/images/favicon.ico" />
+</head>
+<body>
+<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+
+<!--#set $mypath=$statpath+"/"+$topmenu#-->
+
+<span class="MainMenu">
+<!--#if $topmenu==''#-->
+    <a class="current" href="$mypath/">Home</a> |
+<!--#else#-->
+    <a href="$statpath/">Home</a> |
+<!--#end if#-->
+
+<!--#if $topmenu=='queue'#-->
+    <a class="current" href="$mypath/">Queue</a> |
+<!--#else#-->
+    <a href="$statpath/queue">Queue</a> |
+<!--#end if#-->
+
+<!--#if $topmenu=='history'#-->
+    <a class="current" href="$mypath/">History</a> |
+<!--#else#-->
+    <a href="$statpath/history">History</a> |
+<!--#end if#-->
+
+<!--#if $topmenu=='config'#-->
+    <a class="current" href="$mypath/">Config</a> |
+<!--#else#-->
+    <a href="$statpath/config">Config</a> |
+<!--#end if#-->
+
+<!--#if $topmenu=='connections'#-->
+    <a class="current" href="$mypath/">Connections</a> |
+<!--#else#-->
+    <a href="$statpath/connections">Connections</a> |
+<!--#end if#-->
+
+<!--[if IE]>
+    <a href="$helpuri/GUI+Main" target="_blank">Help</a>
+<![endif]-->
+<comment>
+<ul id="nav">
+    <li><a href="$helpuri/GUI+Main" target="_blank">Help</a>
+		<ul>
+			<li><a href="$helpuri/GUI+Main" target="_blank">Wiki</a></li>
+			<li><a href="http://forums.sabnzbd.org" target="_blank">Forums</a></li>
+			<li><a href="http://embed.mibbit.com/?server=irc.synirc.net&channel=%23sabnzbd&parseLinks=true&chatOutputShowTimes=true" target="_blank">IRC</a></li>
+		</ul>
+	</li>
+</ul>
+</comment>
+</span>
