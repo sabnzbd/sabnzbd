@@ -684,6 +684,8 @@ def main():
 
     log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
 
+    os.chdir(sabnzbd.DIR_PROG)
+
     web_dir  = Web_Template('web_dir',  DEF_STDINTF,  web_dir)
     web_dir2 = Web_Template('web_dir2', '', web_dir2)
 
