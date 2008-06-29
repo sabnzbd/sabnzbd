@@ -588,7 +588,7 @@ class QueuePage(ProtectedClass):
         self.__nzo_pages = []
 
     @cherrypy.expose
-    def index(self, limit=None, dummy=None):
+    def index(self, dummy2=None, dummy=None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
         info['isverbose'] = self.__verbose
@@ -605,7 +605,7 @@ class QueuePage(ProtectedClass):
 
         info['script_list'] = ListScripts()
         info['cat_list'] = ListCats()
-        info['limit'] = IntConv(limit)
+        info['limit'] = IntConv(dummy2)
 
         n = 0
         running_bytes = 0
