@@ -164,7 +164,7 @@ def daemonize():
         print "fork() failed"
         sys.exit(1)
 
-    os.chdir("/")
+    os.chdir(sabnzbd.DIR_PROG)
     os.setsid()
     # Make sure I can read my own files and shut out others
     prev= os.umask(0)
