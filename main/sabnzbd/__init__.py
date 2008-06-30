@@ -340,6 +340,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     PAR_CLEANUP = bool(check_setting_int(CFG, 'misc', 'enable_par_cleanup', 1))
 
     PAR_OPTION = check_setting_str(CFG, 'misc', 'par_option', '')
+    if PAR_OPTION.lower() == 'none':
+        PAR_OPTION = ""
 
     CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
 

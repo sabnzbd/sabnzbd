@@ -1112,8 +1112,12 @@ class ConfigSwitches(ProtectedClass):
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
+        par = sabnzbd.CFG['misc']['par_option']
+        if par and par.lower()!="none":
+            config['par_option'] = par
+        else:
+            config['par_option'] = ""
         config['nt'] = os.name == 'nt'
-        config['par_option'] = sabnzbd.CFG['misc']['par_option']
         config['enable_unrar'] = IntConv(sabnzbd.CFG['misc']['enable_unrar'])
         config['enable_unzip'] = IntConv(sabnzbd.CFG['misc']['enable_unzip'])
         config['enable_filejoin'] = IntConv(sabnzbd.CFG['misc']['enable_filejoin'])
@@ -1160,7 +1164,10 @@ class ConfigSwitches(ProtectedClass):
                      dummy = None
                      ):
 
-        sabnzbd.CFG['misc']['par_option'] = par_option
+        if par_option:
+            sabnzbd.CFG['misc']['par_option'] = par_option
+        else:
+            sabnzbd.CFG['misc']['par_option'] = ""
         sabnzbd.CFG['misc']['enable_unrar'] = IntConv(enable_unrar)
         sabnzbd.CFG['misc']['enable_unzip'] = IntConv(enable_unzip)
         sabnzbd.CFG['misc']['enable_filejoin'] = IntConv(enable_filejoin)
