@@ -16,12 +16,6 @@ List of known issues.
   We cannot solve this problem, because the Operating System (read Windows)
   prevents the removal.
 
-- When the Internet connection breaks down, SABnzbd will still show
-  "downloading" and show a constant speed.
-  This problem only occurs when at least one connection uses SSL.
-  When the Internet connection is restored, downloading will proceed
-  after some minutes (depending on the time-outs you set).
-
 - When you have aggressive power managment on (like automatic standby)
   the PC will go into standby despite the fact that SABnzbd is still
   busy downloading. Blame Windows for this.
