@@ -27,8 +27,8 @@ Important **changes** from previous versions:
   program that supports a multi-core CPU.
   You can tune the performance of PAR2 (Config->Switches)
 
-This RC3 release will not re-use an existing download queue
-from an earlier release than 0.4.0Beta5.
+This release will not re-use an existing download queue
+from a release earlier than 0.4.0Beta5.
 It will automatically create a new empty queue and history.
 However, the old queue remains in the cache directory and can
 still be accessed by the previous release.
