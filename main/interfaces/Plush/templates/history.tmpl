@@ -14,7 +14,6 @@ def displayNotices (action, name):
 <!--#if $lines#-->
 <!--#for $line in $lines #-->
 	<!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.loaded) ) or ($limit == -2 and ($cur < 5 or $line.status=="Failed" or $line.loaded) ) or $cur < $limit#-->
-	<!--#set $cur = $cur + 1#-->
 	<!--#set $odd = not $odd#-->
 	<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
 	
@@ -44,6 +43,7 @@ def displayNotices (action, name):
 	
 	</tr>
 	<!--#end if#-->
+	<!--#set $cur = $cur + 1#-->
 <!--#end for#-->
 <!--#end if#-->
 </table>
@@ -70,7 +70,7 @@ def displayNotices (action, name):
 			<option value="50"<!--#if $limit==50#--> selected<!--#end if#-->>Latest 50</option>
 			<option value="100"<!--#if $limit==100#--> selected<!--#end if#-->>Latest 100</option>
 			<option value="200"<!--#if $limit==200#--> selected<!--#end if#-->>Latest 200</option>
-		</select>
+		</select>&nbsp;<small>of</small>&nbsp;<strong>$cur</strong>&nbsp;<small>NZB<!--#if $cur != 1 #-->s<!--#end if#--></small>
 	</div>
 	<div class="history_logo">&nbsp;</div>
 </div>
