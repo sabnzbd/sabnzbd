@@ -78,7 +78,7 @@ DirText "Select the directory to install SABnzbd+ in:"
   !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
   !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
   !define MUI_FINISHPAGE_LINK "View the SABnzbdPlus Wiki"
-  !define MUI_FINISHPAGE_LINK_LOCATION "http://wiki.sabnzbdplus.com/"
+  !define MUI_FINISHPAGE_LINK_LOCATION "http://sabnzbd.wikidot.com/"
   !insertmacro MUI_PAGE_FINISH
 
   !insertmacro MUI_UNPAGE_CONFIRM
@@ -140,8 +140,7 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - SafeMode.lnk" "$INSTDIR\SABnzbd-console.exe"
-    ;CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Online.lnk" "http://sabnzbdplus.wiki.sourceforge.net/Introduction"
-    WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://sabnzbdplus.wiki.sourceforge.net/Introduction"
+    WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://sabnzbd.wikidot.com/"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
 
