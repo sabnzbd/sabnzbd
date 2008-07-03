@@ -89,25 +89,42 @@ $(document).ready(function(){
 			fixPNG:		true
 	});
 	
-	// restore Add NZB from cookie
-	if (ReadCookie('Plush2AddNZB') != 'block')
-		$('#add_nzb_menu').css('display','block');
-	else
-		$('#add_nzb_menu').css('display','none');
-	
-	// restore queue/history view preferences
-	if (ReadCookie('queue_view_preference'))
-		queue_view_preference = ReadCookie('queue_view_preference');
-	if (ReadCookie('history_view_preference'))
-		history_view_preference = ReadCookie('history_view_preference');
 	
 	// restore Refresh rate from cookie
 	if (ReadCookie('Plush2Refresh'))
 		refreshRate = ReadCookie('Plush2Refresh');
 	else
 		SetCookie('Plush2Refresh',refreshRate);
+
+	// restore queue/history view preferences
+	if (ReadCookie('queue_view_preference'))
+		queue_view_preference = ReadCookie('queue_view_preference');
+	if (ReadCookie('history_view_preference'))
+		history_view_preference = ReadCookie('history_view_preference');
+
+	// restore Add NZB from cookie
+	if (ReadCookie('Plush2AddNZB') != 'block')
+		$('#add_nzb_menu').css('display','block');
+	else
+		$('#add_nzb_menu').css('display','none');
+	if (ReadCookie('Plush2ConfigMenu') != 'block')
+		$('.menu_upper_lower').css('display','block');
+	else
+		$('.menu_upper_lower').css('display','none');
 	
-	// set Refresh rate within main menu	
+	// disable toggler selection
+	disableSelection(document.getElementById("add_nzb_menu_toggle_upper"));
+	
+	// "menu toggler" horiz. bar toggler from main menu
+	$('#add_nzb_menu_toggle_upper').bind('click', function() {
+		$('#add_nzb_menu').slideToggle("fast", SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display')) );
+	});
+	$('#add_nzb_menu_toggle_upper').bind('dblclick', function() {
+		$('.menu_upper_lower').slideToggle("fast", SetCookie('Plush2ConfigMenu',$('.menu_upper_lower').css('display')) );
+	});
+	
+	
+	// set Refresh rate within main menu
 	$("#refreshRate-option").val(refreshRate);
 	$("#refreshRate-option").change( function() {
 		reactivate = false;
@@ -185,11 +202,6 @@ $(document).ready(function(){
 				}
 			});
 		}
-	});
-	
-	// "Add NZB" horiz. bar toggler from main menu
-	$('#add_nzb_menu_toggle_upper').bind('click', function() {
-		$('#add_nzb_menu').slideToggle("fast", SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display')) );
 	});
 	
 	// Set up +NZB by URL/Newzbin Report ID
@@ -395,3 +407,13 @@ function ReadCookie(name) {
 	}
 	return null;
 }
+
+// disables toggler text selection when clicking
+function disableSelection(element) {
+    element.onselectstart = function() {
+        return false;
+    };
+    element.unselectable = "on";
+    element.style.MozUserSelect = "none";
+    element.style.cursor = "default";
+};

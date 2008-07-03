@@ -39,10 +39,13 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	cursor:pointer;
 	text-align:center;
 	font-size: 66%;
-	color:white;
+	color:#B1B1B1;
+	background-color:#B1B1B1;
 	font-weight:bold;
 }
 #add_nzb_menu_toggle_upper:hover span{
+	cursor:pointer;
+	color:white;
 	background-color:grey;
 	border-left: 1px dotted white;
 	border-right: 1px dotted white;
