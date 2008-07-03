@@ -9,10 +9,6 @@ def InjectProgressBarPosition (mbleft, mb):
 
 <script type="text/javascript">
 	
-	\$('#stats_kbpersec').html('<!--#echo "%.0f" % float($kbpersec)#-->');
-	\$('#stats_eta').html('$timeleft');
-	\$('#stats_eta').attr('title','ETA: $eta');
-	
 	if (\$("#maxSpeed-option").val() != '$speedlimit' && !focusedOnSpeedChanger)
 		\$("#maxSpeed-option").val('$speedlimit');
 	if (\$("#onQueueFinish-option").val() != '$finishaction')
@@ -26,11 +22,18 @@ def InjectProgressBarPosition (mbleft, mb):
 	
 	<!--#if $noofslots < 1#-->
 	document.title = '<!--#if $paused#-->PAUSED<!--#else#-->READY<!--#end if#--> | SABnzbd+ Plush';
+	\$('#stats_kbpersec').html('&mdash;');
+	\$('#stats_eta').html('&mdash;');
 	<!--#else if $paused#-->
 	document.title = 'PAUSED | <!--#echo "%.0f" % float($mbleft)#--> MB left | $noofslots NZBs';
+	\$('#stats_kbpersec').html('&mdash;');
+	\$('#stats_eta').html('&mdash;');
 	<!--#else#-->
 	document.title = '<!--#echo "%.0f" % float($kbpersec)#--> kB/s | <!--#echo "%.0f" % float($mbleft)#--> MB | $timeleft left';
+	\$('#stats_kbpersec').html('<!--#echo "%.0f" % float($kbpersec)#-->');
+	\$('#stats_eta').html('$timeleft');
 	<!--#end if#-->
+	\$('#stats_eta').attr('title','ETA: $eta');
 	
 </script>
 
