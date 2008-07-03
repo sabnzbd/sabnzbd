@@ -66,7 +66,7 @@ $(document).ready(function(){
 	});
 	
 	// tooltips that will extend over multiple refreshes (for History)
-	$('#history div').livequery(function() {
+	$('#history .box_fatbottom').livequery(function() {
 		
 		$('#history_view_preference').change(function(){
 			history_view_preference = $('#history_view_preference').val();
