@@ -123,9 +123,17 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 #queue_view_preference {
 	cursor:pointer;
+	background-color:#E0E0E0;
+	color:black;
+	font-weight:bold;
+	width:110px;
 }
 #history_view_preference {
 	cursor:pointer;
+	background-color:#E0E0E0;
+	color:black;
+	font-weight:bold;
+	width:110px;
 }
 
 
