@@ -66,14 +66,16 @@ $(document).ready(function(){
 	});
 	
 	// tooltips that will extend over multiple refreshes (for History)
-	$('#history .box_fatbottom').livequery(function() {
+	$('#history .left_stats').livequery(function() {
 		
 		$('#history_view_preference').change(function(){
 			history_view_preference = $('#history_view_preference').val();
 			SetCookie('history_view_preference',history_view_preference);
 			RefreshTheHistory();
 		});
+	});
 		
+	$('#history .last div').livequery(function() {
 		$(this).Tooltip({
 			extraClass:	"tooltip",
 			track:		true, 
