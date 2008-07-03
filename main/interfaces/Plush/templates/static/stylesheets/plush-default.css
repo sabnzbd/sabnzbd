@@ -1,7 +1,7 @@
 body {
 	background-color: #B1B1B1;
 	font-family: arial, "lucida console", sans-serif;
-	opacity: .9999;
+	/* opacity: .9999; */
 	margin:0px 0px; padding:0px;
 }
 select, input, file {
