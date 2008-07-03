@@ -4,7 +4,7 @@ body {
 	opacity: .9999;
 	margin:0px 0px; padding:0px;
 }
-select, input {
+select, input, file {
 	border: 0px;
 	background: #333;
 	color:#FFFF99;
@@ -29,10 +29,9 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	color:white;
 	text-decoration:none;
 	font-weight: bold;
-	border-bottom: 1px dotted white;
 }
 .menu_upper_lower a:hover {
-	border-bottom: 1px solid white;
+	border-bottom: 1px dotted white;
 	background-color: grey;
 }
 #add_nzb_menu_toggle_upper{
