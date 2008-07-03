@@ -14,6 +14,6 @@ Honorary member (and original author)
     Gregor Kaufmann <tdian@users.sourceforge.net>
 
 This software is covered by the GNU GENERAL PUBLIC LICENSE Version 2.
-See LICENSE.TXT
+See LICENSE.txt
 
 ===========================================================================

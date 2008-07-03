@@ -122,7 +122,7 @@ Visit the WIKI site:
 -------------------------------------------------------------------------------
 
 o) Plush alternative web interface
-   pairofdimes, blis102 Organix Design
+   pairofdimes
 
 o) Smpl alternative web interface
    switch
@@ -148,20 +148,6 @@ o) SABnzbd Authentication:
 o) python yenc module:
    http://golug.cc.uniud.it/yenc.html
 
-o) cElementTree and elementtree:
-   http://effbot.org/downloads/
-
-o) sendEmail.exe/pl:
-   Brandon Zehm <caspian@dotconf.net>
-   http://caspian.dotconf.net/
-
 o) json.py:
    Patrick D. Logan
    http://sourceforge.net/projects/json-py
-
-o) Contributors:
-   ShyPike, Freaky, gwynevans, Jigal van Hemert, ...
-
-o) Testers:
-   pairofdimes, rascalli, out2lunch, qwaqwa, duumke,
-   blis102, duz, switch
