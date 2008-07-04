@@ -7,9 +7,10 @@ The SABnzbd-team is:
 Current team:
     ShyPike <shypike@sabnzbd.org>
     sw1tch <switch@sabnzbd.org>
-    pairofdimes <pairofdimes@users.sourceforge.net>
-    deam <deam@users.sourceforge.net>
-    inpheaux <inpheaux@users.sourceforge.net>
+    pairofdimes <pairofdimes@sabnzbd.org>
+    deam <deam@sabnzbd.org>
+    inpheaux <inpheaux@sabnzbd.org>
+    rAf <rAf@sabnzbd.org>
 Honorary member (and original author)
     Gregor Kaufmann <tdian@users.sourceforge.net>
 
