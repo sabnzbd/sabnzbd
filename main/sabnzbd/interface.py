@@ -43,7 +43,7 @@ from sabnzbd.utils.multiauth.providers import DictAuthProvider
 from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
-from sabnzbd.email import email_send
+from sabnzbd.email import email_send, email_endjob
 from sabnzbd.misc import real_path, create_real_path, save_configfile, \
                          to_units, from_units, SameFile, encode_for_xml, \
                          decodePassword, encodePassword
@@ -1022,6 +1022,7 @@ class ConfigDirectories(ProtectedClass):
         config['dirscan_dir'] = sabnzbd.CFG['misc']['dirscan_dir']
         config['dirscan_speed'] = sabnzbd.CFG['misc']['dirscan_speed']
         config['script_dir'] = sabnzbd.CFG['misc']['script_dir']
+        config['email_dir'] = sabnzbd.CFG['misc']['email_dir']
         config['my_home'] = sabnzbd.DIR_HOME
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
         config['permissions'] = sabnzbd.UMASK
@@ -1038,7 +1039,7 @@ class ConfigDirectories(ProtectedClass):
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
                         cache_dir = None, nzb_backup_dir = None, permissions=None,
-                        enable_tv_sorting = None, tv_sort_string = None,
+                        enable_tv_sorting = None, tv_sort_string = None, email_dir=None,
                         dirscan_dir = None, dirscan_speed = None, script_dir = None, dummy = None):
 
         if permissions:
@@ -1078,6 +1079,11 @@ class ConfigDirectories(ProtectedClass):
             if not dd:
                 return badParameterResponse('Error: cannot create script_dir directory "%s".' % path)
 
+        if email_dir:
+            (dd, path) = create_real_path('email_dir', sabnzbd.DIR_HOME, email_dir)
+            if not dd:
+                return badParameterResponse('Error: cannot create email_dir directory "%s".' % path)
+
         #if SameFile(download_dir, complete_dir):
         #    return badParameterResponse('Error: DOWNLOAD_DIR and COMPLETE_DIR should not be the same (%s)!' % path)
 
@@ -1089,6 +1095,7 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['dirscan_dir'] = dirscan_dir
         sabnzbd.CFG['misc']['dirscan_speed'] = sabnzbd.minimax(dirscan_speed, 1, 3600)
         sabnzbd.CFG['misc']['script_dir'] = script_dir
+        sabnzbd.CFG['misc']['email_dir'] = email_dir
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
         if permissions: sabnzbd.CFG['misc']['permissions'] = permissions
@@ -1932,8 +1939,19 @@ class ConnectionInfo(ProtectedClass):
 
     @cherrypy.expose
     def testmail(self, dummy = None):
-        logging.info("Sending testmail")
-        self.__lastmail= email_send("SABnzbd testing email connection", "All is OK")
+        logging.info("[%s] Sending testmail", __NAME__)
+        pack = {}
+        pack[0] = {}
+        pack[0]['action1'] = 'done 1'
+        pack[0]['action2'] = 'done 2'
+        pack[1] = {}
+        pack[1]['action1'] = 'done 1'
+        pack[1]['action2'] = 'done 2'
+        
+        self.__lastmail= email_endjob('Test Job', 'unknown', True,
+                            os.path.normpath(os.path.join(sabnzbd.COMPLETE_DIR, '/unknown/Test Job')),
+                            '123MB', pack, 'my_script', 'Line 1\nLine 2\nLine 3\n')
+
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose

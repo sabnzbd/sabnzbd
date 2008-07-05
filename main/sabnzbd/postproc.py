@@ -36,7 +36,7 @@ if os.name == 'nt':
 from sabnzbd.decorators import *
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread, RLock
-from sabnzbd.email import email_endjob, prepare_msg
+from sabnzbd.email import email_endjob
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          cleanup_empty_directories, get_unique_filename
@@ -232,10 +232,13 @@ class PostProcessor(Thread):
                     nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
                     ext_out = external_processing(script, workdir_complete, filename, dirname, cat, group)
                     fname = MakeLogFile(filename, ext_out)
+            else:
+                script = ""
 
             ## Email the results
             if sabnzbd.EMAIL_ENDJOB:
-                email_endjob(filename, mailResult, prepare_msg(nzo.get_bytes_downloaded(),nzo.get_unpackstrht(), script, ext_out))
+                email_endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
+                             nzo.get_unpackstrht(), script, ext_out)
 
             if fname:
                 # Can do this only now, otherwise it would show up in the email

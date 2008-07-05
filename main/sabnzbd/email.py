@@ -32,37 +32,12 @@ import datetime
 import time
 import tempfile
 import socket
+import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.newsunpack import build_command
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import to_units, from_units, SplitHost
-
-################################################################################
-# prepare_msg
-#
-# Prepare message.
-# - Downloaded bytes
-# - Decoded status array.
-# - Output from external script
-################################################################################
-def prepare_msg(bytes, status, script, output):
-
-    result  = "Downloaded %sB\n\n" % to_units(bytes)
-    result += "Results of the job:\n\n"
-
-    stage_keys = status.keys()
-    stage_keys.sort()
-    for stage in stage_keys:
-        result += "Stage %s\n" % (STAGENAMES[stage])
-        for action in status[stage]:
-            result += "    %s %s\n" % (action, status[stage][action])
-
-    if script and (output != ""):
-        result += "\nExternal processing by %s:\n" % script
-        result += output
-
-    return result
 
 
 ################################################################################
@@ -70,7 +45,7 @@ def prepare_msg(bytes, status, script, output):
 #
 #
 ################################################################################
-def email_send(header, message):
+def email_send(message):
     if sabnzbd.EMAIL_SERVER and sabnzbd.EMAIL_TO and sabnzbd.EMAIL_FROM:
 
         failure = "Email failed"
@@ -91,7 +66,7 @@ def email_send(header, message):
 
                 # Non SSL mail server
                 logging.debug("[%s] Non-SSL mail server detected " \
-                              "reconnecting to server %s:%s", __NAME__, server, port)
+                             "reconnecting to server %s:%s", __NAME__, server, port)
 
                 try:
                     mailconn = smtplib.SMTP(server, port)
@@ -116,10 +91,6 @@ def email_send(header, message):
                     logging.error("[%s] Failed to initiate TLS connection", __NAME__)
                     return failure
 
-        # Message header
-        msg = "From: %s\r\nTo: %s\r\nSubject: %s\r\nX-Priority: 5\r\nX-MS-Priority: 5\r\n\r\n" % \
-            (sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, header)
-
         # Authentication
         if (sabnzbd.EMAIL_ACCOUNT != "") and (sabnzbd.EMAIL_PWD != ""):
             try:
@@ -128,10 +99,8 @@ def email_send(header, message):
                 logging.error("[%s] Failed to authenticate to mail server", __NAME__)
                 return failure
 
-        msg += message
-
         try:
-            mailconn.sendmail(sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, msg)
+            mailconn.sendmail(sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, message)
         except:
             logging.error("[%s] Failed to send e-mail", __NAME__)
             return failure
@@ -145,20 +114,59 @@ def email_send(header, message):
         return "Email succeeded"
 
 
+
 ################################################################################
 # EMAIL_ENDJOB
 #
 #
 ################################################################################
-def email_endjob(filename, success, status_text):
+from Cheetah.Template import Template
+
+def email_endjob(filename, cat, status, path, bytes, stages, script, script_output):
+    """ Send email using templates """
+    
     name, msgid = SplitFileName(filename)
-    message  = "Hello,\n\nSABnzbd has downloaded \'%s\'.\n\n" % name
-    message += "Finished at %s\n" % time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    message += "%s\n\nEnjoy!\n" % status_text
 
-    if success:
-        header = "SABnzbd has completed job %s" % name
+    output = []
+    stage_keys = stages.keys()
+    stage_keys.sort()
+    for stage in stage_keys:
+        res = {}
+        res['name'] = STAGENAMES[stage]
+        res['actions'] = stages[stage]
+        output.append(res)
+
+    parm = {}
+    parm['status'] = status
+    parm['to'] = sabnzbd.EMAIL_TO
+    parm['from'] = sabnzbd.EMAIL_FROM
+    parm['name'] = name
+    parm['path'] = path
+    parm['msgid'] = msgid
+    parm['output'] = output
+    parm['script'] = script
+    parm['script_output'] = script_output
+    parm['cat'] = cat
+    parm['size'] = "%sB" % to_units(bytes)
+    parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+
+    if sabnzbd.EMAIL_DIR and os.path.exists(sabnzbd.EMAIL_DIR):
+        path = sabnzbd.EMAIL_DIR
     else:
-        header = "SABnzbd failed to complete job %s" % name
+        path = sabnzbd.DIR_PROG
+    try:
+        lst = glob.glob(os.path.join(path, '*.tmpl'))
+    except:
+        logging.error('[%s] Cannot find email templates in %s', __NAME__, path)
+        lst = []
 
-    return email_send(header, message)
+    ret = "No templates found"
+    for temp in lst:
+        if os.access(temp, os.R_OK):
+            template = Template(file=temp,
+                                searchList=[parm],
+                                compilerSettings={'directiveStartToken': '<!--#',
+                                                  'directiveEndToken': '#-->'})
+            ret = email_send(template.respond())
+            del template
+    return ret

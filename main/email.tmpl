@@ -1,0 +1,36 @@
+##
+## Default Email template for SABnzbd
+## This a Cheetah template
+## Documentation: http://sabnzbd.wikidot.com/email-templates
+##
+## Newlines and whitespace are significant!
+##
+## These are the email headers
+to: $to
+from: $from
+subject: SABnzbd has <!--#if $status then "completed" else "failed" #--> job $name
+X-priority: 5
+X-MS-priority: 5
+## After this comes the body, the empty line is required!
+
+Hi,
+<!--#if $status #-->
+SABnzbd has downloaded "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
+<!--#else#-->
+SABnzbd has failed to download "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
+<!--#end if#-->
+Finished at $end_time
+Downloaded $size
+
+Results of the job:
+<!--#for $stage in $output #-->
+Stage $stage['name'] <!--#slurp#-->
+<!--#for $action in $stage['actions']#-->
+    $action : $stage['actions'][$action] <!--#slurp#-->
+<!--#end for#-->
+<!--#end for#-->
+<!--#if $script!="" #-->
+Output from user script "$script":
+$script_output
+<!--#end if#-->
+Enjoy!

@@ -107,6 +107,7 @@ DOWNLOAD_DIR = None
 DOWNLOAD_FREE = None
 COMPLETE_DIR = None
 SCRIPT_DIR = None
+EMAIL_DIR = None
 LOGFILE = None
 WEBLOGFILE = None
 LOGHANDLER = None
@@ -295,7 +296,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
            SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_DIR, DIRSCAN_PP, \
-           COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, \
+           COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, EMAIL_DIR, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
            DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
@@ -390,7 +391,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         COMPLETE_DIR == DOWNLOAD_DIR
 
     SCRIPT_DIR = dir_setup(CFG, 'script_dir', DIR_HOME, '')
-
+    
+    EMAIL_DIR = dir_setup(CFG, 'email_dir', DIR_HOME, '')
+    
     NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
 
     if SameFile(DOWNLOAD_DIR, COMPLETE_DIR):
@@ -447,7 +450,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     EMAIL_PWD    = decodePassword(check_setting_str(CFG, 'misc', 'email_pwd', '', False), 'email')
     EMAIL_ENDJOB = bool(check_setting_int(CFG, 'misc', 'email_endjob', 0))
     EMAIL_FULL   = bool(check_setting_int(CFG, 'misc', 'email_full', 0))
-
+    
     try:
         schedlines = CFG['misc']['schedlines']
     except:
