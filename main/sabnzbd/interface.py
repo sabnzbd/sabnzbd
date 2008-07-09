@@ -2166,6 +2166,10 @@ def build_header(prim):
     header['speedlimit'] = "%s" % sabnzbd.BANDWITH_LIMIT
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last()
+    if prim:
+        header['webdir'] = sabnzbd.WEB_DIR
+    else:
+        header['webdir'] = sabnzbd.WEB_DIR2
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = os.name == 'nt'

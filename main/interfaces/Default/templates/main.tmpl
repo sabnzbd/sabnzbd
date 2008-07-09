@@ -1,8 +1,7 @@
 <!--#set global $topmenu=""#-->
 <!--#set global $statpath="."#-->
 <!--#set global $helpsubject="GUI+Main"#-->
-<!--#include "interfaces/Default/templates/inc_top.tmpl"#-->
-
+<!--#include $webdir + "/inc_top.tmpl"#-->
 
 <span class="SubMenu">
 <!--#if $paused then "<a href=\"./resume\">Resume</a>" else "<a href=\"./pause\">Pause</a>"#--> |
@@ -73,4 +72,4 @@
     </form>
 </div>
 
-<!--#include "interfaces/Default/templates/inc_bottom.tmpl"#-->
+<!--#include $webdir + "/inc_bottom.tmpl"#-->

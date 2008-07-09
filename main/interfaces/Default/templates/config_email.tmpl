@@ -1,11 +1,10 @@
 <!--#set global $topmenu="config"#-->
 <!--#set global $statpath="../.."#-->
 <!--#set global $helpsubject="Configure+Email"#-->
-<!--#include "interfaces/Default/templates/inc_top.tmpl"#-->
+<!--#include $webdir + "/inc_top.tmpl" #-->
 
 <!--#set global $submenu="email"#-->
-<!--#include "interfaces/Default/templates/inc_cmenu.tmpl"#-->
-
+<!--#include $webdir + "/inc_cmenu.tmpl"#-->
 <h2>Email Notification</h2>
 <form action="saveEmail" method="post">
 <div class="EntryBlock">
@@ -49,4 +48,4 @@ For authenticated email, password.<br>
 <p><input type="submit" value="Save Changes"></p>
 </form>
 
-<!--#include "interfaces/Default/templates/inc_bottom.tmpl"#-->
+<!--#include $webdir + "/inc_bottom.tmpl"#-->

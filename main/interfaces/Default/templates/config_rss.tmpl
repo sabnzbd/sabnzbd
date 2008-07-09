@@ -1,10 +1,10 @@
 <!--#set global $topmenu="config"#-->
 <!--#set global $statpath="../.."#-->
 <!--#set global $helpsubject="Configure+RSS"#-->
-<!--#include "interfaces/Default/templates/inc_top.tmpl"#-->
+<!--#include $webdir + "/inc_top.tmpl"#-->
 
 <!--#set global $submenu="rss"#-->
-<!--#include "interfaces/Default/templates/inc_cmenu.tmpl"#-->
+<!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
 <h2>RSS Configuration</h2>
 <!--#if $have_feedparser#-->
@@ -191,4 +191,4 @@
     </p>
 <!--#end if#-->
 
-<!--#include "interfaces/Default/templates/inc_bottom.tmpl"#-->
+<!--#include $webdir + "/inc_bottom.tmpl"#-->

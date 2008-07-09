@@ -2,7 +2,7 @@
 <!--#set global $have_refresh=$refresh_rate#-->
 <!--#set global $statpath=".."#-->
 <!--#set global $helpsubject="GUI+Queue"#-->
-<!--#include "interfaces/Default/templates/inc_top.tmpl"#-->
+<!--#include $webdir + "/inc_top.tmpl"#-->
 
 <span class="SubMenu">
 <!--#if $paused then "<a href=\"./resume\">Resume</a>" else "<a href=\"./pause\">Pause</a>"#--> |
@@ -109,4 +109,4 @@ Speed Limit:
     </table>
 <!--#end if#-->
 
-<!--#include "interfaces/Default/templates/inc_bottom.tmpl"#-->
+<!--#include $webdir + "/inc_bottom.tmpl"#-->
