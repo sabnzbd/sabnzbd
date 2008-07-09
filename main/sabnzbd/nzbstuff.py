@@ -127,27 +127,28 @@ class NzbFile(TryList):
 
         self.valid = False
         self.import_finished = False
-
-        # Do a lazy import
-        article_db = {}
-        for segment in segments:
-            bytes = int(segment.get('bytes'))
-            partnum = int(segment.get('number'))
-
-            if partnum in article_db:
-                if segment.text == article_db[partnum][0]:
-                    logging.warning("[%s] Skipping duplicate article (%s)", __NAME__, segment.text)
-                else:
-                    logging.error("[%s] INCORRECT NZB: Duplicate part %s, but different ID-s (%s // %s)",
-                                     __NAME__, partnum, article_db[partnum][0], segment.text)
-                continue
-
-            self.__bytes += bytes
-            self.__bytes_left += bytes
-
-            self.valid = True
-
-            article_db[partnum] = (segment.text, bytes)
+        
+        if segments:
+            # Do a lazy import
+            article_db = {}
+            for segment in segments:
+                bytes = int(segment.get('bytes'))
+                partnum = int(segment.get('number'))
+    
+                if partnum in article_db:
+                    if segment.text == article_db[partnum][0]:
+                        logging.warning("[%s] Skipping duplicate article (%s)", __NAME__, segment.text)
+                    else:
+                        logging.error("[%s] INCORRECT NZB: Duplicate part %s, but different ID-s (%s // %s)",
+                                         __NAME__, partnum, article_db[partnum][0], segment.text)
+                    continue
+    
+                self.__bytes += bytes
+                self.__bytes_left += bytes
+    
+                self.valid = True
+    
+                article_db[partnum] = (segment.text, bytes)
 
         if self.valid and self.nzf_id:
             sabnzbd.save_data(article_db, self.nzf_id)
