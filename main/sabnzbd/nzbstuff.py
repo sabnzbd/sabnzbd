@@ -390,6 +390,7 @@ class NzbObject(TryList):
         avg_age = 0
         valids = 0
         found = 0
+        skipped_files = 0
         for _file in root:
             if not self.__group:
                 groups = _file.find('%sgroups' % DTD)
@@ -443,6 +444,11 @@ class NzbObject(TryList):
                              subject)
                 if nzf.nzf_id:
                     sabnzbd.remove_data(nzf.nzf_id)
+                skipped_files += 1
+                
+        if skipped_files:
+            logging.warning('[%s] Failed to import %s files from %s', __NAME__,
+                             skipped_files, filename)
 
         if self.__cat == None:
             self.__cat = CatConvert(self.__group)
