@@ -49,7 +49,6 @@ from sabnzbd.constants import *
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
-RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
 RE_CAT = re.compile(r'^{{(\w+)}}(.+)') # Category prefix
 
 PANIC_NONE  = 0
@@ -136,7 +135,7 @@ def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
             if name.lower().endswith('.nzb'):
                 data = zf.read(name)
                 name = os.path.basename(name)
-                name = RE_SANITIZE.sub('_', name)
+                name = sanitize_filename(name)
                 name = name.replace('[nzbmatrix.com]','')
                 if data:
                     try:
@@ -380,7 +379,7 @@ class URLGrabber(Thread):
 ################################################################################
 # sanitize_filename                                                            #
 ################################################################################
-RE_SANITIZE = re.compile(r'[\\/><\?\*:|~\$\^"]') # All forbidden file characters
+RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
 
 def sanitize_filename(name):
     """ Return filename with illegal chars converted to '_'
