@@ -122,8 +122,8 @@ def getTVInfo(match1, match2, dirname):
             path = path.replace(".%ext", '')
 
             
-        path = path.replace("%s.n", title)
-        path = path.replace("%s_n", title)
+        path = path.replace("%s.n", show_name2)
+        path = path.replace("%s_n", show_name3)
         path = path.replace("%sn", title)
         #replace season
         path = path.replace("%0s", season)
