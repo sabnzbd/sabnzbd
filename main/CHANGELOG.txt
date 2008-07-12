@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+0.4.1Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix for NZB files containing empty files (e.g. coming from nzbindex.nl)
+- Changed sorting of nzb contents to be more accurate
+- Fix for iPhone-skin on Linux/OSX
+- The "~" character in filenames is kept
+- Some Plush fixes
+- Fix for Linux packagers (solves problem of #include paths in Default-skin)
+-------------------------------------------------------------------------------
 0.4.0Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 fixed:   Restored context-help in Default-skin
