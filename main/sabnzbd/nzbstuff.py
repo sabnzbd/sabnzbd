@@ -932,13 +932,18 @@ def _nzf_cmp_name(nzf1, nzf2):
     they will then be sorted by name.
     '''
     #Try to use the filename if it can be extracted from the subject
-    subject1 = nzf1.get_filename().lower()
-    subject2 = nzf2.get_filename().lower()
+    subject1 = nzf1.get_filename()
+    subject2 = nzf2.get_filename()
     
     #if the filename cannot be extracted, use the full subject line for comparison. Can produce non-ideal results
-    if not subject1:
+    if subject1:
+        subject1 = subject1.lower()
+    else:
         subject1 = nzf1.get_subject().lower()
-    if not subject2:
+    
+    if subject2:
+        subject2 = subject2.lower()
+    else:
         subject2 = nzf2.get_subject().lower()
 
     par2_found = 0
