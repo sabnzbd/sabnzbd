@@ -13,6 +13,16 @@
 	<link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme?$version"/>
 	<!--#end if#-->
 	
+	<!--#raw#-->
+	<script language="javascript">
+		$(document).ready(function(){
+			$('.config_menu').corner("round tl bl");
+			$('#config_container').corner("round");
+			$('#help').corner("round");
+		});
+	</script>
+	<!--#end raw#-->
+	
 	<style>
 	<!--
 		body {background: #ddd;}
@@ -66,12 +76,6 @@
 	</div>
 	
 	</form>
-	
-	<script language="javascript">
-		\$('.config_menu').corner("round tl bl");
-		\$('#config_container').corner("round");
-		\$('#help').corner("round");
-	</script>
 	
 </body>
 </html>

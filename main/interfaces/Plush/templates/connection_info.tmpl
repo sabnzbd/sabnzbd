@@ -13,6 +13,18 @@
 	<link rel="stylesheet" type="text/css" href="../static/stylesheets/colorschemes/$color_scheme?$version"/>
 	<!--#end if#-->
 	
+	<!--#raw#-->
+	<script language="javascript">
+		$(document).ready(function(){
+			$('.config_menu').corner("round tl bl");
+			$('#config_container').corner("round");
+			$('#help').corner("round");
+			$('#test_email').corner("round");
+			$('#force_disconnect').corner("round");
+		});
+	</script>
+	<!--#end raw#-->
+	
 	<style>
 	<!--
 		body {background: #ddd;}
@@ -110,15 +122,6 @@
 	<div class="right_links">
 		<a id="test_email" href="./testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
 	</div>
-	
-	<script language="javascript">
-		\$('.config_menu').corner("round tl bl");
-		\$('#config_container').corner("round");
-		\$('#help').corner("round");
-		
-		\$('#test_email').corner("round");
-		\$('#force_disconnect').corner("round");
-	</script>
 	
 </body>
 </html>

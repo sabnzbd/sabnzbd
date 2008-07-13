@@ -13,6 +13,16 @@
 	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme?$version"/>
 	<!--#end if#-->
 	
+	<!--#raw#-->
+	<script language="javascript">
+		$(document).ready(function(){
+			$('.config_menu').corner("round tl bl");
+			$('#config_container').corner("round");
+			$('#help').corner("round");
+		});
+	</script>
+	<!--#end raw#-->
+	
 	<style>
 	<!--
 		body {background: #ddd;}
@@ -166,12 +176,6 @@ elif day == "7":
 	<div class="left_links config_margin">
 		<a id="help" target="_blank" href="$helpuri/Configure+Scheduling">Scheduling Help</a>
 	</div>
-	
-	<script language="javascript">
-		\$('.config_menu').corner("round tl bl");
-		\$('#config_container').corner("round");
-		\$('#help').corner("round");
-	</script>
 	
 </body>
 </html>
