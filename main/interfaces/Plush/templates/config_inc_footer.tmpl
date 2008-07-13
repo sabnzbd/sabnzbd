@@ -1,0 +1,22 @@
+		</div>
+	</div>
+	
+	<div class="left_links config_margin">
+		<a id="help" target="_blank" href="$helpuri/$help_uri">$pane Help</a>
+	</div>
+	
+	#if $pane=="Connections"#
+		<div class="right_links">
+			<a id="force_disconnect" href="disconnect">Force Disconnect</a>
+		</div>
+		<div class="right_links">
+			<a id="test_email" href="testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
+		</div>
+	#else if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="Newzbin"#
+		<div class="right_links">
+			<a id="save" onclick="document.fullform.submit();">Save Changes</a>
+		</div>
+	#end if#
+	
+</body>
+</html>

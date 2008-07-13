@@ -1,27 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html>
-<head>
-	
-	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
-	<link rel="shortcut icon" type="image/ico" href="../../static/images/plush-default/sabnzbdplus.ico"/>
-	
-	<script type="text/javascript" src="../../static/javascripts/jquery.js?$version"></script>
-	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js?$version"></script>
-	
-	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/plush-default.css?$version"/>
-	<!--#if $color_scheme and $color_scheme != "plush-default.css" and $color_scheme != "plush_default.css" and $color_scheme != "default.css" and $color_scheme != "modern.css" and $color_scheme != "Modern.css"#-->
-	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme?$version"/>
-	<!--#end if#-->
-	
+<!--#set global $pane="Folders"#-->
+<!--#set global $help_uri="Configure+Directories"#-->
+<!--#include $webdir + "/config_inc_header.tmpl"#-->
+
 	<!--#raw#-->
-	<script language="javascript">
-		$(document).ready(function(){
-			$('.config_menu').corner("round tl bl");
-			$('#config_container').corner("round");
-			$('#help').corner("round");
-			$('#save').corner("round");
-		});
-		
+	<script language="javascript">		
 		// switch's TV sort code
 		function tvAdd(val){
 			var tv = document.getElementById('tvfoldername'); 
@@ -59,40 +41,7 @@
 		}
 	</script>
 	<!--#end raw#-->
-	
-	<style>
-	<!--
-		body {background: #ddd;}
-	-->
-	</style>
-	
-</head>
-<body onload="previewtv()">
-	
-	<div id="config_go_back"><div><a href="../../">go&nbsp;back</a></div></div>
-	
-	<div id="config_nav">
-		<ul>
-			<li><a class="config_menu" id="config_nav_connections" href="../../connections">Connections</a></li>
-			<li><a class="config_menu" id="config_nav_general" href="../general">General</a></li>
-			<li><a class="config_menu nav_active" id="config_nav_directories" href="../directories">Folders</a></li>
-			<li><a class="config_menu" id="config_nav_switches" href="../switches">Switches</a></li>
-			<li><a class="config_menu" id="config_nav_server" href="../server">Servers</a></li>
-			<li><a class="config_menu" id="config_nav_categories" href="../categories">Categories</a></li>
-			<li><a class="config_menu" id="config_nav_scheduling" href="../scheduling">Scheduling</a></li>
-			<li><a class="config_menu" id="config_nav_rss" href="../rss">RSS</a></li>
-			<li><a class="config_menu" id="config_nav_email" href="../email">Email</a></li>
-			<li><a class="config_menu" id="config_nav_newzbin" href="../newzbin">Newzbin</a></li>
-		</ul>
-	</div>
-	
-	<div id="config_container" class="config_margin">
-		<div id="config_content">
-			
-<!--************************************
-			PAGE CONTENT IS BELOW
-	************************************ -->
-			
+
 			<div align="center"><small><em>NOTE:</em> Folders will be created automatically when Saving.</small></div>
 			
 			<form action="saveDirectories" method="post" name="fullform">
@@ -219,22 +168,6 @@
 			</fieldset>
 			</div>
 			
-<!--************************************
-			PAGE CONTENT IS ABOVE
-	************************************ -->
-			
-		</div>
-	</div>
-	
-	<div class="left_links config_margin">
-		<a id="help" target="_blank" href="$helpuri/Configure+Directories">Folders Help</a>
-	</div>
-	
-	<div class="right_links">
-		<a id="save" onclick="document.fullform.submit();">Save Changes</a>
-	</div>
-	
-	</form>
-	
-</body>
-</html>
+			</form>
+
+<!--#include $webdir + "/config_inc_footer.tmpl"#-->

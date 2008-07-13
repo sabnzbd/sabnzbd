@@ -646,6 +646,10 @@ fieldset.EntryFieldSet {
 #configbox_bookmark_processing	{ background-image: url(../images/plush-default/config/bookmark_processing.png); }
 #configbox_processed_bookmarks	{ background-image: url(../images/plush-default/config/processed_bookmarks.png); }
 
+.numbered_list li {
+	list-style-type:decimal;
+}
+
 /* FF2 to rescue */
 .sucker {width:120px;font-weight:bold;}
 .tucker {width:300px;font-weight:bold;}
