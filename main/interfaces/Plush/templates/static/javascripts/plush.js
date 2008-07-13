@@ -16,7 +16,8 @@ $(document).ready(function(){
 		hoverClass	: "sfHover",
 		delay		: 800,
 		animation	: {opacity:"show"},
-		speed		: "normal"
+		speed		: "normal",
+		autoArrows	: false
 	});
 	
 	// drag & drop that will extend over multiple refreshes (for Queue)
