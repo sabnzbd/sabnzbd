@@ -34,6 +34,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	border-bottom: 1px dotted white;
 	background-color: grey;
 }
+#chart {
+	width:90%;
+	height:100px;
+	display:none;
+}
 #add_nzb_menu_toggle_upper{
 	cursor:pointer;
 	text-align:center;

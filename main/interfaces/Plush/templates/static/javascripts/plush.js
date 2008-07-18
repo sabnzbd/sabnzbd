@@ -106,37 +106,18 @@ $(document).ready(function(){
 		history_view_preference = ReadCookie('history_view_preference');
 
 	// restore Add NZB from cookie
-	if (ReadCookie('Plush2AddNZB') != 'block')
-	{
+	if (ReadCookie('Plush2AddNZB') != 'block') {
 		$('#add_nzb_menu').css('display','block');
-		$('#addnzb_toggler').html("Show Add NZB Bar");
-	}
-	else
-	{
-		$('#add_nzb_menu').css('display','none');
 		$('#addnzb_toggler').html("Hide Add NZB Bar");
 	}
-	if (ReadCookie('Plush2ConfigMenu') != 'block')
-	{
+	if (ReadCookie('Plush2ConfigMenu') != 'block') {
 		$('.menu_upper_lower').css('display','block');
 		$('#menu_toggler').html("Hide Menu");
 	}	
-	else
-	{
-		$('.menu_upper_lower').css('display','none');
-		$('#menu_toggler').html("Show Menu");
-	}
-	if (ReadCookie('Plush2Chart') != 'block')
-	{
+	if (ReadCookie('Plush2Chart') != 'block') {
 		$('#chart').css('display','block');
 		$('#chart_toggler').html("Hide Chart");
 	}	
-	else
-	{
-		$('#chart').css('display','none');
-		$('#chart_toggler').html("Show Chart");
-	}
-	$('#add_nzb_menu').css('display','block');
 	// disable toggler selection
 	disableSelection(document.getElementById("add_nzb_menu_toggle_upper"));
 	

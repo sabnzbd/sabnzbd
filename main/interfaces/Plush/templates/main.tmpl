@@ -26,11 +26,11 @@
 <body>
 
 
-	<div id="add_nzb_menu_toggle_upper"><span id="menu_toggler">Show Menu</span>&nbsp;<span id="addnzb_toggler">Show Add NZB</span>&nbsp;<span id="chart_toggler">Show&nbsp;Chart</span><</div>
-	<center><div id="chart" style="width:90%;height:100px;"></div>	</center>
+	<div id="add_nzb_menu_toggle_upper"><span id="menu_toggler">Show Menu</span>&nbsp;<span id="addnzb_toggler">Show Add NZB</span>&nbsp;<span id="chart_toggler">Show&nbsp;Chart</span></div>
+	<div align=center><div id="chart"></div></div>
 	<a name="TOP"></a>
 	
-	<div class="menu_upper_lower">
+	<div class="menu_upper_lower" style="display:none">
 		<ul>
 		<!--#if $new_release#-->
 		<li><a href="$new_rel_url" target="_blank"><b style="color:darkgreen">New&nbsp;release&nbsp;$new_release&nbsp;available!</b></a></li>
@@ -56,7 +56,7 @@
 	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
 	<!--#end if#-->
 	
-	<div id="add_nzb_menu" style="display:hidden">
+	<div id="add_nzb_menu" style="display:none">
 		
 		<form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="mode" value="addfile" />
@@ -231,7 +231,7 @@
 	</div>
 	
 	<br/>
-	<div class="menu_upper_lower">
+	<div class="menu_upper_lower" style="display:none">
 		<ul>
 		<li><a href="rss?mode=history">RSS</a></li>
 		<li><a href="$helpuri" target="_blank">Help</a></li>
