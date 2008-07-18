@@ -19,6 +19,9 @@ sabnzbd.newsunpack
 """
 __NAME__ = 'newsunpack'
 
+#OSX
+import platform
+
 import os
 import re
 import subprocess
@@ -50,6 +53,19 @@ ZIP_COMMAND = None
 def find_programs(curdir):
     """Find external programs
     """
+    #OSX
+    if platform.system() == 'Darwin':
+       if platform.machine() == 'i386':
+       		p = os.path.abspath(curdir + '/osx/par2/par2')
+       else:
+       		p = os.path.abspath(curdir + '/osx/par2/par2universal')
+
+       if os.access(p, os.X_OK):
+           sabnzbd.newsunpack.PAR2_COMMAND = p
+       p = os.path.abspath(curdir + '/osx/unrar/unrar')
+       if os.access(p, os.X_OK):
+           sabnzbd.newsunpack.RAR_COMMAND = p
+
     if os.name == 'nt':
         p = os.path.abspath(curdir + '/win/par2/par2.exe')
         if os.access(p, os.X_OK):

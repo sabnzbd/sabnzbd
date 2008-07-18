@@ -776,5 +776,59 @@ def main():
 
     Notify("SAB_Shutdown", None)
 
-if __name__ == '__main__':
-    main()
+#OSX
+if sys.platform == 'darwin':
+    if __name__ == '__main__':
+        try:
+            from email import header
+            import cherrypy.filters.cachefilter
+            import cherrypy.filters.logdebuginfofilter
+            import cherrypy.filters.baseurlfilter
+            import cherrypy.filters.virtualhostfilter
+            import cherrypy.filters.decodingfilter
+            import cherrypy.filters.sessionauthenticatefilter
+            import cherrypy.filters.sessionfilter
+            import cherrypy.filters.staticfilter
+            import cherrypy.filters.nsgmlsfilter
+            import cherrypy.filters.tidyfilter
+            import cherrypy.filters.xmlrpcfilter
+            import cherrypy.filters.responseheadersfilter
+            import cherrypy.filters.encodingfilter
+            import Cheetah.DummyTransaction
+            import objc
+            from Foundation import *
+            from AppKit import *
+            from PyObjCTools import NibClassBuilder, AppHelper
+            
+            NibClassBuilder.extractClasses("MainMenu")
+
+            class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
+                def applicationShouldTerminate_(self, sender):
+                    logging.info('[osx] application terminating')
+                    sabApp.stop()
+                    return NSTerminateNow
+
+            from threading import Thread
+
+            class startApp(Thread):
+                def __init__(self):
+                    logging.info('[osx] sabApp Starting - starting main thread')
+                    Thread.__init__(self)
+                def run(self):
+                    main()
+                    logging.info('[osx] sabApp Stopping - main thread quit ')
+                    AppHelper.stopEventLoop()
+                def stop(self):
+                    logging.info('[osx] sabApp Quit - stopping main thread ')
+                    cherrypy.server.stop()
+                    sabnzbd.halt()
+                    logging.info('[osx] sabApp Quit - main thread stopped')
+
+            sabApp = startApp()
+            sabApp.start()
+            AppHelper.runEventLoop()
+        except:
+            main()
+else:
+	if __name__ == '__main__':
+	    main()

@@ -21,6 +21,9 @@ sabnzbd.assembler - threaded assembly/decoding of files
 
 __NAME__ = "assembler"
 
+#OSX
+import sys
+
 import os
 import Queue
 import binascii
@@ -74,6 +77,10 @@ class Assembler(Thread):
                 if filepath:
                     logging.info('[%s] Decoding %s %s', __NAME__, filepath, nzf.get_type())
                     try:
+                        # OSX fix for unicode chars
+                        if sys.platform == 'darwin':
+                            filepath = filepath.encode('utf8')
+                            logging.info('utf8 filepath: ' + filepath)
                         _assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
                         # 28 == disk full => pause downloader
