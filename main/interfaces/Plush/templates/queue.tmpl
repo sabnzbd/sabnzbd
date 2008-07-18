@@ -29,7 +29,7 @@ def InjectProgressBarPosition (mbleft, mb):
 	\$('#stats_kbpersec').html('&mdash;');
 	\$('#stats_eta').html('&mdash;');
 	<!--#else#-->
-	document.title = '<!--#echo "%.0f" % float($kbpersec)#--> kB/s | <!--#echo "%.0f" % float($mbleft)#--> MB | $timeleft left';
+	document.title = '<!--#echo "%.0f" % float($kbpersec)#--> KB/s | <!--#echo "%.0f" % float($mbleft)#--> MB | $timeleft left';
 	\$('#stats_kbpersec').html('<!--#echo "%.0f" % float($kbpersec)#-->');
 	\$('#stats_eta').html('$timeleft');
 	<!--#end if#-->
