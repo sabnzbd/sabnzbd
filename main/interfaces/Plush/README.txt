@@ -68,6 +68,11 @@ http://bassistance.de/jquery-plugins/jquery-plugin-tooltip
 Copyright (c) 2006-2008 Jörn Zaefferer
 See LICENSE-MIT & LICENSE-GPL
 
+jQuery Flot
+http://code.google.com/p/flot/
+IOLA
+See LICENSE-MIT
+
 WebToolkit
 http://www.webtoolkit.info/ajax-file-upload.html
 Copyright (c) 2006-2008 www.webtoolkit.info
