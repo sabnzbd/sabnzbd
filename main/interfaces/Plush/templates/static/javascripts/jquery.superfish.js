@@ -1,5 +1,5 @@
 /*
- * Superfish v1.4.7 - jQuery menu widget
+ * Superfish v1.4.8 - jQuery menu widget
  * Copyright (c) 2008 Joel Birch
  *
  * Dual licensed under the MIT and GPL licenses:
@@ -35,6 +35,7 @@
 				return menu;
 			},
 			addArrow = function($a){ $a.addClass(c.anchorClass).append($arrow.clone()); };
+			
 		return this.each(function() {
 			var s = this.serial = sf.o.length;
 			var o = $.extend({},sf.defaults,op);
@@ -57,7 +58,11 @@
 			});
 			o.onInit.call(this);
 			
-		}).addClass([c.menuClass,c.shadowClass].join(' '));
+		}).each(function() {
+			menuClasses = [c.menuClass];
+			if (sf.op.dropShadows  && !($.browser.msie && $.browser.version < 7)) menuClasses.push(c.shadowClass);
+			$(this).addClass(menuClasses.join(' '));
+		});
 	};
 
 	var sf = $.fn.superfish;
@@ -113,3 +118,4 @@
 	});
 
 })(jQuery);
+
