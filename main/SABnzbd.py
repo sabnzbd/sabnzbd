@@ -280,8 +280,17 @@ def GetProfileInfo(vista):
             except:
                 pass                        
 
+    elif sys.platform == 'darwin':
+        # OSX
+    	#not pretty
+    	#sabnzbd.DIR_APPDATA = '%s/Library/Application Support/%s' % (os.environ['HOME'], DEF_WORKDIR)
+    	sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % (os.environ['HOME'])
+    	sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+    	sabnzbd.DIR_HOME = os.environ['HOME']
+    	ok = True
+   
     else:
-        # Unix/Linux/OSX
+        # Unix/Linux
     	sabnzbd.DIR_APPDATA = '%s/.%s' % (os.environ['HOME'], DEF_WORKDIR)
     	sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
     	sabnzbd.DIR_HOME = os.environ['HOME']
