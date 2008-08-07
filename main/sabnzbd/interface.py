@@ -110,6 +110,7 @@ def CheckFreeSpace():
 
 def check_timeout(timeout):
     """ Check sensible ranges for server timeout """
+    timeout = Strip(timeout)
     if timeout.isdigit():
         if int(timeout) < MIN_TIMEOUT:
             timeout = MIN_TIMEOUT
@@ -195,6 +196,13 @@ def List2String(lst):
 
 def String2List(txt):
     """ Return comma-separated string as a list """
+
+def Strip(txt):
+    """ Return stripped string, can handle None """
+    try:
+        return txt.strip()
+    except:
+        return None
 
 #------------------------------------------------------------------------------
 class DummyFilter(MultiAuthFilter):
@@ -291,11 +299,11 @@ class MainPage(ProtectedClass):
         RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
         newzbin_url = RE_NEWZBIN_URL.search(id.lower())
         
-        if id: id = id.strip()
+        id = Strip(id)
         if id and (id.isdigit() or len(id)==5):
             sabnzbd.add_msgid(id, pp, script, cat)
         elif newzbin_url:
-            sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat)
+            sabnzbd.add_msgid(Strip(newzbin_url.group(1)), pp, script, cat)
         elif id:
             sabnzbd.add_url(id, pp, script, cat)
         if not redirect:
@@ -305,7 +313,7 @@ class MainPage(ProtectedClass):
 
     @cherrypy.expose
     def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None):
-        if url: url = url.strip()
+        url = Strip(url)
         if url and (url.isdigit() or len(url)==5):
             sabnzbd.add_msgid(url, pp, script, cat)
         elif url:
@@ -1272,11 +1280,11 @@ class ConfigGeneral(ProtectedClass):
                     cronlines = None, refresh_rate = None, rss_rate = None,
                     bandwith_limit = None, cleanup_list = None, cache_limitstr = None, dummy = None):
 
-        sabnzbd.CFG['misc']['web_dir']  = web_dir
+        sabnzbd.CFG['misc']['web_dir']  = Strip(web_dir)
         if web_dir2 == 'None':
             sabnzbd.CFG['misc']['web_dir2'] = ''
         else:
-            sabnzbd.CFG['misc']['web_dir2'] = web_dir2
+            sabnzbd.CFG['misc']['web_dir2'] = Strip(web_dir2)
 
         if web_color:
             if self.__prim:
@@ -1284,9 +1292,9 @@ class ConfigGeneral(ProtectedClass):
             else:
                 sabnzbd.CFG['misc']['web_color2'] = web_color
 
-        sabnzbd.CFG['misc']['host'] = host
-        sabnzbd.CFG['misc']['port'] = port
-        sabnzbd.CFG['misc']['username'] = web_username
+        sabnzbd.CFG['misc']['host'] = Strip(host)
+        sabnzbd.CFG['misc']['port'] = Strip(port)
+        sabnzbd.CFG['misc']['username'] = Strip(web_username)
         if (not web_password) or (web_password and web_password.strip('*')):
             sabnzbd.CFG['misc']['password'] = encodePassword(web_password)
         sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
@@ -1345,6 +1353,8 @@ class ConfigServer(ProtectedClass):
 
         timeout = check_timeout(timeout)
 
+        host = Strip(host)
+        port = Strip(port)
         if connections == "":
             connections = '1'
         if port == "":
@@ -1384,6 +1394,9 @@ class ConfigServer(ProtectedClass):
                          password = None, connections = None, fillserver = None, ssl = None, dummy = None):
 
         timeout = check_timeout(timeout)
+
+        server = Strip(server)
+        port = Strip(port)
 
         if connections == "":
             connections = '1'
@@ -1524,6 +1537,7 @@ class ConfigRss(ProtectedClass):
 
     @cherrypy.expose
     def upd_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, dummy=None):
+        uri = Strip(uri)
         try:
             cfg = sabnzbd.CFG['rss'][feed]
         except:
@@ -1553,6 +1567,8 @@ class ConfigRss(ProtectedClass):
 
     @cherrypy.expose
     def add_rss_feed(self, feed=None, uri=None, dummy=None):
+        feed= Strip(feed)
+        uri = Strip(uri)
         try:
             sabnzbd.CFG['rss'][feed]
         except:
@@ -1731,7 +1747,7 @@ class ConfigNewzbin(ProtectedClass):
                     create_category_folders = None, newzbin_bookmarks = None,
                     newzbin_unbookmark = None, bookmark_rate = None, dummy = None):
 
-        sabnzbd.CFG['newzbin']['username'] = username_newzbin
+        sabnzbd.CFG['newzbin']['username'] = Strip(username_newzbin)
         if (not password_newzbin) or (password_newzbin and password_newzbin.strip('*')):
             sabnzbd.CFG['newzbin']['password'] = encodePassword(password_newzbin)
         #sabnzbd.CFG['newzbin']['create_category_folders'] = create_category_folders
@@ -1825,6 +1841,7 @@ class ConfigCats(ProtectedClass):
 
     @cherrypy.expose
     def save(self, name=None, newname=None, pp=None, script=None, dir=None, newzbin=None, dummy=None):
+        newname = Strip(newname)
         if newname:
             if name:
                 try:
@@ -2288,6 +2305,11 @@ class ConfigEmail(ProtectedClass):
     def saveEmail(self, email_server = None, email_to = None, email_from = None,
                   email_account = None, email_pwd = None,
                   email_endjob = None, email_full = None, dummy = None):
+
+        email_server = Strip(email_server)
+        email_to = Strip(email_to)
+        email_from = Strip(email_from)
+        email_account = Strip(email_account)
 
         sabnzbd.CFG['misc']['email_endjob'] = email_endjob
         sabnzbd.CFG['misc']['email_full'] = email_full
