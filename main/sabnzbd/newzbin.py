@@ -313,7 +313,7 @@ class Bookmarks:
                     if msgid and (msgid not in self.bookmarks):
                         self.bookmarks.append(msgid)
                         logging.info("[%s] Found new bookmarked msgid %s (%s)", __NAME__, msgid, text)
-                        sabnzbd.add_msgid(int(msgid), sabnzbd.DIRSCAN_PP, sabnzbd.DIRSCAN_SCRIPT)
+                        sabnzbd.add_msgid(int(msgid), None, None)
         self.__busy = False
 
     @synchronized(BOOK_LOCK)
