@@ -103,14 +103,17 @@ class RSSQueue:
         self.shutdown = True
 
     @synchronized(LOCK)
-    def run_feed(self, feed=None, download=False):
+    def run_feed(self, feed=None, download=False, ignoreFirst=False):
         """ Run the query for one URI and apply filters """
         self.shutdown = False
 
-        def DupTitle(title):
-            for lk in self.jobs:
-                if lk[0]=='D' and lk[1]==title:
-                    return True
+        def DupTitle(fd, title):
+            for f in self.jobs:
+                if f == fd:
+                    for lk in self.jobs[fd]:
+                        if self.jobs[fd][lk][1]==title:
+                            return True
+                    return False
             return False
 
 
@@ -145,13 +148,14 @@ class RSSQueue:
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
-        # in that case nothing will be downloaded.
         first = feed not in self.jobs
         if first:
             self.jobs[feed] = {}
 
         jobs = self.jobs[feed]
 
+        first = first and ignoreFirst
+        
         # Read the RSS feed
         logging.debug("[%s] Running feedparser on %s", __NAME__, uri)
         d = feedparser.parse(uri)
@@ -172,7 +176,8 @@ class RSSQueue:
                 title = entry.title
                 newlinks.append(link)
 
-                if DupTitle(title):
+                if DupTitle(feed, title):
+                    logging.info("[%s] Ignoring duplicate job %s", __NAME__, title)
                     continue
 
                 myCat = defCat
@@ -224,7 +229,7 @@ class RSSQueue:
             self.__running = True
             for feed in sabnzbd.CFG['rss']:
                 if int(sabnzbd.CFG['rss'][feed]['enable']):
-                    self.run_feed(feed, download=True)
+                    self.run_feed(feed, download=True, ignoreFirst=True)
                     # Wait two minutes, else sites may get irritated
                     for x in xrange(120):
                         if self.shutdown:
