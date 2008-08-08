@@ -210,6 +210,9 @@ class NzbFile(TryList):
     def remove_extrapar(self, extrapar):
         self.__extrapars.remove(extrapar)
 
+    def is_par2(self):
+        return self.__ispar2file
+
     ## end nzf.Mutators #######################################################
     ###########################################################################
     def get_article_count(self):
@@ -508,9 +511,9 @@ class NzbObject(TryList):
         if reset:
             self.reset_try_list()
 
-        ## Special treatment for first part
-        if article.partnum == nzf.lowest_partnum():
-            fn = nzf.get_filename()
+        ## Special treatment for first part of par2 file
+        fn = nzf.get_filename()
+        if (not nzf.is_par2()) and fn and fn.endswith('.par2'):
             if fn:
                 par2match = re.search(PROBABLY_PAR2_RE, fn)
                 ## Is a par2file and repair mode activated
