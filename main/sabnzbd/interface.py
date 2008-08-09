@@ -155,7 +155,7 @@ def ListCats(default=False):
     else:
         lst = ['None']
 
-    for cat in sabnzbd.CFG['categories']:
+    for cat in sorted(sabnzbd.CFG['categories'].keys()):
         content = True
         lst.append(cat)
     if content:
@@ -1801,7 +1801,7 @@ class ConfigCats(ProtectedClass):
         empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'' }
         slotinfo = []
         slotinfo.append(empty)
-        for cat in sabnzbd.CFG['categories']:
+        for cat in sorted(sabnzbd.CFG['categories'].keys()):
             slot = {}
             slot['name'] = cat
             try:
