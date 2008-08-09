@@ -42,7 +42,7 @@ from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber, InitCats
 from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
                          create_real_path, check_latest_version, from_units, SameFile, decodePassword, \
-                         ProcessZipFile, ProcessSingleFile
+                         ProcessArchiveFile, ProcessSingleFile
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
 from sabnzbd.rss import RSSQueue, ListUris
@@ -951,8 +951,8 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None):
     except:
         logging.error("[%s] Cannot create temp file for %s", __NAME__, filename)
 
-    if ext.lower() == '.zip':
-        ProcessZipFile(filename, path, pp, script, cat)
+    if ext.lower() in ('.zip', '.rar'):
+        ProcessArchiveFile(filename, path, pp, script, cat)
     else:
         ProcessSingleFile(filename, path, pp, script, cat)
 

@@ -46,6 +46,7 @@ from threading import *
 from sabnzbd.decorators import *
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.constants import *
+from sabnzbd.utils.rarfile import is_rarfile, RarFile
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
@@ -59,6 +60,15 @@ PANIC_QUEUE = 3
 PANIC_FWALL = 4
 PANIC_OTHER = 5
 PW_PREFIX = '!!!encoded!!!'
+
+
+def CompareStat(tup1, tup2):
+    """ Test equality of two stat-tuples, content-related parts only """
+    if tup1.st_ino   != tup2.st_ino:   return False
+    if tup1.st_size  != tup2.st_size:  return False
+    if tup1.st_mtime != tup2.st_mtime: return False
+    if tup1.st_ctime != tup2.st_ctime: return False
+    return True
 
 
 def Cat2Opts(cat, pp, script):
@@ -115,16 +125,23 @@ def Cat2OptsDef(fname, cat=None):
     return cat, name, pp, script
 
 
-def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
+def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
+        returns: -1==Error/Retry, 0==OK, 1==Ignore
     """
     _cat, name, _pp, _script = Cat2OptsDef(filename, catdir)
     if cat == None: cat = _cat
     if pp == None: pp = _pp
     if script == None: script = _script
 
-    zf = zipfile.ZipFile(path)
+    if path.endswith('.zip'):
+        zf = zipfile.ZipFile(path)
+    elif is_rarfile(path):
+        zf = RarFile(path)
+    else:
+        return -1
+
     ok = True
     for name in zf.namelist():
         name = name.lower()
@@ -150,7 +167,7 @@ def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
             os.remove(path)
         except:
             logging.error("[%s] Error removing %s", __NAME__, path)
-            ok = False
+            ok = 1
     else:
         zf.close()
 
@@ -160,6 +177,7 @@ def ProcessZipFile(filename, path, pp=None, script=None, cat=None, catdir=None):
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
+        returns: -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
     """
     try:
         f = open(path, 'rb')
@@ -188,16 +206,29 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         nzo = NzbObject(name, pp, script, data, cat=cat)
     except:
-        return False
+        return -1
 
     sabnzbd.add_nzo(nzo)
     try:
         os.remove(path)
     except:
         logging.error("[%s] Error removing %s", __NAME__, path)
-        return False
+        return 1
 
-    return True
+    return 0
+
+
+def CleanList(list, folder, files):
+    """ Remove elements of "list" not found in "files" """
+    for path in sorted(list.keys()):
+        present = False
+        for name in files:
+            if os.path.join(folder, name) == path:
+                present = True
+                break
+        if not present:
+            del list[path]
+    
 
 #------------------------------------------------------------------------------
 class DirScanner(Thread):
@@ -205,7 +236,7 @@ class DirScanner(Thread):
     Thread that periodically scans a given directoty and picks up any
     valid NZB, NZB.GZ ZIP-with-only-NZB and even NZB.GZ named as .NZB
     Candidates which turned out wrong, will be remembered and skipped in
-    subsequent scans.
+    subsequent scans, unless changed.
     """
     def __init__(self, dirscan_dir, dirscan_speed):
         Thread.__init__(self)
@@ -213,7 +244,9 @@ class DirScanner(Thread):
         self.dirscan_dir = dirscan_dir
         self.dirscan_speed = dirscan_speed
 
-        self.ignored = []  # Will hold all examined but bad candidates
+        self.ignored = {}    # Will hold all unusable files and the
+                             # successfully processed ones that cannot be deleted
+        self.suspected = {}  # Will hold name/attributes of suspected candidates
         self.shutdown = False
         self.error_reported = False # Prevents mulitple reporting of missing watched folder
 
@@ -238,11 +271,18 @@ class DirScanner(Thread):
 
                 root, ext = os.path.splitext(path)
                 ext = ext.lower()
-                candidate = ext in ('.nzb', '.zip', '.gz')
+                candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
                 if candidate:
                     stat_tuple = os.stat(path)
                 else:
-                    self.ignored.append(path)
+                    self.ignored[path] = 1
+
+                if path in self.suspected:
+                    if CompareStat(self.suspected[path], stat_tuple):
+                        # Suspected file still has the same attributes
+                        continue
+                    else:
+                        del self.suspected[path]
 
                 if candidate and stat_tuple.st_size > 0:
                     logging.info('[%s] Trying to import %s', __NAME__, path)
@@ -251,30 +291,36 @@ class DirScanner(Thread):
                     while 1:
                         time.sleep(1.0)
                         stat_tuple_tmp = os.stat(path)
-                        if stat_tuple == stat_tuple_tmp:
+                        if CompareStat(stat_tuple, stat_tuple_tmp):
                             break
                         else:
                             stat_tuple = stat_tuple_tmp
 
                     # Handle ZIP files, but only when containing just NZB files
-                    if ext == '.zip':
-                        if not ProcessZipFile(filename, path, catdir=catdir):
-                            self.ignored.append(path)
-                        else:
+                    if ext in ('.zip', '.rar') :
+                        res = ProcessArchiveFile(filename, path, catdir=catdir)
+                        if res == -1:
+                            self.suspected[path] = stat_tuple
+                        elif res == 0:
                             self.error_reported = False
+                        else:
+                            self.ignored[path] = 1
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
-                        if not ProcessSingleFile(filename, path, catdir=catdir):
-                            self.ignored.append(path)
-                        else:
+                        res = ProcessSingleFile(filename, path, catdir=catdir)
+                        if res == -1:
+                            self.suspected[path] = stat_tuple
+                        elif res == 0:
                             self.error_reported = False
+                        else:
+                            self.ignored[path] = 1
+
                     else:
-                        self.ignored.append(path)
+                        self.ignored[path] = 1
 
-                if path in self.ignored:
-                    logging.debug('[%s] Ignoring %s', __NAME__, path)
-
+            CleanList(self.ignored, folder, files)
+            CleanList(self.suspected, folder, files)
 
         logging.info('[%s] Dirscanner starting up', __NAME__)
         self.shutdown = False
