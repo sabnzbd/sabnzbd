@@ -2,8 +2,11 @@
 #
 # Copyright (c) 2005  Marko Kreen <marko@l-t.ee>
 #
-# Improved  by ShyPike to use tempfile.mkstemp() instead of the
-# unsafe os.tempnam()
+# Improved by ShyPike:
+#   - use tempfile.mkstemp() instead of the unsafe os.tempnam()
+#   - Improve compatibility with Python's ZipFile support:
+#       - Always use Unix slashes '/' in pathnames
+#       - Foldernames must always end with a '/'
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -178,6 +181,11 @@ class RarFile:
         if item.type == RAR_BLOCK_FILE:
             # use only first part
             if (item.flags & RAR_FILE_SPLIT_BEFORE) == 0:
+                # Always use Unix separators
+                item.filename = item.filename.replace('\\', '/')
+                # Folder items must end with '/'
+                if (item.flags & RAR_FILE_DIRECTORY) == RAR_FILE_DIRECTORY:
+                    item.filename += '/'
                 self.info_list.append(item)
 
         if self.info_callback:
