@@ -221,13 +221,15 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
 def CleanList(list, folder, files):
     """ Remove elements of "list" not found in "files" """
     for path in sorted(list.keys()):
-        present = False
-        for name in files:
-            if os.path.join(folder, name) == path:
-                present = True
-                break
-        if not present:
-            del list[path]
+        fld, name = os.path.split(path)
+        if fld == folder:
+            present = False
+            for name in files:
+                if os.path.join(folder, name) == path:
+                    present = True
+                    break
+            if not present:
+                del list[path]
     
 
 #------------------------------------------------------------------------------
