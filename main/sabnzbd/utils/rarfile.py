@@ -2,10 +2,10 @@
 #
 # Copyright (c) 2005  Marko Kreen <marko@l-t.ee>
 #
-# Improved by ShyPike:
+# Improved by ShyPike 2008-08-11:
 #   - use tempfile.mkstemp() instead of the unsafe os.tempnam()
 #   - Improve compatibility with Python's ZipFile support:
-#       - Always use Unix slashes '/' in pathnames
+#       - Always use Unix separators '/' in pathnames
 #       - Foldernames must always end with a '/'
 #
 # Permission to use, copy, modify, and distribute this software for any
@@ -146,9 +146,11 @@ class RarFile:
 
     def getinfo(self, fname):
         '''Return RarInfo for fname.'''
-        fx = fname.replace("/", "\\")
+        target = fname.replace('\\', '/')
         for f in self.info_list:
-            if fname == f.filename or fx == f.filename:
+            if f.filename.endswith('/'):
+                target += '/'
+            if target == src:
                 return f
 
     def read(self, fname):
