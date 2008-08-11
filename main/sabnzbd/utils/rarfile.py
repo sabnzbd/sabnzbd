@@ -148,10 +148,12 @@ class RarFile:
         '''Return RarInfo for fname.'''
         target = fname.replace('\\', '/')
         for f in self.info_list:
-            if f.filename.endswith('/'):
-                target += '/'
-            if target == src:
-                return f
+            if f.filename.endswith('/') and not target.endswith('/'):
+                if (target+'/') == f.filename:
+                    return f
+            else:
+                if target == f.filename:
+                    return f
 
     def read(self, fname):
         '''Return decompressed data.'''
