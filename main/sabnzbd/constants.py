@@ -1,4 +1,5 @@
 #!/usr/bin/python -OO
+#!/usr/bin/python -OO
 # Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -54,6 +55,7 @@ BYTES_FILE_NAME  = 'bytes%s.sab' % QUEUE_VERSION
 QUEUE_FILE_NAME  = 'queue%s.sab' % QUEUE_VERSION
 RSS_FILE_NAME    = 'rss_data.sab'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'
+SCAN_FILE_NAME    = 'watched_data.sab'
 
 DEF_DOWNLOAD_DIR = 'downloads/incomplete'
 DEF_COMPLETE_DIR = 'downloads/complete'

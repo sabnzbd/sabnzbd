@@ -246,15 +246,26 @@ class DirScanner(Thread):
         self.dirscan_dir = dirscan_dir
         self.dirscan_speed = dirscan_speed
 
-        self.ignored = {}    # Will hold all unusable files and the
-                             # successfully processed ones that cannot be deleted
-        self.suspected = {}  # Will hold name/attributes of suspected candidates
+        try:
+            dir, self.ignored, self.suspected = sabnzbd.load_data(SCAN_FILE_NAME, remove = False)
+            if dir != dirscan_dir:
+                self.ignored = {}
+                self.suspected = {}
+        except:
+            self.ignored = {}   # Will hold all unusable files and the
+                                # successfully processed ones that cannot be deleted
+            self.suspected = {} # Will hold name/attributes of suspected candidates
+
         self.shutdown = False
         self.error_reported = False # Prevents mulitple reporting of missing watched folder
 
     def stop(self):
+        self.save()
         logging.info('[%s] Dirscanner shutting down', __NAME__)
         self.shutdown = True
+
+    def save(self):
+        sabnzbd.save_data((self.dirscan_dir, self.ignored, self.suspected), sabnzbd.SCAN_FILE_NAME)
 
     def run(self):
         def run_dir(folder, catdir):
