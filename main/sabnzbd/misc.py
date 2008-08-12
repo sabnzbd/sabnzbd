@@ -136,9 +136,15 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     if script == None: script = _script
 
     if path.endswith('.zip'):
-        zf = zipfile.ZipFile(path)
+        try:
+            zf = zipfile.ZipFile(path)
+        except:
+            return -1
     elif is_rarfile(path):
-        zf = RarFile(path)
+        try:
+            zf = RarFile(path)
+        except:
+            return -1
     else:
         return -1
 
@@ -151,7 +157,11 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     if ok:
         for name in zf.namelist():
             if name.lower().endswith('.nzb'):
-                data = zf.read(name)
+                try:
+                    data = zf.read(name)
+                except:
+                    zf.close()
+                    return -1
                 name = os.path.basename(name)
                 name = sanitize_filename(name)
                 name = name.replace('[nzbmatrix.com]','')
