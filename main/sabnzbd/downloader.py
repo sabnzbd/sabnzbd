@@ -407,6 +407,10 @@ class Downloader(Thread):
                                         '%s missing',
                                         __NAME__, nw.thrdnum, nw.server.host,
                                         nw.server.port, article.article)
+                        
+                    elif nw.lines[0][:3] in ('480'):
+                        msg = '[%s] Server %s:%s requires user/password' % (__NAME__, nw.server.host, nw.server.port)
+                        self.__reset_nw(nw, msg)
 
                 if done:
                     logging.info('[%s] Thread %s@%s:%s: %s done',
