@@ -1,4 +1,22 @@
 -------------------------------------------------------------------------------
+0.4.3RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Dirscanner: if ignored file is replaced it will still be ignored
+- Accept RAR files that contain NZB-s as input.
+- Duplicate RSS jobs are not filtered out
+- Proper script is not set when fetching from newzbin bookmarks
+- Strip white-space around server host name
+- Par2 checking can fail if first article of a par2 file is missing
+- No error report when server authentication is missing
+- Sort the category list
+- On schedule change, evaluate pause/resume state properly
+- %s.n bug in the TV Sorting Preview
+- %s.n and %s_n bug in TV Sorting output
+-------------------------------------------------------------------------------
+0.4.2Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Repair "Changed sorting of nzb contents to be more accurate"
+-------------------------------------------------------------------------------
 0.4.1Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix for NZB files containing empty files (e.g. coming from nzbindex.nl)
