@@ -514,7 +514,7 @@ class NzbObject(TryList):
 
         ## Special treatment for first part of par2 file
         fn = nzf.get_filename()
-        if (not nzf.is_par2()) and fn and fn.endswith('.par2'):
+        if (not nzf.is_par2()) and fn and fn.strip().lower().endswith('.par2'):
             if fn:
                 par2match = re.search(PROBABLY_PAR2_RE, fn)
                 ## Is a par2file and repair mode activated
