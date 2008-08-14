@@ -112,7 +112,8 @@ class RSSQueue:
             for f in self.jobs:
                 if f == fd:
                     for lk in self.jobs[fd]:
-                        if self.jobs[fd][lk][1]==title:
+                        item = self.jobs[fd][lk]
+                        if item[0]=='D' and item[1]==title:
                             return True
                     return False
             return False
