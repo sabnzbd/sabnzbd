@@ -79,9 +79,6 @@ Windows (binaries)
 Embedded modules (no need to install)
     CherryPy-2.3.0          http://www.cherrypy.org
 
-Embedded modules (no need to install)
-    CherryPy-2.3.0          http://www.cherrypy.org
-
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
 Start the program from the commandline:

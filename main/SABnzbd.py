@@ -148,7 +148,7 @@ Copyright (C) 2008, The SABnzbd-Team <team@sabnzbd.org>
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
-GNU GENERAL PUBLIC LICENSE Version 2.
+GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
 """ % (sabnzbd.MY_NAME, sabnzbd.__version__)
 
