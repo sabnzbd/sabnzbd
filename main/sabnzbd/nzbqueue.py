@@ -408,8 +408,17 @@ class NzbQueue(TryList):
                 self.__downloaded_items.append(hist_item)
             del keep
         else:
-            hist_item = self.__downloaded_items.pop(int(job))
-            DeleteLog(hist_item.filename)
+            n = 0
+            found = False
+            for hist_item in self.__downloaded_items:
+                if (not hist_item.nzo) and (str(int(hist_item.completed*1000)) == job):
+                    found = True
+                    break
+                n = n+1
+            if found:
+                logging.debug("[%s] Delete History item %s", __NAME__, job)
+                hist_item = self.__downloaded_items.pop(n)
+                DeleteLog(hist_item.filename)
 
     @synchronized(NZBQUEUE_LOCK)
     def queue_info(self, for_cli = False):
@@ -429,7 +438,6 @@ class NzbQueue(TryList):
     def history_info(self):
         history_info = {}
         bytes_downloaded = 0
-        n = 0
         for hist_item in self.__downloaded_items:
             completed = hist_item.completed
             filename = hist_item.filename
@@ -451,8 +459,8 @@ class NzbQueue(TryList):
                     status = ""
                 loaded = False
 
-            history_info[completed].append((filename, unpackstrht, loaded, bytes, n, status))
-            n = n + 1
+            ident = str(int(hist_item.completed*1000))
+            history_info[completed].append((filename, unpackstrht, loaded, bytes, ident, status))
         return (history_info, bytes_downloaded, sabnzbd.get_bytes())
 
     @synchronized(NZBQUEUE_LOCK)
