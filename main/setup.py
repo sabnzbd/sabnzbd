@@ -241,7 +241,8 @@ PatchVersion(release)
 # List of data elements, directories end with a '/'
 data = [ 'README.txt',
          'INSTALL.txt',
-         'LICENSE.txt',
+         'GPL2.txt',
+         'GPL3.txt',
          'CHANGELOG.txt',
          'COPYRIGHT.txt',
          'ISSUES.txt',
