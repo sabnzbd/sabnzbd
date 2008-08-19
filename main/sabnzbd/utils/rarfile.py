@@ -7,6 +7,9 @@
 #   - Improve compatibility with Python's ZipFile support:
 #       - Always use Unix separators '/' in pathnames
 #       - Foldernames must always end with a '/'
+# Optimized to fit in SABnzbd:
+#   - No extract hack (not needed for just rarred NZB files).
+#   - Use external program facilities of newsunpack.py
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -25,12 +28,10 @@ from struct import pack, unpack
 from binascii import crc32
 from cStringIO import StringIO
 import tempfile
+from sabnzbd.newsunpack import SimpleRarExtract
 
 # whether to speed up decompression by using tmp archive
-_use_extract_hack = 1
-
-# command line to use for extracting
-_extract_cmd = 'unrar p -inul "%s" "%s"'
+_use_extract_hack = 0
 
 #
 # rar constants
@@ -432,17 +433,16 @@ class RarFile:
     # extract using unrar
     def _extract_unrar(self, rarfile, inf):
         fn = inf.filename
-        # linux unrar wants '/', not '\'
-        fn = fn.replace("\\", "/")
-        # shell escapes
-        fn = fn.replace("`", "\\`")
-        fn = fn.replace('"', '\\"')
-        fn = fn.replace("$", "\\$")
-
-        cmd = _extract_cmd % (rarfile, fn)
-        fd = os.popen(cmd, "r")
-        buf = fd.read()
-        err = fd.close()
+        if os.name == 'nt':
+            # Windows unrar wants '\', not '/'
+            fn = fn.replace("/", "\\")
+        else:
+            # shell escapes for Unix/OSX
+            fn = fn.replace("`", "\\`")
+            fn = fn.replace('"', '\\"')
+            fn = fn.replace("$", "\\$")
+        
+        err, buf = SimpleRarExtract(rarfile, fn)
         if err > 0:
             raise Exception("Error reading file")
         return buf
