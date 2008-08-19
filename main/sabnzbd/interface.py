@@ -53,6 +53,8 @@ from sabnzbd.newzbin import InitCats, IsNewzbin
 
 from sabnzbd.constants import *
 
+RE_URL = re.compile('(.+)/sabnzbd/rss\?mode.+', re.I)
+
 #------------------------------------------------------------------------------
 
 PROVIDER = DictAuthProvider({})
@@ -362,8 +364,9 @@ class MainPage(ProtectedClass):
 
     @cherrypy.expose
     def rss(self, mode='history'):
+        url = cherrypy.request.browser_url
         if mode == 'history':
-            return rss_history()
+            return rss_history(url)
         elif mode == 'warnings':
             return rss_warnings()
 
@@ -2348,7 +2351,12 @@ def std_time(when):
     return item
 
 
-def rss_history():
+def rss_history(url):
+    m = RE_URL.search(url)
+    if not m:
+        url = 'http://%s:%s' % (sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'])
+    else:
+        url = m.group(1)
 
     rss = RSS()
     rss.channel.title = "SABnzbd History"
@@ -2377,8 +2385,7 @@ def rss_history():
             if (msgid):
                 item.link    = "https://www.newzbin.com/browse/post/%s/" % msgid
             else:
-                item.link    = "http://%s:%s/sabnzbd/history" % ( \
-                                sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )
+                item.link    = url + '/sabnzbd/'
 
             if loaded:
                 stageLine = "Post-processing active.<br>"
