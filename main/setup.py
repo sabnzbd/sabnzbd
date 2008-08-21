@@ -19,8 +19,6 @@
 import sabnzbd
 from distutils.core import setup
 
-# py2exe usage: python setup.py py2exe
-
 import glob
 import sys
 import os
@@ -32,6 +30,12 @@ try:
     import py2exe
 except ImportError:
     py2exe = None
+try:
+    import py2app
+    from setuptools import setup
+except ImportError:
+    py2app = None
+
 
 VERSION_FILE = 'sabnzbd/version.py'
 
@@ -219,8 +223,8 @@ if len(sys.argv) < 2:
 else:
     target = sys.argv[1]
 
-if target not in ('source', 'binary'):
-    print 'Usage: setup.py binary|source'
+if target not in ('source', 'binary', 'app'):
+    print 'Usage: setup.py binary|source|app'
     exit(1)
 
 # Derive release name from path
@@ -259,8 +263,8 @@ options = dict(
       name = 'SABnzbd',
       version = release,
       url = 'http://sourceforge.net/projects/sabnzbdplus',
-      author = 'ShyPike, sw1tch (original work by Gregor Kaufmann)',
-      author_email = 'shypike@users.sourceforge.net',
+      author = 'The SABnzbd-Team',
+      author_email = 'team@sabnzbd.org',
       description = 'SABnzbd ' + str(sabnzbd.__version__),
       scripts = ['SABnzbd.py'],
       packages = ['sabnzbd', 'sabnzbd.utils', 'sabnzbd.utils.multiauth'],
@@ -271,7 +275,16 @@ options = dict(
 )
 
 
-if target == 'binary':
+if target == 'app':
+    options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]	      
+    options['options'] = {'py2app': {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns'}}
+    options['app'] = ['SABnzbd.py']
+    options['setup_requires'] = ['py2app']    
+
+    setup(**options)
+    os.system(SvnRevert)
+
+elif target == 'binary':
     if not py2exe:
         print "Sorry, only works on Windows!"
         exit(1)
