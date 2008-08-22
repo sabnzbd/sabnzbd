@@ -448,6 +448,7 @@ class MainPage(ProtectedClass):
 
         elif mode == 'config':
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
+                if not value: value = 0
                 if value.isdigit():
                     try: value = int(value)
                     except: return 'error: Please submit a value\n'
@@ -862,7 +863,8 @@ class QueuePage(ProtectedClass):
         raise Raiser(self.__root, dummy)
     
     @cherrypy.expose
-    def set_speedlimit(self, dummy = None, value=None):
+    def set_speedlimit(self, dummy = None, value=0):
+        if not value: value = 0
         try: value = int(value)
         except: return 'error: Please submit a value\n'
         sabnzbd.CFG['misc']['bandwith_limit'] = value
@@ -2185,13 +2187,20 @@ def build_header(prim):
 
     header = { 'version':sabnzbd.__version__, 'paused':sabnzbd.paused(),
                'uptime':uptime, 'color_scheme':color }
+    try:
+        if int(sabnzbd.BANDWITH_LIMIT) > 0:
+            speed_limit = sabnzbd.BANDWITH_LIMIT
+        else:
+            speed_limit = ''
+    except:
+        speed_limit = ''
 
     header['helpuri'] = 'http://sabnzbd.wikidot.com'
     header['diskspace1'] = "%.2f" % diskfree(sabnzbd.DOWNLOAD_DIR)
     header['diskspace2'] = "%.2f" % diskfree(sabnzbd.COMPLETE_DIR)
     header['diskspacetotal1'] = "%.2f" % disktotal(sabnzbd.DOWNLOAD_DIR)
     header['diskspacetotal2'] = "%.2f" % disktotal(sabnzbd.COMPLETE_DIR)
-    header['speedlimit'] = "%s" % sabnzbd.BANDWITH_LIMIT
+    header['speedlimit'] = "%s" % speed_limit
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last()
     if prim:
