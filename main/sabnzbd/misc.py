@@ -180,6 +180,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
             ok = 1
     else:
         zf.close()
+        ok = 1
 
     return ok
 
