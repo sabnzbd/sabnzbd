@@ -101,6 +101,14 @@ except AttributeError:
             return 0.0
 
 
+def Escape(str):
+    """ Safe escape """
+    try:
+        return escape(str)
+    except:
+        return ""
+
+
 def CheckFreeSpace():
     if sabnzbd.DOWNLOAD_FREE > 0 and not sabnzbd.paused():
         if diskfree(sabnzbd.DOWNLOAD_DIR) < float(sabnzbd.DOWNLOAD_FREE) / GIGI:
@@ -652,7 +660,7 @@ class QueuePage(ProtectedClass):
             slot['unpackopts'] = str(unpackopts)
             slot['script'] = str(script)
             fn, slot['msgid'] = SplitFileName(filename)
-            slot['filename'] = escape(fn)
+            slot['filename'] = Escape(fn)
             slot['cat'] = str(cat)
             slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
             slot['mb'] = "%.2f" % (bytes / MEBI)
@@ -682,7 +690,7 @@ class QueuePage(ProtectedClass):
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
                     if isinstance(fn, unicode):
-                        fn = escape(fn.encode('utf-8'))
+                        fn = Escape(fn.encode('utf-8'))
 
                     age = calc_age(date)
 
@@ -695,7 +703,7 @@ class QueuePage(ProtectedClass):
                 for tup in active_files:
                     bytes_left, bytes, fn, date, nzf_id = tup
                     if isinstance(fn, unicode):
-                        fn = escape(fn.encode('utf-8'))
+                        fn = Escape(fn.encode('utf-8'))
 
                     age = calc_age(date)
 
@@ -709,7 +717,7 @@ class QueuePage(ProtectedClass):
                 for tup in queued_files:
                     _set, bytes_left, bytes, fn, date = tup
                     if isinstance(fn, unicode):
-                        fn = escape(fn.encode('utf-8'))
+                        fn = Escape(fn.encode('utf-8'))
 
                     age = calc_age(date)
 
@@ -900,7 +908,7 @@ class HistoryPage(ProtectedClass):
                 stages = []
                 item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
                         'nzo':nzo,
-                        'msgid':msgid, 'filename':escape(name), 'loaded':loaded,
+                        'msgid':msgid, 'filename':Escape(name), 'loaded':loaded,
                         'stages':stages, 'status':status}
                 if self.__verbose:
                     stage_keys = unpackstrht.keys()
@@ -1925,13 +1933,13 @@ class ConnectionInfo(ProtectedClass):
                     nzf = article.nzf
                     nzo = nzf.nzo
 
-                    art_name = escape(article.article)
+                    art_name = Escape(article.article)
+
                     #filename field is not always present
-                    try:
-                        nzf_name = escape(nzf.get_filename())
-                    except: #attribute error
-                        nzf_name = escape(nzf.get_subject())
-                    nzo_name = escape(nzo.get_filename())
+                    nzf_name = Escape(nzf.get_filename())
+                    if not nzf_name: nzf_name = Escape(nzf.get_subject())
+
+                    nzo_name = Escape(nzo.get_filename())
 
                 busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
 
@@ -1943,7 +1951,7 @@ class ConnectionInfo(ProtectedClass):
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
-            wlist.append(escape(w))
+            wlist.append(Escape(w))
         header['warnings'] = wlist
 
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
@@ -2060,7 +2068,7 @@ def ShowFile(name, path):
     </pre></code><br/><br/>
 </body>
 </html>
-''' % (name, name, escape(msg))
+''' % (name, name, Escape(msg))
 
 
 def ShowOK(url):
@@ -2077,44 +2085,44 @@ def ShowOK(url):
     <br/><br/>
 </body>
 </html>
-''' % (escape(url), escape(url))
+''' % (Escape(url), Escape(url))
 
 
 def ShowRssLog(feed, all):
     """Return a html page listing an RSS log and a 'back' button
     """
     jobs = sabnzbd.show_rss_result(feed)
-    qfeed = escape(feed.replace('/','%2F').replace('?', '%3F'))
+    qfeed = Escape(feed.replace('/','%2F').replace('?', '%3F'))
 
     doneStr = ""
     for x in jobs:
         job = jobs[x]
         if job[0] == 'D':
-            doneStr += '%s<br/>' % encode_for_xml(escape(job[1]))
+            doneStr += '%s<br/>' % encode_for_xml(Escape(job[1]))
     goodStr = ""
     for x in jobs:
         job = jobs[x]
         if job[0] == 'G':
-            goodStr += '%s<br/>' % encode_for_xml(escape(job[1]))
+            goodStr += '%s<br/>' % encode_for_xml(Escape(job[1]))
     badStr = ""
     for x in jobs:
         job = jobs[x]
         if job[0] == 'B':
-            name = escape(job[2]).replace('/','%2F').replace('?', '%3F')
+            name = Escape(job[2]).replace('/','%2F').replace('?', '%3F')
             if job[3]:
-                cat = '&cat=' + escape(job[3])
+                cat = '&cat=' + Escape(job[3])
             else:
                 cat = ''
             if job[4]:
-                pp = '&pp=' + escape(job[4])
+                pp = '&pp=' + Escape(job[4])
             else:
                 pp = ''
             if job[5]:
-                script = '&script=' + escape(job[5])
+                script = '&script=' + Escape(job[5])
             else:
                 script = ''
             badStr += '<a href="rss_download?feed=%s&id=%s%s%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
-                (qfeed, name, cat, pp, encode_for_xml(escape(job[1])))
+                (qfeed, name, cat, pp, encode_for_xml(Escape(job[1])))
 
     if all:
         return '''
@@ -2139,7 +2147,7 @@ def ShowRssLog(feed, all):
     <br/>
 </body>
 </html>
-''' % (escape(feed), escape(feed), goodStr, badStr, doneStr)
+''' % (Escape(feed), Escape(feed), goodStr, badStr, doneStr)
     else:
         return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -2157,7 +2165,7 @@ def ShowRssLog(feed, all):
     <br/>
 </body>
 </html>
-''' % (escape(feed), escape(feed), doneStr)
+''' % (Escape(feed), Escape(feed), doneStr)
 
 
 def build_header(prim):
@@ -2483,7 +2491,7 @@ def xml_qstatus():
         filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
-        name = encode_for_xml(escape(filename), 'UTF-8')
+        name = encode_for_xml(Escape(filename), 'UTF-8')
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
         jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":name, "msgid":msgid } )
 
@@ -2549,7 +2557,7 @@ def xml_list(section, keyw, lst):
     text= '<?xml version="1.0" encoding="UTF-8" ?> \n<%s>\n' % section
 
     for cat in lst:
-        text += '<%s>%s</%s>\n' % (keyw, escape(cat), keyw)
+        text += '<%s>%s</%s>\n' % (keyw, Escape(cat), keyw)
 
     text += '</%s>' % section
 
