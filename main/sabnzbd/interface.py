@@ -488,6 +488,14 @@ class MainPage(ProtectedClass):
             else:
                 return 'not implemented\n'
 
+        elif mode == 'version':
+            if output == 'json':
+                return json_list('version', sabnzbd.__version__)
+            elif output == 'xml':
+                return xml_list('versions', 'version', (sabnzbd.__version__, ))
+            else:
+                return 'not implemented\n'
+        
         else:
             return 'not implemented\n'
 
