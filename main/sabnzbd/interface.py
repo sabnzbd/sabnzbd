@@ -223,6 +223,8 @@ class DummyFilter(MultiAuthFilter):
     def beforeFinalize(self):
         if isinstance(cherrypy.response.body, SecureResource):
             rsrc = cherrypy.response.body
+            if 'ma_username' in rsrc.callable_kwargs: del rsrc.callable_kwargs['ma_username']
+            if 'ma_password' in rsrc.callable_kwargs: del rsrc.callable_kwargs['ma_password']
             cherrypy.response.body = rsrc.callable(rsrc.instance,
                                                    *rsrc.callable_args,
                                                    **rsrc.callable_kwargs)
