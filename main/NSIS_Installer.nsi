@@ -56,7 +56,7 @@ DirText "Select the directory to install SABnzbd+ in:"
 ;--------------------------------
 ;Pages
 
-  !insertmacro MUI_PAGE_LICENSE "GPL3.txt"
+  !insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
   !define MUI_COMPONENTSPAGE_NODESC
   !insertmacro MUI_PAGE_COMPONENTS
 
@@ -212,6 +212,7 @@ Section Uninstall
     Delete "$INSTDIR\GPL2.txt"
     Delete "$INSTDIR\GPL3.txt"
     Delete "$INSTDIR\COPYRIGHT.txt"
+    Delete "$INSTDIR\LICENSE.txt"
     Delete "$INSTDIR\msvcr71.dll"
     Delete "$INSTDIR\python25.dll"
     Delete "$INSTDIR\lib\libeay32.dll"

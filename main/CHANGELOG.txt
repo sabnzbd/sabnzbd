@@ -1,9 +1,10 @@
 -------------------------------------------------------------------------------
-0.4.3RC1 by The SABnzbd-Team
+0.4.3RC4 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Dirscanner: if ignored file is replaced it will still be ignored
 - Accept RAR files that contain NZB-s as input.
-- Duplicate RSS jobs are not filtered out
+- Duplicate RSS jobs were not filtered out
+- Delete history made safer
 - Proper script is not set when fetching from newzbin bookmarks
 - Strip white-space around server host name
 - Par2 checking can fail if first article of a par2 file is missing
@@ -12,6 +13,7 @@
 - On schedule change, evaluate pause/resume state properly
 - %s.n bug in the TV Sorting Preview
 - %s.n and %s_n bug in TV Sorting output
+- Add API call to retrieve version
 -------------------------------------------------------------------------------
 0.4.2Final by The SABnzbd-Team
 -------------------------------------------------------------------------------

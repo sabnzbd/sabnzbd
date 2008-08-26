@@ -1,5 +1,5 @@
 *************************************
-*** This is SABnzbd 0.5.x         ***
+*** This is SABnzbd 0.4.3RC4      ***
 *************************************
 SABnzbd is an open-source cross-platform binary newsreader.
 It simplifies the process of downloading from Usenet dramatically,
@@ -13,8 +13,15 @@ There is an extensive Wiki on the use of SABnzbd.
 http://sabnzbd.wikidot.com/
 
 
+*******************************************
+*** Upgrading from 0.4.2                ***
+*******************************************
+Just install over the existing installation,
+and you will be able to resume where you left off.
+
+
 **************************************
-*** Upgrading from 0.3.4 and older ***
+*** Upgrading from 0.4.1 and older ***
 **************************************
 Do *not* install the new version over the old one.
 Remove old one first or install seperately.
@@ -23,18 +30,25 @@ You cannot re-use an unfinished download queue or keep
 the download history.
 
 
-*******************************************
-*** Upgrading from 0.4.0Beta3 and older ***
-*******************************************
-See "Upgrading from 0.3.4"
-
 
 *******************************************
-*** Upgrading from 0.4.0Beta4 and newer ***
+*** Changes since 0.4.2                 ***
 *******************************************
-Just install over the existing installation,
-and you will be able to resume where you left off.
-
+New:
+- Watched folder and UI now accept RAR files containing NZB-files.
+- Add API call to retrieve version
+- Sort the category list
+Fixed:
+- Watched folder: changed files will now be re-examined
+- Duplicate RSS jobs were not filtered out
+- Delete history made safer
+- Proper script was not set when fetching from newzbin bookmarks
+- Strip white-space around server host name (preventing copy-paste errors)
+- Par2 checking would fail if first article of a par2 file is missing
+- No error report was giben when server authentication is missing
+- On schedule change, evaluate pause/resume state properly
+- Fixed %s.n bug in the TV Sorting Preview
+- Fixed %s.n and %s_n bug in TV Sorting output
 
 
 *******************************************
