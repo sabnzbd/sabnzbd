@@ -185,7 +185,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     return ok
 
 
-def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None):
+def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns: -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
@@ -221,7 +221,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
 
     sabnzbd.add_nzo(nzo)
     try:
-        os.remove(path)
+        if not keep: os.remove(path)
     except:
         logging.error("[%s] Error removing %s", __NAME__, path)
         return 1
@@ -1121,3 +1121,17 @@ def BadFetch(nzo, url):
                      (urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)),
                      '[URL Fetch]', 0)
     sabnzbd.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
+
+
+def OnCleanUpList(filename, skip_nzb=False):
+    """ Return True if a filename matches the clean-up list """
+
+    if sabnzbd.CLEANUP_LIST:
+        ext = os.path.splitext(filename)[1].strip().strip('.')
+        if os.name == 'nt': ext = ext.lower()
+        
+        for k in sabnzbd.CLEANUP_LIST:
+            item = k.strip().strip('.')
+            if item == ext and not (skip_nzb and item == 'nzb'):
+                return True
+    return False

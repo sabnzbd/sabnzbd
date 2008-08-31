@@ -39,7 +39,8 @@ from threading import Thread, RLock
 from sabnzbd.email import email_endjob
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         cleanup_empty_directories, get_unique_filename
+                         cleanup_empty_directories, get_unique_filename, \
+                         OnCleanUpList, ProcessSingleFile
 from sabnzbd.tvsort import TVSeasonCheck, TVSeasonMove, TVRenamer
 
 
@@ -77,6 +78,7 @@ class PostProcessor(Thread):
 
             ## Get the job flags
             flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
+            pp = sabnzbd.opts_to_pp(flagRepair, flagUnpack, flagDelete)
             script = nzo.get_script()
             group = nzo.get_group()
             cat = nzo.get_cat()
@@ -187,7 +189,7 @@ class PostProcessor(Thread):
 
                                       
             ## Remove files matching the cleanup list
-            if parResult: CleanUpList(tmp_workdir_complete)
+            if parResult: CleanUpList(tmp_workdir_complete, True)
 
 
             ## Give destination its final name
@@ -254,13 +256,21 @@ class PostProcessor(Thread):
             else:
                 nzo.set_status("Failed")
 
+            ## Check if this is an NZB-only download, if so redirect to queue
+            if parResult:
+                lst = NzbRedirect(workdir_complete, pp, script, cat)
+                if lst: nzo.set_unpackstr('=> Sent %s to queue' % lst, '[QUEUE]', 6)
+
+            # Another cleanup to remove any NZB that the users wants gone
+            if parResult: CleanUpList(tmp_workdir_complete, False)
+
             ## Clean up the NZO
             try:
                 logging.info('[%s] Cleaning up %s', __NAME__, filename)
                 sabnzbd.cleanup_nzo(nzo)
             except:
                 logging.error("[%s] Cleanup of %s failed.", __NAME__, nzo.get_filename())
-                
+
             ## Allow download to proceed
             sabnzbd.unidle_downloader()
 #end post-processor
@@ -350,13 +360,8 @@ def HandleEmptyQueue():
         sabnzbd.QUEUECOMPLETEACTION_GO = False
 
 
-def CleanUpList(wdir):
+def CleanUpList(wdir, skip_nzb):
     """ Remove all files matching the cleanup list """
-    def CheckItem(item, lst):
-        for k in lst:
-            if k.strip() == item:
-                return True
-        return False
 
     if sabnzbd.CLEANUP_LIST:
         try:
@@ -364,9 +369,7 @@ def CleanUpList(wdir):
         except:
             files = ()
         for _file in files:
-            root, ext = os.path.splitext(_file)
-     
-            if CheckItem(ext, sabnzbd.CLEANUP_LIST):
+            if OnCleanUpList(_file, skip_nzb):
                 path = os.path.join(wdir, _file)
                 try:
                     logging.info("[%s] Removing unwanted file %s", __NAME__, path)
@@ -380,3 +383,29 @@ def prefix(path, pre):
     p, d = os.path.split(path)
     return os.path.join(p, pre + d)
 
+
+def NzbRedirect(wdir, pp, script, cat):
+    """ Check if this job contains only NZB files,
+        if so send to queue and remove if on CleanList
+        Returns list of processed NZB's
+    """
+    list = []
+
+    files = os.listdir(wdir)
+    for file in files:
+        if os.path.splitext(file)[1].lower() != '.nzb'):
+            return list
+    
+    # Process all NZB files
+    keep = not OnCleanUpList("x.nzb", False)
+    for file in files:
+        if file.lower().endswith('.nzb'):
+            ProcessSingleFile(file, os.path.join(wdir, file), pp, script, cat, keep=keep)
+            list.append(file)
+
+    try:
+        # Folder will be removed when empty
+        os.rmdir(wdir)
+    except:
+        pass
+    return list
