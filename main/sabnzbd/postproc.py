@@ -93,6 +93,14 @@ class PostProcessor(Thread):
             # Get the folder containing the download result
             workdir = os.path.join(self.download_dir, nzo.get_dirname())
 
+            # if the directory has not been made, no files were assembled
+            if not os.path.exists(workdir):
+                emsg = 'Download failed - Out of your server\'s retention?'
+                nzo.set_unpackstr(emsg, '[Failed]', 0)
+                # do not run unpacking or parity verification
+                flagRepair = flagUnpack = parResult = False
+                unpackError = True
+                
             logging.info('[%s] Starting PostProcessing on %s' + \
                          ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s',
                          __NAME__, filename, flagRepair, flagUnpack, flagDelete, script)
