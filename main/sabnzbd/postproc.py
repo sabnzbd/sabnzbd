@@ -393,7 +393,7 @@ def NzbRedirect(wdir, pp, script, cat):
 
     files = os.listdir(wdir)
     for file in files:
-        if os.path.splitext(file)[1].lower() != '.nzb'):
+        if os.path.splitext(file)[1].lower() != '.nzb':
             return list
     
     # Process all NZB files
