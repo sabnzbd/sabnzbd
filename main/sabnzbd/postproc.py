@@ -133,6 +133,9 @@ class PostProcessor(Thread):
                 logging.info('[%s] Par2 check finished on %s', __NAME__, filename)
 
             mailResult = parResult
+            jobResult = 1
+            if parResult: jobResult = 0
+
             ## Check if user allows unsafe post-processing
             if not sabnzbd.SAFE_POSTPROC:
                 parResult = True
@@ -222,6 +225,7 @@ class PostProcessor(Thread):
                 else:
                     workdir_complete = TVSeasonMove(tmp_workdir_complete)
 
+            if unpackError: jobResult = jobResult + 2
 
             ## Clean up download dir
             cleanup_empty_directories(self.download_dir)
@@ -234,13 +238,13 @@ class PostProcessor(Thread):
             ## Run the user script
             fname = ""
             ext_out = ""
-            if sabnzbd.SCRIPT_DIR and script and script!='None' and script!='Default' and parResult:
+            if sabnzbd.SCRIPT_DIR and script and script!='None' and script!='Default':
                 #set the current nzo status to "Ext Script...". Used in History
                 script = os.path.join(sabnzbd.SCRIPT_DIR, script)
                 if os.path.exists(script):
                     nzo.set_status("Running Script...")
                     nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
-                    ext_out = external_processing(script, workdir_complete, filename, dirname, cat, group)
+                    ext_out = external_processing(script, workdir_complete, filename, dirname, cat, group, jobResult)
                     fname = MakeLogFile(filename, ext_out)
             else:
                 script = ""
