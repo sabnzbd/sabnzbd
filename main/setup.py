@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/b in/env python
 #
 # Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
 #
@@ -22,7 +22,7 @@ from distutils.core import setup
 import glob
 import sys
 import os
-import os
+import platform
 import tarfile
 import re
 import subprocess
@@ -277,6 +277,11 @@ options = dict(
 
 
 if target == 'app':
+    if not platform.platform == 'darwin':
+        print "Sorry, only works on Apple OSX!"
+        os.system(SvnRevert)
+        exit(1)
+
     options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]	      
     options['options'] = {'py2app': {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns'}}
     options['app'] = ['SABnzbd.py']
@@ -288,6 +293,7 @@ if target == 'app':
 elif target == 'binary':
     if not py2exe:
         print "Sorry, only works on Windows!"
+        os.system(SvnRevert)
         exit(1)
 
     sys.argv[1] = 'py2exe'

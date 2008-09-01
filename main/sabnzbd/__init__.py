@@ -33,6 +33,13 @@ import gzip
 import time
 from time import sleep
 
+try:
+    # Try to import OSX library
+    import Foundation
+    DARWIN = True
+except:
+    DARWIN = False
+
 from threading import RLock, Lock, Condition, Thread
 
 from sabnzbd.assembler import Assembler
@@ -303,7 +310,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
-           WEB_DIR, WEB_DIR2, pause_on_post_processing
+           WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN
 
     if __INITIALIZED__:
         return False

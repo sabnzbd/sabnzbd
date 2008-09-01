@@ -79,7 +79,7 @@ class Assembler(Thread):
                     logging.info('[%s] Decoding %s %s', __NAME__, filepath, nzf.get_type())
                     try:
                         # OSX fix for unicode chars
-                        if sys.platform == 'darwin':
+                        if sabnzbd.DARWIN:
                             filepath = filepath.encode('utf8')
                             logging.info('utf8 filepath: ' + filepath)
                         _assemble(nzf, filepath, dupe)

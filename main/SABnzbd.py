@@ -281,21 +281,18 @@ def GetProfileInfo(vista):
             except:
                 pass                        
 
-    elif sys.platform == 'darwin':
-        # OSX
-    	#not pretty
-    	#sabnzbd.DIR_APPDATA = '%s/Library/Application Support/%s' % (os.environ['HOME'], DEF_WORKDIR)
-    	sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % (os.environ['HOME'])
-    	sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
-    	sabnzbd.DIR_HOME = os.environ['HOME']
-    	ok = True
+    elif sabnzbd.DARWIN:
+        sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % (os.environ['HOME'])
+        sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+        sabnzbd.DIR_HOME = os.environ['HOME']
+        ok = True
    
     else:
         # Unix/Linux
-    	sabnzbd.DIR_APPDATA = '%s/.%s' % (os.environ['HOME'], DEF_WORKDIR)
-    	sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
-    	sabnzbd.DIR_HOME = os.environ['HOME']
-    	ok = True
+        sabnzbd.DIR_APPDATA = '%s/.%s' % (os.environ['HOME'], DEF_WORKDIR)
+        sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+        sabnzbd.DIR_HOME = os.environ['HOME']
+        ok = True
 
     if not ok:
         Panic("Cannot access the user profile.",
@@ -786,8 +783,24 @@ def main():
 
     Notify("SAB_Shutdown", None)
 
-#OSX
-if sys.platform == 'darwin':
+
+
+#####################################################################
+#
+# Platform specific startup code
+#
+
+if not sabnzbd.DARWIN:
+
+    # Windows & Unix/Linux
+
+    if __name__ == '__main__':
+        main()
+
+else:
+
+    # OSX
+
     if __name__ == '__main__':
         try:
             from email import header
@@ -839,6 +852,3 @@ if sys.platform == 'darwin':
             AppHelper.runEventLoop()
         except:
             main()
-else:
-	if __name__ == '__main__':
-	    main()

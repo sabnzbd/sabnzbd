@@ -20,9 +20,6 @@ sabnzbd.newsunpack
 """
 __NAME__ = 'newsunpack'
 
-#OSX
-import platform
-
 import os
 import re
 import subprocess
@@ -54,8 +51,7 @@ ZIP_COMMAND = None
 def find_programs(curdir):
     """Find external programs
     """
-    #OSX
-    if platform.system() == 'Darwin':
+    if sabnzbd.DARWIN:
        if platform.machine() == 'i386':
        		p = os.path.abspath(curdir + '/osx/par2/par2')
        else:
