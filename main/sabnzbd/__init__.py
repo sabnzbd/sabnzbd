@@ -947,7 +947,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None):
     logging.info('[%s] Adding %s', __NAME__, filename)
 
     try:
-        f, path = tempfile.mkstemp(text=False)
+        f, path = tempfile.mkstemp(suffix=ext, text=False)
         os.write(f, nzbfile.value)
         os.close(f)
     except:
