@@ -1589,6 +1589,7 @@ class ConfigRss(ProtectedClass):
             feed = None
         if feed:
             cfg['enable'] = int(not int(cfg['enable']))
+            save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, dummy)
 
     @cherrypy.expose
