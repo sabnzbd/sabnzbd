@@ -32,7 +32,7 @@ from threading import Thread, RLock
 
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject, SplitFileName
-from sabnzbd.misc import Panic_Queue, ExitSab, OnCleanUpList
+from sabnzbd.misc import Panic_Queue, ExitSab
 
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -354,11 +354,6 @@ class NzbQueue(TryList):
         file_done, post_done, reset = nzo.remove_article(article)
 
         filename = nzf.get_filename()
-        if filename:
-            if OnCleanUpList(filename, True):
-                logging.info("[%s] Skipping %s", __NAME__, nzf)
-                file_done, reset = (False, True)
-                post_done = post_done or nzo.remove_nzf(nzf)
 
         if reset:
             self.reset_try_list()
