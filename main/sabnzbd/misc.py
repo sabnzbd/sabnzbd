@@ -135,7 +135,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     if pp == None: pp = _pp
     if script == None: script = _script
 
-    if path.endswith('.zip'):
+    if path.lower().endswith('.zip'):
         try:
             zf = zipfile.ZipFile(path)
         except:
@@ -146,15 +146,15 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         except:
             return -1
     else:
-        return -1
+        return 1
 
-    ok = True
+    status = 0
     for name in zf.namelist():
         name = name.lower()
         if not (name.endswith('.nzb') or name.endswith('.nfo') or name.endswith('/')):
-            ok = False
+            status = 1
             break
-    if ok:
+    if status == 0:
         for name in zf.namelist():
             if name.lower().endswith('.nzb'):
                 try:
@@ -177,12 +177,12 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
             os.remove(path)
         except:
             logging.error("[%s] Error removing %s", __NAME__, path)
-            ok = 1
+            status = 1
     else:
         zf.close()
-        ok = 1
+        status = 1
 
-    return ok
+    return status
 
 
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False):
@@ -416,10 +416,6 @@ class URLGrabber(Thread):
                 fn, header = opener.retrieve(url)
 
                 filename, data = (None, None)
-                f = open(fn, 'r')
-                data = f.read()
-                f.close()
-                os.remove(fn)
 
                 for tup in header.items():
                     for item in tup:
@@ -427,21 +423,32 @@ class URLGrabber(Thread):
                             filename = item[item.index("filename=") + 9:].strip('"')
                             break
 
-                if data:
-                    if not filename:
-                        filename = os.path.basename(url)
-                    else:
-                        filename = sanitize_filename(filename)
-                    pp = future_nzo.get_repair_opts()
-                    script = future_nzo.get_script()
-                    cat = future_nzo.get_cat()
-                    cat, pp, script = Cat2Opts(cat, pp, script)
-                    sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat)
+                if not filename:
+                    filename = os.path.basename(url)
                 else:
-                    BadFetch(future_nzo, url)
+                    filename = sanitize_filename(filename)
+                pp = future_nzo.get_repair_opts()
+                script = future_nzo.get_script()
+                cat = future_nzo.get_cat()
+                cat, pp, script = Cat2Opts(cat, pp, script)
+
+
+                if os.path.splitext(filename)[1].lower() == '.nzb':
+                    data = file(fn, 'r').read()
+                    os.remove(fn)
+                    if data:
+                        sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat)
+                    else:
+                        BadFetch(future_nzo, url, retry=False)
+                else:
+                    if ProcessArchiveFile(filename, fn, pp, script, cat) == 0:
+                        sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                    else:
+                        os.remove(fn)
+                        BadFetch(future_nzo, url, retry=False, archive=True)
 
             except:
-                BadFetch(future_nzo, url)
+                BadFetch(future_nzo, url, retry=True)
 
             # Don't pound the website!
             time.sleep(1.0)
@@ -1090,7 +1097,7 @@ def getFilepath(path, nzo, filename):
     return fullPath
 
 
-def BadFetch(nzo, url):
+def BadFetch(nzo, url, retry, archive=False):
     """ Create History entry for failed URL Fetch """
     logging.error("[%s] Error getting url %s", __NAME__, url)
 
@@ -1112,14 +1119,20 @@ def BadFetch(nzo, url):
 
     nzo.set_status("Failed")
 
-    if url.find('://') < 0:
+    if archive:
+        nzo.set_filename('Got unusable archive file from %s' % url)
+    elif url.find('://') < 0:
         nzo.set_filename('Failed to fetch newzbin report %s' % url)
     else:
         nzo.set_filename('Failed to fetch NZB from %s' % url)
 
-    nzo.set_unpackstr('=> Failed, <a href="./retry?url=%s%s%s%s">Try again</a>' % \
-                     (urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)),
-                     '[URL Fetch]', 0)
+    if retry:
+        nzo.set_unpackstr('=> Failed, <a href="./retry?url=%s%s%s%s">Try again</a>' % \
+                         (urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)),
+                         '[URL Fetch]', 0)
+    else:
+        nzo.set_unpackstr('=> Incorrect file', '[URL Fetch]', 0)
+
     sabnzbd.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
 
 
