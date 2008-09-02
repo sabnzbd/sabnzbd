@@ -179,7 +179,6 @@ class PostProcessor(Thread):
                     logging.info("[%s] Running unpack_magic on %s", __NAME__, filename)
                     unpackError, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), ())
                     logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
-                    if newfiles and tv_file and filename_set: TVRenamer(tmp_workdir_complete, newfiles, filename_set)
                 else:
                     nzo.set_unpackstr('=> No post-processing because of failed verification', '[UNPACK]', 2)
 
@@ -223,6 +222,7 @@ class PostProcessor(Thread):
                     except:
                         logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
                 else:
+                    if newfiles and tv_file and filename_set: TVRenamer(tmp_workdir_complete, newfiles, filename_set)
                     workdir_complete = TVSeasonMove(tmp_workdir_complete)
 
             if unpackError: jobResult = jobResult + 2
