@@ -1711,7 +1711,10 @@ class ConfigScheduling(ProtectedClass):
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['schedlines'] = sabnzbd.CFG['misc']['schedlines']
+        config['schedlines'] = []
+        for ev in sabnzbd.SortSchedules(sabnzbd.CFG['misc']['schedlines'], forward=True):
+            config['schedlines'].append(ev[3])
+
 
         template = Template(file=os.path.join(self.__web_dir, 'config_scheduling.tmpl'),
                             searchList=[config],

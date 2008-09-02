@@ -1296,9 +1296,9 @@ def opts_to_pp(repair, unpack, delete):
 ################################################################################
 RSSTASK_MINUTE = random.randint(0, 59)
 
-def AnalyseSchedules(schedlines):
-    """ Determine what pause/resume state we would have now.
-        Return True if paused mode would be active.
+def SortSchedules(schedlines, forward):
+    """ Sort the schedules, based on order of happening from now
+        forward: assume expired daily event to occur tomorrow
     """
 
     events = []
@@ -1322,23 +1322,32 @@ def AnalyseSchedules(schedlines):
             then = int(h)*60 + int(m)
             if d == '*':
                 d = int(now/(24*60))
-                if then < now_hm: d = (d + 1) % 7
+                if forward and (then < now_hm): d = (d + 1) % 7
             else:
                 d = int(d)-1
             then = d*24*60 + then
         except:
             continue # Bad schedule, ignore
+
         dif = then - now
         if dif < 0: dif = dif + 7*24*60
 
         events.append((dif, action, parms, schedule))
 
-    # Reverse sort schedules
-    events.sort(lambda x, y: y[0]-x[0])
+    events.sort(lambda x, y: x[0]-y[0])
+    return events
 
-    logging.debug('[%s] Schedule check now=%s ', __NAME__, now)
-    for ev in events:
-        logging.debug('[%s] Schedule check result = %s ', __NAME__, ev)
+
+def AnalyseSchedules(schedlines):
+    """ Determine what pause/resume state we would have now.
+        Return True if paused mode would be active.
+    """
+
+    paused = None
+    speedlimit = None
+
+    for ev in SortSchedules(schedlines, forward=False):
+        logging.debug('[%s] Schedule check result = %s', __NAME__, ev)
         action = ev[1]
         if action == 'pause': paused = True
         if action == 'resume': paused = False
