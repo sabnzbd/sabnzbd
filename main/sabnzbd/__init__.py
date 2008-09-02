@@ -1305,8 +1305,8 @@ def AnalyseSchedules(schedlines):
     paused = None
     speedlimit = None
     now = time.localtime()
-    now = int(now[6])*24*60 + int(now[3])*60 + int(now[4])
-    now = now + 2 # Add a 2 minute safety margin
+    now_hm = int(now[3])*60 + int(now[4])
+    now = int(now[6])*24*60 + now_hm
 
     for schedule in schedlines:
         parms = None
@@ -1319,25 +1319,26 @@ def AnalyseSchedules(schedlines):
                 continue # Bad schedule, ignore
         action = action.strip()
         try:
+            then = int(h)*60 + int(m)
             if d == '*':
                 d = int(now/(24*60))
+                if then < now_hm: d = (d + 1) % 7
             else:
                 d = int(d)-1
-            then = d*24*60 + int(h)*60 + int(m)
+            then = d*24*60 + then
         except:
             continue # Bad schedule, ignore
-        if now >= then:
-            dif = now - then
-        else:
-            dif = 7*24*60 - then + now
+        dif = then - now
+        if dif < 0: dif = dif + 7*24*60
 
-        events.append((dif, action, parms))
+        events.append((dif, action, parms, schedule))
 
     # Reverse sort schedules
     events.sort(lambda x, y: y[0]-x[0])
 
+    logging.debug('[%s] Schedule check now=%s ', __NAME__, now)
     for ev in events:
-        logging.debug('[%s] Schedule check result = %s', __NAME__, ev)
+        logging.debug('[%s] Schedule check result = %s ', __NAME__, ev)
         action = ev[1]
         if action == 'pause': paused = True
         if action == 'resume': paused = False
