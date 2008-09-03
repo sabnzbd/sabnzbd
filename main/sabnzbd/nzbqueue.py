@@ -27,7 +27,6 @@ import logging
 import sabnzbd
 import time
 import datetime
-import glob
 
 from threading import Thread, RLock
 
@@ -37,11 +36,6 @@ from sabnzbd.misc import Panic_Queue, ExitSab
 
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
-
-def PurgeCache():
-    """ Remove all download debris from cache """
-    for name in glob.glob(sabnzbd.DOWNLOAD_DIR + '/SABnzbd_'):
-        os.remove(name)
 
 def DeleteLog(name):
     if name:
@@ -384,7 +378,6 @@ class NzbQueue(TryList):
             if not self.__nzo_list:
                 # Close server connections
                 sabnzbd.disconnect()
-                #PurgeCache()
 
                 # Sets the end-of-queue back on if disabled
                 # adding an nzb and re-adding for more blocks disables it
