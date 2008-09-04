@@ -734,7 +734,9 @@ def main():
             except:
                 cherrylogtoscreen = False
 
-    cherrypy.tree.mount(LoginPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/'), '/')
+    login_page = LoginPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/')
+    sabnzbd.LOGIN_PAGE = login_page
+    cherrypy.tree.mount(login_page, '/')
 
     cherrypy.config.update(updateMap={'server.environment': 'production',
                                  'server.socketHost': cherryhost,

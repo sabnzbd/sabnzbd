@@ -35,7 +35,7 @@ $(document).ready(function(){
 			$(this).parent().parent().prependTo('#queueTable');
 			$.ajax({
 				type: "GET",
-				url: "queue/switch?uid1="+$(this).parent().parent().attr('id')+"&uid2=0&dummy="+Math.random()
+				url: "queue/switch?uid1="+$(this).parent().parent().attr('id')+"&uid2=0&_dc="+Math.random()
 			});
 		});
 		
@@ -43,19 +43,19 @@ $(document).ready(function(){
 		$('#queueTable .proc_category').change(function(){
 			$.ajax({
 				type: "GET",
-				url: 'queue/change_cat?dummy='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&cat='+$(this).val()
+				url: 'queue/change_cat?_dc='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&cat='+$(this).val()
 			});
 		});
 		$('#queueTable .proc_option').change(function(){
 			$.ajax({
 				type: "GET",
-				url: 'queue/change_opts?dummy='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&pp='+$(this).val()
+				url: 'queue/change_opts?_dc='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&pp='+$(this).val()
 			});
 		});
 		$('#queueTable .proc_script').change(function(){
 			$.ajax({
 				type: "GET",
-				url: 'queue/change_script?dummy='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&script='+$(this).val()
+				url: 'queue/change_script?_dc='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&script='+$(this).val()
 			});
 		});
 		
@@ -191,7 +191,7 @@ $(document).ready(function(){
 	$("#maxSpeed-option").change( function() {
 		$.ajax({
 			type: "GET",
-			url: "api?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&dummy="+Math.random()
+			url: "api?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&_dc="+Math.random()
 		});
 	});
 	
@@ -199,7 +199,7 @@ $(document).ready(function(){
 	$("#onQueueFinish-option").change( function() {
 		$.ajax({
 			type: "GET",
-			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&dummy="+Math.random()
+			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&_dc="+Math.random()
 		});
 	});
 	
@@ -207,7 +207,7 @@ $(document).ready(function(){
 	$('#sort_by_avg_age').click(function(event) {
 		$.ajax({
 			type: "GET",
-			url: "queue/sort_by_avg_age?dummy="+Math.random(),
+			url: "queue/sort_by_avg_age?_dc="+Math.random(),
 			success: function(result){
 				//return LoadTheQueue(result);
 				return RefreshTheQueue();
@@ -217,7 +217,7 @@ $(document).ready(function(){
 	$('#sort_by_name').click(function(event) {
 		$.ajax({
 			type: "GET",
-			url: "queue/sort_by_name?dummy="+Math.random(),
+			url: "queue/sort_by_name?_dc="+Math.random(),
 			success: function(result){
 				//return LoadTheQueue(result);
 				return RefreshTheQueue();
@@ -227,7 +227,7 @@ $(document).ready(function(){
 	$('#sort_by_size').click(function(event) {
 		$.ajax({
 			type: "GET",
-			url: "queue/sort_by_size?dummy="+Math.random(),
+			url: "queue/sort_by_size?_dc="+Math.random(),
 			success: function(result){
 				//return LoadTheQueue(result);
 				return RefreshTheQueue();
@@ -240,7 +240,7 @@ $(document).ready(function(){
 		if(confirm('Sure you want to clear out your Queue?')){
 			$.ajax({
 				type: "GET",
-				url: "queue/purge?dummy="+Math.random(),
+				url: "queue/purge?_dc="+Math.random(),
 				success: function(result){
 					//return LoadTheQueue(result);
 					return RefreshTheQueue();
@@ -280,7 +280,7 @@ $(document).ready(function(){
 			if(confirm('Are you sure you want to shut down your *computer* when the downloads have finished?')){
 				$.ajax({
 					type: "GET",
-					url: "queue/tog_shutdown?dummy="+Math.random(),
+					url: "queue/tog_shutdown?_dc="+Math.random(),
 					success: function(result){
 						//return LoadTheQueue(result);
 						return RefreshTheQueue();
@@ -301,12 +301,12 @@ $(document).ready(function(){
 		if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
 			$.ajax({
 				type: "GET",
-				url: "api?mode=resume&dummy="+Math.random()
+				url: "api?mode=resume&_dc="+Math.random()
 			});
 		else
 			$.ajax({
 				type: "GET",
-				url: "api?mode=pause&dummy="+Math.random()
+				url: "api?mode=pause&_dc="+Math.random()
 			});
 		if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused')
 			$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
@@ -321,7 +321,7 @@ $(document).ready(function(){
 			$('#'+delid).fadeOut('fast');
 			$.ajax({
 				type: "GET",
-				url: 'queue/delete?dummy='+Math.random()+'&uid='+delid
+				url: 'queue/delete?_dc='+Math.random()+'&uid='+delid
 			});
 		}
 	});
@@ -330,7 +330,7 @@ $(document).ready(function(){
 	$('.h_menu_verbose').click(function(event) {
 		$.ajax({
 			type: "GET",
-			url: 'history/tog_verbose?dummy='+Math.random(),
+			url: 'history/tog_verbose?_dc='+Math.random(),
 			success: function(result){
 				return RefreshTheHistory();//$('#history').html(result);
 			}
@@ -341,7 +341,7 @@ $(document).ready(function(){
 	$('.h_menu_purge').dblclick(function(event) {
 		$.ajax({
 			type: "GET",
-			url: 'history/purge?dummy='+Math.random(),
+			url: 'history/purge?_dc='+Math.random(),
 			success: function(result){
 				return $('#history').html(result);
 			}
@@ -355,7 +355,7 @@ $(document).ready(function(){
 			$('#'+delid).fadeOut('fast');
 			$.ajax({
 				type: "GET",
-				url: 'history/delete?dummy='+Math.random()+'&job='+delid
+				url: 'history/delete?_dc='+Math.random()+'&job='+delid
 			});
 		}
 	});
@@ -385,7 +385,7 @@ function RefreshTheQueue() {
 		var limit = $('#queue_view_preference').val()
 	$.ajax({
 		type: "GET",
-		url: 'queue/?dummy2='+limit+'&dummy='+Math.random(),
+		url: 'queue/?dummy2='+limit+'&_dc='+Math.random(),
 		success: function(result){
 			return $('#queue').html(result);
 		}
@@ -399,7 +399,7 @@ function RefreshTheHistory() {
 		var limit = $('#history_view_preference').val()
 	$.ajax({
 		type: "GET",
-		url: 'history/?dummy2='+limit+'&dummy='+Math.random(),
+		url: 'history/?dummy2='+limit+'&_dc='+Math.random(),
 		success: function(result){
 			return $('#history').html(result);
 		}
@@ -427,7 +427,7 @@ function InitiateDragAndDrop() {
 				if (rows[i].id == row.id)
 					return $.ajax({
 						type: "GET",
-						url: "queue/switch?uid1="+row.id+"&uid2="+i+"&dummy="+Math.random()
+						url: "queue/switch?uid1="+row.id+"&uid2="+i+"&_dc="+Math.random()
 					});
 			return false;
 		}

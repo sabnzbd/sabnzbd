@@ -125,7 +125,7 @@ def Cat2OptsDef(fname, cat=None):
     return cat, name, pp, script
 
 
-def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None):
+def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, priority=NORMAL_PRIORITY):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns: -1==Error/Retry, 0==OK, 1==Ignore
@@ -167,7 +167,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 name = name.replace('[nzbmatrix.com]','')
                 if data:
                     try:
-                        nzo = NzbObject(name, pp, script, data, cat=cat)
+                        nzo = NzbObject(name, pp, script, data, cat=cat, priority=priority)
                     except:
                         nzo = None
                     if nzo:
@@ -185,7 +185,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     return status
 
 
-def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False):
+def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=NORMAL_PRIORITY):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns: -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
@@ -215,7 +215,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     if script == None: script = _script
 
     try:
-        nzo = NzbObject(name, pp, script, data, cat=cat)
+        nzo = NzbObject(name, pp, script, data, cat=cat, priority=priority)
     except:
         return -1
 
@@ -295,6 +295,7 @@ class DirScanner(Thread):
 
                 root, ext = os.path.splitext(path)
                 ext = ext.lower()
+                priority = sabnzbd.DIRSCAN_PRIORITY
                 candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
                 if candidate:
                     stat_tuple = os.stat(path)
@@ -322,7 +323,7 @@ class DirScanner(Thread):
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext in ('.zip', '.rar') :
-                        res = ProcessArchiveFile(filename, path, catdir=catdir)
+                        res = ProcessArchiveFile(filename, path, catdir=catdir, priority=priority)
                         if res == -1:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
@@ -332,7 +333,7 @@ class DirScanner(Thread):
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
-                        res = ProcessSingleFile(filename, path, catdir=catdir)
+                        res = ProcessSingleFile(filename, path, catdir=catdir, priority=priority)
                         if res == -1:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
@@ -430,6 +431,7 @@ class URLGrabber(Thread):
                 pp = future_nzo.get_repair_opts()
                 script = future_nzo.get_script()
                 cat = future_nzo.get_cat()
+                priority = future_nzo.get_priority()
                 cat, pp, script = Cat2Opts(cat, pp, script)
 
 
@@ -437,11 +439,11 @@ class URLGrabber(Thread):
                     data = file(fn, 'r').read()
                     os.remove(fn)
                     if data:
-                        sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat)
+                        sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority)
                     else:
                         BadFetch(future_nzo, url, retry=False)
                 else:
-                    if ProcessArchiveFile(filename, fn, pp, script, cat) == 0:
+                    if ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
                         sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                     else:
                         os.remove(fn)

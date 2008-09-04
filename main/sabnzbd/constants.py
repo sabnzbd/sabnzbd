@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 CONFIG_VERSION = 18
-QUEUE_VERSION = 7
+QUEUE_VERSION = 8
 
 PNFO_REPAIR_FIELD = 0
 PNFO_UNPACK_FIELD = 1
@@ -36,6 +36,7 @@ PNFO_FINISHED_FILES_FIELD = 13
 PNFO_ACTIVE_FILES_FIELD = 14
 PNFO_QUEUED_FILES_FIELD = 15
 PNFO_STATUS_FIELD = 16
+PNFO_PRIORITY_FIELD = 17
 
 QNFO_BYTES_FIELD = 0
 QNFO_BYTES_LEFT_FIELD = 1
@@ -83,6 +84,13 @@ MIN_DECODE_QUEUE = 5
 MAX_DECODE_QUEUE = 10
 MAX_WARNINGS     = 20
 
+TOP_PRIORITY = 2
+HIGH_PRIORITY = 1
+NORMAL_PRIORITY = 0
+LOW_PRIORITY = -1
+
+
+IGNORE_SAMPLE_LIST = ['.sample', '-sample', 'sample-', '~sample', '_sample']
 
 tv_episode_match = ['(\w+)x(\d+)',# 1x01
                       '[Ss](\d+)[\.\-]?[Ee](\d+)'] # S01E01

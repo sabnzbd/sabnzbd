@@ -28,7 +28,9 @@ import cherrypy
 import logging
 import re
 import glob
+import urllib
 from xml.sax.saxutils import escape
+from cherrypy.lib import cptools
 
 from sabnzbd.utils.rsslib import RSS, Item, Namespace
 from sabnzbd.utils.json import JsonWriter
@@ -174,9 +176,8 @@ def ListCats(default=False):
         return []
 
 
-def Raiser(root, dummy):
-    if dummy:
-        root += '?dummy=' + dummy
+def Raiser(root, *args, **kwargs):
+    root = '%s?%s' % (root, urllib.urlencode(kwargs))
     return cherrypy.HTTPRedirect(root)
 
 
@@ -242,18 +243,25 @@ class LoginPage:
             self._cpFilterList.append(DummyFilter('', PROVIDER))
 
         self.sabnzbd = MainPage(web_dir, root, prim=True)
+        self.root = root
         if web_dir2:
             self.sabnzbd.m = MainPage(web_dir2, root2, prim=False)
         else:
             self.sabnzbd.m = NoPage()
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         return ""
 
     @cherrypy.expose
     def unauthorized(self):
         return "<h1>You are not authorized to view this resource</h1>"
+    
+    def change_web_dir(self, web_dir):
+        self.sabnzbd = MainPage(web_dir, self.root, prim=True)
+        
+    def change_web_dir2(self, web_dir):
+        self.sabnzbd.m = MainPage(web_dir, self.root, prim=False)
 
 
 #------------------------------------------------------------------------------
@@ -262,7 +270,7 @@ class NoPage(ProtectedClass):
         pass
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         return badParameterResponse('Error: No secondary interface defined.')
 
 
@@ -280,7 +288,7 @@ class MainPage(ProtectedClass):
 
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
@@ -308,42 +316,42 @@ class MainPage(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def addID(self, id = None, pp=None, script=None, cat=None, redirect = None):
+    def addID(self, id = None, pp=None, script=None, cat=None, redirect = None, priority=NORMAL_PRIORITY):
         RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
         newzbin_url = RE_NEWZBIN_URL.search(id.lower())
         
         id = Strip(id)
         if id and (id.isdigit() or len(id)==5):
-            sabnzbd.add_msgid(id, pp, script, cat)
+            sabnzbd.add_msgid(id, pp, script, cat, priority)
         elif newzbin_url:
-            sabnzbd.add_msgid(Strip(newzbin_url.group(1)), pp, script, cat)
+            sabnzbd.add_msgid(Strip(newzbin_url.group(1)), pp, script, cat, priority)
         elif id:
-            sabnzbd.add_url(id, pp, script, cat)
+            sabnzbd.add_url(id, pp, script, cat, priority)
         if not redirect:
             redirect = self.__root
         raise cherrypy.HTTPRedirect(redirect)
 
 
     @cherrypy.expose
-    def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None):
+    def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None, priority=NORMAL_PRIORITY):
         url = Strip(url)
         if url and (url.isdigit() or len(url)==5):
-            sabnzbd.add_msgid(url, pp, script, cat)
+            sabnzbd.add_msgid(url, pp, script, cat, priority)
         elif url:
-            sabnzbd.add_url(url, pp, script, cat)
+            sabnzbd.add_url(url, pp, script, cat, priority)
         if not redirect:
             redirect = self.__root
         raise cherrypy.HTTPRedirect(redirect)
 
 
     @cherrypy.expose
-    def addFile(self, nzbfile, pp=None, script=None, cat=None, dummy = None):
+    def addFile(self, nzbfile, pp=None, script=None, cat=None, _dc = None, priority=NORMAL_PRIORITY):
         if nzbfile.filename and nzbfile.value:
-            sabnzbd.add_nzbfile(nzbfile, pp, script, cat)
-        raise Raiser(self.__root, dummy)
+            sabnzbd.add_nzbfile(nzbfile, pp, script, cat, priority)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def shutdown(self):
+    def shutdown(self, _dc=None):
         yield "Initiating shutdown..."
         sabnzbd.halt()
         cherrypy.server.stop()
@@ -351,14 +359,14 @@ class MainPage(ProtectedClass):
         raise KeyboardInterrupt()
 
     @cherrypy.expose
-    def pause(self, dummy = None):
+    def pause(self, _dc = None):
         sabnzbd.pause_downloader()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def resume(self, dummy = None):
+    def resume(self, _dc = None):
         sabnzbd.resume_downloader()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def debug(self):
@@ -382,38 +390,187 @@ class MainPage(ProtectedClass):
 
 
     @cherrypy.expose
-    def api(self, mode='', name=None, pp=None, script=None, cat=None,
-            output='plain', value = None, dummy = None):
+    def api(self, mode='', name=None, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY,
+            output='plain', value = None, value2 = None, _dc = None, query=None,
+            sort=None, dir=None, start=None, limit=None):
         """Handler for API over http
         """
         if mode == 'qstatus':
             if output == 'json':
                 return json_qstatus()
-            elif output == 'xml':
+            elif output == 'xml':                   
                 return xml_qstatus()
+            else:
+                return 'not implemented\n'
+            
+        if mode == 'queue':
+            if output == 'xml':
+                if sort and sort != 'index':
+                    reverse=False
+                    if dir.lower() == 'desc':
+                        reverse=True
+                    sabnzbd.sort_queue(sort,reverse)
+                return queueStatus(start,limit)
+            elif output == 'json':
+                if sort and sort != 'index':
+                    reverse=False
+                    if dir.lower() == 'desc':
+                        reverse=True
+                    sabnzbd.sort_queue(sort,reverse)
+                return queueStatusJson(start,limit)
+            elif name == 'delete':
+                if value.lower()=='all':
+                    sabnzbd.remove_all_nzo()
+                    return 'ok\n'
+                elif value:
+                    items = value.split(',')
+                    sabnzbd.remove_multiple_nzos(items, False)
+                    return 'ok\n'
+                else:
+                    return 'error\n'
+            elif name == 'rename':
+                if value and value2:
+                    sabnzbd.rename_nzo(value, value2)
+                else:
+                    return 'error\n'
+            elif name == 'change_complete_action': 
+                # http://localhost:8080/sabnzbd/api?mode=queue&name=change_complete_action&value=hibernate_pc
+                if value:
+                    sabnzbd.change_queue_complete_action(value)
+                    return 'ok\n'
+                else:
+                    return 'error: Please submit a value\n'
+            elif name == 'purge':
+                sabnzbd.remove_all_nzo()
+                return 'ok\n'
+            elif name == 'pause':
+                if value:
+                    items = value.split(',')
+                    sabnzbd.pause_multiple_nzo(items)
+            elif name == 'resume':
+                if value:
+                    items = value.split(',')
+                    sabnzbd.resume_multiple_nzo(items)
+            elif name == 'priority':
+                if value and value2:
+                    try:
+                        priority = int(value2)
+                        items = value.split(',')
+                        if len(items) > 1:
+                            sabnzbd.set_priority_multiple(items, priority)
+                        else:
+                            sabnzbd.set_priority(value, priority)
+                    except:
+                        return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
+                else:
+                    return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
             else:
                 return 'not implemented\n'
         elif mode == 'addfile':
             if name.filename and name.value:
-                sabnzbd.add_nzbfile(name, pp, script, cat)
+                sabnzbd.add_nzbfile(name, pp, script, cat, priority)
                 return 'ok\n'
             else:
                 return 'error\n'
+            
+        elif mode == 'switch':
+            if value and value2:
+                sabnzbd.switch(value, value2)
+                return 'ok\n'
+            else:
+                return 'error\n'
+            
+                
+        elif mode == 'change_cat':
+            if value and value2:
+                nzo_id = value
+                cat = value2
+                if cat == 'None':
+                    cat = None
+                sabnzbd.change_cat(nzo_id, cat)
+                try:
+                    script = sabnzbd.CFG['categories'][cat]['script']
+                except:
+                    script = sabnzbd.DIRSCAN_SCRIPT
+                try:
+                    pp = int(sabnzbd.CFG['categories'][cat]['pp'])
+                except:
+                    pp = sabnzbd.DIRSCAN_PP
+    
+                sabnzbd.change_script(nzo_id, script)
+                sabnzbd.change_opts(nzo_id, pp)
+                return 'ok\n'
+            else:
+                return 'error\n'
+            
+        elif mode == 'change_script':
+            if value and value2:
+                nzo_id = value
+                script = value2
+                if script == 'None':
+                    script = None
+                sabnzbd.change_script(nzo_id, script)
+                return 'ok\n'
+            else:
+                return 'error\n'
+            
+        elif mode == 'fullstatus':
+            if output == 'xml':
+                return xml_full()
+            else:
+                return 'not implemented\n'
+            
+        elif mode == 'history':
+            if output == 'xml':
+                return xml_history(start, limit)
+            elif output == 'json':
+                return json_history(start, limit)
+            elif name == 'delete':
+                if value.lower()=='all':
+                    sabnzbd.purge_history()
+                    return 'ok\n'
+                elif value:
+                    items = value.split(',')
+                    sabnzbd.remove_multiple_history(items)
+                    return 'ok\n'
+                else:
+                    return 'error\n'
+            else:
+                return 'not implemented\n'
 
+        elif mode == 'get_files':
+            if value:
+                if output == 'xml':
+                    return xml_files(value)
+                elif output == 'json':
+                    return json_files(value)
+                else:
+                    return 'not implemented\n'
+            
         elif mode == 'addurl':
             if name:
-                sabnzbd.add_url(name, pp, script, cat)
+                sabnzbd.add_url(name, pp, script, cat, priority)
                 return 'ok\n'
             else:
                 return 'error\n'
 
         elif mode == 'addid':
+            RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
+            newzbin_url = RE_NEWZBIN_URL.search(name.lower())
+            
+            if name: name = name.strip()
             if name and (name.isdigit() or len(name)==5):
-                sabnzbd.add_msgid(name, pp, script)
+                sabnzbd.add_msgid(name, pp, script, cat, priority)
+                return 'ok\n'
+            elif newzbin_url:
+                sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat, priority)
+                return 'ok\n'
+            elif name:
+                sabnzbd.add_url(name, pp, script, cat, priority)
                 return 'ok\n'
             else:
                 return 'error\n'
-
+            
         elif mode == 'pause':
             sabnzbd.pause_downloader()
             return 'ok\n'
@@ -429,25 +586,12 @@ class MainPage(ProtectedClass):
 
         elif mode == 'warnings':
             if output == 'json':
-                return json_list("warnings", sabnzbd.GUIHANDLER.content())
+                return json_list("warnings", "warning", sabnzbd.GUIHANDLER.content())
             elif output == 'xml':
                 return xml_list("warnings", "warning", sabnzbd.GUIHANDLER.content())
             else:
                 return 'not implemented\n'
-
-        elif mode == 'queue':
-            if name == 'change_complete_action': # http://localhost:8080/sabnzbd/api?mode=queue&name=change_complete_action&value=hibernate_pc
-                if value:
-                    sabnzbd.change_queue_complete_action(value)
-                    return 'ok\n'
-                else:
-                    return 'error: Please submit a value\n'
-            elif name == 'purge':
-                sabnzbd.remove_all_nzo()
-                return 'ok\n'
-            else:
-                return 'error: Please submit a value\n'
-
+            
         elif mode == 'config':
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
                 if not value: value = '0'
@@ -468,13 +612,24 @@ class MainPage(ProtectedClass):
                 except:
                     pass
                 return band
+            elif name == 'set_colorscheme':
+                if value:
+                    if self.__prim:
+                        sabnzbd.CFG['misc']['web_color'] = value
+                        sabnzbd.WEB_COLOR = value
+                    else:
+                        sabnzbd.CFG['misc']['web_color2'] = value
+                        sabnzbd.WEB_COLOR2 = value
+                    return 'ok\n'
+                else:
+                    return 'error: Please submit a value\n'
                 
             else:
                 return 'not implemented\n'
 
         elif mode == 'get_cats':
             if output == 'json':
-                return json_list("categories", ListCats())
+                return json_list("categories", "category", ListCats())
             elif output == 'xml':
                 return xml_list("categories", "category", ListCats())
             else:
@@ -482,7 +637,7 @@ class MainPage(ProtectedClass):
 
         elif mode == 'get_scripts':
             if output == 'json':
-                return json_list("scripts", ListScripts())
+                return json_list("scripts", "script", ListScripts())
             elif output == 'xml':
                 return xml_list("scripts", "script", ListScripts())
             else:
@@ -500,16 +655,16 @@ class MainPage(ProtectedClass):
             return 'not implemented\n'
 
     @cherrypy.expose
-    def scriptlog(self, name=None, dummy=None):
+    def scriptlog(self, name=None, _dc=None):
         """ Duplicate of scriptlog of History, needed for some skins """
         if name:
             path = os.path.dirname(sabnzbd.LOGFILE)
             return ShowFile(name, os.path.join(path, name))
         else:
-            raise Raiser(self.__root, dummy)
+            raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def retry(self, url=None, pp=None, cat=None, script=None, dummy=None):
+    def retry(self, url=None, pp=None, cat=None, script=None, _dc=None):
         """ Duplicate of retry of History, needed for some skins """
         if url: url = url.strip()
         if url and (url.isdigit() or len(url)==5):
@@ -519,7 +674,7 @@ class MainPage(ProtectedClass):
         if url:
             return ShowOK(url)
         else:
-            raise Raiser(self.__root, dummy)
+            raise Raiser(self.__root, _dc)
 
 #------------------------------------------------------------------------------
 class NzoPage(ProtectedClass):
@@ -533,7 +688,7 @@ class NzoPage(ProtectedClass):
         self.__cached_selection = {} #None
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
         this_pnfo = None
@@ -595,15 +750,15 @@ class NzoPage(ProtectedClass):
             elif kwargs['action_key'] == 'Bottom':
                 sabnzbd.move_bottom_bulk(self.__nzo_id, nzf_ids)
 
-        if 'dummy' in kwargs:
-            raise Raiser(self.__root, kwargs['dummy'])
+        if '_dc' in kwargs:
+            raise Raiser(self.__root, _dc=kwargs['_dc'])
         else:
             raise Raiser(self.__root, '')
 
     @cherrypy.expose
-    def tog_verbose(self, dummy = None):
+    def tog_verbose(self, _dc = None):
         self.__verbose = not self.__verbose
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
 #------------------------------------------------------------------------------
 class QueuePage(ProtectedClass):
@@ -618,209 +773,79 @@ class QueuePage(ProtectedClass):
         self.__nzo_pages = []
 
     @cherrypy.expose
-    def index(self, dummy2=None, dummy=None):
-        info, pnfo_list, bytespersec = build_header(self.__prim)
+    def index(self, _dc = None, start=None, limit=None, dummy2=None):
 
-        info['isverbose'] = self.__verbose
-        if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
-            info['newzbinDetails'] = True
-
-        if int(sabnzbd.CFG['misc']['refresh_rate']) > 0:
-            info['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
-        else:
-            info['refresh_rate'] = ''
-
-        info['noofslots'] = len(pnfo_list)
-        datestart = datetime.datetime.now()
-
-        info['script_list'] = ListScripts()
-        info['cat_list'] = ListCats()
-        info['limit'] = IntConv(dummy2)
-
-        n = 0
-        running_bytes = 0
-        slotinfo = []
-
-        nzo_ids = []
-
-        for pnfo in pnfo_list:
-            repair = pnfo[PNFO_REPAIR_FIELD]
-            unpack = pnfo[PNFO_UNPACK_FIELD]
-            delete = pnfo[PNFO_DELETE_FIELD]
-            script = pnfo[PNFO_SCRIPT_FIELD]
-            nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-            cat = pnfo[PNFO_EXTRA_FIELD1]
-            filename = pnfo[PNFO_FILENAME_FIELD]
-            bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
-            bytes = pnfo[PNFO_BYTES_FIELD]
-            average_date = pnfo[PNFO_AVG_DATE_FIELD]
-            finished_files = pnfo[PNFO_FINISHED_FILES_FIELD]
-            active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
-            queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
-
-            nzo_ids.append(nzo_id)
-
-            if nzo_id not in self.__dict__:
-                self.__dict__[nzo_id] = NzoPage(self.__web_dir, self.__root, nzo_id, self.__prim)
-                self.__nzo_pages.append(nzo_id)
-
-            slot = {'index':n, 'nzo_id':str(nzo_id)}
-            n += 1
-            unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
-
-            slot['unpackopts'] = str(unpackopts)
-            slot['script'] = str(script)
-            fn, slot['msgid'] = SplitFileName(filename)
-            slot['filename'] = Escape(fn)
-            slot['cat'] = str(cat)
-            slot['mbleft'] = "%.2f" % (bytesleft / MEBI)
-            slot['mb'] = "%.2f" % (bytes / MEBI)
-
-            running_bytes += bytesleft
-
-            slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
-
-            try:
-                datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
-                #new eta format: 16:00 Fri 07 Feb
-                slot['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
-            except:
-                datestart = datetime.datetime.now()
-                slot['eta'] = 'unknown'
-
-            slot['avg_age'] = calc_age(average_date)
-
-            finished = []
-            active = []
-            queued = []
-            if self.__verbose or nzo_id in self.__verboseList:
-
-                date_combined = 0
-                num_dates = 0
-
-                for tup in finished_files:
-                    bytes_left, bytes, fn, date = tup
-                    if isinstance(fn, unicode):
-                        fn = Escape(fn.encode('utf-8'))
-
-                    age = calc_age(date)
-
-                    line = {'filename':str(fn),
-                            'mbleft':"%.2f" % (bytes_left / MEBI),
-                            'mb':"%.2f" % (bytes / MEBI),
-                            'age':age}
-                    finished.append(line)
-
-                for tup in active_files:
-                    bytes_left, bytes, fn, date, nzf_id = tup
-                    if isinstance(fn, unicode):
-                        fn = Escape(fn.encode('utf-8'))
-
-                    age = calc_age(date)
-
-                    line = {'filename':str(fn),
-                            'mbleft':"%.2f" % (bytes_left / MEBI),
-                            'mb':"%.2f" % (bytes / MEBI),
-                            'nzf_id':nzf_id,
-                            'age':age}
-                    active.append(line)
-
-                for tup in queued_files:
-                    _set, bytes_left, bytes, fn, date = tup
-                    if isinstance(fn, unicode):
-                        fn = Escape(fn.encode('utf-8'))
-
-                    age = calc_age(date)
-
-                    line = {'filename':str(fn), 'set':_set,
-                            'mbleft':"%.2f" % (bytes_left / MEBI),
-                            'mb':"%.2f" % (bytes / MEBI),
-                            'age':age}
-                    queued.append(line)
-
-            slot['finished'] = finished
-            slot['active'] = active
-            slot['queued'] = queued
-
-            slotinfo.append(slot)
-
-        if slotinfo:
-            info['slotinfo'] = slotinfo
-        else:
-            self.__verboseList = []
-
-        for nzo_id in self.__nzo_pages[:]:
-            if nzo_id not in nzo_ids:
-                self.__nzo_pages.remove(nzo_id)
-                self.__dict__.pop(nzo_id)
+        info, pnfo_list, bytespersec, self.__verboseList, self.__nzo_pages, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verboseList, self.__nzo_pages, self.__dict__, start=start, limit=limit, dummy2=dummy2)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             searchList=[info],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
+    
+
 
     @cherrypy.expose
-    def delete(self, uid = None, dummy = None):
+    def delete(self, uid = None, _dc = None, start=None, limit=None):
         if uid:
             sabnzbd.remove_nzo(uid, False)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def purge(self, dummy = None):
+    def purge(self, _dc = None, start=None, limit=None):
         sabnzbd.remove_all_nzo()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def removeNzf(self, nzo_id = None, nzf_id = None, dummy = None):
+    def removeNzf(self, nzo_id = None, nzf_id = None, _dc = None, start=None, limit=None):
         if nzo_id and nzf_id:
             sabnzbd.remove_nzf(nzo_id, nzf_id)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root,  _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def tog_verbose(self, dummy = None):
+    def tog_verbose(self, _dc = None, start=None, limit=None):
         self.__verbose = not self.__verbose
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def tog_uid_verbose(self, uid, dummy = None):
+    def tog_uid_verbose(self, uid, _dc = None, start=None, limit=None):
         if self.__verboseList.count(uid):
             self.__verboseList.remove(uid)
         else:
             self.__verboseList.append(uid)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def change_queue_complete_action(self, action = None, dummy = None):
+    def change_queue_complete_action(self, action = None, _dc = None, start=None, limit=None):
         """
         Action or script to be performed once the queue has been completed
         Scripts are prefixed with 'script_'
         """
         sabnzbd.change_queue_complete_action(action)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def switch(self, uid1 = None, uid2 = None, dummy = None):
+    def switch(self, uid1 = None, uid2 = None, _dc = None, start=None, limit=None):
         if uid1 and uid2:
             sabnzbd.switch(uid1, uid2)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def change_opts(self, nzo_id = None, pp = None, dummy = None):
+    def change_opts(self, nzo_id = None, pp = None, _dc = None, start=None, limit=None):
         if nzo_id and pp and pp.isdigit():
             sabnzbd.change_opts(nzo_id, int(pp))
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def change_script(self, nzo_id = None, script = None, dummy = None):
+    def change_script(self, nzo_id = None, script = None, _dc = None, start=None, limit=None):
         if nzo_id and script:
             if script == 'None':
                 script = None
             sabnzbd.change_script(nzo_id, script)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def change_cat(self, nzo_id = None, cat = None, dummy = None):
+    def change_cat(self, nzo_id = None, cat = None, _dc = None, start=None, limit=None):
         if nzo_id and cat:
             if cat == 'None':
                 cat = None
@@ -837,7 +862,7 @@ class QueuePage(ProtectedClass):
             sabnzbd.change_script(nzo_id, script)
             sabnzbd.change_opts(nzo_id, pp)
 
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def shutdown(self):
@@ -848,32 +873,32 @@ class QueuePage(ProtectedClass):
         raise KeyboardInterrupt()
 
     @cherrypy.expose
-    def pause(self, dummy = None):
+    def pause(self, _dc = None, start=None, limit=None):
         sabnzbd.pause_downloader()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def resume(self, dummy = None):
+    def resume(self, _dc = None, start=None, limit=None):
         sabnzbd.resume_downloader()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def sort_by_avg_age(self, dummy = None):
+    def sort_by_avg_age(self, _dc = None, start=None, limit=None):
         sabnzbd.sort_by_avg_age()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def sort_by_name(self, dummy = None):
+    def sort_by_name(self, _dc = None, start=None, limit=None):
         sabnzbd.sort_by_name()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def sort_by_size(self, dummy = None):
+    def sort_by_size(self, _dc = None, start=None, limit=None):
         sabnzbd.sort_by_size()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
     
     @cherrypy.expose
-    def set_speedlimit(self, dummy = None, value=0):
+    def set_speedlimit(self, _dc = None, value=None):
         if not value: value = '0'
         try: value = int(value)
         except: return 'error: Please submit a value\n'
@@ -881,7 +906,7 @@ class QueuePage(ProtectedClass):
         sabnzbd.BANDWITH_LIMIT = value
         sabnzbd.limit_speed(value)
         save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc)
 
 class HistoryPage(ProtectedClass):
     def __init__(self, web_dir, root, prim):
@@ -892,7 +917,7 @@ class HistoryPage(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy2=None, dummy=None):
+    def index(self, _dc = None, start=None, limit=None, dummy2=None):
         history, pnfo_list, bytespersec = build_header(self.__prim)
 
         history['isverbose'] = self.__verbose
@@ -908,36 +933,7 @@ class HistoryPage(ProtectedClass):
         
         history['limit'] = IntConv(dummy2)
 
-        items = []
-        while history_items:
-            added = max(history_items.keys())
-
-            history_item_list = history_items.pop(added)
-
-            for history_item in history_item_list:
-                filename, unpackstrht, loaded, bytes, nzo, status = history_item
-                name, msgid = SplitFileName(filename)
-                stages = []
-                item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
-                        'nzo':nzo,
-                        'msgid':msgid, 'filename':Escape(name), 'loaded':loaded,
-                        'stages':stages, 'status':status}
-                if self.__verbose:
-                    stage_keys = unpackstrht.keys()
-                    stage_keys.sort()
-                    for stage in stage_keys:
-                        stageLine = {'name':STAGENAMES[stage]}
-                        actions = []
-                        for action in unpackstrht[stage]:
-                            actionLine = {'name':action, 'value':unpackstrht[stage][action]}
-                            actions.append(actionLine)
-                        actions.sort()
-                        actions.reverse()
-                        stageLine['actions'] = actions
-                        stages.append(stageLine)
-                item['stages'] = stages
-                items.append(item)
-        history['lines'] = items
+        history['lines'], history['noofslots'] = build_history(verbose=self.__verbose, start=start, limit=limit)
 
 
         template = Template(file=os.path.join(self.__web_dir, 'history.tmpl'),
@@ -947,36 +943,36 @@ class HistoryPage(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def purge(self, dummy = None):
+    def purge(self, _dc = None, start=None, limit=None):
         sabnzbd.purge_history()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc, start, limit)
 
     @cherrypy.expose
-    def delete(self, job=None, dummy = None):
+    def delete(self, job=None, _dc = None, start=None, limit=None):
         if job:
             sabnzbd.purge_history(job)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def reset(self, dummy = None):
+    def reset(self, _dc = None, start=None, limit=None):
         sabnzbd.reset_byte_counter()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def tog_verbose(self, dummy = None):
+    def tog_verbose(self, _dc = None, start=None, limit=None):
         self.__verbose = not self.__verbose
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def scriptlog(self, name=None, dummy=None):
+    def scriptlog(self, name=None, _dc=None, start=None, limit=None):
         if name:
             path = os.path.dirname(sabnzbd.LOGFILE)
             return ShowFile(name, os.path.join(path, name))
         else:
-            raise Raiser(self.__root, dummy)
+            raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def retry(self, url=None, pp=None, cat=None, script=None, dummy=None):
+    def retry(self, url=None, pp=None, cat=None, script=None, _dc=None):
         if url: url = url.strip()
         if url and (url.isdigit() or len(url)==5):
             sabnzbd.add_msgid(url, pp, script, cat)
@@ -985,7 +981,7 @@ class HistoryPage(ProtectedClass):
         if url:
             return ShowOK(url)
         else:
-            raise Raiser(self.__root, dummy)
+            raise Raiser(self.__root, _dc)
 
 #------------------------------------------------------------------------------
 class ConfigPage(ProtectedClass):
@@ -1007,10 +1003,16 @@ class ConfigPage(ProtectedClass):
 
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['configfn'] = sabnzbd.CFG.filename
+        
+        new = {}
+        org = sabnzbd.CFG['servers']
+        for svr in org:
+            new[svr] = {}
+        config['servers'] = new
 
         template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
                             searchList=[config],
@@ -1019,12 +1021,12 @@ class ConfigPage(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def restart(self, dummy = None):
+    def restart(self, _dc = None):
         sabnzbd.halt()
         init_ok = sabnzbd.initialize()
         if init_ok:
             sabnzbd.start()
-            raise Raiser(self.__root, dummy)
+            raise Raiser(self.__root, _dc=_dc)
         else:
             return "SABnzbd restart failed! See logfile(s)."
 
@@ -1038,7 +1040,7 @@ class ConfigDirectories(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
@@ -1071,7 +1073,7 @@ class ConfigDirectories(ProtectedClass):
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
                         cache_dir = None, nzb_backup_dir = None, permissions=None,
                         enable_tv_sorting = None, tv_sort_string = None, email_dir=None,
-                        dirscan_dir = None, dirscan_speed = None, script_dir = None, dummy = None):
+                        dirscan_dir = None, dirscan_speed = None, script_dir = None, _dc = None):
 
         if permissions:
             try:
@@ -1133,7 +1135,7 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['enable_tv_sorting'] = IntConv(enable_tv_sorting)
         sabnzbd.CFG['misc']['tv_sort_string'] = tv_sort_string
 
-        return saveAndRestart(self.__root, dummy)
+        return saveAndRestart(self.__root, _dc)
 
 #------------------------------------------------------------------------------
 class ConfigSwitches(ProtectedClass):
@@ -1144,7 +1146,7 @@ class ConfigSwitches(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
@@ -1199,7 +1201,7 @@ class ConfigSwitches(ProtectedClass):
                      ignore_samples = None,
                      pause_on_post_processing = None,
                      script = None,
-                     dummy = None
+                     _dc = None
                      ):
 
         if par_option:
@@ -1229,7 +1231,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['ignore_samples'] = IntConv(ignore_samples)
         sabnzbd.CFG['misc']['pause_on_post_processing'] = IntConv(pause_on_post_processing)
 
-        return saveAndRestart(self.__root, dummy)
+        return saveAndRestart(self.__root, _dc)
 
 #------------------------------------------------------------------------------
 
@@ -1241,7 +1243,7 @@ class ConfigGeneral(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         def ListColors(web_dir):
             lst = []
             dd = os.path.abspath(web_dir + '/static/stylesheets/colorschemes')
@@ -1302,13 +1304,8 @@ class ConfigGeneral(ProtectedClass):
     def saveGeneral(self, host = None, port = None, web_username = None, web_password = None, web_dir = None,
                     web_dir2 = None, web_color = None,
                     cronlines = None, refresh_rate = None, rss_rate = None,
-                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None, dummy = None):
+                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None, _dc = None):
 
-        sabnzbd.CFG['misc']['web_dir']  = Strip(web_dir)
-        if web_dir2 == 'None':
-            sabnzbd.CFG['misc']['web_dir2'] = ''
-        else:
-            sabnzbd.CFG['misc']['web_dir2'] = Strip(web_dir2)
 
         if web_color:
             if self.__prim:
@@ -1329,7 +1326,34 @@ class ConfigGeneral(ProtectedClass):
         sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
         sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
 
-        return saveAndRestart(self.__root, dummy)
+        web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
+        web_dir2_path = real_path(sabnzbd.DIR_INTERFACES, web_dir2)
+        
+        if not os.path.exists(web_dir_path):
+            logging.warning('Cannot find web template: %s', web_dir_path)
+        else:    
+            sabnzbd.CFG['misc']['web_dir']  = web_dir
+            self.__web_dir = web_dir
+            
+        if web_dir2 == 'None':
+            sabnzbd.CFG['misc']['web_dir2'] = ''
+        elif os.path.exists(web_dir2_path):
+            sabnzbd.CFG['misc']['web_dir2'] = web_dir2
+          
+        if os.path.exists(web_dir_path) and os.path.exists(web_dir2_path):
+            
+            web_dir_path = real_path(web_dir_path, "templates")
+            web_dir2_path = real_path(web_dir2_path, "templates")
+            sabnzbd.change_web_dir(web_dir_path)
+            sabnzbd.change_web_dir2(web_dir2_path)
+            
+            #cherrypy.tree.mount(LoginPage(web_dir_path, '/sabnzbd/', web_dir2_path, '/sabnzbd/m/'), '/')
+            cherrypy.config.update(updateMap={'/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir_path, 'static')},
+                                         '/sabnzbd/m/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir2_path, 'static')}
+                                   })
+       
+       
+        return saveAndRestart(self.__root, _dc)
 
 
 #------------------------------------------------------------------------------
@@ -1342,7 +1366,7 @@ class ConfigServer(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
@@ -1375,7 +1399,7 @@ class ConfigServer(ProtectedClass):
 
     @cherrypy.expose
     def addServer(self, server = None, host = None, port = None, timeout = None, username = None,
-                         password = None, connections = None, ssl = None, fillserver = None, dummy = None):
+                         password = None, connections = None, ssl = None, fillserver = None, _dc = None):
 
         timeout = check_timeout(timeout)
 
@@ -1413,11 +1437,11 @@ class ConfigServer(ProtectedClass):
                 sabnzbd.CFG['servers'][server]['connections'] = connections
                 sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
                 sabnzbd.CFG['servers'][server]['ssl'] = ssl
-        return saveAndRestart(self.__root, dummy)
+        return saveAndRestart(self.__root, _dc)
 
     @cherrypy.expose
     def saveServer(self, server = None, host = None, port = None, username = None, timeout = None,
-                         password = None, connections = None, fillserver = None, ssl = None, dummy = None):
+                         password = None, connections = None, fillserver = None, ssl = None, _dc = None):
 
         timeout = check_timeout(timeout)
 
@@ -1460,15 +1484,15 @@ class ConfigServer(ProtectedClass):
             sabnzbd.CFG['servers'][server]['timeout'] = timeout
             sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
             sabnzbd.CFG['servers'][server]['ssl'] = ssl
-        return saveAndRestart(self.__root, dummy)
+        return saveAndRestart(self.__root, _dc)
 
     @cherrypy.expose
     def delServer(self, *args, **kwargs):
         if 'server' in kwargs and kwargs['server'] in sabnzbd.CFG['servers']:
             del sabnzbd.CFG['servers'][kwargs['server']]
 
-        if 'dummy' in kwargs:
-            return saveAndRestart(self.__root, kwargs['dummy'])
+        if '_dc' in kwargs:
+            return saveAndRestart(self.__root, kwargs['_dc'])
         else:
             return saveAndRestart(self.__root, '')
 
@@ -1523,7 +1547,7 @@ class ConfigRss(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
@@ -1562,7 +1586,7 @@ class ConfigRss(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def upd_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, dummy=None):
+    def upd_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, _dc=None):
         uri = Strip(uri)
         try:
             cfg = sabnzbd.CFG['rss'][feed]
@@ -1579,10 +1603,10 @@ class ConfigRss(ProtectedClass):
             cfg['enable'] = IntConv(enable)
             save_configfile(sabnzbd.CFG)
 
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def toggle_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, dummy=None):
+    def toggle_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, _dc=None):
         try:
             cfg = sabnzbd.CFG['rss'][feed]
         except:
@@ -1590,10 +1614,10 @@ class ConfigRss(ProtectedClass):
         if feed:
             cfg['enable'] = int(not int(cfg['enable']))
             save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def add_rss_feed(self, feed=None, uri=None, dummy=None):
+    def add_rss_feed(self, feed=None, uri=None, _dc=None):
         feed= Strip(feed)
         uri = Strip(uri)
         try:
@@ -1608,15 +1632,15 @@ class ConfigRss(ProtectedClass):
             cfg['enable'] = 0
             cfg['filter0'] = ('', '', '', 'A', '*')
             save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def upd_rss_filter(self, feed=None, index=None, filter_text=None,
-                       filter_type=None, cat=None, pp=None, script=None, dummy=None):
+                       filter_type=None, cat=None, pp=None, script=None, _dc=None):
         try:
             cfg = sabnzbd.CFG['rss'][feed]
         except:
-            raise Raiser(self.__root, dummy)
+            raise Raiser(self.__root, _dc=_dc)
 
         if IsNone(cat): cat = ''
         if IsNone(pp): pp = ''
@@ -1624,10 +1648,10 @@ class ConfigRss(ProtectedClass):
         cfg['filter'+str(index)] = (cat, pp, script, filter_type, filter_text)
         cfg['enable'] = 0
         save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def pos_rss_filter(self, feed=None, current=None, new=None, dummy=None):
+    def pos_rss_filter(self, feed=None, current=None, new=None, _dc=None):
         if current != new:
             filters = ListFilters(feed)
             filter = filters.pop(int(current))
@@ -1635,7 +1659,7 @@ class ConfigRss(ProtectedClass):
             UnlistFilters(feed, filters)
             sabnzbd.CFG['rss'][feed]['enable'] = 0
             save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def del_rss_feed(self, *args, **kwargs):
@@ -1647,20 +1671,20 @@ class ConfigRss(ProtectedClass):
             except:
                 pass
             save_configfile(sabnzbd.CFG)
-        if 'dummy' in kwargs:
-            raise Raiser(self.__root, kwargs['dummy'])
+        if '_dc' in kwargs:
+            raise Raiser(self.__root, _dc=kwargs['_dc'])
         else:
             raise Raiser(self.__root, '')
 
     @cherrypy.expose
-    def del_rss_filter(self, feed=None, index=None, dummy=None):
+    def del_rss_filter(self, feed=None, index=None, _dc=None):
         if feed and index!=None:
             filters = ListFilters(feed)
             filter = filters.pop(int(index))
             UnlistFilters(feed, filters)
             sabnzbd.CFG['rss'][feed]['enable'] = 0
             save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def download_rss_feed(self, *args, **kwargs):
@@ -1668,8 +1692,8 @@ class ConfigRss(ProtectedClass):
             feed = kwargs['feed']
             sabnzbd.run_rss_feed(feed, download=True)
             return ShowRssLog(feed, False)
-        if 'dummy' in kwargs:
-            raise Raiser(self.__root, kwargs['dummy'])
+        if '_dc' in kwargs:
+            raise Raiser(self.__root, _dc=kwargs['_dc'])
         else:
             raise Raiser(self.__root, '')
 
@@ -1679,20 +1703,20 @@ class ConfigRss(ProtectedClass):
             feed = kwargs['feed']
             sabnzbd.run_rss_feed(feed, download=False)
             return ShowRssLog(feed, True)
-        if 'dummy' in kwargs:
-            raise Raiser(self.__root, kwargs['dummy'])
+        if '_dc' in kwargs:
+            raise Raiser(self.__root, _dc=kwargs['_dc'])
         else:
             raise Raiser(self.__root, '')
 
 
     @cherrypy.expose
-    def rss_download(self, feed=None, id=None, cat=None, pp=None, script=None, dummy=None):
+    def rss_download(self, feed=None, id=None, cat=None, pp=None, script=None, _dc=None, priority=NORMAL_PRIORITY):
         if id and id.isdigit():
-            sabnzbd.add_msgid(id, pp, script, cat)
+            sabnzbd.add_msgid(id, pp, script, cat, priority)
         elif id:
-            sabnzbd.add_url(id, pp, script, cat)
+            sabnzbd.add_url(id, pp, script, cat, priority)
         sabnzbd.rss_flag_downloaded(feed, id)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
 
 #------------------------------------------------------------------------------
@@ -1705,7 +1729,7 @@ class ConfigScheduling(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
@@ -1724,7 +1748,7 @@ class ConfigScheduling(ProtectedClass):
 
     @cherrypy.expose
     def addSchedule(self, minute = None, hour = None, dayofweek = None,
-                    action = None, arguments = None, dummy = None):
+                    action = None, arguments = None, _dc = None):
         if minute and hour  and dayofweek and action:
             try:
                 if action == 'speedlimit': int(arguments)
@@ -1732,13 +1756,13 @@ class ConfigScheduling(ProtectedClass):
                                               (minute, hour, dayofweek, action, arguments))
             except:
                 pass
-        return saveAndRestart(self.__root, dummy, evalSched=True)
+        return saveAndRestart(self.__root, _dc, evalSched=True)
 
     @cherrypy.expose
-    def delSchedule(self, line = None, dummy = None):
+    def delSchedule(self, line = None, _dc = None):
         if line and line in sabnzbd.CFG['misc']['schedlines']:
             sabnzbd.CFG['misc']['schedlines'].remove(line)
-        return saveAndRestart(self.__root, dummy, evalSched=True)
+        return saveAndRestart(self.__root, _dc, evalSched=True)
 
 #------------------------------------------------------------------------------
 
@@ -1751,7 +1775,7 @@ class ConfigNewzbin(ProtectedClass):
         self.__bookmarks = []
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
@@ -1775,7 +1799,7 @@ class ConfigNewzbin(ProtectedClass):
     @cherrypy.expose
     def saveNewzbin(self, username_newzbin = None, password_newzbin = None,
                     create_category_folders = None, newzbin_bookmarks = None,
-                    newzbin_unbookmark = None, bookmark_rate = None, dummy = None):
+                    newzbin_unbookmark = None, bookmark_rate = None, _dc = None):
 
         sabnzbd.CFG['newzbin']['username'] = Strip(username_newzbin)
         if (not password_newzbin) or (password_newzbin and password_newzbin.strip('*')):
@@ -1785,22 +1809,22 @@ class ConfigNewzbin(ProtectedClass):
         sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
         sabnzbd.CFG['newzbin']['bookmark_rate'] = sabnzbd.minimax(bookmark_rate, 15, 24*60)
 
-        return saveAndRestart(self.__root, dummy)
+        return saveAndRestart(self.__root, _dc)
 
     @cherrypy.expose
-    def getBookmarks(self, dummy = None):
+    def getBookmarks(self, _dc = None):
         sabnzbd.getBookmarksNow()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def showBookmarks(self, dummy = None):
+    def showBookmarks(self, _dc = None):
         self.__bookmarks = sabnzbd.getBookmarksList()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def hideBookmarks(self, dummy = None):
+    def hideBookmarks(self, _dc = None):
         self.__bookmarks = []
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
 #------------------------------------------------------------------------------
 
@@ -1812,7 +1836,7 @@ class ConfigCats(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
@@ -1860,17 +1884,17 @@ class ConfigCats(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def delete(self, name = None, dummy = None):
+    def delete(self, name = None, _dc = None):
         if name:
             try:
                 del sabnzbd.CFG['categories'][name]
             except:
                 pass
             save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def save(self, name=None, newname=None, pp=None, script=None, dir=None, newzbin=None, dummy=None):
+    def save(self, name=None, newname=None, pp=None, script=None, dir=None, newzbin=None, _dc=None):
         newname = Strip(newname)
         if newname:
             if name:
@@ -1902,13 +1926,13 @@ class ConfigCats(ProtectedClass):
                 except:
                     pass
             save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def init_newzbin(self, dummy = None):
+    def init_newzbin(self, _dc = None):
         InitCats()
         save_configfile(sabnzbd.CFG)
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
 
 #------------------------------------------------------------------------------
@@ -1922,7 +1946,7 @@ class ConnectionInfo(ProtectedClass):
         self.__lastmail = None
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         header, pnfo_list, bytespersec = build_header(self.__prim)
 
         header['logfile'] = sabnzbd.LOGFILE
@@ -1979,12 +2003,12 @@ class ConnectionInfo(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def disconnect(self, dummy = None):
+    def disconnect(self, _dc = None):
         sabnzbd.disconnect()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def testmail(self, dummy = None):
+    def testmail(self, _dc = None):
         logging.info("[%s] Sending testmail", __NAME__)
         pack = {}
         pack[0] = {}
@@ -1998,7 +2022,7 @@ class ConnectionInfo(ProtectedClass):
                             os.path.normpath(os.path.join(sabnzbd.COMPLETE_DIR, '/unknown/Test Job')),
                             '123MB', pack, 'my_script', 'Line 1\nLine 2\nLine 3\n')
 
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def showlog(self):
@@ -2016,28 +2040,28 @@ class ConnectionInfo(ProtectedClass):
             return "Web logging is off!"
 
     @cherrypy.expose
-    def clearwarnings(self, dummy = None):
+    def clearwarnings(self, _dc = None):
         sabnzbd.GUIHANDLER.clear()
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def change_loglevel(self, loglevel=None, dummy = None):
+    def change_loglevel(self, loglevel=None, _dc = None):
         loglevel = IntConv(loglevel)
         if loglevel >= 0 and loglevel < 3:
             sabnzbd.LOGLEVEL = loglevel
             sabnzbd.CFG['logging']['log_level'] = loglevel
             save_configfile(sabnzbd.CFG)
 
-        raise Raiser(self.__root, dummy)
+        raise Raiser(self.__root, _dc=_dc)
 
 
-def saveAndRestart(redirect_root, dummy, evalSched=False):
+def saveAndRestart(redirect_root, _dc, evalSched=False):
     save_configfile(sabnzbd.CFG)
     sabnzbd.halt()
     init_ok = sabnzbd.initialize(evalSched=evalSched)
     if init_ok:
         sabnzbd.start()
-        raise Raiser(redirect_root, dummy)
+        raise Raiser(redirect_root, _dc=_dc)
     else:
         return "SABnzbd restart failed! See logfile(s)."
 
@@ -2240,6 +2264,15 @@ def build_header(prim):
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
     header['mbleft']   = "%.2f" % (bytesleft / MEBI)
     header['mb']       = "%.2f" % (bytes / MEBI)
+    
+    status = ''
+    if sabnzbd.paused():
+        status = 'Paused'
+    elif bytespersec > 0:
+        status = 'Downloading'
+    else:
+        status = 'Idle'
+    header['status'] = "%s" % status
 
     anfo  = sabnzbd.cache_info()
 
@@ -2318,7 +2351,7 @@ class ConfigEmail(ProtectedClass):
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, dummy = None):
+    def index(self, _dc = None):
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
@@ -2341,7 +2374,7 @@ class ConfigEmail(ProtectedClass):
     @cherrypy.expose
     def saveEmail(self, email_server = None, email_to = None, email_from = None,
                   email_account = None, email_pwd = None,
-                  email_endjob = None, email_full = None, dummy = None):
+                  email_endjob = None, email_full = None, _dc = None):
 
         email_server = Strip(email_server)
         email_to = Strip(email_to)
@@ -2374,7 +2407,7 @@ class ConfigEmail(ProtectedClass):
         if (not email_pwd) or (email_pwd and email_pwd.strip('*')):
             sabnzbd.CFG['misc']['email_pwd'] = encodePassword(email_pwd)
 
-        return saveAndRestart(self.__root, dummy)
+        return saveAndRestart(self.__root, _dc)
 
 
 def std_time(when):
@@ -2560,32 +2593,561 @@ def xml_qstatus():
     status_str += '</queue>'
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
+
     return status_str
 
 
+def build_file_list(id):
+    qnfo = sabnzbd.queue_info()
+    pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
+    
+    jobs = []
+    n = 0
+    for pnfo in pnfo_list:
+        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+        if nzo_id == id:
+            finished_files = pnfo[PNFO_FINISHED_FILES_FIELD]
+            active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
+            queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
+    
+    
+            date_combined = 0
+            num_dates = 0
+            n2 = 0
+            for tup in finished_files:
+                bytes_left, bytes, fn, date = tup
+                if isinstance(fn, unicode):
+                    fn = escape(fn.encode('utf-8'))
+    
+                age = calc_age(date)
+    
+                line = {'filename':str(fn),
+                        'mbleft':"%.2f" % (bytes_left / MEBI),
+                        'mb':"%.2f" % (bytes / MEBI),
+                        'bytes':"%.2f" % bytes,
+                        'age':age, 'id':str(n2), 'status':'finished'}
+                jobs.append(line)
+                n2+=1
+    
+            for tup in active_files:
+                bytes_left, bytes, fn, date, nzf_id = tup
+                if isinstance(fn, unicode):
+                    fn = escape(fn.encode('utf-8'))
+    
+                age = calc_age(date)
+    
+                line = {'filename':str(fn),
+                        'mbleft':"%.2f" % (bytes_left / MEBI),
+                        'mb':"%.2f" % (bytes / MEBI),
+                        'bytes':"%.2f" % bytes,
+                        'nzf_id':nzf_id,
+                        'age':age, 'id':str(n2), 'status':'active'}
+                jobs.append(line)
+                n2+=1
+    
+            for tup in queued_files:
+                _set, bytes_left, bytes, fn, date = tup
+                if isinstance(fn, unicode):
+                    fn = escape(fn.encode('utf-8'))
+    
+                age = calc_age(date)
+    
+                line = {'filename':str(fn), 'set':_set,
+                        'mbleft':"%.2f" % (bytes_left / MEBI),
+                        'mb':"%.2f" % (bytes / MEBI),
+                        'bytes':"%.2f" % bytes,
+                        'age':age, 'id':str(n2), 'status':'queued'}
+                jobs.append(line)
+                n2+=1
+                
+    return jobs
 
-def json_list(section, lst):
-    """Output a simple list as a JSON object
-    """
+def xml_files(id):
+    
+    #Collect all Queue data
+    status_str = '<?xml version="1.0" encoding="UTF-8" ?> \n'
+    
+    jobs = build_file_list(id)
 
-    obj = { section : lst }
-    text = JsonWriter().write(obj)
+                
+    xmlmaker = xml_factory()
+    status_str += xmlmaker.run("files",jobs)
+                
+    #status_str += '</files>\n'
+    cherrypy.response.headers['Content-Type'] = "text/xml"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return status_str
+
+def json_files(id):
+    
+    #Collect all Queue data    
+    jobs = build_file_list(id)
+                
+    status_str = JsonWriter().write(jobs)
 
     cherrypy.response.headers['Content-Type'] = "application/json"
     cherrypy.response.headers['Pragma'] = 'no-cache'
-    return text
+    return status_str
+
+def build_history(loaded=False, start=None, limit=None, verbose=False):
+    #Collect all history data
+    history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
+    items = []
+    while history_items:
+        added = max(history_items.keys())
+        history_item_list = history_items.pop(added)
+
+        for history_item in history_item_list:
+            filename, unpackstrht, loaded, bytes, nzo, status = history_item
+            name, msgid = SplitFileName(filename)
+            stages = []
+            item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
+                    'nzo':nzo,
+                    'msgid':msgid, 'filename':escape(name), 'loaded':loaded,
+                    'stages':stages, 'status':status, 'bytes':bytes}
+            if verbose:
+                stage_keys = unpackstrht.keys()
+                stage_keys.sort()
+                for stage in stage_keys:
+                    stageLine = {'name':STAGENAMES[stage]}
+                    actions = []
+                    for action in unpackstrht[stage]:
+                        actionLine = {'name':action, 'value':unpackstrht[stage][action]}
+                        actions.append(actionLine)
+                    actions.sort()
+                    actions.reverse()
+                    stageLine['actions'] = actions
+                    stages.append(stageLine)
+            item['stages'] = stages
+            items.append(item)
+            
+    total_items = len(items)
+            
+    try: limit = int(limit)
+    except: limit = 0
+    try: start = int(start)
+    except: start = 0
+            
+    #Paging code - Happens outside the loop for easy of coding
+    if limit > 0:
+        try:
+            if start > 0:               
+                if start > len(items):
+                    items = []
+                else:
+                    end = start+limit
+                    if start+limit > len(items):
+                        end = len(items)                  
+                    items = items[start:end]
+            else:
+                if not limit > len(items):
+                    items = items[:limit]
+        except:
+            pass
+        
+        
+    return (items, total_items)
+    
+def xml_history(start=None, limit=None):
+    items, total_items = build_history(start=start, limit=limit, verbose=True)
+    status_lst = []
+    status_lst.append('<?xml version="1.0" encoding="UTF-8" ?> \n')
+    #Compile the history data
+    
+    xmlmaker = xml_factory()
+    status_lst.append(xmlmaker.run("history",items))
+            
+    cherrypy.response.headers['Content-Type'] = "text/xml"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return ''.join(status_lst)
+
+def json_history(start=None, limit=None):
+    #items = {}
+    #items['history'],
+    items, total_items = build_history(start=start, limit=limit, verbose=True)
+    status_lst = []
+    #Compile the history data
+
+    status_str = JsonWriter().write(items)
+
+    cherrypy.response.headers['Content-Type'] = "application/json"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return status_str
+
+
+def json_list(section, keyw, lst, headers=True):
+    """Output a simple list as a JSON object
+    """
+
+    i = 0
+    d = []
+    for item in lst:
+        c = {}
+        c['id'] = '%s' % i
+        c['name'] = item
+        i += 1
+        d.append(c)
+        
+    obj = { section : d }
+    
+    if headers:
+        text = JsonWriter().write(obj)
+        cherrypy.response.headers['Content-Type'] = "application/json"
+        cherrypy.response.headers['Pragma'] = 'no-cache'
+        return text
+    else:
+        return obj
 
 
 def xml_list(section, keyw, lst):
     """Output a simple list as an XML object
     """
     text= '<?xml version="1.0" encoding="UTF-8" ?> \n<%s>\n' % section
-
+    n = 0
     for cat in lst:
-        text += '<%s>%s</%s>\n' % (keyw, Escape(cat), keyw)
+        text += '<%s>\n' % (keyw)
+        text += '<id>%s</id>\n' % (n)
+        text += '<name>%s</name>\n' % (escape(cat))
+        text += '</%s>\n' % (keyw)
+        n+=1
 
     text += '</%s>' % section
 
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
+    return text
+
+
+class xml_factory():
+    """
+    Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
+    Current limitations: 
+        In Two tiered lists hardcoded name of "item": <cat_list><item> </item></cat_list>
+        In Three tiered lists hardcoded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
+    """
+    def __init__(self):
+        self.__text = ''
+        
+    
+    def tuple(self, keyw, lst, text = ''):
+        for item in lst:
+            text += self.run(keyw, item)
+        return text
+    
+    def dict(self, keyw, lst, text = ''):
+        for key in lst.keys():
+            found = self.run(key,lst[key])
+            if found:
+                text += found
+            else:
+                text += '<%s>%s</%s>\n' % (escape(str(key)),escape(str(lst[key])),escape(str(key)))
+                
+        if keyw and text:
+            return '<%s>%s</%s>\n' % (keyw,text,keyw)
+        else:
+            return ''
+        
+
+
+    def list(self, keyw, lst, text = ''):
+        #deal with lists
+        found = False
+        for cat in lst:
+            if isinstance(cat, dict):
+                #debug = 'dict%s' % n
+                text += self.dict('slot', cat) 
+            elif isinstance(cat, list):
+                debug = 'list'
+                text  += self.list(debug, cat) 
+            elif isinstance(cat, tuple):
+                debug = 'tuple'
+                text += self.tuple(debug, cat) 
+                '''    found = self.run('slot', cat)
+                if found:
+                    text += found'''
+            else:
+                text += '<item>%s</item>\n' % escape(str(cat))
+            
+        if keyw and text:
+            return '<%s>%s</%s>\n' % (keyw,text,keyw)
+        else:    
+            return ''
+        
+    def run(self, keyw, lst):
+        if isinstance(lst, dict):
+            text = self.dict(keyw,lst) 
+        elif isinstance(lst, list):
+            text = self.list(keyw,lst)
+        elif isinstance(lst, tuple):
+            text = self.tuple(keyw,lst) 
+        else:     
+            text = ''
+        return text
+    
+
+def queueStatus(start, limit):
+    #gather the queue details
+    info, pnfo_list, bytespersec, verboseList, nzo_pages, dict = build_queue(history=True, start=start, limit=limit)
+    text = '<?xml version="1.0" encoding="UTF-8" ?><queue> \n'
+    
+    #Use xmlmaker to make an xml string out of info which is a tuple that contains lists/strings/dictionaries
+    xmlmaker = xml_factory()
+    text += xmlmaker.run("mainqueue",info)
+    text += "</queue>"
+    
+    #output in xml with no caching
+    cherrypy.response.headers['Content-Type'] = "text/xml"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return text
+
+def queueStatusJson(start, limit):
+    #gather the queue details
+    info = {}
+    info['mainqueue'], pnfo_list, bytespersec, verboseList, nzo_pages, dict = build_queue(history=True, start=start, limit=limit, json_output=True)
+
+    
+    status_str = JsonWriter().write(info)
+
+    cherrypy.response.headers['Content-Type'] = "application/json"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return status_str
+
+def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[], nzo_pages=[],
+                dict=[], history=False, start=None, limit=None, dummy2=None, json_output=False):
+    #build up header full of basic information
+    info, pnfo_list, bytespersec = build_header(prim)
+
+    info['isverbose'] = verbose
+    if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+        info['newzbinDetails'] = True
+
+    if int(sabnzbd.CFG['misc']['refresh_rate']) > 0:
+        info['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
+    else:
+        info['refresh_rate'] = ''
+        
+    info['limit'] = IntConv(dummy2)
+
+    datestart = datetime.datetime.now()
+
+    if json_output:
+        info['script_list'] = json_list("scripts", "script", ListScripts(), headers=False)
+        info['cat_list'] = json_list("categories", "category", ListCats(), headers=False)
+    else:
+        info['script_list'] = ListScripts()
+        info['cat_list'] = ListCats()
+    
+
+    n = 0
+    found_active = False
+    running_bytes = 0
+    slotinfo = []
+    nzo_ids = []
+
+    try: limit = int(limit)
+    except: limit = 0
+    try: start = int(start)
+    except: start = 0
+    
+    
+    #Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
+    if history:
+        slotinfo = get_history()
+        #if the specified start value is greater than the amount of history items, do no include the history (used for paging the queue)
+        if len(slotinfo) < start:
+            slotinfo = []
+    else:
+        slotinfo = []
+        
+    info['noofslots'] = len(pnfo_list) + len(slotinfo)
+    
+    #Paging of the queue using limit and/or start values
+    if limit > 0:
+        try:
+            if start > 0:               
+                if start > len(pnfo_list):
+                    pnfo_list = []
+                else:
+                    end = start+limit
+                    if start+limit > len(pnfo_list):
+                        end = len(pnfo_list)                  
+                    pnfo_list = pnfo_list[start:end]
+            else:
+                if not limit > len(pnfo_list):
+                    pnfo_list = pnfo_list[:limit]
+        except:
+            pass
+
+
+    for pnfo in pnfo_list:
+        repair = pnfo[PNFO_REPAIR_FIELD]
+        unpack = pnfo[PNFO_UNPACK_FIELD]
+        delete = pnfo[PNFO_DELETE_FIELD]
+        script = pnfo[PNFO_SCRIPT_FIELD]
+        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
+        cat = pnfo[PNFO_EXTRA_FIELD1]
+        if not cat:
+            cat = 'None'
+        filename = pnfo[PNFO_FILENAME_FIELD]
+        bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
+        bytes = pnfo[PNFO_BYTES_FIELD]
+        average_date = pnfo[PNFO_AVG_DATE_FIELD]
+        status = pnfo[PNFO_STATUS_FIELD]
+        priority = pnfo[PNFO_PRIORITY_FIELD]
+        mbleft = (bytesleft / MEBI)
+        mb = (bytes / MEBI)
+        if verbose or verboseList:
+            finished_files = pnfo[PNFO_FINISHED_FILES_FIELD]
+            active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
+            queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
+
+        nzo_ids.append(nzo_id)
+
+        if web_dir:#DONT WANT TO RUN THIS FOR XML OUTPUT#
+            if nzo_id not in dict:
+                dict[nzo_id] = NzoPage(web_dir, root, nzo_id, prim)
+                nzo_pages.append(nzo_id)
+            
+        slot = {'index':n, 'nzo_id':str(nzo_id)}
+        unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
+
+        slot['unpackopts'] = str(unpackopts)
+        if script:
+            slot['script'] = script
+        else:
+            slot['script'] = 'None'
+        fn, slot['msgid'] = SplitFileName(filename)
+        slot['filename'] = escape(fn)
+        slot['cat'] = cat
+        slot['mbleft'] = "%.2f" % mbleft
+        slot['mb'] = "%.2f" % mb
+        slot['bytes'] = "%s" % (bytes)
+        if not sabnzbd.paused() and status != 'Paused' and status != 'Fetching' and not found_active:
+            slot['status'] = "Downloading"
+            found_active = True
+        else:
+            slot['status'] = "%s" % (status)
+        if priority == HIGH_PRIORITY or priority == TOP_PRIORITY:
+            slot['priority'] = 'High'
+        elif priority == NORMAL_PRIORITY:
+            slot['priority'] = 'Normal'
+        elif priority == LOW_PRIORITY:
+            slot['priority'] = 'Low'
+        if mb == mbleft:
+            slot['percentage'] = "0"
+        else:
+            slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
+            
+        running_bytes += bytesleft
+        
+        slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
+
+        try:
+            datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
+            #new eta format: 16:00 Fri 07 Feb
+            slot['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
+        except:
+            datestart = datetime.datetime.now()
+            slot['eta'] = 'unknown'
+
+        slot['avg_age'] = calc_age(average_date)
+        if web_dir:
+            finished = []
+            active = []
+            queued = []
+            if verbose or nzo_id in verboseList:#this will list files in the xml output, wanted yes/no?
+    
+                date_combined = 0
+                num_dates = 0
+    
+                for tup in finished_files:
+                    bytes_left, bytes, fn, date = tup
+                    if isinstance(fn, unicode):
+                        fn = escape(fn.encode('utf-8'))
+    
+                    age = calc_age(date)
+    
+                    line = {'filename':str(fn),
+                            'mbleft':"%.2f" % (bytes_left / MEBI),
+                            'mb':"%.2f" % (bytes / MEBI),
+                            'age':age}
+                    finished.append(line)
+    
+                for tup in active_files:
+                    bytes_left, bytes, fn, date, nzf_id = tup
+                    if isinstance(fn, unicode):
+                        fn = escape(fn.encode('utf-8'))
+    
+                    age = calc_age(date)
+    
+                    line = {'filename':str(fn),
+                            'mbleft':"%.2f" % (bytes_left / MEBI),
+                            'mb':"%.2f" % (bytes / MEBI),
+                            'nzf_id':nzf_id,
+                            'age':age}
+                    active.append(line)
+    
+                for tup in queued_files:
+                    _set, bytes_left, bytes, fn, date = tup
+                    if isinstance(fn, unicode):
+                        fn = escape(fn.encode('utf-8'))
+    
+                    age = calc_age(date)
+    
+                    line = {'filename':str(fn), 'set':_set,
+                            'mbleft':"%.2f" % (bytes_left / MEBI),
+                            'mb':"%.2f" % (bytes / MEBI),
+                            'age':age}
+                    queued.append(line)
+
+            slot['finished'] = finished
+            slot['active'] = active
+            slot['queued'] = queued
+
+        slotinfo.append(slot)
+        n += 1
+
+    if slotinfo:
+        info['slotinfo'] = slotinfo
+    else:
+        info['slotinfo'] = ''
+        verboseList = []
+        if web_dir: #DONT WANT TO RUN THIS FOR XML OUTPUT#
+            for nzo_id in nzo_pages[:]:
+                if nzo_id not in nzo_ids:
+                    nzo_pages.remove(nzo_id)
+                    dict.pop(nzo_id)
+
+    return info, pnfo_list, bytespersec, verboseList, nzo_pages, dict
+
+def get_history():
+    slotinfo = []
+    history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
+    while history_items:
+        added = max(history_items.keys())
+        history_item_list = history_items.pop(added)
+        
+        for history_item in history_item_list:
+            filename, unpackstrht, loaded, bytes, nzo, status = history_item
+            #loaded = True #debug
+            if loaded:
+                name, msgid = SplitFileName(filename)
+                stages = []
+                item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
+                        'nzo':nzo,
+                        'msgid':msgid, 'filename':escape(name), 'loaded':loaded,
+                        'stages':stages, 'status':status, 'bytes':bytes}
+                slotinfo.append(item)
+    return slotinfo
+
+#depreciated
+def xmlSimpleDict(keyw,lst):
+    """
+    Output a simple dictionary as an XML string
+    """
+
+    text = '<%s>' % (keyw)
+    for key in lst.keys():
+        text += '<%s>%s</%s>\n' % (escape(key),escape(lst[key]),escape(key))
+    text += '</%s>' % keyw
     return text

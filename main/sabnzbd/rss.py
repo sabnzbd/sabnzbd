@@ -271,7 +271,7 @@ class RSSQueue:
                     lst[link][0] = 'D'
 
 
-def _HandleLink(jobs, link, title, flag, cat, pp, script, download):
+def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NORMAL_PRIORITY):
     """ Process one link """
     if script=='': script = None
     if pp=='': pp = None
@@ -287,7 +287,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download):
             jobs[link].append('')
             jobs[link].append('')
             logging.info("[%s] Adding %s (%s) to queue", __NAME__, m.group(3), title)
-            sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat)
+            sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat, priority=priority)
         else:
             jobs[link].append(flag)
             jobs[link].append(title)
@@ -305,7 +305,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download):
             jobs[link].append('')
             jobs[link].append('')
             logging.info("[%s] Adding %s (%s) to queue", __NAME__, link, title)
-            sabnzbd.add_url(link, pp=pp, script=script, cat=cat)
+            sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority)
         else:
             jobs[link].append(flag)
             jobs[link].append(title)

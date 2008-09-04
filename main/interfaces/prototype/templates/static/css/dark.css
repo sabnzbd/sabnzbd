@@ -1,0 +1,25 @@
+.red-row{ background-color: #fad9d9 !important;color:black;} 
+.yellow-row{ background-color: #FBF8BF !important; color:black;} 
+.green-row{ background-color: #dafad9 !important; color:black;}
+
+.downloading-row{ background-color: #304a2c !important; }
+.paused-row{ background-color: #464646 !important; }
+
+.status_Paused{background-color: red !important;padding:2px; color:black;}
+.status_Downloading{background-color:#00FF00;padding:2px; color:black;}
+.status_Idle{background-color:yellow;padding:2px; color:black;}
+
+#chartContainer{
+    background-color:#222;
+}
+
+.priority-cell-high{
+    background-color:#dafad9 !important;
+    color:#333 !important;
+}
+.priority-cell-low{
+    background-color:#fad9d9;
+    color:#333 !important;
+}
+
+.tickLabel{color:white;}

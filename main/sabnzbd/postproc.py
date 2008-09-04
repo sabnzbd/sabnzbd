@@ -42,7 +42,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          cleanup_empty_directories, get_unique_filename, \
                          OnCleanUpList, ProcessSingleFile
 from sabnzbd.tvsort import TVSeasonCheck, TVSeasonMove, TVRenamer
-
+from sabnzbd.constants import TOP_PRIORITY
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
@@ -125,7 +125,7 @@ class PostProcessor(Thread):
                 if reAdd:
                     logging.info('[%s] Readded %s to queue', __NAME__, filename)
                     sabnzbd.QUEUECOMPLETEACTION_GO = False
-                    sabnzbd.add_nzo(nzo, 0)
+                    sabnzbd.add_nzo(nzo, TOP_PRIORITY)
                     sabnzbd.unidle_downloader()
                     ## Break out, further downloading needed
                     continue

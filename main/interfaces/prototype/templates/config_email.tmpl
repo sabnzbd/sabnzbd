@@ -1,0 +1,65 @@
+<div id="formPanel">
+<a href="$helpuri/Configure+Email" id="help">Help</a><h3>Email Notification</h3>
+<form class="cmxform" >
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>Email Options</legend>
+
+	
+		
+			<label><span class="label">End-of-job notifications:</span>
+			<input class="radio" type="checkbox" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> />
+			<span class="tips">Send email when job is completed.</span></label>
+		<br class="clear" />
+		
+			<label><span class="label">Disk full notifications:</span>
+			<input class="radio" type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
+			<span class="tips">Send email when disk is full and SABnzbd is paused.</span></label>
+		<br class="clear" />
+		
+</fieldset>
+
+<fieldset class="EntryFieldSet">
+<legend>Email Account Settings</legend>
+
+	
+		
+			<label class="label">SMTP server:</label>
+
+			<input type="text" size="35" name="email_server" value="$email_server">
+			<span class="tips">Set your ISP's server for outgoing email.</span>
+            <br class="clear" />
+		
+			<label class="label">Email recipient:</label>
+
+			<input type="text" size="35" name="email_to" value="$email_to">
+			<span class="tips">Email address to send the email to.</span>
+            <br class="clear" />
+		
+			<label class="label">Email sender:</label>
+
+			<input type="text" size="35" name="email_from" value="$email_from">
+			<span class="tips">Email address the message appears to come from.</span>
+            <br class="clear" />
+		
+			<label class="label">OPTIONAL: Account name:</label>
+
+			<input type="text" size="35" name="email_account" value="$email_account">
+			<span class="tips">For authenticated email, account name.</span>
+            <br class="clear" />
+		
+			<label class="label">OPTIONAL: Account password:</label>
+
+			<input type="password" size="35" name="email_pwd" value="$email_pwd">
+			<span class="tips">For authenticated email, password.	</span>		
+            <br class="clear" />
+			
+</fieldset>
+</div>
+
+<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/email/saveEmail', 'submitstatus', 'formPanel')">
+<span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
+<a class="config" onClick="testemail();">Test E-Mail</a>
+</form>
+
+</div>

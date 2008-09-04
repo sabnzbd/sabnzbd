@@ -17,7 +17,7 @@
 
 from sabnzbd.version import __version__, __baseline__
 __configversion__ = 18
-__queueversion__ = 7
+__queueversion__ = 8
 __NAME__ = "sabnzbd"
 
 import os
@@ -124,6 +124,7 @@ AMBI_LOCALHOST = False
 SAFE_POSTPROC = False
 DIRSCAN_SCRIPT = None
 DIRSCAN_DIR = None
+DIRSCAN_PRIORITY = 0
 
 POSTPROCESSOR = None
 ASSEMBLER = None
@@ -157,6 +158,8 @@ WEB_COLOR2 = None
 WEB_DIR = None
 WEB_DIR2 = None
 pause_on_post_processing = False
+
+LOGIN_PAGE = None
 
 __INITIALIZED__ = False
 
@@ -310,7 +313,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
-           WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN
+           WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, DIRSCAN_PRIORITY
 
     if __INITIALIZED__:
         return False
@@ -466,6 +469,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     DIRSCAN_PP = check_setting_int(CFG, 'misc', 'dirscan_opts', 3)
     DIRSCAN_SCRIPT = check_setting_str(CFG, 'misc', 'dirscan_script', '')
+    DIRSCAN_PRIORITY = check_setting_int(CFG, 'misc', 'dirscan_priority', 0)
 
     top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
 
@@ -705,6 +709,12 @@ def remove_nzo(nzo_id, add_to_history = True, unload=False):
         NZBQ.remove(nzo_id, add_to_history, unload)
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+def remove_multiple_nzos(nzo_ids, add_to_history = True):
+    try:
+        NZBQ.remove_multiple(nzo_ids, add_to_history)
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
 def remove_all_nzo():
     try:
@@ -783,6 +793,12 @@ def switch(nzo_id1, nzo_id2):
         NZBQ.switch(nzo_id1, nzo_id2)
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+def rename_nzo(nzo_id, name):
+    try:
+        NZBQ.rename(nzo_id, name)
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
 def history_info():
     try:
@@ -799,6 +815,24 @@ def queue_info(for_cli = False):
 def purge_history(job=None):
     try:
         NZBQ.purge(job)
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+def remove_multiple_history(jobs=None):
+    try:
+        NZBQ.remove_multiple_history(jobs)
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+def pause_multiple_nzo(jobs):
+    try:
+        NZBQ.pause_multiple_nzo(jobs)
+    except:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+def resume_multiple_nzo(jobs):
+    try:
+        NZBQ.resume_multiple_nzo(jobs)
     except:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
@@ -850,7 +884,7 @@ def purge_articles(articles):
 ################################################################################
 ## Misc Wrappers                                                              ##
 ################################################################################
-def add_msgid(msgid, pp=None, script=None, cat=None):
+def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -860,7 +894,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None):
                      __NAME__, msgid)
         msg = "fetching msgid %s from www.newzbin.com" % msgid
     
-        future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat, url=msgid)
+        future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority)
     
         MSGIDGRABBER.grab(msgid, future_nzo)
     else:
@@ -868,7 +902,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None):
                              __NAME__, msgid)    
 
 
-def add_url(url, pp=None, script=None, cat=None):
+def add_url(url, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -876,7 +910,7 @@ def add_url(url, pp=None, script=None, cat=None):
     if URLGRABBER:
         logging.info('[%s] Fetching %s', __NAME__, url)
         msg = "Trying to fetch NZB from %s" % url
-        future_nzo = NZBQ.generate_future(msg, pp, script, cat, url=url)
+        future_nzo = NZBQ.generate_future(msg, pp, script, cat, url=url, priority=priority)
         URLGRABBER.add(url, future_nzo)
 
 
@@ -936,7 +970,7 @@ def backup_nzb(filename, data):
 ## CV synchronized (notifys downloader)                                       ##
 ################################################################################
 @synchronized_CV
-def add_nzbfile(nzbfile, pp=None, script=None, cat=None):
+def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -961,24 +995,48 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None):
         logging.error("[%s] Cannot create temp file for %s", __NAME__, filename)
 
     if ext.lower() in ('.zip', '.rar'):
-        ProcessArchiveFile(filename, path, pp, script, cat)
+        ProcessArchiveFile(filename, path, pp, script, cat, priority)
     else:
-        ProcessSingleFile(filename, path, pp, script, cat)
+        ProcessSingleFile(filename, path, pp, script, cat, priority)
 
 
 @synchronized_CV
-def add_nzo(nzo, position = -1):
+def add_nzo(nzo):
     try:
-        NZBQ.add(nzo, position)
+        NZBQ.add(nzo)
     except NameError:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
 @synchronized_CV
-def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None):
+def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
     try:
-        NZBQ.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat)
+        NZBQ.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority)
     except NameError:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+@synchronized_CV
+def set_priority(nzo_id, priority):
+    try:
+        NZBQ.set_priority(nzo_id, priority)
+    except NameError:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+@synchronized_CV
+def set_priority_multiple(nzo_ids, priority):
+    try:
+        NZBQ.set_priority_multiple(nzo_ids, priority)
+    except NameError:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+        
+@synchronized_CV
+def sort_queue(field, reverse=False):
+    try:
+        NZBQ.sort_queue(field, reverse)
+    except NameError:
+        logging.exception("[%s] Error accessing NZBQ?", __NAME__)
+        
+        
 
 @synchronized_CV
 def pause_downloader(save=True):
@@ -1038,6 +1096,12 @@ def limit_speed(value):
 ################################################################################
 ## Unsynchronized methods                                                     ##
 ################################################################################
+def change_web_dir(web_dir):
+    LOGIN_PAGE.change_web_dir(web_dir)
+    
+def change_web_dir2(web_dir):
+    LOGIN_PAGE.change_web_dir2(web_dir)
+    
 def bps():
     try:
         return BPSMETER.bps

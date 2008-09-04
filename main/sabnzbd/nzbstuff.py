@@ -291,7 +291,8 @@ PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 
 class NzbObject(TryList):
     def __init__(self, filename, pp, script, nzb = None,
-                 futuretype = False, cat = None, url=None):
+                 futuretype = False, cat = None, url=None, 
+                 priority=NORMAL_PRIORITY, status="Queued"):
         TryList.__init__(self)
 
         if cat and pp == None:
@@ -315,7 +316,7 @@ class NzbObject(TryList):
 
         self.__filename = filename    # Original filename
         self.__dirname = filename
-        self.__original_dirname = filename
+        self.__original_dirname = filename # Used for folder name for final unpack
         self.__created = False        # dirprefixes + dirname created
         self.__bytes = 0              # Original bytesize
         self.__bytes_downloaded = 0   # Downloaded byte
@@ -345,9 +346,13 @@ class NzbObject(TryList):
 
         #the current status of the nzo eg:
         #Queued, Downloading, Repairing, Unpacking, Failed, Complete
-        self.__status = "Queued"
+        self.__status = status
         self.__avg_bps_freq = 0
         self.__avg_bps_total = 0
+        try:
+            self.__priority = int(priority)
+        except:
+            self.__priority = NORMAL_PRIORITY
 
         self.__dupe_table = {}
 
@@ -358,6 +363,13 @@ class NzbObject(TryList):
         self.futuretype = futuretype
         self.deleted = False
         self.parsed = False
+        
+        self.extra1 = None
+        self.extra2 = None
+        self.extra3 = None
+        self.extra4 = None
+        self.extra5 = None
+        self.extra6 = None
 
         self.create_group_folder = sabnzbd.CREATE_GROUP_FOLDERS
 
@@ -584,6 +596,30 @@ class NzbObject(TryList):
 
     def get_original_dirname(self):
         return self.__original_dirname
+    
+    def set_original_dirname(self, name):
+        self.__original_dirname = name
+    
+    def pause_nzo(self):
+        try:
+            self.__status = 'Paused'
+        except:
+            pass
+        
+    def resume_nzo(self):
+        try:
+            self.__status = 'Queued'
+        except:
+            pass
+        
+    def get_priority(self):
+        return self.__priority
+        
+    def set_priority(self, priority):
+        try:
+            self.__priority = priority
+        except:
+            pass
 
     def add_parfile(self, parfile):
         self.__files.append(parfile)
@@ -849,7 +885,7 @@ class NzbObject(TryList):
                 self.nzo_id, self.__filename, self.__unpackstrht.copy(),
                 self.__msgid, self.__cat, self.__url,
                 bytes_left_all, self.__bytes, avg_date,
-                finished_files, active_files, queued_files, self.__status)
+                finished_files, active_files, queued_files, self.__status, self.__priority)
 
     def get_nzf_by_id(self, nzf_id):
         if nzf_id in self.__files_table:

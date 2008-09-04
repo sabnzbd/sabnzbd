@@ -1,0 +1,23 @@
+[
+{"text":"Downloads","id":"\/downloads","cls":"folder", "children" : [
+	{"text":"Folders","id":"\/folders","leaf":true,"cls":"file"},
+	{"text":"Categories","id":"categories","leaf":true,"cls":"file"}
+	]
+},
+{"text":"Web Server","id":"\/webserver","leaf":true,"cls":"file"},
+{"text":"Post-Processing","id":"\/post-processing","leaf":true,"cls":"file"},
+{"text":"Servers","id":"\/servers","cls":"folder", "children" : [
+	<!--#for $server in $servers#-->
+		{"text":"$server","id":"\/$server","leaf":true,"cls":"file"},
+	<!--#end for#-->
+		{"text":"Add New","id":"addnewserver","leaf":true,"cls":"file"}
+	]
+},
+{"text":"RSS","id":"\/rss","leaf":true,"cls":"file"},
+{"text":"Email","id":"\/email","leaf":true,"cls":"file"},
+{"text":"Newzbin","id":"\/newzbin","leaf":true,"cls":"file"},
+{"text":"Scheduling","id":"\/scheduling","leaf":true,"cls":"file"}
+]
+
+
+

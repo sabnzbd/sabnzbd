@@ -110,7 +110,8 @@ class MSGIDGrabber(Thread):
                 cat = CatConvert(cat)                    
                 try:
                     cat, name, pp, script = Cat2OptsDef(filename, cat)
-                    sabnzbd.insert_future_nzo(nzo, name, data, pp=pp, script=script, cat=cat)
+                    priority = nzo.get_priority()
+                    sabnzbd.insert_future_nzo(nzo, name, data, pp=pp, script=script, cat=cat, priority=priority)
                 except:
                     logging.error("[%s] Failed to update newzbin job %s", __NAME__, msgid)
                     sabnzbd.remove_nzo(nzo.nzo_id, False)
@@ -314,7 +315,7 @@ class Bookmarks:
                     if msgid and (msgid not in self.bookmarks):
                         self.bookmarks.append(msgid)
                         logging.info("[%s] Found new bookmarked msgid %s (%s)", __NAME__, msgid, text)
-                        sabnzbd.add_msgid(int(msgid), None, None)
+                        sabnzbd.add_msgid(int(msgid), None, None, priority=sabnzbd.DIRSCAN_PRIORITY)
         self.__busy = False
 
     @synchronized(BOOK_LOCK)

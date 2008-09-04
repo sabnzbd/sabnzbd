@@ -261,7 +261,7 @@ function loadtitle() {
         val1 = document.getElementById(elem).innerHTML;
         val1="";
 
-		d = doSimpleXMLHttpRequest('queue/delete', {uid: elem, dummy: Math.random()});
+		d = doSimpleXMLHttpRequest('queue/delete', {uid: elem, _dc: Math.random()});
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
@@ -271,7 +271,7 @@ function loadtitle() {
     //deletes an item from the history - passed variable is the id (uid) of the history item to delete(and also the id of the history element)
         val1 = document.getElementById(elem).innerHTML;
         val1="";
-		d = doSimpleXMLHttpRequest('history/delete', {job: elem, dummy: Math.random()});
+		d = doSimpleXMLHttpRequest('history/delete', {job: elem, _dc: Math.random()});
 		if (pnode == 'Right_bottom')d.addCallback(replaceright2);
         else d.addCallback(replaceright);
 		d.addErrback(handleServerError);
@@ -302,6 +302,7 @@ function loadtitle() {
         var enc_uri = urlEncode(uri)
         location = url+"?uri="+enc_uri+"&cat="+cat+"&this_uri="+enc_uri
     }
+    
 	
 	function lr(url, extra, refresh, dual, pnode)
 	{
@@ -320,7 +321,7 @@ function loadtitle() {
                 document.getElementById('Right_bottom').style.width = "41%";
             }
         }
-        append = '?dummy='+Math.random();
+        append = '?_dc='+Math.random();
         if (extra){
             append = append+'&'+extra;
         }
@@ -346,7 +347,7 @@ function loadtitle() {
     //killTimer()
     //similar to lr() but loads the response in the right_bottom container
 		if (timerId3) clearTimeout ( timerId3 );
-		var res = doSimpleXMLHttpRequest(url+'?dummy='+Math.random());
+		var res = doSimpleXMLHttpRequest(url+'?_dc='+Math.random());
 	    res.addCallback(function (res)
 	    {
 	      document.getElementById('Right_bottom').innerHTML = res.responseText;
@@ -372,7 +373,7 @@ function loadtitle() {
 
 	function changequeuedetails(page)
 	{
-        append = '&dummy='+Math.random();
+        append = '&_dc='+Math.random();
         url = page+append;
 		d = doSimpleXMLHttpRequest(url);
 		d.addCallback(replaceright);
@@ -426,7 +427,7 @@ function loadtitle() {
 
     function toggle_verbosity(nzo_id)
     {
-        append = '&dummy='+Math.random();
+        append = '&_dc='+Math.random();
         url = 'queue/tog_uid_verbose?uid='+nzo_id+append;
 		var res = doSimpleXMLHttpRequest(url);        
 	    res.addCallback(function (res)
@@ -439,7 +440,7 @@ function loadtitle() {
 	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post
 	function submitconfig(extra, saveelement, element, url2, refresh)
 	{
-        append = '?dummy='+Math.random();
+        append = '?_dc='+Math.random();
 		var values = [];
 		var elementt;
 		if (element) elementt = document.getElementById(element);
@@ -490,7 +491,7 @@ function loadingJSON(){
 	clearTimeout ( jsontimeout );
 	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);
 	}
-	var url = "api?mode=qstatus&output=json&dummy="+Math.random();
+	var url = "api?mode=qstatus&output=json&_dc="+Math.random();
 	var d = loadJSONDoc(url);
 	var gotMetadata = function (info)
 	{
@@ -638,7 +639,7 @@ function loadingJSON(){
                     <br/>
         			<li><a href="$helpuri" target="_blank">Wiki</a></li>
         			<li><a href="http://forums.sabnzbd.org" target="_blank">Forums</a></li>
-                    <li><a href="http://embed.mibbit.com/?server=irc.synirc.net&channel=%23sabnzbd&parseLinks=true&chatOutputShowTimes=true" target="_blank">IRC</a></li>
+                    <li><a http://embed.mibbit.com/?server=irc.synirc.net&channel=%23sabnzbd&parseLinks=true&chatOutputShowTimes=true" target="_blank">IRC</a></li>
 				</ul>
 				<!--<input type="checkbox" name="enable_speedlimit" />-->
 				<span class="small">Speedlimit: </span><input type="text" id="speedbox" value="$speedlimit" onChange="javascript:doSimpleXMLHttpRequest('api?mode=config&name=set_speedlimit&value='+this.value);">
@@ -723,6 +724,9 @@ function loadingJSON(){
     				<!--#if $warning#-->
     				<h2>WARNING</h2>
     				<b>$warning</b><br/>
+    				<!--#end if#-->
+    				<!--#if $have_warnings#-->
+    				<h2><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings!</a></h2>
     				<!--#end if#-->
     				<!--#if $new_release#-->
     			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br/>

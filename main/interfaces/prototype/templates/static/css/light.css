@@ -1,0 +1,17 @@
+.red-row{ background-color: #fad9d9 !important; } 
+.yellow-row{ background-color: #FBF8BF !important; } 
+.green-row{ background-color: #dafad9 !important; }
+
+.downloading-row{ background-color: #e1ffd3 !important; }
+.paused-row{ background-color: #e7e7e7 !important; }
+
+.status_Paused{background-color: red !important;padding:2px;}
+.status_Downloading{background-color:#00FF00;padding:2px;}
+.status_Idle{background-color:yellow;padding:2px;}
+
+.priority-cell-high{
+    background-color:#dafad9;
+}
+.priority-cell-low{
+    background-color:#fad9d9;
+}
