@@ -450,7 +450,7 @@ class MainPage(ProtectedClass):
 
         elif mode == 'config':
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
-                if not value: value = 0
+                if not value: value = '0'
                 if value.isdigit():
                     try: value = int(value)
                     except: return 'error: Please submit a value\n'
@@ -874,7 +874,7 @@ class QueuePage(ProtectedClass):
     
     @cherrypy.expose
     def set_speedlimit(self, dummy = None, value=0):
-        if not value: value = 0
+        if not value: value = '0'
         try: value = int(value)
         except: return 'error: Please submit a value\n'
         sabnzbd.CFG['misc']['bandwith_limit'] = value
