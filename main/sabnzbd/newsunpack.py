@@ -21,6 +21,7 @@ sabnzbd.newsunpack
 __NAME__ = 'newsunpack'
 
 import os
+import sys
 import re
 import subprocess
 import logging
@@ -288,11 +289,11 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                     actionname = '[DEL-INFO] %s' % os.path.basename(joinable_set)
                     nzo.set_unpackstr("=> Deleted %s file(s)" % i, actionname, 4)
     except:
-        nzo.set_unpackstr('=> Unknown error while running file_join, ' + \
-                          'see logfile', actionname, 4)
-        logging.error('[%s] Unknown error while' + \
+        msg = sys.exc_info()[1]
+        nzo.set_unpackstr('=> Error "%s" while running file_join' % msg, actionname, 4)
+        logging.error('[%s] Error "%s" while' + \
                           ' running file_join on %s',
-                          __NAME__, nzo.get_filename())
+                          __NAME__, msg, nzo.get_filename())
         return True
 
 #------------------------------------------------------------------------------
@@ -373,11 +374,11 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
 
         return errors, newfiles
     except:
-        nzo.set_unpackstr('=> Unknown error while running rar_unpack, ' + \
-                          'see logfile', actionname, 2)
-        logging.error('[%s] Unknown error while' + \
+        msg = sys.exc_info()[1]
+        nzo.set_unpackstr('=> Error "%s" while running rar_unpack' % msg, actionname, 2)
+        logging.error('[%s] Error "%s" while' + \
                           ' running rar_unpack on %s',
-                          __NAME__, nzo.get_filename())
+                          __NAME__, msg, nzo.get_filename())
         return True, ''
 
 def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
@@ -580,11 +581,11 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
 
         return unzip_failed
     except:
-        nzo.set_unpackstr('=> Unknown error while running unzip(): ' + \
-                          'see logfile', actionname, 3)
-        logging.error('[%s] Unknown error while' + \
+        msg = sys.exc_info()[1]
+        nzo.set_unpackstr('=> Error "%s" while running unzip()' % msg, actionname, 3)
+        logging.error('[%s] Error "%s" while' + \
                           ' running unzip() on %s',
-                          __NAME__, nzo.get_filename())
+                          __NAME__, msg, nzo.get_filename())
         return True
 
 def ZIP_Extract(zipfile, extraction_path):
@@ -695,11 +696,11 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                                         filepath)
             nzo.set_unpackstr("=> Deleted %d file(s)" % i, actionname, 1)
     except:
-        nzo.set_unpackstr('=> Unknown error while running par2_repair, ' + \
-                          'see logfile', actionname, 1)
-        logging.error('[%s] Unknown error while' + \
+        msg = sys.exc_info()[1]
+        nzo.set_unpackstr('=> Error "%s" while running par2_repair' % msg, actionname, 1)
+        logging.error('[%s] Error "%s" while' + \
                           ' running par2_repair on set %s',
-                           __NAME__, setname)
+                           __NAME__, msg, setname)
 
     return readd, result
 
