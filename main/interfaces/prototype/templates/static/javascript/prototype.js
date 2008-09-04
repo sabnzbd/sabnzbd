@@ -2303,7 +2303,7 @@ storeUnpack.loadData(unpackStrings);
             //autoExpandColumn:'Filename',
             //autoFitColumns: true,
             iconCls: 'icon-fileinfo',
-            enableDragDrop:true
+            enableDragDrop:false
     });
     
     
