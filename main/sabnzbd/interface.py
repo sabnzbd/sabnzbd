@@ -45,7 +45,7 @@ from sabnzbd.utils.multiauth.providers import DictAuthProvider
 from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
-from sabnzbd.email import email_send, email_endjob
+from sabnzbd.email import email_send, email_endjob, email_diskfull
 from sabnzbd.misc import real_path, create_real_path, save_configfile, \
                          to_units, from_units, SameFile, encode_for_xml, \
                          decodePassword, encodePassword
@@ -118,7 +118,7 @@ def CheckFreeSpace():
             # Pause downloader, but don't save, since the disk is almost full!
             sabnzbd.pause_downloader(save=False)
             if sabnzbd.EMAIL_FULL:
-                email_send("SABnzbd has halted", "SABnzbd has halted because diskspace is below the minimum.\n\nSABnzbd")
+                email_diskfull()
 
 
 def check_timeout(timeout):
@@ -2020,8 +2020,7 @@ class ConnectionInfo(ProtectedClass):
         
         self.__lastmail= email_endjob('Test Job', 'unknown', True,
                             os.path.normpath(os.path.join(sabnzbd.COMPLETE_DIR, '/unknown/Test Job')),
-                            '123MB', pack, 'my_script', 'Line 1\nLine 2\nLine 3\n')
-
+                            str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n')
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose

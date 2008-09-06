@@ -170,3 +170,26 @@ def email_endjob(filename, cat, status, path, bytes, stages, script, script_outp
             ret = email_send(template.respond())
             del template
     return ret
+
+
+
+################################################################################
+# EMAIL_DISKFULL
+#
+#
+################################################################################
+def email_diskfull():
+    """ Send email about disk full, no templates """
+    
+    message = """to: %s
+from: %s
+subject: SABnzbd reports Disk Full
+
+Hi,
+
+SABnzbd has stopped downloading, because the disk is almost full.
+Please make room and resume SABnzbd manually.
+
+""" % (sabnzbd.EMAIL_TO, sabnzbd.EMAIL_FROM)
+
+    return email_send(message)
