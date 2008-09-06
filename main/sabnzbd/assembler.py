@@ -29,7 +29,15 @@ import os
 import Queue
 import binascii
 import logging
+import struct
 import sabnzbd
+
+try:
+    import hashlib
+    new_md5 = hashlib.md5
+except:
+    import md5
+    new_md5 = md5.new
 
 from sabnzbd.interface import CheckFreeSpace
 from sabnzbd.misc import getFilepath, sanitize_filename
@@ -82,7 +90,8 @@ class Assembler(Thread):
                         if sabnzbd.DARWIN:
                             filepath = filepath.encode('utf8')
                             logging.info('utf8 filepath: ' + filepath)
-                        _assemble(nzf, filepath, dupe)
+                        filepath = _assemble(nzo, nzf, filepath, dupe)
+
                     except IOError, (errno, strerror):
                         # 28 == disk full => pause downloader
                         if errno == 28:
@@ -90,11 +99,18 @@ class Assembler(Thread):
                             sabnzbd.pause_downloader()
                         else:
                             logging.error('[%s] Disk error on creating file %s', __NAME__, filepath)
+
+                    setname = nzf.get_setname()
+                    if sabnzbd.QUICK_CHECK and nzf.is_par2() and (nzo.get_md5pack(setname) == None):
+                        nzo.set_md5pack(setname, GetMD5Hashes(filepath))
+                        logging.debug('[%s] Got md5pack for set %s', __NAME__, setname)
+
+
             else:
                 sabnzbd.postprocess_nzo(nzo)
 
 
-def _assemble(nzf, path, dupe):
+def _assemble(nzo, nzf, path, dupe):
     if os.path.exists(path):
         unique_path = get_unique_path(path, create_dir = False)
         if dupe:
@@ -104,6 +120,11 @@ def _assemble(nzf, path, dupe):
 
     fout = open(path, 'ab')
 
+    if sabnzbd.QUICK_CHECK:
+        md5 = new_md5()
+    else:
+        md5 = None
+    
     _type = nzf.get_type()
     decodetable = nzf.get_decodetable()
 
@@ -119,6 +140,7 @@ def _assemble(nzf, path, dupe):
             # yenc data already decoded, flush it out
             if _type == 'yenc':
                 fout.write(data)
+                if md5: md5.update(data)
             # need to decode uu data now
             elif _type == 'uu':
                 data = data.split('\r\n')
@@ -144,6 +166,80 @@ def _assemble(nzf, path, dupe):
                             logging.info('[%s] Decode failed in part %s: %s',
                                          __NAME__, article.article, msg)
                 fout.write(''.join(chunks))
+                if md5: md5.update(''.join(chunks))
 
     fout.flush()
     fout.close()
+    if md5:
+        nzf.md5sum = md5.digest()
+        del md5
+
+    return path
+
+
+# For a full description of the par2 specification, visit: 
+# http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
+
+def GetMD5Hashes(name):
+    """ Get the hash table from a PAR2 file
+        Return as dictionary, indexed on names
+    """
+    table = {}
+    try:
+        f = open(name, 'rb')
+    except:
+        return table
+
+    header = f.read(8)
+    while header:
+        name, hash = ParseFilePacket(f, header)
+        if name:
+            table[name] = hash
+        header = f.read(8)
+
+    f.close()
+    return table
+
+
+def ParseFilePacket(f, header):
+    """ Look up and analyse a FileDesc package """
+
+    def ToInt(buf):
+        return struct.unpack('<Q', buf)[0]
+        
+    nothing = None, None
+
+    if header != 'PAR2\0PKT':
+        return nothing
+
+    # Length must be multiple of 4 and at least 20
+    len = ToInt(f.read(8))
+    if int(len/4)*4 != len or len < 20:
+        return nothing
+
+    # Next 16 bytes is md5sum of this packet
+    md5sum = f.read(16)
+
+    # Read and check the data
+    data = f.read(len-32)
+    md5 = new_md5()
+    md5.update(data)
+    if md5sum != md5.digest():
+        return nothing
+
+    # The FileDesc packet looks like:
+    # 16 : "PAR 2.0\0FileDesc"
+    # 16 : FileId
+    # 16 : Hash for full file **
+    # 16 : Hash for first 16K
+    #  8 : File length
+    # xx : Name (multiple of 4, padded with \0 if needed) **
+    
+    # See if it's the right packet and get name + hash
+    for offset in range(0, len, 8):
+        if data[offset:offset+16] == "PAR 2.0\0FileDesc":
+            hash = data[offset+32:offset+48]
+            filename = data[offset+72:].strip('\0')
+            return filename, hash
+
+    return nothing

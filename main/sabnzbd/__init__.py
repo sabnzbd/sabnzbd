@@ -158,7 +158,7 @@ WEB_COLOR2 = None
 WEB_DIR = None
 WEB_DIR2 = None
 pause_on_post_processing = False
-
+QUICK_CHECK = True
 LOGIN_PAGE = None
 
 __INITIALIZED__ = False
@@ -313,7 +313,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
-           WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, DIRSCAN_PRIORITY
+           WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY
 
     if __INITIALIZED__:
         return False
@@ -359,6 +359,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     SAFE_POSTPROC = bool(check_setting_int(CFG, 'misc', 'safe_postproc', 0))
 
     pause_on_post_processing = bool(check_setting_int(CFG, 'misc', 'pause_on_post_processing', 0))
+
+    QUICK_CHECK = bool(check_setting_int(CFG, 'misc', 'quick_check', 1))
 
     CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
     if type(CLEANUP_LIST) != type([]):

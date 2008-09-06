@@ -25,6 +25,7 @@ import sys
 import re
 import subprocess
 import logging
+import glob
 from time import time
 import sabnzbd
 from sabnzbd.nzbstuff import SplitFileName
@@ -43,6 +44,7 @@ TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
 EXTRACTFROM_RE = re.compile(r'^Extracting\sfrom\s(.+)')
 SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
+VOLPAR2_RE = re.compile(r'\.*vol[0-9]+\+[0-9]+\.par2', re.I)
 
 PAR2_COMMAND = None
 RAR_COMMAND = None
@@ -611,36 +613,59 @@ def ZIP_Extract(zipfile, extraction_path):
 def par2_repair(parfile_nzf, nzo, workdir, setname):
     """ Try to repair a set, return readd or correctness """
     #set the current nzo status to "Repairing". Used in History
-    nzo.set_status("Repairing...")
+
+    parfile = os.path.join(workdir, parfile_nzf.get_filename())
     actionname = '[PAR-INFO] %s' % setname
-    result = False
-    readd = False
-    try:
-        parfile = os.path.join(workdir, parfile_nzf.get_filename())
-        nzo.set_unpackstr('=> Scanning "%s"' % parfile, actionname, 1)
 
-        joinables, zips, rars = build_filelists(workdir, None)
+    nzo.set_status("Quick check...")
+    nzo.set_unpackstr('=> Quick checking', actionname, 1)
+    if QuickCheck(setname, nzo):
+        logging.info("[%s] Quick-check for %s is OK, skipping repair",
+                      __NAME__, setname)
+        nzo.set_unpackstr('=> Quick check OK', actionname, 1)
+        readd = False
+        result = True
+        # Poor man's list of other pars, should not be needed
+        # but sometimes too many are downloaded
+        pars = ParsOfSet(workdir, setname)
 
-        old_dir_content = os.listdir(workdir)
+    else:
 
-        finished, readd, pars, datafiles = PAR_Verify(parfile, parfile_nzf, nzo,
-                                                      actionname, joinables)
+        nzo.set_status("Repairing...")
+        result = False
+        readd = False
+        try:
+            nzo.set_unpackstr('=> Scanning "%s"' % parfile, actionname, 1)
 
-        if finished:
-            result = True
-            logging.info('[%s] Par verify finished ok on %s!', __NAME__,
-                         parfile)
+            joinables, zips, rars = build_filelists(workdir, None)
 
-            # Remove this set so we don't try to check it again
-            nzo.remove_parset(parfile_nzf.get_setname())
-        else:
-            logging.info('[%s] Par verify failed on %s!', __NAME__, parfile)
+            old_dir_content = os.listdir(workdir)
 
-            if not readd:
-                # Failed to repair -> remove this set
+            finished, readd, pars, datafiles = PAR_Verify(parfile, parfile_nzf, nzo,
+                                                          actionname, joinables)
+
+            if finished:
+                result = True
+                logging.info('[%s] Par verify finished ok on %s!', __NAME__,
+                             parfile)
+
+                # Remove this set so we don't try to check it again
                 nzo.remove_parset(parfile_nzf.get_setname())
-            return readd, False
+            else:
+                logging.info('[%s] Par verify failed on %s!', __NAME__, parfile)
 
+                if not readd:
+                    # Failed to repair -> remove this set
+                    nzo.remove_parset(parfile_nzf.get_setname())
+                return readd, False
+        except:
+            msg = sys.exc_info()[1]
+            nzo.set_unpackstr('=> Error %s while running par2_repair' % msg, actionname, 1)
+            logging.error('[%s] Error %s while running par2_repair on set %s',
+                               __NAME__, msg, setname)
+            return readd, result
+
+    try:
         if sabnzbd.PAR_CLEANUP:
             actionname = '[DEL-INFO] %s' % setname
             i = 0
@@ -1012,3 +1037,45 @@ def notrar(f):
         return True
 
     return False
+
+
+def QuickCheck(set, nzo):
+    """ Check all on-the-fly md5sums of a set """
+    
+    md5pack = nzo.get_md5pack(set)
+    if md5pack == None:
+        return False
+
+    result = False
+    nzf_list = nzo.get_files()
+    for file in md5pack:
+        if sabnzbd.misc.OnCleanUpList(file, False):
+            result = True
+            continue
+        found = False
+        for nzf in nzf_list:
+            if file == nzf.get_filename():
+                found = True
+                if nzf.md5sum == md5pack[file]:
+                    logging.debug('[%s] Quick-check of file %s OK', __NAME__, file)
+                    result = True
+                else:
+                    logging.debug('[%s] Quick-check of file %s failed!', __NAME__, file)
+                    return False # When any file fails, just stop
+                break
+        if not found:
+            logging.debug('[%s] Cannot Quick-check missing file %s!', __NAME__, file)
+            return False # Missing file is failure
+    return result
+
+
+def ParsOfSet(wdir, setname):
+    """ Return list of par2 files matching the set """
+    
+    list = []
+    size = len(setname)
+
+    for file in os.listdir(wdir):
+        if VOLPAR2_RE.search(file[size:]):
+            list.append(file)
+    return list

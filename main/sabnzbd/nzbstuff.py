@@ -128,6 +128,8 @@ class NzbFile(TryList):
         self.valid = False
         self.import_finished = False
         
+        self.md5sum = None
+        
         if segments:
             # Do a lazy import
             article_db = {}
@@ -334,8 +336,9 @@ class NzbObject(TryList):
         self.__avg_date = None
         self.__dirprefix = []
 
-        self.__partable = {}
-        self.__extrapars = {}
+        self.__partable = {}          # Holds one parfile-name for each set
+        self.__extrapars = {}         # Holds the extra parfile names for all sets
+        self.md5packs = {}            # Holds the md5pack for each set
 
         self.__files = []
         self.__files_table = {}
@@ -642,6 +645,8 @@ class NzbObject(TryList):
         #returns a string of the current history status
         return self.__status
 
+    def get_files(self):
+        return self.__finished_files
 
     def set_download_report(self):
         if self.__avg_bps_total and self.__bytes_downloaded and self.__avg_bps_freq:
@@ -911,6 +916,15 @@ class NzbObject(TryList):
 
     def get_future(self):
         return self.__url
+
+    def get_md5pack(self, name):
+        try:
+            return self.md5packs[name]
+        except:
+            return None
+
+    def set_md5pack(self, name, pack):
+        self.md5packs[name] = pack
 
     def __build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
