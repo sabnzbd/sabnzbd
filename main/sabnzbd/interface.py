@@ -35,6 +35,7 @@ from cherrypy.lib import cptools
 from sabnzbd.utils.rsslib import RSS, Item, Namespace
 from sabnzbd.utils.json import JsonWriter
 import sabnzbd
+import sabnzbd.rss
 
 from cherrypy.filters.gzipfilter import GzipFilter
 
@@ -1556,7 +1557,7 @@ class ConfigRss(ProtectedClass):
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['have_feedparser'] = sabnzbd.rss.HAVE_FEEDPARSER
+        config['have_feedparser'] = sabnzbd.rss.have_feedparser()
 
         config['script_list'] = ListScripts()
         config['script_list'].insert(0, 'Default')
@@ -1670,7 +1671,7 @@ class ConfigRss(ProtectedClass):
             feed = kwargs['feed']
             try:
                 del sabnzbd.CFG['rss'][feed]
-                sabnzbd.del_rss_feed(feed)
+                sabnzbd.rss.del_feed(feed)
             except:
                 pass
             save_configfile(sabnzbd.CFG)
@@ -1693,7 +1694,7 @@ class ConfigRss(ProtectedClass):
     def download_rss_feed(self, *args, **kwargs):
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            sabnzbd.run_rss_feed(feed, download=True)
+            sabnzbd.rss.run_feed(feed, download=True)
             return ShowRssLog(feed, False)
         if '_dc' in kwargs:
             raise Raiser(self.__root, _dc=kwargs['_dc'])
@@ -1704,7 +1705,7 @@ class ConfigRss(ProtectedClass):
     def test_rss_feed(self, *args, **kwargs):
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            sabnzbd.run_rss_feed(feed, download=False)
+            sabnzbd.rss.run_feed(feed, download=False)
             return ShowRssLog(feed, True)
         if '_dc' in kwargs:
             raise Raiser(self.__root, _dc=kwargs['_dc'])
@@ -1718,7 +1719,7 @@ class ConfigRss(ProtectedClass):
             sabnzbd.add_msgid(id, pp, script, cat, priority)
         elif id:
             sabnzbd.add_url(id, pp, script, cat, priority)
-        sabnzbd.rss_flag_downloaded(feed, id)
+        sabnzbd.rss.flag_downloaded(feed, id)
         raise Raiser(self.__root, _dc=_dc)
 
 
@@ -2135,7 +2136,7 @@ def ShowOK(url):
 def ShowRssLog(feed, all):
     """Return a html page listing an RSS log and a 'back' button
     """
-    jobs = sabnzbd.show_rss_result(feed)
+    jobs = sabnzbd.rss.show_result(feed)
     qfeed = Escape(feed.replace('/','%2F').replace('?', '%3F'))
 
     doneStr = ""

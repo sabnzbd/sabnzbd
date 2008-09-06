@@ -27,18 +27,67 @@ import re
 import logging
 import time
 import sabnzbd
-from sabnzbd.interface import ListFilters
 from sabnzbd.constants import *
 from sabnzbd.decorators import *
 from threading import RLock
 
 try:
     import feedparser
-    HAVE_FEEDPARSER = True
+    __HAVE_FEEDPARSER = True
 except ImportError:
-    HAVE_FEEDPARSER = False
+    __HAVE_FEEDPARSER = False
+__RSS = None  # Global pointer to RSS-scanner instance
 
-RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
+
+################################################################################
+# Wrapper functions                                                            #
+################################################################################
+
+def init():
+    global __RSS, __HAVEFEEDPARSER
+    if __HAVE_FEEDPARSER:
+        __RSS = RSSQueue()
+        return True
+    else:
+        return False
+
+def stop():
+    global __RSS
+    if __RSS: __RSS.stop()
+
+def have_feedparser():
+    global __HAVEFEEDPARSER
+    return __HAVE_FEEDPARSER
+
+def del_feed(feed):
+    global __RSS
+    if __RSS: __RSS.delete(feed)
+
+def run_feed(feed, download):
+    global __RSS
+    if __RSS: return __RSS.run_feed(feed, download)
+
+def show_result(feed):
+    global __RSS
+    if __RSS: return __RSS.show_result(feed)
+
+def flag_downloaded(feed, id):
+    global __RSS
+    if __RSS: __RSS.flag_downloaded(feed, id)
+
+def run_method():
+    global __RSS
+    if __RSS:
+        return __RSS.run
+    else:
+        return None
+
+def save():
+    global __RSS
+    if __RSS: __RSS.save()
+
+################################################################################
+
 
 def ListUris():
     """ Return list of all RSS uris """
@@ -135,7 +184,7 @@ class RSSQueue:
             return
 
         # Preparations, convert filters to regex's
-        filters = ListFilters(feed)
+        filters = sabnzbd.interface.ListFilters(feed)
         regexes = []
         reTypes = []
         reCats = []
@@ -270,6 +319,8 @@ class RSSQueue:
                 if lst[link][2] == id:
                     lst[link][0] = 'D'
 
+
+RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
 
 def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NORMAL_PRIORITY):
     """ Process one link """

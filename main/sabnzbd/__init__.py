@@ -52,7 +52,7 @@ from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
                          ProcessArchiveFile, ProcessSingleFile
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.utils.kronos import ThreadedScheduler
-from sabnzbd.rss import RSSQueue, ListUris
+import sabnzbd.rss
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -134,7 +134,6 @@ ARTICLECACHE = None
 DOWNLOADER = None
 NZBQ = None
 BPSMETER = None
-RSS = None
 SCHED = None
 BOOKMARKS = None
 
@@ -496,7 +495,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         else:
             BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
-    need_rsstask = init_RSS()
+    need_rsstask = rss.init()
     init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK, BOOKMARKS, BOOKMARK_RATE)
 
     if ARTICLECACHE:
@@ -602,8 +601,7 @@ def halt():
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
 
-        if RSS:
-            RSS.stop()
+        rss.stop()
 
         if BOOKMARKS:
             BOOKMARKS.save()
@@ -929,11 +927,7 @@ def save_state():
     except:
         logging.exception("[%s] Error accessing BPSMETER?", __NAME__)
 
-    if RSS:
-        try:
-            RSS.save()
-        except:
-            logging.exception("[%s] Error accessing RSS?", __NAME__)
+    rss.save()
 
     if BOOKMARKS:
         BOOKMARKS.save()
@@ -1477,7 +1471,7 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 60, need_versionchec
                 h = int(at/60)
                 m = at - h*60
                 logging.debug("Scheduling RSS task %s %s:%s", d, h, m)
-                SCHED.addDaytimeTask(RSS.run, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
+                SCHED.addDaytimeTask(rss.run_method, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
 
 
         if need_versioncheck:
@@ -1502,33 +1496,3 @@ def init_SCHED(schedlines, need_rsstask = False, rss_rate = 60, need_versionchec
                 SCHED.addDaytimeTask(bookmarks.run, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
 
 
-################################################################################
-# RSS                                                                          #
-################################################################################
-def init_RSS():
-    global RSS
-    if rss.HAVE_FEEDPARSER:
-        RSS = RSSQueue()
-        return True
-    else:
-        return False
-
-def del_rss_feed(feed):
-    if RSS:
-        RSS.delete(feed)
-
-def get_rss_info():
-    if RSS:
-        return RSS.get_info()
-
-def run_rss_feed(feed, download):
-    if RSS:
-        return RSS.run_feed(feed, download)
-
-def show_rss_result(feed):
-    if RSS:
-        return RSS.show_result(feed)
-
-def rss_flag_downloaded(feed, id):
-    if RSS:
-        RSS.flag_downloaded(feed, id)
