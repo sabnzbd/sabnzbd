@@ -27,6 +27,12 @@ import subprocess
 import logging
 import glob
 from time import time
+try:
+    import Foundation #OSX
+    import platform
+except:
+    pass
+
 import sabnzbd
 from sabnzbd.nzbstuff import SplitFileName
 
@@ -319,7 +325,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
         logging.debug('Rar_sets: %s', rar_sets)
 
         for rar_set in rar_sets:
-            actionname = '[RAR-INFO] %s' % rar_set
+            actionname = u'[RAR-INFO] %s' % rar_set.decode('Latin-1')
             # Run the RAR extractor
             rarpath = rar_sets[rar_set][0]
 
