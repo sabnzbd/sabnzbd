@@ -481,7 +481,25 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
         
         if (r[0])
         {
-            speed = r[0].data.kbpersec
+    		speed = r[0].data.kbpersec;
+    		paused = r[0].data.paused;
+    		if (paused=="True") speed = 0;
+
+    		if (paused=="True")
+    		{
+                document.title = "SABnzbd+ | Paused";
+    						//alert("paused");
+    		} else if 	(speed>0)
+    		{
+        		totalTimeRemain = r[0].data.timeleft;
+                dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"kB/s";
+                document.title = dltitle;
+    						//alert("down");
+    		} else {
+                document.title = "SABnzbd+ | Idle";
+    						//alert("idle");
+    		}
+            
         } else {
             speed = '0'
         }
