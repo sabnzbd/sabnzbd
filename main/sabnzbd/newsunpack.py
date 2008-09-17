@@ -61,16 +61,16 @@ def find_programs(curdir):
     """Find external programs
     """
     if sabnzbd.DARWIN:
-       if platform.machine() == 'i386':
-       		p = os.path.abspath(curdir + '/osx/par2/par2')
-       else:
-       		p = os.path.abspath(curdir + '/osx/par2/par2universal')
+        if platform.machine() == 'i386':
+            p = os.path.abspath(curdir + '/osx/par2/par2')
+        else:
+            p = os.path.abspath(curdir + '/osx/par2/par2universal')
 
-       if os.access(p, os.X_OK):
-           sabnzbd.newsunpack.PAR2_COMMAND = p
-       p = os.path.abspath(curdir + '/osx/unrar/unrar')
-       if os.access(p, os.X_OK):
-           sabnzbd.newsunpack.RAR_COMMAND = p
+        if os.access(p, os.X_OK):
+            sabnzbd.newsunpack.PAR2_COMMAND = p
+        p = os.path.abspath(curdir + '/osx/unrar/unrar')
+        if os.access(p, os.X_OK):
+            sabnzbd.newsunpack.RAR_COMMAND = p
 
     if os.name == 'nt':
         p = os.path.abspath(curdir + '/win/par2/par2.exe')
@@ -213,12 +213,12 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
             logging.info('[%s] Unzip finished on %s', __NAME__, workdir)
 
     if rerun:
-            z, y = unpack_magic(nzo, workdir, workdir_complete, dele, xjoinables,
-                             xzips, xrars)
-            if z:
-                error = z
-            if y:
-                newfiles.extend(y)
+        z, y = unpack_magic(nzo, workdir, workdir_complete, dele, xjoinables,
+                            xzips, xrars)
+        if z:
+            error = z
+        if y:
+            newfiles.extend(y)
 
     return error, newfiles
 
@@ -300,8 +300,8 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running file_join' % msg, actionname, 4)
         logging.error('[%s] Error "%s" while' + \
-                          ' running file_join on %s',
-                          __NAME__, msg, nzo.get_filename())
+                      ' running file_join on %s',
+                      __NAME__, msg, nzo.get_filename())
         return True
 
 #------------------------------------------------------------------------------
@@ -385,8 +385,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running rar_unpack' % msg, actionname, 2)
         logging.error('[%s] Error "%s" while' + \
-                          ' running rar_unpack on %s',
-                          __NAME__, msg, nzo.get_filename())
+                      ' running rar_unpack on %s',
+                      __NAME__, msg, nzo.get_filename())
         return True, ''
 
 def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
@@ -464,7 +464,7 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
             nzo.set_unpackstr('=> ERROR: unable to find "%s"' % filename,
                               actionname, 2)
             logging.warning('[%s] ERROR: unable to find "%s"', __NAME__,
-                                                                       filename)
+                            filename)
             fail = 1
 
         elif line.endswith('- CRC failed'):
@@ -492,7 +492,7 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
                 '=> ERROR: CRC failed in "%s" - password incorrect?' % filename,
                 actionname, 2)
             logging.warning('[%s] ERROR: encrypted file: "%s"', __NAME__,
-                                                                       filename)
+                            filename)
             fail = 1
 
         else:
@@ -512,7 +512,7 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
     p.wait()
 
     logging.debug("[%s] RAR_Extract(): expected_files: %s", __NAME__,
-                                                                 expected_files)
+                  expected_files)
 
     all_files_found = True
     for expected_path in expected_files:
@@ -528,7 +528,7 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
         return ((), ())
 
     nzo.set_unpackstr('=> Unpacked %d file(s) in %.1fs' % \
-                    (len(extracted), time() - start), actionname, 2)
+                      (len(extracted), time() - start), actionname, 2)
     logging.info('[%s] Unpacked %d file(s) in %1.fs', __NAME__, len(extracted),
                  (time() - start))
 
@@ -560,7 +560,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
                 i += 1
 
         nzo.set_unpackstr("=> Unzipped %d file(s) in %1.fs" % (i, time() - tms),
-                                                                  actionname, 3)
+                          actionname, 3)
 
         # Delete the old files if we have to
         if delete and not unzip_failed:
@@ -592,8 +592,8 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running unzip()' % msg, actionname, 3)
         logging.error('[%s] Error "%s" while' + \
-                          ' running unzip() on %s',
-                          __NAME__, msg, nzo.get_filename())
+                      ' running unzip() on %s',
+                      __NAME__, msg, nzo.get_filename())
         return True
 
 def ZIP_Extract(zipfile, extraction_path):
@@ -627,7 +627,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     nzo.set_unpackstr('=> Quick checking', actionname, 1)
     if QuickCheck(setname, nzo):
         logging.info("[%s] Quick-check for %s is OK, skipping repair",
-                      __NAME__, setname)
+                     __NAME__, setname)
         nzo.set_unpackstr('=> Quick check OK', actionname, 1)
         readd = False
         result = True
@@ -668,7 +668,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             msg = sys.exc_info()[1]
             nzo.set_unpackstr('=> Error %s while running par2_repair' % msg, actionname, 1)
             logging.error('[%s] Error %s while running par2_repair on set %s',
-                               __NAME__, msg, setname)
+                          __NAME__, msg, setname)
             return readd, result
 
     try:
@@ -730,14 +730,14 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running par2_repair' % msg, actionname, 1)
         logging.error('[%s] Error "%s" while' + \
-                          ' running par2_repair on set %s',
-                           __NAME__, msg, setname)
+                      ' running par2_repair on set %s',
+                      __NAME__, msg, setname)
 
     return readd, result
 
 
 def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
-    
+
     #set the current nzo status to "Verifying...". Used in History
     nzo.set_status("Verifying...")
     start = time()
@@ -804,7 +804,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
             nzo.set_unpackstr('=> Verified in %.1fs, repair is required' % \
                               (time() - start), actionname, 1)
             logging.info('[%s] Verified in %.1fs, repair is required', __NAME__,
-                          time() - start)
+                         time() - start)
             start = time()
             verified = 1
 
@@ -867,8 +867,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                 # Tell SAB that we always have enough blocks, so that
                 # it will try to load all pars anyway
                 nzo.set_unpackstr(\
-                     '=> Not enough repair blocks, downloading all available (%d short)' % \
-                     int(needed_blocks - avail_blocks), actionname, 1)
+                    '=> Not enough repair blocks, downloading all available (%d short)' % \
+                    int(needed_blocks - avail_blocks), actionname, 1)
                 nzo.set_status("Failed")
                 needed_blocks = avail_blocks
                 force = True
@@ -898,8 +898,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
 
             else:
                 nzo.set_unpackstr(\
-                     '=> Not enough repair blocks left (have: %s, need: %s)' % \
-                     (avail_blocks, needed_blocks), actionname, 1)
+                    '=> Not enough repair blocks left (have: %s, need: %s)' % \
+                    (avail_blocks, needed_blocks), actionname, 1)
                 nzo.set_status("Failed")
 
         elif line.startswith('Repair is possible'):
@@ -943,7 +943,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                 if verifytotal == 0 or verifynum < verifytotal:
                     verifynum += 1
                     nzo.set_unpackstr('=> Verifying : %02d/%02d' % \
-                               (verifynum, verifytotal), actionname, 1)
+                                      (verifynum, verifytotal), actionname, 1)
                     nzo.set_status("Verifying...")
                 datafiles.append(m.group(1))
                 continue
@@ -1047,7 +1047,7 @@ def notrar(f):
 
 def QuickCheck(set, nzo):
     """ Check all on-the-fly md5sums of a set """
-    
+
     md5pack = nzo.get_md5pack(set)
     if md5pack == None:
         return False
@@ -1077,7 +1077,7 @@ def QuickCheck(set, nzo):
 
 def ParsOfSet(wdir, setname):
     """ Return list of par2 files matching the set """
-    
+
     list = []
     size = len(setname)
 
