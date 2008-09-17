@@ -413,7 +413,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
             id: 'version'
         }, [
             {name: 'cache_limit', mapping: 'cache_limit'},
-            'mbleft', 'mb', 'timeleft', 'kbpersec', 'eta', 'finishaction', 'status', 'paused'
+            'mbleft', 'mb', 'timeleft', 'kbpersec', 'eta', 'finishaction', 'status', 'paused', 'speedlimit'
         ]);
         
     var newQueueStatus = new Ext.data.HttpProxy({
@@ -499,6 +499,8 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
                 document.title = "SABnzbd+ | Idle";
     						//alert("idle");
     		}
+            speedlimit = r[0].data.speedlimit;
+            speedbox.setValue(speedlimit);
             
         } else {
             speed = '0'
@@ -1164,8 +1166,18 @@ storeUnpack.loadData(unpackStrings);
            failure: dummy
            
         });
+    };
+    
+    function limitSpeed(o , value){
+        url = 'api?mode=config&name=set_speedlimit&value='+value;
+        Ext.Ajax.request(
+        {
+           url: url,
+           success: dummy,
+           failure: dummy
+           
+        });
     }
-
 
 //-------------------------------------------------------------------------------------------------------------
 //                                                              TABS
@@ -2172,6 +2184,33 @@ storeUnpack.loadData(unpackStrings);
                     minWidth:110,
                     toggleHandler: pausetoggle
                 });
+                
+     var speedbox = new Ext.form.TextField({
+            width:35,
+            listeners: {
+                change: {
+                    fn : limitSpeed,
+                    value : 'frog'
+                }
+            },
+            selectOnFocus:true
+        });
+        
+     var queueActionCombo = new Ext.form.ComboBox({
+            typeAhead: true,
+            triggerAction: 'all',
+            transform:'actionqfin',
+            emptyText:'Action on queue finish...',
+            width:150,
+            lazyRender:true,
+            listeners: {
+                change: {
+                    fn : queueFinishAction,
+                    value : 'frog'
+                }
+            },
+            selectOnFocus:true
+        });
   
   
 // create the top toolbar
@@ -2226,22 +2265,10 @@ storeUnpack.loadData(unpackStrings);
             ]}
         }
         ,'-', queuePause,' ',
-        
-        new Ext.form.ComboBox({
-            typeAhead: true,
-            triggerAction: 'all',
-            transform:'actionqfin',
-            emptyText:'Action on queue finish...',
-            width:150,
-            lazyRender:true,
-            listeners: {
-                change: {
-                    fn : queueFinishAction,
-                    value : 'frog'
-                }
-            },
-            selectOnFocus:true
-        }),'->', statusTemplate
+        '-',
+        ' Speed Limit: ',speedbox,'KB/s','-',
+        queueActionCombo,
+        '->', statusTemplate
     );
 
 // hist toolbar
