@@ -1140,3 +1140,7 @@ td.x-date-mp-month a:hover, td.x-date-mp-year a:hover {
 .x-tbar-loading{
     background-image:url(../images/slickness/grid/done.gif)!important;
 }
+
+.x-form-text{
+    color:black!important;
+}
