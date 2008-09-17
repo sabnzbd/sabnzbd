@@ -46,6 +46,8 @@ def TVSeasonCheck(path, dirname):
     tv_file = False
     filename_set = None
     _path = path
+    #replace underscores with spaces for easier detection and stripping of surrounding whitespace
+    dirname = dirname.replace('_', ' ')
     if sabnzbd.ENABLE_TV_SORTING and sabnzbd.TV_SORT_STRING:
         #First check if the show matches TV episode regular expressions. Returns regex match object
         match1, match2 = checkForTVShow(dirname, tv_episode_match)
