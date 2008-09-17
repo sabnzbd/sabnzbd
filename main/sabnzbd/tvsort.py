@@ -46,8 +46,6 @@ def TVSeasonCheck(path, dirname):
     tv_file = False
     filename_set = None
     _path = path
-    #replace underscores with spaces for easier detection and stripping of surrounding whitespace
-    dirname = dirname.replace('_', ' ')
     if sabnzbd.ENABLE_TV_SORTING and sabnzbd.TV_SORT_STRING:
         #First check if the show matches TV episode regular expressions. Returns regex match object
         match1, match2 = checkForTVShow(dirname, tv_episode_match)
@@ -76,7 +74,7 @@ def getTVInfo(match1, match2, dirname):
     """
     try:
         title = dirname[:match1.start()].replace('.', ' ')
-        title = title.strip().strip('_').strip('-').strip()
+        title = title.strip().strip('_').strip('-').strip().strip('_')
         title = title.title() # title
         #title applied uppercase to 's Python bug?
         title = title.replace("'S", "'s")
@@ -85,13 +83,14 @@ def getTVInfo(match1, match2, dirname):
         ep_no = int(match1.group(2)) # episode number
     
         #gather the episode name
-        spl = dirname[match1.start():].split(' - ',2)
-    
-        try:
-            ep_name = spl[1].strip('_').strip().strip('_')
-        except:
+        ep_name = dirname[match1.end():]
+        RE_EPNAME = re.compile('_?-[_\W]', re.I)
+        m = RE_EPNAME.search(ep_name)
+        if m:
+            ep_name = ep_name[m.end():].strip('_').strip().strip('_')
+        else:
             ep_name = ''
-            
+
         #provide alternatve formatting   
         _season = str(season)
         if season < 10:
