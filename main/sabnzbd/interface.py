@@ -436,11 +436,8 @@ class MainPage(ProtectedClass):
                     return 'error\n'
             elif name == 'change_complete_action': 
                 # http://localhost:8080/sabnzbd/api?mode=queue&name=change_complete_action&value=hibernate_pc
-                if value:
-                    sabnzbd.change_queue_complete_action(value)
-                    return 'ok\n'
-                else:
-                    return 'error: Please submit a value\n'
+                sabnzbd.change_queue_complete_action(value)
+                return 'ok\n'
             elif name == 'purge':
                 sabnzbd.remove_all_nzo()
                 return 'ok\n'
