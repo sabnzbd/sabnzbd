@@ -92,6 +92,6 @@ LOW_PRIORITY = -1
 
 IGNORE_SAMPLE_LIST = ['.sample', '-sample', 'sample-', '~sample', '_sample']
 
-tv_episode_match = ['(\w+)x(\d+)',# 1x01
+tv_episode_match = ['([sS]|[\d]+)x(\d+)',# 1x01
                       '[Ss](\d+)[\.\-]?[Ee](\d+)'] # S01E01
                       #possibly flawed - 101 - support: [\.\- \s]?(\d)(\d{2,2})[\.\- \s]?
