@@ -1136,6 +1136,17 @@ storeUnpack.loadData(unpackStrings);
            
         });
     }
+    
+    function queueFinishAction(o , value){
+        url = 'api?mode=queue&name=change_complete_action&value='+value;
+        Ext.Ajax.request(
+        {
+           url: url,
+           success: dummy,
+           failure: dummy
+           
+        });
+    }
 
 
 //-------------------------------------------------------------------------------------------------------------
@@ -2197,15 +2208,20 @@ storeUnpack.loadData(unpackStrings);
             ]}
         }
         ,'-', queuePause,' ',
-        new Ext.form.ComboBox(
-        {
-            fieldLabel: 'Script',
-            width:150,
-            store: storeQueueActions,
-            displayField:'script',
+        
+        new Ext.form.ComboBox({
             typeAhead: true,
             triggerAction: 'all',
+            transform:'actionqfin',
             emptyText:'Action on queue finish...',
+            width:150,
+            lazyRender:true,
+            listeners: {
+                change: {
+                    fn : queueFinishAction,
+                    value : 'frog'
+                }
+            },
             selectOnFocus:true
         }),'->', statusTemplate
     );
