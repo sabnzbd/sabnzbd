@@ -171,6 +171,7 @@ class PostProcessor(Thread):
                 workdir_complete = create_dirs(complete_dir)
                 tmp_workdir_complete = create_dirs(prefix(os.path.join(workdir_complete, dirname), '_UNPACK_'))
                 
+            newfiles = []                
             ## Run Stage 2: Unpack
             if flagUnpack:
                 if parResult:
