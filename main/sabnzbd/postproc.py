@@ -75,6 +75,7 @@ class PostProcessor(Thread):
 
             parResult = True
             unpackError = False
+            nzb_list = []
 
             ## Get the job flags
             flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
@@ -199,65 +200,72 @@ class PostProcessor(Thread):
                 logging.error("[%s] Error removing workdir (%s)", __NAME__, workdir)
 
                                       
-            ## Remove files matching the cleanup list
-            if parResult: CleanUpList(tmp_workdir_complete, True)
+            if parResult:
+                ## Remove files matching the cleanup list
+                CleanUpList(tmp_workdir_complete, True)
+
+                ## Check if this is an NZB-only download, if so redirect to queue
+                nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat)
+                if nzb_list:
+                    nzo.set_unpackstr('=> Sent %s to queue' % nzb_list, '[QUEUE]', 6)
+                    try:
+                        os.rmdir(tmp_workdir_complete)
+                    except:
+                        pass
 
 
-            ## Give destination its final name
-            if not tv_file:
-                if unpackError or not parResult:
-                    workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
-                    workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
-                try:
-                    os.rename(tmp_workdir_complete, workdir_complete)
-                    nzo.set_dirname(os.path.basename(workdir_complete))
-                except:
-                    logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
-            else:
-                if unpackError or not parResult: 
-                    workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
-                    workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
+            if not nzb_list:
+                ## Give destination its final name
+                if not tv_file:
+                    if unpackError or not parResult:
+                        workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
+                        workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
                     try:
                         os.rename(tmp_workdir_complete, workdir_complete)
                         nzo.set_dirname(os.path.basename(workdir_complete))
                     except:
                         logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
                 else:
-                    if newfiles and tv_file and filename_set: TVRenamer(tmp_workdir_complete, newfiles, filename_set)
-                    workdir_complete = TVSeasonMove(tmp_workdir_complete)
+                    if unpackError or not parResult: 
+                        workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
+                        workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
+                        try:
+                            os.rename(tmp_workdir_complete, workdir_complete)
+                            nzo.set_dirname(os.path.basename(workdir_complete))
+                        except:
+                            logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
+                    else:
+                        if newfiles and tv_file and filename_set: TVRenamer(tmp_workdir_complete, newfiles, filename_set)
+                        workdir_complete = TVSeasonMove(tmp_workdir_complete)
 
-            if unpackError: jobResult = jobResult + 2
+                if unpackError: jobResult = jobResult + 2
 
-            ## Clean up download dir
-            cleanup_empty_directories(self.download_dir)
+                ## Set permissions right
+                if sabnzbd.UMASK and (os.name != 'nt'):
+                    perm_script(workdir_complete, sabnzbd.UMASK)
 
-   
-            ## Set permissions right
-            if sabnzbd.UMASK and (os.name != 'nt'):
-                perm_script(workdir_complete, sabnzbd.UMASK)
+                ## Run the user script
+                fname = ""
+                ext_out = ""
+                if (not nzb_list) and sabnzbd.SCRIPT_DIR and script and script!='None' and script!='Default':
+                    #set the current nzo status to "Ext Script...". Used in History
+                    script = os.path.join(sabnzbd.SCRIPT_DIR, script)
+                    if os.path.exists(script):
+                        nzo.set_status("Running Script...")
+                        nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
+                        ext_out = external_processing(script, workdir_complete, filename, dirname, cat, group, jobResult)
+                        fname = MakeLogFile(filename, ext_out)
+                else:
+                    script = ""
 
-            ## Run the user script
-            fname = ""
-            ext_out = ""
-            if sabnzbd.SCRIPT_DIR and script and script!='None' and script!='Default':
-                #set the current nzo status to "Ext Script...". Used in History
-                script = os.path.join(sabnzbd.SCRIPT_DIR, script)
-                if os.path.exists(script):
-                    nzo.set_status("Running Script...")
-                    nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
-                    ext_out = external_processing(script, workdir_complete, filename, dirname, cat, group, jobResult)
-                    fname = MakeLogFile(filename, ext_out)
-            else:
-                script = ""
+                ## Email the results
+                if (not nzb_list) and sabnzbd.EMAIL_ENDJOB:
+                    email_endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
+                                 nzo.get_unpackstrht(), script, ext_out)
 
-            ## Email the results
-            if sabnzbd.EMAIL_ENDJOB:
-                email_endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
-                             nzo.get_unpackstrht(), script, ext_out)
-
-            if fname:
-                # Can do this only now, otherwise it would show up in the email
-                nzo.set_unpackstr('=> <a href="./scriptlog?name=%s">Show script output</a>' % urllib.quote(fname), '[USER-SCRIPT]', 5)
+                if fname:
+                    # Can do this only now, otherwise it would show up in the email
+                    nzo.set_unpackstr('=> <a href="./scriptlog?name=%s">Show script output</a>' % urllib.quote(fname), '[USER-SCRIPT]', 5)
 
             ## Remove newzbin bookmark, if any
             name, msgid = SplitFileName(filename)
@@ -269,13 +277,8 @@ class PostProcessor(Thread):
             else:
                 nzo.set_status("Failed")
 
-            ## Check if this is an NZB-only download, if so redirect to queue
-            if parResult:
-                lst = NzbRedirect(workdir_complete, pp, script, cat)
-                if lst: nzo.set_unpackstr('=> Sent %s to queue' % lst, '[QUEUE]', 6)
-
-            # Another cleanup to remove any NZB that the users wants gone
-            if parResult: CleanUpList(tmp_workdir_complete, False)
+            ## Clean up download dir
+            cleanup_empty_directories(self.download_dir)
 
             ## Clean up the NZO
             try:
@@ -416,9 +419,4 @@ def NzbRedirect(wdir, pp, script, cat):
             ProcessSingleFile(file, os.path.join(wdir, file), pp, script, cat, keep=keep)
             list.append(file)
 
-    try:
-        # Folder will be removed when empty
-        os.rmdir(wdir)
-    except:
-        pass
     return list
