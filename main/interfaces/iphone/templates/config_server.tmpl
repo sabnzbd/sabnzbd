@@ -7,7 +7,9 @@
     </ul>
 
 
- <!--#for $server in $servers#-->
+ <!--#set $slist = $servers.keys()#-->
+ <!--#$slist.sort()#-->
+ <!--#for $server in $slist#-->
   <form title="$servers[$server]['host']$servers[$server]['port']" class="panel" action="javascript:var dummy=0" id="$servers[$server]['host']$servers[$server]['port']">
 <fieldset class="EntryFieldSet">
       <h2>$server</h2>

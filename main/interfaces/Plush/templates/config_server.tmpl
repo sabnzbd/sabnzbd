@@ -38,7 +38,9 @@
 			</fieldset>
 			</form>
 			
-			<!--#for $server in $servers#-->
+            <!--#set $slist = $servers.keys()#-->
+            <!--#$slist.sort()#-->
+            <!--#for $server in $slist#-->
 			<form action="saveServer" method="post">
 			<fieldset class="EntryFieldSet">
 				
