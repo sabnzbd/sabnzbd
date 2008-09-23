@@ -46,6 +46,10 @@ class CrcError(Exception):
         self.gotcrc = gotcrc
         self.data = data
 
+class BadYenc(Exception):
+    def __Init__(self):
+        Exception.__init__(self)
+
 #-------------------------------------------------------------------------------
 
 class Decoder(Thread):
@@ -108,6 +112,15 @@ class Decoder(Thread):
                         if new_server_found:
                             register = False
                             
+                except BadYenc, e:
+                    logging.warning("[%s] Badly formed yEnc article in %s", __NAME__,
+                                    article)
+                                    
+                    if sabnzbd.FAIL_ON_CRC:
+                        new_server_found = self.__search_new_server(article)
+                        if new_server_found:
+                            register = False
+
                 except:
                     logging.error("[%s] Unknown Error while decoding %s",
                                       __NAME__, article)
@@ -220,7 +233,9 @@ def decode(article, data):
                               
             if not (_partcrc == partcrc):
                 raise CrcError(_partcrc, partcrc, decoded_data)
-                
+        else:
+            raise BadYenc()
+
         return decoded_data
             
 def yCheck(data):
