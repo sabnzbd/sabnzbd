@@ -443,7 +443,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     try:
         BANDWITH_LIMIT = check_setting_int(CFG, 'misc', 'bandwith_limit', 0)
     except:
-        #BANDWITH_LIMIT = check_setting_float(CFG, 'misc', 'bandwith_limit', 0.0)
         BANDWITH_LIMIT = 0
 
     if BANDWITH_LIMIT < 1:
@@ -554,8 +553,11 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     if evalSched:
         p, s = AnalyseSchedules(schedlines)
-        if not pause_downloader: DOWNLOADER.paused = p
-        if s: DOWNLOADER.limit_speed(s)
+        if not pause_downloader:
+            DOWNLOADER.paused = p
+        if s:
+            DOWNLOADER.limit_speed(s)
+            BANDWITH_LIMIT = s
 
     logging.info('All processes started')
 
@@ -1081,8 +1083,10 @@ def unidle_downloader():
 
 @synchronized_CV
 def limit_speed(value):
+    global BANDWITH_LIMIT
     try:
         DOWNLOADER.limit_speed(int(value))
+        BANDWITH_LIMIT = int(value)
         logging.info("[%s] Bandwidth limit set to %s", __NAME__, value)
     except NameError:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)

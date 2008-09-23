@@ -897,13 +897,13 @@ class QueuePage(ProtectedClass):
     
     @cherrypy.expose
     def set_speedlimit(self, _dc = None, value=None):
-        if not value: value = '0'
-        try: value = int(value)
-        except: return 'error: Please submit a value\n'
-        sabnzbd.CFG['misc']['bandwith_limit'] = value
-        sabnzbd.BANDWITH_LIMIT = value
+        if not value:
+            value = '0'
+        try:
+            value = int(value)
+        except:
+            return 'error: Please submit a value\n'
         sabnzbd.limit_speed(value)
-        save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc)
 
 class HistoryPage(ProtectedClass):
