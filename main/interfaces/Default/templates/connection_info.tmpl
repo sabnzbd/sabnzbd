@@ -5,10 +5,10 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 <span class="SubMenu">
-<a href="./disconnect">Force Disconnect</a> |
-<a href="./testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a> |
-<a href="./showlog">Show logging</a> |
-<a href="./showweb">Show Weblogging</a>
+<a href="./disconnect/">Force Disconnect</a> |
+<a href="./testmail/" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a> |
+<a href="./showlog/">Show logging</a> |
+<a href="./showweb/">Show Weblogging</a>
 Logging:
 <select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value">
     <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
@@ -37,7 +37,7 @@ Logging:
     $lastmail
 <!--#end if#-->
 <!--#if $warnings#-->
-    <h2>Last warnings (<a href="./clearwarnings">clear</a>)</h2>
+    <h2>Last warnings (<a href="./clearwarnings/">clear</a>)</h2>
     <!--#for $warn in $warnings#-->
         $warn<br/>
     <!--#end for#-->
