@@ -393,6 +393,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         if DOWNLOAD_DIR == "":
             return False
 
+    if DOWNLOAD_DIR.startswith('\\\\'):
+        logging.error('[%s] UNC path "%s" not supported as download directory', __NAME__, DOWNLOAD_DIR)
+
     DOWNLOAD_FREE = check_setting_str(CFG, 'misc', 'download_free', "0")
     DOWNLOAD_FREE = int(from_units(DOWNLOAD_FREE))
     logging.debug("DOWNLOAD_FREE %s", DOWNLOAD_FREE)

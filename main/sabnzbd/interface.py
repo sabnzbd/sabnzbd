@@ -1082,6 +1082,8 @@ class ConfigDirectories(ProtectedClass):
         (dd, path) = create_real_path('download_dir', sabnzbd.DIR_HOME, download_dir)
         if not dd:
             return badParameterResponse('Error: cannot create download directory "%s".' % path)
+        if path.startswith('\\\\'):
+            return badParameterResponse('Error: UNC path "%s" not supported as download directory.' % path)
 
         (dd, path) = create_real_path('cache_dir', sabnzbd.DIR_LCLDATA, cache_dir)
         if not dd:
