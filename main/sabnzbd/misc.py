@@ -1099,7 +1099,7 @@ def getFilepath(path, nzo, filename):
     return fullPath
 
 
-def BadFetch(nzo, url, retry, archive=False):
+def BadFetch(nzo, url, retry=False, archive=False):
     """ Create History entry for failed URL Fetch """
     logging.error("[%s] Error getting url %s", __NAME__, url)
 

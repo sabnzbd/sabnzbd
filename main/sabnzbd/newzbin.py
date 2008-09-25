@@ -121,7 +121,7 @@ class MSGIDGrabber(Thread):
                     sleeper(int(filename))
                 else:
                     # Fatal error, give up on this one
-                    BadFetch(nzo, msgid)
+                    BadFetch(nzo, msgid, retry=False)
                     msgid = None
 
             # Keep some distance between the grabs
