@@ -56,6 +56,7 @@ PAR2_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
+IONICE_COMMAND = None
 
 def find_programs(curdir):
     """Find external programs
@@ -87,6 +88,7 @@ def find_programs(curdir):
         findpar2 = ('par2',)
         findrar = ('rar', 'unrar', 'rar3', 'unrar3')
         findnice = ('nice',)
+        findionice = ('ionice',)
         findzip = ('unzip',)
 
         for path in lookhere:
@@ -112,6 +114,14 @@ def find_programs(curdir):
                     nice_path = os.path.abspath(nice_path)
                     if os.access(nice_path, os.X_OK):
                         sabnzbd.newsunpack.NICE_COMMAND = nice_path
+                        break
+
+            if not sabnzbd.newsunpack.IONICE_COMMAND:
+                for _ionice in findionice:
+                    ionice_path = os.path.join(path, _ionice)
+                    ionice_path = os.path.abspath(ionice_path)
+                    if os.access(ionice_path, os.X_OK):
+                        sabnzbd.newsunpack.IONICE_COMMAND = ionice_path
                         break
 
             if not sabnzbd.newsunpack.ZIP_COMMAND:
@@ -961,6 +971,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
 
 def build_command(command):
     if os.name != "nt":
+        if IONICE_COMMAND:
+            command.insert(0, "-n7")
+            command.insert(0, "-c2")
+            command.insert(0, IONICE_COMMAND)
         if NICE_COMMAND:
             command.insert(0, NICE_COMMAND)
         need_shell = False
