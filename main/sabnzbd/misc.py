@@ -298,7 +298,10 @@ class DirScanner(Thread):
                 priority = sabnzbd.DIRSCAN_PRIORITY
                 candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
                 if candidate:
-                    stat_tuple = os.stat(path)
+                    try:
+                        stat_tuple = os.stat(path)
+                    except:
+                        continue
                 else:
                     self.ignored[path] = 1
 
@@ -313,13 +316,22 @@ class DirScanner(Thread):
                     logging.info('[%s] Trying to import %s', __NAME__, path)
 
                     # Wait until the attributes are stable for 1 second
-                    while 1:
+                    # but give up after 3 sec
+                    stable = False
+                    for n in xrange(3):
                         time.sleep(1.0)
-                        stat_tuple_tmp = os.stat(path)
+                        try:
+                            stat_tuple_tmp = os.stat(path)
+                        except:
+                            continue
                         if CompareStat(stat_tuple, stat_tuple_tmp):
+                            stable = True
                             break
                         else:
                             stat_tuple = stat_tuple_tmp
+
+                    if not stable:
+                        continue
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext in ('.zip', '.rar') :
@@ -436,8 +448,13 @@ class URLGrabber(Thread):
 
 
                 if os.path.splitext(filename)[1].lower() == '.nzb':
-                    data = file(fn, 'r').read()
-                    os.remove(fn)
+                    try:
+                        data = file(fn, 'r').read()
+                        os.remove(fn)
+                    except:
+                        logging.debug('[%s] Cannot access file %s', __NAME__, fn)
+                        data = None
+
                     if data:
                         sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority)
                     else:
@@ -446,7 +463,10 @@ class URLGrabber(Thread):
                     if ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
                         sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                     else:
-                        os.remove(fn)
+                        try:
+                            os.remove(fn)
+                        except:
+                            pass
                         BadFetch(future_nzo, url, retry=False, archive=True)
 
             except:
