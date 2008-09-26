@@ -1044,12 +1044,14 @@ def SplitFileName(name):
         return name.strip(), ""
 
 def CatConvert(cat):
-    """ Convert newzbin-category/group-name to user categories
-        Return unchanged if not found
+    """ Convert newzbin-category/group-name to user categories.
+        If no match found, but newzbin-cat equals user-cat, then return user-cat
+        If no match found, return None
     """
     newcat = cat
-    if cat:
-        found = False
+    found = False
+
+    if cat and cat.lower() != 'none':
         for ucat in sabnzbd.CFG['categories']:
             try:
                 newzbin = sabnzbd.CFG['categories'][ucat]['newzbin']
@@ -1066,5 +1068,17 @@ def CatConvert(cat):
                     newcat = ucat
                     found = True
                     break
-            if found: break
-    return newcat
+            if found:
+                break
+
+        if not found:
+            for ucat in sabnzbd.CFG['categories']:
+                if cat.lower() == ucat.lower():
+                    found = True
+                    break
+
+    if found:            
+        return newcat
+    else:
+        return None
+ 

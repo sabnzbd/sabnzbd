@@ -146,12 +146,17 @@ def check_server(host, port):
     else:
         return badParameterResponse('Server address "%s:%s" is not valid.' % (host, port))
 
-def ListScripts():
+
+def ListScripts(default=False):
     """ Return a list of script names """
     lst = []
     dd = sabnzbd.SCRIPT_DIR
+    
     if dd and os.access(dd, os.R_OK):
-        lst = ['None']
+        if default:
+            lst = ['Default', 'None']
+        else:
+            lst = ['None']
         for script in glob.glob(dd + '/*'):
             if os.path.isfile(script):
                 sc= os.path.basename(script)
@@ -175,6 +180,16 @@ def ListCats(default=False):
         return lst
     else:
         return []
+
+
+def ConvertSpecials(p):
+    """ Convert None to 'None' and 'Default' to ''
+    """
+    if p == None:
+        p = 'None'
+    elif p.lower() == 'default':
+        p = ''
+    return p
 
 
 def Raiser(root, *args, **kwargs):
@@ -295,9 +310,7 @@ class MainPage(ProtectedClass):
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             info['newzbinDetails'] = True
 
-        info['script_list'] = ListScripts()
-        if info['script_list']:
-            info['script_list'].insert(0, 'Default')
+        info['script_list'] = ListScripts(default=True)
         info['script'] = sabnzbd.DIRSCAN_SCRIPT
 
         info['cat'] = 'Default'
@@ -1558,10 +1571,9 @@ class ConfigRss(ProtectedClass):
 
         config['have_feedparser'] = sabnzbd.rss.have_feedparser()
 
-        config['script_list'] = ListScripts()
-        config['script_list'].insert(0, 'Default')
+        config['script_list'] = ListScripts(default=True)
 
-        config['cat_list'] = ListCats()
+        config['cat_list'] = ListCats(default=True)
 
         rss = {}
         unum = 1
@@ -1573,7 +1585,7 @@ class ConfigRss(ProtectedClass):
             rss[feed]['pp'] = GetCfgRss(cfg, 'pp')
             rss[feed]['script'] = GetCfgRss(cfg, 'script')
             rss[feed]['enable'] = IntConv(GetCfgRss(cfg, 'enable'))
-            rss[feed]['pick_cat'] = config['cat_list'] != [] and not IsNewzbin(GetCfgRss(cfg, 'uri'))
+            rss[feed]['pick_cat'] = config['cat_list'] != []
             rss[feed]['pick_script'] = config['script_list'] != []
             filters = ListFilters(feed)
             rss[feed]['filters'] = filters
@@ -1597,12 +1609,10 @@ class ConfigRss(ProtectedClass):
             feed = None
         if feed and uri:
             cfg['uri'] = uri
-            if IsNone(cat): cat = ''
-            cfg['cat'] = cat
+            cfg['cat'] = ConvertSpecials(cat)
             if IsNone(pp): pp = ''
             cfg['pp'] = pp
-            if script==None or script=='Default': script = ''
-            cfg['script'] = script
+            cfg['script'] = ConvertSpecials(script)
             cfg['enable'] = IntConv(enable)
             save_configfile(sabnzbd.CFG)
 
@@ -1645,9 +1655,10 @@ class ConfigRss(ProtectedClass):
         except:
             raise Raiser(self.__root, _dc=_dc)
 
-        if IsNone(cat): cat = ''
         if IsNone(pp): pp = ''
-        if script==None or script=='Default': script = ''
+        script = ConvertSpecials(script)
+        cat = ConvertSpecials(cat)
+
         cfg['filter'+str(index)] = (cat, pp, script, filter_type, filter_text)
         cfg['enable'] = 0
         save_configfile(sabnzbd.CFG)
@@ -1848,8 +1859,7 @@ class ConfigCats(ProtectedClass):
         if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
             config['newzbinDetails'] = True
 
-        config['script_list'] = ListScripts()
-        config['script_list'].insert(0, 'Default')
+        config['script_list'] = ListScripts(default=True)
 
         config['have_cats'] = len(sabnzbd.CFG['categories']) > 0
         config['defdir'] = sabnzbd.COMPLETE_DIR

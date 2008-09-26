@@ -177,6 +177,8 @@ class RSSQueue:
         try:
             uri = cfg['uri']
             defCat = cfg['cat']
+            if defCat == "":
+                defCat = None
             defPP = cfg['pp']
             defScript = cfg['script']
         except:
@@ -191,7 +193,10 @@ class RSSQueue:
         rePPs = []
         reScripts = []
         for n in xrange(len(filters)):
-            reCats.append(filters[n][0])
+            reCat = filters[n][0]
+            if not reCat:
+                reCat = None
+            reCats.append(reCat)
             rePPs.append(filters[n][1])
             reScripts.append(filters[n][2])
             reTypes.append(filters[n][3])

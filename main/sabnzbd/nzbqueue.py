@@ -143,8 +143,12 @@ class NzbQueue(TryList):
                 scr = future.get_script()
                 if scr == None:
                     scr = script
+                categ = future.get_cat()
+                if categ == None:
+                    categ = cat
+
                 try:
-                    future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=cat, priority=priority)
+                    future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority)
                     future.nzo_id = nzo_id
                     self.save()
                 except:
