@@ -483,9 +483,13 @@ RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
 
 def sanitize_filename(name):
     """ Return filename with illegal chars converted to '_'
+        and with the par2 extension always in lowercase
     """
-    return RE_SANITIZE.sub('_', name).strip()
-
+    name, ext = os.path.splitext(RE_SANITIZE.sub('_', name).strip())
+    lowext = ext.lower()
+    if lowext == '.par2' and lowext != ext:
+        ext = lowext
+    return name + ext
 
 ################################################################################
 # DirPermissions                                                               #
