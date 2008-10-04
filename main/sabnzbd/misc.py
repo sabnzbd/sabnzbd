@@ -47,6 +47,7 @@ from sabnzbd.decorators import *
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.constants import *
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
+from sabnzbd.codecs import name_fixer
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
@@ -908,34 +909,6 @@ def ExitSab(value):
         print
         raw_input("Press ENTER to close this window");
     sys.exit(value)
-
-
-#------------------------------------------------------------------------------
-def encode_for_xml(unicode_data, encoding='ascii'):
-    """
-    Encode unicode_data for use as XML or HTML, with characters outside
-    of the encoding converted to XML numeric character references.
-    """
-    try:
-        return unicode_data.encode(encoding, 'xmlcharrefreplace')
-    except ValueError:
-        # ValueError is raised if there are unencodable chars in the
-        # data and the 'xmlcharrefreplace' error handler is not found.
-        # Pre-2.3 Python doesn't support the 'xmlcharrefreplace' error
-        # handler, so we'll emulate it.
-        return _xmlcharref_encode(unicode_data, encoding)
-
-def _xmlcharref_encode(unicode_data, encoding):
-    """Emulate Python 2.3's 'xmlcharrefreplace' encoding error handler."""
-    chars = []
-    # Step through the unicode_data string one character at a time in
-    # order to catch unencodable characters:
-    for char in unicode_data:
-        try:
-            chars.append(char.encode(encoding, 'strict'))
-        except UnicodeError:
-            chars.append('&#%i;' % ord(char))
-    return ''.join(chars)
 
 
 #------------------------------------------------------------------------------

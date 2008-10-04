@@ -5,11 +5,14 @@
 # Improved by ShyPike 2008-08-11:
 #   - use tempfile.mkstemp() instead of the unsafe os.tempnam()
 #   - Improve compatibility with Python's ZipFile support:
-#       - Always use Unix separators '/' in pathnames
-#       - Foldernames must always end with a '/'
+#       - Always use Unix separators '/' in pathnames (ascii & unicode)
+#       - Foldernames must always end with a '/' (ascii & unicode)
+#       - Use CP850 as default codepage
+#       - Convert ASCII filenames to Python's default 'latin-1' encoding
+#
 # Optimized to fit in SABnzbd:
 #   - No extract hack (not needed for just rarred NZB files).
-#   - Use external program facilities of newsunpack.py
+#   - Use "SimpleRarExtract" function of newsunpack.py
 #
 # Permission to use, copy, modify, and distribute this software for any
 # purpose with or without fee is hereby granted, provided that the above
@@ -28,7 +31,8 @@ from struct import pack, unpack
 from binascii import crc32
 from cStringIO import StringIO
 import tempfile
-from sabnzbd.newsunpack import SimpleRarExtract
+import logging
+import sabnzbd.newsunpack
 
 # whether to speed up decompression by using tmp archive
 _use_extract_hack = 0
@@ -120,7 +124,7 @@ class RarInfo:
 
 class RarFile:
     '''Rar archive handling.'''
-    def __init__(self, rarfile, mode="r", charset=None, info_callback=None):
+    def __init__(self, rarfile, mode="r", charset='cp850', info_callback=None):
         self.rarfile = rarfile
         self.charset = charset
 
@@ -144,20 +148,37 @@ class RarFile:
             res.append(f.filename)
         return res
 
+    def unamelist(self):
+        '''Return list of unicode filenames in rar'''
+        res = []
+        for f in self.info_list:
+            res.append(f.unicode_filename)
+        return res
+
     def infolist(self):
         '''Return rar entries.'''
         return self.info_list
 
     def getinfo(self, fname):
         '''Return RarInfo for fname.'''
-        target = fname.replace('\\', '/')
-        for f in self.info_list:
-            if f.filename.endswith('/') and not target.endswith('/'):
-                if (target+'/') == f.filename:
-                    return f
-            else:
-                if target == f.filename:
-                    return f
+        if type(fname) == type(u''):
+            target = fname.replace(u'\\', u'/')
+            for f in self.info_list:
+                if f.unicode_filename.endswith(u'/') and not target.endswith(u'/'):
+                    if (target+u'/') == f.unicode_filename:
+                        return f
+                else:
+                    if target == f.unicode_filename:
+                        return f
+        else:
+            target = fname.replace('\\', '/')
+            for f in self.info_list:
+                if f.filename.endswith('/') and not target.endswith('/'):
+                    if (target+'/') == f.filename:
+                        return f
+                else:
+                    if target == f.filename:
+                        return f
 
     def read(self, fname):
         '''Return decompressed data.'''
@@ -191,9 +212,11 @@ class RarFile:
             if (item.flags & RAR_FILE_SPLIT_BEFORE) == 0:
                 # Always use Unix separators
                 item.filename = item.filename.replace('\\', '/')
+                item.unicode_filename = item.unicode_filename.replace(u'\\', u'/')
                 # Folder items must end with '/'
                 if (item.flags & RAR_FILE_DIRECTORY) == RAR_FILE_DIRECTORY:
                     item.filename += '/'
+                    item.unicode_filename += u'/'
                 self.info_list.append(item)
 
         if self.info_callback:
@@ -285,7 +308,7 @@ class RarFile:
             return h
 
         # crc failed
-        print "CRC mismatch! ofs =", h.header_offset
+        logging.error("[rarfile] CRC mismatch! ofs =%s", h.header_offset)
         # instead panicing, send eof
         return None
 
@@ -317,14 +340,11 @@ class RarFile:
             h.filename = name[:nul]
             u = _UnicodeFilename(h.filename, name[nul + 1 : ])
             h.unicode_filename = u.decode()
+            # Remap ASCII name from CP850 to Python's default Latin-1
+            h.filename = h.filename.decode(self.charset, 'replace').encode('latin-1', 'replace')
         else:
             h.filename = name
-            h.unicode_filename = None
-            if self.charset:
-                h.unicode_filename = name.decode(self.charset)
-            else:
-                # just guessing...
-                h.unicode_filename = name.decode("iso-8859-1", "replace")
+            h.unicode_filename = name.decode(self.charset, 'replace')
 
         if h.flags & RAR_FILE_SALT:
             h.salt = h.data[pos : pos + 8]
@@ -445,7 +465,7 @@ class RarFile:
             fn = fn.replace('"', '\\"')
             fn = fn.replace("$", "\\$")
         
-        err, buf = SimpleRarExtract(rarfile, fn)
+        err, buf = sabnzbd.newsunpack.SimpleRarExtract(rarfile, fn)
         if err > 0:
             raise Exception("Error reading file")
         return buf

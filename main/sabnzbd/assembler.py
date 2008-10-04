@@ -86,12 +86,7 @@ class Assembler(Thread):
                 if filepath:
                     logging.info('[%s] Decoding %s %s', __NAME__, filepath, nzf.get_type())
                     try:
-                        # OSX fix for unicode chars
-                        if sabnzbd.DARWIN:
-                            filepath = filepath.encode('utf8')
-                            logging.info('utf8 filepath: ' + filepath)
                         filepath = _assemble(nzo, nzf, filepath, dupe)
-
                     except IOError, (errno, strerror):
                         # 28 == disk full => pause downloader
                         if errno == 28:

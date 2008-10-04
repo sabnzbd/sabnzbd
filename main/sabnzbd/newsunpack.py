@@ -35,6 +35,8 @@ except:
 
 import sabnzbd
 from sabnzbd.nzbstuff import SplitFileName
+from sabnzbd.codecs import TRANS
+from sabnzbd.utils.rarfile import is_rarfile, RarFile
 
 try:
     from win32con import SW_HIDE
@@ -53,6 +55,7 @@ ZIP_RE = re.compile(r'\.(zip$)', re.I)
 VOLPAR2_RE = re.compile(r'\.*vol[0-9]+\+[0-9]+\.par2', re.I)
 
 PAR2_COMMAND = None
+PAR2C_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
@@ -77,6 +80,9 @@ def find_programs(curdir):
         p = os.path.abspath(curdir + '/win/par2/par2.exe')
         if os.access(p, os.X_OK):
             sabnzbd.newsunpack.PAR2_COMMAND = p
+        p = os.path.abspath(curdir + '/win/par2/par2-classic.exe')
+        if os.access(p, os.X_OK):
+            sabnzbd.newsunpack.PAR2C_COMMAND = p
         p = os.path.abspath(curdir + '/win/unrar/UnRAR.exe')
         if os.access(p, os.X_OK):
             sabnzbd.newsunpack.RAR_COMMAND = p
@@ -335,11 +341,12 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
         logging.debug('Rar_sets: %s', rar_sets)
 
         for rar_set in rar_sets:
-            actionname = u'[RAR-INFO] %s' % rar_set.decode('Latin-1')
+            actionname = '[RAR-INFO] %s' % rar_set
             # Run the RAR extractor
+            rar_sets[rar_set].sort(rar_sort)
+
             rarpath = rar_sets[rar_set][0]
 
-            rar_sets[rar_set].sort(rar_sort)
 
             extraction_path = workdir
             if workdir_complete:
@@ -359,22 +366,15 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
                 actionname = '[DEL-INFO] %s' % rar_set
                 i = 0
                 for rar in rars:
-                    # Must translate to cp437 codepage due to a mismatch between
-                    # the way Python and unrar interpret high-ASCII codes
-                    if os.name == 'nt':
-                        urar = rar.decode('cp437')
-                    else:
-                        urar = rar
-
-                    logging.info("[%s] Deleting %s", __NAME__, urar)
+                    logging.info("[%s] Deleting %s", __NAME__, rar)
                     try:
-                        os.remove(urar)
+                        os.remove(rar)
                         i += 1
                     except OSError:
                         logging.warning("[%s] Deleting %s failed!", __NAME__,
-                                        urar)
+                                        rar)
 
-                    brokenrar = '%s.1' % (urar)
+                    brokenrar = '%s.1' % (rar)
 
                     if os.path.exists(brokenrar):
                         logging.info("[%s] Deleting %s", __NAME__, brokenrar)
@@ -395,8 +395,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running rar_unpack' % msg, actionname, 2)
         logging.error('[%s] Error "%s" while' + \
-                      ' running rar_unpack on %s',
-                      __NAME__, msg, nzo.get_filename())
+                          ' running rar_unpack on %s',
+                          __NAME__, msg, nzo.get_filename())
         return True, ''
 
 def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
@@ -405,35 +405,20 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
     logging.debug("[%s] RAR_Extract(): Extractionpath: %s", __NAME__,
                   extraction_path)
 
-    ############################################################################
-    command = ['%s' % RAR_COMMAND, 'vb', '-v', '-p-', '%s' % rarfile]
-
-    stup, need_shell, command, creationflags = build_command(command)
-
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         startupinfo=stup, creationflags=creationflags)
-
-    output = p.stdout.read()
-
-    p.wait()
-
-    if output.find('Encrypted file:  CRC failed') >= 0:
+    try:
+        zf = RarFile(rarfile)
+        expected_files = zf.namelist()
+        zf.close()
+    except:
         nzo.set_unpackstr('=> Archive probably encrypted', actionname, 2)
         logging.info('[%s] Archive %s probably encrypted, skipping', __NAME__, rarfile)
         return ((), ())
 
-    # List of all files we expect to extract from this archive
-    expected_files = []
-    for path in output.split(os.linesep):
-        if path:
-            path = os.path.join(extraction_path, path)
-            if path not in expected_files:
-                expected_files.append(path)
+
     ############################################################################
 
     command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-p-',
-               '%s' % rarfile, '%s' % extraction_path]
+               '%s' % rarfile, '%s/' % extraction_path]
 
     stup, need_shell, command, creationflags = build_command(command)
 
@@ -462,7 +447,7 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
         line = line.strip()
 
         if line.startswith('Extracting from'):
-            filename = (re.search(EXTRACTFROM_RE, line).group(1))
+            filename = TRANS((re.search(EXTRACTFROM_RE, line).group(1)))
             if filename not in rarfiles:
                 rarfiles.append(filename)
             curr += 1
@@ -470,15 +455,15 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
                               actionname, 2)
 
         elif line.startswith('Cannot find volume'):
-            filename = os.path.basename(line[19:])
+            filename = os.path.basename(TRANS(line[19:]))
             nzo.set_unpackstr('=> ERROR: unable to find "%s"' % filename,
                               actionname, 2)
             logging.warning('[%s] ERROR: unable to find "%s"', __NAME__,
-                            filename)
+                                                                       filename)
             fail = 1
 
         elif line.endswith('- CRC failed'):
-            filename = line[:-12].strip()
+            filename = TRANS(line[:-12].strip())
             nzo.set_unpackstr('=> ERROR: CRC failed in "%s"' % filename,
                               actionname, 2)
             logging.warning('[%s] ERROR: CRC failed in %s"', __NAME__, filename)
@@ -497,18 +482,18 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
             fail = 1
 
         elif line.startswith('Encrypted file:  CRC failed'):
-            filename = line[31:-23].strip()
+            filename = TRANS(line[31:-23].strip())
             nzo.set_unpackstr(\
                 '=> ERROR: CRC failed in "%s" - password incorrect?' % filename,
                 actionname, 2)
             logging.warning('[%s] ERROR: encrypted file: "%s"', __NAME__,
-                            filename)
+                                                                       filename)
             fail = 1
 
         else:
-            m = re.search(r'^(Extracting|...)\s+(.*?)\s+OK\s*$', line)
+            m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
             if m:
-                extracted.append(m.group(2))
+                extracted.append(TRANS(m.group(2)))
 
         if fail:
             if proc:
@@ -521,26 +506,23 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
         proc.close()
     p.wait()
 
-    logging.debug("[%s] RAR_Extract(): expected_files: %s", __NAME__,
-                  expected_files)
 
-    all_files_found = True
-    for expected_path in expected_files:
-        logging.debug("[%s] Checking existance of %s", __NAME__, expected_path)
-        if not os.path.exists(expected_path):
-            all_files_found = False
-            logging.info("[%s] Missing expected file: %s => unrar error?",
-                         __NAME__, expected_path)
+    all_found = True
+    for path in expected_files:
+        fullpath = os.path.join(extraction_path, path)
+        if path.endswith('/') or os.path.exists(fullpath):
+            logging.debug("[%s] Checking existance of %s", __NAME__, fullpath)
+        else:
+            all_found = False
+            logging.warning("[%s] Missing expected file: %s => unrar error?", __NAME__, path)
 
-    if not all_files_found:
+    if not all_found:
         nzo.set_unpackstr('=> At least one file failed to be unpacked, skipping', actionname, 2)
-        logging.info('[%s] At least one file failed to be unpacked in %s, skipping', __NAME__, rarfile)
         return ((), ())
 
-    nzo.set_unpackstr('=> Unpacked %d file(s) in %.1fs' % \
-                      (len(extracted), time() - start), actionname, 2)
-    logging.info('[%s] Unpacked %d file(s) in %1.fs', __NAME__, len(extracted),
-                 (time() - start))
+    msg = 'Unpacked %d files/folders in %.1fs' % (len(extracted), time() - start)
+    nzo.set_unpackstr('=> ' + msg , actionname, 2)
+    logging.info('[%s] %s', __NAME__, msg)
 
     return (extracted, rarfiles)
 
@@ -570,7 +552,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
                 i += 1
 
         nzo.set_unpackstr("=> Unzipped %d file(s) in %1.fs" % (i, time() - tms),
-                          actionname, 3)
+                                                                  actionname, 3)
 
         # Delete the old files if we have to
         if delete and not unzip_failed:
@@ -602,8 +584,8 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running unzip()' % msg, actionname, 3)
         logging.error('[%s] Error "%s" while' + \
-                      ' running unzip() on %s',
-                      __NAME__, msg, nzo.get_filename())
+                          ' running unzip() on %s',
+                          __NAME__, msg, nzo.get_filename())
         return True
 
 def ZIP_Extract(zipfile, extraction_path):
@@ -733,15 +715,14 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                         os.remove(filepath)
                         i += 1
                     except OSError:
-                        logging.warning("[%s] Deleting %s failed!", __NAME__,
-                                        filepath)
+                        logging.warning("[%s] Deleting %s failed!", __NAME__, filepath)
             nzo.set_unpackstr("=> Deleted %d file(s)" % i, actionname, 1)
     except:
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running par2_repair' % msg, actionname, 1)
         logging.error('[%s] Error "%s" while' + \
-                      ' running par2_repair on set %s',
-                      __NAME__, msg, setname)
+                          ' running par2_repair on set %s',
+                           __NAME__, msg, setname)
 
     return readd, result
 
@@ -752,10 +733,14 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
     nzo.set_status("Verifying...")
     start = time()
 
-    if sabnzbd.PAR_OPTION:
-        command = [str(PAR2_COMMAND), 'r', str(sabnzbd.PAR_OPTION.strip()), str(parfile)]
+    odd = OddFiles(parfile)
+
+    if sabnzbd.PAR_OPTION and not (odd and PAR2C_COMMAND):
+        command = [str(PAR2_COMMAND), 'r', str(sabnzbd.PAR_OPTION.strip()), parfile]
+    elif odd and PAR2C_COMMAND:
+        command = [str(PAR2C_COMMAND), 'r', parfile]
     else:
-        command = [str(PAR2_COMMAND), 'r', str(parfile)]
+        command = [str(PAR2_COMMAND), 'r', parfile]
 
     for joinable in joinables:
         command.append(joinable)
@@ -814,7 +799,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
             nzo.set_unpackstr('=> Verified in %.1fs, repair is required' % \
                               (time() - start), actionname, 1)
             logging.info('[%s] Verified in %.1fs, repair is required', __NAME__,
-                         time() - start)
+                          time() - start)
             start = time()
             verified = 1
 
@@ -877,8 +862,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                 # Tell SAB that we always have enough blocks, so that
                 # it will try to load all pars anyway
                 nzo.set_unpackstr(\
-                    '=> Not enough repair blocks, downloading all available (%d short)' % \
-                    int(needed_blocks - avail_blocks), actionname, 1)
+                     '=> Not enough repair blocks, downloading all available (%d short)' % \
+                     int(needed_blocks - avail_blocks), actionname, 1)
                 nzo.set_status("Failed")
                 needed_blocks = avail_blocks
                 force = True
@@ -908,8 +893,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
 
             else:
                 nzo.set_unpackstr(\
-                    '=> Not enough repair blocks left (have: %s, need: %s)' % \
-                    (avail_blocks, needed_blocks), actionname, 1)
+                     '=> Not enough repair blocks left (have: %s, need: %s)' % \
+                     (avail_blocks, needed_blocks), actionname, 1)
                 nzo.set_status("Failed")
 
         elif line.startswith('Repair is possible'):
@@ -953,7 +938,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
                 if verifytotal == 0 or verifynum < verifytotal:
                     verifynum += 1
                     nzo.set_unpackstr('=> Verifying : %02d/%02d' % \
-                                      (verifynum, verifytotal), actionname, 1)
+                               (verifynum, verifytotal), actionname, 1)
                     nzo.set_status("Verifying...")
                 datafiles.append(m.group(1))
                 continue
@@ -1006,8 +991,8 @@ def rar_sort(a, b):
 
 # Sort the various PAR filename formats properly :\
 def par_sort(a, b):
-    aext = a.split('.')[-1]
-    bext = b.split('.')[-1]
+    aext = a.lower().split('.')[-1]
+    bext = b.lower().split('.')[-1]
 
     if aext == bext:
         return cmp(a, b)
@@ -1099,3 +1084,15 @@ def ParsOfSet(wdir, setname):
         if VOLPAR2_RE.search(file[size:]):
             list.append(file)
     return list
+
+
+def OddFiles(parfile):
+    """ Return True if any name in the job contains high ASCII """
+
+    path, name = os.path.split(parfile)
+    for name in os.listdir(path):
+        try:
+            name.encode('Latin-1')
+        except:
+            return True
+    return False

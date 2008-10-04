@@ -43,6 +43,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          OnCleanUpList, ProcessSingleFile
 from sabnzbd.tvsort import TVSeasonCheck, TVSeasonMove, TVRenamer
 from sabnzbd.constants import TOP_PRIORITY
+from sabnzbd.codecs import TRANS
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
@@ -261,7 +262,7 @@ class PostProcessor(Thread):
                 ## Email the results
                 if (not nzb_list) and sabnzbd.EMAIL_ENDJOB:
                     email_endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
-                                 nzo.get_unpackstrht(), script, ext_out)
+                                 nzo.get_unpackstrht(), script, TRANS(ext_out))
 
                 if fname:
                     # Can do this only now, otherwise it would show up in the email

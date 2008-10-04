@@ -48,11 +48,12 @@ from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 from sabnzbd.email import email_send, email_endjob, email_diskfull
 from sabnzbd.misc import real_path, create_real_path, save_configfile, \
-                         to_units, from_units, SameFile, encode_for_xml, \
+                         to_units, from_units, SameFile, \
                          decodePassword, encodePassword
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import InitCats, IsNewzbin
+from sabnzbd.codecs import TRANS, xml_name
 
 from sabnzbd.constants import *
 
@@ -102,14 +103,6 @@ except AttributeError:
             return (secp * byteper * noclu) / GIGI
         except:
             return 0.0
-
-
-def Escape(str):
-    """ Safe escape """
-    try:
-        return escape(str)
-    except:
-        return ""
 
 
 def CheckFreeSpace():
@@ -180,7 +173,6 @@ def ListCats(default=False):
         return lst
     else:
         return []
-
 
 def ConvertSpecials(p):
     """ Convert None to 'None' and 'Default' to ''
@@ -710,7 +702,7 @@ class NzoPage(ProtectedClass):
 
         if this_pnfo:
             info['nzo_id'] = self.__nzo_id
-            info['filename'] = pnfo[PNFO_FILENAME_FIELD]
+            info['filename'] = xml_name(pnfo[PNFO_FILENAME_FIELD])
 
             active = []
             for tup in pnfo[PNFO_ACTIVE_FILES_FIELD]:
@@ -720,7 +712,7 @@ class NzoPage(ProtectedClass):
                 self.__cached_selection[nzf_id] == 'on':
                     checked = True
 
-                line = {'filename':str(fn),
+                line = {'filename':xml_name(fn),
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
                         'nzf_id':nzf_id,
@@ -1988,13 +1980,13 @@ class ConnectionInfo(ProtectedClass):
                     nzf = article.nzf
                     nzo = nzf.nzo
 
-                    art_name = Escape(article.article)
-
+                    art_name = xml_name(article.article)
                     #filename field is not always present
-                    nzf_name = Escape(nzf.get_filename())
-                    if not nzf_name: nzf_name = Escape(nzf.get_subject())
-
-                    nzo_name = Escape(nzo.get_filename())
+                    try:
+                        nzf_name = xml_name(nzf.get_filename())
+                    except: #attribute error
+                        nzf_name = xml_name(nzf.get_subject())
+                    nzo_name = xml_name(nzo.get_filename())
 
                 busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
 
@@ -2006,7 +1998,7 @@ class ConnectionInfo(ProtectedClass):
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
-            wlist.append(Escape(w))
+            wlist.append(xml_name(w))
         header['warnings'] = wlist
 
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
@@ -2103,7 +2095,7 @@ def ShowFile(name, path):
     """
     try:
         f = open(path, "r")
-        msg = f.read()
+        msg = TRANS(f.read())
         f.close()
     except:
         msg = "FILE NOT FOUND\n"
@@ -2122,7 +2114,7 @@ def ShowFile(name, path):
     </pre></code><br/><br/>
 </body>
 </html>
-''' % (name, name, Escape(msg))
+''' % (name, name, escape(msg))
 
 
 def ShowOK(url):
@@ -2139,44 +2131,44 @@ def ShowOK(url):
     <br/><br/>
 </body>
 </html>
-''' % (Escape(url), Escape(url))
+''' % (escape(url), escape(url))
 
 
 def ShowRssLog(feed, all):
     """Return a html page listing an RSS log and a 'back' button
     """
     jobs = sabnzbd.rss.show_result(feed)
-    qfeed = Escape(feed.replace('/','%2F').replace('?', '%3F'))
+    qfeed = escape(feed.replace('/','%2F').replace('?', '%3F'))
 
     doneStr = ""
     for x in jobs:
         job = jobs[x]
         if job[0] == 'D':
-            doneStr += '%s<br/>' % encode_for_xml(Escape(job[1]))
+            doneStr += '%s<br/>' % xml_name(job[1])
     goodStr = ""
     for x in jobs:
         job = jobs[x]
         if job[0] == 'G':
-            goodStr += '%s<br/>' % encode_for_xml(Escape(job[1]))
+            goodStr += '%s<br/>' % xml_name(job[1])
     badStr = ""
     for x in jobs:
         job = jobs[x]
         if job[0] == 'B':
-            name = Escape(job[2]).replace('/','%2F').replace('?', '%3F')
+            name = escape(job[2]).replace('/','%2F').replace('?', '%3F')
             if job[3]:
-                cat = '&cat=' + Escape(job[3])
+                cat = '&cat=' + escape(job[3])
             else:
                 cat = ''
             if job[4]:
-                pp = '&pp=' + Escape(job[4])
+                pp = '&pp=' + escape(job[4])
             else:
                 pp = ''
             if job[5]:
-                script = '&script=' + Escape(job[5])
+                script = '&script=' + escape(job[5])
             else:
                 script = ''
             badStr += '<a href="rss_download?feed=%s&id=%s%s%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
-                (qfeed, name, cat, pp, encode_for_xml(Escape(job[1])))
+                (qfeed, name, cat, pp, xml_name(job[1]))
 
     if all:
         return '''
@@ -2201,7 +2193,7 @@ def ShowRssLog(feed, all):
     <br/>
 </body>
 </html>
-''' % (Escape(feed), Escape(feed), goodStr, badStr, doneStr)
+''' % (escape(feed), escape(feed), goodStr, badStr, doneStr)
     else:
         return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -2219,7 +2211,7 @@ def ShowRssLog(feed, all):
     <br/>
 </body>
 </html>
-''' % (Escape(feed), Escape(feed), doneStr)
+''' % (escape(feed), escape(feed), doneStr)
 
 
 def build_header(prim):
@@ -2561,7 +2553,7 @@ def xml_qstatus():
         filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
-        name = encode_for_xml(Escape(filename), 'UTF-8')
+        name = xml_name(filename)
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
         jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":name, "msgid":msgid } )
 
@@ -2628,8 +2620,7 @@ def build_file_list(id):
             n2 = 0
             for tup in finished_files:
                 bytes_left, bytes, fn, date = tup
-                if isinstance(fn, unicode):
-                    fn = escape(fn.encode('utf-8'))
+                fn = xml_name(fn)
     
                 age = calc_age(date)
     
@@ -2643,8 +2634,7 @@ def build_file_list(id):
     
             for tup in active_files:
                 bytes_left, bytes, fn, date, nzf_id = tup
-                if isinstance(fn, unicode):
-                    fn = escape(fn.encode('utf-8'))
+                fn = xml_name(fn)
     
                 age = calc_age(date)
     
@@ -2659,8 +2649,7 @@ def build_file_list(id):
     
             for tup in queued_files:
                 _set, bytes_left, bytes, fn, date = tup
-                if isinstance(fn, unicode):
-                    fn = escape(fn.encode('utf-8'))
+                fn = xml_name(fn)
     
                 age = calc_age(date)
     
@@ -2715,7 +2704,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False):
             stages = []
             item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
                     'nzo':nzo,
-                    'msgid':msgid, 'filename':escape(name), 'loaded':loaded,
+                    'msgid':msgid, 'filename':xml_name(name), 'loaded':loaded,
                     'stages':stages, 'status':status, 'bytes':bytes}
             if verbose:
                 stage_keys = unpackstrht.keys()
@@ -2724,7 +2713,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False):
                     stageLine = {'name':STAGENAMES[stage]}
                     actions = []
                     for action in unpackstrht[stage]:
-                        actionLine = {'name':action, 'value':unpackstrht[stage][action]}
+                        actionLine = {'name':xml_name(action, True), 'value':xml_name(unpackstrht[stage][action], True)}
                         actions.append(actionLine)
                     actions.sort()
                     actions.reverse()
@@ -2819,7 +2808,7 @@ def xml_list(section, keyw, lst):
     for cat in lst:
         text += '<%s>\n' % (keyw)
         text += '<id>%s</id>\n' % (n)
-        text += '<name>%s</name>\n' % (escape(cat))
+        text += '<name>%s</name>\n' % xml_name(cat)
         text += '</%s>\n' % (keyw)
         n+=1
 
@@ -2852,7 +2841,7 @@ class xml_factory():
             if found:
                 text += found
             else:
-                text += '<%s>%s</%s>\n' % (escape(str(key)),escape(str(lst[key])),escape(str(key)))
+                text += '<%s>%s</%s>\n' % (str(key), str(lst[key]), str(key))
                 
         if keyw and text:
             return '<%s>%s</%s>\n' % (keyw,text,keyw)
@@ -2878,7 +2867,7 @@ class xml_factory():
                 if found:
                     text += found'''
             else:
-                text += '<item>%s</item>\n' % escape(str(cat))
+                text += '<item>%s</item>\n' % str(cat)
             
         if keyw and text:
             return '<%s>%s</%s>\n' % (keyw,text,keyw)
@@ -3029,7 +3018,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         else:
             slot['script'] = 'None'
         fn, slot['msgid'] = SplitFileName(filename)
-        slot['filename'] = escape(fn)
+        slot['filename'] = xml_name(fn)
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
@@ -3074,8 +3063,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
-                    if isinstance(fn, unicode):
-                        fn = escape(fn.encode('utf-8'))
+                    fn = xml_name(fn)
     
                     age = calc_age(date)
     
@@ -3087,8 +3075,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     
                 for tup in active_files:
                     bytes_left, bytes, fn, date, nzf_id = tup
-                    if isinstance(fn, unicode):
-                        fn = escape(fn.encode('utf-8'))
+                    fn = xml_name(fn)
     
                     age = calc_age(date)
     
@@ -3101,8 +3088,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     
                 for tup in queued_files:
                     _set, bytes_left, bytes, fn, date = tup
-                    if isinstance(fn, unicode):
-                        fn = escape(fn.encode('utf-8'))
+                    fn = xml_name(fn)
     
                     age = calc_age(date)
     
@@ -3147,7 +3133,7 @@ def get_history():
                 stages = []
                 item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
                         'nzo':nzo,
-                        'msgid':msgid, 'filename':escape(name), 'loaded':loaded,
+                        'msgid':msgid, 'filename':xml_name(name), 'loaded':loaded,
                         'stages':stages, 'status':status, 'bytes':bytes}
                 slotinfo.append(item)
     return slotinfo

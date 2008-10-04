@@ -24,6 +24,7 @@ import logging
 import sabnzbd
 import datetime
 from sabnzbd.constants import *
+from sabnzbd.codecs import name_fixer
 
 from sabnzbd.trylist import TryList
 
@@ -199,7 +200,7 @@ class NzbFile(TryList):
         self.__type = _type
 
     def set_filename(self, filename):
-        self.__filename = filename
+        self.__filename = name_fixer(filename)
 
     def set_par2(self, setname, vol, blocks):
         self.__ispar2file = True
@@ -418,7 +419,7 @@ class NzbObject(TryList):
             subject = _file.get('subject')
 
             if isinstance(subject, unicode):
-                subject = subject.encode('utf-8')
+                subject = subject.encode('latin-1', 'replace')
 
             try:
                 t = int(_file.get('date'))

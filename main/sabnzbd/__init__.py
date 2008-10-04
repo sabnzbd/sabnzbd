@@ -57,6 +57,8 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 from sabnzbd.newsunpack import build_command
+from sabnzbd.codecs import name_fixer
+
 import subprocess
 
 START = datetime.datetime.now()
@@ -976,7 +978,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
-    filename = nzbfile.filename
+    filename = name_fixer(nzbfile.filename)
 
     if os.name != 'nt':
         # If windows client sends file to Unix server backslashed may

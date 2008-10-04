@@ -41,6 +41,7 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import *
 from sabnzbd.misc import Cat2OptsDef, sanitize_filename, BadFetch
 from sabnzbd.nzbstuff import CatConvert
+from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
 
 # Regex to find msgid in the Bookmarks page
@@ -107,6 +108,7 @@ class MSGIDGrabber(Thread):
 
             filename, data, cat = _grabnzb(msgid, self.nzbun, self.nzbpw)
             if filename and data:
+                filename = name_fixer(filename)
                 cat = CatConvert(cat)                    
                 try:
                     cat, name, pp, script = Cat2OptsDef(filename, cat)

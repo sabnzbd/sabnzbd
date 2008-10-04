@@ -596,6 +596,9 @@ def main():
     else:
         logging.error("par2 binary... NOT found!")
 
+    if sabnzbd.newsunpack.PAR2C_COMMAND:
+        logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
+
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
     else:
