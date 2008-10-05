@@ -480,13 +480,21 @@ class URLGrabber(Thread):
 ################################################################################
 # sanitize_filename                                                            #
 ################################################################################
-RE_SANITIZE = re.compile(r'[\\/><\?\*:|"]') # All forbidden file characters
-
 def sanitize_filename(name):
-    """ Return filename with illegal chars converted to '_'
+    """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
-    name, ext = os.path.splitext(RE_SANITIZE.sub('_', name).strip())
+    illegal = r'\/<>?*:|"'
+    legal   = r'++{}!@;#`'
+
+    lst = []
+    for ch in name.strip():
+        if ch in illegal:
+            ch = legal[illegal.find(ch)]
+        lst.append(ch)
+    name = ''.join(lst)
+
+    name, ext = os.path.splitext(name)
     lowext = ext.lower()
     if lowext == '.par2' and lowext != ext:
         ext = lowext
