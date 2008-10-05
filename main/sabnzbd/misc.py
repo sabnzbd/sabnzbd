@@ -1155,3 +1155,20 @@ def OnCleanUpList(filename, skip_nzb=False):
             if item == ext and not (skip_nzb and item == 'nzb'):
                 return True
     return False
+
+
+def loadavg():
+    """ Return 1-minute load average of host or None if not supported
+    """
+    if os.name == 'nt' or sabnzbd.DARWIN:
+        return None
+
+    try:
+        loadavgstr = open('/proc/loadavg', 'r').readline().strip()
+    except:
+        return None
+
+    data = loadavgstr.split()
+    avg1, avg5, avg15 = map(float, data[:3])
+
+    return avg1
