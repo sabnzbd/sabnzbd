@@ -403,7 +403,7 @@ class Downloader(Thread):
                         done = True
                         nw.lines = None
 
-                        logging.warning('[%s] Thread %s@%s:%s: Article ' + \
+                        logging.info('[%s] Thread %s@%s:%s: Article ' + \
                                         '%s missing',
                                         __NAME__, nw.thrdnum, nw.server.host,
                                         nw.server.port, article.article)

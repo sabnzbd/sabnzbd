@@ -196,7 +196,8 @@ class PostProcessor(Thread):
 
             ## Remove download folder
             try:
-                os.rmdir(workdir)
+                if os.path.exists(workdir):
+                    os.rmdir(workdir)
             except:
                 logging.error("[%s] Error removing workdir (%s)", __NAME__, workdir)
 
