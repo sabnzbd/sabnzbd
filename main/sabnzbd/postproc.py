@@ -127,7 +127,8 @@ class PostProcessor(Thread):
                 if reAdd:
                     logging.info('[%s] Readded %s to queue', __NAME__, filename)
                     sabnzbd.QUEUECOMPLETEACTION_GO = False
-                    sabnzbd.add_nzo(nzo, TOP_PRIORITY)
+                    nzo.set_priority(TOP_PRIORITY)
+                    sabnzbd.add_nzo(nzo)
                     sabnzbd.unidle_downloader()
                     ## Break out, further downloading needed
                     continue

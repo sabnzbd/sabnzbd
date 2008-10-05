@@ -1004,9 +1004,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
 
 
 @synchronized_CV
-def add_nzo(nzo, priority=None):
+def add_nzo(nzo):
     try:
-        NZBQ.add(nzo, priority=priority)
+        NZBQ.add(nzo)
     except NameError:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 

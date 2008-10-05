@@ -181,7 +181,7 @@ class NzbQueue(TryList):
             self.__nzo_table[nzo_id].set_cat(cat)
 
     @synchronized(NZBQUEUE_LOCK)
-    def add(self, nzo, priority=None, save=True):
+    def add(self, nzo, save=True):
         sabnzbd.QUEUECOMPLETEACTION_GO = False
 
         # Reset try_lists
@@ -194,8 +194,7 @@ class NzbQueue(TryList):
 
         if nzo.nzo_id:
             nzo.deleted = False
-            if priority == None:
-                priority = nzo.get_priority()
+            priority = nzo.get_priority()
             self.__nzo_table[nzo.nzo_id] = nzo
             if priority == TOP_PRIORITY:
                 #A top priority item (usually a completed download fetching pars)
