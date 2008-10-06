@@ -427,6 +427,7 @@ class URLGrabber(Thread):
                 logging.info('[%s] Grabbing URL %s', __NAME__, url)
                 opener = urllib.FancyURLopener({})
                 opener.prompt_user_passwd = None
+                opener.addheader('Accept-encoding','gzip')
                 fn, header = opener.retrieve(url)
 
                 filename, data = (None, None)
@@ -449,16 +450,7 @@ class URLGrabber(Thread):
 
 
                 if os.path.splitext(filename)[1].lower() == '.nzb':
-                    try:
-                        data = file(fn, 'r').read()
-                        os.remove(fn)
-                    except:
-                        logging.debug('[%s] Cannot access file %s', __NAME__, fn)
-                        data = None
-
-                    if data:
-                        sabnzbd.insert_future_nzo(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority)
-                    else:
+                    if ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority) == -1:
                         BadFetch(future_nzo, url, retry=False)
                 else:
                     if ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
