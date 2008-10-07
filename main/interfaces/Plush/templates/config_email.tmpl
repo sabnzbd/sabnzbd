@@ -8,11 +8,12 @@
 				
 				<legend id="configbox_email_options">Email&nbsp;Options</legend>
 				
-				<input type="checkbox" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> />
-				<strong>End-of-Job Notifications</strong><br/>
-				<small>Send email when job is completed.</small><br/>
-				
-				<br/>
+                <strong>Email notification on job completion</strong><br/>
+                    <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> Never
+                    <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> Always
+                    <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> Error-only
+                <br/><br/>
+	
 				<input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
 				<strong>Disk Full Notifications</strong><br/>
 				<small>Send email when disk is full and SABnzbd is paused.</small><br/>

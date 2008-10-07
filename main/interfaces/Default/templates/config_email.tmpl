@@ -10,9 +10,11 @@
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Email Options</legend>
-<label><input type="checkbox" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> /> <strong>End-of-job notifications:</strong></label><br>
-Send email when job is completed.<br>
-<br>
+<strong>Email notification on job completion</strong><br/>
+    <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> Never
+    <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> Always
+    <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> Error-only
+<br/><br/>
 <label><input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> <strong>Disk full notifications:</strong></label><br>
 Send email when disk is full and SABnzbd is paused.<br>
 <br>

@@ -144,7 +144,7 @@ EMAIL_TO = None
 EMAIL_FROM = None
 EMAIL_ACCOUNT = None
 EMAIL_PWD = None
-EMAIL_ENDJOB = False
+EMAIL_ENDJOB = 0
 EMAIL_FULL = False
 
 URLGRABBER = None
@@ -463,7 +463,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     EMAIL_FROM   = check_setting_str(CFG, 'misc', 'email_from', '')
     EMAIL_ACCOUNT= check_setting_str(CFG, 'misc', 'email_account', '')
     EMAIL_PWD    = decodePassword(check_setting_str(CFG, 'misc', 'email_pwd', '', False), 'email')
-    EMAIL_ENDJOB = bool(check_setting_int(CFG, 'misc', 'email_endjob', 0))
+    EMAIL_ENDJOB = check_setting_int(CFG, 'misc', 'email_endjob', 0)
     EMAIL_FULL   = bool(check_setting_int(CFG, 'misc', 'email_full', 0))
     
     try:

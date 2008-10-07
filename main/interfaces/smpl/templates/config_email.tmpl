@@ -7,11 +7,13 @@
  <hr />
 	
 		
-			<label><span class="label">End-of-job notifications:</span>
-			<input class="radio" type="checkbox" name="email_endjob" value="1" <!--#if $email_endjob > 0 then "checked=1" else ""#--> />
-			<span class="tips">Send email when job is completed.</span></label>
+            <span class="label">Job completion:</span>
+                <input class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> Never
+                <input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> Always
+                <input class="radio" type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> Error-only
+			<span class="tips">Send email when job is completed.</span>
 		<br class="clear" />
-		
+
 			<label><span class="label">Disk full notifications:</span>
 			<input class="radio" type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
 			<span class="tips">Send email when disk is full and SABnzbd is paused.</span></label>
