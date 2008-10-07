@@ -450,7 +450,10 @@ class URLGrabber(Thread):
 
 
                 if os.path.splitext(filename)[1].lower() == '.nzb':
-                    if ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority) == -1:
+                    res = ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority)
+                    if res == 0:
+                        sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                    else:
                         BadFetch(future_nzo, url, retry=False)
                 else:
                     if ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
