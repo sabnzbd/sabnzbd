@@ -45,9 +45,10 @@ def xml_name(p, keep_escape=False):
     """ Prepare name for use in HTML/XML contect """
 
     if sabnzbd.DARWIN:
-        p = p.decode('utf-8')
+        p = p.decode('utf-8', 'replace')
     else:
-        p = p.decode('Latin-1', 'replace')
+        if type(p) != type(u''):
+            p = p.decode('Latin-1', 'replace')
 
     if keep_escape:
         return p.encode('ascii', 'xmlcharrefreplace')
