@@ -189,7 +189,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=NORMAL_PRIORITY):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
-        returns: -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
+        returns: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
     """
     try:
         f = open(path, 'rb')
@@ -218,7 +218,11 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         nzo = NzbObject(name, pp, script, data, cat=cat, priority=priority)
     except:
-        return -1
+        if data.find("<nzb") >= 0 and data.find("</nzb") < 0:
+            # Looks like an incomplete file, retry
+            return -2
+        else:
+            return -1
 
     sabnzbd.add_nzo(nzo)
     try:
@@ -347,7 +351,7 @@ class DirScanner(Thread):
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
                         res = ProcessSingleFile(filename, path, catdir=catdir, priority=priority)
-                        if res == -1:
+                        if res < 0:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
                             self.error_reported = False
@@ -453,6 +457,8 @@ class URLGrabber(Thread):
                     res = ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority)
                     if res == 0:
                         sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                    elif res == -2:
+                        self.add(url, future_nzo)
                     else:
                         BadFetch(future_nzo, url, retry=False)
                 else:
