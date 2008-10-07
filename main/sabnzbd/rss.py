@@ -78,7 +78,7 @@ def flag_downloaded(feed, id):
 def run_method():
     global __RSS
     if __RSS:
-        return __RSS.run
+        return __RSS.run()
     else:
         return None
 
