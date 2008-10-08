@@ -2154,7 +2154,7 @@ def ShowRssLog(feed, all):
     for x in jobs:
         job = jobs[x]
         if job[0] == 'B':
-            name = escape(job[2]).replace('/','%2F').replace('?', '%3F')
+            name = urllib.quote_plus(job[2])
             if job[3]:
                 cat = '&cat=' + escape(job[3])
             else:
