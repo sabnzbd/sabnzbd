@@ -44,10 +44,10 @@ def name_fixer(p):
 def xml_name(p, keep_escape=False):
     """ Prepare name for use in HTML/XML contect """
 
-    if sabnzbd.DARWIN:
-        p = p.decode('utf-8', 'replace')
-    else:
-        if type(p) != type(u''):
+    if type(p) != type(u''):
+        if sabnzbd.DARWIN:
+            p = p.decode('utf-8', 'replace')
+        else:
             p = p.decode('Latin-1', 'replace')
 
     if keep_escape:
