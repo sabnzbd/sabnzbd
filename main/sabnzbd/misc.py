@@ -149,12 +149,14 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     else:
         return 1
 
-    status = 0
+    status = 1
     for name in zf.namelist():
         name = name.lower()
         if not (name.endswith('.nzb') or name.endswith('.nfo') or name.endswith('/')):
             status = 1
             break
+        elif name.endswith('.nzb'):
+            status = 0
     if status == 0:
         for name in zf.namelist():
             if name.lower().endswith('.nzb'):
