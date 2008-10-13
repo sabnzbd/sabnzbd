@@ -249,12 +249,18 @@ class RSSQueue:
                         if found and reTypes[n]=='A':
                             logging.debug("[%s] Filter matched on rule %d", __NAME__, n)
                             result = True
-                            if reCats[n]: myCat = reCats[n]
-                            if rePPs[n]: myPP = rePPs[n]
-                            if reScripts[n]: myScript = reScripts[n]
-                            if not myCat:
-                                if not myPP: myPP = defPP
-                                if not myScript: myScript = defScript
+                            if reCats[n]:
+                                myCat = reCats[n]
+                            else:
+                                myCat = defCat
+                            if rePPs[n]:
+                                myPP = rePPs[n]
+                            elif not reCats[n]:
+                                myPP = defPP
+                            if reScripts[n]:
+                                myScript = reScripts[n]
+                            elif not reCats[n]:
+                                myScript = defScript
                             break
                         if found and reTypes[n]=='R':
                             logging.debug("[%s] Filter rejected on rule %d", __NAME__, n)

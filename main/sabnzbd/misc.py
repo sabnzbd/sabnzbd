@@ -77,14 +77,14 @@ def Cat2Opts(cat, pp, script):
         Derive options from category, if option not already defined.
         Specified options have priority over category-options
     """
-    if not pp == None:
+    if not pp:
         try:
             pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
             logging.debug('[%s] Job %s gets options %s', __NAME__, name, pp)
         except:
             pp = sabnzbd.DIRSCAN_PP
 
-    if not script == None:
+    if not script:
         try:
             script = sabnzbd.CFG['categories'][cat.lower()]['script']
             logging.debug('[%s] Job %s gets script %s', __NAME__, name, script)
@@ -446,7 +446,8 @@ class URLGrabber(Thread):
                     filename = os.path.basename(url)
                 else:
                     filename = sanitize_filename(filename)
-                pp = future_nzo.get_repair_opts()
+                _r, _u, _d = future_nzo.get_repair_opts()
+                pp = sabnzbd.opts_to_pp(_r, _u, _d)
                 script = future_nzo.get_script()
                 cat = future_nzo.get_cat()
                 priority = future_nzo.get_priority()

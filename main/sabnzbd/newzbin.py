@@ -39,7 +39,7 @@ from threading import *
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import *
-from sabnzbd.misc import Cat2OptsDef, sanitize_filename, BadFetch
+from sabnzbd.misc import Cat2Opts, sanitize_filename, BadFetch
 from sabnzbd.nzbstuff import CatConvert
 from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
@@ -106,14 +106,21 @@ class MSGIDGrabber(Thread):
                     break
             logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
 
-            filename, data, cat = _grabnzb(msgid, self.nzbun, self.nzbpw)
+            filename, data, newzbin_cat = _grabnzb(msgid, self.nzbun, self.nzbpw)
             if filename and data:
                 filename = name_fixer(filename)
-                cat = CatConvert(cat)                    
+
+                _r, _u, _d = nzo.get_repair_opts()
+                pp = sabnzbd.opts_to_pp(_r, _u, _d)
+                script = nzo.get_script()
+                cat = nzo.get_cat()
+                if not cat:
+                    cat = CatConvert(newzbin_cat)
+                cat, pp, script = Cat2Opts(cat, pp, script)
+
+                priority = nzo.get_priority()
                 try:
-                    cat, name, pp, script = Cat2OptsDef(filename, cat)
-                    priority = nzo.get_priority()
-                    sabnzbd.insert_future_nzo(nzo, name, data, pp=pp, script=script, cat=cat, priority=priority)
+                    sabnzbd.insert_future_nzo(nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority)
                 except:
                     logging.error("[%s] Failed to update newzbin job %s", __NAME__, msgid)
                     sabnzbd.remove_nzo(nzo.nzo_id, False)
