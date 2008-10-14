@@ -41,6 +41,15 @@ def name_fixer(p):
         return p
 
 
+def unicode2local(p):
+    """ Convert Unicode filename to appropriate local encoding
+    """
+    if gNT:
+        return p.encode('Latin-1', 'replace').replace('?', '_')
+    else:
+        return p.encode('utf-8', 'replace').replace('?', '_')
+
+
 def xml_name(p, keep_escape=False):
     """ Prepare name for use in HTML/XML contect """
 

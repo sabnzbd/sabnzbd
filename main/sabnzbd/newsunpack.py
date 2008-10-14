@@ -35,7 +35,7 @@ except:
 
 import sabnzbd
 from sabnzbd.nzbstuff import SplitFileName
-from sabnzbd.codecs import TRANS
+from sabnzbd.codecs import TRANS, unicode2local
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 
 try:
@@ -407,7 +407,7 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
 
     try:
         zf = RarFile(rarfile)
-        expected_files = zf.namelist()
+        expected_files = zf.unamelist()
         zf.close()
     except:
         nzo.set_unpackstr('=> Archive probably encrypted', actionname, 2)
@@ -509,6 +509,7 @@ def RAR_Extract(rarfile, numrars, nzo, actionname, extraction_path):
 
     all_found = True
     for path in expected_files:
+        path = unicode2local(path)
         fullpath = os.path.join(extraction_path, path)
         if path.endswith('/') or os.path.exists(fullpath):
             logging.debug("[%s] Checking existance of %s", __NAME__, fullpath)
