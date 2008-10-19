@@ -328,6 +328,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
     actionname = '[RAR-INFO]'
     try:
         errors = False
+        extracted_files = []
 
         rar_sets = {}
         for rar in rars:
@@ -360,6 +361,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
 
             logging.debug('[%s] rar_unpack(): Rars: %s', __NAME__, rars)
             logging.debug('[%s] rar_unpack(): Newfiles: %s', __NAME__, newfiles)
+            
+            extracted_files.extend(newfiles)
 
             # Delete the old files if we have to
             if delete and newfiles:
@@ -387,10 +390,10 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
                 nzo.set_unpackstr("=> Deleted %d file(s)" % i, actionname,
                                   2)
 
-            if not newfiles:
+            if not extracted_files:
                 errors = True
 
-        return errors, newfiles
+        return errors, extracted_files
     except:
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running rar_unpack' % msg, actionname, 2)
