@@ -424,6 +424,8 @@ class MainPage(ProtectedClass):
                         reverse=True
                     sabnzbd.sort_queue(sort,reverse)
                 return queueStatusJson(start,limit)
+            elif output == 'rss':
+                return rss_qstatus()
             elif name == 'delete':
                 if value.lower()=='all':
                     sabnzbd.remove_all_nzo()
@@ -3168,3 +3170,63 @@ def xmlSimpleDict(keyw,lst):
         text += '<%s>%s</%s>\n' % (escape(key),escape(lst[key]),escape(key))
     text += '</%s>' % keyw
     return text
+
+def rss_qstatus():
+    """ Return a RSS feed with the queue status
+    """
+    qnfo = sabnzbd.queue_info()
+    pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
+
+    rss = RSS()
+    rss.channel.title = "SABnzbd Queue"
+    rss.channel.description = "Overview of current downloads"
+    rss.channel.link = "http://%s:%s/sabnzbd/queue" % ( \
+        sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )
+    rss.channel.language = "en"
+
+    item = Item()
+    item.title  = "Total ETA: " + calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()) + " - "
+    item.title += "Queued: %.2f MB - " % (qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI)
+    item.title += "Speed: %.2f kB/s" % (sabnzbd.bps() / KIBI)
+    rss.addItem(item)
+
+    sum_bytesleft = 0
+    for pnfo in pnfo_list:
+        filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
+        bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
+        bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
+        mbleft = (bytesleft / MEBI)
+        mb = (bytes / MEBI)
+        
+        
+        if mb == mbleft:
+            percentage = "0%"
+        else:
+            percentage = "%s%%" % (int(((mb-mbleft) / mb) * 100))
+            
+        filename = xml_name(filename)
+        name = u'%s (%s)' % (filename, percentage)
+
+        item = Item()
+        item.title = name
+        if msgid:
+            item.link    = "https://newzbin.com/browse/post/%s/" % msgid
+        else:
+            item.link    = "http://%s:%s/sabnzbd/history" % ( \
+            sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )
+        statusLine  = ""
+        statusLine += '<tr>'
+        #Total MB/MB left
+        statusLine +=  '<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes)
+        #ETA
+        sum_bytesleft += pnfo[PNFO_BYTES_LEFT_FIELD]
+        statusLine += "<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, sabnzbd.bps())
+        statusLine += "<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD])
+        statusLine += "</tr>"
+        item.description = statusLine
+        rss.addItem(item)
+
+    rss.channel.lastBuildDate = std_time(time.time())
+    rss.channel.pubDate = rss.channel.lastBuildDate
+    rss.channel.ttl = "1"
+    return rss.write()
