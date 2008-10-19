@@ -41,7 +41,8 @@ from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          cleanup_empty_directories, get_unique_filename, \
                          OnCleanUpList, ProcessSingleFile
-from sabnzbd.tvsort import TVSeasonCheck, TVSeasonMove, TVRenamer
+from sabnzbd.tvsort import TVSeasonCheck, move_to_parent_folder, TVRenamer, MovieCheck, MovieRenamer, \
+     DateCheck, DateRenamer, check_for_folder
 from sabnzbd.constants import TOP_PRIORITY
 from sabnzbd.codecs import TRANS
 
@@ -74,9 +75,15 @@ class PostProcessor(Thread):
             ## Pause downloader, if users wants that
             if sabnzbd.pause_on_post_processing: sabnzbd.idle_downloader()
 
+            # keep track of if par2 fails
             parResult = True
+            # keep track of any unpacking errors
             unpackError = False
             nzb_list = []
+            # used for detecting tv/movie/date based files
+            movie_file = False
+            tv_file = False
+            date_file = False
 
             ## Get the job flags
             flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
@@ -159,20 +166,23 @@ class PostProcessor(Thread):
 
             ## Determine destination directory
             dirname = nzo.get_original_dirname()
-            complete_dir, filename_set, tv_file = TVSeasonCheck(complete_dir, dirname)
             nzo.set_dirname(dirname)
+            
+            ## TV/Movie/Date Renaming code part 1 - detect and construct paths
+            complete_dir, filename_set, tv_file = TVSeasonCheck(complete_dir, dirname)
             if not tv_file:
-                workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
-                tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
-                try:
-                    os.rename(workdir_complete, tmp_workdir_complete)
-                except:
-                    pass # On failure, just use the original name
-            else:
-                tmp_workdir_complete = complete_dir
+                if (cat and cat.lower() in sabnzbd.MOVIE_CATEGORIES) or (not cat and 'None' in sabnzbd.MOVIE_CATEGORIES):
+                    complete_dir, filename_set, movie_file = MovieCheck(complete_dir, dirname)
+                if not movie_file and (cat and cat.lower() in sabnzbd.DATE_CATEGORIES) or (not cat and 'None' in sabnzbd.DATE_CATEGORIES):
+                    complete_dir, filename_set, date_file = DateCheck(complete_dir, dirname)
                 
-                workdir_complete = create_dirs(complete_dir)
-                tmp_workdir_complete = create_dirs(prefix(os.path.join(workdir_complete, dirname), '_UNPACK_'))
+            
+            workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
+            tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
+            try:
+                os.rename(workdir_complete, tmp_workdir_complete)
+            except:
+                pass # On failure, just use the original name
                 
             newfiles = []                
             ## Run Stage 2: Unpack
@@ -216,33 +226,47 @@ class PostProcessor(Thread):
                     except:
                         pass
 
-
             if not nzb_list:
                 ## Give destination its final name
-                if not tv_file:
-                    if unpackError or not parResult:
-                        workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
-                        workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
-                    try:
-                        os.rename(tmp_workdir_complete, workdir_complete)
-                        nzo.set_dirname(os.path.basename(workdir_complete))
-                    except:
-                        logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
-                else:
-                    if unpackError or not parResult: 
-                        workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
-                        workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
-                        try:
-                            os.rename(tmp_workdir_complete, workdir_complete)
-                            nzo.set_dirname(os.path.basename(workdir_complete))
-                        except:
-                            logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
-                    else:
-                        if newfiles and tv_file and filename_set: TVRenamer(tmp_workdir_complete, newfiles, filename_set)
-                        workdir_complete = TVSeasonMove(tmp_workdir_complete)
-
+                if unpackError or not parResult:
+                    workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
+                    workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
+                    
+                try:
+                    os.rename(tmp_workdir_complete, workdir_complete)
+                    nzo.set_dirname(os.path.basename(workdir_complete))
+                except:
+                    logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
+    
                 if unpackError: jobResult = jobResult + 2
-
+    
+                ## Clean up download dir
+                cleanup_empty_directories(self.download_dir)
+                
+                
+                ## Run the TV Renamer and TV Mover
+                ## TV/Movie/Date Renaming code part 1 - rename and move files to parent folder
+                if not unpackError or parResult:
+                    if newfiles:
+                        if tv_file:
+                            if filename_set: 
+                                TVRenamer(workdir_complete, newfiles, filename_set)
+                            workdir_complete = move_to_parent_folder(workdir_complete)
+                        elif movie_file:
+                            if filename_set: 
+                                MovieRenamer(workdir_complete, newfiles, filename_set)
+                            move_to_parent = True
+                            # check if we should leave the files inside an extra folder
+                            if sabnzbd.MOVIE_EXTRA_FOLDER:
+                                #if there is a folder in the download, leave it in an extra folder
+                                move_to_parent = not check_for_folder(workdir_complete)
+                            if move_to_parent:
+                                workdir_complete = move_to_parent_folder(workdir_complete)
+                        elif date_file:
+                            if filename_set: 
+                                DateRenamer(workdir_complete, newfiles, filename_set)
+                            workdir_complete = move_to_parent_folder(workdir_complete)
+       
                 ## Set permissions right
                 if sabnzbd.UMASK and (os.name != 'nt'):
                     perm_script(workdir_complete, sabnzbd.UMASK)

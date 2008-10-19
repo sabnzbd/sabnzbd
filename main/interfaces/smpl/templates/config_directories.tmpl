@@ -77,14 +77,14 @@
 
 <br class="clear" />
 <fieldset class="EntryFieldSet">
-<legend>Sorting Folders</legend>
+<legend>TV Sorting</legend>
 <hr />
 
     <label><span class="label">Enable TV Sorting:</span>
     <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> />
     <span class="tips">Enable sorting and renaming of episodes.</span></label>
     <br class="clear" />
-
+    <a onclick="javascript:showDiv('Keytable')">Toggle key</a>
      <div id="Keytable">
         <div class="row">
                 <span class="heading1">Meaning</span>
@@ -134,20 +134,180 @@
             <span class="pattern">%ext</span>
             <span class="result">avi</span>
         </div>
+        <div class="row">
+            <span class="normalheight">Lower Case</span>
+            <span class="pattern">{TEXT}</span>
+            <span class="result">text</span>
+        </div>
         <!--
         <span class="">Original Filename</span>
         <span class="">%fn</span>
         <span class="">Episode Name</span>
         <br />-->
-    </div><br class="clear" />
-    
+    </div><br class="clear" /><br class="clear" />
+    <label class="label">Sort String:</label>
+    <input type="text" style="width:400px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><input type="button" style="width:100px;" onclick="tvClear()" value="Clear"/><br class="clear" />
+    <label class="label">Presets:</label>
     <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
     <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
     <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
     <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
-    <input type="button" onclick="tvClear()" value="Clear"/><br class="clear" /><br class="clear" />
-    <input type="text" style="width:500px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><br class="clear" />
     Example: <span id="previewtv"></span>
+    <br class="clear" /><br class="clear" />
+</fieldset>
+
+<br class="clear" />
+<fieldset class="EntryFieldSet">
+<legend>Movie Sorting</legend>
+<hr />
+    <label><span class="label">Enable Movie Sorting:</span>
+    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> />
+    <span class="tips">Enable sorting and renaming of movies.</span></label>
+    <br class="clear" />
+    <label><span class="label">Keep loose downloads in extra folders:</span>
+    <input class="radio" type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> />
+    <span class="tips">Enable if downloads are not put in their own folders.</span></label>
+    <br class="clear" />
+    <label><span class="label">Affected Categories:</span>
+    <select name="movie_cat" multiple="multiple" size=4 class="multiple_cats">
+        <!--#for $ct in $cat_list#-->
+            <!--#if $ct != 'Default'#-->
+                <option value="$ct" <!--#if $ct in $movie_categories then 'selected' else ''#--> >$ct</option>
+            <!--#end if#-->
+        <!--#end for#-->
+    </select>
+    <br class="clear" />
+    <a onclick="javascript:showDiv('Keytable2')">Toggle key</a>
+     <div id="Keytable2">
+        <div class="row">
+                <span class="heading1">Meaning</span>
+                <span class="heading2">Pattern</span>
+                <span class="heading3">Result</span>
+        </div>
+        <div class="row">
+            <span class="tripleheight">Title</span>
+            <span class="pattern">%title</span>
+            <span class="result">Movie Name</span>
+        <br />
+            <span class="pattern">%.title</span>
+            <span class="result">Movie.Name</span>
+        <br />
+            <span class="pattern">%_title</span>
+            <span class="result">Movie_Name</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Year</span>
+            <span class="pattern">%y</span>
+            <span class="result">2000</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Extension</span>
+            <span class="pattern">%ext</span>
+            <span class="result">avi</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Part Number</span>
+            <span class="pattern">%1</span>
+            <span class="result">1</span>
+        </div>
+        <div class="row">
+            <span class="normalheight">Decade</span>
+            <span class="pattern">%decade</span>
+            <span class="result">00</span>
+        </div>
+        <div class="row">
+            <span class="normalheight">Lower Case</span>
+            <span class="pattern">{TEXT}</span>
+            <span class="result">text</span>
+        </div>
+    </div><br class="clear" /><br class="clear" />
+    <label class="label">Sort String:</label>
+    <input type="text" style="width:400px" size="80" id="moviefoldername" name="movie_sort_string" value="$movie_sort_string" onkeyup="javascript:previewmovie()"><input type="button" onclick="movieClear()" style="width:100px;" value="Clear"/><br class="clear" />
+    <label class="label">Multi-part label:</label>
+    <input type="text" style="width:400px" size="80" id="movieextra" name="movie_sort_extra" value="$movie_sort_extra" onkeyup="javascript:previewmovie()"><input type="button" onclick="movieClearExtra()" style="width:100px;" value="Clear"/><br class="clear" />
+    <label class="label">Presets:</label>
+    <input type="button" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="In folders"/>
+    <input type="button" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="No folders"/><br class="clear" />
+    Example: <span id="previewmovie"></span>
+    <br class="clear" /><br class="clear" />
+</fieldset>
+
+<br class="clear" />
+<fieldset class="EntryFieldSet">
+<legend>Date Sorting</legend>
+<hr />
+    <label><span class="label">Enable Date Sorting:</span>
+    <input class="radio" type="checkbox" name="enable_date_sorting" value="1" <!--#if $enable_date_sorting > 0 then "checked=1" else ""#--> />
+    <span class="tips">Enable sorting and renaming of date named files.</span></label>
+    <br class="clear" />
+    <label><span class="label">Affected Categories:</span>
+    <select name="date_cat" multiple="multiple" size=4 class="multiple_cats">
+        <!--#for $ct in $cat_list#-->
+            <!--#if $ct != 'Default'#-->
+                <option value="$ct" <!--#if $ct in $date_categories then 'selected' else ''#--> >$ct</option>
+            <!--#end if#-->
+        <!--#end for#-->
+    </select>
+    <br class="clear" />
+    <a onclick="javascript:showDiv('Keytable3')">Toggle key</a>
+     <div id="Keytable3">
+        <div class="row">
+                <span class="heading1">Meaning</span>
+                <span class="heading2">Pattern</span>
+                <span class="heading3">Result</span>
+        </div>
+        <div class="row">
+            <span class="tripleheight">Show Name</span>
+            <span class="pattern">%t</span>
+            <span class="result">Show Name</span>
+        <br />
+            <span class="pattern">%.t</span>
+            <span class="result">Show.Name</span>
+        <br />
+            <span class="pattern">%_t</span>
+            <span class="result">Show_Name</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Year</span>
+            <span class="pattern">%y</span>
+            <span class="result">2009</span>
+        </div>
+        <div class="row">
+            <span class="doubleheight">Month</span>
+            <span class="pattern">%m</span>
+            <span class="result">1</span>
+        <br />
+            <span class="pattern">%0m</span>
+            <span class="result">01</span>
+        </div>
+        <div class="row">
+            <span class="tripleheight">Day of month</span>
+            <span class="pattern">%d</span>
+            <span class="result">2</span>
+        <br />
+            <span class="pattern">%0d</span>
+            <span class="result">02</span>
+        <br />
+        </div>
+        <div class="row">
+            <span class="normalheight">Decade</span>
+            <span class="pattern">%decade</span>
+            <span class="result">00</span>
+        </div>
+        <div class="row">
+            <span class="normalheight">Lower Case</span>
+            <span class="pattern">{TEXT}</span>
+            <span class="result">text</span>
+        </div>
+    </div><br class="clear" /><br class="clear" />
+    <label class="label">Sort String:</label>
+    <input type="text" style="width:400px" size="80" id="datefoldername" name="date_sort_string" value="$date_sort_string" onkeyup="javascript:previewdate()"><input type="button" style="width:100px;" onclick="dateClear()" value="Clear"/><br class="clear" />
+    <label class="label">Presets:</label>
+    <input type="button" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="Show Name folder"/>
+    <input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="Year-Month Folders"/>
+    <input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="Daily Folders"/><br class="clear" />
+    Example: <span id="previewdate"></span>
+    
 </fieldset>
 
 

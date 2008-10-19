@@ -151,9 +151,6 @@ URLGRABBER = None
 
 AUTO_SORT = None
 
-ENABLE_TV_SORTING = False
-TV_SORT_STRING = None
-
 WEB_COLOR = None
 WEB_COLOR2 = None
 WEB_DIR = None
@@ -161,6 +158,21 @@ WEB_DIR2 = None
 pause_on_post_processing = False
 QUICK_CHECK = True
 LOGIN_PAGE = None
+
+
+ENABLE_TV_SORTING = False
+TV_SORT_STRING = None
+
+ENABLE_MOVIE_SORTING = False
+MOVIE_SORT_STRING = None
+MOVIE_SORT_EXTRA = None
+MOVIE_EXTRA_FOLDER = False
+MOVIE_CATEGORIES = []
+
+ENABLE_DATE_SORTING = False
+DATE_SORT_STRING = None
+DATE_CATEGORIES = []
+
 
 __INITIALIZED__ = False
 
@@ -314,7 +326,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
-           WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY
+           WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY, \
+           MOVIE_SORT_STRING, ENABLE_MOVIE_SORTING, MOVIE_SORT_EXTRA, ENABLE_DATE_SORTING, DATE_SORT_STRING, \
+           MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES
 
     if __INITIALIZED__:
         return False
@@ -483,6 +497,20 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     ENABLE_TV_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_tv_sorting', 0)) #tv sorting on/off
     TV_SORT_STRING = check_setting_str(CFG, 'misc', 'tv_sort_string', '') #tv sort format
 
+    ENABLE_MOVIE_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_movie_sorting', 0))
+    MOVIE_SORT_STRING = check_setting_str(CFG, 'misc', 'movie_sort_string', '') 
+    MOVIE_SORT_EXTRA = check_setting_str(CFG, 'misc', 'movie_sort_extra', '-cd%1')
+    MOVIE_EXTRA_FOLDER = bool(check_setting_int(CFG, 'misc', 'movie_extra_folder', 0))
+    MOVIE_CATEGORIES = check_setting_str(CFG, 'misc', 'movie_categories', ['movies'])
+    if type(MOVIE_CATEGORIES) != type([]):
+        MOVIE_CATEGORIES = []
+    
+    ENABLE_DATE_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_date_sorting', 0))
+    DATE_SORT_STRING = check_setting_str(CFG, 'misc', 'date_sort_string', '')
+    DATE_CATEGORIES = check_setting_str(CFG, 'misc', 'date_categories', ['tv'])
+    if type(DATE_CATEGORIES) != type([]):
+        DATE_CATEGORIES = []
+    
     WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
 
