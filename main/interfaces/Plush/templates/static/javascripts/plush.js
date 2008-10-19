@@ -77,7 +77,7 @@ $(document).ready(function(){
 	});
 		
 	$('#history .last div').livequery(function() {
-		$(this).Tooltip({
+		$(this).tooltip({
 			extraClass:	"tooltip",
 			track:		true, 
 			fixPNG:		true
@@ -86,7 +86,7 @@ $(document).ready(function(){
 	});
 	
 	// set up more tooltips for main screen
-	$('.tip').Tooltip({
+	$('.tip').tooltip({
 			extraClass:	"tooltip",
 			track:		true, 
 			fixPNG:		true
@@ -108,38 +108,24 @@ $(document).ready(function(){
 	// restore Add NZB from cookie
 	if (ReadCookie('Plush2AddNZB') != 'block') {
 		$('#add_nzb_menu').css('display','block');
-		$('#addnzb_toggler').html("Hide Add NZB Bar");
 	}
 	if (ReadCookie('Plush2ConfigMenu') != 'block') {
 		$('.menu_upper_lower').css('display','block');
-		$('#menu_toggler').html("Hide Menu");
 	}	
 	if (ReadCookie('Plush2Chart') != 'block') {
 		$('#chart').css('display','block');
-		$('#chart_toggler').html("Hide Chart");
 	}	
 	// disable toggler selection
 	disableSelection(document.getElementById("add_nzb_menu_toggle_upper"));
 	
-	// "menu toggler" horiz. bar toggler from main menu
-
-	//$("#menu_toggler").click(function() {
-	//		if ($('.menu_upper_lower').css( "opacity" ) == 1)
-	//			$('.menu_upper_lower').animate({opacity: 0.0}, 500)
-	//		else
-	//			$('.menu_upper_lower').animate({opacity: 1.0}, 500)
-	//});
-
 	$("#menu_toggler").click(function() {
 			if ($('.menu_upper_lower').css('display')!='block')
 			{
 				$('.menu_upper_lower').slideDown("fast", SetCookie('Plush2ConfigMenu',$('.menu_upper_lower').css('display')) );
-				$('#menu_toggler').html("Hide Menu");
 			}
 			else
 			{
 				$('.menu_upper_lower').slideUp("fast", SetCookie('Plush2ConfigMenu',$('.menu_upper_lower').css('display')) );
-				$('#menu_toggler').html("Show Menu");
 			}
 	});
 
@@ -147,12 +133,10 @@ $(document).ready(function(){
 			if ($('#add_nzb_menu').css('display')!='block')
 			{
 				$('#add_nzb_menu').slideDown("fast", SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display')) );
-				$('#addnzb_toggler').html("Hide Add NZB Bar");
 			}
 			else
 			{
 				$('#add_nzb_menu').slideUp("fast", SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display')) );
-				$('#addnzb_toggler').html("Show Add NZB Bar");
 			}
 	});
 
@@ -160,12 +144,10 @@ $(document).ready(function(){
 			if ($('#chart').css('display')!='block')
 			{
 				$('#chart').slideDown("fast", SetCookie('Plush2Chart',$('#chart').css('display')) );
-				$('#chart_toggler').html("Hide Chart");
 			}
 			else
 			{
 				$('#chart').slideUp("fast", SetCookie('Plush2Chart',$('#chart').css('display')) );
-				$('#chart_toggler').html("Show Chart");
 			}
 	});
 

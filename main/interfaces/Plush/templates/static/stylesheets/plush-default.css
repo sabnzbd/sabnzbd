@@ -4,12 +4,14 @@ body {
 	/* opacity: .9999; */
 	margin:0px 0px; padding:0px;
 }
-select, input, file {
+/*
+select, input {
 	border: 0px;
 	background: #333;
 	color:#FFFF99;
 	display:inline;
 }
+*/
 
 ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
@@ -128,7 +130,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	color: white;
 }
 
-#queue_view_preference {
+#queue_view_preference, #history_view_preference {
+	cursor:pointer;
+	width:110px;
+}
+/*
 	cursor:pointer;
 	background-color:#E0E0E0;
 	color:black;
@@ -142,7 +148,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	font-weight:bold;
 	width:110px;
 }
-
+*/
 
 
 #stats_noofslots {
@@ -345,6 +351,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	text-align: center;
 	font-size: 70%;
 }
+/*
 .queueTable select {
 	border:0px;
 	font-size: 66%;
@@ -354,6 +361,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .queueTable tr:hover select {
 	color: #000;
 }
+*/
 
 .queueProgressBarContainer {
 	width:121px;
@@ -420,6 +428,9 @@ tr:hover .history_added  {
 	background: url(../images/plush-default/hv_par.png) 0 50% no-repeat;
 }
 .hv_JOI {
+	background: url(../images/plush-default/hv_join.png) 0 50% no-repeat;
+}
+.hv_FJN {
 	background: url(../images/plush-default/hv_join.png) 0 50% no-repeat;
 }
 .hv_RAR {
