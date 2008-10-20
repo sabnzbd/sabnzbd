@@ -3,7 +3,7 @@ def displayNotices (action, name):
 	if name[1:4] == 'Tim' or name[1:4] == 'Avg':
 		return ''
 	notice = action[3:11]
-	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 ":
+	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 " and notice != "Download":
 		return '<span class="hvMessage">&raquo;&nbsp;' + action[3:] + '&nbsp;</span><br/>'
 %>
 
