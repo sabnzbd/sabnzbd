@@ -1158,7 +1158,11 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['movie_extra_folder'] = IntConv(movie_extra_folder)
         sabnzbd.CFG['misc']['enable_date_sorting'] = IntConv(enable_date_sorting)
         sabnzbd.CFG['misc']['date_sort_string'] = date_sort_string
+        if type(movie_cat) == type(''):
+            movie_cat = [movie_cat]
         sabnzbd.CFG['misc']['movie_categories'] = movie_cat
+        if type(date_cat) == type(''):
+            date_cat = [date_cat]
         sabnzbd.CFG['misc']['date_categories'] = date_cat
 
         return saveAndRestart(self.__root, _dc)
