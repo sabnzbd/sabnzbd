@@ -225,6 +225,8 @@ class PostProcessor(Thread):
                         os.rmdir(tmp_workdir_complete)
                     except:
                         pass
+                else:
+                    CleanUpList(tmp_workdir_complete, False)
 
             if not nzb_list:
                 ## Give destination its final name
