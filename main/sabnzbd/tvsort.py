@@ -459,7 +459,7 @@ def formatDatePath(_path, match, dirname):
         
     title, title2, title3 = getTitles(match, dirname)
     folders = sabnzbd.DATE_SORT_STRING
-    description, description2, description3, folders = getDescriptions(match, dirname, folders, '%\.?\_?description')
+    description, description2, description3, folders = getDescriptions(match, dirname, folders, '%\.?\_?desc')
     
     # replace any backslashes with forward slashes
     folders = folders.replace('\\','/')
@@ -469,15 +469,16 @@ def formatDatePath(_path, match, dirname):
     folders = folders.replace('%_t', title3)
     # replace the year and decade
     folders = folders.replace('%y', year)
+
+    folders = folders.replace("%.desc", description2)
+    folders = folders.replace("%_desc", description3)
+    folders = folders.replace("%desc", description)
+    
     folders = folders.replace('%decade', decade)
     folders = folders.replace('%m', month)
     folders = folders.replace('%d', date)
     folders = folders.replace('%0m', month2)
     folders = folders.replace('%0d', date2)
-
-    folders = folders.replace("%.desc", description2)
-    folders = folders.replace("%_desc", description3)
-    folders = folders.replace("%desc", description)
     
     # if year is missing, get rid left over characters
     
