@@ -392,6 +392,11 @@ def _get_link(uri, entry):
                 link = entry.links[0].href
             except:
                 link = None
+    elif uri.find('nzbindex.nl') > 0:
+        try:
+            link = entry.enclosures[0]['href']
+        except:
+            link = None
     else:
         # Try standard link first
         link = entry.link
