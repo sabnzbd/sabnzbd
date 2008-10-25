@@ -1631,7 +1631,6 @@ class ConfigRss(ProtectedClass):
             if IsNone(pp): pp = ''
             cfg['pp'] = pp
             cfg['script'] = ConvertSpecials(script)
-            cfg['enable'] = IntConv(enable)
             save_configfile(sabnzbd.CFG)
 
         raise Raiser(self.__root, _dc=_dc)
@@ -1678,7 +1677,6 @@ class ConfigRss(ProtectedClass):
         cat = ConvertSpecials(cat)
 
         cfg['filter'+str(index)] = (cat, pp, script, filter_type, filter_text)
-        cfg['enable'] = 0
         save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
@@ -1689,7 +1687,6 @@ class ConfigRss(ProtectedClass):
             filter = filters.pop(int(current))
             filters.insert(int(new), filter)
             UnlistFilters(feed, filters)
-            sabnzbd.CFG['rss'][feed]['enable'] = 0
             save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
@@ -1714,7 +1711,6 @@ class ConfigRss(ProtectedClass):
             filters = ListFilters(feed)
             filter = filters.pop(int(index))
             UnlistFilters(feed, filters)
-            sabnzbd.CFG['rss'][feed]['enable'] = 0
             save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
