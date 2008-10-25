@@ -32,7 +32,7 @@ from binascii import crc32
 from cStringIO import StringIO
 import tempfile
 import logging
-import sabnzbd.newsunpack
+import sabnzbd
 
 # whether to speed up decompression by using tmp archive
 _use_extract_hack = 0
@@ -465,7 +465,7 @@ class RarFile:
             fn = fn.replace('"', '\\"')
             fn = fn.replace("$", "\\$")
         
-        err, buf = sabnzbd.newsunpack.SimpleRarExtract(rarfile, fn)
+        err, buf = sabnzbd.SimpleRarExtract(rarfile, fn)
         if err > 0:
             raise Exception("Error reading file")
         return buf

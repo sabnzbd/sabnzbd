@@ -36,6 +36,7 @@ from sabnzbd.utils.rsslib import RSS, Item, Namespace
 from sabnzbd.utils.json import JsonWriter
 import sabnzbd
 import sabnzbd.rss
+import sabnzbd.scheduler as scheduler
 
 from cherrypy.filters.gzipfilter import GzipFilter
 
@@ -144,7 +145,7 @@ def ListScripts(default=False):
     """ Return a list of script names """
     lst = []
     dd = sabnzbd.SCRIPT_DIR
-
+    
     if dd and os.access(dd, os.R_OK):
         if default:
             lst = ['Default', 'None']
@@ -264,10 +265,10 @@ class LoginPage:
     @cherrypy.expose
     def unauthorized(self):
         return "<h1>You are not authorized to view this resource</h1>"
-
+    
     def change_web_dir(self, web_dir):
         self.sabnzbd = MainPage(web_dir, self.root, prim=True)
-
+        
     def change_web_dir2(self, web_dir):
         self.sabnzbd.m = MainPage(web_dir, self.root, prim=False)
 
@@ -325,7 +326,7 @@ class MainPage(ProtectedClass):
     def addID(self, id = None, pp=None, script=None, cat=None, redirect = None, priority=NORMAL_PRIORITY):
         RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
         newzbin_url = RE_NEWZBIN_URL.search(id.lower())
-
+        
         id = Strip(id)
         if id and (id.isdigit() or len(id)==5):
             sabnzbd.add_msgid(id, pp, script, cat, priority)
@@ -408,7 +409,7 @@ class MainPage(ProtectedClass):
                 return xml_qstatus()
             else:
                 return 'not implemented\n'
-
+            
         if mode == 'queue':
             if output == 'xml':
                 if sort and sort != 'index':
@@ -477,15 +478,15 @@ class MainPage(ProtectedClass):
                 return 'ok\n'
             else:
                 return 'error\n'
-
+            
         elif mode == 'switch':
             if value and value2:
                 sabnzbd.switch(value, value2)
                 return 'ok\n'
             else:
                 return 'error\n'
-
-
+            
+                
         elif mode == 'change_cat':
             if value and value2:
                 nzo_id = value
@@ -501,13 +502,13 @@ class MainPage(ProtectedClass):
                     pp = int(sabnzbd.CFG['categories'][cat]['pp'])
                 except:
                     pp = sabnzbd.DIRSCAN_PP
-
+    
                 sabnzbd.change_script(nzo_id, script)
                 sabnzbd.change_opts(nzo_id, pp)
                 return 'ok\n'
             else:
                 return 'error\n'
-
+            
         elif mode == 'change_script':
             if value and value2:
                 nzo_id = value
@@ -518,13 +519,13 @@ class MainPage(ProtectedClass):
                 return 'ok\n'
             else:
                 return 'error\n'
-
+            
         elif mode == 'fullstatus':
             if output == 'xml':
                 return xml_full()
             else:
                 return 'not implemented\n'
-
+            
         elif mode == 'history':
             if output == 'xml':
                 return xml_history(start, limit)
@@ -551,7 +552,7 @@ class MainPage(ProtectedClass):
                     return json_files(value)
                 else:
                     return 'not implemented\n'
-
+            
         elif mode == 'addurl':
             if name:
                 sabnzbd.add_url(name, pp, script, cat, priority)
@@ -562,7 +563,7 @@ class MainPage(ProtectedClass):
         elif mode == 'addid':
             RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
             newzbin_url = RE_NEWZBIN_URL.search(name.lower())
-
+            
             if name: name = name.strip()
             if name and (name.isdigit() or len(name)==5):
                 sabnzbd.add_msgid(name, pp, script, cat, priority)
@@ -575,7 +576,7 @@ class MainPage(ProtectedClass):
                 return 'ok\n'
             else:
                 return 'error\n'
-
+            
         elif mode == 'pause':
             sabnzbd.pause_downloader()
             return 'ok\n'
@@ -596,7 +597,7 @@ class MainPage(ProtectedClass):
                 return xml_list("warnings", "warning", sabnzbd.GUIHANDLER.content())
             else:
                 return 'not implemented\n'
-
+            
         elif mode == 'config':
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
                 if not value: value = '0'
@@ -628,7 +629,7 @@ class MainPage(ProtectedClass):
                     return 'ok\n'
                 else:
                     return 'error: Please submit a value\n'
-
+                
             else:
                 return 'not implemented\n'
 
@@ -655,7 +656,7 @@ class MainPage(ProtectedClass):
                 return xml_list('versions', 'version', (sabnzbd.__version__, ))
             else:
                 return 'not implemented\n'
-
+        
         else:
             return 'not implemented\n'
 
@@ -787,7 +788,7 @@ class QueuePage(ProtectedClass):
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
-
+    
 
 
     @cherrypy.expose
@@ -901,7 +902,7 @@ class QueuePage(ProtectedClass):
     def sort_by_size(self, _dc = None, start=None, limit=None):
         sabnzbd.sort_by_size()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
-
+    
     @cherrypy.expose
     def set_speedlimit(self, _dc = None, value=None):
         if not value:
@@ -935,7 +936,7 @@ class HistoryPage(ProtectedClass):
         history['total_bytes'] = "%.2f" % (total_bytes / GIGI)
 
         history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
-
+        
         history['limit'] = IntConv(dummy2)
 
         history['lines'], history['noofslots'] = build_history(verbose=self.__verbose, start=start, limit=limit)
@@ -1012,7 +1013,7 @@ class ConfigPage(ProtectedClass):
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['configfn'] = sabnzbd.CFG.filename
-
+        
         new = {}
         org = sabnzbd.CFG['servers']
         for svr in org:
@@ -1076,7 +1077,7 @@ class ConfigDirectories(ProtectedClass):
         config['date_categories'] = sabnzbd.CFG['misc']['date_categories']
         config['cat_list'] = ListCats(True)
         tvSortList = []
-
+        
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
                             searchList=[config],
                             compilerSettings={'directiveStartToken': '<!--#',
@@ -1361,31 +1362,31 @@ class ConfigGeneral(ProtectedClass):
 
         web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
         web_dir2_path = real_path(sabnzbd.DIR_INTERFACES, web_dir2)
-
+        
         if not os.path.exists(web_dir_path):
             logging.warning('Cannot find web template: %s', web_dir_path)
         else:    
             sabnzbd.CFG['misc']['web_dir']  = web_dir
             self.__web_dir = web_dir
-
+            
         if web_dir2 == 'None':
             sabnzbd.CFG['misc']['web_dir2'] = ''
         elif os.path.exists(web_dir2_path):
             sabnzbd.CFG['misc']['web_dir2'] = web_dir2
-
+          
         if os.path.exists(web_dir_path) and os.path.exists(web_dir2_path):
-
+            
             web_dir_path = real_path(web_dir_path, "templates")
             web_dir2_path = real_path(web_dir2_path, "templates")
             sabnzbd.change_web_dir(web_dir_path)
             sabnzbd.change_web_dir2(web_dir2_path)
-
+            
             #cherrypy.tree.mount(LoginPage(web_dir_path, '/sabnzbd/', web_dir2_path, '/sabnzbd/m/'), '/')
             cherrypy.config.update(updateMap={'/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir_path, 'static')},
                                               '/sabnzbd/m/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir2_path, 'static')}
                                           })
-
-
+       
+       
         return saveAndRestart(self.__root, _dc)
 
 
@@ -1767,7 +1768,7 @@ class ConfigScheduling(ProtectedClass):
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['schedlines'] = []
-        for ev in sabnzbd.SortSchedules(sabnzbd.CFG['misc']['schedlines'], forward=True):
+        for ev in scheduler.sort_schedules(sabnzbd.CFG['misc']['schedlines'], forward=True):
             config['schedlines'].append(ev[3])
 
 
@@ -1780,20 +1781,26 @@ class ConfigScheduling(ProtectedClass):
     @cherrypy.expose
     def addSchedule(self, minute = None, hour = None, dayofweek = None,
                     action = None, arguments = None, _dc = None):
+        schedules = sabnzbd.CFG['misc']['schedlines']
         if minute and hour  and dayofweek and action:
             try:
                 if action == 'speedlimit': int(arguments)
-                sabnzbd.CFG['misc']['schedlines'].append('%s %s %s %s %s' %
-                                                         (minute, hour, dayofweek, action, arguments))
+                schedules.append('%s %s %s %s %s' %
+                                 (minute, hour, dayofweek, action, arguments))
             except:
                 pass
-        return saveAndRestart(self.__root, _dc, evalSched=True)
+        save_configfile(sabnzbd.CFG)
+        scheduler.restart()
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def delSchedule(self, line = None, _dc = None):
-        if line and line in sabnzbd.CFG['misc']['schedlines']:
-            sabnzbd.CFG['misc']['schedlines'].remove(line)
-        return saveAndRestart(self.__root, _dc, evalSched=True)
+        schedules = sabnzbd.CFG['misc']['schedlines']
+        if line and line in schedules:
+            schedules.remove(line)
+        save_configfile(sabnzbd.CFG)
+        scheduler.restart()
+        raise Raiser(self.__root, _dc=_dc)
 
 #------------------------------------------------------------------------------
 
@@ -2047,7 +2054,7 @@ class ConnectionInfo(ProtectedClass):
         pack[1] = {}
         pack[1]['action1'] = 'done 1'
         pack[1]['action2'] = 'done 2'
-
+        
         self.__lastmail= email_endjob('Test Job', 'unknown', True,
                                       os.path.normpath(os.path.join(sabnzbd.COMPLETE_DIR, '/unknown/Test Job')),
                                       str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n')
@@ -2293,7 +2300,7 @@ def build_header(prim):
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
     header['mbleft']   = "%.2f" % (bytesleft / MEBI)
     header['mb']       = "%.2f" % (bytes / MEBI)
-
+    
     status = ''
     if sabnzbd.paused():
         status = 'Paused'
@@ -2414,9 +2421,9 @@ class ConfigEmail(ProtectedClass):
         sabnzbd.CFG['misc']['email_full'] = email_full
 
         off = not (email_endjob or email_full)
-
+        
         VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
-
+        
 
         if (off and not email_to) or VAL.match(email_to):
             sabnzbd.CFG['misc']['email_to'] = email_to
@@ -2629,7 +2636,7 @@ def xml_qstatus():
 def build_file_list(id):
     qnfo = sabnzbd.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
-
+    
     jobs = []
     n = 0
     for pnfo in pnfo_list:
@@ -2638,17 +2645,17 @@ def build_file_list(id):
             finished_files = pnfo[PNFO_FINISHED_FILES_FIELD]
             active_files = pnfo[PNFO_ACTIVE_FILES_FIELD]
             queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
-
-
+    
+    
             date_combined = 0
             num_dates = 0
             n2 = 0
             for tup in finished_files:
                 bytes_left, bytes, fn, date = tup
                 fn = xml_name(fn)
-
+    
                 age = calc_age(date)
-
+    
                 line = {'filename':str(fn),
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
@@ -2656,13 +2663,13 @@ def build_file_list(id):
                         'age':age, 'id':str(n2), 'status':'finished'}
                 jobs.append(line)
                 n2+=1
-
+    
             for tup in active_files:
                 bytes_left, bytes, fn, date, nzf_id = tup
                 fn = xml_name(fn)
-
+    
                 age = calc_age(date)
-
+    
                 line = {'filename':str(fn),
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
@@ -2671,13 +2678,13 @@ def build_file_list(id):
                         'age':age, 'id':str(n2), 'status':'active'}
                 jobs.append(line)
                 n2+=1
-
+    
             for tup in queued_files:
                 _set, bytes_left, bytes, fn, date = tup
                 fn = xml_name(fn)
-
+    
                 age = calc_age(date)
-
+    
                 line = {'filename':str(fn), 'set':_set,
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
@@ -2685,30 +2692,30 @@ def build_file_list(id):
                         'age':age, 'id':str(n2), 'status':'queued'}
                 jobs.append(line)
                 n2+=1
-
+                
     return jobs
 
 def xml_files(id):
-
+    
     #Collect all Queue data
     status_str = '<?xml version="1.0" encoding="UTF-8" ?> \n'
-
+    
     jobs = build_file_list(id)
 
-
+                
     xmlmaker = xml_factory()
     status_str += xmlmaker.run("files",jobs)
-
+                
     #status_str += '</files>\n'
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return status_str
 
 def json_files(id):
-
+    
     #Collect all Queue data    
     jobs = build_file_list(id)
-
+                
     status_str = JsonWriter().write(jobs)
 
     cherrypy.response.headers['Content-Type'] = "application/json"
@@ -2746,14 +2753,14 @@ def build_history(loaded=False, start=None, limit=None, verbose=False):
                     stages.append(stageLine)
             item['stages'] = stages
             items.append(item)
-
+            
     total_items = len(items)
-
+            
     try: limit = int(limit)
     except: limit = 0
     try: start = int(start)
     except: start = 0
-
+            
     #Paging code - Happens outside the loop for easy of coding
     if limit > 0:
         try:
@@ -2770,19 +2777,19 @@ def build_history(loaded=False, start=None, limit=None, verbose=False):
                     items = items[:limit]
         except:
             pass
-
-
+        
+        
     return (items, total_items)
-
+    
 def xml_history(start=None, limit=None):
     items, total_items = build_history(start=start, limit=limit, verbose=True)
     status_lst = []
     status_lst.append('<?xml version="1.0" encoding="UTF-8" ?> \n')
     #Compile the history data
-
+    
     xmlmaker = xml_factory()
     status_lst.append(xmlmaker.run("history",items))
-
+            
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return ''.join(status_lst)
@@ -2813,9 +2820,9 @@ def json_list(section, keyw, lst, headers=True):
         c['name'] = item
         i += 1
         d.append(c)
-
+        
     obj = { section : d }
-
+    
     if headers:
         text = JsonWriter().write(obj)
         cherrypy.response.headers['Content-Type'] = "application/json"
@@ -2853,13 +2860,13 @@ class xml_factory():
     """
     def __init__(self):
         self.__text = ''
-
-
+        
+    
     def tuple(self, keyw, lst, text = ''):
         for item in lst:
             text += self.run(keyw, item)
         return text
-
+    
     def dict(self, keyw, lst, text = ''):
         for key in lst.keys():
             found = self.run(key,lst[key])
@@ -2867,12 +2874,12 @@ class xml_factory():
                 text += found
             else:
                 text += '<%s>%s</%s>\n' % (str(key), str(lst[key]), str(key))
-
+                
         if keyw and text:
             return '<%s>%s</%s>\n' % (keyw,text,keyw)
         else:
             return ''
-
+        
 
 
     def list(self, keyw, lst, text = ''):
@@ -2893,12 +2900,12 @@ class xml_factory():
                     text += found'''
             else:
                 text += '<item>%s</item>\n' % str(cat)
-
+            
         if keyw and text:
             return '<%s>%s</%s>\n' % (keyw,text,keyw)
         else:    
             return ''
-
+        
     def run(self, keyw, lst):
         if isinstance(lst, dict):
             text = self.dict(keyw,lst) 
@@ -2909,18 +2916,18 @@ class xml_factory():
         else:     
             text = ''
         return text
-
+    
 
 def queueStatus(start, limit):
     #gather the queue details
     info, pnfo_list, bytespersec, verboseList, nzo_pages, dict = build_queue(history=True, start=start, limit=limit)
     text = '<?xml version="1.0" encoding="UTF-8" ?><queue> \n'
-
+    
     #Use xmlmaker to make an xml string out of info which is a tuple that contains lists/strings/dictionaries
     xmlmaker = xml_factory()
     text += xmlmaker.run("mainqueue",info)
     text += "</queue>"
-
+    
     #output in xml with no caching
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
@@ -2931,7 +2938,7 @@ def queueStatusJson(start, limit):
     info = {}
     info['mainqueue'], pnfo_list, bytespersec, verboseList, nzo_pages, dict = build_queue(history=True, start=start, limit=limit, json_output=True)
 
-
+    
     status_str = JsonWriter().write(info)
 
     cherrypy.response.headers['Content-Type'] = "application/json"
@@ -2951,7 +2958,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         info['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
     else:
         info['refresh_rate'] = ''
-
+        
     info['limit'] = IntConv(dummy2)
 
     datestart = datetime.datetime.now()
@@ -2962,7 +2969,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     else:
         info['script_list'] = ListScripts()
         info['cat_list'] = ListCats()
-
+    
 
     n = 0
     found_active = False
@@ -2974,8 +2981,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     except: limit = 0
     try: start = int(start)
     except: start = 0
-
-
+    
+    
     #Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
     if history:
         slotinfo = get_history()
@@ -2984,9 +2991,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             slotinfo = []
     else:
         slotinfo = []
-
+        
     info['noofslots'] = len(pnfo_list) + len(slotinfo)
-
+    
     #Paging of the queue using limit and/or start values
     if limit > 0:
         try:
@@ -3033,7 +3040,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             if nzo_id not in dict:
                 dict[nzo_id] = NzoPage(web_dir, root, nzo_id, prim)
                 nzo_pages.append(nzo_id)
-
+            
         slot = {'index':n, 'nzo_id':str(nzo_id)}
         unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
 
@@ -3063,9 +3070,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             slot['percentage'] = "0"
         else:
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
-
+            
         running_bytes += bytesleft
-
+        
         slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
 
         try:
@@ -3082,41 +3089,41 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             active = []
             queued = []
             if verbose or nzo_id in verboseList:#this will list files in the xml output, wanted yes/no?
-
+    
                 date_combined = 0
                 num_dates = 0
-
+    
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
                     fn = xml_name(fn)
-
+    
                     age = calc_age(date)
-
+    
                     line = {'filename':str(fn),
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
                             'age':age}
                     finished.append(line)
-
+    
                 for tup in active_files:
                     bytes_left, bytes, fn, date, nzf_id = tup
                     fn = xml_name(fn)
-
+    
                     age = calc_age(date)
-
+    
                     line = {'filename':str(fn),
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
                             'nzf_id':nzf_id,
                             'age':age}
                     active.append(line)
-
+    
                 for tup in queued_files:
                     _set, bytes_left, bytes, fn, date = tup
                     fn = xml_name(fn)
-
+    
                     age = calc_age(date)
-
+    
                     line = {'filename':str(fn), 'set':_set,
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
@@ -3149,7 +3156,7 @@ def get_history():
     while history_items:
         added = max(history_items.keys())
         history_item_list = history_items.pop(added)
-
+        
         for history_item in history_item_list:
             filename, unpackstrht, loaded, bytes, nzo, status = history_item
             #loaded = True #debug
@@ -3174,63 +3181,3 @@ def xmlSimpleDict(keyw,lst):
         text += '<%s>%s</%s>\n' % (escape(key),escape(lst[key]),escape(key))
     text += '</%s>' % keyw
     return text
-
-def rss_qstatus():
-    """ Return a RSS feed with the queue status
-    """
-    qnfo = sabnzbd.queue_info()
-    pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
-
-    rss = RSS()
-    rss.channel.title = "SABnzbd Queue"
-    rss.channel.description = "Overview of current downloads"
-    rss.channel.link = "http://%s:%s/sabnzbd/queue" % ( \
-        sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )
-    rss.channel.language = "en"
-
-    item = Item()
-    item.title  = "Total ETA: " + calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()) + " - "
-    item.title += "Queued: %.2f MB - " % (qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI)
-    item.title += "Speed: %.2f kB/s" % (sabnzbd.bps() / KIBI)
-    rss.addItem(item)
-
-    sum_bytesleft = 0
-    for pnfo in pnfo_list:
-        filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
-        bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
-        bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
-        mbleft = (bytesleft / MEBI)
-        mb = (bytes / MEBI)
-        
-        
-        if mb == mbleft:
-            percentage = "0%"
-        else:
-            percentage = "%s%%" % (int(((mb-mbleft) / mb) * 100))
-            
-        filename = xml_name(filename)
-        name = u'%s (%s)' % (filename, percentage)
-
-        item = Item()
-        item.title = name
-        if msgid:
-            item.link    = "https://newzbin.com/browse/post/%s/" % msgid
-        else:
-            item.link    = "http://%s:%s/sabnzbd/history" % ( \
-            sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )
-        statusLine  = ""
-        statusLine += '<tr>'
-        #Total MB/MB left
-        statusLine +=  '<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes)
-        #ETA
-        sum_bytesleft += pnfo[PNFO_BYTES_LEFT_FIELD]
-        statusLine += "<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, sabnzbd.bps())
-        statusLine += "<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD])
-        statusLine += "</tr>"
-        item.description = statusLine
-        rss.addItem(item)
-
-    rss.channel.lastBuildDate = std_time(time.time())
-    rss.channel.pubDate = rss.channel.lastBuildDate
-    rss.channel.ttl = "1"
-    return rss.write()

@@ -27,9 +27,9 @@ import tempfile
 import cPickle
 import zipfile
 import re
-import random
 import glob
 import gzip
+import subprocess
 import time
 from time import sleep
 
@@ -51,15 +51,14 @@ from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
                          create_real_path, check_latest_version, from_units, SameFile, decodePassword, \
                          ProcessArchiveFile, ProcessSingleFile
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.utils.kronos import ThreadedScheduler
-import sabnzbd.rss
+import sabnzbd.scheduler as scheduler
+import sabnzbd.rss as rss
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
-from sabnzbd.newsunpack import build_command
+import sabnzbd.newsunpack
 from sabnzbd.codecs import name_fixer
 
-import subprocess
 
 START = datetime.datetime.now()
 
@@ -106,6 +105,7 @@ DEBUG_DELAY = 0
 AUTOBROWSER = None
 DAEMON = None
 CONFIGLOCK = None
+RSS_RATE = None
 
 USERNAME_NEWZBIN = None
 PASSWORD_NEWZBIN = None
@@ -136,7 +136,6 @@ ARTICLECACHE = None
 DOWNLOADER = None
 NZBQ = None
 BPSMETER = None
-SCHED = None
 BOOKMARKS = None
 
 EMAIL_SERVER = None
@@ -315,14 +314,14 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, PAR_OPTION, CLEANUP_LIST, IGNORE_SAMPLES, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
-           DIRSCANNER, MSGIDGRABBER, URLGRABBER, SCHED, NZBQ, DOWNLOADER, BOOKMARKS, \
+           DIRSCANNER, MSGIDGRABBER, URLGRABBER, NZBQ, DOWNLOADER, BOOKMARKS, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
            SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_DIR, DIRSCAN_PP, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, EMAIL_DIR, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
-           DAEMON, CONFIGLOCK, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
+           DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
@@ -456,8 +455,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', DEF_QRATE)
 
-    rss_rate = check_setting_int(CFG, 'misc', 'rss_rate', 60)
-    rss_rate = minimax(rss_rate, 15, 24*60)
+    RSS_RATE = check_setting_int(CFG, 'misc', 'rss_rate', 60)
+    RSS_RATE = minimax(RSS_RATE, 15, 24*60)
 
     try:
         BANDWITH_LIMIT = check_setting_int(CFG, 'misc', 'bandwith_limit', 0)
@@ -481,10 +480,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     EMAIL_FULL   = bool(check_setting_int(CFG, 'misc', 'email_full', 0))
     
     try:
-        schedlines = CFG['misc']['schedlines']
+        dummy = CFG['misc']['schedlines']
     except:
         CFG['misc']['schedlines'] = []
-    schedlines = CFG['misc']['schedlines']
 
     DIRSCAN_PP = check_setting_int(CFG, 'misc', 'dirscan_opts', 3)
     DIRSCAN_SCRIPT = check_setting_str(CFG, 'misc', 'dirscan_script', '')
@@ -528,7 +526,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
             BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
 
     need_rsstask = rss.init()
-    init_SCHED(schedlines, need_rsstask, rss_rate, VERSION_CHECK, BOOKMARKS, BOOKMARK_RATE)
+    scheduler.init()
 
     if ARTICLECACHE:
         ARTICLECACHE.__init__(cache_limit)
@@ -585,7 +583,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         URLGRABBER = URLGrabber()
 
     if evalSched:
-        p, s = AnalyseSchedules(schedlines)
+        p, s = scheduler.analyse()
         if not pause_downloader:
             DOWNLOADER.paused = p
         if s:
@@ -599,7 +597,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
 @synchronized(INIT_LOCK)
 def start():
-    global __INITIALIZED__, ASSEMBLER, DOWNLOADER, SCHED, DIRSCANNER, \
+    global __INITIALIZED__, ASSEMBLER, DOWNLOADER, DIRSCANNER, \
            MSGIDGRABBER, URLGRABBER, DIRSCAN_DIR, USERNAME_NEWZBIN
 
     if __INITIALIZED__:
@@ -612,9 +610,7 @@ def start():
         logging.debug('[%s] Starting downloader', __NAME__)
         DOWNLOADER.start()
 
-        if SCHED:
-            logging.debug('[%s] Starting scheduler', __NAME__)
-            SCHED.start()
+        scheduler.start()
 
         if DIRSCANNER and DIRSCAN_DIR:
             logging.debug('[%s] Starting dirscanner', __NAME__)
@@ -631,7 +627,7 @@ def start():
 @synchronized(INIT_LOCK)
 def halt():
     global __INITIALIZED__, BOOKMARKS, URLGRABBER, MSGIDGRABBER, DIRSCANNER, \
-           DOWNLOADER, ASSEMBLER, POSTPROCESSOR, SCHED
+           DOWNLOADER, ASSEMBLER, POSTPROCESSOR
 
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
@@ -697,14 +693,12 @@ def halt():
 
         ## Stop Optional Objects ##
         #Scheduler is stopped last so it doesn't break when halt() is launched by the scheduler
-        if SCHED:
-            logging.debug('Stopping scheduler')
-            SCHED.stop()
-            SCHED = None
+        scheduler.stop()
 
         logging.info('All processes stopped')
 
         __INITIALIZED__ = False
+
 
 ################################################################################
 ## NZBQ Wrappers                                                              ##
@@ -1284,7 +1278,7 @@ def change_queue_complete_action(action):
 
 def run_script(script):
     command = os.path.join(SCRIPT_DIR, script)
-    stup, need_shell, command, creationflags = build_command(command)
+    stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
     logging.info('[%s] Spawning external command %s', __NAME__, command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -1388,148 +1382,7 @@ def opts_to_pp(repair, unpack, delete):
     return pp
 
 
-################################################################################
-# SCHED                                                                        #
-################################################################################
-RSSTASK_MINUTE = random.randint(0, 59)
-
-def SortSchedules(schedlines, forward):
-    """ Sort the schedules, based on order of happening from now
-        forward: assume expired daily event to occur tomorrow
+def SimpleRarExtract(rarfile, fn):
+    """ Wrapper for call to newsunpack, required to avoid circular imports
     """
-
-    events = []
-    paused = None
-    speedlimit = None
-    now = time.localtime()
-    now_hm = int(now[3])*60 + int(now[4])
-    now = int(now[6])*24*60 + now_hm
-
-    for schedule in schedlines:
-        parms = None
-        try:
-            m, h, d, action, parms = schedule.split(None, 4)
-        except:
-            try:
-                m, h, d, action = schedule.split(None, 3)
-            except:
-                continue # Bad schedule, ignore
-        action = action.strip()
-        try:
-            then = int(h)*60 + int(m)
-            if d == '*':
-                d = int(now/(24*60))
-                if forward and (then < now_hm): d = (d + 1) % 7
-            else:
-                d = int(d)-1
-            then = d*24*60 + then
-        except:
-            continue # Bad schedule, ignore
-
-        dif = then - now
-        if dif < 0: dif = dif + 7*24*60
-
-        events.append((dif, action, parms, schedule))
-
-    events.sort(lambda x, y: x[0]-y[0])
-    return events
-
-
-def AnalyseSchedules(schedlines):
-    """ Determine what pause/resume state we would have now.
-        Return True if paused mode would be active.
-    """
-
-    paused = None
-    speedlimit = None
-
-    for ev in SortSchedules(schedlines, forward=False):
-        logging.debug('[%s] Schedule check result = %s', __NAME__, ev)
-        action = ev[1]
-        if action == 'pause': paused = True
-        if action == 'resume': paused = False
-        if action == 'speedlimit' and ev[2]!=None: speedlimit = int(ev[2])
-
-    return paused, speedlimit
-
-
-def init_SCHED(schedlines, need_rsstask = False, rss_rate = 60, need_versioncheck=True, \
-               bookmarks=None, bookmark_rate=60):
-    global SCHED
-
-    if schedlines or need_rsstask or need_versioncheck:
-        SCHED = ThreadedScheduler()
-
-        for schedule in schedlines:
-            arguments = []
-            argument_list = None
-            try:
-                m, h, d, action_name = schedule.split()
-            except:
-                m, h, d, action_name, argument_list = schedule.split(None, 4)
-            if argument_list:
-                arguments = argument_list.split()
-
-            m = int(m)
-            h = int(h)
-            if d == '*':
-                d = range(1, 8)
-            else:
-                d = [int(d)]
-
-            if action_name == 'resume':
-                action = resume_downloader
-                arguments = []
-            elif action_name == 'pause':
-                action = pause_downloader
-                arguments = []
-            elif action_name == 'shutdown':
-                action = shutdown_program
-                arguments = []
-            elif action_name == 'speedlimit' and arguments != []:
-                action = limit_speed
-            elif action_name == 'speedlimit':
-                continue
-            else:
-                logging.warning("[%s] Unknown action: %s", __NAME__, ACTION)
-
-            logging.debug("[%s] scheduling action:%s arguments:%s",__NAME__, action_name, arguments)
-
-            #(action, taskname, initialdelay, interval, processmethod, actionargs)
-            SCHED.addDaytimeTask(action, '', d, None, (h, m),
-                                 SCHED.PM_SEQUENTIAL, arguments)
-
-        if need_rsstask:
-            d = range(1, 8) # all days of the week
-            interval = rss_rate
-            ran_m = random.randint(0,interval-1)
-            for n in range(0, 24*60, interval):
-                at = n + ran_m
-                h = int(at/60)
-                m = at - h*60
-                logging.debug("Scheduling RSS task %s %s:%s", d, h, m)
-                SCHED.addDaytimeTask(rss.run_method, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
-
-
-        if need_versioncheck:
-            # Check for new release, once per week on random time
-            m = random.randint(0, 59)
-            h = random.randint(0, 23)
-            d = (random.randint(1, 7), )
-
-            logging.debug("Scheduling VersionCheck day=%s time=%s:%s", d, h, m)
-            SCHED.addDaytimeTask(check_latest_version, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
-
-
-        if bookmarks:
-            d = range(1, 8) # all days of the week
-            interval = bookmark_rate
-            ran_m = random.randint(0,interval-1)
-            for n in range(0, 24*60, interval):
-                at = n + ran_m
-                h = int(at/60)
-                m = at - h*60
-                logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
-                SCHED.addDaytimeTask(bookmarks.run, '', d, None, (h, m), SCHED.PM_SEQUENTIAL, [])
-
-
+    return sabnzbd.newsunpack.SimpleRarExtract(rarfile, fn)
