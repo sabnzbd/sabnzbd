@@ -143,6 +143,9 @@ class URLGrabber(Thread):
 
 
 #------------------------------------------------------------------------------
+# Function "_grab_nzbmatrix" was contibuted by
+# SABnzbd.org forum-user "ultimatejones"
+
 RE_NZBMATRIX = re.compile(r'(nzbmatrix).com/nzb-details.php\?id=(\d+)', re.I)
 
 def _grab_nzbmatrix(url):
