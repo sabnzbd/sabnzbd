@@ -45,6 +45,7 @@ from sabnzbd.tvsort import TVSeasonCheck, move_to_parent_folder, TVRenamer, Movi
      DateCheck, DateRenamer, check_for_folder
 from sabnzbd.constants import TOP_PRIORITY
 from sabnzbd.codecs import TRANS
+import sabnzbd.newzbin as newzbin
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
@@ -299,7 +300,7 @@ class PostProcessor(Thread):
 
             ## Remove newzbin bookmark, if any
             name, msgid = SplitFileName(filename)
-            sabnzbd.delete_bookmark(msgid)
+            newzbin.delete_bookmark(msgid)
 
             ## Show final status in history
             if parResult and not unpackError:
