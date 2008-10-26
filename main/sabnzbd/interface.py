@@ -592,7 +592,7 @@ class MainPage(ProtectedClass):
 
         elif mode == 'warnings':
             if output == 'json':
-                return json_list("warnings", "warning", sabnzbd.GUIHANDLER.content())
+                return json_list("warnings", sabnzbd.GUIHANDLER.content())
             elif output == 'xml':
                 return xml_list("warnings", "warning", sabnzbd.GUIHANDLER.content())
             else:
@@ -635,7 +635,7 @@ class MainPage(ProtectedClass):
 
         elif mode == 'get_cats':
             if output == 'json':
-                return json_list("categories", "category", ListCats())
+                return json_list("categories", ListCats())
             elif output == 'xml':
                 return xml_list("categories", "category", ListCats())
             else:
@@ -643,7 +643,7 @@ class MainPage(ProtectedClass):
 
         elif mode == 'get_scripts':
             if output == 'json':
-                return json_list("scripts", "script", ListScripts())
+                return json_list("scripts", ListScripts())
             elif output == 'xml':
                 return xml_list("scripts", "script", ListScripts())
             else:
@@ -1536,10 +1536,10 @@ def ListFilters(feed):
     """ Make a list of all filters of this feed """
     n = 0
     filters= []
-    cfg = sabnzbd.CFG['rss'][feed]
+    config = sabnzbd.CFG['rss'][feed]
     while True:
         try:
-            tup = cfg['filter'+str(n)]
+            tup = config['filter'+str(n)]
             try:
                 cat, pp, scr, act, txt = tup
                 filters.append(tup)
@@ -1552,24 +1552,24 @@ def ListFilters(feed):
 
 def UnlistFilters(feed, filters):
     """ Convert list to filter list for this feed """
-    cfg = sabnzbd.CFG['rss'][feed]
+    config = sabnzbd.CFG['rss'][feed]
     n = 0
     while True:
         try:
-            del cfg['filter'+str(n)]
+            del config['filter'+str(n)]
             n = n + 1
         except:
             break
 
     for n in xrange(len(filters)):
-        cfg['filter'+str(n)] = filters[n]
+        config['filter'+str(n)] = filters[n]
 
 
 
-def GetCfgRss(cfg, keyword):
+def GetCfgRss(config, keyword):
     """ Get a keyword from an RSS entry """
     try:
-        return cfg[keyword]
+        return config[keyword]
     except:
         return ''
 
@@ -2216,10 +2216,6 @@ def ShowRssLog(feed, all):
                 pp = '&pp=' + escape(job[4])
             else:
                 pp = ''
-            if job[5]:
-                script = '&script=' + escape(job[5])
-            else:
-                script = ''
             badStr += '<a href="rss_download?feed=%s&id=%s%s%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
                    (qfeed, name, cat, pp, xml_name(job[1]))
 
@@ -2487,9 +2483,6 @@ def rss_history(url):
     rss.channel.link = "http://sourceforge.net/projects/sabnzbdplus/"
     rss.channel.language = "en"
 
-    if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
-        newzbin = True
-
     history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
 
     youngest = None
@@ -2659,7 +2652,6 @@ def build_file_list(id):
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
     
     jobs = []
-    n = 0
     for pnfo in pnfo_list:
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
         if nzo_id == id:
@@ -2668,9 +2660,7 @@ def build_file_list(id):
             queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
     
     
-            date_combined = 0
-            num_dates = 0
-            n2 = 0
+            n = 0
             for tup in finished_files:
                 bytes_left, bytes, fn, date = tup
                 fn = xml_name(fn)
@@ -2681,9 +2671,9 @@ def build_file_list(id):
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
                         'bytes':"%.2f" % bytes,
-                        'age':age, 'id':str(n2), 'status':'finished'}
+                        'age':age, 'id':str(n), 'status':'finished'}
                 jobs.append(line)
-                n2+=1
+                n += 1
     
             for tup in active_files:
                 bytes_left, bytes, fn, date, nzf_id = tup
@@ -2696,9 +2686,9 @@ def build_file_list(id):
                         'mb':"%.2f" % (bytes / MEBI),
                         'bytes':"%.2f" % bytes,
                         'nzf_id':nzf_id,
-                        'age':age, 'id':str(n2), 'status':'active'}
+                        'age':age, 'id':str(n), 'status':'active'}
                 jobs.append(line)
-                n2+=1
+                n += 1
     
             for tup in queued_files:
                 _set, bytes_left, bytes, fn, date = tup
@@ -2710,9 +2700,9 @@ def build_file_list(id):
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
                         'bytes':"%.2f" % bytes,
-                        'age':age, 'id':str(n2), 'status':'queued'}
+                        'age':age, 'id':str(n), 'status':'queued'}
                 jobs.append(line)
-                n2+=1
+                n += 1
                 
     return jobs
 
@@ -2819,7 +2809,6 @@ def json_history(start=None, limit=None):
     #items = {}
     #items['history'],
     items, total_items = build_history(start=start, limit=limit, verbose=True)
-    status_lst = []
     #Compile the history data
 
     status_str = JsonWriter().write(items)
@@ -2829,7 +2818,7 @@ def json_history(start=None, limit=None):
     return status_str
 
 
-def json_list(section, keyw, lst, headers=True):
+def json_list(section, lst, headers=True):
     """Output a simple list as a JSON object
     """
 
@@ -2888,7 +2877,7 @@ class xml_factory():
             text += self.run(keyw, item)
         return text
     
-    def dict(self, keyw, lst, text = ''):
+    def dictn(self, keyw, lst, text = ''):
         for key in lst.keys():
             found = self.run(key,lst[key])
             if found:
@@ -2905,7 +2894,7 @@ class xml_factory():
 
     def list(self, keyw, lst, text = ''):
         #deal with lists
-        found = False
+        #found = False
         for cat in lst:
             if isinstance(cat, dict):
                 #debug = 'dict%s' % n
@@ -2916,9 +2905,6 @@ class xml_factory():
             elif isinstance(cat, tuple):
                 debug = 'tuple'
                 text += self.tuple(debug, cat) 
-                '''    found = self.run('slot', cat)
-                if found:
-                    text += found'''
             else:
                 text += '<item>%s</item>\n' % str(cat)
             
@@ -2929,7 +2915,7 @@ class xml_factory():
         
     def run(self, keyw, lst):
         if isinstance(lst, dict):
-            text = self.dict(keyw,lst) 
+            text = self.dictn(keyw,lst) 
         elif isinstance(lst, list):
             text = self.list(keyw,lst)
         elif isinstance(lst, tuple):
@@ -2941,7 +2927,7 @@ class xml_factory():
 
 def queueStatus(start, limit):
     #gather the queue details
-    info, pnfo_list, bytespersec, verboseList, nzo_pages, dict = build_queue(history=True, start=start, limit=limit)
+    info, pnfo_list, bytespersec, verboseList, nzo_pages, dictn = build_queue(history=True, start=start, limit=limit)
     text = '<?xml version="1.0" encoding="UTF-8" ?><queue> \n'
     
     #Use xmlmaker to make an xml string out of info which is a tuple that contains lists/strings/dictionaries
@@ -2957,7 +2943,7 @@ def queueStatus(start, limit):
 def queueStatusJson(start, limit):
     #gather the queue details
     info = {}
-    info['mainqueue'], pnfo_list, bytespersec, verboseList, nzo_pages, dict = build_queue(history=True, start=start, limit=limit, json_output=True)
+    info['mainqueue'], pnfo_list, bytespersec, verboseList, nzo_pages, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
 
     
     status_str = JsonWriter().write(info)
@@ -2966,8 +2952,16 @@ def queueStatusJson(start, limit):
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return status_str
 
-def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[], nzo_pages=[],
-                dict=[], history=False, start=None, limit=None, dummy2=None, json_output=False):
+def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[], pages=None,
+                dictionary=None, history=False, start=None, limit=None, dummy2=None, json_output=False):
+    if dictionary:
+        dictn = dictionary
+    else:
+        dictn = []
+    if pages:
+        nzo_pages = pages
+    else:
+        nzo_pages = []
     #build up header full of basic information
     info, pnfo_list, bytespersec = build_header(prim)
 
@@ -2985,8 +2979,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     datestart = datetime.datetime.now()
 
     if json_output:
-        info['script_list'] = json_list("scripts", "script", ListScripts(), headers=False)
-        info['cat_list'] = json_list("categories", "category", ListCats(), headers=False)
+        info['script_list'] = json_list("scripts", ListScripts(), headers=False)
+        info['cat_list'] = json_list("categories", ListCats(), headers=False)
     else:
         info['script_list'] = ListScripts()
         info['cat_list'] = ListCats()
@@ -3058,8 +3052,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         nzo_ids.append(nzo_id)
 
         if web_dir:#DONT WANT TO RUN THIS FOR XML OUTPUT#
-            if nzo_id not in dict:
-                dict[nzo_id] = NzoPage(web_dir, root, nzo_id, prim)
+            if nzo_id not in dictn:
+                dictn[nzo_id] = NzoPage(web_dir, root, nzo_id, prim)
                 nzo_pages.append(nzo_id)
             
         slot = {'index':n, 'nzo_id':str(nzo_id)}
@@ -3110,9 +3104,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             active = []
             queued = []
             if verbose or nzo_id in verboseList:#this will list files in the xml output, wanted yes/no?
-    
-                date_combined = 0
-                num_dates = 0
     
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
@@ -3167,9 +3158,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             for nzo_id in nzo_pages[:]:
                 if nzo_id not in nzo_ids:
                     nzo_pages.remove(nzo_id)
-                    dict.pop(nzo_id)
+                    dictn.pop(nzo_id)
 
-    return info, pnfo_list, bytespersec, verboseList, nzo_pages, dict
+    return info, pnfo_list, bytespersec, verboseList, nzo_pages, dictn
 
 def get_history():
     slotinfo = []

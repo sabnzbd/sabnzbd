@@ -163,12 +163,12 @@ def email_endjob(filename, cat, status, path, bytes, stages, script, script_outp
     ret = "No templates found"
     for temp in lst:
         if os.access(temp, os.R_OK):
-            template = Template(file=temp,
+            message = Template(file=temp,
                                 searchList=[parm],
                                 compilerSettings={'directiveStartToken': '<!--#',
                                                   'directiveEndToken': '#-->'})
-            ret = email_send(template.respond())
-            del template
+            ret = email_send(message.respond())
+            del message
     return ret
 
 

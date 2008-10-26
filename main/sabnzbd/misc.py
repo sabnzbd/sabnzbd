@@ -493,14 +493,14 @@ def create_real_path(name, loc, path, umask=None):
 
 def Get_User_ShellFolders():
     import _winreg
-    dict = {}
+    values = {}
 
     # Open registry hive
     try:
         hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
     except WindowsError:
         logging.error("Cannot connect to registry hive HKEY_CURRENT_USER.")
-        return dict
+        return values
 
     # Then open the registry key where Windows stores the Shell Folder locations
     try:
@@ -508,23 +508,23 @@ def Get_User_ShellFolders():
     except WindowsError:
         logging.error("Cannot open registry key Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders.")
         _winreg.CloseKey(hive)
-        return dict
+        return values
 
     try:
         for i in range(0, _winreg.QueryInfoKey(key)[1]):
             name, value, val_type = _winreg.EnumValue(key, i)
             try:
-                dict[name] = value.encode('latin-1')
+                values[name] = value.encode('latin-1')
             except:
                 try:
                     import win32api
-                    dict[name] = win32api.GetShortPathName(value)
+                    values[name] = win32api.GetShortPathName(value)
                 except:
-                    del dict[name]
+                    del values[name]
             i += 1
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
-        return dict
+        return values
     except WindowsError:
         # On error, return empty dict.
         logging.error("Failed to read registry keys for special folders")
@@ -537,20 +537,20 @@ def Get_User_ShellFolders():
 # save_configfile
 #
 ################################################################################
-def save_configfile(cfg):
+def save_configfile(config):
     """Save configuration to disk
     """
     try:
-        cfg.write()
-        f = open(cfg.filename)
+        config.write()
+        f = open(config.filename)
         x = f.read()
         f.close()
-        f = open(cfg.filename, "w")
+        f = open(config.filename, "w")
         f.write(x)
         f.flush()
         f.close()
     except:
-        Panic('Cannot write to configuration file "%s".' % cfg.filename, \
+        Panic('Cannot write to configuration file "%s".' % config.filename, \
               'Make sure file is writable and in a writable folder.')
         ExitSab(2)
 
@@ -795,7 +795,7 @@ def from_units(val):
         except:
             return 0.0
     else:
-        return 0
+        return 0.0
 
 def to_units(val):
     """ Convert number to K/M/G/T/P notation

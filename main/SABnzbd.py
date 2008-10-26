@@ -517,8 +517,8 @@ def main():
 
     if fork:
         try:
-            sys.stderr.fileno
-            sys.stdout.fileno
+            x= sys.stderr.fileno
+            x= sys.stdout.fileno
             my_logpath = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
             ol_path = os.path.join(my_logpath, DEF_LOG_ERRFILE)
             out_log = file(ol_path, 'a+', 0)
@@ -531,8 +531,8 @@ def main():
 
     else:
         try:
-            sys.stderr.fileno
-            sys.stdout.fileno
+            x= sys.stderr.fileno
+            x= sys.stdout.fileno
 
             if consoleLogging:
                 console = logging.StreamHandler()
@@ -741,8 +741,8 @@ def main():
             sabnzbd.WEBLOGFILE = os.path.join(log_dir, DEF_LOG_CHERRY);
         if not fork:
             try:
-                sys.stderr.fileno
-                sys.stdout.fileno
+                x= sys.stderr.fileno
+                x= sys.stdout.fileno
                 cherrylogtoscreen = True
             except:
                 cherrylogtoscreen = False
@@ -845,8 +845,6 @@ else:
                     logging.info('[osx] application terminating')
                     sabApp.stop()
                     return NSTerminateNow
-
-            from threading import Thread
 
             class startApp(Thread):
                 def __init__(self):
