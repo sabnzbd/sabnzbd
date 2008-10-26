@@ -1,7 +1,7 @@
-<a href="$helpuri/Configure+Newzbin" id="help">Help</a><h3>Newzbin settings</h3>
+<a href="$helpuri/Configure+Newzbin" id="help">Help</a><h3>Newzbin</h3>
 <form class="cmxform" >
 
-If you have an account at www.newzbin.com, you can enter your account info here.<br/>
+If you have an account at <strong>www.newzbin.com</strong>, you can enter your account info here.<br/>
 This will unlock extra functionality.<br/>
 <br/>
 <div class="EntryBlock">
@@ -57,6 +57,31 @@ This will unlock extra functionality.<br/>
 
 
 </div>
+
+<br/><hr/>
+<h3>NzbMatrix</h3><br/>
+
+If you have an account at <strong>www.nzbmatrix.com</strong>, you can enter your account info here.<br/>
+This is required if you want to use the RSS feeds of this site.<br/>
+<br/>
+<div class="EntryBlock">
+
+
+<fieldset class="EntryFieldSet">
+<legend>Account info</legend>
+ <hr />
+            <label class="label">Username:</label>
+            <input type="text" name="username_matrix" value="$username_matrix">
+            <span class="tips">Set your username here.</span>
+        <br class="clear" />
+
+
+            <label class="label">Password:</label>
+            <input type="password" name="password_matrix" value="$password_matrix">
+            <span class="tips">Set your password here.</span>
+        <br class="clear" />
+</fieldset>
+
 <p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/newzbin/saveNewzbin', 'submitstatus')">
 <span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
 <a class="config" onClick="getBookmarks();">Get bookmarks now</a>

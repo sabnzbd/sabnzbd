@@ -6,8 +6,8 @@
 <!--#set global $submenu="newzbin"#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
-<h2>Newzbin settings</h2>
-If you have an account at www.newzbin.com, you can enter your account info here.<br/>
+<h2>Newzbin</h2>
+If you have an account at <strong>www.newzbin.com</strong>, you can enter your account info here.<br/>
 This will unlock extra functionality.<br/>
 <br/>
 <form action="saveNewzbin" method="post">
@@ -55,6 +55,30 @@ In minutes (at least 15 min).<br>
     <!--#end for#-->
     </fieldset>
 <!--#end if#-->
+<p><input type="submit" value="Save Changes"></p>
+</form>
+
+<hr/>
+
+<h2>NzbMatrix</h2>
+If you have an account at <strong>www.nzbmatrix.com</strong>, you can enter your account info here.<br/>
+This is required if you want to use the RSS feeds of this site.<br/>
+<br/>
+
+<form action="saveMatrix" method="post">
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>Account info</legend>
+<strong>Username:</strong><br>
+Set your username here.<br>
+<input type="text" name="username_matrix" value="$username_matrix">
+<br>
+<br>
+<strong>Password:</strong><br>
+Set your password here.<br>
+<input type="password" name="password_matrix" value="$password_matrix">
+</fieldset>
+</div>
 <p><input type="submit" value="Save Changes"></p>
 </form>
 

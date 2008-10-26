@@ -2,7 +2,9 @@
 <!--#set global $help_uri="Configure+Newzbin"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-			<div align="center"><small>If you have an account at <a href="https://www.newzbin.com" target="_blakn">www.newzbin.com</a>, you can enter your account info here; this will unlock extra functionality.</small></div>
+			<div align="center"><small>If you have an account at <a href="https://www.newzbin.com" target="_blank">www.newzbin.com</a>, you can enter your account info here; this will unlock extra functionality.</small></div>
+			<div align="center"><small>If you have an account at <a href="https://www.nzbmatrix.com" target="_blank">www.nzbmatrix.com</a>, you can enter your account info here.
+            This is required if you want to use the RSS feeds of this site.</small></div>
 	
 			<form action="saveNewzbin" method="post" name="fullform">
 			<div class="EntryBlock">
@@ -27,7 +29,7 @@
 			<div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 				
-				<legend id="configbox_bookmark_processing">Bookmark&nbsp;Processing</legend>
+				<legend id="configbox_bookmark_processing">Newzbin&nbsp;Bookmark&nbsp;Processing</legend>
 				
 				<input type="checkbox" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> />
 				<strong>Auto Fetch Bookmarks</strong><br/>
@@ -66,7 +68,24 @@
 				
 			</fieldset>
 			<!--#end if#-->
+			<div class="EntryBlock">
+			<fieldset class="EntryFieldSet">
+				
+				<legend id="configbox_newzbin_account_info">NzbMatrix&nbsp;Account&nbsp;Info</legend>
+				
+				<strong style="color:white;background-color:green;">&nbsp;Optional&nbsp;</strong><br/><br/>
+				
+				<strong>Username:</strong><br/>
+				<small>Set your NzbMatrix username here.</small><br/>
+				<input type="text" name="username_matrix" value="$username_matrix"/>
+				
+				<br/><br/>
+				<strong>Password:</strong><br/>
+				<small>Set your NzbMatrix password here.</small><br/>
+				<input type="password" name="password_matrix" value="$password_matrix"/>
+				
+			</fieldset>
+			</div>
+            </form>
 			
-			</form>
-		
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

@@ -53,7 +53,7 @@ from sabnzbd.misc import real_path, create_real_path, save_configfile, \
      decodePassword, encodePassword
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.newzbin import InitCats, IsNewzbin
+import sabnzbd.newzbin as newzbin
 from sabnzbd.codecs import TRANS, xml_name
 
 from sabnzbd.constants import *
@@ -1824,6 +1824,9 @@ class ConfigNewzbin(ProtectedClass):
 
         config['bookmarks_list'] = self.__bookmarks
 
+        config['username_matrix'] = sabnzbd.CFG['nzbmatrix']['username']
+        config['password_matrix'] = '*' * len(decodePassword(sabnzbd.CFG['nzbmatrix']['password'], 'password_matrix'))
+
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             searchList=[config],
                             compilerSettings={'directiveStartToken': '<!--#',
@@ -1833,7 +1836,8 @@ class ConfigNewzbin(ProtectedClass):
     @cherrypy.expose
     def saveNewzbin(self, username_newzbin = None, password_newzbin = None,
                     create_category_folders = None, newzbin_bookmarks = None,
-                    newzbin_unbookmark = None, bookmark_rate = None, _dc = None):
+                    newzbin_unbookmark = None, bookmark_rate = None,
+                    username_matrix = None, password_matrix = None, _dc = None):
 
         sabnzbd.CFG['newzbin']['username'] = Strip(username_newzbin)
         if (not password_newzbin) or (password_newzbin and password_newzbin.strip('*')):
@@ -1843,16 +1847,37 @@ class ConfigNewzbin(ProtectedClass):
         sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
         sabnzbd.CFG['newzbin']['bookmark_rate'] = sabnzbd.minimax(bookmark_rate, 15, 24*60)
 
-        return saveAndRestart(self.__root, _dc)
+        if Strip(username_matrix):
+            sabnzbd.CFG['nzbmatrix']['username'] = Strip(username_matrix)
+            if (not password_matrix) or (password_matrix and password_matrix.strip('*')):
+                sabnzbd.CFG['nzbmatrix']['password'] = encodePassword(password_matrix)
+
+        save_configfile(sabnzbd.CFG)
+        sabnzbd.init_newzbin()
+        # Enable/disable Bookmark schedule
+        scheduler.restart()
+        raise Raiser(self.__root, _dc=_dc)
+
+    @cherrypy.expose
+    def saveMatrix(self, username_matrix = None, password_matrix = None, _dc = None):
+
+        sabnzbd.CFG['nzbmatrix']['username'] = Strip(username_matrix)
+        if (not password_matrix) or (password_matrix and password_matrix.strip('*')):
+            sabnzbd.CFG['nzbmatrix']['password'] = encodePassword(password_matrix)
+
+        save_configfile(sabnzbd.CFG)
+        sabnzbd.init_newzbin()
+        raise Raiser(self.__root, _dc=_dc)
+
 
     @cherrypy.expose
     def getBookmarks(self, _dc = None):
-        sabnzbd.getBookmarksNow()
+        newzbin.getBookmarksNow()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def showBookmarks(self, _dc = None):
-        self.__bookmarks = sabnzbd.getBookmarksList()
+        self.__bookmarks = newzbin.getBookmarksList()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -1963,7 +1988,7 @@ class ConfigCats(ProtectedClass):
 
     @cherrypy.expose
     def init_newzbin(self, _dc = None):
-        InitCats()
+        newzbin.InitCats()
         save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 

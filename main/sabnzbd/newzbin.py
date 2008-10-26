@@ -44,9 +44,83 @@ from sabnzbd.nzbstuff import CatConvert
 from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
 
-# Regex to find msgid in the Bookmarks page
-RE_BOOKMARK = re.compile(r'<a href="/browse/post/(\d+)/">')
+################################################################################
+# BOOKMARK Wrappers
+################################################################################
 
+__BOOKMARKS = None
+
+def bookmarks_init():
+    global __BOOKMARKS
+    if not __BOOKMARKS:
+        __BOOKMARKS = Bookmarks()
+
+
+def bookmarks_save():
+    global __BOOKMARKS
+    if __BOOKMARKS:
+        __BOOKMARKS.save()
+
+
+def getBookmarksNow():
+    global __BOOKMARKS
+    if __BOOKMARKS:
+        __BOOKMARKS.run()
+
+
+def getBookmarksList():
+    global __BOOKMARKS
+    if __BOOKMARKS:
+        return __BOOKMARKS.bookmarksList()
+
+
+def delete_bookmark(msgid):
+    global __BOOKMARKS
+    if __BOOKMARKS and sabnzbd.NEWZBIN_BOOKMARKS and sabnzbd.NEWZBIN_UNBOOKMARK:
+        __BOOKMARKS.del_bookmark(msgid)
+
+
+################################################################################
+# Msgid Grabber Wrappers
+################################################################################
+__MSGIDGRABBER = None
+
+def init_grabber():
+    global __MSGIDGRABBER
+    if __MSGIDGRABBER:
+        __MSGIDGRABBER.__init__()
+    else:
+        __MSGIDGRABBER = MSGIDGrabber()
+
+
+def start_grabber():
+    global __MSGIDGRABBER
+    if __MSGIDGRABBER:
+        logging.debug('[%s] Starting msgidgrabber', __NAME__)
+        __MSGIDGRABBER.start()
+
+
+def stop_grabber():
+    global __MSGIDGRABBER
+    if __MSGIDGRABBER:
+        logging.debug('Stopping msgidgrabber')
+        __MSGIDGRABBER.stop()
+        try:
+            __MSGIDGRABBER.join()
+        except:
+            pass
+
+
+def grab(msgid, future_nzo):
+    global __MSGIDGRABBER
+    if __MSGIDGRABBER:
+        __MSGIDGRABBER.grab(msgid, future_nzo)
+
+
+
+################################################################################
+# Category support
+################################################################################
 
 def InitCats():
     """ Initialise categories with newzbin categories """
@@ -60,22 +134,14 @@ def InitCats():
         cfg[lcat]['dir'] = cat
 
 
-def IsNewzbin(uri):
-    """ Return True if URI points to newzbin.com """
-    return uri.find('newzbin') > 0 or uri.find('newzxxx') > 0
-
-
-
 ################################################################################
 # DirectNZB support
 ################################################################################
 
 class MSGIDGrabber(Thread):
     """ Thread for msgid-grabber queue """
-    def __init__(self, nzbun, nzbpw):
+    def __init__(self):
         Thread.__init__(self)
-        self.nzbun = nzbun
-        self.nzbpw = nzbpw
         self.queue = Queue.Queue()
         for tup in sabnzbd.NZBQ.get_msgids():
             self.queue.put(tup)
@@ -106,7 +172,7 @@ class MSGIDGrabber(Thread):
                     break
             logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
 
-            filename, data, newzbin_cat = _grabnzb(msgid, self.nzbun, self.nzbpw)
+            filename, data, newzbin_cat = _grabnzb(msgid)
             if filename and data:
                 filename = name_fixer(filename)
 
@@ -139,7 +205,7 @@ class MSGIDGrabber(Thread):
         logging.debug('[%s] Stopping MSGIDGrabber', __NAME__)
 
 
-def _grabnzb(msgid, username_newzbin, password_newzbin):
+def _grabnzb(msgid):
     """ Grab one msgid from newzbin """
 
     nothing  = (None, None, None)
@@ -156,7 +222,7 @@ def _grabnzb(msgid, username_newzbin, password_newzbin):
         else:
             conn = httplib.HTTPConnection('www.newzbin.com')
 
-        postdata = { 'username': username_newzbin, 'password': password_newzbin, 'reportid': msgid }
+        postdata = { 'username': sabnzbd.USERNAME_NEWZBIN, 'password': sabnzbd.PASSWORD_NEWZBIN, 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
 
         headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -248,9 +314,7 @@ BOOK_LOCK = Lock()
 class Bookmarks:
     """ Get list of bookmarks from www.newzbin.com
     """
-    def __init__(self, username, password):
-        self.username = username
-        self.password = password
+    def __init__(self):
         self.bookmarks = sabnzbd.load_data(BOOKMARK_FILE_NAME)
         if not self.bookmarks:
             self.bookmarks = []
@@ -269,11 +333,11 @@ class Bookmarks:
 
             if delete:
                 logging.info('[%s] Deleting Newzbin bookmark %s', __NAME__, delete)
-                postdata = { 'username': self.username, 'password': self.password, 'action': 'delete', \
+                postdata = { 'username': sabnzbd.USERNAME_NEWZBIN, 'password': sabnzbd.PASSWORD_NEWZBIN, 'action': 'delete', \
                              'reportids' : delete }
             else:
                 logging.info('[%s] Fetching Newzbin bookmarks', __NAME__)
-                postdata = { 'username': self.username, 'password': self.password, 'action': 'fetch'}
+                postdata = { 'username': sabnzbd.USERNAME_NEWZBIN, 'password': sabnzbd.PASSWORD_NEWZBIN, 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
     
             headers['Content-type'] = 'application/x-www-form-urlencoded'

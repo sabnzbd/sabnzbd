@@ -46,10 +46,11 @@ from sabnzbd.assembler import Assembler
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
-from sabnzbd.newzbin import Bookmarks, MSGIDGrabber, InitCats
-from sabnzbd.misc import URLGrabber, DirScanner, real_path, \
+import sabnzbd.newzbin as newzbin
+from sabnzbd.misc import DirScanner, real_path, \
                          create_real_path, check_latest_version, from_units, SameFile, decodePassword, \
                          ProcessArchiveFile, ProcessSingleFile
+from sabnzbd.urlgrabber import URLGrabber
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
@@ -109,6 +110,8 @@ RSS_RATE = None
 
 USERNAME_NEWZBIN = None
 PASSWORD_NEWZBIN = None
+USERNAME_MATRIX = None
+PASSWORD_MATRIX = None
 
 CACHE_DIR = None
 NZB_BACKUP_DIR = None
@@ -131,12 +134,11 @@ DIRSCAN_PRIORITY = 0
 POSTPROCESSOR = None
 ASSEMBLER = None
 DIRSCANNER = None
-MSGIDGRABBER = None
+
 ARTICLECACHE = None
 DOWNLOADER = None
 NZBQ = None
 BPSMETER = None
-BOOKMARKS = None
 
 EMAIL_SERVER = None
 EMAIL_TO = None
@@ -307,6 +309,23 @@ def check_setting_str(config, cfg_name, item_name, def_val, log = True):
 ################################################################################
 # Initializing                                                                 #
 ################################################################################
+def init_newzbin():
+    global USERNAME_NEWZBIN, PASSWORD_NEWZBIN, \
+           USERNAME_MATRIX, PASSWORD_MATRIX, \
+           NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE
+
+    USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
+    PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
+    NEWZBIN_BOOKMARKS = bool(check_setting_int(CFG, 'newzbin', 'bookmarks', 0))
+    NEWZBIN_UNBOOKMARK = bool(check_setting_int(CFG, 'newzbin', 'unbookmark', 0))
+
+    BOOKMARK_RATE = check_setting_int(CFG, 'newzbin', 'bookmark_rate', 60)
+    BOOKMARK_RATE = minimax(BOOKMARK_RATE, 15, 24*60)
+
+    USERNAME_MATRIX = check_setting_str(CFG, 'nzbmatrix', 'username', '')
+    PASSWORD_MATRIX = decodePassword(check_setting_str(CFG, 'nzbmatrix', 'password', '', False), 'web')
+
+
 INIT_LOCK = Lock()
 
 @synchronized(INIT_LOCK)
@@ -314,7 +333,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, PAR_OPTION, CLEANUP_LIST, IGNORE_SAMPLES, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
-           DIRSCANNER, MSGIDGRABBER, URLGRABBER, NZBQ, DOWNLOADER, BOOKMARKS, \
+           USERNAME_MATRIX, PASSWORD_MATRIX, \
+           DIRSCANNER, URLGRABBER, NZBQ, DOWNLOADER, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
            SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_DIR, DIRSCAN_PP, \
@@ -339,12 +359,12 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     CheckSection('misc')
     CheckSection('logging')
     CheckSection('newzbin')
+    CheckSection('nzbmatrix')
     CheckSection('servers')
     CheckSection('rss')
     catsDefined = CheckSection('categories')
 
-    USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
-    PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
+    init_newzbin()
 
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
 
@@ -390,13 +410,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         logging.error("Permissions (%s) not correct, use OCTAL notation!", UMASK)
 
     SEND_GROUP = bool(check_setting_int(CFG, 'misc', 'send_group', 0))
-
-    NEWZBIN_BOOKMARKS = bool(check_setting_int(CFG, 'newzbin', 'bookmarks', 0))
-
-    NEWZBIN_UNBOOKMARK = bool(check_setting_int(CFG, 'newzbin', 'unbookmark', 0))
-
-    BOOKMARK_RATE = check_setting_int(CFG, 'newzbin', 'bookmark_rate', 60)
-    BOOKMARK_RATE = minimax(BOOKMARK_RATE, 15, 24*60)
 
     CREATE_CAT_FOLDERS = False #bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
 
@@ -513,17 +526,13 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
 
     if not catsDefined:
-        InitCats()
+        newzbin.InitCats()
 
     ############################
     ## Object initializiation ##
     ############################
 
-    if NEWZBIN_BOOKMARKS:
-        if BOOKMARKS:
-            BOOKMARKS.__init__(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
-        else:
-            BOOKMARKS = Bookmarks(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+    newzbin.bookmarks_init()
 
     need_rsstask = rss.init()
     scheduler.init()
@@ -572,10 +581,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     elif DIRSCAN_DIR:
         DIRSCANNER = DirScanner(DIRSCAN_DIR, dirscan_speed)
 
-    if MSGIDGRABBER:
-        MSGIDGRABBER.__init__(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
-    elif USERNAME_NEWZBIN:
-        MSGIDGRABBER = MSGIDGrabber(USERNAME_NEWZBIN, PASSWORD_NEWZBIN)
+    newzbin.init_grabber()
 
     if URLGRABBER:
         URLGRABBER.__init__()
@@ -598,7 +604,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 @synchronized(INIT_LOCK)
 def start():
     global __INITIALIZED__, ASSEMBLER, DOWNLOADER, DIRSCANNER, \
-           MSGIDGRABBER, URLGRABBER, DIRSCAN_DIR, USERNAME_NEWZBIN
+           URLGRABBER, DIRSCAN_DIR
 
     if __INITIALIZED__:
         logging.debug('[%s] Starting postprocessor', __NAME__)
@@ -616,9 +622,7 @@ def start():
             logging.debug('[%s] Starting dirscanner', __NAME__)
             DIRSCANNER.start()
 
-        if MSGIDGRABBER and USERNAME_NEWZBIN:
-            logging.debug('[%s] Starting msgidgrabber', __NAME__)
-            MSGIDGRABBER.start()
+        newzbin.start_grabber()
 
         if URLGRABBER:
             logging.debug('[%s] Starting urlgrabber', __NAME__)
@@ -626,7 +630,7 @@ def start():
 
 @synchronized(INIT_LOCK)
 def halt():
-    global __INITIALIZED__, BOOKMARKS, URLGRABBER, MSGIDGRABBER, DIRSCANNER, \
+    global __INITIALIZED__, URLGRABBER, DIRSCANNER, \
            DOWNLOADER, ASSEMBLER, POSTPROCESSOR
 
     if __INITIALIZED__:
@@ -634,8 +638,7 @@ def halt():
 
         rss.stop()
 
-        if BOOKMARKS:
-            BOOKMARKS.save()
+        newzbin.bookmarks_save()
 
         if URLGRABBER:
             logging.debug('Stopping URLGrabber')
@@ -645,13 +648,7 @@ def halt():
             except:
                 pass
 
-        if MSGIDGRABBER:
-            logging.debug('Stopping msgidgrabber')
-            MSGIDGRABBER.stop()
-            try:
-                MSGIDGRABBER.join()
-            except:
-                pass
+        newzbin.stop_grabber()
 
         if DIRSCANNER:
             logging.debug('Stopping dirscanner')
@@ -914,18 +911,21 @@ def purge_articles(articles):
 ## Misc Wrappers                                                              ##
 ################################################################################
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
+    global USERNAME_NEWZBIN, PASSWORD_NEWZBIN
+
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
-    if MSGIDGRABBER:
+
+    if USERNAME_NEWZBIN and PASSWORD_NEWZBIN:
         logging.info('[%s] Fetching msgid %s from www.newzbin.com',
                      __NAME__, msgid)
         msg = "fetching msgid %s from www.newzbin.com" % msgid
     
         future_nzo = NZBQ.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority)
     
-        MSGIDGRABBER.grab(msgid, future_nzo)
+        newzbin.grab(msgid, future_nzo)
     else:
         logging.error('[%s] Error Fetching msgid %s from www.newzbin.com - Please make sure your Username and Password are set',
                              __NAME__, msgid)    
@@ -958,8 +958,7 @@ def save_state():
 
     rss.save()
 
-    if BOOKMARKS:
-        BOOKMARKS.save()
+    newzbin.bookmarks_save()
 
     if DIRSCANNER:
         DIRSCANNER.save()
@@ -1190,18 +1189,6 @@ def delayed():
         return DOWNLOADER.delayed
     except:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
-
-def getBookmarksNow():
-    if BOOKMARKS:
-        BOOKMARKS.run()
-
-def getBookmarksList():
-    if BOOKMARKS:
-        return BOOKMARKS.bookmarksList()
-
-def delete_bookmark(msgid):
-    if BOOKMARKS and NEWZBIN_BOOKMARKS and NEWZBIN_UNBOOKMARK:
-        BOOKMARKS.del_bookmark(msgid)
 
 
 def system_shutdown():

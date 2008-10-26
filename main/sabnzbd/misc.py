@@ -24,9 +24,6 @@ import os
 import sys
 import time
 import logging
-import Queue
-import sabnzbd
-import cherrypy
 import urllib
 import re
 import zipfile
@@ -43,6 +40,8 @@ except:
     HAVE_FOUNDATION = False
 
 from threading import *
+
+import sabnzbd
 from sabnzbd.decorators import *
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.constants import *
@@ -168,9 +167,9 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 except:
                     zf.close()
                     return -1
+                name = re.sub(r'\[.*nzbmatrix.com\]', '', name)
                 name = os.path.basename(name)
                 name = sanitize_filename(name)
-                name = name.replace('[nzbmatrix.com]','')
                 if data:
                     try:
                         nzo = NzbObject(name, pp, script, data, cat=cat, priority=priority)
@@ -216,7 +215,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         f.close()
     except:
         logging.warning('[%s] Cannot read %s', __NAME__, path)
-        return False
+        return -2
 
     _cat, name, _pp, _script = Cat2OptsDef(name, catdir)
     if cat == None: cat = _cat
@@ -398,93 +397,6 @@ class DirScanner(Thread):
                     if os.path.isdir(dpath) and dd.lower() in sabnzbd.CFG['categories']:
                         run_dir(dpath, dd.lower())
 
-
-#------------------------------------------------------------------------------
-class URLGrabber(Thread):
-    def __init__(self):
-        Thread.__init__(self)
-        self.queue = Queue.Queue()
-        for tup in sabnzbd.NZBQ.get_urls():
-            self.queue.put(tup)
-        self.shutdown = False
-
-    def add(self, url, future_nzo):
-        """ Add an URL to the URLGrabber queue """
-        self.queue.put((url, future_nzo))
-
-    def stop(self):
-        logging.info('[%s] URLGrabber shutting down', __NAME__)
-        self.shutdown = True
-        self.queue.put((None, None))
-
-    def run(self):
-        logging.info('[%s] URLGrabber starting up', __NAME__)
-        self.shutdown = False
-
-        while not self.shutdown:
-            (url, future_nzo) = self.queue.get()
-            if not url:
-                continue
-
-            # If nzo entry deleted, give up
-            try:
-                deleted = future_nzo.deleted
-            except:
-                deleted = True
-            if deleted:
-                logging.debug('[%s] Dropping URL %s, job entry missing', __NAME__, url)
-                continue
-
-            try:
-                logging.info('[%s] Grabbing URL %s', __NAME__, url)
-                opener = urllib.FancyURLopener({})
-                opener.prompt_user_passwd = None
-                opener.addheader('Accept-encoding','gzip')
-                fn, header = opener.retrieve(url)
-
-                filename, data = (None, None)
-
-                for tup in header.items():
-                    for item in tup:
-                        if "filename=" in item:
-                            filename = item[item.index("filename=") + 9:].strip('"')
-                            break
-
-                if not filename:
-                    filename = os.path.basename(url)
-                else:
-                    filename = sanitize_filename(filename)
-                _r, _u, _d = future_nzo.get_repair_opts()
-                pp = sabnzbd.opts_to_pp(_r, _u, _d)
-                script = future_nzo.get_script()
-                cat = future_nzo.get_cat()
-                priority = future_nzo.get_priority()
-                cat, pp, script = Cat2Opts(cat, pp, script)
-
-
-                if os.path.splitext(filename)[1].lower() == '.nzb':
-                    res = ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority)
-                    if res == 0:
-                        sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
-                    elif res == -2:
-                        self.add(url, future_nzo)
-                    else:
-                        BadFetch(future_nzo, url, retry=False)
-                else:
-                    if ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
-                        sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
-                    else:
-                        try:
-                            os.remove(fn)
-                        except:
-                            pass
-                        BadFetch(future_nzo, url, retry=False, archive=True)
-
-            except:
-                BadFetch(future_nzo, url, retry=True)
-
-            # Don't pound the website!
-            time.sleep(1.0)
 
 
 ################################################################################

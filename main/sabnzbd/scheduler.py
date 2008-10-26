@@ -29,6 +29,7 @@ import time
 
 from sabnzbd.utils.kronos import ThreadedScheduler
 import sabnzbd.rss as rss
+import sabnzbd.newzbin as newzbin
 import sabnzbd.misc
 
 
@@ -119,7 +120,7 @@ def init():
                 h = int(at/60)
                 m = at - h*60
                 logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
-                __SCHED.addDaytimeTask(bookmarks.run, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
+                __SCHED.addDaytimeTask(newzbin.getBookmarksNow, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
 
 
 
