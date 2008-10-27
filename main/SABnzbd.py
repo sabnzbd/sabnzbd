@@ -602,22 +602,22 @@ def main():
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
     else:
-        logging.error("unrar binary... NOT found")
+        logging.warning("unrar binary... NOT found")
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
     else:
-        logging.error("unzip binary... NOT found!")
+        logging.warning("unzip binary... NOT found!")
 
     if os.name != 'nt':
         if sabnzbd.newsunpack.NICE_COMMAND:
             logging.info("nice binary... found (%s)", sabnzbd.newsunpack.NICE_COMMAND)
         else:
-            logging.error("nice binary... NOT found!")
+            logging.info("nice binary... NOT found!")
         if sabnzbd.newsunpack.IONICE_COMMAND:
             logging.info("ionice binary... found (%s)", sabnzbd.newsunpack.IONICE_COMMAND)
         else:
-            logging.error("ionice binary... NOT found!")
+            logging.info("ionice binary... NOT found!")
 
     if sabnzbd.newswrapper.HAVE_SSL:
         logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
