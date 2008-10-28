@@ -79,14 +79,14 @@ def Cat2Opts(cat, pp, script):
     if not pp:
         try:
             pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
-            logging.debug('[%s] Job %s gets options %s', __NAME__, name, pp)
+            logging.debug('[%s] Job gets options %s', __NAME__, pp)
         except:
             pp = sabnzbd.DIRSCAN_PP
 
     if not script:
         try:
             script = sabnzbd.CFG['categories'][cat.lower()]['script']
-            logging.debug('[%s] Job %s gets script %s', __NAME__, name, script)
+            logging.debug('[%s] Job gets script %s', __NAME__, script)
         except:
             script = sabnzbd.DIRSCAN_SCRIPT
 
@@ -152,7 +152,9 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         return 1
 
     status = 1
-    for name in zf.namelist():
+    names = zf.namelist()
+    names.sort()
+    for name in names:
         name = name.lower()
         if not (name.endswith('.nzb') or name.endswith('.nfo') or name.endswith('/')):
             status = 1
@@ -160,7 +162,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         elif name.endswith('.nzb'):
             status = 0
     if status == 0:
-        for name in zf.namelist():
+        for name in names:
             if name.lower().endswith('.nzb'):
                 try:
                     data = zf.read(name)
