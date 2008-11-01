@@ -702,7 +702,8 @@ def launch_a_browser(url):
 #     <current-final-release>
 #     <url-of-current-final-release>
 #     <latest-beta-or-rc>
-# The latter line is only present when a beta/rc is available.
+#     <url-of-latest-beta/rc-release>
+# The latter two lines are only present when a beta/rc is available.
 # Formula for the version numbers (line 1 and 3).
 # - <major>.<minor>.<bugfix>[rc|beta]<cand>
 #
@@ -761,6 +762,11 @@ def check_latest_version():
         latest_testlabel = data.split()[2]
     except:
         latest_testlabel = ''
+    try:
+        url_beta = data.split()[3]
+    except:
+        url_beta = url
+
 
     latest, dummy = ConvertVersion(latest_label) 
     latest_test, dummy = ConvertVersion(latest_testlabel)
@@ -772,7 +778,7 @@ def check_latest_version():
     elif current < latest:
         sabnzbd.NEW_VERSION = "%s;%s" % (latest_label, url)
     elif testver and current < latest_test:
-        sabnzbd.NEW_VERSION = "%s;%s" % (latest_testlabel, url)
+        sabnzbd.NEW_VERSION = "%s;%s" % (latest_testlabel, url_beta)
 
 
 def from_units(val):
