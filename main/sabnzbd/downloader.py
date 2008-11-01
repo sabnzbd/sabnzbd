@@ -151,6 +151,7 @@ class Downloader(Thread):
 
         self.servers = []
 
+        primary = False
         for server in servers:
             srv = servers[server]
             enabled = True #bool(GetParmInt(srv, 'enable', 1))
@@ -162,6 +163,7 @@ class Downloader(Thread):
 
             threads = GetParmInt(srv, 'connections', 1)
             fillserver = bool(GetParmInt(srv, 'fillserver', 0))
+            primary = primary or (enabled and (not fillserver) and (threads > 0))
             ssl = bool(GetParmInt(srv, 'ssl', 0))
             username = GetParm(srv, 'username')
             password = decodePassword(GetParm(srv, 'password'), 'server')
@@ -169,6 +171,9 @@ class Downloader(Thread):
             if enabled and host and port and threads:
                 self.servers.append(Server(host, port, timeout, threads, fillserver, ssl,
                                            username, password))
+
+        if (not primary):
+            logging.warning('[%s] No active primary servers defined, will not download!', __NAME__)
 
         self.servers = tuple(self.servers)
 
