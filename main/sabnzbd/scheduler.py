@@ -78,10 +78,9 @@ def init():
             arguments = []
         elif action_name == 'speedlimit' and arguments != []:
             action = sabnzbd.limit_speed
-        elif action_name == 'speedlimit':
-            continue
         else:
-            logging.warning("[%s] Unknown action: %s", __NAME__, ACTION)
+            logging.warning("[%s] Unknown action: %s", __NAME__, action_name)
+            continue
 
         logging.debug("[%s] scheduling action:%s arguments:%s",__NAME__, action_name, arguments)
 
@@ -89,38 +88,38 @@ def init():
         __SCHED.addDaytimeTask(action, '', d, None, (h, m),
                              __SCHED.PM_SEQUENTIAL, arguments)
 
-        if need_rsstask:
-            d = range(1, 8) # all days of the week
-            interval = sabnzbd.RSS_RATE
-            ran_m = random.randint(0,interval-1)
-            for n in range(0, 24*60, interval):
-                at = n + ran_m
-                h = int(at/60)
-                m = at - h*60
-                logging.debug("Scheduling RSS task %s %s:%s", d, h, m)
-                __SCHED.addDaytimeTask(rss.run_method, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
+    if need_rsstask:
+        d = range(1, 8) # all days of the week
+        interval = sabnzbd.RSS_RATE
+        ran_m = random.randint(0,interval-1)
+        for n in range(0, 24*60, interval):
+            at = n + ran_m
+            h = int(at/60)
+            m = at - h*60
+            logging.debug("Scheduling RSS task %s %s:%s", d, h, m)
+            __SCHED.addDaytimeTask(rss.run_method, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
 
 
-        if need_versioncheck:
-            # Check for new release, once per week on random time
-            m = random.randint(0, 59)
-            h = random.randint(0, 23)
-            d = (random.randint(1, 7), )
+    if need_versioncheck:
+        # Check for new release, once per week on random time
+        m = random.randint(0, 59)
+        h = random.randint(0, 23)
+        d = (random.randint(1, 7), )
 
-            logging.debug("Scheduling VersionCheck day=%s time=%s:%s", d, h, m)
-            __SCHED.addDaytimeTask(sabnzbd.misc.check_latest_version, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
+        logging.debug("Scheduling VersionCheck day=%s time=%s:%s", d, h, m)
+        __SCHED.addDaytimeTask(sabnzbd.misc.check_latest_version, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
 
 
-        if bookmarks:
-            d = range(1, 8) # all days of the week
-            interval = bookmark_rate
-            ran_m = random.randint(0,interval-1)
-            for n in range(0, 24*60, interval):
-                at = n + ran_m
-                h = int(at/60)
-                m = at - h*60
-                logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
-                __SCHED.addDaytimeTask(newzbin.getBookmarksNow, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
+    if bookmarks:
+        d = range(1, 8) # all days of the week
+        interval = bookmark_rate
+        ran_m = random.randint(0,interval-1)
+        for n in range(0, 24*60, interval):
+            at = n + ran_m
+            h = int(at/60)
+            m = at - h*60
+            logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
+            __SCHED.addDaytimeTask(newzbin.getBookmarksNow, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
 
 
 
