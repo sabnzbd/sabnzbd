@@ -48,7 +48,8 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 	<thead>
     <tr>
 		<!--<th mochi:format="str"></th>-->
-		<th mochi:format="str" id="order">Order</th>
+		<th mochi:format="str" id="order"></th>
+        <th mochi:format="str">Priority</th>
         <!--#if $script_list#--><th>Script</th><!--#end if#-->
         <!--#if $cat_list#--><th>Category</th><!--#end if#-->
 		<th mochi:format="str">Name</th>
@@ -57,6 +58,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
         <th mochi:format="str">Timeleft</th>
 		<th mochi:format="str">ETA</th>
 		<th mochi:format="str">Age</th>
+        <th mochi:format="str"></th>
 	</tr>
 	</thead>
 	<tfoot class="invisible">
@@ -70,9 +72,9 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
     <!--#set $odd = False#-->
     <!--#for $slot in $slotinfo#-->
         <!--#set $odd = not $odd#-->
-        <tr id="$slot.nzo_id" class="<!--#if $odd then "odd" else "even"#-->">
+        <tr id="$slot.nzo_id" class="$slot.priority">
 		<!--<td><input type="checkbox" "></td>checked-->
-	<td>
+	<td class="actionTD">
 <form> 
 			
 
@@ -88,10 +90,23 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
                 <option value="$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
 			</select>
                 
-
-            <span class="del"> 
-			<a onClick="deletequeueitem('$slot.nzo_id');"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a>
+            <!--#if $slot.status == 'Paused'#-->
+            <a onClick="resumequeueitem('$slot.nzo_id');"><img class="resumeicon" src="static/images/control_play.png" /></a>
+            <!--#else#-->
+            <a onClick="pausequeueitem('$slot.nzo_id');"><img class="pauseicon" src="static/images/control_pause.png" /></a>            
+            <!--#end if#--> 
 			</form>
+            </td>
+            
+            <td>
+            <!--#if $slot.priority != '2'#-->
+            <form>
+            <select onchange="javascript:changequeuedetails('queue/set_priority?nzo_id=$slot.nzo_id&priority='+this.options[this.selectedIndex].value);">
+                    <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
+                    <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
+                    <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
+                </select></form>
+            <!--#end if#-->
             </td>
         <!--#if $script_list#-->            
 		<td>
@@ -115,6 +130,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
                 </select></form>
             </td>
             <!--#end if#-->
+            
 
         
 		<td>
@@ -133,6 +149,9 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 <td>$slot.timeleft</td>
 <td>$slot.eta</td>
 <td>$slot.avg_age</td>
+<td>
+<a onClick="deletequeueitem('$slot.nzo_id');"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a>
+</td>
         </tr>
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.finished#-->

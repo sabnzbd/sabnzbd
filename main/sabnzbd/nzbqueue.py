@@ -400,6 +400,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def set_priority(self, nzo_id, priority):
         try:
+            priority = int(priority)
             nzo = self.__nzo_table[nzo_id]
             nzo.set_priority(priority)
             nzo_id_pos1 = -1

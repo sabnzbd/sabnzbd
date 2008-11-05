@@ -85,9 +85,9 @@ border-color:#3a3a3a;
 color:white;
 }
 
-tr.evenLine, tr.oddLine {
-color:#777;
-}
+tr.High {background-color:#111;}
+tr.Normal {background-color:#222;}
+tr.Low {background-color:#333;}
 
 legend{color:white}
 .job_progress{background-color: #444;}

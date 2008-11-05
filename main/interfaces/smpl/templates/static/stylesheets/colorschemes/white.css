@@ -82,6 +82,6 @@ tr{background-color:#f5f5f5;}
 color:#fff;
 }
 
-tr.evenLine, tr.oddLine {
-color:#555;
-}
+tr.High {background-color:#ececec;}
+tr.Normal {background-color:#f5f5f5;}
+tr.Low {background-color:#fafafa;}

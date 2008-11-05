@@ -252,8 +252,8 @@ tr{background-color:#f5f5f5;}
 #finished{background-color:#ffd9d9;}
 #active{background-color:#deffd9;}
 #waiting{background-color:#ffffd9;}
-#order{width:112px;}
-#delicon{
+
+#delicon, .pauseicon, .resumeicon{
 border:none;
 color:#fff;
 display:inline;
@@ -306,3 +306,4 @@ overflow:auto;}
 #speedbox{width:36px;display:inline;}
 .small{font-size:10px;}
 #Keytable,#Keytable2,#Keytable3{display:none;}
+.actionTD{min-width:113px;}

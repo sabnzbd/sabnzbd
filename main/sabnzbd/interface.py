@@ -887,6 +887,23 @@ class QueuePage(ProtectedClass):
     def resume(self, _dc = None, start=None, limit=None):
         sabnzbd.resume_downloader()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+    
+    @cherrypy.expose
+    def pause_nzo(self, uid=None, _dc = None, start=None, limit=None):
+        items = uid.split(',')
+        sabnzbd.pause_multiple_nzo(items)
+        raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
+    
+    @cherrypy.expose
+    def resume_nzo(self, uid=None, _dc = None, start=None, limit=None):
+        items = uid.split(',')
+        sabnzbd.resume_multiple_nzo(items)
+        raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
+    
+    @cherrypy.expose
+    def set_priority(self, nzo_id=None, priority=None, _dc = None, start=None, limit=None):
+        sabnzbd.set_priority(nzo_id, priority)
+        raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def sort_by_avg_age(self, _dc = None, start=None, limit=None):
@@ -3077,10 +3094,10 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             slot['status'] = "%s" % (status)
         if priority == HIGH_PRIORITY or priority == TOP_PRIORITY:
             slot['priority'] = 'High'
-        elif priority == NORMAL_PRIORITY:
-            slot['priority'] = 'Normal'
         elif priority == LOW_PRIORITY:
             slot['priority'] = 'Low'
+        else:
+            slot['priority'] = 'Normal'
         if mb == mbleft:
             slot['percentage'] = "0"
         else:
