@@ -411,12 +411,19 @@ def sanitize_filename(name):
     illegal = r'\/<>?*:|"'
     legal   = r'++{}!@;#`'
 
+    repl = sabnzbd.REPLACE_ILLEGAL
     lst = []
     for ch in name.strip():
         if ch in illegal:
-            ch = legal[illegal.find(ch)]
-        lst.append(ch)
+            if repl:
+                ch = legal[illegal.find(ch)]
+                lst.append(ch)
+        else:
+            lst.append(ch)
     name = ''.join(lst)
+
+    if not name:
+        name = 'unknown'
 
     name, ext = os.path.splitext(name)
     lowext = ext.lower()

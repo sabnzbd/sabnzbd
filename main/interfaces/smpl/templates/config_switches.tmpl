@@ -95,6 +95,11 @@
 		    <span class="tips">Replaces spaces in foldernames with underscores.</span></label>
  		<br class="clear" />
 
+			<label><span class="label">Replace illegal characters in foldernames:</span>
+		    <input class="radio" type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Replace illegal characters in foldernames by equivalents (otherwise remove).</span></label>
+ 		<br class="clear" />
+
 			<label><span class="label">Launch browser on startup:</span>
 		    <input class="radio" type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> />
 		    <span class="tips">Set whether SABnzbd launches your browser on startup.</span></label>

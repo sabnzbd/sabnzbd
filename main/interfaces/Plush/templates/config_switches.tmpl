@@ -122,6 +122,11 @@
 						<td><small>Replace spaces with underscores in foldernames.</small></td>
 					</tr>
 					<tr>
+						<td align=right><div class="tucker">Replace illegal characters in Foldernames:</div></td>
+						<td><input type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> /></td>
+						<td><small>Replace illegal characters in foldernames by equivalents (otherwise remove).</small></td>
+					</tr>
+					<tr>
 						<td align=right><div class="tucker">Pause Downloads During Post-processing:</div></td>
 						<td><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></td>
 						<td><small>Pauses downloading at the start of post processing and resumes when finished.</small></td>

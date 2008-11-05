@@ -1220,6 +1220,7 @@ class ConfigSwitches(ProtectedClass):
         config['check_rel'] = IntConv(sabnzbd.CFG['misc']['check_new_rel'])
         #config['auto_disconnect'] = IntConv(sabnzbd.CFG['misc']['auto_disconnect'])
         config['replace_spaces'] = IntConv(sabnzbd.CFG['misc']['replace_spaces'])
+        config['replace_illegal'] = IntConv(sabnzbd.CFG['misc']['replace_illegal'])
         config['safe_postproc'] = IntConv(sabnzbd.CFG['misc']['safe_postproc'])
         config['auto_browser'] = IntConv(sabnzbd.CFG['misc']['auto_browser'])
         config['ignore_samples'] = IntConv(sabnzbd.CFG['misc']['ignore_samples'])
@@ -1246,6 +1247,7 @@ class ConfigSwitches(ProtectedClass):
                      auto_disconnect = None,
                      safe_postproc = None,
                      replace_spaces = None,
+                     replace_illegal = None,
                      auto_browser = None,
                      ignore_samples = None,
                      pause_on_post_processing = None,
@@ -1277,6 +1279,7 @@ class ConfigSwitches(ProtectedClass):
         #sabnzbd.CFG['misc']['auto_disconnect'] = IntConv(auto_disconnect)
         sabnzbd.CFG['misc']['safe_postproc'] = IntConv(safe_postproc)
         sabnzbd.CFG['misc']['replace_spaces'] = IntConv(replace_spaces)
+        sabnzbd.CFG['misc']['replace_illegal'] = IntConv(replace_illegal)
         sabnzbd.CFG['misc']['auto_browser'] = IntConv(auto_browser)
         sabnzbd.CFG['misc']['ignore_samples'] = IntConv(ignore_samples)
         sabnzbd.CFG['misc']['pause_on_post_processing'] = IntConv(pause_on_post_processing)

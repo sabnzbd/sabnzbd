@@ -98,6 +98,12 @@
  		</div>
             <div class="row">
 
+			<label>Replace illegal characters in foldernames:</label><br/><br/>
+            <input type="hidden" id="replace_illegal" name="replace_illegal" value="$replace_illegal">
+                <div class="toggle" onclick="toggleValue('replace_illegal')" <!--#if $replace_illegal > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+ 		</div>
+            <div class="row">
+
 			<label>Launch browser on startup:</label><br/><br/>
             <input type="hidden" id="auto_browser" name="auto_browser" value="$auto_browser">
                 <div class="toggle" onclick="toggleValue('auto_browser')" <!--#if $auto_browser > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>

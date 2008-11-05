@@ -70,6 +70,7 @@ MY_FULLNAME = None
 NEW_VERSION = None
 VERSION_CHECK = None
 REPLACE_SPACES = None
+REPLACE_ILLEGAL = None
 DIR_HOME = None
 DIR_APPDATA = None
 DIR_LCLDATA = None
@@ -341,7 +342,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, EMAIL_DIR, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
-           DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, \
+           DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, REPLACE_ILLEGAL,\
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
            EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
@@ -369,6 +370,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
 
     REPLACE_SPACES = bool(check_setting_int(CFG, 'misc', 'replace_spaces', 0))
+    REPLACE_ILLEGAL = bool(check_setting_int(CFG, 'misc', 'replace_illegal', 1))
 
     FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
 
