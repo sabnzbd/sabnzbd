@@ -45,18 +45,27 @@ Speed Limit:
     <table id="queueTable">
         <tr> <th></th><th></th><th></th>
             <!--#if $cat_list#--><th>Category</th><!--#end if#-->
-            <th>Mode</th>
+            <th>Mode</th><th>Priority</th>
             <!--#if $script_list#--><th>Script</th><!--#end if#-->
             <th>Name</th><th>Remain/Total</th><th>ETA</th><th>AGE</th>
         </tr>
     <!--#set $odd = False#-->
     <!--#for $slot in $slotinfo#-->
         <!--#set $odd = not $odd#-->
-        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <tr class="<!--#if $odd then "odd" else "even"#--> $slot.priority $slot.status">
         <td><a class="verbosity_link" href="./tog_uid_verbose?uid=$slot.nzo_id"> <!--#if $slot.active then "-" else "+" #--> </a></td>
         <td><form action="delete" method="get">
             <input type="hidden" value="$slot.nzo_id" name="uid">
             <input type="submit" value="Del"></form>
+            <!--#if $slot.status == 'Paused'#-->
+                <form action="resume_nzo" method="get">
+                <input type="hidden" value="$slot.nzo_id" name="uid">
+                <input type="submit" value="Resume"></form>
+            <!--#else#-->
+                <form action="pause_nzo" method="get">
+                <input type="hidden" value="$slot.nzo_id" name="uid">
+                <input type="submit" value="Pause"></form>         
+            <!--#end if#--> 
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
             <!--#for $i in xrange($noofslots)#-->
                 <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
@@ -77,6 +86,16 @@ Speed Limit:
                 <option value="change_opts?nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
                 </select></form>
             </td>
+            <td>
+            <!--#if $slot.priority != '2'#-->
+            <form>
+            <select onchange="location = this.options[this.selectedIndex].value;">
+                    <option value="set_priority?nzo_id=$slot.nzo_id&priority=1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
+                    <option value="set_priority?nzo_id=$slot.nzo_id&priority=0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
+                    <option value="set_priority?nzo_id=$slot.nzo_id&priority=-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
+                </select></form>
+            <!--#end if#-->
+            </td>
             <!--#if $script_list#-->
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
                 <!--#for $sc in $script_list#-->
@@ -93,17 +112,17 @@ Speed Limit:
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.finished#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td></td><td></td><td>Finished</td><td></td><!--#if $cat_list#--><td></td><!--#end if#--><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td></td><td></td><td>Finished</td><td></td><!--#if $cat_list#--><td></td><!--#end if#--><td></td><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.active#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td></td><td><a class="remove" href="./removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id">Remove</a></td><td>Active</td><td></td><!--#if $cat_list#--><td></td><!--#end if#--><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td></td><td><a class="remove" href="./removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id">Remove</a></td><td>Active</td><td></td><!--#if $cat_list#--><td></td><!--#end if#--><td></td><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td>$line.age</td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.queued#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td></td></td><td><td>Waiting</td><td></td><!--#if $cat_list#--><td></td><!--#end if#--><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename (set: $line.set)</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td></td></td><td><td>Waiting</td><td></td><!--#if $cat_list#--><td></td><!--#end if#--><td></td><!--#if $script_list#--><td></td><!--#end if#--><td>$line.filename (set: $line.set)</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td>$line.age</td></tr>
         <!--#end for#-->
     <!--#end for#-->
     </table>
