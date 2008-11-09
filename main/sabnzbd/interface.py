@@ -1622,6 +1622,10 @@ class ConfigRss(ProtectedClass):
             rss[feed]['cat'] = GetCfgRss(cfg, 'cat')
             rss[feed]['pp'] = GetCfgRss(cfg, 'pp')
             rss[feed]['script'] = GetCfgRss(cfg, 'script')
+            if GetCfgRss(cfg, 'priority'):
+                rss[feed]['priority'] = GetCfgRss(cfg, 'priority')
+            else:
+                rss[feed]['priority'] = 0
             rss[feed]['enable'] = IntConv(GetCfgRss(cfg, 'enable'))
             rss[feed]['pick_cat'] = config['cat_list'] != []
             rss[feed]['pick_script'] = config['script_list'] != []
@@ -1639,7 +1643,7 @@ class ConfigRss(ProtectedClass):
         return template.respond()
 
     @cherrypy.expose
-    def upd_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, _dc=None):
+    def upd_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, priority=None, enable=None, _dc=None):
         uri = Strip(uri)
         try:
             cfg = sabnzbd.CFG['rss'][feed]
@@ -1651,12 +1655,13 @@ class ConfigRss(ProtectedClass):
             if IsNone(pp): pp = ''
             cfg['pp'] = pp
             cfg['script'] = ConvertSpecials(script)
+            cfg['priority'] = IntConv(priority)
             save_configfile(sabnzbd.CFG)
 
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def toggle_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, enable=None, _dc=None):
+    def toggle_rss_feed(self, feed=None, uri=None, cat=None, pp=None, script=None, priority=None, enable=None, _dc=None):
         try:
             cfg = sabnzbd.CFG['rss'][feed]
         except:
@@ -1679,6 +1684,7 @@ class ConfigRss(ProtectedClass):
             cfg['cat'] = ''
             cfg['pp'] = ''
             cfg['script'] = ''
+            cfg['priority'] = 0
             cfg['enable'] = 0
             cfg['filter0'] = ('', '', '', 'A', '*')
             save_configfile(sabnzbd.CFG)

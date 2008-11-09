@@ -181,6 +181,10 @@ class RSSQueue:
                 defCat = None
             defPP = cfg['pp']
             defScript = cfg['script']
+            try:
+                defPriority = cfg['priority']
+            except:
+                defPriority = cfg['priority'] = 0
         except:
             logging.error('[%s] Incorrect RSS feed description "%s"', __NAME__, feed)
             return
@@ -239,6 +243,7 @@ class RSSQueue:
                 myCat = defCat
                 myPP = ''
                 myScript = ''
+                #myPriority = 0
 
                 if (link not in jobs) or (jobs[link][0]!='D'):
                     # Match this title against all filters
@@ -261,6 +266,8 @@ class RSSQueue:
                                 myScript = reScripts[n]
                             elif not reCats[n]:
                                 myScript = defScript
+                            #elif not rePriority[n]:
+                                #myScript = defScript
                             break
                         if found and reTypes[n]=='R':
                             logging.debug("[%s] Filter rejected on rule %d", __NAME__, n)
@@ -268,9 +275,9 @@ class RSSQueue:
                             break
 
                     if result:
-                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, download and not first)
+                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, download and not first, priority=defPriority)
                     else:
-                        _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False)
+                        _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False, priority=defPriority)
 
 
         # If links were dropped by feed, remove from our tables too

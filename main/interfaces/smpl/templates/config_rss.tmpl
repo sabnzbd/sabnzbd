@@ -11,18 +11,22 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 
     <input type="text" size="10" name="feed" value="$feed"/>
     <input type="text" size="80" name="uri" value=""/>
-    <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/add_rss_feed', '','add_rss_feed', '1')"   />
+    <input type="submit" value="Add" onclick="javascript:submitconfig('config/rss/add_rss_feed', '','add_rss_feed', '1')"   />
 </fieldset>
 </div>
 <br class="clear" />
 <!--#for $feed in $rss#-->
 <br class="clear" />
 <fieldset class="EntryFieldSet">
-    <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->>Feed $feed</legend>
+    <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/> Feed $feed</legend>
     <hr />
     <div class="EntryBlock" id="update_$feed">
 
-            <input type="text" size="92" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
+            <input type="text" size="92" name="uri" value="$rss[$feed]['uri']"/>
+            <input type="submit" onclick="javascript:submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )" value="Delete Feed"/>
+            <input type="submit" onClick="javascript:location='./config/rss/test_rss_feed?feed=$feed'" value="Preview"/>
+            <input type="submit" onClick="javascript:location='./config/rss/download_rss_feed?feed=$feed'" value="Force-Download"/>
+            <br/><br/>
 
             <!--#if $rss[$feed]['pick_cat']#-->
                 <select name="cat">
@@ -45,12 +49,15 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
                 <!--#end for#-->
                 </select>
             <!--#end if#-->
+            <select name="priority">
+                <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
+                <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>Normal</option>
+                <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>Low</option>
+            </select>
             <input type="hidden" name="feed" value="$feed"/>
-            <input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled 
+            <!--<input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled -->
             <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', '','update_$feed','1' )" />
-            <input type="submit" onclick="javascript:submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )" value="Delete"/>
-            <input type="submit" onClick="javascript:location='./config/rss/test_rss_feed?feed=$feed'" value="Preview"/>
-            <input type="submit" onClick="javascript:location='./config/rss/download_rss_feed?feed=$feed'" value="Download"/>
+ 
         </fieldset>
 
     </div>
