@@ -97,7 +97,7 @@ class NNTP:
 
         if sslenabled and _ssl:
             ctx = _ssl.Context(_ssl.SSLv23_METHOD)
-            self.sock = _ssl.tsafe.Connection(ctx, socket.socket(af, socktype, proto))
+            self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
             logging.error("[%s] Error importing OpenSSL module. Connecting with NON-SSL", __NAME__)
             self.sock = socket.socket(af, socktype, proto)
@@ -244,3 +244,25 @@ class NewsWrapper:
         else:
             # Reset for internal reasons, just wait 5 sec
             self.timeout = time() + 5
+            
+
+
+class SSLConnection:
+    def __init__(self, *args):
+        self._ssl_conn = apply(_ssl.Connection, args)
+        self._lock = _RLock()
+
+    for f in ('get_context', 'pending', 'send', 'write', 'recv', 'read',
+              'renegotiate', 'bind', 'listen', 'connect', 'accept',
+              'setblocking', 'fileno', 'shutdown', 'close', 'get_cipher_list',
+              'getpeername', 'getsockname', 'getsockopt', 'setsockopt',
+              'makefile', 'get_app_data', 'set_app_data', 'state_string',
+              'sock_shutdown', 'get_peer_certificate', 'want_read',
+              'want_write', 'set_connect_state', 'set_accept_state',
+              'connect_ex', 'sendall', 'do_handshake'):
+        exec """def %s(self, *args):
+            self._lock.acquire()
+            try:
+                return apply(self._ssl_conn.%s, args)
+            finally:
+                self._lock.release()\n""" % (f, f)
