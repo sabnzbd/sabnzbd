@@ -61,6 +61,9 @@
   </fieldset>
   <fieldset class="EntryFieldSet">
     <legend>Other switches</legend>
+    <label><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> <strong>Disconnect on empty queue</strong></label><br>
+    Disconnect from Usenet server(s) when queue is empty or paused.<br>
+    <br>
     <label><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> <strong>Send Group</strong></label><br>
     Send group command before requesting articles.<br>
     <br>

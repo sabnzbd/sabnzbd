@@ -74,6 +74,12 @@
          <fieldset>
             <div class="row">
 
+		    <label>Disconnect on empty queue</label><br/><br/>
+            <input type="hidden" id="auto_disconnect" name="auto_disconnect" value="$auto_disconnect">
+                <div class="toggle" onclick="toggleValue('auto_disconnect')" <!--#if $auto_disconnect > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+		</div>
+            <div class="row">
+
 		    <label>Send Group</label><br/><br/>
             <input type="hidden" id="send_group" name="send_group" value="$send_group">
                 <div class="toggle" onclick="toggleValue('send_group')" <!--#if $send_group > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>

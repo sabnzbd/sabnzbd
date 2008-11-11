@@ -87,6 +87,7 @@ DO_FILE_JOIN = False
 DO_UNZIP = False
 DO_UNRAR = False
 DO_SAVE = True
+AUTODISCONNECT = True
 PAR_CLEANUP = False
 PAR_OPTION = ''
 
@@ -331,7 +332,7 @@ INIT_LOCK = Lock()
 
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
-    global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, \
+    global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, AUTODISCONNECT, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, PAR_OPTION, CLEANUP_LIST, IGNORE_SAMPLES, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            USERNAME_MATRIX, PASSWORD_MATRIX, \
@@ -383,6 +384,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     DO_UNRAR = bool(check_setting_int(CFG, 'misc', 'enable_unrar', 1))
 
     DO_SAVE = True #bool(check_setting_int(CFG, 'misc', 'enable_save', 1))
+
+    AUTODISCONNECT = bool(check_setting_int(CFG, 'misc', 'auto_disconnect', 1))
 
     PAR_CLEANUP = bool(check_setting_int(CFG, 'misc', 'enable_par_cleanup', 1))
 
@@ -1068,7 +1071,8 @@ def sort_queue(field, reverse=False):
 def pause_downloader(save=True):
     try:
         DOWNLOADER.pause()
-        DOWNLOADER.disconnect()
+        if AUTODISCONNECT:
+            DOWNLOADER.disconnect()
         if save:
             save_state()
     except NameError:

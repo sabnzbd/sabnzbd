@@ -534,7 +534,8 @@ class NzbQueue(TryList):
 
             if not self.__nzo_list:
                 # Close server connections
-                sabnzbd.disconnect()
+                if sabnzbd.AUTODISCONNECT:
+                    sabnzbd.disconnect()
 
                 # Sets the end-of-queue back on if disabled
                 # adding an nzb and re-adding for more blocks disables it

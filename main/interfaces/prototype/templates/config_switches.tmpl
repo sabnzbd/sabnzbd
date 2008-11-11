@@ -74,6 +74,11 @@
 	<legend>Other</legend>
 
 
+		    <label><span class="label">Disconnect on empty queue</span>
+		    <input class="radio" type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Disconnect from Usenet server(s) when queue is empty or paused.</span></label>
+		<br class="clear" />
+
 		    <label><span class="label">Send Group</span>
 		    <input class="radio" type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> />
 		    <span class="tips">Send group command before requesting articles.</span></label>

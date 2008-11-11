@@ -107,6 +107,11 @@
 						<td><small>Filters out sample files from the queue (i.e. video clips).</small></td>
 					</tr>
 					<tr>
+						<td align=right><div class="tucker">Disconnect on empty queue:</div></td>
+						<td><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /></td>
+						<td><small>Disconnect from Usenet server(s) when queue is empty or paused.</small></td>
+					</tr>
+					<tr>
 						<td align=right><div class="tucker">Send Group:</div></td>
 						<td><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /></td>
 						<td><small>Send group command before requesting articles.</small></td>
