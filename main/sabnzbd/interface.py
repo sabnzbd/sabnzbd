@@ -2924,7 +2924,7 @@ class xml_factory():
         for cat in lst:
             if isinstance(cat, dict):
                 #debug = 'dict%s' % n
-                text += self.dict('slot', cat) 
+                text += self.dictn('slot', cat) 
             elif isinstance(cat, list):
                 debug = 'list'
                 text  += self.list(debug, cat) 
