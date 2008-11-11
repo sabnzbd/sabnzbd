@@ -255,6 +255,10 @@ class PostProcessor(Thread):
                             if filename_set: 
                                 TVRenamer(workdir_complete, newfiles, filename_set)
                             workdir_complete = move_to_parent_folder(workdir_complete)
+                        elif date_file:
+                            if filename_set: 
+                                DateRenamer(workdir_complete, newfiles, filename_set)
+                            workdir_complete = move_to_parent_folder(workdir_complete)
                         elif movie_file:
                             if filename_set: 
                                 MovieRenamer(workdir_complete, newfiles, filename_set)
@@ -265,10 +269,6 @@ class PostProcessor(Thread):
                                 move_to_parent = not check_for_folder(workdir_complete)
                             if move_to_parent:
                                 workdir_complete = move_to_parent_folder(workdir_complete)
-                        elif date_file:
-                            if filename_set: 
-                                DateRenamer(workdir_complete, newfiles, filename_set)
-                            workdir_complete = move_to_parent_folder(workdir_complete)
        
                 ## Set permissions right
                 if sabnzbd.UMASK and (os.name != 'nt'):
