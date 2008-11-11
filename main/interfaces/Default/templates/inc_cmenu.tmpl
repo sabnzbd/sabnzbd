@@ -54,9 +54,15 @@
 <!--#end if#-->
 
 <!--#if $submenu=="categories"#-->
-    <a class="current" href="./">Categories</a>
+    <a class="current" href="./">Categories</a> |
 <!--#else#-->
-    <a href="$cpath/categories/">Categories</a>
+    <a href="$cpath/categories/">Categories</a> |
+<!--#end if#-->
+
+<!--#if $submenu=="sorting"#-->
+    <a class="current" href="./">Sorting</a>
+<!--#else#-->
+    <a href="$cpath/sorting/">Sorting</a>
 <!--#end if#-->
 
 </span>

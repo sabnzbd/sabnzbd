@@ -1023,6 +1023,7 @@ class ConfigPage(ProtectedClass):
         self.server = ConfigServer(web_dir, root+'server/', prim)
         self.switches = ConfigSwitches(web_dir, root+'switches/', prim)
         self.categories = ConfigCats(web_dir, root+'categories/', prim)
+        self.sorting = ConfigSorting(web_dir, root+'sorting/', prim)
 
 
     @cherrypy.expose
@@ -1082,18 +1083,6 @@ class ConfigDirectories(ProtectedClass):
         config['my_home'] = sabnzbd.DIR_HOME
         config['my_lcldata'] = sabnzbd.DIR_LCLDATA
         config['permissions'] = sabnzbd.UMASK
-        config['enable_tv_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_tv_sorting'])
-        config['tv_sort_string'] = sabnzbd.CFG['misc']['tv_sort_string']
-        config['enable_movie_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_movie_sorting'])
-        config['movie_sort_string'] = sabnzbd.CFG['misc']['movie_sort_string']
-        config['movie_sort_extra'] = sabnzbd.CFG['misc']['movie_sort_extra']
-        config['movie_extra_folder'] =  IntConv(sabnzbd.CFG['misc']['movie_extra_folder'])
-        config['enable_date_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_date_sorting'])
-        config['date_sort_string'] = sabnzbd.CFG['misc']['date_sort_string']
-        config['movie_categories'] = sabnzbd.CFG['misc']['movie_categories']
-        config['date_categories'] = sabnzbd.CFG['misc']['date_categories']
-        config['cat_list'] = ListCats(True)
-        tvSortList = []
         
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
                             searchList=[config],
@@ -1104,10 +1093,8 @@ class ConfigDirectories(ProtectedClass):
     @cherrypy.expose
     def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
                         cache_dir = None, nzb_backup_dir = None, permissions=None,
-                        enable_tv_sorting = None, tv_sort_string = None, email_dir=None,
-                        enable_movie_sorting = None, movie_sort_string = None, movie_sort_extra = None,
-                        movie_extra_folder = None, enable_date_sorting = None, date_sort_string = None, date_cat=None, movie_cat=None,
-                        dirscan_dir = None, dirscan_speed = None, script_dir = None, _dc = None):
+                        date_cat=None, movie_cat=None, dirscan_dir = None, email_dir = None,
+                        dirscan_speed = None, script_dir = None, _dc = None):
 
         if permissions:
             try:
@@ -1168,20 +1155,6 @@ class ConfigDirectories(ProtectedClass):
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
         if permissions: sabnzbd.CFG['misc']['permissions'] = permissions
-        sabnzbd.CFG['misc']['enable_tv_sorting'] = IntConv(enable_tv_sorting)
-        sabnzbd.CFG['misc']['tv_sort_string'] = tv_sort_string
-        sabnzbd.CFG['misc']['enable_movie_sorting'] = IntConv(enable_movie_sorting)
-        sabnzbd.CFG['misc']['movie_sort_string'] = movie_sort_string
-        sabnzbd.CFG['misc']['movie_sort_extra'] = movie_sort_extra
-        sabnzbd.CFG['misc']['movie_extra_folder'] = IntConv(movie_extra_folder)
-        sabnzbd.CFG['misc']['enable_date_sorting'] = IntConv(enable_date_sorting)
-        sabnzbd.CFG['misc']['date_sort_string'] = date_sort_string
-        if type(movie_cat) == type(''):
-            movie_cat = [movie_cat]
-        sabnzbd.CFG['misc']['movie_categories'] = movie_cat
-        if type(date_cat) == type(''):
-            date_cat = [date_cat]
-        sabnzbd.CFG['misc']['date_categories'] = date_cat
 
         return saveAndRestart(self.__root, _dc)
 
@@ -2018,6 +1991,65 @@ class ConfigCats(ProtectedClass):
         save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
+    
+#------------------------------------------------------------------------------
+class ConfigSorting(ProtectedClass):
+    def __init__(self, web_dir, root, prim):
+        self.roles = ['admins']
+
+        self.__root = root
+        self.__web_dir = web_dir
+        self.__prim = prim
+
+    @cherrypy.expose
+    def index(self, _dc = None):
+        if sabnzbd.CONFIGLOCK:
+            return Protected()
+
+        config, pnfo_list, bytespersec = build_header(self.__prim)
+
+        config['enable_tv_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_tv_sorting'])
+        config['tv_sort_string'] = sabnzbd.CFG['misc']['tv_sort_string']
+        config['enable_movie_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_movie_sorting'])
+        config['movie_sort_string'] = sabnzbd.CFG['misc']['movie_sort_string']
+        config['movie_sort_extra'] = sabnzbd.CFG['misc']['movie_sort_extra']
+        config['movie_extra_folder'] =  IntConv(sabnzbd.CFG['misc']['movie_extra_folder'])
+        config['enable_date_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_date_sorting'])
+        config['date_sort_string'] = sabnzbd.CFG['misc']['date_sort_string']
+        config['movie_categories'] = sabnzbd.CFG['misc']['movie_categories']
+        config['date_categories'] = sabnzbd.CFG['misc']['date_categories']
+        config['cat_list'] = ListCats(True)
+        tvSortList = []
+        
+        template = Template(file=os.path.join(self.__web_dir, 'config_sorting.tmpl'),
+                            searchList=[config],
+                            compilerSettings={'directiveStartToken': '<!--#',
+                                              'directiveEndToken': '#-->'})
+        return template.respond()
+
+    @cherrypy.expose
+    def saveSorting(self, enable_tv_sorting = None, tv_sort_string = None,
+                        enable_movie_sorting = None, movie_sort_string = None, movie_sort_extra = None,
+                        movie_extra_folder = None, enable_date_sorting = None, date_sort_string = None, 
+                        date_cat=None, movie_cat=None, _dc = None):
+
+        sabnzbd.CFG['misc']['enable_tv_sorting'] = IntConv(enable_tv_sorting)
+        sabnzbd.CFG['misc']['tv_sort_string'] = tv_sort_string
+        sabnzbd.CFG['misc']['enable_movie_sorting'] = IntConv(enable_movie_sorting)
+        sabnzbd.CFG['misc']['movie_sort_string'] = movie_sort_string
+        sabnzbd.CFG['misc']['movie_sort_extra'] = movie_sort_extra
+        sabnzbd.CFG['misc']['movie_extra_folder'] = IntConv(movie_extra_folder)
+        sabnzbd.CFG['misc']['enable_date_sorting'] = IntConv(enable_date_sorting)
+        sabnzbd.CFG['misc']['date_sort_string'] = date_sort_string
+        if type(movie_cat) == type(''):
+            movie_cat = [movie_cat]
+        sabnzbd.CFG['misc']['movie_categories'] = movie_cat
+        if type(date_cat) == type(''):
+            date_cat = [date_cat]
+        sabnzbd.CFG['misc']['date_categories'] = date_cat
+
+        return saveAndRestart(self.__root, _dc)
+    
 
 #------------------------------------------------------------------------------
 
