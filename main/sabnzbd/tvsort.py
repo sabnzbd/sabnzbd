@@ -271,8 +271,8 @@ def MovieRenamer(path, _files, _name):
                         filepath = os.path.join(path, f)
                         tmp, ext = os.path.splitext(file)
                         name = '%s%s' % (_name, sabnzbd.MOVIE_SORT_EXTRA)
-                        _name = name.replace('%1', index)
-                        name = _name + ext
+                        name = name.replace('%1', index)
+                        name = name + ext
                         newpath = os.path.join(path, name)
                         try:
                             os.rename(filepath,newpath)
