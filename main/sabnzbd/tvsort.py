@@ -548,7 +548,9 @@ def getTitles(match, name):
     The title will be the part before the match
     Clean it up and title() it
     '''
-    title = name[:match.start()].replace('.', ' ').replace('_', ' ')
+    if match:
+        name = name[:match.start()]
+    title = name.replace('.', ' ').replace('_', ' ')
     title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
     title = title.title() # title
     #title applied uppercase to 's Python bug?
@@ -565,7 +567,10 @@ def getDescriptions(match, name, path, desc_token):
     A description has to be after the matched item, seperated either
     like ' - Description' or '_-_Description'
     '''
-    ep_name = name[match.end():]
+    if match:
+        ep_name = name[match.end():]
+    else:
+        ep_name = name
     RE_EPNAME = re.compile('_?-[_\W]', re.I)
     m = RE_EPNAME.search(ep_name)
     if m:
