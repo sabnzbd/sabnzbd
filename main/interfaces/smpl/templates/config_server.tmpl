@@ -31,6 +31,10 @@
             
             <label><span class="label">Backup Server:</span>
 			<input class="radio" type="checkbox" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /></label>
+            </label><br class="clear" />
+
+            <label><span class="label">Enable:</span>
+			<input class="radio" type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></label>
    		<input type="hidden" name="server" value="$server"><br class="clear" />
 
 
@@ -74,6 +78,10 @@
         
 			<label><span class="label">Backup Server:</span>
 				<input class="radio" type="checkbox" name="fillserver" value="1"></label>
+ 		<br class="clear" />
+
+			<label><span class="label">Enable:</span>
+				<input class="radio" type="checkbox" name="enable" value="1"></label>
  		<br class="clear" />
 
       <p><input type="button" class="submitindent" size="40" value="Add Server" onclick="javascript:submitconfig('config/server/addServer', 'submitstatus3','addserver','config/server','0')">

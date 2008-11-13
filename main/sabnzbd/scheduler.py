@@ -40,7 +40,7 @@ RSSTASK_MINUTE = random.randint(0, 59)
 def init():
     """ Create the scheduler and set all required events
     """
-    global __SCHED
+    global __SCHED, CFG
 
     need_rsstask = True
     need_versioncheck = sabnzbd.VERSION_CHECK
@@ -78,6 +78,10 @@ def init():
             arguments = []
         elif action_name == 'speedlimit' and arguments != []:
             action = sabnzbd.limit_speed
+        elif action_name == 'enable_server' and arguments != []:
+            action = sabnzbd.enable_server
+        elif action_name == 'disable_server' and arguments != []:
+            action = sabnzbd.disable_server
         else:
             logging.warning("[%s] Unknown action: %s", __NAME__, action_name)
             continue
@@ -139,12 +143,8 @@ def restart():
 
     stop()
 
-    p, s = analyse()
-    sabnzbd.DOWNLOADER.paused = p
-    if s:
-        sabnzbd.DOWNLOADER.limit_speed(s)
-        sabnzbd.BANDWITH_LIMIT = s
-    
+    analyse()
+
     init()
     start()
 
@@ -203,7 +203,7 @@ def sort_schedules(schedlines, forward):
     return events
 
 
-def analyse():
+def analyse(was_paused=False):
     """ Determine what pause/resume state we would have now.
         Return True if paused mode would be active.
         Return speedlimit
@@ -212,15 +212,40 @@ def analyse():
     schedlines = sabnzbd.CFG['misc']['schedlines']
     paused = None
     speedlimit = None
+    servers = {}
 
     for ev in sort_schedules(schedlines, forward=False):
         logging.debug('[%s] Schedule check result = %s', __NAME__, ev)
         action = ev[1]
+        try:
+            value = ev[2]
+        except:
+            value = None
         if action == 'pause':
             paused = True
         elif action == 'resume':
             paused = False
-        elif action == 'speedlimit' and ev[2]!=None:
+        elif action == 'speedlimit' and value!=None:
             speedlimit = int(ev[2])
+        elif action == 'enable_server':
+            try:
+                servers[value] = 1
+            except:
+                logging.warning('[%s] Schedule for non-existing server %s', __NAME__, value)
+        elif action == 'disable_server':
+            try:
+                servers[value] = 0
+            except:
+                logging.warning('[%s] Schedule for non-existing server %s', __NAME__, value)
 
-    return paused, speedlimit
+    if not was_paused:
+        sabnzbd.DOWNLOADER.paused = paused
+    if speedlimit:
+        sabnzbd.DOWNLOADER.limit_speed(s)
+        sabnzbd.BANDWITH_LIMIT = speedlimit
+    for serv in servers:
+        try:
+            sabnzbd.CFG['servers'][serv]['enable'] = servers[serv]
+        except:
+            pass
+    sabnzbd.misc.save_configfile(sabnzbd.CFG)

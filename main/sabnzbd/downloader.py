@@ -57,8 +57,11 @@ def GetParmInt(server, keyword, default):
 
 
 class Server:
-    def __init__(self, host, port, timeout, threads, fillserver, ssl, username = None,
+    def __init__(self, id, host, port, timeout, threads, fillserver, ssl, username = None,
                  password = None):
+        self.id = id
+        self.newid = None
+        self.restart = False
         self.host = host
         self.port = port
         self.timeout = timeout
@@ -68,12 +71,25 @@ class Server:
 
         self.username = username
         self.password = password
-
+        
         self.busy_threads = []
         self.idle_threads = []
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
+
+    def stop(self, readers, writers):
+        for nw in self.idle_threads:
+            try:
+                fno = nw.nntp.sock.fileno()
+            except:
+                fno = None
+            if fno and fno in readers:
+                readers.pop(fno)
+            if fno and fno in writers:
+                writers.pop(fno)
+            nw.terminate()
+        self.idle_threads = []
 
     def __repr__(self):
         return "%s:%s" % (self.host, self.port)
@@ -128,8 +144,10 @@ class BPSMeter:
 #------------------------------------------------------------------------------
 
 class Downloader(Thread):
-    def __init__(self, servers, paused = False):
+    def __init__(self, paused = False):
         Thread.__init__(self)
+
+        logging.debug("[%s] Initializing downloader/decoder", __NAME__)
 
         # Used for scheduled pausing
         self.paused = paused
@@ -143,6 +161,7 @@ class Downloader(Thread):
         self.postproc = False
 
         self.shutdown = False
+        self.__restart = 0
 
         self.force_disconnect = False
 
@@ -151,10 +170,32 @@ class Downloader(Thread):
 
         self.servers = []
 
+        servers = sabnzbd.CFG['servers']
+
         primary = False
         for server in servers:
-            srv = servers[server]
-            enabled = True #bool(GetParmInt(srv, 'enable', 1))
+            if self.init_server(None, server):
+                primary = True
+
+        if not primary:
+            logging.warning('[%s] No active primary servers defined, will not download!', __NAME__)
+
+        self.decoder = Decoder(self.servers)
+
+
+    def init_server(self, oldserver, newserver):
+        """ Setup or re-setup single server
+            When oldserver is defined and in use, delay startup.
+            Return True when newserver is primary
+        """
+
+        primary = False
+        create = False
+
+        servers = sabnzbd.CFG['servers']
+        if newserver in servers:
+            srv = servers[newserver]
+            enabled = bool(GetParmInt(srv, 'enable', 1))
             host = GetParm(srv, 'host')
             port = GetParmInt(srv, 'port', 119)
             timeout = GetParmInt(srv, 'timeout', 60)
@@ -164,20 +205,27 @@ class Downloader(Thread):
             threads = GetParmInt(srv, 'connections', 1)
             fillserver = bool(GetParmInt(srv, 'fillserver', 0))
             primary = primary or (enabled and (not fillserver) and (threads > 0))
-            ssl = bool(GetParmInt(srv, 'ssl', 0))
+            ssl = bool(GetParmInt(srv, 'ssl', 0)) and sabnzbd.newswrapper.HAVE_SSL
             username = GetParm(srv, 'username')
             password = decodePassword(GetParm(srv, 'password'), 'server')
+            create = True
 
-            if enabled and host and port and threads:
-                self.servers.append(Server(host, port, timeout, threads, fillserver, ssl,
-                                           username, password))
+        if oldserver:
+            for n in xrange(len(self.servers)):
+                if self.servers[n].id == oldserver:
+                    # Server exists, do re-init later
+                    create = False
+                    self.servers[n].newid = newserver
+                    self.servers[n].restart = True
+                    self.__restart += 1
+                    break
 
-        if (not primary):
-            logging.warning('[%s] No active primary servers defined, will not download!', __NAME__)
+        if create and enabled and host and port and threads:
+            self.servers.append(Server(newserver, host, port, timeout, threads, fillserver, ssl,
+                                            username, password))
+                
+        return primary
 
-        self.servers = tuple(self.servers)
-
-        self.decoder = Decoder(self.servers)
 
     def stop(self):
         self.shutdown = True
@@ -224,7 +272,21 @@ class Downloader(Thread):
                     if nw.timeout and time.time() > nw.timeout:
                         self.__reset_nw(nw, "timed out")
 
-                if not server.idle_threads or self.paused or self.shutdown or self.delayed or self.postproc:
+                if server.restart:
+                    if not server.busy_threads:
+                        newid = server.newid
+                        server.stop(self.read_fds, self.write_fds)
+                        self.servers.remove(server)
+                        if newid:
+                            self.init_server(None, newid)
+                        self.__restart -= 1
+                        # Have to leave this loop, because we removed element
+                        break
+                    else:
+                        # Restart pending, don't add new articles
+                        continue
+
+                if not server.idle_threads or server.restart or self.paused or self.shutdown or self.delayed or self.postproc:
                     continue
 
                 if not sabnzbd.has_articles_for(server):
@@ -281,8 +343,7 @@ class Downloader(Thread):
                     self.decoder.join()
 
                     for server in self.servers:
-                        for nw in server.idle_threads:
-                            nw.hard_reset(wait=False)
+                        server.stop(self.read_fds, self.write_fds)
 
                     logging.info("[%s] Shutting down", __NAME__)
                     break
@@ -312,7 +373,7 @@ class Downloader(Thread):
 
                 sabnzbd.CV.acquire()
                 while (not sabnzbd.has_articles() or self.paused or self.delayed or self.postproc) and not \
-                       self.shutdown:
+                       self.shutdown and not self.__restart:
                     sabnzbd.CV.wait()
                 sabnzbd.CV.release()
 

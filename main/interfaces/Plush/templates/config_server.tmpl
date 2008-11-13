@@ -28,6 +28,9 @@
 				<tr><td align=right><div class="sucker">Backup&nbsp;Server?</div></td><td>
 					<input type="checkbox" name="fillserver" value="1"/>
 				</td></tr>
+				<tr><td align=right><div class="sucker">Enable?</div></td><td>
+					<input type="checkbox" name="enable" value="1"/>
+				</td></tr>
 				
 				<tr><td></td><td>
 					<br/><input type="submit" value="&oplus; Add Server"/>
@@ -76,6 +79,12 @@
 					<td align=right><div class="sucker">Backup&nbsp;Server?</div></td>
 					<td>
 						<input type="checkbox" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />
+					</td>
+				</tr>
+				<tr>
+					<td align=right><div class="sucker">Enable?</div></td>
+					<td>
+						<input type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> />
 					</td>
 				</tr>
 				</table>

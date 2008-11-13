@@ -244,7 +244,15 @@ class NewsWrapper:
         else:
             # Reset for internal reasons, just wait 5 sec
             self.timeout = time() + 5
-            
+
+    def terminate(self):
+        """ Close connection and remove nntp object """
+        if self.nntp:
+            try:
+                self.nntp.sock.close()
+            except:
+                pass
+        del self.nntp
 
 
 class SSLConnection:

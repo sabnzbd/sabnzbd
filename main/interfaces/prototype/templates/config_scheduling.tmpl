@@ -40,10 +40,9 @@ else:
 <br class="clear" />
 <label class="label">Action:</label>
 <select name="action">
-<option value="resume">resume
-<option value="pause">pause
-<option value="shutdown">shutdown
-<option value="speedlimit">speedlimit
+<!--#for $action in $actions#-->
+    <option value="$action">$action
+<!--#end for#-->
 </select>
 <br class="clear" />
 <label class="label">Arguments:</label>

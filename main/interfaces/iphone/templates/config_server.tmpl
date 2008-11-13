@@ -53,6 +53,13 @@
 			<label>Backup-Server:</label><br/><br/>
             <input type="hidden" id="$server" name="fillserver" value="<!--#if int($servers[$server]['fillserver']) != 0 then '1' else '0'#-->">
             <div class="toggle" onclick="toggleValue('$server')" <!--#if int($servers[$server]['fillserver']) != 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+        </div>
+
+        <div class="row">
+
+			<label>Enable:</label><br/><br/>
+            <input type="hidden" id="$server" name="enable" value="<!--#if int($servers[$server]['enable']) != 0 then '1' else '0'#-->">
+            <div class="toggle" onclick="toggleValue('$server')" <!--#if int($servers[$server]['enable']) != 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
    		<input type="hidden" name="server" value="$server">
         </div>
         

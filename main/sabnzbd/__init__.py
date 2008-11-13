@@ -49,7 +49,7 @@ from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
 import sabnzbd.newzbin as newzbin
 from sabnzbd.misc import DirScanner, real_path, \
                          create_real_path, check_latest_version, from_units, SameFile, decodePassword, \
-                         ProcessArchiveFile, ProcessSingleFile
+                         ProcessArchiveFile, ProcessSingleFile, save_configfile
 from sabnzbd.urlgrabber import URLGrabber
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.scheduler as scheduler
@@ -575,9 +575,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         ASSEMBLER = Assembler(DOWNLOAD_DIR)
 
     if DOWNLOADER:
-        DOWNLOADER.__init__(CFG['servers'], DOWNLOADER.paused)
+        DOWNLOADER.__init__(DOWNLOADER.paused)
     else:
-        DOWNLOADER = Downloader(CFG['servers'])
+        DOWNLOADER = Downloader()
         if pause_downloader:
             DOWNLOADER.paused = True
 
@@ -594,12 +594,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         URLGRABBER = URLGrabber()
 
     if evalSched:
-        p, s = scheduler.analyse()
-        if not pause_downloader:
-            DOWNLOADER.paused = p
-        if s:
-            DOWNLOADER.limit_speed(s)
-            BANDWITH_LIMIT = s
+        scheduler.analyse(pause_downloader)
 
     logging.info('All processes started')
 
@@ -1128,6 +1123,26 @@ def limit_speed(value):
 ################################################################################
 ## Unsynchronized methods                                                     ##
 ################################################################################
+def enable_server(server):
+    """ Enable server """
+    try:
+        CFG['servers'][server]['enable'] = 1
+    except:
+        logging.warning('[%s] Trying to set status of non-existing server %s', __NAME__, server)
+        return
+    save_configfile(CFG)
+    update_server(server, server)
+
+def disable_server(server):
+    """ Disable server """
+    try:
+        CFG['servers'][server]['enable'] = 0
+    except:
+        logging.warning('[%s] Trying to set status of non-existing server %s', __NAME__, server)
+        return
+    save_configfile(CFG)
+    update_server(server, server)
+
 def change_web_dir(web_dir):
     LOGIN_PAGE.change_web_dir(web_dir)
     
@@ -1181,6 +1196,18 @@ def assemble_nzf(nzf):
 def disconnect():
     try:
         DOWNLOADER.disconnect()
+    except:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+
+def update_server(oldserver, newserver):
+    global DOWNLOADER, CV
+    try:
+        CV.acquire()
+        try:
+            DOWNLOADER.init_server(oldserver, newserver)
+        finally:
+            CV.notifyAll()
+            CV.release()
     except:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
 

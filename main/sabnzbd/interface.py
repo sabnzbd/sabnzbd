@@ -1411,6 +1411,7 @@ class ConfigServer(ProtectedClass):
             new[svr]['timeout'] = org[svr]['timeout']
             new[svr]['fillserver'] = org[svr]['fillserver']
             new[svr]['ssl'] = org[svr]['ssl']
+            new[svr]['enable'] = org[svr]['enable']
         config['servers'] = new
 
         if sabnzbd.newswrapper.HAVE_SSL:
@@ -1426,7 +1427,7 @@ class ConfigServer(ProtectedClass):
 
     @cherrypy.expose
     def addServer(self, server = None, host = None, port = None, timeout = None, username = None,
-                  password = None, connections = None, ssl = None, fillserver = None, _dc = None):
+                  password = None, connections = None, ssl = None, fillserver = None, enable=None, _dc = None):
 
         timeout = check_timeout(timeout)
 
@@ -1440,6 +1441,8 @@ class ConfigServer(ProtectedClass):
             fillserver = '0'
         if not ssl:
             ssl = '0'
+        if enable == None:
+            enable = '1'
         if host and port and port.isdigit() \
            and connections.isdigit() and fillserver.isdigit() \
            and ssl.isdigit():
@@ -1464,15 +1467,20 @@ class ConfigServer(ProtectedClass):
                 sabnzbd.CFG['servers'][server]['connections'] = connections
                 sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
                 sabnzbd.CFG['servers'][server]['ssl'] = ssl
-        return saveAndRestart(self.__root, _dc)
+                sabnzbd.CFG['servers'][server]['enable'] = enable
+
+        save_configfile(sabnzbd.CFG)
+        sabnzbd.update_server(None, server)
+        raise Raiser(self.__root, _dc=_dc)
+
 
     @cherrypy.expose
     def saveServer(self, server = None, host = None, port = None, username = None, timeout = None,
-                   password = None, connections = None, fillserver = None, ssl = None, _dc = None):
+                   password = None, connections = None, fillserver = None, ssl = None, enable=None, _dc = None):
 
         timeout = check_timeout(timeout)
 
-        server = Strip(server)
+        oldserver = Strip(server)
         port = Strip(port)
 
         if connections == "":
@@ -1483,6 +1491,8 @@ class ConfigServer(ProtectedClass):
             ssl = '0'
         if not fillserver:
             fillserver = '0'
+        if not enable:
+            enable = '0'
         if host and port and port.isdigit() \
            and connections.isdigit() and fillserver and fillserver.isdigit() \
            and ssl and ssl.isdigit():
@@ -1491,9 +1501,9 @@ class ConfigServer(ProtectedClass):
                 return msg
 
             if password and not password.strip('*'):
-                password = sabnzbd.CFG['servers'][server]['password']
+                password = sabnzbd.CFG['servers'][oldserver]['password']
 
-            del sabnzbd.CFG['servers'][server]
+            del sabnzbd.CFG['servers'][oldserver]
 
             # Allow IPV6 numerical addresses, '[]' is not compatible with
             # INI file handling, replace by '{}'
@@ -1511,17 +1521,24 @@ class ConfigServer(ProtectedClass):
             sabnzbd.CFG['servers'][server]['timeout'] = timeout
             sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
             sabnzbd.CFG['servers'][server]['ssl'] = ssl
-        return saveAndRestart(self.__root, _dc)
+            sabnzbd.CFG['servers'][server]['enable'] = enable
+
+        save_configfile(sabnzbd.CFG)
+        sabnzbd.update_server(oldserver, server)
+        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def delServer(self, *args, **kwargs):
         if 'server' in kwargs and kwargs['server'] in sabnzbd.CFG['servers']:
-            del sabnzbd.CFG['servers'][kwargs['server']]
-
+            server = kwargs['server']
+            del sabnzbd.CFG['servers'][server]
+            save_configfile(sabnzbd.CFG)
+            sabnzbd.update_server(server, None)
+        
         if '_dc' in kwargs:
-            return saveAndRestart(self.__root, kwargs['_dc'])
+            raise Raiser(self.__root, _dc=kwargs['_dc'])
         else:
-            return saveAndRestart(self.__root, '')
+            raise Raiser(self.__root, _dc='')
 
 #------------------------------------------------------------------------------
 
@@ -1766,6 +1783,11 @@ class ConfigScheduling(ProtectedClass):
         for ev in scheduler.sort_schedules(sabnzbd.CFG['misc']['schedlines'], forward=True):
             config['schedlines'].append(ev[3])
 
+        actions = ['resume', 'pause', 'shutdown', 'speedlimit']
+        servers = sabnzbd.CFG['servers']
+        for server in servers:
+            actions.append(server)
+        config['actions'] = actions
 
         template = Template(file=os.path.join(self.__web_dir, 'config_scheduling.tmpl'),
                             searchList=[config],
@@ -1777,13 +1799,31 @@ class ConfigScheduling(ProtectedClass):
     def addSchedule(self, minute = None, hour = None, dayofweek = None,
                     action = None, arguments = None, _dc = None):
         schedules = sabnzbd.CFG['misc']['schedlines']
+
+        arguments = arguments.strip().lower()
+        if arguments in ('on', 'enable'):
+            arguments = '1'
+        elif arguments in ('off','disable'):
+            arguments = '0'
+
         if minute and hour  and dayofweek and action:
-            try:
-                if action == 'speedlimit': int(arguments)
+            if (action == 'speedlimit') and arguments.isdigit():
+                pass
+            elif action in ('resume', 'pause', 'shutdown'):
+                arguments = ''
+            elif action.find(':') > 0:
+                if arguments == '1':
+                    arguments = action
+                    action = 'enable_server'
+                else:
+                    arguments = action
+                    action = 'disable_server'
+            else:
+                action = None
+
+            if action:
                 schedules.append('%s %s %s %s %s' %
                                  (minute, hour, dayofweek, action, arguments))
-            except:
-                pass
         save_configfile(sabnzbd.CFG)
         scheduler.restart()
         raise Raiser(self.__root, _dc=_dc)

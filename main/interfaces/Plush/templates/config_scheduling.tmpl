@@ -49,10 +49,9 @@ else:
 						<div class="sucker">Action:</div>
 					</td><td>
 						<select name="action">
-							<option value="resume">Resume</option>
-							<option value="pause">Pause</option>
-							<option value="shutdown">Shutdown SAB</option>
-							<option value="speedlimit">Speed Limit</option>
+                            <!--#for $action in $actions#-->
+                                <option value="$action">$action
+                            <!--#end for#-->
 						</select>
 					</td></tr>
 					
