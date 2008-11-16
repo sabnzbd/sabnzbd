@@ -355,9 +355,15 @@ def perm_script(wdir, umask):
 
     # Parse the dir/file tree and set permissions
     for root, dirs, files in os.walk(wdir):
-        os.chmod(root, umask)
+        try:
+            os.chmod(root, umask)
+        except:
+            logging.error('[%s] Cannot change permissions of %s', __NAME__, root)
         for name in files:
-            os.chmod(join(root, name), umask_file)
+            try:
+                os.chmod(join(root, name), umask_file)
+            except:
+                logging.error('[%s] Cannot change permissions of %s', __NAME__, join(root, name))
 
 
 def Cat2Dir(cat, defdir):
