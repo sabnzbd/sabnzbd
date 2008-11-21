@@ -90,6 +90,7 @@ DO_SAVE = True
 AUTODISCONNECT = True
 PAR_CLEANUP = False
 PAR_OPTION = ''
+NO_DUPES = False
 
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
@@ -333,7 +334,7 @@ INIT_LOCK = Lock()
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, AUTODISCONNECT, \
-           DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, PAR_OPTION, CLEANUP_LIST, IGNORE_SAMPLES, \
+           DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, PAR_OPTION, NO_DUPES, CLEANUP_LIST, IGNORE_SAMPLES, \
            USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
            USERNAME_MATRIX, PASSWORD_MATRIX, \
            DIRSCANNER, URLGRABBER, NZBQ, DOWNLOADER, \
@@ -393,6 +394,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if PAR_OPTION.lower() == 'none':
         PAR_OPTION = ""
 
+    NO_DUPES = bool(check_setting_int(CFG, 'misc', 'no_dupes', 0))
+    
     CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
 
     SAFE_POSTPROC = bool(check_setting_int(CFG, 'misc', 'safe_postproc', 0))
@@ -969,25 +972,34 @@ def save_state():
 NZB_LOCK = Lock()
 
 @synchronized(NZB_LOCK)
-def backup_nzb(filename, data):
+def backup_nzb(filename, data, no_dupes):
+    """ Backup NZB file,
+        return True if OK, False if no_dupes and backup already exists
+    """
+    result = True
     if NZB_BACKUP_DIR:
-        filename += '.gz'
-        logging.info("[%s] Backing up %s", __NAME__, filename)
+        backup_name = filename + '.gz'
 
         # Need to go to the backup folder to
         # prevent the pathname being embedded in the GZ file
         here = os.getcwd()
         os.chdir(NZB_BACKUP_DIR)
 
-        try:
-            _f = gzip.GzipFile(filename, 'wb')
-            _f.write(data)
-            _f.flush()
-            _f.close()
-        except:
-            logging.error("[%s] Saving %s to %s failed", __NAME__, filename, NZB_BACKUP_DIR)
+        if no_dupes and os.path.exists(backup_name):
+            result = False
+        else:
+            logging.info("[%s] Backing up %s", __NAME__, backup_name)
+            try:
+                _f = gzip.GzipFile(backup_name, 'wb')
+                _f.write(data)
+                _f.flush()
+                _f.close()
+            except:
+                logging.error("[%s] Saving %s to %s failed", __NAME__, backup_name, NZB_BACKUP_DIR)
 
         os.chdir(here)
+
+    return result
 
 
 ################################################################################

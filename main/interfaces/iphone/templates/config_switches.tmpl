@@ -39,6 +39,11 @@
                 <div class="toggle" onclick="toggleValue('safe_postproc')" <!--#if $safe_postproc > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
             </div>
             <div class="row">
+    		    <label>No duplicate downloads:</label><br/><br/>
+                <input type="hidden" id="no_dupes" name="no_dupes" value="$no_dupes">
+                <div class="toggle" onclick="toggleValue('no_dupes')" <!--#if $no_dupes > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+            </div>
+            <div class="row">
 
 		    <label>Dirscan Options:</label><br/><br/>
             

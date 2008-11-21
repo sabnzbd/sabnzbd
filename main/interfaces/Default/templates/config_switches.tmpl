@@ -32,6 +32,9 @@
     <label><input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> <strong>Post-process only verified jobs</strong></label><br>
     Only perform post-processing on jobs that passed all PAR2 checks.<br>
     <br>
+    <label><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /> <strong>Do not download same job twice</strong></label><br>
+    Skip job if a backed-up NZB with the same name exists.<br>
+    <br>
     <strong>Default post-processing:</strong><br>
     Used when no post-processing is defined by the category.<br>
     <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None

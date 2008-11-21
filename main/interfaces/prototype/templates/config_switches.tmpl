@@ -42,6 +42,11 @@
 		    <span class="tips">Only perform post-processing on jobs that passed all PAR2 checks.</span></label>
 		<br class="clear" />
 
+		    <label><span class="label">Do not download same job twice:</span>
+		    <input class="radio" type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> />
+		    <span class="tips">Skip job if a backed-up NZB with the same name exists.</span></label>
+		<br class="clear" />
+
 		    <span class="label">Default Post-Processing:</span>
 		    <input class="radio" type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
 		    <input class="radio" type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair

@@ -404,7 +404,10 @@ class NzbObject(TryList):
             logging.error("[%s] Invalid NZB file %s, skipping", __NAME__, filename)
             raise ValueError
 
-        sabnzbd.backup_nzb(filename, nzb)
+        if not sabnzbd.backup_nzb(filename, nzb, sabnzbd.NO_DUPES):
+            # File already exists and we have no_dupes set
+            logging.warning('[%s] Skipping duplicate NZB "%s"', __NAME__, filename)
+            raise ValueError
 
         avg_age = 0
         valids = 0
