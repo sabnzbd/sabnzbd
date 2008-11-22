@@ -65,6 +65,9 @@ class PostProcessor(Thread):
     def stop(self):
         self.queue.put(None)
 
+    def empty(self):
+        return self.queue.empty()
+
     def run(self):
         while 1:
             if self.queue.empty(): HandleEmptyQueue()

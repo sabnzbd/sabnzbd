@@ -790,10 +790,17 @@ def main():
         check_latest_version()
 
     # Have to keep this running, otherwise logging will terminate
+    awake = 0
     while cherrypy.server.ready:
         if (not testRelease) and sabnzbd.LOGLEVEL != logging_level:
             logging_level = sabnzbd.LOGLEVEL
             logger.setLevel(LOGLEVELS[logging_level])
+        # Keep Windows awake every 30 sec (if needed)
+        if awake > 9:
+            sabnzbd.keep_awake()
+            awake = 0
+        else:
+            awake += 1
         time.sleep(3)
 
     Notify("SAB_Shutdown", None)

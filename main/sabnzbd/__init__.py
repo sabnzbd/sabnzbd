@@ -34,6 +34,12 @@ import time
 from time import sleep
 
 try:
+    import ctypes
+    KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
+except:
+    KERNEL32 = None
+
+try:
     # Try to import OSX library
     import Foundation
     DARWIN = True
@@ -1315,6 +1321,15 @@ def run_script(script):
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
+
+def keep_awake():
+    """ If we still have work to do, keep Windows system awake
+    """
+    global KERNEL32, NZBQ, POSTPROCESSOR, DOWNLOADER
+    if KERNEL32 and (DOWNLOADER and not DOWNLOADER.paused):
+        if (POSTPROCESSOR and not POSTPROCESSOR.empty()) or (NZBQ and not NZBQ.is_empty()):
+            # set ES_SYSTEM_REQUIRED
+            KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
 
 
 ################################################################################
