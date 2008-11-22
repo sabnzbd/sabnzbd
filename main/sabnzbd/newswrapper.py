@@ -231,6 +231,8 @@ class NewsWrapper:
     def hard_reset(self, wait=True):
         if self.nntp:
             try:
+                self.nntp.sock.sendall('QUIT\r\n')
+                time.sleep(0.1)
                 self.nntp.sock.close()
             except:
                 pass
@@ -249,6 +251,8 @@ class NewsWrapper:
         """ Close connection and remove nntp object """
         if self.nntp:
             try:
+                self.nntp.sock.sendall('QUIT\r\n')
+                time.sleep(0.1)
                 self.nntp.sock.close()
             except:
                 pass
