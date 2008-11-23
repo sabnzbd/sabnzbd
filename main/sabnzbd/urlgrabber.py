@@ -100,7 +100,7 @@ class URLGrabber(Thread):
                     for tup in header.items():
                         for item in tup:
                             if "filename=" in item:
-                                filename = item[item.index("filename=") + 9:].strip('"')
+                                filename = item[item.index("filename=") + 9:].strip(';').strip('"')
                                 break
 
             if not fn:
