@@ -402,6 +402,7 @@ class NzbObject(TryList):
             root
         except:
             logging.error("[%s] Invalid NZB file %s, skipping", __NAME__, filename)
+            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
             raise ValueError
 
         if not sabnzbd.backup_nzb(filename, nzb, sabnzbd.NO_DUPES):

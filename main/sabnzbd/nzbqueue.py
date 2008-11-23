@@ -160,6 +160,7 @@ class NzbQueue(TryList):
                 self.reset_try_list()
             except:
                 logging.error("[%s] Error while adding %s, removing", __NAME__, nzo_id)
+                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
                 self.remove(nzo_id, False)
         else:
             logging.info("[%s] Item %s no longer in queue, omitting", __NAME__,

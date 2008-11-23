@@ -328,6 +328,7 @@ class Downloader(Thread):
                                 logging.error("[%s] Failed to initialize %s@%s:%s",
                                                   __NAME__, nw.thrdnum, server.host,
                                                   server.port)
+                                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
                                 self.__reset_nw(nw, "failed to initialize")
 
             # Exit-point

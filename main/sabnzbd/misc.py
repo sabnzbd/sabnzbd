@@ -184,6 +184,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
             os.remove(path)
         except:
             logging.error("[%s] Error removing %s", __NAME__, path)
+            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
             status = 1
     else:
         zf.close()
@@ -217,6 +218,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         f.close()
     except:
         logging.warning('[%s] Cannot read %s', __NAME__, path)
+        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
         return -2
 
     _cat, name, _pp, _script = Cat2OptsDef(name, catdir)
@@ -238,6 +240,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         if not keep: os.remove(path)
     except:
         logging.error("[%s] Error removing %s", __NAME__, path)
+        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
         return 1
 
     return 0
@@ -299,6 +302,7 @@ class DirScanner(Thread):
             except:
                 if not self.error_reported and not catdir:
                     logging.error("Cannot read Watched Folder %s", folder)
+                    logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
                     self.error_reported = True
                 files = []
 
@@ -391,6 +395,7 @@ class DirScanner(Thread):
                 except:
                     if not self.error_reported:
                         logging.error("Cannot read Watched Folder %s", folder)
+                        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
                         self.error_reported = True
                     list = []
 
@@ -701,6 +706,7 @@ def launch_a_browser(url):
             webbrowser.open(url, 1, 1)
         except:
             logging.warning("Cannot launch the browser, probably not found")
+            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
 
 
 ################################################################################
@@ -965,6 +971,7 @@ def create_dirs(dirpath):
         logging.info('[%s] Creating directories: %s', __NAME__, dirpath)
         if not CreateAllDirs(dirpath, sabnzbd.UMASK):
             logging.error("[%s] Failed making (%s)",__NAME__,dirpath)
+            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
             return None
     return dirpath
 
@@ -989,6 +996,7 @@ def move_to_path(path, new_path, unique=True):
                 os.remove(path)
             except:
                 logging.error("[%s] Failed moving %s to %s", __NAME__, path, new_path)
+                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
     return new_path
 
 

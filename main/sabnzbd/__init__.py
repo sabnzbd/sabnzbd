@@ -1346,6 +1346,7 @@ def get_new_id(prefix):
         return tail
     except:
         logging.error("[%s] Failure in tempfile.mkstemp", __NAME__)
+        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
 
 @synchronized(IO_LOCK)
 def save_data(data, _id, do_pickle = True, doze= 0):

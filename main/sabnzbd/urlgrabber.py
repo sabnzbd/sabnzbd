@@ -220,6 +220,7 @@ def _grab_nzbmatrix(url):
         os.close(fn)
     except:
         logging.error("[%s] Cannot create temp file for %s", __NAME__, filename)
+        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
         path = None
 
     return (path, filename)

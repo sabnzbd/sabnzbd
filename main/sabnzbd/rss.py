@@ -187,6 +187,7 @@ class RSSQueue:
                 defPriority = cfg['priority'] = 0
         except:
             logging.error('[%s] Incorrect RSS feed description "%s"', __NAME__, feed)
+            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
             return
 
         # Preparations, convert filters to regex's
