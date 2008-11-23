@@ -639,17 +639,19 @@ def panic_message(panic, a=None, b=None):
 
     if os.name == 'nt':
         os_str = 'Press Startkey+R and type the line (example):'
+        prog_path = '"%s"' % sabnzbd.MY_FULLNAME
     else:
         os_str = 'Open a Terminal window and type the line (example):'
+        prog_path = sabnzbd.MY_FULLNAME
 
     if panic == PANIC_PORT:
         newport = int(b) + 1
         newport = "%s" % newport
-        msg = MSG_BAD_PORT % (b, a, os_str, sabnzbd.MY_FULLNAME, a, newport)
+        msg = MSG_BAD_PORT % (b, a, os_str, prog_path, a, newport)
     elif panic == PANIC_TEMPL:
         msg = MSG_BAD_TEMPL % a
     elif panic == PANIC_QUEUE:
-        msg = MSG_BAD_QUEUE % (a, os_str, sabnzbd.MY_FULLNAME)
+        msg = MSG_BAD_QUEUE % (a, os_str, prog_path)
     elif panic == PANIC_FWALL:
         if a:
             msg = MSG_BAD_FWALL % "It is likely that you are using ZoneAlarm on Vista.<br>"
