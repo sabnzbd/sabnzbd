@@ -14,7 +14,10 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <input type="submit" value="Add" onclick="javascript:submitconfig('config/rss/add_rss_feed', '','add_rss_feed', '1')"   />
 </fieldset>
 </div>
-<br class="clear" />
+
+<p>The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />
+The checking frequency is in the General page of the configuration<br />
+When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download"</p>
 <!--#for $feed in $rss#-->
 <br class="clear" />
 <fieldset class="EntryFieldSet">
