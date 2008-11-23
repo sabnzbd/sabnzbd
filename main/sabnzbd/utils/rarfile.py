@@ -134,7 +134,11 @@ class RarFile:
         self.uses_volumes = 0
         self.info_callback = info_callback
         self.got_mainhdr = 0
-        self._gen_volname = self._gen_oldvol
+        file, ext = os.path.splitext(rarfile)
+        if 'r' in ext:
+            self._gen_volname = self._gen_oldvol
+        else:
+            self._gen_volname = self._gen_newvol
 
         if mode != "r":
             raise Exception("Only mode=r supported")
