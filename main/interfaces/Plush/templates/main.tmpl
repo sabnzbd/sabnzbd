@@ -19,49 +19,38 @@
 	<script type="text/javascript" src="static/javascripts/jquery.livequery.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.ifixpng.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.flot.pack.js?$version"></script>
-	<script type="text/javascript" src="static/javascripts/webtoolkit.aim.js?$version"></script>
+	<script type="text/javascript" src="static/javascripts/jquery.ocupload-1.1.2.packed.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/plush.js?$version"></script>
 	
 </head>
 <body>
+	
+	<!--#if $warning#-->
+	<div id="warning_message"><strong>$warning</strong></div>
+	<!--#end if#-->
 
-
-	<div id="add_nzb_menu_toggle_upper"><span id="addnzb_toggler">Add NZB</span>&nbsp;<span id="chart_toggler">Bandwidth Graph</span>&nbsp;<span id="menu_toggler">Config Menu</span></div>
+	<div id="add_nzb_menu_toggle_upper"><span id="addnzb_toggler">Add NZB</span>&nbsp;<span id="chart_toggler">Bandwidth Graph</span></div>
 	<div align=center><div id="chart"></div></div>
 	<a name="TOP"></a>
-	
-	<div class="menu_upper_lower" style="display:none">
+
+	<div class="menu_upper_lower">
 		<ul>
 		<!--#if $new_release#-->
 		<li><a href="$new_rel_url" target="_blank"><b style="color:darkgreen">New&nbsp;release&nbsp;$new_release&nbsp;available!</b></a></li>
 		<!--#end if#-->
 		<!--#if $have_warnings != '0' #-->
-		<li><a href="connections" style="border-bottom:0px;"><b style="color:darkred" title="$last_warning" class="tip">$have_warnings&nbsp;Warning<!--#if $have_warnings != '1' #-->s<!--#end if#-->&nbsp;!</b></a></li>
+		<li><a href="connections" style="border-bottom:0px;"><b style="color:darkred" title="$last_warning" class="tip">$have_warnings&nbsp;Warning<!--#if $have_warnings != '1' #-->s<!--#end if#--></b></a></li>
 		<!--#end if#-->
-		<li><a href="connections">Connections</a></li>
-		<li><a href="config/general">General</a></li>
-		<li><a href="config/directories">Folders</a></li>
-		<li><a href="config/switches">Switches</a></li>
-		<li><a href="config/server">Servers</a></li>
-		<li><a href="config/categories">Categories</a></li>
-		<li><a href="config/scheduling">Scheduling</a></li>
-		<li><a href="config/rss">RSS</a></li>
-		<li><a href="config/email">Email</a></li>
-		<li><a href="config/newzbin">Index sites</a></li>
-		<li><a href="#HIST">History</a></li>
 		</ul>
 	</div>
 	
-	<!--#if $warning#-->
-	<div id="warning_message"><h2><u>/<blink>!</blink>\</u>&nbsp;WARNING&nbsp;<u>/<blink>!</blink>\</u></h2><b>$warning</b></div>
-	<!--#end if#-->
 	
 	<div id="add_nzb_menu" style="display:none">
 		
 		<form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="mode" value="addfile" />
 		<span class="add_nzb_item">
-			<small>&rarr;&nbsp;NZB&nbsp;Processing</small>
+			<small>NZB Processing:</small>
 			<!--#if $cat_list#-->
 			<select id="addID_cat" name="cat" title="Category" class="tip">
 			<!--#for $ct in $cat_list#-->
@@ -70,8 +59,8 @@
 			</select>
 			<!--#end if#-->
 			<select id="addID_pp" name="pp" title="Post-Processing Option" class="tip">
-				<option value="-1" <!--#if $cat_list then "selected" else ""#-->>(Default)</option>
-				<option value="0">(Skip)</option>
+				<option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
+				<option value="0">Skip</option>
 				<option value="1">+Repair</option>
 				<option value="2">+R+Unpack</option>
 				<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
@@ -86,19 +75,12 @@
 		</span>
 		&nbsp;&nbsp;
 		<span class="add_nzb_item">
-			<span class="add_nzb_item">
-				<small>&rarr;&nbsp;URL<!--#if $varExists('newzbinDetails') then "/Newzbin" else ""#--></small>
-				<input type="text" id="addID_input" size="24" />
-				<input type="submit" id="addID" value="&raquo; FETCH NZB" />
-			</span>
-			
-			&nbsp;&nbsp;
-
-			<span class="add_nzb_item">
-				<small>&rarr;&nbsp;File Upload</small>
-				<input type="file" name="name" size="24" />
-				<input type="submit" id="addNZBbyFile" value="&raquo; UPLOAD NZB" />
-			</span>
+			<input type="text" id="addID_input" size="22" />
+			<input type="submit" id="addID" value="Fetch NZB" />
+		</span>
+		&nbsp;&nbsp;
+		<span class="add_nzb_item">
+			<div id="addNZBbyFile"><input type="submit" value="Upload an NZB" /></div>
 		</span>
 		</form>
 		
@@ -128,16 +110,16 @@
 					<li><a class="queue_logo"></a>
 						<ul>
 							<li><a style="text-decoration:none"><select id="refreshRate-option">
-									<option value="1">1 second&nbsp;</option>
-									<option value="2">2 second&nbsp;</option>
-									<option value="4">4 second&nbsp;</option>
-									<option value="8">8 second&nbsp;</option>
-									<option value="16">16 second&nbsp;</option>
-									<option value="30">30 second&nbsp;</option>
-									<option value="60">1 minute&nbsp;</option>
-									<option value="120">2 minute&nbsp;</option>
-									<option value="900">15 minute&nbsp;</option>
-									<option value="1800">30 minute&nbsp;</option>
+									<option value="1">1 sec&nbsp;</option>
+									<option value="2">2 sec&nbsp;</option>
+									<option value="4">4 sec&nbsp;</option>
+									<option value="8">8 sec&nbsp;</option>
+									<option value="16">16 sec&nbsp;</option>
+									<option value="30">30 sec&nbsp;</option>
+									<option value="60">1 min&nbsp;</option>
+									<option value="120">2 min&nbsp;</option>
+									<option value="900">15 min&nbsp;</option>
+									<option value="1800">30 min&nbsp;</option>
 									<option value="0">No&nbsp;</option>
 								</select>&nbsp;Refresh</a>
 							</li>
@@ -177,7 +159,7 @@
 									<li><a id="queue_purge">Purge the Queue</a></li>
 								</ul>
 							</li>
-							<li><a class="navbullet">Config</a>
+							<li><a href="connections" class="navbullet">Config</a>
 								<ul>
 									<li><a href="connections">Connections</a></li>
 									<li><a href="config/general">General</a></li>
@@ -188,14 +170,14 @@
 									<li><a href="config/scheduling">Scheduling</a></li>
 									<li><a href="config/rss">RSS</a></li>
 									<li><a href="config/email">Email</a></li>
-									<li><a href="config/newzbin">Newzbin</a></li>
+									<li><a href="config/newzbin">Index Sites</a></li>
 								</ul>
 							</li>
 							<li><a class="navbullet">Help</a>
 								<ul>
 									<li><a href="$helpuri" target="_blank" title="Open Official Manual" class="tip">Wiki</a></li>
 									<li><a href="http://forums.sabnzbd.org" target="_blank" title="Open Official Message Board" class="tip">Forums</a></li>
-									<li title="Auto-Load Chat Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip"><a id="help_irc" href="http://embed.mibbit.com/?server=irc.synirc.net&channel=%23sabnzbd&parseLinks=true&chatOutputShowTimes=true" target="_blank">IRC</a></li>
+									<li title="Load IRC Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip"><a id="help_irc" href="http://www.sabnzbd.org/live-chat/" target="_blank">Live Chat</a></li>
 								</ul>
 							</li>
 							<li><a id="shutdown_sabnzbd">Shutdown <small>SABnzbd</small></a></li>
@@ -243,15 +225,7 @@
 		</div>
 		
 	</div>
-	
-	<br/>
-	<div class="menu_upper_lower" style="display:none">
-		<ul>
-		<li><a href="rss?mode=history">RSS</a></li>
-		<li><a href="$helpuri" target="_blank">Help</a></li>
-		<li><a href="#TOP">Top</a></li>
-		</ul>
-	</div>
-	
+	&nbsp;
+		
 </body>
 </html>

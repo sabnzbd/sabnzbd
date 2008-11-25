@@ -116,7 +116,7 @@ def InjectProgressBarPosition (mbleft, mb):
 		</select>
 		<!--#end if#-->
 		<select title="Processing Option" class="proc_option">
-			<option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->>(Skip)</option>
+			<option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->>Skip</option>
 			<option value="1" <!--#if $slot.unpackopts == "1" then "selected " else ""#-->>+Repair</option>
 			<option value="2" <!--#if $slot.unpackopts == "2" then "selected " else ""#-->>+R+Unpack</option>
 			<option value="3" <!--#if $slot.unpackopts == "3" then "selected " else ""#-->>+R+U+Delete</option>

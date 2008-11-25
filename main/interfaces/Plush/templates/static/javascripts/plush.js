@@ -109,26 +109,12 @@ $(document).ready(function(){
 	if (ReadCookie('Plush2AddNZB') != 'block') {
 		$('#add_nzb_menu').css('display','block');
 	}
-	if (ReadCookie('Plush2ConfigMenu') != 'block') {
-		$('.menu_upper_lower').css('display','block');
-	}	
 	if (ReadCookie('Plush2Chart') != 'block') {
 		$('#chart').css('display','block');
 	}	
 	// disable toggler selection
 	disableSelection(document.getElementById("add_nzb_menu_toggle_upper"));
 	
-	$("#menu_toggler").click(function() {
-			if ($('.menu_upper_lower').css('display')!='block')
-			{
-				$('.menu_upper_lower').slideDown("fast", SetCookie('Plush2ConfigMenu',$('.menu_upper_lower').css('display')) );
-			}
-			else
-			{
-				$('.menu_upper_lower').slideUp("fast", SetCookie('Plush2ConfigMenu',$('.menu_upper_lower').css('display')) );
-			}
-	});
-
 	$("#addnzb_toggler").click(function() {
 			if ($('#add_nzb_menu').css('display')!='block')
 			{
@@ -241,20 +227,32 @@ $(document).ready(function(){
 				return RefreshTheQueue();
 			}
 		});
-		$("#addID_input").val('enter URL/ID');
+		$("#addID_input").val('enter NZB URL / Newzbin ID');
 	});
-	$('#addID_input').val('enter URL/ID').focus( function(){
-		if ($(this).val()=="enter URL/ID")
+	$('#addID_input').val('enter NZB URL / Newzbin ID').focus( function(){
+		if ($(this).val()=="enter NZB URL / Newzbin ID")
 			$(this).val('');
 	}).blur( function(){
 		if (!$(this).val())
-			$(this).val('enter URL/ID');
+			$(this).val('enter NZB URL / Newzbin ID');
 	});
 	
 	// set up +NZB by file upload
 	$('#uploadNZBForm').submit( function(){
 		return AIM.submit(this, {'onComplete': RefreshTheQueue})
 	});
+
+	$('#addNZBbyFile').upload({
+	        name: 'name',
+	        action: 'api',
+	        enctype: 'multipart/form-data',
+	        params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val()},
+	        autoSubmit: true,
+	        onComplete: RefreshTheQueue
+			//onSubmit: function() {},
+	        //onSelect: function() {}
+	});
+	
 	
 	// toggle queue shutdown - from options menu
 	if ($('#queue_shutdown_option')) {
