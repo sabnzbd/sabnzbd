@@ -9,7 +9,7 @@ $(document).ready(function(){
 			$('#test_email').corner("round");
 			$('#force_disconnect').corner("round");
 			break;
-		case 'Folders':
+		case 'Sorting':
 			previewtv();
 		case 'General':
 		case 'Switches':
