@@ -591,13 +591,13 @@ fieldset.EntryFieldSet {
 #config_nav li a {
 	background-color: #ddd;
 	display: block;
-	padding: 8px 0px 5px 25px;
+	padding: 8px 0px 8px 30px;
 	color: #666;
 	text-decoration: none;
 	width: 100%;
 	font-size: 9pt;
 	font-weight: bold;
-	background-position: 5px 50%;
+	background-position: 4px 50%;
 	background-repeat:no-repeat;
 }
 
@@ -625,7 +625,8 @@ fieldset.EntryFieldSet {
 #config_nav_scheduling	{ background-image: url(../images/plush-default/config/scheduling.png); }
 #config_nav_rss 		{ background-image: url(../images/plush-default/config/rss.png); }
 #config_nav_email		{ background-image: url(../images/plush-default/config/email.png); }
-#config_nav_newzbin		{ background-image: url(../images/plush-default/config/newzbin.png); }
+#config_nav_index_sites	{ background-image: url(../images/plush-default/config/index_sites.png); }
+#config_nav_sorting		{ background-image: url(../images/plush-default/config/sorting.png); }
 
 
 #config_content legend {
@@ -684,6 +685,7 @@ fieldset.EntryFieldSet {
 	background-image: url(../images/plush-default/config/disconnect.png);
 	padding: 6px;
 	padding-left:36px;
+	padding-right:36px;
 }
 #test_email {
 	background-image: url(../images/plush-default/config/test_email.png);
@@ -694,6 +696,7 @@ fieldset.EntryFieldSet {
 	background-image: url(../images/plush-default/config/save.png);
 	padding: 6px;
 	padding-left:36px;
+	padding-right:36px;
 }
 
 

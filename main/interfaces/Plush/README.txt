@@ -98,7 +98,7 @@ See LICENSE-LGPL
 The following images are from the Nuvola icon set:
 templates/static/images/plush-default/nzo/*.png
 templates/static/images/plush-default/config/*.png
-( with the exception of config_newzbin.png which is used with permission of Newzbin.com )
+...with the exception of config/rss.png which comes from http://feedicons.com/
 
 All other imagery provided by injectx and real_scud; thank you both for the skin.
 
