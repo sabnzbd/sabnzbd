@@ -2,7 +2,8 @@ body {
 	background-color: #B1B1B1;
 	font-family: arial, "lucida console", sans-serif;
 	/* opacity: .9999; */
-	margin:0px 0px; padding:0px;
+	margin: 0px;
+	padding: 0px;
 }
 /*
 select, input {
@@ -18,7 +19,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .menu_upper_lower {
 	text-align: center;
 	font-size: 66%;
-	padding-bottom:6px;
+	padding:4px;
 }
 .menu_upper_lower ul {
 	padding-left:20px;
@@ -64,6 +65,8 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .add_nzb_item {
 	display:inline-block;
 	text-align: center;
+	padding-left: 10px;
+	padding-right:10px;
 }
 #add_nzb_menu {
 	text-align: center;
@@ -128,6 +131,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	text-align:center;
 	background-color: red;
 	color: white;
+	padding-top:2px;
 }
 
 #queue_view_preference, #history_view_preference {

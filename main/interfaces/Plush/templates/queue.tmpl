@@ -35,41 +35,6 @@ def InjectProgressBarPosition (mbleft, mb):
 	<!--#end if#-->
 	\$('#stats_eta').attr('title','ETA: $eta');
 
-	RefreshTime = 5;
-	var cookietimeout;
-
-	function checkCookie()
-	{
-	var speedlog = [];
-	cook=ReadCookie('speedlog2');
-
-		if (cook!=null && cook!="")
-		{
-			var speedlog = cook.split(',');
-			for(i=1; i<21; i++) 
-			{
-				speedlog[i-1] = speedlog[i];
-			}
-
-			speedlog[20] = <!--#echo "%.0f" % float($kbpersec)#-->;
-
-			var speedstr = speedlog.join(',');
-			SetCookie('speedlog2',speedstr,1);
-
-			//drawGraph(speedlog);
-			chartReload(speedlog);
-		}
-		else
-		{
-			SetCookie('speedlog2','0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,<!--#echo "%.0f" % float($kbpersec)#-->',1);
-		}
-
-	}
-	function chartReload(data)
-	{
-		\$.plot(\$("#chart"),[ [ [0, data[0]], [1, data[1]], [2, data[2]], [3, data[3]], [4, data[4]], [5, data[5]], [6, data[6]], [7, data[7]], [8, data[8]],[9, data[9]],[10, data[10]], [11, data[11]],  [12, data[12]], [13, data[13]], [14, data[14]], [15, data[15]], [16, data[16]], [17, data[17]], [18, data[18]],[19, data[19]],[20, data[20]]]],{ yaxis: { min: 0 }, xaxis: { ticks: []} });
-	}
-	checkCookie();
 </script>
 
 <div class="box_banner_hr"></div>

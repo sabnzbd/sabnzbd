@@ -18,7 +18,6 @@
 	<script type="text/javascript" src="static/javascripts/jquery.tooltip.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.livequery.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.ifixpng.js?$version"></script>
-	<script type="text/javascript" src="static/javascripts/jquery.flot.pack.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.ocupload-1.1.2.packed.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/plush.js?$version"></script>
 	
@@ -28,10 +27,6 @@
 	<!--#if $warning#-->
 	<div id="warning_message"><strong>$warning</strong></div>
 	<!--#end if#-->
-
-	<div id="add_nzb_menu_toggle_upper"><span id="addnzb_toggler">Add NZB</span>&nbsp;<span id="chart_toggler">Bandwidth Graph</span></div>
-	<div align=center><div id="chart"></div></div>
-	<a name="TOP"></a>
 
 	<div class="menu_upper_lower">
 		<ul>
@@ -45,7 +40,7 @@
 	</div>
 	
 	
-	<div id="add_nzb_menu" style="display:none">
+	<div id="add_nzb_menu">
 		
 		<form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 		<input type="hidden" name="mode" value="addfile" />
@@ -76,11 +71,11 @@
 		&nbsp;&nbsp;
 		<span class="add_nzb_item">
 			<input type="text" id="addID_input" size="22" />
-			<input type="submit" id="addID" value="Fetch NZB" />
+			<input type="submit" id="addID" value="Fetch" />
 		</span>
 		&nbsp;&nbsp;
 		<span class="add_nzb_item">
-			<div id="addNZBbyFile"><input type="submit" value="Upload an NZB" /></div>
+			<div id="addNZBbyFile"><input type="submit" value="Upload NZB" /></div>
 		</span>
 		</form>
 		

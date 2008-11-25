@@ -106,15 +106,14 @@ $(document).ready(function(){
 		history_view_preference = ReadCookie('history_view_preference');
 
 	// restore Add NZB from cookie
+	/*
 	if (ReadCookie('Plush2AddNZB') != 'block') {
 		$('#add_nzb_menu').css('display','block');
 	}
-	if (ReadCookie('Plush2Chart') != 'block') {
-		$('#chart').css('display','block');
-	}	
+	
 	// disable toggler selection
 	disableSelection(document.getElementById("add_nzb_menu_toggle_upper"));
-	
+
 	$("#addnzb_toggler").click(function() {
 			if ($('#add_nzb_menu').css('display')!='block')
 			{
@@ -125,18 +124,8 @@ $(document).ready(function(){
 				$('#add_nzb_menu').slideUp("fast", SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display')) );
 			}
 	});
-
-	$("#chart_toggler").click(function() {
-			if ($('#chart').css('display')!='block')
-			{
-				$('#chart').slideDown("fast", SetCookie('Plush2Chart',$('#chart').css('display')) );
-			}
-			else
-			{
-				$('#chart').slideUp("fast", SetCookie('Plush2Chart',$('#chart').css('display')) );
-			}
-	});
-
+	*/
+	
 	// set Refresh rate within main menu
 	$("#refreshRate-option").val(refreshRate);
 	$("#refreshRate-option").change( function() {
@@ -433,6 +422,7 @@ function ReadCookie(name) {
 	return null;
 }
 
+/*
 // disables toggler text selection when clicking
 function disableSelection(element) {
     element.onselectstart = function() {
@@ -442,3 +432,4 @@ function disableSelection(element) {
     element.style.MozUserSelect = "none";
     element.style.cursor = "default";
 };
+*/
