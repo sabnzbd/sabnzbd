@@ -243,7 +243,8 @@ def GetProfileInfo(vista):
             # Ignore Win23 "logoff" signal
             # This should work, but it doesn't
             # Instead the signal_handler will ignore the "logoff" signal
-            signal.signal(5, signal.SIG_IGN)
+            #signal.signal(5, signal.SIG_IGN)
+            pass
         ok = True
     elif os.name == 'nt':
         specials = Get_User_ShellFolders()
