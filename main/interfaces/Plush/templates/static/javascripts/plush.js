@@ -110,7 +110,7 @@ $(document).ready(function(){
 	$("#onQueueFinish-option").change( function() {
 		$.ajax({
 			type: "GET",
-			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&_dc="+Math.random()
+			url: "api?mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()+"&_dc="+Math.random()
 		});
 	});
 	
@@ -143,23 +143,7 @@ $(document).ready(function(){
 			}
 		});
 	});
-	
-	
-	// toggle queue shutdown - from options menu
-	if ($('#queue_shutdown_option')) {
-		$('#queue_shutdown_option').bind('click', function() { 
-			if(confirm('Are you sure you want to shut down your *computer* when the downloads have finished?')){
-				$.ajax({
-					type: "GET",
-					url: "queue/tog_shutdown?_dc="+Math.random(),
-					success: function(result){
-						return RefreshTheQueue();
-					}
-				});
-			}
-		});
-	}
-	
+
 	
 	// set up "shutdown sabnzbd" from main menu
 	$('#shutdown_sabnzbd').click( function(){
@@ -192,7 +176,7 @@ $(document).ready(function(){
 			$(this).parent().parent().prependTo('#queueTable');
 			$.ajax({
 				type: "GET",
-				url: "queue/switch?uid1="+$(this).parent().parent().attr('id')+"&uid2=0&_dc="+Math.random()
+				url: "api?mode=switch&value="+$(this).parent().parent().attr('id')+"&value2=0&_dc="+Math.random()
 			});
 		});
 		
@@ -200,19 +184,19 @@ $(document).ready(function(){
 		$('#queueTable .proc_category').change(function(){
 			$.ajax({
 				type: "GET",
-				url: 'queue/change_cat?_dc='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&cat='+$(this).val()
+				url: 'api?mode=change_cat&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random()
 			});
 		});
 		$('#queueTable .proc_option').change(function(){
 			$.ajax({
 				type: "GET",
-				url: 'queue/change_opts?_dc='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&pp='+$(this).val()
+				url: 'api?mode=change_opts&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random()
 			});
 		});
 		$('#queueTable .proc_script').change(function(){
 			$.ajax({
 				type: "GET",
-				url: 'queue/change_script?_dc='+Math.random()+'&nzo_id='+$(this).parent().parent().attr('id')+'&script='+$(this).val()
+				url: 'api?mode=change_script&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random()
 			});
 		});
 		
@@ -224,7 +208,7 @@ $(document).ready(function(){
 	}); // end livequery
 	
 	
-	// pause & resume
+	// queue pause/resume
 	$('#pause_resume').click(function(event) {
 		if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
 			$.ajax({
@@ -243,28 +227,28 @@ $(document).ready(function(){
 	});
 
 
-	// purge queue
+	// queue purge
 	$('#queue_purge').click(function(event) {
 		if(confirm('Sure you want to clear out your Queue?')){
 			$.ajax({
 				type: "GET",
-				url: "queue/purge?_dc="+Math.random(),
+				url: "api?mode=queue&name=delete&value=all&_dc="+Math.random(),
 				success: function(result){
 					return RefreshTheQueue();
 				}
 			});
 		}
 	});
-		
-		
-	// Set up Queue Menu actions
+	
+	
+	// queue nzb deletion
 	$('#queue').click(function(event) {
 		if ($(event.target).is('.queue_delete') && confirm('Delete NZB? Are you sure?') ) {
 			delid = $(event.target).parent().parent().attr('id');
 			$('#'+delid).fadeOut('fast');
 			$.ajax({
 				type: "GET",
-				url: 'queue/delete?_dc='+Math.random()+'&uid='+delid
+				url: 'api?mode=queue&name=delete&value='+delid+'&_dc='+Math.random()
 			});
 		}
 	});
@@ -279,13 +263,14 @@ $(document).ready(function(){
 	********************************************/
 
 
-	// history verbosity
+	// history verbosity toggle
 	$('.h_menu_verbose').click(function(event) {
 		$.ajax({
 			type: "GET",
 			url: 'history/tog_verbose?_dc='+Math.random(),
 			success: function(result){
-				return RefreshTheHistory();
+//				return RefreshTheHistory();
+				return $('#history').html(result); // is this loading the history twice? redirect?
 			}
 		});
 	});
@@ -295,22 +280,22 @@ $(document).ready(function(){
 	$('.h_menu_purge').dblclick(function(event) {
 		$.ajax({
 			type: "GET",
-			url: 'history/purge?_dc='+Math.random(),
+			url: 'api?mode=history&name=delete&value=all&_dc='+Math.random(),
 			success: function(result){
-				return $('#history').html(result);
+				RefreshTheHistory();
 			}
 		});
 	});
 	
 	
-	// Set up History Menu actions
+	// history nzb deletion
 	$('#history').click(function(event) {
 		if ($(event.target).is('.queue_delete')) {	// history delete
 			delid = $(event.target).parent().parent().attr('id');
 			$('#'+delid).fadeOut('fast');
 			$.ajax({
 				type: "GET",
-				url: 'history/delete?_dc='+Math.random()+'&job='+delid
+				url: 'api?mode=history&name=delete&value='+delid+'&_dc='+Math.random()
 			});
 		}
 	});
@@ -429,7 +414,7 @@ function InitiateQueueDragAndDrop() {
 				if (rows[i].id == row.id)
 					return $.ajax({
 						type: "GET",
-						url: "queue/switch?uid1="+row.id+"&uid2="+i+"&_dc="+Math.random()
+						url: "api?mode=switch&value="+row.id+"&value2="+i+"&_dc="+Math.random()
 					});
 			return false;
 		}
