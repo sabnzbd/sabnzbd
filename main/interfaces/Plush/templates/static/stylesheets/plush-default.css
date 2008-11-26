@@ -622,13 +622,13 @@ fieldset.EntryFieldSet {
 }
 #config_nav_connections	{ background-image: url(../images/plush-default/config/connections.png); }
 #config_nav_general		{ background-image: url(../images/plush-default/config/general.png); }
-#config_nav_directories	{ background-image: url(../images/plush-default/config/directories.png); }
+#config_nav_directories	{ background-image: url(../images/plush-default/config/user_folders.png); }
 #config_nav_switches	{ background-image: url(../images/plush-default/config/switches.png); }
 #config_nav_server		{ background-image: url(../images/plush-default/config/servers.png); }
 #config_nav_categories	{ background-image: url(../images/plush-default/config/categories.png); }
 #config_nav_scheduling	{ background-image: url(../images/plush-default/config/scheduling.png); }
 #config_nav_rss 		{ background-image: url(../images/plush-default/config/rss.png); }
-#config_nav_email		{ background-image: url(../images/plush-default/config/email.png); }
+#config_nav_email		{ background-image: url(../images/plush-default/config/email_options.png); }
 #config_nav_index_sites	{ background-image: url(../images/plush-default/config/index_sites.png); }
 #config_nav_sorting		{ background-image: url(../images/plush-default/config/sorting.png); }
 
