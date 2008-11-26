@@ -1,12 +1,11 @@
 
-=================================================
-== Plush 2.0 for SABnzbd+ 0.4.0 | June 28 2008 ==
+================================================
+== Plush 3.0 for SABnzbd+ 0.5.0 | Nov 25 2008 ==
 
 ============
 ASSEMBLED BY
 
-pairofdimes
-See LICENSE-CC.txt
+pairofdimes (See LICENSE-CC.txt)
 
 ==============
 SPECIAL THANKS
@@ -16,21 +15,31 @@ switch for bringing so many new enhancements to the web interfaces
 injectx for the new concept design and imagery
 real_scud for creating the new HTML/CSS layout
 inpheaux for the Config concept & assembly and SABnzbd+ logo
-sbultez for creating numerous post-processing icons
-rAf styling up the add menu/main menu
+sbultez for creating numerous history verbosity icons
+rAf for styling up the main menu/add menu
 blis102 for the original Nova & Plush concepts
 
 ============
 KNOWN ISSUES
 
-Slow down your refresh rate if it gets slow!
+Slow down your refresh rate if it gets slow.
 
 ==========
 TOOLS USED
 
+jQuery
+http://jquery.com
+Copyright (c) 2008 John Resig
+See LICENSE-MIT & LICENSE-GPL
+
 jQuery BGiFrame
 http://plugins.jquery.com/project/bgiframe
 Copyright (c) 2006 Brandon Aaron
+See LICENSE-MIT & LICENSE-GPL
+
+jQuery Cookie
+http://www.stilbuero.de
+Copyright (c) 2006 Klaus Hartl
 See LICENSE-MIT & LICENSE-GPL
 
 jQuery Corner
@@ -48,9 +57,9 @@ http://plugins.jquery.com/project/livequery
 Copyright (c) 2007 Brandon Aaron
 See LICENSE-MIT & LICENSE-GPL
 
-jQuery
-http://jquery.com
-Copyright (c) 2008 John Resig
+jQuery One Click Upload
+http://www.michaelmitchell.co.nz
+Copyright (c) 2008 Michael Mitchell
 See LICENSE-MIT & LICENSE-GPL
 
 jQuery Superfish
@@ -67,16 +76,6 @@ jQuery Tooltip
 http://bassistance.de/jquery-plugins/jquery-plugin-tooltip
 Copyright (c) 2006-2008 Jörn Zaefferer
 See LICENSE-MIT & LICENSE-GPL
-
-jQuery Flot
-http://code.google.com/p/flot/
-IOLA
-See LICENSE-MIT
-
-WebToolkit
-http://www.webtoolkit.info/ajax-file-upload.html
-Copyright (c) 2006-2008 www.webtoolkit.info
-See LICENSE-GPL
 
 Thanks goes out to inpheaux for supplying:
 Complete Config Skin

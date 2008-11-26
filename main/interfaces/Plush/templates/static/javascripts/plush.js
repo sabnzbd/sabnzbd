@@ -7,10 +7,7 @@ var history_view_preference = 15;
 // once the DOM is ready, run this
 $(document).ready(function(){
 	
-	// IE6 png transparency issues
-	$('img[@src$=.png], div.history_logo, a.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
-	
-	// main menu
+	// activate main menu (shown upon hovering SABnzbd logo)
 	$(".nav").superfish({
 		animation	: { opacity:"show", height:"show" },
 		hoverClass	: "sfHover",
@@ -20,16 +17,16 @@ $(document).ready(function(){
 		autoArrows	: false
 	});
 	
-	// drag & drop that will extend over multiple refreshes (for Queue)
+	// this code will remain instantiated even when the contents of the queue change
 	$('#queueTable').livequery(function() {
 		
 		$('#queue_view_preference').change(function(){
-			queue_view_preference = $('#queue_view_preference').val();
-			SetCookie('queue_view_preference',queue_view_preference);
+			$.cookie('queue_view_preference', $('#queue_view_preference').val(), { expires: 365 });
 			RefreshTheQueue();
 		});
 		
-		InitiateDragAndDrop(); // also called when queue is manually refreshed
+		// queue sorting
+		InitiateQueueDragAndDrop();
 		
 		$('#queueTable .title').dblclick(function(){
 			$(this).parent().parent().prependTo('#queueTable');
@@ -66,79 +63,58 @@ $(document).ready(function(){
 		
 	});
 	
-	// tooltips that will extend over multiple refreshes (for History)
+	// this code will remain instantiated even when the contents of the history change
 	$('#history .left_stats').livequery(function() {
-		
+		// history view limiter
 		$('#history_view_preference').change(function(){
-			history_view_preference = $('#history_view_preference').val();
-			SetCookie('history_view_preference',history_view_preference);
+			$.cookie('history_view_preference', $('#history_view_preference').val(), { expires: 365 });
 			RefreshTheHistory();
 		});
 	});
-		
+	
+	// this code will remain instantiated even when the contents of the history change
 	$('#history .last div').livequery(function() {
+		// tooltips for verbose notices
 		$(this).tooltip({
 			extraClass:	"tooltip",
 			track:		true, 
 			fixPNG:		true
 		});
-		
 	});
 	
-	// set up more tooltips for main screen
+	// additional tooltips
 	$('.tip').tooltip({
-			extraClass:	"tooltip",
-			track:		true, 
-			fixPNG:		true
+		extraClass:	"tooltip",
+		track:		true, 
+		fixPNG:		true
 	});
 	
 	
 	// restore Refresh rate from cookie
-	if (ReadCookie('Plush2Refresh'))
-		refreshRate = ReadCookie('Plush2Refresh');
+	if ($.cookie('Plush2Refresh'))
+		refreshRate = $.cookie('Plush2Refresh');
 	else
-		SetCookie('Plush2Refresh',refreshRate);
-
+		$.cookie('Plush2Refresh', refreshRate, { expires: 365 });
+	
 	// restore queue/history view preferences
-	if (ReadCookie('queue_view_preference'))
-		queue_view_preference = ReadCookie('queue_view_preference');
-	if (ReadCookie('history_view_preference'))
-		history_view_preference = ReadCookie('history_view_preference');
+	if ($.cookie('queue_view_preference'))
+		queue_view_preference = $.cookie('queue_view_preference');
+	if ($.cookie('history_view_preference'))
+		history_view_preference = $.cookie('history_view_preference');
 
-	// restore Add NZB from cookie
-	/*
-	if (ReadCookie('Plush2AddNZB') != 'block') {
-		$('#add_nzb_menu').css('display','block');
-	}
-	
-	// disable toggler selection
-	disableSelection(document.getElementById("add_nzb_menu_toggle_upper"));
-
-	$("#addnzb_toggler").click(function() {
-			if ($('#add_nzb_menu').css('display')!='block')
-			{
-				$('#add_nzb_menu').slideDown("fast", SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display')) );
-			}
-			else
-			{
-				$('#add_nzb_menu').slideUp("fast", SetCookie('Plush2AddNZB',$('#add_nzb_menu').css('display')) );
-			}
-	});
-	*/
-	
-	// set Refresh rate within main menu
+	// Refresh Rate main menu input
 	$("#refreshRate-option").val(refreshRate);
 	$("#refreshRate-option").change( function() {
 		reactivate = false;
 		if (refreshRate == 0)
 			reactivate = true;
 		refreshRate = $("#refreshRate-option").val();
-		SetCookie('Plush2Refresh',refreshRate);
+		$.cookie('Plush2Refresh', refreshRate, { expires: 365 });
 		if (refreshRate > 0 && reactivate)
 			MainLoop();
 	});
 	
-	// "KB/s Max Speed" main menu input
+	// Max Speed main menu input
 	$("#maxSpeed-option").focus( function() {
 		focusedOnSpeedChanger = true;
 	});
@@ -152,7 +128,7 @@ $(document).ready(function(){
 		});
 	});
 	
-	// "On Queue Finish" main menu item menu select
+	// On Queue Finish main menu select
 	$("#onQueueFinish-option").change( function() {
 		$.ajax({
 			type: "GET",
@@ -160,13 +136,12 @@ $(document).ready(function(){
 		});
 	});
 	
-	// sort queue (3 options from main menu)
+	// Sort Queue main menu options
 	$('#sort_by_avg_age').click(function(event) {
 		$.ajax({
 			type: "GET",
 			url: "queue/sort_by_avg_age?_dc="+Math.random(),
 			success: function(result){
-				//return LoadTheQueue(result);
 				return RefreshTheQueue();
 			}
 		});
@@ -176,7 +151,6 @@ $(document).ready(function(){
 			type: "GET",
 			url: "queue/sort_by_name?_dc="+Math.random(),
 			success: function(result){
-				//return LoadTheQueue(result);
 				return RefreshTheQueue();
 			}
 		});
@@ -186,7 +160,6 @@ $(document).ready(function(){
 			type: "GET",
 			url: "queue/sort_by_size?_dc="+Math.random(),
 			success: function(result){
-				//return LoadTheQueue(result);
 				return RefreshTheQueue();
 			}
 		});
@@ -199,7 +172,6 @@ $(document).ready(function(){
 				type: "GET",
 				url: "queue/purge?_dc="+Math.random(),
 				success: function(result){
-					//return LoadTheQueue(result);
 					return RefreshTheQueue();
 				}
 			});
@@ -251,7 +223,6 @@ $(document).ready(function(){
 					type: "GET",
 					url: "queue/tog_shutdown?_dc="+Math.random(),
 					success: function(result){
-						//return LoadTheQueue(result);
 						return RefreshTheQueue();
 					}
 				});
@@ -301,7 +272,7 @@ $(document).ready(function(){
 			type: "GET",
 			url: 'history/tog_verbose?_dc='+Math.random(),
 			success: function(result){
-				return RefreshTheHistory();//$('#history').html(result);
+				return RefreshTheHistory();
 			}
 		});
 	});
@@ -329,7 +300,10 @@ $(document).ready(function(){
 		}
 	});
 	
-	// initiate refreshes
+	// fix IE6 .png image transparencies
+	$('img[@src$=.png], div.history_logo, a.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
+
+	// initiate refresh cycle
 	MainLoop();
 	
 });
@@ -375,15 +349,8 @@ function RefreshTheHistory() {
 	});
 }
 
-// refresh the queue with supplied data (like if we already made an AJAX call)
-/*function LoadTheQueue(result) {
-	$('#queue').html(result);
-	if ($('#stats_noofslots').html()!='0')
-		InitiateDragAndDrop();
-}*/
-
-// called upon every refresh
-function InitiateDragAndDrop() {
+// called upon every queue refresh
+function InitiateQueueDragAndDrop() {
 	$("#queueTable").tableDnD({
 		onDrop: function(table, row) {
 			var rows = table.tBodies[0].rows;
@@ -391,7 +358,7 @@ function InitiateDragAndDrop() {
 			if (rows.length < 2)
 				return false;
 			
-			// figure out which position dropped row is at now
+			// determine which position the repositioned row is at now
 			for ( var i=0; i < rows.length; i++ )
 				if (rows[i].id == row.id)
 					return $.ajax({
@@ -401,25 +368,6 @@ function InitiateDragAndDrop() {
 			return false;
 		}
 	});	
-}
-
-// used to store refresh rate
-function SetCookie(name,val) {
-	var date = new Date();
-	date.setTime(date.getTime()+(365*24*60*60*1000));
-	document.cookie = name+"="+val+"; expires="+ date.toGMTString() +"; path=/";
-}
-
-// used during initialization to restore refresh rate
-function ReadCookie(name) {
-	var nameEQ = name + "=";
-	var ca = document.cookie.split(';');
-	for(var i=0;i < ca.length;i++) {
-		var c = ca[i];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	}
-	return null;
 }
 
 /*
