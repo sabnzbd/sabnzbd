@@ -4,9 +4,62 @@ var focusedOnSpeedChanger = false;
 var queue_view_preference = 15;
 var history_view_preference = 15;
 
+
 // once the DOM is ready, run this
 $(document).ready(function(){
 	
+	/********************************************
+	*********************************************
+
+		NZB Processing Methods
+		
+	*********************************************
+	********************************************/
+	
+	
+	// Fetch NZB by URL/Newzbin Report ID
+	$('#addID').bind('click', function() { 
+		$.ajax({
+			type: "GET",
+			url: "addID",
+			data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
+			success: function(result){
+				return RefreshTheQueue();
+			}
+		});
+		$("#addID_input").val('enter NZB URL / Newzbin ID');
+	});
+	$('#addID_input').val('enter NZB URL / Newzbin ID').focus( function(){
+		if ($(this).val()=="enter NZB URL / Newzbin ID")
+			$(this).val('');
+	}).blur( function(){
+		if (!$(this).val())
+			$(this).val('enter NZB URL / Newzbin ID');
+	});
+	
+	
+	// NZB File Upload
+	$('#addNZBbyFile').upload({
+        name: 'name',
+        action: 'api',
+        enctype: 'multipart/form-data',
+        params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val()},
+        autoSubmit: true,
+        onComplete: RefreshTheQueue
+		//onSubmit: function() {},
+        //onSelect: function() {}
+	});
+	
+	
+	/********************************************
+	*********************************************
+
+		Main Menu Methods
+		
+	*********************************************
+	********************************************/
+
+
 	// activate main menu (shown upon hovering SABnzbd logo)
 	$(".nav").superfish({
 		animation	: { opacity:"show", height:"show" },
@@ -17,6 +70,113 @@ $(document).ready(function(){
 		autoArrows	: false
 	});
 	
+	
+	// restore Refresh rate from cookie
+	if ($.cookie('Plush2Refresh'))
+		refreshRate = $.cookie('Plush2Refresh');
+	else
+		$.cookie('Plush2Refresh', refreshRate, { expires: 365 });
+
+
+	// Refresh Rate main menu input
+	$("#refreshRate-option").val(refreshRate);
+	$("#refreshRate-option").change( function() {
+		reactivate = false;
+		if (refreshRate == 0)
+			reactivate = true;
+		refreshRate = $("#refreshRate-option").val();
+		$.cookie('Plush2Refresh', refreshRate, { expires: 365 });
+		if (refreshRate > 0 && reactivate)
+			MainLoop();
+	});
+	
+	
+	// Max Speed main menu input
+	$("#maxSpeed-option").focus( function() {
+		focusedOnSpeedChanger = true;
+	});
+	$("#maxSpeed-option").blur( function() {
+		focusedOnSpeedChanger = false;
+	});
+	$("#maxSpeed-option").change( function() {
+		$.ajax({
+			type: "GET",
+			url: "api?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&_dc="+Math.random()
+		});
+	});
+	
+	
+	// On Queue Finish main menu select
+	$("#onQueueFinish-option").change( function() {
+		$.ajax({
+			type: "GET",
+			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&_dc="+Math.random()
+		});
+	});
+	
+	
+	// Sort Queue main menu options
+	$('#sort_by_avg_age').click(function(event) {
+		$.ajax({
+			type: "GET",
+			url: "queue/sort_by_avg_age?_dc="+Math.random(),
+			success: function(result){
+				return RefreshTheQueue();
+			}
+		});
+	});
+	$('#sort_by_name').click(function(event) {
+		$.ajax({
+			type: "GET",
+			url: "queue/sort_by_name?_dc="+Math.random(),
+			success: function(result){
+				return RefreshTheQueue();
+			}
+		});
+	});
+	$('#sort_by_size').click(function(event) {
+		$.ajax({
+			type: "GET",
+			url: "queue/sort_by_size?_dc="+Math.random(),
+			success: function(result){
+				return RefreshTheQueue();
+			}
+		});
+	});
+	
+	
+	// toggle queue shutdown - from options menu
+	if ($('#queue_shutdown_option')) {
+		$('#queue_shutdown_option').bind('click', function() { 
+			if(confirm('Are you sure you want to shut down your *computer* when the downloads have finished?')){
+				$.ajax({
+					type: "GET",
+					url: "queue/tog_shutdown?_dc="+Math.random(),
+					success: function(result){
+						return RefreshTheQueue();
+					}
+				});
+			}
+		});
+	}
+	
+	
+	// set up "shutdown sabnzbd" from main menu
+	$('#shutdown_sabnzbd').click( function(){
+		if(confirm('Sure you want to shut down the SABnzbd application?'))
+			window.location='shutdown';
+	});
+	
+
+	/********************************************
+	*********************************************
+
+		Queue Methods
+		
+	*********************************************
+	********************************************/
+
+
 	// this code will remain instantiated even when the contents of the queue change
 	$('#queueTable').livequery(function() {
 		
@@ -61,182 +221,10 @@ $(document).ready(function(){
 		$('#queueTable').bind("mouseout", function(){ skipRefresh=false; });
 		$('.box_fatbottom').bind("mouseover mouseout", function(){ skipRefresh=false; });
 		
-	});
-	
-	// this code will remain instantiated even when the contents of the history change
-	$('#history .left_stats').livequery(function() {
-		// history view limiter
-		$('#history_view_preference').change(function(){
-			$.cookie('history_view_preference', $('#history_view_preference').val(), { expires: 365 });
-			RefreshTheHistory();
-		});
-	});
-	
-	// this code will remain instantiated even when the contents of the history change
-	$('#history .last div').livequery(function() {
-		// tooltips for verbose notices
-		$(this).tooltip({
-			extraClass:	"tooltip",
-			track:		true, 
-			fixPNG:		true
-		});
-	});
-	
-	// additional tooltips
-	$('.tip').tooltip({
-		extraClass:	"tooltip",
-		track:		true, 
-		fixPNG:		true
-	});
+	}); // end livequery
 	
 	
-	// restore Refresh rate from cookie
-	if ($.cookie('Plush2Refresh'))
-		refreshRate = $.cookie('Plush2Refresh');
-	else
-		$.cookie('Plush2Refresh', refreshRate, { expires: 365 });
-	
-	// restore queue/history view preferences
-	if ($.cookie('queue_view_preference'))
-		queue_view_preference = $.cookie('queue_view_preference');
-	if ($.cookie('history_view_preference'))
-		history_view_preference = $.cookie('history_view_preference');
-
-	// Refresh Rate main menu input
-	$("#refreshRate-option").val(refreshRate);
-	$("#refreshRate-option").change( function() {
-		reactivate = false;
-		if (refreshRate == 0)
-			reactivate = true;
-		refreshRate = $("#refreshRate-option").val();
-		$.cookie('Plush2Refresh', refreshRate, { expires: 365 });
-		if (refreshRate > 0 && reactivate)
-			MainLoop();
-	});
-	
-	// Max Speed main menu input
-	$("#maxSpeed-option").focus( function() {
-		focusedOnSpeedChanger = true;
-	});
-	$("#maxSpeed-option").blur( function() {
-		focusedOnSpeedChanger = false;
-	});
-	$("#maxSpeed-option").change( function() {
-		$.ajax({
-			type: "GET",
-			url: "api?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&_dc="+Math.random()
-		});
-	});
-	
-	// On Queue Finish main menu select
-	$("#onQueueFinish-option").change( function() {
-		$.ajax({
-			type: "GET",
-			url: "queue/change_queue_complete_action?action="+$("#onQueueFinish-option").val()+"&_dc="+Math.random()
-		});
-	});
-	
-	// Sort Queue main menu options
-	$('#sort_by_avg_age').click(function(event) {
-		$.ajax({
-			type: "GET",
-			url: "queue/sort_by_avg_age?_dc="+Math.random(),
-			success: function(result){
-				return RefreshTheQueue();
-			}
-		});
-	});
-	$('#sort_by_name').click(function(event) {
-		$.ajax({
-			type: "GET",
-			url: "queue/sort_by_name?_dc="+Math.random(),
-			success: function(result){
-				return RefreshTheQueue();
-			}
-		});
-	});
-	$('#sort_by_size').click(function(event) {
-		$.ajax({
-			type: "GET",
-			url: "queue/sort_by_size?_dc="+Math.random(),
-			success: function(result){
-				return RefreshTheQueue();
-			}
-		});
-	});
-	
-	// purge queue
-	$('#queue_purge').click(function(event) {
-		if(confirm('Sure you want to clear out your Queue?')){
-			$.ajax({
-				type: "GET",
-				url: "queue/purge?_dc="+Math.random(),
-				success: function(result){
-					return RefreshTheQueue();
-				}
-			});
-		}
-	});
-	
-	// Set up +NZB by URL/Newzbin Report ID
-	$('#addID').bind('click', function() { 
-		$.ajax({
-			type: "GET",
-			url: "addID",
-			data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
-			success: function(result){
-				return RefreshTheQueue();
-			}
-		});
-		$("#addID_input").val('enter NZB URL / Newzbin ID');
-	});
-	$('#addID_input').val('enter NZB URL / Newzbin ID').focus( function(){
-		if ($(this).val()=="enter NZB URL / Newzbin ID")
-			$(this).val('');
-	}).blur( function(){
-		if (!$(this).val())
-			$(this).val('enter NZB URL / Newzbin ID');
-	});
-	
-	// set up +NZB by file upload
-	$('#uploadNZBForm').submit( function(){
-		return AIM.submit(this, {'onComplete': RefreshTheQueue})
-	});
-
-	$('#addNZBbyFile').upload({
-	        name: 'name',
-	        action: 'api',
-	        enctype: 'multipart/form-data',
-	        params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val()},
-	        autoSubmit: true,
-	        onComplete: RefreshTheQueue
-			//onSubmit: function() {},
-	        //onSelect: function() {}
-	});
-	
-	
-	// toggle queue shutdown - from options menu
-	if ($('#queue_shutdown_option')) {
-		$('#queue_shutdown_option').bind('click', function() { 
-			if(confirm('Are you sure you want to shut down your *computer* when the downloads have finished?')){
-				$.ajax({
-					type: "GET",
-					url: "queue/tog_shutdown?_dc="+Math.random(),
-					success: function(result){
-						return RefreshTheQueue();
-					}
-				});
-			}
-		});
-	}
-	
-	// set up "shutdown sabnzbd" from main menu
-	$('#shutdown_sabnzbd').click( function(){
-		if(confirm('Sure you want to shut down the SABnzbd application?'))
-			window.location='shutdown';
-	});
-	
-	// pause / resume
+	// pause & resume
 	$('#pause_resume').click(function(event) {
 		if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
 			$.ajax({
@@ -253,7 +241,22 @@ $(document).ready(function(){
 		else
 			$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
 	});
-	
+
+
+	// purge queue
+	$('#queue_purge').click(function(event) {
+		if(confirm('Sure you want to clear out your Queue?')){
+			$.ajax({
+				type: "GET",
+				url: "queue/purge?_dc="+Math.random(),
+				success: function(result){
+					return RefreshTheQueue();
+				}
+			});
+		}
+	});
+		
+		
 	// Set up Queue Menu actions
 	$('#queue').click(function(event) {
 		if ($(event.target).is('.queue_delete') && confirm('Delete NZB? Are you sure?') ) {
@@ -266,6 +269,16 @@ $(document).ready(function(){
 		}
 	});
 	
+	
+	/********************************************
+	*********************************************
+
+		History Methods
+		
+	*********************************************
+	********************************************/
+
+
 	// history verbosity
 	$('.h_menu_verbose').click(function(event) {
 		$.ajax({
@@ -277,6 +290,7 @@ $(document).ready(function(){
 		});
 	});
 	
+	
 	// history purge
 	$('.h_menu_purge').dblclick(function(event) {
 		$.ajax({
@@ -287,6 +301,7 @@ $(document).ready(function(){
 			}
 		});
 	});
+	
 	
 	// Set up History Menu actions
 	$('#history').click(function(event) {
@@ -300,13 +315,61 @@ $(document).ready(function(){
 		}
 	});
 	
+	
+	// this code will remain instantiated even when the contents of the history change
+	$('#history .left_stats').livequery(function() {
+		// history view limiter
+		$('#history_view_preference').change(function(){
+			$.cookie('history_view_preference', $('#history_view_preference').val(), { expires: 365 });
+			RefreshTheHistory();
+		});
+	});
+	
+	
+	// this code will remain instantiated even when the contents of the history change
+	$('#history .last div').livequery(function() {
+		// tooltips for verbose notices
+		$(this).tooltip({
+			extraClass:	"tooltip",
+			track:		true, 
+			fixPNG:		true
+		});
+	});
+	
+	
+	/********************************************
+	*********************************************
+
+		Miscellaneous Methods
+		
+	*********************************************
+	********************************************/
+	
+	
+	// restore queue/history view preferences
+	if ($.cookie('queue_view_preference'))
+		queue_view_preference = $.cookie('queue_view_preference');
+	if ($.cookie('history_view_preference'))
+		history_view_preference = $.cookie('history_view_preference');
+	
+	
+	// additional tooltips
+	$('.tip').tooltip({
+		extraClass:	"tooltip",
+		track:		true, 
+		fixPNG:		true
+	});
+	
+	
 	// fix IE6 .png image transparencies
 	$('img[@src$=.png], div.history_logo, a.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
+
 
 	// initiate refresh cycle
 	MainLoop();
 	
-});
+}); // end document onready
+
 
 // calls itself after `refreshRate` seconds
 function MainLoop() {
@@ -319,6 +382,7 @@ function MainLoop() {
 	if (refreshRate > 0)
 		setTimeout("MainLoop()",refreshRate*1000);
 }
+
 
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
@@ -335,6 +399,7 @@ function RefreshTheQueue() {
 	});
 }
 
+
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheHistory() {
 	var limit = history_view_preference;
@@ -348,6 +413,7 @@ function RefreshTheHistory() {
 		}
 	});
 }
+
 
 // called upon every queue refresh
 function InitiateQueueDragAndDrop() {
@@ -369,6 +435,7 @@ function InitiateQueueDragAndDrop() {
 		}
 	});	
 }
+
 
 /*
 // disables toggler text selection when clicking
