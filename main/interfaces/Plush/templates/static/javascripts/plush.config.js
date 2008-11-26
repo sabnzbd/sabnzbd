@@ -12,9 +12,10 @@ $(document).ready(function(){
 		case 'Sorting':
 			previewtv();
 		case 'General':
+		case 'Folders':
 		case 'Switches':
 		case 'Email':
-		case 'Newzbin':
+		case 'Index Sites':
 			$('#save').corner("round");
 			break;
 	};

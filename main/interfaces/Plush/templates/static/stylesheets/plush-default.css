@@ -689,7 +689,6 @@ fieldset.EntryFieldSet {
 	background-image: url(../images/plush-default/config/disconnect.png);
 	padding: 6px;
 	padding-left:36px;
-	padding-right:36px;
 }
 #test_email {
 	background-image: url(../images/plush-default/config/test_email.png);
@@ -700,7 +699,6 @@ fieldset.EntryFieldSet {
 	background-image: url(../images/plush-default/config/save.png);
 	padding: 6px;
 	padding-left:36px;
-	padding-right:36px;
 }
 
 
@@ -801,7 +799,7 @@ fieldset.EntryFieldSet {
 
 .right_links {
 	float: right;
-	margin: 5px 10px 0 0;
+	margin: 5px 40px 0 0;
 }
 
 .right_links a {
