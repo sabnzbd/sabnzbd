@@ -520,6 +520,10 @@ class MainPage(ProtectedClass):
             else:
                 return 'error\n'
             
+        elif mode == 'change_opts':
+            if value and value2 and value2.isdigit():
+                sabnzbd.change_opts(value, int(value2))
+            
         elif mode == 'fullstatus':
             if output == 'xml':
                 return xml_full()
@@ -1762,6 +1766,7 @@ class ConfigRss(ProtectedClass):
             sabnzbd.add_msgid(id, pp, script, cat, priority)
         elif id:
             sabnzbd.add_url(id, pp, script, cat, priority)
+        # Need to pass the title instead
         sabnzbd.rss.flag_downloaded(feed, id)
         raise Raiser(self.__root, _dc=_dc)
 
