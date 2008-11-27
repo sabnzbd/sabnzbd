@@ -53,6 +53,7 @@ EXTRACTFROM_RE = re.compile(r'^Extracting\sfrom\s(.+)')
 SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
 VOLPAR2_RE = re.compile(r'\.*vol[0-9]+\+[0-9]+\.par2', re.I)
+TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
 
 PAR2_COMMAND = None
 PAR2C_COMMAND = None
@@ -178,8 +179,8 @@ def SimpleRarExtract(rarfile, name):
 
 #------------------------------------------------------------------------------
 
-def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
-    xjoinables, xzips, xrars = build_filelists(workdir, workdir_complete)
+def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts):
+    xjoinables, xzips, xrars, xts = build_filelists(workdir, workdir_complete)
 
     rerun = False
     newfiles = []
@@ -227,10 +228,26 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
             if unzip(nzo, workdir, workdir_complete, dele, xzips):
                 error = True
             logging.info('[%s] Unzip finished on %s', __NAME__, workdir)
+            
+    if sabnzbd.DO_TSJOIN:
+        do_tsjoin = False
+        for _ts in xts:
+            if _ts not in ts:
+                do_tsjoin = True
+                rerun = True
+                break
+
+        if do_tsjoin:
+            logging.info('[%s] TS Joining starting on %s', __NAME__, workdir)
+            error, newf = file_join(nzo, workdir, workdir_complete, dele, xts)
+            if newf:
+                newfiles.extend(newf)
+            logging.info('[%s] TS Joining finished on %s', __NAME__, workdir)
+
 
     if rerun:
         z, y = unpack_magic(nzo, workdir, workdir_complete, dele, xjoinables,
-                            xzips, xrars)
+                            xzips, xrars, xts)
         if z:
             error = z
         if y:
@@ -242,15 +259,35 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars):
 # Filejoin Functions
 #------------------------------------------------------------------------------
 
+def match_ts(file):
+    match = TS_RE.search(file)
+    if not match: 
+        return False, '', 0
+    
+    num = int(match.group(1))
+    try:
+        set = file[:match.start()]
+        set += '.ts'
+    except:
+        set = ''
+    return match, set, num
+
 def file_join(nzo, workdir, workdir_complete, delete, joinables):
     actionname = '[FJN-INFO]'
+    newfiles = []
     try:
         joinable_sets = {}
+        set = match = num = None
         for joinable in joinables:
             head, tail = os.path.splitext(joinable)
-            if head not in joinable_sets:
-                joinable_sets[head] = []
-            joinable_sets[head].append(joinable)
+            if tail == '.ts':
+                match, set, num = match_ts(joinable)
+            if not set:
+                set = head
+                    
+            if set not in joinable_sets:
+                joinable_sets[set] = []
+            joinable_sets[set].append(joinable)
 
         logging.debug("[%s] joinable_sets: %s", __NAME__, joinable_sets)
 
@@ -265,7 +302,11 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
             real_size = 0
             for joinable in joinable_sets[joinable_set]:
                 head, tail = os.path.splitext(joinable)
-                real_size += int(tail[1:])
+                if tail == '.ts':
+                    match, set, num = match_ts(joinable)
+                    real_size += num
+                else:
+                    real_size += int(tail[1:])
             logging.debug("[%s] FJN, realsize: %s", __NAME__, real_size)
 
             if real_size == expected_size:
@@ -296,8 +337,10 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 
                 i = 0
                 for joinable in joinable_sets[joinable_set]:
+                    join_num = len(joinable_sets[joinable_set])
+                    perc = (100.0/join_num)*(i)
                     logging.debug("[%s] Processing %s", __NAME__, joinable)
-                    nzo.set_unpackstr("=> Processing %s" % joinable, actionname, 4)
+                    nzo.set_unpackstr("=> Joining %.0f%%" % perc, actionname, 4)
                     f = open(joinable, 'rb')
                     joined_file.write(f.read())
                     f.close()
@@ -312,13 +355,16 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 if delete:
                     actionname = '[DEL-INFO] %s' % os.path.basename(joinable_set)
                     nzo.set_unpackstr("=> Deleted %s file(s)" % i, actionname, 4)
+                newfiles.append(joinable_set)
+                
+        return False, newfiles
     except:
         msg = sys.exc_info()[1]
         nzo.set_unpackstr('=> Error "%s" while running file_join' % msg, actionname, 4)
         logging.error('[%s] Error "%s" while' + \
                       ' running file_join on %s',
                       __NAME__, msg, nzo.get_filename())
-        return True
+        return True, []
 
 #------------------------------------------------------------------------------
 # (Un)Rar Functions
@@ -639,7 +685,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         try:
             nzo.set_unpackstr('=> Scanning "%s"' % parfile, actionname, 1)
 
-            joinables, zips, rars = build_filelists(workdir, None)
+            joinables, zips, rars, ts = build_filelists(workdir, None)
 
             old_dir_content = os.listdir(workdir)
 
@@ -1024,12 +1070,15 @@ def build_filelists(workdir, workdir_complete):
     zips = [f for f in filelist if ZIP_RE.search(f)]
 
     rars = [f for f in filelist if RAR_RE.search(f) and f not in joinables]
+    
+    ts = [f for f in filelist if TS_RE.search(f) and f not in joinables]
 
     logging.debug("[%s] build_filelists(): joinables: %s", __NAME__, joinables)
     logging.debug("[%s] build_filelists(): zips: %s", __NAME__, zips)
     logging.debug("[%s] build_filelists(): rars: %s", __NAME__, rars)
+    logging.debug("[%s] build_filelists(): ts: %s", __NAME__, ts)
 
-    return (joinables, zips, rars)
+    return (joinables, zips, rars, ts)
 
 def notrar(f):
     logging.debug("[%s] notrar(): testing %s", __NAME__, f)

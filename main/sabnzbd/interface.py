@@ -1186,6 +1186,7 @@ class ConfigSwitches(ProtectedClass):
         config['enable_unrar'] = IntConv(sabnzbd.CFG['misc']['enable_unrar'])
         config['enable_unzip'] = IntConv(sabnzbd.CFG['misc']['enable_unzip'])
         config['enable_filejoin'] = IntConv(sabnzbd.CFG['misc']['enable_filejoin'])
+        config['enable_tsjoin'] = IntConv(sabnzbd.CFG['misc']['enable_tsjoin'])
         #config['enable_save'] = IntConv(sabnzbd.CFG['misc']['enable_save'])
         config['enable_par_cleanup'] = IntConv(sabnzbd.CFG['misc']['enable_par_cleanup'])
         config['send_group'] = IntConv(sabnzbd.CFG['misc']['send_group'])
@@ -1217,7 +1218,7 @@ class ConfigSwitches(ProtectedClass):
 
     @cherrypy.expose
     def saveSwitches(self, par_option=None, enable_unrar = None, enable_unzip = None,
-                     enable_filejoin = None, enable_save = None,
+                     enable_filejoin = None, enable_save = None, enable_tsjoin = None,
                      send_group = None, fail_on_crc = None, top_only = None,
                      create_group_folders = None, dirscan_opts = None,
                      enable_par_cleanup = None, auto_sort = None,
@@ -1242,6 +1243,7 @@ class ConfigSwitches(ProtectedClass):
         sabnzbd.CFG['misc']['enable_unrar'] = IntConv(enable_unrar)
         sabnzbd.CFG['misc']['enable_unzip'] = IntConv(enable_unzip)
         sabnzbd.CFG['misc']['enable_filejoin'] = IntConv(enable_filejoin)
+        sabnzbd.CFG['misc']['enable_tsjoin'] = IntConv(enable_tsjoin)
         #sabnzbd.CFG['misc']['enable_save'] = IntConv(enable_save)
         sabnzbd.CFG['misc']['send_group'] = IntConv(send_group)
         sabnzbd.CFG['misc']['fail_on_crc'] = IntConv(fail_on_crc)

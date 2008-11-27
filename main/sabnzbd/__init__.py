@@ -97,6 +97,7 @@ AUTODISCONNECT = True
 PAR_CLEANUP = False
 PAR_OPTION = ''
 NO_DUPES = False
+DO_TSJOIN = True
 
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
@@ -356,7 +357,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
            WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY, \
            MOVIE_SORT_STRING, ENABLE_MOVIE_SORTING, MOVIE_SORT_EXTRA, ENABLE_DATE_SORTING, DATE_SORT_STRING, \
-           MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES
+           MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES, DO_TSJOIN
 
     if __INITIALIZED__:
         return False
@@ -389,6 +390,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     DO_UNZIP = bool(check_setting_int(CFG, 'misc', 'enable_unzip', 1))
 
     DO_UNRAR = bool(check_setting_int(CFG, 'misc', 'enable_unrar', 1))
+    
+    DO_TSJOIN = bool(check_setting_int(CFG, 'misc', 'enable_tsjoin', 1))
 
     DO_SAVE = True #bool(check_setting_int(CFG, 'misc', 'enable_save', 1))
 
