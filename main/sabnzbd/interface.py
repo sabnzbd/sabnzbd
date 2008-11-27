@@ -2970,7 +2970,7 @@ def xml_list(section, keyw, lst):
     return text
 
 
-class xml_factory():
+class xml_factory:
     """
     Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
     Current limitations: 
