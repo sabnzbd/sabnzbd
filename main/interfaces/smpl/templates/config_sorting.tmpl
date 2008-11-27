@@ -4,10 +4,11 @@
 <form class="cmxform" action="">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-<legend>TV Sorting</legend>
+<legend>Series Sorting</legend>
 <hr />
 
-    <label><span class="label">Enable TV Sorting:</span>
+    <input id="complete_dir" type="hidden" value="$complete_dir" />
+    <label><span class="label">Enable Series Sorting:</span>
     <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> />
     <span class="tips">Enable sorting and renaming of episodes.</span></label>
     <br class="clear" />
@@ -85,9 +86,9 @@
 
 <br class="clear" />
 <fieldset class="EntryFieldSet">
-<legend>Movie Sorting</legend>
+<legend>Generic Sorting</legend>
 <hr />
-    <label><span class="label">Enable Movie Sorting:</span>
+    <label><span class="label">Enable Generic Sorting:</span>
     <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> />
     <span class="tips">Enable sorting and renaming of movies.</span></label>
     <br class="clear" />

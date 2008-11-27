@@ -4,7 +4,7 @@
 
 	<!--#raw#-->
 	<script language="javascript">		
-		// switch's TV sort code
+		// switch's Series sort code
     function tvAdd(val){
         var tv = document.getElementById('tvfoldername'); 
         tv.value = tv.value + val;
@@ -176,7 +176,7 @@
 				
 				<legend id="configbox_sorting_folders">Sorting&nbsp;Folders</legend>
 				
-				<input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable TV Sorting</strong><br class="clear" />
+				<input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Series Sorting</strong><br class="clear" />
 
     <a href="#toggle" onclick="javascript:showDiv('Keytable')">Toggle key</a>
      <div id="Keytable">
@@ -250,8 +250,8 @@
     Example: <span id="previewtv"></span>
     <br class="clear" /><br class="clear" />
 
-
-    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Movie Sorting</strong>
+    <input id="complete_dir" type="hidden" value="$complete_dir" />
+    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Generic Sorting</strong>
     <br class="clear" /><br class="clear" />
     <input class="radio" type="checkbox" name="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>Keep loose downloads in extra folders</strong>
     <br class="clear" /><br class="clear" />

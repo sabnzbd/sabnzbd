@@ -54,7 +54,7 @@ STAGENAMES = {0:"Download", 1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin", 5:"Use
 
 BYTES_FILE_NAME  = 'bytes%s.sab' % QUEUE_VERSION
 QUEUE_FILE_NAME  = 'queue%s.sab' % QUEUE_VERSION
-RSS_FILE_NAME    = 'rss_data.sab'
+RSS_FILE_NAME    = 'downloaded_rss.csv'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'
 SCAN_FILE_NAME    = 'watched_data.sab'
 
@@ -90,11 +90,15 @@ NORMAL_PRIORITY = 0
 LOW_PRIORITY = -1
 
 
-IGNORE_SAMPLE_LIST = ['.sample', '-sample', 'sample-', '~sample', '_sample']
-
-tv_episode_match = ['([sS]|[\d]+)x(\d+)',# 1x01
-                      '[Ss](\d+)[\.\-]?[Ee](\d+)'] # S01E01
+series_match = [ ('([sS]|[\d]+)x(\d+)', # 1x01
+                     ['([sS]|[\d])+x(\d+)', '-(\d+)'] ),  #(MATCHER, [EXTRA,MATCHERS])
+                     
+                      ('[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
+                       ['[Ss](\d+)[\.\-]?[Ee](\d+)', '-(\d+)']) ] # Extra matchers
+                      
                       #possibly flawed - 101 - support: [\.\- \s]?(\d)(\d{2,2})[\.\- \s]?
                       
 date_match = ['(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
               '(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
+
+year_match = ['[\(|\.](\d{4})[\)|\.]'] # Something (Year) or .Year.

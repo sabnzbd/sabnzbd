@@ -175,7 +175,7 @@
 <div class="EntryBlock">
   <fieldset class="EntryFieldSet">
 
-<legend>TV Sorting</legend>
+<legend>Series Sorting</legend>
 
     <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable TV Sorting</strong><br class="clear" />
 
@@ -253,8 +253,8 @@
   </fieldset>
 <br />
   <fieldset class="EntryFieldSet">
-<legend>Movie Sorting</legend>
-
+<legend>Generic Sorting</legend>
+    <input id="complete_dir" type="hidden" value="$complete_dir" />
     <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Movie Sorting</strong>
     <br class="clear" /><br class="clear" />
     <input class="radio" type="checkbox" name="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>Keep loose downloads in extra folders</strong>
