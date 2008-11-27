@@ -2056,6 +2056,7 @@ class ConfigSorting(ProtectedClass):
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
+        config['complete_dir'] = sabnzbd.CFG['misc']['complete_dir']
         config['enable_tv_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_tv_sorting'])
         config['tv_sort_string'] = sabnzbd.CFG['misc']['tv_sort_string']
         config['enable_movie_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_movie_sorting'])
