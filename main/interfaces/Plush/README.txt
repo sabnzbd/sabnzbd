@@ -1,6 +1,6 @@
 
 ================================================
-== Plush 3.0 for SABnzbd+ 0.5.0 | Nov 25 2008 ==
+== Plush 3.0 for SABnzbd+ 0.5.0 | Nov 29 2008 ==
 
 ============
 ASSEMBLED BY
@@ -45,6 +45,11 @@ See LICENSE-MIT & LICENSE-GPL
 jQuery Corner
 http://www.malsup.com/jquery/corner
 Dave Methvin & Mike Alsup
+See LICENSE-MIT & LICENSE-GPL
+
+jQuery hoverIntent
+http://cherne.net/brian/resources/jquery.hoverIntent.html
+Brian Cherne
 See LICENSE-MIT & LICENSE-GPL
 
 jQuery ifixpng
@@ -100,6 +105,7 @@ templates/static/images/plush-default/config/*.png
 ...with the exception of config/rss.png which comes from http://feedicons.com/
 
 All other imagery provided by injectx and real_scud; thank you both for the skin.
+...with the exceptions of shadow.png and arrows-ffffff.png which come from http://users.tpg.com.au/j_birch/plugins/superfish
 
 =======
 CONTACT
