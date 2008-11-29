@@ -143,6 +143,7 @@ class RSSQueue:
         #           3 = cat
         #           4 = pp
         #           5 = script
+        #           6 = timestamp (used for time-based clean-up)
         if type(self.jobs) != type({}):
             self.jobs = {}
 
@@ -284,10 +285,19 @@ class RSSQueue:
                         _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False, priority=defPriority)
 
 
-        # If links were dropped by feed, remove from our tables too
+        # If links are in table for more than 4 weeks, remove
+        now = time.time()
+        limit =  now - 4*7*24*3600
         olds  = jobs.keys()
         for old in olds:
-            if old not in newlinks:
+            try:
+                tm = float(jobs[old][6])
+            except:
+                # Fix missing timestamp in older RSS_DATA.SAB file
+                jobs[old].append(now)
+                tm = now
+
+            if tm < limit and (old not in newlinks):
                 logging.debug("[%s] Purging link %s", __NAME__, old)
                 del jobs[old]
 
@@ -386,6 +396,8 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             jobs[link].append(cat)
             jobs[link].append(pp)
             jobs[link].append(script)
+
+    jobs[link].append(time.time())
 
 
 def _get_link(uri, entry):
