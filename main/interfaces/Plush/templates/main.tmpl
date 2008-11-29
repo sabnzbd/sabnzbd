@@ -14,6 +14,7 @@
 	<script type="text/javascript" src="static/javascripts/jquery.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.bgiframe.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.cookie.js?$version"></script>
+	<script type="text/javascript" src="static/javascripts/jquery.hoverIntent.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.ifixpng.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.livequery.js?$version"></script>
 	<script type="text/javascript" src="static/javascripts/jquery.ocupload.js?$version"></script>
@@ -25,60 +26,139 @@
 </head>
 <body>
 	
+	<ul class="sf-menu sf-navbar">
+		<li>
+			<a class="sf-with-ul">SABnzbd<span class="sf-sub-indicator"> &#187;</span></a>
+			<ul>
+				<li><a>Refresh:&nbsp;<select id="refreshRate-option">
+						<option value="1">1 seconds</option>
+						<option value="2">2 seconds</option>
+						<option value="4">4 seconds</option>
+						<option value="8">8 seconds</option>
+						<option value="16">16 seconds</option>
+						<option value="30">30 seconds</option>
+						<option value="60">1 minute</option>
+						<option value="120">2 minute</option>
+						<option value="900">15 minutes</option>
+						<option value="1800">30 minutes</option>
+						<option value="0">Disabled</option>
+					</select></a>
+				</li>
+				<li><a>Max&nbsp;Speed:&nbsp;<input type=text id="maxSpeed-option" /><small>&nbsp;KB/s</small></a></li>
+				<li><a class="sf-with-ul">Help<span class="sf-sub-indicator"> &#187;</span></a>
+					<ul>
+						<li><a href="$helpuri" target="_blank" title="Open Official Manual" class="tip">Wiki</a></li>
+						<li><a href="http://forums.sabnzbd.org" target="_blank" title="Open Official Message Board" class="tip">Forums</a></li>
+						<li title="Load IRC Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip"><a id="help_irc" href="http://www.sabnzbd.org/live-chat/" target="_blank">Live Chat</a></li>
+					</ul>
+				</li>
+				<li><a id="shutdown_sabnzbd">Shutdown</a></li>
+			</ul>
+		</li>
+		<li>
+			<a class="sf-with-ul">Queue<span class="sf-sub-indicator"> &#187;</span></a>
+			<ul>
+				<li>
+					<a class="sf-with-ul">Sort<span class="sf-sub-indicator"> &#187;</span></a>
+					<ul>
+						<li><a id="sort_by_avg_age">by Average Age</a></li>
+						<li><a id="sort_by_name">by Name</a></li>
+						<li><a id="sort_by_size">by Size</a></li>
+					</ul>
+				</li>
+				<li>
+					<a class="sf-with-ul">On Finish:
+						<select id="onQueueFinish-option">
+							<option value=""></option>
+							<optgroup label="Actions">
+								<option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
+								<!--#if $nt#-->
+								<option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
+								<option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>Standby PC</option>
+								<option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
+								<!--#end if#-->
+							</optgroup>
+							<!--#if $script_list#-->
+							<optgroup label="Scripts">
+								<!--#for $sc in $script_list#-->
+								<!--#if $sc != 'None'#-->
+								<option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
+								<!--#end if#-->
+								<!--#end for#-->
+							</optgroup>
+							<!--#end if#-->
+						</select>
+					</a>
+				</li>
+				<li><a id="queue_purge">Purge</a></li>
+			</ul>
+		</li>
+		<li>
+			<a class="sf-with-ul" href="connections">Config<span class="sf-sub-indicator"> &#187;</span></a>
+			<ul>
+				<li><a href="connections">Connections</a></li>
+				<li><a href="config/general">General</a></li>
+				<li><a href="config/directories">Folders</a></li>
+				<li><a href="config/switches">Switches</a></li>
+				<li><a href="config/server">Servers</a></li>
+				<li><a href="config/categories">Categories</a></li>
+				<li><a href="config/scheduling">Scheduling</a></li>
+				<li><a href="config/rss">RSS</a></li>
+				<li><a href="config/email">Email</a></li>
+				<li><a href="config/newzbin">Index Sites</a></li>
+				<li><a href="config/sorting">Sorting</a></li>
+			</ul>
+		</li>
+		<li>
+			<a class="sf-with-ul" href="connections">Warnings&nbsp;<!--#if $have_warnings != "0" #--><small>($have_warnings)</small<!--#end if#--><span class="sf-sub-indicator"> &#187;</span></a>
+			<ul>
+				<li><a href="connections">$last_warning</a></li>
+			</ul>
+		</li>
+		<li>
+			<a class="sf-with-ul">Add NZB<span class="sf-sub-indicator"> &#187;</span></a>
+			<ul>
+				<li><a>Processing:
+					<!--#if $cat_list#-->
+					<select id="addID_cat" name="cat" title="Category" class="tip">
+					<!--#for $ct in $cat_list#-->
+						<option value="$ct">$ct</option>
+					<!--#end for#-->
+					</select>
+					<!--#end if#-->
+					<select id="addID_pp" name="pp" title="Post-Processing Option" class="tip">
+						<option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
+						<option value="0">Skip</option>
+						<option value="1">+Repair</option>
+						<option value="2">+R+Unpack</option>
+						<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
+					</select>
+					<!--#if $script_list#-->
+					<select id="addID_script" name="script" title="Script" class="tip">
+					<!--#for $sc in $script_list#-->
+						<option value="$sc">$sc</option>
+					<!--#end for#-->
+					</select>
+					<!--#end if#-->
+					</a>
+				</li>
+				<li><a><input type="text" id="addID_input" size="22" /><input type="submit" id="addID" value="Fetch" /></a></li>
+				<li><a><div id="addNZBbyFile"><input type="submit" value="Upload" /></div></a></li>
+			</ul>
+		</li>
+	</ul>
+	
 	<!--#if $warning#-->
 	<div id="warning_message"><strong>$warning</strong></div>
 	<!--#end if#-->
 
+	<!--#if $new_release#-->
 	<div class="menu_upper_lower">
 		<ul>
-		<!--#if $new_release#-->
 		<li><a href="$new_rel_url" target="_blank"><b style="color:darkgreen">New&nbsp;release&nbsp;$new_release&nbsp;available!</b></a></li>
-		<!--#end if#-->
-		<!--#if $have_warnings != '0' #-->
-		<li><a href="connections" style="border-bottom:0px;"><b style="color:darkred" title="$last_warning" class="tip">$have_warnings&nbsp;Warning<!--#if $have_warnings != '1' #-->s<!--#end if#--></b></a></li>
-		<!--#end if#-->
 		</ul>
 	</div>
-	
-	
-	<div id="add_nzb_menu">
-		
-		<input type="hidden" name="mode" value="addfile" />
-		<span class="add_nzb_item">
-			<small>NZB Processing:</small>
-			<!--#if $cat_list#-->
-			<select id="addID_cat" name="cat" title="Category" class="tip">
-			<!--#for $ct in $cat_list#-->
-				<option value="$ct">$ct</option>
-			<!--#end for#-->
-			</select>
-			<!--#end if#-->
-			<select id="addID_pp" name="pp" title="Post-Processing Option" class="tip">
-				<option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
-				<option value="0">Skip</option>
-				<option value="1">+Repair</option>
-				<option value="2">+R+Unpack</option>
-				<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
-			</select>
-			<!--#if $script_list#-->
-			<select id="addID_script" name="script" title="Script" class="tip">
-			<!--#for $sc in $script_list#-->
-				<option value="$sc">$sc</option>
-			<!--#end for#-->
-			</select>
-			<!--#end if#-->
-		</span>
-		&nbsp;&nbsp;
-		<span class="add_nzb_item">
-			<input type="text" id="addID_input" size="22" />
-			<input type="submit" id="addID" value="Fetch" />
-		</span>
-		&nbsp;&nbsp;
-		<span class="add_nzb_item">
-			<div id="addNZBbyFile"><input type="submit" value="Upload NZB" /></div>
-		</span>
-		
-	</div>
+	<!--#end if#-->
 	
 	<div id="page-wrap">
 		
@@ -100,85 +180,7 @@
 					<p><span id="stats_kbpersec">&hellip;</span>&nbsp;KB/s</p>
 				</div>
 				
-				<ul class="nav">
-					<li><a class="queue_logo"></a>
-						<ul>
-							<li><a style="text-decoration:none"><select id="refreshRate-option">
-									<option value="1">1 sec&nbsp;</option>
-									<option value="2">2 sec&nbsp;</option>
-									<option value="4">4 sec&nbsp;</option>
-									<option value="8">8 sec&nbsp;</option>
-									<option value="16">16 sec&nbsp;</option>
-									<option value="30">30 sec&nbsp;</option>
-									<option value="60">1 min&nbsp;</option>
-									<option value="120">2 min&nbsp;</option>
-									<option value="900">15 min&nbsp;</option>
-									<option value="1800">30 min&nbsp;</option>
-									<option value="0">No&nbsp;</option>
-								</select>&nbsp;Refresh</a>
-							</li>
-							<li><a style="text-decoration:none"><input type=text id="maxSpeed-option" /><small>&nbsp;KB/s&nbsp;</small>Max&nbsp;Speed</a></li>
-							<li><a class="navbullet">Queue Functions</a>
-								<ul>
-									<li><a class="navbullet">Sort Queue</a>
-										<ul>
-											<li><a id="sort_by_avg_age">by Average Age</a></li>
-											<li><a id="sort_by_name">by Name</a></li>
-											<li><a id="sort_by_size">by Size</a></li>
-										</ul>
-									</li>
-									<li><a style="text-decoration:none">On Queue Finish...<br/>
-											<select id="onQueueFinish-option">
-												<option value=""></option>
-												<optgroup label="Actions">
-													<option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
-													<!--#if $nt#-->
-													<option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
-													<option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>Standby PC</option>
-													<option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
-													<!--#end if#-->
-												</optgroup>
-												<!--#if $script_list#-->
-												<optgroup label="Scripts">
-													<!--#for $sc in $script_list#-->
-													<!--#if $sc != 'None'#-->
-													<option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
-													<!--#end if#-->
-													<!--#end for#-->
-												</optgroup>
-												<!--#end if#-->
-											</select>
-										</a>
-									</li>
-									<li><a id="queue_purge">Purge the Queue</a></li>
-								</ul>
-							</li>
-							<li><a href="connections" class="navbullet">Config</a>
-								<ul>
-									<li><a href="connections">Connections</a></li>
-									<li><a href="config/general">General</a></li>
-									<li><a href="config/directories">Folders</a></li>
-									<li><a href="config/switches">Switches</a></li>
-									<li><a href="config/server">Servers</a></li>
-									<li><a href="config/categories">Categories</a></li>
-									<li><a href="config/scheduling">Scheduling</a></li>
-									<li><a href="config/rss">RSS</a></li>
-									<li><a href="config/email">Email</a></li>
-									<li><a href="config/newzbin">Index Sites</a></li>
-									<li><a href="config/sorting">Sorting</a></li>
-								</ul>
-							</li>
-							<li><a class="navbullet">Help</a>
-								<ul>
-									<li><a href="$helpuri" target="_blank" title="Open Official Manual" class="tip">Wiki</a></li>
-									<li><a href="http://forums.sabnzbd.org" target="_blank" title="Open Official Message Board" class="tip">Forums</a></li>
-									<li title="Load IRC Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip"><a id="help_irc" href="http://www.sabnzbd.org/live-chat/" target="_blank">Live Chat</a></li>
-								</ul>
-							</li>
-							<li><a id="shutdown_sabnzbd">Shutdown <small>SABnzbd</small></a></li>
-						</ul>
-					</li>
-				</ul>
+				<div id="queue_logo"></div
 				
 				<div id="time-left">
 					<p><span id="stats_eta">&hellip;</span>&nbsp;left</p>

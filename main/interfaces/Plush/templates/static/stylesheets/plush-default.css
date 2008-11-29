@@ -91,23 +91,13 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 #addNZBbyFile {
 	cursor:pointer;
 }
-#refreshRate-option {
-	font-size:100%;
-	text-align: right;
-	width:85px;
-}
 #maxSpeed-option {
-	font-size:100%;
-	padding:2px;
 	width: 40px;
-	text-align: center;
 }
 #refreshRate-option option {
 }
 #onQueueFinish-option {
 	margin-left:8px;
-	width:140px;
-	font-size:100%;
 }
 #sort_by_avg_age {
 	cursor:pointer;
@@ -287,14 +277,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	display:none;
 }
 .h_menu_purge.show { display: inline; }
-.queue_logo {
-	background: url(../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
-	padding-left:240px;
-	padding-right:240px;
-	padding-bottom:50px;
-	width: 90px;
-	height: 40px;
-}
 
 .queue_pill_l {display:inline; background: url(../images/plush-default/q_pill_l.png) 0 0 no-repeat;padding-left:9px;}
 .queue_pill_m {display:inline; background: url(../images/plush-default/q_pill_m.png) 0 0 repeat-x; width:100px; }
@@ -489,6 +471,14 @@ tr:hover .history_added  {
 #queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
 #queue-buttons li { float:left; }
 #queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
+#queue_logo {
+	background: url(../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
+	padding-left:50px;
+	padding-right:50px;
+	padding-bottom:20px;
+	height: 40px;
+	float:left;
+}
 #speed, #time-left {
 	background-image: url(../images/plush-default/rounded_area_bg.png);
 	width: 68px;
@@ -498,8 +488,8 @@ tr:hover .history_added  {
 	text-align: center;
 	cursor:default;
 }
-#speed { float:left; margin-right:8px;}
-#time-left { float:left; margin-left:42px; }
+#speed { float:left; margin-right:36px;}
+#time-left { float:left; margin-left:36px; }
 #speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
 #speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
 #btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
@@ -914,7 +904,7 @@ fieldset.EntryFieldSet {
 	z-index: 3000;
 	border: 1px solid #111;
 	background-color: lightyellow;
-	color:red;
+	color:#000;
 	font-size: 11px !important;
 	padding: 5px;
 	opacity: 0.85;
@@ -930,195 +920,252 @@ fieldset.EntryFieldSet {
 
 
 
-/* This file is commented in great detail for educational purposes. There is also
- * an uncommented version for use production use here:
- * http://users.tpg.com.au/j_birch/plugins/superfish/superfish.css
- */
 
-/**************** ESSENTIAL STYLES ***************/
-/* This first group of styles are most important for the function of Superfish.
- * The more cosmetic styling rules are grouped together below under the heading
- * ORIGINAL SKIN.
- *
- * Note that this CSS file will create the kind of menu demonstrated on the main
- * page of the Superfish documentation, ie. top tier of nav is horizontal, with
- * subsequent tiers vertical.
- */
- 
-/* remove any default styles */
-.nav, .nav * {
-	margin:0;
-	padding:0;
-	list-style:none;
+
+
+
+
+
+
+
+
+/*** ESSENTIAL STYLES ***/
+.sf-menu, .sf-menu * {
+	margin:			0;
+	padding:		0;
+	list-style:		none;
+}
+.sf-menu {
+	line-height:	1.0;
+}
+.sf-menu ul {
+	position:		absolute;
+	top:			-999em;
+	width:			10em; /* left offset of submenus need to match (see below) */
+}
+.sf-menu ul li {
+	width:			100%;
+}
+.sf-menu li:hover {
+	visibility:		inherit; /* fixes IE7 'sticky bug' */
+}
+.sf-menu li {
+	float:			left;
+	position:		relative;
+}
+.sf-menu a {
+	display:		block;
+	position:		relative;
+}
+.sf-menu li:hover ul,
+.sf-menu li.sfHover ul {
+	left:			0;
+	top:			2.5em; /* match top ul list item height */
+	z-index:		99;
+}
+ul.sf-menu li:hover li ul,
+ul.sf-menu li.sfHover li ul {
+	top:			-999em;
+}
+ul.sf-menu li li:hover ul,
+ul.sf-menu li li.sfHover ul {
+	left:			10em; /* match ul width */
+	top:			0;
+}
+ul.sf-menu li li:hover li ul,
+ul.sf-menu li li.sfHover li ul {
+	top:			-999em;
+}
+ul.sf-menu li li li:hover ul,
+ul.sf-menu li li li.sfHover ul {
+	left:			10em; /* match ul width */
+	top:			0;
 }
 
-/* top ul.nav element */
-.nav {
-	line-height:1.0; /* makes calculating the 'top' value for first submenu easier */
+/*** DEMO SKIN ***/
+.sf-menu {
+	margin:			auto;
+	margin-bottom:	0.25em;
+	cursor: default;
 }
-
-/* nested submenu ul elements */
-.nav ul {
-	position:absolute; /* remove from flow and allow positioning */
-	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
-	width:9.45em; /* VARIABLE. Must have a width for menu items to inherit. Use ems so font scaling does not break design*/
-}
-/* submenu items */
-.nav ul li,
-.nav a { /* this affects top level anchors too */
-	width: 100%;/* stretch submenu items to width of submenu ul width (see .nav ul rules above). When link text runs over more than one line, use padding and an explicit width for the anchor instead of width:100% and text-indent. Example below in the SKIN section */
-	}
-
-
-
-/* all li elements */
-.nav li {
-	float:left; /* must float all li elements. Vertical submenu items are restrained by parent ul width (see .nav ul rules above) */
-	position:relative; /* make child submenu ul position relative to parent li */
-	z-index:99; /* ensure submenus appear above other page items. Increase if needed, but do not exceed thickbox overlay z-index! */
-}
-
-/* all anchor elements */
-.nav a {
-	display:block; /* make IE6 obey width when text-indent is used */
-}
-
-/**** Position of second tier of nav ****/
-.nav li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
-ul.nav li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
-{
-	left:-1px; /* position first submenu directly under parent li */
-	top:2.5em; /* VARIABLE. This is calculated by adding 1em text height to top and bottom anchor element padding (original skin: .75em top + .75em bottom + 1em text height = 2.5em) */
-}
-
-/**** Position of third tier of nav ****/
- /* Note that this rule must appear here in the code order in order for it to override previous positioning rules so that this and subsequent nested submenus still remain hidden when the parent submenu is shown. Do not group these selectors with other top:-999em rules */
-.nav li:hover li ul,
-.nav li.sfHover li ul {
-	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
-}
-/* DO NOT attempt to group these selectors with similar earlier rules. The code order is important so the rules override previous ones correctly */
-.nav li li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
-ul.nav li li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
- {
-	left:9.45em; /* VARIABLE. Offset subsequent submenus to the right by the amount you set for the submenu widths (see .nav ul rules above) */
-	top:-1px; /* position subsequent submenus horizontally aligned to parent li */
-}
-
-/**** Position of fourth tier of nav (not used on main demo page. You could delete this block for a three tiered nav) ****/
- /* Note that this rule must appear here in the code order in order for it to override previous positioning rules so that this and subsequent nested submenus still remain hidden when the parent submenu is shown. Do not group these selectors with other top:-999em rules */
-.nav li li:hover li ul,
-.nav li li.sfHover li ul {
-	top:-999em; /* hide submenu in screen-reader and search-engine friendly way */
-}
-/* DO NOT attempt to group these selectors with similar earlier rules. The code order is important so the rules override previous ones correctly */
-.nav li li li:hover ul, /* this pure CSS hover is overridden by the .superfish rules below which are applied only when JavaScript is available. This way, the menu degrades to regular CSS dropdown when JavaScript is unavailable */
-ul.nav li li li.sfHover ul /* this is the familiar IE6 hover support. With Superfish, all browsers use this rule when JS is available. This is because the JS needs to be able to control hide and reveal delays and animations without the pure CSS rule intruding. Note the tag selector ul.nav instead of just .nav - this gives it the most specificity of all and makes it trump all other positioning rules, including the .superfish overrides below */
- {
-	left:9.45em; /* VARIABLE. Offset subsequent submenus to the right by the amount you set for the submenu widths (see .nav ul rules above) */
-	top:-1px; /* position subsequent submenus horizontally aligned to parent li */
-}
-
-/**** Position of further tiers of nav ****/
-/* To add further tiers, you need copy the previous block of code (everything back until the "Position of fourth tier of nav" comment) and paste it in here. Then add an extra li just after .nav in each of the pasted selectors. So the new block will differ from the copied block in the same way that the block for the fourth tier differs from the block for the third tier.*/
-
-
-/**** Very important ****/
-/* this negates the pure CSS hovers so submenu remains hidden and JS controls when and how it appears. This is in turn is overridden by the .sfHover rules above as they have greater specificity */
-/* notice there are three selectors here. You need three for a four tier menu system. If you had a five tier system you would copy the last selector of these three and paste it below to create a fourth selector and add another li just after the .superfish part. On the other hand if you only had a three tiered menu you could delete the third line here and save some file size.*/
-.superfish li:hover ul,
-.superfish li li:hover ul,
-.superfish li li li:hover ul {
-	top: -999em; /* hide submenu in screen-reader and search-engine friendly way */
-}
-
-/* A quick note about issues with submenus appearing under Flash animations. Some say that setting wmode="opaque" or  wmode="transparent" on the embed or object tag is sufficient. This does fix many issues but I find it sometimes helps to also add this CSS: */
-embed, object {
-	position: relative;
-	z-index: 0;
-	}
-
-/******************** ORIGINAL SKIN ******************/
-/*
- * The CSS below is my attempt to extract most of the stuff you need to change in order
- * to reskin the menu with the appearance you require. However, certain rules above
- * (indicated with the word "VARIABLE") may also need to be altered to suit the width
- * and height of your menu items and submenus. For example, if you need wider submenus
- * eg: .nav ul { width:12em} then you will need to also apply that value
- * to the left offset of any deeper nested submenus, eg:
- * .nav li li:hover ul,
- * ul.nav li li.sfHover ul {
-	 left:12em; top:-1px;
-   }
- *
- * Other than that, most of the cosmetic stuff is below:
- */
-
-.nav {
-	/* if you want to change font-size, do it here as opposed to setting it on deeper nested anchor elements for example,  so that the em unit is the same size for all elements in the menu */
-	float:left; /* necessary if you don't want this element to collapse */
-	cursor:default;
-	margin-top: 4px;
-	padding-left: 10%;
-	margin-bottom: -8px;
-}
-.nav ul {
-	margin-top:10px;
-	border:2px solid #CFCFCF;
-}
-.nav li {
-	width:100px; /* affects top level menu items only, as nested li elements have width 100% of their ul parent (see .nav ul rules above)*/
-}
-.nav a {
-	color: black;
-	padding: 0.5em 0; /* note that the top and bottom padding will affect the 'top' value (marked with the word "VARIABLE") of the second tier of nav (see "essential rules" above and alter accordingly) */
+.sf-menu a {
+	border-left:	1px solid #fff;
+	border-top:		1px solid #CFDEFF;
+	padding: 		.75em 1em;
 	text-decoration:none;
-	text-indent: 0.85em;
-	font-size:75%;
 }
-/* if link text runs over two or more lines, you will want padding in the anchor element instead of relying on text-indent to provide space. The following disabled rule shows how to style the submenu links in this case. Note that the width plus left and right padding must equal the width set above for the submenu (.nav ul) */
-/*
-.nav ul a {
-	width: 7.45em;
-	padding: .75em 1em;
-	text-indent: 0;
-	}
-*/
-.nav li:hover, .nav li.sfHover,
-.nav a:focus, .nav a:hover, .nav a:active {
-	background-color:#FFDF00; /* hover highlight */
+.sf-menu a, .sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
+	color:			#000;
+	font-size:		75%;
 }
-.nav a:hover {
-	text-decoration:underline;
+.sf-menu li {
+	background:		#BDD2FF;
 }
-.nav li li {
-	background:#E0E0E0; /* slightly darker shade for nested submenus */
+.sf-menu li li {
+	background:		#AABDE6;
 }
-.nav ul li ul {
-	margin-top:0px;
+.sf-menu li li li {
+	background:		#9AAEDB;
 }
-.nav li li li {
-	background:#E0E0E0; /* slightly darker shade for nested submenus */
+.sf-menu li:hover, .sf-menu li.sfHover,
+.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
+	background:		#CFDEFF;
+	outline:		0;
 }
-.nav input {
-	border: 1px dotted white;
-	padding:4px;
-	font-size: 66%;
+
+/*** arrows **/
+.sf-menu a.sf-with-ul {
+	padding-right: 	2.25em;
+	min-width:		1px; /* trigger IE7 hasLayout so spans position accurately */
 }
-.nav select {
-	font-size: 66%;
-	cursor:pointer;
+.sf-sub-indicator {
+	position:		absolute;
+	display:		block;
+	right:			.75em;
+	top:			1.05em; /* IE6 only */
+	width:			10px;
+	height:			10px;
+	text-indent: 	-999em;
+	overflow:		hidden;
+	background:		url('../images/plush-default/arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
 }
-.nav em {
-	float:right;
-	font-weight:bold;
-	padding-right:4px;
+a > .sf-sub-indicator {  /* give all except IE6 the correct values */
+	top:			.8em;
+	background-position: 0 -100px; /* use translucent arrow for modern browsers*/
 }
-.navbullet {
-	background-image: url(../images/plush-default/ql_bullet.png);
-	background-position: right center;
-	background-repeat:no-repeat;
+/* apply hovers to modern browsers */
+a:focus > .sf-sub-indicator,
+a:hover > .sf-sub-indicator,
+a:active > .sf-sub-indicator,
+li:hover > a > .sf-sub-indicator,
+li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px -100px; /* arrow hovers for modern browsers*/
 }
-.navbullet:hover {
-	background-image: url(../images/plush-default/ql_bullet_on.png);
+
+/* point right for anchors in subs */
+.sf-menu ul .sf-sub-indicator { background-position:  -10px 0; }
+.sf-menu ul a > .sf-sub-indicator { background-position:  0 0; }
+/* apply hovers to modern browsers */
+.sf-menu ul a:focus > .sf-sub-indicator,
+.sf-menu ul a:hover > .sf-sub-indicator,
+.sf-menu ul a:active > .sf-sub-indicator,
+.sf-menu ul li:hover > a > .sf-sub-indicator,
+.sf-menu ul li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px 0; /* arrow hovers for modern browsers*/
 }
+
+/*** shadows for all but IE6 ***/
+.sf-shadow ul {
+	background:	url('../images/plush-default/shadow.png') no-repeat bottom right;
+	padding: 0 8px 9px 0;
+	-moz-border-radius-bottomleft: 17px;
+	-moz-border-radius-topright: 17px;
+	-webkit-border-top-right-radius: 17px;
+	-webkit-border-bottom-left-radius: 17px;
+}
+.sf-shadow ul.sf-shadow-off {
+	background: transparent;
+}
+
+
+
+
+
+
+
+
+
+
+/*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
+.sf-navbar {
+	background:		#B1B1B1;
+	height:			2.5em;
+	padding-bottom:	2.5em;
+	position:		relative;
+}
+.sf-navbar li {
+	background:		#B1B1B1;
+	position:		static;
+}
+.sf-navbar a {
+	border-top:		none;
+}
+.sf-navbar li ul {
+	width:			44em; /*IE6 soils itself without this*/
+}
+.sf-navbar li li {
+	background:		#E0E0E0;
+	position:		relative;
+}
+.sf-navbar li li ul {
+	width:			13em;
+}
+.sf-navbar li li li {
+	width:			100%;
+}
+.sf-navbar ul li {
+	width:			auto;
+	float:			left;
+}
+.sf-navbar a, .sf-navbar a:visited {
+	border:			none;
+}
+.sf-navbar li.current {
+	background:		#BDD2FF;
+}
+.sf-navbar li:hover,
+.sf-navbar li.sfHover,
+.sf-navbar li li.current,
+.sf-navbar a:focus, .sf-navbar a:hover, .sf-navbar a:active {
+	background:		#E0E0E0;
+}
+.sf-navbar ul li:hover,
+.sf-navbar ul li.sfHover,
+ul.sf-navbar ul li:hover li,
+ul.sf-navbar ul li.sfHover li,
+.sf-navbar ul a:focus, .sf-navbar ul a:hover, .sf-navbar ul a:active {
+	background:		#E8E8E8;
+}
+ul.sf-navbar li li li:hover,
+ul.sf-navbar li li li.sfHover,
+.sf-navbar li li.current li.current,
+.sf-navbar ul li li a:focus, .sf-navbar ul li li a:hover, .sf-navbar ul li li a:active {
+	background:		#E8E8E8;
+}
+ul.sf-navbar .current ul,
+ul.sf-navbar ul li:hover ul,
+ul.sf-navbar ul li.sfHover ul {
+	left:			0;
+	top:			2.5em; /* match top ul list item height */
+}
+ul.sf-navbar .current ul ul {
+	top: 			-999em;
+}
+
+.sf-navbar li li.current > a {
+	font-weight:	bold;
+}
+
+/*** point all arrows down ***/
+/* point right for anchors in subs */
+.sf-navbar ul .sf-sub-indicator { background-position: -10px -100px; }
+.sf-navbar ul a > .sf-sub-indicator { background-position: 0 -100px; }
+/* apply hovers to modern browsers */
+.sf-navbar ul a:focus > .sf-sub-indicator,
+.sf-navbar ul a:hover > .sf-sub-indicator,
+.sf-navbar ul a:active > .sf-sub-indicator,
+.sf-navbar ul li:hover > a > .sf-sub-indicator,
+.sf-navbar ul li.sfHover > a > .sf-sub-indicator {
+	background-position: -10px -100px; /* arrow hovers for modern browsers*/
+}
+
+/*** remove shadow on first submenu ***/
+.sf-navbar > li > ul {
+	background: transparent;
+	padding: 0;
+	-moz-border-radius-bottomleft: 0;
+	-moz-border-radius-topright: 0;
+	-webkit-border-top-right-radius: 0;
+	-webkit-border-bottom-left-radius: 0;
+}
+

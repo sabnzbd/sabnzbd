@@ -19,22 +19,25 @@ $(document).ready(function(){
 	
 	// Fetch NZB by URL/Newzbin Report ID
 	$('#addID').bind('click', function() { 
-		$.ajax({
-			type: "GET",
-			url: "addID",
-			data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
-			success: function(result){
-				return RefreshTheQueue();
-			}
-		});
-		$("#addID_input").val('enter NZB URL / Newzbin ID');
+		if ($('#addID_input').val()!='enter URL / Newzbin ID') {
+			$.ajax({
+				type: "GET",
+				url: "addID",
+				data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
+				success: function(result){
+					return RefreshTheQueue();
+				}
+			});
+			$("#addID_input").val('enter URL / Newzbin ID');
+		}
 	});
-	$('#addID_input').val('enter NZB URL / Newzbin ID').focus( function(){
-		if ($(this).val()=="enter NZB URL / Newzbin ID")
+	$('#addID_input').val('enter URL / Newzbin ID')
+	.focus( function(){
+		if ($(this).val()=="enter URL / Newzbin ID")
 			$(this).val('');
 	}).blur( function(){
 		if (!$(this).val())
-			$(this).val('enter NZB URL / Newzbin ID');
+			$(this).val('enter URL / Newzbin ID');
 	});
 	
 	
@@ -61,13 +64,8 @@ $(document).ready(function(){
 
 
 	// activate main menu (shown upon hovering SABnzbd logo)
-	$(".nav").superfish({
-		animation	: { opacity:"show", height:"show" },
-		hoverClass	: "sfHover",
-		delay		: 800,
-		animation	: {opacity:"show"},
-		speed		: "normal",
-		autoArrows	: false
+	$("ul.sf-menu").superfish({
+		pathClass:  'current'
 	});
 	
 	
@@ -229,7 +227,7 @@ $(document).ready(function(){
 
 	// queue purge
 	$('#queue_purge').click(function(event) {
-		if(confirm('Sure you want to clear out your Queue?')){
+		if(confirm('Sure you want to empty out your Queue?')){
 			$.ajax({
 				type: "GET",
 				url: "api?mode=queue&name=delete&value=all&_dc="+Math.random(),
@@ -347,7 +345,7 @@ $(document).ready(function(){
 	
 	
 	// fix IE6 .png image transparencies
-	$('img[@src$=.png], div.history_logo, a.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
+	$('img[@src$=.png], div.history_logo, div.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
 
 
 	// initiate refresh cycle
