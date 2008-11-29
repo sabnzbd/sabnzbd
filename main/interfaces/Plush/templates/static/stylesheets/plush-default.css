@@ -138,6 +138,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	cursor:pointer;
 	width:110px;
 }
+
+#queue_view_preference {
+	margin-top:-5px;
+}
+
 /*
 	cursor:pointer;
 	background-color:#E0E0E0;
