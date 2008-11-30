@@ -30,7 +30,8 @@
 		<li>
 			<a class="sf-with-ul">SABnzbd<span class="sf-sub-indicator"> &#187;</span></a>
 			<ul>
-				<li><a>Refresh:&nbsp;<select id="refreshRate-option">
+				<li><a>Max&nbsp;Speed:&nbsp;<input type=text id="maxSpeed-option" /><small>&nbsp;KB/s</small></a></li>
+				<li><a>Refresh&nbsp;Rate:&nbsp;<select id="refreshRate-option">
 						<option value="1">1 seconds</option>
 						<option value="2">2 seconds</option>
 						<option value="4">4 seconds</option>
@@ -44,7 +45,6 @@
 						<option value="0">Disabled</option>
 					</select></a>
 				</li>
-				<li><a>Max&nbsp;Speed:&nbsp;<input type=text id="maxSpeed-option" /><small>&nbsp;KB/s</small></a></li>
 				<li><a class="sf-with-ul">Help<span class="sf-sub-indicator"> &#187;</span></a>
 					<ul>
 						<li><a href="$helpuri" target="_blank" title="Open Official Manual" class="tip">Wiki</a></li>
@@ -67,7 +67,7 @@
 					</ul>
 				</li>
 				<li>
-					<a class="sf-with-ul">On Finish:
+					<a class="sf-with-ul">Upon Completion:
 						<select id="onQueueFinish-option">
 							<option value=""></option>
 							<optgroup label="Actions">
