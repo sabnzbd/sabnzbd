@@ -855,6 +855,8 @@ class NzbObject(TryList):
         for _file in self.__finished_files:
             bytes = _file.bytes()
             filename = _file.get_filename()
+            if not filename:
+                filename = _file.get_subject()
             date = _file.get_date()
             if for_cli:
                 date = time.mktime(date.timetuple())
