@@ -193,6 +193,10 @@ class SeriesSorter:
         if season.lower() == 's':
             season2 = season
         else:
+            try:
+                season = int(season)
+            except:
+                pass
             season2 = season.rjust(2,'0')
             
         self.show_info['season_num'] = season
@@ -206,6 +210,10 @@ class SeriesSorter:
 
         # Provide alternatve formatting (0 padding)
         ep_no2 = ep_no.rjust(2,'0')
+        try:
+            ep_no = int(ep_no)
+        except:
+            pass
             
         # Dual episode support
         if self.extras:
