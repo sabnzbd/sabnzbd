@@ -8,33 +8,14 @@ def InjectProgressBarPosition (mbleft, mb):
 %>
 
 <script type="text/javascript">
-	
-	if (\$("#maxSpeed-option").val() != '$speedlimit' && !focusedOnSpeedChanger)
-		\$("#maxSpeed-option").val('$speedlimit');
-	if (\$("#onQueueFinish-option").val() != '$finishaction')
-		\$("#onQueueFinish-option").val('$finishaction');
-	
-	var paused = <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
-	if ( paused && \$('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_paused')
-		\$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
-	else if ( !paused && \$('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_unpaused')
-		\$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
-	
-	<!--#if $noofslots < 1#-->
-	document.title = '<!--#if $paused#-->PAUSED<!--#else#-->READY<!--#end if#--> | SABnzbd+ Plush';
-	\$('#stats_kbpersec').html('&mdash;');
-	\$('#stats_eta').html('&mdash;');
-	<!--#else if $paused#-->
-	document.title = 'PAUSED | <!--#echo "%.0f" % float($mbleft)#--> MB left | $noofslots NZBs';
-	\$('#stats_kbpersec').html('&mdash;');
-	\$('#stats_eta').html('&mdash;');
-	<!--#else#-->
-	document.title = '<!--#echo "%.0f" % float($kbpersec)#--> KB/s | <!--#echo "%.0f" % float($mbleft)#--> MB | $timeleft left';
-	\$('#stats_kbpersec').html('<!--#echo "%.0f" % float($kbpersec)#-->');
-	\$('#stats_eta').html('$timeleft');
-	<!--#end if#-->
-	\$('#stats_eta').attr('title','ETA: $eta');
-
+	var speedlimit 	= '$speedlimit';
+	var finishaction= '$finishaction';
+	var paused 		= <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
+	var noofslots 	= $noofslots;
+	var mbleft 		= <!--#echo "%.0f" % float($mbleft)#-->;
+	var kbpersec 	= <!--#echo "%.0f" % float($kbpersec)#-->;
+	var timeleft 	= '$timeleft';
+	var eta			= '$eta';
 </script>
 
 <div class="box_banner_hr"></div>

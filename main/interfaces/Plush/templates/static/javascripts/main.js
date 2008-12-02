@@ -105,6 +105,7 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}('1.3={j:f,h:f,G:f,F:0,1x:a(1p){8.z(a(){8.k=1.1A({1m:f,1r:f,v:"1C",12:f,t:f,w:5,15:/[^\\-]*$/,1N:f,N:f},1p||{});1.3.O(8)});1(g).1s(\'V\',1.3.V).1s(\'Z\',1.3.Z);9 8},O:a(c){4 7=c.k;6(c.k.N){4 1u=1("1J."+c.k.N,c);1u.z(a(){1(8).1l(a(b){1.3.h=8.Y;1.3.j=c;1.3.G=1.3.Q(8,b);6(7.t){7.t(c,8)}9 L})})}m{4 l=1("1H",c);l.z(a(){4 d=1(8);6(!d.1t("1K")){d.1l(a(b){6(b.P.1F=="1E"){1.3.h=8;1.3.j=c;1.3.G=1.3.Q(8,b);6(7.t){7.t(c,8)}9 L}}).11("1M","1L")}})}},1D:a(){8.z(a(){6(8.k){1.3.O(8)}})},U:a(b){6(b.1k||b.1h){9{x:b.1k,y:b.1h}}9{x:b.1z+g.o.1B-g.o.1w,y:b.1y+g.o.S-g.o.1G}},Q:a(P,b){b=b||q.23;4 X=8.C(P);4 p=8.U(b);9{x:p.x-X.x,y:p.y-X.y}},C:a(e){4 K=0;4 I=0;6(e.E==0){e=e.M}21(e.1f){K+=e.1e;I+=e.1g;e=e.1f}K+=e.1e;I+=e.1g;9{x:K,y:I}},V:a(b){6(1.3.h==f){9}4 D=1(1.3.h);4 7=1.3.j.k;4 p=1.3.U(b);4 y=p.y-1.3.G.y;4 u=q.27;6(g.26){6(18 g.17!=\'1b\'&&g.17!=\'24\'){u=g.T.S}m 6(18 g.o!=\'1b\'){u=g.o.S}}6(p.y-u<7.w){q.1v(0,-7.w)}m{4 1j=q.1a?q.1a:g.T.W?g.T.W:g.o.W;6(1j-(p.y-u)<7.w){q.1v(0,7.w)}}6(y!=1.3.F){4 R=y>1.3.F;1.3.F=y;6(7.v){D.1X(7.v)}m{D.11(7.1m)}4 r=1.3.1o(D,y);6(r){6(R&&1.3.h!=r){1.3.h.Y.1q(1.3.h,r.1W)}m 6(!R&&1.3.h!=r){1.3.h.Y.1q(1.3.h,r)}}}9 L},1o:a(16,y){4 l=1.3.j.l;1d(4 i=0;i<l.10;i++){4 d=l[i];4 B=8.C(d).y;4 H=1n(d.E)/2;6(d.E==0){B=8.C(d.M).y;H=1n(d.M.E)/2}6((y>B-H)&&(y<(B+H))){6(d==16){9 f}4 7=1.3.j.k;6(7.1i){6(7.1i(16,d)){9 d}m{9 f}}m{4 13=1(d).1t("13");6(!13){9 d}m{9 f}}9 d}}9 f},Z:a(e){6(1.3.j&&1.3.h){4 A=1.3.h;4 7=1.3.j.k;6(7.v){1(A).1V(7.v)}m{1(A).11(7.1r)}1.3.h=f;6(7.12){7.12(1.3.j,A)}1.3.j=f}},1Y:a(){6(1.3.j){9 1.3.14(1.3.j)}m{9"1U: 1T 1P J 19, 1Q 1R 20 19 1S J 1Z 28 c 25 1O d"}},14:a(c){4 n="";4 1c=c.J;4 l=c.l;1d(4 i=0;i<l.10;i++){6(n.10>0)n+="&";4 s=l[i].J;6(s&&s&&c.k&&c.k.15){s=s.22(c.k.15)[0]}n+=1c+\'[]=\'+s}9 n},1I:a(){4 n="";8.z(a(){n+=1.3.14(8)});9 n}}',62,133,'|jQuery||tableDnD|var||if|config|this|return|function|ev|table|row||null|document|dragObject||currentTable|tableDnDConfig|rows|else|result|body|mousePos|window|currentRow|rowId|onDragStart|yOffset|onDragClass|scrollAmount|||each|droppedRow|rowY|getPosition|dragObj|offsetHeight|oldY|mouseOffset|rowHeight|top|id|left|false|firstChild|dragHandle|makeDraggable|target|getMouseOffset|movingDown|scrollTop|documentElement|mouseCoords|mousemove|clientHeight|docPos|parentNode|mouseup|length|css|onDrop|nodrop|serializeTable|serializeRegexp|draggedRow|compatMode|typeof|set|innerHeight|undefined|tableId|for|offsetLeft|offsetParent|offsetTop|pageY|onAllowDrop|windowHeight|pageX|mousedown|onDragStyle|parseInt|findDropTargetRow|options|insertBefore|onDropStyle|bind|hasClass|cells|scrollBy|clientLeft|build|clientY|clientX|extend|scrollLeft|tDnD_whileDrag|updateTables|TD|tagName|clientTop|tr|serializeTables|td|nodrag|move|cursor|serializeParamName|every|Table|you|need|an|No|Error|removeClass|nextSibling|addClass|serialize|on|to|while|match|event|BackCompat|and|all|pageYOffset|your'.split('|'),0,{}))
 jQuery.fn.extend({ tableDnD: jQuery.tableDnD.build, tableDnDUpdate: jQuery.tableDnD.updateTables, tableDnDSerialize: jQuery.tableDnD.serializeTables });
 
+
 /*
  * jQuery Tooltip plugin 1.3
  *
@@ -343,6 +344,13 @@ $(document).ready(function(){
 		$('#queueTable').bind("mouseout", function(){ skipRefresh=false; });
 		$('.box_fatbottom').bind("mouseover mouseout", function(){ skipRefresh=false; });
 		
+		// tooltips for time left / ETA
+		$('#stats_eta').tooltip({
+			extraClass:	"tooltip",
+			track:		true, 
+			fixPNG:		true
+		});
+
 	}); // end livequery
 	
 	
@@ -517,7 +525,41 @@ function RefreshTheQueue() {
 		type: "GET",
 		url: 'queue/?dummy2='+limit+'&_dc='+Math.random(),
 		success: function(result){
-			return $('#queue').html(result);
+			
+			// refresh queue slots, and fetch certain variables
+			$('#queue').html(result);
+
+			// set speed limit and completion script form fields
+			if ($("#maxSpeed-option").val() != speedlimit && !focusedOnSpeedChanger)
+				$("#maxSpeed-option").val(speedlimit);
+			if ($("#onQueueFinish-option").val() != finishaction)
+				$("#onQueueFinish-option").val(finishaction);
+			
+			// set tooltip for the ETA
+			$('#stats_eta').attr('title','ETA: '+eta);
+			
+			// set pause/resume button state
+			if ( paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_paused')
+				$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
+			else if ( !paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_unpaused')
+				$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
+			
+			// set page title + eta/kbpersec stats at top of queue
+			if (noofslots < 1) {
+				if (paused) document.title = 'PAUSED | SABnzbd+ Plush';
+				else		document.title = 'READY | SABnzbd+ Plush';
+				$('#stats_kbpersec').html('&mdash;');
+				$('#stats_eta').html('&mdash;');
+			} else if (paused) {
+				document.title = 'PAUSED | '+mbleft+' MB left | '+noofslots+' NZBs';
+				$('#stats_kbpersec').html('&mdash;');
+				$('#stats_eta').html('&mdash;');
+			} else {
+				document.title = kbpersec+' KB/s | '+mbleft+' MB | '+timeleft+' left';
+				$('#stats_kbpersec').html(kbpersec);
+				$('#stats_eta').html(timeleft);
+			}
+			return false;
 		}
 	});
 }
