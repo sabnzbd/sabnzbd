@@ -333,13 +333,13 @@ $(document).ready(function(){
 				$(this).text('Paused').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
 				$.ajax({
 					type: "GET",
-					url: 'api?mode=queue&value=pause&value2='+$(this).parent().parent().attr('id')+'&_dc='+Math.random()
+					url: 'api?mode=queue&name=pause&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random()
 				});
 			} else {
 				$(this).text('Queued').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
 				$.ajax({
 					type: "GET",
-					url: 'api?mode=queue&value=resume&value2='+$(this).parent().parent().attr('id')+'&_dc='+Math.random()
+					url: 'api?mode=queue&name=resume&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random()
 				});
 			}
 		});
