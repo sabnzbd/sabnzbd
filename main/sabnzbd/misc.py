@@ -413,8 +413,8 @@ def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
-    illegal = r'\/<>?*:|"'
-    legal   = r'++{}!@-#`'
+    illegal = r'\/<>?*:;|"'
+    legal   = r'++{}!@--#`'
 
     repl = sabnzbd.REPLACE_ILLEGAL
     lst = []
