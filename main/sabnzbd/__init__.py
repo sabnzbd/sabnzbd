@@ -169,7 +169,7 @@ WEB_DIR2 = None
 pause_on_post_processing = False
 QUICK_CHECK = True
 LOGIN_PAGE = None
-
+IONICE_ARGS = ''
 
 ENABLE_TV_SORTING = False
 TV_SORT_STRING = None
@@ -357,7 +357,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
            WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY, \
            MOVIE_SORT_STRING, ENABLE_MOVIE_SORTING, MOVIE_SORT_EXTRA, ENABLE_DATE_SORTING, DATE_SORT_STRING, \
-           MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES, DO_TSJOIN
+           MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES, DO_TSJOIN, IONICE_ARGS
 
     if __INITIALIZED__:
         return False
@@ -538,6 +538,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     DATE_CATEGORIES = check_setting_str(CFG, 'misc', 'date_categories', ['tv'])
     if type(DATE_CATEGORIES) != type([]):
         DATE_CATEGORIES = []
+
+    IONICE_ARGS = check_setting_str(CFG, 'misc', 'ionice',  '-c2 -n4')
     
     WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')

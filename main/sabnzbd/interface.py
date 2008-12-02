@@ -1205,6 +1205,7 @@ class ConfigSwitches(ProtectedClass):
         config['ignore_samples'] = IntConv(sabnzbd.CFG['misc']['ignore_samples'])
         config['pause_on_post_processing'] = IntConv(sabnzbd.CFG['misc']['pause_on_post_processing'])
         config['quick_check'] = IntConv(sabnzbd.CFG['misc']['quick_check'])
+        config['ionice'] = sabnzbd.CFG['misc']['ionice']
         config['script'] = sabnzbd.CFG['misc']['dirscan_script']
         if not config['script']:
             config['script'] = 'None'
@@ -1233,6 +1234,7 @@ class ConfigSwitches(ProtectedClass):
                      pause_on_post_processing = None,
                      quick_check = None,
                      script = None,
+                     ionice=None,
                      _dc = None
                      ):
 
@@ -1240,6 +1242,11 @@ class ConfigSwitches(ProtectedClass):
             sabnzbd.CFG['misc']['par_option'] = par_option
         else:
             sabnzbd.CFG['misc']['par_option'] = ""
+        if ionice:
+            sabnzbd.CFG['misc']['ionice'] = ionice
+        else:
+            sabnzbd.CFG['misc']['ionice'] = ""
+
         sabnzbd.CFG['misc']['enable_unrar'] = IntConv(enable_unrar)
         sabnzbd.CFG['misc']['enable_unzip'] = IntConv(enable_unzip)
         sabnzbd.CFG['misc']['enable_filejoin'] = IntConv(enable_filejoin)

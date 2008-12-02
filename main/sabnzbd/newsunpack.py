@@ -1006,9 +1006,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, actionname, joinables):
 
 def build_command(command):
     if os.name != "nt":
-        if IONICE_COMMAND:
-            command.insert(0, "-n7")
-            command.insert(0, "-c2")
+        if IONICE_COMMAND and sabnzbd.IONICE_ARGS.strip():
+            lst = sabnzbd.IONICE_ARGS.split()
+            lst.reverse()
+            for arg in lst:
+                command.insert(0, arg)
             command.insert(0, IONICE_COMMAND)
         if NICE_COMMAND:
             command.insert(0, NICE_COMMAND)

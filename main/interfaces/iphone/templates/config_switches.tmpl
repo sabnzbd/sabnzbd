@@ -73,6 +73,13 @@
 			<input type="text" style="margin:0px;padding:0px;margin-left:15px;" size="25" name="par_option" value="$par_option">
 		
         </div>
+<!--#if not $nt#-->
+        <div class="row"> 		
+			<label>IONice parameters:</label><br/><br/>
+			<input type="text" style="margin:0px;padding:0px;margin-left:15px;" size="25" name="ionice" value="$ionice">
+		
+        </div>
+<!--#end if#-->
         </fieldset>
 
         <h2>Other switches</h2>
