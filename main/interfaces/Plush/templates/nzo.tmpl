@@ -4,15 +4,16 @@
 	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
 	<link rel="shortcut icon" type="image/ico" href="../../static/images/plush-default/sabnzbdplus.ico"/>
 	
-	<script type="text/javascript" src="../../static/javascripts/jquery.js?$version"></script>
-	<script type="text/javascript" src="../../static/javascripts/jquery.corner.js?$version"></script>
+	<script type="text/javascript" src="../../static/javascripts/config.js?$version"></script>
 	
 	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/plush-default.css?$version"/>
 	<!--#if $color_scheme and $color_scheme != "plush-default.css" and $color_scheme != "plush_default.css" and $color_scheme != "default.css" and $color_scheme != "modern.css" and $color_scheme != "Modern.css"#-->
 	<link rel="stylesheet" type="text/css" href="../../static/stylesheets/colorschemes/$color_scheme?$version"/>
 	<!--#end if#-->
 	
-	<script type='text/javascript'>
+	<script language="javascript">
+		var config_pane = "NZO"; // uses config's js
+		
 		function mark_all(){
 			var s;
 			var i=0;
@@ -136,15 +137,6 @@
 			
 		</div>
 	</div>
-	
-	<script language="javascript">
-		\$('.config_menu').corner("round tl bl");
-		\$('#config_container').corner("round");
-		
-		\$('.nzf_row').click(function(event) {
-			\$('#box-'+\$(event.target).parent().attr('id')).attr('checked', !\$('#box-'+\$(event.target).parent().attr('id')).attr('checked'));
-		});
-	</script>
 	
 	</form>
 	
