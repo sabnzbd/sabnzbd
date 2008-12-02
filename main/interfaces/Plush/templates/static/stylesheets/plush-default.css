@@ -498,12 +498,14 @@ tr:hover .history_added  {
 	font-size:66%;
 	cursor:pointer;
 	display:inline;
+	color:white;
+	padding:1px;
 }
 .queue_nzb_queued {
-	color:darkgreen;
+	background-color:darkgreen;
 }
 .queue_nzb_paused {
-	color:darkred;
+	background-color:darkred;
 }
 
 #manual_refresh {
