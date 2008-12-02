@@ -52,8 +52,12 @@ def InjectProgressBarPosition (mbleft, mb):
 		<!--#end if#-->
 	</td>
 	
-	<td class="options">
-		<div class="queue_delete" title="Remove&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
+	<td class="options" nowrap>
+		<!--#if $slot.status == "Paused"#-->
+		<div class="queue_nzb_status queue_nzb_paused">$slot.status</div>
+		<!--#else#-->
+		<div class="queue_nzb_status queue_nzb_queued">$slot.status</div>
+		<!--#end if#-->
 		<select title="Priority" class="proc_priority">
 			<option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
 			<option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
@@ -79,6 +83,7 @@ def InjectProgressBarPosition (mbleft, mb):
 			<!--#end for#-->
 		</select>
 		<!--#end if#-->
+		<div class="queue_delete" title="Remove&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
 	</td>
 	
 	</tr>

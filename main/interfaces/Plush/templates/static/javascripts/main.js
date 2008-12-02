@@ -328,6 +328,21 @@ $(document).ready(function(){
 		});
 		
 		// processing option changes
+		$('#queueTable .queue_nzb_status').click(function(){
+			if ($(this).attr('class') == "queue_nzb_status queue_nzb_queued") {
+				$(this).text('Paused').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
+				$.ajax({
+					type: "GET",
+					url: 'api?mode=queue&value=pause&value2='+$(this).parent().parent().attr('id')+'&_dc='+Math.random()
+				});
+			} else {
+				$(this).text('Queued').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
+				$.ajax({
+					type: "GET",
+					url: 'api?mode=queue&value=resume&value2='+$(this).parent().parent().attr('id')+'&_dc='+Math.random()
+				});
+			}
+		});
 		$('#queueTable .proc_priority').change(function(){
 			$.ajax({
 				type: "GET",
