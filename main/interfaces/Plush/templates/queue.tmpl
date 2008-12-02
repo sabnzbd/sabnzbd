@@ -54,6 +54,11 @@ def InjectProgressBarPosition (mbleft, mb):
 	
 	<td class="options">
 		<div class="queue_delete" title="Remove&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
+		<select title="Priority" class="proc_priority">
+			<option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
+			<option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
+			<option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
+		</select>
 		<!--#if $cat_list#-->
 		<select title="Category" class="proc_category">
 			<!--#for $ct in $cat_list#-->
@@ -112,7 +117,8 @@ def InjectProgressBarPosition (mbleft, mb):
 			<option value="100"<!--#if $limit==100#--> selected<!--#end if#-->>Top 100</option>
 			<option value="200"<!--#if $limit==200#--> selected<!--#end if#-->>Top 200</option>
 		</select>&nbsp;<small>of</small>&nbsp;<strong>$noofslots</strong>&nbsp;<small>NZB<!--#if $noofslots != 1 #-->s<!--#end if#--></small>&nbsp;&nbsp;&nbsp;&nbsp;
-		<span id="skipped_refresh" style="display:none;">&raquo;&nbsp;Skipped&nbsp;last&nbsp;refresh</span>
+		<span id="manual_refresh">Refresh</span>
+		<span id="skipped_refresh" style="display:none;">skipped</span>
 	</div>
 	
 </div>

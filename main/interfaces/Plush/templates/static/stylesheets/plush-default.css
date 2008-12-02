@@ -496,9 +496,17 @@ tr:hover .history_added  {
 #btm-wrapper .corner-right { float:right; background-image: url(../images/plush-default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
 #btm-wrapper .corner-left { float:left; background-image: url(../images/plush-default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
 
-#skipped_refresh {
+#manual_refresh {
 	color:darkgreen;
 	font-weight:bold;
+	cursor:pointer;
+}
+#manual_refresh:hover {
+	border-bottom:1px dotted;
+}
+
+#skipped_refresh {
+	color:darkgreen;
 }
 
 .centerpiece {
@@ -909,7 +917,6 @@ fieldset.EntryFieldSet {
 	padding: 5px;
 	opacity: 0.85;
 	text-align: right;
-	margin-left:-90px;
 }
 #tooltip h3, #tooltip div { margin: 0; }
 

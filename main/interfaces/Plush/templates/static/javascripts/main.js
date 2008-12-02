@@ -303,9 +303,17 @@ $(document).ready(function(){
 	// this code will remain instantiated even when the contents of the queue change
 	$('#queueTable').livequery(function() {
 		
+		// queue nzb list limit
 		$('#queue_view_preference').change(function(){
 			$.cookie('queue_view_preference', $('#queue_view_preference').val(), { expires: 365 });
 			RefreshTheQueue();
+		});
+		
+		// queue manual refresh
+		$('#manual_refresh').click(function(event) {
+			$(event.target).text("Refreshing");
+			RefreshTheQueue();
+			RefreshTheHistory();
 		});
 		
 		// queue sorting
@@ -320,6 +328,16 @@ $(document).ready(function(){
 		});
 		
 		// processing option changes
+		$('#queueTable .proc_priority').change(function(){
+			$.ajax({
+				type: "GET",
+				url: 'api?mode=queue&name=priority&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random(),
+				success: function(result){
+					skipRefresh = false;
+					return RefreshTheQueue();
+				}
+			});
+		});
 		$('#queueTable .proc_category').change(function(){
 			$.ajax({
 				type: "GET",
@@ -344,8 +362,8 @@ $(document).ready(function(){
 		$('#queueTable').bind("mouseout", function(){ skipRefresh=false; });
 		$('.box_fatbottom').bind("mouseover mouseout", function(){ skipRefresh=false; });
 		
-		// tooltips for time left / ETA
-		$('#stats_eta').tooltip({
+		// tooltips for options & time left / ETA
+		$('#stats_eta, select').tooltip({
 			extraClass:	"tooltip",
 			track:		true, 
 			fixPNG:		true
@@ -398,7 +416,8 @@ $(document).ready(function(){
 			});
 		}
 	});
-	
+
+
 	
 	/********************************************
 	*********************************************
@@ -504,7 +523,7 @@ $(document).ready(function(){
 
 // calls itself after `refreshRate` seconds
 function MainLoop() {
-	
+		
 	// ajax calls
 	RefreshTheQueue();
 	RefreshTheHistory();
@@ -518,6 +537,7 @@ function MainLoop() {
 // in a function since some processes need to refresh the queue outside of MainLoop()
 function RefreshTheQueue() {
 	if (skipRefresh) return $('#skipped_refresh').fadeIn("slow").fadeOut("slow"); // set within queue <table>
+	$("#manual_refresh").text("Refreshing");
 	var limit = queue_view_preference;
 	if ($('#queue_view_preference').val() != "")
 		var limit = $('#queue_view_preference').val()
