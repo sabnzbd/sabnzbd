@@ -194,7 +194,7 @@ class SeriesSorter:
             season2 = season
         else:
             try:
-                season = int(season)
+                season = str(int(season))
             except:
                 pass
             season2 = season.rjust(2,'0')
@@ -211,7 +211,7 @@ class SeriesSorter:
         # Provide alternatve formatting (0 padding)
         ep_no2 = ep_no.rjust(2,'0')
         try:
-            ep_no = int(ep_no)
+            ep_no = str(int(ep_no))
         except:
             pass
             
