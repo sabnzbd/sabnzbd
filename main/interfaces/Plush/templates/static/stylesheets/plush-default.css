@@ -149,7 +149,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	height: 55px;
 	cursor:pointer;
 }
-.q_menu_sort.show { background: url(../images/plush-default/q_pill_sort.png) 0 0 no-repeat;}
 .q_menu_verbose,.h_menu_verbose {
 	background: url(../images/plush-default/qh_verbosity.png) 0 100% no-repeat;
 	margin-right:6px;
@@ -166,7 +165,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	cursor:pointer;
 	display:none;
 }
-.q_menu_purge.show { display: inline; }
 .h_menu_purge {
 	background: url(../images/plush-default/h_purge.png) 0 100% no-repeat;
 	margin-right:6px;
@@ -175,7 +173,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	cursor:pointer;
 	display:none;
 }
-.h_menu_purge.show { display: inline; }
+.show { display: inline; }
 
 .queue_pill_l {display:inline; background: url(../images/plush-default/q_pill_l.png) 0 0 no-repeat;padding-left:9px;}
 .queue_pill_m {display:inline; background: url(../images/plush-default/q_pill_m.png) 0 0 repeat-x; width:100px; }
