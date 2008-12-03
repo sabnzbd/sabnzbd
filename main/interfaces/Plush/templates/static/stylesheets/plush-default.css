@@ -1,103 +1,20 @@
 body {
 	background-color: #B1B1B1;
 	font-family: arial, "lucida console", sans-serif;
-	/* opacity: .9999; */
 	margin: 0px;
 	padding: 0px;
 }
-/*
-select, input {
-	border: 0px;
-	background: #333;
-	color:#FFFF99;
-	display:inline;
-}
-*/
 
 ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
-.menu_upper_lower {
-	text-align: center;
-	font-size: 66%;
-	padding:4px;
-}
-.menu_upper_lower ul {
-	padding-left:20px;
-}
-.menu_upper_lower li {
-	display:inline;
-	padding-right:20px;
-}
-.menu_upper_lower a {
-	color:white;
-	text-decoration:none;
-	font-weight: bold;
-}
-.menu_upper_lower a:hover {
-	border-bottom: 1px dotted white;
-	background-color: grey;
-}
-#chart {
-	width:90%;
-	height:100px;
-	display:none;
-}
-#add_nzb_menu_toggle_upper{
-	cursor:pointer;
-	text-align:center;
-	font-size: 66%;
-	color:#B1B1B1;
-	background-color:#B1B1B1;
-	font-weight:bold;
-}
-#add_nzb_menu_toggle_upper:hover span{
-	cursor:pointer;
-	color:white;
-	background-color:grey;
-	border-left: 1px dotted white;
-	border-right: 1px dotted white;
-	padding-left:4px;
-	padding-right:4px;
-}
 .new_release_link {
 	color: darkgreen;
-}
-.add_nzb_item {
-	display:inline-block;
-	text-align: center;
-	padding-left: 10px;
-	padding-right:10px;
-}
-#add_nzb_menu {
-	text-align: center;
-	color: #606060;
-	background-color:#E0E0E0;
-	cursor:default;
-	border-right: 4px solid #CFCFCF;
-	border-left: 4px solid #CFCFCF;
-	border-top: 4px solid #CFCFCF;
-	line-height: 25px;
-	width: 90%;
-	margin:0px auto;
-	vertical-align: middle;
-}
-#uploadNZBForm {
-	display: inline;
-	height:10px;
 }
 #addID {
 	cursor:pointer;
 }
 #addNZBbyFile {
 	cursor:pointer;
-}
-#maxSpeed-option {
-	width: 40px;
-}
-#refreshRate-option option {
-}
-#onQueueFinish-option {
-	margin-left:8px;
 }
 #sort_by_avg_age {
 	cursor:pointer;
@@ -133,28 +50,10 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	margin-top:-5px;
 }
 
-/*
-	cursor:pointer;
-	background-color:#E0E0E0;
-	color:black;
-	font-weight:bold;
-	width:110px;
-}
-#history_view_preference {
-	cursor:pointer;
-	background-color:#E0E0E0;
-	color:black;
-	font-weight:bold;
-	width:110px;
-}
-*/
-
 
 #stats_noofslots {
 	display:none;
 }
-
-
 
 
 
@@ -342,17 +241,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	text-align: center;
 	font-size: 70%;
 }
-/*
-.queueTable select {
-	border:0px;
-	font-size: 66%;
-	background-color: #E0E0E0;
-	color: #606060;
-}
-.queueTable tr:hover select {
-	color: #000;
-}
-*/
+
 
 .queueProgressBarContainer {
 	width:121px;
@@ -366,7 +255,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	height: 15px;
 	width: 121px;
 	margin: 2px 0 0 1px;
-/*	overflow:hidden;*/
 }
 
 .currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1; margin-top:2px; font-weight:bold;}
@@ -407,46 +295,23 @@ tr:hover .history_added  {
 	width: 16px;
 	margin-right: 2px;
 }
-.hv_Tim {
-	background: url(../images/plush-default/hv_timetaken.png) 0 50% no-repeat;
-}
-.hv_Avg {
-	background: url(../images/plush-default/hv_avgspeed.png) 0 50% no-repeat;
-}
-.hv_PAR {
-	background: url(../images/plush-default/hv_par.png) 0 50% no-repeat;
-}
-.hv_JOI {
-	background: url(../images/plush-default/hv_join.png) 0 50% no-repeat;
-}
-.hv_FJN {
-	background: url(../images/plush-default/hv_join.png) 0 50% no-repeat;
-}
-.hv_RAR {
-	background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat;
-}
-.hv_ZIP {
-	background: url(../images/plush-default/hv_unzip.png) 0 50% no-repeat;
-}
-.hv_UNP { /* unpack */
-	background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat;
-}
-.hv_DEL {
-	background: url(../images/plush-default/hv_del.png) 0 50% no-repeat;
-}
-.hv_USE {
-	display:inline;
-	background: url(../images/plush-default/hv_userscript.png) 0 50% no-repeat;
-}
 
-
+/* history verbosity icons */
+.hv_Tim { background: url(../images/plush-default/hv_timetaken.png) 0 50% no-repeat; }
+.hv_Avg { background: url(../images/plush-default/hv_avgspeed.png) 0 50% no-repeat; }
+.hv_PAR { background: url(../images/plush-default/hv_par.png) 0 50% no-repeat; }
+.hv_JOI { background: url(../images/plush-default/hv_join.png) 0 50% no-repeat; }
+.hv_FJN { background: url(../images/plush-default/hv_join.png) 0 50% no-repeat; }
+.hv_RAR { background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat; }
+.hv_ZIP { background: url(../images/plush-default/hv_unzip.png) 0 50% no-repeat; }
+.hv_UNP { background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat; }
+.hv_DEL { background: url(../images/plush-default/hv_del.png) 0 50% no-repeat; }
+.hv_USE { display:inline; background: url(../images/plush-default/hv_userscript.png) 0 50% no-repeat; }
 .hvMessage {
 	font-weight: bold;
 	color: red;
 	font-size: 60%;
 }
-
-
 
 
 
@@ -527,24 +392,22 @@ tr:hover .history_added  {
 	margin-right:auto;
 }
 
-#add_nzb_menu_toggle_title {
-	display: block;
-	text-align: center;
+
+
+
+/* for jQuery Tooltip Plugin */
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	border: 1px solid #111;
+	background-color: lightyellow;
+	color:#000;
+	font-size: 11px !important;
+	padding: 5px;
+	opacity: 0.85;
+	text-align: right;
 }
-#add_nzb_menu_toggle_title em {
-	color: #FFBC00;
-}
-#add_nzb_menu_toggle_title a {
-	font-size: 75%;
-	color: white;
-	font-weight:bold;
-	border-bottom: 1px dotted #FFBC00;
-	text-decoration: none;
-	cursor: default;
-}
-#add_nzb_menu_toggle_title a:hover {
-	border-bottom: 1px solid #FFBC00;
-}
+#tooltip h3, #tooltip div { margin: 0; }
 
 
 /* ---------------------------------------------------------------------------------------------------------------
@@ -899,106 +762,7 @@ fieldset.EntryFieldSet {
 
 
 
-
-/* ---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------
-
-	H E L P E R    C L A S S E S
-
-------------------------------------------------------------------------------------------------------------------
---------------------------------------------------------------------------------------------------------------- */
-
-
-
-/* Text align
------------------------------------------------------------ */
-.textRight {text-align: right;}
-.textLeft {text-align: left;}
-.textCenter {text-align: center;}
-
-
-/* Display
------------------------------------------------------------ */
-.clear {clear: both;}
-.noClear {clear: none;}
-.hide {display: none;}
-.show {display: inherit;}
-.visible {display: inherit;}
-.hidden {display: none;}
-.block {display: block;}
-.inline {display: inline;}
-.noStyling {border: none; background: none; text-decoration: none;}
-
-
-/* Column Classes
------------------------------------------------------------ */
-.col10 {width: 10%; float: left; display: block; margin: 0; padding: 0;}
-.col15 {width: 15%; float: left; display: block; margin: 0; padding: 0;}
-.col20 {width: 20%; float: left; display: block; margin: 0; padding: 0;}
-.col25 {width: 25%; float: left; display: block; margin: 0; padding: 0;}
-.col33 {width: 33%; float: left; display: block; margin: 0; padding: 0;}
-.col40 {width: 40%; float: left; display: block; margin: 0; padding: 0;}
-.col45 {width: 45%; float: left; display: block; margin: 0; padding: 0;}
-.col50 {width: 50%; float: left; display: block; margin: 0; padding: 0;}
-.col55 {width: 55%; float: left; display: block; margin: 0; padding: 0;}
-.col60 {width: 60%; float: left; display: block; margin: 0; padding: 0;}
-.col65 {width: 65%; float: left; display: block; margin: 0; padding: 0;}
-.col66 {width: 66%; float: left; display: block; margin: 0; padding: 0;}
-.col70 {width: 70%; float: left; display: block; margin: 0; padding: 0;}
-.col75 {width: 75%; float: left; display: block; margin: 0; padding: 0;}
-.col80 {width: 80%; float: left; display: block; margin: 0; padding: 0;}
-.col90 {width: 90%; float: left; display: block; margin: 0; padding: 0;}
-.col100 {width: 100%; float: left; display: block; margin: 0; padding: 0;}
-
-
-/* Padding Classes
------------------------------------------------------------ */
-.pad5 {padding: 5px; margin: 0;}
-.pad10 {padding: 12px; margin: 0;}
-.pad15 {padding: 15px; margin: 0;}
-.pad20 {padding: 20px; margin: 0;}
-.pad25 {padding: 25px; margin: 0;}
-.pad30 {padding: 30px; margin: 0;}
-.pad35 {padding: 35px; margin: 0;}
-.pad40 {padding: 40px; margin: 0;}
-.pad45 {padding: 45px; margin: 0;}
-.pad50 {padding: 50px; margin: 0;}
-
-
-
-
-
-
-/* jQuery Tooltip Plugin */
-#tooltip {
-	position: absolute;
-	z-index: 3000;
-	border: 1px solid #111;
-	background-color: lightyellow;
-	color:#000;
-	font-size: 11px !important;
-	padding: 5px;
-	opacity: 0.85;
-	text-align: right;
-}
-#tooltip h3, #tooltip div { margin: 0; }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* for jquery superfish plugin (MAIN MENU) */
 /*** ESSENTIAL STYLES ***/
 .sf-menu, .sf-menu * {
 	margin:			0;
@@ -1145,7 +909,7 @@ li.sfHover > a > .sf-sub-indicator {
 
 
 
-
+/* for jquery superfish plugin (main menu) */
 /*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
 .sf-navbar {
 	background:		#B1B1B1;
@@ -1239,4 +1003,3 @@ ul.sf-navbar .current ul ul {
 	-webkit-border-top-right-radius: 0;
 	-webkit-border-bottom-left-radius: 0;
 }
-
