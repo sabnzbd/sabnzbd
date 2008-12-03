@@ -546,6 +546,57 @@ tr:hover .history_added  {
 	border-bottom: 1px solid #FFBC00;
 }
 
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	N Z O (nzb files page, linked from queue)
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+body.nzo {background: #ddd;}
+body.nzo .config_menu {
+	cursor:default;
+}
+body.nzo input {
+	cursor:pointer;
+}
+body.nzo .config_menu input {
+	width:60px;
+}
+table.nzoTable {
+	font-size: 9pt;
+	color: black;
+	margin: 0px;
+}
+table.nzoTable tr {
+	cursor:pointer;
+}
+table.nzoTable th {
+	background: #b5b5b5;
+	color: white;
+	font-weight: bold;
+	cursor:default;
+}
+table.nzoTable tr.even{
+	background-color: #cdf;
+}
+table.nzoTable tr.evenLine {
+	background-color: #eee;
+}
+table.nzoTable tr.odd {
+	background-color: #99bbff;
+}
+table.nzoTable tr.oddLine {
+	background-color: #f8f8f8;
+}
+table.nzoTable tr:hover {
+	background-color: #333333;
+	color: #FFF;
+}
+
+
+
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 

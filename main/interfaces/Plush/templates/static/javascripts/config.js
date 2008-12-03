@@ -31,7 +31,7 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 /***************************************/
 /***************************************/
 /***************************************/
-/* plush config template code as follows */
+/* plush config/nzo                    */
 /***************************************/
 /***************************************/
 /***************************************/
@@ -44,6 +44,17 @@ $(document).ready(function(){
 		$('.nzf_row').click(function(event) {
 			$('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked'));
 		});
+		$("#config_nzo_select_all").click(function(){
+			$("INPUT[type='checkbox']").attr('checked', true);
+    	});
+		$("#config_nzo_select_none").click(function(){
+			$("INPUT[type='checkbox']").attr('checked', false);
+    	});
+		$("#config_nzo_select_invert").click(function(){
+			$("INPUT[type='checkbox']").each( function() {
+                $(this).attr('checked', !$(this).attr('checked'));
+            });
+    	});
 		return;
 	}
 	

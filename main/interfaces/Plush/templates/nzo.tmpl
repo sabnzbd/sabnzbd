@@ -12,76 +12,11 @@
 	<!--#end if#-->
 	
 	<script language="javascript">
-		var config_pane = "NZO"; // uses config's js
-		
-		function mark_all(){
-			var s;
-			var i=0;
-			while(s = document.getElementsByTagName("input")[i++])
-				if(s.type=='checkbox')
-				s.checked=true;
-		}
-		function unmark_all(){
-			var s;
-			var i=0;
-			while(s = document.getElementsByTagName("input")[i++])
-				if(s.type=='checkbox')
-					s.checked=false;
-		}
-		function invert(){
-			var s;
-			var i=0;
-			while(s = document.getElementsByTagName("input")[i++])
-			if(s.type=='checkbox')
-				s.checked=!s.checked;
-		}
+		var config_pane = "NZO"; // re-uses config's js/css
 	</script>
 	
-	<style>
-		body {background: #ddd;}
-		table {
-			font-size: 9pt;
-			color: black;
-			margin: 0px;
-		}
-		tr {
-			cursor:pointer;
-		}
-		th {
-			background: #b5b5b5;
-			color: white;
-			font-weight: bold;
-			cursor:default;
-		}
-		tr.even{
-			background-color: #cdf;
-		}
-		tr.evenLine {
-			background-color: #eee;
-		}
-		tr.odd {
-			background-color: #99bbff;
-		}
-		tr.oddLine {
-			background-color: #f8f8f8;
-		}
-		tr:hover {
-			background-color: #333333;
-			color: #FFF;
-		}
-		.config_menu {
-			cursor:default;
-		}
-		input {
-			cursor:pointer;
-		}
-		.config_menu input {
-			width:60px;
-		}
-	</style>
-	
 </head>
-<body>
+<body class="nzo">
 	
 	<div align="center">
 		<a href="../../" style="text-decoration:none; color:black">&laquo; go back <img src="../../static/images/plush-default/sabnzbdplus_logo.png" border="0"/></a>
@@ -99,9 +34,9 @@
 			<li><a class="config_menu" id="config_nzo_down"><input type="submit" name="action_key" value="Down" /></a></li>
 			<li><a class="config_menu" id="config_nzo_bottom"><input type="submit" name="action_key" value="Bottom" /></a></li>
 			<br/>Selection:
-			<li><a class="config_menu" id="config_nzo_select_all" onclick='mark_all();'>ALL</a></li>
-			<li><a class="config_menu" id="config_nzo_select_none" onclick='unmark_all();'>NONE</a></li>
-			<li><a class="config_menu" id="config_nzo_select_invert" onclick='invert();'>INVERT</a></li>
+			<li><a class="config_menu" id="config_nzo_select_all">ALL</a></li>
+			<li><a class="config_menu" id="config_nzo_select_none">NONE</a></li>
+			<li><a class="config_menu" id="config_nzo_select_invert">INVERT</a></li>
 		</ul>
 	</div>
 	
@@ -112,7 +47,7 @@
 				PAGE CONTENT IS BELOW
 		************************************ -->
 			
-			<table>
+			<table class="nzoTable">
 				<tr><th></th><th>Filename/Subject</th><th>Size (MB)</th><th>Age</th></tr>
 				<!--#set $oddLine = False#-->
 				<!--#for $file in $active_files#-->
