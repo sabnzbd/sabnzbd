@@ -91,10 +91,10 @@ LOW_PRIORITY = -1
 
 
 series_match = [ ('([sS]|[\d]+)x(\d+)', # 1x01
-                     ['([sS]|[\d])+x(\d+)', '-(\d+)'] ),  #(MATCHER, [EXTRA,MATCHERS])
+                     ['^[-\.]+([sS]|[\d])+x(\d+)', '^[-\.](\d+)'] ),  #(MATCHER, [EXTRA,MATCHERS])
                      
                       ('[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
-                       ['[Ss](\d+)[\.\-]?[Ee](\d+)', '-(\d+)']) ] # Extra matchers
+                       ['^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)', '^[-\.](\d+)']) ] # Extra matchers
                       
                       #possibly flawed - 101 - support: [\.\- \s]?(\d)(\d{2,2})[\.\- \s]?
                       
