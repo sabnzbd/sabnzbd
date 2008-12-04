@@ -162,10 +162,10 @@ class SeriesSorter:
             return self.final_path
         else:
             # Error Sorting
-            return self.original_path
+            return os.path.join(self.original_path, self.original_dirname)
     
     
-    def get_multi_ep_naming(one, two, extras):
+    def get_multi_ep_naming(self, one, two, extras):
         ''' Returns a list of unique values joined into a string and seperated by - (ex:01-02-03-04) '''
         extra_list = [one]
         extra2_list = [two]
@@ -424,7 +424,7 @@ class GenericSorter:
             return self.final_path
         else:
             # Error Sorting
-            return self.original_path
+            return os.path.join(self.original_path, self.original_dirname)
     
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
@@ -622,7 +622,7 @@ class DateSorter:
             return self.final_path
         else:
             # Error Sorting
-            return self.original_path
+            return os.path.join(self.original_path, self.original_dirname)
     
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
