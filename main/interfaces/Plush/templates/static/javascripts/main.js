@@ -190,7 +190,7 @@ jQuery(function($) {
 					
 					// set page title + eta/kbpersec stats at top of queue
 					if ($.plush.noofslots < 1) {
-						if (paused) document.title = 'PAUSED | SABnzbd+ Plush';
+						if ($.plush.paused) document.title = 'PAUSED | SABnzbd+ Plush';
 						else		document.title = 'READY | SABnzbd+ Plush';
 						$('#stats_kbpersec').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
