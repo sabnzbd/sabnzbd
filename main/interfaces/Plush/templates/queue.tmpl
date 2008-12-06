@@ -1,12 +1,3 @@
-<%
-def InjectProgressBarPosition (mbleft, mb):
-	if mb == '0.00': # don't divide by zero
-		return '-120px -1px;'
-	percentage = int(100 - float(mbleft) / float(mb) * 100)
-	postion =  int(120 - 120.0 / 100.0 * percentage)
-	return '-'+str(postion)+'px -1px;'
-%>
-
 <script type="text/javascript">
 	// set vars within the plush object
 	jQuery(function($) {
@@ -41,9 +32,9 @@ def InjectProgressBarPosition (mbleft, mb):
 	</td>
 	
 	<td class="queueProgressBarContainer">
-		<div class="queueProgressBar" style="background-position: <%=InjectProgressBarPosition(slot['mbleft'],slot['mb'])%>">
-			<div class="totalDownload"><%=int(float(slot['mbleft']))%>&nbsp;<small>left</small></div>
-			<div class="currentDownload"><%=int(float(slot['mb']))%>&nbsp;<small>MB</small></div>
+		<div class="queueProgressBar" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -1px">
+			<div class="totalDownload"><!--#echo int(float($slot.mbleft))#-->&nbsp;<small>left</small></div>
+			<div class="currentDownload"><!--#echo int(float($slot.mb))#-->&nbsp;<small>MB</small></div>
 		</div>
 	</td>
 	
