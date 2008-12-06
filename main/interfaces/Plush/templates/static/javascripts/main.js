@@ -163,8 +163,8 @@ jQuery(function($) {
 			if ($.plush.skipRefresh) return $('#skipped_refresh').fadeIn("slow").fadeOut("slow"); // set within queue <table>
 			$("#manual_refresh").text("Refreshing");
 			var limit = $.plush.queueViewPreference;
-			if ($('#$.plush.queueViewPreference').val() != "")
-				var limit = $('#$.plush.queueViewPreference').val()
+			if ($('#queue_view_preference').val() != "")
+				var limit = $('#queue_view_preference').val()
 			$.ajax({
 				type: "GET",
 				url: 'queue/?dummy2='+limit+'&_dc='+Math.random(),
@@ -228,8 +228,8 @@ jQuery(function($) {
 
 		refreshHistory : function() {
 			var limit = $.plush.historyViewPreference;
-			if ($('#$.plush.historyViewPreference').val() != "")
-				var limit = $('#$.plush.historyViewPreference').val()
+			if ($('#history_view_preference').val() != "")
+				var limit = $('#history_view_preference').val()
 			$.ajax({
 				type: "GET",
 				url: 'history/?dummy2='+limit+'&_dc='+Math.random(),
@@ -425,8 +425,8 @@ jQuery(function($) {
 			$('#queueTable').livequery(function() {
 				
 				// queue nzb list limit
-				$('#$.plush.queueViewPreference').change(function(){
-					$.cookie('$.plush.queueViewPreference', $('#$.plush.queueViewPreference').val(), { expires: 365 });
+				$('#queue_view_preference').change(function(){
+					$.cookie('$.plush.queueViewPreference', $('#queue_view_preference').val(), { expires: 365 });
 					$.plush.refreshQueue();
 				});
 				
@@ -624,8 +624,8 @@ jQuery(function($) {
 			// this code will remain instantiated even when the contents of the history change
 			$('#history .left_stats').livequery(function() {
 				// history view limiter
-				$('#$.plush.historyViewPreference').change(function(){
-					$.cookie('$.plush.historyViewPreference', $('#$.plush.historyViewPreference').val(), { expires: 365 });
+				$('#history_view_preference').change(function(){
+					$.cookie('$.plush.historyViewPreference', $('#history_view_preference').val(), { expires: 365 });
 					$.plush.refreshHistory();
 				});
 			});
