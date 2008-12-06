@@ -10,7 +10,7 @@
 		$.plush.timeleft 	 = '$timeleft';
 		$.plush.eta			 = '$eta';
 		$.plush.have_warnings= $have_warnings;
-		$.plush.last_warning = "<!--#echo $last_warning.replace("\n"," ") #-->";
+		$.plush.last_warning = "<!--#echo $last_warning.replace("\n"," ").replace('"',"&quot;") #-->";
 	});
 </script>
 
