@@ -231,36 +231,6 @@ jQuery(function($) {
 			});
 		},
 		
-		
-		
-		/********************************************
-		*********************************************
-		
-			$.plush.initQueueDnD() -- drag & drop sorting
-		
-		*********************************************
-		********************************************/
-		
-		initQueueDnD : function() {
-			$("#queueTable").tableDnD({
-				onDrop: function(table, row) {
-					var rows = table.tBodies[0].rows;
-					
-					if (rows.length < 2)
-						return false;
-					
-					// determine which position the repositioned row is at now
-					for ( var i=0; i < rows.length; i++ )
-						if (rows[i].id == row.id)
-							return $.ajax({
-								type: "GET",
-								url: "api?mode=switch&value="+row.id+"&value2="+i+"&_dc="+Math.random()
-							});
-					return false;
-				}
-			});	
-		},
-		
 				
 		/********************************************
 		*********************************************
@@ -459,9 +429,27 @@ jQuery(function($) {
 					$.plush.refreshHistory();
 				});
 				
-				// queue sorting
-				$.plush.initQueueDnD();
+				// queue drag and drop sorting
+				$("#queueTable").tableDnD({
+					onDrop: function(table, row) {
+						var rows = table.tBodies[0].rows;
+						
+						if (rows.length < 2)
+							return false;
+						
+						// determine which position the repositioned row is at now
+						for ( var i=0; i < rows.length; i++ )
+							if (rows[i].id == row.id)
+								return $.ajax({
+									type: "GET",
+									url: "api?mode=switch&value="+row.id+"&value2="+i+"&_dc="+Math.random()
+								});
+						return false;
+					}
+				});
 				
+				// double-click on bullet icon sends nzb to top of queue
+				/*
 				$('#queueTable .title').dblclick(function(){
 					$(this).parent().parent().prependTo('#queueTable');
 					$.ajax({
@@ -469,6 +457,7 @@ jQuery(function($) {
 						url: "api?mode=switch&value="+$(this).parent().parent().attr('id')+"&value2=0&_dc="+Math.random()
 					});
 				});
+				*/
 				
 				// processing option changes
 				$('#queueTable .queue_nzb_status').click(function(){
