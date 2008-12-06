@@ -5,6 +5,7 @@ body {
 	padding: 0px;
 }
 select {
+	color: #000;
 	background-color:#E0E0E0;
 	border:0px;
 	padding:0px;
@@ -196,8 +197,14 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .queueTable tr {
 	background-color: #e0e0e0;
 }
+.queueTable tr select {
+	color: #606060;
+}
 .queueTable tr:hover {
 	background-color: #f9f9f9;
+	color: #000;
+}
+.queueTable tr:hover select {
 	color: #000;
 }
 .queueTable td {

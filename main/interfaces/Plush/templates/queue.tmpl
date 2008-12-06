@@ -28,8 +28,8 @@
 	<!--#set $odd = not $odd#-->
 	<tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
 	
-	<td title="Average File Age: $slot.avg_age" class="download-title">
-		<a href="queue/$slot.nzo_id/">$slot.filename</a>
+	<td class="download-title">
+		<a href="queue/$slot.nzo_id/" title="Average File Age: $slot.avg_age">$slot.filename</a>
 	</td>
 	
 	<td class="queueProgressBarContainer">
