@@ -1106,6 +1106,12 @@ class ConfigDirectories(ProtectedClass):
             except:
                 return badParameterResponse('Error: use octal notation for permissions')
 
+        if not sabnzbd.empty_queues():
+            if download_dir != sabnzbd.CFG['misc']['download_dir']:
+                return badParameterResponse('Error: Queue not empty, cannot change download directory.')
+            if cache_dir != sabnzbd.CFG['misc']['cache_dir']:
+                return badParameterResponse('Error: Queue not empty, cannot change cache directory.')
+        
         (dd, path) = create_real_path('download_dir', sabnzbd.DIR_HOME, download_dir)
         if not dd:
             return badParameterResponse('Error: cannot create download directory "%s".' % path)

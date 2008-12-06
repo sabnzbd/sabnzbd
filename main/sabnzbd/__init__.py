@@ -1327,6 +1327,10 @@ def run_script(script):
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
+def empty_queues():
+    global NZBQ, POSTPROCESSOR
+    return (POSTPROCESSOR and POSTPROCESSOR.empty()) and (NZBQ and NZBQ.is_empty())
+
 def keep_awake():
     """ If we still have work to do, keep Windows system awake
     """
