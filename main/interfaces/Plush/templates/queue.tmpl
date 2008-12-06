@@ -8,14 +8,15 @@ def InjectProgressBarPosition (mbleft, mb):
 %>
 
 <script type="text/javascript">
-	var speedlimit 	= '$speedlimit';
-	var finishaction= '$finishaction';
-	var paused 		= <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
-	var noofslots 	= $noofslots;
-	var mbleft 		= <!--#echo "%.0f" % float($mbleft)#-->;
-	var kbpersec 	= <!--#echo "%.0f" % float($kbpersec)#-->;
-	var timeleft 	= '$timeleft';
-	var eta			= '$eta';
+	// set vars within the plush object
+	$.plush.speedlimit 	= '$speedlimit';
+	$.plush.finishaction= '$finishaction';
+	$.plush.paused 		= <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
+	$.plush.noofslots 	= $noofslots;
+	$.plush.mbleft 		= <!--#echo "%.0f" % float($mbleft)#-->;
+	$.plush.kbpersec 	= <!--#echo "%.0f" % float($kbpersec)#-->;
+	$.plush.timeleft 	= '$timeleft';
+	$.plush.eta			= '$eta';
 </script>
 
 <div class="box_banner_hr"></div>

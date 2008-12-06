@@ -363,6 +363,7 @@ tr:hover .history_added  {
 	display:inline;
 	color:white;
 	padding:1px;
+	margin-left:4px;
 }
 .queue_nzb_queued {
 	background-color:darkgreen;
