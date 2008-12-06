@@ -144,54 +144,61 @@ jQuery(function($) {
 		*********************************************
 		********************************************/
 	
-		refreshRate 		  : 30,
-		skipRefresh 		  : false,
-		queueViewPreference   : 15,
-		historyViewPreference : 15,
-		focusedOnSpeedChanger : false,
+		refreshRate 		  : 30,		// in seconds, how long to wait until updating all the content
+		skipRefresh 		  : false,	// used when the cursor is hovering the queue
+		queueViewPreference   : 15,		// nzb limit
+		historyViewPreference : 15,		// nzb limit
+		focusedOnSpeedChanger : false,  // 
 		
 		
 		/********************************************
 		*********************************************
 		
 			$.plush.refreshQueue()
+			replaces queue contents with new html from queue.tmpl
+			also makes updates throughout interface
 		
 		*********************************************
 		********************************************/
 		
 		refreshQueue : function() {
-			if ($.plush.skipRefresh) return $('#skipped_refresh').fadeIn("slow").fadeOut("slow"); // set within queue <table>
+			
+			// skip refresh if cursor hovers queue
+			if ($.plush.skipRefresh)
+				return $('#skipped_refresh').fadeIn("slow").fadeOut("slow");
+			
+			// refresh state notification
 			$("#manual_refresh").text("Refreshing");
-			var limit = $.plush.queueViewPreference;
-			if ($('#queue_view_preference').val() != "")
-				var limit = $('#queue_view_preference').val()
+			
+			// fetch updated content from queue.tmpl
 			$.ajax({
-				type: "GET",
-				url: 'queue/?dummy2='+limit+'&_dc='+Math.random(),
+				url: 'queue/?dummy2='+$.plush.queueViewPreference+'&_dc='+Math.random(),
 				success: function(result){
 					
-					// refresh queue slots, and fetch certain variables
+					// replace queue contents with queue.tmpl (js in the template sets additional fetched variables)
 					$('#queue').html(result);
-		
-					// set speed limit and completion script form fields
+					
+					// set queue speed limit selector
 					if ($("#maxSpeed-option").val() != $.plush.speedlimit && !$.plush.focusedOnSpeedChanger)
 						$("#maxSpeed-option").val($.plush.speedlimit);
+					
+					// set queue completion script selector
 					if ($("#onQueueFinish-option").val() != $.plush.finishaction)
 						$("#onQueueFinish-option").val($.plush.finishaction);
 					
-					// set tooltip for the ETA
-					$('#stats_eta').attr('title','ETA: '+$.plush.eta);
-					
-					// set pause/resume button state
+					// set queue pause/resume button state
 					if ( $.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_paused')
 						$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
 					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_unpaused')
 						$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
 					
+					// set queue titlebar stats tooltip (ETA) 
+					$('#stats_eta').attr('title','ETA: '+$.plush.eta);
+					
 					// set page title + eta/kbpersec stats at top of queue
 					if ($.plush.noofslots < 1) {
 						if ($.plush.paused) document.title = 'PAUSED | SABnzbd+ Plush';
-						else		document.title = 'READY | SABnzbd+ Plush';
+						else				document.title = 'READY | SABnzbd+ Plush';
 						$('#stats_kbpersec').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
 					} else if ($.plush.paused) {
@@ -227,12 +234,8 @@ jQuery(function($) {
 		********************************************/
 
 		refreshHistory : function() {
-			var limit = $.plush.historyViewPreference;
-			if ($('#history_view_preference').val() != "")
-				var limit = $('#history_view_preference').val()
 			$.ajax({
-				type: "GET",
-				url: 'history/?dummy2='+limit+'&_dc='+Math.random(),
+				url: 'history/?dummy2='+$.plush.historyViewPreference+'&_dc='+Math.random(),
 				success: function(result){
 					return $('#history').html(result);
 				}
@@ -256,7 +259,7 @@ jQuery(function($) {
 			
 			// loop
 			if ($.plush.refreshRate > 0)
-				setTimeout("$.plush.refresh()", $.plush.refreshRate*1000);
+				$.plush.timeout = setTimeout("$.plush.refresh()", $.plush.refreshRate*1000);
 		},
 		
 		
@@ -283,7 +286,6 @@ jQuery(function($) {
 			$('#addID').bind('click', function() { 
 				if ($('#addID_input').val()!='enter URL / Newzbin ID') {
 					$.ajax({
-						type: "GET",
 						url: "addID",
 						data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
 						success: function(result){
@@ -311,74 +313,64 @@ jQuery(function($) {
 				params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val()},
 				autoSubmit: true,
 				onComplete: $.plush.refreshQueue
-				//onSubmit: function() {},
-				//onSelect: function() {}
 			});
 			
 			
 			/********************************************
 			*********************************************
-		
+			
 				Main Menu Methods
-				
+			
 			*********************************************
 			********************************************/
-		
-		
-			// activate main menu (shown upon hovering SABnzbd logo)
+			
+			
+			// activate main menu, already uses hoverIntent
 			$("ul.sf-menu").superfish({
 				pathClass:  'current'
 			});
 			
 			
-			// restore Refresh rate from cookie
-			if ($.cookie('Plush2Refresh'))
-				$.plush.refreshRate = $.cookie('Plush2Refresh');
-			else
-				$.cookie('Plush2Refresh', $.plush.refreshRate, { expires: 365 });
-		
-		
 			// Refresh Rate main menu input
-			$("#refreshRate-option").val($.plush.refreshRate);
-			$("#refreshRate-option").change( function() {
-				reactivate = false;
-				if ($.plush.refreshRate == 0)
-					reactivate = true;
+			if ($.cookie('Plush2Refresh')) // restore from cookie
+				$.plush.refreshRate = $.cookie('Plush2Refresh');
+			$("#refreshRate-option").val($.plush.refreshRate).change( function() {
 				$.plush.refreshRate = $("#refreshRate-option").val();
 				$.cookie('Plush2Refresh', $.plush.refreshRate, { expires: 365 });
-				if ($.plush.refreshRate > 0 && reactivate)
-					MainLoop();
+				clearTimeout($.plush.timeout);
+				if ($.plush.refreshRate > 0)
+					$.plush.refresh();
 			});
 			
 			
 			// Max Speed main menu input
-			$("#maxSpeed-option").focus( function() {
-				$.plush.focusedOnSpeedChanger = true;
-			});
-			$("#maxSpeed-option").blur( function() {
-				$.plush.focusedOnSpeedChanger = false;
-			});
+			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
+								 .blur(function(){ $.plush.focusedOnSpeedChanger = false; });
 			$("#maxSpeed-option").change( function() {
-				$.ajax({
-					type: "GET",
-					url: "api?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&_dc="+Math.random()
-				});
+				$.get("api?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&_dc="+Math.random());
 			});
 			
 			
-			// On Queue Finish main menu select
+			// Upon Queue Completion main menu select
 			$("#onQueueFinish-option").change( function() {
-				$.ajax({
-					type: "GET",
-					url: "api?mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()+"&_dc="+Math.random()
-				});
+				$.get("api?mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()+"&_dc="+Math.random());
 			});
-			
+					
+			// queue purge
+			$('#queue_purge').click(function(event) {
+				if(confirm('Sure you want to empty out your Queue?')){
+					$.ajax({
+						url: "api?mode=queue&name=delete&value=all&_dc="+Math.random(),
+						success: function(result){
+							return $.plush.refreshQueue();
+						}
+					});
+				}
+			});
 			
 			// Sort Queue main menu options
 			$('#sort_by_avg_age').click(function(event) {
 				$.ajax({
-					type: "GET",
 					url: "queue/sort_by_avg_age?_dc="+Math.random(),
 					success: function(result){
 						return $.plush.refreshQueue();
@@ -387,7 +379,6 @@ jQuery(function($) {
 			});
 			$('#sort_by_name').click(function(event) {
 				$.ajax({
-					type: "GET",
 					url: "queue/sort_by_name?_dc="+Math.random(),
 					success: function(result){
 						return $.plush.refreshQueue();
@@ -396,7 +387,6 @@ jQuery(function($) {
 			});
 			$('#sort_by_size').click(function(event) {
 				$.ajax({
-					type: "GET",
 					url: "queue/sort_by_size?_dc="+Math.random(),
 					success: function(result){
 						return $.plush.refreshQueue();
@@ -411,22 +401,23 @@ jQuery(function($) {
 					window.location='shutdown';
 			});
 			
-		
+			
 			/********************************************
 			*********************************************
-		
+			
 				Queue Methods
-				
+			
 			*********************************************
 			********************************************/
-		
-		
+			
+			
 			// this code will remain instantiated even when the contents of the queue change
 			$('#queueTable').livequery(function() {
 				
 				// queue nzb list limit
 				$('#queue_view_preference').change(function(){
-					$.cookie('$.plush.queueViewPreference', $('#queue_view_preference').val(), { expires: 365 });
+					$.plush.queueViewPreference = $('#queue_view_preference').val();
+					$.cookie('queue_view_preference', $.plush.queueViewPreference, { expires: 365 });
 					$.plush.refreshQueue();
 				});
 				
@@ -440,18 +431,12 @@ jQuery(function($) {
 				// queue drag and drop sorting
 				$("#queueTable").tableDnD({
 					onDrop: function(table, row) {
-						var rows = table.tBodies[0].rows;
-						
-						if (rows.length < 2)
+						if (table.tBodies[0].rows.length < 2)
 							return false;
-						
 						// determine which position the repositioned row is at now
-						for ( var i=0; i < rows.length; i++ )
-							if (rows[i].id == row.id)
-								return $.ajax({
-									type: "GET",
-									url: "api?mode=switch&value="+row.id+"&value2="+i+"&_dc="+Math.random()
-								});
+						for ( var i=0; i < table.tBodies[0].rows.length; i++ )
+							if (table.tBodies[0].rows[i].id == row.id)
+								return $.get("api?mode=switch&value="+row.id+"&value2="+i+"&_dc="+Math.random());
 						return false;
 					}
 				});
@@ -460,32 +445,24 @@ jQuery(function($) {
 				/*
 				$('#queueTable .title').dblclick(function(){
 					$(this).parent().parent().prependTo('#queueTable');
-					$.ajax({
-						type: "GET",
-						url: "api?mode=switch&value="+$(this).parent().parent().attr('id')+"&value2=0&_dc="+Math.random()
-					});
+					$.get("api?mode=switch&value="+$(this).parent().parent().attr('id')+"&value2=0&_dc="+Math.random());
 				});
 				*/
 				
-				// processing option changes
+				// nzb pause/resume toggle ajax
 				$('#queueTable .queue_nzb_status').click(function(){
 					if ($(this).attr('class') == "queue_nzb_status queue_nzb_queued") {
 						$(this).text('Paused').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
-						$.ajax({
-							type: "GET",
-							url: 'api?mode=queue&name=pause&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random()
-						});
+						$.get('api?mode=queue&name=pause&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random());
 					} else {
 						$(this).text('Queued').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
-						$.ajax({
-							type: "GET",
-							url: 'api?mode=queue&name=resume&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random()
-						});
+						$.get('api?mode=queue&name=resume&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random());
 					}
 				});
+				
+				// nzb change priority ajax
 				$('#queueTable .proc_priority').change(function(){
 					$.ajax({
-						type: "GET",
 						url: 'api?mode=queue&name=priority&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random(),
 						success: function(result){
 							$.plush.skipRefresh = false;
@@ -493,26 +470,23 @@ jQuery(function($) {
 						}
 					});
 				});
+				
+				// nzb change category ajax
 				$('#queueTable .proc_category').change(function(){
-					$.ajax({
-						type: "GET",
-						url: 'api?mode=change_cat&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random()
-					});
-				});
-				$('#queueTable .proc_option').change(function(){
-					$.ajax({
-						type: "GET",
-						url: 'api?mode=change_opts&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random()
-					});
-				});
-				$('#queueTable .proc_script').change(function(){
-					$.ajax({
-						type: "GET",
-						url: 'api?mode=change_script&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random()
-					});
+					$.get('api?mode=change_cat&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
 				});
 				
-				// skip queue refresh on mouseover
+				// nzb change processing option ajax
+				$('#queueTable .proc_option').change(function(){
+					$.get('api?mode=change_opts&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
+				});
+				
+				// nzb change script ajax
+				$('#queueTable .proc_script').change(function(){
+					$.get('api?mode=change_script&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
+				});
+				
+				// for skipping queue refresh on mouseover
 				$('#queueTable').bind("mouseover", function(){ $.plush.skipRefresh=true; });
 				$('#queueTable').bind("mouseout", function(){ $.plush.skipRefresh=false; });
 				$('.box_fatbottom').bind("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
@@ -523,52 +497,27 @@ jQuery(function($) {
 					track:		true, 
 					fixPNG:		true
 				});
-		
+				
 			}); // end livequery
-			
 			
 			// queue pause/resume
 			$('#pause_resume').click(function(event) {
 				if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
-					$.ajax({
-						type: "GET",
-						url: "api?mode=resume&_dc="+Math.random()
-					});
+					$.get("api?mode=resume&_dc="+Math.random());
 				else
-					$.ajax({
-						type: "GET",
-						url: "api?mode=pause&_dc="+Math.random()
-					});
+					$.get("api?mode=pause&_dc="+Math.random());
 				if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused')
 					$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
 				else
 					$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
 			});
-		
-		
-			// queue purge
-			$('#queue_purge').click(function(event) {
-				if(confirm('Sure you want to empty out your Queue?')){
-					$.ajax({
-						type: "GET",
-						url: "api?mode=queue&name=delete&value=all&_dc="+Math.random(),
-						success: function(result){
-							return $.plush.refreshQueue();
-						}
-					});
-				}
-			});
 			
-			
-			// queue nzb deletion
+			// queue singular nzb deletion
 			$('#queue').click(function(event) {
 				if ($(event.target).is('.queue_delete') && confirm('Delete NZB? Are you sure?') ) {
 					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeOut('fast');
-					$.ajax({
-						type: "GET",
-						url: 'api?mode=queue&name=delete&value='+delid+'&_dc='+Math.random()
-					});
+					$.get('api?mode=queue&name=delete&value='+delid+'&_dc='+Math.random());
 				}
 			});
 		
@@ -576,30 +525,26 @@ jQuery(function($) {
 			
 			/********************************************
 			*********************************************
-		
+			
 				History Methods
-				
+			
 			*********************************************
 			********************************************/
-		
-		
+			
+			
 			// history verbosity toggle
 			$('.h_menu_verbose').click(function(event) {
 				$.ajax({
-					type: "GET",
 					url: 'history/tog_verbose?_dc='+Math.random(),
 					success: function(result){
-						//return RefreshTheHistory();
 						return $('#history').html(result); // is this loading the history twice? redirect?
 					}
 				});
 			});
 			
-			
 			// history purge
 			$('.h_menu_purge').dblclick(function(event) {
 				$.ajax({
-					type: "GET",
 					url: 'api?mode=history&name=delete&value=all&_dc='+Math.random(),
 					success: function(result){
 						$.plush.refreshHistory();
@@ -607,39 +552,40 @@ jQuery(function($) {
 				});
 			});
 			
-			
-			// history nzb deletion
+			// history singular nzb deletion
 			$('#history').click(function(event) {
 				if ($(event.target).is('.queue_delete')) {	// history delete
 					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeOut('fast');
-					$.ajax({
-						type: "GET",
-						url: 'api?mode=history&name=delete&value='+delid+'&_dc='+Math.random()
-					});
+					$.get('api?mode=history&name=delete&value='+delid+'&_dc='+Math.random());
 				}
 			});
 			
 			
 			// this code will remain instantiated even when the contents of the history change
 			$('#history .left_stats').livequery(function() {
+
 				// history view limiter
 				$('#history_view_preference').change(function(){
-					$.cookie('$.plush.historyViewPreference', $('#history_view_preference').val(), { expires: 365 });
+					$.plush.historyViewPreference = $('#history_view_preference').val();
+					$.cookie('history_view_preference', $.plush.historyViewPreference, { expires: 365 });
 					$.plush.refreshHistory();
 				});
-			});
+
+			}); // end livequery
 			
 			
 			// this code will remain instantiated even when the contents of the history change
-			$('#history .last div').livequery(function() {
+			$('#historyTable').livequery(function() {
+				
 				// tooltips for verbose notices
-				$(this).tooltip({
+				$('#history .last div').tooltip({
 					extraClass:	"tooltip",
 					track:		true, 
 					fixPNG:		true
 				});
-			});
+				
+			}); // end livequery
 			
 			
 			/********************************************
@@ -651,11 +597,11 @@ jQuery(function($) {
 			********************************************/
 			
 			
-			// restore queue/history view preferences
-			if ($.cookie('$.plush.queueViewPreference'))
-				$.plush.queueViewPreference = $.cookie('$.plush.queueViewPreference');
-			if ($.cookie('$.plush.historyViewPreference'))
-				$.plush.historyViewPreference = $.cookie('$.plush.historyViewPreference');
+			// restore queue/history view preferences (or set to defaults)
+			if ($.cookie('queue_view_preference'))
+				$.plush.queueViewPreference = $.cookie('queue_view_preference');
+			if ($.cookie('history_view_preference'))
+				$.plush.historyViewPreference = $.cookie('history_view_preference');
 			
 			
 			// additional tooltips
@@ -668,8 +614,12 @@ jQuery(function($) {
 			
 			// fix IE6 .png image transparencies
 			$('img[@src$=.png], div.history_logo, div.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
-	
 			
+		} // end of $.plush.initEvents()
+		
+	}; // end plush object
+});
+
 			/*
 			// disables toggler text selection when clicking
 			function disableSelection(element) {
@@ -681,11 +631,6 @@ jQuery(function($) {
 				element.style.cursor = "default";
 			};
 			*/
-		}
-		
-	};
-});
-
 
 // once the DOM is ready, run this
 jQuery(document).ready(function($){
