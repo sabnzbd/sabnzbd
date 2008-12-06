@@ -4,6 +4,11 @@ body {
 	margin: 0px;
 	padding: 0px;
 }
+select {
+	background-color:#E0E0E0;
+	border:0px;
+	padding:0px;
+}
 
 ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
@@ -956,13 +961,13 @@ li.sfHover > a > .sf-sub-indicator {
 ul.sf-navbar ul li:hover li,
 ul.sf-navbar ul li.sfHover li,
 .sf-navbar ul a:focus, .sf-navbar ul a:hover, .sf-navbar ul a:active {
-	background:		#E8E8E8;
+	background:		#F9F9F9;
 }
 ul.sf-navbar li li li:hover,
 ul.sf-navbar li li li.sfHover,
 .sf-navbar li li.current li.current,
 .sf-navbar ul li li a:focus, .sf-navbar ul li li a:hover, .sf-navbar ul li li a:active {
-	background:		#E8E8E8;
+	background:		#F9F9F9;
 }
 ul.sf-navbar .current ul,
 ul.sf-navbar ul li:hover ul,
