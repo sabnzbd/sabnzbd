@@ -203,6 +203,14 @@ jQuery(function($) {
 						$('#stats_kbpersec').html($.plush.kbpersec);
 						$('#stats_eta').html($.plush.timeleft);
 					}
+					
+					// update warnings count/latest warning text in main menu
+					$('#have_warnings').html('('+$.plush.have_warnings+')');
+					if ($.plush.have_warnings > 0)
+						$('#last_warning').html($.plush.last_warning);
+					else
+						$('#last_warning').html('nothing to report');
+					
 					return false;
 				}
 			});

@@ -85,9 +85,9 @@
 		</li>
 		<li><a class="sf-with-ul" href="connections">Config<span class="sf-sub-indicator"> &#187;</span></a></li>
 		<li>
-			<a class="sf-with-ul" href="connections">Warnings&nbsp;<!--#if $have_warnings != "0" #--><small>($have_warnings)</small><!--#end if#--><span class="sf-sub-indicator"> &#187;</span></a>
+			<a class="sf-with-ul" href="connections">Warnings&nbsp;<small id="have_warnings">($have_warnings)</small><span class="sf-sub-indicator"> &#187;</span></a>
 			<ul>
-				<li><a href="connections">Latest:&nbsp;<!--#if $have_warnings == "0" #-->nothing to report<!--#end if#-->$last_warning</a></li>
+				<li><a href="connections">Latest:&nbsp;<span id="last_warning"><!--#if $have_warnings == "0" #-->nothing to report<!--#end if#-->$last_warning</span></a></li>
 			</ul>
 		</li>
 		<li>

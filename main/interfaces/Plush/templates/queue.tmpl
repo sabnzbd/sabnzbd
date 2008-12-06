@@ -1,14 +1,16 @@
 <script type="text/javascript">
 	// set vars within the plush object
 	jQuery(function($) {
-		$.plush.speedlimit 	= '$speedlimit';
-		$.plush.finishaction= '$finishaction';
-		$.plush.paused 		= <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
-		$.plush.noofslots 	= $noofslots;
-		$.plush.mbleft 		= <!--#echo "%.0f" % float($mbleft)#-->;
-		$.plush.kbpersec 	= <!--#echo "%.0f" % float($kbpersec)#-->;
-		$.plush.timeleft 	= '$timeleft';
-		$.plush.eta			= '$eta';
+		$.plush.speedlimit 	 = '$speedlimit';
+		$.plush.finishaction = '$finishaction';
+		$.plush.paused 		 = <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
+		$.plush.noofslots 	 = $noofslots;
+		$.plush.mbleft 		 = <!--#echo "%.0f" % float($mbleft)#-->;
+		$.plush.kbpersec 	 = <!--#echo "%.0f" % float($kbpersec)#-->;
+		$.plush.timeleft 	 = '$timeleft';
+		$.plush.eta			 = '$eta';
+		$.plush.have_warnings= $have_warnings;
+		$.plush.last_warning = "<!--#echo $last_warning.replace("\n"," ") #-->";
 	});
 </script>
 
