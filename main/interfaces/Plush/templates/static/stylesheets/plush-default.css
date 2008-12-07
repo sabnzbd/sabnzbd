@@ -16,28 +16,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .new_release_link {
 	color: darkgreen;
 }
-#addID {
-	cursor:pointer;
-}
-#addNZBbyFile {
-	cursor:pointer;
-}
-#sort_by_avg_age {
-	cursor:pointer;
-}
-#sort_by_name {
-	cursor:pointer;
-}
-#sort_by_size {
-	cursor:pointer;
-}
-#queue_purge {
-	cursor:pointer;
-}
-#help_irc {
-	cursor:pointer;
-}
-#shutdown_sabnzbd {
+.pointer {
 	cursor:pointer;
 }
 #warning_message {
@@ -47,21 +26,30 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	padding-top:2px;
 }
 
-#queue_view_preference, #history_view_preference {
-	cursor:pointer;
-	width:110px;
+/* for jQuery Tooltip Plugin */
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	border: 1px solid #111;
+	background-color: lightyellow;
+	color:#000;
+	font-size: 11px !important;
+	padding: 5px;
+	opacity: 0.85;
+	text-align: right;
 }
-
-#queue_view_preference {
-	margin-top:-5px;
-}
+#tooltip h3, #tooltip div { margin: 0; }
 
 
-#stats_noofslots {
-	display:none;
-}
 
 
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	queue + history overall container
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
 
 .box_fatbottom {
 	height:37px;
@@ -83,38 +71,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .box_fatbottom strong {
 	color: #000;
 }
-.stats_incomplete_freespace {
-	padding-top:8px;
-	padding-bottom:8px;
-	padding-left:20px;
-	background: url(../images/plush-default/q_stats_incomplete.png) 0 50% no-repeat;
-}
-.stats_incomplete_freespace_needspace {
-	padding-top:8px;
-	padding-bottom:8px;
-	padding-left:20px;
-	background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
-	color:red;
-}
-.stats_complete_freespace {
-	margin-left:10px;
-	padding-top:8px;
-	padding-bottom:8px;
-	padding-left:20px;
-	background: url(../images/plush-default/q_stats_complete.png) 0 50% no-repeat;
-}
-.stats_complete_freespace_needspace {
-	margin-left:10px;
-	padding-top:8px;
-	padding-bottom:8px;
-	padding-left:20px;
-	background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
-	color:red;
-}
-
-.history_logo {
-	background: url(../images/plush-default/sabnzbdplus_plush.png) 50% 100% no-repeat;
-}
 
 .box_banner_menu {
 	float:right;
@@ -126,6 +82,8 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .box_banner_menu li {
 	float:right;
 }
+
+/* overall pause/resume */
 .q_menu_pause {
 	margin-right:6px;
 	padding-right:32px;
@@ -138,33 +96,9 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .q_menu_paused {
 	background: url(../images/plush-default/q_pause_on.png) 0 0 no-repeat;
 }
-.q_menu_addnzb {
-	padding-bottom:24px;
-	margin-right:6px;
-	padding-right:28px;
-	cursor:pointer;
-}
-.q_menu_addnzb_on {
-	background: url(../images/plush-default/qh_verbosity.png) 0 0 no-repeat;
-}
-.q_menu_addnzb_off {
-	background: url(../images/plush-default/qh_verbosity.png) 0 0 no-repeat;
-}
-.q_menu_sort {
-	width:55px;
-	height: 55px;
-	cursor:pointer;
-}
-.q_menu_verbose,.h_menu_verbose {
+/* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
+.h_menu_verbose {
 	background: url(../images/plush-default/qh_verbosity.png) 0 100% no-repeat;
-	margin-right:6px;
-	padding-right:28px;
-	padding-bottom:24px;
-	cursor:pointer;
-	display:none;
-}
-.q_menu_purge {
-	background: url(../images/plush-default/h_purge.png) 0 0 no-repeat;
 	margin-right:6px;
 	padding-right:28px;
 	padding-bottom:24px;
@@ -179,6 +113,74 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	cursor:pointer;
 	display:none;
 }
+
+
+#page-wrap { width: 95%; margin: 0px auto; }
+.box_banner_hr {
+	background: #cfcfcf url(../images/plush-default/qh_seperator.png) 0 0 repeat-x;
+	height:4px;
+}
+.box_banner_history {background-image: url(../images/plush-default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
+.box_banner_r {
+	background-image: url(../images/plush-default/history_title_bg.png);
+	background-position: left center;
+	background-repeat:no-repeat;
+	height:52px;
+	margin-left:1px;
+}
+#hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
+#hdr-queue .logo { background-image: url(../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
+#hdr-queue .logo h1 { text-indent: -9999px; margin: 0; padding: 0;}
+#queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
+#queue-buttons li { float:left; }
+#queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
+#btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
+#btm-wrapper .corner-right { float:right; background-image: url(../images/plush-default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
+#btm-wrapper .corner-left { float:left; background-image: url(../images/plush-default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	box header, above queue (sabnzbd logo & stats)
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+.centerpiece {
+	width:320px;
+	margin-left:auto;
+	margin-right:auto;
+}
+#queue_logo {
+	background: url(../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
+	padding-left:50px;
+	padding-right:50px;
+	padding-bottom:19px;
+	height: 40px;
+	float:left;
+}
+#speed, #time-left {
+	background-image: url(../images/plush-default/rounded_area_bg.png);
+	width: 68px;
+	height: 12px;
+	padding: 5px 0px;
+	margin-top: 20px;
+	text-align: center;
+	cursor:default;
+}
+/* stats next to logo */
+#speed { float:left; margin-right:36px;}
+#time-left { float:left; margin-left:36px; }
+#speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
+#speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
+
+/* plush logo, below history */
+.history_logo {
+	background: url(../images/plush-default/sabnzbdplus_plush.png) 50% 100% no-repeat;
+}
+
 .show { display: inline; }
 
 .queue_pill_l {display:inline; background: url(../images/plush-default/q_pill_l.png) 0 0 no-repeat;padding-left:9px;}
@@ -186,6 +188,8 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .queue_pill_r {display:inline; background: url(../images/plush-default/q_pill_r.png) 100% 0 no-repeat; height:51px;}
 
 
+
+/*  queueTable shared by queue and history */
 .queueTable {
 	border-collapse: seperate;
 	width: 100%;
@@ -244,6 +248,13 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	border-bottom: 1px dotted #606060;
 	cursor: pointer;
 }
+.queueTable tr:hover .queue_delete {
+	background: url(../images/plush-default/ql_cross.png) 50% 50% no-repeat;
+}
+.queueTable td:hover .queue_delete {
+	background: url(../images/plush-default/ql_cross_on.png) 50% 50% no-repeat;
+	cursor:pointer;
+}
 .queueTable .eta {
 	padding-left:6px;
 	text-align: center;
@@ -251,6 +262,31 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 
 
+
+/* refresh button below queue */
+#manual_refresh {
+	color:darkgreen;
+	font-weight:bold;
+	cursor:pointer;
+}
+#manual_refresh:hover {
+	border-bottom:1px dotted;
+}
+#skipped_refresh {
+	color:darkgreen;
+}
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	Queue
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+
+/* progress bar & MB/left stats */
 .queueProgressBarContainer {
 	width:121px;
 	background-image: url(../images/plush-default/ql_pbar_empty.png);
@@ -264,13 +300,29 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	width: 121px;
 	margin: 2px 0 0 1px;
 }
-
 .currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1; margin-top:2px; font-weight:bold;}
 .currentDownload small, .totalDownload small {
 	font-weight:normal;
 }
 .currentDownload { float: left; margin-left: 3px;}
 .totalDownload { float:right; margin-right: 3px;}
+
+
+/* queue singular nzb queue/pause */
+.queue_nzb_status {
+	font-size:66%;
+	cursor:pointer;
+	display:inline;
+	color:white;
+	padding:1px;
+	margin-left:4px;
+}
+.queue_nzb_queued {
+	background-color:darkgreen;
+}
+.queue_nzb_paused {
+	background-color:darkred;
+}
 
 
 .options {
@@ -282,13 +334,62 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	margin-right: 5px;
 	padding-left:16px;
 }
-.queueTable tr:hover .queue_delete {
-	background: url(../images/plush-default/ql_cross.png) 50% 50% no-repeat;
+
+
+/* below queue, left side, limit */
+#queue_view_preference, #history_view_preference {
+	width:120px;
 }
-.queueTable td:hover .queue_delete {
-	background: url(../images/plush-default/ql_cross_on.png) 50% 50% no-repeat;
-	cursor:pointer;
+#queue_view_preference {
+	margin-top:-5px;
 }
+#stats_noofslots {
+	display:none;
+}
+
+/* below queue, right side, disk space */
+.stats_incomplete_freespace {
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../images/plush-default/q_stats_incomplete.png) 0 50% no-repeat;
+}
+.stats_incomplete_freespace_needspace {
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
+	color:red;
+}
+.stats_complete_freespace {
+	margin-left:10px;
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../images/plush-default/q_stats_complete.png) 0 50% no-repeat;
+}
+.stats_complete_freespace_needspace {
+	margin-left:10px;
+	padding-top:8px;
+	padding-bottom:8px;
+	padding-left:20px;
+	background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
+	color:red;
+}
+
+
+
+
+
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+	History
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+
+
 .history_added {
 	font-size:75%;
 	cursor:default;
@@ -296,6 +397,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 tr:hover .history_added  {
 	color:black;
 }
+
 .last div {
 	cursor: help;
 	display:inline;
@@ -323,100 +425,6 @@ tr:hover .history_added  {
 
 
 
-#page-wrap { width: 95%; margin: 0px auto; }
-.box_banner_hr {
-	background: #cfcfcf url(../images/plush-default/qh_seperator.png) 0 0 repeat-x;
-	height:4px;
-}
-.box_banner_history {background-image: url(../images/plush-default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
-.box_banner_r {
-	background-image: url(../images/plush-default/history_title_bg.png);
-	background-position: left center;
-	background-repeat:no-repeat;
-	height:52px;
-	margin-left:1px;
-}
-#hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
-#hdr-queue .logo { background-image: url(../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
-#hdr-queue .logo h1 { text-indent: -9999px; margin: 0; padding: 0;}
-#queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
-#queue-buttons li { float:left; }
-#queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
-#queue_logo {
-	background: url(../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
-	padding-left:50px;
-	padding-right:50px;
-	padding-bottom:19px;
-	height: 40px;
-	float:left;
-}
-#speed, #time-left {
-	background-image: url(../images/plush-default/rounded_area_bg.png);
-	width: 68px;
-	height: 12px;
-	padding: 5px 0px;
-	margin-top: 20px;
-	text-align: center;
-	cursor:default;
-}
-#speed { float:left; margin-right:36px;}
-#time-left { float:left; margin-left:36px; }
-#speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
-#speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
-#btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
-#btm-wrapper .corner-right { float:right; background-image: url(../images/plush-default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
-#btm-wrapper .corner-left { float:left; background-image: url(../images/plush-default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
-
-.queue_nzb_status {
-	font-size:66%;
-	cursor:pointer;
-	display:inline;
-	color:white;
-	padding:1px;
-	margin-left:4px;
-}
-.queue_nzb_queued {
-	background-color:darkgreen;
-}
-.queue_nzb_paused {
-	background-color:darkred;
-}
-
-#manual_refresh {
-	color:darkgreen;
-	font-weight:bold;
-	cursor:pointer;
-}
-#manual_refresh:hover {
-	border-bottom:1px dotted;
-}
-
-#skipped_refresh {
-	color:darkgreen;
-}
-
-.centerpiece {
-	width:320px;
-	margin-left:auto;
-	margin-right:auto;
-}
-
-
-
-
-/* for jQuery Tooltip Plugin */
-#tooltip {
-	position: absolute;
-	z-index: 3000;
-	border: 1px solid #111;
-	background-color: lightyellow;
-	color:#000;
-	font-size: 11px !important;
-	padding: 5px;
-	opacity: 0.85;
-	text-align: right;
-}
-#tooltip h3, #tooltip div { margin: 0; }
 
 
 /* ---------------------------------------------------------------------------------------------------------------
@@ -672,9 +680,6 @@ fieldset.EntryFieldSet {
 	cursor:pointer;
 }
 
-
-
-
 #config_container {
 	background: #bbb;
 /*	width: 655px; 
@@ -770,8 +775,14 @@ fieldset.EntryFieldSet {
 
 
 
+/* ---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
 
-/* for jquery superfish plugin (MAIN MENU) */
+	jquery superfish plugin (MAIN MENU)
+
+------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------- */
+
 /*** ESSENTIAL STYLES ***/
 .sf-menu, .sf-menu * {
 	margin:			0;
@@ -909,13 +920,6 @@ li.sfHover > a > .sf-sub-indicator {
 .sf-shadow ul.sf-shadow-off {
 	background: transparent;
 }
-
-
-
-
-
-
-
 
 
 /* for jquery superfish plugin (main menu) */

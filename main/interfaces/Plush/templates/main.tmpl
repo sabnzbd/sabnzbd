@@ -39,10 +39,10 @@
 					<ul>
 						<li><a href="$helpuri" target="_blank" title="Open Official Manual" class="tip">Wiki</a></li>
 						<li><a href="http://forums.sabnzbd.org" target="_blank" title="Open Official Message Board" class="tip">Forums</a></li>
-						<li title="Load IRC Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip"><a id="help_irc" href="http://www.sabnzbd.org/live-chat/" target="_blank">Live Chat</a></li>
+						<li title="Load IRC Client<br/><small>irc.synirc.net #sabnzbd</small>" class="tip"><a class="pointer" id="help_irc" href="http://www.sabnzbd.org/live-chat/" target="_blank">Live Chat</a></li>
 					</ul>
 				</li>
-				<li><a id="shutdown_sabnzbd">Shutdown</a></li>
+				<li><a class="pointer" id="shutdown_sabnzbd">Shutdown</a></li>
 			</ul>
 		</li>
 		<li>
@@ -51,9 +51,9 @@
 				<li>
 					<a class="sf-with-ul">Sort<span class="sf-sub-indicator"> &#187;</span></a>
 					<ul>
-						<li><a id="sort_by_avg_age">by Average Age</a></li>
-						<li><a id="sort_by_name">by Name</a></li>
-						<li><a id="sort_by_size">by Size</a></li>
+						<li><a class="pointer" id="sort_by_avg_age">by Average Age</a></li>
+						<li><a class="pointer" id="sort_by_name">by Name</a></li>
+						<li><a class="pointer" id="sort_by_size">by Size</a></li>
 					</ul>
 				</li>
 				<li>
@@ -80,7 +80,7 @@
 						</select>
 					</a>
 				</li>
-				<li><a id="queue_purge">Purge</a></li>
+				<li><a id="queue_purge" class="pointer">Purge</a></li>
 			</ul>
 		</li>
 		<li><a class="sf-with-ul" href="connections">Config<span class="sf-sub-indicator"> &#187;</span></a></li>
@@ -95,7 +95,7 @@
 			<ul>
 				<!--#if $cat_list#-->
 				<li><a>Category:
-					<select id="addID_cat" name="cat" title="Category">
+					<select id="addID_cat" name="cat">
 					<!--#for $ct in $cat_list#-->
 						<option value="$ct">$ct</option>
 					<!--#end for#-->
@@ -104,7 +104,7 @@
 				</li>
 				<!--#end if#-->
 				<li><a>Processing:
-					<select id="addID_pp" name="pp" title="Post-Processing Option">
+					<select id="addID_pp" name="pp">
 						<option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
 						<option value="0">Skip</option>
 						<option value="1">+Repair</option>
@@ -124,7 +124,7 @@
 				</li>
 				<!--#end if#-->
 				<li><a><input type="text" id="addID_input" size="22" /><input type="submit" id="addID" value="Fetch" /></a></li>
-				<li><a><div id="addNZBbyFile"><input type="submit" value="Upload" /></div></a></li>
+				<li><a><div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div></a></li>
 			</ul>
 		</li>
 	</ul>
