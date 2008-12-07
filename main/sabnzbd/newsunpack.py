@@ -665,6 +665,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     parfile = os.path.join(workdir, parfile_nzf.get_filename())
     actionname = '[PAR-INFO] %s' % setname
 
+    old_dir_content = os.listdir(workdir)
+
     nzo.set_status("Quick check...")
     nzo.set_unpackstr('=> Quick checking', actionname, 1)
     if QuickCheck(setname, nzo):
@@ -686,8 +688,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             nzo.set_unpackstr('=> Scanning "%s"' % parfile, actionname, 1)
 
             joinables, zips, rars, ts = build_filelists(workdir, None)
-
-            old_dir_content = os.listdir(workdir)
 
             finished, readd, pars, datafiles = PAR_Verify(parfile, parfile_nzf, nzo,
                                                           actionname, joinables)
