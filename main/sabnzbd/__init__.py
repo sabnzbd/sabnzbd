@@ -539,7 +539,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if type(DATE_CATEGORIES) != type([]):
         DATE_CATEGORIES = []
 
-    IONICE_ARGS = check_setting_str(CFG, 'misc', 'ionice',  '-c2 -n4')
+    IONICE_ARGS = check_setting_str(CFG, 'misc', 'ionice',  '')
     
     WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
