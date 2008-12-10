@@ -408,7 +408,7 @@ class NzbObject(TryList):
         if not sabnzbd.backup_nzb(filename, nzb, sabnzbd.NO_DUPES):
             # File already exists and we have no_dupes set
             logging.warning('[%s] Skipping duplicate NZB "%s"', __NAME__, filename)
-            raise ValueError
+            raise TypeError
 
         avg_age = 0
         valids = 0

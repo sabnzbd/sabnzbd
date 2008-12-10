@@ -228,6 +228,9 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
 
     try:
         nzo = NzbObject(name, pp, script, data, cat=cat, priority=priority)
+    except TypeError:
+        # Duplicate, ignore
+        nzo = None
     except:
         if data.find("<nzb") >= 0 and data.find("</nzb") < 0:
             # Looks like an incomplete file, retry
@@ -235,7 +238,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         else:
             return -1
 
-    sabnzbd.add_nzo(nzo)
+    if nzo:
+        sabnzbd.add_nzo(nzo)
     try:
         if not keep: os.remove(path)
     except:
