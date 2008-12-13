@@ -175,48 +175,11 @@ jQuery(function($) {
 				url: 'queue/?dummy2='+$.plush.queueViewPreference+'&_dc='+Math.random(),
 				success: function(result){
 					
-					// replace queue contents with queue.tmpl (js in the template sets additional fetched variables)
+					// replace queue contents with queue.tmpl
 					$('#queue').html(result);
 					
-					// set queue speed limit selector
-					if ($("#maxSpeed-option").val() != $.plush.speedlimit && !$.plush.focusedOnSpeedChanger)
-						$("#maxSpeed-option").val($.plush.speedlimit);
-					
-					// set queue completion script selector
-					if ($("#onQueueFinish-option").val() != $.plush.finishaction)
-						$("#onQueueFinish-option").val($.plush.finishaction);
-					
-					// set queue pause/resume button state
-					if ( $.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_paused')
-						$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
-					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_unpaused')
-						$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
-					
-					// set queue titlebar stats tooltip (ETA) 
-					$('#stats_eta').attr('title','ETA: '+$.plush.eta);
-					
-					// set page title + eta/kbpersec stats at top of queue
-					if ($.plush.noofslots < 1) {
-						if ($.plush.paused) document.title = 'PAUSED | SABnzbd+ Plush';
-						else				document.title = 'READY | SABnzbd+ Plush';
-						$('#stats_kbpersec').html('&mdash;');
-						$('#stats_eta').html('&mdash;');
-					} else if ($.plush.paused) {
-						document.title = 'PAUSED | '+$.plush.mbleft+' MB left | '+$.plush.noofslots+' NZBs';
-						$('#stats_kbpersec').html('&mdash;');
-						$('#stats_eta').html('&mdash;');
-					} else {
-						document.title = $.plush.kbpersec+' KB/s | '+$.plush.mbleft+' MB | '+$.plush.timeleft+' left';
-						$('#stats_kbpersec').html($.plush.kbpersec);
-						$('#stats_eta').html($.plush.timeleft);
-					}
-					
-					// update warnings count/latest warning text in main menu
-					$('#have_warnings').html('('+$.plush.have_warnings+')');
-					if ($.plush.have_warnings > 0)
-						$('#last_warning').html($.plush.last_warning);
-					else
-						$('#last_warning').html('nothing to report');
+					// keep in mind the initialized livequery methods defined below
+					// (uses vars set within queue.tmpl to update other parts of the interface outside of the queue table)
 					
 					return false;
 				}
@@ -413,6 +376,46 @@ jQuery(function($) {
 			
 			// this code will remain instantiated even when the contents of the queue change
 			$('#queueTable').livequery(function() {
+			
+				// set queue speed limit selector
+				if ($("#maxSpeed-option").val() != $.plush.speedlimit && !$.plush.focusedOnSpeedChanger)
+					$("#maxSpeed-option").val($.plush.speedlimit);
+				
+				// set queue completion script selector
+				if ($("#onQueueFinish-option").val() != $.plush.finishaction)
+					$("#onQueueFinish-option").val($.plush.finishaction);
+				
+				// set queue pause/resume button state
+				if ( $.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_paused')
+					$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
+				else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_unpaused')
+					$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
+				
+				// set queue titlebar stats tooltip (ETA) 
+				$('#stats_eta').attr('title','ETA: '+$.plush.eta);
+				
+				// set page title + eta/kbpersec stats at top of queue
+				if ($.plush.noofslots < 1) {
+					if ($.plush.paused) document.title = 'PAUSED | SABnzbd+ Plush';
+					else				document.title = 'READY | SABnzbd+ Plush';
+					$('#stats_kbpersec').html('&mdash;');
+					$('#stats_eta').html('&mdash;');
+				} else if ($.plush.paused) {
+					document.title = 'PAUSED | '+$.plush.mbleft+' MB left | '+$.plush.noofslots+' NZBs';
+					$('#stats_kbpersec').html('&mdash;');
+					$('#stats_eta').html('&mdash;');
+				} else {
+					document.title = $.plush.kbpersec+' KB/s | '+$.plush.mbleft+' MB | '+$.plush.timeleft+' left';
+					$('#stats_kbpersec').html($.plush.kbpersec);
+					$('#stats_eta').html($.plush.timeleft);
+				}
+				
+				// update warnings count/latest warning text in main menu
+				$('#have_warnings').html('('+$.plush.have_warnings+')');
+				if ($.plush.have_warnings > 0)
+					$('#last_warning').html($.plush.last_warning);
+				else
+					$('#last_warning').html('nothing to report');
 				
 				// queue nzb list limit
 				$('#queue_view_preference').change(function(){

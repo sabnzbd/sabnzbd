@@ -92,18 +92,17 @@
 		</li>
 		<li>
 			<a class="sf-with-ul">Add NZB<span class="sf-sub-indicator"> &#187;</span></a>
-			<ul>
+			<ul><li><a>
 				<!--#if $cat_list#-->
-				<li><a>Category:
+				Category:
 					<select id="addID_cat" name="cat">
 					<!--#for $ct in $cat_list#-->
 						<option value="$ct">$ct</option>
 					<!--#end for#-->
 					</select>
-					</a>
-				</li>
+				<br/>
 				<!--#end if#-->
-				<li><a>Processing:
+				Processing:
 					<select id="addID_pp" name="pp">
 						<option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
 						<option value="0">Skip</option>
@@ -111,18 +110,16 @@
 						<option value="2">+R+Unpack</option>
 						<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
 					</select>
-					</a>
-				</li>
 				<!--#if $script_list#-->
-				<li><a>Script:
+				<br/>Script:
 					<select id="addID_script" name="script">
 					<!--#for $sc in $script_list#-->
 						<option value="$sc">$sc</option>
 					<!--#end for#-->
 					</select>
+				<!--#end if#-->
 					</a>
 				</li>
-				<!--#end if#-->
 				<li><a><input type="text" id="addID_input" size="22" /><input type="submit" id="addID" value="Fetch" /></a></li>
 				<li><a><div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div></a></li>
 			</ul>
@@ -174,7 +171,7 @@
 			
 			<!-- Queue ( queue.tmpl )-->
 			<div id="queue">
-				<small><i>..loading..</i></small>
+				<br/><small><i>loading</i></small>
 				<input type="hidden" id="queue_view_preference" value="" />
 			</div>
 			
@@ -191,7 +188,7 @@
 			
 			<!-- History ( history.tmpl ) -->
 			<div id="history">
-				<small><i>..loading..</i></small>
+				<br/><small><i>loading</i></small>
 				<input type="hidden" id="history_view_preference" value="" />
 			</div>
 			
