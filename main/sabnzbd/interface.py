@@ -2111,7 +2111,9 @@ class ConfigSorting(ProtectedClass):
             date_cat = [date_cat]
         sabnzbd.CFG['misc']['date_categories'] = date_cat
 
-        return saveAndRestart(self.__root, _dc)
+        sabnzbd.sorting_init()
+        save_configfile(sabnzbd.CFG)
+        raise Raiser(self.__root, _dc=_dc)
     
 
 #------------------------------------------------------------------------------

@@ -329,6 +329,29 @@ def init_newzbin():
     PASSWORD_MATRIX = decodePassword(check_setting_str(CFG, 'nzbmatrix', 'password', '', False), 'web')
 
 
+def sorting_init():
+    global TV_SORT_STRING, ENABLE_TV_SORTING, MOVIE_SORT_STRING, ENABLE_MOVIE_SORTING, \
+           MOVIE_SORT_EXTRA, ENABLE_DATE_SORTING, DATE_SORT_STRING, \
+           MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES
+
+    ENABLE_TV_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_tv_sorting', 0)) #tv sorting on/off
+    TV_SORT_STRING = check_setting_str(CFG, 'misc', 'tv_sort_string', '') #tv sort format
+
+    ENABLE_MOVIE_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_movie_sorting', 0))
+    MOVIE_SORT_STRING = check_setting_str(CFG, 'misc', 'movie_sort_string', '') 
+    MOVIE_SORT_EXTRA = check_setting_str(CFG, 'misc', 'movie_sort_extra', '-cd%1')
+    MOVIE_EXTRA_FOLDER = bool(check_setting_int(CFG, 'misc', 'movie_extra_folder', 0))
+    MOVIE_CATEGORIES = check_setting_str(CFG, 'misc', 'movie_categories', ['movies'])
+    if type(MOVIE_CATEGORIES) != type([]):
+        MOVIE_CATEGORIES = []
+    
+    ENABLE_DATE_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_date_sorting', 0))
+    DATE_SORT_STRING = check_setting_str(CFG, 'misc', 'date_sort_string', '')
+    DATE_CATEGORIES = check_setting_str(CFG, 'misc', 'date_categories', ['tv'])
+    if type(DATE_CATEGORIES) != type([]):
+        DATE_CATEGORIES = []
+
+
 INIT_LOCK = Lock()
 
 @synchronized(INIT_LOCK)
@@ -346,10 +369,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
            DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, REPLACE_ILLEGAL,\
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
+           AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
            WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY, \
-           MOVIE_SORT_STRING, ENABLE_MOVIE_SORTING, MOVIE_SORT_EXTRA, ENABLE_DATE_SORTING, DATE_SORT_STRING, \
-           MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES, DO_TSJOIN, IONICE_ARGS
+           DO_TSJOIN, IONICE_ARGS
 
     if __INITIALIZED__:
         return False
@@ -506,22 +528,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     AUTO_SORT = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
 
-    ENABLE_TV_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_tv_sorting', 0)) #tv sorting on/off
-    TV_SORT_STRING = check_setting_str(CFG, 'misc', 'tv_sort_string', '') #tv sort format
-
-    ENABLE_MOVIE_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_movie_sorting', 0))
-    MOVIE_SORT_STRING = check_setting_str(CFG, 'misc', 'movie_sort_string', '') 
-    MOVIE_SORT_EXTRA = check_setting_str(CFG, 'misc', 'movie_sort_extra', '-cd%1')
-    MOVIE_EXTRA_FOLDER = bool(check_setting_int(CFG, 'misc', 'movie_extra_folder', 0))
-    MOVIE_CATEGORIES = check_setting_str(CFG, 'misc', 'movie_categories', ['movies'])
-    if type(MOVIE_CATEGORIES) != type([]):
-        MOVIE_CATEGORIES = []
-    
-    ENABLE_DATE_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_date_sorting', 0))
-    DATE_SORT_STRING = check_setting_str(CFG, 'misc', 'date_sort_string', '')
-    DATE_CATEGORIES = check_setting_str(CFG, 'misc', 'date_categories', ['tv'])
-    if type(DATE_CATEGORIES) != type([]):
-        DATE_CATEGORIES = []
+    sorting_init()
 
     IONICE_ARGS = check_setting_str(CFG, 'misc', 'ionice',  '')
     
