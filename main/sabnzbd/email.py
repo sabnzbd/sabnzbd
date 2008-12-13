@@ -37,7 +37,30 @@ from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.newsunpack import build_command
 from sabnzbd.nzbstuff import SplitFileName
-from sabnzbd.misc import to_units, from_units, SplitHost
+from sabnzbd.misc import to_units, from_units, SplitHost, decodePassword
+
+EMAIL_SERVER = None
+EMAIL_TO = None
+EMAIL_FROM = None
+EMAIL_ACCOUNT = None
+EMAIL_PWD = None
+EMAIL_ENDJOB = 0
+EMAIL_FULL = False
+EMAIL_DIR = ''
+
+def init():
+    """ Setup email parameters """
+    global EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
+           EMAIL_ENDJOB, EMAIL_FULL, EMAIL_DIR
+
+    EMAIL_SERVER = sabnzbd.check_setting_str(sabnzbd.CFG, 'misc', 'email_server', '')
+    EMAIL_TO     = sabnzbd.check_setting_str(sabnzbd.CFG, 'misc', 'email_to', '')
+    EMAIL_FROM   = sabnzbd.check_setting_str(sabnzbd.CFG, 'misc', 'email_from', '')
+    EMAIL_ACCOUNT= sabnzbd.check_setting_str(sabnzbd.CFG, 'misc', 'email_account', '')
+    EMAIL_PWD    = decodePassword(sabnzbd.check_setting_str(sabnzbd.CFG, 'misc', 'email_pwd', '', False), 'email')
+    EMAIL_ENDJOB = sabnzbd.check_setting_int(sabnzbd.CFG, 'misc', 'email_endjob', 0)
+    EMAIL_FULL   = bool(sabnzbd.check_setting_int(sabnzbd.CFG, 'misc', 'email_full', 0))
+    EMAIL_DIR    = sabnzbd.dir_setup(sabnzbd.CFG, 'email_dir', sabnzbd.DIR_HOME, '')
 
 
 ################################################################################
@@ -45,11 +68,13 @@ from sabnzbd.misc import to_units, from_units, SplitHost
 #
 #
 ################################################################################
-def email_send(message):
-    if sabnzbd.EMAIL_SERVER and sabnzbd.EMAIL_TO and sabnzbd.EMAIL_FROM:
+def send(message):
+    global EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
+           EMAIL_ENDJOB, EMAIL_FULL, EMAIL_DIR
+    if EMAIL_SERVER and EMAIL_TO and EMAIL_FROM:
 
         failure = "Email failed"
-        server, port = SplitHost(sabnzbd.EMAIL_SERVER)
+        server, port = SplitHost(EMAIL_SERVER)
         if not port:
             port = 25
 
@@ -92,15 +117,15 @@ def email_send(message):
                     return failure
 
         # Authentication
-        if (sabnzbd.EMAIL_ACCOUNT != "") and (sabnzbd.EMAIL_PWD != ""):
+        if (EMAIL_ACCOUNT != "") and (EMAIL_PWD != ""):
             try:
-                mailconn.login(sabnzbd.EMAIL_ACCOUNT, sabnzbd.EMAIL_PWD)
+                mailconn.login(EMAIL_ACCOUNT, EMAIL_PWD)
             except:
                 logging.error("[%s] Failed to authenticate to mail server", __NAME__)
                 return failure
 
         try:
-            mailconn.sendmail(sabnzbd.EMAIL_FROM, sabnzbd.EMAIL_TO, message)
+            mailconn.sendmail(EMAIL_FROM, EMAIL_TO, message)
         except:
             logging.error("[%s] Failed to send e-mail", __NAME__)
             return failure
@@ -122,8 +147,10 @@ def email_send(message):
 ################################################################################
 from Cheetah.Template import Template
 
-def email_endjob(filename, cat, status, path, bytes, stages, script, script_output):
+def endjob(filename, cat, status, path, bytes, stages, script, script_output):
     """ Send email using templates """
+    global EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
+           EMAIL_ENDJOB, EMAIL_FULL, EMAIL_DIR
     
     name, msgid = SplitFileName(filename)
 
@@ -138,8 +165,8 @@ def email_endjob(filename, cat, status, path, bytes, stages, script, script_outp
 
     parm = {}
     parm['status'] = status
-    parm['to'] = sabnzbd.EMAIL_TO
-    parm['from'] = sabnzbd.EMAIL_FROM
+    parm['to'] = EMAIL_TO
+    parm['from'] = EMAIL_FROM
     parm['name'] = name
     parm['path'] = path
     parm['msgid'] = msgid
@@ -150,8 +177,8 @@ def email_endjob(filename, cat, status, path, bytes, stages, script, script_outp
     parm['size'] = "%sB" % to_units(bytes)
     parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
 
-    if sabnzbd.EMAIL_DIR and os.path.exists(sabnzbd.EMAIL_DIR):
-        path = sabnzbd.EMAIL_DIR
+    if EMAIL_DIR and os.path.exists(EMAIL_DIR):
+        path = EMAIL_DIR
     else:
         path = sabnzbd.DIR_PROG
     try:
@@ -167,7 +194,7 @@ def email_endjob(filename, cat, status, path, bytes, stages, script, script_outp
                                 searchList=[parm],
                                 compilerSettings={'directiveStartToken': '<!--#',
                                                   'directiveEndToken': '#-->'})
-            ret = email_send(message.respond())
+            ret = send(message.respond())
             del message
     return ret
 
@@ -178,9 +205,13 @@ def email_endjob(filename, cat, status, path, bytes, stages, script, script_outp
 #
 #
 ################################################################################
-def email_diskfull():
+def diskfull():
     """ Send email about disk full, no templates """
-    
+    global EMAIL_TO, EMAIL_FROM, EMAIL_FULL
+
+    if not EMAIL_FULL:
+        return
+
     message = """to: %s
 from: %s
 subject: SABnzbd reports Disk Full
@@ -190,6 +221,6 @@ Hi,
 SABnzbd has stopped downloading, because the disk is almost full.
 Please make room and resume SABnzbd manually.
 
-""" % (sabnzbd.EMAIL_TO, sabnzbd.EMAIL_FROM)
+""" % (EMAIL_TO, EMAIL_FROM)
 
-    return email_send(message)
+    return send(message)

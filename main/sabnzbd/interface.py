@@ -47,7 +47,7 @@ from sabnzbd.utils.multiauth.providers import DictAuthProvider
 from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
-from sabnzbd.email import email_send, email_endjob, email_diskfull
+import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, save_configfile, \
      to_units, from_units, SameFile, \
      decodePassword, encodePassword
@@ -112,8 +112,7 @@ def CheckFreeSpace():
             logging.warning('Too little diskspace forcing PAUSE')
             # Pause downloader, but don't save, since the disk is almost full!
             sabnzbd.pause_downloader(save=False)
-            if sabnzbd.EMAIL_FULL:
-                email_diskfull()
+            email.diskfull()
 
 
 def check_timeout(timeout):
@@ -2198,7 +2197,7 @@ class ConnectionInfo(ProtectedClass):
         pack[1]['action1'] = 'done 1'
         pack[1]['action2'] = 'done 2'
         
-        self.__lastmail= email_endjob('Test Job', 'unknown', True,
+        self.__lastmail= email.endjob('Test Job', 'unknown', True,
                                       os.path.normpath(os.path.join(sabnzbd.COMPLETE_DIR, '/unknown/Test Job')),
                                       str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n')
         raise Raiser(self.__root, _dc=_dc)
@@ -2562,7 +2561,6 @@ class ConfigEmail(ProtectedClass):
         off = not (email_endjob or email_full)
         
         VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
-        
 
         if (off and not email_to) or VAL.match(email_to):
             sabnzbd.CFG['misc']['email_to'] = email_to
@@ -2582,7 +2580,9 @@ class ConfigEmail(ProtectedClass):
         if (not email_pwd) or (email_pwd and email_pwd.strip('*')):
             sabnzbd.CFG['misc']['email_pwd'] = encodePassword(email_pwd)
 
-        return saveAndRestart(self.__root, _dc)
+        email.init()
+        save_configfile(sabnzbd.CFG)
+        raise Raiser(self.__root, _dc=_dc)
 
 
 def std_time(when):

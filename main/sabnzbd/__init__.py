@@ -60,6 +60,7 @@ from sabnzbd.urlgrabber import URLGrabber
 from sabnzbd.nzbstuff import NzbObject
 import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
+import sabnzbd.email as email
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -149,14 +150,6 @@ ARTICLECACHE = None
 DOWNLOADER = None
 NZBQ = None
 BPSMETER = None
-
-EMAIL_SERVER = None
-EMAIL_TO = None
-EMAIL_FROM = None
-EMAIL_ACCOUNT = None
-EMAIL_PWD = None
-EMAIL_ENDJOB = 0
-EMAIL_FULL = False
 
 URLGRABBER = None
 
@@ -353,8 +346,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
            DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, REPLACE_ILLEGAL,\
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL, TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
+           TV_SORT_STRING, ENABLE_TV_SORTING, AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
            WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY, \
            MOVIE_SORT_STRING, ENABLE_MOVIE_SORTING, MOVIE_SORT_EXTRA, ENABLE_DATE_SORTING, DATE_SORT_STRING, \
            MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES, DO_TSJOIN, IONICE_ARGS
@@ -451,8 +443,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     SCRIPT_DIR = dir_setup(CFG, 'script_dir', DIR_HOME, '')
     
-    EMAIL_DIR = dir_setup(CFG, 'email_dir', DIR_HOME, '')
-    
     NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
 
     if SameFile(DOWNLOAD_DIR, COMPLETE_DIR):
@@ -501,13 +491,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cache_limit = int(from_units(cache_limit))
     logging.debug("Actual cache limit = %s", cache_limit)
 
-    EMAIL_SERVER = check_setting_str(CFG, 'misc', 'email_server', '')
-    EMAIL_TO     = check_setting_str(CFG, 'misc', 'email_to', '')
-    EMAIL_FROM   = check_setting_str(CFG, 'misc', 'email_from', '')
-    EMAIL_ACCOUNT= check_setting_str(CFG, 'misc', 'email_account', '')
-    EMAIL_PWD    = decodePassword(check_setting_str(CFG, 'misc', 'email_pwd', '', False), 'email')
-    EMAIL_ENDJOB = check_setting_int(CFG, 'misc', 'email_endjob', 0)
-    EMAIL_FULL   = bool(check_setting_int(CFG, 'misc', 'email_full', 0))
+    email.init()
     
     try:
         dummy = CFG['misc']['schedlines']

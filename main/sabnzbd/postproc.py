@@ -36,7 +36,6 @@ if os.name == 'nt':
 from sabnzbd.decorators import *
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread, RLock
-from sabnzbd.email import email_endjob
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          cleanup_empty_directories, get_unique_filename, \
@@ -45,6 +44,7 @@ from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY
 from sabnzbd.codecs import TRANS
 import sabnzbd.newzbin as newzbin
+import sabnzbd.email as email
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
@@ -268,9 +268,9 @@ class PostProcessor(Thread):
                         script = ""
     
                     ## Email the results
-                    if (not nzb_list) and sabnzbd.EMAIL_ENDJOB:
-                        if (sabnzbd.EMAIL_ENDJOB == 1) or (sabnzbd.EMAIL_ENDJOB == 2 and (unpackError or not parResult)):
-                            email_endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
+                    if (not nzb_list) and email.EMAIL_ENDJOB:
+                        if (email.EMAIL_ENDJOB == 1) or (email.EMAIL_ENDJOB == 2 and (unpackError or not parResult)):
+                            email.endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
                                          nzo.get_unpackstrht(), script, TRANS(ext_out))
     
                     if fname:
