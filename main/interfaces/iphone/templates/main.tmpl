@@ -29,7 +29,7 @@ function loadingJSON(){
 	clearTimeout ( jsontimeout );
 	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);		
 	}	
-	var url = "api?mode=qstatus&output=json";
+	var url = "tapi?mode=qstatus&output=json";
 
 	var d = loadJSONDoc(url);
 	var gotMetadata = function (info) 
@@ -120,7 +120,7 @@ function loadingJSON(){
                 elemsPaused[i].innerHTML = "<span class='paused'>| Paused</span>";
                 elemsStatus2[i].innerHTML = "Resume";
             }
-			doSimpleXMLHttpRequest("api?mode=resume");
+			doSimpleXMLHttpRequest("tapi?mode=resume");
 
 
 		}
@@ -136,7 +136,7 @@ function loadingJSON(){
                 elemsPaused[i].innerHTML = "<span class='idle'>| Idle</span>";
                 elemsStatus2[i].innerHTML = "Pause";
             }
-			doSimpleXMLHttpRequest("api?mode=pause");
+			doSimpleXMLHttpRequest("tapi?mode=pause");
 
 		}
 	}

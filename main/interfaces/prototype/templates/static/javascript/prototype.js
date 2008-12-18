@@ -417,11 +417,11 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
         ]);
         
     var newQueueStatus = new Ext.data.HttpProxy({
-                    url: 'api?mode=queue&output=json'
+                    url: 'tapi?mode=queue&output=json'
                 })
                 
     var newQueueStatus2 = new Ext.data.HttpProxy({
-                    url: 'api?mode=queue&output=xml'
+                    url: 'tapi?mode=queue&output=xml'
                 })
 
 //QueueStore
@@ -519,7 +519,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     
 //HistoryStore
     storeHistory = new Ext.data.Store({
-        url: 'api?mode=history&output=json',
+        url: 'tapi?mode=history&output=json',
         reader: new Ext.data.JsonReader({
             root: '',
             id: 'nzo'
@@ -548,7 +548,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     });
 //WarningsStore
     var storeWarnings = new Ext.data.Store({
-        url: 'api?mode=warnings&output=json',
+        url: 'tapi?mode=warnings&output=json',
         reader: new Ext.data.JsonReader({
             root: 'warnings',
             id: 'id',
@@ -561,7 +561,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     
 //FilesStore
     storeFiles = new Ext.data.Store({
-        url: 'api?mode=get_files&output=json&value=',
+        url: 'tapi?mode=get_files&output=json&value=',
         reader: new Ext.data.JsonReader({
             record: 'slot',
             id: 'id',
@@ -588,7 +588,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     
 //ScriptsStore
     var storeScripts = new Ext.data.Store({
-        url: 'api?mode=queue&output=json',
+        url: 'tapi?mode=queue&output=json',
         reader: new Ext.data.JsonReader({
             root: 'mainqueue.script_list.scripts',
             //id: 'id',
@@ -616,7 +616,7 @@ var myNewRecord = new TopicRecord({
 
     
     var storeQueueActions = new Ext.data.Store({
-        url: 'api?mode=queue&output=json',
+        url: 'tapi?mode=queue&output=json',
         reader: new Ext.data.JsonReader({
             root: 'mainqueue.script_list.scripts',
             //id: 'id',
@@ -631,7 +631,7 @@ var myNewRecord = new TopicRecord({
     
     
     var storeCats = new Ext.data.Store({
-        url: 'api?mode=queue&output=json',
+        url: 'tapi?mode=queue&output=json',
         reader: new Ext.data.JsonReader({
             root: 'mainqueue.cat_list.categories',
             //id: 'id',
@@ -786,7 +786,7 @@ storeUnpack.loadData(unpackStrings);
     {
         ids = store.collect('nzo_id');
         currentFile = ids[record];
-        url = 'api?mode=queue&name=delete';
+        url = 'tapi?mode=queue&name=delete';
         Ext.Ajax.request(
         {
            url: url,
@@ -808,8 +808,8 @@ storeUnpack.loadData(unpackStrings);
         //var pauicon = pauqueue.getIconCls()
         //if (pauicon == "icon-pause") pauqueue.setIconCls('icon-play')
         currentFile = grid.data.nzo_id;
-        url = 'api?mode=queue&name=pause';
-        if (status == 'Paused') url = 'api?mode=queue&name=resume';
+        url = 'tapi?mode=queue&name=pause';
+        if (status == 'Paused') url = 'tapi?mode=queue&name=resume';
         
         Ext.Ajax.request(
         {
@@ -851,11 +851,11 @@ storeUnpack.loadData(unpackStrings);
     {
         if (paused)
         {
-            url = 'api?mode=resume';
+            url = 'tapi?mode=resume';
             paused = false;
         } else 
         {
-            url = 'api?mode=pause';
+            url = 'tapi?mode=pause';
             paused = true;
         }
         
@@ -926,7 +926,7 @@ storeUnpack.loadData(unpackStrings);
         //row.setAttribute("class", 'yellow-row'); //For Most Browsers
         ids = store.collect('nzo_id');
         currentFile = ids[row]
-        url = 'api?mode=get_files&output=json&value='+currentFile
+        url = 'tapi?mode=get_files&output=json&value='+currentFile
         storeFiles.proxy.conn.url = url;
         storeFiles.reload();
         //storeFiles.load(url)
@@ -940,7 +940,7 @@ storeUnpack.loadData(unpackStrings);
         var url;
         //script
         if (grid.field == "script"){
-            url = "api?mode=change_script&value="+currentFile+"&value2="+value;
+            url = "tapi?mode=change_script&value="+currentFile+"&value2="+value;
         }
         //unpack options
         else if (grid.field == "unpackopts"){
@@ -955,11 +955,11 @@ storeUnpack.loadData(unpackStrings);
         {
             var nzoid1 = ids[grid.originalValue];
             var nzoid2 = ids[value];
-            url = "api?mode=switch&value="+nzoid1+"&value2="+nzoid2;
+            url = "tapi?mode=switch&value="+nzoid1+"&value2="+nzoid2;
         }
         else if (grid.field == "cat")
         {
-            url = "api?mode=change_cat&value="+currentFile+"&value2="+value
+            url = "tapi?mode=change_cat&value="+currentFile+"&value2="+value
         }
         if (url){
             Ext.Ajax.request(
@@ -981,7 +981,7 @@ storeUnpack.loadData(unpackStrings);
     
     function deleteAll(){
     
-        url = "api?mode=queue&name=delete&value=all"
+        url = "tapi?mode=queue&name=delete&value=all"
         if (url){
             Ext.Ajax.request(
             {
@@ -996,7 +996,7 @@ storeUnpack.loadData(unpackStrings);
        
     function deleteAllHistory(){
     
-        url = "api?mode=history&name=delete&value=all"
+        url = "tapi?mode=history&name=delete&value=all"
         if (url){
             Ext.Ajax.request(
             {
@@ -1031,7 +1031,7 @@ storeUnpack.loadData(unpackStrings);
     function removeSelected()
     {
         ids = getGridSelected(queueGrid,true); 
-        url = "api?mode=queue&name=delete&value="+ids
+        url = "tapi?mode=queue&name=delete&value="+ids
         Ext.Ajax.request({url: url});
         var msg = String.format('{0} item{1} deleted.', selectedNo, s_returner(selectedNo));
         Ext.example.msg('Deleted', msg);
@@ -1042,7 +1042,7 @@ storeUnpack.loadData(unpackStrings);
     function pauseSelected()
     {
         ids = getGridSelected(queueGrid,false);
-        url = "api?mode=queue&name=pause&value="+ids
+        url = "tapi?mode=queue&name=pause&value="+ids
         var msg = String.format('{0} item{1} paused.', selectedNo, s_returner(selectedNo));
         Ext.example.msg('Paused', msg);
         Ext.Ajax.request({url: url});
@@ -1054,7 +1054,7 @@ storeUnpack.loadData(unpackStrings);
     function resumeSelected()
     {
         ids = getGridSelected(queueGrid,false);  
-        url = "api?mode=queue&name=resume&value="+ids
+        url = "tapi?mode=queue&name=resume&value="+ids
         Ext.Ajax.request({url: url});
         var msg = String.format('{0} item{1} resumed.', selectedNo, s_returner(selectedNo));
         Ext.example.msg('Resumed', msg);
@@ -1066,7 +1066,7 @@ storeUnpack.loadData(unpackStrings);
     function highPrioritySelected()
     {
         ids = getGridSelected(queueGrid,false);
-        url = "api?mode=queue&name=priority&value="+ids+"&value2=1";
+        url = "tapi?mode=queue&name=priority&value="+ids+"&value2=1";
         Ext.Ajax.request({url: url});
         var msg = String.format('{0} item{1} set to high priority.', selectedNo, s_returner(selectedNo));
         Ext.example.msg('Priority', msg);
@@ -1077,7 +1077,7 @@ storeUnpack.loadData(unpackStrings);
     function normalPrioritySelected()
     {
         ids = getGridSelected(queueGrid,false);  
-        url = "api?mode=queue&name=priority&value="+ids+"&value2=0";
+        url = "tapi?mode=queue&name=priority&value="+ids+"&value2=0";
         Ext.Ajax.request({url: url});
         var msg = String.format('{0} item{1} set to normal priority.', selectedNo, s_returner(selectedNo));
         Ext.example.msg('Priority', msg);
@@ -1088,7 +1088,7 @@ storeUnpack.loadData(unpackStrings);
     function lowPrioritySelected()
     {
         ids = getGridSelected(queueGrid,false);  
-        url = "api?mode=queue&name=priority&value="+ids+"&value2=-1";
+        url = "tapi?mode=queue&name=priority&value="+ids+"&value2=-1";
         Ext.Ajax.request({url: url});
         var msg = String.format('{0} item{1} set to low priority.', selectedNo, s_returner(selectedNo));
         Ext.example.msg('Priority', msg);
@@ -1100,7 +1100,7 @@ storeUnpack.loadData(unpackStrings);
     {
         ids = getGridSelected(historyGrid,true);
         if (ids){
-            url = "api?mode=history&name=delete&value="+ids
+            url = "tapi?mode=history&name=delete&value="+ids
             Ext.Ajax.request({url: url});
             var msg = String.format('{0} history job{1} deleted.', selectedNo, s_returner(selectedNo));
             Ext.example.msg('Deleted', msg);
@@ -1147,7 +1147,7 @@ storeUnpack.loadData(unpackStrings);
 
     function changeColorScheme(color)
     {
-        url = 'api?mode=config&name=set_colorscheme&value='+color;
+        url = 'tapi?mode=config&name=set_colorscheme&value='+color;
         Ext.Ajax.request(
         {
            url: url,
@@ -1158,7 +1158,7 @@ storeUnpack.loadData(unpackStrings);
     }
     
     function queueFinishAction(o , value){
-        url = 'api?mode=queue&name=change_complete_action&value='+value;
+        url = 'tapi?mode=queue&name=change_complete_action&value='+value;
         Ext.Ajax.request(
         {
            url: url,
@@ -1169,7 +1169,7 @@ storeUnpack.loadData(unpackStrings);
     };
     
     function limitSpeed(o , value){
-        url = 'api?mode=config&name=set_speedlimit&value='+value;
+        url = 'tapi?mode=config&name=set_speedlimit&value='+value;
         Ext.Ajax.request(
         {
            url: url,
@@ -2585,7 +2585,7 @@ storeUnpack.loadData(unpackStrings);
                                         for(i = 0; i < records.length; i++){
                                             //idx1 = records[newIndex].data.index;
                                             idx2 = newIndex;
-                                            url = 'api?mode=switch&value='+records[i].data.nzo_id+'&value2='+idx2;
+                                            url = 'tapi?mode=switch&value='+records[i].data.nzo_id+'&value2='+idx2;
                                             Ext.Ajax.request(
                                             {
                                                url: url,

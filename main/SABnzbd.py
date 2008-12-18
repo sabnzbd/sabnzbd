@@ -40,6 +40,9 @@ except:
     exit(1)
 
 import cherrypy
+if not cherrypy.__version__.startswith("3.1."):
+    print "Sorry, requires Python module Cherrypy 3.1.x"
+    exit(1)
 
 import sabnzbd
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
@@ -139,6 +142,7 @@ def print_help():
     print "  -v  --version            Print version information"
     print "  -c  --clean              Remove queue, cache and logs"
     print "  -p  --pause              Start in paused mode"
+    print "      --https              Webserver uses HTTPS only"
 
 def print_version():
     print """
@@ -151,8 +155,6 @@ under certain conditions. It is licensed under the
 GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
 """ % (sabnzbd.MY_NAME, sabnzbd.__version__)
-
-
 
 
 def daemonize():
@@ -332,7 +334,7 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:b:2:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
                       'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', \
-                      'template2', 'browser=', 'config-file=', 'delay=', 'force', 'version'])
+                      'template2', 'browser=', 'config-file=', 'delay=', 'force', 'version', 'https'])
     except getopt.GetoptError:
         print_help()
         ExitSab(2)
@@ -353,6 +355,7 @@ def main():
     vista = False
     vista64 = False
     force_web = False
+    https = False
 
     for o, a in opts:
         if (o in ('-d', '--daemon')):
@@ -412,6 +415,8 @@ def main():
             #    pass
         if o in ('--force'):
             force_web = True
+        if o in ('--https'):
+            https = True
 
 
     # Detect Vista or higher
@@ -661,7 +666,7 @@ def main():
             browserhost = cherryhost
     elif cherryhost == '0.0.0.0':
         # Just take the gamble for this
-        cherryhost = ''
+        cherryhost = '0.0.0.0'
         browserhost = localhost
     elif cherryhost.find('[') >= 0 or cherryhost.find(':') >= 0:
         # IPV6
@@ -748,31 +753,54 @@ def main():
             except:
                 cherrylogtoscreen = False
 
+    cherrypy.config.update({'server.environment': 'production',
+                             'server.socket_host': cherryhost,
+                             'server.socket_port': cherryport,
+                             'server.logToScreen': cherrylogtoscreen,
+                             'server.logFile': sabnzbd.WEBLOGFILE,
+                             'engine.autoreload_frequency' : 100,
+                             'engine.autoreload_on' : False,
+                             'tools.encode.on' : True,
+                             'tools.gzip.on' : True,
+                             'tools.sessions.on' : True,
+                             'server.show_tracebacks': True,
+                             'error_page.401': sabnzbd.misc.error_page_401
+                           })
+
+    if https and not (sabnzbd.SSL_CA and sabnzbd.SSL_KEY):
+        logging.warning('Disabled HTTPS because of missing CA and KEY files')
+        https = False
+
+    if https:
+        cherrypy.config.update({'server.ssl_certificate' : sabnzbd.SSL_CA,
+                                 'server.ssl_private_key' : sabnzbd.SSL_KEY})
+
+
+    appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
+                 '/sabnzbd/shutdown': {'streamResponse': True},
+                 '/sabnzbd/static': {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')},
+                 '/sabnzbd/m/shutdown': {'streamResponse': True},
+                 '/sabnzbd/m/static': {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
+                }
+    
+    if sabnzbd.interface.USERNAME and sabnzbd.interface.PASSWORD:
+        appconfig['/sabnzbd'] = {'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
+                                'tools.basic_auth.users' : sabnzbd.interface.get_users, 'tools.basic_auth.encrypt' : sabnzbd.interface.encrypt_pwd}
+                 
+
     login_page = LoginPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/')
     sabnzbd.LOGIN_PAGE = login_page
-    cherrypy.tree.mount(login_page, '/')
-
-    cherrypy.config.update(updateMap={'server.environment': 'production',
-                                 'server.socketHost': cherryhost,
-                                 'server.socketPort': cherryport,
-                                 'server.logToScreen': cherrylogtoscreen,
-                                 'server.logFile': sabnzbd.WEBLOGFILE,
-                                 'sessionFilter.on': True,
-                                 'server.show_tracebacks': True,
-                                 '/sabnzbd': {'streamResponse': True},
-                                 '/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir, 'static')},
-                                 '/sabnzbd/m': {'streamResponse': True},
-                                 '/sabnzbd/m/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir2, 'static')}
-                           })
+    cherrypy.tree.mount(login_page, '/', config=appconfig)
 
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
 
     sabnzbd.LOGLEVEL = logging_level
 
     try:
-        cherrypy.server.start(init_only=True)
-        cherrypy.server.wait()
-    except cherrypy.NotReady, error:
+        # Use internal cherrypy check first to prevent ugly tracebacks
+        cherrypy.process.servers.check_port(cherryhost, cherryport)
+        cherrypy.engine.start()
+    except IOError, error:
         if str(error) == 'Port not bound.':
             if not force_web:
                 Panic_FWall(vista)
@@ -783,7 +811,14 @@ def main():
     except:
         Bail_Out(browserhost, cherryport)
 
-    launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
+    # Wait for server to become ready
+    cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
+
+    if https:
+        launch_a_browser("https://%s:%s/sabnzbd" % (browserhost, cherryport))
+    else:
+        launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
+
     Notify("SAB_Launched", None)
 
     # Now's the time to check for a new version
@@ -792,7 +827,12 @@ def main():
 
     # Have to keep this running, otherwise logging will terminate
     awake = 0
-    while cherrypy.server.ready:
+    while not sabnzbd.SABSTOP:
+        # This clumsyness would be needed for auto-reload to work
+        # but we disabled it.
+        #if cherrypy.engine.execv:
+        #    cherrypy.engine._do_execv()
+
         if (not testRelease) and sabnzbd.LOGLEVEL != logging_level:
             logging_level = sabnzbd.LOGLEVEL
             logger.setLevel(LOGLEVELS[logging_level])
@@ -805,7 +845,7 @@ def main():
         time.sleep(3)
 
     Notify("SAB_Shutdown", None)
-
+    logging.info('Leaving SABnzbd')
 
 
 #####################################################################

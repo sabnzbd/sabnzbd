@@ -713,6 +713,22 @@ def launch_a_browser(url):
             logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
 
 
+def error_page_401(status, message, traceback, version):
+    """ Custom handler for 401 error """
+    return r'''
+<html>
+    <head>
+    <title>Access denied</title>
+    </head>
+    <body>
+    <br/><br/>
+    <font color="#0000FF">Error %s: You need to provide a valid username and password.</font>
+    </body>
+</html>
+''' % status
+
+
+
 ################################################################################
 # Check latest version
 #

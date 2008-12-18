@@ -30,19 +30,12 @@ import re
 import glob
 import urllib
 from xml.sax.saxutils import escape
-from cherrypy.lib import cptools
 
 from sabnzbd.utils.rsslib import RSS, Item, Namespace
 from sabnzbd.utils.json import JsonWriter
 import sabnzbd
 import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
-
-from cherrypy.filters.gzipfilter import GzipFilter
-
-from sabnzbd.utils.multiauth.filter import MultiAuthFilter
-from sabnzbd.utils.multiauth.auth import ProtectedClass, SecureResource
-from sabnzbd.utils.multiauth.providers import DictAuthProvider
 
 from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
@@ -62,7 +55,7 @@ RE_URL = re.compile('(.+)/sabnzbd/rss\?mode.+', re.I)
 
 #------------------------------------------------------------------------------
 
-PROVIDER = DictAuthProvider({})
+#PROVIDER = DictAuthProvider({})
 
 USERNAME = None
 PASSWORD = None
@@ -225,46 +218,44 @@ def Strip(txt):
         return None
 
 #------------------------------------------------------------------------------
-class DummyFilter(MultiAuthFilter):
-    def beforeMain(self):
-        pass
-
-    def beforeFinalize(self):
-        if isinstance(cherrypy.response.body, SecureResource):
-            rsrc = cherrypy.response.body
-            if 'ma_username' in rsrc.callable_kwargs: del rsrc.callable_kwargs['ma_username']
-            if 'ma_password' in rsrc.callable_kwargs: del rsrc.callable_kwargs['ma_password']
-            cherrypy.response.body = rsrc.callable(rsrc.instance,
-                                                   *rsrc.callable_args,
-                                                   **rsrc.callable_kwargs)
+#class DummyFilter(MultiAuthFilter):
+#    def beforeMain(self):
+#        pass
+#
+#    def beforeFinalize(self):
+#        if isinstance(cherrypy.response.body, SecureResource):
+#            rsrc = cherrypy.response.body
+#            if 'ma_username' in rsrc.callable_kwargs: del rsrc.callable_kwargs['ma_username']
+#            if 'ma_password' in rsrc.callable_kwargs: del rsrc.callable_kwargs['ma_password']
+#            cherrypy.response.body = rsrc.callable(rsrc.instance,
+#                                                   *rsrc.callable_args,
+#                                                   **rsrc.callable_kwargs)
 
 #------------------------------------------------------------------------------
+def get_users():
+    global USERNAME, PASSWORD
+    users = {}
+    users[USERNAME] = PASSWORD
+    return users
+
+def encrypt_pwd(pwd):
+    return pwd
+
+
 class LoginPage:
     def __init__(self, web_dir, root, web_dir2=None, root2=None):
-        self._cpFilterList = [GzipFilter()]
-
-        if USERNAME and PASSWORD:
-            PROVIDER.add(USERNAME, PASSWORD, ['admins'])
-
-            self._cpFilterList.append(MultiAuthFilter('/unauthorized', PROVIDER))
-        else:
-            self._cpFilterList.append(DummyFilter('', PROVIDER))
-
         self.sabnzbd = MainPage(web_dir, root, prim=True)
         self.root = root
         if web_dir2:
             self.sabnzbd.m = MainPage(web_dir2, root2, prim=False)
         else:
             self.sabnzbd.m = NoPage()
+        pass
 
     @cherrypy.expose
     def index(self, _dc = None):
         return ""
 
-    @cherrypy.expose
-    def unauthorized(self):
-        return "<h1>You are not authorized to view this resource</h1>"
-    
     def change_web_dir(self, web_dir):
         self.sabnzbd = MainPage(web_dir, self.root, prim=True)
         
@@ -273,7 +264,7 @@ class LoginPage:
 
 
 #------------------------------------------------------------------------------
-class NoPage(ProtectedClass):
+class NoPage:
     def __init__(self):
         pass
 
@@ -283,7 +274,7 @@ class NoPage(ProtectedClass):
 
 
 #------------------------------------------------------------------------------
-class MainPage(ProtectedClass):
+class MainPage:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -360,9 +351,9 @@ class MainPage(ProtectedClass):
     def shutdown(self, _dc=None):
         yield "Initiating shutdown..."
         sabnzbd.halt()
-        cherrypy.server.stop()
         yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
-        raise KeyboardInterrupt()
+        cherrypy.engine.exit()
+        sabnzbd.SABSTOP = True
 
     @cherrypy.expose
     def pause(self, _dc = None):
@@ -394,13 +385,25 @@ class MainPage(ProtectedClass):
         elif mode == 'warnings':
             return rss_warnings()
 
+    @cherrypy.expose
+    def tapi(self, mode='', name=None, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY,
+            output='plain', value = None, value2 = None, _dc = None, query=None,
+            sort=None, dir=None, start=None, limit=None):
+        """Handler for API over http, for template use
+        """
+        return self.api(mode, name, pp, script, cat, priority, output, value, value2, _dc, query,
+                        sort, dir, start, limit, ma_username=USERNAME, ma_password=PASSWORD)
 
     @cherrypy.expose
     def api(self, mode='', name=None, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY,
             output='plain', value = None, value2 = None, _dc = None, query=None,
-            sort=None, dir=None, start=None, limit=None):
-        """Handler for API over http
+            sort=None, dir=None, start=None, limit=None, ma_password=None, ma_username=None):
+        """Handler for API over http, with explicit authentication parameters
         """
+        if USERNAME and PASSWORD:
+            if not (ma_password == PASSWORD and ma_username == USERNAME):
+                return "Missing authentication"
+
         if mode == 'qstatus':
             if output == 'json':
                 return json_qstatus()
@@ -590,8 +593,8 @@ class MainPage(ProtectedClass):
 
         elif mode == 'shutdown':
             sabnzbd.halt()
-            cherrypy.server.stop()
-            raise KeyboardInterrupt()
+            cherrypy.engine.exit()
+            sabnzbd.SABSTOP = True
 
         elif mode == 'warnings':
             if output == 'json':
@@ -686,7 +689,7 @@ class MainPage(ProtectedClass):
             raise Raiser(self.__root, _dc)
 
 #------------------------------------------------------------------------------
-class NzoPage(ProtectedClass):
+class NzoPage:
     def __init__(self, web_dir, root, nzo_id, prim):
         self.roles = ['admins']
         self.__nzo_id = nzo_id
@@ -770,7 +773,7 @@ class NzoPage(ProtectedClass):
         raise Raiser(self.__root, _dc=_dc)
 
 #------------------------------------------------------------------------------
-class QueuePage(ProtectedClass):
+class QueuePage:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -877,9 +880,9 @@ class QueuePage(ProtectedClass):
     def shutdown(self):
         yield "Initiating shutdown..."
         sabnzbd.halt()
-        cherrypy.server.stop()
+        cherrypy.engine.exit()
         yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
-        raise KeyboardInterrupt()
+        sabnzbd.SABSTOP = True
 
     @cherrypy.expose
     def pause(self, _dc = None, start=None, limit=None):
@@ -934,7 +937,7 @@ class QueuePage(ProtectedClass):
         sabnzbd.limit_speed(value)
         raise Raiser(self.__root, _dc)
 
-class HistoryPage(ProtectedClass):
+class HistoryPage:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -1010,7 +1013,7 @@ class HistoryPage(ProtectedClass):
             raise Raiser(self.__root, _dc)
 
 #------------------------------------------------------------------------------
-class ConfigPage(ProtectedClass):
+class ConfigPage:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
 
@@ -1058,7 +1061,7 @@ class ConfigPage(ProtectedClass):
             return "SABnzbd restart failed! See logfile(s)."
 
 #------------------------------------------------------------------------------
-class ConfigDirectories(ProtectedClass):
+class ConfigDirectories:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
 
@@ -1168,7 +1171,7 @@ class ConfigDirectories(ProtectedClass):
         return saveAndRestart(self.__root, _dc)
 
 #------------------------------------------------------------------------------
-class ConfigSwitches(ProtectedClass):
+class ConfigSwitches:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -1283,7 +1286,7 @@ class ConfigSwitches(ProtectedClass):
 
 #------------------------------------------------------------------------------
 
-class ConfigGeneral(ProtectedClass):
+class ConfigGeneral:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -1395,10 +1398,6 @@ class ConfigGeneral(ProtectedClass):
             sabnzbd.change_web_dir(web_dir_path)
             sabnzbd.change_web_dir2(web_dir2_path)
             
-            #cherrypy.tree.mount(LoginPage(web_dir_path, '/sabnzbd/', web_dir2_path, '/sabnzbd/m/'), '/')
-            cherrypy.config.update(updateMap={'/sabnzbd/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir_path, 'static')},
-                                              '/sabnzbd/m/static': {'staticFilter.on': True, 'staticFilter.dir': os.path.join(web_dir2_path, 'static')}
-                                          })
        
        
         return saveAndRestart(self.__root, _dc)
@@ -1406,7 +1405,7 @@ class ConfigGeneral(ProtectedClass):
 
 #------------------------------------------------------------------------------
 
-class ConfigServer(ProtectedClass):
+class ConfigServer:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -1604,7 +1603,7 @@ def GetCfgRss(config, keyword):
     except:
         return ''
 
-class ConfigRss(ProtectedClass):
+class ConfigRss:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -1787,7 +1786,7 @@ class ConfigRss(ProtectedClass):
 
 #------------------------------------------------------------------------------
 
-class ConfigScheduling(ProtectedClass):
+class ConfigScheduling:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -1861,7 +1860,7 @@ class ConfigScheduling(ProtectedClass):
 
 #------------------------------------------------------------------------------
 
-class ConfigNewzbin(ProtectedClass):
+class ConfigNewzbin:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -1948,7 +1947,7 @@ class ConfigNewzbin(ProtectedClass):
 
 #------------------------------------------------------------------------------
 
-class ConfigCats(ProtectedClass):
+class ConfigCats:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -2055,7 +2054,7 @@ class ConfigCats(ProtectedClass):
 
     
 #------------------------------------------------------------------------------
-class ConfigSorting(ProtectedClass):
+class ConfigSorting:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
 
@@ -2118,7 +2117,7 @@ class ConfigSorting(ProtectedClass):
 
 #------------------------------------------------------------------------------
 
-class ConnectionInfo(ProtectedClass):
+class ConnectionInfo:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root
@@ -2210,12 +2209,12 @@ class ConnectionInfo(ProtectedClass):
             sabnzbd.LOGHANDLER.flush()
         except:
             pass
-        return cherrypy.lib.cptools.serveFile(sabnzbd.LOGFILE, disposition='attachment')
+        return cherrypy.lib.static.serve_file(sabnzbd.LOGFILE, "application/x-download", "attachment")
 
     @cherrypy.expose
     def showweb(self):
         if sabnzbd.WEBLOGFILE:
-            return cherrypy.lib.cptools.serveFile(sabnzbd.WEBLOGFILE, disposition='attachment')
+            return cherrypy.lib.static.serve_file(sabnzbd.WEBLOGFILE, "application/x-download", "attachment")
         else:
             return "Web logging is off!"
 
@@ -2519,7 +2518,7 @@ def calc_age(date):
 
 #------------------------------------------------------------------------------
 
-class ConfigEmail(ProtectedClass):
+class ConfigEmail:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
         self.__root = root

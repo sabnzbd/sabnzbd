@@ -162,6 +162,7 @@ WEB_DIR2 = None
 pause_on_post_processing = False
 QUICK_CHECK = True
 LOGIN_PAGE = None
+SABSTOP = False
 IONICE_ARGS = ''
 
 ENABLE_TV_SORTING = False
@@ -177,6 +178,8 @@ ENABLE_DATE_SORTING = False
 DATE_SORT_STRING = None
 DATE_CATEGORIES = []
 
+SSL_CA = ''
+SSL_KEY = ''
 
 __INITIALIZED__ = False
 
@@ -198,6 +201,7 @@ def synchronized_CV(func):
 # Signal Handler                                                               #
 ################################################################################
 def sig_handler(signum = None, frame = None):
+    global SABSTOP
     if os.name == 'nt' and type(signum) != type(None) and DAEMON and signum==5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
@@ -206,6 +210,7 @@ def sig_handler(signum = None, frame = None):
     try:
         save_state()
     finally:
+        SABSTOP = True
         os._exit(0)
 
 
@@ -240,6 +245,21 @@ def dir_setup(config, cfg_name, def_loc, def_name, umask=None):
             my_dir = ""
         logging.debug("%s: %s", cfg_name, my_dir)
     return my_dir
+
+################################################################################
+# Check_setting_file                                                           #
+################################################################################
+def check_setting_file(config, cfg_name, def_loc):
+    try:
+        file = config['misc'][cfg_name]
+    except:
+        config['misc'][cfg_name] = file = ''
+
+    if file:
+        file = real_path(def_loc, file)
+        if not os.path.exists(file):
+            file = ''
+    return file
 
 ################################################################################
 # Check_setting_int                                                            #
@@ -371,7 +391,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
            WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY, \
-           DO_TSJOIN, IONICE_ARGS
+           DO_TSJOIN, IONICE_ARGS, \
+           SSL_CA, SSL_KEY
 
     if __INITIALIZED__:
         return False
@@ -532,6 +553,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     IONICE_ARGS = check_setting_str(CFG, 'misc', 'ionice',  '')
     
+    SSL_CA = check_setting_file(CFG, 'ssl_ca', DIR_LCLDATA)
+    SSL_KEY = check_setting_file(CFG, 'ssl_key', DIR_LCLDATA)
+
     WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
 

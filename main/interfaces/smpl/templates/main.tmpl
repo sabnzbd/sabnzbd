@@ -368,7 +368,7 @@ function loadtitle() {
 			status2 = 0;
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
 			document.getElementById("status2").innerHTML = "Pause";
-			doSimpleXMLHttpRequest("api?mode=resume");
+			doSimpleXMLHttpRequest("tapi?mode=resume");
 		}
 		else
 		{
@@ -376,7 +376,7 @@ function loadtitle() {
 			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
 			document.getElementById("speed").innerHTML = "0";
 			document.getElementById("status2").innerHTML = "Resume";
-			doSimpleXMLHttpRequest("api?mode=pause");
+			doSimpleXMLHttpRequest("tapi?mode=pause");
 
 		}
 	}
@@ -639,7 +639,7 @@ function loadingJSON(){
 	clearTimeout ( jsontimeout );
 	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);
 	}
-	var url = "api?mode=qstatus&output=json&_dc="+Math.random();
+	var url = "tapi?mode=qstatus&output=json&_dc="+Math.random();
 	var d = loadJSONDoc(url);
 	var gotMetadata = function (info)
 	{
@@ -791,7 +791,7 @@ function loadingJSON(){
                     <li><a http://embed.mibbit.com/?server=irc.synirc.net&channel=%23sabnzbd&parseLinks=true&chatOutputShowTimes=true" target="_blank">IRC</a></li>
 				</ul>
 				<!--<input type="checkbox" name="enable_speedlimit" />-->
-				<span class="small">Speedlimit: </span><input type="text" id="speedbox" value="$speedlimit" onChange="javascript:doSimpleXMLHttpRequest('api?mode=config&name=set_speedlimit&value='+this.value);">
+				<span class="small">Speedlimit: </span><input type="text" id="speedbox" value="$speedlimit" onChange="javascript:doSimpleXMLHttpRequest('tapi?mode=config&name=set_speedlimit&value='+this.value);">
 				<br /><br /><center>
 				Incomplete<br />
 				<span class="small"><span id="ds1">${diskspace1}</span>GB / ${diskspacetotal1}GB</span><br />
