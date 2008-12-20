@@ -42,7 +42,10 @@ except:
 import sabnzbd
 from sabnzbd.misc import ProcessSingleFile, ProcessArchiveFile, Cat2Opts, \
                          BadFetch, sanitize_filename
+import sabnzbd.config as config
 
+USERNAME_MATRIX = config.OptionStr('nzbmatrix', 'username')
+PASSWORD_MATRIX = config.OptionPassword('nzbmatrix', 'password')
 
 #------------------------------------------------------------------------------
 class URLGrabber(Thread):
@@ -173,7 +176,7 @@ def _grab_nzbmatrix(url):
     logging.debug('[%s] Using download url: %s', __NAME__, download_url)
 
     # username and password
-    login_info = {'username': sabnzbd.USERNAME_MATRIX, 'password': sabnzbd.PASSWORD_MATRIX}
+    login_info = {'username': USERNAME_MATRIX, 'password': PASSWORD_MATRIX}
     login_info_encode = urllib.urlencode(login_info)
 
     # create and install the cookie jar and handler so we can save the login cookie

@@ -47,6 +47,7 @@ from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.constants import *
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.codecs import name_fixer
+import sabnzbd.config as config
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
@@ -555,19 +556,10 @@ def Get_User_ShellFolders():
 # save_configfile
 #
 ################################################################################
-def save_configfile(config):
+def save_configfile(dummy):
     """Save configuration to disk
     """
-    try:
-        config.write()
-        f = open(config.filename)
-        x = f.read()
-        f.close()
-        f = open(config.filename, "w")
-        f.write(x)
-        f.flush()
-        f.close()
-    except:
+    if not config.save_config(force=True):
         Panic('Cannot write to configuration file "%s".' % config.filename, \
               'Make sure file is writable and in a writable folder.')
         ExitSab(2)

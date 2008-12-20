@@ -87,9 +87,6 @@ FAIL_ON_CRC = False
 CREATE_GROUP_FOLDERS = False
 CREATE_CAT_FOLDERS = False
 CREATE_CAT_SUB = False
-NEWZBIN_BOOKMARKS = False
-NEWZBIN_UNBOOKMARK = False
-BOOKMARK_RATE = None
 DO_FILE_JOIN = False
 DO_UNZIP = False
 DO_UNRAR = False
@@ -118,11 +115,6 @@ AUTOBROWSER = None
 DAEMON = None
 CONFIGLOCK = None
 RSS_RATE = None
-
-USERNAME_NEWZBIN = None
-PASSWORD_NEWZBIN = None
-USERNAME_MATRIX = None
-PASSWORD_MATRIX = None
 
 CACHE_DIR = None
 NZB_BACKUP_DIR = None
@@ -332,22 +324,6 @@ def check_setting_str(config, cfg_name, item_name, def_val, log = True):
 ################################################################################
 # Initializing                                                                 #
 ################################################################################
-def init_newzbin():
-    global USERNAME_NEWZBIN, PASSWORD_NEWZBIN, \
-           USERNAME_MATRIX, PASSWORD_MATRIX, \
-           NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE
-
-    USERNAME_NEWZBIN = check_setting_str(CFG, 'newzbin', 'username', '')
-    PASSWORD_NEWZBIN = decodePassword(check_setting_str(CFG, 'newzbin', 'password', '', False), 'web')
-    NEWZBIN_BOOKMARKS = bool(check_setting_int(CFG, 'newzbin', 'bookmarks', 0))
-    NEWZBIN_UNBOOKMARK = bool(check_setting_int(CFG, 'newzbin', 'unbookmark', 0))
-
-    BOOKMARK_RATE = check_setting_int(CFG, 'newzbin', 'bookmark_rate', 60)
-    BOOKMARK_RATE = minimax(BOOKMARK_RATE, 15, 24*60)
-
-    USERNAME_MATRIX = check_setting_str(CFG, 'nzbmatrix', 'username', '')
-    PASSWORD_MATRIX = decodePassword(check_setting_str(CFG, 'nzbmatrix', 'password', '', False), 'web')
-
 
 def sorting_init():
     global TV_SORT_STRING, ENABLE_TV_SORTING, MOVIE_SORT_STRING, ENABLE_MOVIE_SORTING, \
@@ -378,15 +354,13 @@ INIT_LOCK = Lock()
 def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
     global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, AUTODISCONNECT, \
            DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, PAR_OPTION, NO_DUPES, CLEANUP_LIST, IGNORE_SAMPLES, \
-           USERNAME_NEWZBIN, PASSWORD_NEWZBIN, POSTPROCESSOR, ASSEMBLER, \
-           USERNAME_MATRIX, PASSWORD_MATRIX, \
+           POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, URLGRABBER, NZBQ, DOWNLOADER, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
            SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_DIR, DIRSCAN_PP, \
            COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, EMAIL_DIR, \
            CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
-           NEWZBIN_BOOKMARKS, NEWZBIN_UNBOOKMARK, BOOKMARK_RATE, \
            DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, REPLACE_ILLEGAL,\
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
@@ -408,8 +382,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     CheckSection('servers')
     CheckSection('rss')
     catsDefined = CheckSection('categories')
-
-    init_newzbin()
 
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
 

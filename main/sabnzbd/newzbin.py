@@ -43,6 +43,18 @@ from sabnzbd.misc import Cat2Opts, sanitize_filename, BadFetch
 from sabnzbd.nzbstuff import CatConvert
 from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
+import sabnzbd.config as config
+
+################################################################################
+# Configuration Instances
+################################################################################
+
+USERNAME_NEWZBIN = config.OptionStr('newzbin', 'username')
+PASSWORD_NEWZBIN = config.OptionPassword('newzbin', 'password')
+NEWZBIN_BOOKMARKS = config.OptionBool('newzbin', 'bookmarks', False)
+NEWZBIN_UNBOOKMARK = config.OptionBool('newzbin', 'unbookmark', False)
+BOOKMARK_RATE = config.OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
+
 
 ################################################################################
 # BOOKMARK Wrappers
@@ -76,7 +88,7 @@ def getBookmarksList():
 
 def delete_bookmark(msgid):
     global __BOOKMARKS
-    if __BOOKMARKS and sabnzbd.NEWZBIN_BOOKMARKS and sabnzbd.NEWZBIN_UNBOOKMARK:
+    if __BOOKMARKS and NEWZBIN_BOOKMARKS.get() and NEWZBIN_UNBOOKMARK.get():
         __BOOKMARKS.del_bookmark(msgid)
 
 
@@ -126,6 +138,14 @@ def InitCats():
     """ Initialise categories with newzbin categories """
     cats = ['Unknown', 'Anime', 'Apps', 'Books', 'Consoles', 'Emulation', 'Games',
             'Misc', 'Movies', 'Music', 'PDA', 'Resources', 'TV']
+
+    # New code for config-datbase
+    #lst = []
+    #for cat in cats:
+    #    val = { 'newzbin' : cat, 'dir' : cat }
+    #    lst.append(config.ConfigCat(cat.lower(), val))
+
+    # Old code
     cfg = sabnzbd.CFG['categories']
     for cat in cats:
         lcat = cat.lower()
@@ -222,7 +242,7 @@ def _grabnzb(msgid):
         else:
             conn = httplib.HTTPConnection('www.newzbin.com')
 
-        postdata = { 'username': sabnzbd.USERNAME_NEWZBIN, 'password': sabnzbd.PASSWORD_NEWZBIN, 'reportid': msgid }
+        postdata = { 'username': USERNAME_NEWZBIN, 'password': PASSWORD_NEWZBIN, 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
 
         headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -333,11 +353,11 @@ class Bookmarks:
 
             if delete:
                 logging.info('[%s] Deleting Newzbin bookmark %s', __NAME__, delete)
-                postdata = { 'username': sabnzbd.USERNAME_NEWZBIN, 'password': sabnzbd.PASSWORD_NEWZBIN, 'action': 'delete', \
+                postdata = { 'username': USERNAME_NEWZBIN, 'password': PASSWORD_NEWZBIN, 'action': 'delete', \
                              'reportids' : delete }
             else:
                 logging.info('[%s] Fetching Newzbin bookmarks', __NAME__)
-                postdata = { 'username': sabnzbd.USERNAME_NEWZBIN, 'password': sabnzbd.PASSWORD_NEWZBIN, 'action': 'fetch'}
+                postdata = { 'username': USERNAME_NEWZBIN, 'password': PASSWORD_NEWZBIN, 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
     
             headers['Content-type'] = 'application/x-www-form-urlencoded'

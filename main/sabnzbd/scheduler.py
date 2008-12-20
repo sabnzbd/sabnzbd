@@ -36,6 +36,14 @@ import sabnzbd.misc
 __SCHED = None  # Global pointer to Scheduler instance
 
 RSSTASK_MINUTE = random.randint(0, 59)
+SCHEDULE_GUARD_FLAG = False
+
+
+def schedule_guard():
+    """ Set flag for scheduler restart """
+    global SCHEDULE_GUARD_FLAG
+    SCHEDULE_GUARD_FLAG = True
+
 
 def init():
     """ Create the scheduler and set all required events
@@ -44,8 +52,8 @@ def init():
 
     need_rsstask = True
     need_versioncheck = sabnzbd.VERSION_CHECK
-    bookmarks = sabnzbd.NEWZBIN_BOOKMARKS
-    bookmark_rate = sabnzbd.BOOKMARK_RATE
+    bookmarks = newzbin.NEWZBIN_BOOKMARKS.get()
+    bookmark_rate = newzbin.BOOKMARK_RATE.get()
     schedlines = sabnzbd.CFG['misc']['schedlines']
 
     __SCHED = ThreadedScheduler()
@@ -125,6 +133,9 @@ def init():
             logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
             __SCHED.addDaytimeTask(newzbin.getBookmarksNow, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
 
+    # Subscribe to bookmark schedule changes
+    newzbin.NEWZBIN_BOOKMARKS.callback(schedule_guard)
+    newzbin.BOOKMARK_RATE.callback(schedule_guard)
 
 
 def start():
@@ -136,17 +147,19 @@ def start():
         __SCHED.start()
 
 
-def restart():
+def restart(force=False):
     """ Stop and start scheduler
     """
-    global __PARMS
+    global __PARMS, SCHEDULE_GUARD_FLAG
 
-    stop()
+    if force or SCHEDULE_GUARD_FLAG:
+        SCHEDULE_GUARD_FLAG = False
+        stop()
 
-    analyse()
+        analyse()
 
-    init()
-    start()
+        init()
+        start()
 
 
 def stop():

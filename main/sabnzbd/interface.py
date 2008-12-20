@@ -47,7 +47,9 @@ from sabnzbd.misc import real_path, create_real_path, save_configfile, \
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
+import sabnzbd.urlgrabber as urlgrabber
 from sabnzbd.codecs import TRANS, xml_name
+import sabnzbd.config as config
 
 from sabnzbd.constants import *
 
@@ -290,7 +292,7 @@ class MainPage:
     def index(self, _dc = None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+        if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
             info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts(default=True)
@@ -951,7 +953,7 @@ class HistoryPage:
 
         history['isverbose'] = self.__verbose
 
-        if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+        if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
             history['newzbinDetails'] = True
 
         history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
@@ -1846,7 +1848,7 @@ class ConfigScheduling:
                 schedules.append('%s %s %s %s %s' %
                                  (minute, hour, dayofweek, action, arguments))
         save_configfile(sabnzbd.CFG)
-        scheduler.restart()
+        scheduler.restart(force=True)
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -1855,7 +1857,7 @@ class ConfigScheduling:
         if line and line in schedules:
             schedules.remove(line)
         save_configfile(sabnzbd.CFG)
-        scheduler.restart()
+        scheduler.restart(force=True)
         raise Raiser(self.__root, _dc=_dc)
 
 #------------------------------------------------------------------------------
@@ -1875,17 +1877,16 @@ class ConfigNewzbin:
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['username_newzbin'] = sabnzbd.CFG['newzbin']['username']
-        config['password_newzbin'] = '*' * len(decodePassword(sabnzbd.CFG['newzbin']['password'], 'password_newzbin'))
-        #config['create_category_folders'] = IntConv(sabnzbd.CFG['newzbin']['create_category_folders'])
-        config['newzbin_bookmarks'] = IntConv(sabnzbd.CFG['newzbin']['bookmarks'])
-        config['newzbin_unbookmark'] = IntConv(sabnzbd.CFG['newzbin']['unbookmark'])
-        config['bookmark_rate'] = sabnzbd.BOOKMARK_RATE
+        config['username_newzbin'] = newzbin.USERNAME_NEWZBIN.get()
+        config['password_newzbin'] = newzbin.PASSWORD_NEWZBIN.get_stars()
+        config['newzbin_bookmarks'] = int(newzbin.NEWZBIN_BOOKMARKS.get())
+        config['newzbin_unbookmark'] = int(newzbin.NEWZBIN_UNBOOKMARK.get())
+        config['bookmark_rate'] = newzbin.BOOKMARK_RATE.get()
 
         config['bookmarks_list'] = self.__bookmarks
 
-        config['username_matrix'] = sabnzbd.CFG['nzbmatrix']['username']
-        config['password_matrix'] = '*' * len(decodePassword(sabnzbd.CFG['nzbmatrix']['password'], 'password_matrix'))
+        config['username_matrix'] = urlgrabber.USERNAME_MATRIX.get()
+        config['password_matrix'] = urlgrabber.PASSWORD_MATRIX.get_stars()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             searchList=[config],
@@ -1899,34 +1900,27 @@ class ConfigNewzbin:
                     newzbin_unbookmark = None, bookmark_rate = None,
                     username_matrix = None, password_matrix = None, _dc = None):
 
-        sabnzbd.CFG['newzbin']['username'] = Strip(username_newzbin)
-        if (not password_newzbin) or (password_newzbin and password_newzbin.strip('*')):
-            sabnzbd.CFG['newzbin']['password'] = encodePassword(password_newzbin)
-        #sabnzbd.CFG['newzbin']['create_category_folders'] = create_category_folders
-        sabnzbd.CFG['newzbin']['bookmarks'] = newzbin_bookmarks
-        sabnzbd.CFG['newzbin']['unbookmark'] = newzbin_unbookmark
-        sabnzbd.CFG['newzbin']['bookmark_rate'] = sabnzbd.minimax(bookmark_rate, 15, 24*60)
+        
+        newzbin.USERNAME_NEWZBIN.set(username_newzbin)
+        newzbin.PASSWORD_NEWZBIN.set(password_newzbin)
+        newzbin.NEWZBIN_BOOKMARKS.set(newzbin_bookmarks)
+        newzbin.NEWZBIN_UNBOOKMARK.set(newzbin_unbookmark)
+        newzbin.BOOKMARK_RATE.set(bookmark_rate)
 
-        if Strip(username_matrix):
-            sabnzbd.CFG['nzbmatrix']['username'] = Strip(username_matrix)
-            if (not password_matrix) or (password_matrix and password_matrix.strip('*')):
-                sabnzbd.CFG['nzbmatrix']['password'] = encodePassword(password_matrix)
+        urlgrabber.USERNAME_MATRIX.set(username_matrix)
+        urlgrabber.PASSWORD_MATRIX.set(password_matrix)
 
-        save_configfile(sabnzbd.CFG)
-        sabnzbd.init_newzbin()
-        # Enable/disable Bookmark schedule
+        config.save_config()
         scheduler.restart()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def saveMatrix(self, username_matrix = None, password_matrix = None, _dc = None):
 
-        sabnzbd.CFG['nzbmatrix']['username'] = Strip(username_matrix)
-        if (not password_matrix) or (password_matrix and password_matrix.strip('*')):
-            sabnzbd.CFG['nzbmatrix']['password'] = encodePassword(password_matrix)
+        urlgrabber.USERNAME_MATRIX.set(username_matrix)
+        urlgrabber.PASSWORD_MATRIX.set(password_matrix)
 
-        save_configfile(sabnzbd.CFG)
-        sabnzbd.init_newzbin()
+        config.save_config()
         raise Raiser(self.__root, _dc=_dc)
 
 
@@ -1961,7 +1955,7 @@ class ConfigCats:
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+        if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
             config['newzbinDetails'] = True
 
         config['script_list'] = ListScripts(default=True)
@@ -3089,7 +3083,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     info, pnfo_list, bytespersec = build_header(prim)
 
     info['isverbose'] = verbose
-    if sabnzbd.USERNAME_NEWZBIN and sabnzbd.PASSWORD_NEWZBIN:
+    if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
         info['newzbinDetails'] = True
 
     if int(sabnzbd.CFG['misc']['refresh_rate']) > 0:

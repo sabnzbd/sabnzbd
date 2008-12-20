@@ -443,30 +443,19 @@ def main():
     # All system data dirs are relative to the place we found the INI file
     sabnzbd.DIR_LCLDATA = os.path.dirname(f)
 
-    if not os.path.exists(f):
-        # No file found, create default INI file
+    if not os.path.exists(f) and not os.path.exists(sabnzbd.DIR_LCLDATA):
         try:
-            if not os.path.exists(sabnzbd.DIR_LCLDATA):
-                os.makedirs(sabnzbd.DIR_LCLDATA)
-            fp = open(f, "w")
-            fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
-            fp.close()
-        except:
-            Panic('Cannot create file "%s".' % f, 'Check specified INI file location.')
+            os.makedirs(sabnzbd.DIR_LCLDATA)
+        except IOError:
+            Panic('Cannot create folder "%s".' % sabnzbd.DIR_LCLDATA, 'Check specified INI file location.')
             ExitSab(1)
 
-    try:
-        cfg = ConfigObj(f)
-        try:
-            my_version = cfg['__version__']
-        except:
-            my_version = CONFIG_VERSION
-            cfg['__version__'] = my_version
-
-    except ConfigObjError, strerror:
+    if not config.read_config(f):
         Panic('"%s" is not a valid configuration file.' % f, \
               'Specify a correct file or delete this file.')
         ExitSab(1)
+
+    cfg = config.CFG
 
     if cherrypylogging == None:
         cherrypylogging = bool(check_setting_int(cfg, 'logging', 'enable_cherrypy_logging', 1))
