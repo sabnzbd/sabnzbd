@@ -778,11 +778,14 @@ def main():
 
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
                  '/sabnzbd/shutdown': {'streamResponse': True},
-                 '/sabnzbd/static': {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')},
-                 '/sabnzbd/m/shutdown': {'streamResponse': True},
-                 '/sabnzbd/m/static': {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
+                 '/sabnzbd/static': {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
                 }
-    
+
+    if web_dir2:
+        appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on' : False}
+        appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
+        appconfig['/sabnzbd/m/static'] = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
+
     if sabnzbd.interface.USERNAME and sabnzbd.interface.PASSWORD:
         appconfig['/sabnzbd'] = {'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
                                 'tools.basic_auth.users' : sabnzbd.interface.get_users, 'tools.basic_auth.encrypt' : sabnzbd.interface.encrypt_pwd}
