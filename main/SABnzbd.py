@@ -849,6 +849,7 @@ def main():
 
     Notify("SAB_Shutdown", None)
     logging.info('Leaving SABnzbd')
+    ExitSab(0)
 
 
 #####################################################################
