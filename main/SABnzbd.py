@@ -53,6 +53,7 @@ from sabnzbd.newsunpack import find_programs
 from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
                          decodePassword, Notify, SplitHost, ConvertVersion
+import sabnzbd.scheduler as scheduler
 
 from threading import Thread
 
@@ -818,23 +819,33 @@ def main():
         check_latest_version()
 
     # Have to keep this running, otherwise logging will terminate
-    awake = 0
+    timer = 0
     while not sabnzbd.SABSTOP:
-        # This clumsyness would be needed for auto-reload to work
+        # This clumsiness would be needed for auto-reload to work
         # but we disabled it.
         #if cherrypy.engine.execv:
         #    cherrypy.engine._do_execv()
 
+        # 3 sec polling tasks
         if (not testRelease) and sabnzbd.LOGLEVEL != logging_level:
             logging_level = sabnzbd.LOGLEVEL
             logger.setLevel(LOGLEVELS[logging_level])
-        # Keep Windows awake every 30 sec (if needed)
-        if awake > 9:
+
+        # 30 sec polling tasks
+        if timer > 9:
+            timer = 0
+            # Keep Windows awake (if needed)
             sabnzbd.keep_awake()
-            awake = 0
+            # Restart scheduler (if needed)
+            scheduler.restart()
+            # Save config (if needed)
+            config.save_config()
         else:
-            awake += 1
+            timer += 1
+
         time.sleep(3)
+
+    config.save_config()
 
     Notify("SAB_Shutdown", None)
     logging.info('Leaving SABnzbd')

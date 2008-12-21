@@ -70,6 +70,17 @@ class Option:
         else:
             return self.__default_val
 
+    def get_dict(self):
+        """ Return value a dictionary """
+        return { 'value' : self.get() }
+
+    def set_dict(self, dict):
+        """ Set value based on dictionary """
+        try:
+            return self.set(dict['value'])
+        except:
+            return False
+
     def __set(self, value):
         """ Set new value, no validation """
         global modified
@@ -81,6 +92,7 @@ class Option:
 
     def set(self, value):
         self.__set(value)
+        return True
 
     def callback(self, callback):
         """ Set callback function """
@@ -118,7 +130,7 @@ class OptionNumber(Option):
                 elif (self.__minval != None) and value < self.__minval:
                     value = self.__minval
                 self._Option__set(value)
-
+        return True
 
     
 class OptionBool(Option):
@@ -133,6 +145,7 @@ class OptionBool(Option):
             self._Option__set(bool(int(value)))
         except ValueError:
             self._Option__set(False)
+        return True
 
 
 class OptionDir(Option):
@@ -164,7 +177,6 @@ class OptionDir(Option):
             if self.__validation:
                 res, value, path = self.__validation(self.__root, value)
                 if not res:
-                    print "log-problem-with-dir"
                     self._Option__set('')
                 else:
                     self._Option__set(value)
@@ -239,6 +251,7 @@ class OptionPassword(Option):
         """ Set password, encode it """
         if (pw and pw.strip('*')) or (pw and pw == ''):
             self._Option__set(encode_password(pw))
+        return True
 
 
 class ConfigServer:
@@ -259,7 +272,7 @@ class ConfigServer:
 
         self.set(values, all=True)
 
-    def set(self, values, all=False):
+    def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
         for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections', 'fill_server', 'ssl', 'enable'):
             try:
@@ -270,6 +283,21 @@ class ConfigServer:
                 else:
                     continue
             exec 'self.%s.set(value)' % kw
+        return True
+
+    def get_dict(self):
+        """ Return a dictionary with all attributes """
+        dict = {}
+        dict['host'] = self.host.get()
+        dict['port'] = self.port.get()
+        dict['timeout'] = self.timeout.get()
+        dict['username'] = self.username.get()
+        dict['password'] = self.password.get()
+        dict['connections'] = self.connections.get()
+        dict['fill_server'] = self.fill_server.get()
+        dict['ssl'] = self.ssl.get()
+        dict['enable'] = self.enable.get()
+        return dict
 
     def delete(self):
         """ Remove from database """
@@ -296,7 +324,7 @@ class ConfigCat:
 
         self.set(values, all=True)
 
-    def set(self, values, all=False):
+    def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
         for kw in ('pp', 'script', 'dir', 'newzbin', 'priority'):
             try:
@@ -307,7 +335,18 @@ class ConfigCat:
                 else:
                     continue
             exec 'self.%s.set(value)' % kw
+        return True
     
+    def get_dict(self):
+        """ Return a dictionary with all attributes """
+        dict = {}
+        dict['pp'] = self.pp.get()
+        dict['script'] = self.script.get()
+        dict['dir'] = self.dir.get()
+        dict['newzbin'] = self.newzbin.get()
+        dict['priority'] = self.priority.get()
+        return dict
+
     def delete(self):
         """ Remove from database """
         global database, modified
@@ -337,7 +376,7 @@ class ConfigRSS:
 
         self.set(values, all=True)
 
-    def set(self, values, all=False):
+    def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
         for kw in ('uri', 'cat', 'pp', 'script', 'priority'):
             try:
@@ -357,7 +396,18 @@ class ConfigRSS:
                     name = 'rss,' + self.__name
                     exec 'self.%s = OptionList(name, "%s")' % (kw, kw)
                     exec 'self.%s.set(values["%s"])' % (kw, kw)
-            
+        return True
+
+    def get_dict(self):
+        """ Return a dictionary with all attributes """
+        dict = {}
+        dict['uri'] = self.uri.get()
+        dict['cat'] = self.cat.get()
+        dict['pp'] = self.pp.get()
+        dict['script'] = self.script.get()
+        dict['enable'] = self.enable.get()
+        dict['priority'] = self.priority.get()
+        return dict
 
     def delete(self):
         """ Remove from database """
@@ -370,6 +420,46 @@ class ConfigRSS:
         return 'rss', self.__name
 
 
+
+def find_item(args):
+    """ Find config item based on 'section', 'keyword'
+    """
+    try:
+        section = args['section']
+        keyword = args['keyword']
+    except:
+        return None
+
+    item = database
+    for sect in section.split(','):
+        try:
+            item = item[sect]
+        except KeyError:
+            return None
+    try:
+        return item[keyword]
+    except KeyError:
+        return None
+
+
+def get_config(kwargs):
+    """ Return a config value, based on 'section', 'keyword'
+    """
+    item = find_item(kwargs)
+    if item:
+        return True, item.get_dict()
+    else:
+        return False, ''
+
+
+def set_config(kwargs):
+    """ Set a config item, using values in dictionary
+    """
+    item = find_item(kwargs)
+    if item:
+        return item.set_dict(kwargs)
+    else:
+        return False
 
 
 ################################################################################

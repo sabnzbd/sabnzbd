@@ -219,6 +219,14 @@ def Strip(txt):
     except:
         return None
 
+def get_arg(args, kw):
+    """ Get a value from a dictionary, None if not available """
+    try:
+        return args[kw]
+    except KeyError:
+        return None
+
+
 #------------------------------------------------------------------------------
 #class DummyFilter(MultiAuthFilter):
 #    def beforeMain(self):
@@ -388,23 +396,47 @@ class MainPage:
             return rss_warnings()
 
     @cherrypy.expose
-    def tapi(self, mode='', name=None, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY,
-            output='plain', value = None, value2 = None, _dc = None, query=None,
-            sort=None, dir=None, start=None, limit=None):
+    def tapi(self, **kwargs):
         """Handler for API over http, for template use
         """
-        return self.api(mode, name, pp, script, cat, priority, output, value, value2, _dc, query,
-                        sort, dir, start, limit, ma_username=USERNAME, ma_password=PASSWORD)
+        return self.api_handler(kwargs)
 
     @cherrypy.expose
-    def api(self, mode='', name=None, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY,
-            output='plain', value = None, value2 = None, _dc = None, query=None,
-            sort=None, dir=None, start=None, limit=None, ma_password=None, ma_username=None):
+    def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
         if USERNAME and PASSWORD:
+            ma_username = get_arg(kwargs, 'ma_username')
+            ma_password = get_arg(kwargs, 'ma_password')
             if not (ma_password == PASSWORD and ma_username == USERNAME):
                 return "Missing authentication"
+
+        return self.api_handler(kwargs)
+
+
+    def api_handler(self, kwargs):
+        """ Actual API handler, not exposed to Web-ui
+        """
+        mode = get_arg(kwargs, 'mode')
+        output = get_arg(kwargs, 'output')
+
+        if mode == 'set_config':
+            res = config.set_config(kwargs)
+            if output == 'json':
+                return json_result(res, None)
+            elif output == 'xml':                   
+                return xml_result(res, None)
+            else:
+                return 'not implemented\n'
+
+        if mode == 'get_config':
+            res, data = config.get_config(kwargs)
+            if output == 'json':
+                return json_result(res, data)
+            elif output == 'xml':                   
+                return xml_result(res, data)
+            else:
+                return 'not implemented\n'
 
         if mode == 'qstatus':
             if output == 'json':
@@ -415,6 +447,14 @@ class MainPage:
                 return 'not implemented\n'
             
         if mode == 'queue':
+            name = get_arg(kwargs, 'name')
+            sort = get_arg(kwargs, 'sort')
+            dir = get_arg(kwargs, 'dir')
+            value = get_arg(kwargs, 'value')
+            value2 = get_arg(kwargs, 'value2')
+            start = get_arg(kwargs, 'start')
+            limit = get_arg(kwargs, 'limit')
+
             if output == 'xml':
                 if sort and sort != 'index':
                     reverse=False
@@ -476,14 +516,25 @@ class MainPage:
                     return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
             else:
                 return 'not implemented\n'
-        elif mode == 'addfile':
+
+        name = get_arg(kwargs, 'name')
+        pp = get_arg(kwargs, 'pp')
+        script = get_arg(kwargs, 'script')
+        cat = get_arg(kwargs, 'cat')
+        priority = get_arg(kwargs, 'priority')
+        value = get_arg(kwargs, 'value')
+        value2 = get_arg(kwargs, 'value2')
+        start = get_arg(kwargs, 'start')
+        limit = get_arg(kwargs, 'limit')
+
+        if mode == 'addfile':
             if name.filename and name.value:
                 sabnzbd.add_nzbfile(name, pp, script, cat, priority)
                 return 'ok\n'
             else:
                 return 'error\n'
             
-        elif mode == 'switch':
+        if mode == 'switch':
             if value and value2:
                 sabnzbd.switch(value, value2)
                 return 'ok\n'
@@ -491,7 +542,7 @@ class MainPage:
                 return 'error\n'
             
                 
-        elif mode == 'change_cat':
+        if mode == 'change_cat':
             if value and value2:
                 nzo_id = value
                 cat = value2
@@ -513,7 +564,7 @@ class MainPage:
             else:
                 return 'error\n'
             
-        elif mode == 'change_script':
+        if mode == 'change_script':
             if value and value2:
                 nzo_id = value
                 script = value2
@@ -524,17 +575,17 @@ class MainPage:
             else:
                 return 'error\n'
             
-        elif mode == 'change_opts':
+        if mode == 'change_opts':
             if value and value2 and value2.isdigit():
                 sabnzbd.change_opts(value, int(value2))
             
-        elif mode == 'fullstatus':
+        if mode == 'fullstatus':
             if output == 'xml':
                 return xml_full()
             else:
                 return 'not implemented\n'
             
-        elif mode == 'history':
+        if mode == 'history':
             if output == 'xml':
                 return xml_history(start, limit)
             elif output == 'json':
@@ -552,7 +603,7 @@ class MainPage:
             else:
                 return 'not implemented\n'
 
-        elif mode == 'get_files':
+        if mode == 'get_files':
             if value:
                 if output == 'xml':
                     return xml_files(value)
@@ -561,14 +612,14 @@ class MainPage:
                 else:
                     return 'not implemented\n'
             
-        elif mode == 'addurl':
+        if mode == 'addurl':
             if name:
                 sabnzbd.add_url(name, pp, script, cat, priority)
                 return 'ok\n'
             else:
                 return 'error\n'
 
-        elif mode == 'addid':
+        if mode == 'addid':
             RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
             newzbin_url = RE_NEWZBIN_URL.search(name.lower())
             
@@ -585,20 +636,20 @@ class MainPage:
             else:
                 return 'error\n'
             
-        elif mode == 'pause':
+        if mode == 'pause':
             sabnzbd.pause_downloader()
             return 'ok\n'
 
-        elif mode == 'resume':
+        if mode == 'resume':
             sabnzbd.resume_downloader()
             return 'ok\n'
 
-        elif mode == 'shutdown':
+        if mode == 'shutdown':
             sabnzbd.halt()
             cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
 
-        elif mode == 'warnings':
+        if mode == 'warnings':
             if output == 'json':
                 return json_list("warnings", sabnzbd.GUIHANDLER.content())
             elif output == 'xml':
@@ -606,7 +657,7 @@ class MainPage:
             else:
                 return 'not implemented\n'
             
-        elif mode == 'config':
+        if mode == 'config':
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
                 if not value: value = '0'
                 if value.isdigit():
@@ -641,7 +692,7 @@ class MainPage:
             else:
                 return 'not implemented\n'
 
-        elif mode == 'get_cats':
+        if mode == 'get_cats':
             if output == 'json':
                 return json_list("categories", ListCats())
             elif output == 'xml':
@@ -649,7 +700,7 @@ class MainPage:
             else:
                 return 'not implemented\n'
 
-        elif mode == 'get_scripts':
+        if mode == 'get_scripts':
             if output == 'json':
                 return json_list("scripts", ListScripts())
             elif output == 'xml':
@@ -657,7 +708,7 @@ class MainPage:
             else:
                 return 'not implemented\n'
 
-        elif mode == 'version':
+        if mode == 'version':
             if output == 'json':
                 return json_list('version', sabnzbd.__version__)
             elif output == 'xml':
@@ -665,8 +716,7 @@ class MainPage:
             else:
                 return 'not implemented\n'
         
-        else:
-            return 'not implemented\n'
+        return 'not implemented\n'
 
     @cherrypy.expose
     def scriptlog(self, name=None, _dc=None):
@@ -3364,3 +3414,23 @@ def rss_qstatus():
     rss.channel.pubDate = rss.channel.lastBuildDate
     rss.channel.ttl = "1"
     return rss.write()
+
+
+def json_result(result, data):
+    """ Return data in a json structure
+    """
+    dict = { 'status' : result }
+    if data != None:
+        dict['value'] = data
+
+    status_str = JsonWriter().write(dict)
+
+    cherrypy.response.headers['Content-Type'] = "application/json"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return status_str
+
+
+def xml_result(result, data):
+    """ Return data as XML
+    """
+    return "Not yet implemented\n"
