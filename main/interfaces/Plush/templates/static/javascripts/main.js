@@ -555,13 +555,15 @@ jQuery(function($) {
             }); */
             
             // history purge
-            $('.h_menu_purge').dblclick(function(event) {
-                $.ajax({
-                    url: 'api?mode=history&name=delete&value=all&_dc='+Math.random(),
-                    success: function(result){
-                        $.plush.refreshHistory();
-                    }
-                });
+            $('.h_menu_purge').click(function(event) {
+	            if (confirm("Are you sure you want to purge the history?")) {
+                    $.ajax({
+                        url: 'api?mode=history&name=delete&value=all&_dc='+Math.random(),
+                        success: function(result){
+                            $.plush.refreshHistory();
+                        }
+                    });
+                }
             });
             
             // history singular nzb deletion
