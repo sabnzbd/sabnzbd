@@ -201,17 +201,23 @@ class OptionList(Option):
 
 class OptionStr(Option):
     """ STring class """
-    def __init__(self, section, keyword, default_val=''):
+    def __init__(self, section, keyword, default_val='', validation=None):
         Option.__init__(self, section, keyword, default_val)
+        self.__validation = validation
 
     def set(self, value):
         """ Set stripped value """
+        res = True
         if type(value) == type(''):
-            self._Option__set(value.strip())
+            value = value.strip()
+        if self.__validation:
+            res, value = self.__validation(value)
+            if res:
+                self._Option__set(value)
         else:
             self._Option__set(value)
+        return res
 
-    
 class OptionPassword(Option):
     """ Password class """
     def __init__(self, section, keyword, default_val=''):
@@ -554,7 +560,7 @@ def decode_password(pw, name):
     """
     decPW = ''
     if pw and pw.startswith(__PW_PREFIX):
-        for n in range(len(PW_PREFIX), len(pw), 2):
+        for n in range(len(__PW_PREFIX), len(pw), 2):
             try:
                 ch = chr( int(pw[n] + pw[n+1],16) )
             except:

@@ -2526,13 +2526,13 @@ class ConfigEmail:
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['email_server'] = sabnzbd.CFG['misc']['email_server']
-        config['email_to'] = sabnzbd.CFG['misc']['email_to']
-        config['email_from'] = sabnzbd.CFG['misc']['email_from']
-        config['email_account'] = sabnzbd.CFG['misc']['email_account']
-        config['email_pwd'] = '*' * len(decodePassword(sabnzbd.CFG['misc']['email_pwd'], 'email'))
-        config['email_endjob'] = IntConv(sabnzbd.CFG['misc']['email_endjob'])
-        config['email_full'] = IntConv(sabnzbd.CFG['misc']['email_full'])
+        config['email_server'] = email.EMAIL_SERVER.get()
+        config['email_to'] = email.EMAIL_TO.get()
+        config['email_from'] = email.EMAIL_FROM.get()
+        config['email_account'] = email.EMAIL_ACCOUNT.get()
+        config['email_pwd'] = email.EMAIL_PWD.get_stars()
+        config['email_endjob'] = email.EMAIL_ENDJOB.get()
+        config['email_full'] = email.EMAIL_FULL.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
                             searchList=[config],
@@ -2550,33 +2550,27 @@ class ConfigEmail:
         email_from = Strip(email_from)
         email_account = Strip(email_account)
 
-        sabnzbd.CFG['misc']['email_endjob'] = email_endjob
-        sabnzbd.CFG['misc']['email_full'] = email_full
+        email.EMAIL_ENDJOB.set(email_endjob)
+        email.EMAIL_FULL.set(email_full)
 
-        off = not (email_endjob or email_full)
+        on = (email.EMAIL_ENDJOB.get() > 0) or email.EMAIL_FULL.get()
         
-        VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
-
-        if (off and not email_to) or VAL.match(email_to):
-            sabnzbd.CFG['misc']['email_to'] = email_to
-        else:
+        ok = email.EMAIL_TO.set(email_to)
+        if on and not (ok and email_to):
             return badParameterResponse('Invalid email address "%s"' % email_to)
-        if (off and not email_from) or VAL.match(email_from):
-            sabnzbd.CFG['misc']['email_from'] = email_from
-        else:
+
+        ok = email.EMAIL_FROM.set(email_from)
+        if on and not (ok and email_from):
             return badParameterResponse('Invalid email address "%s"' % email_from)
 
-        if email_server or off:
-            sabnzbd.CFG['misc']['email_server'] = email_server
-        else:
+        ok = email.EMAIL_SERVER.set(email_server)
+        if on and not (ok and email_server):
             return badParameterResponse('Need a server address')
 
-        sabnzbd.CFG['misc']['email_account'] = email_account
-        if (not email_pwd) or (email_pwd and email_pwd.strip('*')):
-            sabnzbd.CFG['misc']['email_pwd'] = encodePassword(email_pwd)
+        email.EMAIL_ACCOUNT.set(email_account)
+        email.EMAIL_PWD.set(email_pwd)
 
-        email.init()
-        save_configfile(sabnzbd.CFG)
+        config.save_config()
         raise Raiser(self.__root, _dc=_dc)
 
 

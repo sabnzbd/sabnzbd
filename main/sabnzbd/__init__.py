@@ -506,8 +506,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cache_limit = int(from_units(cache_limit))
     logging.debug("Actual cache limit = %s", cache_limit)
 
-    email.init()
-    
     try:
         dummy = CFG['misc']['schedlines']
     except:
@@ -912,14 +910,13 @@ def purge_articles(articles):
 ## Misc Wrappers                                                              ##
 ################################################################################
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
-    global USERNAME_NEWZBIN, PASSWORD_NEWZBIN
 
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
 
-    if USERNAME_NEWZBIN and PASSWORD_NEWZBIN:
+    if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
         logging.info('[%s] Fetching msgid %s from www.newzbin.com',
                      __NAME__, msgid)
         msg = "fetching msgid %s from www.newzbin.com" % msgid

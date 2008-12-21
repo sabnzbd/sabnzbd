@@ -268,8 +268,8 @@ class PostProcessor(Thread):
                         script = ""
     
                     ## Email the results
-                    if (not nzb_list) and email.EMAIL_ENDJOB:
-                        if (email.EMAIL_ENDJOB == 1) or (email.EMAIL_ENDJOB == 2 and (unpackError or not parResult)):
+                    if (not nzb_list) and email.EMAIL_ENDJOB.get():
+                        if (email.EMAIL_ENDJOB.get() == 1) or (email.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
                             email.endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
                                          nzo.get_unpackstrht(), script, TRANS(ext_out))
     

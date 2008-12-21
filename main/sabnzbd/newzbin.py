@@ -242,7 +242,7 @@ def _grabnzb(msgid):
         else:
             conn = httplib.HTTPConnection('www.newzbin.com')
 
-        postdata = { 'username': USERNAME_NEWZBIN, 'password': PASSWORD_NEWZBIN, 'reportid': msgid }
+        postdata = { 'username': USERNAME_NEWZBIN.get(), 'password': PASSWORD_NEWZBIN.get(), 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
 
         headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -353,11 +353,11 @@ class Bookmarks:
 
             if delete:
                 logging.info('[%s] Deleting Newzbin bookmark %s', __NAME__, delete)
-                postdata = { 'username': USERNAME_NEWZBIN, 'password': PASSWORD_NEWZBIN, 'action': 'delete', \
+                postdata = { 'username': USERNAME_NEWZBIN.get(), 'password': PASSWORD_NEWZBIN.get(), 'action': 'delete', \
                              'reportids' : delete }
             else:
                 logging.info('[%s] Fetching Newzbin bookmarks', __NAME__)
-                postdata = { 'username': USERNAME_NEWZBIN, 'password': PASSWORD_NEWZBIN, 'action': 'fetch'}
+                postdata = { 'username': USERNAME_NEWZBIN.get(), 'password': PASSWORD_NEWZBIN.get(), 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
     
             headers['Content-type'] = 'application/x-www-form-urlencoded'
