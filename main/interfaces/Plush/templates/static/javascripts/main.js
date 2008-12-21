@@ -174,7 +174,7 @@ jQuery(function($) {
             
             // fetch updated content from queue.tmpl
             $.ajax({
-                url: 'queue/?dummy2='+$.plush.queueViewPreference+'&_dc='+Math.random(),
+                url: 'queue/?limit='+$.plush.queueViewPreference+'&_dc='+Math.random(),
                 success: function(result){
                     
                     // replace queue contents with queue.tmpl
@@ -202,7 +202,7 @@ jQuery(function($) {
 
         refreshHistory : function() {
             $.ajax({
-                url: 'history/?dummy2='+$.plush.historyViewPreference+'&_dc='+Math.random(),
+                url: 'history/?limit='+$.plush.historyViewPreference+'&_dc='+Math.random(),
                 success: function(result){
                     $('#history').html(result);
                 }
