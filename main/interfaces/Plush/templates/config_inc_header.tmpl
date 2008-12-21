@@ -1,48 +1,48 @@
 #if $pane=="Connections" or $pane=="Config"#
-	#set global $path = '..'#
+    #set global $path = '..'#
 #else#
-	#set global $path = '../..'#
+    #set global $path = '../..'#
 #end if#
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
 <html>
 <head>
-	
-	<title>SABnzbd+ $version - Queued: $mbleft MB</title>
-	<link rel="shortcut icon" type="image/ico" href="$path/static/images/plush-default/sabnzbdplus.ico"/>
-	
-	<script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
-	
-	<link rel="stylesheet" type="text/css" href="$path/static/stylesheets/plush-default.css?$version"/>
-	#if $color_scheme and $color_scheme != "plush-default.css" and $color_scheme != "default.css"#
-	<link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/$color_scheme?$version"/>
-	#end if#
-	
-	<script language="javascript">
-		var config_pane = "$pane";
-		var help_uri = "$help_uri";
-	</script>
-	
+    
+    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+    <link rel="shortcut icon" type="image/ico" href="$path/static/images/plush-default/sabnzbdplus.ico"/>
+    
+    <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
+    
+    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/plush-default.css?$version"/>
+    #if $color_scheme and $color_scheme != "plush-default.css" and $color_scheme != "default.css"#
+    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/$color_scheme?$version"/>
+    #end if#
+    
+    <script language="javascript">
+        var config_pane = "$pane";
+        var help_uri = "$help_uri";
+    </script>
+    
 </head>
 <body style="background: #ddd;">
-	
-	<div id="config_go_back"><div><a href="$path/">go&nbsp;back</a></div></div>
-	
-	<div id="config_nav">
-		<ul>
-			<li><a class="config_menu #if $pane=="Connections"#nav_active#end if#" id="config_nav_connections" href="$path/connections">Connections</a></li>
-			<li><a class="config_menu #if $pane=="General"#nav_active#end if#" id="config_nav_general" href="$path/config/general">General</a></li>
-			<li><a class="config_menu #if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="$path/config/directories">Folders</a></li>
-			<li><a class="config_menu #if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="$path/config/switches">Switches</a></li>
-			<li><a class="config_menu #if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="$path/config/server">Servers</a></li>
-			<li><a class="config_menu #if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="$path/config/categories">Categories</a></li>
-			<li><a class="config_menu #if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="$path/config/scheduling">Scheduling</a></li>
-			<li><a class="config_menu #if $pane=="RSS"#nav_active#end if#" id="config_nav_rss" href="$path/config/rss">RSS</a></li>
-			<li><a class="config_menu #if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="$path/config/email">Email</a></li>
-			<li><a class="config_menu #if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="$path/config/newzbin">Index Sites</a></li>
+    
+    <div id="config_go_back"><div><a href="$path/">go&nbsp;back</a></div></div>
+    
+    <div id="config_nav">
+        <ul>
+            <li><a class="config_menu #if $pane=="Connections"#nav_active#end if#" id="config_nav_connections" href="$path/connections">Connections</a></li>
+            <li><a class="config_menu #if $pane=="General"#nav_active#end if#" id="config_nav_general" href="$path/config/general">General</a></li>
+            <li><a class="config_menu #if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="$path/config/directories">Folders</a></li>
+            <li><a class="config_menu #if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="$path/config/switches">Switches</a></li>
+            <li><a class="config_menu #if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="$path/config/server">Servers</a></li>
+            <li><a class="config_menu #if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="$path/config/categories">Categories</a></li>
+            <li><a class="config_menu #if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="$path/config/scheduling">Scheduling</a></li>
+            <li><a class="config_menu #if $pane=="RSS"#nav_active#end if#" id="config_nav_rss" href="$path/config/rss">RSS</a></li>
+            <li><a class="config_menu #if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="$path/config/email">Email</a></li>
+            <li><a class="config_menu #if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="$path/config/newzbin">Index Sites</a></li>
             <li><a class="config_menu #if $pane=="Sorting"#nav_active#end if#" id="config_nav_sorting" href="$path/config/sorting">Sorting</a></li>
-		</ul>
-	</div>
-	
-	<div id="config_container" class="config_margin">
-		<div id="config_content">
+        </ul>
+    </div>
+    
+    <div id="config_container" class="config_margin">
+        <div id="config_content">

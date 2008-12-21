@@ -2,57 +2,57 @@
 <!--#set global $help_uri="Configure+Email"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-			<form action="saveEmail" method="post" name="fullform">
-			<div class="EntryBlock">
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_email_options">Email&nbsp;Options</legend>
-				
+            <form action="saveEmail" method="post" name="fullform">
+            <div class="EntryBlock">
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_email_options">Email&nbsp;Options</legend>
+                
                 <strong>Email notification on job completion</strong><br/>
                     <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> Never
                     <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> Always
                     <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> Error-only
                 <br/><br/>
-	
-				<input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
-				<strong>Disk Full Notifications</strong><br/>
-				<small>Send email when disk is full and SABnzbd is paused.</small><br/>
-				
-				
-			</fieldset>
-			</div>
-			
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_email_account_settings">Email&nbsp;Account&nbsp;Settings</legend>
-				
-				<strong>SMTP Server:</strong><br/>
-				<small>Set your ISP's server for outgoing email.</small><br/>
-				<input type="text" size="35" name="email_server" value="$email_server"/>
-				
-				<br/><br/>
-				<strong>Email Recipient:</strong><br/>
-				<small>Email address to send the email to.</small><br/>
-				<input type="text" size="35" name="email_to" value="$email_to"/>
-				
-				<br/><br/>
-				<strong>Email Sender:</strong><br/>
-				<small>Who should we say sent the email?</small><br/>
-				<input type="text" size="35" name="email_from" value="$email_from"/>
-				
-				<br/><br/>
-				<strong>OPTIONAL: Account Name:</strong><br/>
-				<small>For authenticated email, account name.</small><br/>
-				<input type="text" size="35" name="email_account" value="$email_account"/>
-				
-				<br/><br/>
-				<strong>OPTIONAL: Account Password:</strong><br/>
-				<small>For authenticated email, password.</small><br/>
-				<input type="password" size="35" name="email_pwd" value="$email_pwd"/>
-				
-			</fieldset>
-			</div>
-			
-			</form>
+    
+                <input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
+                <strong>Disk Full Notifications</strong><br/>
+                <small>Send email when disk is full and SABnzbd is paused.</small><br/>
+                
+                
+            </fieldset>
+            </div>
+            
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_email_account_settings">Email&nbsp;Account&nbsp;Settings</legend>
+                
+                <strong>SMTP Server:</strong><br/>
+                <small>Set your ISP's server for outgoing email.</small><br/>
+                <input type="text" size="35" name="email_server" value="$email_server"/>
+                
+                <br/><br/>
+                <strong>Email Recipient:</strong><br/>
+                <small>Email address to send the email to.</small><br/>
+                <input type="text" size="35" name="email_to" value="$email_to"/>
+                
+                <br/><br/>
+                <strong>Email Sender:</strong><br/>
+                <small>Who should we say sent the email?</small><br/>
+                <input type="text" size="35" name="email_from" value="$email_from"/>
+                
+                <br/><br/>
+                <strong>OPTIONAL: Account Name:</strong><br/>
+                <small>For authenticated email, account name.</small><br/>
+                <input type="text" size="35" name="email_account" value="$email_account"/>
+                
+                <br/><br/>
+                <strong>OPTIONAL: Account Password:</strong><br/>
+                <small>For authenticated email, password.</small><br/>
+                <input type="password" size="35" name="email_pwd" value="$email_pwd"/>
+                
+            </fieldset>
+            </div>
+            
+            </form>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

@@ -2,169 +2,169 @@
 <!--#set global $help_uri="Configure+Switches"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-			<form action="saveSwitches" method="post" name="fullform">
-			<div class="EntryBlock">
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_processing_switches">Processing&nbsp;Switches</legend>
-				
-				<table cellpadding=2>
-					<tr>
-						<td align=right><div class="tucker">Enable Unrar:</div></td>
-						<td><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Enable built-in unrar functionality.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Enable Unzip:</div></td>
-						<td><input type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Enable built-in unzip functionality.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Enable Filejoin:</div></td>
-						<td><input type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Join files ending in .001, .002 etc. into one file.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Enable TS Joining:</div></td>
-						<td><input type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Join files ending in .001.ts, .002.ts etc. into one file.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Enable Par Cleanup:</div></td>
-						<td><input type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Cleanup par files (if verifiying/repairing succeded).</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Fail on yEnc crc Errors:</div></td>
-						<td><input type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Use backup servers on yEnc crc errors.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Post-process Only Verified Jobs:</div></td>
-						<td><input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Only perform post-processing on jobs that passed all PAR2 checks.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Do not download same job twice:</div></td>
-						<td><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Skip job if a backed-up NZB with the same name exists.</small></td>
-					</tr>
-					<tr>
-						<td align=right valign=top><div class="tucker">Only Get Articles for Top of the Queue:</div></td>
-						<td valign=top><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Enable for less memory usage.<br/>Disable to prevent slow jobs from blocking the queue.</small></td>
-					</tr>
-				</table>
-				
-				<hr/>
-				
-				<table cellpadding=8>
-					<tr><td>
-					
-						<strong>Default Post-processing:</strong><br/>
-						<small>Used when no post-processing is defined by the category.</small><br/>
-						<select name="dirscan_opts">
-							<option value="0" <!--#if $dirscan_opts == 0 then "selected" else ""#--> >(Skip)</option>
-							<option value="1" <!--#if $dirscan_opts == 1 then "selected" else ""#--> >+Repair</option>
-							<option value="2" <!--#if $dirscan_opts == 2 then "selected" else ""#--> >+R+Unpack</option>
-							<option value="3" <!--#if $dirscan_opts == 3 then "selected" else ""#--> >+R+U+Delete</option>
-						</select>
-					
-					</td><td>
-					
-						<strong>Default User Script:</strong><br/>
-						<small>Used when no user script is defined by the category.</small><br/>
-						<select name="script">
-						<!--#for $sc in $script_list#-->
-						<!--#if $sc.lower() == $script.lower()#-->
-							<option value="$sc" selected>$sc</option>
-						<!--#else#-->
-							<option value="$sc">$sc</option>
-						<!--#end if#-->
-						<!--#end for#-->
-						</select>
-					
-					</td><td>
-						
-						<strong>Extra PAR2 Parameters:</strong><br/>
-						<small>Read the Wiki Help on this!</small><br/>
-						<input type="text" name="par_option" value="$par_option"/>
-						
+            <form action="saveSwitches" method="post" name="fullform">
+            <div class="EntryBlock">
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_processing_switches">Processing&nbsp;Switches</legend>
+                
+                <table cellpadding=2>
+                    <tr>
+                        <td align=right><div class="tucker">Enable Unrar:</div></td>
+                        <td><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Enable built-in unrar functionality.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Enable Unzip:</div></td>
+                        <td><input type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Enable built-in unzip functionality.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Enable Filejoin:</div></td>
+                        <td><input type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Join files ending in .001, .002 etc. into one file.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Enable TS Joining:</div></td>
+                        <td><input type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Join files ending in .001.ts, .002.ts etc. into one file.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Enable Par Cleanup:</div></td>
+                        <td><input type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Cleanup par files (if verifiying/repairing succeded).</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Fail on yEnc crc Errors:</div></td>
+                        <td><input type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Use backup servers on yEnc crc errors.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Post-process Only Verified Jobs:</div></td>
+                        <td><input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Only perform post-processing on jobs that passed all PAR2 checks.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Do not download same job twice:</div></td>
+                        <td><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Skip job if a backed-up NZB with the same name exists.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right valign=top><div class="tucker">Only Get Articles for Top of the Queue:</div></td>
+                        <td valign=top><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Enable for less memory usage.<br/>Disable to prevent slow jobs from blocking the queue.</small></td>
+                    </tr>
+                </table>
+                
+                <hr/>
+                
+                <table cellpadding=8>
+                    <tr><td>
+                    
+                        <strong>Default Post-processing:</strong><br/>
+                        <small>Used when no post-processing is defined by the category.</small><br/>
+                        <select name="dirscan_opts">
+                            <option value="0" <!--#if $dirscan_opts == 0 then "selected" else ""#--> >(Skip)</option>
+                            <option value="1" <!--#if $dirscan_opts == 1 then "selected" else ""#--> >+Repair</option>
+                            <option value="2" <!--#if $dirscan_opts == 2 then "selected" else ""#--> >+R+Unpack</option>
+                            <option value="3" <!--#if $dirscan_opts == 3 then "selected" else ""#--> >+R+U+Delete</option>
+                        </select>
+                    
+                    </td><td>
+                    
+                        <strong>Default User Script:</strong><br/>
+                        <small>Used when no user script is defined by the category.</small><br/>
+                        <select name="script">
+                        <!--#for $sc in $script_list#-->
+                        <!--#if $sc.lower() == $script.lower()#-->
+                            <option value="$sc" selected>$sc</option>
+                        <!--#else#-->
+                            <option value="$sc">$sc</option>
+                        <!--#end if#-->
+                        <!--#end for#-->
+                        </select>
+                    
+                    </td><td>
+                        
+                        <strong>Extra PAR2 Parameters:</strong><br/>
+                        <small>Read the Wiki Help on this!</small><br/>
+                        <input type="text" name="par_option" value="$par_option"/>
+                        
                 <!--#if not $nt#-->
-					</td><td>
-						
-						<strong>IONice Parameters:</strong><br/>
-						<small>Read the Wiki Help on this!</small><br/>
-						<input type="text" name="ionice" value="$ionice"/>
-				<!--#end if#-->
-		
-					</td></tr>
-				</table>
-				
-				
-			</fieldset>
-			
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_other_switches">Other&nbsp;Switches</legend>
-				
-				<table cellpadding=2>
-					<tr>
-						<td align=right><div class="tucker">Check for New Release:</div></td>
-						<td><input type="checkbox" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Weekly check for new SABnzbd release.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Launch Web Browser on Startup:</div></td>
-						<td><input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Launch the web browser when starting SABnzbd.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Ignore Sample Files:</div></td>
-						<td><input type="checkbox" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Filters out sample files from the queue (i.e. video clips).</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Disconnect on empty queue:</div></td>
-						<td><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Disconnect from Usenet server(s) when queue is empty or paused.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Send Group:</div></td>
-						<td><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Send group command before requesting articles.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Sort by Age:</div></td>
-						<td><input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Automatically sort items by (average) age.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Replace Spaces in Foldername:</div></td>
-						<td><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Replace spaces with underscores in foldernames.</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Replace illegal characters in Foldernames:</div></td>
-						<td><input type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Replace illegal characters in foldernames by equivalents (otherwise remove).</small></td>
-					</tr>
-					<tr>
-						<td align=right><div class="tucker">Pause Downloads During Post-processing:</div></td>
-						<td><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></td>
-						<td><small>Pauses downloading at the start of post processing and resumes when finished.</small></td>
-					</tr>
+                    </td><td>
+                        
+                        <strong>IONice Parameters:</strong><br/>
+                        <small>Read the Wiki Help on this!</small><br/>
+                        <input type="text" name="ionice" value="$ionice"/>
+                <!--#end if#-->
+        
+                    </td></tr>
+                </table>
+                
+                
+            </fieldset>
+            
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_other_switches">Other&nbsp;Switches</legend>
+                
+                <table cellpadding=2>
+                    <tr>
+                        <td align=right><div class="tucker">Check for New Release:</div></td>
+                        <td><input type="checkbox" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Weekly check for new SABnzbd release.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Launch Web Browser on Startup:</div></td>
+                        <td><input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Launch the web browser when starting SABnzbd.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Ignore Sample Files:</div></td>
+                        <td><input type="checkbox" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Filters out sample files from the queue (i.e. video clips).</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Disconnect on empty queue:</div></td>
+                        <td><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Disconnect from Usenet server(s) when queue is empty or paused.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Send Group:</div></td>
+                        <td><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Send group command before requesting articles.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Sort by Age:</div></td>
+                        <td><input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Automatically sort items by (average) age.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Replace Spaces in Foldername:</div></td>
+                        <td><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Replace spaces with underscores in foldernames.</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Replace illegal characters in Foldernames:</div></td>
+                        <td><input type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Replace illegal characters in foldernames by equivalents (otherwise remove).</small></td>
+                    </tr>
+                    <tr>
+                        <td align=right><div class="tucker">Pause Downloads During Post-processing:</div></td>
+                        <td><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Pauses downloading at the start of post processing and resumes when finished.</small></td>
+                    </tr>
                     <tr>
                         <td align=right><div class="tucker">Use Quick Check:</div></td>
                         <td><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /></td>
                         <td><small>Do PAR2 check on files while downloading.</small></td>
                     </tr>
 
-				</table>
-				
-			</fieldset>
-			</div>
-			
-			</form>
+                </table>
+                
+            </fieldset>
+            </div>
+            
+            </form>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

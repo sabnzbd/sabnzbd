@@ -1,42 +1,42 @@
 body {
-	background-color: #B1B1B1;
-	font-family: arial, "lucida console", sans-serif;
-	margin: 0px;
-	padding: 0px;
+    background-color: #B1B1B1;
+    font-family: arial, "lucida console", sans-serif;
+    margin: 0px;
+    padding: 0px;
 }
 select {
-	color: #000;
-	background-color:#E0E0E0;
-	border:0px;
-	padding:0px;
+    color: #000;
+    background-color:#E0E0E0;
+    border:0px;
+    padding:0px;
 }
 
 ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 .new_release_link {
-	color: darkgreen;
+    color: darkgreen;
 }
 .pointer {
-	cursor:pointer;
+    cursor:pointer;
 }
 #warning_message {
-	text-align:center;
-	background-color: red;
-	color: white;
-	padding-top:2px;
+    text-align:center;
+    background-color: red;
+    color: white;
+    padding-top:2px;
 }
 
 /* for jQuery Tooltip Plugin */
 #tooltip {
-	position: absolute;
-	z-index: 3000;
-	border: 1px solid #111;
-	background-color: lightyellow;
-	color:#000;
-	font-size: 11px !important;
-	padding: 5px;
-	opacity: 0.85;
-	text-align: right;
+    position: absolute;
+    z-index: 3000;
+    border: 1px solid #111;
+    background-color: lightyellow;
+    color:#000;
+    font-size: 11px !important;
+    padding: 5px;
+    opacity: 0.85;
+    text-align: right;
 }
 #tooltip h3, #tooltip div { margin: 0; }
 
@@ -46,87 +46,87 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
-	queue + history overall container
+    queue + history overall container
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 
 .box_fatbottom {
-	height:37px;
-	font-size: 66%;
-	color: #606060;
-	text-align:center;
-	background: url(../images/plush-default/qh_bottom.png) 0 0 repeat-x;
+    height:37px;
+    font-size: 66%;
+    color: #606060;
+    text-align:center;
+    background: url(../images/plush-default/qh_bottom.png) 0 0 repeat-x;
 }
 .box_fatbottom div {
-	padding:12px 16px 0 20px;
-	cursor:default;
+    padding:12px 16px 0 20px;
+    cursor:default;
 }
 .box_fatbottom .left_stats {
-	float:left;
+    float:left;
 }
 .box_fatbottom .right_stats {
-	float:right;
+    float:right;
 }
 .box_fatbottom strong {
-	color: #000;
+    color: #000;
 }
 
 .box_banner_menu {
-	float:right;
-	list-style:none;
-	display:inline;
-	margin: 10px 0;
-	padding: 0;
+    float:right;
+    list-style:none;
+    display:inline;
+    margin: 10px 0;
+    padding: 0;
 }
 .box_banner_menu li {
-	float:right;
+    float:right;
 }
 
 /* overall pause/resume */
 .q_menu_pause {
-	margin-right:6px;
-	padding-right:32px;
-	padding-bottom:24px;
-	cursor:pointer;
+    margin-right:6px;
+    padding-right:32px;
+    padding-bottom:24px;
+    cursor:pointer;
 }
 .q_menu_unpaused {
-	background: url(../images/plush-default/q_pause.png) 0 0 no-repeat;
+    background: url(../images/plush-default/q_pause.png) 0 0 no-repeat;
 }
 .q_menu_paused {
-	background: url(../images/plush-default/q_pause_on.png) 0 0 no-repeat;
+    background: url(../images/plush-default/q_pause_on.png) 0 0 no-repeat;
 }
 /* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
 .h_menu_verbose {
-	background: url(../images/plush-default/qh_verbosity.png) 0 100% no-repeat;
-	margin-right:6px;
-	padding-right:28px;
-	padding-bottom:24px;
-	cursor:pointer;
-	display:none;
+    background: url(../images/plush-default/qh_verbosity.png) 0 100% no-repeat;
+    margin-right:6px;
+    padding-right:28px;
+    padding-bottom:24px;
+    cursor:pointer;
+    display:none;
 }
 .h_menu_purge {
-	background: url(../images/plush-default/h_purge.png) 0 100% no-repeat;
-	margin-right:6px;
-	padding-right:28px;
-	padding-bottom:24px;
-	cursor:pointer;
-	display:none;
+    background: url(../images/plush-default/h_purge.png) 0 100% no-repeat;
+    margin-right:6px;
+    padding-right:28px;
+    padding-bottom:24px;
+    cursor:pointer;
+    display:none;
 }
 
 
 #page-wrap { width: 95%; margin: 0px auto; }
 .box_banner_hr {
-	background: #cfcfcf url(../images/plush-default/qh_seperator.png) 0 0 repeat-x;
-	height:4px;
+    background: #cfcfcf url(../images/plush-default/qh_seperator.png) 0 0 repeat-x;
+    height:4px;
 }
 .box_banner_history {background-image: url(../images/plush-default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
 .box_banner_r {
-	background-image: url(../images/plush-default/history_title_bg.png);
-	background-position: left center;
-	background-repeat:no-repeat;
-	height:52px;
-	margin-left:1px;
+    background-image: url(../images/plush-default/history_title_bg.png);
+    background-position: left center;
+    background-repeat:no-repeat;
+    height:52px;
+    margin-left:1px;
 }
 #hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
 #hdr-queue .logo { background-image: url(../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
@@ -144,31 +144,31 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
-	box header, above queue (sabnzbd logo & stats)
+    box header, above queue (sabnzbd logo & stats)
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 .centerpiece {
-	width:320px;
-	margin-left:auto;
-	margin-right:auto;
+    width:320px;
+    margin-left:auto;
+    margin-right:auto;
 }
 #queue_logo {
-	background: url(../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
-	padding-left:50px;
-	padding-right:50px;
-	padding-bottom:19px;
-	height: 40px;
-	float:left;
+    background: url(../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
+    padding-left:50px;
+    padding-right:50px;
+    padding-bottom:19px;
+    height: 40px;
+    float:left;
 }
 #speed, #time-left {
-	background-image: url(../images/plush-default/rounded_area_bg.png);
-	width: 68px;
-	height: 12px;
-	padding: 5px 0px;
-	margin-top: 20px;
-	text-align: center;
-	cursor:default;
+    background-image: url(../images/plush-default/rounded_area_bg.png);
+    width: 68px;
+    height: 12px;
+    padding: 5px 0px;
+    margin-top: 20px;
+    text-align: center;
+    cursor:default;
 }
 /* stats next to logo */
 #speed { float:left; margin-right:36px;}
@@ -178,7 +178,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 /* plush logo, below history */
 .history_logo {
-	background: url(../images/plush-default/sabnzbdplus_plush.png) 50% 100% no-repeat;
+    background: url(../images/plush-default/sabnzbdplus_plush.png) 50% 100% no-repeat;
 }
 
 .show { display: inline; }
@@ -191,87 +191,87 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 /*  queueTable shared by queue and history */
 .queueTable {
-	border-collapse: seperate;
-	width: 100%;
-	background-color: #e0e0e0;
-	color: #606060;
-	border-bottom: 1px solid #fff;
-	border-spacing: 0px;
+    border-collapse: seperate;
+    width: 100%;
+    background-color: #e0e0e0;
+    color: #606060;
+    border-bottom: 1px solid #fff;
+    border-spacing: 0px;
 }
 .queueTable tr {
-	background-color: #e0e0e0;
+    background-color: #e0e0e0;
 }
 .queueTable tr select {
-	color: #606060;
+    color: #606060;
 }
 .queueTable tr:hover {
-	background-color: #f9f9f9;
-	color: #000;
+    background-color: #f9f9f9;
+    color: #000;
 }
 .queueTable tr:hover select {
-	color: #000;
+    color: #000;
 }
 .queueTable td {
-	vertical-align: middle;
-	padding:2px 0;
-	border-top: 1px solid #FFF;
-	border-bottom: 1px solid #B1B1B1;
+    vertical-align: middle;
+    padding:2px 0;
+    border-top: 1px solid #FFF;
+    border-bottom: 1px solid #B1B1B1;
 }
 .queueTable td.download-title {
-	width: 50%;
-	padding-left:29px;
-	background: url(../images/plush-default/ql_grip.png) 4px 50% no-repeat;
+    width: 50%;
+    padding-left:29px;
+    background: url(../images/plush-default/ql_grip.png) 4px 50% no-repeat;
 }
 .queueTable tr:hover .download-title {
-	background: url(../images/plush-default/ql_grip_on.png) 4px 50% no-repeat;
+    background: url(../images/plush-default/ql_grip_on.png) 4px 50% no-repeat;
 }
 .queueTable td.historyTitle {
-	padding-left:29px;
+    padding-left:29px;
 }
 .queueTable .historyTitle.Loaded {
-	background: url(../images/plush-default/hl_loaded.gif) 4px 50% no-repeat;
+    background: url(../images/plush-default/hl_loaded.gif) 4px 50% no-repeat;
 }
 .queueTable .historyTitle.Check {
-	background: url(../images/plush-default/hv_ok.png) 4px 50% no-repeat;
+    background: url(../images/plush-default/hv_ok.png) 4px 50% no-repeat;
 }
 .queueTable .historyTitle.Cross {
-	background: url(../images/plush-default/hv_error.png) 4px 50% no-repeat;
+    background: url(../images/plush-default/hv_error.png) 4px 50% no-repeat;
 }
 .queueTable a {
-	text-decoration: none;
-	color: #606060;
+    text-decoration: none;
+    color: #606060;
 }
 .queueTable tr:hover a {
-	color: #000;
+    color: #000;
 }
 .queueTable a:hover {
-	border-bottom: 1px dotted #606060;
-	cursor: pointer;
+    border-bottom: 1px dotted #606060;
+    cursor: pointer;
 }
 .queueTable tr:hover .queue_delete {
-	background: url(../images/plush-default/ql_cross.png) 50% 50% no-repeat;
+    background: url(../images/plush-default/ql_cross.png) 50% 50% no-repeat;
 }
 .queueTable td:hover .queue_delete {
-	background: url(../images/plush-default/ql_cross_on.png) 50% 50% no-repeat;
-	cursor:pointer;
+    background: url(../images/plush-default/ql_cross_on.png) 50% 50% no-repeat;
+    cursor:pointer;
 }
 .queueTable .eta {
-	padding-left:6px;
-	text-align: center;
-	font-size: 70%;
+    padding-left:6px;
+    text-align: center;
+    font-size: 70%;
 }
 
 
 
 /* refresh button below queue */
 #manual_refresh {
-	cursor:pointer;
+    cursor:pointer;
 }
 .refreshing {
-	border-bottom:1px dotted;
+    border-bottom:1px dotted;
 }
 .refresh_skipped {
-	border-bottom:1px dotted red;
+    border-bottom:1px dotted red;
 }
 
 
@@ -279,28 +279,28 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
-	Queue
+    Queue
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 
 /* progress bar & MB/left stats */
 .queueProgressBarContainer {
-	width:121px;
-	background-image: url(../images/plush-default/ql_pbar_empty.png);
-	background-repeat: no-repeat;
-	background-position: left center;
+    width:121px;
+    background-image: url(../images/plush-default/ql_pbar_empty.png);
+    background-repeat: no-repeat;
+    background-position: left center;
 }
 .queueProgressBar {
-	background-image: url(../images/plush-default/ql_pbar_full.png);
-	background-repeat: no-repeat;
-	height: 15px;
-	width: 121px;
-	margin: 2px 0 0 1px;
+    background-image: url(../images/plush-default/ql_pbar_full.png);
+    background-repeat: no-repeat;
+    height: 15px;
+    width: 121px;
+    margin: 2px 0 0 1px;
 }
 .currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1; margin-top:2px; font-weight:bold;}
 .currentDownload small, .totalDownload small {
-	font-weight:normal;
+    font-weight:normal;
 }
 .currentDownload { float: left; margin-left: 3px;}
 .totalDownload { float:right; margin-right: 3px;}
@@ -308,71 +308,71 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 /* queue singular nzb queue/pause */
 .queue_nzb_status {
-	font-size:66%;
-	cursor:pointer;
-	display:inline;
-	color:white;
-	padding:1px;
-	margin-left:4px;
+    font-size:66%;
+    cursor:pointer;
+    display:inline;
+    color:white;
+    padding:1px;
+    margin-left:4px;
 }
 .queue_nzb_queued {
-	background-color:darkgreen;
+    background-color:darkgreen;
 }
 .queue_nzb_paused {
-	background-color:darkred;
+    background-color:darkred;
 }
 
 
 .options {
-	text-align:right;
-	padding-right:8px;
+    text-align:right;
+    padding-right:8px;
 }
 .queue_delete {
-	display:inline;
-	margin-right: 5px;
-	padding-left:16px;
+    display:inline;
+    margin-right: 5px;
+    padding-left:16px;
 }
 
 
 /* below queue, left side, limit */
 #queue_view_preference, #history_view_preference {
-	width:120px;
+    width:120px;
 }
 #queue_view_preference {
-	margin-top:-5px;
+    margin-top:-5px;
 }
 #stats_noofslots {
-	display:none;
+    display:none;
 }
 
 /* below queue, right side, disk space */
 .stats_incomplete_freespace {
-	padding-top:8px;
-	padding-bottom:8px;
-	padding-left:20px;
-	background: url(../images/plush-default/q_stats_incomplete.png) 0 50% no-repeat;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-left:20px;
+    background: url(../images/plush-default/q_stats_incomplete.png) 0 50% no-repeat;
 }
 .stats_incomplete_freespace_needspace {
-	padding-top:8px;
-	padding-bottom:8px;
-	padding-left:20px;
-	background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
-	color:red;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-left:20px;
+    background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
+    color:red;
 }
 .stats_complete_freespace {
-	margin-left:10px;
-	padding-top:8px;
-	padding-bottom:8px;
-	padding-left:20px;
-	background: url(../images/plush-default/q_stats_complete.png) 0 50% no-repeat;
+    margin-left:10px;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-left:20px;
+    background: url(../images/plush-default/q_stats_complete.png) 0 50% no-repeat;
 }
 .stats_complete_freespace_needspace {
-	margin-left:10px;
-	padding-top:8px;
-	padding-bottom:8px;
-	padding-left:20px;
-	background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
-	color:red;
+    margin-left:10px;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-left:20px;
+    background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
+    color:red;
 }
 
 
@@ -382,26 +382,26 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
-	History
+    History
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 
 
 .history_added {
-	font-size:75%;
-	cursor:default;
+    font-size:75%;
+    cursor:default;
 }
 tr:hover .history_added  {
-	color:black;
+    color:black;
 }
 
 .verbose div {
-	cursor: help;
-	display:inline;
-	float:left;
-	width: 16px;
-	margin-right: 2px;
+    cursor: help;
+    display:inline;
+    float:left;
+    width: 16px;
+    margin-right: 2px;
 }
 
 /* history verbosity icons */
@@ -417,9 +417,9 @@ tr:hover .history_added  {
 .hv_DEL { background: url(../images/plush-default/hv_del.png) 0 50% no-repeat; }*/
 .hv_script { display:inline; background: url(../images/plush-default/hv_userscript.png) 0 50% no-repeat; }
 .hvMessage {
-	font-weight: bold;
-	color: red;
-	font-size: 60%;
+    font-weight: bold;
+    color: red;
+    font-size: 60%;
 }
 
 
@@ -429,49 +429,49 @@ tr:hover .history_added  {
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
-	N Z O (nzb files page, linked from queue)
+    N Z O (nzb files page, linked from queue)
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 body.nzo {background: #ddd;}
 body.nzo .config_menu {
-	cursor:default;
+    cursor:default;
 }
 body.nzo input {
-	cursor:pointer;
+    cursor:pointer;
 }
 body.nzo .config_menu input {
-	width:60px;
+    width:60px;
 }
 table.nzoTable {
-	font-size: 9pt;
-	color: black;
-	margin: 0px;
+    font-size: 9pt;
+    color: black;
+    margin: 0px;
 }
 table.nzoTable tr {
-	cursor:pointer;
+    cursor:pointer;
 }
 table.nzoTable th {
-	background: #b5b5b5;
-	color: white;
-	font-weight: bold;
-	cursor:default;
+    background: #b5b5b5;
+    color: white;
+    font-weight: bold;
+    cursor:default;
 }
 table.nzoTable tr.even{
-	background-color: #cdf;
+    background-color: #cdf;
 }
 table.nzoTable tr.evenLine {
-	background-color: #eee;
+    background-color: #eee;
 }
 table.nzoTable tr.odd {
-	background-color: #99bbff;
+    background-color: #99bbff;
 }
 table.nzoTable tr.oddLine {
-	background-color: #f8f8f8;
+    background-color: #f8f8f8;
 }
 table.nzoTable tr:hover {
-	background-color: #333333;
-	color: #FFF;
+    background-color: #333333;
+    color: #FFF;
 }
 
 
@@ -479,34 +479,34 @@ table.nzoTable tr:hover {
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
-	C O N F I G
+    C O N F I G
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 #config_go_back {
-	text-align:center;
-	background-position: 50% 50%;
-	background-repeat:no-repeat;
-	background-image: url(../images/plush-default/sabnzbdplus_logo.png);
-	padding:1px;
+    text-align:center;
+    background-position: 50% 50%;
+    background-repeat:no-repeat;
+    background-image: url(../images/plush-default/sabnzbdplus_logo.png);
+    padding:1px;
 }
 #config_go_back div {
-	margin:auto;
-	padding-top:22px;
-	padding-left:20px;
-	width:80px;
+    margin:auto;
+    padding-top:22px;
+    padding-left:20px;
+    width:80px;
 }
 #config_go_back a {
-	margin-left:-20px;
-	padding-left:40px;
-	padding-right:10px;
-	padding-top:30px;
-	text-decoration:none;
-	color:black;
-	font-size:66%;
+    margin-left:-20px;
+    padding-left:40px;
+    padding-right:10px;
+    padding-top:30px;
+    text-decoration:none;
+    color:black;
+    font-size:66%;
 }
 #config_go_back a:hover {
-	border-bottom: 1px dotted black;
+    border-bottom: 1px dotted black;
 }
 div.EntryBlock form {
   display: inline;
@@ -519,101 +519,101 @@ fieldset.EntryFieldSet {
   margin: 5px;
 }
 #config_nav {
-	margin-top: 20px;
-	width: 110px;
-	text-align: left;
-	float: left;
+    margin-top: 20px;
+    width: 110px;
+    text-align: left;
+    float: left;
 }
 
 #config_nav ul {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	border: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: none;
 }
 
 #config_nav li {
-	margin: 0;
-	padding: 3px 0px 3px 5px;
+    margin: 0;
+    padding: 3px 0px 3px 5px;
 }
 
 #config_nav li a {
-	background-color: #ddd;
-	display: block;
-	padding: 8px 0px 8px 30px;
-	color: #666;
-	text-decoration: none;
-	width: 100%;
-	font-size: 9pt;
-	font-weight: bold;
-	background-position: 4px 50%;
-	background-repeat:no-repeat;
+    background-color: #ddd;
+    display: block;
+    padding: 8px 0px 8px 30px;
+    color: #666;
+    text-decoration: none;
+    width: 100%;
+    font-size: 9pt;
+    font-weight: bold;
+    background-position: 4px 50%;
+    background-repeat:no-repeat;
 }
 
 #config_nav li a:hover {
-	background-color: #ccc;
-	color: #000;
+    background-color: #ccc;
+    color: #000;
 }
 
 #config_nav .nav_active {
-	background-color: #bbb;
-	color: #000;
+    background-color: #bbb;
+    color: #000;
 }
 
 #config_nav li a img{
-	vertical-align: -2px;
-	padding-right: 5px;
-	border-width: 0px;
+    vertical-align: -2px;
+    padding-right: 5px;
+    border-width: 0px;
 }
-#config_nav_connections	{ background-image: url(../images/plush-default/config/connections.png); }
-#config_nav_general		{ background-image: url(../images/plush-default/config/general.png); }
-#config_nav_directories	{ background-image: url(../images/plush-default/config/user_folders.png); }
-#config_nav_switches	{ background-image: url(../images/plush-default/config/switches.png); }
-#config_nav_server		{ background-image: url(../images/plush-default/config/servers.png); }
-#config_nav_categories	{ background-image: url(../images/plush-default/config/categories.png); }
-#config_nav_scheduling	{ background-image: url(../images/plush-default/config/scheduling.png); }
-#config_nav_rss 		{ background-image: url(../images/plush-default/config/rss.png); }
-#config_nav_email		{ background-image: url(../images/plush-default/config/email_options.png); }
-#config_nav_index_sites	{ background-image: url(../images/plush-default/config/index_sites.png); }
-#config_nav_sorting		{ background-image: url(../images/plush-default/config/sorting.png); }
+#config_nav_connections    { background-image: url(../images/plush-default/config/connections.png); }
+#config_nav_general        { background-image: url(../images/plush-default/config/general.png); }
+#config_nav_directories    { background-image: url(../images/plush-default/config/user_folders.png); }
+#config_nav_switches    { background-image: url(../images/plush-default/config/switches.png); }
+#config_nav_server        { background-image: url(../images/plush-default/config/servers.png); }
+#config_nav_categories    { background-image: url(../images/plush-default/config/categories.png); }
+#config_nav_scheduling    { background-image: url(../images/plush-default/config/scheduling.png); }
+#config_nav_rss         { background-image: url(../images/plush-default/config/rss.png); }
+#config_nav_email        { background-image: url(../images/plush-default/config/email_options.png); }
+#config_nav_index_sites    { background-image: url(../images/plush-default/config/index_sites.png); }
+#config_nav_sorting        { background-image: url(../images/plush-default/config/sorting.png); }
 
 
 #config_content legend {
-	background-position: 2% 50%;
-	background-repeat: no-repeat;
-	border: 1px solid white;
-	padding:0px;
-	padding-left:32px;
-	padding-right:4px;
-	font-size:150%;
-	font-weight:bold;
-	color:white;
-	background-color:#333;
+    background-position: 2% 50%;
+    background-repeat: no-repeat;
+    border: 1px solid white;
+    padding:0px;
+    padding-left:32px;
+    padding-right:4px;
+    font-size:150%;
+    font-weight:bold;
+    color:white;
+    background-color:#333;
 }
 
-#configbox_server_encrypted		{ background-image: url(../images/plush-default/config/encrypted.png); }
-#configbox_server_decrypted		{ background-image: url(../images/plush-default/config/decrypted.png); }
-#configbox_latest_warnings		{ background-image: url(../images/plush-default/config/latest_warnings.png); }
-#configbox_web_server			{ background-image: url(../images/plush-default/config/web_server.png); }
-#configbox_tuning				{ background-image: url(../images/plush-default/config/tuning.png); }
-#configbox_user_folders			{ background-image: url(../images/plush-default/config/user_folders.png); }
-#configbox_system_folders		{ background-image: url(../images/plush-default/config/system_folders.png); }
-#configbox_sorting_folders		{ background-image: url(../images/plush-default/config/sorting_folders.png); }
-#configbox_processing_switches	{ background-image: url(../images/plush-default/config/processing_switches.png); }
-#configbox_other_switches		{ background-image: url(../images/plush-default/config/other_switches.png); }
-#configbox_add_server			{ background-image: url(../images/plush-default/config/add_server.png); }
-#configbox_add_schedule			{ background-image: url(../images/plush-default/config/add_schedule.png); }
-#configbox_current_schedules	{ background-image: url(../images/plush-default/config/current_schedules.png); }
-#configbox_new_feed_url			{ background-image: url(../images/plush-default/config/new_feed_url.png); }
-#configbox_feed_definition		{ background-image: url(../images/plush-default/config/feed_definition.png); }
-#configbox_email_options		{ background-image: url(../images/plush-default/config/email_options.png); }
+#configbox_server_encrypted        { background-image: url(../images/plush-default/config/encrypted.png); }
+#configbox_server_decrypted        { background-image: url(../images/plush-default/config/decrypted.png); }
+#configbox_latest_warnings        { background-image: url(../images/plush-default/config/latest_warnings.png); }
+#configbox_web_server            { background-image: url(../images/plush-default/config/web_server.png); }
+#configbox_tuning                { background-image: url(../images/plush-default/config/tuning.png); }
+#configbox_user_folders            { background-image: url(../images/plush-default/config/user_folders.png); }
+#configbox_system_folders        { background-image: url(../images/plush-default/config/system_folders.png); }
+#configbox_sorting_folders        { background-image: url(../images/plush-default/config/sorting_folders.png); }
+#configbox_processing_switches    { background-image: url(../images/plush-default/config/processing_switches.png); }
+#configbox_other_switches        { background-image: url(../images/plush-default/config/other_switches.png); }
+#configbox_add_server            { background-image: url(../images/plush-default/config/add_server.png); }
+#configbox_add_schedule            { background-image: url(../images/plush-default/config/add_schedule.png); }
+#configbox_current_schedules    { background-image: url(../images/plush-default/config/current_schedules.png); }
+#configbox_new_feed_url            { background-image: url(../images/plush-default/config/new_feed_url.png); }
+#configbox_feed_definition        { background-image: url(../images/plush-default/config/feed_definition.png); }
+#configbox_email_options        { background-image: url(../images/plush-default/config/email_options.png); }
 #configbox_email_account_settings{background-image: url(../images/plush-default/config/email_account_settings.png); }
-#configbox_newzbin_account_info	{ background-image: url(../images/plush-default/config/newzbin_account_info.png); }
-#configbox_bookmark_processing	{ background-image: url(../images/plush-default/config/bookmark_processing.png); }
-#configbox_processed_bookmarks	{ background-image: url(../images/plush-default/config/processed_bookmarks.png); }
+#configbox_newzbin_account_info    { background-image: url(../images/plush-default/config/newzbin_account_info.png); }
+#configbox_bookmark_processing    { background-image: url(../images/plush-default/config/bookmark_processing.png); }
+#configbox_processed_bookmarks    { background-image: url(../images/plush-default/config/processed_bookmarks.png); }
 
 .numbered_list li {
-	list-style-type:decimal;
+    list-style-type:decimal;
 }
 
 /* FF2 to rescue */
@@ -621,153 +621,153 @@ fieldset.EntryFieldSet {
 .tucker {width:300px;font-weight:bold;}
 
 .left_links a, .right_links a {
-	background-position: 5px 50%;
-	background-repeat:no-repeat;
+    background-position: 5px 50%;
+    background-repeat:no-repeat;
 }
 #help {
-	background-image: url(../images/plush-default/config/help.png);
-	padding: 6px;
-	padding-left:36px;
-	margin-bottom:40px;
+    background-image: url(../images/plush-default/config/help.png);
+    padding: 6px;
+    padding-left:36px;
+    margin-bottom:40px;
 }
 #force_disconnect {
-	background-image: url(../images/plush-default/config/disconnect.png);
-	padding: 6px;
-	padding-left:36px;
+    background-image: url(../images/plush-default/config/disconnect.png);
+    padding: 6px;
+    padding-left:36px;
 }
 #test_email {
-	background-image: url(../images/plush-default/config/test_email.png);
-	padding: 6px;
-	padding-left:36px;
+    background-image: url(../images/plush-default/config/test_email.png);
+    padding: 6px;
+    padding-left:36px;
 }
 #save {
-	background-image: url(../images/plush-default/config/save.png);
-	padding: 6px;
-	padding-left:36px;
+    background-image: url(../images/plush-default/config/save.png);
+    padding: 6px;
+    padding-left:36px;
 }
 
 
 #config_nzo_reload {
-	background-image: url(../images/plush-default/nzo/reload.png);
-	cursor:pointer;
+    background-image: url(../images/plush-default/nzo/reload.png);
+    cursor:pointer;
 }
 #config_nzo_delete {
-	background-image: url(../images/plush-default/nzo/delete.png);
+    background-image: url(../images/plush-default/nzo/delete.png);
 }
 #config_nzo_top {
-	background-image: url(../images/plush-default/nzo/top.png);
+    background-image: url(../images/plush-default/nzo/top.png);
 }
 #config_nzo_up {
-	background-image: url(../images/plush-default/nzo/up.png);
+    background-image: url(../images/plush-default/nzo/up.png);
 }
 #config_nzo_down {
-	background-image: url(../images/plush-default/nzo/down.png);
+    background-image: url(../images/plush-default/nzo/down.png);
 }
 #config_nzo_bottom {
-	background-image: url(../images/plush-default/nzo/bottom.png);
+    background-image: url(../images/plush-default/nzo/bottom.png);
 }
 #config_nzo_select_all {
-	background-image: url(../images/plush-default/nzo/select_all.png);
-	cursor:pointer;
+    background-image: url(../images/plush-default/nzo/select_all.png);
+    cursor:pointer;
 }
 #config_nzo_select_none {
-	background-image: url(../images/plush-default/nzo/select_none.png);
-	cursor:pointer;
+    background-image: url(../images/plush-default/nzo/select_none.png);
+    cursor:pointer;
 }
 #config_nzo_select_invert {
-	background-image: url(../images/plush-default/nzo/select_invert.png);
-	cursor:pointer;
+    background-image: url(../images/plush-default/nzo/select_invert.png);
+    cursor:pointer;
 }
 
 #config_container {
-	background: #bbb;
-/*	width: 655px; 
-	height: 435px; */
-	min-height: 435px;
-	text-align: left;
-	font-size: 10pt;
-	padding: 10px;
-	padding-left: 20px;
+    background: #bbb;
+/*    width: 655px; 
+    height: 435px; */
+    min-height: 435px;
+    text-align: left;
+    font-size: 10pt;
+    padding: 10px;
+    padding-left: 20px;
 }
 
 #connections_container {
-	background: #bbb;
-	height: 395px;
-	text-align: left;
-	font-size: 10pt;
-	margin: 10px 10px 0px 10px;
-	padding: 10px;
+    background: #bbb;
+    height: 395px;
+    text-align: left;
+    font-size: 10pt;
+    margin: 10px 10px 0px 10px;
+    padding: 10px;
 }
 
 #config_content {
-	height: 100%;
-	width: 100%;
-	overflow: auto;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
 }
 
 .left_links {
-	float: left;
-	margin: 5px 0 0 10px;
+    float: left;
+    margin: 5px 0 0 10px;
 }
 
 .left_links a {
-	display: block;
-	background-color: #ddd;
-	color: #666;
-	text-decoration: none;
-	font-size: 9pt;
-	font-weight: bold;
-	padding: 2px 5px;
+    display: block;
+    background-color: #ddd;
+    color: #666;
+    text-decoration: none;
+    font-size: 9pt;
+    font-weight: bold;
+    padding: 2px 5px;
 }
 
 .left_links a:hover {
-	background-color: #bbb;
-	color: #000;
+    background-color: #bbb;
+    color: #000;
 }
 
 .left_links a img {
-	vertical-align: middle;
-	padding-right: 5px;
-	border-width: 0px;
+    vertical-align: middle;
+    padding-right: 5px;
+    border-width: 0px;
 }
 
 .right_links a {
-	cursor:pointer;
+    cursor:pointer;
 }
 
 .config_margin {
-	margin: 5px 10px 0 110px;
+    margin: 5px 10px 0 110px;
 }
 
 .right_links {
-	float: right;
-	margin: 5px 40px 0 0;
+    float: right;
+    margin: 5px 40px 0 0;
 }
 
 .right_links a {
-	display: block;
-	background-color: #ddd;
-	color: #666;
-	text-decoration: none;
-	font-size: 9pt;
-	font-weight: bold;
-	padding: 2px 5px;
+    display: block;
+    background-color: #ddd;
+    color: #666;
+    text-decoration: none;
+    font-size: 9pt;
+    font-weight: bold;
+    padding: 2px 5px;
 }
 
 .right_links a:hover {
-	background-color: #bbb;
-	color: #000;
+    background-color: #bbb;
+    color: #000;
 }
 
 .right_links a img {
-	vertical-align: middle;
-	padding-right: 5px;
-	border-width: 0px;
+    vertical-align: middle;
+    padding-right: 5px;
+    border-width: 0px;
 }
 
 #save_button {
-	float: right;
-	margin: 6px 10px 0 0;
+    float: right;
+    margin: 6px 10px 0 0;
 }
 
 
@@ -777,114 +777,114 @@ fieldset.EntryFieldSet {
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
-	jquery superfish plugin (MAIN MENU)
+    jquery superfish plugin (MAIN MENU)
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 
 /*** ESSENTIAL STYLES ***/
 .sf-menu, .sf-menu * {
-	margin:			0;
-	padding:		0;
-	list-style:		none;
+    margin:            0;
+    padding:        0;
+    list-style:        none;
 }
 .sf-menu {
-	line-height:	1.0;
+    line-height:    1.0;
 }
 .sf-menu ul {
-	position:		absolute;
-	top:			-999em;
-	width:			10em; /* left offset of submenus need to match (see below) */
+    position:        absolute;
+    top:            -999em;
+    width:            10em; /* left offset of submenus need to match (see below) */
 }
 .sf-menu ul li {
-	width:			100%;
+    width:            100%;
 }
 .sf-menu li:hover {
-	visibility:		inherit; /* fixes IE7 'sticky bug' */
+    visibility:        inherit; /* fixes IE7 'sticky bug' */
 }
 .sf-menu li {
-	float:			left;
-	position:		relative;
+    float:            left;
+    position:        relative;
 }
 .sf-menu a {
-	display:		block;
-	position:		relative;
+    display:        block;
+    position:        relative;
 }
 .sf-menu li:hover ul,
 .sf-menu li.sfHover ul {
-	left:			0;
-	top:			2.5em; /* match top ul list item height */
-	z-index:		99;
+    left:            0;
+    top:            2.5em; /* match top ul list item height */
+    z-index:        99;
 }
 ul.sf-menu li:hover li ul,
 ul.sf-menu li.sfHover li ul {
-	top:			-999em;
+    top:            -999em;
 }
 ul.sf-menu li li:hover ul,
 ul.sf-menu li li.sfHover ul {
-	left:			10em; /* match ul width */
-	top:			0;
+    left:            10em; /* match ul width */
+    top:            0;
 }
 ul.sf-menu li li:hover li ul,
 ul.sf-menu li li.sfHover li ul {
-	top:			-999em;
+    top:            -999em;
 }
 ul.sf-menu li li li:hover ul,
 ul.sf-menu li li li.sfHover ul {
-	left:			10em; /* match ul width */
-	top:			0;
+    left:            10em; /* match ul width */
+    top:            0;
 }
 
 /*** DEMO SKIN ***/
 .sf-menu {
-	margin:			auto;
-	margin-bottom:	0.25em;
-	cursor: default;
+    margin:            auto;
+    margin-bottom:    0.25em;
+    cursor: default;
 }
 .sf-menu a {
-	border-left:	1px solid #fff;
-	border-top:		1px solid #CFDEFF;
-	padding: 		.75em 1em;
-	text-decoration:none;
+    border-left:    1px solid #fff;
+    border-top:        1px solid #CFDEFF;
+    padding:         .75em 1em;
+    text-decoration:none;
 }
 .sf-menu a, .sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-	color:			#000;
-	font-size:		75%;
+    color:            #000;
+    font-size:        75%;
 }
 .sf-menu li {
-	background:		#BDD2FF;
+    background:        #BDD2FF;
 }
 .sf-menu li li {
-	background:		#AABDE6;
+    background:        #AABDE6;
 }
 .sf-menu li li li {
-	background:		#9AAEDB;
+    background:        #9AAEDB;
 }
 .sf-menu li:hover, .sf-menu li.sfHover,
 .sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-	background:		#CFDEFF;
-	outline:		0;
+    background:        #CFDEFF;
+    outline:        0;
 }
 
 /*** arrows **/
 .sf-menu a.sf-with-ul {
-	padding-right: 	2.25em;
-	min-width:		1px; /* trigger IE7 hasLayout so spans position accurately */
+    padding-right:     2.25em;
+    min-width:        1px; /* trigger IE7 hasLayout so spans position accurately */
 }
 .sf-sub-indicator {
-	position:		absolute;
-	display:		block;
-	right:			.75em;
-	top:			1.05em; /* IE6 only */
-	width:			10px;
-	height:			10px;
-	text-indent: 	-999em;
-	overflow:		hidden;
-	background:		url('../images/plush-default/arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
+    position:        absolute;
+    display:        block;
+    right:            .75em;
+    top:            1.05em; /* IE6 only */
+    width:            10px;
+    height:            10px;
+    text-indent:     -999em;
+    overflow:        hidden;
+    background:        url('../images/plush-default/arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
 }
 a > .sf-sub-indicator {  /* give all except IE6 the correct values */
-	top:			.8em;
-	background-position: 0 -100px; /* use translucent arrow for modern browsers*/
+    top:            .8em;
+    background-position: 0 -100px; /* use translucent arrow for modern browsers*/
 }
 /* apply hovers to modern browsers */
 a:focus > .sf-sub-indicator,
@@ -892,7 +892,7 @@ a:hover > .sf-sub-indicator,
 a:active > .sf-sub-indicator,
 li:hover > a > .sf-sub-indicator,
 li.sfHover > a > .sf-sub-indicator {
-	background-position: -10px -100px; /* arrow hovers for modern browsers*/
+    background-position: -10px -100px; /* arrow hovers for modern browsers*/
 }
 
 /* point right for anchors in subs */
@@ -904,93 +904,93 @@ li.sfHover > a > .sf-sub-indicator {
 .sf-menu ul a:active > .sf-sub-indicator,
 .sf-menu ul li:hover > a > .sf-sub-indicator,
 .sf-menu ul li.sfHover > a > .sf-sub-indicator {
-	background-position: -10px 0; /* arrow hovers for modern browsers*/
+    background-position: -10px 0; /* arrow hovers for modern browsers*/
 }
 
 /*** shadows for all but IE6 ***/
 .sf-shadow ul {
-	background:	url('../images/plush-default/shadow.png') no-repeat bottom right;
-	padding: 0 8px 9px 0;
-	-moz-border-radius-bottomleft: 17px;
-	-moz-border-radius-topright: 17px;
-	-webkit-border-top-right-radius: 17px;
-	-webkit-border-bottom-left-radius: 17px;
+    background:    url('../images/plush-default/shadow.png') no-repeat bottom right;
+    padding: 0 8px 9px 0;
+    -moz-border-radius-bottomleft: 17px;
+    -moz-border-radius-topright: 17px;
+    -webkit-border-top-right-radius: 17px;
+    -webkit-border-bottom-left-radius: 17px;
 }
 .sf-shadow ul.sf-shadow-off {
-	background: transparent;
+    background: transparent;
 }
 
 
 /* for jquery superfish plugin (main menu) */
 /*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
 .sf-navbar {
-	background:		#B1B1B1;
-	height:			2.5em;
-	padding-bottom:	2.5em;
-	position:		relative;
+    background:        #B1B1B1;
+    height:            2.5em;
+    padding-bottom:    2.5em;
+    position:        relative;
 }
 .sf-navbar li {
-	background:		#B1B1B1;
-	position:		static;
+    background:        #B1B1B1;
+    position:        static;
 }
 .sf-navbar a {
-	border-top:		none;
+    border-top:        none;
 }
 .sf-navbar li ul {
-	width:			44em; /*IE6 soils itself without this*/
-	background:		#E0E0E0;
+    width:            44em; /*IE6 soils itself without this*/
+    background:        #E0E0E0;
 }
 .sf-navbar li li {
-	background:		#E0E0E0;
-	position:		relative;
+    background:        #E0E0E0;
+    position:        relative;
 }
 .sf-navbar li li ul {
-	width:			13em;
+    width:            13em;
 }
 .sf-navbar li li li {
-	width:			100%;
+    width:            100%;
 }
 .sf-navbar ul li {
-	width:			auto;
-	float:			left;
+    width:            auto;
+    float:            left;
 }
 .sf-navbar a, .sf-navbar a:visited {
-	border:			none;
+    border:            none;
 }
 .sf-navbar li.current {
-	background:		#BDD2FF;
+    background:        #BDD2FF;
 }
 .sf-navbar li:hover,
 .sf-navbar li.sfHover,
 .sf-navbar li li.current,
 .sf-navbar a:focus, .sf-navbar a:hover, .sf-navbar a:active {
-	background:		#E0E0E0;
+    background:        #E0E0E0;
 }
 .sf-navbar ul li:hover,
 .sf-navbar ul li.sfHover,
 ul.sf-navbar ul li:hover li,
 ul.sf-navbar ul li.sfHover li,
 .sf-navbar ul a:focus, .sf-navbar ul a:hover, .sf-navbar ul a:active {
-	background:		#F9F9F9;
+    background:        #F9F9F9;
 }
 ul.sf-navbar li li li:hover,
 ul.sf-navbar li li li.sfHover,
 .sf-navbar li li.current li.current,
 .sf-navbar ul li li a:focus, .sf-navbar ul li li a:hover, .sf-navbar ul li li a:active {
-	background:		#F9F9F9;
+    background:        #F9F9F9;
 }
 ul.sf-navbar .current ul,
 ul.sf-navbar ul li:hover ul,
 ul.sf-navbar ul li.sfHover ul {
-	left:			0;
-	top:			2.5em; /* match top ul list item height */
+    left:            0;
+    top:            2.5em; /* match top ul list item height */
 }
 ul.sf-navbar .current ul ul {
-	top: 			-999em;
+    top:             -999em;
 }
 
 .sf-navbar li li.current > a {
-	font-weight:	bold;
+    font-weight:    bold;
 }
 
 /*** point all arrows down ***/
@@ -1003,15 +1003,15 @@ ul.sf-navbar .current ul ul {
 .sf-navbar ul a:active > .sf-sub-indicator,
 .sf-navbar ul li:hover > a > .sf-sub-indicator,
 .sf-navbar ul li.sfHover > a > .sf-sub-indicator {
-	background-position: -10px -100px; /* arrow hovers for modern browsers*/
+    background-position: -10px -100px; /* arrow hovers for modern browsers*/
 }
 
 /*** remove shadow on first submenu ***/
 .sf-navbar > li > ul {
-	background: transparent;
-	padding: 0;
-	-moz-border-radius-bottomleft: 0;
-	-moz-border-radius-topright: 0;
-	-webkit-border-top-right-radius: 0;
-	-webkit-border-bottom-left-radius: 0;
+    background: transparent;
+    padding: 0;
+    -moz-border-radius-bottomleft: 0;
+    -moz-border-radius-topright: 0;
+    -webkit-border-top-right-radius: 0;
+    -webkit-border-bottom-left-radius: 0;
 }

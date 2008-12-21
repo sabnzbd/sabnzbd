@@ -6,71 +6,73 @@
 <!--#set $odd = False#-->
 <!--#if $lines#-->
 <!--#for $line in $lines #-->
-	<!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.action_line) ) or ($limit == -2 and ($cur < 5 or $line.status=="Failed" or $line.action_line) ) or $cur < $limit#-->
-	<!--#set $odd = not $odd#-->
-	<tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
-	
-	<td class="historyTitle <!--#if $line.action_line #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->">
-		<!--#if $line.report #-->
-		<a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">$line.name</a>
-		<!--#else#-->
-		$line.name
-		<!--#end if#-->
-	</td>
-	
-	<td class="verbose">
-		<!--#for $stage in $line.stage_log#-->
-			<!--#for $action in $stage.actions#-->
-				<div class="hv_$stage.name" title='<!--#echo $stage.name.replace("'","&rsquo;").title() #--> &bull; <!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
-				<!--#if $stage.name == "script" and not $line.fail_message#-->
-					<span class="hvMessage">&raquo;&nbsp;<a href="scriptlog?name=$line.nzo_id">View&nbsp;Script&nbsp;Log</a>&nbsp;</span>
-				<!--#end if#-->
-			<!--#end for#-->
-		<!--#end for#-->
-		<!--#if $line.action_line#-->
-		<span class="hvMessage">&raquo;&nbsp;$line.action_line&nbsp;</span><br/>
-		<!--#end if#-->
-		<!--#if $line.fail_message#-->
-		<span class="hvMessage">&raquo;&nbsp;$line.fail_message&nbsp;</span><br/>
-		<!--#end if#-->
-	</td>
-	
-	<td class="options" nowrap>
+    <!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.action_line) ) or ($limit == -2 and ($cur < 5 or $line.status=="Failed" or $line.action_line) ) or $cur < $limit#-->
+    <!--#set $odd = not $odd#-->
+    <tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
+    
+    <td class="historyTitle <!--#if $line.action_line #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->">
+        <!--#if $line.report #-->
+        <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">$line.name</a>
+        <!--#else#-->
+        $line.name
+        <!--#end if#-->
+    </td>
+    
+    <td class="verbose">
+        <!--#if $line.show_details #-->
+	    <!--#for $stage in $line.stage_log#-->
+            <!--#for $action in $stage.actions#-->
+                <div class="hv_$stage.name" title='<!--#echo $stage.name.replace("'","&rsquo;").title() #--> &bull; <!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
+                <!--#if $stage.name == "script" and not $line.fail_message#-->
+                <span class="hvMessage">&raquo;&nbsp;<a href="scriptlog?name=$line.nzo_id">View&nbsp;Script&nbsp;Log</a>&nbsp;</span>
+                <!--#end if#-->
+            <!--#end for#-->
+        <!--#end for#-->
+        <!--#end if#-->
+        <!--#if $line.action_line#-->
+        <span class="hvMessage">&raquo;&nbsp;$line.action_line&nbsp;</span><br/>
+        <!--#end if#-->
+        <!--#if $line.fail_message#-->
+        <span class="hvMessage">&raquo;&nbsp;$line.fail_message&nbsp;</span><br/>
+        <!--#end if#-->
+    </td>
+    
+    <td class="options" nowrap>
         <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
-		<small class="history_added">$d</small>
-		<div class="queue_delete" title="Hide&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
-	</td>
-	
-	</tr>
-	<!--#end if#-->
-	<!--#set $cur = $cur + 1#-->
+        <small class="history_added">$d</small>
+        <div class="queue_delete" title="Hide&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
+    </td>
+    
+    </tr>
+    <!--#end if#-->
+    <!--#set $cur = $cur + 1#-->
 <!--#end for#-->
 <!--#end if#-->
 </table>
 
 <div class="box_fatbottom">
-	<div class="right_stats">
-		<!--#if $lines#-->
-		<strong>$total_size</strong>&nbsp;In&nbsp;History&nbsp;&nbsp;&nbsp;&nbsp;
-		<!--#end if #-->
-		
-	</div>
-	<div class="left_stats">
-		<small>Showing:</small>&nbsp;<select id="history_view_preference">
-			<option value="0"<!--#if $limit==0#--> selected<!--#end if#-->>Everything</option>
-			<option value="-1"<!--#if $limit==-1#--> selected<!--#end if#-->>Active/Failed</option>
-			<option value="-2"<!--#if $limit==-2#--> selected<!--#end if#-->>Latest 5 + A/F</option>
-			<option value="5"<!--#if $limit==5#--> selected<!--#end if#-->>Latest 5</option>
-			<option value="10"<!--#if $limit==10#--> selected<!--#end if#-->>Latest 10</option>
-			<option value="15"<!--#if $limit==15#--> selected<!--#end if#-->>Latest 15</option>
-			<option value="20"<!--#if $limit==20#--> selected<!--#end if#-->>Latest 20</option>
-			<option value="25"<!--#if $limit==25#--> selected<!--#end if#-->>Latest 25</option>
-			<option value="30"<!--#if $limit==30#--> selected<!--#end if#-->>Latest 30</option>
-			<option value="40"<!--#if $limit==40#--> selected<!--#end if#-->>Latest 40</option>
-			<option value="50"<!--#if $limit==50#--> selected<!--#end if#-->>Latest 50</option>
-			<option value="100"<!--#if $limit==100#--> selected<!--#end if#-->>Latest 100</option>
-			<option value="200"<!--#if $limit==200#--> selected<!--#end if#-->>Latest 200</option>
-		</select>&nbsp;<small>of</small>&nbsp;<strong>$cur</strong>&nbsp;<small>NZB<!--#if $cur != 1 #-->s<!--#end if#--></small>
-	</div>
-	<div class="history_logo">&nbsp;</div>
+    <div class="right_stats">
+        <!--#if $lines#-->
+        <strong>$total_size</strong>&nbsp;In&nbsp;History&nbsp;&nbsp;&nbsp;&nbsp;
+        <!--#end if #-->
+        
+    </div>
+    <div class="left_stats">
+        <small>Showing:</small>&nbsp;<select id="history_view_preference">
+            <option value="0"<!--#if $limit==0#--> selected<!--#end if#-->>Everything</option>
+            <option value="-1"<!--#if $limit==-1#--> selected<!--#end if#-->>Active/Failed</option>
+            <option value="-2"<!--#if $limit==-2#--> selected<!--#end if#-->>Latest 5 + A/F</option>
+            <option value="5"<!--#if $limit==5#--> selected<!--#end if#-->>Latest 5</option>
+            <option value="10"<!--#if $limit==10#--> selected<!--#end if#-->>Latest 10</option>
+            <option value="15"<!--#if $limit==15#--> selected<!--#end if#-->>Latest 15</option>
+            <option value="20"<!--#if $limit==20#--> selected<!--#end if#-->>Latest 20</option>
+            <option value="25"<!--#if $limit==25#--> selected<!--#end if#-->>Latest 25</option>
+            <option value="30"<!--#if $limit==30#--> selected<!--#end if#-->>Latest 30</option>
+            <option value="40"<!--#if $limit==40#--> selected<!--#end if#-->>Latest 40</option>
+            <option value="50"<!--#if $limit==50#--> selected<!--#end if#-->>Latest 50</option>
+            <option value="100"<!--#if $limit==100#--> selected<!--#end if#-->>Latest 100</option>
+            <option value="200"<!--#if $limit==200#--> selected<!--#end if#-->>Latest 200</option>
+        </select>&nbsp;<small>of</small>&nbsp;<strong>$cur</strong>&nbsp;<small>NZB<!--#if $cur != 1 #-->s<!--#end if#--></small>
+    </div>
+    <div class="history_logo">&nbsp;</div>
 </div>

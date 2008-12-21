@@ -2,122 +2,122 @@
 <!--#set global $help_uri="Configure+General"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-			<div align=center>
-				<small><i>Config File:</i> <font color=blue>$configfn</font></small>
-			</div>
-			
-			<form action="saveGeneral" method="post" name="fullform">
-			<div class="EntryBlock">
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_web_server">SABnzbd&nbsp;Web&nbsp;Server</legend>
-				
-				<font color="white" style="background-color:red">&nbsp;Changes require manual SABnzbd restart!&nbsp;</font>
-				
-				<br/><br/>
-				<table cellpadding=2>
-				<tr><td>
-				<strong>Web Host:</strong><br/>
-				<small>Host SABnzbd should listen on.</small><br/>
-				<input type="text" name="host" value="$host"/>
-				
-				</td><td>
-				<strong>Web Port:</strong><br/>
-				<small>Port SABnzbd should listen on.</small><br/>
-				<input type="text" name="port" size=8 value="$port"/>
-				
-				</td></tr><tr><td colspan=2><hr/></td></tr><tr><td>
-				<strong>Web Username:</strong><br/>
-				<small>Authentication Username.</small><br/>
-				<input type="text" name="web_username" value="$username"/>
-				
-				</td><td>
-				<strong>Web Password:</strong><br/>
-				<small>Authentication Password.</small><br/>
-				<input type="password" name="web_password" value="$password"/>
-				</td></tr>
-				</td></tr><tr><td colspan=2><hr/></td></tr><tr><td>
-				
-				<strong>Web Interface:</strong><br/>
-				<small>Choose a skin.</small><br/>
-				<select name="web_dir">
-				<!--#for $webline in $web_list#-->
-				<!--#if $webline.lower() == $web_dir.lower()#-->
-					<option value="$webline" selected>$webline</option>
-				<!--#else#-->
-					<option value="$webline">$webline</option>
-				<!--#end if#-->
-				<!--#end for#-->
-				</select>
-				
-				</td><td>
-				<strong>Secondary Web Interface:</strong><br/>
-				<small>Activate a secondary skin.</small><br/>
-				<select name="web_dir2">
-				<!--#for $webline in $web_list2#-->
-				<!--#if $webline.lower() == $web_dir2.lower()#-->
-					<option value="$webline" selected>$webline</option>
-				<!--#else#-->
-					<option value="$webline">$webline</option>
-				<!--#end if#-->
-				<!--#end for#-->
-				</select>
-				</td></tr>
-				</table>
-				
-				<!--#if $web_colors#-->
-				<br/>
-				<strong>(Active) Web Interface Schema:</strong><br/>
-				<small>Choose a color scheme for currently loaded skin.</small><br/>
-				<select name="web_color">
-				<!--#for $webline in $web_colors#-->
-				<!--#if $webline.lower() == $web_color.lower()#-->
-					<option value="$webline" selected>$webline</option>
-				<!--#else if not $web_color.lower() and $webline.lower() == 'plush-default'#-->
-					<option value="$webline" selected>$webline</option>
-				<!--#else#-->
-					<option value="$webline">$webline</option>
-				<!--#end if#-->
-				<!--#end for#-->
-				</select>
-				<!--#end if#-->
-								
-			</fieldset>
-			</div>
-			
-			<div class="EntryBlock">
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_tuning">Tuning</legend>
-				<strong>Queue Auto-Refresh Interval:</strong><br/>
-				<small>Not used in Plush!
-				<br/>Refresh interval of the queue web-interface page.</small><br/>
-				<input type="text" name="refresh_rate" value="$refresh_rate" size=8 /><small>&nbsp;(seconds;&nbsp;0&nbsp;=&nbsp;none)</small>
-				
-				<br/><br/>
-				<strong>RSS Checking Interval:</strong><br/>
-				<small>In minutes.</small><br/>
-				<input type="text" name="rss_rate" value="$rss_rate" size=8 /><small>&nbsp;(at&nbsp;least&nbsp;15&nbsp;min)</small>
-				
-				<br/><br/>
-				<strong>Download Speed Limit:</strong><br/>
-				<small>Download speed limit in kilobytes per second.</small><br/>
-				<input type="text" name="bandwith_limit" value="$bandwith_limit" size=8 /><small>&nbsp;(kB/s)</small>
-				
-				<br/><br/>
-				<strong>Article Cache Limit:</strong><br/>
-				<small>Cache articles in memory (reduce disk access).</small><br/>
-				<input type="text" name="cache_limitstr" value="$cache_limitstr" size=8 />
-				
-				<br/><br/>
-				<strong>Cleanup List:</strong><br/>
-				<small>List of file extensions that should be deleted after download.<br/>
-				For example: ".nfo," or ".nfo, .sfv"</small><br/>
-				<input type="text" name="cleanup_list" value="$cleanup_list" size=40 />
-				
-			</fieldset>
-			</div>
-			
-			</form>
+            <div align=center>
+                <small><i>Config File:</i> <font color=blue>$configfn</font></small>
+            </div>
+            
+            <form action="saveGeneral" method="post" name="fullform">
+            <div class="EntryBlock">
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_web_server">SABnzbd&nbsp;Web&nbsp;Server</legend>
+                
+                <font color="white" style="background-color:red">&nbsp;Changes require manual SABnzbd restart!&nbsp;</font>
+                
+                <br/><br/>
+                <table cellpadding=2>
+                <tr><td>
+                <strong>Web Host:</strong><br/>
+                <small>Host SABnzbd should listen on.</small><br/>
+                <input type="text" name="host" value="$host"/>
+                
+                </td><td>
+                <strong>Web Port:</strong><br/>
+                <small>Port SABnzbd should listen on.</small><br/>
+                <input type="text" name="port" size=8 value="$port"/>
+                
+                </td></tr><tr><td colspan=2><hr/></td></tr><tr><td>
+                <strong>Web Username:</strong><br/>
+                <small>Authentication Username.</small><br/>
+                <input type="text" name="web_username" value="$username"/>
+                
+                </td><td>
+                <strong>Web Password:</strong><br/>
+                <small>Authentication Password.</small><br/>
+                <input type="password" name="web_password" value="$password"/>
+                </td></tr>
+                </td></tr><tr><td colspan=2><hr/></td></tr><tr><td>
+                
+                <strong>Web Interface:</strong><br/>
+                <small>Choose a skin.</small><br/>
+                <select name="web_dir">
+                <!--#for $webline in $web_list#-->
+                <!--#if $webline.lower() == $web_dir.lower()#-->
+                    <option value="$webline" selected>$webline</option>
+                <!--#else#-->
+                    <option value="$webline">$webline</option>
+                <!--#end if#-->
+                <!--#end for#-->
+                </select>
+                
+                </td><td>
+                <strong>Secondary Web Interface:</strong><br/>
+                <small>Activate a secondary skin.</small><br/>
+                <select name="web_dir2">
+                <!--#for $webline in $web_list2#-->
+                <!--#if $webline.lower() == $web_dir2.lower()#-->
+                    <option value="$webline" selected>$webline</option>
+                <!--#else#-->
+                    <option value="$webline">$webline</option>
+                <!--#end if#-->
+                <!--#end for#-->
+                </select>
+                </td></tr>
+                </table>
+                
+                <!--#if $web_colors#-->
+                <br/>
+                <strong>(Active) Web Interface Schema:</strong><br/>
+                <small>Choose a color scheme for currently loaded skin.</small><br/>
+                <select name="web_color">
+                <!--#for $webline in $web_colors#-->
+                <!--#if $webline.lower() == $web_color.lower()#-->
+                    <option value="$webline" selected>$webline</option>
+                <!--#else if not $web_color.lower() and $webline.lower() == 'plush-default'#-->
+                    <option value="$webline" selected>$webline</option>
+                <!--#else#-->
+                    <option value="$webline">$webline</option>
+                <!--#end if#-->
+                <!--#end for#-->
+                </select>
+                <!--#end if#-->
+                                
+            </fieldset>
+            </div>
+            
+            <div class="EntryBlock">
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_tuning">Tuning</legend>
+                <strong>Queue Auto-Refresh Interval:</strong><br/>
+                <small>Not used in Plush!
+                <br/>Refresh interval of the queue web-interface page.</small><br/>
+                <input type="text" name="refresh_rate" value="$refresh_rate" size=8 /><small>&nbsp;(seconds;&nbsp;0&nbsp;=&nbsp;none)</small>
+                
+                <br/><br/>
+                <strong>RSS Checking Interval:</strong><br/>
+                <small>In minutes.</small><br/>
+                <input type="text" name="rss_rate" value="$rss_rate" size=8 /><small>&nbsp;(at&nbsp;least&nbsp;15&nbsp;min)</small>
+                
+                <br/><br/>
+                <strong>Download Speed Limit:</strong><br/>
+                <small>Download speed limit in kilobytes per second.</small><br/>
+                <input type="text" name="bandwith_limit" value="$bandwith_limit" size=8 /><small>&nbsp;(kB/s)</small>
+                
+                <br/><br/>
+                <strong>Article Cache Limit:</strong><br/>
+                <small>Cache articles in memory (reduce disk access).</small><br/>
+                <input type="text" name="cache_limitstr" value="$cache_limitstr" size=8 />
+                
+                <br/><br/>
+                <strong>Cleanup List:</strong><br/>
+                <small>List of file extensions that should be deleted after download.<br/>
+                For example: ".nfo," or ".nfo, .sfv"</small><br/>
+                <input type="text" name="cleanup_list" value="$cleanup_list" size=40 />
+                
+            </fieldset>
+            </div>
+            
+            </form>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

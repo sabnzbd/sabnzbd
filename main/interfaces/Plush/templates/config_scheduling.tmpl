@@ -2,11 +2,11 @@
 <!--#set global $help_uri="Configure+Scheduling"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-			<div class="EntryBlock">
-			<form action="addSchedule" method="post">
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_add_schedule">Add&nbsp;Schedule</legend>
+            <div class="EntryBlock">
+            <form action="addSchedule" method="post">
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_add_schedule">Add&nbsp;Schedule</legend>
 <%import time
 t = time.localtime()
 hour = t[3]
@@ -15,74 +15,74 @@ if hour != 23:
 else:
     hour = 0 %>
 
-				<table>
-					<tr><td align=right>
-						<div class="sucker">Hour&nbsp;:&nbsp;Minute:</div>
-					</td><td>
-						<select name="hour">
-						<!--#for $i in range(24)#-->
-							<option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
-						<!--#end for#-->
-						</select>&nbsp;:&nbsp;<select name="minute">
-						<!--#for $i in range(60)#-->
-							<option value="$i">$i</option>
-						<!--#end for#-->
-						</select>
-					</td></tr>
-					
-					<tr><td align=right>
-						<div class="sucker">Frequency:</div>
-					</td><td>
-						<select name="dayofweek">
-							<option value="*" selected>Daily</option>
-							<option value="1">Mondays</option>
-							<option value="2">Tuesdays</option>
-							<option value="3">Wednesdays</option>
-							<option value="4">Thursdays</option>
-							<option value="5">Fridays</option>
-							<option value="6">Saturdays</option>
-							<option value="7">Sundays</option>
-						</select>
-					</td></tr>
-					
-					<tr><td align=right>
-						<div class="sucker">Action:</div>
-					</td><td>
-						<select name="action">
+                <table>
+                    <tr><td align=right>
+                        <div class="sucker">Hour&nbsp;:&nbsp;Minute:</div>
+                    </td><td>
+                        <select name="hour">
+                        <!--#for $i in range(24)#-->
+                            <option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
+                        <!--#end for#-->
+                        </select>&nbsp;:&nbsp;<select name="minute">
+                        <!--#for $i in range(60)#-->
+                            <option value="$i">$i</option>
+                        <!--#end for#-->
+                        </select>
+                    </td></tr>
+                    
+                    <tr><td align=right>
+                        <div class="sucker">Frequency:</div>
+                    </td><td>
+                        <select name="dayofweek">
+                            <option value="*" selected>Daily</option>
+                            <option value="1">Mondays</option>
+                            <option value="2">Tuesdays</option>
+                            <option value="3">Wednesdays</option>
+                            <option value="4">Thursdays</option>
+                            <option value="5">Fridays</option>
+                            <option value="6">Saturdays</option>
+                            <option value="7">Sundays</option>
+                        </select>
+                    </td></tr>
+                    
+                    <tr><td align=right>
+                        <div class="sucker">Action:</div>
+                    </td><td>
+                        <select name="action">
                             <!--#for $action in $actions#-->
                                 <option value="$action">$action
                             <!--#end for#-->
-						</select>
-					</td></tr>
-					
-					<tr><td align=right>
-						<div class="sucker">Arguments:</div>
-					</td><td>
-						<input type="text" size="20" name="arguments" value=""/>
-					</td></tr>
-					
-					<tr><td>
-					</td><td>
-						<br/><input type="submit" value="Add Schedule"/>
-					</td></tr>
-					
-				</table>
-				
-				
-				
-			</fieldset>
-			</form>
-			</div>
-			
-			<!--#if $schedlines#-->
-			<div class="EntryBlock">
-			<fieldset class="EntryFieldSet">
-			<legend id="configbox_current_schedules">Current&nbsp;Schedules</legend>
-			<!--#set $schednum = 0#-->
-			<!--#for $line in $schedlines#-->
-			<form action="delSchedule" method="post">
-				<!--#set $schednum = $schednum+1#-->
-				<input type="hidden" name="line" value="$line"/>
+                        </select>
+                    </td></tr>
+                    
+                    <tr><td align=right>
+                        <div class="sucker">Arguments:</div>
+                    </td><td>
+                        <input type="text" size="20" name="arguments" value=""/>
+                    </td></tr>
+                    
+                    <tr><td>
+                    </td><td>
+                        <br/><input type="submit" value="Add Schedule"/>
+                    </td></tr>
+                    
+                </table>
+                
+                
+                
+            </fieldset>
+            </form>
+            </div>
+            
+            <!--#if $schedlines#-->
+            <div class="EntryBlock">
+            <fieldset class="EntryFieldSet">
+            <legend id="configbox_current_schedules">Current&nbsp;Schedules</legend>
+            <!--#set $schednum = 0#-->
+            <!--#for $line in $schedlines#-->
+            <form action="delSchedule" method="post">
+                <!--#set $schednum = $schednum+1#-->
+                <input type="hidden" name="line" value="$line"/>
 <% 
 m, h, day, action = line.split(' ', 3)
 if len(m) == 1:
@@ -104,12 +104,12 @@ elif day == "6":
 elif day == "7":
     day='Sunday'    
 %>
-				<input type="submit" value="X"/>&nbsp;&sdot;<u>Schedule&nbsp;#$schednum:</u>&nbsp;<strong>$h:$m</strong>&nbsp;&sdot;&nbsp;$day&nbsp;&sdot;&nbsp;$action
-				
-			</form><br />
-			<!--#end for#-->
-			</fieldset>
-			</div>
-			<!--#end if#-->
+                <input type="submit" value="X"/>&nbsp;&sdot;<u>Schedule&nbsp;#$schednum:</u>&nbsp;<strong>$h:$m</strong>&nbsp;&sdot;&nbsp;$day&nbsp;&sdot;&nbsp;$action
+                
+            </form><br />
+            <!--#end for#-->
+            </fieldset>
+            </div>
+            <!--#end if#-->
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

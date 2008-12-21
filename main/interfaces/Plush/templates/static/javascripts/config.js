@@ -37,45 +37,45 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 /***************************************/
 /***************************************/
 jQuery(document).ready(function($){
-	
-	if (config_pane=="NZO") {
-		$('.config_menu').corner("round tl bl");
-		$('#config_container').corner("round");
-		$('.nzf_row').click(function(event) {
-			$('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked'));
-		});
-		$("#config_nzo_select_all").click(function(){
-			$("INPUT[type='checkbox']").attr('checked', true);
-    	});
-		$("#config_nzo_select_none").click(function(){
-			$("INPUT[type='checkbox']").attr('checked', false);
-    	});
-		$("#config_nzo_select_invert").click(function(){
-			$("INPUT[type='checkbox']").each( function() {
+    
+    if (config_pane=="NZO") {
+        $('.config_menu').corner("round tl bl");
+        $('#config_container').corner("round");
+        $('.nzf_row').click(function(event) {
+            $('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked'));
+        });
+        $("#config_nzo_select_all").click(function(){
+            $("INPUT[type='checkbox']").attr('checked', true);
+        });
+        $("#config_nzo_select_none").click(function(){
+            $("INPUT[type='checkbox']").attr('checked', false);
+        });
+        $("#config_nzo_select_invert").click(function(){
+            $("INPUT[type='checkbox']").each( function() {
                 $(this).attr('checked', !$(this).attr('checked'));
             });
-    	});
-		return;
-	}
-	
-	$('.config_menu').corner("round tl bl");
-	$('#config_container').corner("round");
-	$('#help').corner("round");
-	
-	switch(config_pane) {
-		case 'Connections':
-			$('#test_email').corner("round");
-			$('#force_disconnect').corner("round");
-			break;
-		case 'Sorting':
-			previewtv();
-		case 'General':
-		case 'Folders':
-		case 'Switches':
-		case 'Email':
-		case 'Index Sites':
-			$('#save').corner("round");
-			break;
-	};
+        });
+        return;
+    }
+    
+    $('.config_menu').corner("round tl bl");
+    $('#config_container').corner("round");
+    $('#help').corner("round");
+    
+    switch(config_pane) {
+        case 'Connections':
+            $('#test_email').corner("round");
+            $('#force_disconnect').corner("round");
+            break;
+        case 'Sorting':
+            previewtv();
+        case 'General':
+        case 'Folders':
+        case 'Switches':
+        case 'Email':
+        case 'Index Sites':
+            $('#save').corner("round");
+            break;
+    };
 
 });

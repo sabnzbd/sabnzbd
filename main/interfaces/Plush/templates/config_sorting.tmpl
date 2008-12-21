@@ -2,9 +2,9 @@
 <!--#set global $help_uri="Configure+Sorting"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-	<!--#raw#-->
-	<script language="javascript">		
-		// switch's Series sort code
+    <!--#raw#-->
+    <script language="javascript">        
+        // switch's Series sort code
     function tvAdd(val){
         var tv = document.getElementById('tvfoldername'); 
         tv.value = tv.value + val;
@@ -165,18 +165,18 @@
         disp = (document.getElementById(id).style.display == "block") ? "none" : "block";
         document.getElementById(id).style.display = disp;
     }
-	</script>
-	<!--#end raw#-->
+    </script>
+    <!--#end raw#-->
 
-			<form action="saveSorting" method="post" name="fullform">
-			<div class="EntryBlock">
+            <form action="saveSorting" method="post" name="fullform">
+            <div class="EntryBlock">
 
-			
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_sorting_folders">Sorting&nbsp;Folders</legend>
-				
-				<input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Series Sorting</strong><br class="clear" />
+            
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_sorting_folders">Sorting&nbsp;Folders</legend>
+                
+                <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Series Sorting</strong><br class="clear" />
 
     <a href="#toggle" onclick="javascript:showDiv('Keytable')">Toggle key</a>
      <div id="Keytable">
@@ -392,37 +392,37 @@
     <input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="Daily Folders"/><br class="clear" />
     <br class="clear" />
     Ex: <span id="previewdate"></span>
-				<br/><b>&raquo; Legend:</b><br/>
-				
-				<table>
-				<tr><td>
-				<u>Show Name:</u><br/>
-					&nbsp;&nbsp;&nbsp;%sn <small>(ex: Show Name)</small><br/>
-					&nbsp;&nbsp;&nbsp;%s.n <small>(ex: Show.Name)</small><br/>
-					&nbsp;&nbsp;&nbsp;%s_n <small>(ex: Show_Name)</small><br/>
-				</td><td>
-				<u>Episode Name:</u><br/>
-					&nbsp;&nbsp;&nbsp;%en <small>(ex: Episode Name)</small><br/>
-					&nbsp;&nbsp;&nbsp;%e.n <small>(ex: Episode.Name)</small><br/>
-					&nbsp;&nbsp;&nbsp;%e_n <small>(ex: Episode_Name)</small><br/>
-				</td><td valign=top>
-				<u>File Extension:</u><br/>
-					&nbsp;&nbsp;&nbsp;%ext <small>(ex: avi)</small><br/>
-				<br class="clear" />
-				</td></tr><tr><td>
-				<u>Season Number:</u><br/>
-					&nbsp;&nbsp;&nbsp;%s <small>(ex: 1)</small><br/>
-					&nbsp;&nbsp;&nbsp;%0s <small>(ex: 01)</small><br/>
-				</td><td>
-				<u>Episode Number:</u><br/>
-					&nbsp;&nbsp;&nbsp;%e <small>(ex: 5)</small><br/>
-					&nbsp;&nbsp;&nbsp;%0e <small>(ex: 05)</small><br/>
-				</td><td></td></tr>
-				</table>
-				
-			</fieldset>
-			</div>
-			
-			</form>
+                <br/><b>&raquo; Legend:</b><br/>
+                
+                <table>
+                <tr><td>
+                <u>Show Name:</u><br/>
+                    &nbsp;&nbsp;&nbsp;%sn <small>(ex: Show Name)</small><br/>
+                    &nbsp;&nbsp;&nbsp;%s.n <small>(ex: Show.Name)</small><br/>
+                    &nbsp;&nbsp;&nbsp;%s_n <small>(ex: Show_Name)</small><br/>
+                </td><td>
+                <u>Episode Name:</u><br/>
+                    &nbsp;&nbsp;&nbsp;%en <small>(ex: Episode Name)</small><br/>
+                    &nbsp;&nbsp;&nbsp;%e.n <small>(ex: Episode.Name)</small><br/>
+                    &nbsp;&nbsp;&nbsp;%e_n <small>(ex: Episode_Name)</small><br/>
+                </td><td valign=top>
+                <u>File Extension:</u><br/>
+                    &nbsp;&nbsp;&nbsp;%ext <small>(ex: avi)</small><br/>
+                <br class="clear" />
+                </td></tr><tr><td>
+                <u>Season Number:</u><br/>
+                    &nbsp;&nbsp;&nbsp;%s <small>(ex: 1)</small><br/>
+                    &nbsp;&nbsp;&nbsp;%0s <small>(ex: 01)</small><br/>
+                </td><td>
+                <u>Episode Number:</u><br/>
+                    &nbsp;&nbsp;&nbsp;%e <small>(ex: 5)</small><br/>
+                    &nbsp;&nbsp;&nbsp;%0e <small>(ex: 05)</small><br/>
+                </td><td></td></tr>
+                </table>
+                
+            </fieldset>
+            </div>
+            
+            </form>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

@@ -2,81 +2,81 @@
 <!--#set global $help_uri="Configure+Directories"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-			<div align="center"><small><em>NOTE:</em> Folders will be created automatically when Saving.</small></div>
-			
-			<form action="saveDirectories" method="post" name="fullform">
-			<div class="EntryBlock">
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_user_folders">User&nbsp;Folders</legend>
-				<strong style="color:white;background-color:blue">&nbsp;In&nbsp;"$my_home"&nbsp;</strong>
-				
-				<br/><br/>
-				<strong>Temporary Download Folder:</strong><br/>
-				<small>Location to store unprocessed downloads.</small><br/>
-				<input type="text" size="40" name="download_dir" value="$download_dir">
-				
-				<br/><br/>
-				<strong>Minimum Free Space for Temp. Download Folder:</strong><br/>
-				<small>Auto-pause when free space is beneath this value.</small><br/>
-				<input type="text" size="8" name="download_free" value="$download_free">&nbsp;<small>(bytes; optionally follow with K,M,G,T,P e.g. 500M 2G)</small>
-				
-				<br/><br/>
-				<strong>Completed Download Folder:</strong><br/>
-				<small>(can be overruled by user-defined categories)</small><br/>
-				<input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
-				
-				<!--#if not $nt#-->
-				<br/><br/>
-				<strong>Permissions for Completed Downloads:</strong><br/>
-				<small>Set permissions pattern for completed files/folders, octal notation only!</small><br/>
-				<input type="text" size="10" name="permissions" value="$permissions">
-				<!--#end if#-->
-				
-				<br/><br/>
-				<strong>Watched Folder:</strong><br/>
-				<small>Folder to monitor for .nzb and .zip files.</small><br/>
-				<input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
-				
-				<br/><br/>
-				<strong>Watched Folder Scan Speed:</strong><br/>
-				<small>Number of seconds between scans for .nzb files.</small><br/>
-				<input type="text" size="8" name="dirscan_speed" value="$dirscan_speed">&nbsp;<small>(seconds)</small>
-				
-				<br/><br/>
-				<strong>Folder Containing the User Scripts:</strong><br/>
-				<small>Folder containing user scripts for post-processing.</small><br/>
-				<input type="text" size="40" name="script_dir" value="$script_dir">
+            <div align="center"><small><em>NOTE:</em> Folders will be created automatically when Saving.</small></div>
+            
+            <form action="saveDirectories" method="post" name="fullform">
+            <div class="EntryBlock">
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_user_folders">User&nbsp;Folders</legend>
+                <strong style="color:white;background-color:blue">&nbsp;In&nbsp;"$my_home"&nbsp;</strong>
+                
+                <br/><br/>
+                <strong>Temporary Download Folder:</strong><br/>
+                <small>Location to store unprocessed downloads.</small><br/>
+                <input type="text" size="40" name="download_dir" value="$download_dir">
+                
+                <br/><br/>
+                <strong>Minimum Free Space for Temp. Download Folder:</strong><br/>
+                <small>Auto-pause when free space is beneath this value.</small><br/>
+                <input type="text" size="8" name="download_free" value="$download_free">&nbsp;<small>(bytes; optionally follow with K,M,G,T,P e.g. 500M 2G)</small>
+                
+                <br/><br/>
+                <strong>Completed Download Folder:</strong><br/>
+                <small>(can be overruled by user-defined categories)</small><br/>
+                <input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
+                
+                <!--#if not $nt#-->
+                <br/><br/>
+                <strong>Permissions for Completed Downloads:</strong><br/>
+                <small>Set permissions pattern for completed files/folders, octal notation only!</small><br/>
+                <input type="text" size="10" name="permissions" value="$permissions">
+                <!--#end if#-->
+                
+                <br/><br/>
+                <strong>Watched Folder:</strong><br/>
+                <small>Folder to monitor for .nzb and .zip files.</small><br/>
+                <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
+                
+                <br/><br/>
+                <strong>Watched Folder Scan Speed:</strong><br/>
+                <small>Number of seconds between scans for .nzb files.</small><br/>
+                <input type="text" size="8" name="dirscan_speed" value="$dirscan_speed">&nbsp;<small>(seconds)</small>
+                
+                <br/><br/>
+                <strong>Folder Containing the User Scripts:</strong><br/>
+                <small>Folder containing user scripts for post-processing.</small><br/>
+                <input type="text" size="40" name="script_dir" value="$script_dir">
 
-				<br/><br/>
-				<strong>Folder Containing Email Templates:</strong><br/>
-				<small>Folder containing user defined email templates.</small><br/>
-				<input type="text" size="40" name="email_dir" value="$email_dir">
-			</fieldset>
-			
-			<fieldset class="EntryFieldSet">
-				
-				<legend id="configbox_system_folders">System&nbsp;Folders</legend>
-				<strong style="color:white;background-color:blue;">&nbsp;In&nbsp;"$my_lcldata"&nbsp;</strong><br/><br/>
-				
-				<strong>Cache Folder:</strong><br/>
-				<small>Location for temporary storage.</small><br/>
-				<input type="text" size="40" name="cache_dir" value="$cache_dir">
-				
-				<br/><br/>
-				<strong>Log Folder:</strong><br/>
-				<small>Location of log files for SABnzbd.</small><br/>
-				<input type="text" size="40" name="log_dir" value="$log_dir">
-				
-				<br/><br/>
-				<strong>Backup Folder for .nzb:</strong><br/>
-				<small>Location where .nzb will be backed up.</small><br/>
-				<input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
-			</fieldset>
-			
+                <br/><br/>
+                <strong>Folder Containing Email Templates:</strong><br/>
+                <small>Folder containing user defined email templates.</small><br/>
+                <input type="text" size="40" name="email_dir" value="$email_dir">
+            </fieldset>
+            
+            <fieldset class="EntryFieldSet">
+                
+                <legend id="configbox_system_folders">System&nbsp;Folders</legend>
+                <strong style="color:white;background-color:blue;">&nbsp;In&nbsp;"$my_lcldata"&nbsp;</strong><br/><br/>
+                
+                <strong>Cache Folder:</strong><br/>
+                <small>Location for temporary storage.</small><br/>
+                <input type="text" size="40" name="cache_dir" value="$cache_dir">
+                
+                <br/><br/>
+                <strong>Log Folder:</strong><br/>
+                <small>Location of log files for SABnzbd.</small><br/>
+                <input type="text" size="40" name="log_dir" value="$log_dir">
+                
+                <br/><br/>
+                <strong>Backup Folder for .nzb:</strong><br/>
+                <small>Location where .nzb will be backed up.</small><br/>
+                <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
+            </fieldset>
+            
 
-			</div>
-			
-			</form>
+            </div>
+            
+            </form>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->
