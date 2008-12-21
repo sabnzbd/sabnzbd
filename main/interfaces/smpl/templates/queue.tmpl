@@ -4,9 +4,6 @@
 
 <h3>Queue</h3>
 <div id="centerLinks">
-<a onClick="lr('queue/sort_by_name','', '-1', this.parentNode.parentNode.id);" >Sort by name</a>  |
-<a onClick="lr('queue/sort_by_avg_age','', '-1', this.parentNode.parentNode.id);" >Sort by date</a>  |
-<a onClick="lr('queue/sort_by_size','', '-1', this.parentNode.parentNode.id);" >Sort by size</a>  |
 <a onClick="if(confirm('Delete the all items from the queue?')){lr('queue/purge','', '-1', this.parentNode.parentNode.id);}" >Delete All</a> |
 On queue finish:
 <select onChange="javascript:changequeuedetails('queue/change_queue_complete_action?action='+this.options[this.selectedIndex].value)">
@@ -47,126 +44,107 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 
 	<thead>
     <tr>
-		<!--<th mochi:format="str"></th>-->
-		<th mochi:format="str" id="order"></th>
-        <th mochi:format="str">Priority</th>
-        <!--#if $script_list#--><th>Script</th><!--#end if#-->
-        <!--#if $cat_list#--><th>Category</th><!--#end if#-->
-		<th mochi:format="str">Name</th>
-		<th mochi:format="str">Percentage</th>
-		<th mochi:format="str">Remain/Total</th>
-        <th mochi:format="str">Timeleft</th>
-		<th mochi:format="str">ETA</th>
-		<th mochi:format="str">Age</th>
-        <th mochi:format="str"></th>
+		<th class="expandColumn center"></th>
+        <th class="orderColumn center"></th>
+		<th><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','', '-1', this.parentNode.parentNode.id);">Name</a></th>
+		<th class="center">Progress</th>
+        <th class="timeleftColumn center">Timeleft</th>
+		<th class="ageColumn center"><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','', '-1', this.parentNode.parentNode.id);">Age</a></th>
+        <th class="sizeColumn center"><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','', '-1', this.parentNode.parentNode.id);">Size</a></th>
+        <th class="editColumn center">Edit</th>
+        <th class="actionsColumn center"></th>
 	</tr>
 	</thead>
-	<tfoot class="invisible">
-
-		<tr>
-			<td colspan="0"></td>
-		</tr>
-	</tfoot>
-	<tbody>
   <!--#if $varExists('slotinfo')#--> 
     <!--#set $odd = False#-->
     <!--#for $slot in $slotinfo#-->
         <!--#set $odd = not $odd#-->
-        <tr id="$slot.nzo_id" class="$slot.priority">
-		<!--<td><input type="checkbox" "></td>checked-->
-	<td class="actionTD">
-<form> 
-			
+<tbody id="$slot.nzo_id">
+<tr class="$slot.priority">
+    <td class="expand">
+        <a class="expander" onClick="javascript:toggle_verbosity('$slot.nzo_id')"><span id="name_$slot.nzo_id"><!--#if $slot.verbosity then '-' else '+'#--></span></a>
+    </td>
+    <td>
+        <select onclick="restartTimer(5)" onchange="javascript:changequeuedetails('queue/'+this.options[this.selectedIndex].value)">
+        <!--#for $i in xrange($noofslots)#-->
+            <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
+        <!--#end for#-->
+        </select>
+    </td>
+    <td>
+        <span class="filename">$slot.filename</span>
+    </td>
+    <td title="$slot.mbleft/${slot.mb}MB">
+        <!--#if float($slot.mb)>0 #-->
+        <!--#set $perc = round( (1-(float($slot.mbleft) / float($slot.mb))) * 100, 2)#-->
+        <div class="progressBar"><div id="progress_$slot.nzo_id" style="width: $perc%;   position: relative;   background-color: #9bf;   height: 6px;"><!-- --></div></div>
+        <!--#end if#-->
+    </td>
+    <td class="center" title="$slot.eta">$slot.timeleft</td>
+    <td class="center">$slot.avg_age</td>
+    <td class="center">$slot.size</td>
+    <td class="center"><a onclick="javascript:showRow('action_$slot.nzo_id')">Edit</a></td>
+    <td class="right_align">
+        <!--#if $slot.status == 'Paused'#-->
+            <a onClick="resumequeueitem('$slot.nzo_id');"><img class="resumeicon" src="static/images/control_play.png" /></a>
+        <!--#else#-->
+            <a onClick="pausequeueitem('$slot.nzo_id');"><img class="pauseicon" src="static/images/control_pause.png" /></a>            
+        <!--#end if#-->
+        <a onClick="deletequeueitem('$slot.nzo_id');"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
+    </td>
+</tr>
+<tr id="action_$slot.nzo_id" class="hidden">
+    <td>
+    </td>
+<td colspan="8">
 
-            <select onclick="restartTimer(5)" onchange="javascript:changequeuedetails('queue/'+this.options[this.selectedIndex].value)">
-            <!--#for $i in xrange($noofslots)#-->
-                <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
-            <!--#end for#-->
-            </select>
             <select onclick="restartTimer(5)" onchange="javascript:changequeuedetails('queue/change_opts?nzo_id='+this.options[this.selectedIndex].value)">
                 <option value="$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
                 <option value="$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
                 <option value="$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
                 <option value="$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
 			</select>
-                
-            <!--#if $slot.status == 'Paused'#-->
-            <a onClick="resumequeueitem('$slot.nzo_id');"><img class="resumeicon" src="static/images/control_play.png" /></a>
-            <!--#else#-->
-            <a onClick="pausequeueitem('$slot.nzo_id');"><img class="pauseicon" src="static/images/control_pause.png" /></a>            
-            <!--#end if#--> 
-			</form>
-            </td>
-            
-            <td>
+
+
             <!--#if $slot.priority != '2'#-->
-            <form>
             <select onchange="javascript:changequeuedetails('queue/set_priority?nzo_id=$slot.nzo_id&priority='+this.options[this.selectedIndex].value);">
                     <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
                     <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
                     <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
-                </select></form>
+                </select>
             <!--#end if#-->
-            </td>
-        <!--#if $script_list#-->            
-		<td>
-            
-                <form>
+        <!--#if $script_list#-->                       
                 <select onchange="javascript:changequeuedetails('queue/change_script?nzo_id=$slot.nzo_id&script='+this.options[this.selectedIndex].value);">
                 <!--#for $sc in $script_list#-->
                     <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
                 <!--#end for#-->
                 </select>
-                </form>
-		</td>
             <!--#end if#-->
             
             <!--#if $cat_list#-->
-            <td><form>
             <select onchange="javascript:changequeuedetails('queue/change_cat?nzo_id=$slot.nzo_id&cat='+this.options[this.selectedIndex].value);">
                 <!--#for $ct in $cat_list#-->
                     <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
                 <!--#end for#-->
-                </select></form>
-            </td>
+                </select>
             <!--#end if#-->
-            
-
-        
-		<td>
-            <span class="filename"><a onClick="javascript:toggle_verbosity('$slot.nzo_id')"><span id="name_$slot.nzo_id">$slot.filename</span></a></span>
-		
-	<td>
-<!--#if float($slot.mb)>0 #-->
-<!--#set $perc = round( (1-(float($slot.mbleft) / float($slot.mb))) * 100, 2)#-->
-<div id="progressBar"><div id="progress_$slot.nzo_id" style="width: $perc%;   position: relative;   background-color: #9bf;   height: 6px;"><!-- --></div></div>
-<!--#end if#-->
-	</td>
-	<td>
-	<span class="pre"> <span id="left_$slot.nzo_id">$slot.mbleft</span>/<span id="total_$slot.nzo_id">$slot.mb</span> MB</span>
-	</td>
-</span>
-<td>$slot.timeleft</td>
-<td>$slot.eta</td>
-<td>$slot.avg_age</td>
-<td>
-<a onClick="deletequeueitem('$slot.nzo_id');"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a>
 </td>
-        </tr>
+</tr>
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.finished#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="finished" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td>Finished</td><td></td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td></td><td>$line.age</td><td></td></tr>
+            <tr class="finished <!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td></td><td>Finished</td><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td><td></td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.active#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="active" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td>Active</td><td></td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename</td><td></td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td></td><td>$line.age</td><td><a onClick="changequeuedetails('queue/removeNzf?nzo_id=$slot.nzo_id&nzf_id=$line.nzf_id')"><img id="delicon" src="static/images/32px-Crystal_Clear_action_stop.png" /></a></td></tr>
+            <tr id="$line.nzf_id" class="active <!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td></td><td>Active</td><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td><td class="right_align"><a onClick="deletenzf('$slot.nzo_id','$line.nzf_id')"><img class="delicon" src="static/images/messagebox_critical.png" /></a></td></tr>
         <!--#end for#-->
         <!--#set $oddLine = False#-->
         <!--#for $line in $slot.queued#-->
             <!--#set $oddLine = not $oddLine#-->
-            <tr id="waiting" class="<!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td>Waiting</td><td></td><!--#if $script_list#--><td></td><!--#end if#--><!--#if $cat_list#--><td></td><!--#end if#--><td>$line.filename (set: $line.set)</td><td></td><td class="pre">$line.mbleft/$line.mb MB<td></td><td></td><td>$line.age</td><td></td></tr>
+            <tr class="waiting <!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td></td><td>Waiting</td><td>$line.filename (set: $line.set)</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td><td></td></tr>
         <!--#end for#-->
+</tbody>
     <!--#end for#--><!--#end if#-->
     </table>

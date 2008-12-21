@@ -13,34 +13,58 @@
 
 <br>
 <p>
-<strong>Bytes Downloaded:</strong> $bytes_beginning GB <strong>- Bytes in History:</strong> $total_bytes GB</strong>
+<strong>History Size: $total_size</strong>
 </p>
+<% import datetime %>
 <!--#if $lines#-->
 <table id="historyTable">
-    <tr><th>Completed</th><th></th><th>Name</th><th>Status</th></tr>
+    <tr><th></th><th>Completed</th><th>Name</th><th>Size</th><th>Status</th><th></th></tr>
     <!--#set $odd = False#-->
     <!--#for $line in $lines #-->
+<% 
+d = datetime.datetime.fromtimestamp(float(line['completed']))
+t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
+%>
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td>$line.added</td>
+        <td><a class="verbosity_link" href="./tog_verbose/?jobs=$line.nzo_id">
+        <!--#if $line.show_details then '-' else '+'#-->
+        </a></td>
+        <td>$t</td>
+        <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
+        <td>$line.size</td><td>$line.status</td>
         <td><form action="delete" method="get">
-            <input type="hidden" value="$line.nzo" name="job">
+            <input type="hidden" value="$line.nzo_id" name="job">
             <input type="submit" value="Del"></form>
         </td>
-        <td>$line.filename</td><td>$line.status</td></tr>
-        <!--#set $oddLine = not False#-->
-        <!--#for $stage in $line.stages#-->
-            <!--#set $oddLine = not $oddLine#-->
-            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#-->"><td></td><td></td><td><dl>
-            <dt>Stage $stage.name</dt>
-            <!--#for $action in $stage.actions#-->
-                 <dd>$action.name: $action.value</dd>
-			            <!--#end for#-->
-		            </dl>
-				</td>
-				<td></td>
-			</tr>
-        <!--#end for#-->
+        </tr>
+        <!--#if $line.show_details#-->
+            <!--#set $oddLine = not False#-->
+            <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#-->"><td></td><td></td>
+            <td colspan="3"><dl>
+            <!--#for $stage in $line.stage_log#-->
+                <!--#set $oddLine = not $oddLine#-->
+                <dt>Stage $stage.name.title</dt>
+                <!--#for $action in $stage.actions#-->
+                     <dd>$action</dd>
+                            <!--#end for#-->
+                     <br />
+            <!--#end for#-->
+            <!--#if $line.category#-->
+                <dt>Category</dt>
+                <dd>$line.category</dd>
+                <br />
+            <!--#end if#-->
+            <!--#if $line.path#-->
+                <dt>Path</dt>
+                <dd title="$line.storage">$line.path</dd>
+                <br />
+            <!--#end if#-->
+                    </dl>
+                    </td>
+                    <td></td>
+                </tr>
+        <!--#end if#-->
     <!--#end for#-->
 </table>
 <!--#end if#-->

@@ -71,13 +71,11 @@ background-color:#444;
 th{background-color:#000;color:white;}
 tr{background-color:#222;}
 
-#finished{background-color:#ff5151; color:black;}
-#active{background-color:#4aff5f; color:black;}
-#waiting{background-color:#fff44a; color:black;}
+.finished{background-color:#ff5151; color:black;}
+.active{background-color:#4aff5f; color:black;}
+.waiting{background-color:#fff44a; color:black;}
 
-#delicon{
-color:#fff;
-}
+
 
 input, select {
 background-color:#232323;

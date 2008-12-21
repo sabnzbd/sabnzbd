@@ -295,7 +295,7 @@ PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 class NzbObject(TryList):
     def __init__(self, filename, pp, script, nzb = None,
                  futuretype = False, cat = None, url=None, 
-                 priority=NORMAL_PRIORITY, status="Queued"):
+                 priority=NORMAL_PRIORITY, status="Queued", nzo_info={}):
         TryList.__init__(self)
 
         if cat and pp == None:
@@ -346,8 +346,6 @@ class NzbObject(TryList):
 
         self.__finished_files = []
 
-        self.__unpackstrht = {}
-
         #the current status of the nzo eg:
         #Queued, Downloading, Repairing, Unpacking, Failed, Complete
         self.__status = status
@@ -367,6 +365,15 @@ class NzbObject(TryList):
         self.futuretype = futuretype
         self.deleted = False
         self.parsed = False
+        
+        # Store one line responses for filejoin/par2/unrar/unzip here for history display
+        self.action_line = ''
+        # Store the results from various filejoin/par2/unrar/unzip stages
+        self.unpack_info = {}
+        # Stores one line containing the last failure
+        self.fail_msg = ''
+        # Stores various info about the nzo to be 
+        self.nzo_info = nzo_info
         
         self.extra1 = None
         self.extra2 = None
@@ -636,11 +643,6 @@ class NzbObject(TryList):
     def remove_parset(self, setname):
         self.__partable.pop(setname)
 
-    def set_unpackstr(self, msg, action, stage):
-        if stage not in self.__unpackstrht:
-            self.__unpackstrht[stage] = {}
-        self.__unpackstrht[stage][action] = msg
-
     def set_status(self, status):
         #sets a string outputting the current status of the job, eg:
         #Queued, Downloading, Repairing, Unpacking, Failed, Complete
@@ -649,6 +651,9 @@ class NzbObject(TryList):
     def get_status(self):
         #returns a string of the current history status
         return self.__status
+    
+    def get_nzo_id(self):
+        return self.nzo_id
 
     def get_files(self):
         return self.__finished_files
@@ -662,32 +667,14 @@ class NzbObject(TryList):
             seconds = timecompleted.seconds
             #find the total time including days
             totaltime = (timecompleted.days/86400) + seconds
+            self.set_nzo_info('download_time',totaltime)
     
             #format the total time the download took, in days, hours, and minutes, or seconds.
-            completestr = ''
-            if timecompleted.days:
-                completestr += '%s day%s ' % (timecompleted.days, self.s_returner(timecompleted.days))
-            if (seconds/3600) >= 1:
-                completestr += '%s hour%s ' % (seconds/3600, self.s_returner((seconds/3600)))
-                seconds -= (seconds/3600)*3600
-            if (seconds/60) >= 1:
-                completestr += '%s minute%s ' % (seconds/60, self.s_returner((seconds/60)))
-                seconds -= (seconds/60)*60
-            if seconds > 0:
-                completestr += '%s second%s ' % (seconds, self.s_returner(seconds))
-            #message 1 - total time
-            completemsg = '%s' % (completestr)
-            self.set_unpackstr(completemsg, '[Time-Taken]', 0)
-            #message 2 - average speed
-            completemsg = '%0.fkB/s' % (avg_bps)
-            self.set_unpackstr(completemsg, '[Avg-Speed]', 0)
+            complete_time = format_time_string(seconds, timecompleted.days)
+            
+            self.set_unpack_info('download', 'Downloaded in %s at an average of %0.fkB/s' % (complete_time, avg_bps), unique=True)
 
 
-    def s_returner(self, value):
-        if value > 1:
-            return 's'
-        else:
-            return ''
 
     def get_article(self, server):
         article = None
@@ -894,7 +881,7 @@ class NzbObject(TryList):
             avg_date = time.mktime(avg_date.timetuple())
 
         return (self.__repair, self.__unpack, self.__delete, self.__script,
-                self.nzo_id, self.__filename, self.__unpackstrht.copy(),
+                self.nzo_id, self.__filename, {},
                 self.__msgid, self.__cat, self.__url,
                 bytes_left_all, self.__bytes, avg_date,
                 finished_files, active_files, queued_files, self.__status, self.__priority)
@@ -902,10 +889,57 @@ class NzbObject(TryList):
     def get_nzf_by_id(self, nzf_id):
         if nzf_id in self.__files_table:
             return self.__files_table[nzf_id]
-
-    def get_unpackstrht(self):
-        return self.__unpackstrht.copy()
-
+    
+    def set_unpack_info(self, key, msg, set='', unique=False):
+        ''' 
+            Builds a dictionary containing the stage name (key) and a message
+            If set is present, it will overwrite any other messages from the set of the same stage
+            If unique is present, it will only have a single line message
+        '''
+        found = False
+        # Unique messages allow only one line per stage(key)
+        if not unique:
+            if not self.unpack_info.has_key(key):
+                self.unpack_info[key] = []
+            # If set is present, look for previous message from that set and replace
+            if set:
+                set = '[%s]' % set
+                for x in xrange(len(self.unpack_info[key])):
+                    if set in self.unpack_info[key][x]:
+                        self.unpack_info[key][x] = msg
+                        found = True
+            if not found:
+                self.unpack_info[key].append(msg)
+        else:
+            self.unpack_info[key] = [msg]
+        
+    def get_unpack_info(self):
+        return self.unpack_info
+        
+    def set_action_line(self, action, msg):
+        if action and msg:
+            self.action_line = '%s: %s' % (action, msg)
+        else:
+            self.action_line = ''
+    
+    def get_action_line(self):
+        return self.action_line
+    
+    def set_fail_msg(self, msg):
+        self.fail_msg = msg
+        
+    def get_fail_msg(self):
+        return self.fail_msg
+        
+    def set_nzo_info(self, key, value):
+        self.nzo_info[key] = value
+        
+    def get_nzo_info(self):
+        return self.nzo_info
+        
+    def set_db_info(self, key, msg):
+        self.nzo_info[key] = msg
+    
     def get_repair_opts(self):
         return self.__repair, self.__unpack, self.__delete
 
@@ -1088,4 +1122,31 @@ def CatConvert(cat):
         return newcat
     else:
         return None
+    
+def format_time_string(seconds, days=0):
+    
+    try:
+        seconds = int(seconds)
+    except:
+        seconds = 0
+
+    completestr = ''
+    if days:
+        completestr += '%s day%s ' % (days, s_returner(days))
+    if (seconds/3600) >= 1:
+        completestr += '%s hour%s ' % (seconds/3600, s_returner((seconds/3600)))
+        seconds -= (seconds/3600)*3600
+    if (seconds/60) >= 1:
+        completestr += '%s minute%s ' % (seconds/60, s_returner((seconds/60)))
+        seconds -= (seconds/60)*60
+    if seconds > 0:
+        completestr += '%s second%s ' % (seconds, s_returner(seconds))
+        
+    return completestr.strip()
+
+def s_returner(value):
+    if value > 1:
+        return 's'
+    else:
+        return ''
  

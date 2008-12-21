@@ -192,7 +192,7 @@ class MSGIDGrabber(Thread):
                     break
             logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
 
-            filename, data, newzbin_cat = _grabnzb(msgid)
+            filename, data, newzbin_cat, nzo_info = _grabnzb(msgid)
             if filename and data:
                 filename = name_fixer(filename)
 
@@ -206,7 +206,7 @@ class MSGIDGrabber(Thread):
 
                 priority = nzo.get_priority()
                 try:
-                    sabnzbd.insert_future_nzo(nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority)
+                    sabnzbd.insert_future_nzo(nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
                 except:
                     logging.error("[%s] Failed to update newzbin job %s", __NAME__, msgid)
                     sabnzbd.remove_nzo(nzo.nzo_id, False)
@@ -230,6 +230,7 @@ def _grabnzb(msgid):
 
     nothing  = (None, None, None)
     retry = (300, None, None)
+    nzo_info = {'msgid': msgid}
 
     logging.info('[%s] Fetching NZB for Newzbin report #%s', __NAME__, msgid)
 
@@ -260,6 +261,11 @@ def _grabnzb(msgid):
     # Get the filename
     rcode = response.getheader('X-DNZB-RCode')
     rtext = response.getheader('X-DNZB-RText')
+    try:
+        nzo_info['more_info'] = response.getheader('X-DNZB-MoreInfo')
+    except:
+        # Only some reports will generate a moreinfo header
+        pass
     if not (rcode or rtext):
         logging.error("[%s] Newzbin server changed its protocol", __NAME__)
         return nothing
@@ -323,7 +329,7 @@ def _grabnzb(msgid):
 
     logging.info('[%s] Successfully fetched %s (cat=%s) (%s)', __NAME__, report_name, report_cat, newname)
 
-    return (newname, data, report_cat)
+    return (newname, data, report_cat, nzo_info)
 
 
 ################################################################################

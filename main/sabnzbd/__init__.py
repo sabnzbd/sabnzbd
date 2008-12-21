@@ -563,10 +563,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         NZBQ = NzbQueue(AUTO_SORT, top_only)
 
     if POSTPROCESSOR:
-        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, POSTPROCESSOR.queue)
+        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, POSTPROCESSOR.queue, POSTPROCESSOR.history_queue, restart=True)
     else:
         POSTPROCESSOR = PostProcessor(DOWNLOAD_DIR, COMPLETE_DIR)
-        NZBQ.__init__stage2__()
 
     if ASSEMBLER:
         ASSEMBLER.__init__(DOWNLOAD_DIR, ASSEMBLER.queue)
@@ -1039,9 +1038,9 @@ def add_nzo(nzo):
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
 
 @synchronized_CV
-def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
+def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
     try:
-        NZBQ.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority)
+        NZBQ.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
     except NameError:
         logging.exception("[%s] Error accessing NZBQ?", __NAME__)
         
@@ -1130,6 +1129,12 @@ def limit_speed(value):
 ################################################################################
 ## Unsynchronized methods                                                     ##
 ################################################################################
+def get_history_queue():
+    try:
+        return POSTPROCESSOR.get_queue()
+    except NameError:
+        logging.exception("[%s] Error accessing POSTPROCESSOR?", __NAME__)
+        
 def enable_server(server):
     """ Enable server """
     try:

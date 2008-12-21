@@ -15,30 +15,34 @@ def displayNotices (action, name):
 <!--#set $odd = False#-->
 <!--#if $lines#-->
 <!--#for $line in $lines #-->
-	<!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.loaded) ) or ($limit == -2 and ($cur < 5 or $line.status=="Failed" or $line.loaded) ) or $cur < $limit#-->
+	<!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.action_line) ) or ($limit == -2 and ($cur < 5 or $line.status=="Failed" or $line.action_line) ) or $cur < $limit#-->
 	<!--#set $odd = not $odd#-->
-	<tr id="$line.nzo" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.loaded #-->active<!--#end if#-->">
+	<tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
 	
-	<td class="historyTitle <!--#if $line.loaded #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stages#--> colspan="2"<!--#end if#-->>
-		<!--#if $line.msgid #-->
-		<a href="https://www.newzbin.com/browse/post/$line.msgid/" target="_blank">$line.filename</a>
+	<td> class="historyTitle <!--#if $line.action_line #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stage_log#--> colspan="2"<!--#end if#-->>
+		<!--#if $line.report #-->
+		<a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">$line.name</a>
 		<!--#else#-->
-		$line.filename
+		$line.name
 		<!--#end if#-->
 	</td>
 	
-	<!--#if $line.stages#-->
+	<!--#if $line.stage_log#-->
 	<td class="last">
-		<!--#for $stage in $line.stages#-->
+		<!--#for $stage in $line.stage_log#-->
 			<!--#for $action in $stage.actions#-->
-				<div class="hv_<%=action['name'][1:4]%>" title='<%= action['name'].replace("'","&rsquo;") %><br><%=action['value']%>'>&thinsp;&nbsp;</div><%=displayNotices(action['value'],action['name'])%>
+<% 
+name_escaped = stage['name'].replace("'","&rsquo;") .title()
+%>
+				<div class="hv_$stage.name" title='$name_escaped<br /> &thinsp;&nbsp;$action'>
+                &nbsp;</div>
 			<!--#end for#-->
 		<!--#end for#-->
 	</td>
 	<!--#end if#-->
 	
 	<td class="options" nowrap>
-		<small class="history_added">$line.added</small>
+		<small class="history_added">$line.completed</small>
 		<div class="queue_delete" title="Hide&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
 	</td>
 	
@@ -52,9 +56,9 @@ def displayNotices (action, name):
 <div class="box_fatbottom">
 	<div class="right_stats">
 		<!--#if $lines#-->
-		<strong>$total_bytes&nbsp;GB</strong>&nbsp;In&nbsp;History&nbsp;&nbsp;&nbsp;&nbsp;
+		<strong>$total_size</strong>&nbsp;In&nbsp;History&nbsp;&nbsp;&nbsp;&nbsp;
 		<!--#end if #-->
-		<strong>$bytes_beginning&nbsp;GB</strong>&nbsp;Downloaded
+		
 	</div>
 	<div class="left_stats">
 		<small>Showing:</small>&nbsp;<select id="history_view_preference">

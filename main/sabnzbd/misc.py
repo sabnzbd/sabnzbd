@@ -1085,19 +1085,22 @@ def BadFetch(nzo, url, retry=False, archive=False):
 
     nzo.set_status("Failed")
 
-    if archive:
-        nzo.set_filename('Got unusable archive file from %s' % url)
-    elif url.find('://') < 0:
-        nzo.set_filename('Failed to fetch newzbin report %s' % url)
-    else:
-        nzo.set_filename('Failed to fetch NZB from %s' % url)
+        
+    if url:
+        nzo.set_filename(url)
+        nzo.set_original_dirname(url)
 
     if retry:
-        nzo.set_unpackstr('=> Failed, <a href="./retry?url=%s%s%s%s">Try again</a>' % \
-                         (urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)),
-                         '[URL Fetch]', 0)
+        nzo.set_fail_msg('URL Fetching failed, <a href="./retry?url=%s%s%s%s">Try again</a>' % \
+                         (urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)))
     else:
-        nzo.set_unpackstr('=> Incorrect file', '[URL Fetch]', 0)
+        if archive:
+            msg = 'Failed, Unusable archive file'
+        elif not '://' in url:
+            msg = 'Failed to fetch newzbin report'
+        else:
+            msg = 'Failed to add url'
+        nzo.set_fail_msg(msg)
 
     sabnzbd.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
 
@@ -1131,3 +1134,30 @@ def loadavg():
     avg1, avg5, avg15 = map(float, data[:3])
 
     return avg1
+
+def format_time_string(seconds, days=0):
+    
+    try:
+        seconds = int(seconds)
+    except:
+        seconds = 0
+
+    completestr = ''
+    if days:
+        completestr += '%s day%s ' % (days, s_returner(days))
+    if (seconds/3600) >= 1:
+        completestr += '%s hour%s ' % (seconds/3600, s_returner((seconds/3600)))
+        seconds -= (seconds/3600)*3600
+    if (seconds/60) >= 1:
+        completestr += '%s minute%s ' % (seconds/60, s_returner((seconds/60)))
+        seconds -= (seconds/60)*60
+    if seconds > 0:
+        completestr += '%s second%s ' % (seconds, s_returner(seconds))
+        
+    return completestr.strip()
+
+def s_returner(value):
+    if value > 1:
+        return 's'
+    else:
+        return ''

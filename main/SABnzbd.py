@@ -43,6 +43,17 @@ import cherrypy
 if not cherrypy.__version__.startswith("3.1."):
     print "Sorry, requires Python module Cherrypy 3.1.x"
     exit(1)
+    
+try:
+    from sqlite3 import version as sqlite3_version
+except:
+    try:
+        from pysqlite2.sqlite3 import version as sqlite3_version
+    except:
+        print "Sorry, requires Python module sqlite3 (pysqlite2 in python2.4)"
+        if os.name != 'nt':
+            print "Try: apt-get install python-pysqlite2"
+        exit(1)
 
 import sabnzbd
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError

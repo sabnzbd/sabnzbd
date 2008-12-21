@@ -33,7 +33,7 @@ from threading import Thread, RLock
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject, SplitFileName
 from sabnzbd.misc import Panic_Queue, ExitSab, sanitize_filename
-
+from database import HistoryDB
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 
@@ -44,25 +44,6 @@ def DeleteLog(name):
             os.remove(os.path.join(os.path.dirname(sabnzbd.LOGFILE), name))
         except:
             pass
-
-#-------------------------------------------------------------------------------
-
-class HistoryItem:
-    def __init__(self, nzo):
-        self.nzo = nzo
-        self.filename = nzo.get_filename()
-        self.bytes_downloaded = nzo.get_bytes_downloaded()
-        self.completed = time.time()
-        self.unpackstrht = None
-        self.status = nzo.get_status()
-
-    def cleanup(self):
-        if self.nzo:
-            self.bytes_downloaded = self.nzo.get_bytes_downloaded()
-            self.unpackstrht = self.nzo.get_unpackstrht()
-            self.status = self.nzo.get_status()
-            self.completed = time.time()
-            self.nzo = None
 
 #-------------------------------------------------------------------------------
 
@@ -104,11 +85,6 @@ class NzbQueue(TryList):
                 if nzo:
                     self.add(nzo, save = False)
 
-    def __init__stage2__(self):
-        for hist_item in self.__downloaded_items:
-            if hist_item.nzo:
-                sabnzbd.postprocess_nzo(hist_item.nzo)
-
     @synchronized(NZBQUEUE_LOCK)
     def save(self):
         """ Save queue """
@@ -131,7 +107,7 @@ class NzbQueue(TryList):
         return future_nzo
 
     @synchronized(NZBQUEUE_LOCK)
-    def insert_future(self, future, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
+    def insert_future(self, future, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
         """ Refresh a placeholder nzo with an actual nzo """
         nzo_id = future.nzo_id
         if nzo_id in self.__nzo_table:
@@ -148,7 +124,7 @@ class NzbQueue(TryList):
                     categ = cat
 
                 try:
-                    future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority)
+                    future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzo_info=nzo_info)
                     future.nzo_id = nzo_id
                     self.save()
                 except:
@@ -231,24 +207,21 @@ class NzbQueue(TryList):
             self.sort_by_avg_age()
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove(self, nzo_id, add_to_history = True, unload=False, save=True):
+    def remove(self, nzo_id, add_to_history = True, unload=False, save=True, cleanup=True):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
             self.__nzo_list.remove(nzo)
 
             if add_to_history:
-                # Make sure item is only represented once in history
-                should_add = True
-                for hist_item in self.__downloaded_items:
-                    if hist_item.nzo and hist_item.nzo.nzo_id == nzo.nzo_id:
-                        should_add = False
-                        break
-                if should_add:
-                    hist = HistoryItem(nzo)
-                    self.__downloaded_items.append(hist)
-                    if unload: hist.cleanup()
-            else:
+                # Create the history DB instance
+                history_db = HistoryDB(os.path.join(sabnzbd.DIR_LCLDATA, DB_HISTORY_NAME))
+                # Add the nzo to the database. Only the path, script and time taken is passed
+                # Other information is obtained from the nzo
+                history_db.add_history_db(nzo, '', '', 0, '', '')
+                history_db.close()
+                    
+            elif cleanup:
                 self.cleanup_nzo(nzo)
 
             sabnzbd.remove_data(nzo_id)
@@ -531,7 +504,7 @@ class NzbQueue(TryList):
                                 filename)
 
         if post_done:
-            self.remove(nzo.nzo_id, True)
+            self.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
 
             if not self.__nzo_list:
                 # Close server connections
@@ -546,38 +519,6 @@ class NzbQueue(TryList):
             # Notify assembler to call postprocessor
             sabnzbd.assemble_nzf((nzo, None))
 
-    @synchronized(NZBQUEUE_LOCK)
-    def purge(self, job=None):
-        """ Remove all history items, except the active ones """
-        if job == None:
-            keep = []
-            for hist_item in self.__downloaded_items:
-                if hist_item.nzo:
-                    keep.append(hist_item)
-                else:
-                    DeleteLog(hist_item.filename)
-            self.__downloaded_items = []
-            for hist_item in keep:
-                self.__downloaded_items.append(hist_item)
-            del keep
-        else:
-            n = 0
-            found = False
-            for hist_item in self.__downloaded_items:
-                if (not hist_item.nzo) and (str(int(hist_item.completed*1000)) == job):
-                    found = True
-                    break
-                n = n+1
-            if found:
-                logging.debug("[%s] Delete History item %s", __NAME__, job)
-                hist_item = self.__downloaded_items.pop(n)
-                DeleteLog(hist_item.filename)
-            
-    @synchronized(NZBQUEUE_LOCK)
-    def remove_multiple_history(self, jobs):
-        for job in jobs:
-            hist_item = self.__downloaded_items.pop(int(job))
-            DeleteLog(hist_item.filename)
 
     @synchronized(NZBQUEUE_LOCK)
     def queue_info(self, for_cli = False):
@@ -594,35 +535,6 @@ class NzbQueue(TryList):
         return (bytes, bytes_left, pnfo_list)
 
     @synchronized(NZBQUEUE_LOCK)
-    def history_info(self):
-        history_info = {}
-        bytes_downloaded = 0
-        for hist_item in self.__downloaded_items:
-            completed = hist_item.completed
-            filename = hist_item.filename
-            bytes = hist_item.bytes_downloaded
-            bytes_downloaded += bytes
-
-            if completed not in history_info:
-                history_info[completed] = []
-
-            if hist_item.nzo:
-                unpackstrht = hist_item.nzo.get_unpackstrht()
-                status = hist_item.nzo.get_status()
-                loaded = True
-            else:
-                unpackstrht = hist_item.unpackstrht
-                try:
-                    status = hist_item.status
-                except:
-                    status = ""
-                loaded = False
-
-            ident = str(int(hist_item.completed*1000))
-            history_info[completed].append((filename, unpackstrht, loaded, bytes, ident, status))
-        return (history_info, bytes_downloaded, sabnzbd.get_bytes())
-
-    @synchronized(NZBQUEUE_LOCK)
     def is_empty(self):
         empty = True
         for nzo in self.__nzo_list:
@@ -630,7 +542,7 @@ class NzbQueue(TryList):
                 empty = False
                 break
         return empty
-
+    
     @synchronized(NZBQUEUE_LOCK)
     def cleanup_nzo(self, nzo):
         nzo.purge_data()

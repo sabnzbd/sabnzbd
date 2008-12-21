@@ -25,6 +25,7 @@ var state2;
 var southHeight;
 var storeHistory;
 var selectedNo; //used for keeping track of how many items were selected when an action was done
+var pauseIgnore = false; //prevent the toggling of the pause button on page load from entering a pause/unpause loop
     
 Ext.onReady(function(){
 
@@ -292,29 +293,20 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     },
 
     getBodyContent : function(record, index){
-        if(!this.enableCaching){
-        //NOT USED
-            var str = '';
-            for (i=0;i<record.data.stages.length;i++)
-            {               
-                for (j=0;j<record.data.stages[i].actions.length;j++)
-                {
-                    str = str + record.data.stages[i].actions[j].name + ': ' + record.data.stages[i].actions[j].value + '<br /><br />'
-                }
-            }
-            return str;
-        }
+
         var content = this.bodyContent[record.id];
         if(!content){
             var str = '<p class="historyDetails">';
-            for (i=0;i<record.data.stages.length;i++)
+            
+            for (i=0;i<record.data.stage_log.length;i++)
             {
-            str = str + '<span class="historyDetail">' + record.data.stages[i].name + '</span><br />';
-                for (j=0;j<record.data.stages[i].actions.length;j++)
+                stageName = record.data.stage_log[i].name[0].toUpperCase() + record.data.stage_log[i].name.slice(1, record.data.stage_log[i].name.length)
+                str = str + '<span class="historyDetail">' + stageName + '</span><br />';
+                for (j=0;j<record.data.stage_log[i].actions.length;j++)
                 {
-                    str = str + record.data.stages[i].actions[j].name + ': ' + record.data.stages[i].actions[j].value + '<br />'
+                    str += record.data.stage_log[i].actions[j] + '<br />'
                 }
-            str = str + '<br />';
+                str = str + '<br />';
             }
             str = str + '</span>';
             content = str;
@@ -463,10 +455,14 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
             if (r[0])
             {
                 tpl.overwrite(statEl, r[0].data);
-                if (r[0].data.paused == "True")
+                if (r[0].data.paused == "True" && paused == false)
                 {
+                    pauseIgnore = true
+                    paused = false
                     queuePause.toggle(1)
-                } else {
+                } else if (paused) {
+                    pauseIgnore = true
+                    paused = true
                     queuePause.toggle(0)
                 }
             }
@@ -522,10 +518,10 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
         url: 'tapi?mode=history&output=json',
         reader: new Ext.data.JsonReader({
             root: '',
-            id: 'nzo'
+            id: 'nzo_id'
         }, [
-            {name: 'filename', mapping: 'filename'},
-            'status', {name:'id', type: 'int', mapping: 'nzo'}, 'stages'
+            {name: 'filename', mapping: 'name'},
+            'status', {name:'id', type: 'int', mapping: 'nzo_id'}, 'stage_log'
         ])
     });
     storeHistory.load({params:{start:0, limit:50}});
@@ -534,7 +530,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     
     var historyGridExpander = new Ext.grid.RowExpander({
         tpl : new Ext.Template(
-            ''
+            '{name}'
         )
     });
 
@@ -858,15 +854,18 @@ storeUnpack.loadData(unpackStrings);
             url = 'tapi?mode=pause';
             paused = true;
         }
-        
-        Ext.Ajax.request(
+        if (!pauseIgnore)
         {
-           url: url,
-           success: dummy,
-           failure: dummy
-        })
-        storeStatus.reload();
-        Ext.example.msg('Queue Paused', 'Pause was set to {0}.',  pressed);
+            Ext.Ajax.request(
+            {
+               url: url,
+               success: dummy,
+               failure: dummy
+            })
+            storeStatus.reload();
+            Ext.example.msg('Queue Paused', 'Pause was set to {0}.',  pressed);
+        }
+        pauseIgnore = false
     }
    
 //MESSAGE BOX FUNCTION
@@ -1209,7 +1208,7 @@ storeUnpack.loadData(unpackStrings);
                 id: 'filesgrid',
                 view: filesGridView,
                 columns: [{
-                        header: "ID",
+                        header: "#",
                         id: "filesid",
                         width: 70,
                         sortable: true,
@@ -1256,21 +1255,15 @@ storeUnpack.loadData(unpackStrings);
         title: 'History',
         id: 'hgrid',
             columns: [{
-                header: "Job",
-                id: "historyid",
-                width: 35,
-                sortable: true,
-                dataIndex: 'id'
-            },{
                 header: "Filename",
                 id: "historyFilename",
                 width: 170,
-                sortable: true,
+                sortable: false,
                 dataIndex: 'filename'
             },{
                 header: "Status",
                 width: 40,
-                sortable: true,
+                sortable: false,
                 dataIndex: 'status',
                 renderer: historyStatus
             },
@@ -1427,7 +1420,7 @@ storeUnpack.loadData(unpackStrings);
                 store: storeWarnings,
                 title: 'Error Log',
                 columns: [{
-                    header: "ID",
+                    header: "#",
                     id: "id",
                     width: 10,
                     sortable: true,
@@ -2330,22 +2323,16 @@ storeUnpack.loadData(unpackStrings);
             columns: [
             historyGridExpander,
             {
-                header: "Job",
-                id: "historyid",
-                width: 35,
-                sortable: true,
-                dataIndex: 'id'
-            },{
                 header: "Filename",
                 id: "historyFilename",
                 width: 170,
-                sortable: true,
+                sortable: false,
 				hideable: false,
                 dataIndex: 'filename'
             },{
                 header: "Status",
                 width: 40,
-                sortable: true,
+                sortable: false,
                 dataIndex: 'status',
                 renderer: historyStatus
             },
@@ -2427,7 +2414,7 @@ storeUnpack.loadData(unpackStrings);
         view: gridView,
         columns: [{
             id: 'order',
-            header: "Order",
+            header: "#",
             width: 35,
             sortable: true,
             dataIndex: 'index',

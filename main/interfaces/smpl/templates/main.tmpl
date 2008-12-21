@@ -37,6 +37,7 @@
 	var speed = $kbpersecrnd;
     var gDual = 0;
     var gUrl;
+    var gDeferrer;
 	</script>
 
 
@@ -201,6 +202,13 @@
         disp = (document.getElementById(id).style.display == "block") ? "none" : "block";
         document.getElementById(id).style.display = disp;
     }
+    function showRow(id)
+    {
+        console.log("id=%s", id);
+        disp = (document.getElementById(id).style.display == "table-row") ? "none" : "table-row";
+        document.getElementById(id).style.display = disp;
+    }
+    
 function setCookie(c_name,value,expiredays)
 {
 var exdate=new Date();
@@ -255,6 +263,37 @@ if (RefreshTime>0) {
 	cookietimeout = setTimeout("checkCookie();", RefreshTime*1000)
 }
 }
+function toggleHistoryDetails(nzoID, row_obj, tog_id)
+{
+
+    cook=getCookie('history_verbosity');
+
+    if (cook!=null && cook!="")
+    {
+        var histitems = cook.split(',');
+        found = -1;
+        for(i=0; i<histitems.length; i++) 
+        {
+            if (histitems[i] == nzoID) found = i;
+        }
+        if (found >= 0){
+            histitems.splice(found,1);
+            plus = "+";
+        } else {
+            histitems.push(nzoID)
+            plus = "-";
+        }
+        var histstr = histitems.join(',');
+    } else {
+        var histstr = nzoID;
+        plus = "-"
+    }
+    setCookie('history_verbosity',histstr,100);
+    element = document.getElementById(tog_id);
+    element.innerHTML = plus
+    showRow(row_obj)
+}
+
 
 
 function checkrefresh()
@@ -384,12 +423,21 @@ function loadtitle() {
 	function deletequeueitem(elem)
 	{
     //deletes an item from the queue - passed variable is the id (uid) of the queue item to delete(and also the id of the queue element)
-        val1 = document.getElementById(elem).innerHTML;
-        val1="";
+        el = document.getElementById(elem)
+        el.parentNode.removeChild(el);
 
-		d = doSimpleXMLHttpRequest('queue/delete', {uid: elem, _dc: Math.random()});
-		d.addCallback(replaceright);
-		d.addErrback(handleServerError);
+		d = doSimpleXMLHttpRequest('tapi/', {mode: 'queue', name: 'delete', value: elem, _dc: Math.random()});
+
+	}
+    
+	function deletenzf(nzo,elem)
+	{
+    //deletes an item from the queue - passed variable is the id (uid) of the queue item to delete(and also the id of the queue element)
+        el = document.getElementById(elem)
+        el.parentNode.removeChild(el);
+
+		d = doSimpleXMLHttpRequest('tapi/', {mode: 'queue', name: 'delete_nzf', value: nzo, value2: elem, _dc: Math.random()});
+
 	}
     
 	function pausequeueitem(elem)
@@ -417,12 +465,10 @@ function loadtitle() {
 	function deletehistoryitem(elem, pnode)
 	{
     //deletes an item from the history - passed variable is the id (uid) of the history item to delete(and also the id of the history element)
-        val1 = document.getElementById(elem).innerHTML;
-        val1="";
-		d = doSimpleXMLHttpRequest('history/delete', {job: elem, _dc: Math.random()});
-		if (pnode == 'Right_bottom')d.addCallback(replaceright2);
-        else d.addCallback(replaceright);
-		d.addErrback(handleServerError);
+        el = document.getElementById(elem)
+        el.parentNode.removeChild(el);
+    
+		d = doSimpleXMLHttpRequest('tapi/', {mode: 'history', name: 'delete', value: elem, _dc: Math.random()});
 	}
     
     function handleServerError(){}
@@ -473,8 +519,11 @@ function loadtitle() {
         if (extra){
             append = append+'&'+extra;
         }
-		var res = doSimpleXMLHttpRequest(url+append);        
-	    res.addCallback(function (res)
+        if (gDeferrer) {
+            gDeferrer.prototype.cancel()
+        }
+		var gDeferrer = doSimpleXMLHttpRequest(url+append);        
+	    gDeferrer.addCallback(function (res)
 	    {
           if (timerId2 && refresh>=0 && pnode != 'Right_bottom') killTimer()
 	      if (pnode != 'Right_bottom') document.getElementById('Right').innerHTML = res.responseText;
@@ -488,7 +537,7 @@ function loadtitle() {
           startTimer(url, dual);
           }
 	    });
-		res.addErrback(handleServerError);
+		gDeferrer.addErrback(handleServerError);
 	}
 	function lrb(url, refresh)
 	{

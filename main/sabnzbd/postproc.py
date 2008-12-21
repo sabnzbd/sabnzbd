@@ -29,6 +29,7 @@ import sabnzbd
 import shutil
 import urllib
 import re
+import time
 from xml.sax.saxutils import escape
 if os.name == 'nt':
     import subprocess
@@ -41,24 +42,34 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          cleanup_empty_directories, get_unique_filename, \
                          OnCleanUpList, ProcessSingleFile
 from sabnzbd.tvsort import Sorter
-from sabnzbd.constants import TOP_PRIORITY
+from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME
 from sabnzbd.codecs import TRANS
 import sabnzbd.newzbin as newzbin
 import sabnzbd.email as email
+from database import HistoryDB
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
-    def __init__ (self, download_dir, complete_dir, queue = None):
+    def __init__ (self, download_dir, complete_dir, queue=None, history_queue=[], restart=False):
         Thread.__init__(self)
 
         self.download_dir = download_dir
         self.complete_dir = complete_dir
         self.queue = queue
+        if restart:
+            self.history_queue = []
+            for nzo in history_queue:
+                self.process(nzo)
+        # This history queue is simply used to log what active items to display in the web_ui
+        self.history_queue = history_queue
+
 
         if not self.queue:
             self.queue = Queue.Queue()
 
     def process(self, nzo):
+        if nzo not in self.history_queue:
+            self.history_queue.append(nzo)
         self.queue.put(nzo)
 
     def stop(self):
@@ -66,6 +77,9 @@ class PostProcessor(Thread):
 
     def empty(self):
         return self.queue.empty()
+    
+    def get_queue(self):
+        return self.history_queue
 
     def run(self):
         while 1:
@@ -77,12 +91,20 @@ class PostProcessor(Thread):
             
             ## Pause downloader, if users wants that
             if sabnzbd.pause_on_post_processing: sabnzbd.idle_downloader()
+            
+            start = time.time()
 
             # keep track of if par2 fails
             parResult = True
             # keep track of any unpacking errors
             unpackError = False
             nzb_list = []
+            # These need to be initialised incase of a crash
+            workdir_complete = ''
+            rel_path = ''
+            postproc_time = 0
+            script_log = ''
+            script_line = ''
             
             ## Get the job flags
             flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
@@ -106,7 +128,7 @@ class PostProcessor(Thread):
                 # if the directory has not been made, no files were assembled
                 if not os.path.exists(workdir):
                     emsg = 'Download failed - Out of your server\'s retention?'
-                    nzo.set_unpackstr(emsg, '[Failed]', 0)
+                    nzo.set_fail_msg(emsg)
                     # do not run unpacking or parity verification
                     flagRepair = flagUnpack = parResult = False
                     unpackError = True
@@ -121,7 +143,7 @@ class PostProcessor(Thread):
                     reAdd = False
                     if not repairSets:
                         logging.info("[%s] No par2 sets for %s", __NAME__, filename)
-                        nzo.set_unpackstr('=> No par2 sets', '[PAR-INFO]', 1)
+                        nzo.set_unpack_info('repair','[%s] No par2 sets' % filename)
     
                     for _set in repairSets:
                         logging.info("[%s] Running repair on set %s", __NAME__, _set)
@@ -164,6 +186,7 @@ class PostProcessor(Thread):
                     complete_dir = create_dirs(complete_dir)
                 else:
                     complete_dir = self.complete_dir
+                _base_dir = complete_dir
     
                 ## Determine destination directory
                 dirname = nzo.get_original_dirname()
@@ -190,10 +213,11 @@ class PostProcessor(Thread):
                         unpackError, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), (), ())
                         logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
                     else:
-                        nzo.set_unpackstr('=> No post-processing because of failed verification', '[UNPACK]', 2)
+                        nzo.set_unpack_info('unpack','No post-processing because of failed verification')
     
                 ## Move any (left-over) files to destination
                 nzo.set_status("Moving...")
+                nzo.set_action_line('Moving', '...')
                 for root, dirs, files in os.walk(workdir):
                     for _file in files:
                         path = os.path.join(root, _file)
@@ -217,7 +241,7 @@ class PostProcessor(Thread):
                     ## Check if this is an NZB-only download, if so redirect to queue
                     nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat)
                     if nzb_list:
-                        nzo.set_unpackstr('=> Sent %s to queue' % nzb_list, '[QUEUE]', 6)
+                        nzo.set_unpack_info('download', 'Sent %s to queue' % nzb_list)
                         try:
                             os.rmdir(tmp_workdir_complete)
                         except:
@@ -255,27 +279,44 @@ class PostProcessor(Thread):
     
                     ## Run the user script
                     fname = ""
-                    ext_out = ""
                     if (not nzb_list) and sabnzbd.SCRIPT_DIR and script and script!='None' and script!='Default':
                         #set the current nzo status to "Ext Script...". Used in History
-                        script = os.path.join(sabnzbd.SCRIPT_DIR, script)
-                        if os.path.exists(script):
+                        script_path = os.path.join(sabnzbd.SCRIPT_DIR, script)
+                        if os.path.exists(script_path):
                             nzo.set_status("Running Script...")
-                            nzo.set_unpackstr('=> Running user script %s' % script, '[USER-SCRIPT]', 5)
-                            ext_out = external_processing(script, workdir_complete, filename, dirname, cat, group, jobResult)
-                            fname = MakeLogFile(filename, ext_out)
+                            nzo.set_action_line('Running Script', script)
+                            nzo.set_unpack_info('script','Running user script %s' % script, unique=True)
+                            script_log = external_processing(script_path, workdir_complete, filename, dirname, cat, group, jobResult)
+                            # Expects the script to have \r\n as line seperators
+                            try:
+                                script_line = script_log.strip('\r\n').rsplit('\r\n',1)[0]
+                                # Make the script line a maximum of 150 characters
+                                if len(script_line) >= 150:
+                                    script_line = script_line[:147] + '...'
+                            except:
+                                    script_line = ''
+                            if script_log:
+                                fname = nzo.get_nzo_id()
+                            if script_line:
+                                nzo.set_unpack_info('script',script_line, unique=True)
+                            else:
+                                nzo.set_unpack_info('script','Ran %s' % script, unique=True)
                     else:
                         script = ""
+                        script_line = ""
     
                     ## Email the results
                     if (not nzb_list) and email.EMAIL_ENDJOB.get():
                         if (email.EMAIL_ENDJOB.get() == 1) or (email.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
                             email.endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
-                                         nzo.get_unpackstrht(), script, TRANS(ext_out))
+                                         {}, script, TRANS(script_log))
     
                     if fname:
                         # Can do this only now, otherwise it would show up in the email
-                        nzo.set_unpackstr('=> <a href="./scriptlog?name=%s">Show script output</a>' % urllib.quote(fname), '[USER-SCRIPT]', 5)
+                        if script_line:
+                            nzo.set_unpack_info('script','%s <a href="./scriptlog?name=%s">(More)</a>' % (script_line, urllib.quote(fname)), unique=True)
+                        else:
+                            nzo.set_unpack_info('script','<a href="./scriptlog?name=%s">View script output</a>' % urllib.quote(fname), unique=True)
     
                 ## Remove newzbin bookmark, if any
                 name, msgid = SplitFileName(filename)
@@ -290,10 +331,36 @@ class PostProcessor(Thread):
             except:
                 logging.error("[%s] Post Processing Failed for %s", __NAME__, filename)
                 logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                nzo.set_fail_msg('PostProcessing Crashed, see logfile')
                 nzo.set_status("Failed")
     
             ## Clean up download dir
             cleanup_empty_directories(self.download_dir)
+            
+            # If the folder only contains one file OR folder, have that as the path
+            # Be aware that series/generic/date sorting may move a single file into a folder containing other files
+            workdir_complete = one_file_or_folder(workdir_complete)
+                
+            # Make the use of / or \ consistant in the path name
+            if workdir_complete[1:3] == ':\\':
+                rep = '/'
+                sep = '\\'
+            else:
+                sep = '/'
+                rep = '\\'
+            # Create a relative path removing the complete_dir folder or category folder
+            rel_path = workdir_complete.replace(_base_dir,'').replace(rep, sep)
+            
+            # Log the overall time taken for postprocessing
+            postproc_time = int(time.time() - start)
+            
+            # Create the history DB instance
+            history_db = HistoryDB(os.path.join(sabnzbd.DIR_LCLDATA, DB_HISTORY_NAME))
+            # Add the nzo to the database. Only the path, script and time taken is passed
+            # Other information is obtained from the nzo
+            history_db.add_history_db(nzo, workdir_complete, rel_path, postproc_time, script_log, script_line)
+            # The connection is only used once, so close it here
+            history_db.close()
 
             ## Clean up the NZO
             try:
@@ -302,9 +369,11 @@ class PostProcessor(Thread):
             except:
                 logging.error("[%s] Cleanup of %s failed.", __NAME__, nzo.get_filename())
                 logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                
+            # Remove the nzo from the history_queue list
+            # This list is simply used for the creation of the history in interface.py
+            self.history_queue.remove(nzo)
             
-
-
             ## Allow download to proceed
             sabnzbd.unidle_downloader()
 #end post-processor
@@ -448,3 +517,12 @@ def NzbRedirect(wdir, pp, script, cat):
             list.append(file)
 
     return list
+
+def one_file_or_folder(dir):
+    """ If the dir only contains one file or folder, join that file/folder onto the path """
+    if os.path.exists(dir) and os.path.isdir(dir):
+        cont = os.listdir(dir)
+        if len(cont) == 1:
+            dir = os.path.join(dir, cont[0])
+            dir = one_file_or_folder(dir)
+    return dir

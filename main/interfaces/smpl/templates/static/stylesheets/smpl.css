@@ -69,9 +69,7 @@ margin:0px;
 position:relative;
 }
 
-
-
-#progressBar {
+.progressBar {
   background-color: #fff; 
   border: 1px solid #000; 
   height: 6px;
@@ -82,7 +80,7 @@ position:relative;
   padding: 0px;
   text-align: left;
 }
-#progressBartop {
+.progressBartop {
   background-color: #fff; 
   border: 1px solid #ccc; 
   height: 14px;
@@ -93,7 +91,7 @@ position:relative;
   padding: 0px;
   text-align: left;
 }
-#percentageBar {
+.percentageBar {
   position: relative; 
   background-color: #4B4545; 
   height: 100%;
@@ -249,17 +247,20 @@ tr{background-color:#f5f5f5;}
 #versions{font-size:8pt;}
 #downloadinfo{font-size:8pt;}
 #help{float:right;}
-#finished{background-color:#ffd9d9;}
-#active{background-color:#deffd9;}
-#waiting{background-color:#ffffd9;}
+.finished{background-color:#ffd9d9;}
+.active{background-color:#deffd9;}
+.waiting{background-color:#ffffd9;}
 
-#delicon, .pauseicon, .resumeicon{
+.delicon, .pauseicon, .resumeicon{
 border:none;
 color:#fff;
 display:inline;
 margin:0px;
 padding:0px;
 margin-bottom:-3px;
+}
+.imglink{
+border:none;
 }
 #sortable_table{
 width:99%;
@@ -305,5 +306,18 @@ overflow:auto;}
 .feedDisabled{color:red;}
 #speedbox{width:36px;display:inline;}
 .small{font-size:10px;}
-#Keytable,#Keytable2,#Keytable3{display:none;}
+#Keytable,#Keytable2,#Keytable3,.hidden{display:none;}
 .actionTD{min-width:113px;}
+.left-margin{padding-left:20px;}
+.line-height{line-height:22px;}
+td {padding:4px !important;}
+.center{text-align:center;}
+.expander{text-decoration:none; padding:8px;}
+.fail_message{color:red;}
+.right_align{text-align:right;}
+.row_hidden{visibility:collapse;}
+a.columnLinks{color:white}
+.expandColumn, .orderColumn{width:10px;}
+.timeleftColumn, .sizeColumn{width:80px;}
+.ageColumn, .editColumn, .actionsColumn, .linksColumn{width:50px;}
+.statusColumn{width:100px;}

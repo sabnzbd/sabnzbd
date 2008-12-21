@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 CONFIG_VERSION = 18
-QUEUE_VERSION = 8
+QUEUE_VERSION = 9
 
 PNFO_REPAIR_FIELD = 0
 PNFO_UNPACK_FIELD = 1
@@ -57,6 +57,12 @@ QUEUE_FILE_NAME  = 'queue%s.sab' % QUEUE_VERSION
 RSS_FILE_NAME    = 'downloaded_rss.csv'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'
 SCAN_FILE_NAME    = 'watched_data.sab'
+
+DB_HISTORY_VERSION = 1
+DB_QUEUE_VERSION = 1
+
+DB_HISTORY_NAME = 'history%s.db' % DB_HISTORY_VERSION
+DB_QUEUE_NAME = 'queue%s.db' % DB_QUEUE_VERSION
 
 DEF_DOWNLOAD_DIR = 'downloads/incomplete'
 DEF_COMPLETE_DIR = 'downloads/complete'

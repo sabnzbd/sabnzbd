@@ -74,13 +74,10 @@ background-color:#ccc;
 th{background-color:#4B4545;color:white;}
 tr{background-color:#f5f5f5;}
 
-#finished{background-color:#ffd9d9;}
-#active{background-color:#deffd9;}
-#waiting{background-color:#ffffd9;}
+.finished{background-color:#ffd9d9;}
+.active{background-color:#deffd9;}
+.waiting{background-color:#ffffd9;}
 
-#delicon{
-color:#fff;
-}
 
 tr.High {background-color:#ececec;}
 tr.Normal {background-color:#f5f5f5;}

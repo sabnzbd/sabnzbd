@@ -50,10 +50,11 @@ import sabnzbd.newzbin as newzbin
 import sabnzbd.urlgrabber as urlgrabber
 from sabnzbd.codecs import TRANS, xml_name
 import sabnzbd.config as config
+from sabnzbd.database import HistoryDB, build_history_info, unpack_history_info
 
 from sabnzbd.constants import *
 
-RE_URL = re.compile('(.+)/sabnzbd/rss\?mode.+', re.I)
+RE_URL = re.compile('(.+)/sabnzbd(/m)?/rss', re.I)
 
 #------------------------------------------------------------------------------
 
@@ -251,6 +252,12 @@ def get_users():
 def encrypt_pwd(pwd):
     return pwd
 
+def connect_db(thread_index): 
+    # Create a connection and store it in the current thread 
+    db_history = os.path.join(sabnzbd.DIR_LCLDATA, DB_HISTORY_NAME)
+    cherrypy.thread_data.history_db = HistoryDB(db_history)
+    
+cherrypy.engine.subscribe('start_thread', connect_db)
 
 class LoginPage:
     def __init__(self, web_dir, root, web_dir2=None, root2=None):
@@ -388,10 +395,10 @@ class MainPage:
                try_list: %s''' % sabnzbd.debug()
 
     @cherrypy.expose
-    def rss(self, mode='history'):
-        url = cherrypy.request.browser_url
+    def rss(self, mode='history', limit=50):
+        url = cherrypy.url()
         if mode == 'history':
-            return rss_history(url)
+            return rss_history(url, limit=limit)
         elif mode == 'warnings':
             return rss_warnings()
 
@@ -481,6 +488,13 @@ class MainPage:
                     return 'ok\n'
                 else:
                     return 'error\n'
+            elif name == 'delete_nzf':
+                # Value = nzo_id Value2 = nzf_id
+                if value and value2:
+                    sabnzbd.remove_nzf(value, value2)
+                    return 'ok\n'
+                else:
+                    return 'error: specify the nzo id\'s in the value param and nzf_id in value2 param\n'
             elif name == 'rename':
                 if value and value2:
                     sabnzbd.rename_nzo(value, value2)
@@ -592,11 +606,13 @@ class MainPage:
                 return json_history(start, limit)
             elif name == 'delete':
                 if value.lower()=='all':
-                    sabnzbd.purge_history()
+                    history_db = cherrypy.thread_data.history_db
+                    history_db.remove_history()
                     return 'ok\n'
                 elif value:
-                    items = value.split(',')
-                    sabnzbd.remove_multiple_history(items)
+                    jobs = value.split(',')
+                    history_db = cherrypy.thread_data.history_db
+                    history_db.remove_history(jobs)
                     return 'ok\n'
                 else:
                     return 'error\n'
@@ -722,8 +738,8 @@ class MainPage:
     def scriptlog(self, name=None, _dc=None):
         """ Duplicate of scriptlog of History, needed for some skins """
         if name:
-            path = os.path.dirname(sabnzbd.LOGFILE)
-            return ShowFile(name, os.path.join(path, name))
+            history_db = cherrypy.thread_data.history_db
+            return ShowString(name, history_db.get_script_log(name))
         else:
             raise Raiser(self.__root, _dc=_dc)
 
@@ -994,7 +1010,8 @@ class HistoryPage:
         self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
-        self.__verbose = True
+        self.__verbose = False
+        self.__verbose_list = []
         self.__prim = prim
 
     @cherrypy.expose
@@ -1006,15 +1023,17 @@ class HistoryPage:
         if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
             history['newzbinDetails'] = True
 
-        history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
-
-        history['total_bytes'] = "%.2f" % (total_bytes / GIGI)
-
-        history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
+        #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
+        #history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
         
-        history['limit'] = IntConv(dummy2)
+        history['total_size'] = get_history_size()
+        
+        history['start'] = IntConv(start)
+        history['limit'] = IntConv(limit)
+        # Should really find the actual maximum
+        history['end'] = history['start'] + history['limit']
 
-        history['lines'], history['noofslots'] = build_history(verbose=self.__verbose, start=start, limit=limit)
+        history['lines'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list)
 
 
         template = Template(file=os.path.join(self.__web_dir, 'history.tmpl'),
@@ -1025,13 +1044,16 @@ class HistoryPage:
 
     @cherrypy.expose
     def purge(self, _dc = None, start=None, limit=None):
-        sabnzbd.purge_history()
+        history_db = cherrypy.thread_data.history_db
+        history_db.remove_history()
         raise Raiser(self.__root, _dc, start, limit)
 
     @cherrypy.expose
     def delete(self, job=None, _dc = None, start=None, limit=None):
         if job:
-            sabnzbd.purge_history(job)
+            jobs = job.split(',')
+            history_db = cherrypy.thread_data.history_db
+            history_db.remove_history(jobs)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
@@ -1040,17 +1062,30 @@ class HistoryPage:
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def tog_verbose(self, _dc = None, start=None, limit=None):
-        self.__verbose = not self.__verbose
+    def tog_verbose(self, _dc = None, start=None, limit=None, jobs=None):
+        if not jobs:
+            self.__verbose = not self.__verbose
+            self.__verbose_list = []
+        else:
+            if self.__verbose:
+                self.__verbose = False
+            else:
+                jobs = jobs.split(',')
+                for job in jobs:
+                    if job in self.__verbose_list:
+                        self.__verbose_list.remove(job)
+                    else:
+                        self.__verbose_list.append(job)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def scriptlog(self, name=None, _dc=None, start=None, limit=None):
+        """ Duplicate of scriptlog of History, needed for some skins """
         if name:
-            path = os.path.dirname(sabnzbd.LOGFILE)
-            return ShowFile(name, os.path.join(path, name))
+            history_db = cherrypy.thread_data.history_db
+            return ShowString(name, history_db.get_script_log(name))
         else:
-            raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+            raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def retry(self, url=None, pp=None, cat=None, script=None, _dc=None):
@@ -2335,6 +2370,30 @@ def ShowFile(name, path):
 </html>
 ''' % (name, name, escape(msg))
 
+def ShowString(name, string):
+    """Return a html page listing a file and a 'back' button
+    """
+    try:
+        msg = TRANS(string)
+    except:
+        msg = "Encoding Error\n"
+
+    return '''
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html>
+<head>
+           <title>%s</title>
+</head>
+<body>
+           <FORM><INPUT TYPE="BUTTON" VALUE="Go Back" ONCLICK="history.go(-1)"></FORM>
+           <h3>%s</h3>
+           <code><pre>
+           %s
+           </pre></code><br/><br/>
+</body>
+</html>
+''' % (name, name, escape(msg))
+
 
 def ShowOK(url):
     return '''
@@ -2631,12 +2690,14 @@ def std_time(when):
     return item
 
 
-def rss_history(url):
+def rss_history(url, limit=50):
     m = RE_URL.search(url)
     if not m:
         url = 'http://%s:%s' % (sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'])
     else:
         url = m.group(1)
+        
+    youngest = None
 
     rss = RSS()
     rss.channel.title = "SABnzbd History"
@@ -2644,56 +2705,58 @@ def rss_history(url):
     rss.channel.link = "http://sourceforge.net/projects/sabnzbdplus/"
     rss.channel.language = "en"
 
-    history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
-
-    youngest = None
-    while history_items:
-        added = max(history_items.keys())
-
-        history_item_list = history_items.pop(added)
-
-        for history_item in history_item_list:
-            item = Item()
-            filename, unpackstrht, loaded, bytes, nzo, status = history_item
-            if added > youngest:
-                youngest = added
-            item.pubDate = std_time(added)
-            item.title, msgid = SplitFileName(filename)
-            if (msgid):
-                item.link    = "https://www.newzbin.com/browse/post/%s/" % msgid
-            else:
-                item.link    = url + '/sabnzbd/'
-
-            if loaded:
-                stageLine = "Post-processing active.<br>"
-            else:
-                stageLine = ""
-
-            stageLine += "[%s] Finished at %s and downloaded %sB" % ( \
-                status,
-                time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)), \
-                to_units(bytes) )
-
-            stage_keys = unpackstrht.keys()
-            stage_keys.sort()
-            for stage in stage_keys:
-                stageLine += "<tr><dt>Stage %s</dt>" % STAGENAMES[stage]
-                actions = []
-                for action in unpackstrht[stage]:
-                    actionLine = "<dd>%s %s</dd>" % (action, unpackstrht[stage][action])
-                    actions.append(actionLine)
-                actions.sort()
-                actions.reverse()
-                for act in actions:
-                    stageLine += act
-                stageLine += "</tr>"
-            item.description = stageLine
-            rss.addItem(item)
+    items, max_items = build_history(limit=limit)
+    
+    for history in items:
+        item = Item()
+        
+        item.pubDate = std_time(history['completed'])
+        item.title = history['name']
+        
+        if not youngest:
+            youngest = history['completed']
+        elif history['completed'] < youngest:
+            youngest = history['completed']
+        
+        if history['report']:
+            item.link = "https://www.newzbin.com/browse/post/%s/" % history['report']
+        elif history['url_info']:
+            item.link = history['url_info']
+        else:
+            item.link = url + '/sabnzbd/'
+            
+        stageLine = ""
+        for stage in history['stage_log']:
+            stageLine += "<tr><dt>Stage %s</dt>" % stage['name']
+            actions = []
+            for action in stage['actions']:
+                actionLine = "<dd>%s</dd>" % (action)
+                actions.append(actionLine)
+            actions.sort()
+            actions.reverse()
+            for act in actions:
+                stageLine += act
+            stageLine += "</tr>"
+        item.description = stageLine
+        rss.addItem(item)
 
     rss.channel.lastBuildDate = std_time(youngest)
     rss.channel.pubDate = std_time(time.time())
-
+    
     return rss.write()
+    
+def format_bytes(bytes):
+    try:
+        if bytes >= MEBI and bytes < GIGI:
+            size = '%0.0f MB' % (bytes/MEBI)
+        elif bytes >= GIGI:
+            size = '%0.2f GB' % (bytes/GIGI)
+        else:
+            size = '%0.0f KB' % (bytes/KIBI)
+    except:
+        size = ''
+        
+    return size
 
 
 def rss_warnings():
@@ -2894,63 +2957,101 @@ def json_files(id):
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return status_str
 
-def build_history(loaded=False, start=None, limit=None, verbose=False):
-    #Collect all history data
-    history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
-    items = []
-    while history_items:
-        added = max(history_items.keys())
-        history_item_list = history_items.pop(added)
+def get_history_size():
+    history_db = cherrypy.thread_data.history_db
+    bytes = history_db.get_history_size()
+    return format_bytes(bytes)
 
-        for history_item in history_item_list:
-            filename, unpackstrht, loaded, bytes, nzo, status = history_item
-            name, msgid = SplitFileName(filename)
-            stages = []
-            item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
-                    'nzo':nzo,
-                    'msgid':msgid, 'filename':xml_name(name), 'loaded':loaded,
-                    'stages':stages, 'status':status, 'bytes':bytes}
-            if verbose:
-                stage_keys = unpackstrht.keys()
-                stage_keys.sort()
-                for stage in stage_keys:
-                    stageLine = {'name':STAGENAMES[stage]}
-                    actions = []
-                    for action in unpackstrht[stage]:
-                        actionLine = {'name':xml_name(action, True), 'value':xml_name(unpackstrht[stage][action], True)}
-                        actions.append(actionLine)
-                    actions.sort()
-                    actions.reverse()
-                    stageLine['actions'] = actions
-                    stages.append(stageLine)
-            item['stages'] = stages
-            items.append(item)
+def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=[]):
+    
+    # Get the currently in progress and active history queue.
+    queue = sabnzbd.get_history_queue()
+    
+    try:
+        limit = int(limit)
+    except:
+        limit = 0
+    try:
+        start = int(start)
+    except:
+        start = 0
+    
+    if start:
+        if start > len(queue):
+            queue = []
+        else:
+            queue[start:]
+        start -= len(queue)
             
-    total_items = len(items)
-            
-    try: limit = int(limit)
-    except: limit = 0
-    try: start = int(start)
-    except: start = 0
-            
-    #Paging code - Happens outside the loop for easy of coding
-    if limit > 0:
-        try:
-            if start > 0:               
-                if start > len(items):
-                    items = []
-                else:
-                    end = start+limit
-                    if start+limit > len(items):
-                        end = len(items)                  
-                    items = items[start:end]
+
+    history_db = cherrypy.thread_data.history_db
+    items, total_items = history_db.fetch_history(start,limit)
+
+    # Fetch which items should show details from the cookie
+    k = []
+    if verbose:
+        details_show_all = True
+    else:
+        details_show_all = False
+    cookie = cherrypy.request.cookie
+    if cookie.has_key('history_verbosity'):
+        k = cookie['history_verbosity'].value
+        c_path = cookie['history_verbosity']['path']
+        c_age = cookie['history_verbosity']['max-age']
+        c_version = cookie['history_verbosity']['version']
+
+        if k == 'all':
+            details_show_all = True
+        k = k.split(',')
+    k.extend(verbose_list)
+    '''
+    # Remove any non-existent nzo_ids out of the cookie
+    m = [item['nzo_id'] for item in items]
+    uniq = [x for x in k if x in m]
+    future_cookie = cherrypy.response.cookie
+    future_cookie['history_verbosity'] = ','.join(uniq)
+    future_cookie['history_verbosity']['path'] = c_path
+    future_cookie['history_verbosity']['max-age'] = c_age
+    future_cookie['history_verbosity']['version'] = c_version
+    '''
+
+    # Reverse the queue to add items to the top (faster than insert)
+    items.reverse()
+    
+    # Add currently in progress items to the queue.
+    for nzo in queue:
+        t = build_history_info(nzo)
+        item = {}
+        item['completed'], item['name'], item['nzb_name'], item['category'], item['pp'], item['script'], item['report'], \
+            item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
+            item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
+            item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = t
+        '''
+        if item['status'] != 'Queued':
+            item['show_details'] = 'True'
+        else:
+            item['show_details'] = 'False'
+        '''
+        item['action_line'] = nzo.get_action_line()
+        item = unpack_history_info(item)
+        items.append(item)
+        
+    for item in items:
+        if details_show_all:
+            item['show_details'] = 'True'
+        else:
+            if item['nzo_id'] in k:
+                item['show_details'] = 'True'
             else:
-                if not limit > len(items):
-                    items = items[:limit]
-        except:
-            pass
+                item['show_details'] = ''
+        if item['bytes']:
+            item['size'] = format_bytes(item['bytes'])
+        else:
+            item['size'] = ''
         
-        
+    # Unreverse the queue
+    items.reverse()
+    
     return (items, total_items)
     
 def xml_history(start=None, limit=None):
@@ -3230,7 +3331,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
-        slot['bytes'] = "%s" % (bytes)
+        slot['size'] = "%s" % format_bytes(bytes)
         if not sabnzbd.paused() and status != 'Paused' and status != 'Fetching' and not found_active:
             slot['status'] = "Downloading"
             found_active = True
@@ -3260,12 +3361,13 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             slot['eta'] = 'unknown'
 
         slot['avg_age'] = calc_age(average_date)
+        slot['verbosity'] = ""
         if web_dir:
             finished = []
             active = []
             queued = []
             if verbose or nzo_id in verboseList:#this will list files in the xml output, wanted yes/no?
-    
+                slot['verbosity'] = "True"
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
                     fn = xml_name(fn)
@@ -3275,6 +3377,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
                     line = {'filename':str(fn),
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
+                            'size':'%s' % (format_bytes(bytes)),
                             'age':age}
                     finished.append(line)
     
@@ -3287,6 +3390,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
                     line = {'filename':str(fn),
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
+                            'size':'%s' % (format_bytes(bytes)),
                             'nzf_id':nzf_id,
                             'age':age}
                     active.append(line)
@@ -3300,6 +3404,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
                     line = {'filename':str(fn), 'set':_set,
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
+                            'size':'%s' % (format_bytes(bytes)),
                             'age':age}
                     queued.append(line)
 
@@ -3323,25 +3428,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
 
     return info, pnfo_list, bytespersec, verboseList, nzo_pages, dictn
 
-def get_history():
-    slotinfo = []
-    history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
-    while history_items:
-        added = max(history_items.keys())
-        history_item_list = history_items.pop(added)
-        
-        for history_item in history_item_list:
-            filename, unpackstrht, loaded, bytes, nzo, status = history_item
-            #loaded = True #debug
-            if loaded:
-                name, msgid = SplitFileName(filename)
-                stages = []
-                item = {'added':time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(added)),
-                        'nzo':nzo,
-                        'msgid':msgid, 'filename':xml_name(name), 'loaded':loaded,
-                        'stages':stages, 'status':status, 'bytes':bytes}
-                slotinfo.append(item)
-    return slotinfo
 
 #depreciated
 def xmlSimpleDict(keyw,lst):
