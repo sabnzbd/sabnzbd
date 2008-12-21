@@ -22,6 +22,9 @@
 		<!--#for $stage in $line.stage_log#-->
 			<!--#for $action in $stage.actions#-->
 				<div class="hv_$stage.name" title='<!--#echo $stage.name.replace("'","&rsquo;").title() #--> &bull; <!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
+				<!--#if $stage.name == "script" and not $line.fail_message#-->
+					<span class="hvMessage">&raquo;&nbsp;<a href="scriptlog?name=$line.nzo_id">View&nbsp;Script&nbsp;Log</a>&nbsp;</span>
+				<!--#end if#-->
 			<!--#end for#-->
 		<!--#end for#-->
 		<!--#if $line.action_line#-->
