@@ -265,15 +265,13 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 /* refresh button below queue */
 #manual_refresh {
-	color:darkgreen;
-	font-weight:bold;
 	cursor:pointer;
 }
-#manual_refresh:hover {
+.refreshing {
 	border-bottom:1px dotted;
 }
-#skipped_refresh {
-	color:darkgreen;
+.refresh_skipped {
+	border-bottom:1px dotted red;
 }
 
 
@@ -398,7 +396,7 @@ tr:hover .history_added  {
 	color:black;
 }
 
-.last div {
+.verbose div {
 	cursor: help;
 	display:inline;
 	float:left;

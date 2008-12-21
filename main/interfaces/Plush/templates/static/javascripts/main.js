@@ -164,11 +164,13 @@ jQuery(function($) {
 		refreshQueue : function() {
 			
 			// skip refresh if cursor hovers queue
-			if ($.plush.skipRefresh)
-				return $('#skipped_refresh').fadeIn("slow").fadeOut("slow");
-			
+			if ($.plush.skipRefresh) {
+				$('#manual_refresh').addClass('refresh_skipped');
+				return false;
+			}
+
 			// refresh state notification
-			$("#manual_refresh").text("Refreshing");
+			$('#manual_refresh').removeClass('refresh_skipped').addClass('refreshing');
 			
 			// fetch updated content from queue.tmpl
 			$.ajax({
@@ -178,10 +180,12 @@ jQuery(function($) {
 					// replace queue contents with queue.tmpl
 					$('#queue').html(result);
 					
+					// refresh state notification
+					$('#manual_refresh').removeClass('refreshing');
+
 					// keep in mind the initialized livequery methods defined below
 					// (uses vars set within queue.tmpl to update other parts of the interface outside of the queue table)
 					
-					return false;
 				}
 			});
 		},
@@ -200,7 +204,7 @@ jQuery(function($) {
 			$.ajax({
 				url: 'history/?dummy2='+$.plush.historyViewPreference+'&_dc='+Math.random(),
 				success: function(result){
-					return $('#history').html(result);
+					$('#history').html(result);
 				}
 			});
 		},
@@ -252,7 +256,7 @@ jQuery(function($) {
 						url: "addID",
 						data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
 						success: function(result){
-							return $.plush.refreshQueue();
+							$.plush.refreshQueue();
 						}
 					});
 					$("#addID_input").val('enter URL / Newzbin ID');
@@ -271,11 +275,14 @@ jQuery(function($) {
 			// NZB File Upload
 			$('#addNZBbyFile').upload({
 				name: 'name',
-				action: 'tapi',
+				action: 'api',
 				enctype: 'multipart/form-data',
 				params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val()},
 				autoSubmit: true,
-				onComplete: $.plush.refreshQueue
+				onComplete: function() {
+					//$('#addNZBbyFile').val(''); // an attempt to allow dupe uploads
+					$.plush.refreshQueue;
+				}
 			});
 			
 			
@@ -310,22 +317,22 @@ jQuery(function($) {
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
 								 .blur(function(){ $.plush.focusedOnSpeedChanger = false; });
 			$("#maxSpeed-option").change( function() {
-				$.get("tapi?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&_dc="+Math.random());
+				$.get("api?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&_dc="+Math.random());
 			});
 			
 			
 			// Upon Queue Completion main menu select
 			$("#onQueueFinish-option").change( function() {
-				$.get("tapi?mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()+"&_dc="+Math.random());
+				$.get("api?mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()+"&_dc="+Math.random());
 			});
 					
 			// queue purge
 			$('#queue_purge').click(function(event) {
 				if(confirm('Sure you want to empty out your Queue?')){
 					$.ajax({
-						url: "tapi?mode=queue&name=delete&value=all&_dc="+Math.random(),
+						url: "api?mode=queue&name=delete&value=all&_dc="+Math.random(),
 						success: function(result){
-							return $.plush.refreshQueue();
+							$.plush.refreshQueue();
 						}
 					});
 				}
@@ -336,7 +343,7 @@ jQuery(function($) {
 				$.ajax({
 					url: "queue/sort_by_avg_age?_dc="+Math.random(),
 					success: function(result){
-						return $.plush.refreshQueue();
+						$.plush.refreshQueue();
 					}
 				});
 			});
@@ -344,7 +351,7 @@ jQuery(function($) {
 				$.ajax({
 					url: "queue/sort_by_name?_dc="+Math.random(),
 					success: function(result){
-						return $.plush.refreshQueue();
+						$.plush.refreshQueue();
 					}
 				});
 			});
@@ -352,7 +359,7 @@ jQuery(function($) {
 				$.ajax({
 					url: "queue/sort_by_size?_dc="+Math.random(),
 					success: function(result){
-						return $.plush.refreshQueue();
+						$.plush.refreshQueue();
 					}
 				});
 			});
@@ -364,7 +371,14 @@ jQuery(function($) {
 					window.location='shutdown';
 			});
 			
+				
+			// manual refresh
+			$('#manual_refresh_wrapper').click(function(event) {
+				$.plush.refreshQueue();
+				$.plush.refreshHistory();
+			});
 			
+
 			/********************************************
 			*********************************************
 			
@@ -424,23 +438,18 @@ jQuery(function($) {
 					$.plush.refreshQueue();
 				});
 				
-				// queue manual refresh
-				$('#manual_refresh').click(function(event) {
-					$(event.target).text("Refreshing");
-					$.plush.refreshQueue();
-					$.plush.refreshHistory();
-				});
-				
 				// queue drag and drop sorting
 				$("#queueTable").tableDnD({
 					onDrop: function(table, row) {
 						if (table.tBodies[0].rows.length < 2)
 							return false;
 						// determine which position the repositioned row is at now
-						for ( var i=0; i < table.tBodies[0].rows.length; i++ )
-							if (table.tBodies[0].rows[i].id == row.id)
-								return $.get("tapi?mode=switch&value="+row.id+"&value2="+i+"&_dc="+Math.random());
-						return false;
+						for ( var i=0; i < table.tBodies[0].rows.length; i++ ) {
+							if (table.tBodies[0].rows[i].id == row.id) {
+								$.get("api?mode=switch&value="+row.id+"&value2="+i+"&_dc="+Math.random());
+								return false;
+							}
+						}
 					}
 				});
 				
@@ -448,7 +457,7 @@ jQuery(function($) {
 				/*
 				$('#queueTable .title').dblclick(function(){
 					$(this).parent().parent().prependTo('#queueTable');
-					$.get("tapi?mode=switch&value="+$(this).parent().parent().attr('id')+"&value2=0&_dc="+Math.random());
+					$.get("api?mode=switch&value="+$(this).parent().parent().attr('id')+"&value2=0&_dc="+Math.random());
 				});
 				*/
 				
@@ -456,37 +465,37 @@ jQuery(function($) {
 				$('#queueTable .queue_nzb_status').click(function(){
 					if ($(this).attr('class') == "queue_nzb_status queue_nzb_queued") {
 						$(this).text('Paused').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
-						$.get('tapi?mode=queue&name=pause&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random());
+						$.get('api?mode=queue&name=pause&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random());
 					} else {
 						$(this).text('Queued').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
-						$.get('tapi?mode=queue&name=resume&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random());
+						$.get('api?mode=queue&name=resume&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random());
 					}
 				});
 				
 				// nzb change priority ajax
 				$('#queueTable .proc_priority').change(function(){
 					$.ajax({
-						url: 'tapi?mode=queue&name=priority&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random(),
+						url: 'api?mode=queue&name=priority&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random(),
 						success: function(result){
 							$.plush.skipRefresh = false;
-							return $.plush.refreshQueue();
+							$.plush.refreshQueue();
 						}
 					});
 				});
 				
 				// nzb change category ajax
 				$('#queueTable .proc_category').change(function(){
-					$.get('tapi?mode=change_cat&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
+					$.get('api?mode=change_cat&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
 				});
 				
 				// nzb change processing option ajax
 				$('#queueTable .proc_option').change(function(){
-					$.get('tapi?mode=change_opts&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
+					$.get('api?mode=change_opts&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
 				});
 				
 				// nzb change script ajax
 				$('#queueTable .proc_script').change(function(){
-					$.get('tapi?mode=change_script&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
+					$.get('api?mode=change_script&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
 				});
 				
 				// for skipping queue refresh on mouseover
@@ -506,9 +515,9 @@ jQuery(function($) {
 			// queue pause/resume
 			$('#pause_resume').click(function(event) {
 				if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
-					$.get("tapi?mode=resume&_dc="+Math.random());
+					$.get("api?mode=resume&_dc="+Math.random());
 				else
-					$.get("tapi?mode=pause&_dc="+Math.random());
+					$.get("api?mode=pause&_dc="+Math.random());
 				if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused')
 					$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
 				else
@@ -520,7 +529,7 @@ jQuery(function($) {
 				if ($(event.target).is('.queue_delete') && confirm('Delete NZB? Are you sure?') ) {
 					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeOut('fast');
-					$.get('tapi?mode=queue&name=delete&value='+delid+'&_dc='+Math.random());
+					$.get('api?mode=queue&name=delete&value='+delid+'&_dc='+Math.random());
 				}
 			});
 		
@@ -540,7 +549,7 @@ jQuery(function($) {
 				$.ajax({
 					url: 'history/tog_verbose?_dc='+Math.random(),
 					success: function(result){
-						return $('#history').html(result); // is this loading the history twice? redirect?
+						$('#history').html(result); // is this loading the history twice? redirect?
 					}
 				});
 			});
@@ -548,7 +557,7 @@ jQuery(function($) {
 			// history purge
 			$('.h_menu_purge').dblclick(function(event) {
 				$.ajax({
-					url: 'tapi?mode=history&name=delete&value=all&_dc='+Math.random(),
+					url: 'api?mode=history&name=delete&value=all&_dc='+Math.random(),
 					success: function(result){
 						$.plush.refreshHistory();
 					}
@@ -560,7 +569,7 @@ jQuery(function($) {
 				if ($(event.target).is('.queue_delete')) {	// history delete
 					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeOut('fast');
-					$.get('tapi?mode=history&name=delete&value='+delid+'&_dc='+Math.random());
+					$.get('api?mode=history&name=delete&value='+delid+'&_dc='+Math.random());
 				}
 			});
 			
@@ -582,7 +591,7 @@ jQuery(function($) {
 			$('#historyTable').livequery(function() {
 				
 				// tooltips for verbose notices
-				$('#history .last div').tooltip({
+				$('#history .verbose div').tooltip({
 					extraClass:	"tooltip",
 					track:		true, 
 					fixPNG:		true

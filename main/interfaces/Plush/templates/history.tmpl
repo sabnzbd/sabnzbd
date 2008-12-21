@@ -1,13 +1,4 @@
-<%
-def displayNotices (action, name):
-	if name[1:4] == 'Tim' or name[1:4] == 'Avg':
-		return ''
-	notice = action[3:11]
-	if notice[:-2] != "Joined" and notice != "Verified" and notice[:-1] != "Deleted" and notice != "Unpacked" and notice != "Scanning" and notice != "Repaired" and notice != "Unzipped" and notice != "No par2 " and notice[:-3] != "nload" and notice != "Quick ch":
-		return '<span class="hvMessage">&raquo;&nbsp;' + action[3:] + '&nbsp;</span><br/>'
-	if notice[:-3] == "nload":
-		return '<span class="hvMessage">&raquo;&nbsp;' + action + '&nbsp;</span><br/>'
-%>
+<% import datetime %>
 
 <a name="HIST"></a>
 <table class="queueTable" id="historyTable">
@@ -19,7 +10,7 @@ def displayNotices (action, name):
 	<!--#set $odd = not $odd#-->
 	<tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
 	
-	<td class="historyTitle <!--#if $line.action_line #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->"<!--#if not $line.stage_log#--> colspan="2"<!--#end if#-->>
+	<td class="historyTitle <!--#if $line.action_line #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->">
 		<!--#if $line.report #-->
 		<a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">$line.name</a>
 		<!--#else#-->
@@ -27,22 +18,23 @@ def displayNotices (action, name):
 		<!--#end if#-->
 	</td>
 	
-	<!--#if $line.stage_log#-->
-	<td class="last">
+	<td class="verbose">
 		<!--#for $stage in $line.stage_log#-->
 			<!--#for $action in $stage.actions#-->
-<% 
-name_escaped = stage['name'].replace("'","&rsquo;") .title()
-%>
-				<div class="hv_$stage.name" title='$name_escaped<br /> &thinsp;&nbsp;$action'>
-                &nbsp;</div>
+				<div class="hv_$stage.name" title='<!--#echo $stage.name.replace("'","&rsquo;").title() #--> &bull; <!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
 			<!--#end for#-->
 		<!--#end for#-->
+		<!--#if $line.action_line#-->
+		<span class="hvMessage">&raquo;&nbsp;$line.action_line&nbsp;</span><br/>
+		<!--#end if#-->
+		<!--#if $line.fail_message#-->
+		<span class="hvMessage">&raquo;&nbsp;$line.fail_message&nbsp;</span><br/>
+		<!--#end if#-->
 	</td>
-	<!--#end if#-->
 	
 	<td class="options" nowrap>
-		<small class="history_added">$line.completed</small>
+        <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
+		<small class="history_added">$d</small>
 		<div class="queue_delete" title="Hide&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
 	</td>
 	

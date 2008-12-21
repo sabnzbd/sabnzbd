@@ -46,6 +46,40 @@
 			</ul>
 		</li>
 		<li>
+			<a class="sf-with-ul">Add NZB<span class="sf-sub-indicator"> &#187;</span></a>
+			<ul><li><a>
+				<!--#if $cat_list#-->
+				Category:
+					<select id="addID_cat" name="cat">
+					<!--#for $ct in $cat_list#-->
+						<option value="$ct">$ct</option>
+					<!--#end for#-->
+					</select>
+				<br/>
+				<!--#end if#-->
+				Processing:
+					<select id="addID_pp" name="pp">
+						<option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
+						<option value="0">Skip</option>
+						<option value="1">+Repair</option>
+						<option value="2">+R+Unpack</option>
+						<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
+					</select>
+				<!--#if $script_list#-->
+				<br/>Script:
+					<select id="addID_script" name="script">
+					<!--#for $sc in $script_list#-->
+						<option value="$sc">$sc</option>
+					<!--#end for#-->
+					</select>
+				<!--#end if#-->
+					</a>
+				</li>
+				<li><a><input type="text" id="addID_input" size="22" /><input type="submit" id="addID" value="Fetch" /></a></li>
+				<li><a><div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div></a></li>
+			</ul>
+		</li>
+		<li>
 			<a class="sf-with-ul">Queue<span class="sf-sub-indicator"> &#187;</span></a>
 			<ul>
 				<li>
@@ -83,47 +117,14 @@
 				<li><a id="queue_purge" class="pointer">Purge</a></li>
 			</ul>
 		</li>
-		<li><a class="sf-with-ul" href="connections">Config<span class="sf-sub-indicator"> &#187;</span></a></li>
 		<li>
 			<a class="sf-with-ul" href="connections">Warnings&nbsp;<small id="have_warnings">($have_warnings)</small><span class="sf-sub-indicator"> &#187;</span></a>
 			<ul>
 				<li><a href="connections">Latest:&nbsp;<span id="last_warning"><!--#if $have_warnings == "0" #-->nothing to report<!--#end if#-->$last_warning</span></a></li>
 			</ul>
 		</li>
-		<li>
-			<a class="sf-with-ul">Add NZB<span class="sf-sub-indicator"> &#187;</span></a>
-			<ul><li><a>
-				<!--#if $cat_list#-->
-				Category:
-					<select id="addID_cat" name="cat">
-					<!--#for $ct in $cat_list#-->
-						<option value="$ct">$ct</option>
-					<!--#end for#-->
-					</select>
-				<br/>
-				<!--#end if#-->
-				Processing:
-					<select id="addID_pp" name="pp">
-						<option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
-						<option value="0">Skip</option>
-						<option value="1">+Repair</option>
-						<option value="2">+R+Unpack</option>
-						<option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
-					</select>
-				<!--#if $script_list#-->
-				<br/>Script:
-					<select id="addID_script" name="script">
-					<!--#for $sc in $script_list#-->
-						<option value="$sc">$sc</option>
-					<!--#end for#-->
-					</select>
-				<!--#end if#-->
-					</a>
-				</li>
-				<li><a><input type="text" id="addID_input" size="22" /><input type="submit" id="addID" value="Fetch" /></a></li>
-				<li><a><div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div></a></li>
-			</ul>
-		</li>
+		<li><a href="connections">Config</a></li>
+		<li><a class="pointer" id="manual_refresh_wrapper"><span id="manual_refresh">Refresh</span></a></li>
 	</ul>
 	
 	<!--#if $warning#-->
