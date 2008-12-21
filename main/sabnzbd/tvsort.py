@@ -559,7 +559,7 @@ class GenericSorter:
                 logging.debug("[%s] Movie files not in sequence %s", __NAME__, _files)
                 
 
-    def check_for_multiple(files):
+    def check_for_multiple(self, files):
         expressions = []
         matched_files = []
         
@@ -671,6 +671,10 @@ class DateSorter:
         path = path.replace('%t', self.date_info['title'])
         path = path.replace('%.t', self.date_info['title_two'])
         path = path.replace('%_t', self.date_info['title_three'])
+        
+        path = path.replace('%sn', self.date_info['title'])
+        path = path.replace('%s.n', self.date_info['title_two'])
+        path = path.replace('%s_n', self.date_info['title_three'])
         
         # Replace year
         path = path.replace('%year', self.date_info['year']) 
@@ -788,10 +792,14 @@ def removeDescription(path, desc_token):
     return path
     
 def getDecades(year):
-    try:
-        decade = year[2:3]+'0'
-        decade2 = year[:3]+'0'
-    except:
+    if year != '0':
+        try:
+            decade = year[2:3]+'0'
+            decade2 = year[:3]+'0'
+        except:
+            decade = ''
+            decade2 = ''
+    else:
         decade = ''
         decade2 = ''
     return decade, decade2
@@ -838,7 +846,7 @@ def rename_similar(path, file, name):
             fpath = os.path.join(root, _file)
             tmp, ext = os.path.splitext(_file)
             if tmp == file_prefix:
-                newname = "%s%s" % (self.filename_set,ext)
+                newname = "%s%s" % (name,ext)
                 newpath = os.path.join(path, newname)
                 if not os.path.exists(newpath):
                     try:
