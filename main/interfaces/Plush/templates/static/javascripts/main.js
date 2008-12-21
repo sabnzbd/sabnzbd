@@ -545,14 +545,14 @@ jQuery(function($) {
             
             
             // history verbosity toggle
-            $('.h_menu_verbose').click(function(event) {
+            /* $('.h_menu_verbose').click(function(event) {
                 $.ajax({
                     url: 'history/tog_verbose?_dc='+Math.random(),
                     success: function(result){
                         $('#history').html(result); // is this loading the history twice? redirect?
                     }
                 });
-            });
+            }); */
             
             // history purge
             $('.h_menu_purge').dblclick(function(event) {

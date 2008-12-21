@@ -19,7 +19,7 @@
     </td>
     
     <td class="verbose">
-        <!--#if $line.show_details #-->
+        <!-- UNUSED: if $line.show_details -->
 	    <!--#for $stage in $line.stage_log#-->
             <!--#for $action in $stage.actions#-->
                 <div class="hv_$stage.name" title='<!--#echo $stage.name.replace("'","&rsquo;").title() #--> &bull; <!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
@@ -28,7 +28,6 @@
                 <!--#end if#-->
             <!--#end for#-->
         <!--#end for#-->
-        <!--#end if#-->
         <!--#if $line.action_line#-->
         <span class="hvMessage">&raquo;&nbsp;$line.action_line&nbsp;</span><br/>
         <!--#end if#-->
