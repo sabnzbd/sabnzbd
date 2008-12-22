@@ -36,6 +36,10 @@ from sabnzbd.misc import Panic_Queue, ExitSab, sanitize_filename
 from database import HistoryDB
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
+import sabnzbd.config as config
+
+TOP_ONLY = config.OptionBool('misc', 'top_only', True)
+AUTODISCONNECT = config.OptionBool('misc', 'auto_disconnect', True)
 
 def DeleteLog(name):
     if name:
@@ -49,19 +53,19 @@ def DeleteLog(name):
 
 NZBQUEUE_LOCK = RLock()
 class NzbQueue(TryList):
-    def __init__(self, auto_sort = False, top_only = False):
+    def __init__(self):
         TryList.__init__(self)
 
         self.__downloaded_items = []
 
 
-        self.__top_only = top_only
+        self.__top_only = TOP_ONLY.get()
         self.__top_nzo = None
 
         self.__nzo_list = []
         self.__nzo_table = {}
 
-        self.__auto_sort = auto_sort
+        self.__auto_sort = sabnzbd.nzbstuff.AUTO_SORT.get()
 
         nzo_ids = []
 
@@ -127,7 +131,9 @@ class NzbQueue(TryList):
                     future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzo_info=nzo_info)
                     future.nzo_id = nzo_id
                     self.save()
-                except:
+                except ValueError:
+                    self.remove(nzo_id, False)
+                except TypeError:
                     self.remove(nzo_id, False)
 
                 if self.__auto_sort:
@@ -490,8 +496,7 @@ class NzbQueue(TryList):
             self.reset_try_list()
 
         if file_done:
-            if sabnzbd.DO_SAVE:
-                sabnzbd.save_data(nzo, nzo.nzo_id)
+            sabnzbd.save_data(nzo, nzo.nzo_id)
 
             _type = nzf.get_type()
 
@@ -508,7 +513,7 @@ class NzbQueue(TryList):
 
             if not self.__nzo_list:
                 # Close server connections
-                if sabnzbd.AUTODISCONNECT:
+                if AUTODISCONNECT.get():
                     sabnzbd.disconnect()
 
                 # Sets the end-of-queue back on if disabled

@@ -54,7 +54,7 @@ from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
 import sabnzbd.newzbin as newzbin
 from sabnzbd.misc import DirScanner, real_path, \
-                         create_real_path, check_latest_version, from_units, SameFile, decodePassword, \
+                         create_real_path, from_units, SameFile, decodePassword, \
                          ProcessArchiveFile, ProcessSingleFile, save_configfile
 from sabnzbd.urlgrabber import URLGrabber
 from sabnzbd.nzbstuff import NzbObject
@@ -75,27 +75,12 @@ CFG = None
 MY_NAME = None
 MY_FULLNAME = None
 NEW_VERSION = None
-VERSION_CHECK = None
-REPLACE_SPACES = None
-REPLACE_ILLEGAL = None
 DIR_HOME = None
 DIR_APPDATA = None
 DIR_LCLDATA = None
 DIR_PROG = None
 DIR_INTERFACES = None
-FAIL_ON_CRC = False
-CREATE_GROUP_FOLDERS = False
-CREATE_CAT_FOLDERS = False
-CREATE_CAT_SUB = False
-DO_FILE_JOIN = False
-DO_UNZIP = False
-DO_UNRAR = False
-DO_SAVE = True
-AUTODISCONNECT = True
-PAR_CLEANUP = False
-PAR_OPTION = ''
-NO_DUPES = False
-DO_TSJOIN = True
+DIRSCAN_DIR = None
 
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
@@ -103,15 +88,12 @@ QUEUECOMPLETEARG = None #stores an extra arguments that need to be passed
 QUEUECOMPLETEACTION_GO = False # Booleen value whether to run an action or not at the queue end.
 
 WAITEXIT = False
-SEND_GROUP = False
 
 CLEANUP_LIST = []
-IGNORE_SAMPLES = False
 
 UMASK = None
 BANDWITH_LIMIT = 0
 DEBUG_DELAY = 0
-AUTOBROWSER = None
 DAEMON = None
 CONFIGLOCK = None
 RSS_RATE = None
@@ -129,10 +111,6 @@ LOGHANDLER = None
 GUIHANDLER = None
 LOGLEVEL = None
 AMBI_LOCALHOST = False
-SAFE_POSTPROC = False
-DIRSCAN_SCRIPT = None
-DIRSCAN_DIR = None
-DIRSCAN_PRIORITY = 0
 
 POSTPROCESSOR = None
 ASSEMBLER = None
@@ -145,17 +123,12 @@ BPSMETER = None
 
 URLGRABBER = None
 
-AUTO_SORT = None
-
 WEB_COLOR = None
 WEB_COLOR2 = None
 WEB_DIR = None
 WEB_DIR2 = None
-pause_on_post_processing = False
-QUICK_CHECK = True
 LOGIN_PAGE = None
 SABSTOP = False
-IONICE_ARGS = ''
 
 ENABLE_TV_SORTING = False
 TV_SORT_STRING = None
@@ -352,20 +325,18 @@ INIT_LOCK = Lock()
 
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
-    global __INITIALIZED__, FAIL_ON_CRC, CREATE_GROUP_FOLDERS,  DO_FILE_JOIN, AUTODISCONNECT, \
-           DO_UNZIP, DO_UNRAR, DO_SAVE, PAR_CLEANUP, PAR_OPTION, NO_DUPES, CLEANUP_LIST, IGNORE_SAMPLES, \
+    global __INITIALIZED__, \
+           DIRSCAN_DIR, CLEANUP_LIST, \
            POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, URLGRABBER, NZBQ, DOWNLOADER, \
            NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
-           SAFE_POSTPROC, DIRSCAN_SCRIPT, DIRSCAN_DIR, DIRSCAN_PP, \
-           COMPLETE_DIR, CACHE_DIR, UMASK, SEND_GROUP, CREATE_CAT_FOLDERS, SCRIPT_DIR, EMAIL_DIR, \
-           CREATE_CAT_SUB, BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, AUTOBROWSER, ARTICLECACHE, \
-           DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, VERSION_CHECK, REPLACE_SPACES, REPLACE_ILLEGAL,\
+           COMPLETE_DIR, CACHE_DIR, UMASK, SCRIPT_DIR, EMAIL_DIR, \
+           BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, ARTICLECACHE, \
+           DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           AUTO_SORT, WEB_COLOR, WEB_COLOR2, \
-           WEB_DIR, WEB_DIR2, pause_on_post_processing, DARWIN, QUICK_CHECK, DIRSCAN_PRIORITY, \
-           DO_TSJOIN, IONICE_ARGS, \
+           WEB_COLOR, WEB_COLOR2, \
+           WEB_DIR, WEB_DIR2, DARWIN, \
            SSL_CA, SSL_KEY
 
     if __INITIALIZED__:
@@ -380,48 +351,11 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     CheckSection('servers')
     CheckSection('rss')
 
-    VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
-
-    REPLACE_SPACES = bool(check_setting_int(CFG, 'misc', 'replace_spaces', 0))
-    REPLACE_ILLEGAL = bool(check_setting_int(CFG, 'misc', 'replace_illegal', 1))
-
-    FAIL_ON_CRC = bool(check_setting_int(CFG, 'misc', 'fail_on_crc', 0))
-
-    CREATE_GROUP_FOLDERS = False #bool(check_setting_int(CFG, 'misc', 'create_group_folders', 0))
-
-    DO_FILE_JOIN = bool(check_setting_int(CFG, 'misc', 'enable_filejoin', 0))
-
-    DO_UNZIP = bool(check_setting_int(CFG, 'misc', 'enable_unzip', 1))
-
-    DO_UNRAR = bool(check_setting_int(CFG, 'misc', 'enable_unrar', 1))
-    
-    DO_TSJOIN = bool(check_setting_int(CFG, 'misc', 'enable_tsjoin', 1))
-
-    DO_SAVE = True #bool(check_setting_int(CFG, 'misc', 'enable_save', 1))
-
-    AUTODISCONNECT = bool(check_setting_int(CFG, 'misc', 'auto_disconnect', 1))
-
-    PAR_CLEANUP = bool(check_setting_int(CFG, 'misc', 'enable_par_cleanup', 1))
-
-    PAR_OPTION = check_setting_str(CFG, 'misc', 'par_option', '')
-    if PAR_OPTION.lower() == 'none':
-        PAR_OPTION = ""
-
-    NO_DUPES = bool(check_setting_int(CFG, 'misc', 'no_dupes', 0))
-    
     CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
-
-    SAFE_POSTPROC = bool(check_setting_int(CFG, 'misc', 'safe_postproc', 0))
-
-    pause_on_post_processing = bool(check_setting_int(CFG, 'misc', 'pause_on_post_processing', 0))
-
-    QUICK_CHECK = bool(check_setting_int(CFG, 'misc', 'quick_check', 1))
 
     CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
     if type(CLEANUP_LIST) != type([]):
         CLEANUP_LIST = []
-
-    IGNORE_SAMPLES = bool(check_setting_int(CFG, 'misc', 'ignore_samples', 0))
 
     UMASK = check_setting_str(CFG, 'misc', 'permissions', '')
     try:
@@ -429,10 +363,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
             int(UMASK, 8)
     except:
         logging.error("Permissions (%s) not correct, use OCTAL notation!", UMASK)
-
-    SEND_GROUP = bool(check_setting_int(CFG, 'misc', 'send_group', 0))
-
-    CREATE_CAT_FOLDERS = False #bool(check_setting_int(CFG, 'newzbin', 'create_category_folders', 0))
 
     DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
     if DOWNLOAD_DIR == "":
@@ -503,23 +433,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cache_limit = int(from_units(cache_limit))
     logging.debug("Actual cache limit = %s", cache_limit)
 
-    try:
-        dummy = CFG['misc']['schedlines']
-    except:
-        CFG['misc']['schedlines'] = []
-
-    DIRSCAN_PP = check_setting_int(CFG, 'misc', 'dirscan_opts', 3)
-    DIRSCAN_SCRIPT = check_setting_str(CFG, 'misc', 'dirscan_script', '')
-    DIRSCAN_PRIORITY = check_setting_int(CFG, 'misc', 'dirscan_priority', 0)
-
-    top_only = bool(check_setting_int(CFG, 'misc', 'top_only', 1))
-
-    AUTO_SORT = bool(check_setting_int(CFG, 'misc', 'auto_sort', 0))
-
     sorting_init()
 
-    IONICE_ARGS = check_setting_str(CFG, 'misc', 'ionice',  '')
-    
     SSL_CA = check_setting_file(CFG, 'ssl_ca', DIR_LCLDATA)
     SSL_KEY = check_setting_file(CFG, 'ssl_key', DIR_LCLDATA)
 
@@ -552,9 +467,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         BPSMETER = BPSMeter(bytes)
 
     if NZBQ:
-        NZBQ.__init__(AUTO_SORT, top_only)
+        NZBQ.__init__()
     else:
-        NZBQ = NzbQueue(AUTO_SORT, top_only)
+        NZBQ = NzbQueue()
 
     if POSTPROCESSOR:
         POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, POSTPROCESSOR.queue, POSTPROCESSOR.history_queue, restart=True)
@@ -1066,7 +981,7 @@ def sort_queue(field, reverse=False):
 def pause_downloader(save=True):
     try:
         DOWNLOADER.pause()
-        if AUTODISCONNECT:
+        if sabnzbd.nzbqueue.AUTODISCONNECT.get():
             DOWNLOADER.disconnect()
         if save:
             save_state()

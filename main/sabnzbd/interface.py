@@ -1,4 +1,5 @@
 #!/usr/bin/python -OO
+#!/usr/bin/python -OO
 # Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -50,6 +51,7 @@ import sabnzbd.newzbin as newzbin
 import sabnzbd.urlgrabber as urlgrabber
 from sabnzbd.codecs import TRANS, xml_name
 import sabnzbd.config as config
+import sabnzbd.newsunpack as newsunpack
 from sabnzbd.database import HistoryDB, build_history_info, unpack_history_info
 
 from sabnzbd.constants import *
@@ -311,7 +313,7 @@ class MainPage:
             info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts(default=True)
-        info['script'] = sabnzbd.DIRSCAN_SCRIPT
+        info['script'] = sabnzbd.misc.DIRSCAN_SCRIPT.get()
 
         info['cat'] = 'Default'
         info['cat_list'] = ListCats(True)
@@ -568,8 +570,8 @@ class MainPage:
                     script = item.script.get()
                     pp = item.pp.get()
                 else:
-                    script = sabnzbd.DIRSCAN_SCRIPT
-                    pp = sabnzbd.DIRSCAN_PP
+                    script = sabnzbd.misc.DIRSCAN_SCRIPT.get()
+                    pp = sabnzbd.misc.DIRSCAN_PP.get()
     
                 sabnzbd.change_script(nzo_id, script)
                 sabnzbd.change_opts(nzo_id, pp)
@@ -934,8 +936,8 @@ class QueuePage:
                 script = item.script.get()
                 pp = item.pp.get()
             else:
-                script = sabnzbd.DIRSCAN_SCRIPT
-                pp = sabnzbd.DIRSCAN_PP
+                script = sabnzbd.misc.DIRSCAN_SCRIPT.get()
+                pp = sabnzbd.misc.DIRSCAN_PP.get()
 
             sabnzbd.change_script(nzo_id, script)
             sabnzbd.change_opts(nzo_id, pp)
@@ -1255,6 +1257,15 @@ class ConfigDirectories:
 
         return saveAndRestart(self.__root, _dc)
 
+
+SWITCH_LIST = \
+    ('par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
+     'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
+     'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
+     'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
+     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'ionice'
+    )
+
 #------------------------------------------------------------------------------
 class ConfigSwitches:
     def __init__(self, web_dir, root, prim):
@@ -1268,105 +1279,37 @@ class ConfigSwitches:
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        cfg, pnfo_list, bytespersec = build_header(self.__prim)
 
-        par = sabnzbd.CFG['misc']['par_option']
-        if par and par.lower()!="none":
-            config['par_option'] = par
-        else:
-            config['par_option'] = ""
-        config['nt'] = os.name == 'nt'
-        config['enable_unrar'] = IntConv(sabnzbd.CFG['misc']['enable_unrar'])
-        config['enable_unzip'] = IntConv(sabnzbd.CFG['misc']['enable_unzip'])
-        config['enable_filejoin'] = IntConv(sabnzbd.CFG['misc']['enable_filejoin'])
-        config['enable_tsjoin'] = IntConv(sabnzbd.CFG['misc']['enable_tsjoin'])
-        #config['enable_save'] = IntConv(sabnzbd.CFG['misc']['enable_save'])
-        config['enable_par_cleanup'] = IntConv(sabnzbd.CFG['misc']['enable_par_cleanup'])
-        config['send_group'] = IntConv(sabnzbd.CFG['misc']['send_group'])
-        config['fail_on_crc'] = IntConv(sabnzbd.CFG['misc']['fail_on_crc'])
-        #config['create_group_folders'] = IntConv(sabnzbd.CFG['misc']['create_group_folders'])
-        config['dirscan_opts'] = IntConv(sabnzbd.CFG['misc']['dirscan_opts'])
-        config['top_only'] = IntConv(sabnzbd.CFG['misc']['top_only'])
-        config['auto_sort'] = IntConv(sabnzbd.CFG['misc']['auto_sort'])
-        config['check_rel'] = IntConv(sabnzbd.CFG['misc']['check_new_rel'])
-        config['auto_disconnect'] = IntConv(sabnzbd.CFG['misc']['auto_disconnect'])
-        config['replace_spaces'] = IntConv(sabnzbd.CFG['misc']['replace_spaces'])
-        config['replace_illegal'] = IntConv(sabnzbd.CFG['misc']['replace_illegal'])
-        config['safe_postproc'] = IntConv(sabnzbd.CFG['misc']['safe_postproc'])
-        config['no_dupes'] = IntConv(sabnzbd.CFG['misc']['no_dupes'])
-        config['auto_browser'] = IntConv(sabnzbd.CFG['misc']['auto_browser'])
-        config['ignore_samples'] = IntConv(sabnzbd.CFG['misc']['ignore_samples'])
-        config['pause_on_post_processing'] = IntConv(sabnzbd.CFG['misc']['pause_on_post_processing'])
-        config['quick_check'] = IntConv(sabnzbd.CFG['misc']['quick_check'])
-        config['ionice'] = sabnzbd.CFG['misc']['ionice']
-        config['script'] = sabnzbd.CFG['misc']['dirscan_script']
-        if not config['script']:
-            config['script'] = 'None'
-        config['script_list'] = ListScripts()
+        cfg['nt'] = os.name == 'nt'
+
+        for kw in SWITCH_LIST:
+            cfg[kw] = config.get_config('misc', kw).get()
+
+        cfg['script_list'] = ListScripts()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
-                            searchList=[config],
+                            searchList=[cfg],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
 
     @cherrypy.expose
-    def saveSwitches(self, par_option=None, enable_unrar = None, enable_unzip = None,
-                     enable_filejoin = None, enable_save = None, enable_tsjoin = None,
-                     send_group = None, fail_on_crc = None, top_only = None,
-                     create_group_folders = None, dirscan_opts = None,
-                     enable_par_cleanup = None, auto_sort = None,
-                     check_rel = None,
-                     auto_disconnect = None,
-                     safe_postproc = None,
-                     no_dupes = None,
-                     replace_spaces = None,
-                     replace_illegal = None,
-                     auto_browser = None,
-                     ignore_samples = None,
-                     pause_on_post_processing = None,
-                     quick_check = None,
-                     script = None,
-                     ionice=None,
-                     _dc = None
-                     ):
+    def saveSwitches(self, **kwargs):
 
-        if par_option:
-            sabnzbd.CFG['misc']['par_option'] = par_option
-        else:
-            sabnzbd.CFG['misc']['par_option'] = ""
-        if ionice:
-            sabnzbd.CFG['misc']['ionice'] = ionice
-        else:
-            sabnzbd.CFG['misc']['ionice'] = ""
+        for kw in SWITCH_LIST:
+            item = config.get_config('misc', kw)
+            try:
+                value = kwargs[kw]
+            except:
+                value = None
+            if not item.set(value):
+                return badParameterResponse('Error: incorrect value "%s" for config-item "%s".' % (kw, value))
 
-        sabnzbd.CFG['misc']['enable_unrar'] = IntConv(enable_unrar)
-        sabnzbd.CFG['misc']['enable_unzip'] = IntConv(enable_unzip)
-        sabnzbd.CFG['misc']['enable_filejoin'] = IntConv(enable_filejoin)
-        sabnzbd.CFG['misc']['enable_tsjoin'] = IntConv(enable_tsjoin)
-        #sabnzbd.CFG['misc']['enable_save'] = IntConv(enable_save)
-        sabnzbd.CFG['misc']['send_group'] = IntConv(send_group)
-        sabnzbd.CFG['misc']['fail_on_crc'] = IntConv(fail_on_crc)
-        #sabnzbd.CFG['misc']['create_group_folders'] = IntConv(create_group_folders)
-        sabnzbd.CFG['misc']['dirscan_opts'] = IntConv(dirscan_opts)
-        if script == 'None':
-            sabnzbd.CFG['misc']['dirscan_script'] = None
-        else:
-            sabnzbd.CFG['misc']['dirscan_script'] = script
-        sabnzbd.CFG['misc']['enable_par_cleanup'] = IntConv(enable_par_cleanup)
-        sabnzbd.CFG['misc']['top_only'] = IntConv(top_only)
-        sabnzbd.CFG['misc']['auto_sort'] = IntConv(auto_sort)
-        sabnzbd.CFG['misc']['check_new_rel'] = IntConv(check_rel)
-        sabnzbd.CFG['misc']['auto_disconnect'] = IntConv(auto_disconnect)
-        sabnzbd.CFG['misc']['safe_postproc'] = IntConv(safe_postproc)
-        sabnzbd.CFG['misc']['no_dupes'] = IntConv(no_dupes)
-        sabnzbd.CFG['misc']['replace_spaces'] = IntConv(replace_spaces)
-        sabnzbd.CFG['misc']['replace_illegal'] = IntConv(replace_illegal)
-        sabnzbd.CFG['misc']['auto_browser'] = IntConv(auto_browser)
-        sabnzbd.CFG['misc']['ignore_samples'] = IntConv(ignore_samples)
-        sabnzbd.CFG['misc']['pause_on_post_processing'] = IntConv(pause_on_post_processing)
-        sabnzbd.CFG['misc']['quick_check'] = IntConv(quick_check)
-
+        try:
+            _dc = kwargs['_dc']
+        except:
+            _dc = ''
         return saveAndRestart(self.__root, _dc)
 
 #------------------------------------------------------------------------------

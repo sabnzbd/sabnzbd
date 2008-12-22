@@ -49,6 +49,10 @@ import sabnzbd.email as email
 import sabnzbd.config as config
 from database import HistoryDB
 
+SAFE_POSTPROC = config.OptionBool('misc', 'safe_postproc', False)
+PAUSE_ON_POST_PROCESSING = config.OptionBool('misc', 'pause_on_post_processing', False)
+
+
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
     def __init__ (self, download_dir, complete_dir, queue=None, history_queue=[], restart=False):
@@ -91,7 +95,8 @@ class PostProcessor(Thread):
             if not nzo: break
             
             ## Pause downloader, if users wants that
-            if sabnzbd.pause_on_post_processing: sabnzbd.idle_downloader()
+            if PAUSE_ON_POST_PROCESSING.get():
+                sabnzbd.idle_downloader()
             
             start = time.time()
 
@@ -171,18 +176,13 @@ class PostProcessor(Thread):
                 if parResult: jobResult = 0
     
                 ## Check if user allows unsafe post-processing
-                if not sabnzbd.SAFE_POSTPROC:
+                if not SAFE_POSTPROC.get():
                     parResult = True
     
                 ## Determine class directory
                 if config.get_categories():
                     complete_dir = Cat2Dir(cat, self.complete_dir)
-                elif sabnzbd.CREATE_CAT_FOLDERS:
-                    if nzo.get_cat():
-                        complete_dir = create_dirs(os.path.join(self.complete_dir, nzo.get_cat()))
-                    else:
-                        complete_dir = self.complete_dir
-                elif sabnzbd.CREATE_GROUP_FOLDERS:
+                elif sabnzbd.nzbstuff.CREATE_GROUP_FOLDERS.get():
                     complete_dir = addPrefixes(self.complete_dir, nzo)
                     complete_dir = create_dirs(complete_dir)
                 else:

@@ -33,6 +33,9 @@ from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.misc import Notify, decodePassword
 from sabnzbd.constants import *
+import sabnzbd.config as config
+
+SEND_GROUP = config.OptionBool('misc', 'send_group', False)
 
 #------------------------------------------------------------------------------
 
@@ -311,7 +314,7 @@ class Downloader(Thread):
                         nw.article = article
 
                         if nw.connected:
-                            if sabnzbd.SEND_GROUP and nw.article.nzf.nzo.get_group() != nw.group:
+                            if SEND_GROUP.get() and nw.article.nzf.nzo.get_group() != nw.group:
                                 logging.info("[%s] Sending group", __NAME__)
                                 self.__send_group(nw)
                             else:

@@ -25,8 +25,16 @@ import sabnzbd
 import datetime
 from sabnzbd.constants import *
 from sabnzbd.codecs import name_fixer
+import sabnzbd.misc
+import sabnzbd.config as config
 
 from sabnzbd.trylist import TryList
+
+REPLACE_SPACES = config.OptionBool('misc', 'replace_spaces', False)
+NO_DUPES = config.OptionBool('misc', 'no_dupes', False)
+IGNORE_SAMPLES = config.OptionBool('misc', 'ignore_samples', False)
+CREATE_GROUP_FOLDERS = config.OptionBool('misc', 'create_group_folders', False)
+AUTO_SORT = config.OptionBool('misc', 'auto_sort', False)
 
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
@@ -315,7 +323,7 @@ class NzbObject(TryList):
             r, u, d = sabnzbd.pp_to_opts(pp)
 
         if script == None and not futuretype:
-            script = sabnzbd.DIRSCAN_SCRIPT
+            script = sabnzbd.misc.DIRSCAN_SCRIPT.get()
 
         self.__filename = filename    # Original filename
         self.__dirname = filename
@@ -382,7 +390,7 @@ class NzbObject(TryList):
         self.extra5 = None
         self.extra6 = None
 
-        self.create_group_folder = sabnzbd.CREATE_GROUP_FOLDERS
+        self.create_group_folder = CREATE_GROUP_FOLDERS.get()
 
         match_result = re.search(NZBFN_MATCHER, filename)
         if match_result:
@@ -391,7 +399,7 @@ class NzbObject(TryList):
         # Remove leading msgid_XXXX and trailing .nzb
         self.__dirname, msgid = SplitFileName(self.__dirname)
         self.__original_dirname = self.__dirname
-        if sabnzbd.REPLACE_SPACES:
+        if REPLACE_SPACES.get():
             self.__dirname = self.__dirname.replace(' ','_')
             self.__original_dirname = self.__dirname
             logging.info('[%s] Replacing spaces with underscores in %s', __NAME__, self.__dirname)
@@ -412,7 +420,7 @@ class NzbObject(TryList):
             logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
             raise ValueError
 
-        if not sabnzbd.backup_nzb(filename, nzb, sabnzbd.NO_DUPES):
+        if not sabnzbd.backup_nzb(filename, nzb, NO_DUPES.get()):
             # File already exists and we have no_dupes set
             logging.warning('[%s] Skipping duplicate NZB "%s"', __NAME__, filename)
             raise TypeError
@@ -447,7 +455,7 @@ class NzbObject(TryList):
             if nzf.valid and nzf.nzf_id:
                 found = 0
                 fln = None
-                if sabnzbd.IGNORE_SAMPLES:
+                if IGNORE_SAMPLES.get():
                     if (nzf.get_filename()):
                         fln = nzf.get_filename()
                         fln = fln.lower()
@@ -483,16 +491,13 @@ class NzbObject(TryList):
         if self.__cat == None:
             self.__cat = CatConvert(self.__group)
 
-        #if sabnzbd.CREATE_GROUP_FOLDERS:
-        self.__dirprefix.append(self.__group)
-
-        #if sabnzbd.CREATE_CAT_FOLDERS and cat:
-        #    self.__dirprefix.append(cat)
+        if CREATE_GROUP_FOLDERS.get():
+            self.__dirprefix.append(self.__group)
 
         self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
 
 
-        if sabnzbd.AUTO_SORT:
+        if AUTO_SORT.get():
             self.__files.sort(cmp=_nzf_cmp_date)
         else:
             self.__files.sort(cmp=_nzf_cmp_name)

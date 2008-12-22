@@ -74,9 +74,9 @@
                     
                         <strong>Default User Script:</strong><br/>
                         <small>Used when no user script is defined by the category.</small><br/>
-                        <select name="script">
+                        <select name="dirscan_script">
                         <!--#for $sc in $script_list#-->
-                        <!--#if $sc.lower() == $script.lower()#-->
+                        <!--#if $sc.lower() == $dirscan_script.lower()#-->
                             <option value="$sc" selected>$sc</option>
                         <!--#else#-->
                             <option value="$sc">$sc</option>
@@ -111,7 +111,7 @@
                 <table cellpadding=2>
                     <tr>
                         <td align=right><div class="tucker">Check for New Release:</div></td>
-                        <td><input type="checkbox" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /></td>
+                        <td><input type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> /></td>
                         <td><small>Weekly check for new SABnzbd release.</small></td>
                     </tr>
                     <tr>

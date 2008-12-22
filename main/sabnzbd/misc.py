@@ -49,6 +49,13 @@ from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.codecs import name_fixer
 import sabnzbd.config as config
 
+DIRSCAN_PP = config.OptionNumber('misc', 'dirscan_opts', 3)
+VERSION_CHECK = config.OptionBool('misc', 'check_new_rel', True)
+DIRSCAN_SCRIPT = config.OptionStr('misc', 'dirscan_script', 'None')
+DIRSCAN_PRIORITY = config.OptionNumber('misc', 'dirscan_priority', 0)
+AUTOBROWSER = config.OptionBool('misc', 'auto_browser', True)
+REPLACE_ILLEGAL = config.OptionBool('misc', 'replace_illegal', True)
+
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
@@ -82,14 +89,14 @@ def Cat2Opts(cat, pp, script):
             pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
             logging.debug('[%s] Job gets options %s', __NAME__, pp)
         except:
-            pp = sabnzbd.DIRSCAN_PP
+            pp = DIRSCAN_PP.get()
 
     if not script:
         try:
             script = sabnzbd.CFG['categories'][cat.lower()]['script']
             logging.debug('[%s] Job gets script %s', __NAME__, script)
         except:
-            script = sabnzbd.DIRSCAN_SCRIPT
+            script = DIRSCAN_SCRIPT.get()
 
     return cat, pp, script
 
@@ -99,8 +106,8 @@ def Cat2OptsDef(fname, cat=None):
         Get options associated with the category.
         Category options have priority over default options.
     """
-    pp = sabnzbd.DIRSCAN_PP
-    script = sabnzbd.DIRSCAN_SCRIPT
+    pp = DIRSCAN_PP.get()
+    script = DIRSCAN_SCRIPT.get()
     name = fname
 
     if cat == None:
@@ -318,7 +325,7 @@ class DirScanner(Thread):
 
                 root, ext = os.path.splitext(path)
                 ext = ext.lower()
-                priority = sabnzbd.DIRSCAN_PRIORITY
+                priority = DIRSCAN_PRIORITY.get()
                 candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
                 if candidate:
                     try:
@@ -421,7 +428,7 @@ def sanitize_filename(name):
     illegal = r'\/<>?*:;|"'
     legal   = r'++{}!@--#`'
 
-    repl = sabnzbd.REPLACE_ILLEGAL
+    repl = REPLACE_ILLEGAL.get()
     lst = []
     for ch in name.strip():
         if ch in illegal:
@@ -635,7 +642,7 @@ MSG_OTHER = r'''
 def panic_message(panic, a=None, b=None):
     """Create the panic message from templates
     """
-    if (not sabnzbd.AUTOBROWSER) or sabnzbd.DAEMON:
+    if (not AUTOBROWSER.get()) or sabnzbd.DAEMON:
         return
 
     if os.name == 'nt':
@@ -690,7 +697,7 @@ def Panic(reason, remedy=""):
 def launch_a_browser(url):
     """Launch a browser pointing to the URL
     """
-    if (not sabnzbd.AUTOBROWSER) or sabnzbd.DAEMON:
+    if (not AUTOBROWSER.get()) or sabnzbd.DAEMON:
         return
 
     logging.info("Lauching browser with %s", url)
@@ -764,6 +771,9 @@ def ConvertVersion(text):
 
 def check_latest_version():
     """ Do an online check for the latest version """
+    if not VERSION_CHECK.get():
+        return
+
     current, testver = ConvertVersion(sabnzbd.__version__)
     if not current:
         logging.debug("[%s] Unsupported release number (%s), will not check", __NAME__, sabnzbd.__version__)

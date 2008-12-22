@@ -48,9 +48,9 @@
     <br>
     <strong>Default user script:</strong><br>
     Used when no user script is defined by the category.<br>
-    <select name="script">
+    <select name="dirscan_script">
     <!--#for $sc in $script_list#-->
-        <!--#if $sc.lower() == $script.lower()#-->
+        <!--#if $sc.lower() == $dirscan_script.lower()#-->
             <option value="$sc" selected>$sc</option>
         <!--#else#-->
             <option value="$sc">$sc</option>
@@ -83,7 +83,7 @@
     <label><input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> <strong>Sort by age</strong></label><br>
     Automatically sort items by (average) age.<br>
     <br>
-    <label><input type="checkbox" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> /> <strong>Check for new release</strong></label><br>
+    <label><input type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> /> <strong>Check for new release</strong></label><br>
     Weekly check for new SABnzbd release.<br>
     <br>
     <label><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> <strong>Replace spaces in foldername</strong></label><br>

@@ -38,12 +38,24 @@ from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.codecs import TRANS, unicode2local
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.misc import format_time_string
+import sabnzbd.config as config
 
 try:
     from win32con import SW_HIDE
     from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
 except ImportError:
     pass
+
+# Define option handlers
+
+enable_unrar = config.OptionBool('misc', 'enable_unrar', True)
+enable_unzip = config.OptionBool('misc', 'enable_unzip', True)
+enable_filejoin = config.OptionBool('misc', 'enable_filejoin', True)
+enable_tsjoin = config.OptionBool('misc', 'enable_tsjoin', True)
+enable_par_cleanup = config.OptionBool('misc', 'enable_par_cleanup', True)
+par_option = config.OptionStr('misc', 'par_option', '', validation=config.no_nonsense)
+ionice = config.OptionStr('misc', 'ionice',  '', validation=config.no_nonsense)
+
 
 RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|r\d\d|\d\d\d)$', re.I)
 RAR_RE_V3 = re.compile(r'\.(?P<ext>part\d*)$', re.I)
@@ -187,7 +199,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
     newfiles = []
     error = False
 
-    if sabnzbd.DO_FILE_JOIN:
+    if enable_filejoin.get():
         do_filejoin = False
         for joinable in xjoinables:
             if joinable not in joinables:
@@ -202,7 +214,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
             logging.info('[%s] Filejoin finished on %s', __NAME__, workdir)
             nzo.set_action_line('', '')
 
-    if sabnzbd.DO_UNRAR:
+    if enable_unrar.get():
         do_unrar = False
         for rar in xrars:
             if rar not in rars:
@@ -218,7 +230,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
             logging.info('[%s] Unrar finished on %s', __NAME__, workdir)
             nzo.set_action_line('', '')
 
-    if sabnzbd.DO_UNZIP:
+    if enable_unzip.get():
         do_unzip = False
         for _zip in xzips:
             if _zip not in zips:
@@ -233,7 +245,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
             logging.info('[%s] Unzip finished on %s', __NAME__, workdir)
             nzo.set_action_line('', '')
             
-    if sabnzbd.DO_TSJOIN:
+    if enable_tsjoin.get():
         do_tsjoin = False
         for _ts in xts:
             if _ts not in ts:
@@ -713,7 +725,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             return readd, result
 
     try:
-        if sabnzbd.PAR_CLEANUP:
+        if enable_par_cleanup.get():
             i = 0
 
             new_dir_content = os.listdir(workdir)
@@ -782,8 +794,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 
     odd = OddFiles(parfile)
 
-    if sabnzbd.PAR_OPTION and not (odd and PAR2C_COMMAND):
-        command = [str(PAR2_COMMAND), 'r', str(sabnzbd.PAR_OPTION.strip()), parfile]
+    if par_option.get() and not (odd and PAR2C_COMMAND):
+        command = [str(PAR2_COMMAND), 'r', str(par_option.get().strip()), parfile]
     elif odd and PAR2C_COMMAND:
         command = [str(PAR2C_COMMAND), 'r', parfile]
     else:
@@ -994,8 +1006,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 
 def build_command(command):
     if os.name != "nt":
-        if IONICE_COMMAND and sabnzbd.IONICE_ARGS.strip():
-            lst = sabnzbd.IONICE_ARGS.split()
+        if IONICE_COMMAND and ionice.get().strip():
+            lst = ionice.get().split()
             lst.reverse()
             for arg in lst:
                 command.insert(0, arg)

@@ -58,9 +58,9 @@
 
             <label>User Script:</label><br/><br/>
             
-          	<select style="margin:0px;padding:0px;margin-left:15px;" name="script" id="script">
+          	<select style="margin:0px;padding:0px;margin-left:15px;" name="dirscan_script" id="script">
             <!--#for $sc in $script_list#-->
-                <!--#if $sc.lower() == $script.lower()#-->
+                <!--#if $sc.lower() == $dirscan_script.lower()#-->
                     <option value="$sc" selected>$sc</option>
                 <!--#else#-->
                     <option value="$sc">$sc</option>
@@ -105,8 +105,8 @@
             <div class="row">
 
 			<label>Check for new release:</label><br/><br/>
-            <input type="hidden" id="check_rel" name="check_rel" value="$check_rel">
-                <div class="toggle" onclick="toggleValue('check_rel')" <!--#if $check_rel > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
+            <input type="hidden" id="check_new_rel" name="check__new_rel" value="$check_new_rel">
+                <div class="toggle" onclick="toggleValue('check__new_rel')" <!--#if $check_new_rel > 0 then 'toggled="true"' else ''#-->><span class="thumb"></span><span class="toggleOn">Yes</span><span class="toggleOff">No</span></div>
  		</div>
             <div class="row">
 

@@ -53,7 +53,7 @@ def init():
     global __SCHED, CFG
 
     need_rsstask = True
-    need_versioncheck = sabnzbd.VERSION_CHECK
+    need_versioncheck = sabnzbd.misc.VERSION_CHECK.get()
     bookmarks = newzbin.NEWZBIN_BOOKMARKS.get()
     bookmark_rate = newzbin.BOOKMARK_RATE.get()
     schedlines = SCHEDULES.get()

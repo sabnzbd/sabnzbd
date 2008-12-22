@@ -137,15 +137,15 @@ class OptionNumber(Option):
 class OptionBool(Option):
     """ Boolean option class """
     def __init__(self, section, keyword, default_val=False, add=True):
-        Option.__init__(self, section, keyword, default_val, add=add)
+        Option.__init__(self, section, keyword, int(default_val), add=add)
 
     def set(self, value):
         if value == None:
             value = 0
         try:
-            self._Option__set(bool(int(value)))
+            self._Option__set(int(value))
         except ValueError:
-            self._Option__set(False)
+            self._Option__set(0)
         return True
 
 
@@ -467,12 +467,10 @@ def get_config(section, keyword):
     try:
         item = database[section][keyword]
     except KeyError:
+        item = None
         logging.exception('[%s], Missing configuration item %s,%s', __NAME__, section, keyword)
 
-    if item:
-        return item
-    else:
-        return None
+    return item
 
 
 def set_config(kwargs):
@@ -715,3 +713,11 @@ def decode_password(pw, name):
         return decPW
     else:
         return pw
+
+
+def no_nonsense(value):
+    """ Strip and Filter out None and 'None' from strings """
+    value = str(value).strip()
+    if value.lower() == 'none':
+        value = ''
+    return True, value

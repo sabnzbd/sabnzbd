@@ -65,7 +65,7 @@ from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browse
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
                          decodePassword, Notify, SplitHost, ConvertVersion
 import sabnzbd.scheduler as scheduler
-
+import sabnzbd.config as config
 from threading import Thread
 
 cfg = {}
@@ -319,6 +319,7 @@ def GetProfileInfo(vista):
 def main():
     global cfg
 
+    AUTOBROWSER = None
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
@@ -357,7 +358,6 @@ def main():
     cherryhost = None
     cherryport = None
     cherrypylogging = None
-    sabnzbd.AUTOBROWSER = None
     clean_up = False
     logging_level = None
     umask = None
@@ -373,7 +373,7 @@ def main():
         if (o in ('-d', '--daemon')):
             if os.name != 'nt':
                 fork = True
-            sabnzbd.AUTOBROWSER = 0
+            AUTOBROWSER = False
             sabnzbd.DAEMON = True
             consoleLogging = False
         if o in ('-h', '--help'):
@@ -388,12 +388,12 @@ def main():
         if o in ('-s', '--server'):
             (cherryhost, cherryport) = SplitHost(a)
         if o in ('-n', '--nobrowser'):
-            sabnzbd.AUTOBROWSER = 0
+            AUTOBROWSER = False
         if o in ('-b', '--browser'):
             try:
-                sabnzbd.AUTOBROWSER = int(a)
+                AUTOBROWSER = bool(int(a))
             except:
-                sabnzbd.AUTOBROWSER = 1
+                AUTOBROWSER = True
         if o in ('-c', '--clean'):
             clean_up= True
         if o in ('-w', '--weblogging'):
@@ -563,10 +563,10 @@ def main():
     if testRelease:
         logging.info('Test release, setting maximum logging levels')
 
-    if sabnzbd.AUTOBROWSER == None:
-        sabnzbd.AUTOBROWSER = bool(check_setting_int(cfg, 'misc', 'auto_browser', 1))
+    if AUTOBROWSER != None:
+        sabnzbd.misc.AUTOBROWSER.set(AUTOBROWSER)
     else:
-        cfg['misc']['auto_browser'] = sabnzbd.AUTOBROWSER
+        AUTOBROWSER = sabnzbd.misc.AUTOBROWSER.set(AUTOBROWSER)
 
     if umask == None:
         umask = check_setting_str(cfg, 'misc', 'permissions', '')
@@ -826,8 +826,7 @@ def main():
     Notify("SAB_Launched", None)
 
     # Now's the time to check for a new version
-    if sabnzbd.VERSION_CHECK:
-        check_latest_version()
+    check_latest_version()
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0

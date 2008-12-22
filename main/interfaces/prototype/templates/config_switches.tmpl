@@ -56,9 +56,9 @@
 		<br class="clear" />
 
 		    <span class="label">Default User Script:</span>
-            <select name="script" id="script" class="select">
+            <select name="dirscan_script" id="script" class="select">
             <!--#for $sc in $script_list#-->
-                <!--#if $sc.lower() == $script.lower()#-->
+                <!--#if $sc.lower() == $dirscan_script.lower()#-->
                     <option value="$sc" selected>$sc</option>
                 <!--#else#-->
                     <option value="$sc">$sc</option>
@@ -102,7 +102,7 @@
  		<br class="clear" />
 
 			<label><span class="label">Check for new release:</span>
-		    <input class="radio" type="checkbox" name="check_rel" value="1" <!--#if $check_rel > 0 then "checked=1" else ""#--> />
+		    <input class="radio" type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> />
 		    <span class="tips">Weekly check for new SABnzbd release.</span></label>
  		<br class="clear" />
 

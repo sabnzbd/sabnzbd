@@ -27,8 +27,11 @@ import logging
 import re
 import sabnzbd
 from sabnzbd.constants import *
+import sabnzbd.config as config
 
 from threading import Thread
+
+FAIL_ON_CRC = config.OptionBool('misc', 'fail_on_crc', False)
 
 try:
     import _yenc
@@ -107,7 +110,7 @@ class Decoder(Thread):
                                     
                     data = e.data
                                     
-                    if sabnzbd.FAIL_ON_CRC:
+                    if FAIL_ON_CRC.get():
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
@@ -116,7 +119,7 @@ class Decoder(Thread):
                     logging.warning("[%s] Badly formed yEnc article in %s", __NAME__,
                                     article)
                                     
-                    if sabnzbd.FAIL_ON_CRC:
+                    if FAIL_ON_CRC.get():
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
