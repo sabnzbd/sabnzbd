@@ -1304,7 +1304,7 @@ class ConfigSwitches:
             except:
                 value = None
             if not item.set(value):
-                return badParameterResponse('Error: incorrect value "%s" for config-item "%s".' % (kw, value))
+                return badParameterResponse('Error: incorrect value "%s" for config-item "%s".' % (value, kw))
 
         try:
             _dc = kwargs['_dc']
@@ -2037,7 +2037,13 @@ class ConfigCats:
         config.save_config()
         raise Raiser(self.__root, _dc=_dc)
 
-    
+
+SORT_LIST = ( \
+    'enable_tv_sorting', 'tv_sort_string', 'enable_movie_sorting',
+    'movie_sort_string', 'movie_sort_extra', 'movie_extra_folder',
+    'enable_date_sorting', 'date_sort_string', 'movie_categories', 'date_categories'
+    )
+
 #------------------------------------------------------------------------------
 class ConfigSorting:
     def __init__(self, web_dir, root, prim):
@@ -2052,51 +2058,46 @@ class ConfigSorting:
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        cfg, pnfo_list, bytespersec = build_header(self.__prim)
+        cfg['complete_dir'] = sabnzbd.COMPLETE_DIR
 
-        config['complete_dir'] = sabnzbd.CFG['misc']['complete_dir']
-        config['enable_tv_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_tv_sorting'])
-        config['tv_sort_string'] = sabnzbd.CFG['misc']['tv_sort_string']
-        config['enable_movie_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_movie_sorting'])
-        config['movie_sort_string'] = sabnzbd.CFG['misc']['movie_sort_string']
-        config['movie_sort_extra'] = sabnzbd.CFG['misc']['movie_sort_extra']
-        config['movie_extra_folder'] =  IntConv(sabnzbd.CFG['misc']['movie_extra_folder'])
-        config['enable_date_sorting'] = IntConv(sabnzbd.CFG['misc']['enable_date_sorting'])
-        config['date_sort_string'] = sabnzbd.CFG['misc']['date_sort_string']
-        config['movie_categories'] = sabnzbd.CFG['misc']['movie_categories']
-        config['date_categories'] = sabnzbd.CFG['misc']['date_categories']
-        config['cat_list'] = ListCats(True)
-        tvSortList = []
+        for kw in SORT_LIST:
+            cfg[kw] = config.get_config('misc', kw).get()
+        cfg['cat_list'] = ListCats(True)
+        #tvSortList = []
         
         template = Template(file=os.path.join(self.__web_dir, 'config_sorting.tmpl'),
-                            searchList=[config],
+                            searchList=[cfg],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
 
     @cherrypy.expose
-    def saveSorting(self, enable_tv_sorting = None, tv_sort_string = None,
-                        enable_movie_sorting = None, movie_sort_string = None, movie_sort_extra = None,
-                        movie_extra_folder = None, enable_date_sorting = None, date_sort_string = None, 
-                        date_cat=None, movie_cat=None, _dc = None):
+    def saveSorting(self, **kwargs):
 
-        sabnzbd.CFG['misc']['enable_tv_sorting'] = IntConv(enable_tv_sorting)
-        sabnzbd.CFG['misc']['tv_sort_string'] = tv_sort_string
-        sabnzbd.CFG['misc']['enable_movie_sorting'] = IntConv(enable_movie_sorting)
-        sabnzbd.CFG['misc']['movie_sort_string'] = movie_sort_string
-        sabnzbd.CFG['misc']['movie_sort_extra'] = movie_sort_extra
-        sabnzbd.CFG['misc']['movie_extra_folder'] = IntConv(movie_extra_folder)
-        sabnzbd.CFG['misc']['enable_date_sorting'] = IntConv(enable_date_sorting)
-        sabnzbd.CFG['misc']['date_sort_string'] = date_sort_string
-        if type(movie_cat) == type(''):
-            movie_cat = [movie_cat]
-        sabnzbd.CFG['misc']['movie_categories'] = movie_cat
-        if type(date_cat) == type(''):
-            date_cat = [date_cat]
-        sabnzbd.CFG['misc']['date_categories'] = date_cat
+        try:
+            kwargs['movie_categories'] = kwargs['movie_cat']
+        except:
+            pass
+        try:
+            kwargs['date_categories'] = kwargs['date_cat']
+        except:
+            pass
 
-        sabnzbd.sorting_init()
-        save_configfile(sabnzbd.CFG)
+        for kw in SORT_LIST:
+            item = config.get_config('misc', kw)
+            try:
+                value = kwargs[kw]
+            except:
+                value = None
+            if not item.set(value):
+                return badParameterResponse('Error: incorrect value "%s" for config-item "%s".' % (value, kw))
+
+        config.save_config()
+        try:
+            _dc = kwargs['_dc']
+        except:
+            _dc = ''
         raise Raiser(self.__root, _dc=_dc)
     
 

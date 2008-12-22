@@ -90,10 +90,10 @@ class Option:
             modified = True
             if self.__callback:
                 self.__callback()
+        return True
 
     def set(self, value):
-        self.__set(value)
-        return True
+        return self.__set(value)
 
     def callback(self, callback):
         """ Set callback function """
@@ -193,6 +193,14 @@ class OptionList(Option):
         if default_val == None:
             default_val = []
         Option.__init__(self, section, keyword, default_val, add=add)
+
+    def set(self, value):
+        """ Set value, convert single item to list of one """
+        if value != None:
+            if type(value) != type([]):
+                value = [ value ]
+            return self._Option__set(value)
+        return True
 
     def get_string(self):
         """ Return the list as a comma-separated string """

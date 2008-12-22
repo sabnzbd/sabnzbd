@@ -130,19 +130,6 @@ WEB_DIR2 = None
 LOGIN_PAGE = None
 SABSTOP = False
 
-ENABLE_TV_SORTING = False
-TV_SORT_STRING = None
-
-ENABLE_MOVIE_SORTING = False
-MOVIE_SORT_STRING = None
-MOVIE_SORT_EXTRA = None
-MOVIE_EXTRA_FOLDER = False
-MOVIE_CATEGORIES = []
-
-ENABLE_DATE_SORTING = False
-DATE_SORT_STRING = None
-DATE_CATEGORIES = []
-
 SSL_CA = ''
 SSL_KEY = ''
 
@@ -298,29 +285,6 @@ def check_setting_str(config, cfg_name, item_name, def_val, log = True):
 # Initializing                                                                 #
 ################################################################################
 
-def sorting_init():
-    global TV_SORT_STRING, ENABLE_TV_SORTING, MOVIE_SORT_STRING, ENABLE_MOVIE_SORTING, \
-           MOVIE_SORT_EXTRA, ENABLE_DATE_SORTING, DATE_SORT_STRING, \
-           MOVIE_EXTRA_FOLDER, MOVIE_CATEGORIES, DATE_CATEGORIES
-
-    ENABLE_TV_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_tv_sorting', 0)) #tv sorting on/off
-    TV_SORT_STRING = check_setting_str(CFG, 'misc', 'tv_sort_string', '') #tv sort format
-
-    ENABLE_MOVIE_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_movie_sorting', 0))
-    MOVIE_SORT_STRING = check_setting_str(CFG, 'misc', 'movie_sort_string', '') 
-    MOVIE_SORT_EXTRA = check_setting_str(CFG, 'misc', 'movie_sort_extra', '-cd%1')
-    MOVIE_EXTRA_FOLDER = bool(check_setting_int(CFG, 'misc', 'movie_extra_folder', 0))
-    MOVIE_CATEGORIES = check_setting_str(CFG, 'misc', 'movie_categories', ['movies'])
-    if type(MOVIE_CATEGORIES) != type([]):
-        MOVIE_CATEGORIES = []
-    
-    ENABLE_DATE_SORTING = bool(check_setting_int(CFG, 'misc', 'enable_date_sorting', 0))
-    DATE_SORT_STRING = check_setting_str(CFG, 'misc', 'date_sort_string', '')
-    DATE_CATEGORIES = check_setting_str(CFG, 'misc', 'date_categories', ['tv'])
-    if type(DATE_CATEGORIES) != type([]):
-        DATE_CATEGORIES = []
-
-
 INIT_LOCK = Lock()
 
 @synchronized(INIT_LOCK)
@@ -432,8 +396,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cache_limit = check_setting_str(CFG, 'misc', 'cache_limit', "0")
     cache_limit = int(from_units(cache_limit))
     logging.debug("Actual cache limit = %s", cache_limit)
-
-    sorting_init()
 
     SSL_CA = check_setting_file(CFG, 'ssl_ca', DIR_LCLDATA)
     SSL_KEY = check_setting_file(CFG, 'ssl_key', DIR_LCLDATA)

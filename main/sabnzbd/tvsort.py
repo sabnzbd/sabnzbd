@@ -30,7 +30,20 @@ import re
 import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename
 from sabnzbd.constants import series_match, date_match, year_match
+import sabnzbd.config as config
 
+ENABLE_TV_SORTING = config.OptionBool('misc', 'enable_tv_sorting', False)
+TV_SORT_STRING = config.OptionStr('misc', 'tv_sort_string')
+
+ENABLE_MOVIE_SORTING = config.OptionBool('misc', 'enable_movie_sorting', False)
+MOVIE_SORT_STRING = config.OptionStr('misc', 'movie_sort_string') 
+MOVIE_SORT_EXTRA = config.OptionStr('misc', 'movie_sort_extra', '-cd%1')
+MOVIE_EXTRA_FOLDER = config.OptionBool('misc', 'movie_extra_folder', False)
+MOVIE_CATEGORIES = config.OptionList('misc', 'movie_categories', ['movies'])
+
+ENABLE_DATE_SORTING = config.OptionBool('misc', 'enable_date_sorting', False)
+DATE_SORT_STRING = config.OptionStr('misc', 'date_sort_string')
+DATE_CATEGORIES = config.OptionStr('misc', 'date_categories', ['tv'])
 
 replace_prev = {'\\':'/'}
 replace_after = {
@@ -105,7 +118,7 @@ class Sorter:
         if self.type == 'movie':
             move_to_parent = True
             # check if we should leave the files inside an extra folder
-            if sabnzbd.MOVIE_EXTRA_FOLDER:
+            if MOVIE_EXTRA_FOLDER.get():
                 #if there is a folder in the download, leave it in an extra folder
                 move_to_parent = not check_for_folder(workdir_complete)
             if move_to_parent:
@@ -123,7 +136,7 @@ class SeriesSorter:
 
         self.original_dirname = dirname
         self.original_path = path
-        self.sort_string = sabnzbd.TV_SORT_STRING
+        self.sort_string = TV_SORT_STRING.get()
         self.filename_set = ''
         
         self.match_obj = None
@@ -140,7 +153,7 @@ class SeriesSorter:
         
     def match(self):
         ''' Checks the regex for a match, if so set self.match to true '''
-        if sabnzbd.ENABLE_TV_SORTING and sabnzbd.TV_SORT_STRING:
+        if ENABLE_TV_SORTING.get() and TV_SORT_STRING.get():
             #First check if the show matches TV episode regular expressions. Returns regex match object
             self.match_obj, self.extras = check_regexs(self.original_dirname, series_match, double=True)
             if self.match_obj:
@@ -384,9 +397,9 @@ class GenericSorter:
 
         self.original_dirname = dirname
         self.original_path = path
-        self.sort_string = sabnzbd.MOVIE_SORT_STRING
-        self.extra = sabnzbd.MOVIE_SORT_EXTRA
-        self.cats = sabnzbd.MOVIE_CATEGORIES
+        self.sort_string = MOVIE_SORT_STRING.get()
+        self.extra = MOVIE_SORT_EXTRA.get()
+        self.cats = MOVIE_CATEGORIES.get()
         self.cat = cat
         self.filename_set = ''
         
@@ -402,7 +415,7 @@ class GenericSorter:
         
     def match(self):
         ''' Checks the category for a match, if so set self.match to true '''
-        if sabnzbd.ENABLE_MOVIE_SORTING and self.sort_string:
+        if ENABLE_MOVIE_SORTING.get() and self.sort_string:
             #First check if the show matches TV episode regular expressions. Returns regex match object
             if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 logging.debug("[%s] Movie Sorting - Starting folder sort (%s)", __NAME__, self.original_dirname) 
@@ -581,8 +594,8 @@ class DateSorter:
 
         self.original_dirname = dirname
         self.original_path = path
-        self.sort_string = sabnzbd.DATE_SORT_STRING
-        self.cats = sabnzbd.DATE_CATEGORIES
+        self.sort_string = DATE_SORT_STRING.get()
+        self.cats = DATE_CATEGORIES.get()
         self.cat = cat
         self.filename_set = ''
         
@@ -599,7 +612,7 @@ class DateSorter:
         
     def match(self):
         ''' Checks the category for a match, if so set self.matched to true '''
-        if sabnzbd.ENABLE_DATE_SORTING and self.sort_string:
+        if ENABLE_DATE_SORTING.get() and self.sort_string:
             #First check if the show matches TV episode regular expressions. Returns regex match object
             if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 self.match_obj, self.date_type = checkForDate(self.original_dirname, date_match)
