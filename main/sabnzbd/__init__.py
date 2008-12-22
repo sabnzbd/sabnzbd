@@ -377,11 +377,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     CheckSection('misc')
     CheckSection('logging')
-    CheckSection('newzbin')
-    CheckSection('nzbmatrix')
     CheckSection('servers')
     CheckSection('rss')
-    catsDefined = CheckSection('categories')
 
     VERSION_CHECK = bool(check_setting_int(CFG, 'misc', 'check_new_rel', 1))
 
@@ -528,9 +525,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
     WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
-
-    if not catsDefined:
-        newzbin.InitCats()
 
     ############################
     ## Object initializiation ##

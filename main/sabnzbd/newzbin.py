@@ -129,31 +129,6 @@ def grab(msgid, future_nzo):
         __MSGIDGRABBER.grab(msgid, future_nzo)
 
 
-
-################################################################################
-# Category support
-################################################################################
-
-def InitCats():
-    """ Initialise categories with newzbin categories """
-    cats = ['Unknown', 'Anime', 'Apps', 'Books', 'Consoles', 'Emulation', 'Games',
-            'Misc', 'Movies', 'Music', 'PDA', 'Resources', 'TV']
-
-    # New code for config-datbase
-    #lst = []
-    #for cat in cats:
-    #    val = { 'newzbin' : cat, 'dir' : cat }
-    #    lst.append(config.ConfigCat(cat.lower(), val))
-
-    # Old code
-    cfg = sabnzbd.CFG['categories']
-    for cat in cats:
-        lcat = cat.lower()
-        cfg[lcat] = {}
-        cfg[lcat]['newzbin'] = cat
-        cfg[lcat]['dir'] = cat
-
-
 ################################################################################
 # DirectNZB support
 ################################################################################

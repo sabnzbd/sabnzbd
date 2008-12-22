@@ -40,7 +40,7 @@ modified = False            # Signals a change in option dictionary
 
 class Option:
     """ Basic option class, basic fields """
-    def __init__(self, section, keyword, default_val=None):
+    def __init__(self, section, keyword, default_val=None, add=True):
         """ Basic option
             section     : single section or comma-separated list of sections
                           a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
@@ -55,13 +55,14 @@ class Option:
         self.__callback = None
 
         # Add myself to the config dictionary
-        global database
-        anchor = database
-        for section in self.__sections:
-            if section not in anchor:
-                anchor[section] = {}
-            anchor = anchor[section]
-        anchor[keyword] = self
+        if add:
+            global database
+            anchor = database
+            for section in self.__sections:
+                if section not in anchor:
+                    anchor[section] = {}
+                anchor = anchor[section]
+            anchor[keyword] = self
 
     def get(self):
         """ Retrieve value field """
@@ -105,8 +106,8 @@ class Option:
 
 class OptionNumber(Option):
     """ Numeric option class, int/float is determined from default value """
-    def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None):
-        Option.__init__(self, section, keyword, default_val)
+    def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True):
+        Option.__init__(self, section, keyword, default_val, add=add)
         self.__minval = minval
         self.__maxval = maxval
         self.__validation = validation
@@ -135,8 +136,8 @@ class OptionNumber(Option):
     
 class OptionBool(Option):
     """ Boolean option class """
-    def __init__(self, section, keyword, default_val=False):
-        Option.__init__(self, section, keyword, default_val)
+    def __init__(self, section, keyword, default_val=False, add=True):
+        Option.__init__(self, section, keyword, default_val, add=add)
 
     def set(self, value):
         if value == None:
@@ -150,14 +151,14 @@ class OptionBool(Option):
 
 class OptionDir(Option):
     """ Directory option class """
-    def __init__(self, section, keyword, default_val='', root='', validation=None):
+    def __init__(self, section, keyword, default_val='', root='', validation=None, add=True):
         if validation:
             self.__validation = validation
         else:
             self.__validation = std_dir_validation
         self.__root = root # Base directory for relative paths
         self.__path = ''   # Will contain absolute, normalized path
-        Option.__init__(self, section, keyword, default_val)
+        Option.__init__(self, section, keyword, default_val, add=add)
 
     def get_path(self):
         """ Return full absolute path """
@@ -188,10 +189,10 @@ class OptionDir(Option):
 
 class OptionList(Option):
     """ List option class """
-    def __init__(self, section, keyword, default_val=None):
+    def __init__(self, section, keyword, default_val=None, add=True):
         if default_val == None:
             default_val = []
-        Option.__init__(self, section, keyword, default_val)
+        Option.__init__(self, section, keyword, default_val, add=add)
 
     def get_string(self):
         """ Return the list as a comma-separated string """
@@ -207,14 +208,16 @@ class OptionList(Option):
 
     def set_string(self, txt):
         """ Set the list given a comma-separated string """
-        if txt != None:
+        if type(txt) == type(''):
             self._Option__set(listquote.simplelist(txt))
+        else:
+            self._Option__set(txt)
 
 
 class OptionStr(Option):
     """ STring class """
-    def __init__(self, section, keyword, default_val='', validation=None):
-        Option.__init__(self, section, keyword, default_val)
+    def __init__(self, section, keyword, default_val='', validation=None, add=True):
+        Option.__init__(self, section, keyword, default_val, add=add)
         self.__validation = validation
 
     def set(self, value):
@@ -230,10 +233,11 @@ class OptionStr(Option):
             self._Option__set(value)
         return res
 
+
 class OptionPassword(Option):
     """ Password class """
-    def __init__(self, section, keyword, default_val=''):
-        Option.__init__(self, section, keyword, default_val)
+    def __init__(self, section, keyword, default_val='', add=True):
+        Option.__init__(self, section, keyword, default_val, add=add)
 
     def get(self):
         """ Return decoded password """
@@ -254,23 +258,41 @@ class OptionPassword(Option):
         return True
 
 
+def add_to_database(section, keyword, object):
+    global database
+    if section not in database:
+        database[section] = {}
+    database[section][keyword] = object
+
+
+def delete_from_database(section, keyword):
+        global database, CFG, modified
+        del database[section][keyword]
+        try:
+            del CFG[section][keyword]
+        except KeyError:
+            pass
+        modified = True
+
+
 class ConfigServer:
     def __init__(self, name, values):
 
         self.__name = name
         name = 'servers,' + self.__name
 
-        self.host = OptionStr(name, 'host', '')
-        self.port = OptionNumber(name, 'port', 119, 0, 2**16-1)
-        self.timeout = OptionNumber(name, 'timeout', 120, 30, 240)
-        self.username = OptionStr(name, 'username', '')
-        self.password = OptionPassword(name, 'password', '')
-        self.connections = OptionNumber(name, 'connections', 1, 0, 100)
-        self.fill_server = OptionBool(name, 'fill_server', False)
-        self.ssl = OptionBool(name, 'ssl', False)
-        self.enable = OptionBool(name, 'enable', True)
+        self.host = OptionStr(name, 'host', '', add=False)
+        self.port = OptionNumber(name, 'port', 119, 0, 2**16-1, add=False)
+        self.timeout = OptionNumber(name, 'timeout', 120, 30, 240, add=False)
+        self.username = OptionStr(name, 'username', '', add=False)
+        self.password = OptionPassword(name, 'password', '', add=False)
+        self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
+        self.fill_server = OptionBool(name, 'fill_server', False, add=False)
+        self.ssl = OptionBool(name, 'ssl', False, add=False)
+        self.enable = OptionBool(name, 'enable', True, add=False)
 
-        self.set(values, all=True)
+        self.set_dict(values, all=True)
+        add_to_database('categories', self.__name, self)
 
     def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
@@ -301,28 +323,25 @@ class ConfigServer:
 
     def delete(self):
         """ Remove from database """
-        global database, modified
-        del database['servers'][self.__name]
-        modified = True
-        del self
+        delete_from_database('servers', self.__name)
 
     def ident(self):
         return 'servers', self.__name
 
 
-class ConfigCat:
+class ConfigCat():
     def __init__(self, name, values):
-
         self.__name = name
         name = 'categories,' + name
 
-        self.pp = OptionNumber(name, 'pp', -1, -1, 3)
-        self.script = OptionStr(name, 'script', 'Default')
-        self.dir = OptionDir(name, 'dir')
-        self.newzbin = OptionList(name, 'newzbin')
-        self.priority = OptionNumber(name, 'priority')
+        self.pp = OptionNumber(name, 'pp', -1, -1, 3, add=False)
+        self.script = OptionStr(name, 'script', 'Default', add=False)
+        self.dir = OptionDir(name, 'dir', add=False)
+        self.newzbin = OptionList(name, 'newzbin', add=False)
+        self.priority = OptionNumber(name, 'priority', add=False)
 
-        self.set(values, all=True)
+        self.set_dict(values, all=True)
+        add_to_database('categories', self.__name, self)
 
     def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
@@ -334,7 +353,10 @@ class ConfigCat:
                     value= None
                 else:
                     continue
-            exec 'self.%s.set(value)' % kw
+            if kw == 'newzbin':
+                exec 'self.%s.set_string(value)' % kw
+            else:
+                exec 'self.%s.set(value)' % kw
         return True
     
     def get_dict(self):
@@ -343,19 +365,13 @@ class ConfigCat:
         dict['pp'] = self.pp.get()
         dict['script'] = self.script.get()
         dict['dir'] = self.dir.get()
-        dict['newzbin'] = self.newzbin.get()
+        dict['newzbin'] = self.newzbin.get_string()
         dict['priority'] = self.priority.get()
         return dict
 
     def delete(self):
         """ Remove from database """
-        global database, modified
-        del database['categories'][self.__name]
-        modified = True
-        del self
-
-    def ident(self):
-        return 'categories', self.__name
+        delete_from_database('categories', self.__name)
 
 
 class ConfigRSS:
@@ -364,17 +380,18 @@ class ConfigRSS:
         self.__name = name
         name = 'rss,' + name
 
-        self.uri = OptionStr(name, 'uri')
-        self.cat = OptionStr(name, 'cat')
-        self.pp = OptionNumber(name, 'pp', -1, -1, 3)
-        self.script = OptionStr(name, 'script')
-        self.enable = OptionBool(name, 'enable')
-        self.priority = OptionNumber(name, 'priority', 0, -1, 2)
+        self.uri = OptionStr(name, 'uri', add=False)
+        self.cat = OptionStr(name, 'cat', add=False)
+        self.pp = OptionNumber(name, 'pp', -1, -1, 3, add=False)
+        self.script = OptionStr(name, 'script', add=False)
+        self.enable = OptionBool(name, 'enable', add=False)
+        self.priority = OptionNumber(name, 'priority', 0, -1, 2, add=False)
         for kw in values:
             if kw.startswith('filter'):
-                exec 'self.%s = OptionList(name, "%s")' % (kw, kw)
+                exec 'self.%s = OptionList(name, "%s", add=False)' % (kw, kw)
 
-        self.set(values, all=True)
+        self.set_dict(values, all=True)
+        add_to_database('categories', self.__name, self)
 
     def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
@@ -411,10 +428,7 @@ class ConfigRSS:
 
     def delete(self):
         """ Remove from database """
-        global database, modified
-        del database['rss'][self.__name]
-        modified = True
-        del self
+        delete_from_database('rss', self.__name)
 
     def ident(self):
         return 'rss', self.__name
@@ -430,26 +444,35 @@ def find_item(args):
     except:
         return None
 
-    item = database
-    for sect in section.split(','):
-        try:
-            item = item[sect]
-        except KeyError:
-            return None
     try:
-        return item[keyword]
+        return database[section][keyword]
     except KeyError:
         return None
 
 
-def get_config(kwargs):
-    """ Return a config value, based on 'section', 'keyword'
+def get_dconfig(kwargs):
+    """ Return a config values dictonary,
+        based on dictionary with 'section', 'keyword'
     """
     item = find_item(kwargs)
     if item:
         return True, item.get_dict()
     else:
-        return False, ''
+        return False, {}
+
+
+def get_config(section, keyword):
+    """ Return a config object, based on 'section', 'keyword'
+    """
+    try:
+        item = database[section][keyword]
+    except KeyError:
+        logging.exception('[%s], Missing configuration item %s,%s', __NAME__, section, keyword)
+
+    if item:
+        return item
+    else:
+        return None
 
 
 def set_config(kwargs):
@@ -460,6 +483,16 @@ def set_config(kwargs):
         return item.set_dict(kwargs)
     else:
         return False
+
+
+def delete(section, keyword):
+    """ Delete specific config item
+    """
+    try:
+        item = database[section][keyword]
+        item.delete()
+    except KeyError:
+        return
 
 
 ################################################################################
@@ -474,7 +507,7 @@ def read_config(path):
     """ Read the complete INI file and check its version number
         if OK, pass values to config-database
     """
-    global CFG, database, modified
+    global CFG, database, categories, rss_feeds, servers, modified
 
     if not os.path.exists(path):
         # No file found, create default INI file
@@ -511,6 +544,10 @@ def read_config(path):
                 except KeyError:
                     pass
 
+    categories = define_categories()
+    #rss_feeds = define_rss()
+    #servers = define_servers()
+
     modified = False
     return True
 
@@ -524,19 +561,18 @@ def save_config(force=False):
 
     for section in database:
         if section in ('servers', 'categories', 'rss'):
-            for subsec in sorted(database[section]):
-                for option in database[section][subsec]:
-                    sec, kw = database[section][subsec][option].ident()
-                    sec = sec[-1]
-                    try:
-                        CFG[section][sec]
-                    except:
-                        CFG[section][sec] = {}
-                    try:
-                        CFG[section][subsec]
-                    except:
-                        CFG[section][subsec] = {}
-                    CFG[section][subsec][kw] = database[section][subsec][option].get()
+            try:
+                CFG[section]
+            except:
+                CFG[section] = {}
+            for subsec in database[section]:
+                try:
+                    CFG[section][subsec]
+                except:
+                    CFG[section][subsec] = {}
+                items = database[section][subsec].get_dict()
+                for item in items:
+                    CFG[section][subsec][item] = items[item]
         else:
             for option in database[section]:
                 sec, kw = database[section][option].ident()
@@ -578,43 +614,62 @@ def define_servers():
         return a list of ConfigServer instances
     """
     global CFG
-    servers = []
     name = 1
     try:
         for server in CFG['servers']:
-            servers.append(ConfigServer('server%s' % name, CFG['servers'][server]))
+            ConfigServer('server%s' % name, CFG['servers'][server])
             name += 1
     except KeyError:
-        None
-    return servers
+        pass
+
+def get_servers():
+    global database
+    try:
+        return database['servers']
+    except:
+        return {}
 
 
 def define_categories():
     """ Define categories listed in the Setup file
         return a list of ConfigCat instances
     """
-    global CFG
-    cats = []
+    global CFG, categories
+    cats = ['Unknown', 'Anime', 'Apps', 'Books', 'Consoles', 'Emulation', 'Games',
+            'Misc', 'Movies', 'Music', 'PDA', 'Resources', 'TV']
+
     try:
         for cat in CFG['categories']:
-            cats.append(ConfigCat(cat, CFG['categories'][cat]))
+            ConfigCat(cat, CFG['categories'][cat])
     except KeyError:
-        None
-    return cats
-    
+        for cat in cats:
+            val = { 'newzbin' : cat, 'dir' : cat }
+            ConfigCat(cat.lower(), val)
+
+def get_categories():
+    global database
+    try:
+        return database['categories']
+    except:
+        return {}
 
 def define_rss():
     """ Define rss-ffeds listed in the Setup file
         return a list of ConfigRSS instances
     """
     global CFG
-    rss = []
     try:
         for r in CFG['rss']:
-            rss.append(ConfigRSS(r, CFG['rss'][r]))
+            ConfigRSS(r, CFG['rss'][r])
     except KeyError:
-        None
-    return rss
+        pass
+
+def get_rss():
+    global database
+    try:
+        return database['rss']
+    except:
+        return {}
 
 
 

@@ -46,6 +46,7 @@ from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME
 from sabnzbd.codecs import TRANS
 import sabnzbd.newzbin as newzbin
 import sabnzbd.email as email
+import sabnzbd.config as config
 from database import HistoryDB
 
 #------------------------------------------------------------------------------
@@ -174,7 +175,7 @@ class PostProcessor(Thread):
                     parResult = True
     
                 ## Determine class directory
-                if len(sabnzbd.CFG['categories']):
+                if config.get_categories():
                     complete_dir = Cat2Dir(cat, self.complete_dir)
                 elif sabnzbd.CREATE_CAT_FOLDERS:
                     if nzo.get_cat():
@@ -429,9 +430,10 @@ def Cat2Dir(cat, defdir):
     """ Lookup destination dir for category """
     ddir = defdir
     if cat:
-        try:
-            ddir = sabnzbd.CFG['categories'][cat.lower()]['dir']
-        except:
+        item = config.get_config('categories', cat.lower())
+        if item:
+            ddir = item.dir.get()
+        else:
             return defdir
         ddir = real_path(sabnzbd.COMPLETE_DIR, ddir)
         ddir = create_dirs(ddir)

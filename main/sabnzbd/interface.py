@@ -162,7 +162,7 @@ def ListCats(default=False):
     else:
         lst = ['None']
 
-    for cat in sorted(sabnzbd.CFG['categories'].keys()):
+    for cat in sorted(config.get_categories().keys()):
         content = True
         lst.append(cat)
     if content:
@@ -437,7 +437,7 @@ class MainPage:
                 return 'not implemented\n'
 
         if mode == 'get_config':
-            res, data = config.get_config(kwargs)
+            res, data = config.get_dconfig(kwargs)
             if output == 'json':
                 return json_result(res, data)
             elif output == 'xml':                   
@@ -563,13 +563,12 @@ class MainPage:
                 if cat == 'None':
                     cat = None
                 sabnzbd.change_cat(nzo_id, cat)
-                try:
-                    script = sabnzbd.CFG['categories'][cat]['script']
-                except:
+                item = config.get_config('categories', cat)
+                if item:
+                    script = item.script.get()
+                    pp = item.pp.get()
+                else:
                     script = sabnzbd.DIRSCAN_SCRIPT
-                try:
-                    pp = int(sabnzbd.CFG['categories'][cat]['pp'])
-                except:
                     pp = sabnzbd.DIRSCAN_PP
     
                 sabnzbd.change_script(nzo_id, script)
@@ -930,13 +929,12 @@ class QueuePage:
             if cat == 'None':
                 cat = None
             sabnzbd.change_cat(nzo_id, cat)
-            try:
-                script = sabnzbd.CFG['categories'][cat]['script']
-            except:
+            item = config.get_config('categories', cat)
+            if item:
+                script = item.script.get()
+                pp = item.pp.get()
+            else:
                 script = sabnzbd.DIRSCAN_SCRIPT
-            try:
-                pp = int(sabnzbd.CFG['categories'][cat]['pp'])
-            except:
                 pp = sabnzbd.DIRSCAN_PP
 
             sabnzbd.change_script(nzo_id, script)
@@ -2038,44 +2036,29 @@ class ConfigCats:
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
         if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
-            config['newzbinDetails'] = True
+            conf['newzbinDetails'] = True
 
-        config['script_list'] = ListScripts(default=True)
+        conf['script_list'] = ListScripts(default=True)
 
-        config['have_cats'] = len(sabnzbd.CFG['categories']) > 0
-        config['defdir'] = sabnzbd.COMPLETE_DIR
+        categories = config.get_categories()
+        conf['have_cats'] =  categories != {}
+        conf['defdir'] = sabnzbd.COMPLETE_DIR
+
 
         empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'' }
         slotinfo = []
         slotinfo.append(empty)
-        for cat in sorted(sabnzbd.CFG['categories'].keys()):
-            slot = {}
+        for cat in sorted(categories):
+            slot = categories[cat].get_dict()
             slot['name'] = cat
-            try:
-                slot['pp'] = str(sabnzbd.CFG['categories'][cat]['pp'])
-            except:
-                slot['pp'] = ''
-            try:
-                slot['script'] = sabnzbd.CFG['categories'][cat]['script']
-            except:
-                slot['script'] = 'Default'
-            if slot['script'] == '': slot['script'] = 'None'
-            try:
-                slot['dir'] = sabnzbd.CFG['categories'][cat]['dir']
-            except:
-                slot['dir'] = ''
-            try:
-                slot['newzbin'] = List2String(sabnzbd.CFG['categories'][cat]['newzbin'])
-            except:
-                slot['newzbin'] = ''
             slotinfo.append(slot)
-        config['slotinfo'] = slotinfo
+        conf['slotinfo'] = slotinfo
 
         template = Template(file=os.path.join(self.__web_dir, 'config_cat.tmpl'),
-                            searchList=[config],
+                            searchList=[conf],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
@@ -2083,52 +2066,29 @@ class ConfigCats:
     @cherrypy.expose
     def delete(self, name = None, _dc = None):
         if name:
-            try:
-                del sabnzbd.CFG['categories'][name]
-            except:
-                pass
-            save_configfile(sabnzbd.CFG)
+            config.delete('categories', name)
+            config.save_config()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
-    def save(self, name=None, newname=None, pp=None, script=None, dir=None, newzbin=None, _dc=None):
-        newname = Strip(newname)
+    def save(self, **kwargs):
+        newname = Strip(get_arg(kwargs, 'newname'))
+        name = get_arg(kwargs, 'name')
+        _dc = get_arg(kwargs, '_dc')
+
         if newname:
             if name:
-                try:
-                    del sabnzbd.CFG['categories'][name]
-                except:
-                    pass
+                config.delete('categories', name)
             name = newname.lower()
-            sabnzbd.CFG['categories'][name] = {}
+            config.ConfigCat(name, kwargs)
 
-            if pp and pp.isdigit():
-                try:
-                    sabnzbd.CFG['categories'][name]['pp'] = str(pp)
-                except:
-                    pass
-            if script != None and script != 'Default':
-                try:
-                    sabnzbd.CFG['categories'][name]['script'] = script
-                except:
-                    pass
-            if dir:
-                try:
-                    sabnzbd.CFG['categories'][name]['dir'] = dir
-                except:
-                    pass
-            if newzbin:
-                try:
-                    sabnzbd.CFG['categories'][name]['newzbin'] = listquote.simplelist(newzbin)
-                except:
-                    pass
-            save_configfile(sabnzbd.CFG)
+        config.save_config()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def init_newzbin(self, _dc = None):
-        newzbin.InitCats()
-        save_configfile(sabnzbd.CFG)
+        config.define_categories()
+        config.save_config()
         raise Raiser(self.__root, _dc=_dc)
 
     
