@@ -228,8 +228,8 @@ class MSGIDGrabber(Thread):
 def _grabnzb(msgid):
     """ Grab one msgid from newzbin """
 
-    nothing  = (None, None, None)
-    retry = (300, None, None)
+    nothing  = (None, None, None, None)
+    retry = (300, None, None, None)
     nzo_info = {'msgid': msgid}
 
     logging.info('[%s] Fetching NZB for Newzbin report #%s', __NAME__, msgid)
