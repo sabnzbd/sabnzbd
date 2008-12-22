@@ -1886,7 +1886,7 @@ class ConfigScheduling:
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
         config['schedlines'] = []
-        for ev in scheduler.sort_schedules(sabnzbd.CFG['misc']['schedlines'], forward=True):
+        for ev in scheduler.sort_schedules(forward=True):
             config['schedlines'].append(ev[3])
 
         actions = ['resume', 'pause', 'shutdown', 'speedlimit']
@@ -1904,7 +1904,6 @@ class ConfigScheduling:
     @cherrypy.expose
     def addSchedule(self, minute = None, hour = None, dayofweek = None,
                     action = None, arguments = None, _dc = None):
-        schedules = sabnzbd.CFG['misc']['schedlines']
 
         arguments = arguments.strip().lower()
         if arguments in ('on', 'enable'):
@@ -1928,18 +1927,22 @@ class ConfigScheduling:
                 action = None
 
             if action:
-                schedules.append('%s %s %s %s %s' %
+                sched = scheduler.SCHEDULES.get()
+                sched.append('%s %s %s %s %s' %
                                  (minute, hour, dayofweek, action, arguments))
-        save_configfile(sabnzbd.CFG)
+                scheduler.SCHEDULES.set(sched)
+
+        config.save_config()
         scheduler.restart(force=True)
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def delSchedule(self, line = None, _dc = None):
-        schedules = sabnzbd.CFG['misc']['schedlines']
+        schedules = scheduler.SCHEDULES.get()
         if line and line in schedules:
             schedules.remove(line)
-        save_configfile(sabnzbd.CFG)
+            scheduler.SCHEDULES.set(schedules)
+        config.save_config()
         scheduler.restart(force=True)
         raise Raiser(self.__root, _dc=_dc)
 

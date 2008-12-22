@@ -31,7 +31,9 @@ from sabnzbd.utils.kronos import ThreadedScheduler
 import sabnzbd.rss as rss
 import sabnzbd.newzbin as newzbin
 import sabnzbd.misc
+import sabnzbd.config as config
 
+SCHEDULES = config.OptionList('misc', 'schedlines')
 
 __SCHED = None  # Global pointer to Scheduler instance
 
@@ -54,7 +56,7 @@ def init():
     need_versioncheck = sabnzbd.VERSION_CHECK
     bookmarks = newzbin.NEWZBIN_BOOKMARKS.get()
     bookmark_rate = newzbin.BOOKMARK_RATE.get()
-    schedlines = sabnzbd.CFG['misc']['schedlines']
+    schedlines = SCHEDULES.get()
 
     __SCHED = ThreadedScheduler()
 
@@ -174,7 +176,7 @@ def stop():
 
 
 
-def sort_schedules(schedlines, forward):
+def sort_schedules(forward):
     """ Sort the schedules, based on order of happening from now
         forward: assume expired daily event to occur tomorrow
     """
@@ -186,7 +188,7 @@ def sort_schedules(schedlines, forward):
     now_hm = int(now[3])*60 + int(now[4])
     now = int(now[6])*24*60 + now_hm
 
-    for schedule in schedlines:
+    for schedule in SCHEDULES.get():
         parms = None
         try:
             m, h, d, action, parms = schedule.split(None, 4)
@@ -221,13 +223,11 @@ def analyse(was_paused=False):
         Return True if paused mode would be active.
         Return speedlimit
     """
-
-    schedlines = sabnzbd.CFG['misc']['schedlines']
     paused = None
     speedlimit = None
     servers = {}
 
-    for ev in sort_schedules(schedlines, forward=False):
+    for ev in sort_schedules(forward=False):
         logging.debug('[%s] Schedule check result = %s', __NAME__, ev)
         action = ev[1]
         try:
