@@ -295,16 +295,18 @@ class ConfigServer:
         self.username = OptionStr(name, 'username', '', add=False)
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
-        self.fill_server = OptionBool(name, 'fill_server', False, add=False)
+        self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
         self.enable = OptionBool(name, 'enable', True, add=False)
+        self.optional = OptionBool(name, 'optional', True, add=False)
 
         self.set_dict(values, all=True)
-        add_to_database('categories', self.__name, self)
+        add_to_database('servers', self.__name, self)
 
     def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections', 'fill_server', 'ssl', 'enable'):
+        for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections',
+                   'fillserver', 'ssl', 'enable', 'optional'):
             try:
                 value = values[kw]
             except KeyError:
@@ -324,9 +326,10 @@ class ConfigServer:
         dict['username'] = self.username.get()
         dict['password'] = self.password.get()
         dict['connections'] = self.connections.get()
-        dict['fill_server'] = self.fill_server.get()
+        dict['fillserver'] = self.fillserver.get()
         dict['ssl'] = self.ssl.get()
         dict['enable'] = self.enable.get()
+        dict['optional'] = self.optional.get()
         return dict
 
     def delete(self):
@@ -399,7 +402,7 @@ class ConfigRSS:
                 exec 'self.%s = OptionList(name, "%s", add=False)' % (kw, kw)
 
         self.set_dict(values, all=True)
-        add_to_database('categories', self.__name, self)
+        add_to_database('rss', self.__name, self)
 
     def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
@@ -552,7 +555,7 @@ def read_config(path):
 
     categories = define_categories()
     #rss_feeds = define_rss()
-    #servers = define_servers()
+    servers = define_servers()
 
     modified = False
     return True
@@ -620,11 +623,10 @@ def define_servers():
         return a list of ConfigServer instances
     """
     global CFG
-    name = 1
     try:
         for server in CFG['servers']:
-            ConfigServer('server%s' % name, CFG['servers'][server])
-            name += 1
+            svr = CFG['servers'][server]
+            ConfigServer(server, svr)
     except KeyError:
         pass
 

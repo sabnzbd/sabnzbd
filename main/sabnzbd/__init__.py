@@ -312,7 +312,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     CheckSection('misc')
     CheckSection('logging')
-    CheckSection('servers')
     CheckSection('rss')
 
     CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
@@ -1009,21 +1008,21 @@ def get_history_queue():
 def enable_server(server):
     """ Enable server """
     try:
-        CFG['servers'][server]['enable'] = 1
+        config.get_config('servers', server).enable.set(1)
     except:
         logging.warning('[%s] Trying to set status of non-existing server %s', __NAME__, server)
         return
-    save_configfile(CFG)
+    config.save_config()
     update_server(server, server)
 
 def disable_server(server):
     """ Disable server """
     try:
-        CFG['servers'][server]['enable'] = 0
+        config.get_config('servers', server).enable.set(0)
     except:
         logging.warning('[%s] Trying to set status of non-existing server %s', __NAME__, server)
         return
-    save_configfile(CFG)
+    config.save_config()
     update_server(server, server)
 
 def change_web_dir(web_dir):

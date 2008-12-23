@@ -258,7 +258,7 @@ def analyse(was_paused=False):
         sabnzbd.BANDWITH_LIMIT = speedlimit
     for serv in servers:
         try:
-            sabnzbd.CFG['servers'][serv]['enable'] = servers[serv]
+            config.get_config('servers', serv).enable.set(servers[serv])
         except:
             pass
-    sabnzbd.misc.save_configfile(sabnzbd.CFG)
+    config.save_config()

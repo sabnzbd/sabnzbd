@@ -182,10 +182,15 @@ def ConvertSpecials(p):
     return p
 
 
-def Raiser(root, *args, **kwargs):
+def Raiser(root, **kwargs):
     root = '%s?%s' % (root, urllib.urlencode(kwargs))
     return cherrypy.HTTPRedirect(root)
 
+def dcRaiser(root, kwargs):
+    if '_dc' in kwargs:
+        return Raiser(root, _dc=kwargs['_dc'])
+    else:
+        return Raiser(root)
 
 def IntConv(value):
     """Safe conversion to int"""
@@ -319,7 +324,7 @@ class MainPage:
         info['cat_list'] = ListCats(True)
 
         info['warning'] = ""
-        if not sabnzbd.CFG['servers']:
+        if not config.get_servers():
             info['warning'] = "No Usenet server defined, please check Config-->Servers<br/>"
 
         if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -755,7 +760,7 @@ class MainPage:
         if url:
             return ShowOK(url)
         else:
-            raise Raiser(self.__root, _dc)
+            raise Raiser(self.__root, _dc=_dc)
 
 #------------------------------------------------------------------------------
 class NzoPage:
@@ -831,10 +836,7 @@ class NzoPage:
             elif kwargs['action_key'] == 'Bottom':
                 sabnzbd.move_bottom_bulk(self.__nzo_id, nzf_ids)
 
-        if '_dc' in kwargs:
-            raise Raiser(self.__root, _dc=kwargs['_dc'])
-        else:
-            raise Raiser(self.__root, '')
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def tog_verbose(self, _dc = None):
@@ -1003,7 +1005,7 @@ class QueuePage:
         except:
             return 'error: Please submit a value\n'
         sabnzbd.limit_speed(value)
-        raise Raiser(self.__root, _dc)
+        raise Raiser(self.__root, _dc=_dc)
 
 class HistoryPage:
     def __init__(self, web_dir, root, prim):
@@ -1097,7 +1099,7 @@ class HistoryPage:
         if url:
             return ShowOK(url)
         else:
-            raise Raiser(self.__root, _dc)
+            raise Raiser(self.__root, _dc=_dc)
 
 #------------------------------------------------------------------------------
 class ConfigPage:
@@ -1121,18 +1123,17 @@ class ConfigPage:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        cfg, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['configfn'] = sabnzbd.CFG.filename
+        cfg['configfn'] = sabnzbd.CFG.filename
         
         new = {}
-        org = sabnzbd.CFG['servers']
-        for svr in org:
+        for svr in config.get_servers():
             new[svr] = {}
-        config['servers'] = new
+        cfg['servers'] = new
 
         template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
-                            searchList=[config],
+                            searchList=[cfg],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
@@ -1445,148 +1446,83 @@ class ConfigServer:
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        cfg, pnfo_list, bytespersec = build_header(self.__prim)
 
         new = {}
-        org = sabnzbd.CFG['servers']
-        for svr in org:
-            new[svr] = {}
-            new[svr]['host'] = org[svr]['host']
-            new[svr]['port'] = org[svr]['port']
-            new[svr]['username'] = org[svr]['username']
-            new[svr]['password'] = '*' * len(decodePassword(org[svr]['password'], 'server'))
-            new[svr]['connections'] = org[svr]['connections']
-            new[svr]['timeout'] = org[svr]['timeout']
-            new[svr]['fillserver'] = org[svr]['fillserver']
-            new[svr]['ssl'] = org[svr]['ssl']
-            new[svr]['enable'] = org[svr]['enable']
-        config['servers'] = new
+        servers = config.get_servers()
+        for svr in servers:
+            new[svr] = servers[svr].get_dict()
+        cfg['servers'] = new
 
         if sabnzbd.newswrapper.HAVE_SSL:
-            config['have_ssl'] = 1
+            cfg['have_ssl'] = 1
         else:
-            config['have_ssl'] = 0
+            cfg['have_ssl'] = 0
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
-                            searchList=[config],
+                            searchList=[cfg],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
 
+
     @cherrypy.expose
-    def addServer(self, server = None, host = None, port = None, timeout = None, username = None,
-                  password = None, connections = None, ssl = None, fillserver = None, enable=None, _dc = None):
-
-        timeout = check_timeout(timeout)
-
-        host = Strip(host)
-        port = Strip(port)
-        if connections == "":
-            connections = '1'
-        if port == "":
-            port = '119'
-        if not fillserver:
-            fillserver = '0'
-        if not ssl:
-            ssl = '0'
-        if enable == None:
-            enable = '1'
-        if host and port and port.isdigit() \
-           and connections.isdigit() and fillserver.isdigit() \
-           and ssl.isdigit():
-            msg = check_server(host, port)
-            if msg:
-                return msg
-
-            server = "%s:%s" % (host, port)
-
-            msg = check_server(host, port)
-            if msg:
-                return msg
-
-            if server not in sabnzbd.CFG['servers']:
-                sabnzbd.CFG['servers'][server] = {}
-
-                sabnzbd.CFG['servers'][server]['host'] = host
-                sabnzbd.CFG['servers'][server]['port'] = port
-                sabnzbd.CFG['servers'][server]['username'] = username
-                sabnzbd.CFG['servers'][server]['password'] = encodePassword(password)
-                sabnzbd.CFG['servers'][server]['timeout'] = timeout
-                sabnzbd.CFG['servers'][server]['connections'] = connections
-                sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
-                sabnzbd.CFG['servers'][server]['ssl'] = ssl
-                sabnzbd.CFG['servers'][server]['enable'] = enable
-
-        save_configfile(sabnzbd.CFG)
-        sabnzbd.update_server(None, server)
-        raise Raiser(self.__root, _dc=_dc)
+    def addServer(self, **kwargs):
+        return self.handle_server(kwargs)
 
 
     @cherrypy.expose
-    def saveServer(self, server = None, host = None, port = None, username = None, timeout = None,
-                   password = None, connections = None, fillserver = None, ssl = None, enable=None, _dc = None):
+    def saveServer(self, **kwargs):
+        return self.handle_server(kwargs)
 
-        timeout = check_timeout(timeout)
 
-        oldserver = Strip(server)
-        port = Strip(port)
-
-        if connections == "":
-            connections = '1'
-        if port == "":
+    def handle_server(self, kwargs):
+        """ Internal server handler """
+        try:
+            host = kwargs['host']
+        except:
+            return badParameterResponse('Error: Need host name.')
+        try:
+            port = str(kwargs['port'])
+        except:
             port = '119'
-        if not ssl:
-            ssl = '0'
-        if not fillserver:
-            fillserver = '0'
-        if not enable:
-            enable = '0'
-        if host and port and port.isdigit() \
-           and connections.isdigit() and fillserver and fillserver.isdigit() \
-           and ssl and ssl.isdigit():
-            msg = check_server(host, port)
-            if msg:
-                return msg
 
-            if password and not password.strip('*'):
-                password = sabnzbd.CFG['servers'][oldserver]['password']
+        msg = check_server(host, port)
+        if msg:
+            return msg
 
-            del sabnzbd.CFG['servers'][oldserver]
+        # Replace square by curly brackets to avoid clash
+        # between INI format and IPV6 notation
+        server = '%s:%s' % (host.replace('[','{').replace(']','}'), port)
+ 
+        svr = config.get_config('servers', server)
+        if svr:
+            old_server = server
+            for kw in ('fillserver', 'ssl', 'enable'):
+                if kw not in kwargs.keys():
+                    kwargs[kw] = None
+            svr.set_dict(kwargs)
+        else:
+            old_server = None
+            config.ConfigServer(server, kwargs)
 
-            # Allow IPV6 numerical addresses, '[]' is not compatible with
-            # INI file handling, replace by '{}'
-            ihost = host.replace('[','{')
-            ihost = ihost.replace(']','}')
-            server = "%s:%s" % (ihost, port)
+        config.save_config()
+        sabnzbd.update_server(old_server, server)
+        raise dcRaiser(self.__root, kwargs)
 
-            sabnzbd.CFG['servers'][server] = {}
-
-            sabnzbd.CFG['servers'][server]['host'] = host
-            sabnzbd.CFG['servers'][server]['port'] = port
-            sabnzbd.CFG['servers'][server]['username'] = username
-            sabnzbd.CFG['servers'][server]['password'] = encodePassword(password)
-            sabnzbd.CFG['servers'][server]['connections'] = connections
-            sabnzbd.CFG['servers'][server]['timeout'] = timeout
-            sabnzbd.CFG['servers'][server]['fillserver'] = fillserver
-            sabnzbd.CFG['servers'][server]['ssl'] = ssl
-            sabnzbd.CFG['servers'][server]['enable'] = enable
-
-        save_configfile(sabnzbd.CFG)
-        sabnzbd.update_server(oldserver, server)
-        raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def delServer(self, *args, **kwargs):
-        if 'server' in kwargs and kwargs['server'] in sabnzbd.CFG['servers']:
+        if 'server' in kwargs:
             server = kwargs['server']
-            del sabnzbd.CFG['servers'][server]
-            save_configfile(sabnzbd.CFG)
-            sabnzbd.update_server(server, None)
-        
-        if '_dc' in kwargs:
-            raise Raiser(self.__root, _dc=kwargs['_dc'])
-        else:
-            raise Raiser(self.__root, _dc='')
+            svr = config.get_config('servers', server)
+            if svr:
+                svr.delete()
+                del svr
+                config.save_config()
+                sabnzbd.update_server(server, None)
+
+        raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
 
@@ -1764,10 +1700,7 @@ class ConfigRss:
             except:
                 pass
             save_configfile(sabnzbd.CFG)
-        if '_dc' in kwargs:
-            raise Raiser(self.__root, _dc=kwargs['_dc'])
-        else:
-            raise Raiser(self.__root, '')
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def del_rss_filter(self, feed=None, index=None, _dc=None):
@@ -1784,10 +1717,7 @@ class ConfigRss:
             feed = kwargs['feed']
             sabnzbd.rss.run_feed(feed, download=True)
             return ShowRssLog(feed, False)
-        if '_dc' in kwargs:
-            raise Raiser(self.__root, _dc=kwargs['_dc'])
-        else:
-            raise Raiser(self.__root, '')
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def test_rss_feed(self, *args, **kwargs):
@@ -1795,10 +1725,7 @@ class ConfigRss:
             feed = kwargs['feed']
             sabnzbd.rss.run_feed(feed, download=False)
             return ShowRssLog(feed, True)
-        if '_dc' in kwargs:
-            raise Raiser(self.__root, _dc=kwargs['_dc'])
-        else:
-            raise Raiser(self.__root, '')
+        raise dcRaiser(self.__root, kwargs)
 
 
     @cherrypy.expose
@@ -1826,20 +1753,19 @@ class ConfigScheduling:
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        cfg, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['schedlines'] = []
+        cfg['schedlines'] = []
         for ev in scheduler.sort_schedules(forward=True):
-            config['schedlines'].append(ev[3])
+            cfg['schedlines'].append(ev[3])
 
         actions = ['resume', 'pause', 'shutdown', 'speedlimit']
-        servers = sabnzbd.CFG['servers']
-        for server in servers:
+        for server in config.get_servers():
             actions.append(server)
-        config['actions'] = actions
+        cfg['actions'] = actions
 
         template = Template(file=os.path.join(self.__web_dir, 'config_scheduling.tmpl'),
-                            searchList=[config],
+                            searchList=[cfg],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()

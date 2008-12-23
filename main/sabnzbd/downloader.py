@@ -61,7 +61,7 @@ def GetParmInt(server, keyword, default):
 
 class Server:
     def __init__(self, id, host, port, timeout, threads, fillserver, ssl, username = None,
-                 password = None):
+                 password = None, optional=False):
         self.id = id
         self.newid = None
         self.restart = False
@@ -71,6 +71,7 @@ class Server:
         self.threads = threads
         self.fillserver = fillserver
         self.ssl = ssl
+        self.optional = optional
 
         self.username = username
         self.password = password
@@ -173,10 +174,8 @@ class Downloader(Thread):
 
         self.servers = []
 
-        servers = sabnzbd.CFG['servers']
-
         primary = False
-        for server in servers:
+        for server in config.get_servers():
             if self.init_server(None, server):
                 primary = True
 
@@ -195,22 +194,20 @@ class Downloader(Thread):
         primary = False
         create = False
 
-        servers = sabnzbd.CFG['servers']
+        servers = config.get_servers()
         if newserver in servers:
             srv = servers[newserver]
-            enabled = bool(GetParmInt(srv, 'enable', 1))
-            host = GetParm(srv, 'host')
-            port = GetParmInt(srv, 'port', 119)
-            timeout = GetParmInt(srv, 'timeout', 60)
-            timeout = sabnzbd.minimax(timeout, MIN_TIMEOUT, MAX_TIMEOUT)
-            srv['timeout'] = timeout
-
-            threads = GetParmInt(srv, 'connections', 1)
-            fillserver = bool(GetParmInt(srv, 'fillserver', 0))
+            enabled = srv.enable.get()
+            host = srv.host.get()
+            port = srv.port.get()
+            timeout = srv.timeout.get()
+            threads = srv.connections.get()
+            fillserver = srv.fillserver.get()
             primary = primary or (enabled and (not fillserver) and (threads > 0))
-            ssl = bool(GetParmInt(srv, 'ssl', 0)) and sabnzbd.newswrapper.HAVE_SSL
-            username = GetParm(srv, 'username')
-            password = decodePassword(GetParm(srv, 'password'), 'server')
+            ssl = srv.ssl.get() and sabnzbd.newswrapper.HAVE_SSL
+            username = srv.username.get()
+            password = srv.password.get()
+            optional = srv.optional.get()
             create = True
 
         if oldserver:
@@ -225,7 +222,7 @@ class Downloader(Thread):
 
         if create and enabled and host and port and threads:
             self.servers.append(Server(newserver, host, port, timeout, threads, fillserver, ssl,
-                                            username, password))
+                                            username, password, optional))
                 
         return primary
 
