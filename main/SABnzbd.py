@@ -566,7 +566,7 @@ def main():
     if AUTOBROWSER != None:
         sabnzbd.misc.AUTOBROWSER.set(AUTOBROWSER)
     else:
-        AUTOBROWSER = sabnzbd.misc.AUTOBROWSER.set(AUTOBROWSER)
+        AUTOBROWSER = sabnzbd.misc.AUTOBROWSER.get()
 
     if umask == None:
         umask = check_setting_str(cfg, 'misc', 'permissions', '')
