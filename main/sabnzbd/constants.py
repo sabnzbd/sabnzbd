@@ -107,4 +107,4 @@ series_match = [ ('([sS]|[\d]+)x(\d+)', # 1x01
 date_match = ['(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
               '(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
 
-year_match = ['[\(|\.](\d{4})[\)|\.]'] # Something (Year) or .Year.
+year_match = '[\(|\.](\d{4})' # Something (Year or .Year

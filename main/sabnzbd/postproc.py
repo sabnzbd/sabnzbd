@@ -343,7 +343,7 @@ class PostProcessor(Thread):
             workdir_complete = one_file_or_folder(workdir_complete)
                 
             # Make the use of / or \ consistant in the path name
-            if workdir_complete[1:3] == ':\\':
+            if workdir_complete[1:3] == ':\\' or workdir_complete[0] == '\\':
                 rep = '/'
                 sep = '\\'
             else:

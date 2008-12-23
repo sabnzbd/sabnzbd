@@ -51,6 +51,7 @@ replace_after = {
     '..': '.',
     '__': '_',
     '  ': ' ',
+    '//': '/',
     ' .%ext': '.%ext'
 }
 
@@ -303,7 +304,7 @@ class SeriesSorter:
         path = toLowercase(path)
     
         # If no descriptions were found we need to replace %en and eat up surrounding characters
-        path = removeDescription(path, '%e\.?\_?n')
+        path = removeDescription(path, '%e[\.|\_]?n')
             
         # Split the last part of the path up for the renamer
         if extension:
@@ -443,10 +444,10 @@ class GenericSorter:
         """ Collect and construct all the values needed for path replacement """
     
         ## - Get Year
-        RE_YEAR = re.compile('\((\d{4})\)', re.I)
-        year_match = RE_YEAR.search(self.original_dirname)
-        if year_match:
-            self.movie_info['year'] = year_match.group(1)
+        RE_YEAR = re.compile(year_match, re.I)
+        year_m = RE_YEAR.search(self.original_dirname)
+        if year_m:
+            self.movie_info['year'] = year_m.group(1)
         else:
             self.movie_info['year'] = ''
             
@@ -454,7 +455,7 @@ class GenericSorter:
         self.movie_info['decade'], self.movie_info['decade_two'] = getDecades(self.movie_info['year'])
             
         ## - Get Title
-        self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = getTitles(year_match, self.original_dirname)
+        self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = getTitles(year_m, self.original_dirname)
         
         return True
     
@@ -805,7 +806,7 @@ def removeDescription(path, desc_token):
     return path
     
 def getDecades(year):
-    if year != '0':
+    if year:
         try:
             decade = year[2:3]+'0'
             decade2 = year[:3]+'0'
@@ -839,7 +840,7 @@ def toLowercase(path):
     return path
 
 def stripFolders(folders):
-    f = folders.split('/')
+    f = folders.strip('/').split('/')
     
     def strip_all(x):
         x = x.strip().strip('_')
