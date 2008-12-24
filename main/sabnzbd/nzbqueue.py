@@ -36,10 +36,8 @@ from sabnzbd.misc import Panic_Queue, ExitSab, sanitize_filename
 from database import HistoryDB
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
-import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 
-TOP_ONLY = config.OptionBool('misc', 'top_only', True)
-AUTODISCONNECT = config.OptionBool('misc', 'auto_disconnect', True)
 
 def DeleteLog(name):
     if name:
@@ -59,13 +57,13 @@ class NzbQueue(TryList):
         self.__downloaded_items = []
 
 
-        self.__top_only = TOP_ONLY.get()
+        self.__top_only = cfg.TOP_ONLY.get()
         self.__top_nzo = None
 
         self.__nzo_list = []
         self.__nzo_table = {}
 
-        self.__auto_sort = sabnzbd.nzbstuff.AUTO_SORT.get()
+        self.__auto_sort = cfg.AUTO_SORT.get()
 
         nzo_ids = []
 
@@ -513,7 +511,7 @@ class NzbQueue(TryList):
 
             if not self.__nzo_list:
                 # Close server connections
-                if AUTODISCONNECT.get():
+                if cfg.AUTODISCONNECT.get():
                     sabnzbd.disconnect()
 
                 # Sets the end-of-queue back on if disabled

@@ -51,6 +51,7 @@ import sabnzbd.newzbin as newzbin
 import sabnzbd.urlgrabber as urlgrabber
 from sabnzbd.codecs import TRANS, xml_name
 import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 import sabnzbd.newsunpack as newsunpack
 from sabnzbd.database import HistoryDB, build_history_info, unpack_history_info
 
@@ -314,11 +315,11 @@ class MainPage:
     def index(self, _dc = None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
             info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts(default=True)
-        info['script'] = sabnzbd.misc.DIRSCAN_SCRIPT.get()
+        info['script'] = cfg.DIRSCAN_SCRIPT.get()
 
         info['cat'] = 'Default'
         info['cat_list'] = ListCats(True)
@@ -575,8 +576,8 @@ class MainPage:
                     script = item.script.get()
                     pp = item.pp.get()
                 else:
-                    script = sabnzbd.misc.DIRSCAN_SCRIPT.get()
-                    pp = sabnzbd.misc.DIRSCAN_PP.get()
+                    script = cfg.DIRSCAN_SCRIPT.get()
+                    pp = cfg.DIRSCAN_PP.get()
     
                 sabnzbd.change_script(nzo_id, script)
                 sabnzbd.change_opts(nzo_id, pp)
@@ -938,8 +939,8 @@ class QueuePage:
                 script = item.script.get()
                 pp = item.pp.get()
             else:
-                script = sabnzbd.misc.DIRSCAN_SCRIPT.get()
-                pp = sabnzbd.misc.DIRSCAN_PP.get()
+                script = cfg.DIRSCAN_SCRIPT.get()
+                pp = cfg.DIRSCAN_PP.get()
 
             sabnzbd.change_script(nzo_id, script)
             sabnzbd.change_opts(nzo_id, pp)
@@ -1022,7 +1023,7 @@ class HistoryPage:
 
         history['isverbose'] = self.__verbose
 
-        if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
             history['newzbinDetails'] = True
 
         #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
@@ -1796,10 +1797,10 @@ class ConfigScheduling:
                 action = None
 
             if action:
-                sched = scheduler.SCHEDULES.get()
+                sched = cfg.SCHEDULES.get()
                 sched.append('%s %s %s %s %s' %
                                  (minute, hour, dayofweek, action, arguments))
-                scheduler.SCHEDULES.set(sched)
+                cfg.SCHEDULES.set(sched)
 
         config.save_config()
         scheduler.restart(force=True)
@@ -1807,10 +1808,10 @@ class ConfigScheduling:
 
     @cherrypy.expose
     def delSchedule(self, line = None, _dc = None):
-        schedules = scheduler.SCHEDULES.get()
+        schedules = cfg.SCHEDULES.get()
         if line and line in schedules:
             schedules.remove(line)
-            scheduler.SCHEDULES.set(schedules)
+            cfg.SCHEDULES.set(schedules)
         config.save_config()
         scheduler.restart(force=True)
         raise Raiser(self.__root, _dc=_dc)
@@ -1832,16 +1833,16 @@ class ConfigNewzbin:
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['username_newzbin'] = newzbin.USERNAME_NEWZBIN.get()
-        config['password_newzbin'] = newzbin.PASSWORD_NEWZBIN.get_stars()
-        config['newzbin_bookmarks'] = int(newzbin.NEWZBIN_BOOKMARKS.get())
-        config['newzbin_unbookmark'] = int(newzbin.NEWZBIN_UNBOOKMARK.get())
-        config['bookmark_rate'] = newzbin.BOOKMARK_RATE.get()
+        config['username_newzbin'] = cfg.USERNAME_NEWZBIN.get()
+        config['password_newzbin'] = cfg.PASSWORD_NEWZBIN.get_stars()
+        config['newzbin_bookmarks'] = int(cfg.NEWZBIN_BOOKMARKS.get())
+        config['newzbin_unbookmark'] = int(cfg.NEWZBIN_UNBOOKMARK.get())
+        config['bookmark_rate'] = cfg.BOOKMARK_RATE.get()
 
         config['bookmarks_list'] = self.__bookmarks
 
-        config['username_matrix'] = urlgrabber.USERNAME_MATRIX.get()
-        config['password_matrix'] = urlgrabber.PASSWORD_MATRIX.get_stars()
+        config['username_matrix'] = cfg.USERNAME_MATRIX.get()
+        config['password_matrix'] = cfg.PASSWORD_MATRIX.get_stars()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             searchList=[config],
@@ -1856,14 +1857,14 @@ class ConfigNewzbin:
                     username_matrix = None, password_matrix = None, _dc = None):
 
         
-        newzbin.USERNAME_NEWZBIN.set(username_newzbin)
-        newzbin.PASSWORD_NEWZBIN.set(password_newzbin)
-        newzbin.NEWZBIN_BOOKMARKS.set(newzbin_bookmarks)
-        newzbin.NEWZBIN_UNBOOKMARK.set(newzbin_unbookmark)
-        newzbin.BOOKMARK_RATE.set(bookmark_rate)
+        cfg.USERNAME_NEWZBIN.set(username_newzbin)
+        cfg.PASSWORD_NEWZBIN.set(password_newzbin)
+        cfg.NEWZBIN_BOOKMARKS.set(newzbin_bookmarks)
+        cfg.NEWZBIN_UNBOOKMARK.set(newzbin_unbookmark)
+        cfg.BOOKMARK_RATE.set(bookmark_rate)
 
-        urlgrabber.USERNAME_MATRIX.set(username_matrix)
-        urlgrabber.PASSWORD_MATRIX.set(password_matrix)
+        cfg.USERNAME_MATRIX.set(username_matrix)
+        cfg.PASSWORD_MATRIX.set(password_matrix)
 
         config.save_config()
         scheduler.restart()
@@ -1872,8 +1873,8 @@ class ConfigNewzbin:
     @cherrypy.expose
     def saveMatrix(self, username_matrix = None, password_matrix = None, _dc = None):
 
-        urlgrabber.USERNAME_MATRIX.set(username_matrix)
-        urlgrabber.PASSWORD_MATRIX.set(password_matrix)
+        cfg.USERNAME_MATRIX.set(username_matrix)
+        cfg.PASSWORD_MATRIX.set(password_matrix)
 
         config.save_config()
         raise Raiser(self.__root, _dc=_dc)
@@ -1910,7 +1911,7 @@ class ConfigCats:
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
             conf['newzbinDetails'] = True
 
         conf['script_list'] = ListScripts(default=True)
@@ -2468,13 +2469,13 @@ class ConfigEmail:
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['email_server'] = email.EMAIL_SERVER.get()
-        config['email_to'] = email.EMAIL_TO.get()
-        config['email_from'] = email.EMAIL_FROM.get()
-        config['email_account'] = email.EMAIL_ACCOUNT.get()
-        config['email_pwd'] = email.EMAIL_PWD.get_stars()
-        config['email_endjob'] = email.EMAIL_ENDJOB.get()
-        config['email_full'] = email.EMAIL_FULL.get()
+        config['email_server'] = cfg.EMAIL_SERVER.get()
+        config['email_to'] = cfg.EMAIL_TO.get()
+        config['email_from'] = cfg.EMAIL_FROM.get()
+        config['email_account'] = cfg.EMAIL_ACCOUNT.get()
+        config['email_pwd'] = cfg.EMAIL_PWD.get_stars()
+        config['email_endjob'] = cfg.EMAIL_ENDJOB.get()
+        config['email_full'] = cfg.EMAIL_FULL.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
                             searchList=[config],
@@ -2492,25 +2493,25 @@ class ConfigEmail:
         email_from = Strip(email_from)
         email_account = Strip(email_account)
 
-        email.EMAIL_ENDJOB.set(email_endjob)
-        email.EMAIL_FULL.set(email_full)
+        cfg.EMAIL_ENDJOB.set(email_endjob)
+        cfg.EMAIL_FULL.set(email_full)
 
-        on = (email.EMAIL_ENDJOB.get() > 0) or email.EMAIL_FULL.get()
+        on = (cfg.EMAIL_ENDJOB.get() > 0) or cfg.EMAIL_FULL.get()
         
-        ok = email.EMAIL_TO.set(email_to)
+        ok = cfg.EMAIL_TO.set(email_to)
         if on and not (ok and email_to):
             return badParameterResponse('Invalid email address "%s"' % email_to)
 
-        ok = email.EMAIL_FROM.set(email_from)
+        ok = cfg.EMAIL_FROM.set(email_from)
         if on and not (ok and email_from):
             return badParameterResponse('Invalid email address "%s"' % email_from)
 
-        ok = email.EMAIL_SERVER.set(email_server)
+        ok = cfg.EMAIL_SERVER.set(email_server)
         if on and not (ok and email_server):
             return badParameterResponse('Need a server address')
 
-        email.EMAIL_ACCOUNT.set(email_account)
-        email.EMAIL_PWD.set(email_pwd)
+        cfg.EMAIL_ACCOUNT.set(email_account)
+        cfg.EMAIL_PWD.set(email_pwd)
 
         config.save_config()
         raise Raiser(self.__root, _dc=_dc)
@@ -3061,7 +3062,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     info, pnfo_list, bytespersec = build_header(prim)
 
     info['isverbose'] = verbose
-    if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
+    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
         info['newzbinDetails'] = True
 
     if int(sabnzbd.CFG['misc']['refresh_rate']) > 0:

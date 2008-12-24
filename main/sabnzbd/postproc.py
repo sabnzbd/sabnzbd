@@ -46,12 +46,8 @@ from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME
 from sabnzbd.codecs import TRANS
 import sabnzbd.newzbin as newzbin
 import sabnzbd.email as email
-import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 from database import HistoryDB
-
-SAFE_POSTPROC = config.OptionBool('misc', 'safe_postproc', False)
-PAUSE_ON_POST_PROCESSING = config.OptionBool('misc', 'pause_on_post_processing', False)
-
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
@@ -95,7 +91,7 @@ class PostProcessor(Thread):
             if not nzo: break
             
             ## Pause downloader, if users wants that
-            if PAUSE_ON_POST_PROCESSING.get():
+            if cfg.PAUSE_ON_POST_PROCESSING.get():
                 sabnzbd.idle_downloader()
             
             start = time.time()
@@ -176,13 +172,13 @@ class PostProcessor(Thread):
                 if parResult: jobResult = 0
     
                 ## Check if user allows unsafe post-processing
-                if not SAFE_POSTPROC.get():
+                if not cfg.SAFE_POSTPROC.get():
                     parResult = True
     
                 ## Determine class directory
                 if config.get_categories():
                     complete_dir = Cat2Dir(cat, self.complete_dir)
-                elif sabnzbd.nzbstuff.CREATE_GROUP_FOLDERS.get():
+                elif cfg.CREATE_GROUP_FOLDERS.get():
                     complete_dir = addPrefixes(self.complete_dir, nzo)
                     complete_dir = create_dirs(complete_dir)
                 else:
@@ -307,8 +303,8 @@ class PostProcessor(Thread):
                         script_line = ""
     
                     ## Email the results
-                    if (not nzb_list) and email.EMAIL_ENDJOB.get():
-                        if (email.EMAIL_ENDJOB.get() == 1) or (email.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
+                    if (not nzb_list) and cfg.EMAIL_ENDJOB.get():
+                        if (cfg.EMAIL_ENDJOB.get() == 1) or (cfg.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
                             email.endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
                                          {}, script, TRANS(script_log))
     

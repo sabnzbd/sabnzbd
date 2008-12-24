@@ -32,8 +32,7 @@ import sabnzbd.rss as rss
 import sabnzbd.newzbin as newzbin
 import sabnzbd.misc
 import sabnzbd.config as config
-
-SCHEDULES = config.OptionList('misc', 'schedlines')
+import sabnzbd.cfg as cfg
 
 __SCHED = None  # Global pointer to Scheduler instance
 
@@ -53,10 +52,10 @@ def init():
     global __SCHED, CFG
 
     need_rsstask = True
-    need_versioncheck = sabnzbd.misc.VERSION_CHECK.get()
-    bookmarks = newzbin.NEWZBIN_BOOKMARKS.get()
-    bookmark_rate = newzbin.BOOKMARK_RATE.get()
-    schedlines = SCHEDULES.get()
+    need_versioncheck = cfg.VERSION_CHECK.get()
+    bookmarks = cfg.NEWZBIN_BOOKMARKS.get()
+    bookmark_rate = cfg.BOOKMARK_RATE.get()
+    schedlines = cfg.SCHEDULES.get()
 
     __SCHED = ThreadedScheduler()
 
@@ -136,8 +135,8 @@ def init():
             __SCHED.addDaytimeTask(newzbin.getBookmarksNow, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
 
     # Subscribe to bookmark schedule changes
-    newzbin.NEWZBIN_BOOKMARKS.callback(schedule_guard)
-    newzbin.BOOKMARK_RATE.callback(schedule_guard)
+    cfg.NEWZBIN_BOOKMARKS.callback(schedule_guard)
+    cfg.BOOKMARK_RATE.callback(schedule_guard)
 
 
 def start():
@@ -188,7 +187,7 @@ def sort_schedules(forward):
     now_hm = int(now[3])*60 + int(now[4])
     now = int(now[6])*24*60 + now_hm
 
-    for schedule in SCHEDULES.get():
+    for schedule in cfg.SCHEDULES.get():
         parms = None
         try:
             m, h, d, action, parms = schedule.split(None, 4)

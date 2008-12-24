@@ -66,6 +66,7 @@ from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browse
                          decodePassword, Notify, SplitHost, ConvertVersion
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
+import sabnzbd.cfg
 from threading import Thread
 
 cfg = {}
@@ -564,9 +565,9 @@ def main():
         logging.info('Test release, setting maximum logging levels')
 
     if AUTOBROWSER != None:
-        sabnzbd.misc.AUTOBROWSER.set(AUTOBROWSER)
+        sabnzbd.cfg.AUTOBROWSER.set(AUTOBROWSER)
     else:
-        AUTOBROWSER = sabnzbd.misc.AUTOBROWSER.get()
+        AUTOBROWSER = sabnzbd.cfg.AUTOBROWSER.get()
 
     if umask == None:
         umask = check_setting_str(cfg, 'misc', 'permissions', '')

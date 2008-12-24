@@ -66,6 +66,8 @@ from sabnzbd.decorators import *
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.codecs import name_fixer
+import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 
 
 START = datetime.datetime.now()
@@ -785,7 +787,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
     if cat and cat.lower()=='default': cat = None
 
 
-    if newzbin.USERNAME_NEWZBIN.get() and newzbin.PASSWORD_NEWZBIN.get():
+    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
         logging.info('[%s] Fetching msgid %s from www.newzbin.com',
                      __NAME__, msgid)
         msg = "fetching msgid %s from www.newzbin.com" % msgid
@@ -942,7 +944,7 @@ def sort_queue(field, reverse=False):
 def pause_downloader(save=True):
     try:
         DOWNLOADER.pause()
-        if sabnzbd.nzbqueue.AUTODISCONNECT.get():
+        if cfg.AUTODISCONNECT.get():
             DOWNLOADER.disconnect()
         if save:
             save_state()

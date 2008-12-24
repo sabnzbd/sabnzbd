@@ -731,3 +731,13 @@ def no_nonsense(value):
     if value.lower() == 'none':
         value = ''
     return True, value
+
+
+import re
+RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
+def validate_email(value):
+    if value:
+        return RE_VAL.match(value), value
+    else:
+        return True, value
+

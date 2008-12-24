@@ -38,25 +38,7 @@ import sabnzbd
 from sabnzbd.newsunpack import build_command
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import to_units, from_units, SplitHost
-import sabnzbd.config as config
-
-RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
-def validate_email(value):
-    if value:
-        return RE_VAL.match(value), value
-    else:
-        return True, value
-
-
-EMAIL_SERVER = config.OptionStr('misc', 'email_server')
-EMAIL_TO     = config.OptionStr('misc', 'email_to', validation=validate_email)
-EMAIL_FROM   = config.OptionStr('misc', 'email_from', validation=validate_email)
-EMAIL_ACCOUNT= config.OptionStr('misc', 'email_account')
-EMAIL_PWD    = config.OptionPassword('misc', 'email_pwd')
-EMAIL_ENDJOB = config.OptionNumber('misc', 'email_endjob', 0, 0, 2)
-EMAIL_FULL   = config.OptionBool('misc', 'email_full', False)
-EMAIL_DIR    = config.OptionDir('misc', 'email_dir')
-#EMAIL_DIR    = sabnzbd.dir_setup(sabnzbd.CFG, 'email_dir', sabnzbd.DIR_HOME, '')
+import sabnzbd.cfg as cfg
 
 
 ################################################################################
@@ -65,12 +47,10 @@ EMAIL_DIR    = config.OptionDir('misc', 'email_dir')
 #
 ################################################################################
 def send(message):
-    global EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL, EMAIL_DIR
-    if EMAIL_SERVER.get() and EMAIL_TO.get() and EMAIL_FROM.get():
+    if cfg.EMAIL_SERVER.get() and cfg.EMAIL_TO.get() and cfg.EMAIL_FROM.get():
 
         failure = "Email failed"
-        server, port = SplitHost(EMAIL_SERVER.get())
+        server, port = SplitHost(cfg.EMAIL_SERVER.get())
         if not port:
             port = 25
 
@@ -113,15 +93,15 @@ def send(message):
                     return failure
 
         # Authentication
-        if (EMAIL_ACCOUNT.get() != "") and (EMAIL_PWD.get() != ""):
+        if (cfg.EMAIL_ACCOUNT.get() != "") and (cfg.EMAIL_PWD.get() != ""):
             try:
-                mailconn.login(EMAIL_ACCOUNT.get(), EMAIL_PWD.get())
+                mailconn.login(cfg.EMAIL_ACCOUNT.get(), cfg.EMAIL_PWD.get())
             except:
                 logging.error("[%s] Failed to authenticate to mail server", __NAME__)
                 return failure
 
         try:
-            mailconn.sendmail(EMAIL_FROM.get(), EMAIL_TO.get(), message)
+            mailconn.sendmail(cfg.EMAIL_FROM.get(), cfg.EMAIL_TO.get(), message)
         except:
             logging.error("[%s] Failed to send e-mail", __NAME__)
             return failure
@@ -145,8 +125,6 @@ from Cheetah.Template import Template
 
 def endjob(filename, cat, status, path, bytes, stages, script, script_output):
     """ Send email using templates """
-    global EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, EMAIL_ACCOUNT, EMAIL_PWD, \
-           EMAIL_ENDJOB, EMAIL_FULL, EMAIL_DIR
     
     name, msgid = SplitFileName(filename)
 
@@ -161,8 +139,8 @@ def endjob(filename, cat, status, path, bytes, stages, script, script_output):
 
     parm = {}
     parm['status'] = status
-    parm['to'] = EMAIL_TO.get()
-    parm['from'] = EMAIL_FROM.get()
+    parm['to'] = cfg.EMAIL_TO.get()
+    parm['from'] = cfg.EMAIL_FROM.get()
     parm['name'] = name
     parm['path'] = path
     parm['msgid'] = msgid
@@ -173,8 +151,8 @@ def endjob(filename, cat, status, path, bytes, stages, script, script_output):
     parm['size'] = "%sB" % to_units(bytes)
     parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
 
-    if EMAIL_DIR.get() and os.path.exists(EMAIL_DIR.get()):
-        path = EMAIL_DIR.get()
+    if cfg.EMAIL_DIR.get() and os.path.exists(cfg.EMAIL_DIR.get()):
+        path = cfg.EMAIL_DIR.get()
     else:
         path = sabnzbd.DIR_PROG
     try:
@@ -203,9 +181,8 @@ def endjob(filename, cat, status, path, bytes, stages, script, script_output):
 ################################################################################
 def diskfull():
     """ Send email about disk full, no templates """
-    global EMAIL_TO, EMAIL_FROM, EMAIL_FULL
 
-    if not EMAIL_FULL.get():
+    if not cfg.EMAIL_FULL.get():
         return
 
     message = """to: %s
@@ -217,6 +194,6 @@ Hi,
 SABnzbd has stopped downloading, because the disk is almost full.
 Please make room and resume SABnzbd manually.
 
-""" % (EMAIL_TO.get(), EMAIL_FROM.get())
+""" % (cfg.EMAIL_TO.get(), cfg.EMAIL_FROM.get())
 
     return send(message)

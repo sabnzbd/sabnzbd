@@ -41,14 +41,13 @@ except:
 
 from sabnzbd.interface import CheckFreeSpace
 from sabnzbd.misc import getFilepath, sanitize_filename
-import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 from threading import Thread
 from time import sleep
 if os.name == 'nt':
     import subprocess
 
 
-QUICK_CHECK = config.OptionBool('misc', 'quick_check', True)
 
 #------------------------------------------------------------------------------
 ## sabnzbd.pause_downloader
@@ -99,7 +98,7 @@ class Assembler(Thread):
                             logging.error('[%s] Disk error on creating file %s', __NAME__, filepath)
 
                     setname = nzf.get_setname()
-                    if QUICK_CHECK.get() and nzf.is_par2() and (nzo.get_md5pack(setname) == None):
+                    if cfg.QUICK_CHECK.get() and nzf.is_par2() and (nzo.get_md5pack(setname) == None):
                         nzo.set_md5pack(setname, GetMD5Hashes(filepath))
                         logging.debug('[%s] Got md5pack for set %s', __NAME__, setname)
 
@@ -118,7 +117,7 @@ def _assemble(nzo, nzf, path, dupe):
 
     fout = open(path, 'ab')
 
-    if QUICK_CHECK.get():
+    if cfg.QUICK_CHECK.get():
         md5 = new_md5()
     else:
         md5 = None

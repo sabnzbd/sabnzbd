@@ -43,17 +43,7 @@ from sabnzbd.misc import Cat2Opts, sanitize_filename, BadFetch
 from sabnzbd.nzbstuff import CatConvert
 from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
-import sabnzbd.config as config
-
-################################################################################
-# Configuration Instances
-################################################################################
-
-USERNAME_NEWZBIN = config.OptionStr('newzbin', 'username')
-PASSWORD_NEWZBIN = config.OptionPassword('newzbin', 'password')
-NEWZBIN_BOOKMARKS = config.OptionBool('newzbin', 'bookmarks', False)
-NEWZBIN_UNBOOKMARK = config.OptionBool('newzbin', 'unbookmark', False)
-BOOKMARK_RATE = config.OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
+import sabnzbd.cfg as cfg
 
 
 ################################################################################
@@ -88,7 +78,7 @@ def getBookmarksList():
 
 def delete_bookmark(msgid):
     global __BOOKMARKS
-    if __BOOKMARKS and NEWZBIN_BOOKMARKS.get() and NEWZBIN_UNBOOKMARK.get():
+    if __BOOKMARKS and cfg.NEWZBIN_BOOKMARKS.get() and cfg.NEWZBIN_UNBOOKMARK.get():
         __BOOKMARKS.del_bookmark(msgid)
 
 
@@ -218,7 +208,7 @@ def _grabnzb(msgid):
         else:
             conn = httplib.HTTPConnection('www.newzbin.com')
 
-        postdata = { 'username': USERNAME_NEWZBIN.get(), 'password': PASSWORD_NEWZBIN.get(), 'reportid': msgid }
+        postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
 
         headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -334,11 +324,11 @@ class Bookmarks:
 
             if delete:
                 logging.info('[%s] Deleting Newzbin bookmark %s', __NAME__, delete)
-                postdata = { 'username': USERNAME_NEWZBIN.get(), 'password': PASSWORD_NEWZBIN.get(), 'action': 'delete', \
+                postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'delete', \
                              'reportids' : delete }
             else:
                 logging.info('[%s] Fetching Newzbin bookmarks', __NAME__)
-                postdata = { 'username': USERNAME_NEWZBIN.get(), 'password': PASSWORD_NEWZBIN.get(), 'action': 'fetch'}
+                postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
     
             headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -389,7 +379,7 @@ class Bookmarks:
                     if msgid and (msgid not in self.bookmarks):
                         self.bookmarks.append(msgid)
                         logging.info("[%s] Found new bookmarked msgid %s (%s)", __NAME__, msgid, text)
-                        sabnzbd.add_msgid(int(msgid), None, None, priority=sabnzbd.misc.DIRSCAN_PRIORITY.get())
+                        sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.DIRSCAN_PRIORITY.get())
         self.__busy = False
 
     @synchronized(BOOK_LOCK)
