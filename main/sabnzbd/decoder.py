@@ -27,7 +27,7 @@ import logging
 import re
 import sabnzbd
 from sabnzbd.constants import *
-import sabnzbd.cfg as config
+import sabnzbd.cfg as cfg
 
 from threading import Thread
 
