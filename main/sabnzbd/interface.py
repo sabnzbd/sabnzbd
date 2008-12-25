@@ -1,5 +1,4 @@
 #!/usr/bin/python -OO
-#!/usr/bin/python -OO
 # Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -42,7 +41,7 @@ from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
-from sabnzbd.misc import real_path, create_real_path, save_configfile, \
+from sabnzbd.misc import real_path, create_real_path, \
      to_units, from_units, SameFile, \
      decodePassword, encodePassword
 from sabnzbd.nzbstuff import SplitFileName
@@ -60,8 +59,6 @@ from sabnzbd.constants import *
 RE_URL = re.compile('(.+)/sabnzbd(/m)?/rss', re.I)
 
 #------------------------------------------------------------------------------
-
-#PROVIDER = DictAuthProvider({})
 
 USERNAME = None
 PASSWORD = None
@@ -235,20 +232,6 @@ def get_arg(args, kw):
     except KeyError:
         return None
 
-
-#------------------------------------------------------------------------------
-#class DummyFilter(MultiAuthFilter):
-#    def beforeMain(self):
-#        pass
-#
-#    def beforeFinalize(self):
-#        if isinstance(cherrypy.response.body, SecureResource):
-#            rsrc = cherrypy.response.body
-#            if 'ma_username' in rsrc.callable_kwargs: del rsrc.callable_kwargs['ma_username']
-#            if 'ma_password' in rsrc.callable_kwargs: del rsrc.callable_kwargs['ma_password']
-#            cherrypy.response.body = rsrc.callable(rsrc.instance,
-#                                                   *rsrc.callable_args,
-#                                                   **rsrc.callable_kwargs)
 
 #------------------------------------------------------------------------------
 def get_users():
@@ -689,7 +672,7 @@ class MainPage:
                     sabnzbd.CFG['misc']['bandwith_limit'] = value
                     sabnzbd.BANDWITH_LIMIT = value
                     sabnzbd.limit_speed(value)
-                    save_configfile(sabnzbd.CFG)
+                    config.save_configfile(sabnzbd.CFG)
                     return 'ok\n'
                 else:
                     return 'error: Please submit a value\n'
@@ -1163,24 +1146,24 @@ class ConfigDirectories:
         if sabnzbd.CONFIGLOCK:
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        cfg, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['download_dir'] = sabnzbd.CFG['misc']['download_dir']
-        config['download_free'] = sabnzbd.CFG['misc']['download_free'].upper()
-        config['complete_dir'] = sabnzbd.CFG['misc']['complete_dir']
-        config['cache_dir'] = sabnzbd.CFG['misc']['cache_dir']
-        config['log_dir'] = sabnzbd.CFG['misc']['log_dir']
-        config['nzb_backup_dir'] = sabnzbd.CFG['misc']['nzb_backup_dir']
-        config['dirscan_dir'] = sabnzbd.CFG['misc']['dirscan_dir']
-        config['dirscan_speed'] = sabnzbd.CFG['misc']['dirscan_speed']
-        config['script_dir'] = sabnzbd.CFG['misc']['script_dir']
-        config['email_dir'] = sabnzbd.CFG['misc']['email_dir']
-        config['my_home'] = sabnzbd.DIR_HOME
-        config['my_lcldata'] = sabnzbd.DIR_LCLDATA
-        config['permissions'] = sabnzbd.UMASK
+        cfg['download_dir'] = sabnzbd.CFG['misc']['download_dir']
+        cfg['download_free'] = sabnzbd.CFG['misc']['download_free'].upper()
+        cfg['complete_dir'] = sabnzbd.CFG['misc']['complete_dir']
+        cfg['cache_dir'] = sabnzbd.CFG['misc']['cache_dir']
+        cfg['log_dir'] = sabnzbd.CFG['misc']['log_dir']
+        cfg['nzb_backup_dir'] = sabnzbd.CFG['misc']['nzb_backup_dir']
+        cfg['dirscan_dir'] = sabnzbd.CFG['misc']['dirscan_dir']
+        cfg['dirscan_speed'] = sabnzbd.CFG['misc']['dirscan_speed']
+        cfg['script_dir'] = sabnzbd.CFG['misc']['script_dir']
+        cfg['email_dir'] = config.get_config('misc', 'email_dir').get()
+        cfg['my_home'] = sabnzbd.DIR_HOME
+        cfg['my_lcldata'] = sabnzbd.DIR_LCLDATA
+        cfg['permissions'] = sabnzbd.UMASK
         
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
-                            searchList=[config],
+                            searchList=[cfg],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
@@ -1222,7 +1205,7 @@ class ConfigDirectories:
             if not dd:
                 return badParameterResponse('Error: cannot create dirscan_dir directory "%s".' % path)
 
-        (dd, path) = create_real_path('complete_dir', sabnzbd.DIR_HOME, complete_dir)
+        (dd, path) = create_real_path('complete_dir', sabnzbd.DIR_HOME, complete_dir, True)
         if not dd:
             return badParameterResponse('Error: cannot create complete_dir directory "%s".' % path)
 
@@ -1236,10 +1219,8 @@ class ConfigDirectories:
             if not dd:
                 return badParameterResponse('Error: cannot create script_dir directory "%s".' % path)
 
-        if email_dir:
-            (dd, path) = create_real_path('email_dir', sabnzbd.DIR_HOME, email_dir)
-            if not dd:
-                return badParameterResponse('Error: cannot create email_dir directory "%s".' % path)
+        if not config.get_config('misc', 'email_dir').set(email_dir):
+            return badParameterResponse('Error: cannot create email_dir directory "%s".' % path)
 
         #if SameFile(download_dir, complete_dir):
         #    return badParameterResponse('Error: DOWNLOAD_DIR and COMPLETE_DIR should not be the same (%s)!' % path)
@@ -1252,7 +1233,6 @@ class ConfigDirectories:
         sabnzbd.CFG['misc']['dirscan_dir'] = dirscan_dir
         sabnzbd.CFG['misc']['dirscan_speed'] = sabnzbd.minimax(dirscan_speed, 1, 3600)
         sabnzbd.CFG['misc']['script_dir'] = script_dir
-        sabnzbd.CFG['misc']['email_dir'] = email_dir
         sabnzbd.CFG['misc']['complete_dir'] = complete_dir
         sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
         if permissions: sabnzbd.CFG['misc']['permissions'] = permissions
@@ -1631,7 +1611,7 @@ class ConfigRss:
             cfg['pp'] = pp
             cfg['script'] = ConvertSpecials(script)
             cfg['priority'] = IntConv(priority)
-            save_configfile(sabnzbd.CFG)
+            config.save_configfile(sabnzbd.CFG)
 
         raise Raiser(self.__root, _dc=_dc)
 
@@ -1643,7 +1623,7 @@ class ConfigRss:
             feed = None
         if feed:
             cfg['enable'] = int(not int(cfg['enable']))
-            save_configfile(sabnzbd.CFG)
+            config.save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -1662,7 +1642,7 @@ class ConfigRss:
             cfg['priority'] = 0
             cfg['enable'] = 0
             cfg['filter0'] = ('', '', '', 'A', '*')
-            save_configfile(sabnzbd.CFG)
+            config.save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -1678,7 +1658,7 @@ class ConfigRss:
         cat = ConvertSpecials(cat)
 
         cfg['filter'+str(index)] = (cat, pp, script, filter_type, filter_text)
-        save_configfile(sabnzbd.CFG)
+        config.save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -1688,7 +1668,7 @@ class ConfigRss:
             filter = filters.pop(int(current))
             filters.insert(int(new), filter)
             UnlistFilters(feed, filters)
-            save_configfile(sabnzbd.CFG)
+            config.save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -1700,7 +1680,7 @@ class ConfigRss:
                 sabnzbd.rss.del_feed(feed)
             except:
                 pass
-            save_configfile(sabnzbd.CFG)
+            config.save_configfile(sabnzbd.CFG)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -1709,7 +1689,7 @@ class ConfigRss:
             filters = ListFilters(feed)
             filter = filters.pop(int(index))
             UnlistFilters(feed, filters)
-            save_configfile(sabnzbd.CFG)
+            config.save_configfile(sabnzbd.CFG)
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -2142,13 +2122,13 @@ class ConnectionInfo:
         if loglevel >= 0 and loglevel < 3:
             sabnzbd.LOGLEVEL = loglevel
             sabnzbd.CFG['logging']['log_level'] = loglevel
-            save_configfile(sabnzbd.CFG)
+            config.save_configfile(sabnzbd.CFG)
 
         raise Raiser(self.__root, _dc=_dc)
 
 
 def saveAndRestart(redirect_root, _dc, evalSched=False):
-    save_configfile(sabnzbd.CFG)
+    config.save_configfile(sabnzbd.CFG)
     sabnzbd.halt()
     init_ok = sabnzbd.initialize(evalSched=evalSched)
     if init_ok:

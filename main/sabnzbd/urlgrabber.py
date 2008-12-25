@@ -40,8 +40,8 @@ except:
     _HAVE_SSL = False
 
 import sabnzbd
-from sabnzbd.misc import ProcessSingleFile, ProcessArchiveFile, Cat2Opts, \
-                         BadFetch, sanitize_filename
+import sabnzbd.misc as misc
+import sabnzbd.dirscanner as dirscanner
 import sabnzbd.cfg as cfg
 
 
@@ -105,38 +105,38 @@ class URLGrabber(Thread):
                                 break
 
             if not fn:
-                BadFetch(future_nzo, url, retry=filename)
+                misc.BadFetch(future_nzo, url, retry=filename)
                 continue
 
             if not filename:
                 filename = os.path.basename(url)
             else:
-                filename = sanitize_filename(filename)
+                filename = misc.sanitize_filename(filename)
             _r, _u, _d = future_nzo.get_repair_opts()
             pp = sabnzbd.opts_to_pp(_r, _u, _d)
             script = future_nzo.get_script()
             cat = future_nzo.get_cat()
             priority = future_nzo.get_priority()
-            cat, pp, script = Cat2Opts(cat, pp, script)
+            cat, pp, script = misc.Cat2Opts(cat, pp, script)
 
 
             if os.path.splitext(filename)[1].lower() == '.nzb':
-                res = ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority)
+                res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority)
                 if res == 0:
                     sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                 elif res == -2:
                     self.add(url, future_nzo)
                 else:
-                    BadFetch(future_nzo, url, retry=False)
+                    misc.BadFetch(future_nzo, url, retry=False)
             else:
-                if ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
+                if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
                     sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                 else:
                     try:
                         os.remove(fn)
                     except:
                         pass
-                    BadFetch(future_nzo, url, retry=False, archive=True)
+                    misc.BadFetch(future_nzo, url, retry=False, archive=True)
 
             # Don't pound the website!
             time.sleep(2.0)

@@ -22,8 +22,11 @@ __NAME__ = "sabnzbd.config"
 
 import os
 import logging
+
+import sabnzbd.misc
 from sabnzbd.utils import listquote
-from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
+from sabnzbd.utils import configobj
+
 
 
 __CONFIG_VERSION = '18'     # Minumum INI file version required
@@ -151,22 +154,25 @@ class OptionBool(Option):
 
 class OptionDir(Option):
     """ Directory option class """
-    def __init__(self, section, keyword, default_val='', root='', validation=None, add=True):
+    def __init__(self, section, keyword, default_val='', root='', apply_umask=False, create=True, validation=None, add=True):
         if validation:
             self.__validation = validation
         else:
             self.__validation = std_dir_validation
         self.__root = root # Base directory for relative paths
         self.__path = ''   # Will contain absolute, normalized path
+        self.__apply_umask = apply_umask
+        self.__create = create
         Option.__init__(self, section, keyword, default_val, add=add)
 
     def get_path(self):
         """ Return full absolute path """
-        return self.__path
+        path = sabnzbd.misc.real_path(self.__root, self.get())
 
     def set_root(self, root):
         """ Set new root, is assumed to be valid """
         self.__root = root
+        self.set(self.get())
 
     def set(self, value):
         """ Set new dir value, validate and create if needed
@@ -175,15 +181,22 @@ class OptionDir(Option):
         """
         res = True
         if value != None:
-            if self.__validation:
-                res, value, path = self.__validation(self.__root, value)
-                if not res:
-                    self._Option__set('')
+            if self.__create:
+                res, path = sabnzbd.misc.create_real_path(self.ident(), self.__root, value, self.__apply_umask)
+            else:
+                res = True
+                path = sabnzbd.misc.real_path(self.__root, value)
+
+            if res:
+                if self.__validation:
+                    res, value, path = self.__validation(self.__root, value)
+                    if not res:
+                        self._Option__set('')
+                    else:
+                        self._Option__set(value)
+                        self.__path = path
                 else:
                     self._Option__set(value)
-                    self.__path = path
-            else:
-                self._Option__set(value)
         return res
 
 
@@ -223,7 +236,7 @@ class OptionList(Option):
 
 
 class OptionStr(Option):
-    """ STring class """
+    """ String class """
     def __init__(self, section, keyword, default_val='', validation=None, add=True):
         Option.__init__(self, section, keyword, default_val, add=add)
         self.__validation = validation
@@ -529,7 +542,7 @@ def read_config(path):
             return False
 
     try:
-        CFG = ConfigObj(path)
+        CFG = configobj.ConfigObj(path)
         try:
             if int(CFG['__version__']) > int(__CONFIG_VERSION):
                 logging.error("[%s] Incorrect version number %s in %s", __NAME__, CFG['__version__'], path)
@@ -538,7 +551,7 @@ def read_config(path):
             CFG['__version__'] = __CONFIG_VERSION
         except ValueError:
             CFG['__version__'] = __CONFIG_VERSION
-    except ConfigObjError, strerror:
+    except configobj.ConfigObjError, strerror:
         logging.error("[%s] Invalid Config file %s", __NAME__, path)
         return False
 
@@ -615,7 +628,10 @@ def save_config(force=False):
 
 def save_configfile(dummy):
     """ Backwards compatible version, forced save """
-    save_config(force=True)
+    if not save_config(force=True):
+        sabnzbd.misc.Panic('Cannot write to configuration file "%s".' % config.filename, \
+              'Make sure file is writable and in a writable folder.')
+        sabnzbd.misc.ExitSab(2)
 
 
 def define_servers():

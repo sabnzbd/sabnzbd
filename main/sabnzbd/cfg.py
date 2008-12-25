@@ -34,8 +34,7 @@ EMAIL_ACCOUNT= config.OptionStr('misc', 'email_account')
 EMAIL_PWD    = config.OptionPassword('misc', 'email_pwd')
 EMAIL_ENDJOB = config.OptionNumber('misc', 'email_endjob', 0, 0, 2)
 EMAIL_FULL   = config.OptionBool('misc', 'email_full', False)
-EMAIL_DIR    = config.OptionDir('misc', 'email_dir')
-#EMAIL_DIR    = sabnzbd.dir_setup(sabnzbd.CFG, 'email_dir', sabnzbd.DIR_HOME, '')
+EMAIL_DIR    = config.OptionDir('misc', 'email_dir', create=False)
 
 DIRSCAN_PP = config.OptionNumber('misc', 'dirscan_opts', 3)
 VERSION_CHECK = config.OptionBool('misc', 'check_new_rel', True)
@@ -87,3 +86,7 @@ DATE_CATEGORIES = config.OptionStr('misc', 'date_categories', ['tv'])
 
 USERNAME_MATRIX = config.OptionStr('nzbmatrix', 'username')
 PASSWORD_MATRIX = config.OptionPassword('nzbmatrix', 'password')
+
+#### Set root folders for Folder config-items
+def set_root_folders(home, lcldata, prog):
+    EMAIL_DIR.set_root(home)

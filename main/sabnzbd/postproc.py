@@ -40,12 +40,14 @@ from threading import Thread, RLock
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          cleanup_empty_directories, get_unique_filename, \
-                         OnCleanUpList, ProcessSingleFile
+                         OnCleanUpList
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME
 from sabnzbd.codecs import TRANS
 import sabnzbd.newzbin as newzbin
 import sabnzbd.email as email
+import sabnzbd.dirscanner as dirscanner
+import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from database import HistoryDB
 
@@ -511,7 +513,7 @@ def NzbRedirect(wdir, pp, script, cat):
     keep = not OnCleanUpList("x.nzb", False)
     for file in files:
         if file.lower().endswith('.nzb'):
-            ProcessSingleFile(file, os.path.join(wdir, file), pp, script, cat, keep=keep)
+            dirscanner.ProcessSingleFile(file, os.path.join(wdir, file), pp, script, cat, keep=keep)
             list.append(file)
 
     return list

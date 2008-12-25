@@ -53,21 +53,19 @@ from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader, BPSMeter
 from sabnzbd.nzbqueue import NzbQueue, NZBQUEUE_LOCK
 import sabnzbd.newzbin as newzbin
-from sabnzbd.misc import DirScanner, real_path, \
-                         create_real_path, from_units, SameFile, decodePassword, \
-                         ProcessArchiveFile, ProcessSingleFile, save_configfile
-from sabnzbd.urlgrabber import URLGrabber
-from sabnzbd.nzbstuff import NzbObject
+import sabnzbd.misc as misc
+import sabnzbd.dirscanner as dirscanner
+import sabnzbd.urlgrabber as urlgrabber
 import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
 import sabnzbd.email as email
-from sabnzbd.articlecache import ArticleCache
-from sabnzbd.decorators import *
-from sabnzbd.constants import *
+import sabnzbd.articlecache as articlecache
 import sabnzbd.newsunpack
-from sabnzbd.codecs import name_fixer
+import sabnzbd.codecs as codecs
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+from sabnzbd.decorators import *
+from sabnzbd.constants import *
 
 
 START = datetime.datetime.now()
@@ -194,7 +192,7 @@ def dir_setup(config, cfg_name, def_loc, def_name, umask=None):
             config['misc'][cfg_name] = my_dir
 
     if my_dir:
-        (dd, my_dir) = create_real_path(cfg_name, def_loc, my_dir, umask)
+        (dd, my_dir) = misc.create_real_path(cfg_name, def_loc, my_dir, umask)
         if not dd:
             my_dir = ""
         logging.debug("%s: %s", cfg_name, my_dir)
@@ -210,7 +208,7 @@ def check_setting_file(config, cfg_name, def_loc):
         config['misc'][cfg_name] = file = ''
 
     if file:
-        file = real_path(def_loc, file)
+        file = misc.real_path(def_loc, file)
         if not os.path.exists(file):
             file = ''
     return file
@@ -308,6 +306,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if __INITIALIZED__:
         return False
 
+    cfg.set_root_folders(DIR_HOME, DIR_LCLDATA, DIR_PROG)
+
     ###########################
     ## CONFIG Initialization ##
     ###########################
@@ -341,7 +341,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         logging.error('[%s] UNC path "%s" not supported as download directory', __NAME__, DOWNLOAD_DIR)
 
     DOWNLOAD_FREE = check_setting_str(CFG, 'misc', 'download_free', "0")
-    DOWNLOAD_FREE = int(from_units(DOWNLOAD_FREE))
+    DOWNLOAD_FREE = int(misc.from_units(DOWNLOAD_FREE))
     logging.debug("DOWNLOAD_FREE %s", DOWNLOAD_FREE)
 
     COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, DEF_COMPLETE_DIR, UMASK)
@@ -352,7 +352,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     
     NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
 
-    if SameFile(DOWNLOAD_DIR, COMPLETE_DIR):
+    if misc.SameFile(DOWNLOAD_DIR, COMPLETE_DIR):
         logging.warning('DOWNLOAD_DIR and COMPLETE_DIR should not be the same!')
 
     CACHE_DIR = dir_setup(CFG, "cache_dir", DIR_LCLDATA, "cache")
@@ -372,7 +372,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         DIRSCAN_DIR = dir_setup(CFG, "dirscan_dir", DIR_HOME, defdir)
         # If dirscan_dir cannot be created, set a proper value anyway.
         # Maybe it's a network path that's temporarily missing.
-        if not DIRSCAN_DIR: DIRSCAN_DIR = real_path(DIR_HOME, defdir)
+        if not DIRSCAN_DIR: DIRSCAN_DIR = misc.real_path(DIR_HOME, defdir)
     else:
         DIRSCAN_DIR = ''
 
@@ -395,7 +395,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
 
     cache_limit = check_setting_str(CFG, 'misc', 'cache_limit', "0")
-    cache_limit = int(from_units(cache_limit))
+    cache_limit = int(misc.from_units(cache_limit))
     logging.debug("Actual cache limit = %s", cache_limit)
 
     SSL_CA = check_setting_file(CFG, 'ssl_ca', DIR_LCLDATA)
@@ -416,7 +416,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if ARTICLECACHE:
         ARTICLECACHE.__init__(cache_limit)
     else:
-        ARTICLECACHE = ArticleCache(cache_limit)
+        ARTICLECACHE = articlecache.ArticleCache(cache_limit)
 
     if BPSMETER:
         BPSMETER.reset()
@@ -454,14 +454,14 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if DIRSCANNER:
         DIRSCANNER.__init__(DIRSCAN_DIR, dirscan_speed)
     elif DIRSCAN_DIR:
-        DIRSCANNER = DirScanner(DIRSCAN_DIR, dirscan_speed)
+        DIRSCANNER = dirscanner.DirScanner(DIRSCAN_DIR, dirscan_speed)
 
     newzbin.init_grabber()
 
     if URLGRABBER:
         URLGRABBER.__init__()
     else:
-        URLGRABBER = URLGrabber()
+        URLGRABBER = urlgrabber.URLGrabber()
 
     if evalSched:
         scheduler.analyse(pause_downloader)
@@ -877,7 +877,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
-    filename = name_fixer(nzbfile.filename)
+    filename = codecs.name_fixer(nzbfile.filename)
 
     if os.name != 'nt':
         # If windows client sends file to Unix server backslashed may
@@ -897,9 +897,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         logging.error("[%s] Cannot create temp file for %s", __NAME__, filename)
 
     if ext.lower() in ('.zip', '.rar'):
-        ProcessArchiveFile(filename, path, pp, script, cat, priority)
+        dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority)
     else:
-        ProcessSingleFile(filename, path, pp, script, cat, priority)
+        dirscanner.ProcessSingleFile(filename, path, pp, script, cat, priority)
 
 
 @synchronized_CV

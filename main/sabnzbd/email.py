@@ -151,9 +151,8 @@ def endjob(filename, cat, status, path, bytes, stages, script, script_output):
     parm['size'] = "%sB" % to_units(bytes)
     parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
 
-    if cfg.EMAIL_DIR.get() and os.path.exists(cfg.EMAIL_DIR.get()):
-        path = cfg.EMAIL_DIR.get()
-    else:
+    path = cfg.EMAIL_DIR.get_path()
+    if not (path and os.path.exists(path)):
         path = sabnzbd.DIR_PROG
     try:
         lst = glob.glob(os.path.join(path, '*.tmpl'))

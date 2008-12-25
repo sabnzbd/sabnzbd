@@ -61,7 +61,7 @@ from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
 from sabnzbd.constants import *
 from sabnzbd.newsunpack import find_programs
-from sabnzbd.misc import Get_User_ShellFolders, save_configfile, launch_a_browser, from_units, \
+from sabnzbd.misc import Get_User_ShellFolders, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
                          decodePassword, Notify, SplitHost, ConvertVersion
 import sabnzbd.scheduler as scheduler
@@ -732,7 +732,7 @@ def main():
         daemonize()
 
     # Save the INI file
-    save_configfile(cfg)
+    config.save_config(force=True)
 
     logging.info('Starting %s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
     try:
