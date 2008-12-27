@@ -1242,11 +1242,9 @@ class ConfigSwitches:
             if not item.set(value):
                 return badParameterResponse('Error: incorrect value "%s" for config-item "%s".' % (value, kw))
 
-        try:
-            _dc = kwargs['_dc']
-        except:
-            _dc = ''
-        return saveAndRestart(self.__root, _dc)
+        config.save_config()
+        raise dcRaiser(self.__root, kwargs)
+
 
 #------------------------------------------------------------------------------
 
