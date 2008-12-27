@@ -5,11 +5,14 @@ except:
         from pysqlite2 import sqlite3
     except:
         pass
+
+__NAME__ = "sabnzbd.database"
     
 import sabnzbd
 import os
 import time
 import zlib
+import logging
 from constants import DB_HISTORY_VERSION
 from threading import Thread
 
@@ -206,7 +209,12 @@ def unpack_history_info(item):
         item['stage_log'] = []
         for line in lines:
             stage = {}
-            key, logs = line.split(':::')
+            try:
+                key, logs = line.split(':::')
+            except:
+                logging.debug('[%s] Missing key:::logs "%s"', __NAME__, line)
+                key = line
+                logs = ''
             stage['name'] = key
             stage['actions'] = []
             logs = logs.split(';')
