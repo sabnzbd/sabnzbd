@@ -39,7 +39,6 @@ except:
     import md5
     new_md5 = md5.new
 
-from sabnzbd.interface import CheckFreeSpace
 from sabnzbd.misc import getFilepath, sanitize_filename
 import sabnzbd.cfg as cfg
 from threading import Thread
@@ -77,7 +76,7 @@ class Assembler(Thread):
             nzo, nzf = nzo_nzf_tuple
 
             if nzf:
-                CheckFreeSpace()
+                sabnzbd.CheckFreeSpace()
                 filename = sanitize_filename(nzf.get_filename())
                 nzf.set_filename(filename)
 

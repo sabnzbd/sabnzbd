@@ -26,10 +26,12 @@ import os
 import re
 import logging
 import time
+import threading
+
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import *
-from threading import RLock
+import sabnzbd.config as config
 
 try:
     import feedparser
@@ -126,7 +128,7 @@ def ConvertFilter(text):
         return None
 
 
-LOCK = RLock()
+LOCK = threading.RLock()
 class RSSQueue:
     def __init__(self):
         self.jobs = {}
@@ -174,39 +176,36 @@ class RSSQueue:
         newlinks = []
 
         # Preparations, get options
-        cfg = sabnzbd.CFG['rss'][feed]
         try:
-            uri = cfg['uri']
-            defCat = cfg['cat']
-            if defCat == "":
-                defCat = None
-            defPP = cfg['pp']
-            defScript = cfg['script']
-            try:
-                defPriority = cfg['priority']
-            except:
-                defPriority = cfg['priority'] = 0
-        except:
+            cfg = config.get_rss()[feed]
+        except KeyError:
             logging.error('[%s] Incorrect RSS feed description "%s"', __NAME__, feed)
             logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
             return
+            
+        uri = cfg.uri.get()
+        defCat = cfg.cat.get()
+        if defCat == "":
+            defCat = None
+        defPP = cfg.pp.get()
+        defScript = cfg.script.get()
+        defPriority = cfg.priority.get()
 
         # Preparations, convert filters to regex's
-        filters = sabnzbd.interface.ListFilters(feed)
         regexes = []
         reTypes = []
         reCats = []
         rePPs = []
         reScripts = []
-        for n in xrange(len(filters)):
-            reCat = filters[n][0]
+        for filter in cfg.filters.get():
+            reCat = filter[0]
             if not reCat:
                 reCat = None
             reCats.append(reCat)
-            rePPs.append(filters[n][1])
-            reScripts.append(filters[n][2])
-            reTypes.append(filters[n][3])
-            regexes.append(ConvertFilter(filters[n][4]))
+            rePPs.append(filter[1])
+            reScripts.append(filter[2])
+            reTypes.append(filter[3])
+            regexes.append(ConvertFilter(filter[4]))
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
@@ -310,8 +309,9 @@ class RSSQueue:
 
         if not self.__running:
             self.__running = True
-            for feed in sabnzbd.CFG['rss']:
-                if int(sabnzbd.CFG['rss'][feed]['enable']):
+            feeds = config.get_rss()
+            for feed in feeds:
+                if feeds[feed].enable.get():
                     self.run_feed(feed, download=True, ignoreFirst=True)
                     # Wait two minutes, else sites may get irritated
                     for x in xrange(120):

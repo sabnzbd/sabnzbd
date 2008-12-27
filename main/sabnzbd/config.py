@@ -88,11 +88,12 @@ class Option:
     def __set(self, value):
         """ Set new value, no validation """
         global modified
-        if (value != None) and (value != self.__value):
-            self.__value = value
-            modified = True
-            if self.__callback:
-                self.__callback()
+        if (value != None):
+            if type(value) == type([]) or type(value) == type({}) or value != self.__value:
+                self.__value = value
+                modified = True
+                if self.__callback:
+                    self.__callback()
         return True
 
     def set(self, value):
@@ -105,6 +106,7 @@ class Option:
     def ident(self):
         """ Return section-list and keyword """
         return self.__sections, self.__keyword
+
 
 
 class OptionNumber(Option):
@@ -297,6 +299,7 @@ def delete_from_database(section, keyword):
 
 
 class ConfigServer:
+    """ Class defining a single server """
     def __init__(self, name, values):
 
         self.__name = name
@@ -354,11 +357,12 @@ class ConfigServer:
 
 
 class ConfigCat():
+    """ Class defining a single category """
     def __init__(self, name, values):
         self.__name = name
         name = 'categories,' + name
 
-        self.pp = OptionNumber(name, 'pp', -1, -1, 3, add=False)
+        self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', 'Default', add=False)
         self.dir = OptionDir(name, 'dir', add=False)
         self.newzbin = OptionList(name, 'newzbin', add=False)
@@ -398,21 +402,81 @@ class ConfigCat():
         delete_from_database('categories', self.__name)
 
 
-class ConfigRSS:
-    def __init__(self, name, values):
+class OptionFilters(Option):
+    """ Filter list class """
+    def __init__(self, section, keyword, add=True):
+        Option.__init__(self, section, keyword, add=add)
+        self.set([])
 
+    def move(self, current, new):
+        """ Move filter from position 'current' to 'new' """
+        lst = self.get()
+        try:
+            item = lst.pop(current)
+            lst.insert(new, item)
+        except IndexError:
+            return
+        self.set(lst)
+
+    def update(self, pos, value):
+        """ Update filter 'pos' definition, value is a list
+            Append if 'pos' outside list
+        """
+        lst = self.get()
+        try:
+            lst[pos] = value
+        except IndexError:
+            lst.append(value)
+        self.set(lst)
+
+    def delete(self, pos):
+        """ Remove filter 'pos' """
+        lst = self.get()
+        try:
+            lst.pop(pos)
+        except IndexError:
+            return
+        self.set(lst)
+
+    def get_dict(self):
+        """ Return filter list as a dictionary with keys 'filter[0-9]+' """
+        dict = {}
+        n = 0
+        for filter in self.get():
+            dict['filter'+str(n)] = filter
+            n = n + 1
+        return dict
+
+    def set_dict(self, values):
+        """ Create filter list from dictionary with keys 'filter[0-9]+' """
+        filters = []
+        n = 0
+        for kw in sorted(values.keys()):
+            if kw.startswith('filter'):
+                val = values[kw]
+                if type(val) == type([]):
+                    filters.append(val)
+                else:
+                    filters.append(listquote.simplelist(val))
+                n = n + 1
+        if n > 0:
+            self.set(filters)
+
+
+class ConfigRSS:
+    """ Class defining a single Feed definition """
+    def __init__(self, name, values):
         self.__name = name
         name = 'rss,' + name
 
         self.uri = OptionStr(name, 'uri', add=False)
         self.cat = OptionStr(name, 'cat', add=False)
-        self.pp = OptionNumber(name, 'pp', -1, -1, 3, add=False)
+        self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', add=False)
         self.enable = OptionBool(name, 'enable', add=False)
         self.priority = OptionNumber(name, 'priority', 0, -1, 2, add=False)
-        for kw in values:
-            if kw.startswith('filter'):
-                exec 'self.%s = OptionList(name, "%s", add=False)' % (kw, kw)
+        self.filters = OptionFilters(name, 'filters', add=False)
+        self.filters.set([['', '', '', 'A', '*']])
 
         self.set_dict(values, all=True)
         add_to_database('rss', self.__name, self)
@@ -429,14 +493,7 @@ class ConfigRSS:
                     continue
             exec 'self.%s.set(value)' % kw
 
-        for kw in values:
-            if kw.startswith('filter'):
-                try:
-                    exec 'self.%s.set(values["%s"])' % (kw, kw)
-                except:
-                    name = 'rss,' + self.__name
-                    exec 'self.%s = OptionList(name, "%s")' % (kw, kw)
-                    exec 'self.%s.set(values["%s"])' % (kw, kw)
+        self.filters.set_dict(values)
         return True
 
     def get_dict(self):
@@ -448,6 +505,9 @@ class ConfigRSS:
         dict['script'] = self.script.get()
         dict['enable'] = self.enable.get()
         dict['priority'] = self.priority.get()
+        filters = self.filters.get_dict()
+        for kw in filters:
+            dict[kw] = filters[kw]
         return dict
 
     def delete(self):
@@ -567,7 +627,7 @@ def read_config(path):
                     pass
 
     categories = define_categories()
-    #rss_feeds = define_rss()
+    rss_feeds = define_rss()
     servers = define_servers()
 
     modified = False

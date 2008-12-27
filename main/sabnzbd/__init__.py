@@ -1202,6 +1202,17 @@ def keep_awake():
             KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
 
 
+
+def CheckFreeSpace():
+    global DOWNLOAD_FREE
+    if DOWNLOAD_FREE > 0 and not paused():
+        if misc.diskfree(DOWNLOAD_DIR) < float(DOWNLOAD_FREE) / GIGI:
+            logging.warning('Too little diskspace forcing PAUSE')
+            # Pause downloader, but don't save, since the disk is almost full!
+            pause_downloader(save=False)
+            email.diskfull()
+
+
 ################################################################################
 # Data IO                                                                      #
 ################################################################################

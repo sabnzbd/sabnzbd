@@ -857,3 +857,43 @@ def s_returner(value):
         return 's'
     else:
         return ''
+
+
+#------------------------------------------------------------------------------
+# Diskfree
+try:
+    os.statvfs
+    import statvfs
+    # posix diskfree
+    def diskfree(_dir):
+        try:
+            s = os.statvfs(_dir)
+            return (s[statvfs.F_BAVAIL] * s[statvfs.F_FRSIZE]) / GIGI
+        except OSError:
+            return 0.0
+    def disktotal(_dir):
+        try:
+            s = os.statvfs(_dir)
+            return (s[statvfs.F_BLOCKS] * s[statvfs.F_FRSIZE]) / GIGI
+        except OSError:
+            return 0.0
+
+except AttributeError:
+
+    try:
+        import win32api
+    except ImportError:
+        pass
+    # windows diskfree
+    def diskfree(_dir):
+        try:
+            secp, byteper, freecl, noclu = win32api.GetDiskFreeSpace(_dir)
+            return (secp * byteper * freecl) / GIGI
+        except:
+            return 0.0
+    def disktotal(_dir):
+        try:
+            secp, byteper, freecl, noclu = win32api.GetDiskFreeSpace(_dir)
+            return (secp * byteper * noclu) / GIGI
+        except:
+            return 0.0
