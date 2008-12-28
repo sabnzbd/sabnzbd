@@ -2895,7 +2895,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     
     
     #Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
-    if history:
+    if 0: #history: ### TEMPORARY FIX ###
         slotinfo = get_history()
         #if the specified start value is greater than the amount of history items, do no include the history (used for paging the queue)
         if len(slotinfo) < start:
