@@ -170,9 +170,6 @@ def List2String(lst):
 
     return txt
 
-def String2List(txt):
-    """ Return comma-separated string as a list """
-
 def Strip(txt):
     """ Return stripped string, can handle None """
     try:
@@ -239,7 +236,6 @@ class NoPage:
 #------------------------------------------------------------------------------
 class MainPage:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -702,7 +698,6 @@ class MainPage:
 #------------------------------------------------------------------------------
 class NzoPage:
     def __init__(self, web_dir, root, nzo_id, prim):
-        self.roles = ['admins']
         self.__nzo_id = nzo_id
         self.__root = '%s%s/' % (root, nzo_id)
         self.__web_dir = web_dir
@@ -781,7 +776,6 @@ class NzoPage:
 #------------------------------------------------------------------------------
 class QueuePage:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__verbose = False
@@ -942,7 +936,6 @@ class QueuePage:
 
 class HistoryPage:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__verbose = False
@@ -1035,8 +1028,6 @@ class HistoryPage:
 #------------------------------------------------------------------------------
 class ConfigPage:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
-
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1086,8 +1077,6 @@ LIST_DIRPAGE = ( \
 
 class ConfigDirectories:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
-
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1138,7 +1127,6 @@ SWITCH_LIST = \
 #------------------------------------------------------------------------------
 class ConfigSwitches:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1182,7 +1170,6 @@ class ConfigSwitches:
 
 class ConfigGeneral:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1299,7 +1286,6 @@ class ConfigGeneral:
 
 class ConfigServer:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1430,7 +1416,6 @@ def GetCfgRss(config, keyword):
 
 class ConfigRss:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1592,7 +1577,6 @@ class ConfigRss:
 
 class ConfigScheduling:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1666,7 +1650,6 @@ class ConfigScheduling:
     
 class ConfigNewzbin:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1743,7 +1726,6 @@ class ConfigNewzbin:
 
 class ConfigCats:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1762,7 +1744,7 @@ class ConfigCats:
 
         categories = config.get_categories()
         conf['have_cats'] =  categories != {}
-        conf['defdir'] = sabnzbd.COMPLETE_DIR
+        conf['defdir'] = cfg.COMPLETE_DIR.get_path()
 
 
         empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'' }
@@ -1816,8 +1798,6 @@ SORT_LIST = ( \
 #------------------------------------------------------------------------------
 class ConfigSorting:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
-
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -1828,7 +1808,7 @@ class ConfigSorting:
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
-        conf['complete_dir'] = sabnzbd.COMPLETE_DIR
+        conf['complete_dir'] = cfg.COMPLETE_DIR.get_path()
 
         for kw in SORT_LIST:
             conf[kw] = config.get_config('misc', kw).get()
@@ -1873,7 +1853,6 @@ class ConfigSorting:
 
 class ConnectionInfo:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
@@ -2300,7 +2279,6 @@ LIST_EMAIL = (
     
 class ConfigEmail:
     def __init__(self, web_dir, root, prim):
-        self.roles = ['admins']
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
