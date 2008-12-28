@@ -267,7 +267,7 @@ class OptionPassword(Option):
 
     def set(self, pw):
         """ Set password, encode it """
-        if (pw and pw.strip('*')) or (pw and pw == ''):
+        if (pw != None and pw == '') or (pw and pw.strip('*')):
             self._Option__set(encode_password(pw))
         return None
 
