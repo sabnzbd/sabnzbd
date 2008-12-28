@@ -102,7 +102,7 @@ class Option:
     def callback(self, callback):
         """ Set callback function """
         self.__callback = callback
-        
+
     def ident(self):
         """ Return section-list and keyword """
         return self.__sections, self.__keyword
@@ -129,7 +129,8 @@ class OptionNumber(Option):
             except:
                 value = 0
             if self.__validation:
-                self._Option__set(self.__validation(value, self.__minval, self.__maxval))
+                error, val = self.__validation(value)
+                self._Option__set(val)
             else:
                 if (self.__maxval != None) and value > self.__maxval:
                     value = self.__maxval
@@ -177,9 +178,9 @@ class OptionDir(Option):
             Return error-string when not accepted, value will not be changed
         """
         error = None
-        if value != None:
+        if value != None and value != self.get():
             if self.__validation:
-                error, value = self.__validation(self.__root, value)
+                error, val = self.__validation(self.__root, value)
             if not error:
                 if self.__create:
                     res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
@@ -240,9 +241,8 @@ class OptionStr(Option):
         if type(value) == type(''):
             value = value.strip()
         if self.__validation:
-            error, value = self.__validation(value)
-            if not error:
-                self._Option__set(value)
+            error, val = self.__validation(value)
+            self._Option__set(val)
         else:
             self._Option__set(value)
         return error
@@ -796,27 +796,15 @@ def no_nonsense(value):
     return None, value
 
 
-import re
-RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
-def validate_email(value):
-    if value:
-        if RE_VAL.match(value):
-            return None, value
-        else:   
-            return "%s is not a valid email address" % value, ''
-    else:
-        return None, value
-
-
 def validate_octal(value):
     """ Check if string is valid octal number """
     if not value:
-        return True, ''
+        return None, value
     try:
         int(value, 8)
         return None, value
     except:
-        return '%s is not a correct octal value' % value, ''
+        return '%s is not a correct octal value' % value, None
 
 
 def validate_no_unc(root, value):
@@ -825,4 +813,12 @@ def validate_no_unc(root, value):
     if value and not value.startswith(r'\\'):
         return None, value
     else:
-        return 'UNC path %s not allowed here' % value, value
+        return 'UNC path %s not allowed here' % value, None
+
+
+def validate_safedir(root, value):
+    """ Allow only when queues are empty and no UNC """
+    if sabnzbd.empty_queues():
+        return validate_no_unc(root, value)
+    else:
+        return 'Error: Queue not empty, cannot change folder.', None

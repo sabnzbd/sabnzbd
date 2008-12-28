@@ -39,6 +39,7 @@ from sabnzbd.constants import *
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.misc as misc
+import sabnzbd.cfg as cfg
 
 
 def CompareStat(tup1, tup2):
@@ -197,15 +198,13 @@ class DirScanner(threading.Thread):
     Candidates which turned out wrong, will be remembered and skipped in
     subsequent scans, unless changed.
     """
-    def __init__(self, dirscan_dir, dirscan_speed):
+    def __init__(self):
         threading.Thread.__init__(self)
 
-        self.dirscan_dir = dirscan_dir
-        self.dirscan_speed = dirscan_speed
-
+        self.newdir()
         try:
             dir, self.ignored, self.suspected = sabnzbd.load_data(SCAN_FILE_NAME, remove = False)
-            if dir != dirscan_dir:
+            if dir != self.dirscan_dir:
                 self.ignored = {}
                 self.suspected = {}
         except:
@@ -215,7 +214,15 @@ class DirScanner(threading.Thread):
 
         self.shutdown = False
         self.error_reported = False # Prevents mulitple reporting of missing watched folder
+        cfg.DIRSCAN_DIR.callback(self.newdir)
 
+    def newdir(self):
+        """ We're notified of a dir change """
+        self.ignored = {}
+        self.suspected = {}
+        self.dirscan_dir = cfg.DIRSCAN_DIR.get_path()
+        self.dirscan_speed = cfg.DIRSCAN_SPEED.get()
+        
     def stop(self):
         self.save()
         logging.info('[%s] Dirscanner shutting down', __NAME__)
@@ -310,16 +317,17 @@ class DirScanner(threading.Thread):
 
         while not self.shutdown:
             # Use variable scan delay
+            dirscan_dir = self.dirscan_dir
             x = self.dirscan_speed
             while (x > 0) and not self.shutdown:
                 time.sleep(1.0)
                 x = x - 1
 
             if not self.shutdown:
-                run_dir(self.dirscan_dir, None)
+                run_dir(dirscan_dir, None)
 
                 try:
-                    list = os.listdir(self.dirscan_dir)
+                    list = os.listdir(dirscan_dir)
                 except:
                     if not self.error_reported:
                         logging.error("Cannot read Watched Folder %s", folder)
@@ -328,7 +336,7 @@ class DirScanner(threading.Thread):
                     list = []
 
                 for dd in list:
-                    dpath = os.path.join(self.dirscan_dir, dd)
+                    dpath = os.path.join(dirscan_dir, dd)
                     if os.path.isdir(dpath) and dd.lower() in sabnzbd.CFG['categories']:
                         run_dir(dpath, dd.lower())
 

@@ -16,8 +16,12 @@
     <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> Error-only
 <br/><br/>
 <label><input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> <strong>Disk full notifications:</strong></label><br>
-Send email when disk is full and SABnzbd is paused.<br>
-<br>
+Send email when disk is full and SABnzbd is paused.<br/>
+<br/>
+<strong>Folder containing email templates:</strong><br/>
+Folder containing user defined email templates.<br/>
+(Relative to $my_home)<br/>
+<input type="text" size="40" name="email_dir" value="$email_dir">
 </fieldset>
 </div>
 <fieldset class="EntryFieldSet">

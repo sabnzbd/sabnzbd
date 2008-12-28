@@ -80,7 +80,6 @@ DIR_APPDATA = None
 DIR_LCLDATA = None
 DIR_PROG = None
 DIR_INTERFACES = None
-DIRSCAN_DIR = None
 
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
@@ -317,9 +316,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if not os.path.exists(path):
         sabnzbd.misc.create_real_path(cfg.DIRSCAN_DIR.ident(), '', path, False)
 
-    dirscan_speed = check_setting_int(CFG, 'misc', 'dirscan_speed', DEF_SCANRATE)
-    dirscan_speed = minimax(dirscan_speed, 1, 3600)
-
     refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', DEF_QRATE)
 
     RSS_RATE = check_setting_int(CFG, 'misc', 'rss_rate', 60)
@@ -392,9 +388,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
             DOWNLOADER.paused = True
 
     if DIRSCANNER:
-        DIRSCANNER.__init__(cfg.DIRSCAN_DIR.get_path(), cfg.DIRSCAN_SPEED.get())
+        DIRSCANNER.__init__()
     elif cfg.DIRSCAN_DIR.get():
-        DIRSCANNER = dirscanner.DirScanner(cfg.DIRSCAN_DIR.get_path(), cfg.DIRSCAN_SPEED.get())
+        DIRSCANNER = dirscanner.DirScanner()
 
     newzbin.init_grabber()
 
@@ -1129,8 +1125,12 @@ def run_script(script):
                          startupinfo=stup, creationflags=creationflags)
 
 def empty_queues():
+    """ Return True if queues empty or non-existent """
     global NZBQ, POSTPROCESSOR
-    return (POSTPROCESSOR and POSTPROCESSOR.empty()) and (NZBQ and NZBQ.is_empty())
+    if POSTPROCESSOR and NZBQ:
+        return POSTPROCESSOR.empty() and NZBQ.is_empty()
+    else:
+        return True
 
 def keep_awake():
     """ If we still have work to do, keep Windows system awake

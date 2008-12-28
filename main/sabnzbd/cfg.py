@@ -22,15 +22,42 @@ __NAME__ = "sabnzbd.cfg"
 
 from sabnzbd.constants import *
 from sabnzbd.config import OptionBool, OptionNumber, OptionNumber, OptionPassword, \
-                           OptionDir, OptionStr, OptionList, validate_email, no_nonsense, \
-                           validate_octal, validate_no_unc
+                           OptionDir, OptionStr, OptionList, no_nonsense, \
+                           validate_octal, validate_safedir
+
+#------------------------------------------------------------------------------
+# Email validation support
+#
+import re
+RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
+def validate_email(value):
+    global EMAIL_ENDJOB, EMAIL_FULL
+    if EMAIL_ENDJOB.get() or EMAIL_FULL.get():
+        if value and RE_VAL.match(value):
+            return None, value
+        else:   
+            return "%s is not a valid email address" % value, None
+    else:
+        return None, value
 
 
+def validate_server(value):
+    """ Check if server non-empty"""
+    global EMAIL_ENDJOB, EMAIL_FULL
+    if value == '' and (EMAIL_ENDJOB.get() or EMAIL_FULL.get()):
+        return "Server address required", None
+    else:
+        return None, value
+
+
+#------------------------------------------------------------------------------
+# Configuration instances
+#
 QUICK_CHECK = OptionBool('misc', 'quick_check', True)
 FAIL_ON_CRC = OptionBool('misc', 'fail_on_crc', False)
 SEND_GROUP = OptionBool('misc', 'send_group', False)
 
-EMAIL_SERVER = OptionStr('misc', 'email_server')
+EMAIL_SERVER = OptionStr('misc', 'email_server', validation=validate_server)
 EMAIL_TO     = OptionStr('misc', 'email_to', validation=validate_email)
 EMAIL_FROM   = OptionStr('misc', 'email_from', validation=validate_email)
 EMAIL_ACCOUNT= OptionStr('misc', 'email_account')
@@ -93,19 +120,20 @@ PASSWORD_MATRIX = OptionPassword('nzbmatrix', 'password')
 CONFIGLOCK = OptionBool('misc', 'config_lock', 0)
 
 UMASK = OptionStr('misc', 'permissions', '', validation=validate_octal)
-DOWNLOAD_DIR = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=validate_no_unc)
+DOWNLOAD_DIR = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=validate_safedir)
 DOWNLOAD_FREE = OptionStr('misc', 'download_free')
 COMPLETE_DIR = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, apply_umask=True)
 SCRIPT_DIR = OptionDir('misc', 'script_dir', create=False)
 NZB_BACKUP_DIR = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
-CACHE_DIR = OptionDir('misc', 'cache_dir', 'cache')
+CACHE_DIR = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
 #LOG_DIR = OptionDir('misc', 'log_dir', 'logs')
 DIRSCAN_DIR = OptionDir('misc', 'dirscan_dir', create=False)
 DIRSCAN_SPEED = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
 
 
-
-#### Set root folders for Folder config-items
+#------------------------------------------------------------------------------
+# Set root folders for Folder config-items
+#
 def set_root_folders(home, lcldata, prog):
     EMAIL_DIR.set_root(home)
     DOWNLOAD_DIR.set_root(home)

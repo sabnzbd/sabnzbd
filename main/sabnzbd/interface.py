@@ -1113,7 +1113,8 @@ class ConfigDirectories:
                 if msg:
                     return badParameterResponse(msg)
 
-        return saveAndRestart(self.__root, get_arg(kwargs, '_dc'))
+        config.save_config()
+        raise dcRaiser(self.__root, kwargs)
 
 
 SWITCH_LIST = \
@@ -2273,8 +2274,9 @@ def calc_age(date):
 
 #------------------------------------------------------------------------------
 LIST_EMAIL = (
+    'email_endjob', 'email_full',
     'email_server', 'email_to', 'email_from',
-    'email_account', 'email_pwd',  'email_endjob', 'email_full'
+    'email_account', 'email_pwd', 'email_dir'
     )
     
 class ConfigEmail:
@@ -2290,6 +2292,9 @@ class ConfigEmail:
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
+        conf['my_home'] = sabnzbd.DIR_HOME
+        conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
+
         for kw in LIST_EMAIL:
             if kw == 'email_pwd':
                 conf[kw] = config.get_config('misc', kw).get_stars()
@@ -2303,15 +2308,10 @@ class ConfigEmail:
     @cherrypy.expose
     def saveEmail(self, **kwargs):
 
-        cfg.EMAIL_ENDJOB.set(get_arg(kwargs, 'email_endjob'))
-        cfg.EMAIL_FULL.set(get_arg(kwargs, 'email_endfull'))
-
-        on = (cfg.EMAIL_ENDJOB.get() > 0) or cfg.EMAIL_FULL.get()
-
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(get_arg(kwargs, kw))
-            if on and msg:
-                return badParameterResponse(msg)
+            if msg:
+                return badParameterResponse('Incorrect value for %s: %s' % (kw, msg))
 
         config.save_config()
         scheduler.restart()
