@@ -125,7 +125,7 @@ class PostProcessor(Thread):
             try:
                 
                 # Get the folder containing the download result
-                workdir = os.path.join(cfg.download_dir.get_path(), nzo.get_dirname())
+                workdir = os.path.join(cfg.DOWNLOAD_DIR.get_path(), nzo.get_dirname())
     
                 # if the directory has not been made, no files were assembled
                 if not os.path.exists(workdir):
@@ -177,12 +177,12 @@ class PostProcessor(Thread):
     
                 ## Determine class directory
                 if config.get_categories():
-                    complete_dir = Cat2Dir(cat, cfg.complete_dir.get_path())
+                    complete_dir = Cat2Dir(cat, cfg.COMPLETE_DIR.get_path())
                 elif cfg.CREATE_GROUP_FOLDERS.get():
-                    complete_dir = addPrefixes(cfg.complete_dir.get_path(), nzo)
+                    complete_dir = addPrefixes(cfg.COMPLETE_DIR.get_path(), nzo)
                     complete_dir = create_dirs(complete_dir)
                 else:
-                    complete_dir = cfg.complete_dir.get_path()
+                    complete_dir = cfg.COMPLETE_DIR.get_path()
                 _base_dir = complete_dir
     
                 ## Determine destination directory
@@ -262,7 +262,7 @@ class PostProcessor(Thread):
                     if unpackError: jobResult = jobResult + 2
         
                     ## Clean up download dir
-                    cleanup_empty_directories(cfg.download_dir.get_path())
+                    cleanup_empty_directories(cfg.DOWNLOAD_DIR.get_path())
                     
                     ## TV/Movie/Date Renaming code part 1 - rename and move files to parent folder
                     if not unpackError or parResult:
@@ -332,7 +332,7 @@ class PostProcessor(Thread):
                 nzo.set_status("Failed")
     
             ## Clean up download dir
-            cleanup_empty_directories(cfg.download_dir.get_path())
+            cleanup_empty_directories(cfg.DOWNLOAD_DIR.get_path())
             
             # If the folder only contains one file OR folder, have that as the path
             # Be aware that series/generic/date sorting may move a single file into a folder containing other files
