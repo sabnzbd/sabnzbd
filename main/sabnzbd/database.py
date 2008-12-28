@@ -1,3 +1,25 @@
+#!/usr/bin/python -OO
+# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+"""
+sabnzbd.database - Database Support
+"""
+__NAME__ = "sabnzbd.database"
+
 try:
     import sqlite3
 except:
@@ -6,15 +28,14 @@ except:
     except:
         pass
 
-__NAME__ = "sabnzbd.database"
-    
-import sabnzbd
 import os
 import time
 import zlib
 import logging
-from constants import DB_HISTORY_VERSION
 from threading import Thread
+
+import sabnzbd
+from sabnzbd.constants import DB_HISTORY_VERSION
 
 class HistoryDB:
     def __init__(self, db_path):
