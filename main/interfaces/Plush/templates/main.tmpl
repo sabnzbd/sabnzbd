@@ -47,7 +47,10 @@
         </li>
         <li>
             <a class="sf-with-ul">Add NZB<span class="sf-sub-indicator"> &#187;</span></a>
-            <ul><li><a>
+            <ul>
+                <li><a><input type="text" id="addID_input" size="20" /><input type="submit" id="addID" value="Fetch" /></a></li>
+                <li><a><div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div></a></li>
+				<li><a>
                 <!--#if $cat_list#-->
                 Category:
                     <select id="addID_cat" name="cat">
@@ -75,8 +78,6 @@
                 <!--#end if#-->
                     </a>
                 </li>
-                <li><a><input type="text" id="addID_input" size="22" /><input type="submit" id="addID" value="Fetch" /></a></li>
-                <li><a><div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div></a></li>
             </ul>
         </li>
         <li>
@@ -120,7 +121,7 @@
         <li>
             <a class="sf-with-ul" href="connections">Warnings&nbsp;<small id="have_warnings">($have_warnings)</small><span class="sf-sub-indicator"> &#187;</span></a>
             <ul>
-                <li><a href="connections">Latest:&nbsp;<span id="last_warning"><!--#if $have_warnings == "0" #-->nothing to report<!--#end if#-->$last_warning</span></a></li>
+                <li><a href="connections" id="last_warning_link">Latest:&nbsp;<span id="last_warning"><!--#if $have_warnings == "0" #-->nothing to report<!--#end if#-->$last_warning</span></a></li>
             </ul>
         </li>
         <li><a href="connections">Config</a></li>

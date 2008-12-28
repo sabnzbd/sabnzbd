@@ -777,7 +777,7 @@ fieldset.EntryFieldSet {
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
 
-    jquery superfish plugin (MAIN MENU)
+    courtesy of jquery superfish plugin (MAIN MENU)
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
@@ -789,7 +789,7 @@ fieldset.EntryFieldSet {
     list-style:        none;
 }
 .sf-menu {
-    line-height:    1.0;
+    line-height:    1.1em;
 }
 .sf-menu ul {
     position:        absolute;
@@ -813,7 +813,7 @@ fieldset.EntryFieldSet {
 .sf-menu li:hover ul,
 .sf-menu li.sfHover ul {
     left:            0;
-    top:            2.5em; /* match top ul list item height */
+    top:            2em; /* match top ul list item height */
     z-index:        99;
 }
 ul.sf-menu li:hover li ul,
@@ -908,6 +908,7 @@ li.sfHover > a > .sf-sub-indicator {
 }
 
 /*** shadows for all but IE6 ***/
+/*
 .sf-shadow ul {
     background:    url('../images/plush-default/shadow.png') no-repeat bottom right;
     padding: 0 8px 9px 0;
@@ -919,15 +920,16 @@ li.sfHover > a > .sf-sub-indicator {
 .sf-shadow ul.sf-shadow-off {
     background: transparent;
 }
-
+*/
 
 /* for jquery superfish plugin (main menu) */
 /*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
 .sf-navbar {
     background:        #B1B1B1;
     height:            2.5em;
-    padding-bottom:    2.5em;
+    padding-bottom:    1.5em;
     position:        relative;
+margin-left:27%;
 }
 .sf-navbar li {
     background:        #B1B1B1;
@@ -938,10 +940,10 @@ li.sfHover > a > .sf-sub-indicator {
 }
 .sf-navbar li ul {
     width:            44em; /*IE6 soils itself without this*/
-    background:        #E0E0E0;
+    background:        #CFCFCF;
 }
 .sf-navbar li li {
-    background:        #E0E0E0;
+    background:        #CFCFCF;
     position:        relative;
 }
 .sf-navbar li li ul {
@@ -964,7 +966,7 @@ li.sfHover > a > .sf-sub-indicator {
 .sf-navbar li.sfHover,
 .sf-navbar li li.current,
 .sf-navbar a:focus, .sf-navbar a:hover, .sf-navbar a:active {
-    background:        #E0E0E0;
+    background:        #CFCFCF;
 }
 .sf-navbar ul li:hover,
 .sf-navbar ul li.sfHover,
@@ -983,7 +985,7 @@ ul.sf-navbar .current ul,
 ul.sf-navbar ul li:hover ul,
 ul.sf-navbar ul li.sfHover ul {
     left:            0;
-    top:            2.5em; /* match top ul list item height */
+    top:            2em; /* match top ul list item height */
 }
 ul.sf-navbar .current ul ul {
     top:             -999em;
@@ -1014,4 +1016,11 @@ ul.sf-navbar .current ul ul {
     -moz-border-radius-topright: 0;
     -webkit-border-top-right-radius: 0;
     -webkit-border-bottom-left-radius: 0;
+}
+
+.sf-navbar select {
+	background-color: white;
+}
+#last_warning_link {
+	min-width:460px;
 }
