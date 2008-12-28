@@ -57,6 +57,7 @@ from sabnzbd.database import HistoryDB, build_history_info, unpack_history_info
 from sabnzbd.constants import *
 
 RE_URL = re.compile('(.+)/sabnzbd(/m)?/rss', re.I)
+DIRECTIVES = {'directiveStartToken': '<!--#', 'directiveEndToken': '#-->'}
 
 #------------------------------------------------------------------------------
 
@@ -269,9 +270,7 @@ class MainPage:
             info['warning'] += "No PAR2 program found, repairs not possible<br/>"
 
         template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
-                            searchList=[info],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -744,9 +743,7 @@ class NzoPage:
             info['active_files'] = active
 
             template = Template(file=os.path.join(self.__web_dir, 'nzo.tmpl'),
-                                searchList=[info],
-                                compilerSettings={'directiveStartToken': '<!--#',
-                                                  'directiveEndToken': '#-->'})
+                                searchList=[info], compilerSettings=DIRECTIVES)
             return template.respond()
         else:
             return "ERROR: %s deleted" % self.__nzo_id
@@ -799,9 +796,7 @@ class QueuePage:
         info, pnfo_list, bytespersec, self.__verboseList, self.__nzo_pages, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verboseList, self.__nzo_pages, self.__dict__, start=start, limit=limit, dummy2=dummy2)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
-                            searchList=[info],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
     
 
@@ -977,9 +972,7 @@ class HistoryPage:
 
 
         template = Template(file=os.path.join(self.__web_dir, 'history.tmpl'),
-                            searchList=[history],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[history], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1071,9 +1064,7 @@ class ConfigPage:
         cfg['servers'] = new
 
         template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
-                            searchList=[cfg],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[cfg], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1116,9 +1107,7 @@ class ConfigDirectories:
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
         
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
-                            searchList=[conf],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1169,9 +1158,7 @@ class ConfigSwitches:
         conf['script_list'] = ListScripts()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
-                            searchList=[conf],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1253,9 +1240,7 @@ class ConfigGeneral:
         config['cleanup_list'] = List2String(sabnzbd.CFG['misc']['cleanup_list'])
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
-                            searchList=[config],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[config], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1338,9 +1323,7 @@ class ConfigServer:
             conf['have_ssl'] = 0
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
-                            searchList=[conf],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
 
@@ -1484,9 +1467,7 @@ class ConfigRss:
         conf['feed'] = 'Feed' + str(unum)
 
         template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
-                            searchList=[conf],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1633,9 +1614,7 @@ class ConfigScheduling:
         conf['actions'] = actions
 
         template = Template(file=os.path.join(self.__web_dir, 'config_scheduling.tmpl'),
-                            searchList=[conf],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1684,7 +1663,7 @@ class ConfigScheduling:
         raise Raiser(self.__root, _dc=_dc)
 
 #------------------------------------------------------------------------------
-
+    
 class ConfigNewzbin:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
@@ -1698,23 +1677,21 @@ class ConfigNewzbin:
         if cfg.CONFIGLOCK.get():
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['username_newzbin'] = cfg.USERNAME_NEWZBIN.get()
-        config['password_newzbin'] = cfg.PASSWORD_NEWZBIN.get_stars()
-        config['newzbin_bookmarks'] = int(cfg.NEWZBIN_BOOKMARKS.get())
-        config['newzbin_unbookmark'] = int(cfg.NEWZBIN_UNBOOKMARK.get())
-        config['bookmark_rate'] = cfg.BOOKMARK_RATE.get()
+        conf['username_newzbin'] = cfg.USERNAME_NEWZBIN.get()
+        conf['password_newzbin'] = cfg.PASSWORD_NEWZBIN.get_stars()
+        conf['newzbin_bookmarks'] = int(cfg.NEWZBIN_BOOKMARKS.get())
+        conf['newzbin_unbookmark'] = int(cfg.NEWZBIN_UNBOOKMARK.get())
+        conf['bookmark_rate'] = cfg.BOOKMARK_RATE.get()
 
-        config['bookmarks_list'] = self.__bookmarks
+        conf['bookmarks_list'] = self.__bookmarks
 
-        config['username_matrix'] = cfg.USERNAME_MATRIX.get()
-        config['password_matrix'] = cfg.PASSWORD_MATRIX.get_stars()
+        conf['username_matrix'] = cfg.USERNAME_MATRIX.get()
+        conf['password_matrix'] = cfg.PASSWORD_MATRIX.get_stars()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
-                            searchList=[config],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1798,9 +1775,7 @@ class ConfigCats:
         conf['slotinfo'] = slotinfo
 
         template = Template(file=os.path.join(self.__web_dir, 'config_cat.tmpl'),
-                            searchList=[conf],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1861,9 +1836,7 @@ class ConfigSorting:
         #tvSortList = []
         
         template = Template(file=os.path.join(self.__web_dir, 'config_sorting.tmpl'),
-                            searchList=[conf],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1958,9 +1931,7 @@ class ConnectionInfo:
         header['warnings'] = wlist
 
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
-                            searchList=[header],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[header], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -2322,7 +2293,11 @@ def calc_age(date):
     return age
 
 #------------------------------------------------------------------------------
-
+LIST_EMAIL = (
+    'email_server', 'email_to', 'email_from',
+    'email_account', 'email_pwd',  'email_endjob', 'email_full'
+    )
+    
 class ConfigEmail:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
@@ -2335,55 +2310,34 @@ class ConfigEmail:
         if cfg.CONFIGLOCK.get():
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['email_server'] = cfg.EMAIL_SERVER.get()
-        config['email_to'] = cfg.EMAIL_TO.get()
-        config['email_from'] = cfg.EMAIL_FROM.get()
-        config['email_account'] = cfg.EMAIL_ACCOUNT.get()
-        config['email_pwd'] = cfg.EMAIL_PWD.get_stars()
-        config['email_endjob'] = cfg.EMAIL_ENDJOB.get()
-        config['email_full'] = cfg.EMAIL_FULL.get()
+        for kw in LIST_EMAIL:
+            if kw == 'email_pwd':
+                conf[kw] = config.get_config('misc', kw).get_stars()
+            else:
+                conf[kw] = config.get_config('misc', kw).get()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
-                            searchList=[config],
-                            compilerSettings={'directiveStartToken': '<!--#',
-                                              'directiveEndToken': '#-->'})
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
-    def saveEmail(self, email_server = None, email_to = None, email_from = None,
-                  email_account = None, email_pwd = None,
-                  email_endjob = None, email_full = None, _dc = None):
+    def saveEmail(self, **kwargs):
 
-        email_server = Strip(email_server)
-        email_to = Strip(email_to)
-        email_from = Strip(email_from)
-        email_account = Strip(email_account)
-
-        cfg.EMAIL_ENDJOB.set(email_endjob)
-        cfg.EMAIL_FULL.set(email_full)
+        cfg.EMAIL_ENDJOB.set(get_arg(kwargs, 'email_endjob'))
+        cfg.EMAIL_FULL.set(get_arg(kwargs, 'email_endfull'))
 
         on = (cfg.EMAIL_ENDJOB.get() > 0) or cfg.EMAIL_FULL.get()
-        
-        msg = cfg.EMAIL_TO.set(email_to)
-        if on and not (not msg and email_to):
-            return badParameterResponse(msg)
 
-        msg = cfg.EMAIL_FROM.set(email_from)
-        if on and not (not msg and email_from):
-            return badParameterResponse(msg)
-
-        msg = cfg.EMAIL_SERVER.set(email_server)
-        if on and not (not msg and email_server):
-            return badParameterResponse(msg)
-
-        cfg.EMAIL_ACCOUNT.set(email_account)
-        cfg.EMAIL_PWD.set(email_pwd)
+        for kw in LIST_EMAIL:
+            msg = config.get_config('misc', kw).set(get_arg(kwargs, kw))
+            if on and msg:
+                return badParameterResponse(msg)
 
         config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
-
+        scheduler.restart()
+        raise dcRaiser(self.__root, kwargs)
 
 def std_time(when):
     # Fri, 16 Nov 2007 16:42:01 GMT +0100
