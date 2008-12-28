@@ -463,10 +463,13 @@ def main():
             Panic('Cannot create folder "%s".' % sabnzbd.DIR_LCLDATA, 'Check specified INI file location.')
             ExitSab(1)
 
+    sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA, sabnzbd.DIR_PROG)
+
     if not config.read_config(f):
         Panic('"%s" is not a valid configuration file.' % f, \
               'Specify a correct file or delete this file.')
         ExitSab(1)
+
 
     cfg = config.CFG
 

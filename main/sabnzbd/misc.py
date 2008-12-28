@@ -169,10 +169,13 @@ def CreateAllDirs(path, umask=False):
                         result = True
                     except:
                         result = False
-                try:
-                    if umask: os.chmod(path, int(sabnzbd.UMASK, 8) | 0700)
-                except:
-                    pass
+                    if umask:
+                        mask = cfg.UMASK.get()
+                        if mask:
+                            try:
+                                os.chmod(path, int(mask, 8) | 0700)
+                            except:
+                                pass
     return result
 
 ################################################################################

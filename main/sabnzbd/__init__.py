@@ -91,20 +91,11 @@ WAITEXIT = False
 
 CLEANUP_LIST = []
 
-UMASK = None
 BANDWITH_LIMIT = 0
 DEBUG_DELAY = 0
 DAEMON = None
-CONFIGLOCK = None
 RSS_RATE = None
 
-CACHE_DIR = None
-NZB_BACKUP_DIR = None
-DOWNLOAD_DIR = None
-DOWNLOAD_FREE = None
-COMPLETE_DIR = None
-SCRIPT_DIR = None
-EMAIL_DIR = None
 LOGFILE = None
 WEBLOGFILE = None
 LOGHANDLER = None
@@ -290,14 +281,12 @@ INIT_LOCK = Lock()
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
     global __INITIALIZED__, \
-           DIRSCAN_DIR, CLEANUP_LIST, \
+           CLEANUP_LIST, \
            POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, URLGRABBER, NZBQ, DOWNLOADER, \
-           NZB_BACKUP_DIR, DOWNLOAD_DIR, DOWNLOAD_FREE, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
-           COMPLETE_DIR, CACHE_DIR, UMASK, SCRIPT_DIR, EMAIL_DIR, \
            BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, ARTICLECACHE, \
-           DAEMON, CONFIGLOCK, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, \
+           DAEMON, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            WEB_COLOR, WEB_COLOR2, \
            WEB_DIR, WEB_DIR2, DARWIN, \
@@ -306,76 +295,27 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if __INITIALIZED__:
         return False
 
-    cfg.set_root_folders(DIR_HOME, DIR_LCLDATA, DIR_PROG)
-
     ###########################
     ## CONFIG Initialization ##
     ###########################
 
     CheckSection('misc')
     CheckSection('logging')
-    CheckSection('rss')
-
-    CONFIGLOCK = bool(check_setting_int(CFG, 'misc', 'config_lock', 0))
 
     CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
     if type(CLEANUP_LIST) != type([]):
         CLEANUP_LIST = []
 
-    UMASK = check_setting_str(CFG, 'misc', 'permissions', '')
-    try:
-        if UMASK:
-            int(UMASK, 8)
-    except:
-        logging.error("Permissions (%s) not correct, use OCTAL notation!", UMASK)
-
-    DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
-    if DOWNLOAD_DIR == "":
-        # Directory creation failed, retry with default
-        CFG['misc']['download_dir'] = DEF_DOWNLOAD_DIR
-        DOWNLOAD_DIR = dir_setup(CFG, "download_dir", DIR_HOME, DEF_DOWNLOAD_DIR)
-        if DOWNLOAD_DIR == "":
-            return False
-
-    if DOWNLOAD_DIR.startswith('\\\\'):
-        logging.error('[%s] UNC path "%s" not supported as download directory', __NAME__, DOWNLOAD_DIR)
-
-    DOWNLOAD_FREE = check_setting_str(CFG, 'misc', 'download_free', "0")
-    DOWNLOAD_FREE = int(misc.from_units(DOWNLOAD_FREE))
-    logging.debug("DOWNLOAD_FREE %s", DOWNLOAD_FREE)
-
-    COMPLETE_DIR = dir_setup(CFG, "complete_dir", DIR_HOME, DEF_COMPLETE_DIR, UMASK)
-    if COMPLETE_DIR == "":
-        COMPLETE_DIR == DOWNLOAD_DIR
-
-    SCRIPT_DIR = dir_setup(CFG, 'script_dir', DIR_HOME, '')
-    
-    NZB_BACKUP_DIR = dir_setup(CFG, "nzb_backup_dir", DIR_LCLDATA, DEF_NZBBACK_DIR)
-
-    if misc.SameFile(DOWNLOAD_DIR, COMPLETE_DIR):
-        logging.warning('DOWNLOAD_DIR and COMPLETE_DIR should not be the same!')
-
-    CACHE_DIR = dir_setup(CFG, "cache_dir", DIR_LCLDATA, "cache")
-    if CACHE_DIR == "":
-        return False
     if clean_up:
-        xlist= glob.glob(CACHE_DIR + '/*')
+        xlist= glob.glob(cfg.CACHE_DIR.get_path() + '/*')
         for x in xlist:
             os.remove(x)
 
-    try:
-        defdir = CFG['misc']['dirscan_dir']
-    except:
-        CFG['misc']['dirscan_dir'] = ''
-        defdir = ''
-    if defdir:
-        DIRSCAN_DIR = dir_setup(CFG, "dirscan_dir", DIR_HOME, defdir)
-        # If dirscan_dir cannot be created, set a proper value anyway.
-        # Maybe it's a network path that's temporarily missing.
-        if not DIRSCAN_DIR: DIRSCAN_DIR = misc.real_path(DIR_HOME, defdir)
-    else:
-        DIRSCAN_DIR = ''
-
+    # If dirscan_dir cannot be created, set a proper value anyway.
+    # Maybe it's a network path that's temporarily missing.
+    path = cfg.DIRSCAN_DIR.get_path()
+    if not os.path.exists(path):
+        sabnzbd.misc.create_real_path(cfg.DIRSCAN_DIR.ident(), '', path, False)
 
     dirscan_speed = check_setting_int(CFG, 'misc', 'dirscan_speed', DEF_SCANRATE)
     dirscan_speed = minimax(dirscan_speed, 1, 3600)
@@ -435,14 +375,14 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         NZBQ = NzbQueue()
 
     if POSTPROCESSOR:
-        POSTPROCESSOR.__init__(DOWNLOAD_DIR, COMPLETE_DIR, POSTPROCESSOR.queue, POSTPROCESSOR.history_queue, restart=True)
+        POSTPROCESSOR.__init__(POSTPROCESSOR.queue, POSTPROCESSOR.history_queue, restart=True)
     else:
-        POSTPROCESSOR = PostProcessor(DOWNLOAD_DIR, COMPLETE_DIR)
+        POSTPROCESSOR = PostProcessor()
 
     if ASSEMBLER:
-        ASSEMBLER.__init__(DOWNLOAD_DIR, ASSEMBLER.queue)
+        ASSEMBLER.__init__(cfg.DOWNLOAD_DIR.get_path(), ASSEMBLER.queue)
     else:
-        ASSEMBLER = Assembler(DOWNLOAD_DIR)
+        ASSEMBLER = Assembler(cfg.DOWNLOAD_DIR.get_path())
 
     if DOWNLOADER:
         DOWNLOADER.__init__(DOWNLOADER.paused)
@@ -452,9 +392,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
             DOWNLOADER.paused = True
 
     if DIRSCANNER:
-        DIRSCANNER.__init__(DIRSCAN_DIR, dirscan_speed)
-    elif DIRSCAN_DIR:
-        DIRSCANNER = dirscanner.DirScanner(DIRSCAN_DIR, dirscan_speed)
+        DIRSCANNER.__init__(cfg.DIRSCAN_DIR.get_path(), cfg.DIRSCAN_SPEED.get())
+    elif cfg.DIRSCAN_DIR.get():
+        DIRSCANNER = dirscanner.DirScanner(cfg.DIRSCAN_DIR.get_path(), cfg.DIRSCAN_SPEED.get())
 
     newzbin.init_grabber()
 
@@ -474,7 +414,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 @synchronized(INIT_LOCK)
 def start():
     global __INITIALIZED__, ASSEMBLER, DOWNLOADER, DIRSCANNER, \
-           URLGRABBER, DIRSCAN_DIR
+           URLGRABBER
 
     if __INITIALIZED__:
         logging.debug('[%s] Starting postprocessor', __NAME__)
@@ -488,7 +428,7 @@ def start():
 
         scheduler.start()
 
-        if DIRSCANNER and DIRSCAN_DIR:
+        if DIRSCANNER and cfg.DIRSCAN_DIR.get():
             logging.debug('[%s] Starting dirscanner', __NAME__)
             DIRSCANNER.start()
 
@@ -843,13 +783,13 @@ def backup_nzb(filename, data, no_dupes):
         return True if OK, False if no_dupes and backup already exists
     """
     result = True
-    if NZB_BACKUP_DIR:
+    if cfg.NZB_BACKUP_DIR.get_path():
         backup_name = filename + '.gz'
 
         # Need to go to the backup folder to
         # prevent the pathname being embedded in the GZ file
         here = os.getcwd()
-        os.chdir(NZB_BACKUP_DIR)
+        os.chdir(cfg.NZB_BACKUP_DIR.get_path())
 
         if no_dupes and os.path.exists(backup_name):
             result = False
@@ -861,7 +801,7 @@ def backup_nzb(filename, data, no_dupes):
                 _f.flush()
                 _f.close()
             except:
-                logging.error("[%s] Saving %s to %s failed", __NAME__, backup_name, NZB_BACKUP_DIR)
+                logging.error("[%s] Saving %s to %s failed", __NAME__, backup_name, cfg.NZB_BACKUP_DIR.get_path())
 
         os.chdir(here)
 
@@ -1181,7 +1121,7 @@ def change_queue_complete_action(action):
     QUEUECOMPLETEARG = _argument
 
 def run_script(script):
-    command = os.path.join(SCRIPT_DIR, script)
+    command = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
     stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
     logging.info('[%s] Spawning external command %s', __NAME__, command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -1204,9 +1144,8 @@ def keep_awake():
 
 
 def CheckFreeSpace():
-    global DOWNLOAD_FREE
-    if DOWNLOAD_FREE > 0 and not paused():
-        if misc.diskfree(DOWNLOAD_DIR) < float(DOWNLOAD_FREE) / GIGI:
+    if cfg.DOWNLOAD_FREE.get() and not paused():
+        if misc.diskfree(cfg.DOWNLOAD_DIR.get_path()) < cfg.DOWNLOAD_FREE.get_float() / GIGI:
             logging.warning('Too little diskspace forcing PAUSE')
             # Pause downloader, but don't save, since the disk is almost full!
             pause_downloader(save=False)
@@ -1221,7 +1160,7 @@ IO_LOCK = RLock()
 @synchronized(IO_LOCK)
 def get_new_id(prefix):
     try:
-        fd, l = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, CACHE_DIR)
+        fd, l = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, cfg.CACHE_DIR.get_path())
         os.close(fd)
         head, tail = os.path.split(l)
         return tail
@@ -1231,7 +1170,7 @@ def get_new_id(prefix):
 
 @synchronized(IO_LOCK)
 def save_data(data, _id, do_pickle = True, doze= 0):
-    path = os.path.join(CACHE_DIR, _id)
+    path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
     logging.info("[%s] Saving data for %s in %s", __NAME__, _id, path)
 
     try:
@@ -1250,7 +1189,7 @@ def save_data(data, _id, do_pickle = True, doze= 0):
 
 @synchronized(IO_LOCK)
 def load_data(_id, remove = True, do_pickle = True):
-    path = os.path.join(CACHE_DIR, _id)
+    path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
     logging.info("[%s] Loading data for %s from %s", __NAME__, _id, path)
 
     if not os.path.exists(path):
@@ -1276,7 +1215,7 @@ def load_data(_id, remove = True, do_pickle = True):
 
 @synchronized(IO_LOCK)
 def remove_data(_id):
-    path = os.path.join(CACHE_DIR, _id)
+    path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
     try:
         os.remove(path)
         logging.info("[%s] %s removed", __NAME__, path)

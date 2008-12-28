@@ -93,7 +93,7 @@ def check_server(host, port):
 def ListScripts(default=False):
     """ Return a list of script names """
     lst = []
-    dd = sabnzbd.SCRIPT_DIR
+    dd = cfg.SCRIPT_DIR.get()
     
     if dd and os.access(dd, os.R_OK):
         if default:
@@ -1087,6 +1087,12 @@ class ConfigPage:
             return "SABnzbd restart failed! See logfile(s)."
 
 #------------------------------------------------------------------------------
+LIST_DIRPAGE = ( \
+    'download_dir', 'download_free', 'complete_dir', 'cache_dir',
+    'nzb_backup_dir', 'dirscan_dir', 'dirscan_speed', 'script_dir',
+    'email_dir', 'permissions' #, 'log_dir'
+    )
+
 class ConfigDirectories:
     def __init__(self, web_dir, root, prim):
         self.roles = ['admins']
@@ -1097,101 +1103,39 @@ class ConfigDirectories:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
-        cfg, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        cfg['download_dir'] = sabnzbd.CFG['misc']['download_dir']
-        cfg['download_free'] = sabnzbd.CFG['misc']['download_free'].upper()
-        cfg['complete_dir'] = sabnzbd.CFG['misc']['complete_dir']
-        cfg['cache_dir'] = sabnzbd.CFG['misc']['cache_dir']
-        cfg['log_dir'] = sabnzbd.CFG['misc']['log_dir']
-        cfg['nzb_backup_dir'] = sabnzbd.CFG['misc']['nzb_backup_dir']
-        cfg['dirscan_dir'] = sabnzbd.CFG['misc']['dirscan_dir']
-        cfg['dirscan_speed'] = sabnzbd.CFG['misc']['dirscan_speed']
-        cfg['script_dir'] = sabnzbd.CFG['misc']['script_dir']
-        cfg['email_dir'] = config.get_config('misc', 'email_dir').get()
-        cfg['my_home'] = sabnzbd.DIR_HOME
-        cfg['my_lcldata'] = sabnzbd.DIR_LCLDATA
-        cfg['permissions'] = sabnzbd.UMASK
+        for kw in LIST_DIRPAGE:
+            conf[kw] = config.get_config('misc', kw).get()
+
+        conf['log_dir'] = sabnzbd.CFG['misc']['log_dir']
+        conf['my_home'] = sabnzbd.DIR_HOME
+        conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
         
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
-                            searchList=[cfg],
+                            searchList=[conf],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
 
     @cherrypy.expose
-    def saveDirectories(self, download_dir = None, download_free = None, complete_dir = None, log_dir = None,
-                        cache_dir = None, nzb_backup_dir = None, permissions=None,
-                        date_cat=None, movie_cat=None, dirscan_dir = None, email_dir = None,
-                        dirscan_speed = None, script_dir = None, _dc = None):
+    def saveDirectories(self, **kwargs):
 
-        if permissions:
-            try:
-                int(permissions,8)
-            except:
-                return badParameterResponse('Error: use octal notation for permissions')
-
-        if not sabnzbd.empty_queues():
-            if download_dir != sabnzbd.CFG['misc']['download_dir']:
-                return badParameterResponse('Error: Queue not empty, cannot change download directory.')
-            if cache_dir != sabnzbd.CFG['misc']['cache_dir']:
-                return badParameterResponse('Error: Queue not empty, cannot change cache directory.')
-        
-        (dd, path) = create_real_path('download_dir', sabnzbd.DIR_HOME, download_dir)
-        if not dd:
-            return badParameterResponse('Error: cannot create download directory "%s".' % path)
-        if path.startswith('\\\\'):
-            return badParameterResponse('Error: UNC path "%s" not supported as download directory.' % path)
-
-        (dd, path) = create_real_path('cache_dir', sabnzbd.DIR_LCLDATA, cache_dir)
-        if not dd:
-            return badParameterResponse('Error: cannot create cache directory "%s".' % path)
-
-        (dd, path) = create_real_path('log_dir', sabnzbd.DIR_LCLDATA, log_dir)
+        (dd, path) = create_real_path('log_dir', sabnzbd.DIR_LCLDATA, get_arg(kwargs, 'log_dir'))
         if not dd:
             return badParameterResponse('Error: cannot create log directory "%s".' % path)
 
-        if dirscan_dir:
-            (dd, path) = create_real_path('dirscan_dir', sabnzbd.DIR_HOME, dirscan_dir)
-            if not dd:
-                return badParameterResponse('Error: cannot create dirscan_dir directory "%s".' % path)
+        for kw in LIST_DIRPAGE:
+            value = get_arg(kwargs, kw)
+            if value != None:
+                msg = config.get_config('misc', kw).set(value)
+                if msg:
+                    return badParameterResponse(msg)
 
-        (dd, path) = create_real_path('complete_dir', sabnzbd.DIR_HOME, complete_dir, True)
-        if not dd:
-            return badParameterResponse('Error: cannot create complete_dir directory "%s".' % path)
-
-        if nzb_backup_dir:
-            (dd, path) = create_real_path('nzb_backup_dir', sabnzbd.DIR_LCLDATA, nzb_backup_dir)
-            if not dd:
-                return badParameterResponse('Error: cannot create nzb_backup_dir directory %s".' % path)
-
-        if script_dir:
-            (dd, path) = create_real_path('script_dir', sabnzbd.DIR_HOME, script_dir)
-            if not dd:
-                return badParameterResponse('Error: cannot create script_dir directory "%s".' % path)
-
-        if not config.get_config('misc', 'email_dir').set(email_dir):
-            return badParameterResponse('Error: cannot create email_dir directory "%s".' % path)
-
-        #if SameFile(download_dir, complete_dir):
-        #    return badParameterResponse('Error: DOWNLOAD_DIR and COMPLETE_DIR should not be the same (%s)!' % path)
-
-
-        sabnzbd.CFG['misc']['download_dir'] = download_dir
-        sabnzbd.CFG['misc']['download_free'] = download_free
-        sabnzbd.CFG['misc']['cache_dir'] = cache_dir
-        sabnzbd.CFG['misc']['log_dir'] = log_dir
-        sabnzbd.CFG['misc']['dirscan_dir'] = dirscan_dir
-        sabnzbd.CFG['misc']['dirscan_speed'] = sabnzbd.minimax(dirscan_speed, 1, 3600)
-        sabnzbd.CFG['misc']['script_dir'] = script_dir
-        sabnzbd.CFG['misc']['complete_dir'] = complete_dir
-        sabnzbd.CFG['misc']['nzb_backup_dir'] = nzb_backup_dir
-        if permissions: sabnzbd.CFG['misc']['permissions'] = permissions
-
-        return saveAndRestart(self.__root, _dc)
+        return saveAndRestart(self.__root, get_arg(kwargs, '_dc'))
 
 
 SWITCH_LIST = \
@@ -1212,20 +1156,20 @@ class ConfigSwitches:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
-        cfg, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        cfg['nt'] = os.name == 'nt'
+        conf['nt'] = os.name == 'nt'
 
         for kw in SWITCH_LIST:
-            cfg[kw] = config.get_config('misc', kw).get()
+            conf[kw] = config.get_config('misc', kw).get()
 
-        cfg['script_list'] = ListScripts()
+        conf['script_list'] = ListScripts()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
-                            searchList=[cfg],
+                            searchList=[conf],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
@@ -1239,8 +1183,9 @@ class ConfigSwitches:
                 value = kwargs[kw]
             except:
                 value = None
-            if not item.set(value):
-                return badParameterResponse('Error: incorrect value "%s" for config-item "%s".' % (value, kw))
+            msg = item.set(value)
+            if msg:
+                return badParameterResponse(msg)
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -1268,7 +1213,7 @@ class ConfigGeneral:
                     lst.append(col)
             return lst
 
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
@@ -1376,24 +1321,24 @@ class ConfigServer:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
-        cfg, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
         new = {}
         servers = config.get_servers()
         for svr in servers:
             new[svr] = servers[svr].get_dict()
-        cfg['servers'] = new
+        conf['servers'] = new
 
         if sabnzbd.newswrapper.HAVE_SSL:
-            cfg['have_ssl'] = 1
+            conf['have_ssl'] = 1
         else:
-            cfg['have_ssl'] = 0
+            conf['have_ssl'] = 0
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
-                            searchList=[cfg],
+                            searchList=[conf],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
@@ -1509,18 +1454,18 @@ class ConfigRss:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
-        cfg, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        cfg['have_feedparser'] = sabnzbd.rss.have_feedparser()
+        conf['have_feedparser'] = sabnzbd.rss.have_feedparser()
 
-        cfg['script_list'] = ListScripts(default=True)
-        pick_script = cfg['script_list'] != []
+        conf['script_list'] = ListScripts(default=True)
+        pick_script = conf['script_list'] != []
 
-        cfg['cat_list'] = ListCats(default=True)
-        pick_cat = cfg['cat_list'] != []
+        conf['cat_list'] = ListCats(default=True)
+        pick_cat = conf['cat_list'] != []
         
         rss = {}
         unum = 1
@@ -1535,11 +1480,11 @@ class ConfigRss:
             rss[feed]['pick_script'] = pick_script
 
             unum += 1
-        cfg['rss'] = rss
-        cfg['feed'] = 'Feed' + str(unum)
+        conf['rss'] = rss
+        conf['feed'] = 'Feed' + str(unum)
 
         template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
-                            searchList=[cfg],
+                            searchList=[conf],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
@@ -1673,22 +1618,22 @@ class ConfigScheduling:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
-        cfg, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        cfg['schedlines'] = []
+        conf['schedlines'] = []
         for ev in scheduler.sort_schedules(forward=True):
-            cfg['schedlines'].append(ev[3])
+            conf['schedlines'].append(ev[3])
 
         actions = ['resume', 'pause', 'shutdown', 'speedlimit']
         for server in config.get_servers():
             actions.append(server)
-        cfg['actions'] = actions
+        conf['actions'] = actions
 
         template = Template(file=os.path.join(self.__web_dir, 'config_scheduling.tmpl'),
-                            searchList=[cfg],
+                            searchList=[conf],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
@@ -1750,7 +1695,7 @@ class ConfigNewzbin:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
@@ -1828,7 +1773,7 @@ class ConfigCats:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
@@ -1904,19 +1849,19 @@ class ConfigSorting:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
-        cfg, pnfo_list, bytespersec = build_header(self.__prim)
-        cfg['complete_dir'] = sabnzbd.COMPLETE_DIR
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
+        conf['complete_dir'] = sabnzbd.COMPLETE_DIR
 
         for kw in SORT_LIST:
-            cfg[kw] = config.get_config('misc', kw).get()
-        cfg['cat_list'] = ListCats(True)
+            conf[kw] = config.get_config('misc', kw).get()
+        conf['cat_list'] = ListCats(True)
         #tvSortList = []
         
         template = Template(file=os.path.join(self.__web_dir, 'config_sorting.tmpl'),
-                            searchList=[cfg],
+                            searchList=[conf],
                             compilerSettings={'directiveStartToken': '<!--#',
                                               'directiveEndToken': '#-->'})
         return template.respond()
@@ -1939,8 +1884,9 @@ class ConfigSorting:
                 value = kwargs[kw]
             except:
                 value = None
-            if not item.set(value):
-                return badParameterResponse('Error: incorrect value "%s" for config-item "%s".' % (value, kw))
+            msg = item.set(value)
+            if msg:
+                return badParameterResponse(msg)
 
         config.save_config()
         try:
@@ -2270,10 +2216,10 @@ def build_header(prim):
         speed_limit = ''
 
     header['helpuri'] = 'http://sabnzbd.wikidot.com'
-    header['diskspace1'] = "%.2f" % diskfree(sabnzbd.DOWNLOAD_DIR)
-    header['diskspace2'] = "%.2f" % diskfree(sabnzbd.COMPLETE_DIR)
-    header['diskspacetotal1'] = "%.2f" % disktotal(sabnzbd.DOWNLOAD_DIR)
-    header['diskspacetotal2'] = "%.2f" % disktotal(sabnzbd.COMPLETE_DIR)
+    header['diskspace1'] = "%.2f" % diskfree(cfg.DOWNLOAD_DIR.get_path())
+    header['diskspace2'] = "%.2f" % diskfree(cfg.COMPLETE_DIR.get_path())
+    header['diskspacetotal1'] = "%.2f" % disktotal(cfg.DOWNLOAD_DIR.get_path())
+    header['diskspacetotal2'] = "%.2f" % disktotal(cfg.COMPLETE_DIR.get_path())
     header['speedlimit'] = "%s" % speed_limit
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last()
@@ -2386,7 +2332,7 @@ class ConfigEmail:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        if sabnzbd.CONFIGLOCK:
+        if cfg.CONFIGLOCK.get():
             return Protected()
 
         config, pnfo_list, bytespersec = build_header(self.__prim)
@@ -2420,17 +2366,17 @@ class ConfigEmail:
 
         on = (cfg.EMAIL_ENDJOB.get() > 0) or cfg.EMAIL_FULL.get()
         
-        ok = cfg.EMAIL_TO.set(email_to)
-        if on and not (ok and email_to):
-            return badParameterResponse('Invalid email address "%s"' % email_to)
+        msg = cfg.EMAIL_TO.set(email_to)
+        if on and not (not msg and email_to):
+            return badParameterResponse(msg)
 
-        ok = cfg.EMAIL_FROM.set(email_from)
-        if on and not (ok and email_from):
-            return badParameterResponse('Invalid email address "%s"' % email_from)
+        msg = cfg.EMAIL_FROM.set(email_from)
+        if on and not (not msg and email_from):
+            return badParameterResponse(msg)
 
-        ok = cfg.EMAIL_SERVER.set(email_server)
-        if on and not (ok and email_server):
-            return badParameterResponse('Need a server address')
+        msg = cfg.EMAIL_SERVER.set(email_server)
+        if on and not (not msg and email_server):
+            return badParameterResponse(msg)
 
         cfg.EMAIL_ACCOUNT.set(email_account)
         cfg.EMAIL_PWD.set(email_pwd)
@@ -2556,8 +2502,8 @@ def json_qstatus():
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
         "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
-        "diskspace1" : diskfree(sabnzbd.DOWNLOAD_DIR),
-        "diskspace2" : diskfree(sabnzbd.COMPLETE_DIR),
+        "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
+        "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
         "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()),
         "jobs" : jobs
     }
@@ -2590,8 +2536,8 @@ def xml_qstatus():
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
         "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
-        "diskspace1" : diskfree(sabnzbd.DOWNLOAD_DIR),
-        "diskspace2" : diskfree(sabnzbd.COMPLETE_DIR),
+        "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
+        "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
         "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()),
         "jobs" : jobs
     }

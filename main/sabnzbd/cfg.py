@@ -20,8 +20,10 @@ sabnzbd.cfg - Configuration Parameters
 """
 __NAME__ = "sabnzbd.cfg"
 
+from sabnzbd.constants import *
 from sabnzbd.config import OptionBool, OptionNumber, OptionNumber, OptionPassword, \
-                           OptionDir, OptionStr, OptionList, validate_email, no_nonsense
+                           OptionDir, OptionStr, OptionList, validate_email, no_nonsense, \
+                           validate_octal, validate_no_unc
 
 
 QUICK_CHECK = OptionBool('misc', 'quick_check', True)
@@ -88,6 +90,28 @@ DATE_CATEGORIES = OptionStr('misc', 'date_categories', ['tv'])
 USERNAME_MATRIX = OptionStr('nzbmatrix', 'username')
 PASSWORD_MATRIX = OptionPassword('nzbmatrix', 'password')
 
+CONFIGLOCK = OptionBool('misc', 'config_lock', 0)
+
+UMASK = OptionStr('misc', 'permissions', '', validation=validate_octal)
+DOWNLOAD_DIR = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=validate_no_unc)
+DOWNLOAD_FREE = OptionStr('misc', 'download_free')
+COMPLETE_DIR = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, apply_umask=True)
+SCRIPT_DIR = OptionDir('misc', 'script_dir', create=False)
+NZB_BACKUP_DIR = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
+CACHE_DIR = OptionDir('misc', 'cache_dir', 'cache')
+#LOG_DIR = OptionDir('misc', 'log_dir', 'logs')
+DIRSCAN_DIR = OptionDir('misc', 'dirscan_dir', create=False)
+DIRSCAN_SPEED = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
+
+
+
 #### Set root folders for Folder config-items
 def set_root_folders(home, lcldata, prog):
     EMAIL_DIR.set_root(home)
+    DOWNLOAD_DIR.set_root(home)
+    COMPLETE_DIR.set_root(home)
+    SCRIPT_DIR.set_root(home)
+    NZB_BACKUP_DIR.set_root(lcldata)
+    CACHE_DIR.set_root(lcldata)
+    DIRSCAN_DIR.set_root(home)
+    #LOG_DIR.set_root(lcldata)

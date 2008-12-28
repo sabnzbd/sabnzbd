@@ -231,7 +231,6 @@ class DirScanner(threading.Thread):
             except:
                 if not self.error_reported and not catdir:
                     logging.error("Cannot read Watched Folder %s", folder)
-                    logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
                     self.error_reported = True
                 files = []
 

@@ -94,7 +94,7 @@ class Option:
                 modified = True
                 if self.__callback:
                     self.__callback()
-        return True
+        return None
 
     def set(self, value):
         return self.__set(value)
@@ -136,7 +136,7 @@ class OptionNumber(Option):
                 elif (self.__minval != None) and value < self.__minval:
                     value = self.__minval
                 self._Option__set(value)
-        return True
+        return None
 
     
 class OptionBool(Option):
@@ -151,56 +151,43 @@ class OptionBool(Option):
             self._Option__set(int(value))
         except ValueError:
             self._Option__set(0)
-        return True
+        return None
 
 
 class OptionDir(Option):
     """ Directory option class """
-    def __init__(self, section, keyword, default_val='', root='', apply_umask=False, create=True, validation=None, add=True):
-        if validation:
-            self.__validation = validation
-        else:
-            self.__validation = std_dir_validation
-        self.__root = root # Base directory for relative paths
-        self.__path = ''   # Will contain absolute, normalized path
+    def __init__(self, section, keyword, default_val='', apply_umask=False, create=True, validation=None, add=True):
+        self.__validation = validation
+        self.__root = ''   # Base directory for relative paths
         self.__apply_umask = apply_umask
         self.__create = create
         Option.__init__(self, section, keyword, default_val, add=add)
 
     def get_path(self):
         """ Return full absolute path """
-        path = sabnzbd.misc.real_path(self.__root, self.get())
+        return sabnzbd.misc.real_path(self.__root, self.get())
 
     def set_root(self, root):
         """ Set new root, is assumed to be valid """
         self.__root = root
-        self.set(self.get())
 
     def set(self, value):
         """ Set new dir value, validate and create if needed
-            Return true when directory is accepted
-            Return false when not accepted, value will not be changed
+            Return None when directory is accepted
+            Return error-string when not accepted, value will not be changed
         """
-        res = True
+        error = None
         if value != None:
-            if self.__create:
-                res, path = sabnzbd.misc.create_real_path(self.ident(), self.__root, value, self.__apply_umask)
-            else:
-                res = True
-                path = sabnzbd.misc.real_path(self.__root, value)
-
-            if res:
-                if self.__validation:
-                    res, value, path = self.__validation(self.__root, value)
+            if self.__validation:
+                error, value = self.__validation(self.__root, value)
+            if not error:
+                if self.__create:
+                    res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
                     if not res:
-                        self._Option__set('')
-                    else:
-                        self._Option__set(value)
-                        self.__path = path
-                else:
-                    self._Option__set(value)
-        return res
-
+                        error = "Cannot create %s folder %s" % (self.ident()[1], path)
+            if not error:
+                self._Option__set(value)
+        return error
 
 class OptionList(Option):
     """ List option class """
@@ -215,7 +202,7 @@ class OptionList(Option):
             if type(value) != type([]):
                 value = [ value ]
             return self._Option__set(value)
-        return True
+        return None
 
     def get_string(self):
         """ Return the list as a comma-separated string """
@@ -243,18 +230,22 @@ class OptionStr(Option):
         Option.__init__(self, section, keyword, default_val, add=add)
         self.__validation = validation
 
+    def get_float(self):
+        """ Return value converted to a float, allowing KMGT notation """
+        return sabnzbd.misc.from_units(self.get())
+
     def set(self, value):
         """ Set stripped value """
-        res = True
+        error = None
         if type(value) == type(''):
             value = value.strip()
         if self.__validation:
-            res, value = self.__validation(value)
-            if res:
+            error, value = self.__validation(value)
+            if not error:
                 self._Option__set(value)
         else:
             self._Option__set(value)
-        return res
+        return error
 
 
 class OptionPassword(Option):
@@ -278,7 +269,7 @@ class OptionPassword(Option):
         """ Set password, encode it """
         if (pw and pw.strip('*')) or (pw and pw == ''):
             self._Option__set(encode_password(pw))
-        return True
+        return None
 
 
 def add_to_database(section, keyword, object):
@@ -763,10 +754,6 @@ def get_rss():
 #
 __PW_PREFIX = '!!!encoded!!!'
 
-def std_dir_validation(root, value):
-    """ Standard directory validation """
-    return True, value, os.path.join(root, value)
-
 #------------------------------------------------------------------------------
 def encode_password(pw):
     """ Encode password in hexadecimal if needed """
@@ -806,14 +793,36 @@ def no_nonsense(value):
     value = str(value).strip()
     if value.lower() == 'none':
         value = ''
-    return True, value
+    return None, value
 
 
 import re
 RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
 def validate_email(value):
     if value:
-        return RE_VAL.match(value), value
+        if RE_VAL.match(value):
+            return None, value
+        else:   
+            return "%s is not a valid email address" % value, ''
     else:
-        return True, value
+        return None, value
 
+
+def validate_octal(value):
+    """ Check if string is valid octal number """
+    if not value:
+        return True, ''
+    try:
+        int(value, 8)
+        return None, value
+    except:
+        return '%s is not a correct octal value' % value, ''
+
+
+def validate_no_unc(root, value):
+    """ Check if path isn't a UNC path """
+    # Only need to check the 'value' part
+    if value and not value.startswith(r'\\'):
+        return None, value
+    else:
+        return 'UNC path %s not allowed here' % value, value

@@ -53,11 +53,9 @@ from database import HistoryDB
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
-    def __init__ (self, download_dir, complete_dir, queue=None, history_queue=[], restart=False):
+    def __init__ (self, queue=None, history_queue=[], restart=False):
         Thread.__init__(self)
 
-        self.download_dir = download_dir
-        self.complete_dir = complete_dir
         self.queue = queue
         if restart:
             self.history_queue = []
@@ -127,7 +125,7 @@ class PostProcessor(Thread):
             try:
                 
                 # Get the folder containing the download result
-                workdir = os.path.join(self.download_dir, nzo.get_dirname())
+                workdir = os.path.join(cfg.download_dir.get_path(), nzo.get_dirname())
     
                 # if the directory has not been made, no files were assembled
                 if not os.path.exists(workdir):
@@ -179,12 +177,12 @@ class PostProcessor(Thread):
     
                 ## Determine class directory
                 if config.get_categories():
-                    complete_dir = Cat2Dir(cat, self.complete_dir)
+                    complete_dir = Cat2Dir(cat, cfg.complete_dir.get_path())
                 elif cfg.CREATE_GROUP_FOLDERS.get():
-                    complete_dir = addPrefixes(self.complete_dir, nzo)
+                    complete_dir = addPrefixes(cfg.complete_dir.get_path(), nzo)
                     complete_dir = create_dirs(complete_dir)
                 else:
-                    complete_dir = self.complete_dir
+                    complete_dir = cfg.complete_dir.get_path()
                 _base_dir = complete_dir
     
                 ## Determine destination directory
@@ -264,7 +262,7 @@ class PostProcessor(Thread):
                     if unpackError: jobResult = jobResult + 2
         
                     ## Clean up download dir
-                    cleanup_empty_directories(self.download_dir)
+                    cleanup_empty_directories(cfg.download_dir.get_path())
                     
                     ## TV/Movie/Date Renaming code part 1 - rename and move files to parent folder
                     if not unpackError or parResult:
@@ -273,14 +271,14 @@ class PostProcessor(Thread):
                             workdir_complete = file_sorter.move(workdir_complete)
     
                     ## Set permissions right
-                    if sabnzbd.UMASK and (os.name != 'nt'):
-                        perm_script(workdir_complete, sabnzbd.UMASK)
+                    if cfg.UMASK.get() and (os.name != 'nt'):
+                        perm_script(workdir_complete, cfg.UMASK.get())
     
                     ## Run the user script
                     fname = ""
-                    if (not nzb_list) and sabnzbd.SCRIPT_DIR and script and script!='None' and script!='Default':
+                    if (not nzb_list) and cfg.SCRIPT_DIR.get_path() and script and script!='None' and script!='Default':
                         #set the current nzo status to "Ext Script...". Used in History
-                        script_path = os.path.join(sabnzbd.SCRIPT_DIR, script)
+                        script_path = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
                         if os.path.exists(script_path):
                             nzo.set_status("Running Script...")
                             nzo.set_action_line('Running Script', script)
@@ -334,7 +332,7 @@ class PostProcessor(Thread):
                 nzo.set_status("Failed")
     
             ## Clean up download dir
-            cleanup_empty_directories(self.download_dir)
+            cleanup_empty_directories(cfg.download_dir.get_path())
             
             # If the folder only contains one file OR folder, have that as the path
             # Be aware that series/generic/date sorting may move a single file into a folder containing other files
@@ -433,7 +431,7 @@ def Cat2Dir(cat, defdir):
             ddir = item.dir.get()
         else:
             return defdir
-        ddir = real_path(sabnzbd.COMPLETE_DIR, ddir)
+        ddir = real_path(cfg.COMPLETE_DIR.get_path(), ddir)
         ddir = create_dirs(ddir)
         if not ddir:
             ddir = defdir
