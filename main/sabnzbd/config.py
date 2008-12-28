@@ -166,7 +166,11 @@ class OptionDir(Option):
 
     def get_path(self):
         """ Return full absolute path """
-        return sabnzbd.misc.real_path(self.__root, self.get())
+        value = self.get()
+        path = sabnzbd.misc.real_path(self.__root, value)
+        if self.__create and not os.path.exists(path):
+            res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
+        return path
 
     def set_root(self, root):
         """ Set new root, is assumed to be valid """
@@ -355,7 +359,7 @@ class ConfigCat():
 
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', 'Default', add=False)
-        self.dir = OptionDir(name, 'dir', add=False)
+        self.dir = OptionDir(name, 'dir', add=False, create=False)
         self.newzbin = OptionList(name, 'newzbin', add=False)
         self.priority = OptionNumber(name, 'priority', add=False)
 
