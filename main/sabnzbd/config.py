@@ -754,6 +754,9 @@ def get_rss():
     except:
         return {}
 
+def get_filename():
+    global CFG
+    return CFG.filename
 
 
 ################################################################################

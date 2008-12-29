@@ -39,6 +39,7 @@ from sabnzbd.constants import *
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.misc as misc
+import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
 
@@ -335,8 +336,9 @@ class DirScanner(threading.Thread):
                         self.error_reported = True
                     list = []
 
+                cats = config.get_categories()
                 for dd in list:
                     dpath = os.path.join(dirscan_dir, dd)
-                    if os.path.isdir(dpath) and dd.lower() in sabnzbd.CFG['categories']:
+                    if os.path.isdir(dpath) and dd.lower() in cats:
                         run_dir(dpath, dd.lower())
 

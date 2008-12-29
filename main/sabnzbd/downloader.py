@@ -31,7 +31,7 @@ from threading import Thread
 
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper
-from sabnzbd.misc import Notify, decodePassword
+from sabnzbd.misc import Notify
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg

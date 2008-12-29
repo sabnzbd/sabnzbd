@@ -94,7 +94,7 @@ def save():
 def ListUris():
     """ Return list of all RSS uris """
     uris = []
-    for uri in sabnzbd.CFG['rss']:
+    for uri in config.get_rss():
         uris.append(uri)
     return uris
 

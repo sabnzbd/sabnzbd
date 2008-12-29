@@ -148,6 +148,15 @@ WEB_COLOR = OptionStr('misc', 'web_color')
 WEB_COLOR2 = OptionStr('misc', 'web_color2')
 CLEANUP_LIST = OptionList('misc', 'cleanup_list')
 
+LOG_WEB = OptionBool('logging', 'enable_cherrypy_logging', False)
+LOG_DIR = OptionDir('misc', 'log_dir', 'logs')
+LOG_LEVEL = OptionNumber('logging', 'log_level', 0, 0, 2)
+LOG_SIZE = OptionStr('logging', 'max_log_size', '5242880')
+LOG_BACKUPS = OptionNumber('logging', 'log_backups', 5, 1, 1024)
+
+SSL_CA = OptionDir('misc', 'ssl_ca', create=False)
+SSL_KEY = OptionDir('misc', 'ssl_key', create=False)
+
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
 #
@@ -159,4 +168,6 @@ def set_root_folders(home, lcldata, prog, interf):
     NZB_BACKUP_DIR.set_root(lcldata)
     CACHE_DIR.set_root(lcldata)
     DIRSCAN_DIR.set_root(home)
-    #LOG_DIR.set_root(lcldata)
+    LOG_DIR.set_root(lcldata)
+    SSL_CA.set_root(lcldata)
+    SSL_KEY.set_root(lcldata)

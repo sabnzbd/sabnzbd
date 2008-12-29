@@ -95,7 +95,6 @@ LOGFILE = None
 WEBLOGFILE = None
 LOGHANDLER = None
 GUIHANDLER = None
-LOGLEVEL = None
 AMBI_LOCALHOST = False
 
 POSTPROCESSOR = None
@@ -115,9 +114,6 @@ WEB_COLOR = None
 WEB_COLOR2 = None
 LOGIN_PAGE = None
 SABSTOP = False
-
-SSL_CA = ''
-SSL_KEY = ''
 
 __INITIALIZED__ = False
 
@@ -150,16 +146,6 @@ def sig_handler(signum = None, frame = None):
     finally:
         SABSTOP = True
         os._exit(0)
-
-
-def CheckSection(sec):
-    """ Check if INI section exists, if not create it """
-    try:
-        CFG[sec]
-        return True
-    except:
-        CFG[sec] = {}
-        return False
 
 
 ################################################################################
@@ -278,12 +264,11 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     global __INITIALIZED__, \
            POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, URLGRABBER, NZBQ, DOWNLOADER, \
-           LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
+           LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, \
            BPSMETER, DEBUG_DELAY, ARTICLECACHE, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           DARWIN, \
-           SSL_CA, SSL_KEY
+           DARWIN
 
     if __INITIALIZED__:
         return False
@@ -291,9 +276,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     ###########################
     ## CONFIG Initialization ##
     ###########################
-
-    CheckSection('misc')
-    CheckSection('logging')
 
     if clean_up:
         xlist= glob.glob(cfg.CACHE_DIR.get_path() + '/*')
@@ -305,9 +287,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     path = cfg.DIRSCAN_DIR.get_path()
     if not os.path.exists(path):
         sabnzbd.misc.create_real_path(cfg.DIRSCAN_DIR.ident(), '', path, False)
-
-    SSL_CA = check_setting_file(CFG, 'ssl_ca', DIR_LCLDATA)
-    SSL_KEY = check_setting_file(CFG, 'ssl_key', DIR_LCLDATA)
 
     ############################
     ## Object initializiation ##

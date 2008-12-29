@@ -26,6 +26,7 @@ import datetime
 from sabnzbd.constants import *
 from sabnzbd.codecs import name_fixer
 import sabnzbd.misc
+import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
 from sabnzbd.trylist import TryList
@@ -302,12 +303,12 @@ class NzbObject(TryList):
 
         if cat and pp == None:
             try:
-                pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
+                pp = config.get_categories()[cat.lower()].pp.get()
             except:
                 pass
         if cat and script == None:
             try:
-                script = sabnzbd.CFG['categories'][cat.lower()]['script']
+                script = config.get_categories()[cat.lower()].script.get()
             except:
                 pass
 
@@ -1092,9 +1093,10 @@ def CatConvert(cat):
     found = False
 
     if cat and cat.lower() != 'none':
-        for ucat in sabnzbd.CFG['categories']:
+        cats = config.get_categories()
+        for ucat in cats:
             try:
-                newzbin = sabnzbd.CFG['categories'][ucat]['newzbin']
+                newzbin = cats[ucat].newzbin.get()
                 if type(newzbin) != type([]):
                     newzbin = [newzbin] 
             except:
@@ -1112,7 +1114,7 @@ def CatConvert(cat):
                 break
 
         if not found:
-            for ucat in sabnzbd.CFG['categories']:
+            for ucat in cats:
                 if cat.lower() == ucat.lower():
                     found = True
                     break

@@ -42,8 +42,7 @@ from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, \
-     to_units, from_units, SameFile, diskfree, disktotal, \
-     decodePassword, encodePassword
+     to_units, from_units, SameFile, diskfree, disktotal
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
@@ -1025,17 +1024,17 @@ class ConfigPage:
 
     @cherrypy.expose
     def index(self, _dc = None):
-        cfg, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        cfg['configfn'] = sabnzbd.CFG.filename
+        conf['configfn'] = config.get_filename()
         
         new = {}
         for svr in config.get_servers():
             new[svr] = {}
-        cfg['servers'] = new
+        conf['servers'] = new
 
         template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
-                            searchList=[cfg], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1052,7 +1051,7 @@ class ConfigPage:
 LIST_DIRPAGE = ( \
     'download_dir', 'download_free', 'complete_dir', 'cache_dir',
     'nzb_backup_dir', 'dirscan_dir', 'dirscan_speed', 'script_dir',
-    'email_dir', 'permissions' #, 'log_dir'
+    'email_dir', 'permissions', 'log_dir'
     )
 
 class ConfigDirectories:
@@ -1071,7 +1070,6 @@ class ConfigDirectories:
         for kw in LIST_DIRPAGE:
             conf[kw] = config.get_config('misc', kw).get()
 
-        conf['log_dir'] = sabnzbd.CFG['misc']['log_dir']
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
         
@@ -1081,10 +1079,6 @@ class ConfigDirectories:
 
     @cherrypy.expose
     def saveDirectories(self, **kwargs):
-
-        (dd, path) = create_real_path('log_dir', sabnzbd.DIR_LCLDATA, get_arg(kwargs, 'log_dir'))
-        if not dd:
-            return badParameterResponse('Error: cannot create log directory "%s".' % path)
 
         for kw in LIST_DIRPAGE:
             value = get_arg(kwargs, kw)
@@ -1186,7 +1180,7 @@ class ConfigGeneral:
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        conf['configfn'] = sabnzbd.CFG.filename
+        conf['configfn'] = config.get_filename()
 
         wlist = []
         wlist2 = ['None']
@@ -1288,7 +1282,6 @@ class ConfigGeneral:
 
         config.save_config()
         raise Raiser(self.__root, _dc=_dc)
-        #return saveAndRestart(self.__root, _dc)
 
 
 #------------------------------------------------------------------------------
@@ -1380,41 +1373,8 @@ class ConfigServer:
 
         raise dcRaiser(self.__root, kwargs)
 
+
 #------------------------------------------------------------------------------
-
-def ListFilters(feed):
-    """ Make a list of all filters of this feed """
-    n = 0
-    filters= []
-    config = sabnzbd.CFG['rss'][feed]
-    while True:
-        try:
-            tup = config['filter'+str(n)]
-            try:
-                cat, pp, scr, act, txt = tup
-                filters.append(tup)
-            except:
-                logging.warning('[%s] Incorrect filter', __NAME__)
-            n = n + 1
-        except:
-            break
-    return filters
-
-def UnlistFilters(feed, filters):
-    """ Convert list to filter list for this feed """
-    config = sabnzbd.CFG['rss'][feed]
-    n = 0
-    while True:
-        try:
-            del config['filter'+str(n)]
-            n = n + 1
-        except:
-            break
-
-    for n in xrange(len(filters)):
-        config['filter'+str(n)] = filters[n]
-
-
 
 def GetCfgRss(config, keyword):
     """ Get a keyword from an RSS entry """
@@ -1873,7 +1833,7 @@ class ConnectionInfo:
 
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
-        header['loglevel'] = str(sabnzbd.LOGLEVEL)
+        header['loglevel'] = str(cfg.LOG_LEVEL.get())
 
         header['lastmail'] = self.__lastmail
 
@@ -1965,24 +1925,21 @@ class ConnectionInfo:
 
     @cherrypy.expose
     def change_loglevel(self, loglevel=None, _dc = None):
-        loglevel = IntConv(loglevel)
-        if loglevel >= 0 and loglevel < 3:
-            sabnzbd.LOGLEVEL = loglevel
-            sabnzbd.CFG['logging']['log_level'] = loglevel
-            config.save_configfile(sabnzbd.CFG)
+        cfg.LOG_LEVEL.set(loglevel)
+        config.save_config()
 
         raise Raiser(self.__root, _dc=_dc)
 
 
-def saveAndRestart(redirect_root, _dc, evalSched=False):
-    config.save_configfile(sabnzbd.CFG)
-    sabnzbd.halt()
-    init_ok = sabnzbd.initialize(evalSched=evalSched)
-    if init_ok:
-        sabnzbd.start()
-        raise Raiser(redirect_root, _dc=_dc)
-    else:
-        return "SABnzbd restart failed! See logfile(s)."
+#def saveAndRestart(redirect_root, _dc, evalSched=False):
+#    config.save_config()
+#    sabnzbd.halt()
+#    init_ok = sabnzbd.initialize(evalSched=evalSched)
+#    if init_ok:
+#        sabnzbd.start()
+#        raise Raiser(redirect_root, _dc=_dc)
+#    else:
+#        return "SABnzbd restart failed! See logfile(s)."
 
 def Protected():
     return badParameterResponse("Configuration is locked")
@@ -2185,10 +2142,6 @@ def build_header(prim):
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = os.name == 'nt'
-    #if prim:
-    #    header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir'])
-    #else:
-    #    header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir2'])
 
     bytespersec = sabnzbd.bps()
     qnfo = sabnzbd.queue_info()
@@ -2331,7 +2284,7 @@ def std_time(when):
 def rss_history(url, limit=50):
     m = RE_URL.search(url)
     if not m:
-        url = 'http://%s:%s' % (sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'])
+        url = 'http://%s:%s' % (cfg.CHERRYHOST.get(), cfg.CHERRYPORT.get())
     else:
         url = m.group(1)
         
@@ -3089,7 +3042,7 @@ def rss_qstatus():
     rss.channel.title = "SABnzbd Queue"
     rss.channel.description = "Overview of current downloads"
     rss.channel.link = "http://%s:%s/sabnzbd/queue" % ( \
-        sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )
+        cfg.CHERRYHOST.get(), cfg.CHERRYPORT.get() )
     rss.channel.language = "en"
 
     item = Item()
@@ -3121,7 +3074,7 @@ def rss_qstatus():
             item.link    = "https://newzbin.com/browse/post/%s/" % msgid
         else:
             item.link    = "http://%s:%s/sabnzbd/history" % ( \
-            sabnzbd.CFG['misc']['host'], sabnzbd.CFG['misc']['port'] )
+            cfg.CHERRYHOST.get(), cfg.CHERRYPORT.get() )
         statusLine  = ""
         statusLine += '<tr>'
         #Total MB/MB left

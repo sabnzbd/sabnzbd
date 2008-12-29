@@ -63,13 +63,14 @@ from sabnzbd.constants import *
 from sabnzbd.newsunpack import find_programs
 from sabnzbd.misc import Get_User_ShellFolders, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-                         decodePassword, Notify, SplitHost, ConvertVersion
+                         Notify, SplitHost, ConvertVersion
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 from threading import Thread
 
-cfg = {}
+LOG_FLAG = False  # Global for this module, signalling loglevel change
+
 
 #------------------------------------------------------------------------------
 signal.signal(signal.SIGINT, sabnzbd.sig_handler)
@@ -82,6 +83,12 @@ except ImportError:
     if os.name == 'nt':
         print "Sorry, requires Python module PyWin32."
         exit(1)
+
+
+def guard_loglevel():
+    """ Callback function for guarding loglevel """
+    global LOG_FLAG
+    LOG_FLAG = True
 
 
 #------------------------------------------------------------------------------
@@ -146,7 +153,6 @@ def print_help():
     print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
     if os.name != 'nt':
         print "  -d  --daemon             Fork daemon process"
-        print "      --permissions        Set the chmod mode (e.g. o=rwx,g=rwx) [*]"
     else:
         print "  -d  --daemon             Use when run as a service"
     print
@@ -318,7 +324,6 @@ def GetProfileInfo(vista):
 
 
 def main():
-    global cfg
 
     AUTOBROWSER = None
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
@@ -345,9 +350,9 @@ def main():
 
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvncu:w:l:s:f:t:b:2:",
+        opts, args = getopt.getopt(sys.argv[1:], "phdvncw:l:s:f:t:b:2:",
                      ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
-                      'weblogging=', 'umask=', 'server=', 'templates', 'permissions=', \
+                      'weblogging=', 'server=', 'templates', \
                       'template2', 'browser=', 'config-file=', 'delay=', 'force', 'version', 'https'])
     except getopt.GetoptError:
         print_help()
@@ -361,7 +366,6 @@ def main():
     cherrypylogging = None
     clean_up = False
     logging_level = None
-    umask = None
     web_dir = None
     web_dir2 = None
     delay = 0.0
@@ -413,8 +417,6 @@ def main():
             if logging_level < 0 or logging_level > 2:
                 print_help()
                 ExitSab(1)
-        if o in ('--permissions'):
-            umask = a
         if o in ('-v', '--version'):
             print_version()
             ExitSab(0)
@@ -471,34 +473,27 @@ def main():
         ExitSab(1)
 
 
-    cfg = config.CFG
-
     if cherrypylogging == None:
-        cherrypylogging = bool(check_setting_int(cfg, 'logging', 'enable_cherrypy_logging', 1))
+        cherrypylogging = sabnzbd.cfg.LOG_WEB.get()
     else:
-        cfg['logging']['enable_cherrypy_logging'] = cherrypylogging
+        sabnzbd.cfg.LOG_WEB.set(cherrypylogging)
 
     if logging_level == None:
-        logging_level = check_setting_int(cfg, 'logging', 'log_level', DEF_LOGLEVEL)
-        if logging_level > 2:
-            logging_level = 2
+        logging_level = sabnzbd.cfg.LOG_LEVEL.get()
     else:
-        cfg['logging']['log_level'] = logging_level
+        sabnzbd.cfg.LOG_LEVEL.set(logging_level)
 
     ver, testRelease = ConvertVersion(sabnzbd.__version__)
     if testRelease:
         logging_level = 2
         cherrypylogging = True
 
-    my_logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
-    if fork and not my_logdir:
+    logdir = sabnzbd.cfg.LOG_DIR.get_path()
+    if fork and not logdir:
         print "Error:"
         print "I refuse to fork without a log directory!"
         sys.exit()
 
-    logdir = ""
-
-    logdir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
     if clean_up:
         xlist= glob.glob(logdir + '/*')
         for x in xlist:
@@ -507,12 +502,11 @@ def main():
 
     try:
         sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
-        logsize = check_setting_str(cfg, 'logging', 'max_log_size', '5M')
-        logsize = int(from_units(logsize))
+        logsize = sabnzbd.cfg.LOG_SIZE.get_int()
         rollover_log = logging.handlers.RotatingFileHandler(\
                        sabnzbd.LOGFILE, 'a+',
                        logsize,
-                       check_setting_int(cfg, 'logging', 'log_backups', 5))
+                       sabnzbd.cfg.LOG_BACKUPS.get())
 
         rollover_log.setLevel(LOGLEVELS[logging_level])
         format = '%(asctime)s::%(levelname)s::%(message)s'
@@ -530,8 +524,7 @@ def main():
         try:
             x= sys.stderr.fileno
             x= sys.stdout.fileno
-            my_logpath = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
-            ol_path = os.path.join(my_logpath, DEF_LOG_ERRFILE)
+            ol_path = os.path.join(logdir, DEF_LOG_ERRFILE)
             out_log = file(ol_path, 'a+', 0)
             sys.stderr.flush()
             sys.stdout.flush()
@@ -572,13 +565,7 @@ def main():
     else:
         AUTOBROWSER = sabnzbd.cfg.AUTOBROWSER.get()
 
-    if umask == None:
-        umask = check_setting_str(cfg, 'misc', 'permissions', '')
-    if umask:
-        cfg['misc']['permissions'] = umask
-
     sabnzbd.DEBUG_DELAY = delay
-    sabnzbd.CFG = cfg
 
     init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True)
 
@@ -636,9 +623,9 @@ def main():
         logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optional)")
 
     if cherryhost == None:
-        cherryhost = check_setting_str(cfg, 'misc','host', DEF_HOST)
+        cherryhost = sabnzbd.cfg.CHERRYHOST.get()
     else:
-        cfg['misc']['host'] = cherryhost
+        sabnzbd.cfg.CHERRYHOST.set(cherryhost)
 
     # Get IP address, but discard APIPA/IPV6
     # If only APIPA's or IPV6 are found, fall back to localhost
@@ -704,15 +691,9 @@ def main():
         logging.warning("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
 
     if cherryport == None:
-        if os.name == 'nt':
-            defport = DEF_PORT_WIN
-        else:
-            defport = DEF_PORT_UNIX
-        cherryport= check_setting_int(cfg, 'misc', 'port', defport)
+        cherryport= sabnzbd.cfg.CHERRYPORT.get_int()
     else:
-        cfg['misc']['port'] = cherryport
-
-    log_dir = dir_setup(cfg, 'log_dir', sabnzbd.DIR_LCLDATA, DEF_LOG_DIR)
+        sabnzbd.cfg.CHERRYPORT.set(str(cherryport))
 
     os.chdir(sabnzbd.DIR_PROG)
 
@@ -744,8 +725,8 @@ def main():
     sabnzbd.WEBLOGFILE = None
 
     if cherrypylogging:
-        if log_dir:
-            sabnzbd.WEBLOGFILE = os.path.join(log_dir, DEF_LOG_CHERRY);
+        if logdir:
+            sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY);
         if not fork:
             try:
                 x= sys.stderr.fileno
@@ -768,13 +749,15 @@ def main():
                              'error_page.401': sabnzbd.misc.error_page_401
                            })
 
-    if https and not (sabnzbd.SSL_CA and sabnzbd.SSL_KEY):
+    ssl_ca = sabnzbd.cfg.SSL_CA.get_path()
+    ssl_key = sabnzbd.cfg.SSL_KEY.get_path()
+    if https and not (ssl_ca and ssl_key):
         logging.warning('Disabled HTTPS because of missing CA and KEY files')
         https = False
 
     if https:
-        cherrypy.config.update({'server.ssl_certificate' : sabnzbd.SSL_CA,
-                                 'server.ssl_private_key' : sabnzbd.SSL_KEY})
+        cherrypy.config.update({'server.ssl_certificate' : ssl_ca,
+                                 'server.ssl_private_key' : ssl_key})
 
 
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
@@ -798,7 +781,7 @@ def main():
 
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
 
-    sabnzbd.LOGLEVEL = logging_level
+    sabnzbd.cfg.LOG_LEVEL.callback(guard_loglevel)
 
     try:
         # Use internal cherrypy check first to prevent ugly tracebacks
@@ -837,9 +820,9 @@ def main():
         #    cherrypy.engine._do_execv()
 
         # 3 sec polling tasks
-        if (not testRelease) and sabnzbd.LOGLEVEL != logging_level:
-            logging_level = sabnzbd.LOGLEVEL
-            logger.setLevel(LOGLEVELS[logging_level])
+        if (not testRelease) and LOG_FLAG:
+            LOG_FLAG = False
+            logger.setLevel(LOGLEVELS[sabnzbd.cfg.LOG_LEVEL.get()])
 
         # 30 sec polling tasks
         if timer > 9:

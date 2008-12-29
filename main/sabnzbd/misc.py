@@ -42,6 +42,7 @@ except:
 import sabnzbd
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
+import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
@@ -55,7 +56,6 @@ PANIC_TEMPL = 2
 PANIC_QUEUE = 3
 PANIC_FWALL = 4
 PANIC_OTHER = 5
-PW_PREFIX = '!!!encoded!!!'
 
 
 def Cat2Opts(cat, pp, script):
@@ -65,16 +65,16 @@ def Cat2Opts(cat, pp, script):
     """
     if not pp:
         try:
-            pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
+            pp = config.get_categories()[cat.lower()].pp.get()
             logging.debug('[%s] Job gets options %s', __NAME__, pp)
-        except:
+        except KeyError:
             pp = cfg.DIRSCAN_PP.get()
 
     if not script:
         try:
-            script = sabnzbd.CFG['categories'][cat.lower()]['script']
+            script = config.get_categories()[cat.lower()].script.get()
             logging.debug('[%s] Job gets script %s', __NAME__, script)
-        except:
+        except KeyError:
             script = cfg.DIRSCAN_SCRIPT.get()
 
     return cat, pp, script
@@ -98,13 +98,13 @@ def Cat2OptsDef(fname, cat=None):
 
     if cat:
         try:
-            pp = sabnzbd.CFG['categories'][cat.lower()]['pp']
+            pp = config.get_categories()[cat.lower()].pp.get()
             logging.debug('[%s] Job %s gets options %s', __NAME__, name, pp)
         except:
             pass
 
         try:
-            script = sabnzbd.CFG['categories'][cat.lower()]['script']
+            script = config.get_categories()[cat.lower()].script.get()
             logging.debug('[%s] Job %s gets script %s', __NAME__, name, script)
         except:
             pass
@@ -572,39 +572,6 @@ def ExitSab(value):
         raw_input("Press ENTER to close this window");
     sys.exit(value)
 
-
-#------------------------------------------------------------------------------
-def encodePassword(pw):
-    """ Encode password in hexadecimal if needed """
-    enc = False
-    if pw:
-        encPW = PW_PREFIX
-        for c in pw:
-            cnum = ord(c)
-            if c == '#' or cnum<33 or cnum>126:
-                enc = True
-            encPW += '%2x' % cnum
-        if enc:
-            return encPW
-    return pw
-
-
-def decodePassword(pw, name):
-    """ Decode hexadecimal encoded password
-        but only decode when prefixed
-    """
-    decPW = ''
-    if pw.startswith(PW_PREFIX):
-        for n in range(len(PW_PREFIX), len(pw), 2):
-            try:
-                ch = chr( int(pw[n] + pw[n+1],16) )
-            except:
-                logging.error('[%s] Incorrectly encoded password %s', __NAME__, name)
-                return ''
-            decPW += ch
-        return decPW
-    else:
-        return pw
 
 #------------------------------------------------------------------------------
 def Notify(notificationName, message):
