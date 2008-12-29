@@ -60,19 +60,6 @@ DIRECTIVES = {'directiveStartToken': '<!--#', 'directiveEndToken': '#-->'}
 
 #------------------------------------------------------------------------------
 
-def check_timeout(timeout):
-    """ Check sensible ranges for server timeout """
-    timeout = Strip(timeout)
-    if timeout.isdigit():
-        if int(timeout) < MIN_TIMEOUT:
-            timeout = MIN_TIMEOUT
-        elif int(timeout) > MAX_TIMEOUT:
-            timeout = MAX_TIMEOUT
-    else:
-        timeout = DEF_TIMEOUT
-    return timeout
-
-
 def check_server(host, port):
     """ Check if server address resolves properly """
 

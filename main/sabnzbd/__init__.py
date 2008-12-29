@@ -302,6 +302,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     else:
         ARTICLECACHE = articlecache.ArticleCache(cfg.CACHE_LIMIT.get_int())
 
+    cfg.CACHE_LIMIT.callback(new_limit)
+
     if BPSMETER:
         BPSMETER.reset()
     else:
@@ -660,6 +662,14 @@ def purge_articles(articles):
         ARTICLECACHE.purge_articles(articles)
     except:
         logging.exception("[%s] Error accessing ARTICLECACHE?", __NAME__)
+
+def new_limit():
+    """ Callback for article cache changes """
+    try:
+        ARTICLECACHE.new_limit(cfg.CACHE_LIMIT.get_int())
+    except:
+        logging.exception("[%s] Error accessing ARTICLECACHE?", __NAME__)
+
 
 ################################################################################
 ## Misc Wrappers                                                              ##

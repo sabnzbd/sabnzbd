@@ -22,14 +22,13 @@ sabnzbd.articlecache - Article cache handling
 __NAME__ = "articlecache"
 
 import logging
+import threading
+
 import sabnzbd
-
-
-from threading import Lock
-
 from sabnzbd.decorators import *
 
-ARTICLE_LOCK = Lock()
+
+ARTICLE_LOCK = threading.Lock()
 class ArticleCache:
     def __init__(self, cache_limit = 0):
         self.__cache_limit = cache_limit
@@ -42,6 +41,11 @@ class ArticleCache:
     def cache_info(self):
         return (len(self.__article_list), self.__cache_size, self.__cache_limit)
         
+    @synchronized(ARTICLE_LOCK)
+    def new_limit(self, limit):
+        """ Called when cache limit changes """
+        self.__cache_limit = limit
+
     @synchronized(ARTICLE_LOCK)
     def save_article(self, article, data):
         nzf = article.nzf
