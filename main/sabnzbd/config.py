@@ -239,6 +239,10 @@ class OptionStr(Option):
         """ Return value converted to a float, allowing KMGT notation """
         return sabnzbd.misc.from_units(self.get())
 
+    def get_int(self):
+        """ Return value converted to an int, allowing KMGT notation """
+        return int(self.get_float())
+
     def set(self, value):
         """ Set stripped value """
         error = None

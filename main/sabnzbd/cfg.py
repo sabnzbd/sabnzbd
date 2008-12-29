@@ -20,6 +20,7 @@ sabnzbd.cfg - Configuration Parameters
 """
 __NAME__ = "sabnzbd.cfg"
 
+import os
 from sabnzbd.constants import *
 from sabnzbd.config import OptionBool, OptionNumber, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
@@ -130,11 +131,27 @@ CACHE_DIR = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
 DIRSCAN_DIR = OptionDir('misc', 'dirscan_dir', create=False)
 DIRSCAN_SPEED = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
 
+CHERRYHOST = OptionStr('misc','host', DEF_HOST)
+if os.name == 'nt':
+    CHERRYPORT = OptionStr('misc','port', DEF_PORT_WIN)
+else:
+    CHERRYPORT = OptionStr('misc','port', DEF_PORT_UNIX)
+USERNAME = OptionStr('misc', 'username')
+PASSWORD = OptionPassword('misc', 'password')
+BANDWIDTH_LIMIT = OptionStr('misc', 'bandwith_limit', 0)
+REFRESH_RATE = OptionNumber('misc', 'refresh_rate', 0)
+RSS_RATE = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
+CACHE_LIMIT = OptionStr('misc', 'cache_limit')
+WEB_DIR = OptionStr('misc', 'web_dir', 'Default')
+WEB_DIR2 = OptionStr('misc', 'web_dir2')
+WEB_COLOR = OptionStr('misc', 'web_color')
+WEB_COLOR2 = OptionStr('misc', 'web_color2')
+CLEANUP_LIST = OptionList('misc', 'cleanup_list')
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
 #
-def set_root_folders(home, lcldata, prog):
+def set_root_folders(home, lcldata, prog, interf):
     EMAIL_DIR.set_root(home)
     DOWNLOAD_DIR.set_root(home)
     COMPLETE_DIR.set_root(home)

@@ -45,25 +45,7 @@ Choose a skin (restart required!).<br>
         <!--#end if#-->
     <!--#end for#-->
 </select>
-<!--#if $web_colors#-->
-<br>
-<br>
-<strong>Color schema:</strong><br>
-Choose a color scheme for the skin.<br>
-<select name="web_color">
-    <!--#for $webline in $web_colors#-->
-        <!--#if $webline.lower() == $web_color.lower()#-->
-            <option value="$webline" selected>$webline</option>
-        <!--#else if not $web_color.lower() and $webline.lower() == 'darkblue'#-->
-            <option value="$webline" selected>$webline</option>
-        <!--#else#-->
-            <option value="$webline">$webline</option>
-        <!--#end if#-->
-    <!--#end for#-->
-</select>
-<!--#end if#-->
-<br>
-<br>
+<br/><br/>
 <strong>Secondary User Interface:</strong><br>
 Activate a secondary skin (restart required!).<br>
 <select name="web_dir2">

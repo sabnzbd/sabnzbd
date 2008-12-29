@@ -211,12 +211,12 @@ def Web_Template(key, defweb, wdir):
     """
     if wdir == None:
         try:
-            wdir = cfg['misc'][key]
+            wdir = key.get()
         except:
             wdir = ''
     if not wdir:
         wdir = defweb
-    cfg['misc'][key] = wdir
+    key.set(wdir)
     if not wdir:
         # No default value defined, accept empty path
         return ''
@@ -463,7 +463,7 @@ def main():
             Panic('Cannot create folder "%s".' % sabnzbd.DIR_LCLDATA, 'Check specified INI file location.')
             ExitSab(1)
 
-    sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA, sabnzbd.DIR_PROG)
+    sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA, sabnzbd.DIR_PROG, sabnzbd.DIR_INTERFACES)
 
     if not config.read_config(f):
         Panic('"%s" is not a valid configuration file.' % f, \
@@ -716,20 +716,16 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    web_dir  = Web_Template('web_dir',  DEF_STDINTF,  web_dir)
-    web_dir2 = Web_Template('web_dir2', '', web_dir2)
+    web_dir  = Web_Template(sabnzbd.cfg.WEB_DIR,  DEF_STDINTF,  web_dir)
+    web_dir2 = Web_Template(sabnzbd.cfg.WEB_DIR2, '', web_dir2)
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
 
-    sabnzbd.WEB_COLOR  = CheckColor(sabnzbd.WEB_COLOR,  web_dir)
-    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.WEB_COLOR2, web_dir2)
-    cfg['misc']['web_color']  = sabnzbd.WEB_COLOR
-    cfg['misc']['web_color2'] = sabnzbd.WEB_COLOR2
-
-    sabnzbd.interface.USERNAME = check_setting_str(cfg, 'misc', 'username', '')
-
-    sabnzbd.interface.PASSWORD = decodePassword(check_setting_str(cfg, 'misc', 'password', '', False), 'web')
+    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.WEB_COLOR.get(),  web_dir)
+    sabnzbd.cfg.WEB_COLOR.set(sabnzbd.WEB_COLOR)
+    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.WEB_COLOR2.get(),  web_dir2)
+    sabnzbd.cfg.WEB_COLOR2.set(sabnzbd.WEB_COLOR2)
 
     if fork and os.name != 'nt':
         daemonize()
@@ -791,7 +787,7 @@ def main():
         appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
         appconfig['/sabnzbd/m/static'] = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
 
-    if sabnzbd.interface.USERNAME and sabnzbd.interface.PASSWORD:
+    if sabnzbd.cfg.USERNAME.get() and sabnzbd.cfg.PASSWORD.get():
         appconfig['/sabnzbd'] = {'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
                                 'tools.basic_auth.users' : sabnzbd.interface.get_users, 'tools.basic_auth.encrypt' : sabnzbd.interface.encrypt_pwd}
                  

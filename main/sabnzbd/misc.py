@@ -805,11 +805,11 @@ def BadFetch(nzo, url, retry=False, archive=False):
 def OnCleanUpList(filename, skip_nzb=False):
     """ Return True if a filename matches the clean-up list """
 
-    if sabnzbd.CLEANUP_LIST:
+    if cfg.CLEANUP_LIST.get():
         ext = os.path.splitext(filename)[1].strip().strip('.')
         if os.name == 'nt': ext = ext.lower()
         
-        for k in sabnzbd.CLEANUP_LIST:
+        for k in cfg.CLEANUP_LIST.get():
             item = k.strip().strip('.')
             if item == ext and not (skip_nzb and item == 'nzb'):
                 return True

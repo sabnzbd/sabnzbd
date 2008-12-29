@@ -103,7 +103,7 @@ def init():
 
     if need_rsstask:
         d = range(1, 8) # all days of the week
-        interval = sabnzbd.RSS_RATE
+        interval = cfg.RSS_RATE.get()
         ran_m = random.randint(0,interval-1)
         for n in range(0, 24*60, interval):
             at = n + ran_m
@@ -134,10 +134,10 @@ def init():
             logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
             __SCHED.addDaytimeTask(newzbin.getBookmarksNow, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
 
-    # Subscribe to bookmark schedule changes
+    # Subscribe to special schedule changes
     cfg.NEWZBIN_BOOKMARKS.callback(schedule_guard)
     cfg.BOOKMARK_RATE.callback(schedule_guard)
-
+    cfg.RSS_RATE.callback(schedule_guard)
 
 def start():
     """ Start the scheduler
@@ -254,7 +254,6 @@ def analyse(was_paused=False):
         sabnzbd.DOWNLOADER.paused = paused
     if speedlimit:
         sabnzbd.DOWNLOADER.limit_speed(s)
-        sabnzbd.BANDWITH_LIMIT = speedlimit
     for serv in servers:
         try:
             config.get_config('servers', serv).enable.set(servers[serv])

@@ -473,7 +473,7 @@ def HandleEmptyQueue():
 def CleanUpList(wdir, skip_nzb):
     """ Remove all files matching the cleanup list """
 
-    if sabnzbd.CLEANUP_LIST:
+    if cfg.CLEANUP_LIST.get():
         try:
             files = os.listdir(wdir)
         except:

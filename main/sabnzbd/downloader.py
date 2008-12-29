@@ -157,7 +157,8 @@ class Downloader(Thread):
         self.paused = paused
         
         #used for throttling bandwidth and scheduling bandwidth changes
-        self.bandwith_limit = sabnzbd.BANDWITH_LIMIT
+        self.bandwidth_limit = cfg.BANDWIDTH_LIMIT.get()
+        cfg.BANDWIDTH_LIMIT.callback(self.speed_set)
 
         # Used for reducing speed
         self.delayed = False
@@ -260,8 +261,13 @@ class Downloader(Thread):
         self.force_disconnect = True
 
     def limit_speed(self, value):
-        if value >= 0:
-            self.bandwith_limit = value
+        self.bandwidth_limit = value
+
+    def get_limit(self):
+        return self.bandwidth_limit
+
+    def speed_set(self):
+        self.bandwidth_limit = cfg.BANDWIDTH_LIMIT.get()
         
     def run(self):
         self.decoder.start()
@@ -417,10 +423,10 @@ class Downloader(Thread):
                     continue
 
                 else:
-                    if self.bandwith_limit:
+                    if self.bandwidth_limit:
                         bps = sabnzbd.get_bps()
                         bps += bytes
-                        limit = self.bandwith_limit * 1024
+                        limit = self.bandwidth_limit * 1024
                         if bps > limit:
                             sleeptime = (bps/limit)-1
                             if sleeptime > 0 and sleeptime < 10:

@@ -88,12 +88,8 @@ QUEUECOMPLETEACTION_GO = False # Booleen value whether to run an action or not a
 
 WAITEXIT = False
 
-CLEANUP_LIST = []
-
-BANDWITH_LIMIT = 0
 DEBUG_DELAY = 0
 DAEMON = None
-RSS_RATE = None
 
 LOGFILE = None
 WEBLOGFILE = None
@@ -113,10 +109,10 @@ BPSMETER = None
 
 URLGRABBER = None
 
-WEB_COLOR = None
-WEB_COLOR2 = None
 WEB_DIR = None
 WEB_DIR2 = None
+WEB_COLOR = None
+WEB_COLOR2 = None
 LOGIN_PAGE = None
 SABSTOP = False
 
@@ -280,15 +276,13 @@ INIT_LOCK = Lock()
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
     global __INITIALIZED__, \
-           CLEANUP_LIST, \
            POSTPROCESSOR, ASSEMBLER, \
            DIRSCANNER, URLGRABBER, NZBQ, DOWNLOADER, \
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, LOGLEVEL, AMBI_LOCALHOST, WAITEXIT, \
-           BPSMETER, BANDWITH_LIMIT, DEBUG_DELAY, ARTICLECACHE, \
-           DAEMON, RSS_RATE, MY_NAME, MY_FULLNAME, NEW_VERSION, \
+           BPSMETER, DEBUG_DELAY, ARTICLECACHE, \
+           DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           WEB_COLOR, WEB_COLOR2, \
-           WEB_DIR, WEB_DIR2, DARWIN, \
+           DARWIN, \
            SSL_CA, SSL_KEY
 
     if __INITIALIZED__:
@@ -301,10 +295,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     CheckSection('misc')
     CheckSection('logging')
 
-    CLEANUP_LIST = check_setting_str(CFG, 'misc', 'cleanup_list', '')
-    if type(CLEANUP_LIST) != type([]):
-        CLEANUP_LIST = []
-
     if clean_up:
         xlist= glob.glob(cfg.CACHE_DIR.get_path() + '/*')
         for x in xlist:
@@ -316,29 +306,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     if not os.path.exists(path):
         sabnzbd.misc.create_real_path(cfg.DIRSCAN_DIR.ident(), '', path, False)
 
-    refresh_rate = check_setting_int(CFG, 'misc', 'refresh_rate', DEF_QRATE)
-
-    RSS_RATE = check_setting_int(CFG, 'misc', 'rss_rate', 60)
-    RSS_RATE = minimax(RSS_RATE, 15, 24*60)
-
-    try:
-        BANDWITH_LIMIT = check_setting_int(CFG, 'misc', 'bandwith_limit', 0)
-    except:
-        BANDWITH_LIMIT = 0
-
-    if BANDWITH_LIMIT < 1:
-        BANDWITH_LIMIT = 0
-
-
-    cache_limit = check_setting_str(CFG, 'misc', 'cache_limit', "0")
-    cache_limit = int(misc.from_units(cache_limit))
-    logging.debug("Actual cache limit = %s", cache_limit)
-
     SSL_CA = check_setting_file(CFG, 'ssl_ca', DIR_LCLDATA)
     SSL_KEY = check_setting_file(CFG, 'ssl_key', DIR_LCLDATA)
-
-    WEB_COLOR  = check_setting_str(CFG, 'misc', 'web_color',  '')
-    WEB_COLOR2 = check_setting_str(CFG, 'misc', 'web_color2', '')
 
     ############################
     ## Object initializiation ##
@@ -350,9 +319,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     scheduler.init()
 
     if ARTICLECACHE:
-        ARTICLECACHE.__init__(cache_limit)
+        ARTICLECACHE.__init__(cfg.CACHE_LIMIT.get_int())
     else:
-        ARTICLECACHE = articlecache.ArticleCache(cache_limit)
+        ARTICLECACHE = articlecache.ArticleCache(cfg.CACHE_LIMIT.get_int())
 
     if BPSMETER:
         BPSMETER.reset()
@@ -924,13 +893,18 @@ def unidle_downloader():
 
 @synchronized_CV
 def limit_speed(value):
-    global BANDWITH_LIMIT
     try:
         DOWNLOADER.limit_speed(int(value))
-        BANDWITH_LIMIT = int(value)
         logging.info("[%s] Bandwidth limit set to %s", __NAME__, value)
     except NameError:
         logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+
+def get_limit():
+    try:
+        return DOWNLOADER.get_limit()
+    except NameError:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+        return -1
 
 
 

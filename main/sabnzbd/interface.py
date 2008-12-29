@@ -61,11 +61,6 @@ DIRECTIVES = {'directiveStartToken': '<!--#', 'directiveEndToken': '#-->'}
 
 #------------------------------------------------------------------------------
 
-USERNAME = None
-PASSWORD = None
-
-#------------------------------------------------------------------------------
-
 def check_timeout(timeout):
     """ Check sensible ranges for server timeout """
     timeout = Strip(timeout)
@@ -187,9 +182,8 @@ def get_arg(args, kw):
 
 #------------------------------------------------------------------------------
 def get_users():
-    global USERNAME, PASSWORD
     users = {}
-    users[USERNAME] = PASSWORD
+    users[cfg.USERNAME.get()] = cfg.PASSWORD.get()
     return users
 
 def encrypt_pwd(pwd):
@@ -216,11 +210,11 @@ class LoginPage:
     def index(self, _dc = None):
         return ""
 
-    def change_web_dir(self, web_dir):
-        self.sabnzbd = MainPage(web_dir, self.root, prim=True)
+    #def change_web_dir(self, web_dir):
+        #self.sabnzbd = MainPage(web_dir, self.root, prim=True)
         
-    def change_web_dir2(self, web_dir):
-        self.sabnzbd.m = MainPage(web_dir, self.root, prim=False)
+    #def change_web_dir2(self, web_dir):
+        #self.sabnzbd.m = MainPage(web_dir, self.root, prim=False)
 
 
 #------------------------------------------------------------------------------
@@ -352,10 +346,10 @@ class MainPage:
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        if USERNAME and PASSWORD:
+        if cfg.USERNAME.get() and cfg.PASSWORD.get():
             ma_username = get_arg(kwargs, 'ma_username')
             ma_password = get_arg(kwargs, 'ma_password')
-            if not (ma_password == PASSWORD and ma_username == USERNAME):
+            if not (ma_password == cfg.PASSWORD.get() and ma_username == cfg.USERNAME.get()):
                 return "Missing authentication"
 
         return self.api_handler(kwargs)
@@ -616,30 +610,22 @@ class MainPage:
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
                 if not value: value = '0'
                 if value.isdigit():
-                    try: value = int(value)
-                    except: return 'error: Please submit a value\n'
-                    sabnzbd.CFG['misc']['bandwith_limit'] = value
-                    sabnzbd.BANDWITH_LIMIT = value
+                    try:
+                        value = int(value)
+                    except:
+                        return 'error: Please submit a value\n'
                     sabnzbd.limit_speed(value)
-                    config.save_configfile(sabnzbd.CFG)
                     return 'ok\n'
                 else:
                     return 'error: Please submit a value\n'
             elif name == 'get_speedlimit':
-                band = '-1'
-                try:
-                    band = str(int(sabnzbd.BANDWITH_LIMIT))
-                except:
-                    pass
-                return band
+                return str(int(sabnzbd.get_limit(value)))
             elif name == 'set_colorscheme':
                 if value:
                     if self.__prim:
-                        sabnzbd.CFG['misc']['web_color'] = value
-                        sabnzbd.WEB_COLOR = value
+                        cfg.WEB_COLOR.set(value)
                     else:
-                        sabnzbd.CFG['misc']['web_color2'] = value
-                        sabnzbd.WEB_COLOR2 = value
+                        cfg.WEB_COLOR2.set(value)
                     return 'ok\n'
                 else:
                     return 'error: Please submit a value\n'
@@ -925,13 +911,7 @@ class QueuePage:
     
     @cherrypy.expose
     def set_speedlimit(self, _dc = None, value=None):
-        if not value:
-            value = '0'
-        try:
-            value = int(value)
-        except:
-            return 'error: Please submit a value\n'
-        sabnzbd.limit_speed(value)
+        sabnzbd.limit_speed(IntConv(value))
         raise Raiser(self.__root, _dc=_dc)
 
 class HistoryPage:
@@ -1168,6 +1148,12 @@ class ConfigSwitches:
 
 
 #------------------------------------------------------------------------------
+LIST_GENERAL = (
+    'host', 'port', 'username', 'password',
+    'bandwith_limit', 'refresh_rate', 'rss_rate',
+    'cache_limit', 'web_dir', 'web_dir2',
+    'cleanup_list'
+    )
 
 class ConfigGeneral:
     def __init__(self, web_dir, root, prim):
@@ -1179,7 +1165,8 @@ class ConfigGeneral:
     def index(self, _dc = None):
         def ListColors(web_dir):
             lst = []
-            dd = os.path.abspath(web_dir + '/static/stylesheets/colorschemes')
+            web_dir = os.path.join(sabnzbd.DIR_INTERFACES ,web_dir)
+            dd = os.path.abspath(web_dir + '/templates/static/stylesheets/colorschemes')
             if (not dd) or (not os.access(dd, os.R_OK)):
                 return lst
             for color in glob.glob(dd + '/*'):
@@ -1188,47 +1175,60 @@ class ConfigGeneral:
                     lst.append(col)
             return lst
 
+        def add_color(dir, color):
+            if color:
+                return dir + ' - ' + color
+            else:
+                return dir
+
         if cfg.CONFIGLOCK.get():
             return Protected()
 
-        config, pnfo_list, bytespersec = build_header(self.__prim)
+        conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        config['configfn'] = sabnzbd.CFG.filename
+        conf['configfn'] = sabnzbd.CFG.filename
 
-        config['host'] = sabnzbd.CFG['misc']['host']
-        config['port'] = sabnzbd.CFG['misc']['port']
-        config['username'] = sabnzbd.CFG['misc']['username']
-        config['password'] = '*' * len(decodePassword(sabnzbd.CFG['misc']['password'], 'web'))
-        config['bandwith_limit'] = sabnzbd.CFG['misc']['bandwith_limit']
-        config['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
-        config['rss_rate'] = sabnzbd.CFG['misc']['rss_rate']
-        config['cache_limitstr'] = sabnzbd.CFG['misc']['cache_limit'].upper()
+        wlist = []
+        wlist2 = ['None']
+        interfaces = glob.glob(sabnzbd.DIR_INTERFACES + "/*")
+        for k in interfaces:
+            if k.endswith(DEF_STDINTF):
+                interfaces.remove(k)
+                interfaces.insert(0, k)
+                break
+        for web in interfaces:
+            rweb = os.path.basename(web)
+            if rweb != '.svn' and rweb != '_svn' and os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
+                cols = ListColors(rweb)
+                if cols:
+                    for col in cols:
+                        wlist.append(add_color(rweb, col))
+                        wlist2.append(add_color(rweb, col))
+                else:
+                    wlist.append(rweb)
+                    wlist2.append(rweb)
+        conf['web_list'] = wlist
+        conf['web_list2'] = wlist2
 
-        wlist = [DEF_STDINTF]
-        wlist2 = ['None', DEF_STDINTF]
-        for web in glob.glob(sabnzbd.DIR_INTERFACES + "/*"):
-            rweb= os.path.basename(web)
-            if rweb != DEF_STDINTF and rweb != "_svn" and rweb != ".svn" and \
-               os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
-                wlist.append(rweb)
-                wlist2.append(rweb)
-        config['web_list'] = wlist
-        config['web_list2'] = wlist2
+        conf['web_colors'] = ['None'] #ListColors(cfg.WEB_DIR.get())
+        conf['web_color'] = 'None' #cfg.WEB_COLOR.get()
+        conf['web_colors2'] = ['None'] #ListColors(cfg.WEB_DIR2.get())
+        conf['web_color2'] = 'None' #cfg.WEB_COLOR2.get()
 
-        config['web_dir']  = sabnzbd.CFG['misc']['web_dir']
-        config['web_dir2'] = sabnzbd.CFG['misc']['web_dir2']
-
-        if self.__prim:
-            config['web_colors'] = ListColors(sabnzbd.WEB_DIR)
-            config['web_color'] = sabnzbd.WEB_COLOR
-        else:
-            config['web_colors'] = ListColors(sabnzbd.WEB_DIR2)
-            config['web_color'] = sabnzbd.WEB_COLOR2
-
-        config['cleanup_list'] = List2String(sabnzbd.CFG['misc']['cleanup_list'])
+        conf['web_dir']  = add_color(cfg.WEB_DIR.get(), cfg.WEB_COLOR.get())
+        conf['web_dir2'] = add_color(cfg.WEB_DIR2.get(), cfg.WEB_COLOR2.get())
+        conf['host'] = cfg.CHERRYHOST.get()
+        conf['port'] = cfg.CHERRYPORT.get()
+        conf['username'] = cfg.USERNAME.get()
+        conf['password'] = cfg.PASSWORD.get_stars()
+        conf['bandwith_limit'] = cfg.BANDWIDTH_LIMIT.get()
+        conf['refresh_rate'] = cfg.REFRESH_RATE.get()
+        conf['rss_rate'] = cfg.RSS_RATE.get()
+        conf['cache_limitstr'] = cfg.CACHE_LIMIT.get()
+        conf['cleanup_list'] = List2String(cfg.CLEANUP_LIST.get())
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
-                            searchList=[config], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1238,49 +1238,57 @@ class ConfigGeneral:
                     bandwith_limit = None, cleanup_list = None, cache_limitstr = None, _dc = None):
 
 
-        if web_color:
-            if self.__prim:
-                sabnzbd.CFG['misc']['web_color'] = web_color
-            else:
-                sabnzbd.CFG['misc']['web_color2'] = web_color
+        #if web_color:
+        #    if self.__prim:
+        #        cfg.WEB_COLOR.set(web_color)
+        #    else:
+        #        cfg.WEB_COLOR2.set(web_color)
 
-        sabnzbd.CFG['misc']['host'] = Strip(host)
-        sabnzbd.CFG['misc']['port'] = Strip(port)
-        sabnzbd.CFG['misc']['username'] = Strip(web_username)
-        if (not web_password) or (web_password and web_password.strip('*')):
-            sabnzbd.CFG['misc']['password'] = encodePassword(web_password)
-        sabnzbd.CFG['misc']['bandwith_limit'] = bandwith_limit
-        sabnzbd.CFG['misc']['refresh_rate'] = refresh_rate
-        sabnzbd.CFG['misc']['rss_rate'] = sabnzbd.minimax(rss_rate, 15, 24*60)
-        if os.name == 'nt':
+        cfg.CHERRYHOST.set(host)
+        cfg.CHERRYPORT.set(port)
+        cfg.USERNAME.set(web_username)
+        cfg.PASSWORD.set(web_password)
+        cfg.BANDWIDTH_LIMIT.set(bandwith_limit)
+        cfg.RSS_RATE.set(rss_rate)
+        cfg.REFRESH_RATE.set(refresh_rate)
+        if cleanup_list and os.name == 'nt':
             cleanup_list = cleanup_list.lower()
-        sabnzbd.CFG['misc']['cleanup_list'] = listquote.simplelist(cleanup_list)
-        sabnzbd.CFG['misc']['cache_limit'] = cache_limitstr
+        cfg.CLEANUP_LIST.set_string(cleanup_list)
+        cfg.CACHE_LIMIT.set(cache_limitstr)
+
+        try:
+            web_dir, web_color = web_dir.split(' - ')
+        except:
+            web_color = ''
+        try:
+            web_dir2, web_color2 = web_dir2.split(' - ')
+        except:
+            web_color2 = ''
 
         web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
         web_dir2_path = real_path(sabnzbd.DIR_INTERFACES, web_dir2)
         
         if not os.path.exists(web_dir_path):
-            logging.warning('Cannot find web template: %s', web_dir_path)
+            return badParameterResponse('Cannot find web template: %s' % web_dir_path)
         else:    
-            sabnzbd.CFG['misc']['web_dir']  = web_dir
-            self.__web_dir = web_dir
+            cfg.WEB_DIR.set(web_dir)
+            cfg.WEB_COLOR.set(web_color)
             
         if web_dir2 == 'None':
-            sabnzbd.CFG['misc']['web_dir2'] = ''
+            cfg.WEB_DIR2.set('')
         elif os.path.exists(web_dir2_path):
-            sabnzbd.CFG['misc']['web_dir2'] = web_dir2
+            cfg.WEB_DIR2.set(web_dir2)
+        cfg.WEB_COLOR2.set(web_color2)
           
-        if os.path.exists(web_dir_path) and os.path.exists(web_dir2_path):
-            
-            web_dir_path = real_path(web_dir_path, "templates")
-            web_dir2_path = real_path(web_dir2_path, "templates")
-            sabnzbd.change_web_dir(web_dir_path)
-            sabnzbd.change_web_dir2(web_dir2_path)
-            
-       
-       
-        return saveAndRestart(self.__root, _dc)
+        #if os.path.exists(web_dir_path) and os.path.exists(web_dir2_path):
+        #    web_dir_path = real_path(web_dir_path, "templates")
+        #    web_dir2_path = real_path(web_dir2_path, "templates")
+        #    sabnzbd.change_web_dir(web_dir_path)
+        #    sabnzbd.change_web_dir2(web_dir2_path)
+
+        config.save_config()
+        raise Raiser(self.__root, _dc=_dc)
+        #return saveAndRestart(self.__root, _dc)
 
 
 #------------------------------------------------------------------------------
@@ -2158,12 +2166,8 @@ def build_header(prim):
 
     header = { 'version':sabnzbd.__version__, 'paused':sabnzbd.paused(),
                'uptime':uptime, 'color_scheme':color }
-    try:
-        if int(sabnzbd.BANDWITH_LIMIT) > 0:
-            speed_limit = sabnzbd.BANDWITH_LIMIT
-        else:
-            speed_limit = ''
-    except:
+    speed_limit = sabnzbd.get_limit()
+    if speed_limit <= 0:
         speed_limit = ''
 
     header['helpuri'] = 'http://sabnzbd.wikidot.com'
@@ -2181,10 +2185,10 @@ def build_header(prim):
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = os.name == 'nt'
-    if prim:
-        header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir'])
-    else:
-        header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir2'])
+    #if prim:
+    #    header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir'])
+    #else:
+    #    header['web_name'] = os.path.basename(sabnzbd.CFG['misc']['web_dir2'])
 
     bytespersec = sabnzbd.bps()
     qnfo = sabnzbd.queue_info()
@@ -2865,8 +2869,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
         info['newzbinDetails'] = True
 
-    if int(sabnzbd.CFG['misc']['refresh_rate']) > 0:
-        info['refresh_rate'] = sabnzbd.CFG['misc']['refresh_rate']
+    if cfg.REFRESH_RATE.get() > 0:
+        info['refresh_rate'] = str(cfg.REFRESH_RATE.get())
     else:
         info['refresh_rate'] = ''
         
