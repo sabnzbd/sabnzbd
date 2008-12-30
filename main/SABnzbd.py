@@ -57,7 +57,6 @@ except:
 
 import sabnzbd
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
-from sabnzbd.__init__ import check_setting_str, check_setting_int, dir_setup
 from sabnzbd.interface import *
 from sabnzbd.constants import *
 from sabnzbd.newsunpack import find_programs
@@ -814,17 +813,17 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
-        # This clumsiness would be needed for auto-reload to work
-        # but we disabled it.
-        #if cherrypy.engine.execv:
-        #    cherrypy.engine._do_execv()
+        ### 3 sec polling tasks
+        # Check for auto-restart request
+        if cherrypy.engine.execv:
+            cherrypy.engine._do_execv()
 
-        # 3 sec polling tasks
+        # Check for loglevel changes, ignore for non-final releases
         if (not testRelease) and LOG_FLAG:
             LOG_FLAG = False
             logger.setLevel(LOGLEVELS[sabnzbd.cfg.LOG_LEVEL.get()])
 
-        # 30 sec polling tasks
+        ### 30 sec polling tasks
         if timer > 9:
             timer = 0
             # Keep Windows awake (if needed)

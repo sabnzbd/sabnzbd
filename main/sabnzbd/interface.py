@@ -55,11 +55,22 @@ from sabnzbd.database import HistoryDB, build_history_info, unpack_history_info
 
 from sabnzbd.constants import *
 
+#------------------------------------------------------------------------------
+# Global constants
+
 RE_URL = re.compile('(.+)/sabnzbd(/m)?/rss', re.I)
 DIRECTIVES = {'directiveStartToken': '<!--#', 'directiveEndToken': '#-->'}
+RESTART_MSG1 = '''
+Initiating restart...
+'''
+RESTART_MSG2 = '''
+<br/>SABnzbd shutdown finished.
+<br/>Wait for about 5 second and then click the button below.
+<br/><br/><strong><a href="..">Refresh</a></strong>
+'''
 
 #------------------------------------------------------------------------------
-
+#
 def check_server(host, port):
     """ Check if server address resolves properly """
 
@@ -167,6 +178,7 @@ def get_arg(args, kw):
 
 
 #------------------------------------------------------------------------------
+# Web login support
 def get_users():
     users = {}
     users[cfg.USERNAME.get()] = cfg.PASSWORD.get()
@@ -175,6 +187,9 @@ def get_users():
 def encrypt_pwd(pwd):
     return pwd
 
+
+#------------------------------------------------------------------------------
+# Database support
 def connect_db(thread_index): 
     # Create a connection and store it in the current thread 
     db_history = os.path.join(sabnzbd.DIR_LCLDATA, DB_HISTORY_NAME)
@@ -182,6 +197,8 @@ def connect_db(thread_index):
     
 cherrypy.engine.subscribe('start_thread', connect_db)
 
+
+#------------------------------------------------------------------------------
 class LoginPage:
     def __init__(self, web_dir, root, web_dir2=None, root2=None):
         self.sabnzbd = MainPage(web_dir, root, prim=True)
@@ -195,12 +212,6 @@ class LoginPage:
     @cherrypy.expose
     def index(self, _dc = None):
         return ""
-
-    #def change_web_dir(self, web_dir):
-        #self.sabnzbd = MainPage(web_dir, self.root, prim=True)
-        
-    #def change_web_dir2(self, web_dir):
-        #self.sabnzbd.m = MainPage(web_dir, self.root, prim=False)
 
 
 #------------------------------------------------------------------------------
@@ -1025,14 +1036,12 @@ class ConfigPage:
         return template.respond()
 
     @cherrypy.expose
-    def restart(self, _dc = None):
+    def restart(self, **kwargs):
+        yield RESTART_MSG1
         sabnzbd.halt()
-        init_ok = sabnzbd.initialize()
-        if init_ok:
-            sabnzbd.start()
-            raise Raiser(self.__root, _dc=_dc)
-        else:
-            return "SABnzbd restart failed! See logfile(s)."
+        yield RESTART_MSG2
+        cherrypy.engine.restart()
+
 
 #------------------------------------------------------------------------------
 LIST_DIRPAGE = ( \
@@ -1218,13 +1227,6 @@ class ConfigGeneral:
                     cronlines = None, refresh_rate = None, rss_rate = None,
                     bandwith_limit = None, cleanup_list = None, cache_limitstr = None, _dc = None):
 
-
-        #if web_color:
-        #    if self.__prim:
-        #        cfg.WEB_COLOR.set(web_color)
-        #    else:
-        #        cfg.WEB_COLOR2.set(web_color)
-
         cfg.CHERRYHOST.set(host)
         cfg.CHERRYPORT.set(port)
         cfg.USERNAME.set(web_username)
@@ -1261,12 +1263,6 @@ class ConfigGeneral:
             cfg.WEB_DIR2.set(web_dir2)
         cfg.WEB_COLOR2.set(web_color2)
           
-        #if os.path.exists(web_dir_path) and os.path.exists(web_dir2_path):
-        #    web_dir_path = real_path(web_dir_path, "templates")
-        #    web_dir2_path = real_path(web_dir2_path, "templates")
-        #    sabnzbd.change_web_dir(web_dir_path)
-        #    sabnzbd.change_web_dir2(web_dir2_path)
-
         config.save_config()
         raise Raiser(self.__root, _dc=_dc)
 
@@ -1918,16 +1914,6 @@ class ConnectionInfo:
         raise Raiser(self.__root, _dc=_dc)
 
 
-#def saveAndRestart(redirect_root, _dc, evalSched=False):
-#    config.save_config()
-#    sabnzbd.halt()
-#    init_ok = sabnzbd.initialize(evalSched=evalSched)
-#    if init_ok:
-#        sabnzbd.start()
-#        raise Raiser(redirect_root, _dc=_dc)
-#    else:
-#        return "SABnzbd restart failed! See logfile(s)."
-
 def Protected():
     return badParameterResponse("Configuration is locked")
 
@@ -2120,6 +2106,7 @@ def build_header(prim):
     header['diskspacetotal1'] = "%.2f" % disktotal(cfg.DOWNLOAD_DIR.get_path())
     header['diskspacetotal2'] = "%.2f" % disktotal(cfg.COMPLETE_DIR.get_path())
     header['speedlimit'] = "%s" % speed_limit
+    header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last()
     if prim:

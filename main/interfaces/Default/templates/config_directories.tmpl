@@ -17,6 +17,7 @@
     <emp>In "$my_home"</emp><br><br>
     <strong>Temporary Download Folder:</strong><br>
     Location to store unprocessed downloads.<br>
+    <i>Can only be changed when queue is empty.</i><br/>
     <input type="text" size="40" name="download_dir" value="$download_dir">
     <br>
     <br>
@@ -61,11 +62,14 @@
     <emp>In "$my_lcldata"</emp><br><br>
     <strong>Cache folder:</strong><br>
     Location for temporary storage.<br>
+    <i>Can only be changed when queue is empty.</i><br/>
+    <i>Requires restart.</i><br/>
     <input type="text" size="40" name="cache_dir" value="$cache_dir">
     <br>
     <br>
     <strong>Log folder:</strong><br>
     Location of log files for SABnzbd.<br>
+    <i>Requires restart.</i><br/>
     <input type="text" size="40" name="log_dir" value="$log_dir">
     <br>
     <br>
@@ -76,6 +80,9 @@
 
 </div><br>
 <input type="submit" size="40" value="Save Changes">
+<!--#if $restart_req#-->
+    <input type="submit" onclick="this.form.action='../restart'; this.form.submit(); return false;" value="Restart"/>
+<!--#end if#-->
 </form>
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

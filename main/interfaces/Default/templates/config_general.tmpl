@@ -8,12 +8,10 @@
 
 <h2>General configuration</h2>
 <form action="saveGeneral" method="post">
-<div class="EntryBlock"><p><strong>
-    <em>NOTE:</em> Manual restart needed for web server changes!<br />
-</strong></p>
+<div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 
-<legend>Web server</legend>
+<legend>Web server <i>(restart required)</i></legend>
 <strong>Host:</strong><br>
 Host SABnzbd should listen on.<br>
 <input type="text" name="host" value="$host">
@@ -22,16 +20,6 @@ Host SABnzbd should listen on.<br>
 <strong>Port:</strong><br>
 Post SABnzbd should listen on.<br>
 <input type="text" name="port" value="$port">
-<br>
-<br>
-<strong>Web username:</strong><br>
-Authentication Username.<br>
-<input type="text" name="web_username" value="$username">
-<br>
-<br>
-<strong>Web password:</strong><br>
-Authentication Password.<br>
-<input type="password" name="web_password" value="$password">
 <br>
 <br>
 <strong>User interface:</strong><br>
@@ -59,6 +47,19 @@ Activate a secondary skin (restart required!).<br>
 </select>
 </fieldset>
 </div>
+
+<fieldset class="EntryFieldSet">
+<legend>Web server account</legend>
+<strong>Username:</strong><br>
+Authentication username.<br>
+<input type="text" name="web_username" value="$username">
+<br>
+<br>
+<strong>Password:</strong><br>
+Authentication password.<br>
+<input type="password" name="web_password" value="$password">
+</fieldset>
+
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Tuning</legend>
@@ -90,6 +91,9 @@ For example: ".nfo," or ".nfo, .sfv"<br>
 </div>
 <p>
 <input type="submit" value="Save Changes">
+<!--#if $restart_req#-->
+    <input type="submit" onclick="this.form.action='../restart'; this.form.submit(); return false;" value="Restart"/>
+<!--#end if#-->
 </p>
 </form>
 </table>

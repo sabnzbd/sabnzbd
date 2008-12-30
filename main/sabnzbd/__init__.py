@@ -114,6 +114,7 @@ WEB_COLOR = None
 WEB_COLOR2 = None
 LOGIN_PAGE = None
 SABSTOP = False
+RESTART_REQ = False
 
 __INITIALIZED__ = False
 
@@ -149,111 +150,6 @@ def sig_handler(signum = None, frame = None):
 
 
 ################################################################################
-# Directory Setup                                                              #
-################################################################################
-def dir_setup(config, cfg_name, def_loc, def_name, umask=None):
-    try:
-        my_dir = config['misc'][cfg_name]
-    except:
-        logging.info('No %s defined, setting value to "%s"', cfg_name, def_name)
-        my_dir = def_name
-        try:
-            config['misc'][cfg_name] = my_dir
-        except:
-            config['misc'] = {}
-            config['misc'][cfg_name] = my_dir
-
-    if my_dir:
-        (dd, my_dir) = misc.create_real_path(cfg_name, def_loc, my_dir, umask)
-        if not dd:
-            my_dir = ""
-        logging.debug("%s: %s", cfg_name, my_dir)
-    return my_dir
-
-################################################################################
-# Check_setting_file                                                           #
-################################################################################
-def check_setting_file(config, cfg_name, def_loc):
-    try:
-        file = config['misc'][cfg_name]
-    except:
-        config['misc'][cfg_name] = file = ''
-
-    if file:
-        file = misc.real_path(def_loc, file)
-        if not os.path.exists(file):
-            file = ''
-    return file
-
-################################################################################
-# Check_setting_int                                                            #
-################################################################################
-def minimax(val, low, high):
-    """ Return value forced within range """
-    try:
-        val = int(val)
-    except:
-        val = 0
-    if val < low:
-        return low
-    if val > high:
-        return high
-    return val
-
-################################################################################
-# Check_setting_int                                                            #
-################################################################################
-def check_setting_int(config, cfg_name, item_name, def_val):
-    try:
-        my_val = int(config[cfg_name][item_name])
-    except:
-        my_val = def_val
-        try:
-            config[cfg_name][item_name] = my_val
-        except:
-            config[cfg_name] = {}
-            config[cfg_name][item_name] = my_val
-    logging.debug("%s -> %s", item_name, my_val)
-    return my_val
-
-################################################################################
-# Check_setting_float                                                          #
-################################################################################
-def check_setting_float(config, cfg_name, item_name, def_val):
-    try:
-        my_val = float(config[cfg_name][item_name])
-    except:
-        my_val = def_val
-        try:
-            config[cfg_name][item_name] = my_val
-        except:
-            config[cfg_name] = {}
-            config[cfg_name][item_name] = my_val
-
-    logging.debug("%s -> %s", item_name, my_val)
-    return my_val
-
-################################################################################
-# Check_setting_str                                                            #
-################################################################################
-def check_setting_str(config, cfg_name, item_name, def_val, log = True):
-    try:
-        my_val= config[cfg_name][item_name]
-    except:
-        my_val = def_val
-        try:
-            config[cfg_name][item_name] = my_val
-        except:
-            config[cfg_name] = {}
-            config[cfg_name][item_name] = my_val
-
-    if log:
-        logging.debug("%s -> %s", item_name, my_val)
-    else:
-        logging.debug("%s -> %s", item_name, '******')
-    return my_val
-
-################################################################################
 # Initializing                                                                 #
 ################################################################################
 
@@ -268,32 +164,39 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            BPSMETER, DEBUG_DELAY, ARTICLECACHE, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           DARWIN
+           DARWIN, RESTART_REQ
 
     if __INITIALIZED__:
         return False
 
-    ###########################
-    ## CONFIG Initialization ##
-    ###########################
-
+    ### Clean the cache folder, if requested
     if clean_up:
         xlist= glob.glob(cfg.CACHE_DIR.get_path() + '/*')
         for x in xlist:
             os.remove(x)
 
-    # If dirscan_dir cannot be created, set a proper value anyway.
-    # Maybe it's a network path that's temporarily missing.
+    ### If dirscan_dir cannot be created, set a proper value anyway.
+    ### Maybe it's a network path that's temporarily missing.
     path = cfg.DIRSCAN_DIR.get_path()
     if not os.path.exists(path):
         sabnzbd.misc.create_real_path(cfg.DIRSCAN_DIR.ident(), '', path, False)
 
-    ############################
-    ## Object initializiation ##
-    ############################
+    ### Set call backs for Config items
+    cfg.CACHE_LIMIT.callback(new_limit)
+    cfg.CHERRYHOST.callback(guard_restart)
+    cfg.CHERRYPORT.callback(guard_restart)
+    cfg.WEB_DIR.callback(guard_restart)
+    cfg.WEB_DIR2.callback(guard_restart)
+    cfg.WEB_COLOR.callback(guard_restart)
+    cfg.WEB_COLOR2.callback(guard_restart)
+    cfg.LOG_DIR.callback(guard_restart)
+    cfg.CACHE_DIR.callback(guard_restart)
+
+    ###
+    ### Initialize threads
+    ###
 
     newzbin.bookmarks_init()
-
     need_rsstask = rss.init()
     scheduler.init()
 
@@ -301,8 +204,6 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         ARTICLECACHE.__init__(cfg.CACHE_LIMIT.get_int())
     else:
         ARTICLECACHE = articlecache.ArticleCache(cfg.CACHE_LIMIT.get_int())
-
-    cfg.CACHE_LIMIT.callback(new_limit)
 
     if BPSMETER:
         BPSMETER.reset()
@@ -353,9 +254,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
         scheduler.analyse(pause_downloader)
 
     logging.info('All processes started')
-
+    RESTART_REQ = False
     __INITIALIZED__ = True
     return True
+
 
 @synchronized(INIT_LOCK)
 def start():
@@ -669,6 +571,22 @@ def new_limit():
         ARTICLECACHE.new_limit(cfg.CACHE_LIMIT.get_int())
     except:
         logging.exception("[%s] Error accessing ARTICLECACHE?", __NAME__)
+
+def guard_restart():
+    """ Callback for config options requiring a restart """
+    global RESTART_REQ
+    sabnzbd.RESTART_REQ = True
+
+#------------------------------------------------------------------------------
+# Set call backs for Config items that require a restart
+cfg.CHERRYHOST.callback(guard_restart)
+cfg.CHERRYPORT.callback(guard_restart)
+cfg.WEB_DIR.callback(guard_restart)
+cfg.WEB_DIR2.callback(guard_restart)
+cfg.WEB_COLOR.callback(guard_restart)
+cfg.WEB_COLOR2.callback(guard_restart)
+cfg.LOG_DIR.callback(guard_restart)
+cfg.CACHE_DIR.callback(guard_restart)
 
 
 ################################################################################
