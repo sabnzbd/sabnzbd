@@ -577,17 +577,6 @@ def guard_restart():
     global RESTART_REQ
     sabnzbd.RESTART_REQ = True
 
-#------------------------------------------------------------------------------
-# Set call backs for Config items that require a restart
-cfg.CHERRYHOST.callback(guard_restart)
-cfg.CHERRYPORT.callback(guard_restart)
-cfg.WEB_DIR.callback(guard_restart)
-cfg.WEB_DIR2.callback(guard_restart)
-cfg.WEB_COLOR.callback(guard_restart)
-cfg.WEB_COLOR2.callback(guard_restart)
-cfg.LOG_DIR.callback(guard_restart)
-cfg.CACHE_DIR.callback(guard_restart)
-
 
 ################################################################################
 ## Misc Wrappers                                                              ##
