@@ -30,9 +30,11 @@ import time
 from sabnzbd.utils.kronos import ThreadedScheduler
 import sabnzbd.rss as rss
 import sabnzbd.newzbin as newzbin
+import sabnzbd.downloader as downloader
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+
 
 __SCHED = None  # Global pointer to Scheduler instance
 
@@ -49,7 +51,7 @@ def schedule_guard():
 def init():
     """ Create the scheduler and set all required events
     """
-    global __SCHED, CFG
+    global __SCHED
 
     need_rsstask = True
     need_versioncheck = cfg.VERSION_CHECK.get()
@@ -77,16 +79,16 @@ def init():
             d = [int(d)]
 
         if action_name == 'resume':
-            action = sabnzbd.resume_downloader
+            action = downloader.resume_downloader
             arguments = []
         elif action_name == 'pause':
-            action = sabnzbd.pause_downloader
+            action = downloader.pause_downloader
             arguments = []
         elif action_name == 'shutdown':
             action = sabnzbd.shutdown_program
             arguments = []
         elif action_name == 'speedlimit' and arguments != []:
-            action = sabnzbd.limit_speed
+            action = downloader.limit_speed
         elif action_name == 'enable_server' and arguments != []:
             action = sabnzbd.enable_server
         elif action_name == 'disable_server' and arguments != []:
@@ -181,8 +183,6 @@ def sort_schedules(forward):
     """
 
     events = []
-    paused = None
-    speedlimit = None
     now = time.localtime()
     now_hm = int(now[3])*60 + int(now[4])
     now = int(now[6])*24*60 + now_hm
@@ -251,9 +251,9 @@ def analyse(was_paused=False):
                 logging.warning('[%s] Schedule for non-existing server %s', __NAME__, value)
 
     if not was_paused:
-        sabnzbd.DOWNLOADER.paused = paused
+        downloader.set_paused(paused)
     if speedlimit:
-        sabnzbd.DOWNLOADER.limit_speed(s)
+        downloader.limit_speed(speedlimit)
     for serv in servers:
         try:
             config.get_config('servers', serv).enable.set(servers[serv])

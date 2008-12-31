@@ -25,7 +25,6 @@ import sys
 import re
 import subprocess
 import logging
-import glob
 from time import time
 try:
     import Foundation #OSX
@@ -158,9 +157,12 @@ def external_processing(extern_proc, complete_dir, filename, nicename, cat, grou
     logging.info('[%s] Running external script %s(%s, %s, %s, %s, %s, %s, %s)', __NAME__, \
                  extern_proc, complete_dir, filename, nicename, msgid, cat, group, status)
 
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         startupinfo=stup, creationflags=creationflags)
+    try:
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                            startupinfo=stup, creationflags=creationflags)
+    except WindowsError:
+        return "Cannot run script %s\r\n" % extern_proc
 
     output = p.stdout.read()
     p.wait()
@@ -449,11 +451,12 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
     except:
         msg = sys.exc_info()[1]
         nzo.set_fail_msg('Unpacking failed, %s' % msg)
+        setname = nzo.get_filename()
         nzo.set_unpack_info('unpack', '[%s] Error "%s" while running rar_unpack' % (setname, msg))
 
         logging.error('[%s] Error "%s" while' + \
                           ' running rar_unpack on %s',
-                          __NAME__, msg, nzo.get_filename())
+                          __NAME__, msg, setname)
         return True, ''
 
 def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
@@ -541,7 +544,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
         elif line.startswith('Encrypted file:  CRC failed'):
             filename = TRANS(line[31:-23].strip())
             nzo.set_fail_msg('Unpacking failed, archive requires a password')
-            nzo.set_unpack_info('unpack', '[%s] Error, password required' % (setname, filename), set=setname)
+            nzo.set_unpack_info('unpack', '[%s][%s] Error, password required' % (setname, filename), set=setname)
             logging.warning('[%s] ERROR: encrypted file: "%s"', __NAME__,
                                                                        filename)
             fail = 1

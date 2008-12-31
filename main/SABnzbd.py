@@ -778,7 +778,6 @@ def main():
                  
 
     login_page = LoginPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/')
-    sabnzbd.LOGIN_PAGE = login_page
     cherrypy.tree.mount(login_page, '/', config=appconfig)
 
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)

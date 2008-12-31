@@ -27,7 +27,6 @@ import logging
 import re
 
 
-import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename
 from sabnzbd.constants import series_match, date_match, year_match
 import sabnzbd.cfg as cfg
@@ -177,7 +176,7 @@ class SeriesSorter:
                 extra2_list.append(ep_no2)
                 
         one = '-'.join(extra_list)
-        two = '-'.join(extra_list2)
+        two = '-'.join(extra2_list)
         return (one, two)
 
     def get_shownames(self):
@@ -344,7 +343,7 @@ def check_for_sequence(regex, files):
             
     # Don't do anything if only one or no files matched
     if len(matches.keys()) < 2:
-        return []
+        return {}
             
     key_prev = 0
     passed = True
@@ -374,7 +373,7 @@ def check_for_sequence(regex, files):
     if passed:
         return matches
     else:
-        return []
+        return {}
     
     
     

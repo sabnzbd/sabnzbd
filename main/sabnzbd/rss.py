@@ -22,7 +22,6 @@ sabnzbd.rss - rss client functionality
 __NAME__ = "RSS"
 
 
-import os
 import re
 import logging
 import time
@@ -30,7 +29,7 @@ import threading
 
 import sabnzbd
 from sabnzbd.constants import *
-from sabnzbd.decorators import *
+from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 
 try:
@@ -55,7 +54,12 @@ def init():
 
 def stop():
     global __RSS
-    if __RSS: __RSS.stop()
+    if __RSS:
+        __RSS.stop()
+        try:
+            __RSS.join()
+        except:
+            pass
 
 def have_feedparser():
     global __HAVEFEEDPARSER

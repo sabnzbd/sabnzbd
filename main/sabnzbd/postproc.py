@@ -26,15 +26,13 @@ import os
 import Queue
 import logging
 import sabnzbd
-import shutil
 import urllib
-import re
 import time
 from xml.sax.saxutils import escape
 if os.name == 'nt':
     import subprocess
 
-from sabnzbd.decorators import *
+from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread, RLock
 from sabnzbd.nzbstuff import SplitFileName
@@ -44,17 +42,64 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME
 from sabnzbd.codecs import TRANS
-import sabnzbd.newzbin as newzbin
+import sabnzbd.newzbin
 import sabnzbd.email as email
 import sabnzbd.dirscanner as dirscanner
+import sabnzbd.downloader as downloader
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+import sabnzbd.nzbqueue
 from database import HistoryDB
 
 #------------------------------------------------------------------------------
+# Wrapper functions
+
+__POSTPROC = None  # Global pointer to post-proc instance
+
+def init():
+    global __POSTPROC
+    if __POSTPROC:
+        __POSTPROC.__init__(__POSTPROC.queue(), __POSTPROC.get_queue(), restart=True)
+    else:
+        __POSTPROC = PostProcessor()
+
+def start():
+    global __POSTPROC
+    if __POSTPROC: __POSTPROC.start()
+
+def get_queue():
+    global __POSTPROC
+    if __POSTPROC: return __POSTPROC.get_queue()
+
+def process(nzo):
+    global __POSTPROC
+    if __POSTPROC: __POSTPROC.process(nzo)
+
+def empty():
+    global __POSTPROC
+    if __POSTPROC: return __POSTPROC.empty()
+
+def history_queue():
+    global __POSTPROC
+    if __POSTPROC: return __POSTPROC.get_queue()
+
+def stop():
+    global __POSTPROC
+    if __POSTPROC:
+        __POSTPROC.stop()
+        try:
+            __POSTPROC.join()
+        except:
+            pass
+
+
+
+#------------------------------------------------------------------------------
 class PostProcessor(Thread):
-    def __init__ (self, queue=None, history_queue=[], restart=False):
+    def __init__ (self, queue=None, history_queue=None, restart=False):
         Thread.__init__(self)
+
+        if history_queue == None: history_queue = []
 
         self.queue = queue
         if restart:
@@ -92,7 +137,7 @@ class PostProcessor(Thread):
             
             ## Pause downloader, if users wants that
             if cfg.PAUSE_ON_POST_PROCESSING.get():
-                sabnzbd.idle_downloader()
+                downloader.idle_downloader()
             
             start = time.time()
 
@@ -160,8 +205,8 @@ class PostProcessor(Thread):
                         logging.info('[%s] Readded %s to queue', __NAME__, filename)
                         sabnzbd.QUEUECOMPLETEACTION_GO = False
                         nzo.set_priority(TOP_PRIORITY)
-                        sabnzbd.add_nzo(nzo)
-                        sabnzbd.unidle_downloader()
+                        sabnzbd.nzbqueue.add_nzo(nzo)
+                        downloader.unidle_downloader()
                         ## Break out, further downloading needed
                         continue
     
@@ -317,7 +362,7 @@ class PostProcessor(Thread):
     
                 ## Remove newzbin bookmark, if any
                 name, msgid = SplitFileName(filename)
-                newzbin.delete_bookmark(msgid)
+                sabnzbd.newzbin.delete_bookmark(msgid)
     
                 ## Show final status in history
                 if parResult and not unpackError:
@@ -362,7 +407,7 @@ class PostProcessor(Thread):
             ## Clean up the NZO
             try:
                 logging.info('[%s] Cleaning up %s', __NAME__, filename)
-                sabnzbd.cleanup_nzo(nzo)
+                sabnzbd.nzbqueue.cleanup_nzo(nzo)
             except:
                 logging.error("[%s] Cleanup of %s failed.", __NAME__, nzo.get_filename())
                 logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
@@ -372,7 +417,7 @@ class PostProcessor(Thread):
             self.history_queue.remove(nzo)
             
             ## Allow download to proceed
-            sabnzbd.unidle_downloader()
+            downloader.unidle_downloader()
 #end post-processor
 
 

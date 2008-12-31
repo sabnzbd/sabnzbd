@@ -25,19 +25,20 @@ import Queue
 import binascii
 import logging
 import re
-import sabnzbd
-from sabnzbd.constants import *
-import sabnzbd.cfg as cfg
-
 from threading import Thread
-
-
 try:
     import _yenc
     HAVE_YENC = True
 
 except ImportError:
     HAVE_YENC = False
+
+import sabnzbd
+from sabnzbd.constants import *
+import sabnzbd.articlecache as articlecache
+import sabnzbd.downloader
+import sabnzbd.cfg as cfg
+import sabnzbd.nzbqueue
     
 #-------------------------------------------------------------------------------
 
@@ -49,7 +50,7 @@ class CrcError(Exception):
         self.data = data
 
 class BadYenc(Exception):
-    def __Init__(self):
+    def __init__(self):
         Exception.__init__(self)
 
 #-------------------------------------------------------------------------------
@@ -64,7 +65,7 @@ class Decoder(Thread):
     def decode(self, article, lines):
         self.queue.put((article, lines))
         if self.queue.qsize() > MAX_DECODE_QUEUE:
-            sabnzbd.delay_downloader()
+            sabnzbd.downloader.delay_downloader()
         
     def stop(self):
         self.queue.put(None)
@@ -75,8 +76,8 @@ class Decoder(Thread):
             if not art_tup:
                 break
 
-            if self.queue.qsize() < MIN_DECODE_QUEUE and sabnzbd.delayed():
-                sabnzbd.undelay_downloader()
+            if self.queue.qsize() < MIN_DECODE_QUEUE and sabnzbd.downloader.delayed():
+                sabnzbd.downloader.undelay_downloader()
             
             article, lines = art_tup
             nzf = article.nzf
@@ -95,11 +96,11 @@ class Decoder(Thread):
                 except IOError, e:
                     logging.error("[%s] Decoding %s failed", __NAME__,
                                       article)
-                    sabnzbd.pause_downloader()
+                    sabnzbd.downloader.pause_downloader()
                     
                     article.fetcher = None
                     
-                    sabnzbd.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
                     
                     register = False
                     
@@ -133,10 +134,10 @@ class Decoder(Thread):
                     register = False
                     
             if data:
-                sabnzbd.save_article(article, data)
+                articlecache.method.save_article(article, data)
                     
             if register:
-                sabnzbd.register_article(article)
+                sabnzbd.nzbqueue.register_article(article)
             
     def __search_new_server(self, article):
         article.add_to_try_list(article.fetcher)
@@ -164,7 +165,7 @@ class Decoder(Thread):
             article.fetcher = None
             
             ## Allow all servers to iterate over this nzo and nzf again ##
-            sabnzbd.reset_try_lists(nzf, nzo)
+            sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
             
             logging.info('[%s] %s => found at least one untested server',
                             __NAME__, article)

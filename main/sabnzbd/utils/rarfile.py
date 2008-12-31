@@ -420,7 +420,7 @@ class RarFile:
                     buf += f.read(cur.add_size)
                     break
 
-                raise RuntimeException("file not found?")
+                raise Exception("file not found?")
 
             # no more parts?
             if (cur.flags & RAR_FILE_SPLIT_AFTER) == 0:

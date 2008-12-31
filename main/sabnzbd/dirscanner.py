@@ -34,14 +34,49 @@ import shutil
 import threading
 
 import sabnzbd
-from sabnzbd.decorators import *
+from sabnzbd.decorators import synchronized
 from sabnzbd.constants import *
+from sabnzbd.utils.rarfile import is_rarfile, RarFile
 import sabnzbd.nzbstuff as nzbstuff
-import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.misc as misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+import sabnzbd.nzbqueue
 
+################################################################################
+# Wrapper functions
+################################################################################
+
+__SCANNER = None  # Global pointer to dir-scanner instance
+
+def init():
+    global __SCANNER
+    if __SCANNER:
+        __SCANNER.__init__()
+    else:
+        __SCANNER = DirScanner()
+
+def start():
+    global __SCANNER
+    if __SCANNER: __SCANNER.start()
+
+def stop():
+    global __SCANNER
+    if __SCANNER:
+        __SCANNER.stop()
+        try:
+            __SCANNER.join()
+        except:
+            pass
+
+def save():
+    global __SCANNER
+    if __SCANNER: __SCANNER.save()
+
+
+################################################################################
+# Body
+################################################################################
 
 def CompareStat(tup1, tup2):
     """ Test equality of two stat-tuples, content-related parts only """
@@ -70,9 +105,9 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
             zf = zipfile.ZipFile(path)
         except:
             return -1
-    elif rarfile.is_rarfile(path):
+    elif is_rarfile(path):
         try:
-            zf = rarfile.RarFile(path)
+            zf = RarFile(path)
         except:
             return -1
     else:
@@ -98,14 +133,14 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     return -1
                 name = re.sub(r'\[.*nzbmatrix.com\]', '', name)
                 name = os.path.basename(name)
-                name = sanitize_filename(name)
+                name = misc.sanitize_filename(name)
                 if data:
                     try:
                         nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, priority=priority)
                     except:
                         nzo = None
                     if nzo:
-                        sabnzbd.add_nzo(nzo)
+                        sabnzbd.nzbqueue.add_nzo(nzo)
         zf.close()
         try:
             os.remove(path)
@@ -166,7 +201,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             return -1
 
     if nzo:
-        sabnzbd.add_nzo(nzo)
+        sabnzbd.nzbqueue.add_nzo(nzo)
     try:
         if not keep: os.remove(path)
     except:
@@ -324,15 +359,14 @@ class DirScanner(threading.Thread):
                 time.sleep(1.0)
                 x = x - 1
 
-            if not self.shutdown:
+            if dirscan_dir and not self.shutdown:
                 run_dir(dirscan_dir, None)
 
                 try:
                     list = os.listdir(dirscan_dir)
                 except:
                     if not self.error_reported:
-                        logging.error("Cannot read Watched Folder %s", folder)
-                        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                        logging.error("Cannot read Watched Folder %s", dirscan_dir)
                         self.error_reported = True
                     list = []
 

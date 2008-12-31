@@ -23,7 +23,7 @@ __NAME__ = "trylist"
 
 import logging
 
-from sabnzbd.decorators import *
+from sabnzbd.decorators import synchronized
 
 from threading import Lock
 

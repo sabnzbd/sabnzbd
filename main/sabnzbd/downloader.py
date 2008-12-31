@@ -24,17 +24,135 @@ __NAME__ = 'downloader'
 import time
 import select
 import logging
-import sabnzbd
-import datetime
-
 from threading import Thread
 
+import sabnzbd
+from sabnzbd.decorators import synchronized_CV, CV
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.misc import Notify
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+import sabnzbd.bpsmeter as bpsmeter
+import sabnzbd.nzbqueue
+
+#------------------------------------------------------------------------------
+# Wrapper functions
+
+__DOWNLOADER = None  # Global pointer to post-proc instance
+
+
+def init(paused):
+    global __DOWNLOADER
+    if __DOWNLOADER:
+        __DOWNLOADER.__init__(paused)
+    else:
+        __DOWNLOADER = Downloader(paused or __DOWNLOADER.paused)
+
+def start():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.start()
+
+
+def process(nzf):
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.process(nzf)
+
+def servers():
+    global __DOWNLOADER
+    if __DOWNLOADER: return __DOWNLOADER.servers
+
+def stop():
+    global __DOWNLOADER
+    CV.acquire()
+    try:
+        __DOWNLOADER.stop()
+    finally:
+        CV.notifyAll()
+        CV.release()
+    try:
+        __DOWNLOADER.join()
+    except:
+        pass
+
+
+#------------------------------------------------------------------------------
+
+@synchronized_CV
+def pause_downloader(save=True):
+    global __DOWNLOADER
+    if __DOWNLOADER:
+        __DOWNLOADER.pause()
+        if cfg.AUTODISCONNECT.get():
+            __DOWNLOADER.disconnect()
+        if save:
+            sabnzbd.save_state()
+
+@synchronized_CV
+def resume_downloader():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.resume()
+
+@synchronized_CV
+def delay_downloader():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.delay()
+
+@synchronized_CV
+def undelay_downloader():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.undelay()
+
+@synchronized_CV
+def idle_downloader():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.wait_postproc()
+
+@synchronized_CV
+def unidle_downloader():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.resume_postproc()
+
+@synchronized_CV
+def limit_speed(value):
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.limit_speed(int(value))
+    logging.info("[%s] Bandwidth limit set to %s", __NAME__, value)
+
+def update_server(oldserver, newserver):
+    global __DOWNLOADER
+    try:
+        CV.acquire()
+        try:
+            __DOWNLOADER.init_server(oldserver, newserver)
+        finally:
+            CV.notifyAll()
+            CV.release()
+    except:
+        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+
+#------------------------------------------------------------------------------
+
+def paused():
+    global __DOWNLOADER
+    if __DOWNLOADER: return __DOWNLOADER.paused
+
+def get_limit():
+    global __DOWNLOADER
+    if __DOWNLOADER: return __DOWNLOADER.get_limit()
+
+def disconnect():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.disconnect()
+
+def set_paused(state):
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.paused = state
+
+def delayed():
+    global __DOWNLOADER
+    if __DOWNLOADER: return __DOWNLOADER.delayed
 
 
 #------------------------------------------------------------------------------
@@ -98,52 +216,6 @@ class Server:
     def __repr__(self):
         return "%s:%s" % (self.host, self.port)
 
-#------------------------------------------------------------------------------
-
-class BPSMeter:
-    def __init__(self, bytes_sum = 0):
-        t = time.time()
-
-        self.start_time = t
-        self.log_time = t
-        self.last_update = t
-        self.bps = 0.0
-        self.bytes_total = 0
-        self.bytes_sum = bytes_sum
-
-    def update(self, bytes_recvd):
-        self.bytes_total += bytes_recvd
-        self.bytes_sum += bytes_recvd
-
-        t = time.time()
-        try:
-            self.bps = (self.bps * (self.last_update - self.start_time)
-                        + bytes_recvd) / (t - self.start_time)
-        except:
-            self.bps = 0.0
-
-        self.last_update = t
-
-        check_time = t - 5.0
-
-        if self.start_time < check_time:
-            self.start_time = check_time
-
-        if self.bps < 0.01:
-            self.reset()
-            
-        elif self.log_time < check_time:
-            logging.debug("[%s] bps: %s", __NAME__, self.bps)
-            self.log_time = t
-
-    def get_sum(self):
-        return self.bytes_sum
-
-    def reset(self):
-        self.__init__(bytes_sum = self.bytes_sum)
-
-    def get_bps(self):
-        return self.bps
 
 #------------------------------------------------------------------------------
 
@@ -295,7 +367,7 @@ class Downloader(Thread):
                 if not server.idle_threads or server.restart or self.paused or self.shutdown or self.delayed or self.postproc:
                     continue
 
-                if not sabnzbd.has_articles_for(server):
+                if not sabnzbd.nzbqueue.has_articles_for(server):
                     continue
 
                 for nw in server.idle_threads[:]:
@@ -305,7 +377,7 @@ class Downloader(Thread):
                         else:
                             nw.timeout = None
 
-                    article = sabnzbd.get_article(server)
+                    article = sabnzbd.nzbqueue.get_article(server)
 
                     if not article:
                         break
@@ -374,15 +446,15 @@ class Downloader(Thread):
             else:
                 read, write, error = ([], [], [])
 
-                sabnzbd.reset_bpsmeter()
+                bpsmeter.method.reset()
 
                 time.sleep(1.0)
 
-                sabnzbd.CV.acquire()
-                while (not sabnzbd.has_articles() or self.paused or self.delayed or self.postproc) and not \
+                CV.acquire()
+                while (not sabnzbd.nzbqueue.has_articles() or self.paused or self.delayed or self.postproc) and not \
                        self.shutdown and not self.__restart:
-                    sabnzbd.CV.wait()
-                sabnzbd.CV.release()
+                    CV.wait()
+                CV.release()
 
                 self.force_disconnect = False
 
@@ -398,7 +470,7 @@ class Downloader(Thread):
                     self.write_fds.pop(fileno)
 
             if not read:
-                sabnzbd.update_bytes(0)
+                bpsmeter.method.update(0)
                 continue
 
             for selected in read:
@@ -415,7 +487,7 @@ class Downloader(Thread):
                     bytes, done, skip = (0, False, False)
                     
                 if skip:
-                    sabnzbd.update_bytes(0)
+                    bpsmeter.method.update(0)
                     continue
 
                 if bytes < 1:
@@ -424,7 +496,7 @@ class Downloader(Thread):
 
                 else:
                     if self.bandwidth_limit:
-                        bps = sabnzbd.get_bps()
+                        bps = bpsmeter.method.get_bps()
                         bps += bytes
                         limit = self.bandwidth_limit * 1024
                         if bps > limit:
@@ -432,11 +504,11 @@ class Downloader(Thread):
                             if sleeptime > 0 and sleeptime < 10:
                                 #logging.debug("[%s] Sleeping %s second(s) bps:%s limit:%s", __NAME__,sleeptime, bps/1024, limit/1024)
                                 time.sleep(sleeptime)
-                    sabnzbd.update_bytes(bytes)
+                    bpsmeter.method.update(bytes)
                     
                     if nzo:
                         nzo.update_bytes(bytes)
-                        nzo.update_avg_kbs(sabnzbd.get_bps())
+                        nzo.update_avg_kbs(bpsmeter.method.get_bps())
 
                 if len(nw.lines) == 1:
                     if not nw.connected:
@@ -528,7 +600,7 @@ class Downloader(Thread):
             nzo = nzf.nzo
 
             ## Allow all servers to iterate over each nzo/nzf again ##
-            sabnzbd.reset_try_lists(nzf, nzo)
+            sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
 
         nw.hard_reset(wait)
 

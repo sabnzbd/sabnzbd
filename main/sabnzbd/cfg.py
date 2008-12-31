@@ -22,7 +22,7 @@ __NAME__ = "sabnzbd.cfg"
 
 import os
 from sabnzbd.constants import *
-from sabnzbd.config import OptionBool, OptionNumber, OptionNumber, OptionPassword, \
+from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir
 

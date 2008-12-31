@@ -774,11 +774,11 @@ class NzbObject(TryList):
     def get_dirprefix(self):
         return self.__dirprefix[:]
 
-    def get_group(self):
-        if self.__dirprefix:
-            return self.__dirprefix[0]
-        else:
-            return ''
+    #def get_group(self):
+    #    if self.__dirprefix:
+    #        return self.__dirprefix[0]
+    #    else:
+    #        return ''
 
     def get_bytes_downloaded(self):
         return self.__bytes_downloaded
@@ -798,11 +798,11 @@ class NzbObject(TryList):
     def get_filename(self):
         return self.__filename
 
-    def get_cat(self):
-        if self.__cat:
-            return self.__cat
-        else:
-            return ''
+    #def get_cat(self):
+    #    if self.__cat:
+    #        return self.__cat
+    #    else:
+    #        return ''
 
     def get_group(self):
         return self.__group

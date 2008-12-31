@@ -42,7 +42,37 @@ except:
 import sabnzbd
 import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
+import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.cfg as cfg
+
+#------------------------------------------------------------------------------
+# Wrapper functions
+
+__GRABBER = None  # Global pointer to url-grabber instance
+
+def init():
+    global __GRABBER
+    if __GRABBER:
+        __GRABBER.__init__()
+    else:
+        __GRABBER = URLGrabber()
+
+def start():
+    global __GRABBER
+    if __GRABBER: __GRABBER.start()
+
+def add(url, future_nzo):
+    global __GRABBER
+    if __GRABBER: __GRABBER.add(url, future_nzo)
+
+def stop():
+    global __GRABBER
+    if __GRABBER:
+        __GRABBER.stop()
+        try:
+            __GRABBER.join()
+        except:
+            pass
 
 
 #------------------------------------------------------------------------------
@@ -50,7 +80,7 @@ class URLGrabber(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue.Queue()
-        for tup in sabnzbd.NZBQ.get_urls():
+        for tup in sabnzbd.nzbqueue.get_urls():
             self.queue.put(tup)
         self.shutdown = False
 
@@ -123,14 +153,14 @@ class URLGrabber(Thread):
             if os.path.splitext(filename)[1].lower() == '.nzb':
                 res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority)
                 if res == 0:
-                    sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                    nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                 elif res == -2:
                     self.add(url, future_nzo)
                 else:
                     misc.BadFetch(future_nzo, url, retry=False)
             else:
                 if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
-                    sabnzbd.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                    nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                 else:
                     try:
                         os.remove(fn)

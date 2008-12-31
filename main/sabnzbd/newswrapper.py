@@ -26,7 +26,6 @@ from threading import Thread
 from nntplib import NNTPPermanentError
 from time import time
 from sabnzbd.constants import *
-import sabnzbd
 import logging
 
 try:

@@ -37,6 +37,9 @@ from database import HistoryDB
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 import sabnzbd.cfg as cfg
+import sabnzbd.articlecache
+import sabnzbd.downloader
+import sabnzbd.assembler
 
 
 def DeleteLog(name):
@@ -49,7 +52,6 @@ def DeleteLog(name):
 
 #-------------------------------------------------------------------------------
 
-NZBQUEUE_LOCK = RLock()
 class NzbQueue(TryList):
     def __init__(self):
         TryList.__init__(self)
@@ -500,7 +502,7 @@ class NzbQueue(TryList):
 
             # Only start decoding if we have a filename and type
             if filename and _type:
-                sabnzbd.assemble_nzf((nzo, nzf))
+                sabnzbd.assembler.process((nzo, nzf))
 
             else:
                 logging.warning('[%s] %s -> Unknown encoding', __NAME__,
@@ -512,7 +514,7 @@ class NzbQueue(TryList):
             if not self.__nzo_list:
                 # Close server connections
                 if cfg.AUTODISCONNECT.get():
-                    sabnzbd.disconnect()
+                    sabnzbd.downloader.disconnect()
 
                 # Sets the end-of-queue back on if disabled
                 # adding an nzb and re-adding for more blocks disables it
@@ -520,7 +522,7 @@ class NzbQueue(TryList):
                     sabnzbd.QUEUECOMPLETEACTION_GO = True
                     
             # Notify assembler to call postprocessor
-            sabnzbd.assemble_nzf((nzo, None))
+            sabnzbd.assembler.process((nzo, None))
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -550,7 +552,7 @@ class NzbQueue(TryList):
     def cleanup_nzo(self, nzo):
         nzo.purge_data()
 
-        sabnzbd.purge_articles(nzo.saved_articles)
+        sabnzbd.articlecache.method.purge_articles(nzo.saved_articles)
 
         for hist_item in self.__downloaded_items:
             # refresh fields & delete nzo reference
@@ -629,3 +631,192 @@ def sort_queue(list, method, reverse):
     new_list.extend(low_priority)
     
     return new_list
+
+
+
+#-------------------------------------------------------------------------------
+# NZBQ Wrappers
+
+__NZBQ = None  # Global pointer to NzbQueue instance
+
+def init():
+    global __NZBQ
+    if __NZBQ:
+        __NZBQ.__init__()
+    else:
+        __NZBQ = NzbQueue()
+
+def start():
+    global __NZBQ
+    if __NZBQ: __NZBQ.start()
+
+
+def stop():
+    global __NZBQ
+    if __NZBQ:
+        __NZBQ.stop()
+        try:
+            __NZBQ.join()
+        except:
+            pass
+
+def debug():
+    global __NZBQ
+    if __NZBQ: return __NZBQ.debug()
+
+def move_up_bulk(nzo_id, nzf_ids):
+    global __NZBQ
+    if __NZBQ: __NZBQ.move_up_bulk(nzo_id, nzf_ids)
+
+def move_top_bulk(nzo_id, nzf_ids):
+    global __NZBQ
+    if __NZBQ: __NZBQ.move_top_bulk(nzo_id, nzf_ids)
+
+def move_down_bulk(nzo_id, nzf_ids):
+    global __NZBQ
+    if __NZBQ: __NZBQ.move_down_bulk(nzo_id, nzf_ids)
+
+def move_bottom_bulk(nzo_id, nzf_ids):
+    global __NZBQ
+    if __NZBQ: __NZBQ.move_bottom_bulk(nzo_id, nzf_ids)
+
+def remove_nzo(nzo_id, add_to_history = True, unload=False):
+    global __NZBQ
+    if __NZBQ: __NZBQ.remove(nzo_id, add_to_history, unload)
+        
+def remove_multiple_nzos(nzo_ids, add_to_history = True):
+    global __NZBQ
+    if __NZBQ: __NZBQ.remove_multiple(nzo_ids, add_to_history)
+
+def remove_all_nzo():
+    global __NZBQ
+    if __NZBQ: __NZBQ.remove_all()
+
+def remove_nzf(nzo_id, nzf_id):
+    global __NZBQ
+    if __NZBQ: __NZBQ.remove_nzf(nzo_id, nzf_id)
+
+def sort_by_avg_age(reverse=False):
+    global __NZBQ
+    if __NZBQ: __NZBQ.sort_by_avg_age(reverse)
+
+def sort_by_name(reverse=False):
+    global __NZBQ
+    if __NZBQ: __NZBQ.sort_by_name(reverse)
+
+def sort_by_size(reverse=False):
+    global __NZBQ
+    if __NZBQ: __NZBQ.sort_by_size(reverse)
+
+def change_opts(nzo_id, pp):
+    global __NZBQ
+    if __NZBQ: __NZBQ.change_opts(nzo_id, pp)
+
+def change_script(nzo_id, script):
+    global __NZBQ
+    if __NZBQ: __NZBQ.change_script(nzo_id, script)
+
+def change_cat(nzo_id, cat):
+    global __NZBQ
+    if __NZBQ: __NZBQ.change_cat(nzo_id, cat)
+
+def get_article(host):
+    global __NZBQ
+    if __NZBQ: return __NZBQ.get_article(host)
+
+def has_articles():
+    global __NZBQ
+    if __NZBQ: return not __NZBQ.is_empty()
+
+def has_articles_for(server):
+    global __NZBQ
+    if __NZBQ: return __NZBQ.has_articles_for(server)
+
+def register_article(article):
+    global __NZBQ
+    if __NZBQ: return __NZBQ.register_article(article)
+
+def switch(nzo_id1, nzo_id2):
+    global __NZBQ
+    if __NZBQ: __NZBQ.switch(nzo_id1, nzo_id2)
+        
+def rename_nzo(nzo_id, name):
+    global __NZBQ
+    if __NZBQ: __NZBQ.rename(nzo_id, name)
+
+def history_info():
+    global __NZBQ
+    if __NZBQ: return __NZBQ.history_info()
+
+def queue_info(for_cli = False):
+    global __NZBQ
+    if __NZBQ: return __NZBQ.queue_info(for_cli = for_cli)
+
+#def purge_history(job=None):
+#    global __NZBQ
+#    if __NZBQ: __NZBQ.purge(job)
+        
+#def remove_multiple_history(jobs=None):
+#    global __NZBQ
+#    if __NZBQ: __NZBQ.remove_multiple_history(jobs)
+        
+def get_msgids():
+    global __NZBQ
+    if __NZBQ: return __NZBQ.get_msgids()
+
+def get_urls():
+    global __NZBQ
+    if __NZBQ: return __NZBQ.get_urls()
+
+def pause_multiple_nzo(jobs):
+    global __NZBQ
+    if __NZBQ: __NZBQ.pause_multiple_nzo(jobs)
+        
+def resume_multiple_nzo(jobs):
+    global __NZBQ
+    if __NZBQ: __NZBQ.resume_multiple_nzo(jobs)
+
+def cleanup_nzo(nzo):
+    global __NZBQ
+    if __NZBQ: __NZBQ.cleanup_nzo(nzo)
+
+def reset_try_lists(nzf = None, nzo = None):
+    global __NZBQ
+    if __NZBQ: __NZBQ.reset_try_lists(nzf, nzo)
+
+def save():
+    global __NZBQ
+    if __NZBQ: __NZBQ.save()
+
+def generate_future(msg, pp, script, cat, url, priority):
+    global __NZBQ
+    if __NZBQ: return __NZBQ.generate_future(msg, pp, script, cat, url, priority)
+
+
+#-------------------------------------------------------------------------------
+# Synchronized wrappers
+
+@synchronized_CV
+def add_nzo(nzo):
+    global __NZBQ
+    if __NZBQ: __NZBQ.add(nzo)
+
+@synchronized_CV
+def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
+    global __NZBQ
+    if __NZBQ: __NZBQ.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
+        
+@synchronized_CV
+def set_priority(nzo_id, priority):
+    global __NZBQ
+    if __NZBQ: __NZBQ.set_priority(nzo_id, priority)
+        
+@synchronized_CV
+def set_priority_multiple(nzo_ids, priority):
+    global __NZBQ
+    if __NZBQ: __NZBQ.set_priority_multiple(nzo_ids, priority)
+        
+#@synchronized_CV
+#def sort_queue(field, reverse=False):
+#    global __NZBQ
+#    if __NZBQ: __NZBQ.sort_queue(field, reverse)

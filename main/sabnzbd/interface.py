@@ -46,11 +46,15 @@ from sabnzbd.misc import real_path, create_real_path, \
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
-import sabnzbd.urlgrabber as urlgrabber
 from sabnzbd.codecs import TRANS, xml_name
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.newsunpack as newsunpack
+import sabnzbd.articlecache as articlecache
+import sabnzbd.newsunpack
+import sabnzbd.postproc as postproc
+import sabnzbd.downloader as downloader
+import sabnzbd.bpsmeter as bpsmeter
+import sabnzbd.nzbqueue as nzbqueue
 from sabnzbd.database import HistoryDB, build_history_info, unpack_history_info
 
 from sabnzbd.constants import *
@@ -305,12 +309,12 @@ class MainPage:
 
     @cherrypy.expose
     def pause(self, _dc = None):
-        sabnzbd.pause_downloader()
+        downloader.pause_downloader()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def resume(self, _dc = None):
-        sabnzbd.resume_downloader()
+        downloader.resume_downloader()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -323,7 +327,7 @@ class MainPage:
                nzo_table: %s<br>
                nzf_table: %s<br>
                article_table: %s<br>
-               try_list: %s''' % sabnzbd.debug()
+               try_list: %s''' % nzbqueue.debug()
 
     @cherrypy.expose
     def rss(self, mode='history', limit=50):
@@ -398,37 +402,37 @@ class MainPage:
                     reverse=False
                     if dir.lower() == 'desc':
                         reverse=True
-                    sabnzbd.sort_queue(sort,reverse)
+                    nzbqueue.sort_queue(sort,reverse)
                 return queueStatus(start,limit)
             elif output == 'json':
                 if sort and sort != 'index':
                     reverse=False
                     if dir.lower() == 'desc':
                         reverse=True
-                    sabnzbd.sort_queue(sort,reverse)
+                    nzbqueue.sort_queue(sort,reverse)
                 return queueStatusJson(start,limit)
             elif output == 'rss':
                 return rss_qstatus()
             elif name == 'delete':
                 if value.lower()=='all':
-                    sabnzbd.remove_all_nzo()
+                    nzbqueue.remove_all_nzo()
                     return 'ok\n'
                 elif value:
                     items = value.split(',')
-                    sabnzbd.remove_multiple_nzos(items, False)
+                    nzbqueue.remove_multiple_nzos(items, False)
                     return 'ok\n'
                 else:
                     return 'error\n'
             elif name == 'delete_nzf':
                 # Value = nzo_id Value2 = nzf_id
                 if value and value2:
-                    sabnzbd.remove_nzf(value, value2)
+                    nzbqueue.remove_nzf(value, value2)
                     return 'ok\n'
                 else:
                     return 'error: specify the nzo id\'s in the value param and nzf_id in value2 param\n'
             elif name == 'rename':
                 if value and value2:
-                    sabnzbd.rename_nzo(value, value2)
+                    nzbqueue.rename_nzo(value, value2)
                 else:
                     return 'error\n'
             elif name == 'change_complete_action': 
@@ -436,25 +440,25 @@ class MainPage:
                 sabnzbd.change_queue_complete_action(value)
                 return 'ok\n'
             elif name == 'purge':
-                sabnzbd.remove_all_nzo()
+                nzbqueue.remove_all_nzo()
                 return 'ok\n'
             elif name == 'pause':
                 if value:
                     items = value.split(',')
-                    sabnzbd.pause_multiple_nzo(items)
+                    nzbqueue.pause_multiple_nzo(items)
             elif name == 'resume':
                 if value:
                     items = value.split(',')
-                    sabnzbd.resume_multiple_nzo(items)
+                    nzbqueue.resume_multiple_nzo(items)
             elif name == 'priority':
                 if value and value2:
                     try:
                         priority = int(value2)
                         items = value.split(',')
                         if len(items) > 1:
-                            sabnzbd.set_priority_multiple(items, priority)
+                            nzbqueue.set_priority_multiple(items, priority)
                         else:
-                            sabnzbd.set_priority(value, priority)
+                            nzbqueue.set_priority(value, priority)
                     except:
                         return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
                 else:
@@ -481,7 +485,7 @@ class MainPage:
             
         if mode == 'switch':
             if value and value2:
-                sabnzbd.switch(value, value2)
+                nzbqueue.switch(value, value2)
                 return 'ok\n'
             else:
                 return 'error\n'
@@ -493,7 +497,7 @@ class MainPage:
                 cat = value2
                 if cat == 'None':
                     cat = None
-                sabnzbd.change_cat(nzo_id, cat)
+                nzbqueue.change_cat(nzo_id, cat)
                 item = config.get_config('categories', cat)
                 if item:
                     script = item.script.get()
@@ -502,8 +506,8 @@ class MainPage:
                     script = cfg.DIRSCAN_SCRIPT.get()
                     pp = cfg.DIRSCAN_PP.get()
     
-                sabnzbd.change_script(nzo_id, script)
-                sabnzbd.change_opts(nzo_id, pp)
+                nzbqueue.change_script(nzo_id, script)
+                nzbqueue.change_opts(nzo_id, pp)
                 return 'ok\n'
             else:
                 return 'error\n'
@@ -514,18 +518,18 @@ class MainPage:
                 script = value2
                 if script == 'None':
                     script = None
-                sabnzbd.change_script(nzo_id, script)
+                nzbqueue.change_script(nzo_id, script)
                 return 'ok\n'
             else:
                 return 'error\n'
             
         if mode == 'change_opts':
             if value and value2 and value2.isdigit():
-                sabnzbd.change_opts(value, int(value2))
+                nzbqueue.change_opts(value, int(value2))
             
         if mode == 'fullstatus':
             if output == 'xml':
-                return xml_full()
+                return 'not implemented YET\n' #xml_full()
             else:
                 return 'not implemented\n'
             
@@ -583,11 +587,11 @@ class MainPage:
                 return 'error\n'
             
         if mode == 'pause':
-            sabnzbd.pause_downloader()
+            downloader.pause_downloader()
             return 'ok\n'
 
         if mode == 'resume':
-            sabnzbd.resume_downloader()
+            downloader.resume_downloader()
             return 'ok\n'
 
         if mode == 'shutdown':
@@ -611,12 +615,12 @@ class MainPage:
                         value = int(value)
                     except:
                         return 'error: Please submit a value\n'
-                    sabnzbd.limit_speed(value)
+                    downloader.limit_speed(value)
                     return 'ok\n'
                 else:
                     return 'error: Please submit a value\n'
             elif name == 'get_speedlimit':
-                return str(int(sabnzbd.get_limit(value)))
+                return str(int(downloader.get_limit(value)))
             elif name == 'set_colorscheme':
                 if value:
                     if self.__prim:
@@ -732,7 +736,7 @@ class NzoPage:
         if kwargs['action_key'] == 'Delete':
             for key in kwargs:
                 if kwargs[key] == 'on':
-                    sabnzbd.remove_nzf(self.__nzo_id, key)
+                    nzbqueue.remove_nzf(self.__nzo_id, key)
 
         elif kwargs['action_key'] == 'Top' or kwargs['action_key'] == 'Up' or \
              kwargs['action_key'] == 'Down' or kwargs['action_key'] == 'Bottom':
@@ -741,13 +745,13 @@ class NzoPage:
                 if kwargs[key] == 'on':
                     nzf_ids.append(key)
             if kwargs['action_key'] == 'Top':
-                sabnzbd.move_top_bulk(self.__nzo_id, nzf_ids)
+                nzbqueue.move_top_bulk(self.__nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Up':
-                sabnzbd.move_up_bulk(self.__nzo_id, nzf_ids)
+                nzbqueue.move_up_bulk(self.__nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Down':
-                sabnzbd.move_down_bulk(self.__nzo_id, nzf_ids)
+                nzbqueue.move_down_bulk(self.__nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Bottom':
-                sabnzbd.move_bottom_bulk(self.__nzo_id, nzf_ids)
+                nzbqueue.move_bottom_bulk(self.__nzo_id, nzf_ids)
 
         raise dcRaiser(self.__root, kwargs)
 
@@ -781,18 +785,18 @@ class QueuePage:
     @cherrypy.expose
     def delete(self, uid = None, _dc = None, start=None, limit=None):
         if uid:
-            sabnzbd.remove_nzo(uid, False)
+            nzbqueue.remove_nzo(uid, False)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def purge(self, _dc = None, start=None, limit=None):
-        sabnzbd.remove_all_nzo()
+        nzbqueue.remove_all_nzo()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def removeNzf(self, nzo_id = None, nzf_id = None, _dc = None, start=None, limit=None):
         if nzo_id and nzf_id:
-            sabnzbd.remove_nzf(nzo_id, nzf_id)
+            nzbqueue.remove_nzf(nzo_id, nzf_id)
         raise Raiser(self.__root,  _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
@@ -820,13 +824,13 @@ class QueuePage:
     @cherrypy.expose
     def switch(self, uid1 = None, uid2 = None, _dc = None, start=None, limit=None):
         if uid1 and uid2:
-            sabnzbd.switch(uid1, uid2)
+            nzbqueue.switch(uid1, uid2)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def change_opts(self, nzo_id = None, pp = None, _dc = None, start=None, limit=None):
         if nzo_id and pp and pp.isdigit():
-            sabnzbd.change_opts(nzo_id, int(pp))
+            nzbqueue.change_opts(nzo_id, int(pp))
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
@@ -834,7 +838,7 @@ class QueuePage:
         if nzo_id and script:
             if script == 'None':
                 script = None
-            sabnzbd.change_script(nzo_id, script)
+            nzbqueue.change_script(nzo_id, script)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
@@ -842,7 +846,7 @@ class QueuePage:
         if nzo_id and cat:
             if cat == 'None':
                 cat = None
-            sabnzbd.change_cat(nzo_id, cat)
+            nzbqueue.change_cat(nzo_id, cat)
             item = config.get_config('categories', cat)
             if item:
                 script = item.script.get()
@@ -851,8 +855,8 @@ class QueuePage:
                 script = cfg.DIRSCAN_SCRIPT.get()
                 pp = cfg.DIRSCAN_PP.get()
 
-            sabnzbd.change_script(nzo_id, script)
-            sabnzbd.change_opts(nzo_id, pp)
+            nzbqueue.change_script(nzo_id, script)
+            nzbqueue.change_opts(nzo_id, pp)
 
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
@@ -866,49 +870,49 @@ class QueuePage:
 
     @cherrypy.expose
     def pause(self, _dc = None, start=None, limit=None):
-        sabnzbd.pause_downloader()
+        downloader.pause_downloader()
         raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def resume(self, _dc = None, start=None, limit=None):
-        sabnzbd.resume_downloader()
+        downloader.resume_downloader()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
     
     @cherrypy.expose
     def pause_nzo(self, uid=None, _dc = None, start=None, limit=None):
         items = uid.split(',')
-        sabnzbd.pause_multiple_nzo(items)
+        nzbqueue.pause_multiple_nzo(items)
         raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
     
     @cherrypy.expose
     def resume_nzo(self, uid=None, _dc = None, start=None, limit=None):
         items = uid.split(',')
-        sabnzbd.resume_multiple_nzo(items)
+        nzbqueue.resume_multiple_nzo(items)
         raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
     
     @cherrypy.expose
     def set_priority(self, nzo_id=None, priority=None, _dc = None, start=None, limit=None):
-        sabnzbd.set_priority(nzo_id, priority)
+        nzbqueue.set_priority(nzo_id, priority)
         raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def sort_by_avg_age(self, _dc = None, start=None, limit=None):
-        sabnzbd.sort_by_avg_age()
+        nzbqueue.sort_by_avg_age()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def sort_by_name(self, _dc = None, start=None, limit=None):
-        sabnzbd.sort_by_name()
+        nzbqueue.sort_by_name()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def sort_by_size(self, _dc = None, start=None, limit=None):
-        sabnzbd.sort_by_size()
+        nzbqueue.sort_by_size()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
     
     @cherrypy.expose
     def set_speedlimit(self, _dc = None, value=None):
-        sabnzbd.limit_speed(IntConv(value))
+        downloader.limit_speed(IntConv(value))
         raise Raiser(self.__root, _dc=_dc)
 
 class HistoryPage:
@@ -949,7 +953,7 @@ class HistoryPage:
     def purge(self, _dc = None, start=None, limit=None):
         history_db = cherrypy.thread_data.history_db
         history_db.remove_history()
-        raise Raiser(self.__root, _dc, start, limit)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def delete(self, job=None, _dc = None, start=None, limit=None):
@@ -961,7 +965,7 @@ class HistoryPage:
 
     @cherrypy.expose
     def reset(self, _dc = None, start=None, limit=None):
-        sabnzbd.reset_byte_counter()
+        #sabnzbd.reset_byte_counter()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
@@ -1339,7 +1343,7 @@ class ConfigServer:
             config.ConfigServer(server, kwargs)
 
         config.save_config()
-        sabnzbd.update_server(old_server, server)
+        downloader.update_server(old_server, server)
         raise dcRaiser(self.__root, kwargs)
 
 
@@ -1352,7 +1356,7 @@ class ConfigServer:
                 svr.delete()
                 del svr
                 config.save_config()
-                sabnzbd.update_server(server, None)
+                downloader.update_server(server, None)
 
         raise dcRaiser(self.__root, kwargs)
 
@@ -1822,7 +1826,7 @@ class ConnectionInfo:
 
         header['servers'] = []
 
-        for server in sabnzbd.DOWNLOADER.servers[:]:
+        for server in downloader.servers()[:]:
             busy = []
             connected = 0
 
@@ -1867,7 +1871,7 @@ class ConnectionInfo:
 
     @cherrypy.expose
     def disconnect(self, _dc = None):
-        sabnzbd.disconnect()
+        downloader.disconnect()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -1882,7 +1886,7 @@ class ConnectionInfo:
         pack[1]['action2'] = 'done 2'
         
         self.__lastmail= email.endjob('Test Job', 'unknown', True,
-                                      os.path.normpath(os.path.join(sabnzbd.COMPLETE_DIR, '/unknown/Test Job')),
+                                      os.path.normpath(os.path.join(cfg.COMPLETE_DIR.get_path(), '/unknown/Test Job')),
                                       str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n')
         raise Raiser(self.__root, _dc=_dc)
 
@@ -2094,9 +2098,9 @@ def build_header(prim):
     else:
         color = ''
 
-    header = { 'version':sabnzbd.__version__, 'paused':sabnzbd.paused(),
+    header = { 'version':sabnzbd.__version__, 'paused':downloader.paused(),
                'uptime':uptime, 'color_scheme':color }
-    speed_limit = sabnzbd.get_limit()
+    speed_limit = downloader.get_limit()
     if speed_limit <= 0:
         speed_limit = ''
 
@@ -2117,8 +2121,8 @@ def build_header(prim):
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = os.name == 'nt'
 
-    bytespersec = sabnzbd.bps()
-    qnfo = sabnzbd.queue_info()
+    bytespersec = bpsmeter.method.get_bps()
+    qnfo = nzbqueue.queue_info()
 
     bytesleft = qnfo[QNFO_BYTES_LEFT_FIELD]
     bytes = qnfo[QNFO_BYTES_FIELD]
@@ -2128,7 +2132,7 @@ def build_header(prim):
     header['mb']       = "%.2f" % (bytes / MEBI)
     
     status = ''
-    if sabnzbd.paused():
+    if downloader.paused():
         status = 'Paused'
     elif bytespersec > 0:
         status = 'Downloading'
@@ -2136,7 +2140,7 @@ def build_header(prim):
         status = 'Idle'
     header['status'] = "%s" % status
 
-    anfo  = sabnzbd.cache_info()
+    anfo  = articlecache.method.cache_info()
 
     header['cache_art'] = str(anfo[ANFO_ARTICLE_SUM_FIELD])
     header['cache_size'] = str(anfo[ANFO_CACHE_SIZE_FIELD])
@@ -2347,7 +2351,7 @@ def json_qstatus():
     """Build up the queue status as a nested object and output as a JSON object
     """
 
-    qnfo = sabnzbd.queue_info()
+    qnfo = nzbqueue.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     jobs = []
@@ -2359,15 +2363,15 @@ def json_qstatus():
         jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":filename, "msgid":msgid } )
 
     status = {
-        "paused" : sabnzbd.paused(),
-        "kbpersec" : sabnzbd.bps() / KIBI,
+        "paused" : downloader.paused(),
+        "kbpersec" : bpsmeter.method.get_bps() / KIBI,
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
         "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
         "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
         "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
-        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()),
+        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()),
         "jobs" : jobs
     }
     status_str= JsonWriter().write(status)
@@ -2380,7 +2384,7 @@ def xml_qstatus():
     """Build up the queue status as a nested object and output as a XML string
     """
 
-    qnfo = sabnzbd.queue_info()
+    qnfo = nzbqueue.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     jobs = []
@@ -2393,15 +2397,15 @@ def xml_qstatus():
         jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":name, "msgid":msgid } )
 
     status = {
-        "paused" : sabnzbd.paused(),
-        "kbpersec" : sabnzbd.bps() / KIBI,
+        "paused" : downloader.paused(),
+        "kbpersec" : bpsmeter.method.get_bps() / KIBI,
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
         "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
         "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
         "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
-        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()),
+        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()),
         "jobs" : jobs
     }
 
@@ -2437,7 +2441,7 @@ def xml_qstatus():
 
 
 def build_file_list(id):
-    qnfo = sabnzbd.queue_info()
+    qnfo = nzbqueue.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
     
     jobs = []
@@ -2530,7 +2534,7 @@ def get_history_size():
 def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=[]):
     
     # Get the currently in progress and active history queue.
-    queue = sabnzbd.get_history_queue()
+    queue = postproc.history_queue()
     
     try:
         limit = int(limit)
@@ -2897,7 +2901,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
         slot['size'] = "%s" % format_bytes(bytes)
-        if not sabnzbd.paused() and status != 'Paused' and status != 'Fetching' and not found_active:
+        if not downloader.paused() and status != 'Paused' and status != 'Fetching' and not found_active:
             slot['status'] = "Downloading"
             found_active = True
         else:
@@ -3009,7 +3013,7 @@ def xmlSimpleDict(keyw,lst):
 def rss_qstatus():
     """ Return a RSS feed with the queue status
     """
-    qnfo = sabnzbd.queue_info()
+    qnfo = nzbqueue.queue_info()
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     rss = RSS()
@@ -3020,9 +3024,9 @@ def rss_qstatus():
     rss.channel.language = "en"
 
     item = Item()
-    item.title  = "Total ETA: " + calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], sabnzbd.bps()) + " - "
+    item.title  = "Total ETA: " + calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()) + " - "
     item.title += "Queued: %.2f MB - " % (qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI)
-    item.title += "Speed: %.2f kB/s" % (sabnzbd.bps() / KIBI)
+    item.title += "Speed: %.2f kB/s" % (bpsmeter.method.get_bps() / KIBI)
     rss.addItem(item)
 
     sum_bytesleft = 0
@@ -3055,7 +3059,7 @@ def rss_qstatus():
         statusLine +=  '<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes)
         #ETA
         sum_bytesleft += pnfo[PNFO_BYTES_LEFT_FIELD]
-        statusLine += "<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, sabnzbd.bps())
+        statusLine += "<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, bpsmeter.method.get_bps())
         statusLine += "<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD])
         statusLine += "</tr>"
         item.description = statusLine

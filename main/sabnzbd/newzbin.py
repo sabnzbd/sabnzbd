@@ -38,11 +38,12 @@ from threading import *
 
 import sabnzbd
 from sabnzbd.constants import *
-from sabnzbd.decorators import *
+from sabnzbd.decorators import synchronized
 from sabnzbd.misc import Cat2Opts, sanitize_filename, BadFetch
 from sabnzbd.nzbstuff import CatConvert
 from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
+import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
 
 
@@ -128,7 +129,7 @@ class MSGIDGrabber(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue.Queue()
-        for tup in sabnzbd.NZBQ.get_msgids():
+        for tup in sabnzbd.nzbqueue.get_msgids():
             self.queue.put(tup)
         self.shutdown = False
 
@@ -171,10 +172,10 @@ class MSGIDGrabber(Thread):
 
                 priority = nzo.get_priority()
                 try:
-                    sabnzbd.insert_future_nzo(nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
+                    sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
                 except:
                     logging.error("[%s] Failed to update newzbin job %s", __NAME__, msgid)
-                    sabnzbd.remove_nzo(nzo.nzo_id, False)
+                    sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, False)
                 msgid = None
             else:
                 if filename:

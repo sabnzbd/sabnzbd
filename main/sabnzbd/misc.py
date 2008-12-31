@@ -22,7 +22,6 @@ __NAME__ = "sabnzbd.misc"
 
 import os
 import sys
-import time
 import logging
 import urllib
 import re
@@ -40,8 +39,9 @@ except:
 
 
 import sabnzbd
-from sabnzbd.decorators import *
+from sabnzbd.decorators import synchronized
 from sabnzbd.constants import *
+import nzbqueue
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
@@ -57,6 +57,12 @@ PANIC_QUEUE = 3
 PANIC_FWALL = 4
 PANIC_OTHER = 5
 
+def Lower(txt):
+    if txt:
+        return txt.lower()
+    else:
+        return ''
+
 
 def Cat2Opts(cat, pp, script):
     """
@@ -65,14 +71,14 @@ def Cat2Opts(cat, pp, script):
     """
     if not pp:
         try:
-            pp = config.get_categories()[cat.lower()].pp.get()
+            pp = config.get_categories()[Lower(cat)].pp.get()
             logging.debug('[%s] Job gets options %s', __NAME__, pp)
         except KeyError:
             pp = cfg.DIRSCAN_PP.get()
 
     if not script:
         try:
-            script = config.get_categories()[cat.lower()].script.get()
+            script = config.get_categories()[Lower(cat)].script.get()
             logging.debug('[%s] Job gets script %s', __NAME__, script)
         except KeyError:
             script = cfg.DIRSCAN_SCRIPT.get()
@@ -766,7 +772,7 @@ def BadFetch(nzo, url, retry=False, archive=False):
             msg = 'Failed to add url'
         nzo.set_fail_msg(msg)
 
-    sabnzbd.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
+    sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
 
 
 def OnCleanUpList(filename, skip_nzb=False):

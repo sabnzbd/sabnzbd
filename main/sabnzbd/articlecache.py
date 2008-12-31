@@ -18,20 +18,19 @@
 """
 sabnzbd.articlecache - Article cache handling
 """
-
 __NAME__ = "articlecache"
 
 import logging
 import threading
 
 import sabnzbd
-from sabnzbd.decorators import *
+from sabnzbd.decorators import synchronized
 
 
 ARTICLE_LOCK = threading.Lock()
 class ArticleCache:
-    def __init__(self, cache_limit = 0):
-        self.__cache_limit = cache_limit
+    def __init__(self):
+        self.__cache_limit = 0
         self.__cache_size = 0
         
         self.__article_list = []    # List of buffered articles
@@ -157,3 +156,6 @@ class ArticleCache:
         logging.info("[%s] Added %s to cache", __NAME__, article)
         logging.debug("[%s] cache_size -> %s", __NAME__, self.__cache_size)
         
+
+### Global access point for article cache
+method = ArticleCache()

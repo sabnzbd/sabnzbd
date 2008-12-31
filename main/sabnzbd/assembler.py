@@ -30,8 +30,10 @@ import Queue
 import binascii
 import logging
 import struct
-import sabnzbd
-
+from threading import Thread
+from time import sleep
+if os.name == 'nt':
+    import subprocess
 try:
     import hashlib
     new_md5 = hashlib.md5
@@ -39,25 +41,53 @@ except:
     import md5
     new_md5 = md5.new
 
-from sabnzbd.misc import getFilepath, sanitize_filename
+import sabnzbd
+from sabnzbd.misc import getFilepath, sanitize_filename, get_unique_path
 import sabnzbd.cfg as cfg
-from threading import Thread
-from time import sleep
-if os.name == 'nt':
-    import subprocess
-
+import sabnzbd.articlecache
+import sabnzbd.postproc
+import sabnzbd.downloader
 
 
 #------------------------------------------------------------------------------
-## sabnzbd.pause_downloader
+# Wrapper functions
+
+__ASM = None  # Global pointer to post-proc instance
+
+def init():
+    global __ASM
+    if __ASM:
+        __ASM.__init__(__ASM.queue)
+    else:
+        __ASM = Assembler()
+
+def start():
+    global __ASM
+    if __ASM: __ASM.start()
+
+
+def process(nzf):
+    global __ASM
+    if __ASM: __ASM.process(nzf)
+
+def stop():
+    global __ASM
+    if __ASM:
+        __ASM.stop()
+        try:
+            __ASM.join()
+        except:
+            pass
+
+
+#------------------------------------------------------------------------------
 class Assembler(Thread):
-    def __init__ (self, download_dir, queue = None):
+    def __init__ (self, queue = None):
         Thread.__init__(self)
 
-        self.download_dir = download_dir
-        self.queue = queue
-
-        if not self.queue:
+        if queue:
+            self.queue = queue
+        else:
             self.queue = Queue.Queue()
 
     def stop(self):
@@ -82,7 +112,7 @@ class Assembler(Thread):
 
                 dupe = nzo.check_for_dupe(nzf)
 
-                filepath = getFilepath(self.download_dir, nzo, filename)
+                filepath = getFilepath(cfg.DOWNLOAD_DIR.get_path(), nzo, filename)
 
                 if filepath:
                     logging.info('[%s] Decoding %s %s', __NAME__, filepath, nzf.get_type())
@@ -92,7 +122,7 @@ class Assembler(Thread):
                         # 28 == disk full => pause downloader
                         if errno == 28:
                             logging.error('[%s] Disk full! Forcing Pause', __NAME__)
-                            sabnzbd.pause_downloader()
+                            sabnzbd.downloader.pause_downloader()
                         else:
                             logging.error('[%s] Disk error on creating file %s', __NAME__, filepath)
 
@@ -103,7 +133,7 @@ class Assembler(Thread):
 
 
             else:
-                sabnzbd.postprocess_nzo(nzo)
+                sabnzbd.postproc.process(nzo)
 
 
 def _assemble(nzo, nzf, path, dupe):
@@ -128,7 +158,7 @@ def _assemble(nzo, nzf, path, dupe):
         sleep(0.01)
         article = decodetable[articlenum]
 
-        data = sabnzbd.load_article(article)
+        data = sabnzbd.articlecache.method.load_article(article)
 
         if not data:
             logging.warning('[%s] %s missing', __NAME__, article)

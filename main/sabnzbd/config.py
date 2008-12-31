@@ -22,11 +22,14 @@ __NAME__ = "sabnzbd.config"
 
 import os
 import logging
-
+import threading
 import sabnzbd.misc
 from sabnzbd.utils import listquote
 from sabnzbd.utils import configobj
+from sabnzbd.decorators import synchronized
 
+CONFIG_LOCK = threading.Lock()
+SAVE_CONFIG_LOCK = threading.Lock()
 
 
 __CONFIG_VERSION = '18'     # Minumum INI file version required
@@ -280,6 +283,7 @@ class OptionPassword(Option):
         return None
 
 
+@synchronized(CONFIG_LOCK)
 def add_to_database(section, keyword, object):
     global database
     if section not in database:
@@ -287,6 +291,7 @@ def add_to_database(section, keyword, object):
     database[section][keyword] = object
 
 
+@synchronized(CONFIG_LOCK)
 def delete_from_database(section, keyword):
         global database, CFG, modified
         del database[section][keyword]
@@ -551,7 +556,7 @@ def get_config(section, keyword):
         item = database[section][keyword]
     except KeyError:
         item = None
-        logging.exception('[%s], Missing configuration item %s,%s', __NAME__, section, keyword)
+        logging.info('[%s], Missing configuration item %s,%s', __NAME__, section, keyword)
 
     return item
 
@@ -583,7 +588,7 @@ def delete(section, keyword):
 # This does input and output of configuration to an INI file.
 # It translates this data structure to the config database.
 
-
+@synchronized(SAVE_CONFIG_LOCK)
 def read_config(path):
     """ Read the complete INI file and check its version number
         if OK, pass values to config-database
@@ -633,6 +638,7 @@ def read_config(path):
     return True
 
 
+@synchronized(SAVE_CONFIG_LOCK)
 def save_config(force=False):
     """ Update Setup file with current option values """
     global CFG, database, modified
@@ -684,13 +690,6 @@ def save_config(force=False):
     except IOError:
         return False
 
-
-def save_configfile(dummy):
-    """ Backwards compatible version, forced save """
-    if not save_config(force=True):
-        sabnzbd.misc.Panic('Cannot write to configuration file "%s".' % config.filename, \
-              'Make sure file is writable and in a writable folder.')
-        sabnzbd.misc.ExitSab(2)
 
 
 def define_servers():

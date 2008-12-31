@@ -18,6 +18,11 @@
 ################################################################################
 # Decorators                                                                   #
 ################################################################################
+from threading import RLock, Condition
+
+NZBQUEUE_LOCK = RLock()
+CV = Condition(NZBQUEUE_LOCK)
+
 def synchronized(lock):
     def wrap(f):
         def newFunction(*args, **kw):
@@ -28,3 +33,15 @@ def synchronized(lock):
                 lock.release()
         return newFunction
     return wrap
+
+
+def synchronized_CV(func):
+    global CV
+    def call_func(*params, **kparams):
+        CV.acquire()
+        try:
+            return func(*params, **kparams)
+        finally:
+            CV.notifyAll()
+            CV.release()
+    return call_func
