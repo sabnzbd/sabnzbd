@@ -1072,6 +1072,9 @@ class ConfigDirectories:
 
         conf['my_home'] = sabnzbd.DIR_HOME
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
+
+        # Temporary fix, problem with build_header
+        conf['restart_req'] = sabnzbd.RESTART_REQ
         
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
                             searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1182,6 +1185,9 @@ class ConfigGeneral:
 
         conf['configfn'] = config.get_filename()
 
+        # Temporary fix, problem with build_header
+        conf['restart_req'] = sabnzbd.RESTART_REQ
+        
         wlist = []
         wlist2 = ['None']
         interfaces = glob.glob(sabnzbd.DIR_INTERFACES + "/*")

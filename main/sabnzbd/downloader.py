@@ -46,9 +46,9 @@ __DOWNLOADER = None  # Global pointer to post-proc instance
 def init(paused):
     global __DOWNLOADER
     if __DOWNLOADER:
-        __DOWNLOADER.__init__(paused)
+        __DOWNLOADER.__init__(paused or __DOWNLOADER.paused)
     else:
-        __DOWNLOADER = Downloader(paused or __DOWNLOADER.paused)
+        __DOWNLOADER = Downloader(paused)
 
 def start():
     global __DOWNLOADER
