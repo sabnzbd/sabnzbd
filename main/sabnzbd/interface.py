@@ -1554,7 +1554,7 @@ class ConfigScheduling:
         for ev in scheduler.sort_schedules(forward=True):
             conf['schedlines'].append(ev[3])
 
-        actions = ['resume', 'pause', 'shutdown', 'speedlimit']
+        actions = ['resume', 'pause', 'shutdown', 'restart', 'speedlimit']
         for server in config.get_servers():
             actions.append(server)
         conf['actions'] = actions
@@ -1576,7 +1576,7 @@ class ConfigScheduling:
         if minute and hour  and dayofweek and action:
             if (action == 'speedlimit') and arguments.isdigit():
                 pass
-            elif action in ('resume', 'pause', 'shutdown'):
+            elif action in ('resume', 'pause', 'shutdown', 'restart'):
                 arguments = ''
             elif action.find(':') > 0:
                 if arguments == '1':

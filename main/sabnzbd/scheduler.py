@@ -87,6 +87,9 @@ def init():
         elif action_name == 'shutdown':
             action = sabnzbd.shutdown_program
             arguments = []
+        elif action_name == 'restart':
+            action = sabnzbd.restart_program
+            arguments = []
         elif action_name == 'speedlimit' and arguments != []:
             action = downloader.limit_speed
         elif action_name == 'enable_server' and arguments != []:

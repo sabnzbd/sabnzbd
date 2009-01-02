@@ -30,6 +30,7 @@ import glob
 import gzip
 import subprocess
 import time
+import cherrypy
 
 try:
     import ctypes
@@ -262,9 +263,10 @@ def halt():
         ## Save State ##
         save_state()
 
-        ## Stop Optional Objects ##
-        #Scheduler is stopped last so it doesn't break when halt() is launched by the scheduler
-        scheduler.stop()
+        # The Scheduler cannot be stopped when the stop was scheduled.
+        # Since all warm-restarts have been removed, it's not longer
+        # needed to stop the scheduler.
+        ### scheduler.stop()
 
         logging.info('All processes stopped')
 
@@ -466,6 +468,15 @@ def shutdown_program():
     while __INITIALIZED__:
         time.sleep(1.0)
     os._exit(0)
+
+
+def restart_program():
+    """ Restart program (used by scheduler) """
+    logging.info("[%s] Performing sabnzbd restart", __NAME__)
+    sabnzbd.halt()
+    while __INITIALIZED__:
+        time.sleep(1.0)
+    cherrypy.engine.restart()
 
 
 def change_queue_complete_action(action):
