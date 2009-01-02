@@ -329,8 +329,19 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                         if delete:
                             i = 0
                             for joinable in joinable_sets[joinable_set]:
-                                logging.debug("[%s] Deleting %s", __NAME__, joinable)
-                                os.remove(joinable)
+                                if os.path.exists(joinable):
+                                    logging.debug("[%s] Deleting %s", __NAME__, joinable)
+                                    try:
+                                        os.remove(joinable)
+                                    except:
+                                        pass
+                                path1 = joinable + ".1"
+                                if os.path.exists(path1):
+                                    logging.debug("[%s] Deleting %s", __NAME__, path1)
+                                    try:
+                                        os.remove(path1)
+                                    except:
+                                        pass
                                 i += 1
                         continue
     
