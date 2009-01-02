@@ -204,8 +204,9 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
 
         if do_filejoin:
             logging.info('[%s] Filejoin starting on %s', __NAME__, workdir)
-            if file_join(nzo, workdir, workdir_complete, dele, xjoinables):
-                error = True
+            error, newf = file_join(nzo, workdir, workdir_complete, dele, xjoinables)
+            if newf:
+                newfiles.extend(newf)
             logging.info('[%s] Filejoin finished on %s', __NAME__, workdir)
             nzo.set_action_line('', '')
 
