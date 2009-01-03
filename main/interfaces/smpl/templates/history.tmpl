@@ -23,11 +23,11 @@ History Size: $total_size
         </a></td>
         <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
         <td>
-            <!--#if $line.url_info#-->
-                <a href="$line.url_info"><img class="imglink" src="static/images/browser.png" /></a>
-            <!--#end if#-->
             <!--#if $line.report#-->
                 <a href="https://www.newzbin.com/browse/post/$line.report"><img class="imglink" src="static/images/newzbin.png" /></a>
+            <!--#end if#-->
+            <!--#if $line.url_info#-->
+                <a href="$line.url_info"><img class="imglink" src="static/images/browser.png" /></a>
             <!--#end if#-->
         </td>
         <td>$line.size</td>
