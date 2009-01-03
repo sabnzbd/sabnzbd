@@ -41,7 +41,7 @@ from sabnzbd.utils import listquote
 from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
-from sabnzbd.misc import real_path, create_real_path, \
+from sabnzbd.misc import real_path, create_real_path, loadavg, \
      to_units, from_units, SameFile, diskfree, disktotal
 from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.newswrapper import GetServerParms
@@ -2115,6 +2115,7 @@ def build_header(prim):
     header['diskspace2'] = "%.2f" % diskfree(cfg.COMPLETE_DIR.get_path())
     header['diskspacetotal1'] = "%.2f" % disktotal(cfg.DOWNLOAD_DIR.get_path())
     header['diskspacetotal2'] = "%.2f" % disktotal(cfg.COMPLETE_DIR.get_path())
+    header['loadavg'] = loadavg()
     header['speedlimit'] = "%s" % speed_limit
     header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())

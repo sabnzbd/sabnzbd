@@ -846,6 +846,10 @@ function loadingJSON(){
 				<span class="small"><span id="ds1">${diskspace1}</span>GB / ${diskspacetotal1}GB</span><br />
 				Complete<br />
 				<span class="small"><span id="ds2">${diskspace2}</span>GB / ${diskspacetotal2}GB</span>
+                <!--#if $loadavg#-->
+                    SysLoad<br />
+                    <span class="small"><span id="ds3">${loadavg}</span></span>
+                <!--#end if#-->
 				</center>
 				
 			</div>

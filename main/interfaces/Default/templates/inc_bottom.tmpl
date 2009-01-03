@@ -1,5 +1,8 @@
 <div class="footer">
 <b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB
+<!--#if $loadavg#-->
+    - <b>Sysload</b> $loadavg
+<!--#end if#-->
 <!--#if $paused#-->
     - <b>PAUSED</b>
 <!--#end if#-->

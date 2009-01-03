@@ -790,20 +790,21 @@ def OnCleanUpList(filename, skip_nzb=False):
 
 
 def loadavg():
-    """ Return 1-minute load average of host or None if not supported
+    """ Return 1, 5 and 15 minute load average of host or "" if not supported
     """
     if os.name == 'nt' or sabnzbd.DARWIN:
-        return None
-
+        return ""
     try:
         loadavgstr = open('/proc/loadavg', 'r').readline().strip()
     except:
-        return None
+        return ""
 
     data = loadavgstr.split()
-    avg1, avg5, avg15 = map(float, data[:3])
-
-    return avg1
+    try:
+        a1, a5, a15 = map(float, data[:3])
+        return "%2d, %2d, %2d" % (a1*100, a5*100, a15*100)
+    except:
+        return ""
 
 
 def format_time_string(seconds, days=0):
