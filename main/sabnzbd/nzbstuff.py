@@ -292,11 +292,10 @@ class NzbFile(TryList):
 # NzbObject                                                                    #
 ################################################################################
 DTD = '{http://www.newzbin.com/DTD/2003/nzb}'
-NZBFN_MATCHER = re.compile(r"msgid_\d*_(.*).nzb", re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 
 class NzbObject(TryList):
-    def __init__(self, filename, pp, script, nzb = None,
+    def __init__(self, filename, msgid, pp, script, nzb = None,
                  futuretype = False, cat = None, url=None, 
                  priority=NORMAL_PRIORITY, status="Queued", nzo_info={}):
         TryList.__init__(self)
@@ -387,12 +386,11 @@ class NzbObject(TryList):
 
         self.create_group_folder = cfg.CREATE_GROUP_FOLDERS.get()
 
-        match_result = re.search(NZBFN_MATCHER, filename)
-        if match_result:
-            self.__dirname = match_result.group(1)
-
         # Remove leading msgid_XXXX and trailing .nzb
-        self.__dirname, msgid = SplitFileName(self.__dirname)
+        self.__dirname, self.__msgid = SplitFileName(self.__dirname)
+        if msgid:
+            self.__msgid = msgid
+
         self.__original_dirname = self.__dirname
         if cfg.REPLACE_SPACES.get():
             self.__dirname = self.__dirname.replace(' ','_')
@@ -635,6 +633,9 @@ class NzbObject(TryList):
             self.__priority = priority
         except:
             pass
+
+    def get_msgid(self):
+        return self.__msgid
 
     def add_parfile(self, parfile):
         self.__files.append(parfile)
@@ -881,7 +882,7 @@ class NzbObject(TryList):
             avg_date = time.mktime(avg_date.timetuple())
 
         return (self.__repair, self.__unpack, self.__delete, self.__script,
-                self.nzo_id, self.__filename, {},
+                self.nzo_id, self.__dirname, {},
                 self.__msgid, self.__cat, self.__url,
                 bytes_left_all, self.__bytes, avg_date,
                 finished_files, active_files, queued_files, self.__status, self.__priority)

@@ -36,7 +36,6 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.newsunpack import build_command
-from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import to_units, from_units, SplitHost
 import sabnzbd.cfg as cfg
 
@@ -123,11 +122,9 @@ def send(message):
 ################################################################################
 from Cheetah.Template import Template
 
-def endjob(filename, cat, status, path, bytes, stages, script, script_output):
+def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_output):
     """ Send email using templates """
     
-    name, msgid = SplitFileName(filename)
-
     output = []
     stage_keys = stages.keys()
     stage_keys.sort()
@@ -141,7 +138,7 @@ def endjob(filename, cat, status, path, bytes, stages, script, script_output):
     parm['status'] = status
     parm['to'] = cfg.EMAIL_TO.get()
     parm['from'] = cfg.EMAIL_FROM.get()
-    parm['name'] = name
+    parm['name'] = filename
     parm['path'] = path
     parm['msgid'] = msgid
     parm['output'] = output

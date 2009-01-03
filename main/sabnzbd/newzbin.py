@@ -172,7 +172,7 @@ class MSGIDGrabber(Thread):
 
                 priority = nzo.get_priority()
                 try:
-                    sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
+                    sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
                 except:
                     logging.error("[%s] Failed to update newzbin job %s", __NAME__, msgid)
                     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, False)
@@ -291,9 +291,8 @@ def _grabnzb(msgid):
     newname = sanitize_filename(report_name)
     if len(newname) > 80:
         newname = newname[0:79].strip()
-    newname = "msgid_%s %s.nzb" % (msgid, newname)
 
-    logging.info('[%s] Successfully fetched %s (cat=%s) (%s)', __NAME__, report_name, report_cat, newname)
+    logging.info('[%s] Successfully fetched report %s - %s (cat=%s) (%s)', __NAME__, msgid, report_name, report_cat, newname)
 
     return (newname, data, report_cat, nzo_info)
 

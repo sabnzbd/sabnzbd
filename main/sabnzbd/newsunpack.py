@@ -33,7 +33,6 @@ except:
     pass
 
 import sabnzbd
-from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.codecs import TRANS, unicode2local
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.misc import format_time_string
@@ -146,9 +145,8 @@ def find_programs(curdir):
 
 
 #------------------------------------------------------------------------------
-def external_processing(extern_proc, complete_dir, filename, nicename, cat, group, status):
+def external_processing(extern_proc, complete_dir, filename, msgid, nicename, cat, group, status):
 
-    name, msgid = SplitFileName(filename)
     command = [str(extern_proc), str(complete_dir), str(filename), \
                str(nicename), str(msgid), str(cat), str(group), str(status)]
 
@@ -377,7 +375,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 nzo.set_unpack_info('filejoin', '[%s] Error "%s" while running file_join ' % (joinable_set, msg))
                 logging.error('[%s] Error "%s" while' + \
                               ' running file_join on %s',
-                              __NAME__, msg, nzo.get_filename())
+                              __NAME__, msg, nzo.get_dirname())
                 return True, []
                 
         return False, newfiles
@@ -387,7 +385,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         nzo.set_unpack_info('filejoin', 'Error "%s" while running file_join ' % (msg))
         logging.error('[%s] Error "%s" while' + \
                       ' running file_join on %s',
-                      __NAME__, msg, nzo.get_filename())
+                      __NAME__, msg, nzo.get_dirname())
         return True, []
     
 
@@ -463,7 +461,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
     except:
         msg = sys.exc_info()[1]
         nzo.set_fail_msg('Unpacking failed, %s' % msg)
-        setname = nzo.get_filename()
+        setname = nzo.get_dirname()
         nzo.set_unpack_info('unpack', '[%s] Error "%s" while running rar_unpack' % (setname, msg))
 
         logging.error('[%s] Error "%s" while' + \
@@ -654,7 +652,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
         nzo.set_fail_msg('Unpacking failed, %s' % msg)
         logging.error('[%s] Error "%s" while' + \
                           ' running unzip() on %s',
-                          __NAME__, msg, nzo.get_filename())
+                          __NAME__, msg, nzo.get_dirname())
         return True
 
 def ZIP_Extract(zipfile, extraction_path):
@@ -948,7 +946,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
                         block_table.pop(block_size)
 
                 logging.info('[%s] Added %s blocks to %s', __NAME__,
-                             added_blocks, nzo.get_filename())
+                             added_blocks, nzo.get_dirname())
 
                 if not force:
                     nzo.set_status("Fetching %s blocks..." % added_blocks)

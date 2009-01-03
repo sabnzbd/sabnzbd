@@ -43,7 +43,6 @@ from Cheetah.Template import Template
 import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, loadavg, \
      to_units, from_units, SameFile, diskfree, disktotal
-from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
 from sabnzbd.codecs import TRANS, xml_name
@@ -1856,7 +1855,7 @@ class ConnectionInfo:
                         nzf_name = xml_name(nzf.get_filename())
                     except: #attribute error
                         nzf_name = xml_name(nzf.get_subject())
-                    nzo_name = xml_name(nzo.get_filename())
+                    nzo_name = xml_name(nzo.get_dirname())
 
                 busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
 
@@ -2363,7 +2362,8 @@ def json_qstatus():
 
     jobs = []
     for pnfo in pnfo_list:
-        filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
+        filename = pnfo[PNFO_FILENAME_FIELD]
+        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
@@ -2396,7 +2396,8 @@ def xml_qstatus():
 
     jobs = []
     for pnfo in pnfo_list:
-        filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
+        filename = pnfo[PNFO_FILENAME_FIELD]
+        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         name = xml_name(filename)
@@ -2875,6 +2876,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         if not cat:
             cat = 'None'
         filename = pnfo[PNFO_FILENAME_FIELD]
+        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD]
         average_date = pnfo[PNFO_AVG_DATE_FIELD]
@@ -2902,8 +2904,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             slot['script'] = script
         else:
             slot['script'] = 'None'
-        fn, slot['msgid'] = SplitFileName(filename)
-        slot['filename'] = xml_name(fn)
+        slot['msgid'] = msgid
+        slot['filename'] = xml_name(filename)
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
@@ -3038,7 +3040,8 @@ def rss_qstatus():
 
     sum_bytesleft = 0
     for pnfo in pnfo_list:
-        filename, msgid = SplitFileName(pnfo[PNFO_FILENAME_FIELD])
+        filename = pnfo[PNFO_FILENAME_FIELD]
+        msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         mbleft = (bytesleft / MEBI)

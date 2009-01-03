@@ -35,7 +35,6 @@ if os.name == 'nt':
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread, RLock
-from sabnzbd.nzbstuff import SplitFileName
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          cleanup_empty_directories, get_unique_filename, \
                          OnCleanUpList
@@ -165,8 +164,9 @@ class PostProcessor(Thread):
             repairSets = parTable.keys()
 
             # Get the NZB name
-            filename = nzo.get_filename()
-            
+            filename = nzo.get_dirname()
+            msgid = nzo.get_msgid()
+
             try:
                 
                 # Get the folder containing the download result
@@ -328,7 +328,7 @@ class PostProcessor(Thread):
                             nzo.set_status("Running Script...")
                             nzo.set_action_line('Running Script', script)
                             nzo.set_unpack_info('script','Running user script %s' % script, unique=True)
-                            script_log = external_processing(script_path, workdir_complete, filename, dirname, cat, group, jobResult)
+                            script_log = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
                             # Expects the script to have \r\n as line seperators
                             try:
                                 script_line = script_log.strip('\r\n').rsplit('\r\n',1)[0]
@@ -350,7 +350,7 @@ class PostProcessor(Thread):
                     ## Email the results
                     if (not nzb_list) and cfg.EMAIL_ENDJOB.get():
                         if (cfg.EMAIL_ENDJOB.get() == 1) or (cfg.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
-                            email.endjob(filename, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
+                            email.endjob(filename, msgid, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
                                          {}, script, TRANS(script_log))
     
                     if fname:
@@ -361,8 +361,8 @@ class PostProcessor(Thread):
                             nzo.set_unpack_info('script','<a href="./scriptlog?name=%s">View script output</a>' % urllib.quote(fname), unique=True)
     
                 ## Remove newzbin bookmark, if any
-                name, msgid = SplitFileName(filename)
-                sabnzbd.newzbin.delete_bookmark(msgid)
+                if msgid:
+                    sabnzbd.newzbin.delete_bookmark(msgid)
     
                 ## Show final status in history
                 if parResult and not unpackError:
@@ -409,7 +409,7 @@ class PostProcessor(Thread):
                 logging.info('[%s] Cleaning up %s', __NAME__, filename)
                 sabnzbd.nzbqueue.cleanup_nzo(nzo)
             except:
-                logging.error("[%s] Cleanup of %s failed.", __NAME__, nzo.get_filename())
+                logging.error("[%s] Cleanup of %s failed.", __NAME__, nzo.get_dirname())
                 logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
                 
             # Remove the nzo from the history_queue list

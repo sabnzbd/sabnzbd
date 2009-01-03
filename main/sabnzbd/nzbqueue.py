@@ -31,7 +31,7 @@ import datetime
 from threading import Thread, RLock
 
 from sabnzbd.trylist import TryList
-from sabnzbd.nzbstuff import NzbObject, SplitFileName
+from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import Panic_Queue, ExitSab, sanitize_filename
 from database import HistoryDB
 from sabnzbd.decorators import *
@@ -106,12 +106,12 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, pp, script, None, True, cat=cat, url=url, priority=priority, status="Fetching")
+        future_nzo = NzbObject(msg, pp, 0, script, None, True, cat=cat, url=url, priority=priority, status="Fetching")
         self.add(future_nzo)
         return future_nzo
 
     @synchronized(NZBQUEUE_LOCK)
-    def insert_future(self, future, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
+    def insert_future(self, future, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
         """ Refresh a placeholder nzo with an actual nzo """
         nzo_id = future.nzo_id
         if nzo_id in self.__nzo_table:
@@ -128,7 +128,7 @@ class NzbQueue(TryList):
                     categ = cat
 
                 try:
-                    future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzo_info=nzo_info)
+                    future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzo_info=nzo_info)
                     future.nzo_id = nzo_id
                     self.save()
                 except ValueError:
@@ -559,7 +559,7 @@ class NzbQueue(TryList):
             if hist_item.nzo and hist_item.nzo == nzo:
                 hist_item.cleanup()
                 logging.debug('[%s] %s cleaned up', __NAME__,
-                              nzo.get_filename())
+                              nzo.get_dirname())
 
     @synchronized(NZBQUEUE_LOCK)
     def debug(self):
@@ -607,9 +607,7 @@ def _nzo_date_cmp(nzo1, nzo2):
     return cmp(avg_date1, avg_date2)
 
 def _nzo_name_cmp(nzo1, nzo2):
-    fn1, msgid1 = SplitFileName(nzo1.get_filename())
-    fn2, msgid2 = SplitFileName(nzo2.get_filename())
-    return cmp(fn1, fn2)
+    return cmp(nzo1.get_filename(), nzo2.get_filename())
 
 def _nzo_size_cmp(nzo1, nzo2):
     return cmp(nzo1.get_bytes(), nzo2.get_bytes())
@@ -802,9 +800,9 @@ def add_nzo(nzo):
     if __NZBQ: __NZBQ.add(nzo)
 
 @synchronized_CV
-def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
+def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
     global __NZBQ
-    if __NZBQ: __NZBQ.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
+    if __NZBQ: __NZBQ.insert_future(future_nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
         
 @synchronized_CV
 def set_priority(nzo_id, priority):
