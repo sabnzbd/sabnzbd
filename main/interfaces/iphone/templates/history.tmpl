@@ -16,13 +16,13 @@
     <!--#for $line in $lines #-->
     <!--#set id = $line.filename.replace(" ","_") #-->   
     <!--#set id = $id.replace("#","_") #-->        
-    <ul id="$id" title="$line.filename">
+    <ul id="$id" title="$line.name">
          <li ><center><span class="speed">$kbpersec</span> KB/s | <span class="mbleft">$mbleft</span>/<span class="mbtotal">$mb</span> MB <span class="status"><!--#if $paused then "| PAUSED" else ""#--></span> </center></li> 
-        <!--#for $stage in $line.stages#-->
-            <li>$line.filename</li>
+        <!--#for $stage in $line.stage_log#-->
+            <li>$line.name</li>
             <li>Stage $stage.name
             <!--#for $action in $stage.actions#-->
-                 <br />$action.name: $action.value
+                 <br />$action
             <!--#end for#-->
             </li>
         <!--#end for#--> 

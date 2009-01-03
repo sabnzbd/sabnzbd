@@ -55,9 +55,9 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
                 <span class="bold">Category: </span><br />
                 <span class="left-margin">$line.category</span><br />
             <!--#end if#-->
-            <!--#if $line.path#-->
+            <!--#if $line.storage#-->
                 <span class="bold">Path: </span><br />
-                <span class="left-margin" title="$line.storage">$line.path</span>
+                <span class="left-margin">$line.storage</span>
             <!--#end if#-->
             <br />
 
