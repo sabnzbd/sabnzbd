@@ -329,14 +329,7 @@ class PostProcessor(Thread):
                             nzo.set_action_line('Running Script', script)
                             nzo.set_unpack_info('script','Running user script %s' % script, unique=True)
                             script_log = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
-                            # Expects the script to have \r\n as line seperators
-                            try:
-                                script_line = script_log.strip('\r\n').rsplit('\r\n',1)[0]
-                                # Make the script line a maximum of 150 characters
-                                if len(script_line) >= 150:
-                                    script_line = script_line[:147] + '...'
-                            except:
-                                    script_line = ''
+                            script_line = get_last_line(script_log)
                             if script_log:
                                 fname = nzo.get_nzo_id()
                             if script_line:
@@ -561,6 +554,7 @@ def NzbRedirect(wdir, pp, script, cat):
 
     return list
 
+
 def one_file_or_folder(dir):
     """ If the dir only contains one file or folder, join that file/folder onto the path """
     if os.path.exists(dir) and os.path.isdir(dir):
@@ -569,3 +563,16 @@ def one_file_or_folder(dir):
             dir = os.path.join(dir, cont[0])
             dir = one_file_or_folder(dir)
     return dir
+
+
+def get_last_line(txt):
+    """ Return last non-empty line of a text, trim to 150 max """
+    lines = txt.split('\n')
+    n = len(lines) - 1
+    while n >= 0 and not lines[n].strip('\r\t '):
+        n = n - 1
+
+    line = lines[n].strip('\r\t ')
+    if len(line) >= 150:
+        line = line[:147] + '...'
+    return line
