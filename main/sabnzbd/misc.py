@@ -802,7 +802,7 @@ def loadavg():
     data = loadavgstr.split()
     try:
         a1, a5, a15 = map(float, data[:3])
-        return "%2d, %2d, %2d" % (a1*100, a5*100, a15*100)
+        return "%.2f, %.2f, %.2f" % (a1, a5, a15)
     except:
         return ""
 
