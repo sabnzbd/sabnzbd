@@ -95,8 +95,11 @@ def stop():
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
-    def __init__ (self, queue=None, history_queue=[]):
+    def __init__ (self, queue=None, history_queue=None):
         Thread.__init__(self)
+        
+        if history_queue == None:
+            history_queue = []
         
         if queue:
             self.queue = queue
