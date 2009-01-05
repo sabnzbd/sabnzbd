@@ -37,6 +37,8 @@ from threading import Thread
 import sabnzbd
 from sabnzbd.constants import DB_HISTORY_VERSION
 
+# Note: Add support for execute return values
+
 class HistoryDB:
     def __init__(self, db_path):
         #Thread.__init__(self)
@@ -49,9 +51,29 @@ class HistoryDB:
         self.c = self.con.cursor()
         if create_table:
             self.create_history_db()
+            
+    def execute(self, command, args=(), save=False):
+        ''' Wrapper for executing SQL commands '''
+        try:
+            if args:
+                self.c.execute(command, args)
+            else:
+                self.c.execute(command)
+            if save:
+                self.save()
+            return True
+        except:
+            logging.error('[%s] SQL Command Failed, see log', __NAME__)
+            logging.debug("[%s] SQL: %s" , __NAME__, command)
+            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            try:
+                self.con.rollback()
+            except:
+                logging.debug("[%s] Rollback Failed:", __NAME__, exc_info = True)
+            return False
 
     def create_history_db(self):
-        self.c.execute("""
+        self.execute("""
         CREATE TABLE "history" (
             "id" INTEGER PRIMARY KEY,
             "completed" INTEGER NOT NULL,
@@ -79,29 +101,24 @@ class HistoryDB:
             "meta" TEXT
         )
         """)
-        '''
-        self.c.execute("""
-        CREATE TABLE "version" (
-            "table_version" INTEGER
-        )
-        """)
-        self.save()
-        self.c.execute("""
-        INSERT INTO "version" (
-            "table_version") VALUES (?)
-        )
-        """, DB_HISTORY_VERSION)
-        '''
         
     def save(self):
-        self.con.commit()
+        try:
+            self.con.commit()
+        except:
+            logging.error('[%s] SQL Commit Failed, see log', __NAME__)
+            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
         
     def close(self):
-        self.c.close()
-        self.con.close()
+        try:
+            self.c.close()
+            self.con.close()
+        except:
+            logging.error('[%s] Failed to close database, see log', __NAME__)
+            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
         
     def remove_all(self):
-        self.c.execute("""DELETE FROM history""")
+        return self.execute("""DELETE FROM history""")
         
     def remove_history(self, jobs=None):       
         if jobs == None:
@@ -111,7 +128,7 @@ class HistoryDB:
                 jobs = [jobs]
                 
             for job in jobs:
-                self.c.execute("""DELETE FROM history WHERE nzo_id=?""", (job,))
+                self.execute("""DELETE FROM history WHERE nzo_id=?""", (job,))
             
         self.save()
 
@@ -120,25 +137,29 @@ class HistoryDB:
         
         t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
         
-        self.c.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report, 
+        if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report, 
         url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log, 
         downloaded, completeness, fail_message, url_info, bytes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t)
-        
-        self.save()
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
+            self.save()
         
     def fetch_history(self, start=None, limit=None,):
         
         # Get the number of results
-        self.c.execute('select count(*) from History')
-        total_items = self.c.fetchone()
+        if self.execute('select count(*) from History'):
+            total_items = self.c.fetchone()
+        else:
+            total_items = -1
         
         if start and limit:
             t = (start,limit)
-            self.c.execute('SELECT * FROM history ORDER BY completed desc LIMIT ?, ?', t)
+            fetch_ok = self.execute('SELECT * FROM history ORDER BY completed desc LIMIT ?, ?', t)
         else:        
-            self.c.execute('SELECT * FROM history ORDER BY completed desc')
-        items = self.c.fetchall()
+            fetch_ok = self.execute('SELECT * FROM history ORDER BY completed desc')
+        if fetch_ok:
+            items = self.c.fetchall()
+        else:
+            items = []
     
         # Unpack the single line stage log
         # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
@@ -147,19 +168,19 @@ class HistoryDB:
         return (items, total_items)
     
     def get_history_size(self):
-        self.c.execute('SELECT sum(bytes) FROM history')
-        f = self.c.fetchone()
-        return f['sum(bytes)']
+        if self.execute('SELECT sum(bytes) FROM history'):
+            f = self.c.fetchone()
+            return f['sum(bytes)']
+        return 0
     
     
     def get_script_log(self, nzo_id):
         t = (nzo_id,)
-        self.c.execute('SELECT script_log FROM history WHERE nzo_id=?', t)
-        f = self.c.fetchone()
-        return zlib.decompress(f['script_log'])
-
-
-    
+        if self.execute('SELECT script_log FROM history WHERE nzo_id=?', t):
+            f = self.c.fetchone()
+            return zlib.decompress(f['script_log'])
+        else:
+            return ''
     
 def dict_factory(cursor, row):
     d = {}
@@ -225,8 +246,18 @@ def build_history_info(nzo, storage='', path='', postproc_time=0, script_output=
             fail_message, url_info, bytes,)
     
 def unpack_history_info(item):
+    ''' 
+        Expands the single line stage_log from the DB 
+        into a python dictionary for use in the history display 
+    '''
+    # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
     if item['stage_log']:
-        lines = item['stage_log'].split('\r\n')
+        try:
+            lines = item['stage_log'].split('\r\n')
+        except:
+            logging.error('[%s] Invalid stage logging in history for %s (\\r\\n)', __NAME__, item['name'])
+            logging.debug('[%s] Lines: %s', __NAME__, item['stage_log'])
+            lines = []
         item['stage_log'] = []
         for line in lines:
             stage = {}
@@ -238,7 +269,12 @@ def unpack_history_info(item):
                 logs = ''
             stage['name'] = key
             stage['actions'] = []
-            logs = logs.split(';')
+            try:
+                logs = logs.split(';')
+            except:
+                logging.error('[%s] Invalid stage logging in history for %s (;)', __NAME__, item['name'])
+                logging.debug('[%s] Logs: %s', __NAME__, logs)
+                logs = []
             for log in logs:
                 stage['actions'].append(log)
             item['stage_log'].append(stage)
