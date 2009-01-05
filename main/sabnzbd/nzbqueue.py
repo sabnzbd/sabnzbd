@@ -327,9 +327,9 @@ class NzbQueue(TryList):
                 item = self.__nzo_list[item_id_pos1]
                 del self.__nzo_list[item_id_pos1]
                 self.__nzo_list.insert(item_id_pos2, item)
-                return item_id_pos2
+                return (item_id_pos2, nzo1.get_priority())
         # If moving failed/no movement took place
-        return -1
+        return (-1, nzo1.get_priority())
 
     @synchronized(NZBQUEUE_LOCK)
     def move_up_bulk(self, nzo_id, nzf_ids):
