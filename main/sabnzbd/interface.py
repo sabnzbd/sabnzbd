@@ -2541,9 +2541,6 @@ def get_history_size():
 
 def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=[]):
     
-    # Get the currently in progress and active history queue.
-    queue = postproc.history_queue()
-    
     try:
         limit = int(limit)
     except:
@@ -2595,24 +2592,11 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
     
-    # Add currently in progress items to the queue.
-    for nzo in queue:
-        t = build_history_info(nzo)
-        item = {}
-        item['completed'], item['name'], item['nzb_name'], item['category'], item['pp'], item['script'], item['report'], \
-            item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
-            item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
-            item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = t
-        '''
-        if item['status'] != 'Queued':
-            item['show_details'] = 'True'
-        else:
-            item['show_details'] = 'False'
-        '''
-        item['action_line'] = nzo.get_action_line()
-        item = unpack_history_info(item)
-        items.append(item)
+    items = get_active_history(items)
         
+    # Unreverse the queue
+    items.reverse()
+    
     for item in items:
         if details_show_all:
             item['show_details'] = 'True'
@@ -2625,9 +2609,6 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
             item['size'] = format_bytes(item['bytes'])
         else:
             item['size'] = ''
-        
-    # Unreverse the queue
-    items.reverse()
     
     return (items, total_items)
     
@@ -2722,7 +2703,7 @@ class xml_factory:
             if found:
                 text += found
             else:
-                text += '<%s>%s</%s>\n' % (str(key), str(lst[key]), str(key))
+                text += '<%s>%s</%s>\n' % (str(key), xml_name(str(lst[key]), encoding='utf-8'), str(key))
                 
         if keyw and text:
             return '<%s>%s</%s>\n' % (keyw,text,keyw)
@@ -2745,7 +2726,7 @@ class xml_factory:
                 debug = 'tuple'
                 text += self.tuple(debug, cat) 
             else:
-                text += '<item>%s</item>\n' % str(cat)
+                text += '<item>%s</item>\n' % xml_name(str(cat), encoding='utf-8')
             
         if keyw and text:
             return '<%s>%s</%s>\n' % (keyw,text,keyw)
@@ -2836,10 +2817,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     try: start = int(start)
     except: start = 0
     
-    
-    #Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
-    if 0: #history: ### TEMPORARY FIX ###
-        slotinfo = get_history()
+    if history:
+        #Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
+        slotinfo = format_history_for_queue()
         #if the specified start value is greater than the amount of history items, do no include the history (used for paging the queue)
         if len(slotinfo) < start:
             slotinfo = []
@@ -3099,3 +3079,46 @@ def xml_result(result, data):
     """ Return data as XML
     """
     return "Not yet implemented\n"
+
+def format_history_for_queue():
+    ''' Retrieves the information on currently active history items, and formats them for displaying in the queue '''
+    slotinfo = []
+    history_items = get_active_history()
+        
+    for item in history_items:
+        slot = {'nzo_id':item['nzo_id'],
+                'msgid':item['report'], 'filename':xml_name(item['name']), 'loaded':True,
+                'stages':item['stage_log'], 'status':item['status'], 'bytes':item['bytes'],
+                'size':item['size']}
+        slotinfo.append(slot)
+        
+    return slotinfo
+    
+def get_active_history(items=[]):
+    # Get the currently in progress and active history queue.
+    queue = postproc.history_queue()
+
+    for nzo in queue:
+        t = build_history_info(nzo)
+        item = {}
+        item['completed'], item['name'], item['nzb_name'], item['category'], item['pp'], item['script'], item['report'], \
+            item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
+            item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
+            item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = t
+        '''
+        if item['status'] != 'Queued':
+            item['show_details'] = 'True'
+        else:
+            item['show_details'] = 'False'
+        '''
+        item['action_line'] = nzo.get_action_line()
+        item = unpack_history_info(item)
+        items.append(item)
+        
+    for item in items:
+        if item['bytes']:
+            item['size'] = format_bytes(item['bytes'])
+        else:
+            item['size'] = ''
+        
+    return items

@@ -50,11 +50,11 @@ def unicode2local(p):
         return p.encode('utf-8', 'replace').replace('?', '_')
 
 
-def xml_name(p, keep_escape=False):
+def xml_name(p, keep_escape=False, encoding=None):
     """ Prepare name for use in HTML/XML contect """
 
     if type(p) != type(u''):
-        if sabnzbd.DARWIN:
+        if sabnzbd.DARWIN or encoding == 'utf-8':
             p = p.decode('utf-8', 'replace')
         else:
             p = p.decode('Latin-1', 'replace')
