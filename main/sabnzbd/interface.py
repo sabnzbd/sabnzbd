@@ -452,12 +452,17 @@ class MainPage:
             elif name == 'priority':
                 if value and value2:
                     try:
-                        priority = int(value2)
+                        try:
+                            priority = int(value2)
+                        except:
+                            return 'error: please enter an integer for the priority'
                         items = value.split(',')
                         if len(items) > 1:
-                            nzbqueue.set_priority_multiple(items, priority)
+                            pos = nzbqueue.set_priority_multiple(items, priority)
                         else:
-                            nzbqueue.set_priority(value, priority)
+                            pos = nzbqueue.set_priority(value, priority)
+                        # Returns the position in the queue
+                        return str(pos)
                     except:
                         return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
                 else:
@@ -484,8 +489,8 @@ class MainPage:
             
         if mode == 'switch':
             if value and value2:
-                nzbqueue.switch(value, value2)
-                return 'ok\n'
+                pos = nzbqueue.switch(value, value2)
+                return str(pos)
             else:
                 return 'error\n'
             

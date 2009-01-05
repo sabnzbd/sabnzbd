@@ -327,7 +327,9 @@ class NzbQueue(TryList):
                 item = self.__nzo_list[item_id_pos1]
                 del self.__nzo_list[item_id_pos1]
                 self.__nzo_list.insert(item_id_pos2, item)
-                break
+                return item_id_pos2
+        # If moving failed/no movement took place
+        return -1
 
     @synchronized(NZBQUEUE_LOCK)
     def move_up_bulk(self, nzo_id, nzf_ids):
@@ -384,6 +386,7 @@ class NzbQueue(TryList):
             nzo = self.__nzo_table[nzo_id]
             nzo.set_priority(priority)
             nzo_id_pos1 = -1
+            pos = -1
             
             for i in xrange(len(self.__nzo_list)):
                 if nzo_id == self.__nzo_list[i].nzo_id:
@@ -395,7 +398,9 @@ class NzbQueue(TryList):
                     #A top priority item (usually a completed download fetching pars)
                     #is added to the top of the queue
                     self.__nzo_list.insert(0, nzo)
+                    pos = 0
                 elif priority == LOW_PRIORITY:
+                    pos = len(self.__nzo_list)
                     self.__nzo_list.append(nzo)
                 else:
                     # for high priority we need to add the item at the bottom 
@@ -403,24 +408,28 @@ class NzbQueue(TryList):
                     # for normal priority we need to add the item at the bottom 
                     #of the normal priority items above the low priority
                     if self.__nzo_list:
-                        pos = 0
+                        p = 0
                         added = False
                         for position in self.__nzo_list:
                             if position.get_priority() < priority:
-                                self.__nzo_list.insert(pos, nzo)
+                                self.__nzo_list.insert(p, nzo)
+                                pos = p
                                 added=True
                                 break
-                            pos+=1
+                            p+=1
                         if not added:
                             #if there are no other items classed as a lower priority
                             #then it will be added to the bottom of the queue
+                            pos = len(self.__nzo_list)
                             self.__nzo_list.append(nzo)
                     else:
                         #if the queue is empty then simple append the item to the bottom
                         self.__nzo_list.append(nzo)
+                        pos = 0
+            return pos
             
         except:
-            pass
+            return -1
 
     @synchronized(NZBQUEUE_LOCK)
     def set_priority_multiple(self, nzo_ids, priority):
@@ -736,7 +745,8 @@ def register_article(article):
 
 def switch(nzo_id1, nzo_id2):
     global __NZBQ
-    if __NZBQ: __NZBQ.switch(nzo_id1, nzo_id2)
+    if __NZBQ:
+        return __NZBQ.switch(nzo_id1, nzo_id2)
         
 def rename_nzo(nzo_id, name):
     global __NZBQ
@@ -807,7 +817,8 @@ def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, c
 @synchronized_CV
 def set_priority(nzo_id, priority):
     global __NZBQ
-    if __NZBQ: __NZBQ.set_priority(nzo_id, priority)
+    if __NZBQ: 
+        return __NZBQ.set_priority(nzo_id, priority)
         
 @synchronized_CV
 def set_priority_multiple(nzo_ids, priority):
