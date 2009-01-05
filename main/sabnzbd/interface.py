@@ -489,8 +489,9 @@ class MainPage:
             
         if mode == 'switch':
             if value and value2:
-                pos = nzbqueue.switch(value, value2)
-                return str(pos)
+                pos, prio = nzbqueue.switch(value, value2)
+                # Returns the new position and new priority (if different)
+                return '%s %s' % (pos, prio)
             else:
                 return 'error\n'
             
