@@ -36,7 +36,7 @@ def validate_email(value):
     if EMAIL_ENDJOB.get() or EMAIL_FULL.get():
         if value and RE_VAL.match(value):
             return None, value
-        else:   
+        else:
             return "%s is not a valid email address" % value, None
     else:
         return None, value
@@ -106,7 +106,7 @@ ENABLE_TV_SORTING = OptionBool('misc', 'enable_tv_sorting', False)
 TV_SORT_STRING = OptionStr('misc', 'tv_sort_string')
 
 ENABLE_MOVIE_SORTING = OptionBool('misc', 'enable_movie_sorting', False)
-MOVIE_SORT_STRING = OptionStr('misc', 'movie_sort_string') 
+MOVIE_SORT_STRING = OptionStr('misc', 'movie_sort_string')
 MOVIE_SORT_EXTRA = OptionStr('misc', 'movie_sort_extra', '-cd%1')
 MOVIE_EXTRA_FOLDER = OptionBool('misc', 'movie_extra_folder', False)
 MOVIE_CATEGORIES = OptionList('misc', 'movie_categories', ['movies'])
@@ -156,6 +156,9 @@ LOG_BACKUPS = OptionNumber('logging', 'log_backups', 5, 1, 1024)
 
 SSL_CA = OptionDir('misc', 'ssl_ca', create=False)
 SSL_KEY = OptionDir('misc', 'ssl_key', create=False)
+
+# Internal options, not saved in INI file
+DEBUG_DELAY = OptionNumber('misc', 'debug_delay', 0, add=False)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

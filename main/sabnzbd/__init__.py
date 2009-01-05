@@ -165,7 +165,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cfg.CACHE_DIR.callback(guard_restart)
 
     ### Set cache limit
-    articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int())
+    articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY.get())
 
     ###
     ### Initialize threads
@@ -299,13 +299,13 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
         logging.info('[%s] Fetching msgid %s from www.newzbin.com',
                      __NAME__, msgid)
         msg = "fetching msgid %s from www.newzbin.com" % msgid
-    
+
         future_nzo = nzbqueue.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority)
-    
+
         newzbin.grab(msgid, future_nzo)
     else:
         logging.error('[%s] Error Fetching msgid %s from www.newzbin.com - Please make sure your Username and Password are set',
-                             __NAME__, msgid)    
+                             __NAME__, msgid)
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
@@ -327,7 +327,7 @@ def save_state():
     newzbin.bookmarks_save()
     dirscanner.save()
 
-        
+
 ################################################################################
 ## NZB_LOCK Methods                                                           ##
 ################################################################################
@@ -559,7 +559,7 @@ def get_new_id(prefix):
 
 
 @synchronized(IO_LOCK)
-def save_data(data, _id, do_pickle = True, doze= 0):
+def save_data(data, _id, do_pickle = True, doze=0):
     path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
     logging.info("[%s] Saving data for %s in %s", __NAME__, _id, path)
 

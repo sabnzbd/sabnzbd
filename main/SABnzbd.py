@@ -30,7 +30,7 @@ import glob
 import socket
 if os.name=='nt':
     import platform
-    
+
 try:
     import Cheetah
     if Cheetah.Version[0] != '2':
@@ -43,7 +43,7 @@ import cherrypy
 if not cherrypy.__version__.startswith("3.1."):
     print "Sorry, requires Python module Cherrypy 3.1.x"
     exit(1)
-    
+
 try:
     from sqlite3 import version as sqlite3_version
 except:
@@ -300,14 +300,14 @@ def GetProfileInfo(vista):
                         pass
                 sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
             except:
-                pass                        
+                pass
 
     elif sabnzbd.DARWIN:
         sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % (os.environ['HOME'])
         sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
         sabnzbd.DIR_HOME = os.environ['HOME']
         ok = True
-   
+
     else:
         # Unix/Linux
         sabnzbd.DIR_APPDATA = '%s/.%s' % (os.environ['HOME'], DEF_WORKDIR)
@@ -421,12 +421,12 @@ def main():
             ExitSab(0)
         if o in ('-p', '--pause'):
             pause = True
-        #if o in ('--delay'):
+        if o in ('--delay'):
             # For debugging of memory leak only!!
-            #try:
-            #    delay = float(a)
-            #except:
-            #    pass
+            try:
+                delay = float(a)
+            except:
+                pass
         if o in ('--force'):
             force_web = True
         if o in ('--https'):
@@ -564,7 +564,7 @@ def main():
     else:
         AUTOBROWSER = sabnzbd.cfg.AUTOBROWSER.get()
 
-    sabnzbd.DEBUG_DELAY = delay
+    sabnzbd.cfg.DEBUG_DELAY.set(delay)
 
     init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True)
 
@@ -775,7 +775,7 @@ def main():
     if sabnzbd.cfg.USERNAME.get() and sabnzbd.cfg.PASSWORD.get():
         appconfig['/sabnzbd'] = {'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
                                 'tools.basic_auth.users' : sabnzbd.interface.get_users, 'tools.basic_auth.encrypt' : sabnzbd.interface.encrypt_pwd}
-                 
+
 
     login_page = LoginPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/')
     cherrypy.tree.mount(login_page, '/', config=appconfig)
@@ -883,7 +883,7 @@ else:
             from Foundation import *
             from AppKit import *
             from PyObjCTools import NibClassBuilder, AppHelper
-            
+
             NibClassBuilder.extractClasses("MainMenu")
 
             class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
