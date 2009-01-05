@@ -58,7 +58,7 @@ __POSTPROC = None  # Global pointer to post-proc instance
 def init():
     global __POSTPROC
     if __POSTPROC:
-        __POSTPROC.__init__(__POSTPROC.queue(), __POSTPROC.get_queue(), restart=True)
+        __POSTPROC.__init__(__POSTPROC.queue(), __POSTPROC.get_queue())
     else:
         __POSTPROC = PostProcessor()
 
@@ -95,23 +95,19 @@ def stop():
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
-    def __init__ (self, queue=None, history_queue=None, restart=False):
+    def __init__ (self, queue=None, history_queue=[]):
         Thread.__init__(self)
-
-        if history_queue == None: history_queue = []
-
-        self.queue = queue
-        if restart:
-            self.history_queue = []
-            for nzo in history_queue:
-                self.process(nzo)
-        # This history queue is simply used to log what active items to display in the web_ui
-        self.history_queue = history_queue
-
-
-        if not self.queue:
+        
+        if queue:
+            self.queue = queue
+        else:
             self.queue = Queue.Queue()
 
+        for nzo in history_queue:
+            self.process(nzo)
+        # This history queue is simply used to log what active items to display in the web_ui
+        self.history_queue = history_queue
+ 
     def process(self, nzo):
         if nzo not in self.history_queue:
             self.history_queue.append(nzo)
