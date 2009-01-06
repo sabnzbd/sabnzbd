@@ -106,7 +106,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, pp, 0, script, None, True, cat=cat, url=url, priority=priority, status="Fetching")
+        future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, status="Fetching")
         self.add(future_nzo)
         return future_nzo
 
