@@ -46,6 +46,10 @@ import sabnzbd.cfg as cfg
 #
 ################################################################################
 def send(message):
+    """ Send message if message non-empty and email-parms are set """
+    if not message.strip('\n\r\t '):
+        return "Skipped empty message"
+
     if cfg.EMAIL_SERVER.get() and cfg.EMAIL_TO.get() and cfg.EMAIL_FROM.get():
 
         failure = "Email failed"
