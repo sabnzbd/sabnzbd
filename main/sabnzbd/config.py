@@ -170,7 +170,7 @@ class OptionDir(Option):
     def get_path(self):
         """ Return full absolute path """
         value = self.get()
-        path = None
+        path = ''
         if value:
             path = sabnzbd.misc.real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
