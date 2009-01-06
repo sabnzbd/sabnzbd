@@ -750,7 +750,7 @@ def main():
 
     ssl_ca = sabnzbd.cfg.SSL_CA.get_path()
     ssl_key = sabnzbd.cfg.SSL_KEY.get_path()
-    if not (os.path.exists(ssl_ca) and os.path.exists(ssl_key)):
+    if not (ssl_ca and os.path.exists(ssl_ca) and ssl_key and os.path.exists(ssl_key)):
         ssl_ca = None
 
     if https and not (ssl_ca and ssl_key):
