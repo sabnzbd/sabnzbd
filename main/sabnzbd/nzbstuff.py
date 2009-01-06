@@ -36,13 +36,16 @@ RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
 
 HAVE_CELEMENTTREE = True
 try:
-    from xml.etree.cElementTree import XML
-except ImportError:
+    from lxml.etree import XML
+except:
     try:
-        from cElementTree import XML
+        from xml.etree.cElementTree import XML
     except ImportError:
-        from elementtree.ElementTree import XML
-        HAVE_CELEMENTTREE = False
+        try:
+            from cElementTree import XML
+        except ImportError:
+            from elementtree.ElementTree import XML
+            HAVE_CELEMENTTREE = False
 
 __NAME__ = "nzbstuff"
 
@@ -443,6 +446,8 @@ class NzbObject(TryList):
             segments = _file.find('%ssegments' % DTD)
             if not segments:
                 segments = _file.find('segments')
+            if not subject:
+                continue
             nzf = NzbFile(date, subject, segments, self)
 
             if nzf.valid and nzf.nzf_id:
