@@ -172,13 +172,6 @@ def Strip(txt):
     except:
         return None
 
-def get_arg(args, kw):
-    """ Get a value from a dictionary, None if not available """
-    try:
-        return args[kw]
-    except KeyError:
-        return None
-
 
 #------------------------------------------------------------------------------
 # Web login support
@@ -347,8 +340,8 @@ class MainPage:
         """Handler for API over http, with explicit authentication parameters
         """
         if cfg.USERNAME.get() and cfg.PASSWORD.get():
-            ma_username = get_arg(kwargs, 'ma_username')
-            ma_password = get_arg(kwargs, 'ma_password')
+            ma_username = kwargs.get('ma_username')
+            ma_password = kwargs.get('ma_password')
             if not (ma_password == cfg.PASSWORD.get() and ma_username == cfg.USERNAME.get()):
                 return "Missing authentication"
 
@@ -358,8 +351,8 @@ class MainPage:
     def api_handler(self, kwargs):
         """ Actual API handler, not exposed to Web-ui
         """
-        mode = get_arg(kwargs, 'mode')
-        output = get_arg(kwargs, 'output')
+        mode = kwargs.get('mode')
+        output = kwargs.get('output')
 
         if mode == 'set_config':
             res = config.set_config(kwargs)
@@ -388,13 +381,13 @@ class MainPage:
                 return 'not implemented\n'
 
         if mode == 'queue':
-            name = get_arg(kwargs, 'name')
-            sort = get_arg(kwargs, 'sort')
-            dir = get_arg(kwargs, 'dir')
-            value = get_arg(kwargs, 'value')
-            value2 = get_arg(kwargs, 'value2')
-            start = get_arg(kwargs, 'start')
-            limit = get_arg(kwargs, 'limit')
+            name = kwargs.get('name')
+            sort = kwargs.get('sort')
+            dir = kwargs.get('dir')
+            value = kwargs.get('value')
+            value2 = kwargs.get('value2')
+            start = kwargs.get('start')
+            limit = kwargs.get('limit')
 
             if output == 'xml':
                 if sort and sort != 'index':
@@ -470,15 +463,15 @@ class MainPage:
             else:
                 return 'not implemented\n'
 
-        name = get_arg(kwargs, 'name')
-        pp = get_arg(kwargs, 'pp')
-        script = get_arg(kwargs, 'script')
-        cat = get_arg(kwargs, 'cat')
-        priority = get_arg(kwargs, 'priority')
-        value = get_arg(kwargs, 'value')
-        value2 = get_arg(kwargs, 'value2')
-        start = get_arg(kwargs, 'start')
-        limit = get_arg(kwargs, 'limit')
+        name = kwargs.get('name')
+        pp = kwargs.get('pp')
+        script = kwargs.get('script')
+        cat = kwargs.get('cat')
+        priority = kwargs.get('priority')
+        value = kwargs.get('value')
+        value2 = kwargs.get('value2')
+        start = kwargs.get('start')
+        limit = kwargs.get('limit')
 
         if mode == 'addfile':
             if name.filename and name.value:
@@ -1089,7 +1082,7 @@ class ConfigDirectories:
     def saveDirectories(self, **kwargs):
 
         for kw in LIST_DIRPAGE:
-            value = get_arg(kwargs, kw)
+            value = kwargs.get(kw)
             if value != None:
                 msg = config.get_config('misc', kw).set(value)
                 if msg:
@@ -1425,10 +1418,10 @@ class ConfigRss:
     @cherrypy.expose
     def upd_rss_feed(self, **kwargs):
         try:
-            cfg = config.get_rss()[get_arg(kwargs, 'feed')]
+            cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             cfg = None
-        if cfg and Strip(get_arg(kwargs, 'uri')):
+        if cfg and Strip(kwargs.get('uri')):
             cfg.set_dict(kwargs)
             config.save_config()
 
@@ -1437,7 +1430,7 @@ class ConfigRss:
     @cherrypy.expose
     def toggle_rss_feed(self, **kwargs):
         try:
-            cfg = config.get_rss()[get_arg(kwargs, 'feed')]
+            cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             cfg = None
         if cfg:
@@ -1447,8 +1440,8 @@ class ConfigRss:
 
     @cherrypy.expose
     def add_rss_feed(self, **kwargs):
-        feed= Strip(get_arg(kwargs, 'feed'))
-        uri = Strip(get_arg(kwargs, 'uri'))
+        feed= Strip(kwargs.get('feed'))
+        uri = Strip(kwargs.get('uri'))
         try:
             cfg = config.get_rss()[feed]
         except KeyError:
@@ -1490,7 +1483,7 @@ class ConfigRss:
     @cherrypy.expose
     def del_rss_feed(self, *args, **kwargs):
         try:
-            cfg = config.get_rss()[get_arg(kwargs, 'feed')]
+            cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             cfg = None
 
@@ -1736,9 +1729,9 @@ class ConfigCats:
 
     @cherrypy.expose
     def save(self, **kwargs):
-        newname = Strip(get_arg(kwargs, 'newname'))
-        name = get_arg(kwargs, 'name')
-        _dc = get_arg(kwargs, '_dc')
+        newname = Strip(kwargs.get('newname'))
+        name = kwargs.get('name')
+        _dc = kwargs.get('_dc')
 
         if newname:
             if name:
@@ -2256,7 +2249,7 @@ class ConfigEmail:
     def saveEmail(self, **kwargs):
 
         for kw in LIST_EMAIL:
-            msg = config.get_config('misc', kw).set(get_arg(kwargs, kw))
+            msg = config.get_config('misc', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse('Incorrect value for %s: %s' % (kw, msg))
 
