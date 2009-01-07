@@ -1130,10 +1130,7 @@ class ConfigSwitches:
 
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
-            try:
-                value = kwargs[kw]
-            except:
-                value = None
+            value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
@@ -1322,10 +1319,8 @@ class ConfigServer:
             host = kwargs['host']
         except:
             return badParameterResponse('Error: Need host name.')
-        try:
-            port = str(kwargs['port'])
-        except:
-            port = '119'
+
+        port = str(kwargs.get('port', 119))
 
         msg = check_server(host, port)
         if msg:
@@ -1366,13 +1361,6 @@ class ConfigServer:
 
 
 #------------------------------------------------------------------------------
-
-def GetCfgRss(config, keyword):
-    """ Get a keyword from an RSS entry """
-    try:
-        return config[keyword]
-    except:
-        return ''
 
 class ConfigRss:
     def __init__(self, web_dir, root, prim):
@@ -1793,19 +1781,13 @@ class ConfigSorting:
 
         for kw in SORT_LIST:
             item = config.get_config('misc', kw)
-            try:
-                value = kwargs[kw]
-            except:
-                value = None
+            value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
 
         config.save_config()
-        try:
-            _dc = kwargs['_dc']
-        except:
-            _dc = ''
+        _dc = kwargs.get('_dc', '')
         raise Raiser(self.__root, _dc=_dc)
 
 
