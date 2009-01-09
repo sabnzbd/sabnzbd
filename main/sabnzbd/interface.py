@@ -322,10 +322,10 @@ class MainPage:
                try_list: %s''' % nzbqueue.debug()
 
     @cherrypy.expose
-    def rss(self, mode='history', limit=50):
+    def rss(self, mode='history', limit=50, search=None):
         url = cherrypy.url()
         if mode == 'history':
-            return rss_history(url, limit=limit)
+            return rss_history(url, limit=limit, search=search)
         elif mode == 'warnings':
             return rss_warnings()
 
@@ -922,7 +922,7 @@ class HistoryPage:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None, start=None, limit=None, dummy2=None):
+    def index(self, _dc = None, start=None, limit=None, dummy2=None, search=None):
         history, pnfo_list, bytespersec = build_header(self.__prim)
 
         history['isverbose'] = self.__verbose
@@ -935,12 +935,20 @@ class HistoryPage:
 
         history['total_size'] = get_history_size()
 
+        history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search)
+        
+        if search:
+            history['search'] = escape(search)
+        else:
+            history['search'] = ''
+        
         history['start'] = IntConv(start)
         history['limit'] = IntConv(limit)
-        # Should really find the actual maximum
-        history['end'] = history['start'] + history['limit']
-
-        history['lines'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list)
+        history['finish'] = history['start'] + history['limit']
+        if history['finish'] > history['noofslots']:
+            history['finish'] = history['noofslots']
+        if not history['finish']:
+            history['finish'] = history['fetched']
 
 
         template = Template(file=os.path.join(self.__web_dir, 'history.tmpl'),
@@ -2246,7 +2254,7 @@ def std_time(when):
     return item
 
 
-def rss_history(url, limit=50):
+def rss_history(url, limit=50, search=None):
     m = RE_URL.search(url)
     if not m:
         url = 'http://%s:%s' % (cfg.CHERRYHOST.get(), cfg.CHERRYPORT.get())
@@ -2261,7 +2269,7 @@ def rss_history(url, limit=50):
     rss.channel.link = "http://sourceforge.net/projects/sabnzbdplus/"
     rss.channel.language = "en"
 
-    items, max_items = build_history(limit=limit)
+    items, fetched_items, max_items = build_history(limit=limit, search=search)
 
     for history in items:
         item = Item()
@@ -2520,7 +2528,7 @@ def get_history_size():
     bytes = history_db.get_history_size()
     return format_bytes(bytes)
 
-def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=[]):
+def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=[], search=None):
 
     try:
         limit = int(limit)
@@ -2530,17 +2538,18 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
         start = int(start)
     except:
         start = 0
-
+    '''
     if start:
         if start > len(queue):
             queue = []
         else:
             queue[start:]
         start -= len(queue)
+    '''  
 
 
     history_db = cherrypy.thread_data.history_db
-    items, total_items = history_db.fetch_history(start,limit)
+    items, fetched_items, total_items = history_db.fetch_history(start,limit,search)
 
     # Fetch which items should show details from the cookie
     k = []
@@ -2591,10 +2600,10 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
         else:
             item['size'] = ''
 
-    return (items, total_items)
+    return (items, fetched_items, total_items)
 
-def xml_history(start=None, limit=None):
-    items, total_items = build_history(start=start, limit=limit, verbose=True)
+def xml_history(start=None, limit=None, search=None):
+    items, fetched_items, total_items = build_history(start=start, limit=limit, verbose=True, search=search)
     status_lst = []
     status_lst.append('<?xml version="1.0" encoding="UTF-8" ?> \n')
     #Compile the history data
@@ -2606,10 +2615,10 @@ def xml_history(start=None, limit=None):
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return ''.join(status_lst)
 
-def json_history(start=None, limit=None):
+def json_history(start=None, limit=None, search=None):
     #items = {}
     #items['history'],
-    items, total_items = build_history(start=start, limit=limit, verbose=True)
+    items, fetched_items, total_items = build_history(start=start, limit=limit, verbose=True, search=search)
     #Compile the history data
 
     status_str = JsonWriter().write(items)

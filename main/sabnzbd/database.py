@@ -55,7 +55,7 @@ class HistoryDB:
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
         try:
-            if args:
+            if args and isinstance(args, tuple):
                 self.c.execute(command, args)
             else:
                 self.c.execute(command)
@@ -143,29 +143,51 @@ class HistoryDB:
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
         
-    def fetch_history(self, start=None, limit=None,):
+    def fetch_history(self, start=None, limit=None, search=None):
+        
+        if not search:
+            # Default value
+            search = ''
+        else:
+            # Allow * for wildcard matching
+            search = search.replace('*','%')
+            
+        # Allow ^ for start of string and $ for end of string
+        if search and search.startswith('^'):
+            search = search.replace('^','')
+            search += '%'
+        elif search and search.endswith('$'):
+            search = search.replace('$','')
+            search = '%' + search
+        else:
+            search = '%' + search + '%'
         
         # Get the number of results
-        if self.execute('select count(*) from History'):
-            total_items = self.c.fetchone()
+        if self.execute('select count(*) from History WHERE name LIKE ?', (search,)):
+            total_items = self.c.fetchone()['count(*)']
         else:
             total_items = -1
+            
+        if not start:
+            start = 0
+        if not limit:
+            limit = total_items
         
-        if start and limit:
-            t = (start,limit)
-            fetch_ok = self.execute('SELECT * FROM history ORDER BY completed desc LIMIT ?, ?', t)
-        else:        
-            fetch_ok = self.execute('SELECT * FROM history ORDER BY completed desc')
+        t = (search, start,limit)
+        fetch_ok = self.execute("""SELECT * FROM history WHERE name LIKE ? ORDER BY completed desc LIMIT ?, ?""", t)
+
         if fetch_ok:
             items = self.c.fetchall()
         else:
             items = []
+            
+        fetched_items = len(items)
     
         # Unpack the single line stage log
         # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
         items = [unpack_history_info(item) for item in items]
         
-        return (items, total_items)
+        return (items, fetched_items, total_items)
     
     def get_history_size(self):
         if self.execute('SELECT sum(bytes) FROM history'):
