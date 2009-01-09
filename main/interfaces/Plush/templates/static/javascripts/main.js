@@ -174,7 +174,9 @@ jQuery(function($) {
             
             // fetch updated content from queue.tmpl
             $.ajax({
-                url: 'queue/?limit='+$.plush.queueViewPreference+'&_dc='+Math.random(),
+                type: "POST",
+				url: "queue/",
+                data: 'limit='+$.plush.queueViewPreference,
                 success: function(result){
                     
                     // replace queue contents with queue.tmpl
@@ -202,7 +204,9 @@ jQuery(function($) {
 
         refreshHistory : function() {
             $.ajax({
-                url: 'history/?limit='+$.plush.historyViewPreference+'&_dc='+Math.random(),
+                type: "POST",
+				url: "history/",
+                data: 'limit='+$.plush.historyViewPreference,
                 success: function(result){
                     $('#history').html(result);
                 }
@@ -219,6 +223,9 @@ jQuery(function($) {
         ********************************************/
         
         refresh : function() { // calls itself after `refreshRate` seconds
+            
+            // clear out timeout in case multiple refreshes are triggered
+            clearTimeout($.plush.timeout);
             
             // ajax calls
             $.plush.refreshQueue();
@@ -253,6 +260,7 @@ jQuery(function($) {
             $('#addID').bind('click', function() { 
                 if ($('#addID_input').val()!='enter URL / Newzbin ID') {
                     $.ajax({
+                    	type: "POST",
                         url: "addID",
                         data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
                         success: function(result){
@@ -307,9 +315,11 @@ jQuery(function($) {
             $("#refreshRate-option").val($.plush.refreshRate).change( function() {
                 $.plush.refreshRate = $("#refreshRate-option").val();
                 $.cookie('Plush2Refresh', $.plush.refreshRate, { expires: 365 });
-                clearTimeout($.plush.timeout);
+                
                 if ($.plush.refreshRate > 0)
                     $.plush.refresh();
+                else
+                    clearTimeout($.plush.timeout);
             });
             
             
@@ -317,20 +327,30 @@ jQuery(function($) {
             $("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
                                  .blur(function(){ $.plush.focusedOnSpeedChanger = false; });
             $("#maxSpeed-option").change( function() {
-                $.get("tapi?mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+"&_dc="+Math.random());
+                $.ajax({
+                    type: "POST",
+					url: "tapi",
+					data: "mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()
+				});
             });
             
             
             // Upon Queue Completion main menu select
             $("#onQueueFinish-option").change( function() {
-                $.get("tapi?mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()+"&_dc="+Math.random());
+                $.ajax({
+                    type: "POST",
+					url: "tapi",
+					data: "mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()
+				});
             });
                     
             // queue purge
             $('#queue_purge').click(function(event) {
                 if(confirm('Sure you want to empty out your Queue?')){
                     $.ajax({
-                        url: "tapi?mode=queue&name=delete&value=all&_dc="+Math.random(),
+                    	type: "POST",
+                        url: "tapi",
+						data: "mode=queue&name=delete&value=all",
                         success: function(result){
                             $.plush.refreshQueue();
                         }
@@ -341,7 +361,9 @@ jQuery(function($) {
             // Sort Queue main menu options
             $('#sort_by_avg_age').click(function(event) {
                 $.ajax({
-                    url: "queue/sort_by_avg_age?_dc="+Math.random(),
+                	type: "POST",
+                    url: "tapi",
+                    data: "queue/sort_by_avg_age",
                     success: function(result){
                         $.plush.refreshQueue();
                     }
@@ -349,7 +371,9 @@ jQuery(function($) {
             });
             $('#sort_by_name').click(function(event) {
                 $.ajax({
-                    url: "queue/sort_by_name?_dc="+Math.random(),
+                	type: "POST",
+                    url: "tapi",
+                    data: "queue/sort_by_name",
                     success: function(result){
                         $.plush.refreshQueue();
                     }
@@ -357,7 +381,9 @@ jQuery(function($) {
             });
             $('#sort_by_size').click(function(event) {
                 $.ajax({
-                    url: "queue/sort_by_size?_dc="+Math.random(),
+                	type: "POST",
+                    url: "tapi",
+                    data: "queue/sort_by_size",
                     success: function(result){
                         $.plush.refreshQueue();
                     }
@@ -446,36 +472,42 @@ jQuery(function($) {
                         // determine which position the repositioned row is at now
                         for ( var i=0; i < table.tBodies[0].rows.length; i++ ) {
                             if (table.tBodies[0].rows[i].id == row.id) {
-                                $.get("tapi?mode=switch&value="+row.id+"&value2="+i+"&_dc="+Math.random());
+				                $.ajax({
+				                    type: "POST",
+									url: "tapi",
+									data: "mode=switch&value="+row.id+"&value2="+i
+								});
                                 return false;
                             }
                         }
                     }
                 });
                 
-                // double-click on bullet icon sends nzb to top of queue
-                /*
-                $('#queueTable .title').dblclick(function(){
-                    $(this).parent().parent().prependTo('#queueTable');
-                    $.get("tapi?mode=switch&value="+$(this).parent().parent().attr('id')+"&value2=0&_dc="+Math.random());
-                });
-                */
-                
                 // nzb pause/resume toggle ajax
                 $('#queueTable .queue_nzb_status').click(function(){
                     if ($(this).attr('class') == "queue_nzb_status queue_nzb_queued") {
                         $(this).text('Paused').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
-                        $.get('tapi?mode=queue&name=pause&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random());
+		                $.ajax({
+		                    type: "POST",
+							url: "tapi",
+							data: "mode=queue&name=pause&value="+$(this).parent().parent().attr('id')
+						});
                     } else {
                         $(this).text('Queued').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
-                        $.get('tapi?mode=queue&name=resume&value='+$(this).parent().parent().attr('id')+'&_dc='+Math.random());
+		                $.ajax({
+		                    type: "POST",
+							url: "tapi",
+							data: "mode=queue&name=resume&value="+$(this).parent().parent().attr('id')
+						});
                     }
                 });
                 
                 // nzb change priority ajax
                 $('#queueTable .proc_priority').change(function(){
                     $.ajax({
-                        url: 'tapi?mode=queue&name=priority&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random(),
+	                    type: "POST",
+						url: "tapi",
+                        data: 'mode=queue&name=priority&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val(),
                         success: function(result){
                             $.plush.skipRefresh = false;
                             $.plush.refreshQueue();
@@ -485,17 +517,29 @@ jQuery(function($) {
                 
                 // nzb change category ajax
                 $('#queueTable .proc_category').change(function(){
-                    $.get('tapi?mode=change_cat&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
+	                $.ajax({
+	                    type: "POST",
+						url: "tapi",
+						data: "mode=change_cat&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()
+					});
                 });
                 
                 // nzb change processing option ajax
                 $('#queueTable .proc_option').change(function(){
-                    $.get('tapi?mode=change_opts&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
+	                $.ajax({
+	                    type: "POST",
+						url: "tapi",
+						data: "mode=change_opts&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()
+					});
                 });
                 
                 // nzb change script ajax
                 $('#queueTable .proc_script').change(function(){
-                    $.get('tapi?mode=change_script&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&_dc='+Math.random());
+	                $.ajax({
+	                    type: "POST",
+						url: "tapi",
+						data: "mode=change_script&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()
+					});
                 });
                 
                 // for skipping queue refresh on mouseover
@@ -515,9 +559,17 @@ jQuery(function($) {
             // queue pause/resume
             $('#pause_resume').click(function(event) {
                 if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
-                    $.get("tapi?mode=resume&_dc="+Math.random());
+	                $.ajax({
+	                    type: "POST",
+						url: "tapi",
+						data: "mode=resume"
+					});
                 else
-                    $.get("tapi?mode=pause&_dc="+Math.random());
+	                $.ajax({
+	                    type: "POST",
+						url: "tapi",
+						data: "mode=pause"
+					});
                 if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused')
                     $('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
                 else
@@ -529,7 +581,11 @@ jQuery(function($) {
                 if ($(event.target).is('.queue_delete') && confirm('Delete NZB? Are you sure?') ) {
                     delid = $(event.target).parent().parent().attr('id');
                     $('#'+delid).fadeOut('fast');
-                    $.get('tapi?mode=queue&name=delete&value='+delid+'&_dc='+Math.random());
+	                $.ajax({
+	                    type: "POST",
+						url: "tapi",
+						data: "mode=queue&name=delete&value="+delid
+					});
                 }
             });
         
@@ -544,21 +600,13 @@ jQuery(function($) {
             ********************************************/
             
             
-            // history verbosity toggle
-            /* $('.h_menu_verbose').click(function(event) {
-                $.ajax({
-                    url: 'history/tog_verbose?_dc='+Math.random(),
-                    success: function(result){
-                        $('#history').html(result); // is this loading the history twice? redirect?
-                    }
-                });
-            }); */
-            
             // history purge
             $('.h_menu_purge').click(function(event) {
 	            if (confirm("Are you sure you want to purge the history?")) {
                     $.ajax({
-                        url: 'tapi?mode=history&name=delete&value=all&_dc='+Math.random(),
+	                    type: "POST",
+						url: "tapi",
+                        data: 'mode=history&name=delete&value=all',
                         success: function(result){
                             $.plush.refreshHistory();
                         }
@@ -571,7 +619,11 @@ jQuery(function($) {
                 if ($(event.target).is('.queue_delete')) {    // history delete
                     delid = $(event.target).parent().parent().attr('id');
                     $('#'+delid).fadeOut('fast');
-                    $.get('tapi?mode=history&name=delete&value='+delid+'&_dc='+Math.random());
+	                $.ajax({
+	                    type: "POST",
+						url: "tapi",
+						data: "mode=history&name=delete&value="+delid
+					});
                 }
             });
             

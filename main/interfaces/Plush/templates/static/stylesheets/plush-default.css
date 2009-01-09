@@ -3,6 +3,7 @@ body {
     font-family: arial, "lucida console", sans-serif;
     margin: 0px;
     padding: 0px;
+	padding-bottom: 10px;
 }
 select {
     color: #000;
@@ -36,7 +37,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     font-size: 11px !important;
     padding: 5px;
     opacity: 0.85;
-    text-align: right;
 }
 #tooltip h3, #tooltip div { margin: 0; }
 
@@ -227,6 +227,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .queueTable td.historyTitle {
     padding-left:29px;
+    cursor: default;
 }
 .queueTable .historyTitle.Loaded {
     background: url(../images/plush-default/hl_loaded.gif) 4px 50% no-repeat;
@@ -405,8 +406,10 @@ tr:hover .history_added  {
 }
 
 /* history verbosity icons */
+.hv_report { background: url(../images/plush-default/hv_report.png) 0 50% no-repeat; }
+.hv_url { background: url(../images/plush-default/hv_ok.png) 0 50% no-repeat; }
+.hv_stats { background: url(../images/plush-default/hv_avgspeed.png) 0 50% no-repeat; }
 .hv_download { background: url(../images/plush-default/hv_timetaken.png) 0 50% no-repeat; }
-/*.hv_Avg { background: url(../images/plush-default/hv_avgspeed.png) 0 50% no-repeat; }*/
 .hv_repair { background: url(../images/plush-default/hv_par.png) 0 50% no-repeat; }
 .hv_file_join { background: url(../images/plush-default/hv_join.png) 0 50% no-repeat; }
 /*.hv_FJN { background: url(../images/plush-default/hv_join.png) 0 50% no-repeat; }*/

@@ -50,50 +50,55 @@
             <ul>
                 <li><a><input type="text" id="addID_input" size="20" /><input type="submit" id="addID" value="Fetch" /></a></li>
                 <li><a><div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div></a></li>
-				<li><a>Processing</a>
-					<ul>
-                <!--#if $cat_list#-->
-<li><a>
-                Category:
-                    <select id="addID_cat" name="cat">
-                    <!--#for $ct in $cat_list#-->
-                        <option value="$ct">$ct</option>
-                    <!--#end for#-->
-                    </select>
-</a></li>
+                <li>
+                <!--#if not $cat_list and not $script_list #-->
+                    <a>Processing:
+                        <select id="addID_pp" name="pp">
+                            <option value="-1">Default</option>
+                            <option value="0">Skip</option>
+                            <option value="1">+Repair</option>
+                            <option value="2">+R+Unpack</option>
+                            <option value="3">+R+U+Delete</option>
+                        </select>
+                    </a>
+                <!--#else#-->
+                    <a>Processing</a>
+                    <ul>
+                    <!--#if $cat_list#-->
+                    <li><a>Category:
+                        <select id="addID_cat" name="cat">
+                        <!--#for $ct in $cat_list#-->
+                            <option value="$ct">$ct</option>
+                        <!--#end for#-->
+                        </select>
+                    </a></li>
+                    <!--#end if#-->
+                    <li><a>Processing:
+                        <select id="addID_pp" name="pp">
+                            <option value="-1">Default</option>
+                            <option value="0">Skip</option>
+                            <option value="1">+Repair</option>
+                            <option value="2">+R+Unpack</option>
+                            <option value="3">+R+U+Delete</option>
+                        </select>
+                    </a></li>
+                    <!--#if $script_list#-->
+                    <li><a>Script:
+                        <select id="addID_script" name="script">
+                        <!--#for $sc in $script_list#-->
+                            <option value="$sc">$sc</option>
+                        <!--#end for#-->
+                        </select>
+                    <!--#end if#-->
+                    </a></li>
+                    </ul>
                 <!--#end if#-->
-<li><a>                Processing:
-                    <select id="addID_pp" name="pp">
-                        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
-                        <option value="0">Skip</option>
-                        <option value="1">+Repair</option>
-                        <option value="2">+R+Unpack</option>
-                        <option value="3" <!--#if $cat_list then "" else "selected"#-->>+R+U+Delete</option>
-                    </select>
-</a></li>
-                <!--#if $script_list#-->
-<li><a>                Script:
-                    <select id="addID_script" name="script">
-                    <!--#for $sc in $script_list#-->
-                        <option value="$sc">$sc</option>
-                    <!--#end for#-->
-                    </select>
-                <!--#end if#-->
-</a></li>
-</ul>                </li>
+                </li>
             </ul>
         </li>
         <li>
             <a class="sf-with-ul">Queue<span class="sf-sub-indicator"> &#187;</span></a>
             <ul>
-                <li>
-                    <a class="sf-with-ul">Sort<span class="sf-sub-indicator"> &#187;</span></a>
-                    <ul>
-                        <li><a class="pointer" id="sort_by_avg_age">Sort by Average Age</a></li>
-                        <li><a class="pointer" id="sort_by_name">Sort by Name</a></li>
-                        <li><a class="pointer" id="sort_by_size">Sort by Size</a></li>
-                    </ul>
-                </li>
                 <li>
                     <a class="sf-with-ul">Upon Completion:
                         <select id="onQueueFinish-option">
@@ -117,6 +122,14 @@
                             <!--#end if#-->
                         </select>
                     </a>
+                </li>
+                <li>
+                    <a class="sf-with-ul">Sort<span class="sf-sub-indicator"> &#187;</span></a>
+                    <ul>
+                        <li><a class="pointer" id="sort_by_avg_age">Sort by Average Age</a></li>
+                        <li><a class="pointer" id="sort_by_name">Sort by Name</a></li>
+                        <li><a class="pointer" id="sort_by_size">Sort by Size</a></li>
+                    </ul>
                 </li>
                 <li><a id="queue_purge" class="pointer">Purge</a></li>
             </ul>
@@ -205,7 +218,6 @@
         </div>
         
     </div>
-    &nbsp;
         
 </body>
 </html>

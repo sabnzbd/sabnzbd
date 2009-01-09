@@ -11,23 +11,31 @@
     <tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
     
     <td class="historyTitle <!--#if $line.action_line #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->">
-        <!--#if $line.report #-->
-        <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">$line.name</a>
-        <!--#else#-->
         $line.name
-        <!--#end if#-->
     </td>
     
     <td class="verbose">
-        <!-- UNUSED: if $line.show_details -->
+        <!--#if $line.report #-->
+            <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">
+                <div class="hv_report" title='Open NewzBin Report $line.report'>&nbsp;</div>
+            </a>
+        <!--#end if#-->
+        <!--#if $line.url_info #-->
+            <a href="$line.url_info" target="_blank">
+                <div class="hv_url" title="Open URL<br/>$line.url_info">&nbsp;</div>
+            </a>
+        <!--#end if#-->
+        <!--#if not $line.fail_message#-->
+            <div class="hv_stats" title='Size: $line.size<br/><br/>Path:<br/><!--#echo $line.path.replace("'","&rsquo;") #--><br/><br/>Storage:<br/><!--#echo $line.storage.replace("'","&rsquo;") #-->'>&nbsp;</div>
+        <!--#end if#-->
 	    <!--#for $stage in $line.stage_log#-->
             <!--#for $action in $stage.actions#-->
                 <div class="hv_$stage.name" title='<!--#echo $stage.name.replace("'","&rsquo;").title() #--> &bull; <!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
-                <!--#if $stage.name == "script" and not $line.action_line#-->
-                <span class="hvMessage">&raquo;&nbsp;<a href="scriptlog?name=$line.nzo_id">View&nbsp;Script&nbsp;Log</a>&nbsp;</span>
-                <!--#end if#-->
             <!--#end for#-->
         <!--#end for#-->
+        <!--#if $line.script_log #-->
+            <span class="hvMessage">&raquo;&nbsp;<a href="scriptlog?name=$line.nzo_id" title="<!--#echo $line.script_line.replace("'","&rsquo;") #-->">View&nbsp;Script&nbsp;Log</a>&nbsp;</span>
+        <!--#end if#-->
         <!--#if $line.action_line#-->
         <span class="hvMessage">&raquo;&nbsp;$line.action_line&nbsp;</span><br/>
         <!--#end if#-->
