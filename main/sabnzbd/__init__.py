@@ -519,7 +519,8 @@ def run_script(script):
 
 def empty_queues():
     """ Return True if queues empty or non-existent """
-    return postproc.empty() and not nzbqueue.has_articles()
+    global __INITIALIZED__
+    return (not __INITIALIZED__) or (postproc.empty() and not nzbqueue.has_articles())
 
 
 def keep_awake():
