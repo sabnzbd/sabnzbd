@@ -3,7 +3,7 @@
 <!--#end if#-->	
 
 <h3>Queue</h3>
-<div id="centerLinks">
+<div class="centerLinks">
 <a onClick="if(confirm('Delete the all items from the queue?')){lr('queue/purge','', '-1', this.parentNode.parentNode.id);}" >Delete All</a> |
 On queue finish:
 <select onChange="javascript:changequeuedetails('queue/change_queue_complete_action?action='+this.options[this.selectedIndex].value)">
@@ -26,12 +26,12 @@ On queue finish:
     </optgroup>
 <!--#end if#-->
 </select>
+
 </div>
 
 <!--#if int($cache_limit)#-->
 <center><b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br></center>
 <!--#end if#-->
-<!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
 
 <!--#if float($mb)>0 #-->
 <!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
@@ -148,3 +148,5 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 </tbody>
     <!--#end for#--><!--#end if#-->
     </table>
+    
+<br />

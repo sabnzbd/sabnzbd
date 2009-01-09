@@ -37,7 +37,11 @@
 	var speed = $kbpersecrnd;
     var gDual = 0;
     var gUrl;
+    
     var gDeferrer;
+    var gDeferrerTwo;
+    var gRight;
+    var gRightBottom;
 	</script>
 
 
@@ -205,8 +209,10 @@
     function showRow(id)
     {
         console.log("id=%s", id);
-        disp = (document.getElementById(id).style.display == "table-row") ? "none" : "table-row";
-        document.getElementById(id).style.display = disp;
+        //disp = (document.getElementById(id).style.display == "table-row") ? "none" : "table-row";
+        //document.getElementById(id).style.display = disp;
+        toggleElementClass("hidden", id);
+
     }
     
 function setCookie(c_name,value,expiredays)
@@ -362,11 +368,11 @@ function loadtitle() {
         {
         case 'dv1':
           lr('queue/','', 1, 1);
-          lrb('history/',1);
+          lrb('history/','',1);
           break;    
         case 'dv2':
           lr('queue/','', 1, 2);
-          lrb('history/',1);
+          lrb('history/','',1);
           break;
         case 'queue':
         case 'history':
@@ -375,6 +381,9 @@ function loadtitle() {
         default:
           lr(url)
         }
+    } else {
+        lr('queue/','limit=5', 1, 1);
+        lrb('history/','limit=5',1);
     }
 
 }
@@ -398,6 +407,21 @@ function loadtitle() {
 	var status2 = $pau;
 	var timerId2 = 0;
     var timerId3 = 0;
+    
+    
+    function clearForm(obj, defText){
+        text = obj.value;
+        if (text == defText){
+            obj.value = "";
+        }
+    }
+    
+    function setForm(obj, defText){
+        text = obj.value;
+        if (text == ""){
+            obj.value = defText;
+        }
+    }
     
 	function toggle()
 	{
@@ -481,13 +505,13 @@ function loadtitle() {
         timerId2 = setTimeout("startTimer()", time*1000);
     }
     
-    function startTimer(url, dual){
+    function startTimer(url, extra, dual){
         killTimer();
         if (url) gUrl = url
         else url = gUrl
         if (dual) gDual = dual
         else dual = gDual
-        timer="lr(\'"+url+"\', '', 1, "+dual+", 'Right')";
+        timer="lr(\'"+url+"\', \'"+extra+"\', 1, "+dual+", 'Right')";
         timerId2 = setTimeout(timer, RefreshTime*1000);
  
     }
@@ -514,47 +538,92 @@ function loadtitle() {
                 document.getElementById('Right').style.width = "48%";
                 document.getElementById('Right_bottom').style.width = "41%";
             }
+            if (!dual){
+                stopDeferer(gDeferrerTwo);
+                stopDeferer(gRightBottom);
+                document.getElementById('Right_bottom').innerHTML = "";
+            }
         }
+
         append = '?_dc='+Math.random();
         if (extra){
             append = append+'&'+extra;
         }
-        if (gDeferrer) {
-            gDeferrer.prototype.cancel()
-        }
-		var gDeferrer = doSimpleXMLHttpRequest(url+append);        
+        //cancel any running timers for inprogress ajax calls or timed lr()  calls
+        stopDeferer(gDeferrer);
+        stopDeferer(gRight);
+        
+        if (refresh && RefreshTime > 0) {
+            gRight = callLater(RefreshTime, lr, url, extra, refresh, dual, pnode);
+        } 
+        
+		var gDeferrer = doSimpleXMLHttpRequest(url+append); 
+
 	    gDeferrer.addCallback(function (res)
 	    {
-          if (timerId2 && refresh>=0 && pnode != 'Right_bottom') killTimer()
-	      if (pnode != 'Right_bottom') document.getElementById('Right').innerHTML = res.responseText;
-          else document.getElementById('Right_bottom').innerHTML = res.responseText;
-          if (dual==0) {
-              document.getElementById('Right_bottom').innerHTML = "";
-              clearTimeout ( timerId3 );
-          }
-          
-		  if (refresh>0 && RefreshTime>0) {
-          startTimer(url, dual);
+	      if (pnode != 'Right_bottom') {
+            document.getElementById('Right').innerHTML = res.responseText;
+          } else {
+            document.getElementById('Right_bottom').innerHTML = res.responseText;
           }
 	    });
 		gDeferrer.addErrback(handleServerError);
 	}
-	function lrb(url, refresh)
+	function lrb(url, extra, refresh)
 	{
     //killTimer()
     //similar to lr() but loads the response in the right_bottom container
-		if (timerId3) clearTimeout ( timerId3 );
-		var res = doSimpleXMLHttpRequest(url+'?_dc='+Math.random());
-	    res.addCallback(function (res)
-	    {
-	      document.getElementById('Right_bottom').innerHTML = res.responseText;
+		//if (timerId3) clearTimeout ( timerId3 );
+        append = '?_dc='+Math.random();
+        if (extra){
+            append = append+'&'+extra;
+        }
+        stopDeferer(gDeferrerTwo);
+        
+		gDeferrerTwo = doSimpleXMLHttpRequest(url+append);
+	    gDeferrerTwo.addCallback(function (res) {
+            document.getElementById('Right_bottom').innerHTML = res.responseText;
+        });
+        stopDeferer(gRightBottom);
+        
+        if (refresh && RefreshTime > 0) {
+            gRightBottom = callLater(RefreshTime, lrb, url, extra, refresh);
+        } 
 
-		  if (refresh && RefreshTime>0) timerId3 = setTimeout("lrb(\'"+url+"\', 1);", RefreshTime*1000)
-	    });
-		res.addErrback(handleServerError);
+		//res.addErrback(handleServerError);
 	}
 
-	
+    function stopDeferer(deferer){
+        if (deferer){
+            deferer.cancel();
+        }
+	}
+    
+    function pauseHistoryDeferer(pnode){
+	      if (pnode != 'Right_bottom') {
+            stopDeferer(gRight);
+            stopDeferer(gDeferrer);
+          } else {
+            stopDeferer(gRightBottom);
+            stopDeferer(gDeferrerTwo);
+          }
+    }
+    
+    function historySearch(searchTerm, extra, pnode){
+        if (extra && searchTerm){
+            extra += '&';
+        }
+        if (searchTerm){
+            extra = extra+'search='+searchTerm;
+        }
+        if (pnode != 'Right_bottom') {
+            lr('history', extra, '-1',-1,pnode);
+        } else {
+            lrb('history', extra, '-1');
+        }
+
+    }
+    
 	function lrdual(url1, url2, refresh, pnode)
 	{
     killTimer()
@@ -563,7 +632,7 @@ function loadtitle() {
 		d.addCallback(function (d)
         {
         if (pnode == 'Right') lr(url2, '', refresh, gDual);//if link is in right_bottom needs to be lrb(
-        else lrb(url2, refresh, gDual)
+        else lrb(url2, '', refresh, gDual)
         });
 
 	}
@@ -807,7 +876,7 @@ function loadingJSON(){
 			<h2>The automatic usenet download tool</h2>
 		</div>
             <!-- <div id="divchart"><canvas id="graph" height="70" width="700"></canvas></div> -->
-
+<div class="centerLinks header-margin light-grey"><a onclick="showDiv('addNew')">[Toggle Add NZB]</a></div>
 		</div>
 		<div id="Content">
 			<div id="Left">
@@ -815,8 +884,8 @@ function loadingJSON(){
 					<li><a class="current" href="">Home</a></li>
 					<li><a href="#queue" onClick="lr('queue/', '', 1, 0);">Queue</a></li>
 					<li><a href="#history" onClick="lr('history/','', 1, 0);">History</a></li>
-                    <li><a href="#dv1" onClick="lr('queue/','', 1, 1);lrb('history/',1);">DualView1</a></li>
-                    <li><a href="#dv2" onClick="lr('queue/','', 1, 2);lrb('history/',1);">DualView2</a></li>
+                    <li><a href="#dv1" onClick="lr('queue/','', 1, 1);lrb('history/','',1);">DualView1</a></li>
+                    <li><a href="#dv2" onClick="lr('queue/','', 1, 2);lrb('history/','',1);">DualView2</a></li>
 					<li><a href="#config" onClick="lr('config/','', 0, 0);">Config</a></li>
 					<ul class="secondul">
 						<li><a class="config" href="#config-general" onClick="lr('config/general/','', 0, 0);">General</a></li>
@@ -854,93 +923,89 @@ function loadingJSON(){
 				
 			</div>
 			<div id="RightContainer">
-                <div id="Right">
-                
-                
-    				<h3>Add new downloads</h3>
-                    <br/>                        
-                        
-                    <div class="EntryBlock">
-                        <form action="addID" class="cmxform"  method="get">
-                        <fieldset class="EntryFieldSet">
-                            <legend>Add <!--#if $varExists('newzbinDetails') then "Report-ID / " else ""#-->URL</legend>
-                            <hr />
-                            <input type="text" style="width:218px;"  name="id">
-                            <!--#if $cat_list#-->
-                                <select name="cat" class="addnewselect" >
-                                    <!--#for $ct in $cat_list#-->
-                                        <option value="$ct">$ct</option>
-                                    <!--#end for#-->
-                                </select class="addnewselect" >
-                            <!--#end if#-->
-                            <select name="pp" class="scriptselect" >
-                            <option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
-                            <option value="0">None</option>
-                            <option value="1">+Repair</option>
-                            <option value="2">+Unpack</option>
-                            <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
-                            </select>
-                            <!--#if $script_list#-->
-                                <select name="script" class="scriptselect" >
-                                <!--#for $sc in $script_list#-->
-                                    <option value="$sc">$sc</option>
-                                <!--#end for#-->
-                                </select>
-                            <!--#end if#-->
-                            <input type="submit" class="submitindent2"  value="Add">
-                        </fieldset>
-                        </form>
-                    </div>
-                    <div class="EntryBlock2">
-                        <form action="addFile" class="cmxform"  method="post" enctype="multipart/form-data">
-                        <fieldset class="EntryFieldSet">
-                            <legend>Add File</legend>
-                            <hr />
-                            <input type="file" style="width:221px" name="nzbfile">
-                            <!--#if $cat_list#-->
-                                <select name="cat" class="addnewselect" >
-                                    <!--#for $ct in $cat_list#-->
-                                        <option value="$ct">$ct</option>
-                                    <!--#end for#-->
-                                </select>
-                            <!--#end if#-->
-                            <select name="pp" class="scriptselect" >
-                            <option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
-                            <option value="0">None</option>
-                            <option value="1">+Repair</option>
-                            <option value="2">+Unpack</option>
-                            <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
-                            </select>
-                            <!--#if $script_list#-->
-                                <select name="script" class="scriptselect" >
-                                <!--#for $sc in $script_list#-->
-                                    <option value="$sc">$sc</option>
-                                <!--#end for#-->
-                                </select>
-                            <!--#end if#-->
-                            <input type="submit" class="submitindent2"  value="Add">
-                        </fieldset>
-                        </form>
-                    </div>
-                        
-    				<!--#if $warning#-->
-    				<h2>WARNING</h2>
-    				<b>$warning</b><br/>
-    				<!--#end if#-->
-    				<!--#if $have_warnings#-->
-    				<h2><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings!</a></h2>
-    				<!--#end if#-->
-    				<!--#if $new_release#-->
-    			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br/>
-    				<!--#end if#-->
-                        
-                        
+<div class="centerLinks">
+<div id="addNew">
+    <form action="addID" method="get">
+        <input type="text" style="width:218px;" name="id" value="Enter URL<!--#if $varExists('newzbinDetails') then ' or Report ID' else '' #-->" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
+        <!--#if $cat_list#-->
+            <select name="cat" >
+                <optgroup label="Category">
+                    <!--#for $ct in $cat_list#-->
+                        <option value="$ct">$ct</option>
+                    <!--#end for#-->
+                </optgroup>
+            </select>
+        <!--#end if#-->
+        <select name="pp">
+            <optgroup label="PP">
+                <option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
+                <option value="0">None</option>
+                <option value="1">+Repair</option>
+                <option value="2">+Unpack</option>
+                <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
+            </optgroup>
+        </select>
+        <!--#if $script_list#-->
+            <select name="script">
+                <optgroup label="Script">
+                    <!--#for $sc in $script_list#-->
+                        <option value="$sc">$sc</option>
+                    <!--#end for#-->
+                </optgroup>
+            </select>
+        <!--#end if#-->
+        <select name="priority">
+            <optgroup label="Priority">
+                <option value="1">High</option>
+                <option value="0" selected>Normal</option>
+                <option value="-1">Low</option>
+            </optgroup>
+        </select>
+        <input type="submit" class="submitindent2"  value="Add">
+    </form>
 
-
-    			</div>
-
-                <div id="Right_bottom">
-    			</div>
+    <form action="addFile" method="post" enctype="multipart/form-data">
+        <input type="file" style="width:221px" name="nzbfile">
+        <!--#if $cat_list#-->
+            <select name="cat">
+                <optgroup label="Category">
+                    <!--#for $ct in $cat_list#-->
+                        <option value="$ct">$ct</option>
+                    <!--#end for#-->
+                </optgroup>
+            </select>
+        <!--#end if#-->
+        <select name="pp">
+            <optgroup label="PP">
+                <option value="-1" <!--#if $cat_list then "selected" else ""#-->>Default</option>
+                <option value="0">None</option>
+                <option value="1">+Repair</option>
+                <option value="2">+Unpack</option>
+                <option value="3" <!--#if $cat_list then "" else "selected"#-->>+Delete</option>
+            </optgroup>
+        </select>
+        <!--#if $script_list#-->
+            <select name="script">
+                <optgroup label="Script">
+                    <!--#for $sc in $script_list#-->
+                        <option value="$sc">$sc</option>
+                    <!--#end for#-->
+                </optgroup>
+            </select>
+        <!--#end if#-->
+        <select name="priority">
+            <optgroup label="Priority">
+                <option value="1">High</option>
+                <option value="0" selected>Normal</option>
+                <option value="-1">Low</option>
+            </optgroup>
+        </select>
+        <input type="submit" class="submitindent2"  value="Add">
+    </form>
+</div>
+</div>
+                <div id="Right"></div>
+                <div id="Right_bottom"></div>
     		</div>
 		</div>
 		<div id="Footer">
@@ -958,7 +1023,14 @@ function loadingJSON(){
 				<option value="300" >5 minutes</option>
 				<option value="0" >None</option>
 			</select>
-            <br />sabnzbd version: $version | smpl version: 1.2</a></p>
+            <br />sabnzbd version: $version | smpl version: 1.3</a></p>
+    				<!--#if $warning#-->
+    				<h2>WARNING</h2>
+    				<b>$warning</b><br />
+    				<!--#end if#-->
+    				<!--#if $new_release#-->
+    			    <b>New release $new_release available at <a href="$new_rel_url" target="_blank">SF.net</a></b><br/>
+    				<!--#end if#-->
 		</div>
 	</div>
 </body>
