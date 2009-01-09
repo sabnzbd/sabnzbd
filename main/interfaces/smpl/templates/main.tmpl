@@ -363,23 +363,25 @@ function loadtitle() {
         index = url.lastIndexOf('#');
         url = url.slice(index+1, url.length);
         url = url.replace('-', '/');
-        
+
         switch(url)
         {
-        case 'dv1':
-          lr('queue/','', 1, 1);
-          lrb('history/','',1);
-          break;    
-        case 'dv2':
-          lr('queue/','', 1, 2);
-          lrb('history/','',1);
-          break;
-        case 'queue':
-        case 'history':
-        case 'connections':
-          lr(url,'',1)
-        default:
-          lr(url)
+            case 'dv1':
+                lr('queue/','', 1, 1);
+                lrb('history/','limit=50',1);
+                break;    
+            case 'dv2':
+                lr('queue/','', 1, 2);
+                lrb('history/','limit=50',1);
+                break;
+            case 'history':
+                lr('history/','limit=50',1);
+                break;
+            case 'queue':
+            case 'connections':
+                lr(url,'',1)
+            default:
+                lr(url)
         }
     } else {
         lr('queue/','limit=5', 1, 1);
@@ -544,14 +546,21 @@ function loadtitle() {
                 document.getElementById('Right_bottom').innerHTML = "";
             }
         }
+        if (pnode != 'Right_bottom') {
+            lra(url, extra, refresh, dual, pnode)
+        } else {
+            lrb(url, extra, refresh)
+        }
 
+	}
+    function lra(url, extra, refresh, dual, pnode){
         append = '?_dc='+Math.random();
         if (extra){
             append = append+'&'+extra;
         }
-        //cancel any running timers for inprogress ajax calls or timed lr()  calls
-        stopDeferer(gDeferrer);
-        stopDeferer(gRight);
+            //cancel any running timers for inprogress ajax calls or timed lr()  calls
+            stopDeferer(gDeferrer);
+            stopDeferer(gRight);
         
         if (refresh && RefreshTime > 0) {
             gRight = callLater(RefreshTime, lr, url, extra, refresh, dual, pnode);
@@ -561,14 +570,10 @@ function loadtitle() {
 
 	    gDeferrer.addCallback(function (res)
 	    {
-	      if (pnode != 'Right_bottom') {
             document.getElementById('Right').innerHTML = res.responseText;
-          } else {
-            document.getElementById('Right_bottom').innerHTML = res.responseText;
-          }
 	    });
 		gDeferrer.addErrback(handleServerError);
-	}
+    }
 	function lrb(url, extra, refresh)
 	{
     //killTimer()
@@ -609,18 +614,21 @@ function loadtitle() {
           }
     }
     
-    function historySearch(searchTerm, extra, pnode){
+    function historySearch(elem, extra, refresh, pnode, new_search){
+        if (elem){
+            var searchTerm = document.getElementById(elem).value;
+        } else {
+            var searchTerm = "";
+        }
         if (extra && searchTerm){
+            if (new_search) extra = extra.replace(/start=\d+/g, "start=0");
             extra += '&';
         }
         if (searchTerm){
             extra = extra+'search='+searchTerm;
         }
-        if (pnode != 'Right_bottom') {
-            lr('history', extra, '-1',-1,pnode);
-        } else {
-            lrb('history', extra, '-1');
-        }
+        lr('history', extra, refresh,-1,pnode);
+
 
     }
     
@@ -883,9 +891,9 @@ function loadingJSON(){
 				<ul id="menu">
 					<li><a class="current" href="">Home</a></li>
 					<li><a href="#queue" onClick="lr('queue/', '', 1, 0);">Queue</a></li>
-					<li><a href="#history" onClick="lr('history/','', 1, 0);">History</a></li>
-                    <li><a href="#dv1" onClick="lr('queue/','', 1, 1);lrb('history/','',1);">DualView1</a></li>
-                    <li><a href="#dv2" onClick="lr('queue/','', 1, 2);lrb('history/','',1);">DualView2</a></li>
+					<li><a href="#history" onClick="lr('history/','limit=50', 1, 0);">History</a></li>
+                    <li><a href="#dv1" onClick="lr('queue/','', 1, 1);lrb('history/','limit=50',1);">DualView1</a></li>
+                    <li><a href="#dv2" onClick="lr('queue/','', 1, 2);lrb('history/','limit=50',1);">DualView2</a></li>
 					<li><a href="#config" onClick="lr('config/','', 0, 0);">Config</a></li>
 					<ul class="secondul">
 						<li><a class="config" href="#config-general" onClick="lr('config/general/','', 0, 0);">General</a></li>

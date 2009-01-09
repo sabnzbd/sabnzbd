@@ -1,8 +1,8 @@
 <h3>History <a id="feed" href="rss?mode=history"><img id="rss" src="static/feed-icon-14x14.png" alt="rss"/></a></h3>
 <div class="searchBox">
-    <input id="historySearch" type="text" size="17" name="search" value="$search" onchange="javascript:historySearch(this.value, 'limit=$limit&start=$start', this.parentNode.parentNode.id);" onfocus="pauseHistoryDeferer(this.parentNode.parentNode.id)" onblur="historySearch(this.value, 'limit=$limit&start=$start', this.parentNode.parentNode.id);">
-    <a onclick="javascript:lr('history', 'search='+document.getElementById('historySearch').value, '-1',-1,this.parentNode.parentNode.id);"><img class="delicon" src="static/images/key_enter.png" /></a>
-    <a onclick="javascript:historySearch('', 'limit=$limit&start=$start', this.parentNode.parentNode.id);"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
+    <input id="historySearch" type="text" size="17" name="search" value="$search" onchange="javascript:historySearch('historySearch', 'limit=$limit&start=$start', 1, this.parentNode.parentNode.id, 1);" onfocus="pauseHistoryDeferer(this.parentNode.parentNode.id)" onblur="javascript:historySearch('historySearch', 'limit=$limit&start=$start',1, this.parentNode.parentNode.id, 1);">
+    <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=$start',1, this.parentNode.parentNode.id, 1);"><img class="delicon" src="static/images/key_enter.png" /></a>
+    <a onclick="javascript:historySearch('', 'limit=$limit&start=$start',1, this.parentNode.parentNode.id, 1);"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
 </div>
 <div class="centerLinks">
     <a onClick="if(confirm('Delete the all items from the history?')){lr('history/purge', '', '-1',-1,this.parentNode.parentNode.id);}">Purge history</a> | <a onClick="lr('history/tog_verbose', '', -1,-1,this.parentNode.parentNode.id);"><!--#if $isverbose then "Hide details" else "Show details"#--></a></span>
@@ -81,4 +81,41 @@ Showing 1 result
 
 Showing <!--#if $finish > 0 then $start+1 else '0'#--> to $finish out of $noofslots results
 <!--#end if#-->
+<br />
+<div class="centerLinks">
+    <!--#if $limit and $noofslots#-->
+        <!--#set $total = $noofslots#-->
+        <!--#while ($total % $limit)#-->
+            <!--#set $total = $total+1#-->
+        <!--#end while#-->
+        <!--#set $pages = ($total / $limit)#-->
+        <!--#set $newfinish = $finish#-->
+        <!--#while ($newfinish % $limit)#-->
+            <!--#set $newfinish = $newfinish+1#-->
+        <!--#end while#-->
+        <!--#set $currentpage = int($newfinish / $limit)#-->
+        <!--#set $offset = 0#-->
+        <!--#if $currentpage == 1#-->
+            &laquo;First 
+            &lsaquo;Prev 
+        <!--#else#-->
+            <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;First</a> 
+            <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,this.parentNode.parentNode.id);">&lsaquo;Prev</a> 
+        <!--#end if#-->
+        <!--#for $i in $range($pages)#-->
+            <!--#if  $currentpage == $i+1#-->
+                <!--#echo $i+1#-->
+            <!--#else#-->
+                <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=$offset', 1,this.parentNode.parentNode.id);"><!--#echo $i+1#--></a>
+            <!--#end if#-->
+            <!--#set $offset = $offset + $limit#-->
+        <!--#end for#-->
+        <!--#if $currentpage == $pages#-->
+            Next&rsaquo; Last&raquo;
+        <!--#else#-->
+            <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=<!--#echo $start+$limit#-->', 1,this.parentNode.parentNode.id);">Next&rsaquo;</a> 
+            <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,this.parentNode.parentNode.id);">Last&raquo;</a>
+        <!--#end if#-->
+    <!--#end if#-->
+</div>
 
