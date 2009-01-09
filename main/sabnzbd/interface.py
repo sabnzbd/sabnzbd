@@ -2896,17 +2896,19 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         else:
             slot['percentage'] = "%s" % (int(((mb-mbleft) / mb) * 100))
 
-        running_bytes += bytesleft
-
-        slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
-
-        try:
-            datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
-            #new eta format: 16:00 Fri 07 Feb
-            slot['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
-        except:
-            datestart = datetime.datetime.now()
+        if status == 'Paused':
+            slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
+        else:
+            running_bytes += bytesleft
+            slot['timeleft'] = calc_timeleft(running_bytes, bytespersec)
+            try:
+                datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
+                #new eta format: 16:00 Fri 07 Feb
+                slot['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
+            except:
+                datestart = datetime.datetime.now()
+                slot['eta'] = 'unknown'
 
         slot['avg_age'] = calc_age(average_date)
         slot['verbosity'] = ""

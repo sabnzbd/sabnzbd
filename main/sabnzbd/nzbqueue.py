@@ -541,9 +541,9 @@ class NzbQueue(TryList):
         pnfo_list = []
         for nzo in self.__nzo_list:
             pnfo = nzo.gather_info(for_cli = for_cli)
-
-            bytes += pnfo[PNFO_BYTES_FIELD]
-            bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
+            if nzo.get_status() != 'Paused':
+                bytes += pnfo[PNFO_BYTES_FIELD]
+                bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
             pnfo_list.append(pnfo)
 
         return (bytes, bytes_left, pnfo_list)
