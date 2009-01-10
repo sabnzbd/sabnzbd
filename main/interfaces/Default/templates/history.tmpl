@@ -21,16 +21,15 @@
     <tr><th></th><th>Completed</th><th>Name</th><th>Size</th><th>Status</th><th></th></tr>
     <!--#set $odd = False#-->
     <!--#for $line in $lines #-->
-<% 
-d = datetime.datetime.fromtimestamp(float(line['completed']))
-t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
+<%
+compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%m-%d %H:%M:%S')
 %>
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
         <td><a class="verbosity_link" href="./tog_verbose/?jobs=$line.nzo_id">
         <!--#if $line.show_details then '-' else '+'#-->
         </a></td>
-        <td>$t</td>
+        <td>$compl</td>
         <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
         <td>$line.size</td><td>$line.status</td>
         <td><form action="delete" method="get">
