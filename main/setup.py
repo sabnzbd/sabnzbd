@@ -74,7 +74,7 @@ def PatchVersion(name):
         pipe.close()
     except:
         pass
-    
+
     if not svn:
         print "WARNING: Cannot run %s" % SvnVersion
         svn = 'unknown'
@@ -268,7 +268,7 @@ options = dict(
       author_email = 'team@sabnzbd.org',
       description = 'SABnzbd ' + str(sabnzbd.__version__),
       scripts = ['SABnzbd.py'],
-      packages = ['sabnzbd', 'sabnzbd.utils', 'sabnzbd.utils.multiauth'],
+      packages = ['sabnzbd', 'sabnzbd.utils'],
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2)',
       data_files = PairList(data)
@@ -282,10 +282,10 @@ if target == 'app':
         os.system(SvnRevert)
         exit(1)
 
-    options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]	      
+    options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]
     options['options'] = {'py2app': {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns'}}
     options['app'] = ['SABnzbd.py']
-    options['setup_requires'] = ['py2app']    
+    options['setup_requires'] = ['py2app']
 
     setup(**options)
     os.system(SvnRevert)
@@ -298,7 +298,7 @@ elif target == 'binary':
 
     sys.argv[1] = 'py2exe'
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
-    options['options'] = {"py2exe": {"bundle_files": 3, "packages": "email,xml,cherrypy.filters,Cheetah", "optimize": 2, "compressed": 0}}
+    options['options'] = {"py2exe": {"bundle_files": 3, "packages": "email,xml,Cheetah", "optimize": 2, "compressed": 0}}
     options['zipfile'] = 'lib/sabnzbd.zip'
 
     # Generate the console-app
@@ -380,7 +380,7 @@ else:
 
     # Install CherryPy
     os.chdir(root)
-    os.system("unzip -o ../CherryPy-2.3.0.zip")
+    os.system("unzip -o ../CherryPy-3.1.1.zip")
     os.chdir('..')
 
     # Prepare the TAR.GZ pacakge
