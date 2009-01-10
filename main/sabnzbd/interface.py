@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -936,12 +936,12 @@ class HistoryPage:
         history['total_size'] = get_history_size()
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search)
-        
+
         if search:
             history['search'] = escape(search)
         else:
             history['search'] = ''
-        
+
         history['start'] = IntConv(start)
         history['limit'] = IntConv(limit)
         history['finish'] = history['start'] + history['limit']
@@ -1382,8 +1382,6 @@ class ConfigRss:
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
-
-        conf['have_feedparser'] = sabnzbd.rss.have_feedparser()
 
         conf['script_list'] = ListScripts(default=True)
         pick_script = conf['script_list'] != []
@@ -2545,7 +2543,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
         else:
             queue[start:]
         start -= len(queue)
-    '''  
+    '''
 
 
     history_db = cherrypy.thread_data.history_db

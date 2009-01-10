@@ -7,7 +7,6 @@
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
 <h2>RSS Configuration</h2>
-<!--#if $have_feedparser#-->
 
 <div class="EntryBlock">
 <form action="add_rss_feed" method="post">
@@ -68,7 +67,7 @@ When a feed is added, it will only pick up new items and not anything already in
             <input type="hidden" name="feed" value="$feed"/>
             <input type="submit" value="Save"/>
             <br />
-        
+
     </form>
 
     <br/><br/>
@@ -197,11 +196,5 @@ When a feed is added, it will only pick up new items and not anything already in
     </div>
     </fieldset>
 <!--#end for#-->
-
-<!--#else#-->
-    <p>
-        <b>feedparser module missing<b>
-    </p>
-<!--#end if#-->
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

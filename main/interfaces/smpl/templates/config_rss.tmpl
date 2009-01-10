@@ -3,7 +3,6 @@
 MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 </script>
 <h2>RSS Configuration</h2>
-<!--#if $have_feedparser#-->
 
 <div class="EntryBlock" id="add_rss_feed">
 <fieldset class="EntryFieldSet">
@@ -60,7 +59,7 @@ When a feed is added, it will only pick up new items and not anything already in
             <input type="hidden" name="feed" value="$feed"/>
             <!--<input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled -->
             <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', '','update_$feed','1' )" />
- 
+
         </fieldset>
 
     </div>
@@ -123,12 +122,12 @@ When a feed is added, it will only pick up new items and not anything already in
         <input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','$feed+new_filter','1' )">
         </td>
     </tr>
-    
+
 
 
     <!--#set $fnum = 0#-->
 
-    
+
     <!--#for $filter in $rss[$feed].filters#-->
     <tr class="odd" id="$feed+$fnum">
         <td>
@@ -194,11 +193,3 @@ When a feed is added, it will only pick up new items and not anything already in
     </fieldset>
     <br class="clear" /> <br class="clear" />
 <!--#end for#-->
-
-<!--#else#-->
-    <p>
-        <b>feedparser module missing<b>
-    </p>
-<!--#end if#-->
-
-

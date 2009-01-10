@@ -1,12 +1,11 @@
 
-<!--#if $have_feedparser#-->
 <ul title="RSS" selected="true">
-            
+
     <li><a href="#addRSS">Add New RSS</a></li>
     <!--#for $feed in $rss#-->
     <!--#set sanitisedLine = $feed.replace(' ','_') #-->
     <li><a href="#update_$sanitisedLine">$feed</a></li>
-    <!--#end for#-->        
+    <!--#end for#-->
 </ul>
   <form title="RSS" id="addRSS" class="panel" action="javascript:var dummy=0" method="POST">
     <h2>RSS feed settings</h2>
@@ -27,11 +26,5 @@
     <div class="EntryBlock" id="update_$sanitisedLine">
 <p>Updating a feed in this skin is currently not available in this beta.</p>
     </div>
- 
-<!--#end for#-->
 
-<!--#else#-->
-    <p>
-        <b>feedparser module missing<b>
-    </p>
-<!--#end if#-->
+<!--#end for#-->

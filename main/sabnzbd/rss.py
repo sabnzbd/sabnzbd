@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,11 +32,8 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 
-try:
-    import feedparser
-    __HAVE_FEEDPARSER = True
-except ImportError:
-    __HAVE_FEEDPARSER = False
+import sabnzbd.utils.feedparser as feedparser
+
 __RSS = None  # Global pointer to RSS-scanner instance
 
 
@@ -45,12 +42,8 @@ __RSS = None  # Global pointer to RSS-scanner instance
 ################################################################################
 
 def init():
-    global __RSS, __HAVEFEEDPARSER
-    if __HAVE_FEEDPARSER:
-        __RSS = RSSQueue()
-        return True
-    else:
-        return False
+    global __RSS
+    __RSS = RSSQueue()
 
 def stop():
     global __RSS
@@ -60,10 +53,6 @@ def stop():
             __RSS.join()
         except:
             pass
-
-def have_feedparser():
-    global __HAVEFEEDPARSER
-    return __HAVE_FEEDPARSER
 
 def del_feed(feed):
     global __RSS
@@ -186,7 +175,7 @@ class RSSQueue:
             logging.error('[%s] Incorrect RSS feed description "%s"', __NAME__, feed)
             logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
             return
-            
+
         uri = cfg.uri.get()
         defCat = cfg.cat.get()
         if defCat == "":
@@ -220,7 +209,7 @@ class RSSQueue:
         jobs = self.jobs[feed]
 
         first = first and ignoreFirst
-        
+
         # Read the RSS feed
         logging.debug("[%s] Running feedparser on %s", __NAME__, uri)
         d = feedparser.parse(uri)
