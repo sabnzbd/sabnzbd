@@ -18,36 +18,31 @@
 """
 sabnzbd.nzbstuff - misc
 """
+__NAME__ = "nzbstuff"
+
 import time
 import re
 import logging
 import sabnzbd
 import datetime
+import xml.sax
+import xml.sax.handler
+
 from sabnzbd.constants import *
 from sabnzbd.codecs import name_fixer
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-
 from sabnzbd.trylist import TryList
+
+HAVE_CELEMENTTREE = True
 
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
+SUBJECT_FN_MATCHER = re.compile(r'"(.*)"')
+RE_SAMPLE = re.compile('(^|[\W_])sample\d*[\W_]', re.I)
+PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 
-HAVE_CELEMENTTREE = True
-try:
-    from lxml.etree import XML
-except:
-    try:
-        from xml.etree.cElementTree import XML
-    except ImportError:
-        try:
-            from cElementTree import XML
-        except ImportError:
-            from elementtree.ElementTree import XML
-            HAVE_CELEMENTTREE = False
-
-__NAME__ = "nzbstuff"
 
 ################################################################################
 # Article                                                                      #
@@ -99,7 +94,7 @@ class Article(TryList):
 ################################################################################
 SUBJECT_FN_MATCHER = re.compile(r'"(.*)"')
 class NzbFile(TryList):
-    def __init__(self, date, subject, segments, nzo):
+    def __init__(self, date, subject, article_db, bytes, nzo):
         TryList.__init__(self)
 
         # Private
@@ -123,8 +118,8 @@ class NzbFile(TryList):
         self.__articles = []
         self.__decodetable = {}
 
-        self.__bytes = 0
-        self.__bytes_left = 0
+        self.__bytes = bytes
+        self.__bytes_left = bytes
         self.__article_count = 0
 
         # Public
@@ -134,30 +129,10 @@ class NzbFile(TryList):
 
         self.valid = False
         self.import_finished = False
-        
+
         self.md5sum = None
-        
-        if segments:
-            # Do a lazy import
-            article_db = {}
-            for segment in segments:
-                bytes = int(segment.get('bytes'))
-                partnum = int(segment.get('number'))
-    
-                if partnum in article_db:
-                    if segment.text == article_db[partnum][0]:
-                        logging.warning("[%s] Skipping duplicate article (%s)", __NAME__, segment.text)
-                    else:
-                        logging.error("[%s] INCORRECT NZB: Duplicate part %s, but different ID-s (%s // %s)",
-                                         __NAME__, partnum, article_db[partnum][0], segment.text)
-                    continue
-    
-                self.__bytes += bytes
-                self.__bytes_left += bytes
-    
-                self.valid = True
-    
-                article_db[partnum] = (segment.text, bytes)
+
+        self.valid = bool(article_db)
 
         if self.valid and self.nzf_id:
             sabnzbd.save_data(article_db, self.nzf_id)
@@ -291,16 +266,159 @@ class NzbFile(TryList):
         return "<NzbFile: filename=%s, type=%s>" % \
                (self.__filename, self.__type)
 
+
+################################################################################
+# NzbParser                                                                    #
+################################################################################
+class NzbParser(xml.sax.handler.ContentHandler):
+    """ Forgiving parser for NZB's """
+    # Accesses private variables of NzbObject instances to keep
+    # queue-compatibility with previous trunk versions.
+    # Ideally the methods of this class could be added to NzbObject,
+    # but this would also break compatibility.
+    # Hence, this solution.
+    def __init__ (self, nzo):
+        self.nzo = nzo
+        self.in_nzb = False
+        self.in_file = False
+        self.in_groups = False
+        self.in_group = False
+        self.in_segments = False
+        self.in_segment = False
+        self.filename = ''
+        self.avg_age = 0
+        self.valids = 0
+        self.skipped_files = 0
+        self.nzf_list = []
+
+    def startDocument(self):
+        self.filter = cfg.IGNORE_SAMPLES.get()
+
+    def startElement(self, name, attrs):
+        if name == 'segment' and self.in_nzb and self.in_file and self.in_segments:
+            try:
+                self.seg_bytes = int(attrs.get('bytes'))
+                self.article_nr = int(attrs.get('number'))
+            except ValueError:
+                return
+            self.article_id = []
+            self.file_bytes += self.seg_bytes
+            self.in_segment = True
+
+        elif name == 'segments' and self.in_nzb and self.in_file:
+            self.in_segments = True
+
+        elif name == 'file' and self.in_nzb:
+            subject = attrs.get('subject', '')
+            match = re.search(SUBJECT_FN_MATCHER, subject)
+            if match:
+                self.filename = match.group(1).strip()
+            else:
+                self.filename = subject.strip()
+
+            if self.filter and RE_SAMPLE.search(subject):
+                logging.info('[%s] Skipping sample file %s', __NAME__, subject)
+            else:
+                self.in_file = True
+                if isinstance(subject, unicode):
+                    subject = subject.encode('latin-1', 'replace')
+                self.fileSubject = subject
+                try:
+                    self.file_date = int(attrs.get('date'))
+                except:
+                    # NZB has non-standard timestamp, assume 1
+                    self.file_date = 1
+                self.article_db = {}
+                self.file_bytes = 0
+
+        elif name == 'group' and self.in_nzb and self.in_file and self.in_groups:
+            self.in_group = True
+            self.group_name = []
+
+        elif name == 'groups' and self.in_nzb and self.in_file:
+            self.in_groups = True
+            self.groups = []
+
+        elif name == 'nzb':
+            self.in_nzb = True
+
+    def characters (self, content):
+        if self.in_group:
+            self.group_name.append(content)
+        elif self.in_segment:
+            self.article_id.append(content)
+
+    def endElement(self, name):
+        if name == 'group' and self.in_group:
+            self.groups.append(''.join(self.group_name))
+            self.in_group = False
+
+        elif name == 'segment' and self.in_segment:
+            partnum = self.article_nr
+            segm = ''.join(self.article_id)
+            if partnum in self.article_db:
+                if segm != self.article_db[partnum][0]:
+                    logging.error("[%s] Duplicate part %s, but different ID-s (%s // %s)",
+                                         __NAME__, partnum, self.article_db[partnum][0], segm)
+                else:
+                    logging.info("[%s] Skipping duplicate article (%s)", __NAME__, segm)
+            else:
+                self.article_db[partnum] = (segm, self.seg_bytes)
+            self.in_segment = False
+
+        elif name == 'groups' and self.in_groups:
+            self.in_groups = False
+
+        elif name == 'segments' and self.in_segments:
+            self.in_segments = False
+
+        elif name == 'file' and self.in_file:
+            # Create an NZF
+            self.in_file = False
+            if not self.article_db:
+                logging.warning('[%s] File %s is empty, skipping', __NAME__, self.filename)
+                return
+            tm = datetime.datetime.fromtimestamp(self.file_date)
+            nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
+            if nzf.valid and nzf.nzf_id:
+                logging.info('[%s] File %s added to queue', __NAME__, self.filename)
+                self.nzo._NzbObject__files.append(nzf)
+                self.nzo._NzbObject__files_table[nzf.nzf_id] = nzf
+                self.nzo._NzbObject__bytes += nzf.bytes()
+                self.avg_age += self.file_date
+                self.valids += 1
+                self.nzf_list.append(nzf)
+            else:
+                logging.info('[%s] Error importing %s, skipping', __NAME__, self.filename)
+                if nzf.nzf_id:
+                    sabnzbd.remove_data(nzf.nzf_id)
+                self.skipped_files += 1
+
+        elif name == 'nzb':
+            self.in_nzb = False
+
+    def endDocument(self):
+        """ End of the file """
+        self.nzo._NzbObject__group = self.groups[0]
+        self.nzo._NzbObject__avg_date = datetime.datetime.fromtimestamp(self.avg_age / self.valids)
+        if self.skipped_files:
+            logging.warning('[%s] Failed to import %s files from %s', __NAME__,
+                            self.skipped_files, self.nzo.get_filename())
+
+    def remove_files(self):
+        """ Remove all created NZF objects """
+        for nzf in self.nzf_list:
+            sabnzbd.remove_data(nzf.nzf_id)
+
+
 ################################################################################
 # NzbObject                                                                    #
 ################################################################################
-DTD = '{http://www.newzbin.com/DTD/2003/nzb}'
-PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)\+(\d*)\.par2', re.I)
 
 class NzbObject(TryList):
     def __init__(self, filename, msgid, pp, script, nzb = None,
-                 futuretype = False, cat = None, url=None, 
-                 priority=NORMAL_PRIORITY, status="Queued", nzo_info={}):
+                 futuretype = False, cat = None, url=None,
+                 priority=NORMAL_PRIORITY, status="Queued", nzo_info=None):
         TryList.__init__(self)
 
         if cat and pp == None:
@@ -339,7 +457,7 @@ class NzbObject(TryList):
         else:
             self.__url = ''
         self.__group = None
-        self.__avg_date = None
+        self.__avg_date = 0
         self.__dirprefix = []
 
         self.__partable = {}          # Holds one parfile-name for each set
@@ -370,16 +488,19 @@ class NzbObject(TryList):
         self.futuretype = futuretype
         self.deleted = False
         self.parsed = False
-        
+
         # Store one line responses for filejoin/par2/unrar/unzip here for history display
         self.action_line = ''
         # Store the results from various filejoin/par2/unrar/unzip stages
         self.unpack_info = {}
         # Stores one line containing the last failure
         self.fail_msg = ''
-        # Stores various info about the nzo to be 
-        self.nzo_info = nzo_info
-        
+        # Stores various info about the nzo to be
+        if nzo_info:
+            self.nzo_info = nzo_info
+        else:
+            self.nzo_info = {}
+
         self.extra1 = None
         self.extra2 = None
         self.extra3 = None
@@ -404,96 +525,27 @@ class NzbObject(TryList):
             # This is a slot for a future NZB, ready now
             return
 
-        try:
-            root = XML(nzb)
-        except:
-            logging.warning("[%s] Incorrect NZB file %s (trying anyway)", __NAME__, filename)
-
-        try:
-            root
-        except:
-            logging.error("[%s] Invalid NZB file %s, skipping", __NAME__, filename)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
-            raise ValueError
-
-        if not sabnzbd.backup_nzb(filename, nzb, cfg.NO_DUPES.get()):
+        if sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
             logging.warning('[%s] Skipping duplicate NZB "%s"', __NAME__, filename)
             raise TypeError
 
-        avg_age = 0
-        valids = 0
-        found = 0
-        skipped_files = 0
-        for _file in root:
-            if not self.__group:
-                groups = _file.find('%sgroups' % DTD)
-                if not groups:
-                    groups = _file.find('groups')
-                self.__group = groups[0].text
-            subject = _file.get('subject')
+        handler = NzbParser(self)
+        try:
+            xml.sax.parseString(nzb, handler)
+        except xml.sax.SAXParseException, err:
+            handler.remove_files()
+            logging.warning("[%s] Invalid NZB file %s, skipping (reason=%s, line=%s)",
+                          __NAME__, filename, err.getMessage(), err.getLineNumber())
+            raise ValueError
 
-            if isinstance(subject, unicode):
-                subject = subject.encode('latin-1', 'replace')
-
-            try:
-                t = int(_file.get('date'))
-            except:
-                # NZB has non-standard timestamp, assume 1
-                t = 1
-            date = datetime.datetime.fromtimestamp(t)
-
-            segments = _file.find('%ssegments' % DTD)
-            if not segments:
-                segments = _file.find('segments')
-            if not subject:
-                continue
-            nzf = NzbFile(date, subject, segments, self)
-
-            if nzf.valid and nzf.nzf_id:
-                found = 0
-                fln = None
-                if cfg.IGNORE_SAMPLES.get():
-                    if (nzf.get_filename()):
-                        fln = nzf.get_filename()
-                        fln = fln.lower()
-                    else:
-                        fln = nzf.get_subject()
-                        fln = fln.lower()
-
-                    sample = re.compile('(^|[\W_])sample\d*[\W_]')
-                    found = sample.search(fln)
-                    
-                if found:
-                    logging.debug("[%s] Sample file found in file: %s, removing: %s." % (__NAME__,fln,nzf.nzf_id))
-                    sabnzbd.remove_data(nzf.nzf_id)
-                else:
-                    logging.info('[%s] %s added to queue', __NAME__, subject)
-                    avg_age += t
-                    valids += 1
-                    self.__files_table[nzf.nzf_id] = nzf
-                    self.__bytes += nzf.bytes()
-                    self.__files.append(nzf)
-
-            else:
-                logging.info('[%s] Error importing %s, skipping', __NAME__,
-                             subject)
-                if nzf.nzf_id:
-                    sabnzbd.remove_data(nzf.nzf_id)
-                skipped_files += 1
-                
-        if skipped_files:
-            logging.warning('[%s] Failed to import %s files from %s', __NAME__,
-                             skipped_files, filename)
+        sabnzbd.backup_nzb(filename, nzb)
 
         if self.__cat == None:
             self.__cat = CatConvert(self.__group)
 
         if cfg.CREATE_GROUP_FOLDERS.get():
             self.__dirprefix.append(self.__group)
-
-        self.__avg_date = datetime.datetime.fromtimestamp(avg_age / valids)
-
 
         if cfg.AUTO_SORT.get():
             self.__files.sort(cmp=_nzf_cmp_date)
@@ -519,7 +571,7 @@ class NzbObject(TryList):
 
     def update_bytes(self, bytes):
         self.__bytes_downloaded += bytes
-        
+
     def update_avg_kbs(self, bps):
         if bps:
             self.__avg_bps_total += bps / 1024
@@ -614,25 +666,25 @@ class NzbObject(TryList):
 
     def get_original_dirname(self):
         return self.__original_dirname
-    
+
     def set_original_dirname(self, name):
         self.__original_dirname = name
-    
+
     def pause_nzo(self):
         try:
             self.__status = 'Paused'
         except:
             pass
-        
+
     def resume_nzo(self):
         try:
             self.__status = 'Queued'
         except:
             pass
-        
+
     def get_priority(self):
         return self.__priority
-        
+
     def set_priority(self, priority):
         try:
             self.__priority = priority
@@ -657,7 +709,7 @@ class NzbObject(TryList):
     def get_status(self):
         #returns a string of the current history status
         return self.__status
-    
+
     def get_nzo_id(self):
         return self.nzo_id
 
@@ -669,15 +721,15 @@ class NzbObject(TryList):
             #get the deltatime since the download started
             avg_bps = self.__avg_bps_total / self.__avg_bps_freq
             timecompleted = datetime.timedelta(seconds=self.__bytes_downloaded / (avg_bps*1024))
-    
+
             seconds = timecompleted.seconds
             #find the total time including days
             totaltime = (timecompleted.days/86400) + seconds
             self.set_nzo_info('download_time',totaltime)
-    
+
             #format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
-            
+
             self.set_unpack_info('download', 'Downloaded in %s at an average of %0.fkB/s' % (complete_time, avg_bps), unique=True)
 
 
@@ -895,9 +947,9 @@ class NzbObject(TryList):
     def get_nzf_by_id(self, nzf_id):
         if nzf_id in self.__files_table:
             return self.__files_table[nzf_id]
-    
+
     def set_unpack_info(self, key, msg, set='', unique=False):
-        ''' 
+        '''
             Builds a dictionary containing the stage name (key) and a message
             If set is present, it will overwrite any other messages from the set of the same stage
             If unique is present, it will only have a single line message
@@ -918,34 +970,34 @@ class NzbObject(TryList):
                 self.unpack_info[key].append(msg)
         else:
             self.unpack_info[key] = [msg]
-        
+
     def get_unpack_info(self):
         return self.unpack_info
-        
+
     def set_action_line(self, action, msg):
         if action and msg:
             self.action_line = '%s: %s' % (action, msg)
         else:
             self.action_line = ''
-    
+
     def get_action_line(self):
         return self.action_line
-    
+
     def set_fail_msg(self, msg):
         self.fail_msg = msg
-        
+
     def get_fail_msg(self):
         return self.fail_msg
-        
+
     def set_nzo_info(self, key, value):
         self.nzo_info[key] = value
-        
+
     def get_nzo_info(self):
         return self.nzo_info
-        
+
     def set_db_info(self, key, msg):
         self.nzo_info[key] = msg
-    
+
     def get_repair_opts(self):
         return self.__repair, self.__unpack, self.__delete
 
@@ -1035,13 +1087,13 @@ def _nzf_cmp_name(nzf1, nzf2):
     #Try to use the filename if it can be extracted from the subject
     subject1 = nzf1.get_filename()
     subject2 = nzf2.get_filename()
-    
+
     #if the filename cannot be extracted, use the full subject line for comparison. Can produce non-ideal results
     if subject1:
         subject1 = subject1.lower()
     else:
         subject1 = nzf1.get_subject().lower()
-    
+
     if subject2:
         subject2 = subject2.lower()
     else:
@@ -1056,7 +1108,7 @@ def _nzf_cmp_name(nzf1, nzf2):
     if 'vol' in subject2 and '.par2' in subject2:
         par2_found += 1
         ret += 1
-        
+
     #Prioritise .rar files above any other type of file (other than .par)
     #Useful for nzb streaming
     if '.rar' in subject1 and not '.par' in subject2 and not '.rar' in subject2: #some nzbs dont get filename field populated, using subject instead
@@ -1104,7 +1156,7 @@ def CatConvert(cat):
             try:
                 newzbin = cats[ucat].newzbin.get()
                 if type(newzbin) != type([]):
-                    newzbin = [newzbin] 
+                    newzbin = [newzbin]
             except:
                 newzbin = []
             for name in newzbin:
@@ -1125,13 +1177,13 @@ def CatConvert(cat):
                     found = True
                     break
 
-    if found:            
+    if found:
         return newcat
     else:
         return None
-    
+
 def format_time_string(seconds, days=0):
-    
+
     try:
         seconds = int(seconds)
     except:
@@ -1148,7 +1200,7 @@ def format_time_string(seconds, days=0):
         seconds -= (seconds/60)*60
     if seconds > 0:
         completestr += '%s second%s ' % (seconds, s_returner(seconds))
-        
+
     return completestr.strip()
 
 def s_returner(value):
@@ -1156,4 +1208,4 @@ def s_returner(value):
         return 's'
     else:
         return ''
- 
+

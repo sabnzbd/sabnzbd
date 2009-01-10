@@ -50,7 +50,6 @@ You need to have Python installed and some modules.
 
 Unix/Linux/OSX
     Python-2.4.4            http://www.python.org
-    cElementTree-1.0.5      http://effbot.org/downloads/
 OR
     Python-2.5.2            http://www.python.org
 

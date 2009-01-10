@@ -583,11 +583,6 @@ def main():
         else:
             logging.info("_yenc module... NOT found!")
 
-    if sabnzbd.nzbstuff.HAVE_CELEMENTTREE:
-        logging.info("celementtree module... found!")
-    else:
-        logging.info("celementtree module... NOT found!")
-
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:

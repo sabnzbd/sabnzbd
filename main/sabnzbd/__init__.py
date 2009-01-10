@@ -334,11 +334,17 @@ def save_state():
 NZB_LOCK = Lock()
 
 @synchronized(NZB_LOCK)
-def backup_nzb(filename, data, no_dupes):
-    """ Backup NZB file,
-        return True if OK, False if no_dupes and backup already exists
+def backup_exists(filename):
+    """ Return True if backup exists and no_dupes is set
     """
-    result = True
+    path = cfg.NZB_BACKUP_DIR.get_path()
+    return path and sabnzbd.cfg.NO_DUPES.get() and \
+           os.path.exists(os.path.join(path, filename+'.gz'))
+
+@synchronized(NZB_LOCK)
+def backup_nzb(filename, data):
+    """ Backup NZB file
+    """
     if cfg.NZB_BACKUP_DIR.get_path():
         backup_name = filename + '.gz'
 
@@ -347,21 +353,16 @@ def backup_nzb(filename, data, no_dupes):
         here = os.getcwd()
         os.chdir(cfg.NZB_BACKUP_DIR.get_path())
 
-        if no_dupes and os.path.exists(backup_name):
-            result = False
-        else:
-            logging.info("[%s] Backing up %s", __NAME__, backup_name)
-            try:
-                _f = gzip.GzipFile(backup_name, 'wb')
-                _f.write(data)
-                _f.flush()
-                _f.close()
-            except:
-                logging.error("[%s] Saving %s to %s failed", __NAME__, backup_name, cfg.NZB_BACKUP_DIR.get_path())
+        logging.info("[%s] Backing up %s", __NAME__, backup_name)
+        try:
+            _f = gzip.GzipFile(backup_name, 'wb')
+            _f.write(data)
+            _f.flush()
+            _f.close()
+        except:
+            logging.error("[%s] Saving %s to %s failed", __NAME__, backup_name, cfg.NZB_BACKUP_DIR.get_path())
 
         os.chdir(here)
-
-    return result
 
 
 ################################################################################
