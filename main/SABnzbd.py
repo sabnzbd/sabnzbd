@@ -491,7 +491,7 @@ def main():
     if fork and not logdir:
         print "Error:"
         print "I refuse to fork without a log directory!"
-        sys.exit()
+        sys.exit(1)
 
     if clean_up:
         xlist= glob.glob(logdir + '/*')
