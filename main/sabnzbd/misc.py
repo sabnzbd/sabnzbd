@@ -123,12 +123,43 @@ def Cat2OptsDef(fname, cat=None):
 ################################################################################
 # sanitize_filename                                                            #
 ################################################################################
+if os.name == 'nt':
+    CH_ILLEGAL = r'\/<>?*:|"'
+    CH_LEGAL   = r'++{}!@-#`'
+else:
+    CH_ILLEGAL = r'/'
+    CH_LEGAL   = r'+'
+
 def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
-    illegal = r'\/<>?*:;|"'
-    legal   = r'++{}!@--#`'
+    illegal = CH_ILLEGAL
+    legal   = CH_LEGAL
+
+    lst = []
+    for ch in name.strip():
+        if ch in illegal:
+            ch = legal[illegal.find(ch)]
+        lst.append(ch)
+    name = ''.join(lst)
+
+    if not name:
+        name = 'unknown'
+
+    name, ext = os.path.splitext(name)
+    lowext = ext.lower()
+    if lowext == '.par2' and lowext != ext:
+        ext = lowext
+    return name + ext
+
+
+def sanitize_foldername(name):
+    """ Return foldername with dodgy chars converted to safe ones
+        Remove any leading and trailing dot characters
+    """
+    illegal = r'\/<>?*:|"'
+    legal   = r'++{}!@-#`'
 
     repl = cfg.REPLACE_ILLEGAL.get()
     lst = []
@@ -141,14 +172,12 @@ def sanitize_filename(name):
             lst.append(ch)
     name = ''.join(lst)
 
+    name = name.strip('.')
     if not name:
         name = 'unknown'
 
-    name, ext = os.path.splitext(name)
-    lowext = ext.lower()
-    if lowext == '.par2' and lowext != ext:
-        ext = lowext
-    return name + ext
+    return name
+
 
 ################################################################################
 # DirPermissions                                                               #
@@ -460,7 +489,7 @@ def ConvertVersion(text):
             version = version + 99
             test = False
     return version, test
-    
+
 
 def check_latest_version():
     """ Do an online check for the latest version """
@@ -498,7 +527,7 @@ def check_latest_version():
         url_beta = url
 
 
-    latest, dummy = ConvertVersion(latest_label) 
+    latest, dummy = ConvertVersion(latest_label)
     latest_test, dummy = ConvertVersion(latest_testlabel)
 
     logging.debug("Checked for a new release, cur= %s, latest= %s (on %s)", current, latest, url)
@@ -623,7 +652,7 @@ def get_unique_path(dirpath, n=0, create_dir=True):
         return path
     else:
         return get_unique_path(dirpath, n=n+1, create_dir=create_dir)
-    
+
 @synchronized(DIR_LOCK)
 def get_unique_filename(path, new_path, i=1):
     #path = existing path of the file, new_path = destination
@@ -641,7 +670,7 @@ def get_unique_filename(path, new_path, i=1):
             except:
                 return path, new_path
         return path, uniq_path
-                    
+
     else:
         return path, new_path
 
@@ -755,7 +784,7 @@ def BadFetch(nzo, url, retry=False, archive=False):
 
     nzo.set_status("Failed")
 
-        
+
     if url:
         nzo.set_filename(url)
         nzo.set_original_dirname(url)
@@ -781,7 +810,7 @@ def OnCleanUpList(filename, skip_nzb=False):
     if cfg.CLEANUP_LIST.get():
         ext = os.path.splitext(filename)[1].strip().strip('.')
         if os.name == 'nt': ext = ext.lower()
-        
+
         for k in cfg.CLEANUP_LIST.get():
             item = k.strip().strip('.')
             if item == ext and not (skip_nzb and item == 'nzb'):
@@ -808,7 +837,7 @@ def loadavg():
 
 
 def format_time_string(seconds, days=0):
-    
+
     try:
         seconds = int(seconds)
     except:
@@ -825,7 +854,7 @@ def format_time_string(seconds, days=0):
         seconds -= (seconds/60)*60
     if seconds > 0:
         completestr += '%s second%s ' % (seconds, s_returner(seconds))
-        
+
     return completestr.strip()
 
 

@@ -141,7 +141,7 @@ class URLGrabber(Thread):
             if not filename:
                 filename = os.path.basename(url)
             else:
-                filename = misc.sanitize_filename(filename)
+                filename = misc.sanitize_foldername(filename)
             _r, _u, _d = future_nzo.get_repair_opts()
             pp = sabnzbd.opts_to_pp(_r, _u, _d)
             script = future_nzo.get_script()
@@ -187,7 +187,7 @@ def _grab_nzbmatrix(url):
         msgid = m.group(2)
     else:
         return (None, None)
-    
+
     logging.info('[%s] Fetching NZB for nzbmatrix report #%s', __NAME__, msgid)
 
     if _HAVE_SSL:
@@ -212,7 +212,7 @@ def _grab_nzbmatrix(url):
     opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
     urllib2.install_opener(opener)
 
-    #create the request to login 
+    #create the request to login
     request = urllib2.Request(login_url, login_info_encode, cmn_headers)
     response = urllib2.urlopen(request)
 
@@ -226,7 +226,7 @@ def _grab_nzbmatrix(url):
     try:
         #request the file
         response = urllib2.urlopen(request)
-        
+
         # save the data from the response
         data = response.read()
 
@@ -235,7 +235,7 @@ def _grab_nzbmatrix(url):
     except:
         logging.warning('[%s] Problem accessing nzbmatrix server.', __NAME__)
         return (None, True)
-    
+
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably an invalid report number
         logging.warning('[%s] Invalid nzbmatrix report number %s', __NAME__, msgid)

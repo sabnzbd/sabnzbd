@@ -133,7 +133,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     return -1
                 name = re.sub(r'\[.*nzbmatrix.com\]', '', name)
                 name = os.path.basename(name)
-                name = misc.sanitize_filename(name)
+                name = misc.sanitize_foldername(name)
                 if data:
                     try:
                         nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority)
@@ -224,7 +224,7 @@ def CleanList(list, folder, files):
                     break
             if not present:
                 del list[path]
-    
+
 
 #------------------------------------------------------------------------------
 class DirScanner(threading.Thread):
@@ -258,7 +258,7 @@ class DirScanner(threading.Thread):
         self.suspected = {}
         self.dirscan_dir = cfg.DIRSCAN_DIR.get_path()
         self.dirscan_speed = cfg.DIRSCAN_SPEED.get()
-        
+
     def stop(self):
         self.save()
         logging.info('[%s] Dirscanner shutting down', __NAME__)

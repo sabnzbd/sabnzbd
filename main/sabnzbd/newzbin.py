@@ -39,7 +39,7 @@ from threading import *
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import Cat2Opts, sanitize_filename, BadFetch
+from sabnzbd.misc import Cat2Opts, sanitize_foldername, BadFetch
 from sabnzbd.nzbstuff import CatConvert
 from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
@@ -263,7 +263,7 @@ def _grabnzb(msgid):
     if rcode in ('402'):
         logging.warning("[%s] You have no credit on your Newzbin account", __NAME__)
         return nothing
-    
+
     if rcode in ('401'):
         logging.warning("[%s] Unauthorised, check your newzbin username/password", __NAME__)
         return nothing
@@ -288,7 +288,7 @@ def _grabnzb(msgid):
         return nothing
 
     # sanitize report_name
-    newname = sanitize_filename(report_name)
+    newname = sanitize_foldername(report_name)
     if len(newname) > 80:
         newname = newname[0:79].strip()
 
@@ -314,7 +314,7 @@ class Bookmarks:
     def run(self, delete=None):
 
         headers = { 'User-Agent': 'SABnzbd', }
-    
+
         # Connect to Newzbin
         try:
             if _HAVE_SSL:
@@ -330,21 +330,21 @@ class Bookmarks:
                 logging.info('[%s] Fetching Newzbin bookmarks', __NAME__)
                 postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
-    
+
             headers['Content-type'] = 'application/x-www-form-urlencoded'
-    
+
             fetchurl = '/api/bookmarks/'
             conn.request('POST', fetchurl, postdata, headers)
             response = conn.getresponse()
         except:
             logging.warning('[%s] Problem accessing Newzbin server.', __NAME__)
             return
-    
+
         data = response.read()
-    
+
         # Get the status
         rcode = str(response.status)
-    
+
         # Official return codes:
         # 200 = OK, NZB content follows
         # 204 = No content
@@ -355,7 +355,7 @@ class Bookmarks:
         # 403 = Forbidden (incorrect auth)
         # 500 = Internal Server Error, please report to Administrator
         # 503 = Service Unavailable, site is currently down
-    
+
         if rcode == '204':
             logging.debug("[%s] No bookmarks set", __NAME__)
         elif rcode in ('401', '403'):
