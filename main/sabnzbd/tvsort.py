@@ -182,7 +182,7 @@ class SeriesSorter:
     def get_shownames(self):
         ''' Get the show name from the match object and format it '''
         # Get the formatted title and alternate title formats
-        self.show_info['show_name'], self.show_info['show_name_three'], self.show_info['show_name_two'] = getTitles(self.match_obj, self.original_dirname)
+        self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = getTitles(self.match_obj, self.original_dirname)
         
         
     def get_seasons(self):
