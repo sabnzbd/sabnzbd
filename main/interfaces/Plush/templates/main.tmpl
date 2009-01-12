@@ -1,21 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
 <html>
 <head>
-    
+
     <title>SABnzbd+ Plush</title>
     <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
     <link rel="shortcut icon" type="image/ico" href="static/images/plush-default/sabnzbdplus.ico"/>
-    
+
     <link rel="stylesheet" type="text/css" href="static/stylesheets/plush-default.css?$version"/>
     <!--#if $color_scheme and $color_scheme != "plush-default.css" and $color_scheme != "default.css"#-->
     <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme?$version"/>
     <!--#end if#-->
-    
+
     <script type="text/javascript" src="static/javascripts/main.js?$version"></script>
-    
+
 </head>
 <body>
-    
+
     <ul class="sf-menu sf-navbar">
         <li>
             <a class="sf-with-ul">SABnzbd<span class="sf-sub-indicator"> &#187;</span></a>
@@ -105,9 +105,11 @@
                             <option value="">Do Nothing</option>
                             <optgroup label="Actions">
                                 <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
-                                <!--#if $nt#-->
+                                <!--#if $nt or $darwin#-->
                                 <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
                                 <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>Standby PC</option>
+                                <!--#end if#-->
+                                <!--#if $nt#-->
                                 <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
                                 <!--#end if#-->
                             </optgroup>
@@ -143,7 +145,7 @@
         <li><a href="connections">Config</a></li>
         <li><a class="pointer" id="manual_refresh_wrapper"><span id="manual_refresh">Refresh</span></a></li>
     </ul>
-    
+
     <!--#if $warning#-->
     <div id="warning_message"><strong>$warning</strong></div>
     <!--#end if#-->
@@ -155,44 +157,44 @@
         </ul>
     </div>
     <!--#end if#-->
-    
+
     <div id="page-wrap">
-        
+
         <div id="hdr-queue">
-            
+
             <div class="logo">
                 <h1>Queue</h1>
             </div>
-            
+
             <div id="queue-buttons">
                 <ul>
                     <li class="tip q_menu_pause <!--#if $paused then 'q_menu_paused' else 'q_menu_unpaused'#-->" title="Pause&nbsp;&frasl;&nbsp;Resume" id="pause_resume"></li>
                 </ul>
             </div>
-            
+
             <div class="centerpiece">
-                
+
                 <div id="speed">
                     <p><span id="stats_kbpersec">&hellip;</span>&nbsp;KB/s</p>
                 </div>
-                
+
                 <div id="queue_logo"></div>
-                
+
                 <div id="time-left">
                     <p><span id="stats_eta">&hellip;</span>&nbsp;left</p>
                 </div>
-                
+
             </div>
         </div>
-        
+
         <div id="queue-wrap">
-            
+
             <!-- Queue ( queue.tmpl )-->
             <div id="queue">
                 <br/><small><i>loading</i></small>
                 <input type="hidden" id="queue_view_preference" value="" />
             </div>
-            
+
             <!-- History Menu/Banner -->
             <div class="box_banner_history">
                 <div class="box_banner_r">
@@ -203,21 +205,21 @@
                 </div>
             </div>
             <div class="box_banner_hr"></div>
-            
+
             <!-- History ( history.tmpl ) -->
             <div id="history">
                 <br/><small><i>loading</i></small>
                 <input type="hidden" id="history_view_preference" value="" />
             </div>
-            
+
         </div>
-        
+
         <div id="btm-wrapper">
             <div class="corner-right"></div>
             <div class="corner-left"></div>
         </div>
-        
+
     </div>
-        
+
 </body>
 </html>

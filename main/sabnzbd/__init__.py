@@ -41,6 +41,7 @@ except:
 try:
     # Try to import OSX library
     import Foundation
+    import subprocess
     DARWIN = True
 except:
     DARWIN = False
@@ -431,26 +432,37 @@ def system_shutdown():
     while __INITIALIZED__:
         time.sleep(1.0)
 
-    try:
-        import win32security
-        import win32api
-        import ntsecuritycon
+    if os.name == 'nt':
+        try:
+            import win32security
+            import win32api
+            import ntsecuritycon
 
-        flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
-        htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
-        id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
-        newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
-        win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
-        win32api.InitiateSystemShutdown("", "", 30, 1, 0)
-    finally:
-        os._exit(0)
+            flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
+            htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
+            id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
+            newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+            win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
+            win32api.InitiateSystemShutdown("", "", 30, 1, 0)
+        finally:
+            os._exit(0)
+
+    elif DARWIN:
+        Thread(target=halt).start()
+        while __INITIALIZED__:
+            time.sleep(1.0)
+        try:
+            subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
+        finally:
+            os._exit(0)
 
 
 def system_hibernate():
     logging.info("[%s] Performing system hybernation", __NAME__)
     try:
-        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
-        time.sleep(10)
+        if os.name == 'nt':
+            subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
+            time.sleep(10)
     except:
         logging.error("[%s] Failed to hibernate system", __NAME__)
 
@@ -458,7 +470,10 @@ def system_hibernate():
 def system_standby():
     logging.info("[%s] Performing system standby", __NAME__)
     try:
-        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
+        if os.name == 'nt':
+            subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
+        elif DARWIN:
+            subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
         time.sleep(10)
     except:
         logging.error("[%s] Failed to standby system", __NAME__)

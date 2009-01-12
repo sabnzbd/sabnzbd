@@ -2113,6 +2113,7 @@ def build_header(prim):
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = os.name == 'nt'
+    header['darwin'] = sabnzbd.DARWIN
 
     bytespersec = bpsmeter.method.get_bps()
     qnfo = nzbqueue.queue_info()

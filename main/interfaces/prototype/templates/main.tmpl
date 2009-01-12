@@ -5,7 +5,7 @@
 		<title>SABnzbd+</title>
 		<!--ext css -->
 		<link rel="stylesheet" type="text/css" href="static/ext-js/resources/css/ext-all.css" />
-        
+
     <!--#if $color_scheme == 'black.css'#-->
 		<link rel="stylesheet" type="text/css" id="proto-theme-type" href="static/css/dark.css" />
 		<link rel="stylesheet" type="text/css" id="proto-theme" href="static/ext-js/resources/css/xtheme-slickness.css" />
@@ -15,10 +15,10 @@
 		<link rel="stylesheet" type="text/css" id="proto-theme-type" href="static/css/light.css" />
 		<link rel="stylesheet" type="text/css" id="proto-theme" href="static/ext-js/resources/css/xtheme-gray.css" />
     <!--#end if#-->
-        
-        
+
+
 		<script type="text/javascript" src="static/MochiKit/MochiKit.js"></script>
-		
+
 	<style type="text/css">
 	html, body {
         font:normal 12px verdana;
@@ -64,7 +64,7 @@
     .icon-log{
         background-image:url(./static/shared/icons/fam/table_sort.png) !important;
     }
-    
+
     .icon-cross{
         background-image:url(./static/shared/icons/fam/cross.png) !important;
     }
@@ -77,11 +77,11 @@
     .high_priority {
         background-image:url(./static/shared/icons/fam/flag_green.png) !important;
     }
-	
+
 	.autoScroll {
 		overflow:'auto';
 	}
-    
+
 .msg .x-box-mc {
     font-size:14px;
 }
@@ -99,7 +99,7 @@ td.x-grid3-td-historyFilename, td.x-grid3-td-filesFilename, td.x-grid3-td-Name  
 td.x-grid3-td-historyFilename div.x-grid3-cell-inner, td.x-grid3-td-filesFilename div.x-grid3-cell-inner, td.x-grid3-td-Name div.x-grid3-cell-inner {
     white-space: normal;
 }
-    
+
 /*RowActionCSS*/
 .ux-grid3-row-action-cell .x-grid3-cell-inner {
     padding: 1px 0 0 0;
@@ -110,7 +110,7 @@ td.x-grid3-td-historyFilename div.x-grid3-cell-inner, td.x-grid3-td-filesFilenam
     height:16px;
     cursor:pointer;
 }/*EndRowActionCSS*/
-    
+
 
 form.cmxform .label,form.cmxform input {
 	display: block;
@@ -180,24 +180,24 @@ form.cmxform input.radio{
 
     </style>
 
-		
+
 	</head>
 	<body scroll="no" id="sab">
-	
-	
+
+
 <script type="text/javascript">
     function tvAdd(val){
-        var tv = document.getElementById('tvfoldername'); 
+        var tv = document.getElementById('tvfoldername');
         tv.value = tv.value + val;
         previewtv();
     }
     function tvSet(val){
-        var tv = document.getElementById('tvfoldername'); 
+        var tv = document.getElementById('tvfoldername');
         tv.value = val;
         previewtv();
     }
     function tvClear(){
-        var tv = document.getElementById('tvfoldername'); 
+        var tv = document.getElementById('tvfoldername');
         tv.value = '';
         previewtv();
     }
@@ -231,26 +231,26 @@ form.cmxform input.radio{
         }
         var outbox = document.getElementById('previewtv').innerHTML = com+slash+input;
     }
-    
+
     function movieAdd(val){
-        var tv = document.getElementById('moviefoldername'); 
+        var tv = document.getElementById('moviefoldername');
         tv.value = tv.value + val;
         previewmovie();
     }
     function movieSet(val, val2){
-        var tv = document.getElementById('moviefoldername'); 
+        var tv = document.getElementById('moviefoldername');
         tv.value = val;
-        var tv2 = document.getElementById('movieextra'); 
+        var tv2 = document.getElementById('movieextra');
         tv2.value = val2;
         previewmovie();
     }
     function movieClear(){
-        var tv = document.getElementById('moviefoldername'); 
+        var tv = document.getElementById('moviefoldername');
         tv.value = '';
         previewmovie();
     }
     function movieClearExtra(){
-        var tv = document.getElementById('movieextra'); 
+        var tv = document.getElementById('movieextra');
         tv.value = '';
         previewmovie();
     }
@@ -272,7 +272,7 @@ form.cmxform input.radio{
         input = input.replace(/%_title/g,'Movie_Name');
         input = input.replace(/%y/g,'2000');
         input = input.replace(/%decade/g,'00');
-        
+
         var regex = /\{([^\{]*)\}/g;
         var str = input;
         var result;
@@ -299,12 +299,12 @@ form.cmxform input.radio{
         var outbox = document.getElementById('previewmovie').innerHTML = com+slash+input;
     }
     function dateSet(val){
-        var tv = document.getElementById('datefoldername'); 
+        var tv = document.getElementById('datefoldername');
         tv.value = val;
         previewdate();
     }
     function dateClear(){
-        var tv = document.getElementById('datefoldername'); 
+        var tv = document.getElementById('datefoldername');
         tv.value = '';
         previewdate();
     }
@@ -346,7 +346,7 @@ form.cmxform input.radio{
         disp = (document.getElementById(id).style.display == "block") ? "none" : "block";
         document.getElementById(id).style.display = disp;
     }
-	
+
 	function getFormValues(element)
 	{
 
@@ -358,7 +358,7 @@ form.cmxform input.radio{
 	    return kvstr;
 	}
 
-	
+
 	function submitconfig(extra, saveelement, element, url2, refresh, x, msg, clear)
 	{
         if (x){que = '&'}
@@ -381,10 +381,10 @@ form.cmxform input.radio{
 	    d.addCallback(function (result)
 	    {
 	      if (saveelement) {
-          
+
             if (msg){
                 var msgExtra = ""
-                if (clear) {   
+                if (clear) {
                     msgExtra = document.getElementById(clear).value;
                 }
                 document.getElementById(saveelement).innerHTML = msg+' '+msgExtra;
@@ -406,7 +406,7 @@ form.cmxform input.radio{
 	    });
 
 	}
-	
+
 	function lr(url, extra, refresh, dual, pnode)
 	{
     //submits an ajax request and loads the retrieved data into the div called "Right". Can queue itself up to repeat the action based on the refresh rate
@@ -415,7 +415,7 @@ form.cmxform input.radio{
         if (extra){
             append = append+'&'+extra;
         }
-		var res = doSimpleXMLHttpRequest(url+append);        
+		var res = doSimpleXMLHttpRequest(url+append);
 	    res.addCallback(function (res)
 	    {
 			replaceright(res);
@@ -423,19 +423,19 @@ form.cmxform input.radio{
 		res.addErrback(handleServerError);
 	}
 
-	
+
 	var replaceright  = function (res)
 	{
 		document.getElementById('settings-panel').innerHTML = res.responseText;
 	}
-    
-    
+
+
     function clearBox(id)
     {
         document.getElementById(id).value = "";
     }
-	
-	
+
+
 </script>
 
 <!--libs -->
@@ -453,7 +453,7 @@ form.cmxform input.radio{
 	</div>
 	<div id="props-panel" style="width:300px;height:200px;overflow:hidden;">
 	</div>
-  
+
 	<div id="AddNZB1" class="x-hide-display">
 		<form action="addID" class="cmxform"  method="get">
 		<fieldset class="smallFieldSet">
@@ -485,7 +485,7 @@ form.cmxform input.radio{
     			<option value="1">High</option>
     			<option value="0" selected>Normal</option>
     			<option value="-1">Low</option>
-			</select>            
+			</select>
 			<br /><br /><br />
             <input type="button" size="40" value="Add" onclick="javascript:submitconfig('tapi?mode=addid', 'submitstatus', 'AddNZB1','','','1', 'Added', 'addNewById')">
             <br class="clear"/>
@@ -524,25 +524,27 @@ form.cmxform input.radio{
 			<option value="1">High</option>
 			<option value="0" selected>Normal</option>
 			<option value="-1">Low</option>
-			</select>   
+			</select>
 			<br /><br /><br />
 			<input type="submit" class="submitindent2"  value="Add">
 		</fieldset>
 		</form>
 	</div>
-    
+
     <select id="actionqfin" class="x-hide-display">
     <option value=""></option>
         <optgroup label="Actions">
-            <!--#if $nt#-->
+            <!--#if $nt or $darwin#-->
             <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
             <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>Standby PC</option>
+            <!--#end if#-->
+            <!--#if $nt#-->
             <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
             <!--#end if#-->
             <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
         </optgroup>
-    <!--#if $script_list#-->  
-        <optgroup label="Scripts">          
+    <!--#if $script_list#-->
+        <optgroup label="Scripts">
         <!--#for $sc in $script_list#-->
             <!--#if $sc != 'None'#-->
             <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
@@ -551,6 +553,6 @@ form.cmxform input.radio{
         </optgroup>
     <!--#end if#-->
     </select>
-  
+
 	</body>
 </html>
