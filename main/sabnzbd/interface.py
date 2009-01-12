@@ -2545,12 +2545,12 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
                 queue_search.append(nzo)
         queue = queue_search
     
-    if start:
-        if start > len(queue):
-            queue = []
-        else:
-            queue[start:]
-        limit -= len(queue)
+
+    if start > len(queue):
+        queue = []
+    else:
+        queue[start:]
+    limit -= len(queue)
     
 
 
