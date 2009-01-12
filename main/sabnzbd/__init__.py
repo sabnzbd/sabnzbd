@@ -326,6 +326,7 @@ def save_state():
     rss.save()
     newzbin.bookmarks_save()
     dirscanner.save()
+    postproc.save()
 
 
 ################################################################################

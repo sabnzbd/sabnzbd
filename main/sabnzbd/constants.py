@@ -18,6 +18,7 @@
 
 CONFIG_VERSION = 18
 QUEUE_VERSION = 9
+POSTPROC_QUEUE_VERSION = 1
 
 PNFO_REPAIR_FIELD = 0
 PNFO_UNPACK_FIELD = 1
@@ -54,6 +55,7 @@ STAGENAMES = {0:"Download", 1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin", 5:"Use
 
 BYTES_FILE_NAME  = 'bytes%s.sab' % QUEUE_VERSION
 QUEUE_FILE_NAME  = 'queue%s.sab' % QUEUE_VERSION
+POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME    = 'downloaded_rss.csv'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'
 SCAN_FILE_NAME    = 'watched_data.sab'

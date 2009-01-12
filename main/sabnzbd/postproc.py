@@ -39,7 +39,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          cleanup_empty_directories, get_unique_filename, \
                          OnCleanUpList
 from sabnzbd.tvsort import Sorter
-from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME
+from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME, POSTPROC_QUEUE_FILE_NAME, POSTPROC_QUEUE_VERSION
 from sabnzbd.codecs import TRANS
 import sabnzbd.newzbin
 import sabnzbd.email as email
@@ -90,6 +90,14 @@ def stop():
             __POSTPROC.join()
         except:
             pass
+        
+def save():
+    global __POSTPROC
+    if __POSTPROC: __POSTPROC.save()
+
+def load():
+    global __POSTPROC
+    if __POSTPROC: __POSTPROC.load()
 
 
 
@@ -97,27 +105,61 @@ def stop():
 class PostProcessor(Thread):
     def __init__ (self, queue=None, history_queue=None):
         Thread.__init__(self)
-        
-        if history_queue == None:
-            history_queue = []
-        
+               
         if queue:
             self.queue = queue
         else:
             self.queue = Queue.Queue()
 
-        for nzo in history_queue:
-            self.process(nzo)
         # This history queue is simply used to log what active items to display in the web_ui
-        self.history_queue = history_queue
+        if history_queue:
+            self.history_queue = history_queue
+        else:
+            self.load()
+        for nzo in self.history_queue:
+            self.process(nzo)
+        
+    def save(self):
+        """ Save postproc queue """
+        logging.info("[%s] Saving postproc queue", __NAME__)
+        sabnzbd.save_data((POSTPROC_QUEUE_VERSION, self.history_queue), POSTPROC_QUEUE_FILE_NAME)
+        
+    def load(self):
+        """ Save postproc queue """
+        logging.info("[%s] Loading postproc queue", __NAME__)
+        data = sabnzbd.load_data(POSTPROC_QUEUE_FILE_NAME)
+        try:
+            version, history_queue = data
+            if POSTPROC_QUEUE_VERSION != version:
+                logging.warning('[%s] Failed to load postprocessing queue: Wrong version (need:%s, found:%s)', __NAME__, POSTPROC_QUEUE_VERSION, version)
+            if isinstance(history_queue, list):
+                self.history_queue = history_queue
+                return True
+            else:
+                self.history_queue = []
+                return False
+        except:
+            self.history_queue = []
+            return False
+
  
     def process(self, nzo):
         if nzo not in self.history_queue:
             self.history_queue.append(nzo)
         self.queue.put(nzo)
+        self.save()
+        
+    def remove(self, nzo):
+        try:
+            self.history_queue.remove(nzo)
+        except:
+            nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
+            logging.error('[%s] Failed to remove nzo from postproc queue (id)', __NAME__, nzo_id)
+        self.save()
 
     def stop(self):
         self.queue.put(None)
+        self.save()
 
     def empty(self):
         return self.queue.empty()
@@ -406,7 +448,7 @@ class PostProcessor(Thread):
                 
             # Remove the nzo from the history_queue list
             # This list is simply used for the creation of the history in interface.py
-            self.history_queue.remove(nzo)
+            self.remove(nzo)
             
             ## Allow download to proceed
             downloader.unidle_downloader()
