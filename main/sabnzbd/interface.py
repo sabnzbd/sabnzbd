@@ -2536,14 +2536,22 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
         start = int(start)
     except:
         start = 0
-    '''
+        
+    queue = postproc.history_queue()
+    if search:
+        queue_search = []
+        for nzo in queue:
+            if search in nzo.get_original_dirname():
+                queue_search.append(nzo)
+        queue = queue_search
+    
     if start:
         if start > len(queue):
             queue = []
         else:
             queue[start:]
-        start -= len(queue)
-    '''
+        limit -= len(queue)
+    
 
 
     history_db = cherrypy.thread_data.history_db
@@ -2580,7 +2588,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
 
-    items = get_active_history(items)
+    items = get_active_history(queue, items)
 
     # Unreverse the queue
     items.reverse()
@@ -3084,9 +3092,10 @@ def format_history_for_queue():
 
     return slotinfo
 
-def get_active_history(items=[]):
+def get_active_history(queue=None, items=[]):
     # Get the currently in progress and active history queue.
-    queue = postproc.history_queue()
+    if not queue:
+        queue = postproc.history_queue()
 
     for nzo in queue:
         t = build_history_info(nzo)
