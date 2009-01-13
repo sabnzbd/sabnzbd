@@ -558,9 +558,12 @@ function loadtitle() {
         if (extra){
             append = append+'&'+extra;
         }
+		if (refresh!=-1)
+		{
             //cancel any running timers for inprogress ajax calls or timed lr()  calls
             stopDeferer(gDeferrer);
             stopDeferer(gRight);
+		}
         
         if (refresh && RefreshTime > 0) {
             gRight = callLater(RefreshTime, lr, url, extra, refresh, dual, pnode);
@@ -576,22 +579,23 @@ function loadtitle() {
     }
 	function lrb(url, extra, refresh)
 	{
-    //killTimer()
-    //similar to lr() but loads the response in the right_bottom container
-		//if (timerId3) clearTimeout ( timerId3 );
+		//similar to lra() but loads the response in the right_bottom container
         append = '?_dc='+Math.random();
         if (extra){
             append = append+'&'+extra;
         }
-        stopDeferer(gDeferrerTwo);
+		if (refresh!=-1)
+		{
+			stopDeferer(gDeferrerTwo);
+			stopDeferer(gRightBottom);
+		}
         
 		gDeferrerTwo = doSimpleXMLHttpRequest(url+append);
 	    gDeferrerTwo.addCallback(function (res) {
             document.getElementById('Right_bottom').innerHTML = res.responseText;
         });
-        stopDeferer(gRightBottom);
         
-        if (refresh && RefreshTime > 0) {
+        if (refresh && refresh!=-1 && RefreshTime > 0) {
             gRightBottom = callLater(RefreshTime, lrb, url, extra, refresh);
         } 
 
