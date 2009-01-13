@@ -838,7 +838,9 @@ def main():
 
     Notify("SAB_Shutdown", None)
     logging.info('Leaving SABnzbd')
-    ExitSab(0)
+    sys.stderr.flush()
+    sys.stdout.flush()
+    os._exit(0)
 
 
 #####################################################################
