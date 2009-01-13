@@ -106,18 +106,22 @@ class PostProcessor(Thread):
     def __init__ (self, queue=None, history_queue=None):
         Thread.__init__(self)
                
-        if queue:
-            self.queue = queue
-        else:
-            self.queue = Queue.Queue()
-
         # This history queue is simply used to log what active items to display in the web_ui
         if history_queue:
             self.history_queue = history_queue
         else:
             self.load()
-        for nzo in self.history_queue:
-            self.process(nzo)
+            
+        if self.history_queue == None:
+            self.history_queue = []
+        
+        if queue:
+            self.queue = queue
+        else:
+            self.queue = Queue.Queue()
+            for nzo in self.history_queue:
+                self.process(nzo)
+
         
     def save(self):
         """ Save postproc queue """
