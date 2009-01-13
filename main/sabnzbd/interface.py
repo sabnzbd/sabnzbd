@@ -2606,6 +2606,8 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
             item['size'] = format_bytes(item['bytes'])
         else:
             item['size'] = ''
+        if not item.has_key('loaded'):
+            item['loaded'] = False
 
     return (items, fetched_items, total_items)
 

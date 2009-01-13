@@ -37,7 +37,7 @@ History Size: $total_size
         </td>
         <td>$line.size</td>
         <td>$line.status</td>
-        <td class="right_align"><a onClick="deletehistoryitem('$line.nzo_id', this.parentNode.parentNode.parentNode.parentNode.parentNode.id);"><img class="delicon" src="static/images/messagebox_critical.png" /></a></td>
+        <td class="right_align"><!--#if not $line.loaded#--><a onClick="deletehistoryitem('$line.nzo_id', this.parentNode.parentNode.parentNode.parentNode.parentNode.id);"><img class="delicon" src="static/images/messagebox_critical.png" /></a><!--#else#--> <!--#end if#--></td>
     </tr>
     
     <tr id="row_$line.nzo_id" <!--#if $line.show_details then '' else 'class="hidden"'#-->>
