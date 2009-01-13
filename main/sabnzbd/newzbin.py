@@ -290,7 +290,8 @@ def _grabnzb(msgid):
     # sanitize report_name
     newname = sanitize_foldername(report_name)
     if len(newname) > 80:
-        newname = newname[0:79].strip()
+        newname = newname[0:79].strip('. ')
+    newname += ".nzb"
 
     logging.info('[%s] Successfully fetched report %s - %s (cat=%s) (%s)', __NAME__, msgid, report_name, report_cat, newname)
 
