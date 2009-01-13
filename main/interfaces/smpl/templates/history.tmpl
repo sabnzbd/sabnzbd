@@ -1,11 +1,11 @@
 <h3>History <a id="feed" href="rss?mode=history"><img id="rss" src="static/feed-icon-14x14.png" alt="rss"/></a></h3>
 <div class="searchBox">
-    <input id="historySearch" type="text" size="17" name="search" value="$search" onchange="javascript:historySearch('historySearch', 'limit=$limit&start=$start', 1, this.parentNode.parentNode.id, 1);" onfocus="pauseHistoryDeferer(this.parentNode.parentNode.id)" onblur="javascript:historySearch('historySearch', 'limit=$limit&start=$start',1, this.parentNode.parentNode.id, 1);">
-    <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=$start',1, this.parentNode.parentNode.id, 1);"><img class="delicon" src="static/images/key_enter.png" /></a>
-    <a onclick="javascript:historySearch('', 'limit=$limit&start=$start',1, this.parentNode.parentNode.id, 1);"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
+    <input id="historySearch" type="text" size="17" name="search" value="$search" onchange="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1, this.parentNode.parentNode.id, 1);" onfocus="pauseHistoryDeferer(this.parentNode.parentNode.id)" onblur="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0',1, this.parentNode.parentNode.id, 1);">
+    <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0',1, this.parentNode.parentNode.id);"><img class="delicon" src="static/images/key_enter.png" /></a>
+    <a onclick="javascript:loadSearch('history', '', 'limit=$limit&start=$0',1, this.parentNode.parentNode.id);"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
 </div>
 <div class="centerLinks">
-    <a onClick="if(confirm('Delete the all items from the history?')){lr('history/purge', '', '-1',-1,this.parentNode.parentNode.id);}">Purge history</a> | <a onClick="lr('history/tog_verbose', '', -1,-1,this.parentNode.parentNode.id);"><!--#if $isverbose then "Hide details" else "Show details"#--></a></span>
+    <a onClick="if(confirm('Delete the all items from the history?')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">Purge history</a> | <a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);"><!--#if $isverbose then "Hide details" else "Show details"#--></a></span>
 </div>   
 History Size: $total_size
 <% import datetime %>
@@ -23,7 +23,7 @@ History Size: $total_size
     <!--#for $line in $lines #-->
     <tbody id="$line.nzo_id">
     <tr>
-        <td class="center"><a id="tog_$line.nzo_id" class="expander" onclick="javascript:toggleHistoryDetails('$line.nzo_id', 'row_$line.nzo_id', 'tog_$line.nzo_id')">
+        <td class="center"><a id="tog_$line.nzo_id" class="expander" onclick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'jobs=$line.nzo_id&limit=$limit&start=0',1, this.parentNode.parentNode.parentNode.parentNode.parentNode.id);">
         <!--#if $line.show_details then '-' else '+'#-->
         </a></td>
         <td>$line.name<!--#if $line.action_line#--> - <span class="action_message">$line.action_line</span><!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
@@ -39,8 +39,8 @@ History Size: $total_size
         <td>$line.status</td>
         <td class="right_align"><!--#if not $line.loaded#--><a onClick="deletehistoryitem('$line.nzo_id', this.parentNode.parentNode.parentNode.parentNode.parentNode.id);"><img class="delicon" src="static/images/messagebox_critical.png" /></a><!--#else#--> <!--#end if#--></td>
     </tr>
-    
-    <tr id="row_$line.nzo_id" <!--#if $line.show_details then '' else 'class="hidden"'#-->>
+    <!--#if $line.show_details#-->
+    <tr id="row_$line.nzo_id"
         <td></td>
         <td colspan="5">
         <% 
@@ -69,6 +69,7 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
             </div>
         </td>
     </tr>
+	<!--#end if#-->
     </tbody>
     <!--#end for#-->
 <!--#end if#-->
@@ -99,22 +100,22 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to $finish out of $noofsl
             &laquo;First 
             &lsaquo;Prev 
         <!--#else#-->
-            <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;First</a> 
-            <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,this.parentNode.parentNode.id);">&lsaquo;Prev</a> 
+            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;First</a> 
+            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,this.parentNode.parentNode.id);">&lsaquo;Prev</a> 
         <!--#end if#-->
         <!--#for $i in $range($pages)#-->
             <!--#if  $currentpage == $i+1#-->
                 <!--#echo $i+1#-->
             <!--#else#-->
-                <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=$offset', 1,this.parentNode.parentNode.id);"><!--#echo $i+1#--></a>
+                <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$offset', 1,this.parentNode.parentNode.id);"><!--#echo $i+1#--></a>
             <!--#end if#-->
             <!--#set $offset = $offset + $limit#-->
         <!--#end for#-->
         <!--#if $currentpage == $pages#-->
             Next&rsaquo; Last&raquo;
         <!--#else#-->
-            <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=<!--#echo $start+$limit#-->', 1,this.parentNode.parentNode.id);">Next&rsaquo;</a> 
-            <a onclick="javascript:historySearch('historySearch', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,this.parentNode.parentNode.id);">Last&raquo;</a>
+            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo $start+$limit#-->', 1,this.parentNode.parentNode.id);">Next&rsaquo;</a> 
+            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,this.parentNode.parentNode.id);">Last&raquo;</a>
         <!--#end if#-->
     <!--#end if#-->
 </div>

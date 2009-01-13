@@ -209,9 +209,9 @@
     function showRow(id)
     {
         console.log("id=%s", id);
-        //disp = (document.getElementById(id).style.display == "table-row") ? "none" : "table-row";
-        //document.getElementById(id).style.display = disp;
-        toggleElementClass("hidden", id);
+        disp = (document.getElementById(id).style.display == "table-row") ? "none" : "table-row";
+        document.getElementById(id).style.display = disp;
+
 
     }
     
@@ -614,7 +614,7 @@ function loadtitle() {
           }
     }
     
-    function historySearch(elem, extra, refresh, pnode, new_search){
+    function loadSearch(url, elem, extra, refresh, pnode, new_search){
         if (elem){
             var searchTerm = document.getElementById(elem).value;
         } else {
@@ -627,8 +627,7 @@ function loadtitle() {
         if (searchTerm){
             extra = extra+'search='+searchTerm;
         }
-        lr('history', extra, refresh,-1,pnode);
-
+        lr(url, extra, refresh,-1,pnode);
 
     }
     

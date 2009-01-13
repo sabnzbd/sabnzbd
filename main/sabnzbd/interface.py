@@ -131,6 +131,10 @@ def ConvertSpecials(p):
 
 
 def Raiser(root, **kwargs):
+    args_copy = kwargs.copy()
+    for key, value in args_copy.iteritems():
+        if value == None:
+            kwargs.pop(key)
     root = '%s?%s' % (root, urllib.urlencode(kwargs))
     return cherrypy.HTTPRedirect(root)
 
@@ -956,26 +960,26 @@ class HistoryPage:
         return template.respond()
 
     @cherrypy.expose
-    def purge(self, _dc = None, start=None, limit=None):
+    def purge(self, _dc = None, start=None, limit=None, search=None):
         history_db = cherrypy.thread_data.history_db
         history_db.remove_history()
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
 
     @cherrypy.expose
-    def delete(self, job=None, _dc = None, start=None, limit=None):
+    def delete(self, job=None, _dc = None, start=None, limit=None, search=None):
         if job:
             jobs = job.split(',')
             history_db = cherrypy.thread_data.history_db
             history_db.remove_history(jobs)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
 
     @cherrypy.expose
-    def reset(self, _dc = None, start=None, limit=None):
+    def reset(self, _dc = None, start=None, limit=None, search=None):
         #sabnzbd.reset_byte_counter()
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
 
     @cherrypy.expose
-    def tog_verbose(self, _dc = None, start=None, limit=None, jobs=None):
+    def tog_verbose(self, _dc = None, start=None, limit=None, jobs=None, search=None):
         if not jobs:
             self.__verbose = not self.__verbose
             self.__verbose_list = []
@@ -989,10 +993,10 @@ class HistoryPage:
                         self.__verbose_list.remove(job)
                     else:
                         self.__verbose_list.append(job)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
 
     @cherrypy.expose
-    def scriptlog(self, name=None, _dc=None, start=None, limit=None):
+    def scriptlog(self, name=None, _dc=None, start=None, limit=None, search=None):
         """ Duplicate of scriptlog of History, needed for some skins """
         if name:
             history_db = cherrypy.thread_data.history_db
