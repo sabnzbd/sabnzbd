@@ -602,9 +602,6 @@ def SameFile(a, b):
 def ExitSab(value):
     sys.stderr.flush()
     sys.stdout.flush()
-    if sabnzbd.WAITEXIT and hasattr(sys, "frozen"):
-        print
-        raw_input("Press ENTER to close this window");
     sys.exit(value)
 
 
