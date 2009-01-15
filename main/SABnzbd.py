@@ -59,7 +59,7 @@ import sabnzbd
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.interface import *
 from sabnzbd.constants import *
-from sabnzbd.newsunpack import find_programs
+import sabnzbd.newsunpack
 from sabnzbd.misc import Get_User_ShellFolders, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
                          Notify, SplitHost, ConvertVersion
@@ -329,6 +329,50 @@ def GetProfileInfo(vista):
         ExitSab(2)
 
 
+def print_modules():
+    """ Log all detected optional or external modules
+    """
+    if sabnzbd.decoder.HAVE_YENC:
+        logging.info("_yenc module... found!")
+    else:
+        if hasattr(sys, "frozen"):
+            logging.error("_yenc module... NOT found!")
+        else:
+            logging.info("_yenc module... NOT found!")
+
+    if sabnzbd.newsunpack.PAR2_COMMAND:
+        logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
+    else:
+        logging.error("par2 binary... NOT found!")
+
+    if sabnzbd.newsunpack.PAR2C_COMMAND:
+        logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
+
+    if sabnzbd.newsunpack.RAR_COMMAND:
+        logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
+    else:
+        logging.warning("unrar binary... NOT found")
+
+    if sabnzbd.newsunpack.ZIP_COMMAND:
+        logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
+    else:
+        logging.warning("unzip binary... NOT found!")
+
+    if os.name != 'nt':
+        if sabnzbd.newsunpack.NICE_COMMAND:
+            logging.info("nice binary... found (%s)", sabnzbd.newsunpack.NICE_COMMAND)
+        else:
+            logging.info("nice binary... NOT found!")
+        if sabnzbd.newsunpack.IONICE_COMMAND:
+            logging.info("ionice binary... found (%s)", sabnzbd.newsunpack.IONICE_COMMAND)
+        else:
+            logging.info("ionice binary... NOT found!")
+
+    if sabnzbd.newswrapper.HAVE_SSL:
+        logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
+    else:
+        logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optional)")
+
 
 def main():
     global LOG_FLAG
@@ -581,55 +625,16 @@ def main():
 
     sabnzbd.cfg.DEBUG_DELAY.set(delay)
 
+    # Find external programs
+    sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
+    print_modules()
+
     init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True)
 
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting',
                       sabnzbd.MY_NAME, sabnzbd.__version__)
         ExitSab(2)
-
-    find_programs(sabnzbd.DIR_PROG)
-
-    if sabnzbd.decoder.HAVE_YENC:
-        logging.info("_yenc module... found!")
-    else:
-        if hasattr(sys, "frozen"):
-            logging.warning("_yenc module... NOT found!")
-        else:
-            logging.info("_yenc module... NOT found!")
-
-    if sabnzbd.newsunpack.PAR2_COMMAND:
-        logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
-    else:
-        logging.error("par2 binary... NOT found!")
-
-    if sabnzbd.newsunpack.PAR2C_COMMAND:
-        logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
-
-    if sabnzbd.newsunpack.RAR_COMMAND:
-        logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
-    else:
-        logging.warning("unrar binary... NOT found")
-
-    if sabnzbd.newsunpack.ZIP_COMMAND:
-        logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
-    else:
-        logging.warning("unzip binary... NOT found!")
-
-    if os.name != 'nt':
-        if sabnzbd.newsunpack.NICE_COMMAND:
-            logging.info("nice binary... found (%s)", sabnzbd.newsunpack.NICE_COMMAND)
-        else:
-            logging.info("nice binary... NOT found!")
-        if sabnzbd.newsunpack.IONICE_COMMAND:
-            logging.info("ionice binary... found (%s)", sabnzbd.newsunpack.IONICE_COMMAND)
-        else:
-            logging.info("ionice binary... NOT found!")
-
-    if sabnzbd.newswrapper.HAVE_SSL:
-        logging.info("pyOpenSSL... found (%s)", sabnzbd.newswrapper.HAVE_SSL)
-    else:
-        logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optional)")
 
     if cherryhost == None:
         cherryhost = sabnzbd.cfg.CHERRYHOST.get()
