@@ -19,8 +19,6 @@
 sabnzbd.decoder - article decoder
 """
 
-__NAME__ = 'decoder'
-
 import Queue
 import binascii
 import logging
@@ -89,12 +87,12 @@ class Decoder(Thread):
             
             if lines:
                 try:
-                    logging.info("[%s] Decoding %s", __NAME__, article)
+                    logging.info("Decoding %s", article)
                     
                     data = decode(article, lines)
                     nzf.increase_article_count()
                 except IOError, e:
-                    logging.error("[%s] Decoding %s failed", __NAME__,
+                    logging.error("Decoding %s failed",
                                       article)
                     sabnzbd.downloader.pause_downloader()
                     
@@ -105,8 +103,7 @@ class Decoder(Thread):
                     register = False
                     
                 except CrcError, e:
-                    logging.warning("[%s] CRC Error in %s (%s -> %s)", __NAME__,
-                                    article, e.needcrc, e.gotcrc)
+                    logging.warning("CRC Error in %s (%s -> %s)", article, e.needcrc, e.gotcrc)
                                     
                     data = e.data
                                     
@@ -116,8 +113,7 @@ class Decoder(Thread):
                             register = False
                             
                 except BadYenc, e:
-                    logging.warning("[%s] Badly formed yEnc article in %s", __NAME__,
-                                    article)
+                    logging.warning("Badly formed yEnc article in %s", article)
                                     
                     if cfg.FAIL_ON_CRC.get():
                         new_server_found = self.__search_new_server(article)
@@ -125,8 +121,7 @@ class Decoder(Thread):
                             register = False
 
                 except:
-                    logging.error("[%s] Unknown Error while decoding %s",
-                                      __NAME__, article)
+                    logging.error("Unknown Error while decoding %s", article)
                                       
             else:
                 new_server_found = self.__search_new_server(article)
@@ -167,12 +162,10 @@ class Decoder(Thread):
             ## Allow all servers to iterate over this nzo and nzf again ##
             sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
             
-            logging.info('[%s] %s => found at least one untested server',
-                            __NAME__, article)
+            logging.info('%s => found at least one untested server', article)
                             
         else:
-            logging.warning('[%s] %s => missing from all servers, discarding',
-                            __NAME__, article)
+            logging.warning('%s => missing from all servers, discarding', article)
                             
         return new_server_found
 #-------------------------------------------------------------------------------
@@ -206,8 +199,8 @@ def decode(article, data):
             if 'name' in ybegin:
                 nzf.set_filename(ybegin['name'])
             else:
-                logging.debug("[%s] Possible corrupt header detected " + \
-                              "=> ybegin: %s", __NAME__, ybegin)
+                logging.debug("Possible corrupt header detected " + \
+                              "=> ybegin: %s", ybegin)
             nzf.set_type('yenc')
             # Decode data
             if HAVE_YENC:
@@ -231,8 +224,8 @@ def decode(article, data):
                 _partcrc = '0' * (8 - len(yend[crcname])) + yend[crcname].upper()
             else:
                 _partcrc = None
-                logging.debug("[%s] Corrupt header detected " + \
-                              "=> yend: %s", __NAME__, yend)
+                logging.debug("Corrupt header detected " + \
+                              "=> yend: %s", yend)
                               
             if not (_partcrc == partcrc):
                 raise CrcError(_partcrc, partcrc, decoded_data)

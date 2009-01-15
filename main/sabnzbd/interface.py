@@ -19,8 +19,6 @@
 sabnzbd.interface - webinterface
 """
 
-__NAME__ = "interface"
-
 import os
 import datetime
 import time
@@ -1872,7 +1870,7 @@ class ConnectionInfo:
 
     @cherrypy.expose
     def testmail(self, _dc = None):
-        logging.info("[%s] Sending testmail", __NAME__)
+        logging.info("Sending testmail")
         pack = {}
         pack[0] = {}
         pack[0]['action1'] = 'done 1'

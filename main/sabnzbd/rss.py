@@ -19,9 +19,6 @@
 sabnzbd.rss - rss client functionality
 """
 
-__NAME__ = "RSS"
-
-
 import re
 import logging
 import time
@@ -117,7 +114,7 @@ def ConvertFilter(text):
     try:
         return re.compile(txt, re.I)
     except:
-        logging.error("[%s] Could not compile regex: %s", __NAME__, text)
+        logging.error("Could not compile regex: %s", text)
         return None
 
 
@@ -172,8 +169,8 @@ class RSSQueue:
         try:
             cfg = config.get_rss()[feed]
         except KeyError:
-            logging.error('[%s] Incorrect RSS feed description "%s"', __NAME__, feed)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.error('Incorrect RSS feed description "%s"', feed)
+            logging.debug("Traceback: ", exc_info = True)
             return
 
         uri = cfg.uri.get()
@@ -211,14 +208,14 @@ class RSSQueue:
         first = first and ignoreFirst
 
         # Read the RSS feed
-        logging.debug("[%s] Running feedparser on %s", __NAME__, uri)
+        logging.debug("Running feedparser on %s", uri)
         d = feedparser.parse(uri)
-        logging.debug("[%s] Done parsing %s", __NAME__, uri)
+        logging.debug("Done parsing %s", uri)
         if not d or 'bozo_exception' in d:
-            logging.warning("[%s] Failed to retrieve RSS from %s", __NAME__, uri)
+            logging.warning("Failed to retrieve RSS from %s", uri)
             return
         if not d['entries']:
-            logging.info("[%s] RSS Feed was empty: %s", __NAME__, uri)
+            logging.info("RSS Feed was empty: %s", uri)
             return
         entries = d['entries']
 
@@ -234,7 +231,7 @@ class RSSQueue:
                 newlinks.append(link)
 
                 if DupTitle(feed, title):
-                    logging.info("[%s] Ignoring duplicate job %s", __NAME__, title)
+                    logging.info("Ignoring duplicate job %s", title)
                     continue
 
                 myCat = defCat
@@ -244,12 +241,12 @@ class RSSQueue:
 
                 if (link not in jobs) or (jobs[link][0]!='D'):
                     # Match this title against all filters
-                    logging.debug('[%s] Trying link %s', __NAME__, link)
+                    logging.debug('Trying link %s', link)
                     result = False
                     for n in xrange(regcount):
                         found = re.search(regexes[n], title)
                         if found and reTypes[n]=='A':
-                            logging.debug("[%s] Filter matched on rule %d", __NAME__, n)
+                            logging.debug("Filter matched on rule %d", n)
                             result = True
                             if reCats[n]:
                                 myCat = reCats[n]
@@ -267,7 +264,7 @@ class RSSQueue:
                                 #myScript = defScript
                             break
                         if found and reTypes[n]=='R':
-                            logging.debug("[%s] Filter rejected on rule %d", __NAME__, n)
+                            logging.debug("Filter rejected on rule %d", n)
                             result = False
                             break
 
@@ -290,7 +287,7 @@ class RSSQueue:
                 tm = now
 
             if tm < limit and (old not in newlinks):
-                logging.debug("[%s] Purging link %s", __NAME__, old)
+                logging.debug("Purging link %s", old)
                 del jobs[old]
 
 
@@ -362,7 +359,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             jobs[link].append('')
             jobs[link].append('')
             jobs[link].append('')
-            logging.info("[%s] Adding %s (%s) to queue", __NAME__, m.group(3), title)
+            logging.info("Adding %s (%s) to queue", m.group(3), title)
             sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat, priority=priority)
         else:
             jobs[link].append(flag)
@@ -380,7 +377,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             jobs[link].append('')
             jobs[link].append('')
             jobs[link].append('')
-            logging.info("[%s] Adding %s (%s) to queue", __NAME__, link, title)
+            logging.info("Adding %s (%s) to queue", link, title)
             sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority)
         else:
             jobs[link].append(flag)
@@ -422,5 +419,5 @@ def _get_link(uri, entry):
     if link and link.lower().find('http') >= 0:
         return link
     else:
-        logging.warning('[%s]: Empty RSS entry found (%s)', __NAME__, link)
+        logging.warning('[%s]: Empty RSS entry found (%s)', link)
         return None

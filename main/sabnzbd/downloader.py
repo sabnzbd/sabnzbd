@@ -19,8 +19,6 @@
 sabnzbd.downloader - download engine
 """
 
-__NAME__ = 'downloader'
-
 import time
 import select
 import logging
@@ -118,7 +116,7 @@ def unidle_downloader():
 def limit_speed(value):
     global __DOWNLOADER
     if __DOWNLOADER: __DOWNLOADER.limit_speed(int(value))
-    logging.info("[%s] Bandwidth limit set to %s", __NAME__, value)
+    logging.info("Bandwidth limit set to %s", value)
 
 def update_server(oldserver, newserver):
     global __DOWNLOADER
@@ -130,7 +128,7 @@ def update_server(oldserver, newserver):
             CV.notifyAll()
             CV.release()
     except:
-        logging.exception("[%s] Error accessing DOWNLOADER?", __NAME__)
+        logging.exception("Error accessing DOWNLOADER?")
 
 #------------------------------------------------------------------------------
 
@@ -223,7 +221,7 @@ class Downloader(Thread):
     def __init__(self, paused = False):
         Thread.__init__(self)
 
-        logging.debug("[%s] Initializing downloader/decoder", __NAME__)
+        logging.debug("Initializing downloader/decoder")
 
         # Used for scheduled pausing
         self.paused = paused
@@ -253,7 +251,7 @@ class Downloader(Thread):
                 primary = True
 
         if not primary:
-            logging.warning('[%s] No active primary servers defined, will not download!', __NAME__)
+            logging.warning('No active primary servers defined, will not download!')
 
         self.decoder = Decoder(self.servers)
 
@@ -304,29 +302,29 @@ class Downloader(Thread):
         self.shutdown = True
 
     def resume(self):
-        logging.info("[%s] Resuming", __NAME__)
+        logging.info("Resuming")
         Notify("SAB_Resume", None)
         self.paused = False
 
     def pause(self):
-        logging.info("[%s] Pausing", __NAME__)
+        logging.info("Pausing")
         Notify("SAB_Paused", None)
         self.paused = True
 
     def delay(self):
-        logging.info("[%s] Delaying", __NAME__)
+        logging.info("Delaying")
         self.delayed = True
 
     def undelay(self):
-        logging.info("[%s] Undelaying", __NAME__)
+        logging.info("Undelaying")
         self.delayed = False
 
     def wait_postproc(self):
-        logging.info("[%s] Waiting for post-processing to finish", __NAME__)
+        logging.info("Waiting for post-processing to finish")
         self.postproc = True
 
     def resume_postproc(self):
-        logging.info("[%s] Post-processing finished, resuming download", __NAME__)
+        logging.info("Post-processing finished, resuming download")
         self.postproc = False
 
     def disconnect(self):
@@ -390,23 +388,22 @@ class Downloader(Thread):
 
                         if nw.connected:
                             if cfg.SEND_GROUP.get() and nw.article.nzf.nzo.get_group() != nw.group:
-                                logging.info("[%s] Sending group", __NAME__)
+                                logging.info("Sending group")
                                 self.__send_group(nw)
                             else:
                                 self.__request_article(nw)
 
                         else:
                             try:
-                                logging.info("[%s] %s@%s:%s: Initiating connection",
-                                                  __NAME__, nw.thrdnum, server.host,
-                                                  server.port)
+                                logging.info("%s@%s:%s: Initiating connection",
+                                                  nw.thrdnum, server.host, server.port)
                                 nw.init_connect()
                                 self.write_fds[nw.nntp.sock.fileno()] = nw
                             except:
-                                logging.error("[%s] Failed to initialize %s@%s:%s",
-                                                  __NAME__, nw.thrdnum, server.host,
+                                logging.error("Failed to initialize %s@%s:%s",
+                                                  nw.thrdnum, server.host,
                                                   server.port)
-                                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                                logging.debug("Traceback: ", exc_info = True)
                                 self.__reset_nw(nw, "failed to initialize")
 
             # Exit-point
@@ -424,7 +421,7 @@ class Downloader(Thread):
                     for server in self.servers:
                         server.stop(self.read_fds, self.write_fds)
 
-                    logging.info("[%s] Shutting down", __NAME__)
+                    logging.info("Shutting down")
                     break
 
             if self.force_disconnect:
@@ -502,7 +499,7 @@ class Downloader(Thread):
                         if bps > limit:
                             sleeptime = (bps/limit)-1
                             if sleeptime > 0 and sleeptime < 10:
-                                #logging.debug("[%s] Sleeping %s second(s) bps:%s limit:%s", __NAME__,sleeptime, bps/1024, limit/1024)
+                                #logging.debug("Sleeping %s second(s) bps:%s limit:%s",sleeptime, bps/1024, limit/1024)
                                 time.sleep(sleeptime)
                     bpsmeter.method.update(bytes)
                     
@@ -516,28 +513,28 @@ class Downloader(Thread):
 
                         try:
                             nw.finish_connect()
-                            logging.debug("[%s] %s@%s:%s last message -> %s",
-                                         __NAME__, nw.thrdnum, nw.server.host,
+                            logging.debug("%s@%s:%s last message -> %s",
+                                         nw.thrdnum, nw.server.host,
                                          nw.server.port, nw.lines[0])
                             nw.lines = []
                             nw.data = ''
                         except:
-                            logging.error("[%s] Connecting %s@%s:%s failed, message=%s",
-                                              __NAME__, nw.thrdnum,
+                            logging.error("Connecting %s@%s:%s failed, message=%s",
+                                              nw.thrdnum,
                                               nw.server.host, nw.server.port, nw.lines[0])
                             # No reset-warning needed, above logging is sufficient
                             self.__reset_nw(nw, None, warn=False)
 
                         if nw.connected:
-                            logging.info("[%s] Connecting %s@%s:%s finished",
-                                         __NAME__, nw.thrdnum, nw.server.host,
+                            logging.info("Connecting %s@%s:%s finished",
+                                         nw.thrdnum, nw.server.host,
                                          nw.server.port)
                             self.__request_article(nw)
 
                     elif nw.lines[0][:3] in ('211'):
                         done = False
 
-                        logging.debug("[%s] group command ok -> %s", __NAME__,
+                        logging.debug("group command ok -> %s",
                                       nw.lines)
                         nw.group = nw.article.nzf.nzo.get_group()
                         nw.lines = []
@@ -548,18 +545,18 @@ class Downloader(Thread):
                         done = True
                         nw.lines = None
 
-                        logging.info('[%s] Thread %s@%s:%s: Article ' + \
+                        logging.info('Thread %s@%s:%s: Article ' + \
                                         '%s missing',
-                                        __NAME__, nw.thrdnum, nw.server.host,
+                                        nw.thrdnum, nw.server.host,
                                         nw.server.port, article.article)
                         
                     elif nw.lines[0][:3] in ('480'):
-                        msg = '[%s] Server %s:%s requires user/password' % (__NAME__, nw.server.host, nw.server.port)
+                        msg = 'Server %s:%s requires user/password' % (nw.server.host, nw.server.port)
                         self.__reset_nw(nw, msg)
 
                 if done:
-                    logging.info('[%s] Thread %s@%s:%s: %s done',
-                                 __NAME__, nw.thrdnum, server.host,
+                    logging.info('Thread %s@%s:%s: %s done',
+                                 nw.thrdnum, server.host,
                                  server.port, article.article)
                     self.decoder.decode(article, nw.lines)
 
@@ -576,11 +573,11 @@ class Downloader(Thread):
             fileno = nw.nntp.sock.fileno()
 
         if warn and errormsg:
-            logging.warning('[%s] Thread %s@%s:%s: ' + errormsg,
-                             __NAME__, nw.thrdnum, server.host, server.port)
+            logging.warning('Thread %s@%s:%s: ' + errormsg,
+                             nw.thrdnum, server.host, server.port)
         elif errormsg:
-            logging.info('[%s] Thread %s@%s:%s: ' + errormsg,
-                             __NAME__, nw.thrdnum, server.host, server.port)
+            logging.info('Thread %s@%s:%s: ' + errormsg,
+                             nw.thrdnum, server.host, server.port)
 
         if nw in server.busy_threads:
             server.busy_threads.remove(nw)
@@ -606,8 +603,8 @@ class Downloader(Thread):
 
     def __request_article(self, nw):
         try:
-            logging.info('[%s] Thread %s@%s:%s: fetching %s',
-                         __NAME__, nw.thrdnum, nw.server.host,
+            logging.info('Thread %s@%s:%s: fetching %s',
+                         nw.thrdnum, nw.server.host,
                          nw.server.port, nw.article.article)
 
             fileno = nw.nntp.sock.fileno()
@@ -617,15 +614,15 @@ class Downloader(Thread):
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except:
-            logging.error("[%s] Exception?", __NAME__)
+            logging.error("Exception?")
             self.__reset_nw(nw, "server broke off connection")
 
     def __send_group(self, nw):
         try:
             nzo = nw.article.nzf.nzo
             _group = nzo.get_group()
-            logging.info('[%s] Thread %s@%s:%s: group <%s>',
-                         __NAME__, nw.thrdnum, nw.server.host,
+            logging.info('Thread %s@%s:%s: group <%s>',
+                         nw.thrdnum, nw.server.host,
                          nw.server.port, _group)
 
             fileno = nw.nntp.sock.fileno()
@@ -635,5 +632,5 @@ class Downloader(Thread):
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except:
-            logging.error("[%s] Exception?", __NAME__)
+            logging.error("Exception?")
             self.__reset_nw(nw, "server broke off connection")

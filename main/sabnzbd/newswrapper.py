@@ -45,7 +45,6 @@ del threading
 import select
 import os
 
-__NAME__ = "newswrapper"
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
@@ -98,7 +97,7 @@ class NNTP:
             ctx = _ssl.Context(_ssl.SSLv23_METHOD)
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
-            logging.error("[%s] Error importing OpenSSL module. Connecting with NON-SSL", __NAME__)
+            logging.error("Error importing OpenSSL module. Connecting with NON-SSL")
             self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)
@@ -128,9 +127,7 @@ class NNTP:
                 
     def error(self, error):
         msg = "Failed to connect: %s" % (error)
-        logging.error("[%s] %s %s@%s:%s",
-                          __NAME__, msg, self.nntp.thrdnum, self.host,
-                          self.port)
+        logging.error("%s %s@%s:%s", msg, self.nntp.thrdnum, self.host, self.port)
 
 class NewsWrapper:
     def __init__(self, server, thrdnum):

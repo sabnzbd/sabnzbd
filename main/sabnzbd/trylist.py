@@ -19,8 +19,6 @@
 sabnzbd.trylist - trylist class
 """
 
-__NAME__ = "trylist"
-
 import logging
 
 from sabnzbd.decorators import synchronized
@@ -44,22 +42,19 @@ class TryList:
     def add_to_try_list(self, server):
         """ Register server as having been tried already """
         if server not in self.__try_list:
-            logging.debug("[%s] Appending %s to %s.__try_list",
-                          __NAME__, server, self)
+            logging.debug("Appending %s to %s.__try_list", server, self)
             self.__try_list.append(server)
             
     @synchronized(TRYLIST_LOCK)
     def remove_from_try_list(self, server):
         """ Server is no longer listed as tried """
         if server in self.__try_list:
-            logging.debug("[%s] Removing %s from %s.__try_list", 
-                          __NAME__, server, self)
+            logging.debug("Removing %s from %s.__try_list",  server, self)
             self.__try_list.remove(server)
             
     @synchronized(TRYLIST_LOCK)
     def reset_try_list(self):
         """ Clean the list """
         if self.__try_list:
-            logging.debug("[%s] Reseting %s.__try_list", 
-                          __NAME__, self)
+            logging.debug("Reseting %s.__try_list", self)
             self.__try_list = []

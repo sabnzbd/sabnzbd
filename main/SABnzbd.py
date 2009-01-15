@@ -521,7 +521,7 @@ def main():
                        logsize,
                        sabnzbd.cfg.LOG_BACKUPS.get())
 
-        format = '%(asctime)s::%(levelname)s::%(message)s'
+        format = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
         rollover_log.setFormatter(logging.Formatter(format))
         rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log

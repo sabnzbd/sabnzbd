@@ -20,8 +20,6 @@ sabnzbd.scheduler - Event Scheduler
 """
 #------------------------------------------------------------------------------
 
-__NAME__ = "scheduler"
-
 
 import random
 import logging
@@ -97,10 +95,10 @@ def init():
         elif action_name == 'disable_server' and arguments != []:
             action = sabnzbd.disable_server
         else:
-            logging.warning("[%s] Unknown action: %s", __NAME__, action_name)
+            logging.warning("Unknown action: %s", action_name)
             continue
 
-        logging.debug("[%s] scheduling action:%s arguments:%s",__NAME__, action_name, arguments)
+        logging.debug("scheduling action:%s arguments:%s", action_name, arguments)
 
         #(action, taskname, initialdelay, interval, processmethod, actionargs)
         __SCHED.addDaytimeTask(action, '', d, None, (h, m),
@@ -149,7 +147,7 @@ def start():
     """
     global __SCHED
     if __SCHED:
-        logging.debug('[%s] Starting scheduler', __NAME__)
+        logging.debug('Starting scheduler')
         __SCHED.start()
 
 
@@ -230,7 +228,7 @@ def analyse(was_paused=False):
     servers = {}
 
     for ev in sort_schedules(forward=False):
-        logging.debug('[%s] Schedule check result = %s', __NAME__, ev)
+        logging.debug('Schedule check result = %s', ev)
         action = ev[1]
         try:
             value = ev[2]
@@ -246,12 +244,12 @@ def analyse(was_paused=False):
             try:
                 servers[value] = 1
             except:
-                logging.warning('[%s] Schedule for non-existing server %s', __NAME__, value)
+                logging.warning('Schedule for non-existing server %s', value)
         elif action == 'disable_server':
             try:
                 servers[value] = 0
             except:
-                logging.warning('[%s] Schedule for non-existing server %s', __NAME__, value)
+                logging.warning('Schedule for non-existing server %s', value)
 
     if not was_paused:
         downloader.set_paused(paused)

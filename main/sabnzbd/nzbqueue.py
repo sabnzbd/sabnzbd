@@ -19,8 +19,6 @@
 sabnzbd.nzbqueue - nzb queue
 """
 
-__NAME__ = "nzbqueue"
-
 import sys
 import os
 import logging
@@ -75,14 +73,14 @@ class NzbQueue(TryList):
             try:
                 queue_vers, nzo_ids, self.__downloaded_items = data
                 if not queue_vers == QUEUE_VERSION:
-                    logging.error("[%s] Incompatible queuefile found, cannot proceed", __NAME__)
+                    logging.error("Incompatible queuefile found, cannot proceed")
                     self.__downloaded_items = []
                     nzo_ids = []
                     Panic_Queue(os.path.join(cfg.CACHE_DIR.get_path(),QUEUE_FILE_NAME))
                     ExitSab(2)
             except ValueError:
-                logging.error("[%s] Error loading %s, corrupt file " + \
-                              "detected", __NAME__, os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME))
+                logging.error("Error loading %s, corrupt file " + \
+                              "detected", os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME))
 
             for nzo_id in nzo_ids:
                 nzo = sabnzbd.load_data(nzo_id, remove = False)
@@ -92,7 +90,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def save(self):
         """ Save queue """
-        logging.info("[%s] Saving queue", __NAME__)
+        logging.info("Saving queue")
 
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
@@ -116,7 +114,7 @@ class NzbQueue(TryList):
         nzo_id = future.nzo_id
         if nzo_id in self.__nzo_table:
             try:
-                logging.info("[%s] Regenerating item: %s", __NAME__, nzo_id)
+                logging.info("Regenerating item: %s", nzo_id)
                 r, u, d = future.get_repair_opts()
                 if not r == None:
                     pp = sabnzbd.opts_to_pp(r, u, d)
@@ -141,11 +139,11 @@ class NzbQueue(TryList):
 
                 self.reset_try_list()
             except:
-                logging.error("[%s] Error while adding %s, removing", __NAME__, nzo_id)
-                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                logging.error("Error while adding %s, removing", nzo_id)
+                logging.debug("Traceback: ", exc_info = True)
                 self.remove(nzo_id, False)
         else:
-            logging.info("[%s] Item %s no longer in queue, omitting", __NAME__,
+            logging.info("Item %s no longer in queue, omitting",
                          nzo_id)
 
     @synchronized(NZBQUEUE_LOCK)
@@ -277,7 +275,7 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzo.pause_nzo()
-            logging.debug("[%s] Paused nzo: %s", __NAME__, nzo_id)
+            logging.debug("Paused nzo: %s", nzo_id)
 
     @synchronized(NZBQUEUE_LOCK)
     def resume_multiple_nzo(self, nzo_ids):
@@ -289,7 +287,7 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzo.resume_nzo()
-            logging.debug("[%s] Resumed nzo: %s", __NAME__, nzo_id)
+            logging.debug("Resumed nzo: %s", nzo_id)
 
     @synchronized(NZBQUEUE_LOCK)
     def switch(self, item_id_1, item_id_2):
@@ -353,17 +351,17 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def sort_by_avg_age(self, reverse=False):
-        logging.info("[%s] Sorting by average date...(reversed:%s)", __NAME__, reverse)
+        logging.info("Sorting by average date...(reversed:%s)", reverse)
         self.__nzo_list = sort_queue(self.__nzo_list, _nzo_date_cmp, reverse)
 
     @synchronized(NZBQUEUE_LOCK)
     def sort_by_name(self, reverse=False):
-        logging.info("[%s] Sorting by name...(reversed:%s)", __NAME__, reverse)
+        logging.info("Sorting by name...(reversed:%s)", reverse)
         self.__nzo_list = sort_queue(self.__nzo_list, _nzo_name_cmp, reverse)
 
     @synchronized(NZBQUEUE_LOCK)
     def sort_by_size(self, reverse=False):
-        logging.info("[%s] Sorting by size...(reversed:%s)", __NAME__, reverse)
+        logging.info("Sorting by size...(reversed:%s)", reverse)
         self.__nzo_list = sort_queue(self.__nzo_list, _nzo_size_cmp, reverse)
 
 
@@ -376,7 +374,7 @@ class NzbQueue(TryList):
         elif field.lower() == 'avg_age':
             self.sort_by_avg_age(reverse)
         else:
-            logging.debug("[%s] Sort: %s not recognised", __NAME__, field)
+            logging.debug("Sort: %s not recognised", field)
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -493,8 +491,7 @@ class NzbQueue(TryList):
         nzo = nzf.nzo
 
         if nzo.deleted or nzf.deleted:
-            logging.debug("[%s] Discarding article %s, no longer in queue",
-                          __NAME__, article.article)
+            logging.debug("Discarding article %s, no longer in queue", article.article)
             return
 
         file_done, post_done, reset = nzo.remove_article(article)
@@ -514,7 +511,7 @@ class NzbQueue(TryList):
                 sabnzbd.assembler.process((nzo, nzf))
 
             else:
-                logging.warning('[%s] %s -> Unknown encoding', __NAME__,
+                logging.warning('%s -> Unknown encoding',
                                 filename)
 
         if post_done:
@@ -567,7 +564,7 @@ class NzbQueue(TryList):
             # refresh fields & delete nzo reference
             if hist_item.nzo and hist_item.nzo == nzo:
                 hist_item.cleanup()
-                logging.debug('[%s] %s cleaned up', __NAME__,
+                logging.debug('%s cleaned up',
                               nzo.get_dirname())
 
     @synchronized(NZBQUEUE_LOCK)

@@ -19,8 +19,6 @@
 sabnzbd.newzbin - newzbin.com support functions
 """
 
-__NAME__ = "newzbin"
-
 import httplib
 import urllib
 import time
@@ -99,7 +97,7 @@ def init_grabber():
 def start_grabber():
     global __MSGIDGRABBER
     if __MSGIDGRABBER:
-        logging.debug('[%s] Starting msgidgrabber', __NAME__)
+        logging.debug('Starting msgidgrabber')
         __MSGIDGRABBER.start()
 
 
@@ -156,7 +154,7 @@ class MSGIDGrabber(Thread):
                 (msgid, nzo) = self.queue.get()
                 if self.shutdown or not msgid:
                     break
-            logging.debug("[%s] Popping msgid %s", __NAME__, msgid)
+            logging.debug("Popping msgid %s", msgid)
 
             filename, data, newzbin_cat, nzo_info = _grabnzb(msgid)
             if filename and data:
@@ -174,7 +172,7 @@ class MSGIDGrabber(Thread):
                 try:
                     sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
                 except:
-                    logging.error("[%s] Failed to update newzbin job %s", __NAME__, msgid)
+                    logging.error("Failed to update newzbin job %s", msgid)
                     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, False)
                 msgid = None
             else:
@@ -188,7 +186,7 @@ class MSGIDGrabber(Thread):
             # Keep some distance between the grabs
             sleeper(5)
 
-        logging.debug('[%s] Stopping MSGIDGrabber', __NAME__)
+        logging.debug('Stopping MSGIDGrabber')
 
 
 def _grabnzb(msgid):
@@ -198,7 +196,7 @@ def _grabnzb(msgid):
     retry = (300, None, None, None)
     nzo_info = {'msgid': msgid}
 
-    logging.info('[%s] Fetching NZB for Newzbin report #%s', __NAME__, msgid)
+    logging.info('Fetching NZB for Newzbin report #%s', msgid)
 
     headers = { 'User-Agent': 'SABnzbd', }
 
@@ -218,7 +216,7 @@ def _grabnzb(msgid):
         conn.request('POST', fetchurl, postdata, headers)
         response = conn.getresponse()
     except:
-        logging.warning('[%s] Problem accessing Newzbin server, wait 5 min.', __NAME__)
+        logging.warning('Problem accessing Newzbin server, wait 5 min.')
         return retry
 
     # Save debug info if we have to
@@ -233,7 +231,7 @@ def _grabnzb(msgid):
         # Only some reports will generate a moreinfo header
         pass
     if not (rcode or rtext):
-        logging.error("[%s] Newzbin server changed its protocol", __NAME__)
+        logging.error("Newzbin server changed its protocol")
         return nothing
 
     # Official return codes:
@@ -261,30 +259,30 @@ def _grabnzb(msgid):
         return int(wait+1), None, None
 
     if rcode in ('402'):
-        logging.warning("[%s] You have no credit on your Newzbin account", __NAME__)
+        logging.warning("You have no credit on your Newzbin account")
         return nothing
 
     if rcode in ('401'):
-        logging.warning("[%s] Unauthorised, check your newzbin username/password", __NAME__)
+        logging.warning("Unauthorised, check your newzbin username/password")
         return nothing
 
     if rcode in ('400', '404'):
-        logging.error("[%s] Newzbin report %s not found", __NAME__, msgid)
+        logging.error("Newzbin report %s not found", msgid)
         return nothing
 
     if rcode in ('500', '503'):
-        logging.warning('[%s] Newzbin has a server problem (%s, %s), wait 5 min.', __NAME__, rcode, rtext)
+        logging.warning('Newzbin has a server problem (%s, %s), wait 5 min.', rcode, rtext)
         return retry
 
     if rcode != '200':
-        logging.error('[%s] Newzbin gives undocumented error code (%s, %s)', __NAME__, rcode, rtext)
+        logging.error('Newzbin gives undocumented error code (%s, %s)', rcode, rtext)
         return nothing
 
     # Process data
     report_name = response.getheader('X-DNZB-Name')
     report_cat  = response.getheader('X-DNZB-Category')
     if not (report_name and report_cat):
-        logging.error("[%s] Newzbin server fails to give info for %s", __NAME__, msgid)
+        logging.error("Newzbin server fails to give info for %s", msgid)
         return nothing
 
     # sanitize report_name
@@ -293,7 +291,7 @@ def _grabnzb(msgid):
         newname = newname[0:79].strip('. ')
     newname += ".nzb"
 
-    logging.info('[%s] Successfully fetched report %s - %s (cat=%s) (%s)', __NAME__, msgid, report_name, report_cat, newname)
+    logging.info('Successfully fetched report %s - %s (cat=%s) (%s)', msgid, report_name, report_cat, newname)
 
     return (newname, data, report_cat, nzo_info)
 
@@ -324,11 +322,11 @@ class Bookmarks:
                 conn = httplib.HTTPConnection('www.newzbin.com')
 
             if delete:
-                logging.info('[%s] Deleting Newzbin bookmark %s', __NAME__, delete)
+                logging.info('Deleting Newzbin bookmark %s', delete)
                 postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'delete', \
                              'reportids' : delete }
             else:
-                logging.info('[%s] Fetching Newzbin bookmarks', __NAME__)
+                logging.info('Fetching Newzbin bookmarks')
                 postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
 
@@ -338,7 +336,7 @@ class Bookmarks:
             conn.request('POST', fetchurl, postdata, headers)
             response = conn.getresponse()
         except:
-            logging.warning('[%s] Problem accessing Newzbin server.', __NAME__)
+            logging.warning('Problem accessing Newzbin server.')
             return
 
         data = response.read()
@@ -358,15 +356,15 @@ class Bookmarks:
         # 503 = Service Unavailable, site is currently down
 
         if rcode == '204':
-            logging.debug("[%s] No bookmarks set", __NAME__)
+            logging.debug("No bookmarks set")
         elif rcode in ('401', '403'):
-            logging.warning("[%s] Unauthorised, check your newzbin username/password", __NAME__)
+            logging.warning("Unauthorised, check your newzbin username/password")
         elif rcode in ('402'):
-            logging.warning("[%s] You have no credit on your Newzbin account", __NAME__)
+            logging.warning("You have no credit on your Newzbin account")
         elif rcode in ('500', '503'):
-            logging.warning('[%s] Newzbin has a server problem (%s).', __NAME__, rcode)
+            logging.warning('Newzbin has a server problem (%s).', rcode)
         elif rcode != '200':
-            logging.error('[%s] Newzbin gives undocumented error code (%s)', __NAME__, rcode)
+            logging.error('Newzbin gives undocumented error code (%s)', rcode)
 
         if rcode == '200':
             if delete:
@@ -379,7 +377,7 @@ class Bookmarks:
                         msgid = size = text = None
                     if msgid and (msgid not in self.bookmarks):
                         self.bookmarks.append(msgid)
-                        logging.info("[%s] Found new bookmarked msgid %s (%s)", __NAME__, msgid, text)
+                        logging.info("Found new bookmarked msgid %s (%s)", msgid, text)
                         sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.DIRSCAN_PRIORITY.get())
         self.__busy = False
 
@@ -391,6 +389,6 @@ class Bookmarks:
         return self.bookmarks
 
     def del_bookmark(self, msgid):
-        logging.debug('[%s] Try delete newzbin bookmark %s', __NAME__, msgid)
+        logging.debug('Try delete newzbin bookmark %s', msgid)
         if msgid in self.bookmarks:
             self.run(msgid)

@@ -18,7 +18,6 @@
 """
 sabnzbd.database - Database Support
 """
-__NAME__ = "sabnzbd.database"
 
 try:
     import sqlite3
@@ -63,13 +62,13 @@ class HistoryDB:
                 self.save()
             return True
         except:
-            logging.error('[%s] SQL Command Failed, see log', __NAME__)
-            logging.debug("[%s] SQL: %s" , __NAME__, command)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.error('SQL Command Failed, see log')
+            logging.debug("SQL: %s" , command)
+            logging.debug("Traceback: ", exc_info = True)
             try:
                 self.con.rollback()
             except:
-                logging.debug("[%s] Rollback Failed:", __NAME__, exc_info = True)
+                logging.debug("Rollback Failed:", exc_info = True)
             return False
 
     def create_history_db(self):
@@ -106,16 +105,16 @@ class HistoryDB:
         try:
             self.con.commit()
         except:
-            logging.error('[%s] SQL Commit Failed, see log', __NAME__)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.error('SQL Commit Failed, see log')
+            logging.debug("Traceback: ", exc_info = True)
         
     def close(self):
         try:
             self.c.close()
             self.con.close()
         except:
-            logging.error('[%s] Failed to close database, see log', __NAME__)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.error('Failed to close database, see log')
+            logging.debug("Traceback: ", exc_info = True)
         
     def remove_all(self):
         return self.execute("""DELETE FROM history""")
@@ -277,8 +276,8 @@ def unpack_history_info(item):
         try:
             lines = item['stage_log'].split('\r\n')
         except:
-            logging.error('[%s] Invalid stage logging in history for %s (\\r\\n)', __NAME__, item['name'])
-            logging.debug('[%s] Lines: %s', __NAME__, item['stage_log'])
+            logging.error('Invalid stage logging in history for %s (\\r\\n)', item['name'])
+            logging.debug('Lines: %s', item['stage_log'])
             lines = []
         item['stage_log'] = []
         for line in lines:
@@ -286,7 +285,7 @@ def unpack_history_info(item):
             try:
                 key, logs = line.split(':::')
             except:
-                logging.debug('[%s] Missing key:::logs "%s"', __NAME__, line)
+                logging.debug('Missing key:::logs "%s"', line)
                 key = line
                 logs = ''
             stage['name'] = key
@@ -294,8 +293,8 @@ def unpack_history_info(item):
             try:
                 logs = logs.split(';')
             except:
-                logging.error('[%s] Invalid stage logging in history for %s (;)', __NAME__, item['name'])
-                logging.debug('[%s] Logs: %s', __NAME__, logs)
+                logging.error('Invalid stage logging in history for %s (;)', item['name'])
+                logging.debug('Logs: %s', logs)
                 logs = []
             for log in logs:
                 stage['actions'].append(log)

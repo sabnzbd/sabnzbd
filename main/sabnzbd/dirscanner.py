@@ -18,7 +18,6 @@
 """
 sabnzbd.dirscanner - Scanner for Watched Folder
 """
-__NAME__ = "sabnzbd.dirscanner"
 
 import os
 import sys
@@ -145,8 +144,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         try:
             os.remove(path)
         except:
-            logging.error("[%s] Error removing %s", __NAME__, path)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.error("Error removing %s", path)
+            logging.debug("Traceback: ", exc_info = True)
             status = 1
     else:
         zf.close()
@@ -179,8 +178,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         data = f.read()
         f.close()
     except:
-        logging.warning('[%s] Cannot read %s', __NAME__, path)
-        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+        logging.warning('Cannot read %s', path)
+        logging.debug("Traceback: ", exc_info = True)
         return -2
 
     _cat, name, _pp, _script = misc.Cat2OptsDef(name, catdir)
@@ -205,8 +204,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         if not keep: os.remove(path)
     except:
-        logging.error("[%s] Error removing %s", __NAME__, path)
-        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+        logging.error("Error removing %s", path)
+        logging.debug("Traceback: ", exc_info = True)
         return 1
 
     return 0
@@ -261,7 +260,7 @@ class DirScanner(threading.Thread):
 
     def stop(self):
         self.save()
-        logging.info('[%s] Dirscanner shutting down', __NAME__)
+        logging.info('Dirscanner shutting down')
         self.shutdown = True
 
     def save(self):
@@ -302,7 +301,7 @@ class DirScanner(threading.Thread):
                         del self.suspected[path]
 
                 if candidate and stat_tuple.st_size > 0:
-                    logging.info('[%s] Trying to import %s', __NAME__, path)
+                    logging.info('Trying to import %s', path)
 
                     # Wait until the attributes are stable for 1 second
                     # but give up after 3 sec
@@ -348,7 +347,7 @@ class DirScanner(threading.Thread):
             CleanList(self.ignored, folder, files)
             CleanList(self.suspected, folder, files)
 
-        logging.info('[%s] Dirscanner starting up', __NAME__)
+        logging.info('Dirscanner starting up')
         self.shutdown = False
 
         while not self.shutdown:

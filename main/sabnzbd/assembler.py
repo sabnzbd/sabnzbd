@@ -18,13 +18,8 @@
 """
 sabnzbd.assembler - threaded assembly/decoding of files
 """
-#------------------------------------------------------------------------------
 
-__NAME__ = "assembler"
-
-#OSX
 import sys
-
 import os
 import Queue
 import binascii
@@ -100,7 +95,7 @@ class Assembler(Thread):
         while 1:
             nzo_nzf_tuple = self.queue.get()
             if not nzo_nzf_tuple:
-                logging.info("[%s] Shutting down", __NAME__)
+                logging.info("Shutting down")
                 break
 
             nzo, nzf = nzo_nzf_tuple
@@ -115,21 +110,21 @@ class Assembler(Thread):
                 filepath = getFilepath(cfg.DOWNLOAD_DIR.get_path(), nzo, filename)
 
                 if filepath:
-                    logging.info('[%s] Decoding %s %s', __NAME__, filepath, nzf.get_type())
+                    logging.info('Decoding %s %s', filepath, nzf.get_type())
                     try:
                         filepath = _assemble(nzo, nzf, filepath, dupe)
                     except IOError, (errno, strerror):
                         # 28 == disk full => pause downloader
                         if errno == 28:
-                            logging.error('[%s] Disk full! Forcing Pause', __NAME__)
+                            logging.error('Disk full! Forcing Pause')
                             sabnzbd.downloader.pause_downloader()
                         else:
-                            logging.error('[%s] Disk error on creating file %s', __NAME__, filepath)
+                            logging.error('Disk error on creating file %s', filepath)
 
                     setname = nzf.get_setname()
                     if cfg.QUICK_CHECK.get() and nzf.is_par2() and (nzo.get_md5pack(setname) == None):
                         nzo.set_md5pack(setname, GetMD5Hashes(filepath))
-                        logging.debug('[%s] Got md5pack for set %s', __NAME__, setname)
+                        logging.debug('Got md5pack for set %s', setname)
 
 
             else:
@@ -161,7 +156,7 @@ def _assemble(nzo, nzf, path, dupe):
         data = sabnzbd.articlecache.method.load_article(article)
 
         if not data:
-            logging.warning('[%s] %s missing', __NAME__, article)
+            logging.warning('%s missing', article)
         else:
             # yenc data already decoded, flush it out
             if _type == 'yenc':
@@ -189,8 +184,7 @@ def _assemble(nzo, nzf, path, dupe):
                             tmpdata = binascii.a2b_uu(line[:nbytes])
                             chunks.append(tmpdata)
                         except binascii.Error, msg:
-                            logging.info('[%s] Decode failed in part %s: %s',
-                                         __NAME__, article.article, msg)
+                            logging.info('Decode failed in part %s: %s', article.article, msg)
                 fout.write(''.join(chunks))
                 if md5: md5.update(''.join(chunks))
 

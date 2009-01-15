@@ -18,7 +18,6 @@
 """
 sabnzbd.misc - misc classes
 """
-__NAME__ = "sabnzbd.misc"
 
 import os
 import sys
@@ -72,14 +71,14 @@ def Cat2Opts(cat, pp, script):
     if not pp:
         try:
             pp = config.get_categories()[Lower(cat)].pp.get()
-            logging.debug('[%s] Job gets options %s', __NAME__, pp)
+            logging.debug('Job gets options %s', pp)
         except KeyError:
             pp = cfg.DIRSCAN_PP.get()
 
     if not script:
         try:
             script = config.get_categories()[Lower(cat)].script.get()
-            logging.debug('[%s] Job gets script %s', __NAME__, script)
+            logging.debug('Job gets script %s', script)
         except KeyError:
             script = cfg.DIRSCAN_SCRIPT.get()
 
@@ -100,18 +99,18 @@ def Cat2OptsDef(fname, cat=None):
         if m and m.group(1) and m.group(2):
             cat = m.group(1).lower()
             name = m.group(2)
-            logging.debug('[%s] Job %s has category %s', __NAME__, name, cat)
+            logging.debug('Job %s has category %s', name, cat)
 
     if cat:
         try:
             pp = config.get_categories()[cat.lower()].pp.get()
-            logging.debug('[%s] Job %s gets options %s', __NAME__, name, pp)
+            logging.debug('Job %s gets options %s', name, pp)
         except:
             pass
 
         try:
             script = config.get_categories()[cat.lower()].script.get()
-            logging.debug('[%s] Job %s gets script %s', __NAME__, name, script)
+            logging.debug('Job %s gets script %s', name, script)
         except:
             pass
 
@@ -233,7 +232,7 @@ def create_real_path(name, loc, path, umask=False):
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not CreateAllDirs(my_dir, umask):
-                logging.error('[%s] Cannot create directory %s', __NAME__, my_dir)
+                logging.error('Cannot create directory %s', my_dir)
                 return (False, my_dir)
 
         if os.access(my_dir, os.R_OK + os.W_OK):
@@ -431,7 +430,7 @@ def launch_a_browser(url):
             webbrowser.open(url, 1, 1)
         except:
             logging.warning("Cannot launch the browser, probably not found")
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.debug("Traceback: ", exc_info = True)
 
 
 def error_page_401(status, message, traceback, version):
@@ -498,7 +497,7 @@ def check_latest_version():
 
     current, testver = ConvertVersion(sabnzbd.__version__)
     if not current:
-        logging.debug("[%s] Unsupported release number (%s), will not check", __NAME__, sabnzbd.__version__)
+        logging.debug("Unsupported release number (%s), will not check", sabnzbd.__version__)
         return
 
     try:
@@ -676,10 +675,10 @@ def get_unique_filename(path, new_path, i=1):
 def create_dirs(dirpath):
     """ Create directory tree, obeying permissions """
     if not os.path.exists(dirpath):
-        logging.info('[%s] Creating directories: %s', __NAME__, dirpath)
+        logging.info('Creating directories: %s', dirpath)
         if not CreateAllDirs(dirpath, True):
-            logging.error("[%s] Failed making (%s)",__NAME__,dirpath)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.error("Failed making (%s)", dirpath)
+            logging.debug("Traceback: ", exc_info = True)
             return None
     return dirpath
 
@@ -690,8 +689,8 @@ def move_to_path(path, new_path, unique=True):
     if unique:
         new_path = get_unique_path(new_path, create_dir=False)
     if new_path:
-        logging.debug("[%s] Moving. Old path:%s new path:%s unique?:%s",
-                                                  __NAME__,path,new_path, unique)
+        logging.debug("Moving. Old path:%s new path:%s unique?:%s",
+                                                  path,new_path, unique)
         try:
             # First try cheap rename
             os.rename(path, new_path)
@@ -703,8 +702,8 @@ def move_to_path(path, new_path, unique=True):
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
-                logging.error("[%s] Failed moving %s to %s", __NAME__, path, new_path)
-                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                logging.error("Failed moving %s to %s", path, new_path)
+                logging.debug("Traceback: ", exc_info = True)
     return new_path
 
 
@@ -761,7 +760,7 @@ def getFilepath(path, nzo, filename):
 
 def BadFetch(nzo, url, retry=False, archive=False):
     """ Create History entry for failed URL Fetch """
-    logging.error("[%s] Error getting url %s", __NAME__, url)
+    logging.error("Error getting url %s", url)
 
     pp = nzo.get_pp()
     if pp:

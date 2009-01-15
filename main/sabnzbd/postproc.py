@@ -20,8 +20,6 @@ sabnzbd.postproc - threaded post-processing of jobs
 """
 #------------------------------------------------------------------------------
 
-__NAME__ = "postproc"
-
 import os
 import Queue
 import logging
@@ -125,17 +123,17 @@ class PostProcessor(Thread):
         
     def save(self):
         """ Save postproc queue """
-        logging.info("[%s] Saving postproc queue", __NAME__)
+        logging.info("Saving postproc queue")
         sabnzbd.save_data((POSTPROC_QUEUE_VERSION, self.history_queue), POSTPROC_QUEUE_FILE_NAME)
         
     def load(self):
         """ Save postproc queue """
-        logging.info("[%s] Loading postproc queue", __NAME__)
+        logging.info("Loading postproc queue")
         data = sabnzbd.load_data(POSTPROC_QUEUE_FILE_NAME)
         try:
             version, history_queue = data
             if POSTPROC_QUEUE_VERSION != version:
-                logging.warning('[%s] Failed to load postprocessing queue: Wrong version (need:%s, found:%s)', __NAME__, POSTPROC_QUEUE_VERSION, version)
+                logging.warning('Failed to load postprocessing queue: Wrong version (need:%s, found:%s)', POSTPROC_QUEUE_VERSION, version)
             if isinstance(history_queue, list):
                 self.history_queue = history_queue
                 return True
@@ -158,7 +156,7 @@ class PostProcessor(Thread):
             self.history_queue.remove(nzo)
         except:
             nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error('[%s] Failed to remove nzo from postproc queue (id)', __NAME__, nzo_id)
+            logging.error('Failed to remove nzo from postproc queue (id)', nzo_id)
         self.save()
 
     def stop(self):
@@ -225,20 +223,20 @@ class PostProcessor(Thread):
                     flagRepair = flagUnpack = parResult = False
                     unpackError = True
                     
-                logging.info('[%s] Starting PostProcessing on %s' + \
+                logging.info('Starting PostProcessing on %s' + \
                              ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s',
-                             __NAME__, filename, flagRepair, flagUnpack, flagDelete, script)
+                             filename, flagRepair, flagUnpack, flagDelete, script)
     
                 ## Run Stage 1: Repair
                 if flagRepair:
-                    logging.info('[%s] Par2 check starting on %s', __NAME__, filename)
+                    logging.info('Par2 check starting on %s', filename)
                     reAdd = False
                     if not repairSets:
-                        logging.info("[%s] No par2 sets for %s", __NAME__, filename)
+                        logging.info("No par2 sets for %s", filename)
                         nzo.set_unpack_info('repair','[%s] No par2 sets' % filename)
     
                     for _set in repairSets:
-                        logging.info("[%s] Running repair on set %s", __NAME__, _set)
+                        logging.info("Running repair on set %s", _set)
                         parfile_nzf = parTable[_set]
                         need_reAdd, res = par2_repair(parfile_nzf, nzo, workdir, _set)
                         if need_reAdd:
@@ -247,7 +245,7 @@ class PostProcessor(Thread):
                             parResult = parResult and res
     
                     if reAdd:
-                        logging.info('[%s] Readded %s to queue', __NAME__, filename)
+                        logging.info('Readded %s to queue', filename)
                         sabnzbd.QUEUECOMPLETEACTION_GO = False
                         nzo.set_priority(TOP_PRIORITY)
                         sabnzbd.nzbqueue.add_nzo(nzo)
@@ -255,7 +253,7 @@ class PostProcessor(Thread):
                         ## Break out, further downloading needed
                         continue
     
-                    logging.info('[%s] Par2 check finished on %s', __NAME__, filename)
+                    logging.info('Par2 check finished on %s', filename)
     
                 mailResult = parResult
                 jobResult = 1
@@ -296,9 +294,9 @@ class PostProcessor(Thread):
                     if parResult:
                         #set the current nzo status to "Extracting...". Used in History
                         nzo.set_status("Extracting...")
-                        logging.info("[%s] Running unpack_magic on %s", __NAME__, filename)
+                        logging.info("Running unpack_magic on %s", filename)
                         unpackError, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), (), ())
-                        logging.info("[%s] unpack_magic finished on %s", __NAME__, filename)
+                        logging.info("unpack_magic finished on %s", filename)
                     else:
                         nzo.set_unpack_info('unpack','No post-processing because of failed verification')
     
@@ -317,8 +315,8 @@ class PostProcessor(Thread):
                     if os.path.exists(workdir):
                         os.rmdir(workdir)
                 except:
-                    logging.error("[%s] Error removing workdir (%s)", __NAME__, workdir)
-                    logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                    logging.error("Error removing workdir (%s)", workdir)
+                    logging.debug("Traceback: ", exc_info = True)
     
                                           
                 if parResult:
@@ -346,8 +344,8 @@ class PostProcessor(Thread):
                         os.rename(tmp_workdir_complete, workdir_complete)
                         nzo.set_dirname(os.path.basename(workdir_complete))
                     except:
-                        logging.error('[%s] Error renaming "%s" to "%s"', __NAME__, tmp_workdir_complete, workdir_complete)
-                        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                        logging.error('Error renaming "%s" to "%s"', tmp_workdir_complete, workdir_complete)
+                        logging.debug("Traceback: ", exc_info = True)
         
                     if unpackError: jobResult = jobResult + 2
         
@@ -409,8 +407,8 @@ class PostProcessor(Thread):
                     nzo.set_status("Failed")
                     
             except:
-                logging.error("[%s] Post Processing Failed for %s", __NAME__, filename)
-                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                logging.error("Post Processing Failed for %s", filename)
+                logging.debug("Traceback: ", exc_info = True)
                 nzo.set_fail_msg('PostProcessing Crashed, see logfile')
                 nzo.set_status("Failed")
     
@@ -444,11 +442,11 @@ class PostProcessor(Thread):
 
             ## Clean up the NZO
             try:
-                logging.info('[%s] Cleaning up %s', __NAME__, filename)
+                logging.info('Cleaning up %s', filename)
                 sabnzbd.nzbqueue.cleanup_nzo(nzo)
             except:
-                logging.error("[%s] Cleanup of %s failed.", __NAME__, nzo.get_dirname())
-                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                logging.error("Cleanup of %s failed.", nzo.get_dirname())
+                logging.debug("Traceback: ", exc_info = True)
                 
             # Remove the nzo from the history_queue list
             # This list is simply used for the creation of the history in interface.py
@@ -469,8 +467,8 @@ def MakeLogFile(name, content):
     try:
         f = open(path, "w")
     except:
-        logging.error("[%s] Cannot create logfile %s", __NAME__, path)
-        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+        logging.error("Cannot create logfile %s", path)
+        logging.debug("Traceback: ", exc_info = True)
         return "a"
     f.write(content)
     f.close()
@@ -495,14 +493,14 @@ def perm_script(wdir, umask):
         try:
             os.chmod(root, umask)
         except:
-            logging.error('[%s] Cannot change permissions of %s', __NAME__, root)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.error('Cannot change permissions of %s', root)
+            logging.debug("Traceback: ", exc_info = True)
         for name in files:
             try:
                 os.chmod(join(root, name), umask_file)
             except:
-                logging.error('[%s] Cannot change permissions of %s', __NAME__, join(root, name))
-                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                logging.error('Cannot change permissions of %s', join(root, name))
+                logging.debug("Traceback: ", exc_info = True)
 
 
 def Cat2Dir(cat, defdir):
@@ -541,8 +539,8 @@ def HandleEmptyQueue():
     sabnzbd.save_state()
 
     if sabnzbd.QUEUECOMPLETEACTION_GO:
-        logging.info("[%s] Queue has finished, launching: %s (%s)", \
-            __NAME__,sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
+        logging.info("Queue has finished, launching: %s (%s)", \
+            sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
         if sabnzbd.QUEUECOMPLETEARG:
             sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
         else:
@@ -565,11 +563,11 @@ def CleanUpList(wdir, skip_nzb):
             if OnCleanUpList(_file, skip_nzb):
                 path = os.path.join(wdir, _file)
                 try:
-                    logging.info("[%s] Removing unwanted file %s", __NAME__, path)
+                    logging.info("Removing unwanted file %s", path)
                     os.remove(path)
                 except:
-                    logging.error("[%s] Removing %s failed", __NAME__, path)
-                    logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                    logging.error("Removing %s failed", path)
+                    logging.debug("Traceback: ", exc_info = True)
 
 
 def prefix(path, pre):

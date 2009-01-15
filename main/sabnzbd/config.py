@@ -18,7 +18,6 @@
 """
 sabnzbd.config - Configuration Support
 """
-__NAME__ = "sabnzbd.config"
 
 import os
 import logging
@@ -558,7 +557,7 @@ def get_config(section, keyword):
         item = database[section][keyword]
     except KeyError:
         item = None
-        logging.info('[%s], Missing configuration item %s,%s', __NAME__, section, keyword)
+        logging.info('[%s], Missing configuration item %s,%s', section, keyword)
 
     return item
 
@@ -604,21 +603,21 @@ def read_config(path):
             fp.write("__version__=%s\n[misc]\n[logging]\n" % __CONFIG_VERSION)
             fp.close()
         except IOError:
-            logging.error("[%s] Cannot create Config file %s", __NAME__, path)
+            logging.error("Cannot create Config file %s", path)
             return False
 
     try:
         CFG = configobj.ConfigObj(path)
         try:
             if int(CFG['__version__']) > int(__CONFIG_VERSION):
-                logging.error("[%s] Incorrect version number %s in %s", __NAME__, CFG['__version__'], path)
+                logging.error("Incorrect version number %s in %s", CFG['__version__'], path)
                 return False
         except KeyError:
             CFG['__version__'] = __CONFIG_VERSION
         except ValueError:
             CFG['__version__'] = __CONFIG_VERSION
     except configobj.ConfigObjError, strerror:
-        logging.error("[%s] Invalid Config file %s", __NAME__, path)
+        logging.error("Invalid Config file %s", path)
         return False
 
     # Use CFG data to set values for all static options
@@ -792,7 +791,7 @@ def decode_password(pw, name):
             try:
                 ch = chr( int(pw[n] + pw[n+1],16) )
             except:
-                logging.error('[%s] Incorrectly encoded password %s', __NAME__, name)
+                logging.error('Incorrectly encoded password %s', name)
                 return ''
             decPW += ch
         return decPW

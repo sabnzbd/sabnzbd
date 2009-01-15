@@ -18,9 +18,6 @@
 """
 sabnzbd.tvsort - Sorting downloads into seasons & episodes
 """
-#------------------------------------------------------------------------------
-
-__NAME__ = "tvsort"
 
 import os
 import logging
@@ -144,7 +141,7 @@ class SeriesSorter:
             #First check if the show matches TV episode regular expressions. Returns regex match object
             self.match_obj, self.extras = check_regexs(self.original_dirname, series_match, double=True)
             if self.match_obj:
-                logging.debug("[%s] Found TV Show - Starting folder sort (%s)", __NAME__, self.original_dirname) 
+                logging.debug("Found TV Show - Starting folder sort (%s)", self.original_dirname) 
                 self.matched = True
    
     
@@ -246,8 +243,8 @@ class SeriesSorter:
             return True
         
         except:
-            logging.error("[%s] Error getting TV info (%s)", __NAME__, self.original_dirname)
-            logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+            logging.error("Error getting TV info (%s)", self.original_dirname)
+            logging.debug("Traceback: ", exc_info = True)
             return False
         
         
@@ -325,8 +322,8 @@ class SeriesSorter:
                             try:
                                 os.rename(filepath,newpath)
                             except:
-                                logging.error("[%s] Failed to rename: %s to %s", current_path, newpath)
-                                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                                logging.error("Failed to rename: %s to %s", current_path, newpath)
+                                logging.debug("Traceback: ", exc_info = True)
                             rename_similar(current_path, file, self.filename_set)
                             break
 
@@ -405,7 +402,7 @@ class GenericSorter:
         if cfg.ENABLE_MOVIE_SORTING.get() and self.sort_string:
             #First check if the show matches TV episode regular expressions. Returns regex match object
             if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
-                logging.debug("[%s] Movie Sorting - Starting folder sort (%s)", __NAME__, self.original_dirname) 
+                logging.debug("Movie Sorting - Starting folder sort (%s)", self.original_dirname) 
                 self.matched = True
    
     
@@ -531,8 +528,8 @@ class GenericSorter:
                 try:
                     os.rename(filepath,newpath)
                 except:
-                    logging.error("[%s] Failed to rename: %s to %s", filepath,newpath)
-                    logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                    logging.error("Failed to rename: %s to %s", filepath,newpath)
+                    logging.debug("Traceback: ", exc_info = True)
                 rename_similar(current_path, file, self.filename_set)
         ## Sequence File Handling
         # if there is more than one extracted file check for CD1/1/A in the title
@@ -552,11 +549,11 @@ class GenericSorter:
                     try:
                         os.rename(filepath,newpath)
                     except:
-                        logging.error("[%s] Failed to rename: %s to %s", filepath,newpath)
-                        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                        logging.error("Failed to rename: %s to %s", filepath,newpath)
+                        logging.debug("Traceback: ", exc_info = True)
                     rename_similar(current_path, file, self.filename_set)
             else:
-                logging.debug("[%s] Movie files not in sequence %s", __NAME__, _files)
+                logging.debug("Movie files not in sequence %s", _files)
                 
 
     def check_for_multiple(self, files):
@@ -604,7 +601,7 @@ class DateSorter:
             if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 self.match_obj, self.date_type = checkForDate(self.original_dirname, date_match)
                 if self.match_obj:
-                    logging.debug("[%s] Date Sorting - Starting folder sort (%s)", __NAME__, self.original_dirname) 
+                    logging.debug("Date Sorting - Starting folder sort (%s)", self.original_dirname) 
                     self.matched = True
    
     
@@ -740,8 +737,8 @@ class DateSorter:
                             try:
                                 os.rename(filepath,newpath)
                             except:
-                                logging.error("[%s] Failed to rename: %s to %s", current_path, newpath)
-                                logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                                logging.error("Failed to rename: %s to %s", current_path, newpath)
+                                logging.debug("Traceback: ", exc_info = True)
                             rename_similar(current_path, file, self.filename_set)
                             break
     
@@ -852,8 +849,8 @@ def rename_similar(path, file, name):
                     try:
                         os.rename(fpath,newpath)
                     except:
-                        logging.error("[%s] Failed to rename similar file: %s to %s", path, newpath)
-                        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+                        logging.error("Failed to rename similar file: %s to %s", path, newpath)
+                        logging.debug("Traceback: ", exc_info = True)
                         
 
 

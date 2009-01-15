@@ -18,7 +18,6 @@
 """
 sabnzbd.nzbstuff - misc
 """
-__NAME__ = "nzbstuff"
 
 import time
 import re
@@ -143,7 +142,7 @@ class NzbFile(TryList):
         self.__article_count += 1
 
     def finish_import(self):
-        logging.info("[%s] Finishing import on %s", __NAME__, self.__subject)
+        logging.info("Finishing import on %s", self.__subject)
 
         article_db = sabnzbd.load_data(self.nzf_id)
         if article_db:
@@ -317,7 +316,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
                 self.filename = subject.strip()
 
             if self.filter and RE_SAMPLE.search(subject):
-                logging.info('[%s] Skipping sample file %s', __NAME__, subject)
+                logging.info('Skipping sample file %s', subject)
             else:
                 self.in_file = True
                 if isinstance(subject, unicode):
@@ -358,10 +357,10 @@ class NzbParser(xml.sax.handler.ContentHandler):
             segm = ''.join(self.article_id)
             if partnum in self.article_db:
                 if segm != self.article_db[partnum][0]:
-                    logging.error("[%s] Duplicate part %s, but different ID-s (%s // %s)",
-                                         __NAME__, partnum, self.article_db[partnum][0], segm)
+                    logging.error("Duplicate part %s, but different ID-s (%s // %s)",
+                                         partnum, self.article_db[partnum][0], segm)
                 else:
-                    logging.info("[%s] Skipping duplicate article (%s)", __NAME__, segm)
+                    logging.info("Skipping duplicate article (%s)", segm)
             else:
                 self.article_db[partnum] = (segm, self.seg_bytes)
             self.in_segment = False
@@ -376,12 +375,12 @@ class NzbParser(xml.sax.handler.ContentHandler):
             # Create an NZF
             self.in_file = False
             if not self.article_db:
-                logging.warning('[%s] File %s is empty, skipping', __NAME__, self.filename)
+                logging.warning('File %s is empty, skipping', self.filename)
                 return
             tm = datetime.datetime.fromtimestamp(self.file_date)
             nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
             if nzf.valid and nzf.nzf_id:
-                logging.info('[%s] File %s added to queue', __NAME__, self.filename)
+                logging.info('File %s added to queue', self.filename)
                 self.nzo._NzbObject__files.append(nzf)
                 self.nzo._NzbObject__files_table[nzf.nzf_id] = nzf
                 self.nzo._NzbObject__bytes += nzf.bytes()
@@ -389,7 +388,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
                 self.valids += 1
                 self.nzf_list.append(nzf)
             else:
-                logging.info('[%s] Error importing %s, skipping', __NAME__, self.filename)
+                logging.info('Error importing %s, skipping', self.filename)
                 if nzf.nzf_id:
                     sabnzbd.remove_data(nzf.nzf_id)
                 self.skipped_files += 1
@@ -402,7 +401,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.nzo._NzbObject__group = self.groups[0]
         self.nzo._NzbObject__avg_date = datetime.datetime.fromtimestamp(self.avg_age / self.valids)
         if self.skipped_files:
-            logging.warning('[%s] Failed to import %s files from %s', __NAME__,
+            logging.warning('Failed to import %s files from %s',
                             self.skipped_files, self.nzo.get_filename())
 
     def remove_files(self):
@@ -519,7 +518,7 @@ class NzbObject(TryList):
         if cfg.REPLACE_SPACES.get():
             self.__dirname = self.__dirname.replace(' ','_')
             self.__original_dirname = self.__dirname
-            logging.info('[%s] Replacing spaces with underscores in %s', __NAME__, self.__dirname)
+            logging.info('Replacing spaces with underscores in %s', self.__dirname)
 
         if not nzb:
             # This is a slot for a future NZB, ready now
@@ -527,7 +526,7 @@ class NzbObject(TryList):
 
         if sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
-            logging.warning('[%s] Skipping duplicate NZB "%s"', __NAME__, filename)
+            logging.warning('Skipping duplicate NZB "%s"', filename)
             raise TypeError
 
         handler = NzbParser(self)
@@ -535,8 +534,8 @@ class NzbObject(TryList):
             xml.sax.parseString(nzb, handler)
         except xml.sax.SAXParseException, err:
             handler.remove_files()
-            logging.warning("[%s] Invalid NZB file %s, skipping (reason=%s, line=%s)",
-                          __NAME__, filename, err.getMessage(), err.getLineNumber())
+            logging.warning("Invalid NZB file %s, skipping (reason=%s, line=%s)",
+                          filename, err.getMessage(), err.getLineNumber())
             raise ValueError
 
         sabnzbd.backup_nzb(filename, nzb)
@@ -745,7 +744,7 @@ class NzbObject(TryList):
                     nzf.finish_import()
                     # Still not finished? Something went wrong...
                     if not nzf.import_finished:
-                        logging.error("[%s] Error importing %s", __NAME__, nzf)
+                        logging.error("Error importing %s", nzf)
                         nzf_remove_list.append(nzf)
                         continue
 
@@ -1162,9 +1161,9 @@ def CatConvert(cat):
             for name in newzbin:
                 if name.lower() == cat.lower():
                     if name.find('.') < 0:
-                        logging.debug('[%s] Convert newzbin-cat "%s" to user-cat "%s"', __NAME__, cat, ucat)
+                        logging.debug('Convert newzbin-cat "%s" to user-cat "%s"', cat, ucat)
                     else:
-                        logging.debug('[%s] Convert group "%s" to user-cat "%s"', __NAME__, cat, ucat)
+                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat)
                     newcat = ucat
                     found = True
                     break

@@ -20,8 +20,6 @@ sabnzbd.email - Send notification emails
 """
 #------------------------------------------------------------------------------
 
-__NAME__ = "email"
-
 from utils import ssmtplib
 import smtplib
 import os
@@ -57,42 +55,42 @@ def send(message):
         if not port:
             port = 25
 
-        logging.info("[%s] Connecting to server %s:%s",__NAME__, server, port)
+        logging.info("Connecting to server %s:%s",server, port)
 
         try:
             mailconn = ssmtplib.SMTP_SSL(server, port)
             mailconn.ehlo()
 
-            logging.info("[%s] Connected to server %s:%s", __NAME__, server, port)
+            logging.info("Connected to server %s:%s", server, port)
 
         except Exception, errorcode:
             if errorcode[0]:
 
                 # Non SSL mail server
-                logging.debug("[%s] Non-SSL mail server detected " \
-                             "reconnecting to server %s:%s", __NAME__, server, port)
+                logging.debug("Non-SSL mail server detected " \
+                             "reconnecting to server %s:%s", server, port)
 
                 try:
                     mailconn = smtplib.SMTP(server, port)
                     mailconn.ehlo()
                 except:
-                    logging.error("[%s] Failed to connect to mail server", __NAME__)
+                    logging.error("Failed to connect to mail server")
                     return failure
             else:
-                logging.error("[%s] Failed to connect to mail server", __NAME__)
+                logging.error("Failed to connect to mail server")
                 return failure
 
         # TLS support
         if mailconn.ehlo_resp:
             m = re.search('STARTTLS', mailconn.ehlo_resp, re.IGNORECASE)
             if m:
-                logging.debug("[%s] TLS mail server detected")
+                logging.debug("TLS mail server detected")
 
                 try:
                     mailconn.starttls()
                     mailconn.ehlo()
                 except:
-                    logging.error("[%s] Failed to initiate TLS connection", __NAME__)
+                    logging.error("Failed to initiate TLS connection")
                     return failure
 
         # Authentication
@@ -100,21 +98,21 @@ def send(message):
             try:
                 mailconn.login(cfg.EMAIL_ACCOUNT.get(), cfg.EMAIL_PWD.get())
             except:
-                logging.error("[%s] Failed to authenticate to mail server", __NAME__)
+                logging.error("Failed to authenticate to mail server")
                 return failure
 
         try:
             mailconn.sendmail(cfg.EMAIL_FROM.get(), cfg.EMAIL_TO.get(), message)
         except:
-            logging.error("[%s] Failed to send e-mail", __NAME__)
+            logging.error("Failed to send e-mail")
             return failure
 
         try:
             mailconn.close()
         except:
-            logging.warning("[%s] Failed to close mail connection", __NAME__)
+            logging.warning("Failed to close mail connection")
 
-        logging.info("[%s] Notification e-mail succesfully sent", __NAME__)
+        logging.info("Notification e-mail succesfully sent")
         return "Email succeeded"
 
 
@@ -158,7 +156,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     try:
         lst = glob.glob(os.path.join(path, '*.tmpl'))
     except:
-        logging.error('[%s] Cannot find email templates in %s', __NAME__, path)
+        logging.error('Cannot find email templates in %s', path)
         lst = []
 
     ret = "No templates found"

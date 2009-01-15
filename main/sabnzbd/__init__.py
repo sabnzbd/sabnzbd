@@ -18,7 +18,6 @@
 from sabnzbd.version import __version__, __baseline__
 __configversion__ = 18
 __queueversion__ = 8
-__NAME__ = "sabnzbd"
 
 import os
 import logging
@@ -114,7 +113,7 @@ def sig_handler(signum = None, frame = None):
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if type(signum) != type(None):
-        logging.warning('[%s] Signal %s caught, saving and exiting...', __NAME__, signum)
+        logging.warning('Signal %s caught, saving and exiting...', signum)
     try:
         save_state()
     finally:
@@ -209,23 +208,23 @@ def start():
     global __INITIALIZED__
 
     if __INITIALIZED__:
-        logging.debug('[%s] Starting postprocessor', __NAME__)
+        logging.debug('Starting postprocessor')
         postproc.start()
 
-        logging.debug('[%s] Starting assembler', __NAME__)
+        logging.debug('Starting assembler')
         assembler.start()
 
-        logging.debug('[%s] Starting downloader', __NAME__)
+        logging.debug('Starting downloader')
         downloader.start()
 
         scheduler.start()
 
-        logging.debug('[%s] Starting dirscanner', __NAME__)
+        logging.debug('Starting dirscanner')
         dirscanner.start()
 
         newzbin.start_grabber()
 
-        logging.debug('[%s] Starting urlgrabber', __NAME__)
+        logging.debug('Starting urlgrabber')
         urlgrabber.start()
 
 
@@ -295,16 +294,15 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
 
 
     if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
-        logging.info('[%s] Fetching msgid %s from www.newzbin.com',
-                     __NAME__, msgid)
+        logging.info('Fetching msgid %s from www.newzbin.com', msgid)
         msg = "fetching msgid %s from www.newzbin.com" % msgid
 
         future_nzo = nzbqueue.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority)
 
         newzbin.grab(msgid, future_nzo)
     else:
-        logging.error('[%s] Error Fetching msgid %s from www.newzbin.com - Please make sure your Username and Password are set',
-                             __NAME__, msgid)
+        logging.error('Error Fetching msgid %s from www.newzbin.com - '
+                      'Please make sure your Username and Password are set', msgid)
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
@@ -312,7 +310,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
-    logging.info('[%s] Fetching %s', __NAME__, url)
+    logging.info('Fetching %s', url)
     msg = "Trying to fetch NZB from %s" % url
     future_nzo = nzbqueue.generate_future(msg, pp, script, cat, url=url, priority=priority)
     urlgrabber.add(url, future_nzo)
@@ -353,14 +351,14 @@ def backup_nzb(filename, data):
         here = os.getcwd()
         os.chdir(cfg.NZB_BACKUP_DIR.get_path())
 
-        logging.info("[%s] Backing up %s", __NAME__, backup_name)
+        logging.info("Backing up %s", backup_name)
         try:
             _f = gzip.GzipFile(backup_name, 'wb')
             _f.write(data)
             _f.flush()
             _f.close()
         except:
-            logging.error("[%s] Saving %s to %s failed", __NAME__, backup_name, cfg.NZB_BACKUP_DIR.get_path())
+            logging.error("Saving %s to %s failed", backup_name, cfg.NZB_BACKUP_DIR.get_path())
 
         os.chdir(here)
 
@@ -384,14 +382,14 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     filename = os.path.basename(filename)
     root, ext = os.path.splitext(filename)
 
-    logging.info('[%s] Adding %s', __NAME__, filename)
+    logging.info('Adding %s', filename)
 
     try:
         f, path = tempfile.mkstemp(suffix=ext, text=False)
         os.write(f, nzbfile.value)
         os.close(f)
     except:
-        logging.error("[%s] Cannot create temp file for %s", __NAME__, filename)
+        logging.error("Cannot create temp file for %s", filename)
 
     if ext.lower() in ('.zip', '.rar'):
         dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority)
@@ -406,7 +404,7 @@ def enable_server(server):
     try:
         config.get_config('servers', server).enable.set(1)
     except:
-        logging.warning('[%s] Trying to set status of non-existing server %s', __NAME__, server)
+        logging.warning('Trying to set status of non-existing server %s', server)
         return
     config.save_config()
     downloader.update_server(server, server)
@@ -417,14 +415,14 @@ def disable_server(server):
     try:
         config.get_config('servers', server).enable.set(0)
     except:
-        logging.warning('[%s] Trying to set status of non-existing server %s', __NAME__, server)
+        logging.warning('Trying to set status of non-existing server %s', server)
         return
     config.save_config()
     downloader.update_server(server, server)
 
 
 def system_shutdown():
-    logging.info("[%s] Performing system shutdown", __NAME__)
+    logging.info("Performing system shutdown")
 
     Thread(target=halt).start()
     while __INITIALIZED__:
@@ -456,17 +454,17 @@ def system_shutdown():
 
 
 def system_hibernate():
-    logging.info("[%s] Performing system hybernation", __NAME__)
+    logging.info("Performing system hybernation")
     try:
         if os.name == 'nt':
             subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
             time.sleep(10)
     except:
-        logging.error("[%s] Failed to hibernate system", __NAME__)
+        logging.error("Failed to hibernate system")
 
 
 def system_standby():
-    logging.info("[%s] Performing system standby", __NAME__)
+    logging.info("Performing system standby")
     try:
         if os.name == 'nt':
             subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
@@ -474,11 +472,11 @@ def system_standby():
             subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
         time.sleep(10)
     except:
-        logging.error("[%s] Failed to standby system", __NAME__)
+        logging.error("Failed to standby system")
 
 
 def shutdown_program():
-    logging.info("[%s] Performing sabnzbd shutdown", __NAME__)
+    logging.info("Performing sabnzbd shutdown")
     Thread(target=halt).start()
     while __INITIALIZED__:
         time.sleep(1.0)
@@ -487,7 +485,7 @@ def shutdown_program():
 
 def restart_program():
     """ Restart program (used by scheduler) """
-    logging.info("[%s] Performing sabnzbd restart", __NAME__)
+    logging.info("Performing sabnzbd restart")
     sabnzbd.halt()
     while __INITIALIZED__:
         time.sleep(1.0)
@@ -526,7 +524,7 @@ def change_queue_complete_action(action):
 def run_script(script):
     command = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
     stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
-    logging.info('[%s] Spawning external command %s', __NAME__, command)
+    logging.info('Spawning external command %s', command)
     subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                      stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                      startupinfo=stup, creationflags=creationflags)
@@ -570,14 +568,14 @@ def get_new_id(prefix):
         head, tail = os.path.split(l)
         return tail
     except:
-        logging.error("[%s] Failure in tempfile.mkstemp", __NAME__)
-        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+        logging.error("Failure in tempfile.mkstemp")
+        logging.debug("Traceback: ", exc_info = True)
 
 
 @synchronized(IO_LOCK)
 def save_data(data, _id, do_pickle = True, doze=0):
     path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
-    logging.info("[%s] Saving data for %s in %s", __NAME__, _id, path)
+    logging.info("Saving data for %s in %s", _id, path)
 
     try:
         _f = open(path, 'wb')
@@ -591,16 +589,16 @@ def save_data(data, _id, do_pickle = True, doze=0):
         _f.flush()
         _f.close()
     except:
-        logging.error("[%s] Saving %s failed", __NAME__, path)
+        logging.error("Saving %s failed", path)
 
 
 @synchronized(IO_LOCK)
 def load_data(_id, remove = True, do_pickle = True):
     path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
-    logging.info("[%s] Loading data for %s from %s", __NAME__, _id, path)
+    logging.info("Loading data for %s from %s", _id, path)
 
     if not os.path.exists(path):
-        logging.info("[%s] %s missing", __NAME__, path)
+        logging.info("%s missing", path)
         return None
 
     data = None
@@ -616,7 +614,7 @@ def load_data(_id, remove = True, do_pickle = True):
         if remove:
             remove_data(_id)
     except:
-        logging.error("[%s] Loading %s failed", __NAME__, path)
+        logging.error("Loading %s failed", path)
 
     return data
 
@@ -626,7 +624,7 @@ def remove_data(_id):
     path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
     try:
         os.remove(path)
-        logging.info("[%s] %s removed", __NAME__, path)
+        logging.info("%s removed", path)
     except:
         pass
 

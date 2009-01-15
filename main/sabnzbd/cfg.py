@@ -18,7 +18,6 @@
 """
 sabnzbd.cfg - Configuration Parameters
 """
-__NAME__ = "sabnzbd.cfg"
 
 import os
 from sabnzbd.constants import *

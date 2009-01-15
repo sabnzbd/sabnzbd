@@ -19,8 +19,6 @@
 sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 """
 
-__NAME__ = "urlgrabber"
-
 import os
 import sys
 import time
@@ -89,12 +87,12 @@ class URLGrabber(Thread):
         self.queue.put((url, future_nzo))
 
     def stop(self):
-        logging.info('[%s] URLGrabber shutting down', __NAME__)
+        logging.info('URLGrabber shutting down')
         self.shutdown = True
         self.queue.put((None, None))
 
     def run(self):
-        logging.info('[%s] URLGrabber starting up', __NAME__)
+        logging.info('URLGrabber starting up')
         self.shutdown = False
 
         while not self.shutdown:
@@ -108,7 +106,7 @@ class URLGrabber(Thread):
             except:
                 deleted = True
             if deleted:
-                logging.debug('[%s] Dropping URL %s, job entry missing', __NAME__, url)
+                logging.debug('Dropping URL %s, job entry missing', url)
                 continue
 
             if url.lower().find('nzbmatrix.com') > 0:
@@ -116,7 +114,7 @@ class URLGrabber(Thread):
             else:
                 # _grab_url cannot reside in a function, because the tempfile
                 # would not survive the end of the function
-                logging.info('[%s] Grabbing URL %s', __NAME__, url)
+                logging.info('Grabbing URL %s', url)
                 opener = urllib.FancyURLopener({})
                 opener.prompt_user_passwd = None
                 opener.addheader('Accept-encoding','gzip')
@@ -188,7 +186,7 @@ def _grab_nzbmatrix(url):
     else:
         return (None, None)
 
-    logging.info('[%s] Fetching NZB for nzbmatrix report #%s', __NAME__, msgid)
+    logging.info('Fetching NZB for nzbmatrix report #%s', msgid)
 
     if _HAVE_SSL:
         login_url = 'https://nzbmatrix.com/account-login.php'
@@ -200,8 +198,8 @@ def _grab_nzbmatrix(url):
     # TODO don't hardcode these
     cmn_headers = {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
 
-    logging.debug('[%s] Using login url: %s', __NAME__, login_url)
-    logging.debug('[%s] Using download url: %s', __NAME__, download_url)
+    logging.debug('Using login url: %s', login_url)
+    logging.debug('Using download url: %s', download_url)
 
     # username and password
     login_info = {'username': cfg.USERNAME_MATRIX.get(), 'password': cfg.PASSWORD_MATRIX.get()}
@@ -218,7 +216,7 @@ def _grab_nzbmatrix(url):
 
     # assuming the login is successful( should through an exception if it is not)
     # create the download link
-    logging.info('[%s] Downloading NZB: %s', __NAME__, download_url)
+    logging.info('Downloading NZB: %s', download_url)
 
     #create the download request
     request = urllib2.Request(download_url, None, cmn_headers)
@@ -233,12 +231,12 @@ def _grab_nzbmatrix(url):
         # save the filename from the headers
         filename = response.info()["Content-Disposition"].split("\"")[1]
     except:
-        logging.warning('[%s] Problem accessing nzbmatrix server.', __NAME__)
+        logging.warning('Problem accessing nzbmatrix server.')
         return (None, True)
 
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably an invalid report number
-        logging.warning('[%s] Invalid nzbmatrix report number %s', __NAME__, msgid)
+        logging.warning('Invalid nzbmatrix report number %s', msgid)
         return (None, False)
 
     # save the file to disk
@@ -250,8 +248,8 @@ def _grab_nzbmatrix(url):
         os.write(fn, data)
         os.close(fn)
     except:
-        logging.error("[%s] Cannot create temp file for %s", __NAME__, filename)
-        logging.debug("[%s] Traceback: ", __NAME__, exc_info = True)
+        logging.error("Cannot create temp file for %s", filename)
+        logging.debug("Traceback: ", exc_info = True)
         path = None
 
     return (path, filename)

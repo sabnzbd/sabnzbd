@@ -19,8 +19,6 @@
 sabnzbd.codecs - Unicoded filename support
 """
 
-__NAME__ = "codecs"
-
 import os
 import sys
 from xml.sax.saxutils import escape

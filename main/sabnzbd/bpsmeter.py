@@ -19,8 +19,6 @@
 sabnzbd.bpsmeter - bpsmeter
 """
 
-__NAME__ = 'bpsmeter'
-
 import time
 import logging
 
@@ -59,7 +57,7 @@ class BPSMeter:
             self.reset()
             
         elif self.log_time < check_time:
-            logging.debug("[%s] bps: %s", __NAME__, self.bps)
+            logging.debug("bps: %s", self.bps)
             self.log_time = t
 
     def get_sum(self):
