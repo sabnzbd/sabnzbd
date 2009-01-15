@@ -218,7 +218,7 @@ class NoPage:
         pass
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         return badParameterResponse('Error: No secondary interface defined.')
 
 
@@ -1239,7 +1239,7 @@ class ConfigGeneral:
     @cherrypy.expose
     def saveGeneral(self, host = None, port = None, web_username = None, web_password = None, web_dir = None,
                     web_dir2 = None, web_color = None,
-                    cronlines = None, refresh_rate = None, rss_rate = None,
+                    refresh_rate = None, rss_rate = None,
                     bandwith_limit = None, cleanup_list = None, cache_limitstr = None, _dc = None):
 
         cfg.CHERRYHOST.set(host)
@@ -1635,7 +1635,7 @@ class ConfigNewzbin:
 
     @cherrypy.expose
     def saveNewzbin(self, username_newzbin = None, password_newzbin = None,
-                    create_category_folders = None, newzbin_bookmarks = None,
+                    newzbin_bookmarks = None,
                     newzbin_unbookmark = None, bookmark_rate = None,
                     username_matrix = None, password_matrix = None, _dc = None):
 
@@ -2539,7 +2539,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
         start = int(start)
     except:
         start = 0
-        
+
     queue = postproc.history_queue()
     if search:
         queue_search = []
@@ -2547,14 +2547,14 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
             if search in nzo.get_original_dirname():
                 queue_search.append(nzo)
         queue = queue_search
-    
+
 
     if start > len(queue):
         queue = []
     else:
         queue[start:]
     limit -= len(queue)
-    
+
 
 
     history_db = cherrypy.thread_data.history_db
@@ -3097,8 +3097,10 @@ def format_history_for_queue():
 
     return slotinfo
 
-def get_active_history(queue=None, items=[]):
+def get_active_history(queue=None, items=None):
     # Get the currently in progress and active history queue.
+    if not items:
+        items = []
     if not queue:
         queue = postproc.history_queue()
 

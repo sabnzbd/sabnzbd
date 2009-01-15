@@ -91,7 +91,7 @@ def guard_loglevel():
 
 
 #------------------------------------------------------------------------------
-class FilterCP3(logging.Filter):
+class FilterCP3():
     ### Filter out all CherryPy3 logging that we receive,
     ### because we have the root logger
     def __init__(self):
@@ -183,6 +183,7 @@ GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 """ % (sabnzbd.MY_NAME, sabnzbd.__version__)
 
 
+#------------------------------------------------------------------------------
 def daemonize():
     try:
         pid = os.fork()
@@ -209,7 +210,7 @@ def daemonize():
     dev_null = file('/dev/null', 'r')
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
 
-
+#------------------------------------------------------------------------------
 def Bail_Out(browserhost, cherryport):
     """Abort program because of CherryPy troubles
     """
@@ -218,6 +219,7 @@ def Bail_Out(browserhost, cherryport):
     sabnzbd.halt()
     ExitSab(2)
 
+#------------------------------------------------------------------------------
 def Web_Template(key, defweb, wdir):
     """ Determine a correct web template set,
         return full template path
@@ -250,6 +252,7 @@ def Web_Template(key, defweb, wdir):
     return real_path(full_dir, "templates")
 
 
+#------------------------------------------------------------------------------
 def CheckColor(color, web_dir):
     """ Check existence of color-scheme """
     if color and os.path.exists(os.path.join(web_dir,'static/stylesheets/colorschemes/'+color+'.css')):
@@ -257,6 +260,7 @@ def CheckColor(color, web_dir):
     else:
         return ''
 
+#------------------------------------------------------------------------------
 def GetProfileInfo(vista):
     """ Get the default data locations
     """
@@ -329,6 +333,7 @@ def GetProfileInfo(vista):
         ExitSab(2)
 
 
+#------------------------------------------------------------------------------
 def print_modules():
     """ Log all detected optional or external modules
     """
@@ -374,6 +379,88 @@ def print_modules():
         logging.info("pyOpenSSL... NOT found - try apt-get install python-pyopenssl (SSL is optional)")
 
 
+#------------------------------------------------------------------------------
+def get_webhost(cherryhost, cherryport):
+    """ Determine the webhost address and port,
+        return (host, port, browserhost)
+    """
+    if cherryhost == None:
+        cherryhost = sabnzbd.cfg.CHERRYHOST.get()
+    else:
+        sabnzbd.cfg.CHERRYHOST.set(cherryhost)
+
+    # Get IP address, but discard APIPA/IPV6
+    # If only APIPA's or IPV6 are found, fall back to localhost
+    ipv4 = ipv6 = False
+    localhost = hostip = 'localhost'
+    try:
+        info = socket.getaddrinfo(socket.gethostname(), None)
+    except:
+        # Hostname does not resolve, use 0.0.0.0
+        cherryhost = '0.0.0.0'
+        info = socket.getaddrinfo(localhost, None)
+    for item in info:
+        ip = item[4][0]
+        if ip.find('169.254.') == 0:
+            pass # Is an APIPA
+        elif ip.find(':') >= 0:
+            ipv6 = True
+        elif ip.find('.') >= 0:
+            ipv4 = True
+            hostip = ip
+            break
+
+    if cherryhost == '':
+        if ipv6 and ipv4:
+            # To protect Firefox users, use numeric IP
+            cherryhost = hostip
+            browserhost = hostip
+        else:
+            cherryhost = socket.gethostname()
+            browserhost = cherryhost
+    elif cherryhost == '0.0.0.0':
+        # Just take the gamble for this
+        cherryhost = '0.0.0.0'
+        browserhost = localhost
+    elif cherryhost.find('[') >= 0 or cherryhost.find(':') >= 0:
+        # IPV6
+        browserhost = cherryhost
+    elif cherryhost.replace('.', '').isdigit():
+        # IPV4 numerical
+        browserhost = cherryhost
+    elif cherryhost == localhost:
+        cherryhost = localhost
+        browserhost = localhost
+    else:
+        # If on Vista and/or APIPA, use numerical IP, to help FireFoxers
+        if ipv6 and ipv4:
+            cherryhost = hostip
+        browserhost = cherryhost
+
+    # Some systems don't like brackets in numerical ipv6
+    if cherryhost.find('[') >= 0:
+        try:
+            info = socket.getaddrinfo(cherryhost, None)
+        except:
+            cherryhost = cherryhost.strip('[]')
+
+    if ipv6 and ipv4 and \
+        (browserhost not in ('localhost', '127.0.0.1', '[::1]', '::1')):
+        sabnzbd.AMBI_LOCALHOST = True
+        logging.info("IPV6 has priority on this system, potential Firefox issue")
+
+    if ipv6 and ipv4 and cherryhost == '' and os.name == 'nt':
+        logging.warning("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
+
+    if cherryport == None:
+        cherryport= sabnzbd.cfg.CHERRYPORT.get_int()
+    else:
+        sabnzbd.cfg.CHERRYPORT.set(str(cherryport))
+
+    return cherryhost, cherryport, browserhost
+
+
+#------------------------------------------------------------------------------
 def main():
     global LOG_FLAG
 
@@ -415,7 +502,7 @@ def main():
 
     fork = False
     pause = False
-    f = None
+    inifile = None
     cherryhost = None
     cherryport = None
     cherrypylogging = None
@@ -429,65 +516,65 @@ def main():
     force_web = False
     https = False
 
-    for o, a in opts:
-        if (o in ('-d', '--daemon')):
+    for opt, arg in opts:
+        if (opt in ('-d', '--daemon')):
             if os.name != 'nt':
                 fork = True
             AUTOBROWSER = False
             sabnzbd.DAEMON = True
             consoleLogging = False
-        if o in ('-h', '--help'):
+        elif opt in ('-h', '--help'):
             print_help()
             ExitSab(0)
-        if o in ('-f', '--config-file'):
-            f = a
-        if o in ('-t', '--templates'):
-            web_dir = a
-        if o in ('-2', '--template2'):
-            web_dir2 = a
-        if o in ('-s', '--server'):
-            (cherryhost, cherryport) = SplitHost(a)
-        if o in ('-n', '--nobrowser'):
+        elif opt in ('-f', '--config-file'):
+            inifile = arg
+        elif opt in ('-t', '--templates'):
+            web_dir = arg
+        elif opt in ('-2', '--template2'):
+            web_dir2 = arg
+        elif opt in ('-s', '--server'):
+            (cherryhost, cherryport) = SplitHost(arg)
+        elif opt in ('-n', '--nobrowser'):
             AUTOBROWSER = False
-        if o in ('-b', '--browser'):
+        elif opt in ('-b', '--browser'):
             try:
-                AUTOBROWSER = bool(int(a))
+                AUTOBROWSER = bool(int(arg))
             except:
                 AUTOBROWSER = True
-        if o in ('-c', '--clean'):
+        elif opt in ('-c', '--clean'):
             clean_up= True
-        if o in ('-w', '--weblogging'):
+        elif opt in ('-w', '--weblogging'):
             try:
-                cherrypylogging = int(a)
+                cherrypylogging = int(arg)
             except:
                 cherrypylogging = -1
             if cherrypylogging < 0 or cherrypylogging > 1:
                 print_help()
                 ExitSab(1)
-        if o in ('-l', '--logging'):
+        elif opt in ('-l', '--logging'):
             try:
-                logging_level = int(a)
+                logging_level = int(arg)
             except:
                 logging_level = -1
             if logging_level < 0 or logging_level > 2:
                 print_help()
                 ExitSab(1)
-        if o in ('-v', '--version'):
+        elif opt in ('-v', '--version'):
             print_version()
             ExitSab(0)
-        if o in ('-p', '--pause'):
+        elif opt in ('-p', '--pause'):
             pause = True
-        if o in ('--delay'):
+        elif opt in ('--delay'):
             # For debugging of memory leak only!!
             try:
-                delay = float(a)
+                delay = float(arg)
             except:
                 pass
-        if o in ('--force'):
+        elif opt in ('--force'):
             force_web = True
-        if o in ('--https'):
+        elif opt in ('--https'):
             https = True
-        if o in ('--testlog'):
+        elif opt in ('--testlog'):
             testlog = True
 
 
@@ -497,25 +584,25 @@ def main():
             vista = True
             vista64 = 'ProgramFiles(x86)' in os.environ
 
-    if f:
+    if inifile:
         # INI file given, simplest case
-        f = os.path.normpath(os.path.abspath(f))
+        inifile = os.path.normpath(os.path.abspath(inifile))
     else:
         # No ini file given, need profile data
         GetProfileInfo(vista)
         # Find out where INI file is
-        f = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
-        if not os.path.exists(f):
-            f = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
+        inifile = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
+        if not os.path.exists(inifile):
+            inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
 
     # If INI file at non-std location, then use program dir as $HOME
-    if sabnzbd.DIR_LCLDATA != os.path.dirname(f):
-        sabnzbd.DIR_HOME = os.path.dirname(f)
+    if sabnzbd.DIR_LCLDATA != os.path.dirname(inifile):
+        sabnzbd.DIR_HOME = os.path.dirname(inifile)
 
     # All system data dirs are relative to the place we found the INI file
-    sabnzbd.DIR_LCLDATA = os.path.dirname(f)
+    sabnzbd.DIR_LCLDATA = os.path.dirname(inifile)
 
-    if not os.path.exists(f) and not os.path.exists(sabnzbd.DIR_LCLDATA):
+    if not os.path.exists(inifile) and not os.path.exists(sabnzbd.DIR_LCLDATA):
         try:
             os.makedirs(sabnzbd.DIR_LCLDATA)
         except IOError:
@@ -524,8 +611,8 @@ def main():
 
     sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA, sabnzbd.DIR_PROG, sabnzbd.DIR_INTERFACES)
 
-    if not config.read_config(f):
-        Panic('"%s" is not a valid configuration file.' % f, \
+    if not config.read_config(inifile):
+        Panic('"%s" is not a valid configuration file.' % inifile, \
               'Specify a correct file or delete this file.')
         ExitSab(1)
 
@@ -636,78 +723,8 @@ def main():
                       sabnzbd.MY_NAME, sabnzbd.__version__)
         ExitSab(2)
 
-    if cherryhost == None:
-        cherryhost = sabnzbd.cfg.CHERRYHOST.get()
-    else:
-        sabnzbd.cfg.CHERRYHOST.set(cherryhost)
-
-    # Get IP address, but discard APIPA/IPV6
-    # If only APIPA's or IPV6 are found, fall back to localhost
-    ipv4 = ipv6 = False
-    localhost = hostip = 'localhost'
-    try:
-        info = socket.getaddrinfo(socket.gethostname(), None)
-    except:
-        # Hostname does not resolve, use 0.0.0.0
-        cherryhost = '0.0.0.0'
-        info = socket.getaddrinfo(localhost, None)
-    for item in info:
-        ip = item[4][0]
-        if ip.find('169.254.') == 0:
-            pass # Is an APIPA
-        elif ip.find(':') >= 0:
-            ipv6 = True
-        elif ip.find('.') >= 0:
-            ipv4 = True
-            hostip = ip
-            break
-
-    if cherryhost == '':
-        if ipv6 and ipv4:
-            # To protect Firefox users, use numeric IP
-            cherryhost = hostip
-            browserhost = hostip
-        else:
-            cherryhost = socket.gethostname()
-            browserhost = cherryhost
-    elif cherryhost == '0.0.0.0':
-        # Just take the gamble for this
-        cherryhost = '0.0.0.0'
-        browserhost = localhost
-    elif cherryhost.find('[') >= 0 or cherryhost.find(':') >= 0:
-        # IPV6
-        browserhost = cherryhost
-    elif cherryhost.replace('.', '').isdigit():
-        # IPV4 numerical
-        browserhost = cherryhost
-    elif cherryhost == localhost:
-        cherryhost = localhost
-        browserhost = localhost
-    else:
-        # If on Vista and/or APIPA, use numerical IP, to help FireFoxers
-        if ipv6 and ipv4:
-            cherryhost = hostip
-        browserhost = cherryhost
-
-    # Some systems don't like brackets in numerical ipv6
-    if cherryhost.find('[') >= 0:
-        try:
-            info = socket.getaddrinfo(cherryhost, None)
-        except:
-            cherryhost = cherryhost.strip('[]')
-
-    if ipv6 and ipv4 and \
-        (browserhost not in ('localhost', '127.0.0.1', '[::1]', '::1')):
-        sabnzbd.AMBI_LOCALHOST = True
-        logging.info("IPV6 has priority on this system, potential Firefox issue")
-
-    if ipv6 and ipv4 and cherryhost == '' and os.name == 'nt':
-        logging.warning("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
-
-    if cherryport == None:
-        cherryport= sabnzbd.cfg.CHERRYPORT.get_int()
-    else:
-        sabnzbd.cfg.CHERRYPORT.set(str(cherryport))
+    # Determine web host address
+    cherryhost, cherryport, browserhost = get_webhost(cherryhost, cherryport)
 
     os.chdir(sabnzbd.DIR_PROG)
 
