@@ -557,7 +557,7 @@ def get_config(section, keyword):
         item = database[section][keyword]
     except KeyError:
         item = None
-        logging.info('[%s], Missing configuration item %s,%s', section, keyword)
+        logging.info('Missing configuration item %s,%s', section, keyword)
 
     return item
 
