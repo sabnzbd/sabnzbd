@@ -598,6 +598,7 @@ class MainPage:
             sabnzbd.halt()
             cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
+            return 'ok\n'
 
         if mode == 'warnings':
             if output == 'json':
