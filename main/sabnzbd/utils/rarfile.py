@@ -312,7 +312,7 @@ class RarFile:
             return h
 
         # crc failed
-        logging.error("[rarfile] CRC mismatch! ofs =%s", h.header_offset)
+        logging.error("CRC mismatch! ofs =%s", h.header_offset)
         # instead panicing, send eof
         return None
 
