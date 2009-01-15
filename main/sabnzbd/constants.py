@@ -82,6 +82,7 @@ DEF_WORKDIR      = 'sabnzbd'
 DEF_LOG_FILE     = 'sabnzbd.log'
 DEF_LOG_ERRFILE  = 'sabnzbd.error.log'
 DEF_LOG_CHERRY   = 'cherrypy.log'
+DEF_LOG_CHERRY_ACCESS = 'cherrypy.access.log'
 DEF_TIMEOUT      = 120
 MIN_TIMEOUT      = 30
 MAX_TIMEOUT      = 200
@@ -100,12 +101,12 @@ LOW_PRIORITY = -1
 
 series_match = [ ('([sS]|[\d]+)x(\d+)', # 1x01
                      ['^[-\.]+([sS]|[\d])+x(\d+)', '^[-\.](\d+)'] ),  #(MATCHER, [EXTRA,MATCHERS])
-                     
+
                       ('[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
                        ['^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)', '^[-\.](\d+)']) ] # Extra matchers
-                      
+
                       #possibly flawed - 101 - support: [\.\- \s]?(\d)(\d{2,2})[\.\- \s]?
-                      
+
 date_match = ['(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
               '(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
 

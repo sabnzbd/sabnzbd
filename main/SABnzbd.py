@@ -91,6 +91,14 @@ def guard_loglevel():
 
 
 #------------------------------------------------------------------------------
+class FilterCP3(logging.Filter):
+    ### Filter out all CherryPy3 logging that we receive,
+    ### because we have the root logger
+    def __init__(self):
+        pass
+    def filter(self, record):
+        return record.module != '_cplogging'
+
 class guiHandler(logging.Handler):
     """
     Logging handler collects the last warnings/errors/exceptions
@@ -166,7 +174,7 @@ def print_version():
     print """
 %s-%s
 
-Copyright (C) 2008, The SABnzbd-Team <team@sabnzbd.org>
+Copyright (C) 2008-2009, The SABnzbd-Team <team@sabnzbd.org>
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
@@ -323,8 +331,11 @@ def GetProfileInfo(vista):
 
 
 def main():
+    global LOG_FLAG
 
     AUTOBROWSER = None
+    testlog = False # Allow log options for test-releases
+
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
@@ -333,7 +344,7 @@ def main():
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
 
-    LOGLEVELS = [ logging.WARNING, logging.INFO, logging.DEBUG ]
+    LOGLEVELS = (logging.WARNING, logging.INFO, logging.DEBUG)
 
     # Setup primary logging to prevent default console logging
     gui_log = guiHandler(MAX_WARNINGS)
@@ -350,9 +361,10 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "phdvncw:l:s:f:t:b:2:",
-                     ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=', \
-                      'weblogging=', 'server=', 'templates', \
-                      'template2', 'browser=', 'config-file=', 'delay=', 'force', 'version', 'https'])
+                     ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
+                      'weblogging=', 'server=', 'templates',
+                      'template2', 'browser=', 'config-file=', 'delay=', 'force',
+                      'version', 'https', 'testlog'])
     except getopt.GetoptError:
         print_help()
         ExitSab(2)
@@ -431,6 +443,8 @@ def main():
             force_web = True
         if o in ('--https'):
             https = True
+        if o in ('--testlog'):
+            testlog = True
 
 
     # Detect Vista or higher
@@ -483,7 +497,7 @@ def main():
         sabnzbd.cfg.LOG_LEVEL.set(logging_level)
 
     ver, testRelease = ConvertVersion(sabnzbd.__version__)
-    if testRelease:
+    if testRelease and not testlog:
         logging_level = 2
         cherrypylogging = True
 
@@ -507,9 +521,9 @@ def main():
                        logsize,
                        sabnzbd.cfg.LOG_BACKUPS.get())
 
-        rollover_log.setLevel(LOGLEVELS[logging_level])
         format = '%(asctime)s::%(levelname)s::%(message)s'
         rollover_log.setFormatter(logging.Formatter(format))
+        rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log
         logger.addHandler(rollover_log)
         logger.setLevel(LOGLEVELS[logging_level])
@@ -539,6 +553,7 @@ def main():
 
             if consoleLogging:
                 console = logging.StreamHandler()
+                console.addFilter(FilterCP3())
                 console.setLevel(LOGLEVELS[logging_level])
                 console.setFormatter(logging.Formatter(format))
                 logger.addHandler(console)
@@ -717,10 +732,12 @@ def main():
 
     cherrylogtoscreen = False
     sabnzbd.WEBLOGFILE = None
+    access_file = None
 
     if cherrypylogging:
         if logdir:
-            sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY);
+            sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
+            access_file = os.path.join(logdir, DEF_LOG_CHERRY_ACCESS)
         if not fork:
             try:
                 x= sys.stderr.fileno
@@ -730,17 +747,19 @@ def main():
                 cherrylogtoscreen = False
 
     cherrypy.config.update({'server.environment': 'production',
-                             'server.socket_host': cherryhost,
-                             'server.socket_port': cherryport,
-                             'server.logToScreen': cherrylogtoscreen,
-                             'server.logFile': sabnzbd.WEBLOGFILE,
-                             'engine.autoreload_frequency' : 100,
-                             'engine.autoreload_on' : False,
-                             'tools.encode.on' : True,
-                             'tools.gzip.on' : True,
-                             'tools.sessions.on' : True,
-                             'server.show_tracebacks': True,
-                             'error_page.401': sabnzbd.misc.error_page_401
+                            'server.socket_host': cherryhost,
+                            'server.socket_port': cherryport,
+                            'server.logToScreen': cherrylogtoscreen,
+                            'log.error_file' : sabnzbd.WEBLOGFILE,
+                            'log.access_file' : access_file,
+                            'engine.autoreload_frequency' : 100,
+                            'engine.autoreload_on' : False,
+                            'tools.encode.on' : True,
+                            'tools.gzip.on' : True,
+                            'tools.sessions.on' : True,
+                            'request.show_tracebacks': True,
+                            'checker.check_localhost' : bool(consoleLogging),
+                            'error_page.401': sabnzbd.misc.error_page_401
                            })
 
     ssl_ca = sabnzbd.cfg.SSL_CA.get_path()
@@ -816,9 +835,12 @@ def main():
             cherrypy.engine._do_execv()
 
         # Check for loglevel changes, ignore for non-final releases
-        if (not testRelease) and LOG_FLAG:
+        if LOG_FLAG and (testlog or not testRelease):
             LOG_FLAG = False
-            logger.setLevel(LOGLEVELS[sabnzbd.cfg.LOG_LEVEL.get()])
+            level = LOGLEVELS[sabnzbd.cfg.LOG_LEVEL.get()]
+            logger.setLevel(level)
+            if consoleLogging:
+                console.setLevel(level)
 
         ### 30 sec polling tasks
         if timer > 9:
