@@ -177,6 +177,14 @@ def stop():
         __SCHED = None
 
 
+def abort():
+    """ Emergency stop, just set the running attribute false
+    """
+    global __SCHED
+    if __SCHED:
+        logging.debug('Terminating scheduler')
+        __SCHED.running = False
+
 
 def sort_schedules(forward):
     """ Sort the schedules, based on order of happening from now

@@ -264,7 +264,8 @@ def halt():
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
         # needed to stop the scheduler.
-        ### scheduler.stop()
+        # We must tell the scheduler to deactivate.
+        scheduler.abort()
 
         logging.info('All processes stopped')
 
