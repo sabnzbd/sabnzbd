@@ -55,6 +55,7 @@ PANIC_TEMPL = 2
 PANIC_QUEUE = 3
 PANIC_FWALL = 4
 PANIC_OTHER = 5
+PANIC_XPORT = 6
 
 def Lower(txt):
     if txt:
@@ -335,6 +336,19 @@ MSG_BAD_PORT = r'''
     If you get this error message again, please try a different number.<br>
 '''
 
+MSG_ILL_PORT = r'''
+    SABnzbd needs a free tcp/ip port for its internal web server.<br>
+    Port %s on %s was tried , but the account SABnzbd has no permission to use it.<br>
+    On Linux systems, normal users must use ports above 1023.<br>
+    <br>
+    Please restart SABnzbd with a different port number.<br>
+    <br>
+    %s<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
+    <br>
+    If you get this error message again, please try a different number.<br>
+'''
+
 MSG_BAD_QUEUE = r'''
     SABnzbd detected saved data from an other SABnzbd version<br>
     but cannot re-use the data of the other program.<br><br>
@@ -377,6 +391,13 @@ def panic_message(panic, a=None, b=None):
         newport = int(b) + 1
         newport = "%s" % newport
         msg = MSG_BAD_PORT % (b, a, os_str, prog_path, a, newport)
+    elif panic == PANIC_XPORT:
+        if int(b) < 1023:
+            newport = 1024
+        else:
+            newport = int(b) + 1
+        newport = "%s" % newport
+        msg = MSG_ILL_PORT % (b, a, os_str, prog_path, a, newport)
     elif panic == PANIC_TEMPL:
         msg = MSG_BAD_TEMPL % a
     elif panic == PANIC_QUEUE:
@@ -403,6 +424,10 @@ def Panic_FWall(vista):
 
 def Panic_Port(host, port):
     launch_a_browser(panic_message(PANIC_PORT, host, port))
+
+def Panic_XPort(host, port):
+    launch_a_browser(panic_message(PANIC_XPORT, host, port))
+    logging.error('You have no permisson to use port %s', port)
 
 def Panic_Queue(name):
     launch_a_browser(panic_message(PANIC_QUEUE, name, 0))

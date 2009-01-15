@@ -62,7 +62,7 @@ from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import Get_User_ShellFolders, launch_a_browser, from_units, \
                          check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-                         Notify, SplitHost, ConvertVersion
+                         Panic_XPort, Notify, SplitHost, ConvertVersion
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -211,11 +211,14 @@ def daemonize():
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
 
 #------------------------------------------------------------------------------
-def Bail_Out(browserhost, cherryport):
+def Bail_Out(browserhost, cherryport, access=False):
     """Abort program because of CherryPy troubles
     """
     logging.error("Failed to start web-interface")
-    Panic_Port(browserhost, cherryport)
+    if access:
+       Panic_XPort(browserhost, cherryport)
+    else:
+       Panic_Port(browserhost, cherryport)
     sabnzbd.halt()
     ExitSab(2)
 
@@ -832,6 +835,8 @@ def main():
                 ExitSab(2)
         else:
             Bail_Out(browserhost, cherryport)
+    except socket.error, error:
+        Bail_Out(browserhost, cherryport, access=True)
     except:
         Bail_Out(browserhost, cherryport)
 
