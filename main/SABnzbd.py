@@ -92,12 +92,13 @@ def guard_loglevel():
 
 #------------------------------------------------------------------------------
 class FilterCP3():
-    ### Filter out all CherryPy3 logging that we receive,
+    ### Filter out all CherryPy3-Access logging that we receive,
     ### because we have the root logger
     def __init__(self):
         pass
     def filter(self, record):
-        return record.module != '_cplogging'
+        return not (record.module == '_cplogging' and record.funcName == 'access')
+
 
 class guiHandler(logging.Handler):
     """
@@ -155,7 +156,7 @@ def print_help():
     print "  -2  --template2 <templ>  Secondary template dir [*]"
     print
     print "  -l  --logging <0..2>     Set logging level (0= least, 2= most) [*]"
-    print "  -w  --weblogging <0..1>  Set cherrypy logging (0= off, 1= on) [*]"
+    print "  -w  --weblogging <0..2>  Set cherrypy logging (0= off, 1= on, 2= file-only) [*]"
     print
     print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
     if os.name != 'nt':
@@ -551,7 +552,7 @@ def main():
                 cherrypylogging = int(arg)
             except:
                 cherrypylogging = -1
-            if cherrypylogging < 0 or cherrypylogging > 1:
+            if cherrypylogging < 0 or cherrypylogging > 2:
                 print_help()
                 ExitSab(1)
         elif opt in ('-l', '--logging'):
@@ -633,7 +634,7 @@ def main():
     ver, testRelease = ConvertVersion(sabnzbd.__version__)
     if testRelease and not testlog:
         logging_level = 2
-        cherrypylogging = True
+        cherrypylogging = 1
 
     logdir = sabnzbd.cfg.LOG_DIR.get_path()
     if fork and not logdir:
@@ -762,21 +763,21 @@ def main():
     if cherrypylogging:
         if logdir:
             sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-            access_file = os.path.join(logdir, DEF_LOG_CHERRY_ACCESS)
         if not fork:
             try:
                 x= sys.stderr.fileno
                 x= sys.stdout.fileno
-                cherrylogtoscreen = True
+                if cherrypylogging == 1:
+                   cherrylogtoscreen = True
             except:
-                cherrylogtoscreen = False
+                pass
 
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
-                            'server.logToScreen': cherrylogtoscreen,
-                            'log.error_file' : sabnzbd.WEBLOGFILE,
-                            'log.access_file' : access_file,
+                            'log.screen': cherrylogtoscreen,
+                            'log.error_file' : None,
+                            'log.access_file' : sabnzbd.WEBLOGFILE,
                             'engine.autoreload_frequency' : 100,
                             'engine.autoreload_on' : False,
                             'tools.encode.on' : True,

@@ -83,7 +83,6 @@ DEF_WORKDIR      = 'sabnzbd'
 DEF_LOG_FILE     = 'sabnzbd.log'
 DEF_LOG_ERRFILE  = 'sabnzbd.error.log'
 DEF_LOG_CHERRY   = 'cherrypy.log'
-DEF_LOG_CHERRY_ACCESS = 'cherrypy.access.log'
 DEF_TIMEOUT      = 120
 MIN_TIMEOUT      = 30
 MAX_TIMEOUT      = 200
