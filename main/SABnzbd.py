@@ -811,13 +811,11 @@ def main():
         appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
         appconfig['/sabnzbd/m/static'] = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
 
-    if sabnzbd.cfg.USERNAME.get() and sabnzbd.cfg.PASSWORD.get():
-        appconfig['/sabnzbd'] = {'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
-                                'tools.basic_auth.users' : sabnzbd.interface.get_users, 'tools.basic_auth.encrypt' : sabnzbd.interface.encrypt_pwd}
-
-
     login_page = LoginPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/')
     cherrypy.tree.mount(login_page, '/', config=appconfig)
+
+    # Set authentication for CherryPy
+    sabnzbd.interface.set_auth(cherrypy.config)
 
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
 

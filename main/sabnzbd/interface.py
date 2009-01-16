@@ -186,6 +186,17 @@ def encrypt_pwd(pwd):
     return pwd
 
 
+def set_auth(conf):
+    """ Set the authentication for CherryPy
+    """
+    if cfg.USERNAME.get():
+        conf.update({'/sabnzbd':{'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
+                            'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd}})
+    else:
+        conf.update({'/sabnzbd':{'tools.basic_auth.on':False}})
+
+
+
 #------------------------------------------------------------------------------
 # Database support
 def connect_db(thread_index):
@@ -971,7 +982,7 @@ class HistoryPage:
             history_db = cherrypy.thread_data.history_db
             history_db.remove_history(jobs)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
-    
+
     @cherrypy.expose
     def purge_failed(self, _dc = None, start=None, limit=None, search=None):
         history_db = cherrypy.thread_data.history_db
@@ -1260,13 +1271,6 @@ class ConfigGeneral:
             cleanup_list = cleanup_list.lower()
         cfg.CLEANUP_LIST.set_string(cleanup_list)
         cfg.CACHE_LIMIT.set(cache_limitstr)
-        
-        cherry_cfg = cherrypy.request.app.config
-        if web_username:
-            cherry_cfg.update({'/sabnzbd':{'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
-                                'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd}})
-        else:
-            cherry_cfg.update({'/sabnzbd':{'tools.basic_auth.on':False}})
 
         try:
             web_dir, web_color = web_dir.split(' - ')
@@ -1293,6 +1297,9 @@ class ConfigGeneral:
         cfg.WEB_COLOR2.set(web_color2)
 
         config.save_config()
+
+        # Update CherryPy authentication
+        set_auth(cherrypy.request.app.config)
         raise Raiser(self.__root, _dc=_dc)
 
 
@@ -2565,7 +2572,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
             logging.error('Failed to compile regex for search term: %s', search_text)
             return False
         return re_search.search(text)
-        
+
     queue = postproc.history_queue()
     if search:
         queue = [nzo for nzo in queue if matches_search(nzo.get_original_dirname(), search)]
