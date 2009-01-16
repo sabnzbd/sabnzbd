@@ -936,7 +936,7 @@ class HistoryPage:
         #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
         #history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
 
-        history['total_size'] = get_history_size()
+        history['total_size'], history['month_size'], history['week_size'] = get_history_size()
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search)
 
@@ -2535,8 +2535,8 @@ def json_files(id):
 
 def get_history_size():
     history_db = cherrypy.thread_data.history_db
-    bytes = history_db.get_history_size()
-    return format_bytes(bytes)
+    bytes, month, week = history_db.get_history_size()
+    return (format_bytes(bytes), format_bytes(month), format_bytes(week))
 
 def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=[], search=None):
 

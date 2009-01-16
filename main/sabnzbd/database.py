@@ -29,6 +29,8 @@ except:
 
 import os
 import time
+import datetime
+from calendar import MONDAY
 import zlib
 import logging
 from threading import Thread
@@ -192,10 +194,38 @@ class HistoryDB:
         return (items, fetched_items, total_items)
     
     def get_history_size(self):
-        if self.execute('SELECT sum(bytes) FROM history'):
+        """ 
+        Returns the total size of the history and 
+        amounts downloaded in the last month and week 
+        """
+        # Total Size of the history
+        if self.execute('''SELECT sum(bytes) FROM history'''):
             f = self.c.fetchone()
-            return f['sum(bytes)']
-        return 0
+            total = f['sum(bytes)']
+        else:
+            total = 0
+        
+        # Amount downloaded this month
+        r = time.gmtime(time.time())
+        month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
+        
+        if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (month_timest,)):
+            f = self.c.fetchone()
+            month = f['sum(bytes)']
+        else:
+            month = 0
+            
+        # Amount downloaded this week
+        monday = find_monday()
+        week_timest = int(time.mktime(find_monday()))
+        
+        if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (week_timest,)):
+            f = self.c.fetchone()
+            week = f['sum(bytes)']
+        else:
+            week = 0
+        
+        return (total, month, week)
     
     
     def get_script_log(self, nzo_id):
@@ -335,4 +365,11 @@ def decode_factory(text):
         return text
     else:
         return text
-            
+    
+def find_monday():
+    last_monday = datetime.date.today()
+    minus_one_day = datetime.timedelta(days=1)
+    while last_monday.weekday() != MONDAY:
+        last_monday -= minus_one_day
+    return (last_monday.year, last_monday.month, last_monday.day, 0, 1, 1, 0, 0, 0)
+     

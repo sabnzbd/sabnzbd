@@ -4,12 +4,13 @@
     <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0',1, this.parentNode.parentNode.id);"><img class="delicon" src="static/images/key_enter.png" /></a>
     <a onclick="javascript:loadSearch('history', '', 'limit=$limit&start=$0',1, this.parentNode.parentNode.id);"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
 </div>
-<div class="centerLinks">
+
+<div class="centerLinks"><br />
     <a onClick="if(confirm('Delete the all items from the history?')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">Purge history</a> | 
 	<a onClick="if(confirm('Delete the all failed items from the history?')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">Purge failed items</a> | 
 	<a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then "Hide details" else "Show details"#--></a></span>
-</div>   
-History Size: $total_size
+</div>
+
 <% import datetime %>
 
 <!--#if $lines#-->
@@ -76,7 +77,9 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
     <!--#end for#-->
 <!--#end if#-->
 </table>
-
+<div class="centerLinks">
+    Size: <span class="bold">$total_size</span> | This month: <span class="bold">$month_size</span> | This week: <span class="bold">$week_size</span>
+</div>
 <br />
 <!--#if $finish == 1#-->
 Showing 1 result
