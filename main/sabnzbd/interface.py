@@ -971,6 +971,12 @@ class HistoryPage:
             history_db = cherrypy.thread_data.history_db
             history_db.remove_history(jobs)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
+    
+    @cherrypy.expose
+    def purge_failed(self, _dc = None, start=None, limit=None, search=None):
+        history_db = cherrypy.thread_data.history_db
+        history_db.remove_failed()
+        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
 
     @cherrypy.expose
     def reset(self, _dc = None, start=None, limit=None, search=None):

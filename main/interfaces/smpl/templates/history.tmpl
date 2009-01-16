@@ -5,7 +5,9 @@
     <a onclick="javascript:loadSearch('history', '', 'limit=$limit&start=$0',1, this.parentNode.parentNode.id);"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
 </div>
 <div class="centerLinks">
-    <a onClick="if(confirm('Delete the all items from the history?')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);">Purge history</a> | <a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then "Hide details" else "Show details"#--></a></span>
+    <a onClick="if(confirm('Delete the all items from the history?')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">Purge history</a> | 
+	<a onClick="if(confirm('Delete the all failed items from the history?')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">Purge failed items</a> | 
+	<a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then "Hide details" else "Show details"#--></a></span>
 </div>   
 History Size: $total_size
 <% import datetime %>
