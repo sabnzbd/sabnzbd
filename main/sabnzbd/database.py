@@ -23,7 +23,7 @@ try:
     import sqlite3
 except:
     try:
-        from pysqlite2 import sqlite3
+        import pysqlite2.dbapi2 as sqlite
     except:
         pass
 
@@ -148,8 +148,8 @@ class HistoryDB:
             # Default value
             search = ''
         else:
-            # Allow * for wildcard matching
-            search = search.replace('*','%')
+            # Allow * for wildcard matching and space
+            search = search.replace('*','%').replace(' ', '%')
             
         # Allow ^ for start of string and $ for end of string
         if search and search.startswith('^'):
@@ -213,48 +213,48 @@ def build_history_info(nzo, storage='', path='', postproc_time=0, script_output=
     ''' Collects all the information needed for the database '''
     
     flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
-    nzo_info = nzo.get_nzo_info()
+    nzo_info = decode_factory(nzo.get_nzo_info())
     
     # Get the url and newzbin msgid 
-    report = nzo_info.get('msgid', '')
+    report = decode_factory(nzo_info.get('msgid', ''))
     if report:
         url = 'https://newzbin.com/browse/post/%s/' % (report)
     else:
-        url = nzo_info.get('url', '')
+        url = decode_factory(nzo_info.get('url', ''))
     
     #group = nzo.get_group()
     
     completed = int(time.time())
-    name = nzo.get_original_dirname()
+    name = decode_factory(nzo.get_original_dirname())
     
-    nzb_name = nzo.get_filename()
-    category = nzo.get_cat()
+    nzb_name = decode_factory(nzo.get_filename())
+    category = decode_factory(nzo.get_cat())
     pps = ['','R','U','D']
     try:
         pp = pps[sabnzbd.opts_to_pp(flagRepair, flagUnpack, flagDelete)]
     except:
         pp = ''
-    script = nzo.get_script()
-    status = nzo.get_status()
+    script = decode_factory(nzo.get_script())
+    status = decode_factory(nzo.get_status())
     nzo_id = nzo.get_nzo_id()
     bytes = nzo.get_bytes_downloaded()
     
     if script_output:        
         # Compress the output of the script
-        script_log = sqlite3.Binary(zlib.compress(script_output))
+        script_log = sqlite3.Binary(zlib.compress(decode_factory(script_output)))
         #
     else:
-        script_log = ''
+        script_log = u''
     
-    download_time = nzo_info.get('download_time', 0)
+    download_time = decode_factory(nzo_info.get('download_time', 0))
 
     downloaded = nzo.get_bytes_downloaded()
     completeness = 0
-    fail_message = nzo.get_fail_msg()
+    fail_message = decode_factory(nzo.get_fail_msg())
     url_info = nzo_info.get('more_info', '')
     
     # Get the dictionary containing the stages and their unpack process
-    stages = nzo.get_unpack_info()
+    stages = decode_factory(nzo.get_unpack_info())
     # Pack the ditionary up into a single string
     # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
     lines = []
@@ -305,3 +305,31 @@ def unpack_history_info(item):
     if not item.has_key('action_line'):
         item['action_line'] = ''
     return item
+
+def decode_factory(text):
+    ''' 
+        Recursivly looks through the supplied argument
+        and converts and text to urf-8 
+    '''
+    if isinstance(text, str):
+        try:
+            text = text.decode('utf-8', 'replace')
+        except:
+            text = 'Could not decode text to utf-8'
+        return text
+    
+    elif isinstance(text, list):
+        i = 0
+        list_copy = [t for t in text]
+        for t in list_copy:
+            text[i] = decode_factory(t)
+            i += 1
+        return text
+    
+    elif isinstance(text, dict):
+        for key, item in text.copy().iteritems():
+            text[key] = decode_factory(item)
+        return text
+    else:
+        return text
+            

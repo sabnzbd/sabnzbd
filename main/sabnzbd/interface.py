@@ -2315,8 +2315,10 @@ def format_bytes(bytes):
     try:
         if bytes >= MEBI and bytes < GIGI:
             size = '%0.0f MB' % (bytes/MEBI)
-        elif bytes >= GIGI:
+        elif bytes >= GIGI and bytes < TEBI:
             size = '%0.2f GB' % (bytes/GIGI)
+        elif bytes >= TEBI:
+            size = '%0.2f TB' % (bytes/TEBI)
         else:
             size = '%0.0f KB' % (bytes/KIBI)
     except:
@@ -2541,19 +2543,31 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
     except:
         start = 0
 
+    def matches_search(text, search_text):
+        # Replace * with .* and ' ' with .
+        search_text = search_text.replace('*','.*').replace(' ','.')
+        try:
+            re_search = re.compile(search_text)
+        except:
+            logging.error('Failed to compile regex for search term: %s', search_text)
+            return False
+        return re_search.search(text)
+        
     queue = postproc.history_queue()
     if search:
-        queue_search = []
-        for nzo in queue:
-            if search in nzo.get_original_dirname():
-                queue_search.append(nzo)
-        queue = queue_search
-
+        queue = [nzo for nzo in queue if matches_search(nzo.get_original_dirname(), search)]
 
     if start > len(queue):
         queue = []
     else:
-        queue[start:]
+        try:
+            if start:
+                if limit:
+                    queue = queue[start:start+limit]
+                else:
+                    queue = queue[start:]
+        except:
+            pass
     limit -= len(queue)
 
 
