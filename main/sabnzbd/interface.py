@@ -2558,7 +2558,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
 
     def matches_search(text, search_text):
         # Replace * with .* and ' ' with .
-        search_text = search_text.replace('*','.*').replace(' ','.')
+        search_text = search_text.replace('*','.*').replace(' ','.*')
         try:
             re_search = re.compile(search_text)
         except:
