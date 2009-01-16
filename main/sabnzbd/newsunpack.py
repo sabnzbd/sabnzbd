@@ -47,7 +47,7 @@ except ImportError:
 
 
 
-RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|r\d\d|\d\d\d)$', re.I)
+RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|s\d\d|r\d\d|\d\d\d)$', re.I)
 RAR_RE_V3 = re.compile(r'\.(?P<ext>part\d*)$', re.I)
 
 LOADING_RE = re.compile(r'^Loading "(.+)"')
@@ -237,7 +237,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
                 error = True
             logging.info('Unzip finished on %s', workdir)
             nzo.set_action_line('', '')
-            
+
     if cfg.enable_tsjoin.get():
         do_tsjoin = False
         for _ts in xts:
@@ -271,9 +271,9 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
 
 def match_ts(file):
     match = TS_RE.search(file)
-    if not match: 
+    if not match:
         return False, '', 0
-    
+
     num = int(match.group(1))
     try:
         set = file[:match.start()]
@@ -293,7 +293,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 match, set, num = match_ts(joinable)
             if not set:
                 set = head
-                    
+
             if set not in joinable_sets:
                 joinable_sets[set] = []
             joinable_sets[set].append(joinable)
@@ -306,7 +306,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 for i in xrange(len(joinable_sets[joinable_set])+1):
                     expected_size += i
                 logging.debug("FJN, expsize: %s", expected_size)
-    
+
                 real_size = 0
                 for joinable in joinable_sets[joinable_set]:
                     head, tail = os.path.splitext(joinable)
@@ -316,11 +316,11 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                     else:
                         real_size += int(tail[1:])
                 logging.debug("FJN, realsize: %s", real_size)
-    
+
                 if real_size == expected_size:
                     joinable_sets[joinable_set].sort()
                     filename = joinable_set
-    
+
                     # Check if par2 repaired this joinable set
                     if os.path.exists(filename):
                         logging.debug("file_join(): Skipping %s, (probably) joined by par2", filename)
@@ -342,14 +342,14 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                                         pass
                                 i += 1
                         continue
-    
+
                     if workdir_complete:
                         filename = filename.replace(workdir, workdir_complete)
-    
+
                     logging.debug("file_join(): Assembling %s", filename)
-    
+
                     joined_file = open(filename, 'ab')
-    
+
                     i = 0
                     for joinable in joinable_sets[joinable_set]:
                         join_num = len(joinable_sets[joinable_set])
@@ -363,7 +363,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                         if delete:
                             logging.debug("Deleting %s", joinable)
                             os.remove(joinable)
-    
+
                     joined_file.flush()
                     joined_file.close()
                     nzo.set_unpack_info('filejoin', '[%s] Joined %s file%s' % (joinable_set, i, add_s(i)), set=joinable_set)
@@ -375,7 +375,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 logging.error('Error "%s" while' + \
                               ' running file_join on %s', msg, nzo.get_dirname())
                 return True, []
-                
+
         return False, newfiles
     except:
         msg = sys.exc_info()[1]
@@ -384,7 +384,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         logging.error('Error "%s" while' + \
                       ' running file_join on %s', msg, nzo.get_dirname())
         return True, []
-    
+
 
 #------------------------------------------------------------------------------
 # (Un)Rar Functions
@@ -425,7 +425,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
 
             logging.debug('rar_unpack(): Rars: %s', rars)
             logging.debug('rar_unpack(): Newfiles: %s', newfiles)
-            
+
             extracted_files.extend(newfiles)
 
             # Delete the old files if we have to
@@ -946,7 +946,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
                 nzo.set_fail_msg('Repair failed, not enough repair blocks (have: %s, need: %s)' % (avail_blocks, needed_blocks))
                 nzo.set_unpack_info('repair', '[%s] Repair failed, not enough repair blocks, have: %s, need: %s' % (setname, avail_blocks, needed_blocks), set=setname)
                 nzo.set_status("Failed")
-                
+
 
         elif line.startswith('Repair is possible'):
             start = time()
@@ -1068,7 +1068,7 @@ def build_filelists(workdir, workdir_complete):
     zips = [f for f in filelist if ZIP_RE.search(f)]
 
     rars = [f for f in filelist if RAR_RE.search(f) and f not in joinables]
-    
+
     ts = [f for f in filelist if TS_RE.search(f) and f not in joinables]
 
     logging.debug("build_filelists(): joinables: %s", joinables)
