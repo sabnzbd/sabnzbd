@@ -1,7 +1,7 @@
 
 <a href="$helpuri/Configure+Sorting" id="help">Help</a><h3>Sorting configuration</h3>
 <!--action="config/directories/saveDirectories" method="post"-->
-<form class="cmxform" action="">
+<form id="configSorting" class="cmxform" action="">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Series Sorting</legend>
@@ -240,7 +240,7 @@
 
 
 </div><br class="clear" />
-<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/sorting/saveSorting', 'submitstatus')">
+<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/sorting/saveSorting', 'submitstatus', 'configSorting')">
 <span class="submitstatus" id="submitstatus"></span>
 </form>
 

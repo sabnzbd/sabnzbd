@@ -1,7 +1,7 @@
 
 <a href="$helpuri/Configure+Directories" id="help">Help</a><h3>Folder configuration</h3>
 <!--action="config/directories/saveDirectories" method="post"-->
-<form class="cmxform" action="">
+<form id="configFolders" class="cmxform" action="">
 <div class="EntryBlock">
   <fieldset class="EntryFieldSet">
     <legend>User Folders</legend>
@@ -77,7 +77,7 @@
 
 
 </div><br class="clear" />
-<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/directories/saveDirectories', 'submitstatus')">
+<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/directories/saveDirectories', 'submitstatus', 'configFolders')">
 <span class="submitstatus" id="submitstatus"></span>
 </form>
 

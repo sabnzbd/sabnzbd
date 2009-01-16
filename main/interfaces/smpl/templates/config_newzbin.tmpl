@@ -1,5 +1,5 @@
 <a href="$helpuri/Configure+Newzbin" id="help">Help</a><h3>Newzbin</h3>
-<form class="cmxform" >
+<form id="configNewzbin" class="cmxform" >
 
 If you have an account at <strong>www.newzbin.com</strong>, you can enter your account info here.<br/>
 This will unlock extra functionality.<br/>
@@ -82,7 +82,7 @@ This is required if you want to use the RSS feeds of this site.<br/>
         <br class="clear" />
 </fieldset>
 
-<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/newzbin/saveNewzbin', 'submitstatus')">
+<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/newzbin/saveNewzbin', 'submitstatus', 'configNewzbin')">
 <span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
 <a class="config" onClick="getBookmarks();">Get bookmarks now</a>
 <!--#if $bookmarks_list#-->

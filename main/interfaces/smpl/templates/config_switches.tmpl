@@ -1,7 +1,7 @@
 
 <a href="$helpuri/Configure+Switches" id="help">Help</a><h3>Configuration switches</h3>
 <div class="EntryBlock">
-    <form class="cmxform">
+    <form id="configSwitches" class="cmxform">
   <fieldset class="EntryFieldSet">
   <legend>Processing</legend>
  <hr />
@@ -145,7 +145,7 @@
  </fieldset>
 
 
-<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/switches/saveSwitches', 'submitstatus')">
+<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/switches/saveSwitches', 'submitstatus', 'configSwitches')">
 <span class="submitstatus" id="submitstatus"></span></p>
 </form>
 </div>

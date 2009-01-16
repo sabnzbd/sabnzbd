@@ -1,6 +1,6 @@
 
 <a href="$helpuri/Configure+Email" id="help">Help</a><h3>Email Notification</h3>
-<form class="cmxform" >
+<form id="configEmail" class="cmxform" >
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>Email Options</legend>
@@ -59,7 +59,7 @@
 </fieldset>
 </div>
 
-<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/email/saveEmail', 'submitstatus')">
+<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/email/saveEmail', 'submitstatus', 'configEmail')">
 <span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
 <a class="config" onClick="testemail();">Test E-Mail</a>
 </form>

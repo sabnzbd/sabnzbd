@@ -1,6 +1,6 @@
 
 <a href="$helpuri/Configure+General" id="help">Help</a><h3>General configuration</h3>
-<form class="cmxform">
+<form class="cmxform" id="configGeneral">
 
 <fieldset class="EntryFieldSet">
 <legend>Web server</legend>
@@ -114,7 +114,7 @@
 
 <p>
 
-<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/general/saveGeneral', 'submitstatus')">
+<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/general/saveGeneral', 'submitstatus', 'configGeneral')">
 <span class="submitstatus" id="submitstatus"></span>
 </p>
 </form>
