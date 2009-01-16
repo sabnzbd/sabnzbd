@@ -1260,6 +1260,13 @@ class ConfigGeneral:
             cleanup_list = cleanup_list.lower()
         cfg.CLEANUP_LIST.set_string(cleanup_list)
         cfg.CACHE_LIMIT.set(cache_limitstr)
+        
+        cherry_cfg = cherrypy.request.app.config
+        if web_username:
+            cherry_cfg.update({'/sabnzbd':{'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
+                                'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd}})
+        else:
+            cherry_cfg.update({'/sabnzbd':{'tools.basic_auth.on':False}})
 
         try:
             web_dir, web_color = web_dir.split(' - ')
