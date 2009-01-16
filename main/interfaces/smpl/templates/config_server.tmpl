@@ -35,7 +35,8 @@
 
             <label><span class="label">Enable:</span>
 			<input class="radio" type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></label>
-   		<input type="hidden" name="server" value="$server"><br class="clear" />
+   		<br class="clear" />
+		<input type="hidden" name="server" value="$server">
 
 
 	<p><input type="button" class="submitindent" size="40" value="Save Changes" onclick="javascript:submitconfig('config/server/saveServer',this,'$servers[$server]['host']$servers[$server]['port']')">
