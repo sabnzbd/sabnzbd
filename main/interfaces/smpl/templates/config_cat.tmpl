@@ -64,12 +64,9 @@ You can also specify the full path.<br/>
             
             <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"></td>
 
-            <td><input type="submit" value="Save" onclick="javascript:submitconfig('config/categories/save', 'submitstatus','<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'1'<!--#end if#-->)">
+            <td><input type="submit" value="Save" onclick="javascript:submitconfig('config/categories/save', this,'<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'1'<!--#end if#-->)">
             </td>
 </tr>
 
     <!--#end for#--></tbody>
     </table>
-
-<span class="submitstatus" id="submitstatus"></span>
-

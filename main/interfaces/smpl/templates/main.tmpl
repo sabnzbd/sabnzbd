@@ -538,7 +538,7 @@ function loadtitle() {
             else {
                 document.getElementById('Container').style.width = "99%";
                 document.getElementById('Right').style.width = "48%";
-                document.getElementById('Right_bottom').style.width = "41%";
+                document.getElementById('Right_bottom').style.width = "48%";
             }
             if (!dual){
                 stopDeferer(gDeferrerTwo);
@@ -731,20 +731,27 @@ function loadtitle() {
 		    headers: {"Content-Type":"application/x-www-form-urlencoded"}
 
 	    });
-		if (saveelement) document.getElementById(saveelement).innerHTML = "<img src='static/images/ajax-loader.gif' />";
+		if (saveelement) {
+			saveelement.value = "Saving.."
+			saveelement.disabled = true
+		}
 	    d.addCallback(function (result)
 	    {
-	      if (saveelement) document.getElementById(saveelement).innerHTML = "Saved";
+		  if (saveelement) {
+			  saveelement.value = "Saved"
+			  saveelement.disabled = false
+		  }
           if(url2 == "1") {replaceright(result);}
           else if(url2 == "2") {replaceright2(result);}
 		  else if(url2) {lr(url2,'',refresh);}
 	    });
 
-
-
 	    d.addErrback( function (result)
 	    {
-	      //if (saveelement) document.getElementById(saveelement).innerHTML = "Error";
+		  if (saveelement) {
+			  saveelement.value = "Failed!"
+			  saveelement.disabled = false
+		  }
 	    });
 
 	}

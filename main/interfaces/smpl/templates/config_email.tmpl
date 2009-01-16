@@ -59,7 +59,9 @@
 </fieldset>
 </div>
 
-<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/email/saveEmail', 'submitstatus', 'configEmail')">
-<span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
+<p>
+	<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/email/saveEmail', this, 'configEmail')">
+</p>
+<br class="clear" />
 <a class="config" onClick="testemail();">Test E-Mail</a>
 </form>

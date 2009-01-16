@@ -185,7 +185,7 @@ form.cmxform .label,form.cmxform input {
 }
 input.schedulesubmit {
 	display: inline;
-	width: 100px;
+	width: 30px;
 	float: none;
 	margin: 0;
     margin-left: 3px;;

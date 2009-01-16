@@ -82,8 +82,10 @@ This is required if you want to use the RSS feeds of this site.<br/>
         <br class="clear" />
 </fieldset>
 
-<p><input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/newzbin/saveNewzbin', 'submitstatus', 'configNewzbin')">
-<span class="submitstatus" id="submitstatus"></span></p><br class="clear" />
+<p>
+	<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/newzbin/saveNewzbin', this, 'configNewzbin')">
+</p>
+<br class="clear" />
 <a class="config" onClick="getBookmarks();">Get bookmarks now</a>
 <!--#if $bookmarks_list#-->
     <a class="config" onClick="lr('config/newzbin/hideBookmarks');">Hide processed bookmarks</a>

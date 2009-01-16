@@ -58,7 +58,7 @@ When a feed is added, it will only pick up new items and not anything already in
             </select>
             <input type="hidden" name="feed" value="$feed"/>
             <!--<input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled -->
-            <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', '','update_$feed','1' )" />
+            <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', this,'update_$feed','1' )" />
 
         </fieldset>
 
@@ -119,7 +119,7 @@ When a feed is added, it will only pick up new items and not anything already in
         <td>
         <input type="hidden" value="$rss[$feed]['filtercount']" name="index">
         <input type="hidden" value="$feed" name="feed">
-        <input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','$feed+new_filter','1' )">
+        <input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', this,'$feed+new_filter','1' )">
         </td>
     </tr>
 
@@ -182,7 +182,7 @@ When a feed is added, it will only pick up new items and not anything already in
         <td>
         <input type="hidden" name="index" value="$fnum"/>
         <input type="hidden" name="feed" value="$feed"/>
-        <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_filter', '','$feed+$fnum','1' )"/>
+        <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_filter', this,'$feed+$fnum','1' )"/>
         </td>
 
     </tr>

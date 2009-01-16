@@ -38,11 +38,10 @@
    		<input type="hidden" name="server" value="$server"><br class="clear" />
 
 
-      <p><input type="button" class="submitindent" size="40" value="Save Changes" onclick="javascript:submitconfig('config/server/saveServer','submit$servers[$server]['host']$servers[$server]['port']','$servers[$server]['host']$servers[$server]['port']')">
-<br class="clear" />
-      <input type="button" class="submitindent" size="40" value="Remove Server" onclick="javascript:submitconfig('config/server/delServer', 'submit2$servers[$server]['host']$servers[$server]['port']','$servers[$server]['host']$servers[$server]['port']','config/server','0')">
-<br class="clear" /><span id="submit$servers[$server]['host']$servers[$server]['port']" class="submitstatus"></span>
-	  <span id="submit2$servers[$server]['host']$servers[$server]['port']" class="submitstatus"></span></p>
+	<p><input type="button" class="submitindent" size="40" value="Save Changes" onclick="javascript:submitconfig('config/server/saveServer',this,'$servers[$server]['host']$servers[$server]['port']')">
+		<br class="clear" />
+		<input type="button" class="submitindent" size="40" value="Remove Server" onclick="javascript:submitconfig('config/server/delServer', this,'$servers[$server]['host']$servers[$server]['port']','config/server','0')">
+	</p>
     </fieldset>
   </form><br class="clear"/>
   </div>
@@ -84,8 +83,9 @@
 				<input class="radio" type="checkbox" name="enable" value="1"></label>
  		<br class="clear" />
 
-      <p><input type="button" class="submitindent" size="40" value="Add Server" onclick="javascript:submitconfig('config/server/addServer', 'submitstatus3','addserver','config/server','0')">
-<span class="submitstatus" id="submitstatus3"></span></p>
+<p>
+	<input type="button" class="submitindent" size="40" value="Add Server" onclick="javascript:submitconfig('config/server/addServer', this,'addserver','config/server','0')">
+</p>
 
 </fieldset>
   </form><br class="clear"/>
