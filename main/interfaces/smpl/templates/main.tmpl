@@ -202,9 +202,9 @@
     }
     function showDiv(id)
     {
-        console.log("id=%s", id);
         disp = (document.getElementById(id).style.display == "block") ? "none" : "block";
         document.getElementById(id).style.display = disp;
+		
     }
     function showRow(id)
     {
@@ -425,7 +425,7 @@ function loadtitle() {
         }
     }
     
-	function toggle()
+	function toggle_paused()
 	{
     //Pause button toggle - XML request and instant word changing for the link and status
 		if (status2 == 1)
@@ -887,7 +887,7 @@ function loadingJSON(){
 			<h2>The automatic usenet download tool</h2>
 		</div>
             <!-- <div id="divchart"><canvas id="graph" height="70" width="700"></canvas></div> -->
-<div class="centerLinks header-margin light-grey"><a onclick="showDiv('addNew')">[Toggle Add NZB]</a></div>
+<div class="centerLinks header-margin light-grey"><a onclick="javascript:toggle('addNew')">[Toggle Add NZB]</a></div>
 		</div>
 		<div id="Content">
 			<div id="Left">
@@ -912,7 +912,7 @@ function loadingJSON(){
 					</ul>
 					<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Connections</a></li>
     				<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings(<span id="have_warnings">$have_warnings</span>)</a></li>
-					<li><a class="bold" id="status2" onClick="toggle()">$statusstr2</a></li>
+					<li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
                     <br/>
         			<li><a href="$helpuri" target="_blank">Wiki</a></li>
@@ -934,8 +934,7 @@ function loadingJSON(){
 				
 			</div>
 			<div id="RightContainer">
-<div class="centerLinks">
-<div id="addNew">
+<div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">
     <form action="addID" method="get">
         <input type="text" style="width:218px;" name="id" value="Enter URL<!--#if $varExists('newzbinDetails') then ' or Report ID' else '' #-->" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
         <!--#if $cat_list#-->
@@ -974,7 +973,6 @@ function loadingJSON(){
         </select>
         <input type="submit" class="submitindent2"  value="Add">
     </form>
-
     <form action="addFile" method="post" enctype="multipart/form-data">
         <input type="file" style="width:221px" name="nzbfile">
         <!--#if $cat_list#-->
@@ -1013,7 +1011,6 @@ function loadingJSON(){
         </select>
         <input type="submit" class="submitindent2"  value="Add">
     </form>
-</div>
 </div>
                 <div id="Right"></div>
                 <div id="Right_bottom"></div>

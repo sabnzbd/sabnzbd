@@ -322,7 +322,6 @@ a.columnLinks{color:white}
 .ageColumn, .editColumn, .actionsColumn, .linksColumn{width:50px;}
 .statusColumn{width:100px;}
 .searchBox{float:right; display:inline;}
-#addNew{display:none;}
 .header-margin{padding-top:46px;}
 .light-grey a{color:#999;}
 .action_message{color:green;}
