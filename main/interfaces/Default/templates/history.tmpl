@@ -32,9 +32,12 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
         <td>$compl</td>
         <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
         <td>$line.size</td><td>$line.status</td>
-        <td><form action="delete" method="get">
-            <input type="hidden" value="$line.nzo_id" name="job">
-            <input type="submit" value="Del"></form>
+        <td>
+			<!--#if not $line.loaded#-->
+				<form action="delete" method="get">
+				<input type="hidden" value="$line.nzo_id" name="job">
+				<input type="submit" value="Del"></form>
+			<!--#end if#-->
         </td>
         </tr>
         <!--#if $line.show_details#-->
