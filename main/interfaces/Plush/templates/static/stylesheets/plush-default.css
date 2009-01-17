@@ -246,7 +246,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     padding-left:29px;
     cursor: default;
 }
-.queueTable .historyTitle.Loaded {
+.queueTable .historyTitle.Loaded, .loading {
     background: url(../images/plush-default/hl_loaded.gif) 4px 50% no-repeat;
 }
 .queueTable .historyTitle.Check {

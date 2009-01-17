@@ -440,7 +440,7 @@ jQuery(function($) {
                     $('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
                 
                 // set queue titlebar stats tooltip (ETA) 
-                $('#stats_eta').attr('title','ETA: '+$.plush.eta);
+                $('#time-left').attr('title','ETA: '+$.plush.eta);
                 
                 // set page title + eta/kbpersec stats at top of queue
                 if ($.plush.noofslots < 1) {
@@ -563,7 +563,7 @@ jQuery(function($) {
                 $('.box_fatbottom').bind("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
                 
                 // tooltips for options & time left / ETA
-                $('#stats_eta, select').tooltip({
+                $('#time-left, select').tooltip({
                     extraClass:    "tooltip",
                     track:        true, 
                     fixPNG:        true
