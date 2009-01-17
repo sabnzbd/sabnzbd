@@ -88,7 +88,7 @@ When a feed is added, it will only pick up new items and not anything already in
                 <option value="R" /> Reject</option>
             </select>
         </td>
-        <td><input type="text" size="40" class="filter_text" name="filter_text" value=""></td>
+        <td><input type="text" size="40" class="filter_text fill-td" name="filter_text" value=""></td>
         <!--#if $rss[$feed]['pick_cat']#-->
           <td>
             <select name="cat">
@@ -135,30 +135,28 @@ When a feed is added, it will only pick up new items and not anything already in
         </td>
 
         <td>
-        <select onChange="javascript:changequeuedetails('config/rss/'+this.options[this.selectedIndex].value);">
-        <!--#for $i in xrange($rss[$feed]['filtercount'])#-->
-            <option value="pos_rss_filter?feed=$feed&current=$fnum&new=$i" <!--#if int($i) == int($fnum) then "selected" else ""#-->>$i</option>
-        <!--#end for#-->
-        </select>
+			<select onChange="javascript:changequeuedetails('config/rss/'+this.options[this.selectedIndex].value);">
+			<!--#for $i in xrange($rss[$feed]['filtercount'])#-->
+				<option value="pos_rss_filter?feed=$feed&current=$fnum&new=$i" <!--#if int($i) == int($fnum) then "selected" else ""#-->>$i</option>
+			<!--#end for#-->
+			</select>
         </td>
-
-
         <td>
-        <select name="filter_type">
-            <option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> Accept</option>
-            <option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> Reject</option>
-        </select>
+			<select name="filter_type">
+				<option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> Accept</option>
+				<option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> Reject</option>
+			</select>
         </td>
-
-        <td><input type="text" size="40" class="filter_text" name="filter_text" value="$filter[4]"/></td>
+        <td>
+		<input type="text" size="40" class="filter_text fill-td" name="filter_text" value="$filter[4]"/></td>
         <!--#if $rss[$feed]['pick_cat']#-->
-          <td>
-            <select name="cat">
-            <!--#for $ct in $cat_list#-->
-                <option value="$ct" <!--#if $ct == $filter[0] then "selected" else ""#-->>$ct</option>
-            <!--#end for#-->
-            </select>
-          </td>
+		<td>
+			<select name="cat">
+			<!--#for $ct in $cat_list#-->
+				<option value="$ct" <!--#if $ct == $filter[0] then "selected" else ""#-->>$ct</option>
+			<!--#end for#-->
+			</select>
+		</td>
         <!--#end if#-->
 
             <td>

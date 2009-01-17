@@ -12,7 +12,7 @@ Defines post-processing and storage.<br/>
 Relative folders are based on $defdir<br/>
 You can also specify the full path.<br/>
 <br/>
-    <table>
+    <table id="historyTable">
     <thead>
         <tr>
             <th></th>
@@ -40,7 +40,7 @@ You can also specify the full path.<br/>
 
  
         
-            <td><input type="hidden" value="$slot.name" name="name"><input type="text" name="newname" value="$slot.name"></td>
+            <td><input type="hidden" value="$slot.name" name="name"><input type="text" class="fill-td" name="newname" value="$slot.name"></td>
 
             <td><select name="pp">
                 <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
@@ -60,11 +60,11 @@ You can also specify the full path.<br/>
             </td>
             <!--#end if#-->
 
-            <td><input type="text" size=35 name="dir" value="$slot.dir"></td>
+            <td><input type="text" class="fill-td" size=35 name="dir" value="$slot.dir"></td>
             
-            <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"></td>
+            <td><input type="text" class="fill-td" size=35 name="newzbin" value="$slot.newzbin"></td>
 
-            <td><input type="submit" value="Save" onclick="javascript:submitconfig('config/categories/save', this,'<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'1'<!--#end if#-->)">
+            <td><input type="submit" class="fill-td" value="Save" onclick="javascript:submitconfig('config/categories/save', this,'<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'1'<!--#end if#-->)">
             </td>
 </tr>
 
