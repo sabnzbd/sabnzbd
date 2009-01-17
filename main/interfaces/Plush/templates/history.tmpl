@@ -47,7 +47,9 @@
     <td class="options" nowrap>
         <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
         <small class="history_added">$d</small>
+        <!--#if not $line.loaded#-->
         <div class="queue_delete" title="Hide&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
+        <!--#end if#-->
     </td>
     
     </tr>

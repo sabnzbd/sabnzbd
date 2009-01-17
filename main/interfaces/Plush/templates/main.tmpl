@@ -144,19 +144,15 @@
         </li>
         <li><a href="connections">Config</a></li>
         <li><a class="pointer" id="manual_refresh_wrapper"><span id="manual_refresh">Refresh</span></a></li>
+	    <!--#if $new_release#-->
+        <li><a href="$new_rel_url" id="new_release" target="_blank">New&nbsp;release&nbsp;$new_release&nbsp;available!</a></li>
+	    <!--#end if#-->
+	    <!--#if $warning#-->
+        <li><a id="warning_message">$warning</a></li>
+	    <!--#end if#-->
     </ul>
 
-    <!--#if $warning#-->
-    <div id="warning_message"><strong>$warning</strong></div>
-    <!--#end if#-->
 
-    <!--#if $new_release#-->
-    <div class="menu_upper_lower">
-        <ul>
-        <li><a href="$new_rel_url" target="_blank"><b style="color:darkgreen">New&nbsp;release&nbsp;$new_release&nbsp;available!</b></a></li>
-        </ul>
-    </div>
-    <!--#end if#-->
 
     <div id="page-wrap">
 

@@ -21,10 +21,12 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     cursor:pointer;
 }
 #warning_message {
-    text-align:center;
-    background-color: red;
-    color: white;
-    padding-top:2px;
+    color: darkred;
+	font-weight: bold;
+}
+#new_release {
+	color: green;
+	font-weight: bold;
 }
 
 /* for jQuery Tooltip Plugin */
