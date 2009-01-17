@@ -245,6 +245,10 @@ def dict_factory(cursor, row):
 def build_history_info(nzo, storage='', path='', postproc_time=0, script_output='', script_line=''):
     ''' Collects all the information needed for the database '''
     
+    path = decode_factory(path)
+    storage = decode_factory(storage)
+    script_line = decode_factory(script_line)
+    
     flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
     nzo_info = decode_factory(nzo.get_nzo_info())
     
