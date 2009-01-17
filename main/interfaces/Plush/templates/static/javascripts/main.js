@@ -660,7 +660,7 @@ jQuery(function($) {
             $('#historyTable').livequery(function() {
                 
                 // tooltips for verbose notices
-                $('#history .verbose div').tooltip({
+                $('#history .verbose div, #history .tip').tooltip({
                     extraClass:    "tooltip",
                     track:        true, 
                     fixPNG:        true

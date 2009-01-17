@@ -60,10 +60,15 @@
 </table>
 
 <div class="box_fatbottom">
-    <div class="right_stats">
+    <div class="right_stats" nowrap>
         <!--#if $lines#-->
-        <strong>$total_size</strong>&nbsp;In&nbsp;History&nbsp;&nbsp;&nbsp;&nbsp;
+        <strong>$total_size</strong> In History&nbsp;&nbsp;&nbsp;&nbsp;
         <!--#end if #-->
+		<strong>$month_size</strong> This Month&nbsp;&nbsp;&nbsp;&nbsp;
+		<strong>$week_size</strong> This Week
+		<!--#if $loadavg#-->
+		&nbsp;&nbsp;&nbsp;&nbsp;<strong>$loadavg</strong> Load
+		<!--#end if#-->
         
     </div>
     <div class="left_stats">
