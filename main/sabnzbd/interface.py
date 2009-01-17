@@ -370,18 +370,18 @@ class MainPage:
         if mode == 'set_config':
             res = config.set_config(kwargs)
             if output == 'json':
-                return json_result(res, None)
+                return json_result(res)
             elif output == 'xml':
-                return xml_result(res, None)
+                return xml_result(res)
             else:
                 return 'not implemented\n'
 
         if mode == 'get_config':
             res, data = config.get_dconfig(kwargs)
             if output == 'json':
-                return json_result(res, data)
+                return json_result(res, kwargs.get('section'), kwargs.get('keyword'), data)
             elif output == 'xml':
-                return xml_result(res, data)
+                return xml_result(res, kwargs.get('section'), kwargs.get('keyword'), data)
             else:
                 return 'not implemented\n'
 
@@ -3099,24 +3099,42 @@ def rss_qstatus():
     return rss.write()
 
 
-def json_result(result, data):
+def json_result(result, section=None, keyword=None, data=None):
     """ Return data in a json structure
     """
-    dict = { 'status' : result }
-    if data != None:
-        dict['value'] = data
+    dd = { 'status' : result }
+    if section and (data or data == ''):
+        if section in ('servers', 'categories', 'rss'):
+            keyword = keyword.replace(':', '_').replace('.','_')
+            dd[section] = {keyword : data}
+        else:
+            dd[section] = data
 
-    status_str = JsonWriter().write(dict)
+    status_str = JsonWriter().write(dd)
 
     cherrypy.response.headers['Content-Type'] = "application/json"
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return status_str
 
 
-def xml_result(result, data):
+def xml_result(result, section=None, keyword=None, data=None):
     """ Return data as XML
     """
-    return "Not yet implemented\n"
+    status_str = '<?xml version="1.0" encoding="UTF-8" ?> \n'
+    xmlmaker = xml_factory()
+    dd = {'status' : int(result) }
+    if data or data == '':
+        if section in ('servers', 'categories', 'rss'):
+            keyword = keyword.replace(':', '_').replace('.','_')
+            dd[section] = {keyword : data}
+        else:
+            dd[section] = data
+    status_str += xmlmaker.run('result', dd)
+
+    cherrypy.response.headers['Content-Type'] = "text/xml"
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return status_str
+
 
 def format_history_for_queue():
     ''' Retrieves the information on currently active history items, and formats them for displaying in the queue '''

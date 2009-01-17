@@ -78,7 +78,7 @@ class Option:
 
     def get_dict(self):
         """ Return value a dictionary """
-        return { 'value' : self.get() }
+        return { self.__keyword : self.get() }
 
     def set_dict(self, dict):
         """ Set value based on dictionary """
