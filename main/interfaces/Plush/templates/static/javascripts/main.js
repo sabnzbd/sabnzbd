@@ -196,6 +196,9 @@ jQuery(function($) {
                     // keep in mind the initialized livequery methods defined below
                     // (uses vars set within queue.tmpl to update other parts of the interface outside of the queue table)
                     
+                },
+                error: function() {
+                    $('#manual_refresh').addClass('refresh_skipped');
                 }
             });
         },
@@ -356,7 +359,9 @@ jQuery(function($) {
                     	type: "POST",
                         url: "tapi",
 						data: "mode=queue&name=delete&value=all",
-                        success: $.plush.refreshQueue()
+                        success: function(){
+                        	$.plush.refreshQueue()
+                        }
                     });
                 }
             });
@@ -367,7 +372,9 @@ jQuery(function($) {
                 	type: "POST",
                     url: "tapi",
                     data: "queue/sort_by_avg_age",
-                    success: $.plush.refreshQueue()
+                    success: function(){
+                        $.plush.refreshQueue()
+                    }
                 });
             });
             $('#sort_by_name').click(function(event) {
@@ -375,7 +382,9 @@ jQuery(function($) {
                 	type: "POST",
                     url: "tapi",
                     data: "queue/sort_by_name",
-                    success: $.plush.refreshQueue()
+                    success: function(){
+                        $.plush.refreshQueue()
+                    }
                 });
             });
             $('#sort_by_size').click(function(event) {
@@ -383,7 +392,9 @@ jQuery(function($) {
                 	type: "POST",
                     url: "tapi",
                     data: "queue/sort_by_size",
-                    success: $.plush.refreshQueue()
+                    success: function(){
+                        $.plush.refreshQueue()
+                    }
                 });
             });
         
@@ -394,7 +405,7 @@ jQuery(function($) {
                     window.location='shutdown';
             });
             
-                
+            
             // manual refresh
             $('#manual_refresh_wrapper').click(function(event) {
                 $.plush.refreshQueue();
@@ -592,8 +603,8 @@ jQuery(function($) {
 					});
                 }
             });
-        
-        
+            
+            
             
             /********************************************
             *********************************************
@@ -611,7 +622,9 @@ jQuery(function($) {
 	                    type: "POST",
 						url: "tapi",
                         data: 'mode=history&name=delete&value=all',
-                        success: $.plush.refreshHistory()
+                        success: function(){
+                            $.plush.refreshHistory()
+                        }
                     });
                 }
             });
