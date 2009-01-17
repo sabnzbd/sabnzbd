@@ -1,6 +1,6 @@
 
 ================================================
-== Plush 3.0 for SABnzbd+ 0.5.0 | Jan 08 2008 ==
+== Plush 3.0 for SABnzbd+ 0.5.0 | Jan 17 2009 ==
 
 ============
 ASSEMBLED BY
@@ -16,7 +16,7 @@ injectx for the new concept design and imagery
 real_scud for creating the new HTML/CSS layout
 inpheaux for the Config concept & assembly and SABnzbd+ logo
 sbultez for creating numerous history verbosity icons
-rAf for styling up the main menu/add menu
+rAf for pause/resume icons
 blis102 for the original Nova & Plush concepts
 
 ============
@@ -29,8 +29,13 @@ TOOLS USED
 
 jQuery
 http://jquery.com
-Copyright (c) 2008 John Resig
+Copyright (c) 2009 John Resig
 See LICENSE-MIT & LICENSE-GPL
+
+Sizzle CSS Selector Engine
+http://sizzlejs.com/
+Copyright (c) 2009 The Dojo Foundation
+See LICENSE-MIT, LICENSE-BSD, & LICENSE-GPL
 
 jQuery BGiFrame
 http://plugins.jquery.com/project/bgiframe
@@ -94,6 +99,9 @@ templates/static/images/plush-default/q_stats_needspace.png
 templates/static/images/plush-default/ql_cross.png
 templates/static/images/plush-default/ql_cross_on.png
 templates/static/images/plush-default/ql_row_on.png
+
+Thanks goes out to rAf for supplying:
+templates/static/images/plush-default/ql_grip_*.png
 
 Nuvola Icon Set
 http://www.icon-king.com/?p=15

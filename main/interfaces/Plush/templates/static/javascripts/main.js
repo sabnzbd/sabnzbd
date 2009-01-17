@@ -481,20 +481,27 @@ jQuery(function($) {
                 });
                 
                 // nzb pause/resume toggle ajax
-                $('#queueTable .queue_nzb_status').click(function(){
-                    if ($(this).attr('class') == "queue_nzb_status queue_nzb_queued") {
-                        $(this).text('Paused').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
+                $('#queueTable .download-title').click(function(){
+                    if ($(this).attr('class') == "download-title download-queued") {
+                        $(this).toggleClass('download-queued').toggleClass('download-paused');
 		                $.ajax({
 		                    type: "POST",
 							url: "tapi",
-							data: "mode=queue&name=pause&value="+$(this).parent().parent().attr('id')
+							data: "mode=queue&name=pause&value="+$(this).parent().attr('id')
+						});
+                    } else if ($(this).attr('class') == "download-title download-active") {
+                        $(this).toggleClass('download-active').toggleClass('download-paused');
+		                $.ajax({
+		                    type: "POST",
+							url: "tapi",
+							data: "mode=queue&name=pause&value="+$(this).parent().attr('id')
 						});
                     } else {
-                        $(this).text('Queued').toggleClass('queue_nzb_queued').toggleClass('queue_nzb_paused');
+                        $(this).toggleClass('download-queued').toggleClass('download-paused');
 		                $.ajax({
 		                    type: "POST",
 							url: "tapi",
-							data: "mode=queue&name=resume&value="+$(this).parent().parent().attr('id')
+							data: "mode=queue&name=resume&value="+$(this).parent().attr('id')
 						});
                     }
                 });

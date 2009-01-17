@@ -222,10 +222,25 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .queueTable td.download-title {
     width: 50%;
     padding-left:29px;
-    background: url(../images/plush-default/ql_grip.png) 4px 50% no-repeat;
+    cursor: pointer;
 }
-.queueTable tr:hover .download-title {
-    background: url(../images/plush-default/ql_grip_on.png) 4px 50% no-repeat;
+.queueTable tr .download-queued {
+    background: url(../images/plush-default/ql_grip_queued.png) 4px 50% no-repeat;
+}
+.queueTable tr:hover .download-queued {
+    background: url(../images/plush-default/ql_grip_queued_on.png) 4px 50% no-repeat;
+}
+.queueTable tr .download-paused {
+    background: url(../images/plush-default/ql_grip_paused.png) 4px 50% no-repeat;
+}
+.queueTable tr:hover .download-paused {
+    background: url(../images/plush-default/ql_grip_paused_on.png) 4px 50% no-repeat;
+}
+.queueTable tr .download-active {
+    background: url(../images/plush-default/ql_grip_active.png) 4px 50% no-repeat;
+}
+.queueTable tr:hover .download-active {
+    background: url(../images/plush-default/ql_grip_active_on.png) 4px 50% no-repeat;
 }
 .queueTable td.historyTitle {
     padding-left:29px;
@@ -307,24 +322,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .currentDownload { float: left; margin-left: 3px;}
 .totalDownload { float:right; margin-right: 3px;}
-
-
-/* queue singular nzb queue/pause */
-.queue_nzb_status {
-    font-size:66%;
-    cursor:pointer;
-    display:inline;
-    color:white;
-    padding:1px;
-    margin-left:4px;
-}
-.queue_nzb_queued {
-    background-color:darkgreen;
-}
-.queue_nzb_paused {
-    background-color:darkred;
-}
-
 
 .options {
     text-align:right;

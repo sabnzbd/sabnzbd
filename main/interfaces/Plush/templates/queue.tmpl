@@ -28,7 +28,7 @@
     <!--#set $odd = not $odd#-->
     <tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
     
-    <td class="download-title">
+    <td class="download-title <!--#if $slot.status == "Paused"#-->download-paused<!--#else if $slot.status == "Downloading"#-->download-active<!--#else#-->download-queued<!--#end if#-->">
         <a href="queue/$slot.nzo_id/" title="Average File Age: $slot.avg_age">$slot.filename</a>
     </td>
     
@@ -48,11 +48,6 @@
     </td>
     
     <td class="options" nowrap>
-        <!--#if $slot.status == "Paused"#-->
-        <div class="queue_nzb_status queue_nzb_paused">$slot.status</div>
-        <!--#else#-->
-        <div class="queue_nzb_status queue_nzb_queued">$slot.status</div>
-        <!--#end if#-->
         <select title="Priority" class="proc_priority">
             <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
             <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
