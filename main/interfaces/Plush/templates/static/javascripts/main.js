@@ -492,7 +492,9 @@ jQuery(function($) {
                 });
                 
                 // nzb pause/resume toggle ajax
-                $('#queueTable .download-title').click(function(){
+                $('#queueTable .download-title').click(function(event){
+                	if ($(event.target).is('a'))
+                		return;
                     if ($(this).attr('class') == "download-title download-queued") {
                         $(this).toggleClass('download-queued').toggleClass('download-paused');
 		                $.ajax({
