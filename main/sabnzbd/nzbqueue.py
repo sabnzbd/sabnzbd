@@ -160,6 +160,23 @@ class NzbQueue(TryList):
     def change_cat(self, nzo_id, cat):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].set_cat(cat)
+            
+    @synchronized(NZBQUEUE_LOCK)
+    def change_priority(self, nzo_id, priority):
+        if nzo_id in self.__nzo_table:
+            self.__nzo_table[nzo_id].set_priority(priority)
+            
+    @synchronized(NZBQUEUE_LOCK)
+    def change_name(self, nzo_id, name):
+        if nzo_id in self.__nzo_table:
+            self.__nzo_table[nzo_id].set_name(name)
+            
+    @synchronized(NZBQUEUE_LOCK)
+    def get_nzo(NZBQUEUE_LOCK):
+        if nzo_id in self.__nzo_table:
+            return self.__nzo_table[nzo_id]
+        else:
+            return None
 
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, save=True):
@@ -723,6 +740,10 @@ def change_script(nzo_id, script):
 def change_cat(nzo_id, cat):
     global __NZBQ
     if __NZBQ: __NZBQ.change_cat(nzo_id, cat)
+    
+def change_name(nzo_id, name):
+    global __NZBQ
+    if __NZBQ: __NZBQ.change_name(nzo_id, name)
 
 def get_article(host):
     global __NZBQ
@@ -816,6 +837,12 @@ def set_priority(nzo_id, priority):
     global __NZBQ
     if __NZBQ:
         return __NZBQ.set_priority(nzo_id, priority)
+    
+@synchronized_CV
+def get_nzo(nzo_id):
+    global __NZBQ
+    if __NZBQ:
+        return __NZBQ.get_nzo(nzo_id)
 
 @synchronized_CV
 def set_priority_multiple(nzo_ids, priority):

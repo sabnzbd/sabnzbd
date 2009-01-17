@@ -3,81 +3,129 @@
 <!--#set global $helpsubject="GUI+Queue"#-->
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
-<script type='text/javascript'>
-function mark_all()
-{
-    var s;
-    var i=0;
-    while(s = document.getElementsByTagName("input")[i++])
-    {
-        if(s.type=='checkbox')
-        {
-            s.checked=true;
-        }
-    }
-}
-</script>
+	<script type='text/javascript'>
+	function mark_all()
+	{
+		var s;
+		var i=0;
+		while(s = document.getElementsByTagName("input")[i++])
+		{
+			if(s.type=='checkbox')
+			{
+				s.checked=true;
+			}
+		}
+	}
+	</script>
 
-<script type='text/javascript'>
-function unmark_all()
-{
-    var s;
-    var i=0;
-    while(s = document.getElementsByTagName("input")[i++])
-    {
-        if(s.type=='checkbox')
-        {
-            s.checked=false;
-        }
-    }
-}
-</script>
+	<script type='text/javascript'>
+	function unmark_all()
+	{
+		var s;
+		var i=0;
+		while(s = document.getElementsByTagName("input")[i++])
+		{
+			if(s.type=='checkbox')
+			{
+				s.checked=false;
+			}
+		}
+	}
+	</script>
 
-<script type='text/javascript'>
-function invert()
-{
-    var s;
-    var i=0;
-    while(s = document.getElementsByTagName("input")[i++])
-    {
-        if(s.type=='checkbox')
-        {
-            s.checked=!s.checked;
-        }
-    }
-}
-</script>
+	<script type='text/javascript'>
+	function invert()
+	{
+		var s;
+		var i=0;
+		while(s = document.getElementsByTagName("input")[i++])
+		{
+			if(s.type=='checkbox')
+			{
+				s.checked=!s.checked;
+			}
+		}
+	}
+	</script>
 
-<span class="SubMenu">
-&nbsp;
-</span>
+	<span class="SubMenu">
+	&nbsp;
+	</span>
 
-<br>
-<br>
-<form action="bulk_operation">
-  <input type="submit" name="action_key" value="Delete">
-  <br>
-  <input type="submit" name="action_key" value="Top">
-  <input type="submit" name="action_key" value="Up">
-  <input type="submit" name="action_key" value="Down">
-  <input type="submit" name="action_key" value="Bottom">
-  <br>
-  selection:<a href='#/' onclick='mark_all();' target='_self'>all</a>
-            <a href='#/' onclick='unmark_all();' target='_self'>none</a>
-            <a href='#/' onclick='invert();' target='_self'>invert</a>
-  <table>
-      <tr><th></th><th>Filename/Subject</th><th>Size</th><th>Age</th></tr>
-      <!--#set $oddLine = False#-->
-      <!--#for $file in $active_files#-->
-          <!--#set $oddLine = not $oddLine#-->
-          <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
-              <td><input type="checkbox" name="$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
-              <td>$file.filename</td>
-              <td>$file.mb MB</td>
-              <td>$file.age</td>
-          </tr>
-      <!--#end for#-->
-  </table>
-</form>
+<!--#if $varExists('slot')#-->
+	<h3>Edit NZB Details</h3>
+	<form action="save" method="post">
+		<label class="label">Name:</label><br />
+		<input type="text" name="name" style="width:200px" size="80" value="$slot.filename">
+		<br />
+		<label class="label">PP:</label><br />
+		<select name="pp">
+			<option value="0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
+			<option value="1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
+			<option value="2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
+			<option value="3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
+		</select>
+		
+		<!--#if $slot.priority != '2'#-->
+			<br />
+			<label class="label">Priority:</label><br />
+			<select  name="priority">
+				<option value="1" <!--#if $slot.priority == "1" then "selected" else ""#-->>High</option>
+				<option value="0" <!--#if $slot.priority == "0" then "selected" else ""#-->>Normal</option>
+				<option value="-1" <!--#if $slot.priority == "-1" then "selected" else ""#-->>Low</option>
+			</select>
+		<!--#end if#-->
 
+		<!--#if $script_list#-->
+			<br />
+			<label class="label">Script:</label><br />
+			<select name="script">
+				<!--#for $sc in $script_list#-->
+				<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+				<!--#end for#-->
+			</select>
+		<!--#end if#-->
+		<!--#if $cat_list#-->
+			<br />
+			<label class="label">Category:</label><br />
+			<select name="cat">
+				<!--#for $ct in $cat_list#-->
+				<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+				<!--#end for#-->
+			</select>
+		<!--#end if#-->
+		<br /><br />
+		<input type="submit" size="40" value="Save Changes">
+	</form>
+	<br />
+	
+	<br /><br /><br />
+<!--#end if#-->
+
+<!--#if $varExists('active_files')#-->
+	<form action="bulk_operation">
+	  <input type="submit" name="action_key" value="Delete">
+	  <input type="submit" name="action_key" value="Top">
+	  <input type="submit" name="action_key" value="Up">
+	  <input type="submit" name="action_key" value="Down">
+	  <input type="submit" name="action_key" value="Bottom">
+	  <br>
+	  selection:<a href='#' onclick='mark_all();' target='_self'>all</a>
+				<a href='#' onclick='unmark_all();' target='_self'>none</a>
+				<a href='#' onclick='invert();' target='_self'>invert</a>
+	  <table id="historyTable">
+		  <tr><th></th><th>Filename/Subject</th><th>Size</th><th>Age</th></tr>
+		  <!--#set $oddLine = False#-->
+		  <!--#for $file in $active_files#-->
+			  <!--#set $oddLine = not $oddLine#-->
+			  <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
+				  <td><input type="checkbox" name="$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
+				  <td>$file.filename</td>
+				  <td>$file.mb MB</td>
+				  <td>$file.age</td>
+			  </tr>
+		  <!--#end for#-->
+	  </table>
+	</form>
+<!--#end if#-->
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

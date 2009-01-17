@@ -440,7 +440,7 @@ class NzbObject(TryList):
             script = cfg.DIRSCAN_SCRIPT.get()
 
         self.__filename = filename    # Original filename
-        self.__dirname = filename
+        self.__dirname = filename     # Keeps track of the working folder
         self.__original_dirname = filename # Used for folder name for final unpack
         self.__created = False        # dirprefixes + dirname created
         self.__bytes = 0              # Original bytesize
@@ -668,6 +668,13 @@ class NzbObject(TryList):
 
     def set_original_dirname(self, name):
         self.__original_dirname = name
+        
+    def set_name(self, name):
+        if isinstance(name, str):
+            name = sabnzbd.misc.sanitize_foldername(name)
+            self.__original_dirname = name
+            return True
+        return False
 
     def pause_nzo(self):
         try:
@@ -938,7 +945,7 @@ class NzbObject(TryList):
             avg_date = time.mktime(avg_date.timetuple())
 
         return (self.__repair, self.__unpack, self.__delete, self.__script,
-                self.nzo_id, self.__dirname, {},
+                self.nzo_id, self.__original_dirname, {},
                 self.__msgid, self.__cat, self.__url,
                 bytes_left_all, self.__bytes, avg_date,
                 finished_files, active_files, queued_files, self.__status, self.__priority)

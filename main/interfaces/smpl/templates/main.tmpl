@@ -769,6 +769,63 @@ function loadtitle() {
 	}
 
 
+function mark_all()
+{
+    var s;
+    var i=0;
+    while(s = document.getElementsByTagName("input")[i++])
+    {
+        if(s.type=='checkbox')
+        {
+            s.checked=true;
+        }
+    }
+}
+
+
+function submit_marked(nzo_id, action_key)
+{
+	extra = 'action_key='+action_key
+    var s;
+    var i=0;
+    while(s = document.getElementsByTagName("input")[i++])
+    {
+        if(s.type=='checkbox' && s.checked == true)
+        {
+            extra = extra + '&' + s.name + '=on'
+        }
+    }
+	//submitconfig(extra, '', '', 1)
+	url = 'nzb/'+nzo_id+'/bulk_operation'
+	lr(url, extra)
+}
+
+function unmark_all()
+{
+    var s;
+    var i=0;
+    while(s = document.getElementsByTagName("input")[i++])
+    {
+        if(s.type=='checkbox')
+        {
+            s.checked=false;
+        }
+    }
+}
+
+function invert()
+{
+    var s;
+    var i=0;
+    while(s = document.getElementsByTagName("input")[i++])
+    {
+        if(s.type=='checkbox')
+        {
+            s.checked=!s.checked;
+        }
+    }
+}
+
 //loads up the json for the queue page and changes the values in the document
 function loadingJSON(){
 	if (RefreshTime>0) {
@@ -894,6 +951,7 @@ function loadingJSON(){
 			<h2>The automatic usenet download tool</h2>
 		</div>
             <!-- <div id="divchart"><canvas id="graph" height="70" width="700"></canvas></div> -->
+			<br />
 <div class="centerLinks header-margin light-grey"><a onclick="javascript:toggle('addNew','',{duration:0.2})">[Toggle Add NZB]</a></div>
 		</div>
 		<div id="Content">

@@ -243,6 +243,7 @@ class MainPage:
         self.history = HistoryPage(web_dir, root+'history/', prim)
         self.connections = ConnectionInfo(web_dir, root+'connections/', prim)
         self.config = ConfigPage(web_dir, root+'config/', prim)
+        self.nzb = NzoPage(web_dir, root+'nzb/', prim)
 
 
     @cherrypy.expose
@@ -696,59 +697,143 @@ class MainPage:
 
 #------------------------------------------------------------------------------
 class NzoPage:
-    def __init__(self, web_dir, root, nzo_id, prim):
-        self.__nzo_id = nzo_id
-        self.__root = '%s%s/' % (root, nzo_id)
+    def __init__(self, web_dir, root, prim):
+        self.__root = root
         self.__web_dir = web_dir
         self.__verbose = False
         self.__prim = prim
         self.__cached_selection = {} #None
-
+        
     @cherrypy.expose
-    def index(self, _dc = None):
+    def default(self, *args, **kwargs):
+        # Allowed URL's
+        # /nzb/SABnzbd_nzo_xxxxx/
+        # /nzb/SABnzbd_nzo_xxxxx/details
+        # /nzb/SABnzbd_nzo_xxxxx/files
+        # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
+        # /nzb/SABnzbd_nzo_xxxxx/save
+            
         info, pnfo_list, bytespersec = build_header(self.__prim)
+        nzo_id = None
+        
+        for a in args:
+            if a.startswith('SABnzbd_nzo'):
+                nzo_id = a
+                
+        if nzo_id:
+            # /SABnzbd_nzo_xxxxx/bulk_operation
+            if 'bulk_operation' in args:
+                return self.bulk_operation(nzo_id, kwargs)
+            
+            # /SABnzbd_nzo_xxxxx/details
+            elif 'details' in args:
+                info =  self.nzo_details(info, pnfo_list, nzo_id)
+                
+            # /SABnzbd_nzo_xxxxx/files
+            elif 'files' in args:
+                info =  self.nzo_files(info, pnfo_list, nzo_id)
+                
+            # /SABnzbd_nzo_xxxxx/save
+            elif 'save' in args:
+                self.save_details(nzo_id, args, kwargs)
+                return 
+                
+            # /SABnzbd_nzo_xxxxx/
+            else:
+                info =  self.nzo_details(info, pnfo_list, nzo_id)
+                info =  self.nzo_files(info, pnfo_list, nzo_id)
 
-        this_pnfo = None
+        template = Template(file=os.path.join(self.__web_dir, 'nzo.tmpl'),
+                            searchList=[info], compilerSettings=DIRECTIVES)
+        return template.respond()
+
+                
+    def nzo_details(self, info, pnfo_list, nzo_id):
+        slot = {}
         for pnfo in pnfo_list:
-            if pnfo[PNFO_NZO_ID_FIELD] == self.__nzo_id:
-                this_pnfo = pnfo
-                break
+            if pnfo[PNFO_NZO_ID_FIELD] == nzo_id:
+                repair = pnfo[PNFO_REPAIR_FIELD]
+                unpack = pnfo[PNFO_UNPACK_FIELD]
+                delete = pnfo[PNFO_DELETE_FIELD]
+                unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
+                script = pnfo[PNFO_SCRIPT_FIELD]
+                cat = pnfo[PNFO_EXTRA_FIELD1]
+                if not cat:
+                    cat = 'None'
+                filename = pnfo[PNFO_FILENAME_FIELD]
+                priority = pnfo[PNFO_PRIORITY_FIELD]
+                
+                slot['nzo_id'] =  str(nzo_id)
+                slot['cat'] = cat
+                slot['filename'] = filename
+                slot['script'] = script
+                slot['priority'] = str(priority)
+                slot['unpackopts'] = str(unpackopts)
+                
+        info['slot'] = slot
+        info['script_list'] = ListScripts()
+        info['cat_list'] = ListCats()
+        
+        return info
 
-        if this_pnfo:
-            info['nzo_id'] = self.__nzo_id
-            info['filename'] = xml_name(pnfo[PNFO_FILENAME_FIELD])
+    def nzo_files(self, info, pnfo_list, nzo_id):
+        
+        active = []
+        for pnfo in pnfo_list:
+            if pnfo[PNFO_NZO_ID_FIELD] == nzo_id:
+                info['nzo_id'] = nzo_id
+                info['filename'] = xml_name(pnfo[PNFO_FILENAME_FIELD])
+ 
+                for tup in pnfo[PNFO_ACTIVE_FILES_FIELD]:
+                    bytes_left, bytes, fn, date, nzf_id = tup
+                    checked = False
+                    if nzf_id in self.__cached_selection and \
+                       self.__cached_selection[nzf_id] == 'on':
+                        checked = True
+    
+                    line = {'filename':xml_name(fn),
+                            'mbleft':"%.2f" % (bytes_left / MEBI),
+                            'mb':"%.2f" % (bytes / MEBI),
+                            'nzf_id':nzf_id,
+                            'age':calc_age(date),
+                            'checked':checked}
+                    active.append(line)
 
-            active = []
-            for tup in pnfo[PNFO_ACTIVE_FILES_FIELD]:
-                bytes_left, bytes, fn, date, nzf_id = tup
-                checked = False
-                if nzf_id in self.__cached_selection and \
-                   self.__cached_selection[nzf_id] == 'on':
-                    checked = True
+        info['active_files'] = active
+        return info
+        
+        
+    def save_details(self, nzo_id, args, kwargs):
+        name = kwargs.get('name',None)
+        pp = kwargs.get('pp',None)
+        script = kwargs.get('script',None)
+        cat = kwargs.get('cat',None)
+        priority = kwargs.get('priority',None)
+        
+        if name != None:
+            sabnzbd.nzbqueue.change_name(nzo_id, name)
+        if cat != None:
+            sabnzbd.nzbqueue.change_cat(nzo_id,cat)
+        if script != None:
+            sabnzbd.nzbqueue.change_script(nzo_id,script)
+        if pp != None:
+            sabnzbd.nzbqueue.change_opts(nzo_id,pp)
+        if priority != None:
+            sabnzbd.nzbqueue.set_priority(nzo_id, priority)
+            
+        args = [arg for arg in args if arg != 'save']
+        extra = '/'.join(args)
+        url = cherrypy._urljoin(self.__root,extra)
+        if url and not url.endswith('/'):
+            url += '/'
+        raise dcRaiser(url, {})
 
-                line = {'filename':xml_name(fn),
-                        'mbleft':"%.2f" % (bytes_left / MEBI),
-                        'mb':"%.2f" % (bytes / MEBI),
-                        'nzf_id':nzf_id,
-                        'age':calc_age(date),
-                        'checked':checked}
-                active.append(line)
-
-            info['active_files'] = active
-
-            template = Template(file=os.path.join(self.__web_dir, 'nzo.tmpl'),
-                                searchList=[info], compilerSettings=DIRECTIVES)
-            return template.respond()
-        else:
-            return "ERROR: %s deleted" % self.__nzo_id
-
-    @cherrypy.expose
-    def bulk_operation(self, *args, **kwargs):
+    def bulk_operation(self, nzo_id, kwargs):
         self.__cached_selection = kwargs
         if kwargs['action_key'] == 'Delete':
             for key in kwargs:
                 if kwargs[key] == 'on':
-                    nzbqueue.remove_nzf(self.__nzo_id, key)
+                    nzbqueue.remove_nzf(nzo_id, key)
 
         elif kwargs['action_key'] == 'Top' or kwargs['action_key'] == 'Up' or \
              kwargs['action_key'] == 'Down' or kwargs['action_key'] == 'Bottom':
@@ -757,20 +842,18 @@ class NzoPage:
                 if kwargs[key] == 'on':
                     nzf_ids.append(key)
             if kwargs['action_key'] == 'Top':
-                nzbqueue.move_top_bulk(self.__nzo_id, nzf_ids)
+                nzbqueue.move_top_bulk(nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Up':
-                nzbqueue.move_up_bulk(self.__nzo_id, nzf_ids)
+                nzbqueue.move_up_bulk(nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Down':
-                nzbqueue.move_down_bulk(self.__nzo_id, nzf_ids)
+                nzbqueue.move_down_bulk(nzo_id, nzf_ids)
             elif kwargs['action_key'] == 'Bottom':
-                nzbqueue.move_bottom_bulk(self.__nzo_id, nzf_ids)
+                nzbqueue.move_bottom_bulk(nzo_id, nzf_ids)
 
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def tog_verbose(self, _dc = None):
-        self.__verbose = not self.__verbose
-        raise Raiser(self.__root, _dc=_dc)
+        url = cherrypy._urljoin(self.__root,nzo_id)
+        if url and not url.endswith('/'):
+            url += '/'
+        raise dcRaiser(url, kwargs)
 
 #------------------------------------------------------------------------------
 class QueuePage:
@@ -781,12 +864,10 @@ class QueuePage:
         self.__verboseList = []
         self.__prim = prim
 
-        self.__nzo_pages = []
-
     @cherrypy.expose
     def index(self, _dc = None, start=None, limit=None, dummy2=None):
 
-        info, pnfo_list, bytespersec, self.__verboseList, self.__nzo_pages, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verboseList, self.__nzo_pages, self.__dict__, start=start, limit=limit, dummy2=dummy2)
+        info, pnfo_list, bytespersec, self.__verboseList, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verboseList, self.__dict__, start=start, limit=limit, dummy2=dummy2)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
                             searchList=[info], compilerSettings=DIRECTIVES)
@@ -2783,7 +2864,7 @@ class xml_factory:
 
 def queueStatus(start, limit):
     #gather the queue details
-    info, pnfo_list, bytespersec, verboseList, nzo_pages, dictn = build_queue(history=True, start=start, limit=limit)
+    info, pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit)
     text = '<?xml version="1.0" encoding="UTF-8" ?><queue> \n'
 
     #Use xmlmaker to make an xml string out of info which is a tuple that contains lists/strings/dictionaries
@@ -2799,7 +2880,7 @@ def queueStatus(start, limit):
 def queueStatusJson(start, limit):
     #gather the queue details
     info = {}
-    info['mainqueue'], pnfo_list, bytespersec, verboseList, nzo_pages, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
+    info['mainqueue'], pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
 
 
     status_str = JsonWriter().write(info)
@@ -2808,16 +2889,12 @@ def queueStatusJson(start, limit):
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return status_str
 
-def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[], pages=None,
+def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[],
                 dictionary=None, history=False, start=None, limit=None, dummy2=None, json_output=False):
     if dictionary:
         dictn = dictionary
     else:
         dictn = []
-    if pages:
-        nzo_pages = pages
-    else:
-        nzo_pages = []
     #build up header full of basic information
     info, pnfo_list, bytespersec = build_header(prim)
 
@@ -2906,11 +2983,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
             queued_files = pnfo[PNFO_QUEUED_FILES_FIELD]
 
         nzo_ids.append(nzo_id)
-
-        if web_dir:#DONT WANT TO RUN THIS FOR XML OUTPUT#
-            if nzo_id not in dictn:
-                dictn[nzo_id] = NzoPage(web_dir, root, nzo_id, prim)
-                nzo_pages.append(nzo_id)
 
         slot = {'index':n, 'nzo_id':str(nzo_id)}
         unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
@@ -3016,13 +3088,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     else:
         info['slotinfo'] = ''
         verboseList = []
-        if web_dir: #DONT WANT TO RUN THIS FOR XML OUTPUT#
-            for nzo_id in nzo_pages[:]:
-                if nzo_id not in nzo_ids:
-                    nzo_pages.remove(nzo_id)
-                    dictn.pop(nzo_id)
 
-    return info, pnfo_list, bytespersec, verboseList, nzo_pages, dictn
+    return info, pnfo_list, bytespersec, verboseList, dictn
 
 
 #depreciated
