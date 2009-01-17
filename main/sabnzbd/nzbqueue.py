@@ -768,7 +768,7 @@ def switch(nzo_id1, nzo_id2):
 
 def rename_nzo(nzo_id, name):
     global __NZBQ
-    if __NZBQ: __NZBQ.rename(nzo_id, name)
+    if __NZBQ: __NZBQ.change_name(nzo_id, name)
 
 def history_info():
     global __NZBQ
