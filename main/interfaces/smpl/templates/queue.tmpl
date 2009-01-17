@@ -53,7 +53,6 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
         <th class="timeleftColumn center">Timeleft</th>
 		<th class="ageColumn center"><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','', '-1', this.parentNode.parentNode.id);">Age</a></th>
         <th class="sizeColumn center"><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','', '-1', this.parentNode.parentNode.id);">Size</a></th>
-        <th class="editColumn center">Edit</th>
         <th class="actionsColumn center"></th>
 	</tr>
 	</thead>
@@ -74,7 +73,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
         </select>
     </td>
     <td>
-        <span class="filename">$slot.filename</span>
+        <span class="filename"><a href="#nzb/$slot.nzo_id/" onclick="javascript:lr('nzb/$slot.nzo_id/');">$slot.filename</a></span>
     </td>
     <td title="$slot.mbleft/${slot.mb}MB">
         <!--#if float($slot.mb)>0 #-->
@@ -85,7 +84,6 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
     <td class="center" title="$slot.eta">$slot.timeleft</td>
     <td class="center">$slot.avg_age</td>
     <td class="center">$slot.size</td>
-    <td class="center"><a href="#nzb/$slot.nzo_id/" onclick="javascript:lr('nzb/$slot.nzo_id/');">Edit</a></td>
     <td class="right_align">
         <!--#if $slot.status == 'Paused'#-->
             <a onClick="resumequeueitem('$slot.nzo_id');"><img class="resumeicon" src="static/images/control_play.png" /></a>
