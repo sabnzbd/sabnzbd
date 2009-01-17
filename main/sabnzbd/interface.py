@@ -2809,12 +2809,12 @@ class xml_factory:
         self.__text = ''
 
 
-    def tuple(self, keyw, lst, text = ''):
+    def _tuple(self, keyw, lst, text = ''):
         for item in lst:
             text += self.run(keyw, item)
         return text
 
-    def dictn(self, keyw, lst, text = ''):
+    def _dict(self, keyw, lst, text = ''):
         for key in lst.keys():
             found = self.run(key,lst[key])
             if found:
@@ -2829,19 +2829,19 @@ class xml_factory:
 
 
 
-    def list(self, keyw, lst, text = ''):
+    def _list(self, keyw, lst, text = ''):
         #deal with lists
         #found = False
         for cat in lst:
             if isinstance(cat, dict):
                 #debug = 'dict%s' % n
-                text += self.dictn('slot', cat)
+                text += self._dict('slot', cat)
             elif isinstance(cat, list):
                 debug = 'list'
-                text  += self.list(debug, cat)
+                text  += self._list(debug, cat)
             elif isinstance(cat, tuple):
                 debug = 'tuple'
-                text += self.tuple(debug, cat)
+                text += self._tuple(debug, cat)
             else:
                 text += '<item>%s</item>\n' % xml_name(str(cat), encoding='utf-8')
 
@@ -2852,11 +2852,11 @@ class xml_factory:
 
     def run(self, keyw, lst):
         if isinstance(lst, dict):
-            text = self.dictn(keyw,lst)
+            text = self._dict(keyw,lst)
         elif isinstance(lst, list):
-            text = self.list(keyw,lst)
+            text = self._list(keyw,lst)
         elif isinstance(lst, tuple):
-            text = self.tuple(keyw,lst)
+            text = self._tuple(keyw,lst)
         else:
             text = ''
         return text
