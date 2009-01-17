@@ -64,8 +64,12 @@
         <!--#if $lines#-->
         <strong>$total_size</strong> In History&nbsp;&nbsp;&nbsp;&nbsp;
         <!--#end if #-->
+        <!--#if $month_size#-->
 		<strong>$month_size</strong> This Month&nbsp;&nbsp;&nbsp;&nbsp;
+        <!--#end if #-->
+        <!--#if $week_size#-->
 		<strong>$week_size</strong> This Week
+        <!--#end if #-->
 		<!--#if $loadavg#-->
 		&nbsp;&nbsp;&nbsp;&nbsp;<strong>$loadavg</strong> Load
 		<!--#end if#-->
