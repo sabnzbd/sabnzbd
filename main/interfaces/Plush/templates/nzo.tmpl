@@ -20,6 +20,13 @@
     
     <div id="config_go_back"><div><a href="../../">go&nbsp;back</a></div></div>
     
+	<!--#if $varExists('slot')#-->
+		<form action="save" method="post">
+			<input type="text" name="name" style="cursor:text; margin-left:120px" size="80" value="$slot.filename" />
+			<input type="submit" value="Edit NZB Name" />
+		</form>
+	<!--#end if#-->
+		
     <form action="bulk_operation">
     
     <div id="config_nav">
@@ -44,7 +51,7 @@
     <!-- ************************************
                 PAGE CONTENT IS BELOW
         ************************************ -->
-            
+		            
             <table class="nzoTable">
                 <tr><th></th><th>Filename/Subject</th><th>Size (MB)</th><th>Age</th></tr>
                 <!--#set $oddLine = False#-->
@@ -58,7 +65,7 @@
                     </tr>
                 <!--#end for#-->
             </table>
-        
+        </form>
             <div class="footer">
                 <!--#if int($cache_limit)#--><b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br><!--#end if#-->
                 <!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
