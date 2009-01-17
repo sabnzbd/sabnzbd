@@ -64,24 +64,7 @@
                 </select>
                 </td></tr>
                 </table>
-                
-                <!--#if $web_colors#-->
-                <br/>
-                <strong>(Active) Web Interface Schema:</strong><br/>
-                <small>Choose a color scheme for currently loaded skin.</small><br/>
-                <select name="web_color">
-                <!--#for $webline in $web_colors#-->
-                <!--#if $webline.lower() == $web_color.lower()#-->
-                    <option value="$webline" selected>$webline</option>
-                <!--#else if not $web_color.lower() and $webline.lower() == 'plush-default'#-->
-                    <option value="$webline" selected>$webline</option>
-                <!--#else#-->
-                    <option value="$webline">$webline</option>
-                <!--#end if#-->
-                <!--#end for#-->
-                </select>
-                <!--#end if#-->
-                                
+                                                
             </fieldset>
             </div>
             
