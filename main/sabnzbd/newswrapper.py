@@ -105,7 +105,7 @@ class NNTP:
         try:
             if os.name == 'nt':
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, self)).start()
-            else: 
+            else:
                 self.sock.connect((self.host, self.port))
                 self.sock.setblocking(0)
                 if sslenabled and _ssl:
@@ -124,7 +124,7 @@ class NNTP:
                     pass
             finally:
                 self.error(e)
-                
+
     def error(self, error):
         msg = "Failed to connect: %s" % (error)
         logging.error("%s %s@%s:%s", msg, self.nntp.thrdnum, self.host, self.port)
@@ -167,7 +167,9 @@ class NewsWrapper:
             self.pass_sent = True
             self.pass_ok = True
 
-        if not self.user_sent:
+        if self.lines[0][:3] == '400':
+            raise NNTPPermanentError(self.lines[0])
+        elif not self.user_sent:
             command = 'authinfo user %s\r\n' % (self.server.username)
             self.nntp.sock.sendall(command)
             self.user_sent = True
@@ -181,6 +183,7 @@ class NewsWrapper:
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
             if self.lines[0][:3] != '281':
+                # Assume that login failed (code 481 or other)
                 raise NNTPPermanentError(self.lines[0])
             else:
                 self.connected = True

@@ -12,11 +12,11 @@
 				</select>
 				<!--#if int($cache_limit)#-->&nbsp;&nbsp;|&nbsp;&nbsp;<b>$cache_art</b>&nbsp;articles&nbsp;buffered&nbsp;in&nbsp;<b>$cache_size</b>&nbsp;bytes<!--#end if#-->
 			</small></div>
-			
+
 			<!--#if $servers#-->
 				<!--#for $server in $servers#-->
 				<fieldset class="EntryFieldSet">
-					<legend id="<!--#if int($server[4])#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server[0]:$server[1]:$server[2]
+					<legend id="<!--#if int($server[4])#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server[0]:$server[1]:$server[2]<!--#if $server[5] then "" else " (blocked)"#-->
 					</legend>
 					<small><!--#if $server[3]#--><ol class="numbered_list">
 					<!--#for $thrd in $server[3]#-->
@@ -26,14 +26,14 @@
 				</fieldset>
 			    <!--#end for#-->
 			<!--#end if#-->
-			
+
 			<!--#if $lastmail#-->
 				<fieldset class="EntryFieldSet">
 					<legend id="configbox_email_options" style="background-color:darkblue;">Email Test Result</legend>
 					<small>$lastmail</small>
 				</fieldset>
 			<!--#end if#-->
-			
+
 			<!--#if $warnings#-->
 				<fieldset class="EntryFieldSet">
 					<legend id="configbox_latest_warnings" style="background-color:darkred;">Latest Warnings

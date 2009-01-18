@@ -1954,7 +1954,7 @@ class ConnectionInfo:
                     connected += 1
 
             busy.sort()
-            header['servers'].append((server.host, server.port, connected, busy, server.ssl))
+            header['servers'].append((server.host, server.port, connected, busy, server.ssl, server.active))
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():

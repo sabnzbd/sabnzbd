@@ -15,6 +15,7 @@ Logging:
     <!--#for $server in $servers#-->
         <li>
             $server[0]:$server[1]: $server[2] <!--#if int($server[4])#--><img src="static/images/nuvola/kgpg.png" /><!--#end if#-->
+            <!--#if $server[5] then "" else " (blocked)"#-->
             <ul>
             <!--#for $thrd in $server[3]#-->
                 <li>Thread #$thrd[0] -&gt; $thrd[1] -&gt; $thrd[2] -&gt; $thrd[3]</li>

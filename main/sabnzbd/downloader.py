@@ -23,6 +23,7 @@ import time
 import select
 import logging
 from threading import Thread
+from nntplib import NNTPPermanentError
 
 import sabnzbd
 from sabnzbd.decorators import synchronized_CV, CV
@@ -173,6 +174,7 @@ class Server:
 
         self.busy_threads = []
         self.idle_threads = []
+        self.active = True
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
@@ -354,6 +356,9 @@ class Downloader(Thread):
                         else:
                             nw.timeout = None
 
+                    if not server.active:
+                        break
+
                     article = sabnzbd.nzbqueue.get_article(server)
 
                     if not article:
@@ -487,6 +492,7 @@ class Downloader(Thread):
                         nzo.update_avg_kbs(bpsmeter.method.get_bps())
 
                 if len(nw.lines) == 1:
+                    code = nw.lines[0][:3]
                     if not nw.connected:
                         done = False
 
@@ -497,6 +503,36 @@ class Downloader(Thread):
                                          nw.server.port, nw.lines[0])
                             nw.lines = []
                             nw.data = ''
+                        except NNTPPermanentError, error:
+                            # Handle login problems
+                            block = False
+                            msg = error.response
+                            ecode = msg[:3]
+                            if ecode == '481' or (ecode == '502' and clues_login(msg)):
+                                # Cannot login, block this server
+                                if server.active:
+                                    logging.error('Failed login for server %s:%s',  server.host, server.port)
+                                block = True
+                            elif (ecode in ('502', '400')) and clues_too_many(msg):
+                                # Too many connections: remove this thread and reduce thread-setting for server
+                                logging.error('Too many connections to server %s:%s',  server.host, server.port)
+                                self.__reset_nw(nw, None, warn=False, destroy=True)
+                                server.threads -= 1
+                            elif ecode == '502':
+                                # Cannot connect (other reasons), block this server
+                                if server.active:
+                                    logging.error('Cannot connect to server %s:%s [%s]',  server.host, server.port, msg)
+                                block = True
+                            else:
+                                # Unknown error, just keep trying
+                                # In the future we will give this server a penalty timeout
+                                logging.error('Cannot connect to server %s:%s [%s]',  server.host, server.port, msg)
+                            if block:
+                                if server.active:
+                                    server.active = False
+                                    self.init_server(server, None)
+                                self.__reset_nw(nw, None, warn=False)
+                            continue
                         except:
                             logging.error("Connecting %s@%s:%s failed, message=%s",
                                               nw.thrdnum,
@@ -510,7 +546,7 @@ class Downloader(Thread):
                                          nw.server.port)
                             self.__request_article(nw)
 
-                    elif nw.lines[0][:3] in ('211'):
+                    elif code == '211':
                         done = False
 
                         logging.debug("group command ok -> %s",
@@ -520,7 +556,7 @@ class Downloader(Thread):
                         nw.data = ''
                         self.__request_article(nw)
 
-                    elif nw.lines[0][:3] in ('411', '423', '430'):
+                    elif code in ('411', '423', '430'):
                         done = True
                         nw.lines = None
 
@@ -529,7 +565,7 @@ class Downloader(Thread):
                                         nw.thrdnum, nw.server.host,
                                         nw.server.port, article.article)
 
-                    elif nw.lines[0][:3] in ('480'):
+                    elif code == '480':
                         msg = 'Server %s:%s requires user/password' % (nw.server.host, nw.server.port)
                         self.__reset_nw(nw, msg)
 
@@ -543,7 +579,8 @@ class Downloader(Thread):
                     server.busy_threads.remove(nw)
                     server.idle_threads.append(nw)
 
-    def __reset_nw(self, nw, errormsg, warn=True, wait=True):
+
+    def __reset_nw(self, nw, errormsg, warn=True, wait=True, destroy=False):
         server = nw.server
         article = nw.article
         fileno = None
@@ -560,7 +597,7 @@ class Downloader(Thread):
 
         if nw in server.busy_threads:
             server.busy_threads.remove(nw)
-        if nw not in server.idle_threads:
+        if not (destroy or nw in server.idle_threads):
             server.idle_threads.append(nw)
 
         if fileno and fileno in self.write_fds:
@@ -578,7 +615,10 @@ class Downloader(Thread):
             ## Allow all servers to iterate over each nzo/nzf again ##
             sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
 
-        nw.hard_reset(wait)
+        if destroy:
+            nw.terminate()
+        else:
+            nw.hard_reset(wait)
 
     def __request_article(self, nw):
         try:
@@ -613,3 +653,24 @@ class Downloader(Thread):
         except:
             logging.error("Exception?")
             self.__reset_nw(nw, "server broke off connection")
+
+
+#------------------------------------------------------------------------------
+def clues_login(text):
+    """ Check for any "failed login" clues in the response code
+    """
+    text = text.lower()
+    for clue in ('username', 'password', 'invalid', 'authen'):
+        if text.find(clue) >= 0:
+            return True
+    return False
+
+
+def clues_too_many(text):
+    """ Check for any "too many connections" clues in the response code
+    """
+    text = text.lower()
+    for clue in ('exceed', 'connections', 'too many', 'threads', 'limit'):
+        if text.find(clue) >= 0:
+            return True
+    return False
