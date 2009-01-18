@@ -256,7 +256,7 @@ def _grabnzb(msgid):
         if wait > 60:
             wait = 60
         logging.info("Newzbin says we should wait for %s sec", wait)
-        return int(wait+1), None, None
+        return int(wait+1), None, None, None
 
     if rcode in ('402'):
         logging.warning("You have no credit on your Newzbin account")
