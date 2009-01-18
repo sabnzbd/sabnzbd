@@ -508,7 +508,7 @@ class Downloader(Thread):
                             block = False
                             msg = error.response
                             ecode = msg[:3]
-                            if ecode == '481' or (ecode == '502' and clues_login(msg)):
+                            if ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
                                     logging.error('Failed login for server %s:%s',  server.host, server.port)
