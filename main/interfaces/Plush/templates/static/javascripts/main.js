@@ -483,7 +483,12 @@ jQuery(function($) {
 				                $.ajax({
 				                    type: "POST",
 									url: "tapi",
-									data: "mode=switch&value="+row.id+"&value2="+i
+									data: "mode=switch&value="+row.id+"&value2="+i,
+									success: function(result){
+										var newPriority = result.charAt(result.length-1);
+										if (newPriority != $('#'+row.id+' .options .proc_priority').val())
+											$('#'+row.id+' .options .proc_priority').val(newPriority);
+									}
 								});
                                 return false;
                             }
