@@ -154,27 +154,6 @@ def delayed():
 
 
 #------------------------------------------------------------------------------
-
-def GetParm(server, keyword):
-    """ Get named server parameter in a safe way """
-    try:
-        value = server[keyword]
-    except:
-        value = ''
-    server[keyword] = value
-    return value
-
-def GetParmInt(server, keyword, default):
-    """ Get integer server parameter in a safe way """
-    value = GetParm(server, keyword)
-    try:
-        value = int(value)
-    except:
-        value = default
-    server[keyword] = value
-    return value
-
-
 class Server:
     def __init__(self, id, host, port, timeout, threads, fillserver, ssl, username = None,
                  password = None, optional=False):
@@ -191,7 +170,7 @@ class Server:
 
         self.username = username
         self.password = password
-        
+
         self.busy_threads = []
         self.idle_threads = []
 
@@ -225,7 +204,7 @@ class Downloader(Thread):
 
         # Used for scheduled pausing
         self.paused = paused
-        
+
         #used for throttling bandwidth and scheduling bandwidth changes
         self.bandwidth_limit = cfg.BANDWIDTH_LIMIT.get()
         cfg.BANDWIDTH_LIMIT.callback(self.speed_set)
@@ -294,7 +273,7 @@ class Downloader(Thread):
         if create and enabled and host and port and threads:
             self.servers.append(Server(newserver, host, port, timeout, threads, fillserver, ssl,
                                             username, password, optional))
-                
+
         return primary
 
 
@@ -338,7 +317,7 @@ class Downloader(Thread):
 
     def speed_set(self):
         self.bandwidth_limit = cfg.BANDWIDTH_LIMIT.get()
-        
+
     def run(self):
         self.decoder.start()
 
@@ -482,7 +461,7 @@ class Downloader(Thread):
                     bytes, done, skip = nw.recv_chunk()
                 except:
                     bytes, done, skip = (0, False, False)
-                    
+
                 if skip:
                     bpsmeter.method.update(0)
                     continue
@@ -502,7 +481,7 @@ class Downloader(Thread):
                                 #logging.debug("Sleeping %s second(s) bps:%s limit:%s",sleeptime, bps/1024, limit/1024)
                                 time.sleep(sleeptime)
                     bpsmeter.method.update(bytes)
-                    
+
                     if nzo:
                         nzo.update_bytes(bytes)
                         nzo.update_avg_kbs(bpsmeter.method.get_bps())
@@ -549,7 +528,7 @@ class Downloader(Thread):
                                         '%s missing',
                                         nw.thrdnum, nw.server.host,
                                         nw.server.port, article.article)
-                        
+
                     elif nw.lines[0][:3] in ('480'):
                         msg = 'Server %s:%s requires user/password' % (nw.server.host, nw.server.port)
                         self.__reset_nw(nw, msg)
