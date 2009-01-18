@@ -2,9 +2,8 @@
 <!--#set global $help_uri="Configure+Sorting"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-    <!--#raw#-->
     <script language="javascript">        
-        // switch's Series sort code
+    // switch's sort code
     function tvAdd(val){
         var tv = document.getElementById('tvfoldername'); 
         tv.value = tv.value + val;
@@ -161,267 +160,245 @@
     }
     function showDiv(id)
     {
-        console.log("id=%s", id);
         disp = (document.getElementById(id).style.display == "block") ? "none" : "block";
         document.getElementById(id).style.display = disp;
     }
     </script>
-    <!--#end raw#-->
 
             <form action="saveSorting" method="post" name="fullform">
-            <div class="EntryBlock">
 
-            
-            <fieldset class="EntryFieldSet">
-                
-                <legend id="configbox_sorting_folders">Sorting&nbsp;Folders</legend>
-                
-                <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Series Sorting</strong><br class="clear" />
+				<div class="EntryBlock">
+				
+				<fieldset class="EntryFieldSet">
+				<legend class="configbox_sorting_folders">Series Sorting</legend>
+				
+				    <input id="complete_dir" type="hidden" value="$complete_dir" />
+				    <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable sorting and renaming of episodes</strong>
+				    <br class="clear" /><br/>
+				    <a onclick="jQuery('#Keytable1').toggle()" style="cursor:pointer; color:white; background-color:black;"><i>&nbsp;Toggle Key&nbsp;</i></a>
+				     <div id="Keytable1" style="display:none">
+						<table>
+						<thead><tr>
+			                <th align=right><small><u>Meaning</u></small></th>
+			                <th><small><u>Pattern</u></small></th>
+			                <th><small><u>Result</u></small></th>
+				        </tr></thead>
+				        <tr>
+				            <td align=right><strong>Show Name:</strong></td>
+				            <td>%sn</td>
+				            <td>Show Name</td>
+				        </tr><tr>
+							<td></td>
+				            <td>%s.n</td>
+				            <td>Show.Name</td>
+				        </tr><tr>
+							<td></td>
+				            <td>%s_n</td>
+				            <td>Show_Name</td>
+				        </tr><tr>
+				            <td align=right><strong>Season Number:</strong></td>
+				            <td>%s</td>
+				            <td>1</td>
+				        </tr><tr>
+							<td></td>
+				            <td>%0s</td>
+				            <td>01</td>
+				        </tr><tr>
+				            <td align=right><strong>Episode Number:</strong></td>
+				            <td>%e</td>
+				            <td>5</td>
+				        </tr><tr>
+							<td></td>
+				            <td>%0e</td>
+				            <td>05</td>
+				        </tr><tr>
+				            <td align=right><strong>Episode Name:</strong></td>
+				            <td>%en</td>
+				            <td>Episode Name</td>
+				        </tr><tr>
+							<td></td>
+				            <td>%e.n</td>
+				            <td>Episode.Name</td>
+				        </tr><tr>
+							<td></td>
+				            <td>%e_n</td>
+				            <td>Episode_Name</td>
+				        </tr><tr>
+				            <td align=right><strong>File Extension:</strong></td>
+				            <td>%ext</td>
+				            <td>avi</td>
+				        </tr><tr>
+				            <td align=right><strong>Lower Case:</strong></td>
+				            <td>{TEXT}</td>
+				            <td>text</td>
+				        </tr>
+				        </table>
+				        <!--
+				        <span class="">Original Filename</span>
+				        <span class="">%fn</span>
+				        <span class="">Episode Name</span>
+				        <br />-->
+				    </div><br class="clear" /><br class="clear" />
+				    <strong>Sort String:</strong>
+				    <input type="text" style="width:400px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><input type="button" onclick="tvClear()" value="Clear"/><br class="clear" />
+				    <strong>Presets:</strong>
+				    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
+				    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
+				    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
+				    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
+				    <br/>
+				    <strong>Example:</strong> <span id="previewtv"></span>
+				</fieldset>
+				
+				<br class="clear" />
+				<fieldset class="EntryFieldSet">
+				<legend class="configbox_sorting_folders">Generic Sorting</legend>
+				
+				    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable generic sorting and renaming of files</strong>
+				    <br class="clear" />
+				    <input class="radio" type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>Enable if downloads are not put in their own folders</strong>
+				    <br class="clear" />
+				    <label><span class="label">Affected Categories:</span>
+				    <select name="movie_cat" multiple="multiple" size=4 class="multiple_cats">
+				        <!--#for $ct in $cat_list#-->
+				            <!--#if $ct != 'Default'#-->
+				                <option value="$ct" <!--#if $ct in $movie_categories then 'selected' else ''#--> >$ct</option>
+				            <!--#end if#-->
+				        <!--#end for#-->
+				    </select>
+				    <br class="clear" /><br/>
+				    <a onclick="jQuery('#Keytable2').toggle()" style="cursor:pointer; color:white; background-color:black;"><i>&nbsp;Toggle Key&nbsp;</i></a>
+				     <div id="Keytable2" style="display:none">
+				        <table>
+				        <thead><tr>
+				           <th align=right><small><u>Meaning</u></small></th>
+				           <th><small><u>Pattern</u></small></th>
+				           <th><small><u>Result</u></small></th>
+				        </tr></thead>
+				        <tr>
+				            <td align=right><strong>Title:</strong></td>
+				            <td>%title</td>
+				            <td>Movie Name</td>
+				        </tr><tr>
+							<td></td>
+				            <td>%.title</td>
+				            <td>Movie.Name</td>
+				        </tr><tr>
+							<td></td>
+				            <td>%_title</td>
+				            <td>Movie_Name</td>
+				        </tr><tr>
+				            <td align=right><strong>Year:</strong></td>
+				            <td>%y</td>
+				            <td>2000</td>
+				        </tr><tr>
+				            <td align=right><strong>Extension:</strong></td>
+				            <td>%ext</td>
+				            <td>avi</td>
+				        </tr><tr>
+				            <td align=right><strong>Part Number:</strong></td>
+				            <td>%1</td>
+				            <td>1</td>
+				        </tr><tr>
+				            <td align=right><strong>Decade:</strong></td>
+				            <td>%decade</td>
+				            <td>00</td>
+				        </tr><tr>
+				            <td align=right><strong>Lower Case:</strong></td>
+				            <td>{TEXT}</td>
+				            <td>text</td>
+				        </tr>
+				        </table>
+				    </div><br class="clear" /><br class="clear" />
+				    <strong>Sort String:</strong>
+				    <input type="text" style="width:400px" size="80" id="moviefoldername" name="movie_sort_string" value="$movie_sort_string" onkeyup="javascript:previewmovie()"><input type="button" onclick="movieClear()" value="Clear"/><br class="clear" />
+				    <strong>Multi-part label:</strong>
+				    <input type="text" style="width:400px" size="80" id="movieextra" name="movie_sort_extra" value="$movie_sort_extra" onkeyup="javascript:previewmovie()"><input type="button" onclick="movieClearExtra()" value="Clear"/><br class="clear" />
+				    <strong>Presets:</strong>
+				    <input type="button" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="In folders"/>
+				    <input type="button" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="No folders"/><br class="clear" />
+				    <br/>
+				    <strong>Example:</strong> <span id="previewmovie"></span>
+				</fieldset>
+				
+				<br class="clear" />
+				<fieldset class="EntryFieldSet">
+				<legend class="configbox_sorting_folders">Date Sorting</legend>
+				
+				    <input class="radio" type="checkbox" name="enable_date_sorting" value="1" <!--#if $enable_date_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable sorting and renaming of date named files</strong>
+				    <br class="clear" />
+				    <label><span class="label">Affected Categories:</span>
+				    <select name="date_cat" multiple="multiple" size=4 class="multiple_cats">
+				        <!--#for $ct in $cat_list#-->
+				            <!--#if $ct != 'Default'#-->
+				                <option value="$ct" <!--#if $ct in $date_categories then 'selected' else ''#--> >$ct</option>
+				            <!--#end if#-->
+				        <!--#end for#-->
+				    </select>
+				    <br class="clear" /><br/>
+				    <a onclick="jQuery('#Keytable3').toggle()" style="cursor:pointer; color:white; background-color:black;"><i>&nbsp;Toggle Key&nbsp;</i></a>
+				     <div id="Keytable3" style="display:none">
+				     	<table>
+				        <thead><tr>
+			                <th align=right><small><u>Meaning</u></small></td>
+			                <th><small><u>Pattern</u></small></td>
+			                <th><small><u>Result</u></small></td>
+				        </tr></thead>
+				        <tr>
+				            <td align=right><strong>Show Name:</strong></td>
+				            <td>%t</td>
+				            <td>Show Name</td>
+						</tr><tr>
+							<td></td>
+				            <td>%.t</td>
+				            <td>Show.Name</td>
+						</tr><tr>
+							<td></td>
+				            <td>%_t</td>
+				            <td>Show_Name</td>
+						</tr><tr>
+				            <td align=right><strong>Year:</strong></td>
+				            <td>%y</td>
+				            <td>2009</td>
+						</tr><tr>
+				            <td align=right><strong>Month:</strong></td>
+				            <td>%m</td>
+				            <td>1</td>
+						</tr><tr>
+							<td></td>
+				            <td>%0m</td>
+				            <td>01</td>
+						</tr><tr>
+				            <td align=right><strong>Day of month:</strong></td>
+				            <td>%d</td>
+				            <td>2</td>
+						</tr><tr>
+							<td></td>
+				            <td>%0d</td>
+				            <td>02</td>
+						</tr><tr>
+				            <td align=right><strong>Decade:</strong></td>
+				            <td>%decade</td>
+				            <td>00</td>
+						</tr><tr>
+				            <td align=right><strong>Lower Case:</strong></td>
+				            <td>{TEXT}</td>
+				            <td>text</td>
+						</tr>
+				        </table>
+				    </div><br class="clear" /><br class="clear" />
+				    <strong>Sort String:</strong>
+				    <input type="text" size="80" id="datefoldername" name="date_sort_string" value="$date_sort_string" onkeyup="javascript:previewdate()"><input type="button" onclick="dateClear()" value="Clear"/><br class="clear" />
+				    <strong>Presets:</strong>
+				    <input type="button" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="Show Name folder"/>
+				    <input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="Year-Month Folders"/>
+				    <input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="Daily Folders"/><br class="clear" />
+				    <br/>
+				    <strong>Example:</strong> <span id="previewdate"></span>
+				    
+				</fieldset>
 
-    <a href="#toggle" onclick="javascript:showDiv('Keytable')">Toggle key</a>
-     <div id="Keytable">
-        <div class="row">
-                <span class="heading1">Meaning</span>
-                <span class="heading2">Pattern</span>
-                <span class="heading3">Result</span>
-        </div>
-        <div class="row">
-            <span class="tripleheight">Show Name</span>
-            <span class="pattern">%sn</span>
-            <span class="result">Show Name</span>
-        <br />
-            <span class="pattern">%s.n</span>
-            <span class="result">Show.Name</span>
-        <br />
-            <span class="pattern">%s_n</span>
-            <span class="result">Show_Name</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Season Number</span>
-            <span class="pattern">%s</span>
-            <span class="result">1</span>
-        <br />
-            <span class="pattern">%0s</span>
-            <span class="result">01</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Episode Number</span>
-            <span class="pattern">%e</span>
-            <span class="result">5</span>
-        <br />
-            <span class="pattern">%0e</span>
-            <span class="result">05</span>
-        </div>
-        <div class="row">
-            <span class="tripleheight">Episode Name</span>
-            <span class="pattern">%en</span>
-            <span class="result">Episode Name</span>
-        <br />
-            <span class="pattern">%e.n</span>
-            <span class="result">Episode.Name</span>
-        <br />
-            <span class="pattern">%e_n</span>
-            <span class="result">Episode_Name</span>
-        </div>
-        <div class="row">
-            <span class="normalheight">File Extension</span>
-            <span class="pattern">%ext</span>
-            <span class="result">avi</span>
-        </div>
-        <div class="row">
-            <span class="normalheight">Lower Case</span>
-            <span class="pattern">{TEXT}</span>
-            <span class="result">text</span>
-        </div>
-        <!--
-        <span class="">Original Filename</span>
-        <span class="">%fn</span>
-        <span class="">Episode Name</span>
-        <br />-->
-    </div><br class="clear" />
-    <strong>Sort String:</strong><br class="clear" />
-    <input type="text" style="width:400px" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><input type="button" style="width:100px;" onclick="tvClear()" value="Clear"/><br class="clear" />
-    <strong>Presets:</strong><br class="clear" />
-    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
-    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
-    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
-    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
-    <br class="clear" />
-    Example: <span id="previewtv"></span>
-    <br class="clear" /><br class="clear" />
-
-    <input id="complete_dir" type="hidden" value="$complete_dir" />
-    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Generic Sorting</strong>
-    <br class="clear" /><br class="clear" />
-    <input class="radio" type="checkbox" id="movie_extra_folder" name="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>Keep loose downloads in extra folders</strong>
-    <br class="clear" /><br class="clear" />
-    <strong>Affected Categories:</strong>
-    <br class="clear" />
-    <select name="movie_cat" multiple="multiple" size=4 class="multiple_cats">
-        <!--#for $ct in $cat_list#-->
-            <!--#if $ct != 'Default'#-->
-                <option value="$ct" <!--#if $ct in $movie_categories then 'selected' else ''#--> >$ct</option>
-            <!--#end if#-->
-        <!--#end for#-->
-    </select>
-    <br class="clear" /><br class="clear" />
-    <a href="#toggle" onclick="javascript:showDiv('Keytable2')">Toggle key</a>
-     <div id="Keytable2">
-        <div class="row">
-                <span class="heading1">Meaning</span>
-                <span class="heading2">Pattern</span>
-                <span class="heading3">Result</span>
-        </div>
-        <div class="row">
-            <span class="tripleheight">Title</span>
-            <span class="pattern">%title</span>
-            <span class="result">Movie Name</span>
-        <br />
-            <span class="pattern">%.title</span>
-            <span class="result">Movie.Name</span>
-        <br />
-            <span class="pattern">%_title</span>
-            <span class="result">Movie_Name</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Year</span>
-            <span class="pattern">%y</span>
-            <span class="result">2000</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Extension</span>
-            <span class="pattern">%ext</span>
-            <span class="result">avi</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Part Number</span>
-            <span class="pattern">%1</span>
-            <span class="result">1</span>
-        </div>
-        <div class="row">
-            <span class="normalheight">Decade</span>
-            <span class="pattern">%decade</span>
-            <span class="result">00</span>
-        </div>
-        <div class="row">
-            <span class="normalheight">Lower Case</span>
-            <span class="pattern">{TEXT}</span>
-            <span class="result">text</span>
-        </div>
-    </div><br class="clear" /><br class="clear" />
-    <strong>Sort String:</strong><br class="clear" />
-    <input type="text" style="width:400px" size="80" id="moviefoldername" name="movie_sort_string" value="$movie_sort_string" onkeyup="javascript:previewmovie()"><input type="button" onclick="movieClear()" style="width:100px;" value="Clear"/><br class="clear" />
-    <strong>Multi-part label:</strong><br class="clear" />
-    <input type="text" style="width:400px" size="80" id="movieextra" name="movie_sort_extra" value="$movie_sort_extra" onkeyup="javascript:previewmovie()"><input type="button" onclick="movieClearExtra()" style="width:100px;" value="Clear"/><br class="clear" />
-    <strong>Presets:</strong><br class="clear" />
-    <input type="button" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="In folders"/>
-    <input type="button" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="No folders"/><br class="clear" />
-    <br class="clear" />
-    Example: <span id="previewmovie"></span>
-    <br class="clear" /><br class="clear" />
-
-    
-    <input class="radio" type="checkbox" name="enable_date_sorting" value="1" <!--#if $enable_date_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable Date Sorting</strong><br class="clear" />
-    <br class="clear" />
-    <strong>Affected Categories:</strong>
-    <br class="clear" />
-    <select name="date_cat" multiple="multiple" size=4 class="multiple_cats">
-        <!--#for $ct in $cat_list#-->
-            <!--#if $ct != 'Default'#-->
-                <option value="$ct" <!--#if $ct in $date_categories then 'selected' else ''#--> >$ct</option>
-            <!--#end if#-->
-        <!--#end for#-->
-    </select>
-    <br class="clear" /><br class="clear" />
-    <a href="#toggle" onclick="javascript:showDiv('Keytable3')">Toggle key</a>
-     <div id="Keytable3">
-        <div class="row">
-                <span class="heading1">Meaning</span>
-                <span class="heading2">Pattern</span>
-                <span class="heading3">Result</span>
-        </div>
-        <div class="row">
-            <span class="tripleheight">Show Name</span>
-            <span class="pattern">%t</span>
-            <span class="result">Show Name</span>
-        <br />
-            <span class="pattern">%.t</span>
-            <span class="result">Show.Name</span>
-        <br />
-            <span class="pattern">%_t</span>
-            <span class="result">Show_Name</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Year</span>
-            <span class="pattern">%y</span>
-            <span class="result">2009</span>
-        </div>
-        <div class="row">
-            <span class="doubleheight">Month</span>
-            <span class="pattern">%m</span>
-            <span class="result">1</span>
-        <br />
-            <span class="pattern">%0m</span>
-            <span class="result">01</span>
-        </div>
-        <div class="row">
-            <span class="tripleheight">Day of month</span>
-            <span class="pattern">%d</span>
-            <span class="result">2</span>
-        <br />
-            <span class="pattern">%0d</span>
-            <span class="result">02</span>
-        <br />
-        </div>
-        <div class="row">
-            <span class="normalheight">Decade</span>
-            <span class="pattern">%decade</span>
-            <span class="result">00</span>
-        </div>
-        <div class="row">
-            <span class="normalheight">Lower Case</span>
-            <span class="pattern">{TEXT}</span>
-            <span class="result">text</span>
-        </div>
-    </div><br class="clear" />
-    <strong>Sort String:</strong><br class="clear" />
-    <input type="text" style="width:400px" size="80" id="datefoldername" name="date_sort_string" value="$date_sort_string" onkeyup="javascript:previewdate()"><input type="button" style="width:100px;" onclick="tvClear()" value="Clear"/><br class="clear" />
-    <strong>Presets:</strong><br class="clear" />
-    <input type="button" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="Show Name folder"/>
-    <input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="Year-Month Folders"/>
-    <input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="Daily Folders"/><br class="clear" />
-    <br class="clear" />
-    Ex: <span id="previewdate"></span>
-                <br/><b>&raquo; Legend:</b><br/>
-                
-                <table>
-                <tr><td>
-                <u>Show Name:</u><br/>
-                    &nbsp;&nbsp;&nbsp;%sn <small>(ex: Show Name)</small><br/>
-                    &nbsp;&nbsp;&nbsp;%s.n <small>(ex: Show.Name)</small><br/>
-                    &nbsp;&nbsp;&nbsp;%s_n <small>(ex: Show_Name)</small><br/>
-                </td><td>
-                <u>Episode Name:</u><br/>
-                    &nbsp;&nbsp;&nbsp;%en <small>(ex: Episode Name)</small><br/>
-                    &nbsp;&nbsp;&nbsp;%e.n <small>(ex: Episode.Name)</small><br/>
-                    &nbsp;&nbsp;&nbsp;%e_n <small>(ex: Episode_Name)</small><br/>
-                </td><td valign=top>
-                <u>File Extension:</u><br/>
-                    &nbsp;&nbsp;&nbsp;%ext <small>(ex: avi)</small><br/>
-                <br class="clear" />
-                </td></tr><tr><td>
-                <u>Season Number:</u><br/>
-                    &nbsp;&nbsp;&nbsp;%s <small>(ex: 1)</small><br/>
-                    &nbsp;&nbsp;&nbsp;%0s <small>(ex: 01)</small><br/>
-                </td><td>
-                <u>Episode Number:</u><br/>
-                    &nbsp;&nbsp;&nbsp;%e <small>(ex: 5)</small><br/>
-                    &nbsp;&nbsp;&nbsp;%0e <small>(ex: 05)</small><br/>
-                </td><td></td></tr>
-                </table>
-                
-            </fieldset>
-            </div>
+				</div>
             
             </form>
 

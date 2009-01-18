@@ -854,7 +854,7 @@ fieldset.EntryFieldSet {
 #configbox_tuning                { background-image: url(../images/plush-default/config/tuning.png); }
 #configbox_user_folders            { background-image: url(../images/plush-default/config/user_folders.png); }
 #configbox_system_folders        { background-image: url(../images/plush-default/config/system_folders.png); }
-#configbox_sorting_folders        { background-image: url(../images/plush-default/config/sorting_folders.png); }
+.configbox_sorting_folders        { background-image: url(../images/plush-default/config/sorting_folders.png); }
 #configbox_processing_switches    { background-image: url(../images/plush-default/config/processing_switches.png); }
 #configbox_other_switches        { background-image: url(../images/plush-default/config/other_switches.png); }
 #configbox_add_server            { background-image: url(../images/plush-default/config/add_server.png); }

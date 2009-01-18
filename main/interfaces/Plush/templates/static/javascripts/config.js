@@ -77,6 +77,8 @@ jQuery(document).ready(function($){
             break;
         case 'Sorting':
             previewtv();
+            previewmovie();
+            previewdate();
         case 'General':
         case 'Folders':
         case 'Switches':
