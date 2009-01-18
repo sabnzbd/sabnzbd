@@ -485,6 +485,7 @@ jQuery(function($) {
 									url: "tapi",
 									data: "mode=switch&value="+row.id+"&value2="+i,
 									success: function(result){
+										// change priority of the nzb if necessary (priority is returned by API)
 										var newPriority = $.trim(result.substring(result.length-2));
 										if (newPriority != $('#'+row.id+' .options .proc_priority').val())
 											$('#'+row.id+' .options .proc_priority').val(newPriority);
@@ -526,13 +527,22 @@ jQuery(function($) {
                 
                 // nzb change priority ajax
                 $('#queueTable .proc_priority').change(function(){
+                	var nzbid = $(this).parent().parent().attr('id');
+					var oldPos = $('#'+nzbid)[0].rowIndex;
                     $.ajax({
 	                    type: "POST",
 						url: "tapi",
-                        data: 'mode=queue&name=priority&value='+$(this).parent().parent().attr('id')+'&value2='+$(this).val(),
-                        success: function(result){
-                            $.plush.skipRefresh = false;
-                            $.plush.refreshQueue();
+                        data: 'mode=queue&name=priority&value='+nzbid+'&value2='+$(this).val(),
+                        success: function(newPos){
+							// reposition the nzb if necessary (new position is returned by the API)
+                        	if (oldPos == newPos)
+                        		return;
+                        	if (newPos == "0")
+	                        	$('#'+nzbid).insertBefore($('#queueTable tr:first-child'));
+							else if (oldPos < newPos)
+	                        	$('#'+nzbid).insertAfter($('#queueTable tr:eq('+ newPos +')'));
+							else
+	                        	$('#'+nzbid).insertBefore($('#queueTable tr:eq('+ newPos +')'));
                         }
                     });
                 });
