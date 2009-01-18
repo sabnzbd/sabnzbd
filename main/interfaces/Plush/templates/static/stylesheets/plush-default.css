@@ -861,7 +861,7 @@ fieldset.EntryFieldSet {
 #configbox_add_schedule            { background-image: url(../images/plush-default/config/add_schedule.png); }
 #configbox_current_schedules    { background-image: url(../images/plush-default/config/current_schedules.png); }
 #configbox_new_feed_url            { background-image: url(../images/plush-default/config/new_feed_url.png); }
-#configbox_feed_definition        { background-image: url(../images/plush-default/config/feed_definition.png); }
+/*#configbox_feed_definition        { background-image: url(../images/plush-default/config/feed_definition.png); }*/
 #configbox_email_options        { background-image: url(../images/plush-default/config/email_options.png); }
 #configbox_email_account_settings{background-image: url(../images/plush-default/config/email_account_settings.png); }
 #configbox_newzbin_account_info    { background-image: url(../images/plush-default/config/newzbin_account_info.png); }

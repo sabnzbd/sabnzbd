@@ -8,7 +8,7 @@
             <legend id="configbox_new_feed_url">New&nbsp;Feed&nbsp;URL</legend>
                 <input type="text" size="10" name="feed" value="$feed"/>&nbsp;
                 <input type="text" size="104" name="uri" value=""/><br/><br/>
-                <input type="submit" value="&raquo; Save"/>
+                <input type="submit" value="Add"/>
             </fieldset>
             </form>
             </div>
@@ -18,58 +18,54 @@
                 <form action="upd_rss_feed" method="post">
                 <fieldset class="EntryFieldSet">
 
-                    <legend id="configbox_feed_definition" style="color:white; background-color:<!--#if $rss[$feed]['enable'] then 'green' else 'blue'#-->">Feed&nbsp;Definition&nbsp;&mdash;&nbsp;$feed</legend>
+                    <legend style="padding-left:4px; color:white; background-color:<!--#if $rss[$feed]['enable'] then 'darkgreen' else 'darkred'#-->"><input type="checkbox" onclick="this.form.action='toggle_rss_feed';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>&nbsp;Feed&nbsp;&mdash;&nbsp;$feed</legend>
 
                     <input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
-
-                    <!--#if $rss[$feed]['pick_cat']#-->
-                    <select name="cat">
-                    <!--#for $ct in $cat_list#-->
-                        <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
-                    <!--#end for#-->
-                    </select>
-                    <!--#end if#-->
-
-                    <select name="pp">
-                        <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>Default</option>
-                        <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Download</option>
-                        <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
-                        <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>+R+Unpack</option>
-                        <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>+R+U+Delete</option>
-                    </select>
-
-                    <!--#if $rss[$feed]['pick_script']#-->
-                    <select name="script">
-                    <!--#for $sc in $script_list#-->
-                        <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
-                    <!--#end for#-->
-                    </select>
-                    <!--#end if#-->
+					<input type="submit" onclick="this.form.action='del_rss_feed';  this.form.submit(); return false;" value="Delete Feed"/>
+		            <input type="submit" onclick="this.form.action='test_rss_feed'; this.form.submit(); return false;" value="Preview"/>
+		            <input type="submit" onclick="this.form.action='download_rss_feed'; this.form.submit(); return false;" value="Force Download"/>
+		
+		            <select name="priority">
+		                <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
+		                <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>Normal</option>
+		                <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>Low</option>
+		            </select>
+		            <!--#if $rss[$feed]['pick_cat']#-->
+		                <select name="cat">
+		                <!--#for $ct in $cat_list#-->
+		                    <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
+		                <!--#end for#-->
+		                </select>
+		            <!--#end if#-->
+		            <select name="pp">
+		                <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>Default</option>
+		                <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Download</option>
+		                <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
+		                <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>+Unpack</option>
+		                <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>+Delete</option>
+		            </select>
+		            <!--#if $rss[$feed]['pick_script']#-->
+		                <select name="script">
+		                <!--#for $sc in $script_list#-->
+		                    <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
+		                <!--#end for#-->
+		                </select>
+		            <!--#end if#-->
 
                     <input type="hidden" name="feed" value="$feed"/>
-                    &nbsp;&sdot;&nbsp;
-                    <input type="checkbox" onclick="this.form.action='toggle_rss_feed';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled
-                    &nbsp;&sdot;&nbsp;
-                    <input type="submit" onclick="this.form.action='test_rss_feed'; this.form.submit(); return false;" value="Preview"/>
-                    &nbsp;&sdot;&nbsp;
-                    <input type="submit" onclick="this.form.action='download_rss_feed'; this.form.submit(); return false;" value="Download"/>
-                    &nbsp;&sdot;&nbsp;
-                    <input type="submit" value="&raquo; Save"/>
-                    &nbsp;&sdot;&nbsp;
-                    <input type="submit" onclick="this.form.action='del_rss_feed';  this.form.submit(); return false;" value="&otimes; Delete"/>
+		            <input type="submit" value="Save"/>
 
-                </fieldset>
                 </form>
-                </div>
+
+                <hr/>
 
                 <table style="clear:both;">
                     <tr>
-                        <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                         <th>Order</th>
                         <th>Type</th>
                         <th>Filter</th>
                         <!--#if $rss[$feed]['pick_cat'] then "<th>Category</th>" else ""#-->
-                        <th>Post-processing</th>
+                        <th>Processing</th>
                         <!--#if $rss[$feed]['pick_script'] then "<th>Script</th>" else ""#-->
                         <th></th>
                     </tr>
@@ -77,7 +73,6 @@
                     <form action="upd_rss_filter" method="get">
                     <tr class="odd">
 
-                        <td></td>
                         <td></td>
 
                         <td>
@@ -122,23 +117,16 @@
                         <td>
                             <input type="hidden" value="$rss[$feed]['filtercount']" name="index"/>
                             <input type="hidden" value="$feed" name="feed"/>
-                            <input type="submit" value="&raquo; Save"/>
+                            <input type="submit" value="Save"/>
                         </td>
 
+						<td></td>
                     </tr>
                     </form>
 
                     <!--#set $fnum = 0#-->
                     <!--#for $filter in $rss[$feed].filters#-->
                     <tr class="odd">
-
-                        <td>
-                            <form action="del_rss_filter" method="post">
-                                <input type="hidden" value="$fnum" name="index"/>
-                                <input type="hidden" value="$feed" name="feed"/>
-                                <input type="submit" value="X"/>
-                            </form>
-                        </td>
 
                         <td><form>
                             <select onchange="location = this.options[this.selectedIndex].value;">
@@ -192,17 +180,26 @@
                         <td>
                             <input type="hidden" name="index" value="$fnum"/>
                             <input type="hidden" name="feed" value="$feed"/>
-                            <input type="submit" value="&raquo; Save"/>
+                            <input type="submit" value="Save"/>
+							</form>
                         </td>
-
-                        </form>
-
+                        
+                        <td>
+                            <form action="del_rss_filter" method="post">
+                                <input type="hidden" value="$fnum" name="index"/>
+                                <input type="hidden" value="$feed" name="feed"/>
+                                <input type="submit" value="X"/>
+                            </form>
+						</td>
+						
                     </tr>
                     <!--#set $fnum = $fnum+1#-->
                     <!--#end for#-->
 
                 </table>
-                <hr/>
+
+                </fieldset>
+                </div>
 
             <!--#end for#-->
 
