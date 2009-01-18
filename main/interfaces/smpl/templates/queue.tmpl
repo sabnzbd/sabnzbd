@@ -4,7 +4,7 @@
 
 <h3>Queue</h3>
 <div class="centerLinks">
-<a onClick="if(confirm('Delete the all items from the queue?')){lr('queue/purge','', '-1', this.parentNode.parentNode.id);}" >Delete All</a> |
+<a onClick="if(confirm('Delete the all items from the queue?')){lr('queue/purge','', -1, this.parentNode.parentNode.id);}" >Delete All</a> |
 On queue finish:
 <select onChange="javascript:changequeuedetails('queue/change_queue_complete_action?action='+this.options[this.selectedIndex].value)">
 <option value=""></option>
@@ -48,11 +48,11 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
     <tr>
 		<th class="expandColumn center"></th>
         <th class="orderColumn center"></th>
-		<th><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','', '-1', this.parentNode.parentNode.id);">Name</a></th>
+		<th>Name<a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','dir=asc', -1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','dir=desc', -1, this.parentNode.parentNode.id);">v</a></th>
 		<th class="center">Progress</th>
         <th class="timeleftColumn center">Timeleft</th>
-		<th class="ageColumn center"><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','', '-1', this.parentNode.parentNode.id);">Age</a></th>
-        <th class="sizeColumn center"><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','', '-1', this.parentNode.parentNode.id);">Size</a></th>
+		<th class="ageColumn center">Age<a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','dir=asc', -1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','dir=desc', -1, this.parentNode.parentNode.id);">v</a></th>
+        <th class="sizeColumn center">Size<a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','dir=asc', -1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','dir=desc', -1, this.parentNode.parentNode.id);">v</a></th>
         <th class="actionsColumn center"></th>
 	</tr>
 	</thead>

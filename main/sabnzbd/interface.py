@@ -474,6 +474,13 @@ class MainPage:
                         return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
                 else:
                     return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
+            elif name == 'sort':
+                if sort:
+                    nzbqueue.sort_queue(sort,dir)
+                    return 'ok\n'
+                else:
+                    return 'error: correct usage: &sort=name&dir=asc'
+                
             else:
                 return 'not implemented\n'
 
@@ -989,18 +996,18 @@ class QueuePage:
         raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def sort_by_avg_age(self, _dc = None, start=None, limit=None):
-        nzbqueue.sort_by_avg_age()
+    def sort_by_avg_age(self, _dc = None, start=None, limit=None, dir=None):
+        nzbqueue.sort_queue('avg_age',dir)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def sort_by_name(self, _dc = None, start=None, limit=None):
-        nzbqueue.sort_by_name()
+    def sort_by_name(self, _dc = None, start=None, limit=None, dir=None):
+        nzbqueue.sort_queue('name',dir)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
-    def sort_by_size(self, _dc = None, start=None, limit=None):
-        nzbqueue.sort_by_size()
+    def sort_by_size(self, _dc = None, start=None, limit=None, dir=None):
+        nzbqueue.sort_queue('size',dir)
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose

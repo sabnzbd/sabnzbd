@@ -565,7 +565,7 @@ function loadtitle() {
             stopDeferer(gRight);
 		}
         
-        if (refresh && RefreshTime > 0) {
+        if (refresh > 0 && RefreshTime > 0) {
             gRight = callLater(RefreshTime, lr, url, extra, refresh, dual, pnode);
         } 
         

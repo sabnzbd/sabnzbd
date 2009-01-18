@@ -369,21 +369,28 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def sort_by_avg_age(self, reverse=False):
         logging.info("Sorting by average date...(reversed:%s)", reverse)
-        self.__nzo_list = sort_queue(self.__nzo_list, _nzo_date_cmp, reverse)
+        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_date_cmp, reverse)
 
     @synchronized(NZBQUEUE_LOCK)
     def sort_by_name(self, reverse=False):
         logging.info("Sorting by name...(reversed:%s)", reverse)
-        self.__nzo_list = sort_queue(self.__nzo_list, _nzo_name_cmp, reverse)
+        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_name_cmp, reverse)
 
     @synchronized(NZBQUEUE_LOCK)
     def sort_by_size(self, reverse=False):
         logging.info("Sorting by size...(reversed:%s)", reverse)
-        self.__nzo_list = sort_queue(self.__nzo_list, _nzo_size_cmp, reverse)
+        self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
 
 
     @synchronized(NZBQUEUE_LOCK)
     def sort_queue(self, field, reverse=False):
+        if isinstance(reverse, str):
+            if reverse.lower() == 'desc':
+                reverse = True
+            else:
+                reverse = False
+        if reverse == None:
+            reverse = False
         if field.lower() == 'name':
             self.sort_by_name(reverse)
         elif field.lower() == 'size' or field.lower() == 'bytes':
@@ -635,11 +642,11 @@ def _nzo_name_cmp(nzo1, nzo2):
 def _nzo_size_cmp(nzo1, nzo2):
     return cmp(nzo1.get_bytes(), nzo2.get_bytes())
 
-def sort_queue(list, method, reverse):
-    super_high_priority = [nzo for nzo in list if nzo.get_priority() == TOP_PRIORITY]
-    high_priority = [nzo for nzo in list if nzo.get_priority() == HIGH_PRIORITY]
-    normal_priority = [nzo for nzo in list if nzo.get_priority() == NORMAL_PRIORITY]
-    low_priority = [nzo for nzo in list if nzo.get_priority() == LOW_PRIORITY]
+def sort_queue_function(nzo_list, method, reverse):
+    super_high_priority = [nzo for nzo in nzo_list if nzo.get_priority() == TOP_PRIORITY]
+    high_priority = [nzo for nzo in nzo_list if nzo.get_priority() == HIGH_PRIORITY]
+    normal_priority = [nzo for nzo in nzo_list if nzo.get_priority() == NORMAL_PRIORITY]
+    low_priority = [nzo for nzo in nzo_list if nzo.get_priority() == LOW_PRIORITY]
 
     super_high_priority.sort(cmp=method, reverse=reverse)
     high_priority.sort(cmp=method, reverse=reverse)
@@ -849,7 +856,7 @@ def set_priority_multiple(nzo_ids, priority):
     global __NZBQ
     if __NZBQ: __NZBQ.set_priority_multiple(nzo_ids, priority)
 
-#@synchronized_CV
-#def sort_queue(field, reverse=False):
-#    global __NZBQ
-#    if __NZBQ: __NZBQ.sort_queue(field, reverse)
+@synchronized_CV
+def sort_queue(field, reverse=False):
+    global __NZBQ
+    if __NZBQ: __NZBQ.sort_queue(field, reverse)
