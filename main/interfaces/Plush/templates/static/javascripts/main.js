@@ -144,6 +144,7 @@ jQuery(function($) {
     
     $.plush = {
         
+        
         /********************************************
         *********************************************
         
@@ -151,20 +152,19 @@ jQuery(function($) {
         
         *********************************************
         ********************************************/
-    
-        refreshRate           : 30,        // in seconds, how long to wait until updating all the content
+        
+        refreshRate           : 30,       // default refresh rate, overridden by cookie
         skipRefresh           : false,    // used when the cursor is hovering the queue
-        queueViewPreference   : 15,        // nzb limit
-        historyViewPreference : 15,        // nzb limit
-        focusedOnSpeedChanger : false,  // 
+        queueViewPreference   : 15,       // queue nzb limiter
+        historyViewPreference : 15,       // history nzb limiter
+        focusedOnSpeedChanger : false,    // don't update speed limit when editing + queue refreshes
         
         
         /********************************************
         *********************************************
         
-            $.plush.refreshQueue()
-            replaces queue contents with new html from queue.tmpl
-            also makes updates throughout interface
+            $.plush.refreshQueue() -- fetch HTML data from queue.tmpl
+                                      also make updates throughout interface
         
         *********************************************
         ********************************************/
@@ -201,19 +201,20 @@ jQuery(function($) {
                     $('#manual_refresh').addClass('refresh_skipped');
                 }
             });
-        },
-    
+            
+        }, // end refreshQueue()
         
         
         /********************************************
         *********************************************
         
-            $.plush.refreshHistory()
+            $.plush.refreshHistory() -- fetch HTML data from history.tmpl
         
         *********************************************
         ********************************************/
 
         refreshHistory : function() {
+        
             $.ajax({
                 type: "POST",
 				url: "history/",
@@ -222,20 +223,21 @@ jQuery(function($) {
                     $('#history').html(result);
                 }
             });
-        },
+            
+        }, // end refreshHistory()
         
                 
         /********************************************
         *********************************************
         
-            $.plush.refresh() -- drag & drop sorting
+            $.plush.refresh() -- triggers refreshQueue & refreshHistory then calls itself
         
         *********************************************
         ********************************************/
         
         refresh : function() { // calls itself after `refreshRate` seconds
             
-            // clear out timeout in case multiple refreshes are triggered
+            // clear timeout in case multiple refreshes are triggered
             clearTimeout($.plush.timeout);
             
             // ajax calls
@@ -245,7 +247,8 @@ jQuery(function($) {
             // loop
             if ($.plush.refreshRate > 0)
                 $.plush.timeout = setTimeout("$.plush.refresh()", $.plush.refreshRate*1000);
-        },
+                
+        }, // end refresh()
         
         
         /********************************************
@@ -258,6 +261,7 @@ jQuery(function($) {
         
         initEvents : function() {
             
+
             /********************************************
             *********************************************
         
@@ -265,7 +269,6 @@ jQuery(function($) {
                 
             *********************************************
             ********************************************/
-            
             
             // Fetch NZB by URL/Newzbin Report ID
             $('#addID').bind('click', function() { 
@@ -290,7 +293,6 @@ jQuery(function($) {
                     $(this).val('enter URL / Newzbin ID');
             });
             
-            
             // NZB File Upload
             $('#addNZBbyFile').upload({
                 name: 'name',
@@ -310,12 +312,10 @@ jQuery(function($) {
             *********************************************
             ********************************************/
             
-            
-            // activate main menu, already uses hoverIntent
-            $("ul.sf-menu").superfish({
+            // activate main menu
+            $("ul.sf-menu").superfish({ // also uses hoverIntent
                 pathClass:  'current'
             });
-            
             
             // Refresh Rate main menu input
             if ($.cookie('Plush2Refresh')) // restore from cookie
@@ -330,7 +330,6 @@ jQuery(function($) {
                     clearTimeout($.plush.timeout);
             });
             
-            
             // Max Speed main menu input
             $("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
                                  .blur(function(){ $.plush.focusedOnSpeedChanger = false; });
@@ -341,7 +340,6 @@ jQuery(function($) {
 					data: "mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()
 				});
             });
-            
             
             // Upon Queue Completion main menu select
             $("#onQueueFinish-option").change( function() {
@@ -366,45 +364,23 @@ jQuery(function($) {
                 }
             });
             
-            // Sort Queue main menu options
-            $('#sort_by_avg_age').click(function(event) {
+            // 3-in-1 queue sort ajax (via main menu)
+            $('#sort_by_avg_age, #sort_by_name, #sort_by_size').click(function() {
                 $.ajax({
                 	type: "POST",
                     url: "tapi",
-                    data: "queue/sort_by_avg_age",
-                    success: function(){
-                        $.plush.refreshQueue()
-                    }
-                });
-            });
-            $('#sort_by_name').click(function(event) {
-                $.ajax({
-                	type: "POST",
-                    url: "tapi",
-                    data: "queue/sort_by_name",
-                    success: function(){
-                        $.plush.refreshQueue()
-                    }
-                });
-            });
-            $('#sort_by_size').click(function(event) {
-                $.ajax({
-                	type: "POST",
-                    url: "tapi",
-                    data: "queue/sort_by_size",
+                    data: "queue/"+$(this).attr('id'),
                     success: function(){
                         $.plush.refreshQueue()
                     }
                 });
             });
         
-            
             // set up "shutdown sabnzbd" from main menu
             $('#shutdown_sabnzbd').click( function(){
                 if(confirm('Sure you want to shut down the SABnzbd application?'))
                     window.location='shutdown';
             });
-            
             
             // manual refresh
             $('#manual_refresh_wrapper').click(function(event) {
@@ -420,7 +396,6 @@ jQuery(function($) {
             
             *********************************************
             ********************************************/
-            
             
             // this code will remain instantiated even when the contents of the queue change
             $('#queueTable').livequery(function() {
@@ -537,9 +512,7 @@ jQuery(function($) {
 							// reposition the nzb if necessary (new position is returned by the API)
                         	if (oldPos == newPos)
                         		return;
-                        	if (newPos == "0")
-	                        	$('#'+nzbid).insertBefore($('#queueTable tr:first-child'));
-							else if (oldPos < newPos)
+                        	else if (oldPos < newPos)
 	                        	$('#'+nzbid).insertAfter($('#queueTable tr:eq('+ newPos +')'));
 							else
 	                        	$('#'+nzbid).insertBefore($('#queueTable tr:eq('+ newPos +')'));
@@ -547,30 +520,12 @@ jQuery(function($) {
                     });
                 });
                 
-                // nzb change category ajax
-                $('#queueTable .proc_category').change(function(){
+                // 3-in-1 change nzb [category + processing + script] ajax
+                $('.change_cat, .change_opts, .change_script').change(function(){
 	                $.ajax({
 	                    type: "POST",
 						url: "tapi",
-						data: "mode=change_cat&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()
-					});
-                });
-                
-                // nzb change processing option ajax
-                $('#queueTable .proc_option').change(function(){
-	                $.ajax({
-	                    type: "POST",
-						url: "tapi",
-						data: "mode=change_opts&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()
-					});
-                });
-                
-                // nzb change script ajax
-                $('#queueTable .proc_script').change(function(){
-	                $.ajax({
-	                    type: "POST",
-						url: "tapi",
-						data: "mode=change_script&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()
+						data: "mode="+$(this).attr('class')+"&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()
 					});
                 });
                 
@@ -622,7 +577,6 @@ jQuery(function($) {
             });
             
             
-            
             /********************************************
             *********************************************
             
@@ -630,7 +584,6 @@ jQuery(function($) {
             
             *********************************************
             ********************************************/
-            
             
             // history purge
             $('.h_menu_purge').click(function(event) {
@@ -659,7 +612,6 @@ jQuery(function($) {
                 }
             });
             
-            
             // this code will remain instantiated even when the contents of the history change
             $('#history .left_stats').livequery(function() {
 
@@ -671,7 +623,6 @@ jQuery(function($) {
                 });
 
             }); // end livequery
-            
             
             // this code will remain instantiated even when the contents of the history change
             $('#historyTable').livequery(function() {
@@ -694,13 +645,11 @@ jQuery(function($) {
             *********************************************
             ********************************************/
             
-            
             // restore queue/history view preferences (or set to defaults)
             if ($.cookie('queue_view_preference'))
                 $.plush.queueViewPreference = $.cookie('queue_view_preference');
             if ($.cookie('history_view_preference'))
                 $.plush.historyViewPreference = $.cookie('history_view_preference');
-            
             
             // additional tooltips
             $('.tip').tooltip({
@@ -709,26 +658,15 @@ jQuery(function($) {
                 fixPNG:        true
             });
             
-            
             // fix IE6 .png image transparencies
             $('img[@src$=.png], div.history_logo, div.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
             
-        } // end of $.plush.initEvents()
+        } // end initEvents()
         
     }; // end plush object
+
 });
 
-            /*
-            // disables toggler text selection when clicking
-            function disableSelection(element) {
-                element.onselectstart = function() {
-                    return false;
-                };
-                element.unselectable = "on";
-                element.style.MozUserSelect = "none";
-                element.style.cursor = "default";
-            };
-            */
 
 // once the DOM is ready, run this
 jQuery(document).ready(function($){
