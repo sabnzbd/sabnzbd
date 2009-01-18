@@ -364,12 +364,23 @@ jQuery(function($) {
                 }
             });
             
-            // 3-in-1 queue sort ajax (via main menu)
-            $('#sort_by_avg_age, #sort_by_name, #sort_by_size').click(function() {
+            // 6-in-1 queue sort ajax (via main menu)
+            $('#sort_by_avg_age_asc, #sort_by_avg_age_desc, #sort_by_name_asc, #sort_by_name_desc, #sort_by_size_asc, #sort_by_size_desc').click(function() {
+            
+            	switch($(this).attr('id')) {
+            		case 'sort_by_avg_age_asc':	sortParams = "avg_age&dir=asc"; break;
+            		case 'sort_by_avg_age_desc':sortParams = "avg_age&dir=desc";break;
+            		case 'sort_by_name_asc':	sortParams = "name&dir=asc"; 	break;
+            		case 'sort_by_name_desc':	sortParams = "name&dir=desc"; 	break;
+            		case 'sort_by_size_asc':	sortParams = "size&dir=asc"; 	break;
+            		case 'sort_by_size_desc':	sortParams = "size&dir=desc"; 	break;
+            		default: return;
+            	};
+            	
                 $.ajax({
                 	type: "POST",
                     url: "tapi",
-                    data: "queue/"+$(this).attr('id'),
+                    data: "mode=queue&name=sort&sort="+sortParams,
                     success: function(){
                         $.plush.refreshQueue()
                     }
