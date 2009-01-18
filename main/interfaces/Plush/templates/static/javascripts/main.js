@@ -485,7 +485,7 @@ jQuery(function($) {
 									url: "tapi",
 									data: "mode=switch&value="+row.id+"&value2="+i,
 									success: function(result){
-										var newPriority = result.charAt(result.length-1);
+										var newPriority = $.trim(result.substring(result.length-2));
 										if (newPriority != $('#'+row.id+' .options .proc_priority').val())
 											$('#'+row.id+' .options .proc_priority').val(newPriority);
 									}
