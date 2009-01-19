@@ -648,9 +648,12 @@ function loadtitle() {
 
 	}
 
-	function changequeuedetails(page)
+	function changequeuedetails(page, extra)
 	{
         append = '&_dc='+Math.random();
+		if (extra) {
+			append += '&'+extra
+		}
         url = page+append;
 		d = doSimpleXMLHttpRequest(url);
 		d.addCallback(replaceright);
@@ -702,9 +705,12 @@ function loadtitle() {
 	    return kvstr;
 	}
 
-    function toggle_verbosity(nzo_id)
+    function toggle_verbosity(nzo_id, extra)
     {
         append = '&_dc='+Math.random();
+		if (extra) {
+			append += '&'+extra
+		}
         url = 'queue/tog_uid_verbose?uid='+nzo_id+append;
 		var res = doSimpleXMLHttpRequest(url);        
 	    res.addCallback(function (res)

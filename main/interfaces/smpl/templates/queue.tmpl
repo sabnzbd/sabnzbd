@@ -4,9 +4,9 @@
 
 <h3>Queue</h3>
 <div class="centerLinks">
-<a onClick="if(confirm('Delete the all items from the queue?')){lr('queue/purge','', -1, this.parentNode.parentNode.id);}" >Delete All</a> |
+<a onClick="if(confirm('Delete the all items from the queue?')){lr('queue/purge','limit=$limit&start=$start', -1, this.parentNode.parentNode.id);}" >Delete All</a> |
 On queue finish:
-<select onChange="javascript:changequeuedetails('queue/change_queue_complete_action?action='+this.options[this.selectedIndex].value)">
+<select onChange="javascript:changequeuedetails('queue/change_queue_complete_action?action='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
 <option value=""></option>
     <optgroup label="Actions">
         <!--#if $nt or $darwin#-->
@@ -48,68 +48,69 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
     <tr>
 		<th class="expandColumn center"></th>
         <th class="orderColumn center"></th>
-		<th>Name<a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','dir=asc', -1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','dir=desc', -1, this.parentNode.parentNode.id);">v</a></th>
+		<th>Name<a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);">v</a></th>
 		<th class="center">Progress</th>
         <th class="timeleftColumn center">Timeleft</th>
-		<th class="ageColumn center">Age<a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','dir=asc', -1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','dir=desc', -1, this.parentNode.parentNode.id);">v</a></th>
-        <th class="sizeColumn center">Size<a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','dir=asc', -1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','dir=desc', -1, this.parentNode.parentNode.id);">v</a></th>
+		<th class="ageColumn center">Age<a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);">v</a></th>
+        <th class="sizeColumn center">Size<a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);">v</a></th>
         <th class="actionsColumn center"></th>
 	</tr>
 	</thead>
-  <!--#if $varExists('slotinfo')#-->
-    <!--#set $odd = False#-->
-    <!--#for $slot in $slotinfo#-->
-        <!--#set $odd = not $odd#-->
-<tbody id="$slot.nzo_id">
-<tr class="$slot.priority">
-    <td class="expand">
-        <a class="expander" onClick="javascript:toggle_verbosity('$slot.nzo_id')"><span id="name_$slot.nzo_id"><!--#if $slot.verbosity then '-' else '+'#--></span></a>
-    </td>
-    <td>
-        <select onclick="restartTimer(5)" onchange="javascript:changequeuedetails('queue/'+this.options[this.selectedIndex].value)">
-        <!--#for $i in xrange($noofslots)#-->
-            <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
-        <!--#end for#-->
-        </select>
-    </td>
-    <td>
-        <span class="filename"><a href="#nzb/$slot.nzo_id/" onclick="javascript:lr('nzb/$slot.nzo_id/');">$slot.filename</a></span>
-    </td>
-    <td title="$slot.mbleft/${slot.mb}MB">
-        <!--#if float($slot.mb)>0 #-->
-        <!--#set $perc = round( (1-(float($slot.mbleft) / float($slot.mb))) * 100, 2)#-->
-        <div class="progressBar"><div id="progress_$slot.nzo_id" style="width: $perc%;   position: relative;   background-color: #9bf;   height: 6px;"><!-- --></div></div>
-        <!--#end if#-->
-    </td>
-    <td class="center" title="$slot.eta">$slot.timeleft</td>
-    <td class="center">$slot.avg_age</td>
-    <td class="center">$slot.size</td>
-    <td class="right_align">
-        <!--#if $slot.status == 'Paused'#-->
-            <a onClick="resumequeueitem('$slot.nzo_id');"><img class="resumeicon" src="static/images/control_play.png" /></a>
-        <!--#else#-->
-            <a onClick="pausequeueitem('$slot.nzo_id');"><img class="pauseicon" src="static/images/control_pause.png" /></a>
-        <!--#end if#-->
-        <a onClick="deletequeueitem('$slot.nzo_id');"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
-    </td>
-</tr>
-        <!--#set $oddLine = False#-->
-        <!--#for $line in $slot.finished#-->
-            <!--#set $oddLine = not $oddLine#-->
-            <tr class="finished <!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td></td><td>Finished</td><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td><td></td></tr>
-        <!--#end for#-->
-        <!--#set $oddLine = False#-->
-        <!--#for $line in $slot.active#-->
-            <!--#set $oddLine = not $oddLine#-->
-            <tr id="$line.nzf_id" class="active <!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td></td><td>Active</td><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td><td class="right_align"><a onClick="deletenzf('$slot.nzo_id','$line.nzf_id')"><img class="delicon" src="static/images/messagebox_critical.png" /></a></td></tr>
-        <!--#end for#-->
-        <!--#set $oddLine = False#-->
-        <!--#for $line in $slot.queued#-->
-            <!--#set $oddLine = not $oddLine#-->
-            <tr class="waiting <!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td></td><td>Waiting</td><td>$line.filename (set: $line.set)</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td><td></td></tr>
-        <!--#end for#-->
-</tbody>
-    <!--#end for#--><!--#end if#-->
+	<!--#if $varExists('slotinfo')#-->
+		<!--#set $odd = False#-->
+		<!--#for $slot in $slotinfo#-->
+			<!--#set $odd = not $odd#-->
+			<tbody id="$slot.nzo_id">
+				<tr class="$slot.priority">
+					<td class="expand">
+						<a class="expander" onClick="javascript:toggle_verbosity('$slot.nzo_id', 'limit=$limit&start=$start')"><span id="name_$slot.nzo_id"><!--#if $slot.verbosity then '-' else '+'#--></span></a>
+					</td>
+					<td>
+						<select onclick="restartTimer(10)" onchange="javascript:changequeuedetails('queue/'+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
+						<!--#for $i in xrange($noofslots)#-->
+							<option value="switch?uid1=$slot.nzo_id&uid2=$i" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
+						<!--#end for#-->
+						</select>
+					</td>
+					<td>
+						<span class="filename"><a href="#nzb/$slot.nzo_id/" onclick="javascript:lr('nzb/$slot.nzo_id/');">$slot.filename</a></span>
+					</td>
+					<td title="$slot.mbleft/${slot.mb}MB">
+						<!--#if float($slot.mb)>0 #-->
+						<!--#set $perc = round( (1-(float($slot.mbleft) / float($slot.mb))) * 100, 2)#-->
+						<div class="progressBar"><div id="progress_$slot.nzo_id" style="width: $perc%;   position: relative;   background-color: #9bf;   height: 6px;"><!-- --></div></div>
+						<!--#end if#-->
+					</td>
+					<td class="center" title="$slot.eta">$slot.timeleft</td>
+					<td class="center">$slot.avg_age</td>
+					<td class="center">$slot.size</td>
+					<td class="right_align">
+						<!--#if $slot.status == 'Paused'#-->
+							<a onClick="resumequeueitem('$slot.nzo_id');"><img class="resumeicon" src="static/images/control_play.png" /></a>
+						<!--#else#-->
+							<a onClick="pausequeueitem('$slot.nzo_id');"><img class="pauseicon" src="static/images/control_pause.png" /></a>
+						<!--#end if#-->
+						<a onClick="deletequeueitem('$slot.nzo_id');"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
+					</td>
+				</tr>
+				<!--#set $oddLine = False#-->
+				<!--#for $line in $slot.finished#-->
+					<!--#set $oddLine = not $oddLine#-->
+					<tr class="finished <!--#if $oddLine then "oddLine" else "evenLine"#--> finished"><td></td><td>Finished</td><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td></tr>
+				<!--#end for#-->
+				<!--#set $oddLine = False#-->
+				<!--#for $line in $slot.active#-->
+					<!--#set $oddLine = not $oddLine#-->
+					<tr id="$line.nzf_id" class="active <!--#if $oddLine then "oddLine" else "evenLine"#--> active"><td></td><td>Active</td><td>$line.filename</td><td class="pre">$line.mbleft/$line.mb MB</td><td></td><td class="center">$line.age</td><td class="center">$line.size</td><td class="right_align"><a onClick="deletenzf('$slot.nzo_id','$line.nzf_id')"><img class="delicon" src="static/images/messagebox_critical.png" /></a></td></tr>
+				<!--#end for#-->
+				<!--#set $oddLine = False#-->
+				<!--#for $line in $slot.queued#-->
+					<!--#set $oddLine = not $oddLine#-->
+					<tr class="waiting <!--#if $oddLine then "oddLine" else "evenLine"#--> waiting"><td></td><td>Waiting</td><td>$line.filename (set: $line.set)</td><td class="pre">$line.mbleft/$line.mb MB<td></td><td class="center">$line.age</td><td class="center">$line.size</td><td></td></tr>
+				<!--#end for#-->
+			</tbody>
+		<!--#end for#-->
+	<!--#end if#-->
     </table>
 
 <br />
