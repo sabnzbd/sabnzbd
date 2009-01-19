@@ -481,10 +481,9 @@ class Downloader(Thread):
                         bps += bytes
                         limit = self.bandwidth_limit * 1024
                         if bps > limit:
-                            sleeptime = (bps/limit)-1
-                            if sleeptime > 0 and sleeptime < 10:
-                                #logging.debug("Sleeping %s second(s) bps:%s limit:%s",sleeptime, bps/1024, limit/1024)
-                                time.sleep(sleeptime)
+                            while bpsmeter.method.get_bps() > limit:
+                                time.sleep(0.05)
+                                bpsmeter.method.update(0)
                     bpsmeter.method.update(bytes)
 
                     if nzo:
