@@ -219,6 +219,7 @@ class PostProcessor(Thread):
                 if not os.path.exists(workdir):
                     emsg = 'Download failed - Out of your server\'s retention?'
                     nzo.set_fail_msg(emsg)
+                    nzo.set_status('Failed')
                     # do not run unpacking or parity verification
                     flagRepair = flagUnpack = parResult = False
                     unpackError = True
