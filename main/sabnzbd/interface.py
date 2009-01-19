@@ -179,7 +179,7 @@ def Strip(txt):
 # Web login support
 def get_users():
     users = {}
-    users[cfg.USERNAME.get()] = cfg.PASSWORD.get()
+    users[cfg.USERNAME.get()] = cfg.PASSWORD.get_pw()
     return users
 
 def encrypt_pwd(pwd):
@@ -250,7 +250,7 @@ class MainPage:
     def index(self, _dc = None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
             info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts(default=True)
@@ -353,10 +353,10 @@ class MainPage:
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        if cfg.USERNAME.get() and cfg.PASSWORD.get():
+        if cfg.USERNAME.get() and cfg.PASSWORD.get_pw():
             ma_username = kwargs.get('ma_username')
             ma_password = kwargs.get('ma_password')
-            if not (ma_password == cfg.PASSWORD.get() and ma_username == cfg.USERNAME.get()):
+            if not (ma_password == cfg.PASSWORD.get_pw() and ma_username == cfg.USERNAME.get()):
                 return "Missing authentication"
 
         return self.api_handler(kwargs)
@@ -710,7 +710,7 @@ class NzoPage:
         self.__verbose = False
         self.__prim = prim
         self.__cached_selection = {} #None
-        
+
     @cherrypy.expose
     def default(self, *args, **kwargs):
         # Allowed URL's
@@ -719,32 +719,32 @@ class NzoPage:
         # /nzb/SABnzbd_nzo_xxxxx/files
         # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
         # /nzb/SABnzbd_nzo_xxxxx/save
-            
+
         info, pnfo_list, bytespersec = build_header(self.__prim)
         nzo_id = None
-        
+
         for a in args:
             if a.startswith('SABnzbd_nzo'):
                 nzo_id = a
-                
+
         if nzo_id:
             # /SABnzbd_nzo_xxxxx/bulk_operation
             if 'bulk_operation' in args:
                 return self.bulk_operation(nzo_id, kwargs)
-            
+
             # /SABnzbd_nzo_xxxxx/details
             elif 'details' in args:
                 info =  self.nzo_details(info, pnfo_list, nzo_id)
-                
+
             # /SABnzbd_nzo_xxxxx/files
             elif 'files' in args:
                 info =  self.nzo_files(info, pnfo_list, nzo_id)
-                
+
             # /SABnzbd_nzo_xxxxx/save
             elif 'save' in args:
                 self.save_details(nzo_id, args, kwargs)
-                return 
-                
+                return
+
             # /SABnzbd_nzo_xxxxx/
             else:
                 info =  self.nzo_details(info, pnfo_list, nzo_id)
@@ -754,7 +754,7 @@ class NzoPage:
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
 
-                
+
     def nzo_details(self, info, pnfo_list, nzo_id):
         slot = {}
         for pnfo in pnfo_list:
@@ -769,35 +769,35 @@ class NzoPage:
                     cat = 'None'
                 filename = pnfo[PNFO_FILENAME_FIELD]
                 priority = pnfo[PNFO_PRIORITY_FIELD]
-                
+
                 slot['nzo_id'] =  str(nzo_id)
                 slot['cat'] = cat
                 slot['filename'] = filename
                 slot['script'] = script
                 slot['priority'] = str(priority)
                 slot['unpackopts'] = str(unpackopts)
-                
+
         info['slot'] = slot
         info['script_list'] = ListScripts()
         info['cat_list'] = ListCats()
-        
+
         return info
 
     def nzo_files(self, info, pnfo_list, nzo_id):
-        
+
         active = []
         for pnfo in pnfo_list:
             if pnfo[PNFO_NZO_ID_FIELD] == nzo_id:
                 info['nzo_id'] = nzo_id
                 info['filename'] = xml_name(pnfo[PNFO_FILENAME_FIELD])
- 
+
                 for tup in pnfo[PNFO_ACTIVE_FILES_FIELD]:
                     bytes_left, bytes, fn, date, nzf_id = tup
                     checked = False
                     if nzf_id in self.__cached_selection and \
                        self.__cached_selection[nzf_id] == 'on':
                         checked = True
-    
+
                     line = {'filename':xml_name(fn),
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
@@ -808,15 +808,15 @@ class NzoPage:
 
         info['active_files'] = active
         return info
-        
-        
+
+
     def save_details(self, nzo_id, args, kwargs):
         name = kwargs.get('name',None)
         pp = kwargs.get('pp',None)
         script = kwargs.get('script',None)
         cat = kwargs.get('cat',None)
         priority = kwargs.get('priority',None)
-        
+
         if name != None:
             sabnzbd.nzbqueue.change_name(nzo_id, name)
         if cat != None:
@@ -827,7 +827,7 @@ class NzoPage:
             sabnzbd.nzbqueue.change_opts(nzo_id,pp)
         if priority != None:
             sabnzbd.nzbqueue.set_priority(nzo_id, priority)
-            
+
         args = [arg for arg in args if arg != 'save']
         extra = '/'.join(args)
         url = cherrypy._urljoin(self.__root,extra)
@@ -1029,7 +1029,7 @@ class HistoryPage:
 
         history['isverbose'] = self.__verbose
 
-        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
             history['newzbinDetails'] = True
 
         #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
@@ -1331,7 +1331,7 @@ class ConfigGeneral:
         conf['host'] = cfg.CHERRYHOST.get()
         conf['port'] = cfg.CHERRYPORT.get()
         conf['username'] = cfg.USERNAME.get()
-        conf['password'] = cfg.PASSWORD.get_stars()
+        conf['password'] = cfg.PASSWORD.get()
         conf['bandwith_limit'] = cfg.BANDWIDTH_LIMIT.get()
         conf['refresh_rate'] = cfg.REFRESH_RATE.get()
         conf['rss_rate'] = cfg.RSS_RATE.get()
@@ -1728,7 +1728,7 @@ class ConfigNewzbin:
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
         conf['username_newzbin'] = cfg.USERNAME_NEWZBIN.get()
-        conf['password_newzbin'] = cfg.PASSWORD_NEWZBIN.get_stars()
+        conf['password_newzbin'] = cfg.PASSWORD_NEWZBIN.get()
         conf['newzbin_bookmarks'] = int(cfg.NEWZBIN_BOOKMARKS.get())
         conf['newzbin_unbookmark'] = int(cfg.NEWZBIN_UNBOOKMARK.get())
         conf['bookmark_rate'] = cfg.BOOKMARK_RATE.get()
@@ -1736,7 +1736,7 @@ class ConfigNewzbin:
         conf['bookmarks_list'] = self.__bookmarks
 
         conf['username_matrix'] = cfg.USERNAME_MATRIX.get()
-        conf['password_matrix'] = cfg.PASSWORD_MATRIX.get_stars()
+        conf['password_matrix'] = cfg.PASSWORD_MATRIX.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1802,7 +1802,7 @@ class ConfigCats:
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
             conf['newzbinDetails'] = True
 
         conf['script_list'] = ListScripts(default=True)
@@ -2906,7 +2906,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     info, pnfo_list, bytespersec = build_header(prim)
 
     info['isverbose'] = verbose
-    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
+    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
         info['newzbinDetails'] = True
 
     if cfg.REFRESH_RATE.get() > 0:

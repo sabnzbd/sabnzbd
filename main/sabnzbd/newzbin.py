@@ -207,7 +207,7 @@ def _grabnzb(msgid):
         else:
             conn = httplib.HTTPConnection('www.newzbin.com')
 
-        postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'reportid': msgid }
+        postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get_pw(), 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
 
         headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -323,11 +323,11 @@ class Bookmarks:
 
             if delete:
                 logging.info('Deleting Newzbin bookmark %s', delete)
-                postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'delete', \
+                postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get_pw(), 'action': 'delete', \
                              'reportids' : delete }
             else:
                 logging.info('Fetching Newzbin bookmarks')
-                postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'fetch'}
+                postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get_pw(), 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
 
             headers['Content-type'] = 'application/x-www-form-urlencoded'
