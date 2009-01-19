@@ -484,17 +484,15 @@ jQuery(function($) {
                 });
                 
                 // nzb pause/resume toggle ajax
-                $('#queueTable .download-title').click(function(event){
-                	if ($(event.target).is('a'))
-                		return;
-                    if ($(this).attr('class') == "download-title download-queued") {
+                $('#queueTable .download-grippie').click(function(event){
+                    if ($(this).attr('class') == "download-grippie download-queued") {
                         $(this).toggleClass('download-queued').toggleClass('download-paused');
 		                $.ajax({
 		                    type: "POST",
 							url: "tapi",
 							data: "mode=queue&name=pause&value="+$(this).parent().attr('id')
 						});
-                    } else if ($(this).attr('class') == "download-title download-active") {
+                    } else if ($(this).attr('class') == "download-grippie download-active") {
                         $(this).toggleClass('download-active').toggleClass('download-paused');
 		                $.ajax({
 		                    type: "POST",

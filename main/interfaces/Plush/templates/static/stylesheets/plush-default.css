@@ -219,10 +219,12 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     border-top: 1px solid #FFF;
     border-bottom: 1px solid #B1B1B1;
 }
-.queueTable td.download-title {
-    width: 50%;
+.queueTable td.download-grippie {
     padding-left:29px;
     cursor: pointer;
+}
+.queueTable td.download-title {
+    width: 50%;
 }
 .queueTable tr .download-queued {
     background: url(../images/plush-default/ql_grip_queued.png) 4px 50% no-repeat;

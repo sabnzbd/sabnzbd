@@ -28,7 +28,10 @@
     <!--#set $odd = not $odd#-->
     <tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
     
-    <td class="download-title <!--#if $slot.status == "Paused"#-->download-paused<!--#else if $slot.status == "Downloading"#-->download-active<!--#else#-->download-queued<!--#end if#-->">
+    <td class="download-grippie <!--#if $slot.status == "Paused"#-->download-paused<!--#else if $slot.status == "Downloading"#-->download-active<!--#else#-->download-queued<!--#end if#-->">
+    </td>
+
+    <td class="download-title">
         <a href="nzb/$slot.nzo_id/" title="Average File Age: $slot.avg_age">$slot.filename</a>
     </td>
     
