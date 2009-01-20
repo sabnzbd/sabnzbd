@@ -1441,7 +1441,10 @@ class ConfigServer:
 
         port = kwargs.get('port', '')
         if not port.strip():
-            port = '119'
+            if not kwargs.get('ssl', '').strip():
+                port = '119'
+            else:
+                port = '563'
             kwargs['port'] = port
 
         if kwargs.get('connections', '').strip() == '':
