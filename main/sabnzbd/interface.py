@@ -480,7 +480,7 @@ class MainPage:
                     return 'ok\n'
                 else:
                     return 'error: correct usage: &sort=name&dir=asc'
-                
+
             else:
                 return 'not implemented\n'
 
@@ -1439,7 +1439,13 @@ class ConfigServer:
         except:
             return badParameterResponse('Error: Need host name.')
 
-        port = str(kwargs.get('port', 119))
+        port = kwargs.get('port', '')
+        if not port.strip():
+            port = '119'
+            kwargs['port'] = port
+
+        if kwargs.get('connections', '').strip() == '':
+            kwargs['connections'] = '1'
 
         msg = check_server(host, port)
         if msg:
