@@ -3188,7 +3188,6 @@ def json_result(result, section=None, keyword=None, data=None):
     dd = { 'status' : result }
     if section and (data or data == ''):
         if section in ('servers', 'categories', 'rss'):
-            keyword = keyword.replace(':', '_').replace('.','_')
             dd[section] = {keyword : data}
         else:
             dd[section] = data
@@ -3208,7 +3207,7 @@ def xml_result(result, section=None, keyword=None, data=None):
     dd = {'status' : int(result) }
     if data or data == '':
         if section in ('servers', 'categories', 'rss'):
-            keyword = keyword.replace(':', '_').replace('.','_')
+            keyword = keyword.replace(':', '_')
             dd[section] = {keyword : data}
         else:
             dd[section] = data
