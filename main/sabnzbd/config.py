@@ -277,6 +277,13 @@ class OptionPassword(Option):
         """ Return decoded password as asterisk string """
         return '*' * len(decode_password(self.get(), self.ident()))
 
+    def get_dict(self, safe=False):
+        """ Return value a dictionary """
+        if safe:
+            return { self._Option__keyword : self.get_stars() }
+        else:
+            return { self._Option__keyword : self.get() }
+
     def set(self, pw):
         """ Set password, encode it """
         if (pw != None and pw == '') or (pw and pw.strip('*')):
@@ -338,14 +345,17 @@ class ConfigServer:
             exec 'self.%s.set(value)' % kw
         return True
 
-    def get_dict(self):
+    def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
         dict = {}
         dict['host'] = self.host.get()
         dict['port'] = self.port.get()
         dict['timeout'] = self.timeout.get()
         dict['username'] = self.username.get()
-        dict['password'] = self.password.get()
+        if safe:
+            dict['password'] = self.password.get_stars()
+        else:
+            dict['password'] = self.password.get()
         dict['connections'] = self.connections.get()
         dict['fillserver'] = self.fillserver.get()
         dict['ssl'] = self.ssl.get()
@@ -545,7 +555,11 @@ def get_dconfig(kwargs):
     """
     item = find_item(kwargs)
     if item:
-        return True, item.get_dict()
+        try:
+            d = item.get_dict(safe=True)
+        except:
+            d = item.get_dict()
+        return True, d
     else:
         return False, {}
 
