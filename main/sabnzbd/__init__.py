@@ -294,7 +294,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
     if cat and cat.lower()=='default': cat = None
 
 
-    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
+    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
         logging.info('Fetching msgid %s from www.newzbin.com', msgid)
         msg = "fetching msgid %s from www.newzbin.com" % msgid
 

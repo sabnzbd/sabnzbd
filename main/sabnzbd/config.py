@@ -265,7 +265,7 @@ class OptionPassword(Option):
     def __init__(self, section, keyword, default_val='', add=True):
         Option.__init__(self, section, keyword, default_val, add=add)
 
-    def get_pw(self):
+    def get(self):
         """ Return decoded password """
         value = self._Option__value
         if value == None:
@@ -273,9 +273,9 @@ class OptionPassword(Option):
         else:
             return decode_password(value, self.ident())
 
-    def get(self):
+    def get_stars(self):
         """ Return decoded password as asterisk string """
-        return '*' * len(decode_password(self.get_pw(), self.ident()))
+        return '*' * len(decode_password(self.get(), self.ident()))
 
     def set(self, pw):
         """ Set password, encode it """

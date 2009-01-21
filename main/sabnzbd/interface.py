@@ -179,7 +179,7 @@ def Strip(txt):
 # Web login support
 def get_users():
     users = {}
-    users[cfg.USERNAME.get()] = cfg.PASSWORD.get_pw()
+    users[cfg.USERNAME.get()] = cfg.PASSWORD.get()
     return users
 
 def encrypt_pwd(pwd):
@@ -250,7 +250,7 @@ class MainPage:
     def index(self, _dc = None):
         info, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_stars():
             info['newzbinDetails'] = True
 
         info['script_list'] = ListScripts(default=True)
@@ -353,10 +353,10 @@ class MainPage:
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        if cfg.USERNAME.get() and cfg.PASSWORD.get_pw():
+        if cfg.USERNAME.get() and cfg.PASSWORD.get():
             ma_username = kwargs.get('ma_username')
             ma_password = kwargs.get('ma_password')
-            if not (ma_password == cfg.PASSWORD.get_pw() and ma_username == cfg.USERNAME.get()):
+            if not (ma_password == cfg.PASSWORD.get() and ma_username == cfg.USERNAME.get()):
                 return "Missing authentication"
 
         return self.api_handler(kwargs)
@@ -1029,7 +1029,7 @@ class HistoryPage:
 
         history['isverbose'] = self.__verbose
 
-        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
             history['newzbinDetails'] = True
 
         #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
@@ -1331,7 +1331,7 @@ class ConfigGeneral:
         conf['host'] = cfg.CHERRYHOST.get()
         conf['port'] = cfg.CHERRYPORT.get()
         conf['username'] = cfg.USERNAME.get()
-        conf['password'] = cfg.PASSWORD.get()
+        conf['password'] = cfg.PASSWORD.get_stars()
         conf['bandwith_limit'] = cfg.BANDWIDTH_LIMIT.get()
         conf['refresh_rate'] = cfg.REFRESH_RATE.get()
         conf['rss_rate'] = cfg.RSS_RATE.get()
@@ -1737,7 +1737,7 @@ class ConfigNewzbin:
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
         conf['username_newzbin'] = cfg.USERNAME_NEWZBIN.get()
-        conf['password_newzbin'] = cfg.PASSWORD_NEWZBIN.get()
+        conf['password_newzbin'] = cfg.PASSWORD_NEWZBIN.get_stars()
         conf['newzbin_bookmarks'] = int(cfg.NEWZBIN_BOOKMARKS.get())
         conf['newzbin_unbookmark'] = int(cfg.NEWZBIN_UNBOOKMARK.get())
         conf['bookmark_rate'] = cfg.BOOKMARK_RATE.get()
@@ -1745,7 +1745,7 @@ class ConfigNewzbin:
         conf['bookmarks_list'] = self.__bookmarks
 
         conf['username_matrix'] = cfg.USERNAME_MATRIX.get()
-        conf['password_matrix'] = cfg.PASSWORD_MATRIX.get()
+        conf['password_matrix'] = cfg.PASSWORD_MATRIX.get_stars()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1811,7 +1811,7 @@ class ConfigCats:
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
+        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
             conf['newzbinDetails'] = True
 
         conf['script_list'] = ListScripts(default=True)
@@ -2915,7 +2915,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     info, pnfo_list, bytespersec = build_header(prim)
 
     info['isverbose'] = verbose
-    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_pw():
+    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
         info['newzbinDetails'] = True
 
     if cfg.REFRESH_RATE.get() > 0:

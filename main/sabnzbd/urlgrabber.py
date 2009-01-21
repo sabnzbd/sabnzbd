@@ -202,7 +202,7 @@ def _grab_nzbmatrix(url):
     logging.debug('Using download url: %s', download_url)
 
     # username and password
-    login_info = {'username': cfg.USERNAME_MATRIX.get(), 'password': cfg.PASSWORD_MATRIX.get_pw()}
+    login_info = {'username': cfg.USERNAME_MATRIX.get(), 'password': cfg.PASSWORD_MATRIX.get()}
     login_info_encode = urllib.urlencode(login_info)
 
     # create and install the cookie jar and handler so we can save the login cookie
