@@ -2910,7 +2910,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     else:
         info['refresh_rate'] = ''
 
-    info['limit'] = IntConv(dummy2)
+    info['start'] = IntConv(start)
+    info['limit'] = IntConv(limit)
+    info['finish'] = info['start'] + info['limit']
 
     datestart = datetime.datetime.now()
 
