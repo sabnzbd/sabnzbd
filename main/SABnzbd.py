@@ -61,8 +61,8 @@ from sabnzbd.interface import *
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import Get_User_ShellFolders, launch_a_browser, from_units, \
-                         check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-                         Panic_XPort, Notify, SplitHost, ConvertVersion
+     check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
+     Panic_XPort, Notify, SplitHost, ConvertVersion
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -217,9 +217,9 @@ def Bail_Out(browserhost, cherryport, access=False):
     """
     logging.error("Failed to start web-interface")
     if access:
-       Panic_XPort(browserhost, cherryport)
+        Panic_XPort(browserhost, cherryport)
     else:
-       Panic_Port(browserhost, cherryport)
+        Panic_Port(browserhost, cherryport)
     sabnzbd.halt()
     ExitSab(2)
 
@@ -449,7 +449,7 @@ def get_webhost(cherryhost, cherryport):
             cherryhost = cherryhost.strip('[]')
 
     if ipv6 and ipv4 and \
-        (browserhost not in ('localhost', '127.0.0.1', '[::1]', '::1')):
+       (browserhost not in ('localhost', '127.0.0.1', '[::1]', '::1')):
         sabnzbd.AMBI_LOCALHOST = True
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
@@ -478,7 +478,7 @@ def main():
 
     if getattr(sys, 'frozen', None) == 'macosx_app':
         # Correct path if frozen with py2app (OSX)
-    	sabnzbd.MY_FULLNAME = sabnzbd.MY_FULLNAME.replace("/Resources/SABnzbd.py","/MacOS/SABnzbd")
+        sabnzbd.MY_FULLNAME = sabnzbd.MY_FULLNAME.replace("/Resources/SABnzbd.py","/MacOS/SABnzbd")
 
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
@@ -500,10 +500,10 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "phdvncw:l:s:f:t:b:2:",
-                     ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
-                      'weblogging=', 'server=', 'templates',
-                      'template2', 'browser=', 'config-file=', 'delay=', 'force',
-                      'version', 'https', 'testlog'])
+                                   ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
+                                    'weblogging=', 'server=', 'templates',
+                                    'template2', 'browser=', 'config-file=', 'delay=', 'force',
+                                    'version', 'https', 'testlog'])
     except getopt.GetoptError:
         print_help()
         ExitSab(2)
@@ -656,9 +656,9 @@ def main():
         sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
         logsize = sabnzbd.cfg.LOG_SIZE.get_int()
         rollover_log = logging.handlers.RotatingFileHandler(\
-                       sabnzbd.LOGFILE, 'a+',
-                       logsize,
-                       sabnzbd.cfg.LOG_BACKUPS.get())
+            sabnzbd.LOGFILE, 'a+',
+            logsize,
+            sabnzbd.cfg.LOG_BACKUPS.get())
 
         format = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
         rollover_log.setFormatter(logging.Formatter(format))
@@ -772,7 +772,7 @@ def main():
                 x= sys.stderr.fileno
                 x= sys.stdout.fileno
                 if cherrypylogging == 1:
-                   cherrylogtoscreen = True
+                    cherrylogtoscreen = True
             except:
                 pass
 
@@ -803,20 +803,24 @@ def main():
 
     if https:
         cherrypy.config.update({'server.ssl_certificate' : ssl_ca,
-                                 'server.ssl_private_key' : ssl_key})
+                                'server.ssl_private_key' : ssl_key})
 
 
+    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
                  '/sabnzbd/shutdown': {'streamResponse': True},
-                 '/sabnzbd/static': {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
-                }
+                 '/sabnzbd/static': static,
+                 '/static': static
+                 }
 
     if web_dir2:
+        static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
         appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on' : False}
         appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
-        appconfig['/sabnzbd/m/static'] = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
+        appconfig['/sabnzbd/m/static'] = static2
+        appconfig['/m/static'] = static2
 
-    login_page = LoginPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/')
+    login_page = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', first=2)
     cherrypy.tree.mount(login_page, '/', config=appconfig)
 
     # Set authentication for CherryPy

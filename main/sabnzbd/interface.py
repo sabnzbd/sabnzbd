@@ -206,23 +206,6 @@ def connect_db(thread_index):
 
 cherrypy.engine.subscribe('start_thread', connect_db)
 
-
-#------------------------------------------------------------------------------
-class LoginPage:
-    def __init__(self, web_dir, root, web_dir2=None, root2=None):
-        self.sabnzbd = MainPage(web_dir, root, prim=True)
-        self.root = root
-        if web_dir2:
-            self.sabnzbd.m = MainPage(web_dir2, root2, prim=False)
-        else:
-            self.sabnzbd.m = NoPage()
-        pass
-
-    @cherrypy.expose
-    def index(self, _dc = None):
-        return ""
-
-
 #------------------------------------------------------------------------------
 class NoPage:
     def __init__(self):
@@ -235,10 +218,14 @@ class NoPage:
 
 #------------------------------------------------------------------------------
 class MainPage:
-    def __init__(self, web_dir, root, prim):
+    def __init__(self, web_dir, root, web_dir2=None, root2=None, prim=True, first=0):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
+        if first >= 1:
+            self.m = MainPage(web_dir2, root2, prim=False)
+        if first == 2:
+            self.sabnzbd = MainPage(web_dir, root, web_dir2, root2, prim=True, first=1)
         self.queue = QueuePage(web_dir, root+'queue/', prim)
         self.history = HistoryPage(web_dir, root+'history/', prim)
         self.connections = ConnectionInfo(web_dir, root+'connections/', prim)
