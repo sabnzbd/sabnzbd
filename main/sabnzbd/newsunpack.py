@@ -943,8 +943,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
                     nzo.set_action_line('Fetching', '%s blocks...' % added_blocks)
 
             else:
-                nzo.set_fail_msg('Repair failed, not enough repair blocks (have: %s, need: %s)' % (avail_blocks, needed_blocks))
-                nzo.set_unpack_info('repair', '[%s] Repair failed, not enough repair blocks, have: %s, need: %s' % (setname, avail_blocks, needed_blocks), set=setname)
+                nzo.set_fail_msg('Repair failed, not enough repair blocks (%s short)' % (needed_blocks))
+                nzo.set_unpack_info('repair', '[%s] Repair failed, not enough repair blocks, (%s short)' % (setname, needed_blocks), set=setname)
                 nzo.set_status("Failed")
 
 
