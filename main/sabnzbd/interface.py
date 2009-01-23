@@ -3235,20 +3235,14 @@ def get_active_history(queue=None, items=None):
             item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
             item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
             item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = t
-        '''
-        if item['status'] != 'Queued':
-            item['show_details'] = 'True'
-        else:
-            item['show_details'] = 'False'
-        '''
         item['action_line'] = nzo.get_action_line()
         item = unpack_history_info(item)
-        items.append(item)
-
-    for item in items:
+        
+        item['loaded'] = True
         if item['bytes']:
             item['size'] = format_bytes(item['bytes'])
         else:
             item['size'] = ''
+        items.append(item)
 
     return items
