@@ -820,7 +820,7 @@ def main():
         appconfig['/sabnzbd/m/static'] = static2
         appconfig['/m/static'] = static2
 
-    login_page = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', first=2)
+    login_page = MainPage(web_dir, '/', web_dir2, '/m/', first=2)
     cherrypy.tree.mount(login_page, '/', config=appconfig)
 
     # Set authentication for CherryPy

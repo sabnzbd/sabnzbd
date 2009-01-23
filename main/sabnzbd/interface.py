@@ -225,7 +225,7 @@ class MainPage:
         if first >= 1:
             self.m = MainPage(web_dir2, root2, prim=False)
         if first == 2:
-            self.sabnzbd = MainPage(web_dir, root, web_dir2, root2, prim=True, first=1)
+            self.sabnzbd = MainPage(web_dir, '/sabnzbd/', web_dir2, '/sabnzbd/m/', prim=True, first=1)
         self.queue = QueuePage(web_dir, root+'queue/', prim)
         self.history = HistoryPage(web_dir, root+'history/', prim)
         self.connections = ConnectionInfo(web_dir, root+'connections/', prim)
