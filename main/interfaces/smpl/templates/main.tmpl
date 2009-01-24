@@ -208,7 +208,6 @@
     }
     function showRow(id)
     {
-        console.log("id=%s", id);
         disp = (document.getElementById(id).style.display == "table-row") ? "none" : "table-row";
         document.getElementById(id).style.display = disp;
 
@@ -674,7 +673,7 @@ function loadtitle() {
 
 	function getBookmarks()
 	{
-		d = doSimpleXMLHttpRequest('config/newzbin/getBookmarks');
+		d = doSimpleXMLHttpRequest('api?mode=newzbin&name=get_bookmarks');
 	}
 
 	function changequeueoptions(page)
@@ -983,7 +982,13 @@ function loadingJSON(){
 					</ul>
 					<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Connections</a></li>
     				<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings(<span id="have_warnings">$have_warnings</span>)</a></li>
+					<br />
 					<li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a></li>
+					<!--#if $varExists('newzbinDetails')#-->
+					<li><a onClick="getBookmarks()">GetBookmarks</a></li>
+					<!--#end if#-->
+					<br />
+					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to restart SABnzbd?')){window.location='config/restart';}">Restart</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
                     <br/>
         			<li><a href="$helpuri" target="_blank">Wiki</a></li>

@@ -664,6 +664,12 @@ class MainPage:
                 return xml_list('versions', 'version', (sabnzbd.__version__, ))
             else:
                 return 'not implemented\n'
+            
+        if mode == 'newzbin':
+            if name == 'get_bookmarks':
+                newzbin.getBookmarksNow()
+                return 'ok'
+            return 'not implemented'
 
         return 'not implemented\n'
 
