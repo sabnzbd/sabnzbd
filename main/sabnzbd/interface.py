@@ -2908,6 +2908,12 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     info, pnfo_list, bytespersec = build_header(prim)
 
     info['isverbose'] = verbose
+    cookie = cherrypy.request.cookie
+    if cookie.has_key('queue_details'):
+        info['queue_details'] = str(IntConv(cookie['queue_details'].value))
+    else:
+        info['queue_details'] = '0'
+        
     if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
         info['newzbinDetails'] = True
 

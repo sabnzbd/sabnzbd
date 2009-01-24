@@ -616,6 +616,16 @@ function loadtitle() {
             stopDeferer(gDeferrerTwo);
           }
     }
+	
+    function pauseQueueDeferer(pnode){
+	      if (pnode != 'Right_bottom') {
+            stopDeferer(gRight);
+            stopDeferer(gDeferrer);
+          } else {
+            stopDeferer(gRightBottom);
+            stopDeferer(gDeferrerTwo);
+          }
+    }
     
     function loadSearch(url, elem, extra, refresh, pnode, new_search){
         if (elem){
