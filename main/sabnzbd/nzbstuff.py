@@ -104,7 +104,7 @@ class NzbFile(TryList):
 
         match = re.search(SUBJECT_FN_MATCHER, subject)
         if match:
-            self.__filename = match.group(1)
+            self.__filename = match.group(1).strip('"')
 
         self.__ispar2file = False
         self.__vol = None
@@ -311,7 +311,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             subject = attrs.get('subject', '')
             match = re.search(SUBJECT_FN_MATCHER, subject)
             if match:
-                self.filename = match.group(1).strip()
+                self.filename = match.group(1).strip('"').strip()
             else:
                 self.filename = subject.strip()
 
