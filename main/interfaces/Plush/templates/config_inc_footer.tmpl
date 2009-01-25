@@ -2,19 +2,21 @@
     </div>
     
     <div class="left_links config_margin">
-        <a id="help" target="_blank" href="$helpuri/$help_uri">$pane Help</a>
+        <a class="rounded" id="help" target="_blank" href="$helpuri/$help_uri">$pane Help</a>
     </div>
     
     #if $pane=="Connections"#
         <div class="right_links">
-            <a id="force_disconnect" href="disconnect">Force Disconnect</a>
+            <a class="rounded" id="force_disconnect" href="disconnect">Force Disconnect</a>
         </div>
+    #else if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="NZB Sites" or $pane=="Sorting"#
         <div class="right_links">
-            <a id="test_email" href="testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
+            <a class="rounded" id="save" onclick="document.fullform.submit();">Save Changes</a>
         </div>
-    #else if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="Index Sites" or $pane=="Sorting"#
+    #end if#
+    #if $pane=="Email"#
         <div class="right_links">
-            <a id="save" onclick="document.fullform.submit();">Save Changes</a>
+            <a class="rounded" id="test_email" href="../../connections/testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
         </div>
     #end if#
     
