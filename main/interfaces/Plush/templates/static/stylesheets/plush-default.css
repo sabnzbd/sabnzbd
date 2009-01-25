@@ -291,7 +291,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     border-bottom:1px dotted;
 }
 .refresh_skipped {
-    border-bottom:1px dotted red;
+    border-bottom:1px solid red;
 }
 
 
