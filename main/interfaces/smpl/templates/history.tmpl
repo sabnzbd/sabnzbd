@@ -85,7 +85,7 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
 Showing 1 result
 <!--#else#-->
 
-Showing <!--#if $finish > 0 then $start+1 else '0'#--> to $finish out of $noofslots results
+Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noofslots then $noofslots else $finish#--> out of $noofslots results
 <!--#end if#-->
 <br />
 <div class="centerLinks">
@@ -111,7 +111,7 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to $finish out of $noofsl
         <!--#for $i in $range($pages)#-->
             <!--#if  $currentpage == $i+1#-->
                 <!--#echo $i+1#-->
-            <!--#else#-->
+            <!--#elif $i > 0 and $i+1 > $currentpage-3 and $i+1 < $currentpage+3#-->
                 <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$offset', 1,this.parentNode.parentNode.id);"><!--#echo $i+1#--></a>
             <!--#end if#-->
             <!--#set $offset = $offset + $limit#-->
@@ -120,7 +120,7 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to $finish out of $noofsl
             Next&rsaquo; Last&raquo;
         <!--#else#-->
             <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo $start+$limit#-->', 1,this.parentNode.parentNode.id);">Next&rsaquo;</a> 
-            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,this.parentNode.parentNode.id);">Last&raquo;</a>
+            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,this.parentNode.parentNode.id);">Last<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
         <!--#end if#-->
     <!--#end if#-->
 </div>
