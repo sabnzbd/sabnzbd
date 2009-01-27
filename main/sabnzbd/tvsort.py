@@ -304,6 +304,7 @@ class SeriesSorter:
         return self.rename_or_not
     
     def rename(self, files, current_path):
+        logging.debug("Renaming Series")
         renamed = None
         #find the master file to rename
         for file in files:
@@ -317,9 +318,11 @@ class SeriesSorter:
                     if 'sample' not in file:
                         tmp, ext = os.path.splitext(file)
                         newname = "%s%s" % (self.filename_set,ext)
+                        newname = newname.replace('%fn',tmp)
                         newpath = os.path.join(current_path, newname)
                         if not os.path.exists(newpath):
                             try:
+                                logging.debug("Rename: %s to %s", filepath,newpath)
                                 os.rename(filepath,newpath)
                             except:
                                 logging.error("Failed to rename: %s to %s", current_path, newpath)
@@ -331,12 +334,15 @@ class SeriesSorter:
 def check_for_sequence(regex, files):
     matches = {}
     prefix = None
-    for file in files:
-        match1 = regex.search(file)
+    # Build up a dictionary of matches
+    # The key is based off the match, ie {1:'blah-part1.avi'}
+    for _file in files:
+        name, ext = os.path.splitext(_file)
+        match1 = regex.search(name)
         if match1:
-            if not prefix or prefix == file[:match1.start()]:
-                matches[match1.group(1)] = file
-                prefix = file[:match1.start()]
+            if not prefix or prefix == name[:match1.start()]:
+                matches[match1.group(1)] = name+ext
+                prefix = name[:match1.start()]
             
     # Don't do anything if only one or no files matched
     if len(matches.keys()) < 2:
@@ -346,7 +352,9 @@ def check_for_sequence(regex, files):
     passed = True
     alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
     
-    for m in matches.iteritems():
+    # Check the dictionary to see if the keys are in a numeric or alphabetic sequence
+    match_copy = matches.copy()
+    for m in match_copy.iteritems():
         key, file = m
         if key.isdigit():
             key = int(key)
@@ -360,7 +368,7 @@ def check_for_sequence(regex, files):
         else:
             if alphabet[key_prev] == key:
                 key_prev += 1
-                # convert {'b':'filename.avi'} to {'2', 'filename.avi'}
+                # convert {'b':'filename-b.avi'} to {'2', 'filename-b.avi'}
                 matches.pop(key)
                 matches[key_prev] = file
                 
@@ -498,21 +506,23 @@ class GenericSorter:
         return self.rename_or_not
     
     def rename(self, _files, current_path):
-        renamed = False
-        files = []
-        
-        # remove any files below 300MB from this list
-        for file in _files:
-            if is_full_path(file):
-                filepath = file.replace('_UNPACK_', '')
+        logging.debug("Renaming Generic file")
+        def filter_files(_file):
+            if is_full_path(_file):
+                filepath = _file.replace('_UNPACK_', '')
             else:
-                filepath = os.path.join(current_path, file)
+                filepath = os.path.join(current_path, _file)
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
                 if size > 314572800:
-                    if 'sample' not in file:
-                        files.append(file)
+                    if 'sample' not in _file:
+                        return True
+            return False
         
+        renamed = False
+        # remove any files below 300MB from this list
+        files = [_file for _file in _files if filter_files(_file)]
+
         length = len(files)
         ## Single File Handling
         if length == 1:
@@ -524,8 +534,10 @@ class GenericSorter:
             if os.path.exists(filepath):
                 tmp, ext = os.path.splitext(file)
                 newname = "%s%s" % (self.filename_set,ext)
+                newname = newname.replace('%fn',tmp)
                 newpath = os.path.join(current_path, newname)
                 try:
+                    logging.debug("Rename: %s to %s", filepath,newpath)
                     os.rename(filepath,newpath)
                 except:
                     logging.error("Failed to rename: %s to %s", filepath,newpath)
@@ -534,19 +546,19 @@ class GenericSorter:
         ## Sequence File Handling
         # if there is more than one extracted file check for CD1/1/A in the title
         elif self.extra:
-
             matched_files = self.check_for_multiple(files)
-                
             # rename files marked as in a set
             if matched_files:
+                logging.debug("Renaming a series of generic files (%s)", matched_files)
                 for index, file in matched_files.iteritems():            
                     filepath = os.path.join(current_path, file)
                     tmp, ext = os.path.splitext(file)
                     name = '%s%s' % (self.filename_set, self.extra)
-                    name = name.replace('%1', index)
+                    name = name.replace('%1', str(index)).replace('%fn',tmp)
                     name = name + ext
                     newpath = os.path.join(current_path, name)
                     try:
+                        logging.debug("Rename: %s to %s", filepath,newpath)
                         os.rename(filepath,newpath)
                     except:
                         logging.error("Failed to rename: %s to %s", filepath,newpath)
@@ -560,9 +572,9 @@ class GenericSorter:
         expressions = []
         matched_files = []
         
-        expressions.append(re.compile('\Wcd(\d)\W', re.I)) # .cd1.avi
-        expressions.append(re.compile('\W(\d)\W', re.I)) # .1.avi
-        expressions.append(re.compile('\W(\w)\W', re.I)) # .a.avi
+        expressions.append(re.compile('cd\W?(\d)\W', re.I)) # .cd1.avi
+        expressions.append(re.compile('\w\W?([\w\d])$', re.I)) # blah1.avi blaha.avi 
+        expressions.append(re.compile('\w\W([\w\d])\W', re.I)) # blah-1-ok.avi blah-a-ok.avi 
 
         for regex in expressions:
             regex = re.compile(regex, re.I)
@@ -718,6 +730,7 @@ class DateSorter:
         return self.rename_or_not
     
     def rename(self, files, current_path):
+        logging.debug("Renaming Date file")
         renamed = None
         #find the master file to rename
         for file in files:
@@ -732,9 +745,11 @@ class DateSorter:
                     if 'sample' not in file:
                         tmp, ext = os.path.splitext(file)
                         newname = "%s%s" % (self.filename_set,ext)
+                        newname = newname.replace('%fn',tmp)
                         newpath = os.path.join(current_path, newname)
                         if not os.path.exists(newpath):
                             try:
+                                logging.debug("Rename: %s to %s", filepath,newpath)
                                 os.rename(filepath,newpath)
                             except:
                                 logging.error("Failed to rename: %s to %s", current_path, newpath)
@@ -837,6 +852,7 @@ def stripFolders(folders):
     
 
 def rename_similar(path, file, name):
+    logging.debug('Renaming files similar to: %s to %s', file, name)
     file_prefix, ext = os.path.splitext(file)
     for root, dirs, files in os.walk(path):
         for _file in files:
@@ -847,6 +863,7 @@ def rename_similar(path, file, name):
                 newpath = os.path.join(path, newname)
                 if not os.path.exists(newpath):
                     try:
+                        logging.debug("Rename: %s to %s", fpath,newpath)
                         os.rename(fpath,newpath)
                     except:
                         logging.error("Failed to rename similar file: %s to %s", path, newpath)
