@@ -81,7 +81,9 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
     Size: <span class="bold">$total_size</span> | This month: <span class="bold">$month_size</span> | This week: <span class="bold">$week_size</span>
 </div>
 <br />
-<!--#if $finish == 1#-->
+<!--#if $finish == 0#-->
+No results
+<!--#elif $finish == 1#-->
 Showing 1 result
 <!--#else#-->
 
