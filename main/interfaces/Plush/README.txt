@@ -1,6 +1,6 @@
 
 ================================================
-== Plush 3.0 for SABnzbd+ 0.5.0 | Jan 17 2009 ==
+== Plush 3.0 for SABnzbd+ 0.5.0 | Jan 27 2009 ==
 
 ============
 ASSEMBLED BY
@@ -70,6 +70,11 @@ See LICENSE-MIT & LICENSE-GPL
 jQuery One Click Upload
 http://www.michaelmitchell.co.nz
 Copyright (c) 2008 Michael Mitchell
+See LICENSE-MIT & LICENSE-GPL
+
+jQuery preloadCssImages
+http://www.filamentgroup.com/lab/update_automatically_preload_images_from_css_with_jquery/
+Copyright (c) 2008 Filament Group, Inc
 See LICENSE-MIT & LICENSE-GPL
 
 jQuery Superfish
