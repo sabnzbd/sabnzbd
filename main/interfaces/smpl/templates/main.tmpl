@@ -367,7 +367,13 @@ function loadtitle() {
         index = url.lastIndexOf('#');
         url = url.slice(index+1, url.length);
         url = url.replace('-', '/');
-
+		if (url.indexOf('/') == 0){
+			url = url.slice(1, url.length);
+		}
+		if (url.lastIndexOf('/') == url.length-1){
+			url = url.slice(0, url.length-1);
+		}
+		
         switch(url)
         {
             case 'dv1':
@@ -977,26 +983,26 @@ function loadingJSON(){
 		<div id="Content">
 			<div id="Left">
 				<ul id="menu">
-					<li><a class="current" href="">Home</a></li>
-					<li><a href="#queue" onClick="lr('queue/', '', 1, 0);">Queue</a></li>
-					<li><a href="#history" onClick="lr('history/','limit=50', 1, 0);">History</a></li>
-                    <li><a href="#dv1" onClick="lr('queue/','', 1, 1);lrb('history/','limit=50',1);">DualView1</a></li>
-                    <li><a href="#dv2" onClick="lr('queue/','', 1, 2);lrb('history/','limit=50',1);">DualView2</a></li>
-					<li><a href="#config" onClick="lr('config/','', 0, 0);">Config</a></li>
+					<li><a class="current" href="./">Home</a></li>
+					<li><a href="#/queue/" onClick="lr('queue/', '', 1, 0);">Queue</a></li>
+					<li><a href="#/history/" onClick="lr('history/','limit=50', 1, 0);">History</a></li>
+                    <li><a href="#/dv1/" onClick="lr('queue/','', 1, 1);lrb('history/','limit=50',1);">DualView1</a></li>
+                    <li><a href="#/dv2/" onClick="lr('queue/','', 1, 2);lrb('history/','limit=50',1);">DualView2</a></li>
+					<li><a href="#/config/" onClick="lr('config/','', 0, 0);">Config</a></li>
 					<ul class="secondul">
-						<li><a class="config" href="#config-general" onClick="lr('config/general/','', 0, 0);">General</a></li>
-						<li><a class="config" href="#config-directories" onClick="lr('config/directories/','', 0, 0);">Folders</a> </li>
-						<li><a class="config" href="#config-switches" onClick="lr('config/switches/','', 0, 0);">Switches</a> </li>
-						<li><a class="config" href="#config-server" onClick="lr('config/server/','', 0, 0);">Servers</a> </li>
-						<li><a class="config" href="#config-scheduling" onClick="lr('config/scheduling/','', 0, 0);">Scheduling</a> </li>
-						<li><a class="config" href="#config-rss" onClick="lr('config/rss/','', 0, 0);">RSS</a> </li>
-						<li><a class="config" href="#config-email" onClick="lr('config/email/','', 0, 0);">Email</a></li>
-						<li><a class="config" href="#config-newzbin" onClick="lr('config/newzbin/', '', 0, 0);">Index sites</a></li>
-                        <li><a class="config" href="#config-categories" onClick="lr('config/categories/', '', 0, 0);">Categories</a></li>
-                        <li><a class="config" href="#config-sorting" onClick="lr('config/sorting/', '', 0, 0);">Sorting</a></li>
+						<li><a class="config" href="#/config/general/" onClick="lr('config/general/','', 0, 0);">General</a></li>
+						<li><a class="config" href="#/config/directories/" onClick="lr('config/directories/','', 0, 0);">Folders</a> </li>
+						<li><a class="config" href="#/config/switches/" onClick="lr('config/switches/','', 0, 0);">Switches</a> </li>
+						<li><a class="config" href="#/config/server" onClick="lr('config/server/','', 0, 0);">Servers</a> </li>
+						<li><a class="config" href="#/config/scheduling/" onClick="lr('config/scheduling/','', 0, 0);">Scheduling</a> </li>
+						<li><a class="config" href="#/config/rss/" onClick="lr('config/rss/','', 0, 0);">RSS</a> </li>
+						<li><a class="config" href="#/config/email/" onClick="lr('config/email/','', 0, 0);">Email</a></li>
+						<li><a class="config" href="#/config/newzbin/" onClick="lr('config/newzbin/', '', 0, 0);">Index sites</a></li>
+                        <li><a class="config" href="#/config/categories/" onClick="lr('config/categories/', '', 0, 0);">Categories</a></li>
+                        <li><a class="config" href="#/config/sorting/" onClick="lr('config/sorting/', '', 0, 0);">Sorting</a></li>
 					</ul>
-					<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Connections</a></li>
-    				<li><a href="#connections" onClick="lr('connections/','', 1, 0);">Warnings(<span id="have_warnings">$have_warnings</span>)</a></li>
+					<li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">Connections</a></li>
+    				<li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">Warnings(<span id="have_warnings">$have_warnings</span>)</a></li>
 					<br />
 					<li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a></li>
 					<!--#if $varExists('newzbinDetails')#-->
