@@ -2922,10 +2922,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     else:
         info['refresh_rate'] = ''
 
-    info['start'] = IntConv(start)
-    info['limit'] = IntConv(limit)
-    info['finish'] = info['start'] + info['limit']
-
     datestart = datetime.datetime.now()
 
     if json_output:
@@ -2942,10 +2938,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
     slotinfo = []
     nzo_ids = []
 
-    try: limit = int(limit)
-    except: limit = 0
-    try: start = int(start)
-    except: start = 0
+    limit = IntConv(limit)
+    start = IntConv(start)
 
     if history:
         #Collect nzo's from the history that are downloaded but not finished (repairing, extracting)
@@ -2957,6 +2951,12 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         slotinfo = []
 
     info['noofslots'] = len(pnfo_list) + len(slotinfo)
+    
+    info['start'] = start
+    info['limit'] = limit
+    info['finish'] = info['start'] + info['limit']
+    if info['finish'] > info['noofslots']:
+        info['finish'] = info['noofslots']
 
     #Paging of the queue using limit and/or start values
     if limit > 0:
