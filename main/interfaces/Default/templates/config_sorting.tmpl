@@ -37,6 +37,7 @@
         input = input.replace(/%e\_n/g,'Episode_Name');
         input = input.replace(/%0e/g,'05');
         input = input.replace(/%e/g,'5');
+		input = input.replace(/%fn/g,'file');
         var com = document.getElementById('complete_dir').value;
         if (com.search("/") > 0)
         {
@@ -93,6 +94,8 @@
         input = input.replace(/%_title/g,'Movie_Name');
         input = input.replace(/%y/g,'2000');
         input = input.replace(/%decade/g,'00');
+		input = input.replace(/%0decade/g,'2000');
+		input = input.replace(/%fn/g,'file');
         
         var regex = /\{([^\{]*)\}/g;
         var str = input;
@@ -138,6 +141,8 @@
         input = input.replace(/%.t/g,'Show.Name');
         input = input.replace(/%_t/g,'Show_Name');
         input = input.replace(/%decade/g,'00');
+		input = input.replace(/%0decade/g,'2000');
+		input = input.replace(/%fn/g,'file');
         input = input.replace(/%desc/g,'Episode Name');
         input = input.replace(/%\.desc/g,'Episode.Name');
         input = input.replace(/%\_desc/g,'Episode_Name');
@@ -229,6 +234,11 @@
             <span class="result">avi</span>
         </div>
         <div class="row">
+            <span class="normalheight">Original Filename</span>
+            <span class="pattern">%fn</span>
+            <span class="result">file</span>
+        </div>
+        <div class="row">
             <span class="normalheight">Lower Case</span>
             <span class="pattern">{TEXT}</span>
             <span class="result">text</span>
@@ -308,6 +318,16 @@
             <span class="result">00</span>
         </div>
         <div class="row">
+            <span class="normalheight">Decade</span>
+            <span class="pattern">%0decade</span>
+            <span class="result">2000</span>
+        </div>
+        <div class="row">
+            <span class="normalheight">Original Filename</span>
+            <span class="pattern">%fn</span>
+            <span class="result">file</span>
+        </div>
+        <div class="row">
             <span class="normalheight">Lower Case</span>
             <span class="pattern">{TEXT}</span>
             <span class="result">text</span>
@@ -384,6 +404,16 @@
             <span class="normalheight">Decade</span>
             <span class="pattern">%decade</span>
             <span class="result">00</span>
+        </div>
+        <div class="row">
+            <span class="normalheight">Decade</span>
+            <span class="pattern">%0decade</span>
+            <span class="result">2000</span>
+        </div>
+        <div class="row">
+            <span class="normalheight">Original Filename</span>
+            <span class="pattern">%fn</span>
+            <span class="result">file</span>
         </div>
         <div class="row">
             <span class="normalheight">Lower Case</span>
