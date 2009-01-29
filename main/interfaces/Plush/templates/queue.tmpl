@@ -52,6 +52,7 @@
     
     <td class="options" nowrap>
         <select title="Priority" class="proc_priority">
+            <option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>Force</option>
             <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
             <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
             <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
