@@ -82,7 +82,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 					</td>
 					<!--#if $queue_details == '1'#-->
 					<td>
-						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);"onchange="javascript:changequeuedetails('queue/change_opts?nzo_id='+this.options[this.selectedIndex].value)">
+						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);"onchange="javascript:changequeuedetails('queue/change_opts?nzo_id='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
 							<optgroup label="PP">
 								<option value="$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
 								<option value="$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
@@ -93,7 +93,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 
 
 						<!--#if $slot.priority != '2'#-->
-						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/set_priority?nzo_id=$slot.nzo_id&priority='+this.options[this.selectedIndex].value);">
+						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/set_priority?nzo_id=$slot.nzo_id&priority='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
 							<optgroup label="Priority">
 								<option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
 								<option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
@@ -102,7 +102,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 						</select>
 						<!--#end if#-->
 					<!--#if $script_list#-->
-							<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_script?nzo_id=$slot.nzo_id&script='+this.options[this.selectedIndex].value);">
+							<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_script?nzo_id=$slot.nzo_id&script='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
 							<optgroup label="Script">
 							<!--#for $sc in $script_list#-->
 								<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
@@ -112,7 +112,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 						<!--#end if#-->
 
 						<!--#if $cat_list#-->
-						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_cat?nzo_id=$slot.nzo_id&cat='+this.options[this.selectedIndex].value);">
+						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_cat?nzo_id=$slot.nzo_id&cat='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
 							<optgroup label="Category">
 							<!--#for $ct in $cat_list#-->
 								<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
