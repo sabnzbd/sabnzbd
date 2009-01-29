@@ -319,6 +319,15 @@ class Downloader(Thread):
 
     def speed_set(self):
         self.bandwidth_limit = cfg.BANDWIDTH_LIMIT.get()
+        
+    def is_paused(self):
+        if not self.paused:
+            return False
+        else:
+            if sabnzbd.nzbqueue.has_forced_items():
+                return False
+            else:
+                return True
 
     def run(self):
         self.decoder.start()
@@ -343,7 +352,7 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
-                if not server.idle_threads or server.restart or self.paused or self.shutdown or self.delayed or self.postproc:
+                if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
                 if not sabnzbd.nzbqueue.has_articles_for(server):
@@ -432,7 +441,7 @@ class Downloader(Thread):
                 time.sleep(1.0)
 
                 CV.acquire()
-                while (not sabnzbd.nzbqueue.has_articles() or self.paused or self.delayed or self.postproc) and not \
+                while (not sabnzbd.nzbqueue.has_articles() or self.is_paused() or self.delayed or self.postproc) and not \
                        self.shutdown and not self.__restart:
                     CV.wait()
                 CV.release()

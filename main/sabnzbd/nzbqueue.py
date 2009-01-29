@@ -487,6 +487,13 @@ class NzbQueue(TryList):
                     return not nzo.server_in_try_list(server)
         else:
             return not self.server_in_try_list(server)
+        
+    @synchronized(NZBQUEUE_LOCK)
+    def has_forced_items(self):
+        for nzo in self.__nzo_list:
+            if nzo.get_priority() == TOP_PRIORITY:
+                return True
+        return False
 
     @synchronized(NZBQUEUE_LOCK)
     def get_article(self, server):
@@ -763,6 +770,10 @@ def has_articles():
 def has_articles_for(server):
     global __NZBQ
     if __NZBQ: return __NZBQ.has_articles_for(server)
+    
+def has_forced_items():
+    global __NZBQ
+    if __NZBQ: return __NZBQ.has_forced_items()
 
 def register_article(article):
     global __NZBQ

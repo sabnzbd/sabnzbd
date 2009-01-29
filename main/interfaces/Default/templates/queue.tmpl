@@ -89,10 +89,11 @@ Speed Limit:
                 </select></form>
             </td>
             <td>
-            <!--#if $slot.priority != '2'#-->
+            <!--#if $slot.priority#-->
             <form>
             <select onchange="location = this.options[this.selectedIndex].value;">
-                    <option value="set_priority?nzo_id=$slot.nzo_id&priority=1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
+                    <option value="set_priority?nzo_id=$slot.nzo_id&priority=2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>Force</option>
+					<option value="set_priority?nzo_id=$slot.nzo_id&priority=1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
                     <option value="set_priority?nzo_id=$slot.nzo_id&priority=0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
                     <option value="set_priority?nzo_id=$slot.nzo_id&priority=-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
                 </select></form>
