@@ -26,7 +26,6 @@
 		            <input type="submit" onclick="this.form.action='download_rss_feed'; this.form.submit(); return false;" value="Force Download"/>
 		
 		            <select name="priority">
-		                <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>Force</option>
 		                <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
 		                <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>Normal</option>
 		                <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>Low</option>
