@@ -318,6 +318,17 @@ jQuery(function($) {
                 onComplete: $.plush.refreshQueue
             });
             
+            // Fetch Newzbin Bookmarks
+			$('#fetch_newzbin_bookmarks').click(function(){
+                $.ajax({
+                	type: "POST",
+                    url: "tapi",
+                    data: "mode=newzbin&name=get_bookmarks",
+                    success: function(result){
+                        $.plush.refreshQueue();
+                    }
+                });
+			});
             
             /********************************************
             *********************************************
