@@ -534,11 +534,12 @@ jQuery(function($) {
                         data: 'mode=queue&name=priority&value='+nzbid+'&value2='+$(this).val(),
                         success: function(newPos){
 							// reposition the nzb if necessary (new position is returned by the API)
-                        	if (oldPos == newPos)
-                        		return;
-                        	else if (oldPos < newPos)
+                        	if ($.plush.queueViewPreference != 0 && $.plush.queueViewPreference <= parseInt(newPos)) {
+                        		$.plush.skipRefresh = false;
+                        		$.plush.refreshQueue();
+                        	} else if (oldPos < newPos)
 	                        	$('#'+nzbid).insertAfter($('#queueTable tr:eq('+ newPos +')'));
-							else
+							else if (oldPos > newPos)
 	                        	$('#'+nzbid).insertBefore($('#queueTable tr:eq('+ newPos +')'));
                         }
                     });
