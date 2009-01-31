@@ -348,12 +348,12 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
     def endElement(self, name):
         if name == 'group' and self.in_group:
-            self.groups.append(''.join(self.group_name))
+            self.groups.append(str(''.join(self.group_name)))
             self.in_group = False
 
         elif name == 'segment' and self.in_segment:
             partnum = self.article_nr
-            segm = ''.join(self.article_id)
+            segm = str(''.join(self.article_id))
             if partnum in self.article_db:
                 if segm != self.article_db[partnum][0]:
                     logging.error("Duplicate part %s, but different ID-s (%s // %s)",
