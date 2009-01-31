@@ -3258,6 +3258,12 @@ def get_active_history(queue=None, items=None):
             item['size'] = format_bytes(item['bytes'])
         else:
             item['size'] = ''
+
+        # Queue display needs Unicode instead of UTF-8
+        for kw in item:
+            if isinstance(item[kw], str):
+                item[kw] = item[kw].decode('utf-8')
+
         items.append(item)
 
     return items
