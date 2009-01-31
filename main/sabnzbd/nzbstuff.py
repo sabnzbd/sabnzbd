@@ -28,7 +28,6 @@ import xml.sax
 import xml.sax.handler
 
 from sabnzbd.constants import *
-from sabnzbd.codecs import name_fixer
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -180,7 +179,7 @@ class NzbFile(TryList):
         self.__type = _type
 
     def set_filename(self, filename):
-        self.__filename = name_fixer(filename)
+        self.__filename = filename
 
     def set_par2(self, setname, vol, blocks):
         self.__ispar2file = True
@@ -668,7 +667,7 @@ class NzbObject(TryList):
 
     def set_original_dirname(self, name):
         self.__original_dirname = name
-        
+
     def set_name(self, name):
         if isinstance(name, str):
             name = sabnzbd.misc.sanitize_foldername(name)

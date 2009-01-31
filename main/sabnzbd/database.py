@@ -52,7 +52,7 @@ class HistoryDB:
         self.c = self.con.cursor()
         if create_table:
             self.create_history_db()
-            
+
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
         try:
@@ -102,14 +102,14 @@ class HistoryDB:
             "meta" TEXT
         )
         """)
-        
+
     def save(self):
         try:
             self.con.commit()
         except:
             logging.error('SQL Commit Failed, see log')
             logging.debug("Traceback: ", exc_info = True)
-        
+
     def close(self):
         try:
             self.c.close()
@@ -117,45 +117,45 @@ class HistoryDB:
         except:
             logging.error('Failed to close database, see log')
             logging.debug("Traceback: ", exc_info = True)
-        
+
     def remove_all(self):
         return self.execute("""DELETE FROM history""")
-    
-    def remove_failed(self):       
+
+    def remove_failed(self):
         return self.execute('''DELETE FROM history WHERE status="Failed"''', save=True)
-        
-    def remove_history(self, jobs=None):       
+
+    def remove_history(self, jobs=None):
         if jobs == None:
             self.remove_all()
         else:
             if type(jobs) == type(''):
                 jobs = [jobs]
-                
+
             for job in jobs:
                 self.execute("""DELETE FROM history WHERE nzo_id=?""", (job,))
-            
+
         self.save()
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
 
-        
+
         t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
-        
-        if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report, 
-        url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log, 
+
+        if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
+        url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
         downloaded, completeness, fail_message, url_info, bytes)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
-        
+
     def fetch_history(self, start=None, limit=None, search=None):
-        
+
         if not search:
             # Default value
             search = ''
         else:
             # Allow * for wildcard matching and space
             search = search.replace('*','%').replace(' ', '%')
-            
+
         # Allow ^ for start of string and $ for end of string
         if search and search.startswith('^'):
             search = search.replace('^','')
@@ -165,18 +165,18 @@ class HistoryDB:
             search = '%' + search
         else:
             search = '%' + search + '%'
-        
+
         # Get the number of results
         if self.execute('select count(*) from History WHERE name LIKE ?', (search,)):
             total_items = self.c.fetchone()['count(*)']
         else:
             total_items = -1
-            
+
         if not start:
             start = 0
         if not limit:
             limit = total_items
-        
+
         t = (search, start,limit)
         fetch_ok = self.execute("""SELECT * FROM history WHERE name LIKE ? ORDER BY completed desc LIMIT ?, ?""", t)
 
@@ -184,19 +184,19 @@ class HistoryDB:
             items = self.c.fetchall()
         else:
             items = []
-            
+
         fetched_items = len(items)
-    
+
         # Unpack the single line stage log
         # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
         items = [unpack_history_info(item) for item in items]
-        
+
         return (items, fetched_items, total_items)
-    
+
     def get_history_size(self):
-        """ 
-        Returns the total size of the history and 
-        amounts downloaded in the last month and week 
+        """
+        Returns the total size of the history and
+        amounts downloaded in the last month and week
         """
         # Total Size of the history
         if self.execute('''SELECT sum(bytes) FROM history'''):
@@ -204,30 +204,30 @@ class HistoryDB:
             total = f['sum(bytes)']
         else:
             total = 0
-        
+
         # Amount downloaded this month
         r = time.gmtime(time.time())
         month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
-        
+
         if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (month_timest,)):
             f = self.c.fetchone()
             month = f['sum(bytes)']
         else:
             month = 0
-            
+
         # Amount downloaded this week
         monday = find_monday()
         week_timest = int(time.mktime(find_monday()))
-        
+
         if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (week_timest,)):
             f = self.c.fetchone()
             week = f['sum(bytes)']
         else:
             week = 0
-        
+
         return (total, month, week)
-    
-    
+
+
     def get_script_log(self, nzo_id):
         t = (nzo_id,)
         if self.execute('SELECT script_log FROM history WHERE nzo_id=?', t):
@@ -235,7 +235,15 @@ class HistoryDB:
             return zlib.decompress(f['script_log'])
         else:
             return ''
-    
+
+    def get_name(self, nzo_id):
+        t = (nzo_id,)
+        if self.execute('SELECT name FROM history WHERE nzo_id=?', t):
+            return self.c.fetchone()['name']
+        else:
+            return ''
+
+
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):
@@ -244,26 +252,26 @@ def dict_factory(cursor, row):
 
 def build_history_info(nzo, storage='', path='', postproc_time=0, script_output='', script_line=''):
     ''' Collects all the information needed for the database '''
-    
+
     path = decode_factory(path)
     storage = decode_factory(storage)
     script_line = decode_factory(script_line)
-    
+
     flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
     nzo_info = decode_factory(nzo.get_nzo_info())
-    
-    # Get the url and newzbin msgid 
+
+    # Get the url and newzbin msgid
     report = decode_factory(nzo_info.get('msgid', ''))
     if report:
         url = 'https://newzbin.com/browse/post/%s/' % (report)
     else:
         url = decode_factory(nzo_info.get('url', ''))
-    
+
     #group = nzo.get_group()
-    
+
     completed = int(time.time())
     name = decode_factory(nzo.get_original_dirname())
-    
+
     nzb_name = decode_factory(nzo.get_filename())
     category = decode_factory(nzo.get_cat())
     pps = ['','R','U','D']
@@ -275,21 +283,21 @@ def build_history_info(nzo, storage='', path='', postproc_time=0, script_output=
     status = decode_factory(nzo.get_status())
     nzo_id = nzo.get_nzo_id()
     bytes = nzo.get_bytes_downloaded()
-    
-    if script_output:        
+
+    if script_output:
         # Compress the output of the script
-        script_log = sqlite3.Binary(zlib.compress(decode_factory(script_output)))
+        script_log = sqlite3.Binary(zlib.compress(script_output))
         #
     else:
-        script_log = u''
-    
+        script_log = ''
+
     download_time = decode_factory(nzo_info.get('download_time', 0))
 
     downloaded = nzo.get_bytes_downloaded()
     completeness = 0
     fail_message = decode_factory(nzo.get_fail_msg())
     url_info = nzo_info.get('more_info', '')
-    
+
     # Get the dictionary containing the stages and their unpack process
     stages = decode_factory(nzo.get_unpack_info())
     # Pack the ditionary up into a single string
@@ -298,15 +306,15 @@ def build_history_info(nzo, storage='', path='', postproc_time=0, script_output=
     for key, results in stages.iteritems():
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
-    
+
     return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path, \
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness, \
             fail_message, url_info, bytes,)
-    
+
 def unpack_history_info(item):
-    ''' 
-        Expands the single line stage_log from the DB 
-        into a python dictionary for use in the history display 
+    '''
+        Expands the single line stage_log from the DB
+        into a python dictionary for use in the history display
     '''
     # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
     if item['stage_log']:
@@ -343,18 +351,15 @@ def unpack_history_info(item):
         item['action_line'] = ''
     return item
 
+
 def decode_factory(text):
-    ''' 
+    '''
         Recursivly looks through the supplied argument
-        and converts and text to urf-8 
+        and converts and text to utf-8
     '''
     if isinstance(text, str):
-        try:
-            text = text.decode('utf-8', 'replace')
-        except:
-            text = 'Could not decode text to utf-8'
-        return text
-    
+        return text.decode('Latin-1', 'replace').encode('utf-8', 'replace')
+
     elif isinstance(text, list):
         i = 0
         list_copy = [t for t in text]
@@ -362,18 +367,19 @@ def decode_factory(text):
             text[i] = decode_factory(t)
             i += 1
         return text
-    
+
     elif isinstance(text, dict):
         for key, item in text.copy().iteritems():
             text[key] = decode_factory(item)
         return text
     else:
         return text
-    
+
+
 def find_monday():
     last_monday = datetime.date.today()
     minus_one_day = datetime.timedelta(days=1)
     while last_monday.weekday() != MONDAY:
         last_monday -= minus_one_day
     return (last_monday.year, last_monday.month, last_monday.day, 0, 1, 1, 0, 0, 0)
-     
+

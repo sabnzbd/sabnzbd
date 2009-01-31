@@ -664,7 +664,7 @@ class MainPage:
                 return xml_list('versions', 'version', (sabnzbd.__version__, ))
             else:
                 return 'not implemented\n'
-            
+
         if mode == 'newzbin':
             if name == 'get_bookmarks':
                 newzbin.getBookmarksNow()
@@ -678,7 +678,7 @@ class MainPage:
         """ Duplicate of scriptlog of History, needed for some skins """
         if name:
             history_db = cherrypy.thread_data.history_db
-            return ShowString(name, history_db.get_script_log(name))
+            return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise Raiser(self.__root, _dc=_dc)
 
@@ -1097,7 +1097,7 @@ class HistoryPage:
         """ Duplicate of scriptlog of History, needed for some skins """
         if name:
             history_db = cherrypy.thread_data.history_db
-            return ShowString(name, history_db.get_script_log(name))
+            return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise Raiser(self.__root, _dc=_dc)
 
@@ -2092,7 +2092,7 @@ def ShowString(name, string):
            </pre></code><br/><br/>
 </body>
 </html>
-''' % (name, name, escape(msg))
+''' % (xml_name(name), xml_name(name), escape(msg))
 
 
 def ShowOK(url):
@@ -2597,6 +2597,7 @@ def build_file_list(id):
             for tup in queued_files:
                 _set, bytes_left, bytes, fn, date = tup
                 fn = xml_name(fn)
+                _set = xml_name(_set)
 
                 age = calc_age(date)
 
@@ -2913,7 +2914,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         info['queue_details'] = str(IntConv(cookie['queue_details'].value))
     else:
         info['queue_details'] = '0'
-        
+
     if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
         info['newzbinDetails'] = True
 
@@ -2951,7 +2952,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[
         slotinfo = []
 
     info['noofslots'] = len(pnfo_list) + len(slotinfo)
-    
+
     info['start'] = start
     info['limit'] = limit
     info['finish'] = info['start'] + info['limit']
@@ -3251,7 +3252,7 @@ def get_active_history(queue=None, items=None):
             item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = t
         item['action_line'] = nzo.get_action_line()
         item = unpack_history_info(item)
-        
+
         item['loaded'] = True
         if item['bytes']:
             item['size'] = format_bytes(item['bytes'])
