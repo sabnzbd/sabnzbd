@@ -64,6 +64,7 @@ import sabnzbd.codecs as codecs
 import sabnzbd.config as config
 import sabnzbd.bpsmeter
 import sabnzbd.cfg as cfg
+import sabnzbd.database
 
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -127,6 +128,11 @@ def sig_handler(signum = None, frame = None):
 
 INIT_LOCK = Lock()
 
+def connect_db(thread_index):
+    # Create a connection and store it in the current thread
+    cherrypy.thread_data.history_db = sabnzbd.database.get_history_handle()
+
+
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
     global __INITIALIZED__, \
@@ -138,6 +144,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     if __INITIALIZED__:
         return False
+
+    ### Set global database connection for Web-UI threads
+    cherrypy.engine.subscribe('start_thread', connect_db)
 
     ### Clean the cache folder, if requested
     if clean_up:

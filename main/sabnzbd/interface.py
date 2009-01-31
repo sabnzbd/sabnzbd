@@ -52,7 +52,7 @@ import sabnzbd.postproc as postproc
 import sabnzbd.downloader as downloader
 import sabnzbd.bpsmeter as bpsmeter
 import sabnzbd.nzbqueue as nzbqueue
-from sabnzbd.database import HistoryDB, build_history_info, unpack_history_info
+from sabnzbd.database import get_history_handle, build_history_info, unpack_history_info
 
 from sabnzbd.constants import *
 
@@ -196,15 +196,6 @@ def set_auth(conf):
         conf.update({'/sabnzbd':{'tools.basic_auth.on':False}})
 
 
-
-#------------------------------------------------------------------------------
-# Database support
-def connect_db(thread_index):
-    # Create a connection and store it in the current thread
-    db_history = os.path.join(sabnzbd.DIR_LCLDATA, DB_HISTORY_NAME)
-    cherrypy.thread_data.history_db = HistoryDB(db_history)
-
-cherrypy.engine.subscribe('start_thread', connect_db)
 
 #------------------------------------------------------------------------------
 class NoPage:

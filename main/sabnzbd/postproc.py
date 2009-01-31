@@ -46,7 +46,7 @@ import sabnzbd.downloader as downloader
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
-from database import HistoryDB
+import sabnzbd.database as database
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -433,7 +433,7 @@ class PostProcessor(Thread):
             postproc_time = int(time.time() - start)
 
             # Create the history DB instance
-            history_db = HistoryDB(os.path.join(sabnzbd.DIR_LCLDATA, DB_HISTORY_NAME))
+            history_db = get_history_handle()
             # Add the nzo to the database. Only the path, script and time taken is passed
             # Other information is obtained from the nzo
             history_db.add_history_db(nzo, workdir_complete, rel_path, postproc_time, script_log, script_line)

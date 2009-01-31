@@ -36,7 +36,18 @@ import logging
 from threading import Thread
 
 import sabnzbd
-from sabnzbd.constants import DB_HISTORY_VERSION
+import sabnzbd.cfg
+from sabnzbd.constants import DB_HISTORY_VERSION, DB_HISTORY_NAME
+
+__HISTORY_DB = None  # Will contain full path to history database
+
+def get_history_handle():
+    """ Get an instance of the history db hanlder """
+    global __HISTORY_DB
+    if not __HISTORY_DB:
+        __HISTORY_DB = os.path.join(sabnzbd.cfg.ADMIN_DIR.get_path(), DB_HISTORY_NAME)
+    return HistoryDB(__HISTORY_DB)
+
 
 # Note: Add support for execute return values
 
