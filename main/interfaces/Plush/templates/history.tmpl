@@ -10,7 +10,7 @@
     <!--#set $odd = not $odd#-->
     <tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
     
-    <td class="historyTitle <!--#if $line.action_line #-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->">
+    <td class="historyTitle <!--#if $line.action_line or $line.status=="Queued"#-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->">
         $line.name
     </td>
     
