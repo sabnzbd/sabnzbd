@@ -290,8 +290,8 @@ jQuery(function($) {
                 if ($('#addID_input').val()!='enter URL / Newzbin ID') {
                     $.ajax({
                     	type: "POST",
-                        url: "addID",
-                        data: "id="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val(),
+                        url: "tapi",
+                        data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val(),
                         success: function(result){
                             $.plush.refreshQueue();
                         }
@@ -313,7 +313,7 @@ jQuery(function($) {
                 name: 'name',
                 action: 'tapi',
                 enctype: 'multipart/form-data',
-                params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val()},
+                params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val(), priority: $("#addID_priority").val()},
                 autoSubmit: true,
                 onComplete: $.plush.refreshQueue
             });
