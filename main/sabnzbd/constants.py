@@ -47,7 +47,6 @@ ANFO_ARTICLE_SUM_FIELD = 0
 ANFO_CACHE_SIZE_FIELD = 1
 ANFO_CACHE_LIMIT_FIELD = 2
 
-TEBI = float(2 ** 40)
 GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)

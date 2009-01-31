@@ -2412,20 +2412,9 @@ def rss_history(url, limit=50, search=None):
 
     return rss.write()
 
-def format_bytes(bytes):
-    try:
-        if bytes >= MEBI and bytes < GIGI:
-            size = '%0.0f MB' % (bytes/MEBI)
-        elif bytes >= GIGI and bytes < TEBI:
-            size = '%0.2f GB' % (bytes/GIGI)
-        elif bytes >= TEBI:
-            size = '%0.2f TB' % (bytes/TEBI)
-        else:
-            size = '%0.0f KB' % (bytes/KIBI)
-    except:
-        size = ''
 
-    return size
+def format_bytes(bytes):
+    return to_units(bytes) + 'B'
 
 
 def rss_warnings():
