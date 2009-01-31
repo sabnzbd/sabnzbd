@@ -162,8 +162,8 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
         return "Cannot run script %s\r\n" % extern_proc
 
     output = p.stdout.read()
-    p.wait()
-    return output
+    ret = p.wait()
+    return output, ret
 
 
 #------------------------------------------------------------------------------

@@ -1992,7 +1992,7 @@ class ConnectionInfo:
 
         self.__lastmail= email.endjob('Test Job', 123, 'unknown', True,
                                       os.path.normpath(os.path.join(cfg.COMPLETE_DIR.get_path(), '/unknown/Test Job')),
-                                      str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n')
+                                      str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n', 0)
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose

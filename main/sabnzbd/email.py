@@ -124,7 +124,7 @@ def send(message):
 ################################################################################
 from Cheetah.Template import Template
 
-def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_output):
+def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_output, script_ret):
     """ Send email using templates """
 
     output = []
@@ -146,6 +146,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     parm['output'] = output
     parm['script'] = script
     parm['script_output'] = script_output
+    parm['script_ret'] = script_ret
     parm['cat'] = cat
     parm['size'] = "%sB" % to_units(bytes)
     parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))

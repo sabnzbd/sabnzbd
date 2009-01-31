@@ -373,14 +373,14 @@ class PostProcessor(Thread):
                             nzo.set_status("Running Script...")
                             nzo.set_action_line('Running Script', script)
                             nzo.set_unpack_info('script','Running user script %s' % script, unique=True)
-                            script_log = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
+                            script_log, script_ret = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
                             script_line = get_last_line(script_log)
                             if script_log:
                                 fname = nzo.get_nzo_id()
                             if script_line:
-                                nzo.set_unpack_info('script',script_line, unique=True)
+                                nzo.set_unpack_info('script', script_line, unique=True)
                             else:
-                                nzo.set_unpack_info('script','Ran %s' % script, unique=True)
+                                nzo.set_unpack_info('script', 'Ran %s' % script, unique=True)
                     else:
                         script = ""
                         script_line = ""
@@ -389,14 +389,18 @@ class PostProcessor(Thread):
                     if (not nzb_list) and cfg.EMAIL_ENDJOB.get():
                         if (cfg.EMAIL_ENDJOB.get() == 1) or (cfg.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
                             email.endjob(filename, msgid, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
-                                         {}, script, TRANS(script_log))
+                                         {}, script, TRANS(script_log), script_ret)
 
                     if fname:
                         # Can do this only now, otherwise it would show up in the email
-                        if script_line:
-                            nzo.set_unpack_info('script','%s <a href="./scriptlog?name=%s">(More)</a>' % (script_line, urllib.quote(fname)), unique=True)
+                        if script_ret:
+                            script_ret = 'Exit(%s) ' % script_ret
                         else:
-                            nzo.set_unpack_info('script','<a href="./scriptlog?name=%s">View script output</a>' % urllib.quote(fname), unique=True)
+                            script_ret = ''
+                        if script_line:
+                            nzo.set_unpack_info('script','%s%s <a href="./scriptlog?name=%s">(More)</a>' % (script_ret, script_line, urllib.quote(fname)), unique=True)
+                        else:
+                            nzo.set_unpack_info('script','%s<a href="./scriptlog?name=%s">View script output</a>' % (script_ret, urllib.quote(fname)), unique=True)
 
                 ## Remove newzbin bookmark, if any
                 if msgid:
