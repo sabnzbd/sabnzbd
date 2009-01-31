@@ -87,7 +87,7 @@ def check_server(host, port):
 def ListScripts(default=False):
     """ Return a list of script names """
     lst = []
-    dd = cfg.SCRIPT_DIR.get()
+    dd = cfg.SCRIPT_DIR.get_path()
 
     if dd and os.access(dd, os.R_OK):
         if default:
