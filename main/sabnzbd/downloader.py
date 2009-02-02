@@ -291,6 +291,8 @@ class Downloader(Thread):
         logging.info("Pausing")
         Notify("SAB_Paused", None)
         self.paused = True
+        if self.is_paused():
+            bpsmeter.method.reset()
 
     def delay(self):
         logging.info("Delaying")
