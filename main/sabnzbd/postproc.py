@@ -384,6 +384,7 @@ class PostProcessor(Thread):
                     else:
                         script = ""
                         script_line = ""
+                        script_ret = 0
 
                     ## Email the results
                     if (not nzb_list) and cfg.EMAIL_ENDJOB.get():
