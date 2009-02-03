@@ -2414,7 +2414,11 @@ def rss_history(url, limit=50, search=None):
 
 
 def format_bytes(bytes):
-    return to_units(bytes) + 'B'
+    b = to_units(bytes)
+    if b == '':
+        return b
+    else:
+        return b + 'B'
 
 
 def rss_warnings():

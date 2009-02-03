@@ -598,7 +598,7 @@ def to_units(val):
     try:
         val = float(val)
     except:
-        val = 0.0
+        return ''
     while (val > 1023.0) and (n < 5):
         val = val / 1024.0
         n= n+1
