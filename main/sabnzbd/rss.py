@@ -394,7 +394,7 @@ def _get_link(uri, entry):
     """ Retrieve the post link from this entry """
 
     uri = uri.lower()
-    if uri.find('newzbin') > 0 or uri.find('newzxxx') > 0:
+    if 'newzbin' in uri or 'newzxxx'in uri:
         try:
             link = entry.link
         except:
@@ -405,7 +405,7 @@ def _get_link(uri, entry):
                 link = entry.links[0].href
             except:
                 link = None
-    elif uri.find('nzbindex.nl') > 0:
+    elif 'nzbindex.nl'in uri or 'animeusenet.org' in uri:
         try:
             link = entry.enclosures[0]['href']
         except:
