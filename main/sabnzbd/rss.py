@@ -211,10 +211,13 @@ class RSSQueue:
         logging.debug("Running feedparser on %s", uri)
         d = feedparser.parse(uri)
         logging.debug("Done parsing %s", uri)
-        if not d or 'bozo_exception' in d:
+        if not d:
             logging.warning("Failed to retrieve RSS from %s", uri)
             return
-        if not d['entries']:
+        elif 'bozo_exception' in d:
+            logging.warning("Failed to retrieve RSS from %s: %s", uri, str(d['bozo_exception']))
+            return
+        elif not d['entries']:
             logging.info("RSS Feed was empty: %s", uri)
             return
         entries = d['entries']
