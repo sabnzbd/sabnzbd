@@ -81,6 +81,9 @@ def con(sock, host, port, sslenabled, nntp):
                 pass
         finally:
             nntp.error(e)
+            
+    except _ssl.Error, e:
+        nntp.error(e)
 
 class NNTP:
     def __init__(self, host, port, sslenabled, nntp, user=None, password=None):
@@ -124,9 +127,12 @@ class NNTP:
                     pass
             finally:
                 self.error(e)
+                
+        except _ssl.Error, e:
+            self.error(e)
 
     def error(self, error):
-        msg = "Failed to connect: %s" % (error)
+        msg = "Failed to connect: %s" % (str(error))
         logging.error("%s %s@%s:%s", msg, self.nntp.thrdnum, self.host, self.port)
 
 class NewsWrapper:
