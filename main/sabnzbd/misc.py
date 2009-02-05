@@ -917,13 +917,13 @@ except AttributeError:
     # windows diskfree
     def diskfree(_dir):
         try:
-            secp, byteper, freecl, noclu = win32api.GetDiskFreeSpace(_dir)
-            return (secp * byteper * freecl) / GIGI
+            available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
+            return available / GIGI
         except:
             return 0.0
     def disktotal(_dir):
         try:
-            secp, byteper, freecl, noclu = win32api.GetDiskFreeSpace(_dir)
-            return (secp * byteper * noclu) / GIGI
+            available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
+            return disk_size / GIGI
         except:
             return 0.0
