@@ -271,9 +271,10 @@ class SeriesSorter:
         path = path.replace('%0s', self.show_info['season_num_alt'])
         
         # Replace episode names
-        path = path.replace('%en', self.show_info['ep_name'])
-        path = path.replace('%e.n', self.show_info['ep_name_two'])
-        path = path.replace('%e_n', self.show_info['ep_name_three'])
+        if self.show_info['ep_name']:
+            path = path.replace('%en', self.show_info['ep_name'])
+            path = path.replace('%e.n', self.show_info['ep_name_two'])
+            path = path.replace('%e_n', self.show_info['ep_name_three'])
         
         # Replace season number
         path = path.replace('%e', self.show_info['episode_num']) 
@@ -287,7 +288,7 @@ class SeriesSorter:
         path = toLowercase(path)
     
         # If no descriptions were found we need to replace %en and eat up surrounding characters
-        path = removeDescription(path, '%e[\.|\_]?n')
+        path = removeDescription(path, '%e[\._]?n')
             
         # Split the last part of the path up for the renamer
         if extension:
@@ -689,9 +690,10 @@ class DateSorter:
         path = path.replace('%year', self.date_info['year']) 
         path = path.replace('%y', self.date_info['year']) 
         
-        path = path.replace('%desc', self.date_info['ep_name'])
-        path = path.replace('%.desc', self.date_info['ep_name_two'])
-        path = path.replace('%_desc', self.date_info['ep_name_three'])
+        if self.date_info['ep_name']:
+            path = path.replace('%desc', self.date_info['ep_name'])
+            path = path.replace('%.desc', self.date_info['ep_name_two'])
+            path = path.replace('%_desc', self.date_info['ep_name_three'])
         
         # Replace decades
         path = path.replace('%decade', self.date_info['decade'])
@@ -711,7 +713,7 @@ class DateSorter:
         # Lowercase all characters encased in {}
         path = toLowercase(path)
         
-        path = removeDescription(path, '%\.?\_?desc')
+        path = removeDescription(path, '%[\._]?desc')
 
         # Strip any extra ' ' '.' or '_' around foldernames
         path = stripFolders(path)
@@ -860,6 +862,7 @@ def rename_similar(path, file, name):
             tmp, ext = os.path.splitext(_file)
             if tmp == file_prefix:
                 newname = "%s%s" % (name,ext)
+                newname = newname.replace('%fn',tmp)
                 newpath = os.path.join(path, newname)
                 if not os.path.exists(newpath):
                     try:
