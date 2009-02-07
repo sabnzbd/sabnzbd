@@ -635,8 +635,11 @@ ul.sf-navbar ul li.sfHover li,
 ul.sf-navbar li li li:hover,
 ul.sf-navbar li li li.sfHover,
 .sf-navbar li li.current li.current,
-.sf-navbar ul li li a:focus, .sf-navbar ul li li a:hover, .sf-navbar ul li li a:active {
+.sf-navbar ul li li a:focus, .sf-navbar ul li li a:active {
     background:        #F9F9F9;
+}
+.sf-navbar ul li li a:hover {
+    background:        #FFF;
 }
 ul.sf-navbar .current ul,
 ul.sf-navbar ul li:hover ul,
