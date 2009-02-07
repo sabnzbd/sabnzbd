@@ -288,7 +288,7 @@ jQuery(function($) {
             ********************************************/
             
             // Fetch NZB by URL/Newzbin Report ID
-            $('#addID').bind('click', function() { 
+            $('#addID').click(function(){ // also works when hitting enter because of <form>
                 if ($('#addID_input').val()!='enter URL / Newzbin ID') {
                     $.ajax({
                     	type: "POST",
@@ -300,6 +300,7 @@ jQuery(function($) {
                     });
                     $("#addID_input").val('enter URL / Newzbin ID');
                 }
+                return false; // aborts <form> submission
             });
             $('#addID_input').val('enter URL / Newzbin ID')
             .focus( function(){
