@@ -255,13 +255,15 @@ jQuery(function($) {
             // clear timeout in case multiple refreshes are triggered
             clearTimeout($.plush.timeout);
             
-            // ajax calls
-            $.plush.refreshQueue();
-            $.plush.refreshHistory();
+            if ($.plush.refreshRate > 0) {
             
-            // loop
-            if ($.plush.refreshRate > 0)
+                // ajax calls
+                $.plush.refreshQueue();
+                $.plush.refreshHistory();
+
+	            // loop
                 $.plush.timeout = setTimeout("$.plush.refresh()", $.plush.refreshRate*1000);
+            }
                 
         }, // end refresh()
         
@@ -349,11 +351,20 @@ jQuery(function($) {
             $("#refreshRate-option").val($.plush.refreshRate).change( function() {
                 $.plush.refreshRate = $("#refreshRate-option").val();
                 $.cookie('Plush2Refresh', $.plush.refreshRate, { expires: 365 });
-                
-                if ($.plush.refreshRate > 0)
-                    $.plush.refresh();
+                $.plush.refresh();
+            });
+            
+            // Priority toggle main menu input
+            if ( !$.cookie('queue_details') || ($.cookie('queue_details') != 0 && $.cookie('queue_details') != 1) )
+                $.cookie('queue_details', 1, { expires: 365 }); // default priorities to enabled
+			if ($.cookie('queue_details') == 1)
+				$("#priority-toggle").attr('checked','true'); // set toggled state of checkbox
+            $("#priority-toggle").change( function() {
+				if ($("#priority-toggle").attr('checked'))
+	                $.cookie('queue_details', 1, { expires: 365 });
                 else
-                    clearTimeout($.plush.timeout);
+	                $.cookie('queue_details', 0, { expires: 365 });
+			    $.plush.refreshQueue();
             });
             
             // Max Speed main menu input
