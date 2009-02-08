@@ -26,7 +26,7 @@
     <!--#for $line in $lines #-->
     <tbody id="$line.nzo_id">
     <tr>
-        <td class="center"><a id="tog_$line.nzo_id" class="expander" onclick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'jobs=$line.nzo_id&limit=$limit&start=0',-1, this.parentNode.parentNode.parentNode.parentNode.parentNode.id);">
+        <td class="center"><a id="tog_$line.nzo_id" class="expander" onclick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'jobs=$line.nzo_id&limit=$limit&start=$start',-1, this.parentNode.parentNode.parentNode.parentNode.parentNode.id);">
         <!--#if $line.show_details then '-' else '+'#-->
         </a></td>
         <td>$line.name<!--#if $line.action_line#--> - <span class="action_message">$line.action_line</span><!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
