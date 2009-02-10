@@ -1,5 +1,10 @@
 <% import datetime %>
 
+<script type="text/javascript">
+	if (typeof( jQuery ) == 'undefined')
+		window.location = "../"; // redirect to main on direct template hit
+</script>
+
 <a name="HIST"></a>
 <table class="queueTable" id="historyTable">
 <!--#set $cur = 0#-->

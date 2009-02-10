@@ -1,4 +1,8 @@
 <script type="text/javascript">
+
+	if (typeof( jQuery ) == 'undefined')
+		window.location = "../"; // redirect to main on direct template hit
+
     // set vars within the plush object
     jQuery(function($) {
         $.plush.speedlimit      = '$speedlimit';
