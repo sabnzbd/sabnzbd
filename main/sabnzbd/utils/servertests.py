@@ -5,6 +5,7 @@ import sys
 from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.downloader import Server, clues_login, clues_too_many
 from sabnzbd.config import get_servers
+from sabnzbd.codecs import xml_name
 
 def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout=120):
     ''' Will connect (blocking) to the nttp server and report back any errors '''
