@@ -1,0 +1,39 @@
+<!--#include $webdir + "/inc_top.tmpl"#-->
+
+<form action="./five" method="post">
+<div id="serverDetails">
+<h3><a href="http://newzbin.com" target="_blank">Newzbin.com</a> (Optional)</h3>
+    <label class="label">Username:</label><input type="text" size="20" value="$newzbin_user" name="newzbin_user">
+    <br class="clear" />
+    <label class="label">Password:</label><input type="password" size="20" value="$newzbin_pass" name="newzbin_pass">
+    <br class="clear" />
+    <!--
+    <a href="">Test Newzbin details</a>
+    <br/>
+    <div class="quoteBlock"><span class="success">Username and password are correct!</span></div>
+    <br/>
+    -->
+
+<h3><a href="http://nzbmatrix.com" target="_blank">NZBMatrix.com</a> (Optional)</h3>
+    <label class="label">Username:</label><input type="text" size="20" value="$matrix_user" name="matrix_user">
+    <br class="clear" />
+    <label class="label">Password:</label><input type="password" size="20" value="$matrix_pass" name="matrix_pass">
+
+<!--
+<a href="">Test NZBMatrix details</a>
+<br/>
+<div class="quoteBlock"><span class="success">Username and password are correct!</span></div>
+<br/>
+-->
+</div></div>
+
+<hr /><br/>
+<table class="full-width">
+    <tr>
+        <td><input class="bigbutton" type="button" onclick="document.location ='./three'" value="&lsaquo; Previous" /></td>
+        <td class="align-right"><input class="bigbutton" type="submit" value="Next &raquo;" /></td>
+    </tr>
+</table>
+</form>
+			
+<!--#include $webdir + "/inc_bottom.tmpl"#-->

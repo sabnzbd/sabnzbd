@@ -40,7 +40,7 @@ except:
     exit(1)
 
 import cherrypy
-if not cherrypy.__version__.startswith("3.1."):
+if not cherrypy.__version__.startswith("3."):
     print "Sorry, requires Python module Cherrypy 3.1.x"
     exit(1)
 
@@ -738,9 +738,11 @@ def main():
 
     web_dir  = Web_Template(sabnzbd.cfg.WEB_DIR,  DEF_STDINTF,  web_dir)
     web_dir2 = Web_Template(sabnzbd.cfg.WEB_DIR2, '', web_dir2)
+    wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
+    sabnzbd.WIZARD_DIR = wizard_dir
 
     sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.WEB_COLOR.get(),  web_dir)
     sabnzbd.cfg.WEB_COLOR.set(sabnzbd.WEB_COLOR)
@@ -807,10 +809,14 @@ def main():
 
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
+    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
+    
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
                  '/sabnzbd/shutdown': {'streamResponse': True},
                  '/sabnzbd/static': static,
-                 '/static': static
+                 '/static': static,
+                 '/sabnzbd/wizard/static': wizard_static,
+                 '/wizard/static': wizard_static
                  }
 
     if web_dir2:
@@ -819,6 +825,8 @@ def main():
         appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
         appconfig['/sabnzbd/m/static'] = static2
         appconfig['/m/static'] = static2
+        appconfig['/sabnzbd/m/wizard/static'] = wizard_static
+        appconfig['/m/wizard/static'] = wizard_static
 
     login_page = MainPage(web_dir, '/', web_dir2, '/m/', first=2)
     cherrypy.tree.mount(login_page, '/', config=appconfig)

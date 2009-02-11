@@ -97,6 +97,7 @@ AMBI_LOCALHOST = False
 
 WEB_DIR = None
 WEB_DIR2 = None
+WIZARD_DIR = None
 WEB_COLOR = None
 WEB_COLOR2 = None
 SABSTOP = False

@@ -31,6 +31,7 @@ from xml.sax.saxutils import escape
 
 from sabnzbd.utils.rsslib import RSS, Item, Namespace
 from sabnzbd.utils.json import JsonWriter
+from sabnzbd.utils.servertests import test_nntp_server
 import sabnzbd
 import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
@@ -222,31 +223,36 @@ class MainPage:
         self.connections = ConnectionInfo(web_dir, root+'connections/', prim)
         self.config = ConfigPage(web_dir, root+'config/', prim)
         self.nzb = NzoPage(web_dir, root+'nzb/', prim)
+        self.wizard = Wizard(web_dir, root+'wizard/', prim)
 
 
     @cherrypy.expose
-    def index(self, _dc = None):
-        info, pnfo_list, bytespersec = build_header(self.__prim)
-
-        if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_stars():
-            info['newzbinDetails'] = True
-
-        info['script_list'] = ListScripts(default=True)
-        info['script'] = cfg.DIRSCAN_SCRIPT.get()
-
-        info['cat'] = 'Default'
-        info['cat_list'] = ListCats(True)
-
-        info['warning'] = ""
-        if not config.get_servers():
-            info['warning'] = "No Usenet server defined, please check Config-->Servers<br/>"
-
-        if not sabnzbd.newsunpack.PAR2_COMMAND:
-            info['warning'] += "No PAR2 program found, repairs not possible<br/>"
-
-        template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
-        return template.respond()
+    def index(self, _dc=None, skip_wizard=False):
+        # IMPORTANT: Remove the 'not' when done testing
+        if skip_wizard or config.get_servers():
+            info, pnfo_list, bytespersec = build_header(self.__prim)
+    
+            if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_stars():
+                info['newzbinDetails'] = True
+    
+            info['script_list'] = ListScripts(default=True)
+            info['script'] = cfg.DIRSCAN_SCRIPT.get()
+    
+            info['cat'] = 'Default'
+            info['cat_list'] = ListCats(True)
+    
+            info['warning'] = ""
+    
+            if not sabnzbd.newsunpack.PAR2_COMMAND:
+                info['warning'] += "No PAR2 program found, repairs not possible<br/>"
+    
+            template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
+                                searchList=[info], compilerSettings=DIRECTIVES)
+            return template.respond()
+        else:
+            # Redirect to the setup wizard
+            raise cherrypy.HTTPRedirect('/wizard/')
+            
 
     @cherrypy.expose
     def addID(self, id = None, pp=None, script=None, cat=None, redirect = None, priority=NORMAL_PRIORITY):
@@ -654,7 +660,7 @@ class MainPage:
             elif output == 'xml':
                 return xml_list('versions', 'version', (sabnzbd.__version__, ))
             else:
-                return 'not implemented\n'
+                return str(sabnzbd.__version__)
 
         if mode == 'newzbin':
             if name == 'get_bookmarks':
@@ -685,6 +691,144 @@ class MainPage:
             return ShowOK(url)
         else:
             raise Raiser(self.__root, _dc=_dc)
+        
+class Wizard:
+    def __init__(self, web_dir, root, prim):
+        self.__root = root
+        # Get the path for the folder named wizard
+        self.__web_dir = sabnzbd.WIZARD_DIR
+        self.__prim = prim
+        self.info = {'webdir': sabnzbd.WIZARD_DIR,
+                     'steps':5, 'version':sabnzbd.__version__}
+    
+    @cherrypy.expose
+    def index(self, **kwargs):
+        info = self.info.copy()
+        info['num'] = 'One'
+        info['number'] = 1
+        info['skin'] = cfg.WEB_DIR.get().lower()
+        
+        if not os.path.exists(self.__web_dir):
+            # If the wizard folder does not exist, simply load the normal page
+            raise cherrypy.HTTPRedirect('')
+        else:
+            template = Template(file=os.path.join(self.__web_dir, 'index.html'),
+                                searchList=[info], compilerSettings=DIRECTIVES)
+            return template.respond()
+
+    @cherrypy.expose
+    def two(self, **kwargs):
+        # Save skin setting
+        if 'skin' in kwargs:
+            change_web_dir(kwargs['skin'])
+            
+        info = self.info.copy()
+        info['num'] = 'Two'
+        info['number'] = 2
+        
+        info['host'] = cfg.CHERRYHOST.get()
+        info['autobrowser'] = cfg.AUTOBROWSER.get()
+        
+        template = Template(file=os.path.join(self.__web_dir, 'two.html'),
+                            searchList=[info], compilerSettings=DIRECTIVES)
+        return template.respond()
+    
+    @cherrypy.expose
+    def three(self, **kwargs):
+        # Save access/autobrowser/autostart
+        if 'access' in kwargs:
+            cfg.CHERRYHOST.set(kwargs['access'])
+        if 'autobrowser' in kwargs:
+            cfg.AUTOBROWSER.set(kwargs.get('autobrowser',0))
+        if 'autostart' in kwargs:
+            pass
+        info = self.info.copy()
+        info['num'] = 'Three'
+        info['number'] = 3
+        
+        servers = config.get_servers()
+        if not servers:
+            info['host'] = ''
+            info['port'] = ''
+            info['username'] = ''
+            info['password'] = ''
+            info['connections'] = 0
+            info['ssl'] = 0
+        else:
+            for server in servers:
+                # If there are multiple servers, just use the first enabled one
+                s = servers[server]
+                info['host'] = s.host.get()
+                info['port'] = s.port.get()
+                info['username'] = s.username.get()
+                info['password'] = s.password.get_stars()
+                info['connections'] = s.connections.get()
+                info['ssl'] = s.ssl.get()
+                if s.enable.get():
+                    break
+        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
+                            searchList=[info], compilerSettings=DIRECTIVES)
+        return template.respond()
+    
+    @cherrypy.expose
+    def four(self, **kwargs):
+        # Save server details
+        if kwargs: 
+            kwargs['enable'] = 1
+            handle_server(kwargs)
+        
+        info = self.info.copy()
+        info['num'] = 'Four'
+        info['number'] = 4
+        info['newzbin_user'] = cfg.USERNAME_NEWZBIN.get()
+        info['newzbin_pass'] = cfg.PASSWORD_NEWZBIN.get_stars()
+        info['matrix_user'] = cfg.USERNAME_MATRIX.get()
+        info['matrix_pass'] = cfg.PASSWORD_MATRIX.get_stars()
+        template = Template(file=os.path.join(self.__web_dir, 'four.html'),
+                            searchList=[info], compilerSettings=DIRECTIVES)
+        return template.respond()
+    
+    @cherrypy.expose
+    def five(self, **kwargs):
+        # Save server details
+        if 'newzbin_user' in kwargs and 'newzbin_pass' in kwargs:
+            cfg.USERNAME_NEWZBIN.set(kwargs.get('newzbin_user',''))
+            cfg.PASSWORD_NEWZBIN.set(kwargs.get('newzbin_pass',''))
+        if 'matrix_user' in kwargs and 'matrix_pass' in kwargs:
+            cfg.USERNAME_MATRIX.set(kwargs.get('matrix_user',''))
+            cfg.PASSWORD_MATRIX.set(kwargs.get('matrix_pass',''))
+        
+        info = self.info.copy()
+        info['num'] = 'Five'
+        info['number'] = 5
+        cherryhost = cfg.CHERRYHOST.get()
+        if cherryhost == '0.0.0.0':
+            cherryhost = 'localhost'
+        info['url'] = '%s://%s:%s/sabnzbd/' % (cherrypy.request.scheme, cherryhost, cfg.CHERRYPORT.get())
+        template = Template(file=os.path.join(self.__web_dir, 'five.html'),
+                            searchList=[info], compilerSettings=DIRECTIVES)
+        return template.respond()
+    
+    @cherrypy.expose
+    def servertest(self, **kwargs):
+        # Grab the host/port/user/pass/connections/ssl
+        host = kwargs.get('host','')
+        if not host:
+            return 'Hostname not set'
+        port = IntConv(kwargs.get('port',0))
+        if not port:
+            return 'Port not set'
+        username = kwargs.get('username',None)
+        password = kwargs.get('password',None)
+        connections = IntConv(kwargs.get('connections',0))
+        if not connections:
+            return 'Connections not set'
+        ssl = IntConv(kwargs.get('ssl',0))
+        
+        
+        return test_nntp_server(host, port, username=username, \
+                                password=password, ssl=ssl)
+        
 
 #------------------------------------------------------------------------------
 class NzoPage:
@@ -1344,23 +1488,12 @@ class ConfigGeneral:
         cfg.CLEANUP_LIST.set_string(cleanup_list)
         cfg.CACHE_LIMIT.set(cache_limitstr)
 
-        try:
-            web_dir, web_color = web_dir.split(' - ')
-        except:
-            web_color = ''
+        change_web_dir(web_dir)
         try:
             web_dir2, web_color2 = web_dir2.split(' - ')
         except:
             web_color2 = ''
-
-        web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
         web_dir2_path = real_path(sabnzbd.DIR_INTERFACES, web_dir2)
-
-        if not os.path.exists(web_dir_path):
-            return badParameterResponse('Cannot find web template: %s' % web_dir_path)
-        else:
-            cfg.WEB_DIR.set(web_dir)
-            cfg.WEB_COLOR.set(web_color)
 
         if web_dir2 == 'None':
             cfg.WEB_DIR2.set('')
@@ -1373,6 +1506,20 @@ class ConfigGeneral:
         # Update CherryPy authentication
         set_auth(cherrypy.request.app.config)
         raise Raiser(self.__root, _dc=_dc)
+    
+def change_web_dir(web_dir):
+        try:
+            web_dir, web_color = web_dir.split(' - ')
+        except:
+            web_color = ''
+
+        web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
+
+        if not os.path.exists(web_dir_path):
+            return badParameterResponse('Cannot find web template: %s' % web_dir_path)
+        else:
+            cfg.WEB_DIR.set(web_dir)
+            cfg.WEB_COLOR.set(web_color)
 
 
 #------------------------------------------------------------------------------
@@ -1408,54 +1555,12 @@ class ConfigServer:
 
     @cherrypy.expose
     def addServer(self, **kwargs):
-        return self.handle_server(kwargs)
+        return handle_server(kwargs, self.__root)
 
 
     @cherrypy.expose
     def saveServer(self, **kwargs):
-        return self.handle_server(kwargs)
-
-
-    def handle_server(self, kwargs):
-        """ Internal server handler """
-        try:
-            host = kwargs['host']
-        except:
-            return badParameterResponse('Error: Need host name.')
-
-        port = kwargs.get('port', '')
-        if not port.strip():
-            if not kwargs.get('ssl', '').strip():
-                port = '119'
-            else:
-                port = '563'
-            kwargs['port'] = port
-
-        if kwargs.get('connections', '').strip() == '':
-            kwargs['connections'] = '1'
-
-        msg = check_server(host, port)
-        if msg:
-            return msg
-
-        # Replace square by curly brackets to avoid clash
-        # between INI format and IPV6 notation
-        server = '%s:%s' % (host.replace('[','{').replace(']','}'), port)
-
-        svr = config.get_config('servers', server)
-        if svr:
-            old_server = server
-            for kw in ('fillserver', 'ssl', 'enable'):
-                if kw not in kwargs.keys():
-                    kwargs[kw] = None
-            svr.set_dict(kwargs)
-        else:
-            old_server = None
-            config.ConfigServer(server, kwargs)
-
-        config.save_config()
-        downloader.update_server(old_server, server)
-        raise dcRaiser(self.__root, kwargs)
+        return handle_server(kwargs, self.__root)
 
 
     @cherrypy.expose
@@ -1470,6 +1575,48 @@ class ConfigServer:
                 downloader.update_server(server, None)
 
         raise dcRaiser(self.__root, kwargs)
+    
+def handle_server(kwargs, root=None):
+    """ Internal server handler """
+    try:
+        host = kwargs['host']
+    except:
+        return badParameterResponse('Error: Need host name.')
+
+    port = kwargs.get('port', '')
+    if not port.strip():
+        if not kwargs.get('ssl', '').strip():
+            port = '119'
+        else:
+            port = '563'
+        kwargs['port'] = port
+
+    if kwargs.get('connections', '').strip() == '':
+        kwargs['connections'] = '1'
+
+    msg = check_server(host, port)
+    if msg:
+        return msg
+
+    # Replace square by curly brackets to avoid clash
+    # between INI format and IPV6 notation
+    server = '%s:%s' % (host.replace('[','{').replace(']','}'), port)
+
+    svr = config.get_config('servers', server)
+    if svr:
+        old_server = server
+        for kw in ('fillserver', 'ssl', 'enable'):
+            if kw not in kwargs.keys():
+                kwargs[kw] = None
+        svr.set_dict(kwargs)
+    else:
+        old_server = None
+        config.ConfigServer(server, kwargs)
+
+    config.save_config()
+    downloader.update_server(old_server, server)
+    if root:
+        raise dcRaiser(root, kwargs)
 
 
 #------------------------------------------------------------------------------
@@ -1892,7 +2039,7 @@ class ConfigSorting:
         for kw in SORT_LIST:
             item = config.get_config('misc', kw)
             value = kwargs.get(kw)
-            msg = item.set(value)
+            msg = item.set(value, strip=False)
             if msg:
                 return badParameterResponse(msg)
 

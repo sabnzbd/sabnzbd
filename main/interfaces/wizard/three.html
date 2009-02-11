@@ -1,0 +1,46 @@
+<!--#include $webdir + "/inc_top.tmpl"#-->
+<script type="text/javascript" src="static/javascript/jquery.js"></script>
+<script type="text/javascript" src="static/javascript/checkserver.js"></script>
+<h3>Server Details</h3>
+Please enter in the details of your primary usenet provider <a href="">[?]</a>
+<div id="serverBlock" class="quoteBlock">
+    In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended. <br/>
+    Don't have a usenet provider? We recommend trying giganews. <br />
+    <a href="http://www.giganews.com/?c=test" target="_blank"><img src="http://www.giganews.com/banners/gn_sig.jpg" border="0"></a> 
+</div>
+<br /><br class="clear" />
+<form action="./four" method="post">
+<div id="serverDetails">
+    <label class="label">Host<span class="required-star">*</span></label><input type="text" size="20" name="host" value="$host">
+    <br class="clear" />
+    <label class="label">Port</label><input type="text" size="1" name="port" value="$port">
+    <br class="clear" /><br class="clear" />
+    <label class="label">Username</label><input type="text" size="20" name="username" value="$username">
+    <br class="clear" />
+    <label class="label">Password</label><input type="password" size="20" name="password" value="$password">
+    <br class="clear" /><br class="clear" />
+    <label class="label">Connections<span class="required-star">*</span></label><input type="text" size="1" name="connections" value="$connections">
+    <br class="clear" />
+    <label><span class="label">SSL</span>
+    <input class="radio" type="checkbox" name="ssl" value="1" <!--#if $ssl == 1 then 'checked' else ''#-->></label>
+    <br class="clear" />
+</div>
+<br/>
+<input class="bigbutton" id="serverTest" type="button" value="Test Server" />
+<br/>
+<div class="quoteBlock"><span id="serverResponse"></span></div>
+<br/>
+
+<br class="clear"/><br/>
+</div>
+<hr /><br/>
+<table class="full-width">
+    <tr>
+        <td><input class="bigbutton" type="button" onclick="document.location ='./two'" value="&lsaquo; Previous" /></td>
+        <td class="align-right"><input class="bigbutton" type="submit" value="Next &raquo;" /></td>
+    </tr>
+</table>
+</form>
+
+			
+<!--#include $webdir + "/inc_bottom.tmpl"#-->

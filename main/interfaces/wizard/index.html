@@ -1,0 +1,31 @@
+<!--#include $webdir + "/inc_top.tmpl"#-->
+
+<form action="two" method="post">
+<div class="bigger">
+<h3>Skin</h3>
+Which skin would you like to use for SABnzbd?<br /><br />
+<table class="full-width align-center">
+    <tr>
+        <td class="align-center"><a href="static/images/default.png" target="_blank"><img src="static/images/default-th.png" border="0" /></a></td>
+        <td class="align-center"><a href="static/images/plush.png" target="_blank"><img src="static/images/plush-th.png" border="0" /></a></td>
+        <td class="align-center"><a href="static/images/smpl.png" target="_blank"><img src="static/images/smpl-th.png" border="0" /></a></td>
+    </tr>
+    <tr>
+        <td class="align-center"><br/><input type="radio" name="skin" id="radio_default" value="Default" <!--#if $skin == 'default' then 'checked' else ''#-->><br /><label for="radio_default">Default</label></td>
+        <td class="align-center"><br/><input type="radio" name="skin" id="radio_plush" value="Plush" <!--#if $skin == 'plush' then 'checked' else ''#-->><br /><label for="radio_plush">Plush</label></td>
+        <td class="align-center"><br/><input type="radio" name="skin" id="radio_smpl" value="smpl" <!--#if $skin == 'smpl' then 'checked' else ''#-->><br /><label for="radio_smpl">SMPL</label></td>
+    </tr>
+</table>
+</div>
+<br class="clear"/><br/>
+</div>
+<hr /><br/>
+
+<table class="full-width">
+    <tr>
+        <td class="align-right"><input class="bigbutton" type="submit" value="Next &raquo;" /></td>
+    </tr>
+</table>
+</form>
+			
+<!--#include $webdir + "/inc_bottom.tmpl"#-->
