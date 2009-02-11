@@ -86,10 +86,11 @@ def con(sock, host, port, sslenabled, nntp):
         nntp.error(e)
 
 class NNTP:
-    def __init__(self, host, port, sslenabled, nntp, user=None, password=None):
+    def __init__(self, host, port, sslenabled, nntp, user=None, password=None, block=False):
         self.host = host
         self.port = port
         self.nntp = nntp
+        self.blocking = block
         res= GetServerParms(self.host, self.port)
         if not res:
             raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
@@ -106,11 +107,14 @@ class NNTP:
             self.sock = socket.socket(af, socktype, proto)
 
         try:
-            if os.name == 'nt':
+            # Windows must do the connection in a seperate thread due to non-blocking issues
+            # If the server wants to be blocked (for testing) then use the linux route
+            if os.name == 'nt' and not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, self)).start()
             else:
                 self.sock.connect((self.host, self.port))
-                self.sock.setblocking(0)
+                if not block:
+                    self.sock.setblocking(0)
                 if sslenabled and _ssl:
                     while True:
                         try:
@@ -132,13 +136,20 @@ class NNTP:
             self.error(e)
 
     def error(self, error):
+        if 'SSL23_GET_SERVER_HELLO' in str(error):
+            error = 'This server does not allow SSL on this port'
         msg = "Failed to connect: %s" % (str(error))
-        logging.error("%s %s@%s:%s", msg, self.nntp.thrdnum, self.host, self.port)
+        msg = "%s %s@%s:%s" % (msg, self.nntp.thrdnum, self.host, self.port)
+        if self.blocking:
+            raise socket.error(msg)
+        else:
+            logging.error(msg)
 
 class NewsWrapper:
-    def __init__(self, server, thrdnum):
+    def __init__(self, server, thrdnum, block=False):
         self.server = server
         self.thrdnum = thrdnum
+        self.blocking = block
 
         self.timeout = None
         self.article = None
@@ -160,7 +171,7 @@ class NewsWrapper:
 
     def init_connect(self):
         self.nntp = NNTP(self.server.host, self.server.port, self.server.ssl, self,
-                         self.server.username, self.server.password)
+                         self.server.username, self.server.password, self.blocking)
         self.recv = self.nntp.sock.recv
 
         self.timeout = time() + self.server.timeout
@@ -173,7 +184,7 @@ class NewsWrapper:
             self.pass_sent = True
             self.pass_ok = True
 
-        if self.lines[0][:3] == '400':
+        if self.lines and self.lines[0][:3] == '400':
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
             command = 'authinfo user %s\r\n' % (self.server.username)
@@ -206,14 +217,21 @@ class NewsWrapper:
         command = 'GROUP %s\r\n' % (group)
         self.nntp.sock.sendall(command)
 
-    def recv_chunk(self):
+    def recv_chunk(self, block=False):
         self.timeout = time() + self.server.timeout
         while 1:
             try:
                 chunk = self.recv(32768)
                 break
             except _ssl.WantReadError:
-                return (0, False, True)
+                # SSL connections will block until they are ready.
+                # Either ignore the connection until it responds
+                # Or wait in a loop until it responds
+                if block:
+                    #time.sleep(0.0001)
+                    continue
+                else:
+                    return (0, False, True)
 
         self.data += chunk
         new_lines = self.data.split('\r\n')
