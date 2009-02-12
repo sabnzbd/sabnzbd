@@ -104,25 +104,29 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noo
         <!--#set $currentpage = int($newfinish / $limit)#-->
         <!--#set $offset = 0#-->
         <!--#if $currentpage == 1#-->
-            &laquo;First 
-            &lsaquo;Prev 
+            <span class="unselected">&laquo;First</span> 
+            <span class="unselected">&lsaquo;Prev</span> 
         <!--#else#-->
-            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;First</a> 
-            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,this.parentNode.parentNode.id);">&lsaquo;Prev</a> 
+            <!--#set $new_start = $start-$limit#-->
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;First</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$new_start', 1,this.parentNode.parentNode.id);">&lsaquo;Prev</a> 
         <!--#end if#-->
         <!--#for $i in $range($pages)#-->
-            <!--#if  $currentpage == $i+1#-->
-                <!--#echo $i+1#-->
-            <!--#elif $i > 0 and $i+1 > $currentpage-3 and $i+1 < $currentpage+3#-->
-                <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$offset', 1,this.parentNode.parentNode.id);"><!--#echo $i+1#--></a>
+            <!--#set $i = $i+1#-->
+            <!--#if  $currentpage == $i#-->
+                <span class="selected">$i</span>
+            <!--#elif $i >= 0 and $i > $currentpage-3 and $i < $currentpage+6#-->
+                <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$offset', 1,this.parentNode.parentNode.id);">$i</a>
             <!--#end if#-->
             <!--#set $offset = $offset + $limit#-->
         <!--#end for#-->
         <!--#if $currentpage == $pages#-->
-            Next&rsaquo; Last&raquo;
+            <span class="unselected">Next&rsaquo;</span> <span class="unselected">Last&raquo;</span>
         <!--#else#-->
-            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo $start+$limit#-->', 1,this.parentNode.parentNode.id);">Next&rsaquo;</a> 
-            <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,this.parentNode.parentNode.id);">Last<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
+            <!--#set $first_start = $start+$limit#-->
+            <!--#set $second_start = (($pages-1)*$limit)#-->
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$first_start', 1,this.parentNode.parentNode.id);">Next&rsaquo;</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$second_start', 1,this.parentNode.parentNode.id);">Last<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
         <!--#end if#-->
     <!--#end if#-->
 </div>

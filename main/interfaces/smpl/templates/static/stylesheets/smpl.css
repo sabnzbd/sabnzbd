@@ -326,3 +326,20 @@ a.columnLinks{color:white}
 .light-grey a{color:#999;}
 .action_message{color:green;}
 .fill-td{width:97%;}
+a.unselected {
+    padding:1px 5px 1px 5px;
+    border: 1px solid #555;
+    color:#555;
+    text-decoration:none;
+}
+span.unselected {
+    padding:1px 5px 1px 5px;
+    border: 1px solid #C4C4C4;
+    color:#C4C4C4;
+}
+.selected, a.unselected:hover {
+    padding:1px 5px 1px 5px;
+    color: white;
+    background-color:#333;
+    border: 1px solid #555;
+}
