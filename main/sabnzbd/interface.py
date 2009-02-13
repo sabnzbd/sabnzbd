@@ -838,17 +838,20 @@ class Wizard:
         host = kwargs.get('host','')
         if not host:
             return 'Hostname not set'
-        port = IntConv(kwargs.get('port',0))
-        if not port:
-            return 'Port not set'
         username = kwargs.get('username',None)
         password = kwargs.get('password',None)
         connections = IntConv(kwargs.get('connections',0))
         if not connections:
             return 'Connections not set'
         ssl = IntConv(kwargs.get('ssl',0))
-
-
+        port = IntConv(kwargs.get('port',0))
+        if not port:
+            if ssl:
+                port = 563
+            else:
+                port = 119
+        
+        
         return test_nntp_server(host, port, username=username, \
                                 password=password, ssl=ssl)
 

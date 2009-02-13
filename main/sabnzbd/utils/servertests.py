@@ -46,22 +46,23 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout
     
     
     if not username or not password:
-        nw.nntp.sock.sendall('HELP\r\n')
+        nw.nntp.sock.sendall('ARTICLE test\r\n')
         try:
             nw.lines = []
             nw.recv_chunk(block=True)
         except:
             return xml_name(str(sys.exc_info()[1]))
-    
+        
     # Could do with making a function for return codes to be used by downloader
     code = nw.lines[0][:3]
+    
     if code == '502':
         return 'Authentication failed, check username/password'
     
     elif code == '480':
         return 'Server requires username and password'
     
-    elif code == '100' or code.startswith('2'):
+    elif code == '100' or code.startswith('2') or code.startswith('4'):
         return 'Connected Successfully!'
     
     elif clues_login(nw.lines[0]):
@@ -72,3 +73,6 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout
     
     else:
         return 'Cound not determine connection result (%s)' % xml_name(nw.lines[0])
+    
+    # Close the connection
+    nw.terminate()
