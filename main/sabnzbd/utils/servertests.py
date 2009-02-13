@@ -13,9 +13,8 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout
         # If the password is masked, try retrieving it from the config
         servers = get_servers()
         got_pass = False
-        current = '%s:%s' % (host, port)
         for server in servers:
-            if server == current:
+            if host in server:
                 srv = servers[server]
                 password = srv.password.get()
                 got_pass = True

@@ -752,7 +752,7 @@ class Wizard:
             info['port'] = ''
             info['username'] = ''
             info['password'] = ''
-            info['connections'] = 0
+            info['connections'] = ''
             info['ssl'] = 0
         else:
             for server in servers:
@@ -803,8 +803,21 @@ class Wizard:
         info['number'] = 5
         cherryhost = cfg.CHERRYHOST.get()
         if cherryhost == '0.0.0.0':
-            cherryhost = 'localhost'
-        info['url'] = '%s://%s:%s/sabnzbd/' % (cherrypy.request.scheme, cherryhost, cfg.CHERRYPORT.get())
+            import socket
+            host = socket.gethostname()
+            addr = socket.gethostbyname_ex(host)[2]
+            socks = ['localhost', host]
+            socks.extend(addr)
+        elif not cherryhost:
+            import socket
+            socks = [socket.gethostname()]
+        else:
+            socks = [cherryhost]
+        info['urls'] = []
+        for sock in socks:
+            if sock:
+                url = '%s://%s:%s/sabnzbd/' % (cherrypy.request.scheme, sock, cfg.CHERRYPORT.get())
+                info['urls'].append(url)
         template = Template(file=os.path.join(self.__web_dir, 'five.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()

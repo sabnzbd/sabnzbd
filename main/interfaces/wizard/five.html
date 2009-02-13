@@ -1,10 +1,17 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 <br/><br/>
 <h4 class="align-center">Setup is now complete!</h4><br />
-<br/><br/>
-After SABnzbd has finished restarting you will be able to access it at the following location:<br/><br/>
-<div class="quoteBlock"><a href="$url">$url</a></div><br/>
-It is recommended you right click and bookmark this location.
+<br/>
+SABnzbd will now be running in the background. <span class="bold">Closing any browser windows/tabs will not close SABnzbd.</span><br/>
+After SABnzbd has finished restarting you will be able to access it at the following location<!--#if len($urls) > 1#-->s<!--#end if#-->:<br/><br/>
+<div class="quoteBlock">
+<!--#set $i = 0#-->
+<!--#for $url in $urls#-->
+    <!--#set $i = $i+1#-->
+    <a href="$url">$url</a><!--#if $i != len($urls)#--><br /><!--#end if#-->
+<!--#end for#-->
+</div><br/>
+It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.
 
 <br/>
 </div>

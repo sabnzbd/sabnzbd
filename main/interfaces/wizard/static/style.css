@@ -12,16 +12,18 @@ body {
 	/*margin:30px;*/
 	border: 1px solid #000;
 	text-align:left;
+    padding:8px;
+    background-color: #fff;
 }
 
 #inner {
 	background-color: #fff;
+	padding:4px 32px 20px 32px;
 	/*margin:5px;*/
-	padding:0px 32px 20px 32px;
-	border: 3px solid #999966;
+	border: 1px dotted #999966;
 }
 #content {
-    min-height:560px;
+    min-height:520px;
 }
 
 #logo {
@@ -159,4 +161,16 @@ h1,h2 {
 
 .bigbutton {
     font-size:18px !important;
+}
+
+.bold {
+    font-weight:bold;
+}
+
+.correct {
+    border: 2px solid #00cc22;
+}
+
+.incorrect {
+    border: 2px solid red;
 }

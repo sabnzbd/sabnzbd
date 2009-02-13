@@ -16,4 +16,38 @@ $(document).ready(function() {
             }
         });
     });
+    $(".validate-text").blur(function(){
+        if (this.value || this.checked){
+            $(this).removeClass("incorrect");
+            $(this).addClass("correct");
+        } else {
+            $(this).removeClass("correct");
+        }
+    });
+    $(".validate-text-required").blur(function(){
+        if (this.value || this.checked){
+            $(this).removeClass("incorrect");
+            $(this).addClass("correct");
+        } else {
+            $(this).removeClass("correct");
+            $(this).addClass("incorrect");
+        }
+    });
+    $(".validate-numeric").blur(function(){
+        if (this.value && isFinite(this.value)){
+            $(this).removeClass("incorrect");
+            $(this).addClass("correct");
+        } else {
+            $(this).removeClass("correct");
+        }
+    });
+    $(".validate-numeric-required").blur(function(){
+        if (this.value && isFinite(this.value)){
+            $(this).removeClass("incorrect");
+            $(this).addClass("correct");
+        } else {
+            $(this).removeClass("correct");
+            $(this).addClass("incorrect");
+        }
+    });
 });
