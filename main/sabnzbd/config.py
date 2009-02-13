@@ -673,8 +673,7 @@ def save_config(force=False):
                 except:
                     CFG[section][subsec] = {}
                 items = database[section][subsec].get_dict()
-                for item in items:
-                    CFG[section][subsec][item] = items[item]
+                CFG[section][subsec] = items
         else:
             for option in database[section]:
                 sec, kw = database[section][option].ident()
