@@ -498,7 +498,7 @@ class ConfigRSS:
 
     def set_dict(self, values, all=False):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('uri', 'cat', 'pp', 'script', 'priority'):
+        for kw in ('uri', 'cat', 'pp', 'script', 'priority', 'enable'):
             try:
                 value = values[kw]
             except KeyError:
