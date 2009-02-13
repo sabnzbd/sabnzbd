@@ -2277,20 +2277,24 @@ def ShowRssLog(feed, all):
     """Return a html page listing an RSS log and a 'back' button
     """
     jobs = sabnzbd.rss.show_result(feed)
+    names = jobs.keys()
+    # Sort in reverse chronological order (newest first)
+    names.sort(lambda x, y: int(jobs[y][6]*100.0 - jobs[x][6]*100.0))
+
     qfeed = escape(feed.replace('/','%2F').replace('?', '%3F'))
 
     doneStr = ""
-    for x in jobs:
+    for x in names:
         job = jobs[x]
         if job[0] == 'D':
             doneStr += '%s<br/>' % xml_name(job[1])
     goodStr = ""
-    for x in jobs:
+    for x in names:
         job = jobs[x]
         if job[0] == 'G':
             goodStr += '%s<br/>' % xml_name(job[1])
     badStr = ""
-    for x in jobs:
+    for x in names:
         job = jobs[x]
         if job[0] == 'B':
             name = urllib.quote_plus(job[2])
