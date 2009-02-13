@@ -13,7 +13,7 @@
 		<br class="clear" />
 
 		    <label><span class="label">Enable Unzip:</span>
-		    <input class="radio" type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> 
+		    <input class="radio" type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> />
 		    <span class="tips">Enable built-in unzip functionality.</span></label>
 		<br class="clear" />
 
@@ -21,7 +21,7 @@
 		    <input class="radio" type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> />
 		    <span class="tips">Join files ending in .001 .002 ect into one file.</span></label>
 		<br class="clear" />
-        
+
 		    <label><span class="label">Enable TS Joining:</span>
 		    <input class="radio" type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> />
 		    <span class="tips">Join files ending in .001.ts .002.ts ect into one file.</span></label>
@@ -72,14 +72,21 @@
             </select>
 		    <span class="tips">Use the following script if not defined by a category.</span>
 		<br class="clear" />
-		
+
 
 		    <span class="label">Extra PAR2 parameters:</span>
 		    <input type="text" name="par_option" value="$par_option"/>
 		    <span class="tips">See the wiki for usage.</span></label>
 		<br class="clear" />
-		
-    <!--#if not $nt#-->
+
+    <!--#if $have_nice#-->
+		    <span class="label">Nice parameters:</span>
+		    <input type="text" name="nice" value="$nice"/>
+		    <span class="tips">See the wiki for usage.</span></label>
+		<br class="clear" />
+    <!--#end if#-->
+
+    <!--#if $have_ionice#-->
 		    <span class="label">IONice parameters:</span>
 		    <input type="text" name="ionice" value="$ionice"/>
 		    <span class="tips">See the wiki for usage.</span></label>
@@ -131,7 +138,7 @@
 		    <input class="radio" type="checkbox" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /></label>
 		    <span class="tips">Filters out sample files from the queue.</span>
  		<br class="clear" />
-        
+
 			<label><span class="label">Pause downloading during post processing:</span>
 		    <input class="radio" type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></label>
 		    <span class="tips">Pauses downloading at the start of post processing and resumes when finished.</span>

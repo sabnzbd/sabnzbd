@@ -1011,7 +1011,11 @@ def build_command(command):
             for arg in lst:
                 command.insert(0, arg)
             command.insert(0, IONICE_COMMAND)
-        if NICE_COMMAND:
+        if NICE_COMMAND and cfg.nice.get().strip():
+            lst = cfg.nice.get().split()
+            lst.reverse()
+            for arg in lst:
+                command.insert(0, arg)
             command.insert(0, NICE_COMMAND)
         need_shell = False
         stup = None

@@ -64,7 +64,14 @@
     <input type="text" name="par_option" value="$par_option"/>
     <br>
     <br>
-<!--#if not $nt#-->
+<!--#if $have_nice#-->
+    <strong>Nice parameters:</strong><br/>
+    Read the Wiki Help on this!<br/>
+    <input type="text" name="nice" value="$nice"/>
+    <br>
+    <br>
+<!--#end if#-->
+<!--#if $have_ionice#-->
     <strong>IONice parameters:</strong><br/>
     Read the Wiki Help on this!<br/>
     <input type="text" name="ionice" value="$ionice"/>

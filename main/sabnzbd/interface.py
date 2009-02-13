@@ -231,28 +231,28 @@ class MainPage:
         # IMPORTANT: Remove the 'not' when done testing
         if skip_wizard or config.get_servers():
             info, pnfo_list, bytespersec = build_header(self.__prim)
-    
+
             if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_stars():
                 info['newzbinDetails'] = True
-    
+
             info['script_list'] = ListScripts(default=True)
             info['script'] = cfg.DIRSCAN_SCRIPT.get()
-    
+
             info['cat'] = 'Default'
             info['cat_list'] = ListCats(True)
-    
+
             info['warning'] = ""
-    
+
             if not sabnzbd.newsunpack.PAR2_COMMAND:
                 info['warning'] += "No PAR2 program found, repairs not possible<br/>"
-    
+
             template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
                                 searchList=[info], compilerSettings=DIRECTIVES)
             return template.respond()
         else:
             # Redirect to the setup wizard
             raise cherrypy.HTTPRedirect('/wizard/')
-            
+
 
     @cherrypy.expose
     def addID(self, id = None, pp=None, script=None, cat=None, redirect = None, priority=NORMAL_PRIORITY):
@@ -667,7 +667,7 @@ class MainPage:
                 newzbin.getBookmarksNow()
                 return 'ok\n'
             return 'not implemented\n'
-        
+
         if mode == 'restart':
             sabnzbd.halt()
             cherrypy.engine.restart()
@@ -696,7 +696,7 @@ class MainPage:
             return ShowOK(url)
         else:
             raise Raiser(self.__root, _dc=_dc)
-        
+
 class Wizard:
     def __init__(self, web_dir, root, prim):
         self.__root = root
@@ -705,14 +705,14 @@ class Wizard:
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
                      'steps':5, 'version':sabnzbd.__version__}
-    
+
     @cherrypy.expose
     def index(self, **kwargs):
         info = self.info.copy()
         info['num'] = 'One'
         info['number'] = 1
         info['skin'] = cfg.WEB_DIR.get().lower()
-        
+
         if not os.path.exists(self.__web_dir):
             # If the wizard folder does not exist, simply load the normal page
             raise cherrypy.HTTPRedirect('')
@@ -726,18 +726,18 @@ class Wizard:
         # Save skin setting
         if 'skin' in kwargs:
             change_web_dir(kwargs['skin'])
-            
+
         info = self.info.copy()
         info['num'] = 'Two'
         info['number'] = 2
-        
+
         info['host'] = cfg.CHERRYHOST.get()
         info['autobrowser'] = cfg.AUTOBROWSER.get()
-        
+
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
-    
+
     @cherrypy.expose
     def three(self, **kwargs):
         # Save access/autobrowser/autostart
@@ -750,7 +750,7 @@ class Wizard:
         info = self.info.copy()
         info['num'] = 'Three'
         info['number'] = 3
-        
+
         servers = config.get_servers()
         if not servers:
             info['host'] = ''
@@ -774,14 +774,14 @@ class Wizard:
         template = Template(file=os.path.join(self.__web_dir, 'three.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
-    
+
     @cherrypy.expose
     def four(self, **kwargs):
         # Save server details
-        if kwargs: 
+        if kwargs:
             kwargs['enable'] = 1
             handle_server(kwargs)
-        
+
         info = self.info.copy()
         info['num'] = 'Four'
         info['number'] = 4
@@ -793,7 +793,7 @@ class Wizard:
         template = Template(file=os.path.join(self.__web_dir, 'four.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
-    
+
     @cherrypy.expose
     def five(self, **kwargs):
         # Save server details
@@ -804,9 +804,9 @@ class Wizard:
         if 'matrix_user' in kwargs and 'matrix_pass' in kwargs:
             cfg.USERNAME_MATRIX.set(kwargs.get('matrix_user',''))
             cfg.PASSWORD_MATRIX.set(kwargs.get('matrix_pass',''))
-            
+
         config.save_config()
-        
+
         info = self.info.copy()
         info['num'] = 'Five'
         info['number'] = 5
@@ -831,7 +831,7 @@ class Wizard:
         template = Template(file=os.path.join(self.__web_dir, 'five.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
-    
+
     @cherrypy.expose
     def servertest(self, **kwargs):
         # Grab the host/port/user/pass/connections/ssl
@@ -847,11 +847,11 @@ class Wizard:
         if not connections:
             return 'Connections not set'
         ssl = IntConv(kwargs.get('ssl',0))
-        
-        
+
+
         return test_nntp_server(host, port, username=username, \
                                 password=password, ssl=ssl)
-        
+
 
 #------------------------------------------------------------------------------
 class NzoPage:
@@ -1364,7 +1364,7 @@ SWITCH_LIST = \
      'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
      'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
      'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
-     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'ionice'
+     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'nice', 'ionice'
     )
 
 #------------------------------------------------------------------------------
@@ -1382,6 +1382,8 @@ class ConfigSwitches:
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
         conf['nt'] = os.name == 'nt'
+        conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
+        conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
 
         for kw in SWITCH_LIST:
             conf[kw] = config.get_config('misc', kw).get()
@@ -1529,7 +1531,7 @@ class ConfigGeneral:
         # Update CherryPy authentication
         set_auth(cherrypy.request.app.config)
         raise Raiser(self.__root, _dc=_dc)
-    
+
 def change_web_dir(web_dir):
         try:
             web_dir, web_color = web_dir.split(' - ')
@@ -1598,7 +1600,7 @@ class ConfigServer:
                 downloader.update_server(server, None)
 
         raise dcRaiser(self.__root, kwargs)
-    
+
 def handle_server(kwargs, root=None):
     """ Internal server handler """
     try:

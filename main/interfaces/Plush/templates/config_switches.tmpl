@@ -5,9 +5,9 @@
             <form action="saveSwitches" method="post" name="fullform">
             <div class="EntryBlock">
             <fieldset class="EntryFieldSet">
-                
+
                 <legend id="configbox_processing_switches">Processing&nbsp;Switches</legend>
-                
+
                 <table cellpadding=2>
                     <tr>
                         <td align=right><div class="tucker">Enable Unrar:</div></td>
@@ -55,12 +55,12 @@
                         <td><small>Enable for less memory usage.<br/>Disable to prevent slow jobs from blocking the queue.</small></td>
                     </tr>
                 </table>
-                
+
                 <hr/>
-                
+
                 <table cellpadding=8>
                     <tr><td>
-                    
+
                         <strong>Default Post-processing:</strong><br/>
                         <small>Used when no post-processing is defined by the category.</small><br/>
                         <select name="dirscan_opts">
@@ -69,9 +69,9 @@
                             <option value="2" <!--#if $dirscan_opts == 2 then "selected" else ""#--> >+R+Unpack</option>
                             <option value="3" <!--#if $dirscan_opts == 3 then "selected" else ""#--> >+R+U+Delete</option>
                         </select>
-                    
+
                     </td><td>
-                    
+
                         <strong>Default User Script:</strong><br/>
                         <small>Used when no user script is defined by the category.</small><br/>
                         <select name="dirscan_script">
@@ -83,31 +83,39 @@
                         <!--#end if#-->
                         <!--#end for#-->
                         </select>
-                    
+
                     </td><td>
-                        
+
                         <strong>Extra PAR2 Parameters:</strong><br/>
                         <small>Read the Wiki Help on this!</small><br/>
                         <input type="text" name="par_option" value="$par_option"/>
-                        
-                <!--#if not $nt#-->
+
+                <!--#if $have_nice#-->
                     </td><td>
-                        
+
+                        <strong>Nice Parameters:</strong><br/>
+                        <small>Read the Wiki Help on this!</small><br/>
+                        <input type="text" name="nice" value="$nice"/>
+                <!--#end if#-->
+
+                <!--#if $have_ionice#-->
+                    </td><td>
+
                         <strong>IONice Parameters:</strong><br/>
                         <small>Read the Wiki Help on this!</small><br/>
                         <input type="text" name="ionice" value="$ionice"/>
                 <!--#end if#-->
-        
+
                     </td></tr>
                 </table>
-                
-                
+
+
             </fieldset>
-            
+
             <fieldset class="EntryFieldSet">
-                
+
                 <legend id="configbox_other_switches">Other&nbsp;Switches</legend>
-                
+
                 <table cellpadding=2>
                     <tr>
                         <td align=right><div class="tucker">Check for New Release:</div></td>
@@ -161,10 +169,10 @@
                     </tr>
 
                 </table>
-                
+
             </fieldset>
             </div>
-            
+
             </form>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->
