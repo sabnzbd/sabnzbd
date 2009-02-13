@@ -1022,7 +1022,7 @@ def build_command(command):
         creationflags = 0
 
     else:
-        need_shell = False
+        need_shell = not os.path.splitext(command[0])[1].lower() in ('.exe', '.com', '.bat', '.cmd')
         stup = subprocess.STARTUPINFO()
         stup.dwFlags = STARTF_USESHOWWINDOW
         stup.wShowWindow = SW_HIDE
