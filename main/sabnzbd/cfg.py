@@ -84,7 +84,7 @@ ionice = OptionStr('misc', 'ionice',  '', validation=no_nonsense)
 USERNAME_NEWZBIN = OptionStr('newzbin', 'username')
 PASSWORD_NEWZBIN = OptionPassword('newzbin', 'password')
 NEWZBIN_BOOKMARKS = OptionBool('newzbin', 'bookmarks', False)
-NEWZBIN_UNBOOKMARK = OptionBool('newzbin', 'unbookmark', False)
+NEWZBIN_UNBOOKMARK = OptionBool('newzbin', 'unbookmark', True)
 BOOKMARK_RATE = OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
 
 TOP_ONLY = OptionBool('misc', 'top_only', True)
