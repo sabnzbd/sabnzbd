@@ -665,8 +665,13 @@ class MainPage:
         if mode == 'newzbin':
             if name == 'get_bookmarks':
                 newzbin.getBookmarksNow()
-                return 'ok'
-            return 'not implemented'
+                return 'ok\n'
+            return 'not implemented\n'
+        
+        if mode == 'restart':
+            sabnzbd.halt()
+            cherrypy.engine.restart()
+            return 'ok\n'
 
         return 'not implemented\n'
 
@@ -782,6 +787,7 @@ class Wizard:
         info['number'] = 4
         info['newzbin_user'] = cfg.USERNAME_NEWZBIN.get()
         info['newzbin_pass'] = cfg.PASSWORD_NEWZBIN.get_stars()
+        info['newzbin_bookmarks'] = cfg.NEWZBIN_BOOKMARKS.get()
         info['matrix_user'] = cfg.USERNAME_MATRIX.get()
         info['matrix_pass'] = cfg.PASSWORD_MATRIX.get_stars()
         template = Template(file=os.path.join(self.__web_dir, 'four.html'),
@@ -794,13 +800,17 @@ class Wizard:
         if 'newzbin_user' in kwargs and 'newzbin_pass' in kwargs:
             cfg.USERNAME_NEWZBIN.set(kwargs.get('newzbin_user',''))
             cfg.PASSWORD_NEWZBIN.set(kwargs.get('newzbin_pass',''))
+        cfg.NEWZBIN_BOOKMARKS.set(kwargs.get('newzbin_bookmarks', '0'))
         if 'matrix_user' in kwargs and 'matrix_pass' in kwargs:
             cfg.USERNAME_MATRIX.set(kwargs.get('matrix_user',''))
             cfg.PASSWORD_MATRIX.set(kwargs.get('matrix_pass',''))
+            
+        config.save_config()
         
         info = self.info.copy()
         info['num'] = 'Five'
         info['number'] = 5
+        info['helpuri'] = 'http://sabnzbd.wikidot.com'
         cherryhost = cfg.CHERRYHOST.get()
         if cherryhost == '0.0.0.0':
             import socket

@@ -174,3 +174,7 @@ h1,h2 {
 .incorrect {
     border: 2px solid red;
 }
+
+.hidden {
+    display:none;
+}

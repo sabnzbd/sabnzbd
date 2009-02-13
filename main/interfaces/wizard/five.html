@@ -1,8 +1,11 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
+<script type="text/javascript" src="static/javascript/jquery.js"></script>
+<script type="text/javascript" src="static/javascript/restart.js"></script>
 <br/><br/>
-<h4 class="align-center">Setup is now complete!</h4><br />
+<h4 id="restart" class="align-center">Restarting SABnzbd...</h4><br />
 <br/>
-SABnzbd will now be running in the background. <span class="bold">Closing any browser windows/tabs will not close SABnzbd.</span><br/>
+<div class="hidden">
+SABnzbd will now be running in the background. <span class="bold">Closing any browser windows/tabs will NOT close SABnzbd.</span><br/>
 After SABnzbd has finished restarting you will be able to access it at the following location<!--#if len($urls) > 1#-->s<!--#end if#-->:<br/><br/>
 <div class="quoteBlock">
 <!--#set $i = 0#-->
@@ -12,17 +15,10 @@ After SABnzbd has finished restarting you will be able to access it at the follo
 <!--#end for#-->
 </div><br/>
 It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.
-
-<br/>
+<br/><br/>
+Further help can be found on our <a href="$helpuri">wiki</a>
 </div>
-<hr /><br/>
-<table class="full-width">
-    <tr>
-        <td><input class="bigbutton" type="button" onclick="document.location ='./four'" value="&lsaquo; Previous" /></td>
-        <td ><input class="bigbutton" type="button" onclick="document.location ='../config/restart'" value="Save and Restart" /></td>
-        <td></td>
-    </tr>
-</table>
-</form>
+</div>
+<br/><br/><br/><br/>
 			
 <!--#include $webdir + "/inc_bottom.tmpl"#-->
