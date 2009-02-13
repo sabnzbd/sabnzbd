@@ -4,6 +4,7 @@ function complete(){
     r = '<span class="' + cls + '">' + result + '</span>';
     $('#restart').html(r);
     $(".hidden").fadeIn("slow");
+    $(".disabled").removeAttr('disabled');
 }
 $(document).ready(function() {
     $.ajax({

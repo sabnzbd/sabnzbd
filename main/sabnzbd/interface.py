@@ -724,8 +724,9 @@ class Wizard:
     @cherrypy.expose
     def two(self, **kwargs):
         # Save skin setting
-        if 'skin' in kwargs:
-            change_web_dir(kwargs['skin'])
+        if kwargs:
+            if 'skin' in kwargs:
+                change_web_dir(kwargs['skin'])
 
         info = self.info.copy()
         info['num'] = 'Two'
@@ -741,12 +742,13 @@ class Wizard:
     @cherrypy.expose
     def three(self, **kwargs):
         # Save access/autobrowser/autostart
-        if 'access' in kwargs:
-            cfg.CHERRYHOST.set(kwargs['access'])
-        if 'autobrowser' in kwargs:
-            cfg.AUTOBROWSER.set(kwargs.get('autobrowser',0))
-        if 'autostart' in kwargs:
-            pass
+        if kwargs:
+            if 'access' in kwargs:
+                cfg.CHERRYHOST.set(kwargs['access'])
+            if 'autobrowser' in kwargs:
+                cfg.AUTOBROWSER.set(kwargs.get('autobrowser',0))
+            if 'autostart' in kwargs:
+                pass
         info = self.info.copy()
         info['num'] = 'Three'
         info['number'] = 3
@@ -797,13 +799,14 @@ class Wizard:
     @cherrypy.expose
     def five(self, **kwargs):
         # Save server details
-        if 'newzbin_user' in kwargs and 'newzbin_pass' in kwargs:
-            cfg.USERNAME_NEWZBIN.set(kwargs.get('newzbin_user',''))
-            cfg.PASSWORD_NEWZBIN.set(kwargs.get('newzbin_pass',''))
-        cfg.NEWZBIN_BOOKMARKS.set(kwargs.get('newzbin_bookmarks', '0'))
-        if 'matrix_user' in kwargs and 'matrix_pass' in kwargs:
-            cfg.USERNAME_MATRIX.set(kwargs.get('matrix_user',''))
-            cfg.PASSWORD_MATRIX.set(kwargs.get('matrix_pass',''))
+        if kwargs:
+            if 'newzbin_user' in kwargs and 'newzbin_pass' in kwargs:
+                cfg.USERNAME_NEWZBIN.set(kwargs.get('newzbin_user',''))
+                cfg.PASSWORD_NEWZBIN.set(kwargs.get('newzbin_pass',''))
+            cfg.NEWZBIN_BOOKMARKS.set(kwargs.get('newzbin_bookmarks', '0'))
+            if 'matrix_user' in kwargs and 'matrix_pass' in kwargs:
+                cfg.USERNAME_MATRIX.set(kwargs.get('matrix_user',''))
+                cfg.PASSWORD_MATRIX.set(kwargs.get('matrix_pass',''))
 
         config.save_config()
 
@@ -811,12 +814,20 @@ class Wizard:
         info['num'] = 'Five'
         info['number'] = 5
         info['helpuri'] = 'http://sabnzbd.wikidot.com'
+        # Access_url is used to provide the user a link to sabnzbd depending on the host
+        access_url = 'localhost'
         cherryhost = cfg.CHERRYHOST.get()
         if cherryhost == '0.0.0.0':
             import socket
+            # Grab a list of all ips for the hostname
             host = socket.gethostname()
             addr = socket.gethostbyname_ex(host)[2]
-            socks = ['localhost', host]
+            if cherrypy.request.headers.has_key('host') and \
+               not 'localhost' in cherrypy.request.headers['host']:
+                access_uri = host
+                socks = [host]
+            else:
+                socks = ['localhost', host]
             socks.extend(addr)
         elif not cherryhost:
             import socket
@@ -828,6 +839,9 @@ class Wizard:
             if sock:
                 url = '%s://%s:%s/sabnzbd/' % (cherrypy.request.scheme, sock, cfg.CHERRYPORT.get())
                 info['urls'].append(url)
+        info['access_url'] = '%s://%s:%s/sabnzbd/' % (cherrypy.request.scheme, access_uri, \
+                                                      cfg.CHERRYPORT.get())
+        
         template = Template(file=os.path.join(self.__web_dir, 'five.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
