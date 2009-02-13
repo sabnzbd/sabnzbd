@@ -162,7 +162,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, creationflags=creationflags)
     except WindowsError:
-        return "Cannot run script %s\r\n" % extern_proc
+        return "Cannot run script %s\r\n" % extern_proc, -1
 
     output = p.stdout.read()
     ret = p.wait()
