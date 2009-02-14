@@ -312,7 +312,22 @@ overflow:auto;}
 .line-height{line-height:22px;}
 td {padding:4px !important;}
 .center{text-align:center;}
-.expander{text-decoration:none; padding:8px;}
+.expander {
+    text-decoration:none; 
+    margin:0px 2px 0px 2px;
+    padding:0px 2px 0px 2px;
+}
+a.expander:hover {
+    color:white;
+    background-color:black;
+}
+.expander-minus {
+    margin:0px 2px 0px 2px;
+    padding:0px 4px 1px 4px;
+}
+td{border:1px solid #eeeeee !important;}
+table{border-spacing:0;}
+
 .fail_message{color:red;}
 .right_align{text-align:right;}
 .row_hidden{visibility:collapse;}
