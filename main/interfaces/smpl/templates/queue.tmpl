@@ -47,14 +47,14 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
     <tr>
 		<th class="expandColumn center"></th>
         <th class="orderColumn center"></th>
-		<th>Name<a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);">v</a></th>
+		<th>Name <a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
 		<!--#if $queue_details == '1'#-->
 			<th class="center">Edit</th>
 		<!--#end if#-->
 		<th class="center">Progress</th>
         <th class="timeleftColumn center">Timeleft</th>
-		<th class="ageColumn center">Age<a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);">v</a></th>
-        <th class="sizeColumn center">Size<a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);">^</a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);">v</a></th>
+		<th class="ageColumn center">Age <a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
+        <th class="sizeColumn center">Size <a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
         <th class="actionsColumn center"></th>
 	</tr>
 	</thead>
@@ -185,7 +185,7 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noo
             <span class="unselected">&lsaquo;Prev</span> 
         <!--#else#-->
             <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=0', 1,-1,this.parentNode.parentNode.id);">&laquo;First</a> 
-            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,-1,this.parentNode.parentNode.id);">&lsaquo;Prev</a> 
+            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,-1,this.parentNode.parentNode.id);">&lsaquo;Pre<img src="static/images/down.gif" /></a> 
         <!--#end if#-->
         <!--#for $i in $range($pages)#-->
             <!--#set $i = $i+1#-->
