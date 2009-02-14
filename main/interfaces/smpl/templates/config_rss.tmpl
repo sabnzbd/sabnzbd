@@ -18,7 +18,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 The checking frequency is in the General page of the configuration<br />
 When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download"</p>
 <!--#for $feed in $rss#-->
-<br class="clear" />
+
 <fieldset class="EntryFieldSet">
     <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/> Feed $feed</legend>
     <hr />
@@ -189,5 +189,5 @@ When a feed is added, it will only pick up new items and not anything already in
 </tbody>
     </table>
     </fieldset>
-    <br class="clear" /> <br class="clear" />
+<br /><br /><br />
 <!--#end for#-->

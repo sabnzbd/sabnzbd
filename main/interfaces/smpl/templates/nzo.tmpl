@@ -1,5 +1,6 @@
 <!--#if $varExists('slot')#-->
-	<h3>Edit NZB Details</h3><br class="clear" /><br class="clear" />
+    <fieldset class="EntryFieldSet">
+	<h3>Edit NZB Details</h3>
 	<form id="nzbEditForm" class="cmxform">
 		<label class="label">Name:</label>
 		<input type="text" name="name" style="width:400px" size="80" value="$slot.filename">
@@ -41,11 +42,10 @@
 			</select>
 		<!--#end if#-->
 	</form>
-	<br class="clear" />
+    </fieldset>
 	<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('nzb/$slot.nzo_id/save', this, 'nzbEditForm')">
-	<br class="clear" /><br class="clear" /><br class="clear" />
 <!--#end if#-->
-
+<br/><br/>
 <!--#if $varExists('active_files')#-->
 <form id="nzoForm" action="bulk_operation">
 	<a onclick="javascript:submit_marked('$nzo_id', 'Delete')">Del</a>

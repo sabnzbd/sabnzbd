@@ -7,17 +7,20 @@ color:white;
 }
 
 #Content{
-	border-top: 1px dotted #444;
+	border-top: 1px dotted #222;
 
 
 }
 
-#RightContainer {
-border-left: 1px dotted #444;
+.left-border {
+border-left: 1px dotted #222;
+}
+.right-border {
+border-right: 1px dotted #222;
 }
 
 #Footer{
-border-top: 1px dotted #444;
+border-top: 1px dotted #222;
 }
 
 #progressBar {
@@ -64,12 +67,15 @@ color:blue;
 
 hr
 {
-color:#444;
-background-color:#444;
+color:#222;
+background-color:#222;
 }
 
 th{background-color:#000;color:white;}
 tr{background-color:#222;}
+
+td{border:1px solid #333 !important;}
+table{border-spacing:0;}
 
 .finished{background-color:#ff5151; color:black;}
 .active{background-color:#4aff5f; color:black;}
@@ -91,3 +97,17 @@ legend{color:white}
 .job_progress{background-color: #444;}
 
 .pattern, .result{background-color:#111;}
+
+a.unselected {
+    border: 1px solid #C4C4C4;
+    color:#C4C4C4;
+}
+span.unselected {
+    border: 1px solid #555;
+    color:#555;
+}
+.selected, a.unselected:hover {
+    color: white;
+    background-color:#333;
+    border: 1px solid #555;
+}

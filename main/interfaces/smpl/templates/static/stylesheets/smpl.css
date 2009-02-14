@@ -32,23 +32,24 @@ display:inline;
 width:100px;
 height:100%;
 float:left;
-border-right: 1px dotted #ccc;
 padding:0px;
 margin:0px;
 }
 #Content{width:100%;margin:0;padding:0;}
 
 #RightContainer {
-
 /*height:600px;*/
 margin-left: 100px;
 padding:10px 0 10px 10px;
-border-left: 1px dotted #ccc;
 /*overflow:auto;*/
 
 }
-#Right{float:left;width:100%;}
-#Right_bottom{float:left;width:100%;}
+#Right{
+    width:100%;
+}
+#Right_bottom{
+    width:100%;
+}
 #Content{
 clear:both;
 
@@ -138,12 +139,7 @@ color:#4B4545;
 a:hover{
 color:red;
 }
-div.EntryBlock {
-  display: inline;
-}
-div.EntryBlock form {
-  display: inline;
-}
+
 fieldset.EntryFieldSet {
   vertical-align: top;
   display: inline;
@@ -281,7 +277,7 @@ float:left;
 width:360px;
 padding-right:50px;
 }
-
+.float{float:left;}
 #logo{float:left;}
 /*#divchart{float:left;margin-left:50px;}*/
 
@@ -325,8 +321,6 @@ a.expander:hover {
     margin:0px 2px 0px 2px;
     padding:0px 4px 1px 4px;
 }
-td{border:1px solid #eeeeee !important;}
-table{border-spacing:0;}
 
 .fail_message{color:red;}
 .right_align{text-align:right;}
@@ -343,18 +337,11 @@ a.columnLinks{color:white}
 .fill-td{width:97%;}
 a.unselected {
     padding:1px 5px 1px 5px;
-    border: 1px solid #555;
-    color:#555;
     text-decoration:none;
 }
 span.unselected {
     padding:1px 5px 1px 5px;
-    border: 1px solid #C4C4C4;
-    color:#C4C4C4;
 }
 .selected, a.unselected:hover {
     padding:1px 5px 1px 5px;
-    color: white;
-    background-color:#333;
-    border: 1px solid #555;
 }

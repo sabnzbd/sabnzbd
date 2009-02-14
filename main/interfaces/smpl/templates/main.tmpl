@@ -543,12 +543,24 @@ function loadtitle() {
             if (dual!=2 ) {
                 document.getElementById('Container').style.width = "90%";
                 document.getElementById('Right').style.width = "100%";
+                removeElementClass('Right', "float");
+                
+                removeElementClass('Left', "right-border");
+                addElementClass('RightContainer', "left-border");
+                
                 document.getElementById('Right_bottom').style.width = "100%";
+                removeElementClass('Right_bottom', "float");
             }
             else {
                 document.getElementById('Container').style.width = "99%";
                 document.getElementById('Right').style.width = "48%";
+                addElementClass('Right', "float");
+                
+                removeElementClass('RightContainer', "left-border");
+                addElementClass('Left', "right-border");
+                
                 document.getElementById('Right_bottom').style.width = "48%";
+                addElementClass('Right_bottom', "float");
             }
             if (!dual){
                 stopDeferer(gDeferrerTwo);
@@ -984,10 +996,10 @@ function loadingJSON(){
 			<div id="Left">
 				<ul id="menu">
 					<li><a class="current" href="./">Home</a></li>
-					<li><a href="#/queue/" onClick="lr('queue/', '', 1, 0);">Queue</a></li>
-					<li><a href="#/history/" onClick="lr('history/','limit=50', 1, 0);">History</a></li>
-                    <li><a href="#/dv1/" onClick="lr('queue/','', 1, 1);lrb('history/','limit=50',1);">DualView1</a></li>
-                    <li><a href="#/dv2/" onClick="lr('queue/','', 1, 2);lrb('history/','limit=50',1);">DualView2</a></li>
+					<li><a href="#/queue/" onClick="lr('queue/', 'limit=15', 1, 0);">Queue</a></li>
+					<li><a href="#/history/" onClick="lr('history/','limit=15', 1, 0);">History</a></li>
+                    <li><a href="#/dv1/" onClick="lr('queue/','', 1, 1);lrb('history/','limit=15',1);">DualView1</a></li>
+                    <li><a href="#/dv2/" onClick="lr('queue/','', 1, 2);lrb('history/','limit=15',1);">DualView2</a></li>
 					<li><a href="#/config/" onClick="lr('config/','', 0, 0);">Config</a></li>
 					<ul class="secondul">
 						<li><a class="config" href="#/config/general/" onClick="lr('config/general/','', 0, 0);">General</a></li>
@@ -1030,7 +1042,7 @@ function loadingJSON(){
 				</center>
 				
 			</div>
-			<div id="RightContainer">
+			<div id="RightContainer" class="left-border">
 <div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">
     <form action="addID" method="get">
         <input type="text" style="width:218px;" name="id" value="Enter URL<!--#if $varExists('newzbinDetails') then ' or Report ID' else '' #-->" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
