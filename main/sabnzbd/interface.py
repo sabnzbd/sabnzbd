@@ -60,7 +60,6 @@ from sabnzbd.constants import *
 #------------------------------------------------------------------------------
 # Global constants
 
-RE_URL = re.compile('(.+)/sabnzbd(/m)?/rss', re.I)
 DIRECTIVES = {'directiveStartToken': '<!--#', 'directiveEndToken': '#-->'}
 RESTART_MSG1 = '''
 Initiating restart...
@@ -2551,11 +2550,7 @@ def std_time(when):
 
 
 def rss_history(url, limit=50, search=None):
-    m = RE_URL.search(url)
-    if not m:
-        url = 'http://%s:%s' % (cfg.CHERRYHOST.get(), cfg.CHERRYPORT.get())
-    else:
-        url = m.group(1)
+    url = url.replace('rss','')
 
     youngest = None
 
@@ -2583,7 +2578,7 @@ def rss_history(url, limit=50, search=None):
         elif history['url_info']:
             item.link = history['url_info']
         else:
-            item.link = url + '/sabnzbd/'
+            item.link = url
 
         stageLine = ""
         for stage in history['stage_log']:
