@@ -815,7 +815,7 @@ class Wizard:
         info['number'] = 5
         info['helpuri'] = 'http://sabnzbd.wikidot.com'
         # Access_url is used to provide the user a link to sabnzbd depending on the host
-        access_url = 'localhost'
+        access_uri = 'localhost'
         cherryhost = cfg.CHERRYHOST.get()
         if cherryhost == '0.0.0.0':
             import socket
