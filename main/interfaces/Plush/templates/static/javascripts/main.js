@@ -472,7 +472,7 @@ jQuery(function($) {
                     else                document.title = 'READY | SABnzbd+ Plush';
                     $('#stats_kbpersec').html('&mdash;');
                     $('#stats_eta').html('&mdash;');
-                } else if ($.plush.kbpersec < 1) {
+                } else if ($.plush.kbpersec < 1 && $.plush.paused) {
                     document.title = 'PAUSED | '+$.plush.mbleft+' MB left | '+$.plush.noofslots+' NZBs';
                     $('#stats_kbpersec').html('&mdash;');
                     $('#stats_eta').html('&mdash;');
