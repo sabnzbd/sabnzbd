@@ -62,7 +62,7 @@ from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import Get_User_ShellFolders, launch_a_browser, from_units, \
      check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-     Panic_XPort, Notify, SplitHost, ConvertVersion
+     Panic_XPort, Notify, SplitHost, ConvertVersion, get_ext
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -463,6 +463,28 @@ def get_webhost(cherryhost, cherryport):
 
     return cherryhost, cherryport, browserhost
 
+def is_sabnzbd_running(url):
+    import urllib2
+    try:
+        url = '%sapi?mode=version' % (url)
+        s = urllib2.urlopen(url)
+        ver = s.read()
+        if ver and ver.strip() == sabnzbd.__version__:
+            return True
+        else:
+            return False
+    except:
+        return False
+    
+def find_free_port(host, currentport, i=0):
+    while i >=10 and currentport <= 49151:
+        try:
+            cherrypy.process.servers.check_port(host, currentport)
+            return currentport
+        except:
+            currentport+=5
+            i+=1
+    return -1
 
 #------------------------------------------------------------------------------
 def main():
@@ -496,6 +518,14 @@ def main():
     logger = logging.getLogger('')
     logger.setLevel(logging.WARNING)
     logger.addHandler(gui_log)
+    
+    # Create a list of passed files to load on startup
+    # or pass to an already running instance of sabnzbd
+    upload_nzbs = []
+    for entry in sys.argv:
+        if get_ext(entry) in ('.nzb','.zip','.rar', '.nzb.gz'):
+            upload_nzbs.append(entry)
+            sys.argv.remove(entry)
 
 
     try:
@@ -584,6 +614,40 @@ def main():
             https = True
         elif opt in ('--testlog'):
             testlog = True
+            
+    # Determine web host address
+    cherryhost, cherryport, browserhost = get_webhost(cherryhost, cherryport)
+    
+    # If an instance of sabnzbd(same version) is already running on this port, launch the browser
+    # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
+    # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
+    try:
+        cherrypy.process.servers.check_port(cherryhost, cherryport)
+    except IOError, error:
+        if str(error) == 'Port not bound.':
+            pass
+        else:
+            if https:
+                scheme = 'https'
+            else:
+                scheme = 'http'
+            url = '%s://%s:%s/' % (scheme, browserhost, cherryport)
+            # Check for a running instance of sabnzbd(same version) on this port
+            if is_sabnzbd_running(url):
+                # Upload any specified nzb files to the running instance
+                if upload_nzbs:
+                    from sabnzbd.utils.upload import upload_file
+                    for f in upload_nzbs:
+                        upload_file('http', browserhost, cherryport, f)
+                else:
+                    # Launch the web browser and quit since sabnzbd is already running
+                    launch_a_browser(url, force=True)
+                ExitSab(0)
+            else:
+                port = find_free_port(cherryhost, cherryport)
+                if port > 0:
+                    cfg.CHERRYPORT.set(port)
+                    cherryport = port
 
 
     # Detect Vista or higher
@@ -731,9 +795,6 @@ def main():
                       sabnzbd.MY_NAME, sabnzbd.__version__)
         ExitSab(2)
 
-    # Determine web host address
-    cherryhost, cherryport, browserhost = get_webhost(cherryhost, cherryport)
-
     os.chdir(sabnzbd.DIR_PROG)
 
     web_dir  = Web_Template(sabnzbd.cfg.WEB_DIR,  DEF_STDINTF,  web_dir)
@@ -761,7 +822,13 @@ def main():
     except:
         logging.exception("Failed to start %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
         sabnzbd.halt()
-
+        
+    # Upload any nzb/zip/rar/nzb.gz files from file association
+    if upload_nzbs:
+        from sabnzbd.utils.upload import add_local
+        for f in upload_nzbs:
+            add_local(f)
+            
     cherrylogtoscreen = False
     sabnzbd.WEBLOGFILE = None
     access_file = None

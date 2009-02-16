@@ -86,7 +86,7 @@ def CompareStat(tup1, tup2):
     return True
 
 
-def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, priority=NORMAL_PRIORITY):
+def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=NORMAL_PRIORITY):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns: -1==Error/Retry, 0==OK, 1==Ignore
@@ -142,7 +142,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                         sabnzbd.nzbqueue.add_nzo(nzo)
         zf.close()
         try:
-            os.remove(path)
+            if not keep: os.remove(path)
         except:
             logging.error("Error removing %s", path)
             logging.debug("Traceback: ", exc_info = True)
