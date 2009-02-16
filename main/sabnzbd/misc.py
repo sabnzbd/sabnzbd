@@ -843,7 +843,7 @@ def OnCleanUpList(filename, skip_nzb=False):
 
 def get_ext(filename):
     try:
-        return os.path.splitext(filename)[1]
+        return os.path.splitext(filename)[1].lower()
     except:
         return ''
     
