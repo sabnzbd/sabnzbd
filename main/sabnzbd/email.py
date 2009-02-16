@@ -140,6 +140,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     parm['status'] = status
     parm['to'] = cfg.EMAIL_TO.get()
     parm['from'] = cfg.EMAIL_FROM.get()
+    parm['date'] = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
     parm['name'] = filename
     parm['path'] = path
     parm['msgid'] = str(msgid)
