@@ -440,10 +440,10 @@ def Panic(reason, remedy=""):
     launch_a_browser(panic_message(PANIC_OTHER, reason, remedy))
 
 
-def launch_a_browser(url):
+def launch_a_browser(url, force=False):
     """Launch a browser pointing to the URL
     """
-    if (not cfg.AUTOBROWSER.get()) or sabnzbd.DAEMON:
+    if not force and not cfg.AUTOBROWSER.get() or sabnzbd.DAEMON:
         return
 
     logging.info("Lauching browser with %s", url)
@@ -841,6 +841,17 @@ def OnCleanUpList(filename, skip_nzb=False):
                 return True
     return False
 
+def get_ext(filename):
+    try:
+        return os.path.splitext(filename)[1]
+    except:
+        return ''
+    
+def get_filename(path):
+    try:
+        return os.path.split(path)[1]
+    except:
+        return ''
 
 def loadavg():
     """ Return 1, 5 and 15 minute load average of host or "" if not supported

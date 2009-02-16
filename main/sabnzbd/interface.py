@@ -41,7 +41,7 @@ from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, loadavg, \
-     to_units, from_units, SameFile, diskfree, disktotal
+     to_units, from_units, SameFile, diskfree, disktotal, get_ext, get_filename
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
 from sabnzbd.codecs import TRANS, xml_name
@@ -480,6 +480,25 @@ class MainPage:
         if mode == 'addfile':
             if name.filename and name.value:
                 sabnzbd.add_nzbfile(name, pp, script, cat, priority)
+                return 'ok\n'
+            else:
+                return 'error\n'
+            
+        if mode == 'addlocalfile':
+            if name:
+                if os.path.exists(name):
+                    fn = get_filename(name)
+                    if fn:
+                        if get_ext(name) in ('.zip','.rar', '.nzb.gz'):
+                            sabnzbd.dirscanner.ProcessArchiveFile(\
+                                fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
+                        elif get_ext(name) in ('.nzb'):
+                            sabnzbd.dirscanner.ProcessSingleFile(\
+                                fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
+                    else:
+                        return 'error: no filename found'
+                else:
+                    return 'error: path does not exist'
                 return 'ok\n'
             else:
                 return 'error\n'
