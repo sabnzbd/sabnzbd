@@ -403,17 +403,24 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def set_priority(self, nzo_id, priority):
+        """ Sets the priority on the nzo and places it in the queue at the approrioate position """
         try:
             priority = int(priority)
             nzo = self.__nzo_table[nzo_id]
-            nzo.set_priority(priority)
             nzo_id_pos1 = -1
             pos = -1
-
+            
             for i in xrange(len(self.__nzo_list)):
                 if nzo_id == self.__nzo_list[i].nzo_id:
                     nzo_id_pos1 = i
                     break
+                
+            # Check if nzo is already set to the priority
+            if priority == nzo.get_priority():
+                return nzo_id_pos1
+            
+            nzo.set_priority(priority)
+            
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
                 if priority == TOP_PRIORITY:
