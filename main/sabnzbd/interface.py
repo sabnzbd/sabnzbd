@@ -483,7 +483,7 @@ class MainPage:
                 return 'ok\n'
             else:
                 return 'error\n'
-            
+
         if mode == 'addlocalfile':
             if name:
                 if os.path.exists(name):
@@ -859,7 +859,7 @@ class Wizard:
                 info['urls'].append(url)
         info['access_url'] = '%s://%s:%s/sabnzbd/' % (cherrypy.request.scheme, access_uri, \
                                                       cfg.CHERRYPORT.get())
-        
+
         template = Template(file=os.path.join(self.__web_dir, 'five.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
@@ -882,8 +882,8 @@ class Wizard:
                 port = 563
             else:
                 port = 119
-        
-        
+
+
         return test_nntp_server(host, port, username=username, \
                                 password=password, ssl=ssl)
 
@@ -2834,7 +2834,10 @@ def get_history_size():
     bytes, month, week = history_db.get_history_size()
     return (format_bytes(bytes), format_bytes(month), format_bytes(week))
 
-def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=[], search=None):
+def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=None, search=None):
+
+    if not verbose_list:
+        verbose_list = []
 
     try:
         limit = int(limit)
@@ -3090,8 +3093,10 @@ def queueStatusJson(start, limit):
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return status_str
 
-def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=[],
+def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=None,
                 dictionary=None, history=False, start=None, limit=None, dummy2=None, json_output=False):
+    if not verboseList:
+        verboseList = []
     if dictionary:
         dictn = dictionary
     else:
