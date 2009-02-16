@@ -10,6 +10,11 @@
 
                 <table cellpadding=2>
                     <tr>
+                        <td align=right><div class="tucker">Enable Quick Check:</div></td>
+                        <td><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /></td>
+                        <td><small>Skip par2 checking when files are 100% valid.</small></td>
+                    </tr>
+                    <tr>
                         <td align=right><div class="tucker">Enable Unrar:</div></td>
                         <td><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /></td>
                         <td><small>Enable built-in unrar functionality.</small></td>
@@ -128,11 +133,6 @@
                         <td><small>Launch the web browser when starting SABnzbd.</small></td>
                     </tr>
                     <tr>
-                        <td align=right><div class="tucker">Ignore Sample Files:</div></td>
-                        <td><input type="checkbox" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /></td>
-                        <td><small>Filters out sample files from the queue (i.e. video clips).</small></td>
-                    </tr>
-                    <tr>
                         <td align=right><div class="tucker">Disconnect on empty queue:</div></td>
                         <td><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /></td>
                         <td><small>Disconnect from Usenet server(s) when queue is empty or paused.</small></td>
@@ -161,12 +161,25 @@
                         <td align=right><div class="tucker">Pause Downloads During Post-processing:</div></td>
                         <td><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></td>
                         <td><small>Pauses downloading at the start of post processing and resumes when finished.</small></td>
-                    </tr>
+                    </tr> 
+                </table>
+
+                <hr/>
+
+                <table cellpadding=8>
                     <tr>
-                        <td align=right><div class="tucker">Use Quick Check:</div></td>
-                        <td><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /></td>
-                        <td><small>Do PAR2 check on files while downloading.</small></td>
+                    <td>
+                        <strong>Ignore Sample Files:</strong><br/>
+                        <small>Filters out sample files from the queue (i.e. video clips).</small><br/>
+                        <select name="ignore_samples">
+                            <option value="0" <!--#if $ignore_samples == 0 then "selected" else ""#--> >Off</option>
+                            <option value="1" <!--#if $ignore_samples == 1 then "selected" else ""#--> >Delete after download</option>
+                            <option value="2" <!--#if $ignore_samples == 2 then "selected" else ""#--> >Do not download</option>
+                        </select>
+                    </td>
+
                     </tr>
+                    
 
                 </table>
 

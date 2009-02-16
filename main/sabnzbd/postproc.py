@@ -26,6 +26,7 @@ import logging
 import sabnzbd
 import urllib
 import time
+import re
 from xml.sax.saxutils import escape
 if os.name == 'nt':
     import subprocess
@@ -354,7 +355,10 @@ class PostProcessor(Thread):
                     ## Clean up download dir
                     cleanup_empty_directories(cfg.DOWNLOAD_DIR.get_path())
 
-                    ## TV/Movie/Date Renaming code part 1 - rename and move files to parent folder
+                    if cfg.IGNORE_SAMPLES.get() > 0:
+                        remove_samples(workdir_complete)
+                    
+                    ## TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
                     if not unpackError or parResult:
                         if newfiles and file_sorter.is_sortfile():
                             file_sorter.rename(newfiles, workdir_complete)
@@ -426,6 +430,7 @@ class PostProcessor(Thread):
             # If the folder only contains one file OR folder, have that as the path
             # Be aware that series/generic/date sorting may move a single file into a folder containing other files
             workdir_complete = one_file_or_folder(workdir_complete)
+            workdir_complete = os.path.normpath(workdir_complete)
 
             # Create a relative path removing the complete_dir folder or category folder
             rel_path = os.path.normpath(workdir_complete).replace(base_dir, '')
@@ -620,3 +625,16 @@ def get_last_line(txt):
     if len(line) >= 150:
         line = line[:147] + '...'
     return line
+
+def remove_samples(path):
+    RE_SAMPLE = re.compile('(^|[\W_])sample\d*[\W_]', re.I)
+    for root, dirs, files in os.walk(path):
+        for _file in files:
+            if RE_SAMPLE.search(_file):
+                path = os.path.join(root, _file)
+                try:
+                    logging.info("Removing unwanted sample file %s", path)
+                    os.remove(path)
+                except:
+                    logging.error("Removing %s failed", path)
+                    logging.debug("Traceback: ", exc_info = True)

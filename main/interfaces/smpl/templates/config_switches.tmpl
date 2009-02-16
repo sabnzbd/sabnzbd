@@ -129,15 +129,17 @@
 		    <input class="radio" type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> />
 		    <span class="tips">Set whether SABnzbd launches your browser on startup.</span></label>
  		<br class="clear" />
-
-			<label><span class="label">Ignore sample files:</span>
-		    <input class="radio" type="checkbox" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /></label>
-		    <span class="tips">Filters out sample files from the queue.</span>
- 		<br class="clear" />
         
 			<label><span class="label">Pause downloading during post processing:</span>
 		    <input class="radio" type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></label>
 		    <span class="tips">Pauses downloading at the start of post processing and resumes when finished.</span>
+ 		<br class="clear" />
+        
+			<span class="label">Ignore sample files:</span>
+		    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> Off 
+		    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> Delete after download 
+		    <input class="radio" type="radio" name="ignore_samples" value="2" <!--#if $ignore_samples == 2 then 'checked="1"' else ""#--> /> Do not download 
+            <span class="tips">Filters out sample files from the queue.</span>
  		<br class="clear" />
 
  </fieldset>

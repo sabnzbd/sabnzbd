@@ -11,6 +11,9 @@
 <div class="EntryBlock">
   <fieldset class="EntryFieldSet">
     <legend>Processing switches</legend>
+    <label><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /> <strong>Enable Quick Check</strong></label><br/>
+    Skip par2 checking when files are 100% valid.<br>
+    <br/>
     <label><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> <strong>Enable Unrar</strong></label><br>
     Enable built-in unrar functionality.<br>
     <br>
@@ -102,14 +105,15 @@
     <label><input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> <strong>Launch browser on startup</strong></label><br>
     Launch the browser when starting SABnzbd.<br>
     <br>
-    <label><input type="checkbox" name="ignore_samples" value="1" <!--#if $ignore_samples > 0 then "checked=1" else ""#--> /> <strong>Ignore sample files</strong></label><br>
-    Filters out sample files from the queue.<br>
-    <br>
     <label><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> <strong>Pause downloading during post processing</strong></label><br>
     Pauses downloading at the start of post processing and resumes when finished.<br>
     <br/>
-    <label><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /> <strong>Use Quick Check</strong></label><br/>
-    Do PAR2 check on files while downloading.<br/>
+    <strong>Ignore Samples:</strong><br>
+    Filter out sample files from the queue.<br>
+    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> Off 
+    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> Delete after download 
+    <input class="radio" type="radio" name="ignore_samples" value="2" <!--#if $ignore_samples == 2 then 'checked="1"' else ""#--> /> Do not download 
+    <br>
   </fieldset>
 </div>
 <p><input type="submit" value="Save Changes"></p>

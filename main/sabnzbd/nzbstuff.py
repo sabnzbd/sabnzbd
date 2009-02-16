@@ -314,7 +314,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             else:
                 self.filename = subject.strip()
 
-            if self.filter and RE_SAMPLE.search(subject):
+            if self.filter == 2 and RE_SAMPLE.search(subject):
                 logging.info('Skipping sample file %s', subject)
             else:
                 self.in_file = True
