@@ -345,3 +345,7 @@ span.unselected {
 .selected, a.unselected:hover {
     padding:1px 5px 1px 5px;
 }
+
+#hiddenNav {
+    /*display:none;*/
+}

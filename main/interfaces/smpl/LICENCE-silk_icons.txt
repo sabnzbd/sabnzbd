@@ -1,5 +1,8 @@
-For interfaces\smpl\templates\static\images\control_pause.png
-And interfaces\smpl\templates\static\images\control_play.png
+For:
+interfaces\smpl\templates\static\images\control_pause.png
+interfaces\smpl\templates\static\images\control_play.png
+interfaces\smpl\templates\static\images\drive.png
+interfaces\smpl\templates\static\images\drive_go.png
 
 Creative Commons Attribution 2.5 License
 

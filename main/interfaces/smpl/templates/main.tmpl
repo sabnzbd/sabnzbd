@@ -1000,8 +1000,8 @@ function loadingJSON(){
 					<li><a href="#/history/" onClick="lr('history/','limit=15', 1, 0);">History</a></li>
                     <li><a href="#/dv1/" onClick="lr('queue/','', 1, 1);lrb('history/','limit=15',1);">DualView1</a></li>
                     <li><a href="#/dv2/" onClick="lr('queue/','', 1, 2);lrb('history/','limit=15',1);">DualView2</a></li>
-					<li><a href="#/config/" onClick="lr('config/','', 0, 0);">Config</a></li>
-					<ul class="secondul">
+					<li><a href="#/config/" onClick="toggle('hiddenNav','blind',{duration:0.2})">Config</a></li>
+					<ul id="hiddenNav" class="secondul">
 						<li><a class="config" href="#/config/general/" onClick="lr('config/general/','', 0, 0);">General</a></li>
 						<li><a class="config" href="#/config/directories/" onClick="lr('config/directories/','', 0, 0);">Folders</a> </li>
 						<li><a class="config" href="#/config/switches/" onClick="lr('config/switches/','', 0, 0);">Switches</a> </li>
@@ -1030,11 +1030,11 @@ function loadingJSON(){
 				</ul>
 				<!--<input type="checkbox" name="enable_speedlimit" />-->
 				<span class="small">Speedlimit: </span><input type="text" id="speedbox" value="$speedlimit" onChange="javascript:doSimpleXMLHttpRequest('tapi?mode=config&name=set_speedlimit&value='+this.value);">
-				<br /><br /><center>
-				Incomplete<br />
-				<span class="small"><span id="ds1">${diskspace1}</span>GB / ${diskspacetotal1}GB</span><br />
-				Complete<br />
-				<span class="small"><span id="ds2">${diskspace2}</span>GB / ${diskspacetotal2}GB</span>
+				<br /><br />
+                <center>
+				<img src="static/images/drive.png" title="Incomplete" /> <span class="small"><span id="ds1">${diskspace1}</span>GB</span><br />
+				<img src="static/images/drive_go.png" title="Complete" /> <span class="small"><span id="ds2">${diskspace2}</span>GB</span>
+                
                 <!--#if $loadavg#-->
                     SysLoad<br />
                     <span class="small"><span id="ds3">${loadavg}</span></span>
