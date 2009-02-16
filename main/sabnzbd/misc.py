@@ -72,6 +72,9 @@ def Cat2Opts(cat, pp, script):
     if not pp:
         try:
             pp = config.get_categories()[Lower(cat)].pp.get()
+            # Get the default pp
+            if pp == '':
+                pp = cfg.DIRSCAN_PP.get()
             logging.debug('Job gets options %s', pp)
         except KeyError:
             pp = cfg.DIRSCAN_PP.get()
@@ -79,6 +82,9 @@ def Cat2Opts(cat, pp, script):
     if not script:
         try:
             script = config.get_categories()[Lower(cat)].script.get()
+            # Get the default script
+            if script == '':
+                script = cfg.DIRSCAN_SCRIPT.get()
             logging.debug('Job gets script %s', script)
         except KeyError:
             script = cfg.DIRSCAN_SCRIPT.get()
