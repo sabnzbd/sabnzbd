@@ -75,7 +75,7 @@ def find_programs(curdir):
                 sabnzbd.newsunpack.PAR2_COMMAND = p
             p = os.path.abspath(curdir + '/osx/par2/par2-classic')
             if os.access(p, os.X_OK):
-               sabnzbd.newsunpack.PAR2C_COMMAND = p
+                sabnzbd.newsunpack.PAR2C_COMMAND = p
         else:
             p = os.path.abspath(curdir + '/osx/par2/par2universal')
 
