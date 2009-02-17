@@ -173,7 +173,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             name = filename.replace('.nzb.gz', '.nzb')
             f = gzip.GzipFile(path, 'rb')
         else:
-            filename = misc.sanitize_foldername(filename)
+            name = filename
             f = open(path, 'rb')
         data = f.read()
         f.close()
@@ -181,6 +181,9 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         logging.warning('Cannot read %s', path)
         logging.debug("Traceback: ", exc_info = True)
         return -2
+    
+    if name:
+        name = misc.sanitize_foldername(name)
 
     _cat, name, _pp, _script = misc.Cat2OptsDef(name, catdir)
     if cat == None: cat = _cat
