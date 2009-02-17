@@ -173,7 +173,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             name = filename.replace('.nzb.gz', '.nzb')
             f = gzip.GzipFile(path, 'rb')
         else:
-            name = filename
+            filename = misc.sanitize_foldername(filename)
             f = open(path, 'rb')
         data = f.read()
         f.close()
