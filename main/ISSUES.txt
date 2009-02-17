@@ -16,22 +16,12 @@ List of known issues.
   We cannot solve this problem, because the Operating System (read Windows)
   prevents the removal.
 
-- When you have aggressive power managment on (like automatic standby)
-  the PC will go into standby despite the fact that SABnzbd is still
-  busy downloading. Blame Windows for this.
-  In a later release we will try to add code to report to Windows that
-  SABnzbd is active.
-
 - Jobs deleted from the queue will leave downloaded files behind
   in the "incomplete" folder.
   You will have to remove these files manually.
 
 - Memory usage can sometimes have high peaks. This makes using SABnzbd on very low
   memory systems (eg a SAN device) a challenge.
- 
-- On some NAS/SAN systems you may have to downgrade CherryPy to 2.2.1.
-  Remove the "cherrypy" directory inside SABnzbd and install an older
-  CherryPy as a Python module.
 
 - SABnzbd is not compatible with some ZoneAlarm firewall versions.
   Comodo and the Windows firewall work fine.
