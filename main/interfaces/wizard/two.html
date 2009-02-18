@@ -2,14 +2,16 @@
 
 <form action="./three" method="post">
 <div class="indented bigger">
+<!--#if $host in ('localhost','0.0.0.0')#-->
 <h3>Access</h3>
         <input type="radio" name="access" id="all" value="0.0.0.0" <!--#if $host == '0.0.0.0' then 'checked="checked"' else ''#-->> <label for="all">I want SABnzbd to be viewable by any pc on my network.</label><br />
         <input type="radio" name="access" id="local" value="localhost" <!--#if $host == 'localhost' then 'checked="checked"' else ''#-->> <label for="local">I want SABnzbd to be only viewable from my pc only.</label><br />
+<!--#end if#-->
 <h3>Misc</h3>
     <input type="checkbox" name="autobrowser" id="autobrowser" value="1" <!--#if $autobrowser == 1 then 'checked="checked"' else ''#-->> <label for="autobrowser">Launch my internet browser with the SABnzbd page when the program starts.</label><br />
     <!--<input type="checkbox" name="autostart" id="autostart" value="1"> <label for="autostart">Launch SABnzbd when windows starts.</label><br />-->
 </div>
-
+<input type="hidden" name="dummyval" value="1" />
 
 <br class="clear"/><br/>
 </div>

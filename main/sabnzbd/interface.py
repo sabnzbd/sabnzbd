@@ -750,7 +750,14 @@ class Wizard:
         info['num'] = 'Two'
         info['number'] = 2
 
-        info['host'] = cfg.CHERRYHOST.get()
+        host = cfg.CHERRYHOST.get()
+        info['host'] = host
+        # Allow special operation if host is not one of the defaults
+        if host not in ('localhost','0.0.0.0'):
+            info['custom_host'] = True
+        else:
+            info['custom_host'] = False
+        
         info['autobrowser'] = cfg.AUTOBROWSER.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
@@ -763,10 +770,7 @@ class Wizard:
         if kwargs:
             if 'access' in kwargs:
                 cfg.CHERRYHOST.set(kwargs['access'])
-            if 'autobrowser' in kwargs:
-                cfg.AUTOBROWSER.set(kwargs.get('autobrowser',0))
-            if 'autostart' in kwargs:
-                pass
+            cfg.AUTOBROWSER.set(kwargs.get('autobrowser',0))
         info = self.info.copy()
         info['num'] = 'Three'
         info['number'] = 3
