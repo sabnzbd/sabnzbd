@@ -107,7 +107,7 @@ TV_SORT_STRING = OptionStr('misc', 'tv_sort_string')
 
 ENABLE_MOVIE_SORTING = OptionBool('misc', 'enable_movie_sorting', False)
 MOVIE_SORT_STRING = OptionStr('misc', 'movie_sort_string')
-MOVIE_SORT_EXTRA = OptionStr('misc', 'movie_sort_extra', '-cd%1')
+MOVIE_SORT_EXTRA = OptionStr('misc', 'movie_sort_extra', '-cd%1', strip=False)
 MOVIE_EXTRA_FOLDER = OptionBool('misc', 'movie_extra_folder', False)
 MOVIE_CATEGORIES = OptionList('misc', 'movie_categories', ['movies'])
 

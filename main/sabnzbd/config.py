@@ -235,9 +235,10 @@ class OptionList(Option):
 
 class OptionStr(Option):
     """ String class """
-    def __init__(self, section, keyword, default_val='', validation=None, add=True):
+    def __init__(self, section, keyword, default_val='', validation=None, add=True, strip=True):
         Option.__init__(self, section, keyword, default_val, add=add)
         self.__validation = validation
+        self.__strip = strip
 
     def get_float(self):
         """ Return value converted to a float, allowing KMGT notation """
@@ -250,7 +251,7 @@ class OptionStr(Option):
     def set(self, value):
         """ Set stripped value """
         error = None
-        if type(value) == type(''):
+        if type(value) == type('') and self.__strip:
             value = value.strip()
         if self.__validation:
             error, val = self.__validation(value)
