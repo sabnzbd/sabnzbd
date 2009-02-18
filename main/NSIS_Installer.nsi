@@ -16,6 +16,7 @@
 ; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 !include "MUI2.nsh"
+!include "registerExtension.nsh"
 
 
 Name "${SAB_PRODUCT}"
@@ -150,9 +151,18 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 SectionEnd ; end of default section
 
+Section "Run at startup" startup
+    CreateShortCut "$SMPROGRAMS\Startup\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe" "-b0"
+SectionEnd ;
+
 Section "Desktop Icon" desktop
     CreateShortCut "$DESKTOP\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
 SectionEnd ; end of desktop icon section
+
+Section "NZB File association" assoc
+    ${registerExtension} "$INSTDIR\nzb.ico" "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
+    ;${registerExtension} "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
+SectionEnd ; end of file association section
 
 ; begin uninstall settings/section
 UninstallText "This will uninstall SABnzbd+ from your system"
@@ -195,6 +205,7 @@ Section Uninstall
     RMDir /r "$INSTDIR\interfaces\Default"
     RMDir /r "$INSTDIR\interfaces\Plush"
     RMDir /r "$INSTDIR\interfaces\smpl"
+    RMDir /r "$INSTDIR\interfaces\wizard"
     RMDir /r "$INSTDIR\interfaces\iPhone"
     RMDir "$INSTDIR\interfaces"
     RMDir /r "$INSTDIR\win\email"
@@ -220,7 +231,7 @@ Section Uninstall
     Delete "$INSTDIR\lib\ssleay32.dll"
     Delete "$INSTDIR\lib\sabnzbd.zip"
     Delete "$INSTDIR\lib\*.pyd"
-    RMDir  "$INSTDIR\lib\"
+    RMDir  /r "$INSTDIR\lib\"
     Delete "$INSTDIR\PKG-INFO"
     Delete "$INSTDIR\README.txt"
     Delete "$INSTDIR\SABnzbd.exe"
@@ -236,16 +247,21 @@ Section Uninstall
     Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
     RMDir  "$SMPROGRAMS\$MUI_TEMP"
+    
+    Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
 
     Delete "$DESKTOP\SABnzbd.lnk"
 
     DeleteRegKey HKEY_CURRENT_USER  "Software\SABnzbd"
+    
+    ${unregisterExtension} ".nzb" "NZB File"
 
 
 SectionEnd ; end of uninstall section
 
 Section "un.Delete Settings" DelSettings
     Delete "$LOCALAPPDATA\sabnzbd\sabnzbd.ini"
+    RMDir /r "$LOCALAPPDATA\sabnzbd\admin"
 SectionEnd
 
 

@@ -252,6 +252,7 @@ data = [ 'README.txt',
          'LICENSE.txt',
          'ISSUES.txt',
          'email.tmpl',
+         'nzb.ico',
          'Sample-PostProc.cmd',
          'Sample-PostProc.sh',
          'PKG-INFO',
@@ -316,6 +317,7 @@ elif target == 'binary':
     for file in options['data_files'][0][1]:
         Unix2Dos("dist/%s" % file)
     DeleteFiles('dist/Sample-PostProc.sh')
+    DeleteFiles('dist/PKG-INFO')
 
     # Generate the windowed-app (skip datafiles now)
     del options['console']
