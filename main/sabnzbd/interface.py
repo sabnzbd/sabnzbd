@@ -198,7 +198,7 @@ def set_auth(conf):
                      '/sabnzbd/m/api':{'tools.basic_auth.on' : False},
                      })
     else:
-        conf.update({'/':{'tools.basic_auth.on':False}})
+        conf.update({'tools.basic_auth.on':False})
 
 
 
