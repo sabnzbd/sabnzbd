@@ -615,41 +615,6 @@ def main():
         elif opt in ('--testlog'):
             testlog = True
             
-    # Determine web host address
-    cherryhost, cherryport, browserhost = get_webhost(cherryhost, cherryport)
-    
-    # If an instance of sabnzbd(same version) is already running on this port, launch the browser
-    # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
-    # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
-    try:
-        cherrypy.process.servers.check_port(cherryhost, cherryport)
-    except IOError, error:
-        if str(error) == 'Port not bound.':
-            pass
-        else:
-            if https:
-                scheme = 'https'
-            else:
-                scheme = 'http'
-            url = '%s://%s:%s/' % (scheme, browserhost, cherryport)
-            # Check for a running instance of sabnzbd(same version) on this port
-            if is_sabnzbd_running(url):
-                # Upload any specified nzb files to the running instance
-                if upload_nzbs:
-                    from sabnzbd.utils.upload import upload_file
-                    for f in upload_nzbs:
-                        upload_file('http', browserhost, cherryport, f)
-                else:
-                    # Launch the web browser and quit since sabnzbd is already running
-                    launch_a_browser(url, force=True)
-                ExitSab(0)
-            else:
-                port = find_free_port(cherryhost, cherryport)
-                if port > 0:
-                    cfg.CHERRYPORT.set(port)
-                    cherryport = port
-
-
     # Detect Vista or higher
     if os.name == 'nt':
         if platform.platform().find('Windows-32bit') >= 0:
@@ -688,6 +653,39 @@ def main():
               'Specify a correct file or delete this file.')
         ExitSab(1)
 
+    # Determine web host address
+    cherryhost, cherryport, browserhost = get_webhost(cherryhost, cherryport)
+    
+    # If an instance of sabnzbd(same version) is already running on this port, launch the browser
+    # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
+    # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
+    try:
+        cherrypy.process.servers.check_port(cherryhost, cherryport)
+    except IOError, error:
+        if str(error) == 'Port not bound.':
+            pass
+        else:
+            if https:
+                scheme = 'https'
+            else:
+                scheme = 'http'
+            url = '%s://%s:%s/' % (scheme, browserhost, cherryport)
+            # Check for a running instance of sabnzbd(same version) on this port
+            if is_sabnzbd_running(url):
+                # Upload any specified nzb files to the running instance
+                if upload_nzbs:
+                    from sabnzbd.utils.upload import upload_file
+                    for f in upload_nzbs:
+                        upload_file('http', browserhost, cherryport, f)
+                else:
+                    # Launch the web browser and quit since sabnzbd is already running
+                    launch_a_browser(url, force=True)
+                ExitSab(0)
+            else:
+                port = find_free_port(cherryhost, cherryport)
+                if port > 0:
+                    cfg.CHERRYPORT.set(port)
+                    cherryport = port
 
     if cherrypylogging == None:
         cherrypylogging = sabnzbd.cfg.LOG_WEB.get()
