@@ -171,6 +171,7 @@ jQuery(function($) {
         queueViewPreference   : 15,       // queue nzb limiter
         historyViewPreference : 15,       // history nzb limiter
         focusedOnSpeedChanger : false,    // don't update speed limit when editing + queue refreshes
+        nzbupload 			  : null,	  // used in kludge to fix jquery ocupload plugin, see initUpload()
         
         
         /********************************************
@@ -266,6 +267,7 @@ jQuery(function($) {
         }, // end refresh()
         
         
+        
         /********************************************
         *********************************************
         
@@ -310,17 +312,7 @@ jQuery(function($) {
             });
             
             // NZB File Upload
-            $('#addNZBbyFile').upload({
-                name: 'name',
-                action: 'tapi',
-                enctype: 'multipart/form-data',
-                params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val(), priority: $("#addID_priority").val()},
-                autoSubmit: true,
-                onComplete: function(){
-                	$("input[name='name']").val(''); // cludge fix to allow re-uploading same filename
-                	$.plush.refreshQueue();
-                }
-            });
+            $.plush.initUpload(); // kludge
             
             // Fetch Newzbin Bookmarks
 			$('#fetch_newzbin_bookmarks').click(function(){
@@ -710,8 +702,39 @@ jQuery(function($) {
             // fix IE6 .png image transparencies
             $('img[@src$=.png], div.history_logo, div.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
             
-        } // end initEvents()
+        }, // end initEvents()
         
+       
+        /********************************************
+        *********************************************
+        
+            $.plush.initUpload() -- initialize ajax nzb upload
+            
+            this is just a kludge until jquery ocupload plugin fixes multiple uploads
+        
+        *********************************************
+        ********************************************/
+        
+        initUpload : function() {
+        
+			// kludge
+        	$.plush.nzbupload = null;
+        	$('#addNZBbyFile').parent().html('<div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div>');
+        	
+        	$.plush.nzbupload = $('#addNZBbyFile').upload({
+                name: 'name',
+                action: 'tapi',
+                enctype: 'multipart/form-data',
+                params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val(), priority: $("#addID_priority").val()},
+                autoSubmit: true,
+                onComplete: function(){
+                	$.plush.refreshQueue();
+                	$.plush.initUpload(); // kludge
+                }
+            });
+            
+        }
+
     }; // end plush object
 
 });
