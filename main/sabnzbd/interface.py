@@ -647,7 +647,7 @@ class MainPage:
                 else:
                     return 'error: Please submit a value\n'
             elif name == 'get_speedlimit':
-                return str(int(downloader.get_limit(value)))
+                return str(int(downloader.get_limit()))
             elif name == 'set_colorscheme':
                 if value:
                     if self.__prim:
