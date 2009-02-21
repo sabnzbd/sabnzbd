@@ -951,7 +951,8 @@ except AttributeError:
 def create_https_certificates(ssl_cert, ssl_key):
     try:
         from OpenSSL import crypto
-        from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate
+        from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
+             TYPE_RSA, TYPE_DSA, serial
     except:
         logging.warning('pyopenssl module missing, please install for https access')
         return False
