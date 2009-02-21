@@ -7,7 +7,7 @@
             <fieldset class="EntryFieldSet">
             <legend id="configbox_new_feed_url">New&nbsp;Feed&nbsp;URL</legend>
                 <input type="text" size="10" name="feed" value="$feed"/>
-                <input type="text" size="104" name="uri" value=""/>
+                <input type="text" size="104" name="uri"/>
                 <input type="submit" value="Add"/>
             </fieldset>
             </form>
@@ -115,13 +115,12 @@
                         <!--#end if#-->
 
 
-                        <td>
+                        <td colspan="2">
                             <input type="hidden" value="$rss[$feed]['filtercount']" name="index"/>
                             <input type="hidden" value="$feed" name="feed"/>
-                            <input type="submit" value="Save"/>
+                            <input type="submit" value="Add"/>
                         </td>
 
-						<td></td>
                     </tr>
                     </form>
 
