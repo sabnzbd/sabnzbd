@@ -382,7 +382,7 @@ else:
 
     # Install CherryPy
     os.chdir(root)
-    os.system("unzip -o ../CherryPy-3.1.1.zip")
+    os.system("unzip -o ../cherrypy-svn2138.zip")
     os.chdir('..')
 
     # Prepare the TAR.GZ pacakge
