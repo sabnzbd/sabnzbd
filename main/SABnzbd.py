@@ -477,6 +477,10 @@ def is_sabnzbd_running(url):
     import urllib2
     try:
         url = '%sapi?mode=version' % (url)
+        username = cfg.USERNAME.get()
+        if username:
+            password = cfg.PASSWORD.get()
+            url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
         s = urllib2.urlopen(url)
         ver = s.read()
         if ver and ver.strip() == sabnzbd.__version__:
@@ -687,27 +691,27 @@ def main():
     # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
     ## SSL
     try:
-        cherrypy.process.servers.check_port(cherryhost, https_port)
+        cherrypy.process.servers.check_port(browserhost, https_port)
     except IOError, error:
         if str(error) == 'Port not bound.':
             pass
         else:
             url = 'https://%s:%s/' % (browserhost, https_port)
             if not check_for_sabnzbd(url, upload_nzbs):
-                port = find_free_port(cherryhost, https_port)
+                port = find_free_port(browserhost, https_port)
                 if port > 0:
                     cfg.HTTPS_PORT.set(port)
                     cherryport = port
     ## NonSSL       
     try:
-        cherrypy.process.servers.check_port(cherryhost, cherryport)
+        cherrypy.process.servers.check_port(browserhost, cherryport)
     except IOError, error:
         if str(error) == 'Port not bound.':
             pass
         else:
             url = 'http://%s:%s/' % (browserhost, cherryport)
             if not check_for_sabnzbd(url, upload_nzbs):
-                port = find_free_port(cherryhost, cherryport)
+                port = find_free_port(browserhost, cherryport)
                 if port > 0:
                     cfg.CHERRYPORT.set(port)
                     cherryport = port
@@ -908,13 +912,18 @@ def main():
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
+    fp = '''X:\\TV\\Charlie Brooker's Screen Wipe\\Season 5'''
+    file_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': fp }
     
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
+                 '/api' : {'tools.basic_auth.on' : False},
+                 '/m/api' : {'tools.basic_auth.on' : False},
                  '/sabnzbd/shutdown': {'streamResponse': True},
                  '/sabnzbd/static': static,
                  '/static': static,
                  '/sabnzbd/wizard/static': wizard_static,
-                 '/wizard/static': wizard_static
+                 '/wizard/static': wizard_static,
+                 '/f': file_static
                  }
 
     if web_dir2:
@@ -938,7 +947,7 @@ def main():
 
     try:
         # Use internal cherrypy check first to prevent ugly tracebacks
-        cherrypy.process.servers.check_port(cherryhost, cherryport)
+        cherrypy.process.servers.check_port(browserhost, cherryport)
         cherrypy.engine.start()
     except IOError, error:
         if str(error) == 'Port not bound.':
