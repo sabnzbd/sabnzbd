@@ -180,16 +180,16 @@
 				    <input id="complete_dir" type="hidden" value="$complete_dir" />
 				    <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable sorting and renaming of episodes</strong>
 				    <br class="clear" /><br/>
-				    <a onclick="jQuery('#Keytable1').slideToggle()" style="cursor:pointer; color:white; background-color:#333;"><i>&nbsp;Toggle Key&nbsp;</i></a>
+				    <a onclick="jQuery('#Keytable1').slideToggle()" style="cursor:pointer; color:white; background-color:#333;"><i>&nbsp;&plusmn; Pattern Key&nbsp;</i></a>
 				     <div id="Keytable1" style="display:none">
 						<small><table>
 						<thead><tr>
-			                <th align=right><u>Meaning</u></th>
+			                <th align="right"><u>Meaning</u></th>
 			                <th><u>Pattern</u></th>
 			                <th><u>Result</u></th>
 				        </tr></thead>
 				        <tr>
-				            <td align=right><strong>Show Name:</strong></td>
+				            <td align="right"><strong>Show Name:</strong></td>
 				            <td>%sn</td>
 				            <td>Show Name</td>
 				        </tr><tr>
@@ -201,7 +201,7 @@
 				            <td>%s_n</td>
 				            <td>Show_Name</td>
 				        </tr><tr>
-				            <td align=right><strong>Season Number:</strong></td>
+				            <td align="right"><strong>Season Number:</strong></td>
 				            <td>%s</td>
 				            <td>1</td>
 				        </tr><tr>
@@ -209,7 +209,7 @@
 				            <td>%0s</td>
 				            <td>01</td>
 				        </tr><tr>
-				            <td align=right><strong>Episode Number:</strong></td>
+				            <td align="right"><strong>Episode Number:</strong></td>
 				            <td>%e</td>
 				            <td>5</td>
 				        </tr><tr>
@@ -217,7 +217,7 @@
 				            <td>%0e</td>
 				            <td>05</td>
 				        </tr><tr>
-				            <td align=right><strong>Episode Name:</strong></td>
+				            <td align="right"><strong>Episode Name:</strong></td>
 				            <td>%en</td>
 				            <td>Episode Name</td>
 				        </tr><tr>
@@ -229,11 +229,11 @@
 				            <td>%e_n</td>
 				            <td>Episode_Name</td>
 				        </tr><tr>
-				            <td align=right><strong>Original filename:</strong></td>
+				            <td align="right"><strong>Original filename:</strong></td>
 				            <td>%fn</td>
 				            <td>file</td>
 				        </tr><tr>
-				            <td align=right><strong>Lower Case:</strong></td>
+				            <td align="right"><strong>Lower Case:</strong></td>
 				            <td>{TEXT}</td>
 				            <td>text</td>
 				        </tr>
@@ -244,15 +244,28 @@
 				        <span class="">Episode Name</span>
 				        <br />-->
 				    </div><br class="clear" /><br class="clear" />
-				    <strong>Sort String:</strong>
-				    <input type="text" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()"><input type="button" onclick="tvClear()" value="Clear"/><br class="clear" />
-				    <strong>Presets:</strong>
-				    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
-				    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
-				    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
-				    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/><br class="clear" />
-				    <br/>
-				    <strong>Example:</strong> <span id="previewtv"></span>
+				    
+				    <table>
+				    <tr>
+				    	<td align="right"><strong>Sort String:</strong></td>
+				    	<td>
+				    		<input type="text" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()">
+				    		<input type="button" onclick="tvClear()" value="Clear"/>
+				    	</td>
+				    </tr><tr>
+				    	<td align="right"><strong>Presets:</strong></td>
+				    	<td>
+						    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
+						    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
+						    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
+						    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/>
+				    	</td>
+				    </tr><tr>
+				    	<td align="right"><strong>Example:</strong></td>
+				    	<td><span id="previewtv"></span></td>
+				    </tr>
+				    </table>
+				    
 				</fieldset>
 				
 				<br class="clear" />
@@ -272,16 +285,16 @@
 				        <!--#end for#-->
 				    </select>
 				    <br class="clear" /><br/>
-				    <a onclick="jQuery('#Keytable2').slideToggle()" style="cursor:pointer; color:white; background-color:#333;"><i>&nbsp;Toggle Key&nbsp;</i></a>
+				    <a onclick="jQuery('#Keytable2').slideToggle()" style="cursor:pointer; color:white; background-color:#333;"><i>&nbsp;&plusmn; Pattern Key&nbsp;</i></a>
 				     <div id="Keytable2" style="display:none">
 				        <small><table>
 				        <thead><tr>
-				           <th align=right><u>Meaning</u></th>
+				           <th align="right"><u>Meaning</u></th>
 				           <th><u>Pattern</u></th>
 				           <th><u>Result</u></th>
 				        </tr></thead>
 				        <tr>
-				            <td align=right><strong>Title:</strong></td>
+				            <td align="right"><strong>Title:</strong></td>
 				            <td>%title</td>
 				            <td>Movie Name</td>
 				        </tr><tr>
@@ -293,19 +306,19 @@
 				            <td>%_title</td>
 				            <td>Movie_Name</td>
 				        </tr><tr>
-				            <td align=right><strong>Year:</strong></td>
+				            <td align="right"><strong>Year:</strong></td>
 				            <td>%y</td>
 				            <td>2000</td>
 				        </tr><tr>
-				            <td align=right><strong>Extension:</strong></td>
+				            <td align="right"><strong>Extension:</strong></td>
 				            <td>%ext</td>
 				            <td>avi</td>
 				        </tr><tr>
-				            <td align=right><strong>Part Number:</strong></td>
+				            <td align="right"><strong>Part Number:</strong></td>
 				            <td>%1</td>
 				            <td>1</td>
 				        </tr><tr>
-				            <td align=right><strong>Decade:</strong></td>
+				            <td align="right"><strong>Decade:</strong></td>
 				            <td>%decade</td>
 				            <td>00</td>
 				        </tr><tr>
@@ -313,25 +326,41 @@
 				            <td>%0decade</td>
 				            <td>2000</td>
 				        </tr><tr>
-				            <td align=right><strong>Filename:</strong></td>
+				            <td align="right"><strong>Filename:</strong></td>
 				            <td>%fn</td>
 				            <td>file</td>
 				        </tr><tr>
-				            <td align=right><strong>Lower Case:</strong></td>
+				            <td align="right"><strong>Lower Case:</strong></td>
 				            <td>{TEXT}</td>
 				            <td>text</td>
 				        </tr>
 				        </table></small>
 				    </div><br class="clear" /><br class="clear" />
-				    <strong>Sort String:</strong>
-				    <input type="text" size="80" id="moviefoldername" name="movie_sort_string" value="$movie_sort_string" onkeyup="javascript:previewmovie()"><input type="button" onclick="movieClear()" value="Clear"/><br class="clear" />
-				    <strong>Multi-part label:</strong>
-				    <input type="text" size="80" id="movieextra" name="movie_sort_extra" value="$movie_sort_extra" onkeyup="javascript:previewmovie()"><input type="button" onclick="movieClearExtra()" value="Clear"/><br class="clear" />
-				    <strong>Presets:</strong>
-				    <input type="button" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="In folders"/>
-				    <input type="button" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="No folders"/><br class="clear" />
-				    <br/>
-				    <strong>Example:</strong> <span id="previewmovie"></span>
+				    
+				    <table>
+				    <tr>
+				    	<td align="right"><strong>Sort String:</strong></td>
+				    	<td>
+				    		<input type="text" size="80" id="moviefoldername" name="movie_sort_string" value="$movie_sort_string" onkeyup="javascript:previewmovie()">
+				    		<input type="button" onclick="movieClear()" value="Clear"/>
+				    	</td>
+				    </tr><tr>
+				    	<td align="right"><strong>Multi-part Label:</strong></td>
+				    	<td>
+				    		<input type="text" size="80" id="movieextra" name="movie_sort_extra" value="$movie_sort_extra" onkeyup="javascript:previewmovie()">
+				    		<input type="button" onclick="movieClearExtra()" value="Clear"/>
+				    	</td>
+				    </tr><tr>
+				    	<td align="right"><strong>Presets:</strong></td>
+				    	<td>
+						    <input type="button" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="In folders"/>
+						    <input type="button" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="No folders"/>
+				    	</td>
+				    </tr><tr>
+				    	<td align="right"><strong>Example:</strong></td>
+				    	<td><span id="previewmovie"></span></td>
+				    </tr>
+					</table>
 				</fieldset>
 				
 				<br class="clear" />
@@ -349,16 +378,16 @@
 				        <!--#end for#-->
 				    </select>
 				    <br class="clear" /><br/>
-				    <a onclick="jQuery('#Keytable3').slideToggle()" style="cursor:pointer; color:white; background-color:#333;"><i>&nbsp;Toggle Key&nbsp;</i></a>
+				    <a onclick="jQuery('#Keytable3').slideToggle()" style="cursor:pointer; color:white; background-color:#333;"><i>&nbsp;&plusmn; Pattern Key&nbsp;</i></a>
 				     <div id="Keytable3" style="display:none">
 				     	<small><table>
 				        <thead><tr>
-			                <th align=right><u>Meaning</u></td>
+			                <th align="right"><u>Meaning</u></td>
 			                <th><u>Pattern</u></td>
 			                <th><u>Result</u></td>
 				        </tr></thead>
 				        <tr>
-				            <td align=right><strong>Show Name:</strong></td>
+				            <td align="right"><strong>Show Name:</strong></td>
 				            <td>%t</td>
 				            <td>Show Name</td>
 						</tr><tr>
@@ -370,11 +399,11 @@
 				            <td>%_t</td>
 				            <td>Show_Name</td>
 						</tr><tr>
-				            <td align=right><strong>Year:</strong></td>
+				            <td align="right"><strong>Year:</strong></td>
 				            <td>%y</td>
 				            <td>2009</td>
 						</tr><tr>
-				            <td align=right><strong>Month:</strong></td>
+				            <td align="right"><strong>Month:</strong></td>
 				            <td>%m</td>
 				            <td>1</td>
 						</tr><tr>
@@ -382,7 +411,7 @@
 				            <td>%0m</td>
 				            <td>01</td>
 						</tr><tr>
-				            <td align=right><strong>Day of month:</strong></td>
+				            <td align="right"><strong>Day of month:</strong></td>
 				            <td>%d</td>
 				            <td>2</td>
 						</tr><tr>
@@ -390,7 +419,7 @@
 				            <td>%0d</td>
 				            <td>02</td>
 				        </tr><tr>
-				            <td align=right><strong>Decade:</strong></td>
+				            <td align="right"><strong>Decade:</strong></td>
 				            <td>%decade</td>
 				            <td>00</td>
 				        </tr><tr>
@@ -398,24 +427,35 @@
 				            <td>%0decade</td>
 				            <td>2000</td>
 				        </tr><tr>
-				            <td align=right><strong>Filename:</strong></td>
+				            <td align="right"><strong>Filename:</strong></td>
 				            <td>%fn</td>
 				            <td>file</td>
 						</tr><tr>
-				            <td align=right><strong>Lower Case:</strong></td>
+				            <td align="right"><strong>Lower Case:</strong></td>
 				            <td>{TEXT}</td>
 				            <td>text</td>
 						</tr>
 				        </table></small>
 				    </div><br class="clear" /><br class="clear" />
-				    <strong>Sort String:</strong>
-				    <input type="text" size="80" id="datefoldername" name="date_sort_string" value="$date_sort_string" onkeyup="javascript:previewdate()"><input type="button" onclick="dateClear()" value="Clear"/><br class="clear" />
-				    <strong>Presets:</strong>
-				    <input type="button" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="Show Name folder"/>
-				    <input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="Year-Month Folders"/>
-				    <input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="Daily Folders"/><br class="clear" />
-				    <br/>
-				    <strong>Example:</strong> <span id="previewdate"></span>
+
+				    <table>
+				    <tr>
+				    	<td align="right"><strong>Sort String:</strong></td>
+				    	<td>
+				    		<input type="text" size="80" id="datefoldername" name="date_sort_string" value="$date_sort_string" onkeyup="javascript:previewdate()">
+				    		<input type="button" onclick="dateClear()" value="Clear"/></td>
+				    </tr><tr>
+				    	<td align="right"><strong>Presets:</strong></td>
+				    	<td>
+				    		<input type="button" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="Show Name folder"/>
+				    		<input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="Year-Month Folders"/>
+				    		<input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="Daily Folders"/>
+				    	</td>
+				    </tr><tr>
+				    	<td align="right"><strong>Example:</strong></td>
+				    	<td><span id="previewdate"></span></td>
+				    </tr>
+				    </table>
 				    
 				</fieldset>
 

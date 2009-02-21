@@ -50,14 +50,14 @@
                         <td><small>Only perform post-processing on jobs that passed all PAR2 checks.</small></td>
                     </tr>
                     <tr>
-                        <td align=right><div class="tucker">Do not download same job twice:</div></td>
+                        <td align=right><div class="tucker">Do Not Download Same Job Twice:</div></td>
                         <td><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /></td>
                         <td><small>Skip job if a backed-up NZB with the same name exists.</small></td>
                     </tr>
                     <tr>
                         <td align=right valign=top><div class="tucker">Only Get Articles for Top of the Queue:</div></td>
                         <td valign=top><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /></td>
-                        <td><small>Enable for less memory usage.<br/>Disable to prevent slow jobs from blocking the queue.</small></td>
+                        <td><small>Enable for less memory usage. Disable to prevent slow jobs from blocking the queue.</small></td>
                     </tr>
                 </table>
 
@@ -92,14 +92,14 @@
                     </td><td>
 
                         <strong>Extra PAR2 Parameters:</strong><br/>
-                        <small>Read the Wiki Help on this!</small><br/>
+                        <small>Read the <a href="$helpuri/$help_uri" target="_blank">Wiki Help</a> on this!</small><br/>
                         <input type="text" name="par_option" value="$par_option"/>
 
                 <!--#if $have_nice#-->
                     </td><td>
 
                         <strong>Nice Parameters:</strong><br/>
-                        <small>Read the Wiki Help on this!</small><br/>
+                        <small>Read the <a href="$helpuri/$help_uri" target="_blank">Wiki Help</a> on this!</small><br/>
                         <input type="text" name="nice" value="$nice"/>
                 <!--#end if#-->
 

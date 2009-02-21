@@ -10,34 +10,35 @@
                 <legend id="configbox_add_server">Add&nbsp;Usenet&nbsp;Server</legend>
                 
                 <table cellpadding=2>
-                    <tr><td align=right><div class="sucker">Host/IP:</div></td><td><input type="text" size="25" name="host"/></td></tr>
-                    <tr><td align=right><div class="sucker">Port:</div></td><td><input type="text" size="10" name="port"/></td></tr>
+                    <tr><td align="right"><div class="sucker">Host / IP:</div></td><td><input type="text" size="25" name="host"/></td></tr>
+                    <tr><td align="right"><div class="sucker">Port:</div></td><td><input type="text" size="10" name="port"/></td></tr>
                     <tr><td colspan=2>&nbsp;</td></tr>
-                    <tr><td align=right><div class="sucker">Username:</div></td><td><input type="text" size="25" name="username"/></td></tr>
-                    <tr><td align=right><div class="sucker">Password:</div></td><td><input type="password" size="25" name="password"/></td></tr>
+                    <tr><td align="right"><div class="sucker">Username:</div></td><td><input type="text" size="25" name="username"/></td></tr>
+                    <tr><td align="right"><div class="sucker">Password:</div></td><td><input type="password" size="25" name="password"/></td></tr>
                 </table>
                 
                 <br/>
                 
                 <table>
-                <tr><td align=right><div class="sucker">#&nbsp;Connections:</div></td><td><input type="text" size="5" name="connections"/></td></tr>
-                <tr><td align=right><div class="sucker">Timeout:</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>seconds</small></td></tr>
-                <tr><td align=right></td><td><br/>
-                    <input type="checkbox" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
-                    <strong>SSL&nbsp;Encrypted</strong> <!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->
-                </td></tr>
-                <tr><td align=right></td><td>
-                    <input type="checkbox" name="fillserver" value="1"/>
-                    <strong>Backup&nbsp;Server</strong>
-                </td></tr>
-                <tr><td align=right></td><td>
-                    <input type="checkbox" name="enable" value="1" checked="1"/>
-                    <strong>Enabled</strong>
-                </td></tr>
+                <tr><td align="right"><div class="sucker">#&nbsp;Connections:</div></td><td><input type="text" size="5" name="connections"/></td></tr>
+                <tr><td align="right"><div class="sucker">Timeout:</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>seconds</small></td></tr>
                 
-                <tr><td></td><td>
-                    <br/><input type="submit" value="Add Server"/>
-                </td></tr>
+                <td><td colspan="2">&nbsp;</td></tr>
+
+                <tr>
+                	<td align="right"><input type="checkbox" name="enable" id="enable" value="1" checked="1"/></td>
+                	<td><label for="enable"><strong>Enabled</strong></label></td>
+                </tr>
+                <tr>
+                	<td align="right"><input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/></td>
+                	<td><label for="ssl"><strong>SSL&nbsp;Encrypted</strong> <!--#if int($have_ssl) == 0 then "(disabled)" else ""#--></label></td>
+                </tr>
+                <tr>
+                	<td align="right"><input type="checkbox" name="fillserver" id="fillserver" value="1"/></td>
+                	<td><label for="fillserver"><strong>Backup&nbsp;Server</strong></label></td>
+                </tr>
+                
+                <tr><td></td><td><br/><input type="submit" value="Add"/></td></tr>
                 
                 </table>
                 
@@ -46,57 +47,51 @@
             
             <!--#set $slist = $servers.keys()#-->
             <!--#$slist.sort()#-->
+		    <!--#set $cur = 0#-->
             <!--#for $server in $slist#-->
+		    <!--#set $cur = $cur + 1#-->
             <form action="saveServer" method="post">
             <fieldset class="EntryFieldSet">
                 
                 <legend id="<!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server</legend>
                 
                 <table cellpadding=2>
-                    <tr><td align=right><div class="sucker">Host/IP:</div></td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>
-                    <tr><td align=right><div class="sucker">Port:</div></td><td><input type="text" size="10" name="port" value="$servers[$server]['port']"/></td></tr>
+                    <tr><td align="right"><div class="sucker">Host / IP:</div></td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>
+                    <tr><td align="right"><div class="sucker">Port:</div></td><td><input type="text" size="10" name="port" value="$servers[$server]['port']"/></td></tr>
                     <tr><td colspan=2>&nbsp;</td></tr>
-                    <tr><td align=right><div class="sucker">Username:</div></td><td><input type="text" size="25" name="username" value="$servers[$server]['username']"/></td></tr>
-                    <tr><td align=right><div class="sucker">Password:</div></td><td><input type="password" size="25" name="password" value="$servers[$server]['password']"/></td></tr>
+                    <tr><td align="right"><div class="sucker">Username:</div></td><td><input type="text" size="25" name="username" value="$servers[$server]['username']"/></td></tr>
+                    <tr><td align="right"><div class="sucker">Password:</div></td><td><input type="password" size="25" name="password" value="$servers[$server]['password']"/></td></tr>
                 </table>
                 
                 <br/>
                 
                 <table>
                 <tr>
-                    <td align=right><div class="sucker">#&nbsp;Connections:</div></td>
+                    <td align="right"><div class="sucker">#&nbsp;Connections:</div></td>
                     <td><input type="text" size="5" name="connections" value="$servers[$server]['connections']"/></td>
                 </tr>
                 <tr>
-                    <td align=right><div class="sucker">Timeout:</div></td>
+                    <td align="right"><div class="sucker">Timeout:</div></td>
                     <td><input type="text" size="5" name="timeout" value="$servers[$server]['timeout']"/>&nbsp;<small>seconds</small></td>
                 </tr>
+                <td><td colspan="2">&nbsp;</td></tr>
                 <tr>
-                    <td align=right></td>
-                    <td><br/>
-                    <input type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-                    <strong>SSL&nbsp;Encrypted</strong> <!--#if int($have_ssl) == 0 then "(disabled)" else ""#-->
-                    </td>
+                    <td align="right"><input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></td>
+                    <td><label for="enable$cur"><strong>Enabled</strong></label></td>
                 </tr>
                 <tr>
-                    <td align=right></td>
-                    <td>
-                        <input type="checkbox" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />
-                        <strong>Backup&nbsp;Server</strong>
-                    </td>
+                    <td align="right"><input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /></td>
+                    <td><label for="ssl$cur"><strong>SSL&nbsp;Encrypted</strong> <!--#if int($have_ssl) == 0 then "(disabled)" else ""#--></label></td>
                 </tr>
                 <tr>
-                    <td align=right></td>
-                    <td>
-                        <input type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> />
-                        <strong>Enabled</strong>
-                    </td>
+                    <td align="right"><input type="checkbox" name="fillserver" id="fillserver$cur" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /></td>
+                    <td><label for="fillserver$cur"><strong>Backup&nbsp;Server</strong></label></td>
                 </tr>
                 
-                <tr><td colspan=2>
+                <tr><td></td><td>
                     <br/><input type="hidden" name="server" value="$server"/>
-                    <input type="button" onclick="if(confirm('Are you sure you want to remove this server?')){this.form.action='delServer'; this.form.submit();} return false;" value="Remove Server"/>
-                    <input type="submit" value="&raquo; Save Changes"/>
+                    <input type="submit" value="Save"/>
+                    <input type="button" onclick="if(confirm('Are you sure you want to remove this server?')){this.form.action='delServer'; this.form.submit();} return false;" value="X"/>
                 </td></tr>
                 
                 </table>

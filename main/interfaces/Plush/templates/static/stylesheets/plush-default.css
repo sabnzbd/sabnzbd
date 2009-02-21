@@ -886,6 +886,7 @@ fieldset.EntryFieldSet {
 .left_links a, .right_links a {
     background-position: 5px 50%;
     background-repeat:no-repeat;
+    cursor:pointer;
 }
 #help {
     background-image: url(../images/plush-default/config/help.png);
@@ -971,6 +972,7 @@ fieldset.EntryFieldSet {
 .left_links {
     float: left;
     margin: 5px 0 0 10px;
+    padding-left: 20px;
 }
 
 .left_links a {
@@ -992,10 +994,6 @@ fieldset.EntryFieldSet {
     vertical-align: middle;
     padding-right: 5px;
     border-width: 0px;
-}
-
-.right_links a {
-    cursor:pointer;
 }
 
 .config_margin {

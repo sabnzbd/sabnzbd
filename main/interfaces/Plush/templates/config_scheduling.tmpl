@@ -63,7 +63,7 @@ else:
                     
                     <tr><td>
                     </td><td>
-                        <br/><input type="submit" value="Add Schedule"/>
+                        <br/><input type="submit" value="Add"/>
                     </td></tr>
                     
                 </table>
@@ -78,11 +78,10 @@ else:
             <div class="EntryBlock">
             <fieldset class="EntryFieldSet">
             <legend id="configbox_current_schedules">Current&nbsp;Schedules</legend>
+            <table>
             <!--#set $schednum = 0#-->
             <!--#for $line in $schedlines#-->
-            <form action="delSchedule" method="post">
                 <!--#set $schednum = $schednum+1#-->
-                <input type="hidden" name="line" value="$line"/>
 <% 
 m, h, day, action = line.split(' ', 3)
 if len(m) == 1:
@@ -104,10 +103,18 @@ elif day == "6":
 elif day == "7":
     day='Sunday'    
 %>
-                <input type="submit" value="X"/>&nbsp;&sdot;<u>Schedule&nbsp;#$schednum:</u>&nbsp;<strong>$h:$m</strong>&nbsp;&sdot;&nbsp;$day&nbsp;&sdot;&nbsp;$action
+	            <form action="delSchedule" method="post">
+	            <input type="hidden" name="line" value="$line"/>
+                <tr>
+                	<td><input type="submit" value="X"/></td>
+                	<td align="right"><strong>$h:$m</strong></td>
+                	<td>$day</td>
+                	<td>$action</td>
+                </tr>
+				</form>
                 
-            </form><br />
             <!--#end for#-->
+            </table>
             </fieldset>
             </div>
             <!--#end if#-->
