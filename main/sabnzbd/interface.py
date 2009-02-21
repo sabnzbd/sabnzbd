@@ -1527,6 +1527,10 @@ class ConfigGeneral:
         conf['web_dir2'] = add_color(cfg.WEB_DIR2.get(), cfg.WEB_COLOR2.get())
         conf['host'] = cfg.CHERRYHOST.get()
         conf['port'] = cfg.CHERRYPORT.get()
+        conf['https_port'] = cfg.HTTPS_PORT.get()
+        conf['https_cert'] = cfg.HTTPS_CERT.get()
+        conf['https_key'] = cfg.HTTPS_KEY.get()
+        conf['enable_https'] = cfg.ENABLE_HTTPS.get()
         conf['username'] = cfg.USERNAME.get()
         conf['password'] = cfg.PASSWORD.get_stars()
         conf['bandwith_limit'] = cfg.BANDWIDTH_LIMIT.get()
@@ -1540,15 +1544,24 @@ class ConfigGeneral:
         return template.respond()
 
     @cherrypy.expose
-    def saveGeneral(self, host = None, port = None, web_username = None, web_password = None, web_dir = None,
-                    web_dir2 = None, web_color = None,
-                    refresh_rate = None, rss_rate = None,
-                    bandwith_limit = None, cleanup_list = None, cache_limitstr = None, _dc = None):
+    def saveGeneral(self, host=None, port=None, 
+                    https_port=None, https_cert=None, https_key=None, enable_https=None,
+                    web_username=None, web_password=None, web_dir = None,
+                    web_dir2=None, web_color=None,
+                    refresh_rate=None, rss_rate=None,
+                    bandwith_limit=None, cleanup_list=None, cache_limitstr=None, _dc=None):
 
         cfg.CHERRYHOST.set(host)
         cfg.CHERRYPORT.set(port)
+        
+        cfg.ENABLE_HTTPS.set(enable_https)
+        cfg.HTTPS_PORT.set(https_port)
+        cfg.HTTPS_CERT.set(https_cert)
+        cfg.HTTPS_KEY.set(https_key)
+        
         cfg.USERNAME.set(web_username)
         cfg.PASSWORD.set(web_password)
+        
         cfg.BANDWIDTH_LIMIT.set(bandwith_limit)
         cfg.RSS_RATE.set(rss_rate)
         cfg.REFRESH_RATE.set(refresh_rate)

@@ -71,6 +71,35 @@
             <div class="EntryBlock">
             <fieldset class="EntryFieldSet">
                 
+                <legend id="configbox_web_server">HTTPS&nbsp;Support</legend>
+                <table cellpadding=2>
+                    <tr>
+                        <td><div class="tucker">Enable HTTPS:</div></td>
+                        <td><input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> /></td>
+                        <td><small>Enable accessing the interface from a HTTPS address.</small></td>
+                    </tr><tr>
+                        <strong>HTTPS Port:</strong><br/>
+                        <small>Port SABnzbd should listen on for HTTPS communication.</small><br/>
+                        <input type="text" name="https_port" value="$https_port"/>
+                        </td><td>
+                        
+                        <strong>HTTPS Certificate:</strong><br/>
+                        <small>File name or path to HTTPS Certificate.</small><br/>
+                        <input type="text" name="https_cert" value="$https_cert"/>
+                        </td></tr>
+
+                        <strong>HTTPS Key:</strong><br/>
+                        <small>File name or path to HTTPS Key.</small><br/>
+                        <input type="text" name="https_key" value="$https_key"/>
+                    </td></tr>
+                </table>
+                                                
+            </fieldset>
+            </div>
+            
+            <div class="EntryBlock">
+            <fieldset class="EntryFieldSet">
+                
                 <legend id="configbox_tuning">Tuning</legend>
                 <!--
                 <strong>Queue Auto-Refresh Interval:</strong><br/>

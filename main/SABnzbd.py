@@ -40,9 +40,12 @@ except:
     exit(1)
 
 import cherrypy
-if not cherrypy.__version__.startswith("3."):
-    print "Sorry, requires Python module Cherrypy 3.1.x"
+if not cherrypy.__version__.startswith("3.2"):
+    print "Sorry, requires Python module Cherrypy 3.2 (use the included version)"
     exit(1)
+    
+from cherrypy import _cpserver
+from cherrypy import _cpwsgi_server
 
 try:
     from sqlite3 import version as sqlite3_version
@@ -62,7 +65,7 @@ from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import Get_User_ShellFolders, launch_a_browser, from_units, \
      check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-     Panic_XPort, Notify, SplitHost, ConvertVersion, get_ext
+     Panic_XPort, Notify, SplitHost, ConvertVersion, get_ext, create_https_certificates
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -169,7 +172,7 @@ def print_help():
     print "  -v  --version            Print version information"
     print "  -c  --clean              Remove queue, cache and logs"
     print "  -p  --pause              Start in paused mode"
-    print "      --https              Webserver uses HTTPS only"
+    print "      --https <port>       Port to use for HTTPS server"
 
 def print_version():
     print """
@@ -384,7 +387,7 @@ def print_modules():
 
 
 #------------------------------------------------------------------------------
-def get_webhost(cherryhost, cherryport):
+def get_webhost(cherryhost, cherryport, https_port):
     """ Determine the webhost address and port,
         return (host, port, browserhost)
     """
@@ -457,11 +460,18 @@ def get_webhost(cherryhost, cherryport):
         logging.warning("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
 
     if cherryport == None:
-        cherryport= sabnzbd.cfg.CHERRYPORT.get_int()
+        cherryport = sabnzbd.cfg.CHERRYPORT.get_int()
     else:
         sabnzbd.cfg.CHERRYPORT.set(str(cherryport))
-
-    return cherryhost, cherryport, browserhost
+        
+    if https_port == None:
+        https_port = sabnzbd.cfg.HTTPS_PORT.get_int()
+    else:
+        sabnzbd.cfg.HTTPS_PORT.set(str(https_port))
+        # if the https port was specified, assume they want HTTPS enabling also
+        sabnzbd.cfg.ENABLE_HTTPS.set(True)
+        
+    return cherryhost, cherryport, browserhost, https_port
 
 def is_sabnzbd_running(url):
     import urllib2
@@ -485,6 +495,21 @@ def find_free_port(host, currentport, i=0):
             currentport+=5
             i+=1
     return -1
+
+def check_for_sabnzbd(url, upload_nzbs):
+    # Check for a running instance of sabnzbd(same version) on this port
+    if is_sabnzbd_running(url):
+        # Upload any specified nzb files to the running instance
+        if upload_nzbs:
+            from sabnzbd.utils.upload import upload_file
+            for f in upload_nzbs:
+                upload_file(url, f)
+        else:
+            # Launch the web browser and quit since sabnzbd is already running
+            launch_a_browser(url, force=True)
+        ExitSab(0)
+        return True
+    return False
 
 #------------------------------------------------------------------------------
 def main():
@@ -533,7 +558,7 @@ def main():
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'delay=', 'force',
-                                    'version', 'https', 'testlog'])
+                                    'version', 'https=', 'testlog'])
     except getopt.GetoptError:
         print_help()
         ExitSab(2)
@@ -543,6 +568,7 @@ def main():
     inifile = None
     cherryhost = None
     cherryport = None
+    https_port = None
     cherrypylogging = None
     clean_up = False
     logging_level = None
@@ -611,7 +637,7 @@ def main():
         elif opt in ('--force'):
             force_web = True
         elif opt in ('--https'):
-            https = True
+            https_port = int(arg)
         elif opt in ('--testlog'):
             testlog = True
             
@@ -654,38 +680,38 @@ def main():
         ExitSab(1)
 
     # Determine web host address
-    cherryhost, cherryport, browserhost = get_webhost(cherryhost, cherryport)
+    cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)
     
     # If an instance of sabnzbd(same version) is already running on this port, launch the browser
     # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
     # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
+    ## SSL
+    try:
+        cherrypy.process.servers.check_port(cherryhost, https_port)
+    except IOError, error:
+        if str(error) == 'Port not bound.':
+            pass
+        else:
+            url = 'https://%s:%s/' % (browserhost, https_port)
+            if not check_for_sabnzbd(url, upload_nzbs):
+                port = find_free_port(cherryhost, https_port)
+                if port > 0:
+                    cfg.HTTPS_PORT.set(port)
+                    cherryport = port
+    ## NonSSL       
     try:
         cherrypy.process.servers.check_port(cherryhost, cherryport)
     except IOError, error:
         if str(error) == 'Port not bound.':
             pass
         else:
-            if https:
-                scheme = 'https'
-            else:
-                scheme = 'http'
-            url = '%s://%s:%s/' % (scheme, browserhost, cherryport)
-            # Check for a running instance of sabnzbd(same version) on this port
-            if is_sabnzbd_running(url):
-                # Upload any specified nzb files to the running instance
-                if upload_nzbs:
-                    from sabnzbd.utils.upload import upload_file
-                    for f in upload_nzbs:
-                        upload_file('http', browserhost, cherryport, f)
-                else:
-                    # Launch the web browser and quit since sabnzbd is already running
-                    launch_a_browser(url, force=True)
-                ExitSab(0)
-            else:
+            url = 'http://%s:%s/' % (browserhost, cherryport)
+            if not check_for_sabnzbd(url, upload_nzbs):
                 port = find_free_port(cherryhost, cherryport)
                 if port > 0:
                     cfg.CHERRYPORT.set(port)
                     cherryport = port
+            
 
     if cherrypylogging == None:
         cherrypylogging = sabnzbd.cfg.LOG_WEB.get()
@@ -859,18 +885,25 @@ def main():
                             'error_page.401': sabnzbd.misc.error_page_401
                            })
 
-    ssl_ca = sabnzbd.cfg.SSL_CA.get_path()
-    ssl_key = sabnzbd.cfg.SSL_KEY.get_path()
-    if not (ssl_ca and os.path.exists(ssl_ca) and ssl_key and os.path.exists(ssl_key)):
-        ssl_ca = None
-
-    if https and not (ssl_ca and ssl_key):
-        logging.warning('Disabled HTTPS because of missing CA and KEY files')
-        https = False
-
-    if https:
-        cherrypy.config.update({'server.ssl_certificate' : ssl_ca,
-                                'server.ssl_private_key' : ssl_key})
+    https_cert = sabnzbd.cfg.HTTPS_CERT.get_path()
+    https_key = sabnzbd.cfg.HTTPS_KEY.get_path()
+    enable_https = sabnzbd.cfg.ENABLE_HTTPS.get()
+    if enable_https:
+        # If either the HTTPS certificate or key do not exist, make some self-signed ones.
+        if not (https_cert and os.path.exists(https_cert)) or not (https_key and os.path.exists(https_key)):
+            create_https_certificates(https_cert, https_key)
+    
+        if https_port and not (os.path.exists(https_cert) or os.path.exists(https_key)):
+            logging.warning('Disabled HTTPS because of missing CERT and KEY files')
+            https_port = False
+    
+        if https_port:
+            secure_server = _cpwsgi_server.CPWSGIServer()
+            secure_server.bind_addr = (cherryhost, https_port)
+            secure_server.ssl_certificate = https_cert
+            secure_server.ssl_private_key = https_key
+            adapter = _cpserver.ServerAdapter(cherrypy.engine, secure_server, secure_server.bind_addr)
+            adapter.subscribe()
 
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
@@ -923,8 +956,8 @@ def main():
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
-    if https:
-        launch_a_browser("https://%s:%s/sabnzbd" % (browserhost, cherryport))
+    if enable_https and https_port:
+        launch_a_browser("https://%s:%s/sabnzbd" % (browserhost, https_port))
     else:
         launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
 

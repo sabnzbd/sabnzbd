@@ -47,9 +47,8 @@ Activate a secondary skin (restart required!).<br>
 </select>
 </fieldset>
 </div>
-
 <fieldset class="EntryFieldSet">
-<legend>Web server account</legend>
+<legend>Web server authentication</legend>
 <strong>Username:</strong><br>
 Authentication username.<br>
 <input type="text" name="web_username" value="$username">
@@ -59,6 +58,28 @@ Authentication username.<br>
 Authentication password.<br>
 <input type="password" name="web_password" value="$password">
 </fieldset>
+
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+<legend>HTTPS Support</i></legend>
+<label><input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> /> <strong>Enable HTTPS</strong></label><br/>
+Enable accessing the interface from a HTTPS address.<br>
+<br/>
+<strong>HTTPS Port:</strong><br>
+Port SABnzbd should listen on for HTTPS communication.<br>
+<input type="text" name="https_port" value="$https_port">
+<br/>
+<br/>
+<strong>HTTPS Certificate:</strong><br/>
+File name or path to HTTPS Certificate.<br/>
+<input type="text" name="https_cert" value="$https_cert">
+<br/>
+<br/>
+<strong>HTTPS Key:</strong><br/>
+File name or path to HTTPS Key.<br/>
+<input type="text" name="https_key" value="$https_key">
+</fieldset>
+</div>
 
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">

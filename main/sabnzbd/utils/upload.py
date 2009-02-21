@@ -27,14 +27,14 @@ import sabnzbd.cfg as cfg
 from sabnzbd.misc import get_ext, get_filename
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
 
-def upload_file(scheme, host, port, fp):
+def upload_file(url, fp):
     """ Function for uploading nzbs to a running sabnzbd instance """
     try:
         fp = urllib.quote_plus(fp)
         pp = cfg.DIRSCAN_PP.get()
         script = cfg.DIRSCAN_SCRIPT.get()
         priority = cfg.DIRSCAN_PRIORITY.get()
-        url = '%s://%s:%s/api?mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (scheme, host, port, fp, pp, script, priority)
+        url = '%sapi?mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (url, fp, pp, script, priority)
         u = urllib2.urlopen(url)
     except:
         logging.error("Failed to upload file: %s", fp)

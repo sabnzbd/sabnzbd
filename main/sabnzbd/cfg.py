@@ -137,6 +137,11 @@ if os.name == 'nt':
     CHERRYPORT = OptionStr('misc','port', DEF_PORT_WIN)
 else:
     CHERRYPORT = OptionStr('misc','port', DEF_PORT_UNIX)
+if os.name == 'nt':
+    HTTPS_PORT = OptionStr('misc','https_port', DEF_PORT_WIN_SSL)
+else:
+    HTTPS_PORT = OptionStr('misc','https_port', DEF_PORT_UNIX_SSL)
+    
 USERNAME = OptionStr('misc', 'username')
 PASSWORD = OptionPassword('misc', 'password')
 BANDWIDTH_LIMIT = OptionStr('misc', 'bandwith_limit', 0)
@@ -155,8 +160,9 @@ LOG_LEVEL = OptionNumber('logging', 'log_level', 0, 0, 2)
 LOG_SIZE = OptionStr('logging', 'max_log_size', '5242880')
 LOG_BACKUPS = OptionNumber('logging', 'log_backups', 5, 1, 1024)
 
-SSL_CA = OptionDir('misc', 'ssl_ca', create=False)
-SSL_KEY = OptionDir('misc', 'ssl_key', create=False)
+HTTPS_CERT = OptionDir('misc', 'https_cert', 'server.cert', create=False)
+HTTPS_KEY = OptionDir('misc', 'https_key', 'server.key', create=False)
+ENABLE_HTTPS = OptionBool('misc', 'enable_https', False)
 
 # Internal options, not saved in INI file
 DEBUG_DELAY = OptionNumber('misc', 'debug_delay', 0, add=False)
@@ -174,5 +180,5 @@ def set_root_folders(home, lcldata, prog, interf):
     ADMIN_DIR.set_root(lcldata)
     DIRSCAN_DIR.set_root(home)
     LOG_DIR.set_root(lcldata)
-    SSL_CA.set_root(lcldata)
-    SSL_KEY.set_root(lcldata)
+    HTTPS_CERT.set_root(ADMIN_DIR.get_path())
+    HTTPS_KEY.set_root(ADMIN_DIR.get_path())

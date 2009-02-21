@@ -14,7 +14,7 @@
 
 			<label for "port" class="label">Port:</label>
 			<input type="text" name="port" value="$port">
-			<span class="tips">Post SABnzbd should listen on.</span>
+			<span class="tips">Port SABnzbd should listen on.</span>
 		<br class="clear" />
 
 			<label for "webuser" class="label">Web username:</label>
@@ -72,6 +72,31 @@
 			<span class="tips">Choose a secondary user interface (restart required!). Located at /sabnzbd/m/</span>
 		<br class="clear" />
 
+</fieldset>
+<fieldset class="EntryFieldSet">
+<legend>HTTPS Support</legend>
+<hr />
+
+		    <label><span class="label">Enable HTTPS:</span>
+		    <input class="radio" type="checkbox" name="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="1"' else ""#--> />
+			<span class="tips">Enable accessing the interface from a HTTPS address.</span></label>
+		<br class="clear" />
+		
+			<label for "https_port" class="label">HTTPS Port:</label>
+			<input type="text" name="https_port" value="$https_port">
+			<span class="tips">Port SABnzbd should listen on for HTTPS communication.</span>
+		<br class="clear" />
+		
+			<label for "https_cert" class="label">HTTPS Certificate:</label>
+			<input type="text" name="https_cert" value="$https_cert">
+			<span class="tips">File name or path to HTTPS Certificate.</span>
+		<br class="clear" />
+		
+			<label for "https_key" class="label">HTTPS Key:</label>
+			<input type="text" name="https_key" value="$https_key">
+			<span class="tips">File name or path to HTTPS Key.</span>
+		<br class="clear" />
+        
 </fieldset>
 
 <fieldset class="EntryFieldSet">
