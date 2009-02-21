@@ -357,7 +357,7 @@ class PostProcessor(Thread):
 
                     if cfg.IGNORE_SAMPLES.get() > 0:
                         remove_samples(workdir_complete)
-                    
+
                     ## TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
                     if not unpackError or parResult:
                         if newfiles and file_sorter.is_sortfile():
@@ -394,7 +394,7 @@ class PostProcessor(Thread):
                     if (not nzb_list) and cfg.EMAIL_ENDJOB.get():
                         if (cfg.EMAIL_ENDJOB.get() == 1) or (cfg.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
                             email.endjob(filename, msgid, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
-                                         {}, script, TRANS(script_log), script_ret)
+                                         nzo.get_unpack_info(), script, TRANS(script_log), script_ret)
 
                     if fname:
                         # Can do this only now, otherwise it would show up in the email

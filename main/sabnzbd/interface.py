@@ -762,7 +762,7 @@ class Wizard:
             info['custom_host'] = True
         else:
             info['custom_host'] = False
-        
+
         info['autobrowser'] = cfg.AUTOBROWSER.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
@@ -2203,12 +2203,8 @@ class ConnectionInfo:
     def testmail(self, _dc = None):
         logging.info("Sending testmail")
         pack = {}
-        pack[0] = {}
-        pack[0]['action1'] = 'done 1'
-        pack[0]['action2'] = 'done 2'
-        pack[1] = {}
-        pack[1]['action1'] = 'done 1'
-        pack[1]['action2'] = 'done 2'
+        pack['download'] = ['action 1', 'action 2']
+        pack['unpack'] = ['action 1', 'action 2']
 
         self.__lastmail= email.endjob('Test Job', 123, 'unknown', True,
                                       os.path.normpath(os.path.join(cfg.COMPLETE_DIR.get_path(), '/unknown/Test Job')),

@@ -24,10 +24,10 @@ Finished at $end_time
 Downloaded $size
 
 Results of the job:
-<!--#for $stage in $output #-->
-Stage $stage['name'] <!--#slurp#-->
-<!--#for $action in $stage['actions']#-->
-    $action : $stage['actions'][$action] <!--#slurp#-->
+<!--#for $stage in $stages #-->
+Stage $stage <!--#slurp#-->
+<!--#for $result in $stages[$stage]#-->
+    $result <!--#slurp#-->
 <!--#end for#-->
 <!--#end for#-->
 <!--#if $script!="" #-->
