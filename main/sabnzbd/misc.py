@@ -895,6 +895,8 @@ def format_time_string(seconds, days=0):
         seconds -= (seconds/60)*60
     if seconds > 0:
         completestr += '%s second%s ' % (seconds, s_returner(seconds))
+    elif not completestr:
+        completestr += '0 seconds'
 
     return completestr.strip()
 
@@ -944,3 +946,34 @@ except AttributeError:
             return disk_size / GIGI
         except:
             return 0.0
+        
+        
+def create_https_certificates(ssl_cert, ssl_key):
+    try:
+        from OpenSSL import crypto
+        from sabnzbd.utils.certgen import *
+    except:
+        logging.warning('pyopenssl module missing, please install for https access')
+        return False
+    
+    # Create the CA Certificate
+    cakey = createKeyPair(TYPE_RSA, 1024)
+    careq = createCertRequest(cakey, CN='Certificate Authority')
+    cacert = createCertificate(careq, (careq, cakey), serial, (0, 60*60*24*365*10)) # ten years
+    
+    fname = 'server'
+    cname = 'SABnzbd'
+    pkey = createKeyPair(TYPE_RSA, 1024)
+    req = createCertRequest(pkey, CN=cname)
+    cert = createCertificate(req, (cacert, cakey), serial, (0, 60*60*24*365*10)) # ten years
+    
+    # Save the key and certificate to disk
+    try:
+        open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
+        open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
+    except:
+        logging.error('Error creating SSL key and certificate')
+        logging.debug("Traceback: ", exc_info = True)
+        return False
+    
+    return True
