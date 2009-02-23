@@ -487,20 +487,20 @@ def error_page_401(status, message, traceback, version):
 # Syntax of online version file:
 #     <current-final-release>
 #     <url-of-current-final-release>
-#     <latest-beta-or-rc>
-#     <url-of-latest-beta/rc-release>
-# The latter two lines are only present when a beta/rc is available.
+#     <latest-alpha/beta-or-rc>
+#     <url-of-latest-alpha/beta/rc-release>
+# The latter two lines are only present when a alpha/beta/rc is available.
 # Formula for the version numbers (line 1 and 3).
-# - <major>.<minor>.<bugfix>[rc|beta]<cand>
+# - <major>.<minor>.<bugfix>[rc|beta|alpha]<cand>
 #
 # The <cand> value for a final version is assumned to be 99.
-# The <cand> value for the beta/rc version is 1..49, with RC getting
-# a boost of 50.
-# This is done to signal beta/rc users of availability of the final
+# The <cand> value for the beta/rc version is 1..98, with RC getting
+# a boost of 80 and Beta of 40.
+# This is done to signal alpha/beta/rc users of availability of the final
 # version (which is implicitly 99).
-# People will only be informed to upgrade to a higher beta/rc version, if
-# they are already using a beta/rc.
-# RC's are valued higher than Beta's.
+# People will only be informed to upgrade to a higher alpha/beta/rc version, if
+# they are already using an alpha/beta/rc.
+# RC's are valued higher than Beta's, which are valued higher than Alpha's.
 #
 ################################################################################
 
@@ -513,7 +513,9 @@ def ConvertVersion(text):
         version = int(m.group(1))*1000000 + int(m.group(2))*10000 + int(m.group(3))*100
         try:
             if m.group(4).lower() == 'rc':
-                version = version + 50
+                version = version + 80
+            elif m.group(4).lower() == 'beta':
+                version = version + 40
             version = version + int(m.group(5))
         except:
             version = version + 99
