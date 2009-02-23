@@ -5,6 +5,6 @@ Summary: SABnzbd-0.5.x
 Home-page: http://sourceforge.net/projects/sabnzbdplus
 Author: The SABnzbd Team
 Author-email: team@sabnzbd.org
-License: GNU General Public License 2 (GPL2)
+License: GNU General Public License 2 (GPL2 or later)
 Description: Fully automated Usenet Binary Downloader
 Platform: posix
