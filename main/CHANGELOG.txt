@@ -1,5 +1,87 @@
 -------------------------------------------------------------------------------
-0.4.3RC4 by The SABnzbd-Team
+0.4.7Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Support end-of-queue standby/shutdown for OSX
+- Solved accented character problems on OSX
+- OSX: Fall back to classic par2 when filenames contain accented characters
+- Reduce character filtering in filenames to absolute minumum
+- Do not remove ';' from foldernames
+- After file-joining, the .1 files are sometimes not removed
+- Scheduled or end-of-queue Hibernate and Standby sometimes crash.
+- When trimming newzbin titles do not add unique number (defeats duplicate detection)
+- Show correct free space for very large disks on Windows
+- Add "Date" header to emails
+- Unix/OSX: Do not change permissions of existing folders
+- Prevent creation of folders starting with a dot "."
+- Sort RSS previews newest-job-first
+- Names of compressed NZB files were not sanitized, leading to post-processing problems
+-------------------------------------------------------------------------------
+0.4.6Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Add option/parameters for ionice, default off (Linux)
+- Semicolon will be treated as an illegal character
+- Updated par2 and unrar for OSX
+- Fix problem with deleting nameless files from queue
+- Extra measures to prevent duplicate downloads in RSS feeds
+- "No duplicates" option
+  (Do not download an NZB whose name is already present in the backup folder)
+- Option to choose between transposing or removing illegal filename characters
+- Properly close server connections
+  This should prevent servers from complaining about "too many connections" after
+  pauses and empty queues
+- Restore the "auto-disconnect" option
+- Keep Windows awake while downloading/post-processing
+- Restore support for rar's with .nnn extensions
+- Removed warning for correct, but empty RSS feeds
+- Solved incorrect logging for OSX
+- Prevent change of cache and download folders when queues not empty
+-------------------------------------------------------------------------------
+0.4.5Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Proper handling of accented characters
+- Use ionice (if present) to run external utilities (Linux)
+- Support GZipped NZB files in RSS run
+- Allow override of the newzbin category in the RSS scanner
+- No longer disable RSS schedule flag when changing filters
+- Support RSS feeds from nzbindex.nl
+- API-addid did not accept "cat" parameter
+- Category-determined pp/script was not handled properly
+- IE and Opera could not delete first schedule
+- Plush did not show "download failed" message properly
+- Repaired pp/script derivation from category on main page
+- Repaired option handling for RSS feeds
+- Encrypted and obfusticated RAR files were deleted from the Watched folder
+  instead of ignored.
+- Retry on incomplete NZB files in RSS run
+- Reduce number of warnings for a single missing article
+- Map illegal file characters to look-alikes
+- Make sure PAR2 files always have lowercase extension
+- Solve hanging-unrar on Linux
+- Current (scheduled) speed should show in the speedbox
+- Retry malformed yEnc articles on other server(s)
+- Improve handling of underscores in TV Sorting
+- Refine TV Special support in TV Sorting
+- Prevent potential crash in Post-Processor crash for TV files
+- Refuse UNC paths in Windows for "incomplete" (due to par2)
+- Watched folder scanner crashed when file access is prohibited
+- Warning when no active primary servers are defined
+-------------------------------------------------------------------------------
+0.4.4Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix crashing Historypage when names contain accented characters
+- Clearing the download speed shows an error
+- Missing incomplete folder for a download causes par2 errors
+- Filtering files on extension in the queue can lead to failed jobs
+- Rename similar files in TV sorting
+- Better error reporting for problems with external programs
+- SMPL: Status does not always display Downloading when it should
+- RSS feeds not staying enabled through restart
+- Filtering files on extension in the queue can lead to failed jobs
+- Rename similar files in TV sorting
+- Un-openable RAR files crash the dirscanner
+- File-upload does not accept RARred NZB files
+-------------------------------------------------------------------------------
+0.4.3Final by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Dirscanner: if ignored file is replaced it will still be ignored
 - Accept RAR files that contain NZB-s as input.
@@ -35,7 +117,7 @@ changed: Plush improvements
 -------------------------------------------------------------------------------
 0.4.0RC5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
-fixed:   Prevent lockups of SSL during and after disconnect 
+fixed:   Prevent lockups of SSL during and after disconnect
 fixed:   In Plush replace Config->Directories by Config->Folders to conform
          to other skins and documentation.
 fixed:   Crash on Linux when "download" or "complete" folders are

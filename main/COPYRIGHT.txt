@@ -7,7 +7,6 @@ Current team:
     ShyPike <shypike@sabnzbd.org>
     sw1tch <switch@sabnzbd.org>
     pairofdimes <pairofdimes@sabnzbd.org>
-    deam <deam@sabnzbd.org>
     inpheaux <inpheaux@sabnzbd.org>
     rAf <rAf@sabnzbd.org>
 Honorary member (and original author)

@@ -75,7 +75,7 @@ Windows (binaries)
                             (You only need libeay32.dll and ssleay32.dll)
 
 Embedded modules (no need to install)
-    CherryPy-3.1.1          http://www.cherrypy.org
+    CherryPy-3.2pre         http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
