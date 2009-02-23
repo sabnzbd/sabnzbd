@@ -912,8 +912,6 @@ def main():
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
-    fp = '''X:\\TV\\Charlie Brooker's Screen Wipe\\Season 5'''
-    file_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': fp }
     
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
                  '/api' : {'tools.basic_auth.on' : False},
@@ -922,8 +920,7 @@ def main():
                  '/sabnzbd/static': static,
                  '/static': static,
                  '/sabnzbd/wizard/static': wizard_static,
-                 '/wizard/static': wizard_static,
-                 '/f': file_static
+                 '/wizard/static': wizard_static
                  }
 
     if web_dir2:
