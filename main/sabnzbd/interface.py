@@ -1586,7 +1586,7 @@ class ConfigGeneral:
         config.save_config()
 
         # Update CherryPy authentication
-        set_auth(cherrypy.request.app.config)
+        set_auth(cherrypy.config)
         raise Raiser(self.__root, _dc=_dc)
 
 def change_web_dir(web_dir):
