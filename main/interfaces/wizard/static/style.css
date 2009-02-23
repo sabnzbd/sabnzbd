@@ -30,6 +30,7 @@ body {
 	float:center;
 	/*margin-top:30px;*/
 	z-index:40;
+    margin-bottom:-40px;
 }
 
 hr {
@@ -71,7 +72,8 @@ hr {
 
 #rightGreyText {
     color:#ccc;
-    float:right;
+    width:100%;
+    text-align:right;
     padding-top:3px;
     font-style:italic;
 }
