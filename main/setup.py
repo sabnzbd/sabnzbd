@@ -1,6 +1,6 @@
 #!/usr/b in/env python
 #
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -108,7 +108,7 @@ def PairList(src):
         A dir returns for its root and each of its subdirs
             (path, <list-of-file>)
         Always return paths with Unix slashes.
-        Skip all SVN elements, .bak .pyc .pyo
+        Skip all SVN elements, .bak .pyc .pyo and *.~*
     """
     lst = []
     for item in src:
@@ -118,7 +118,7 @@ def PairList(src):
                 if path.find('.svn') < 0 and path.find('_svn') < 0 :
                     flist = []
                     for file in files:
-                        if not (file.endswith('.bak') or file.endswith('.pyc') or file.endswith('.pyo')):
+                        if not (file.endswith('.bak') or file.endswith('.pyc') or file.endswith('.pyo') or (file.find('~') >= 0)):
                             flist.append(os.path.join(root, file).replace('\\','/'))
                     if flist:
                         lst.append((path, flist))
@@ -257,7 +257,10 @@ data = [ 'README.txt',
          'Sample-PostProc.sh',
          'PKG-INFO',
          'licenses/',
-         'interfaces/',
+         'interfaces/Default/',
+         'interfaces/smpl/',
+         'interfaces/Plush/',
+         'interfaces/wizard/',
          'win/'
        ]
 
@@ -283,7 +286,7 @@ if target == 'app':
         os.system(SvnRevert)
         exit(1)
 
-    options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]
+    options['data_files'] = ['interfaces/Default', 'interfaces/smpl', 'interfaces/Plush', 'interfaces/wizard','osx/osx',('',glob.glob("osx/resources/*"))]
     options['options'] = {'py2app': {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns'}}
     options['app'] = ['SABnzbd.py']
     options['setup_requires'] = ['py2app']
@@ -376,7 +379,7 @@ else:
             front, ext = os.path.splitext(file)
             base = os.path.basename(file)
             fullname = os.path.normpath(os.path.abspath(dest + '/' + base))
-            if ext.lower() not in ('.pyc', '.pyo', '.bak'):
+            if (ext.lower() not in ('.pyc', '.pyo', '.bak')) and (ext.find('~') < 0):
                 shutil.copy2(file, dest)
                 Dos2Unix(fullname)
 
