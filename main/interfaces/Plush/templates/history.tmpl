@@ -3,6 +3,13 @@
 <script type="text/javascript">
 	if (typeof( jQuery ) == 'undefined')
 		window.location = "../"; // redirect to main on direct template hit
+    
+    // set vars within the plush object
+    jQuery(function($) {
+        $.plush.histnoofslots      = $noofslots;
+        $.plush.histstats = "<!--#if $lines#--><strong>$total_size</strong> In History&nbsp;&nbsp;&nbsp;&nbsp;<!--#end if #--><!--#if $month_size#--><strong>$month_size</strong> This Month&nbsp;&nbsp;&nbsp;&nbsp;<!--#end if #--><!--#if $week_size#--><strong>$week_size</strong> This Week<!--#end if #--><!--#if $loadavg#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$loadavg</strong> Load<!--#end if#-->";
+	});
+	
 </script>
 
 <a name="HIST"></a>
@@ -63,38 +70,3 @@
 <!--#end for#-->
 <!--#end if#-->
 </table>
-
-<div class="box_fatbottom">
-    <div class="right_stats" nowrap>
-        <!--#if $lines#-->
-        <strong>$total_size</strong> In History&nbsp;&nbsp;&nbsp;&nbsp;
-        <!--#end if #-->
-        <!--#if $month_size#-->
-		<strong>$month_size</strong> This Month&nbsp;&nbsp;&nbsp;&nbsp;
-        <!--#end if #-->
-        <!--#if $week_size#-->
-		<strong>$week_size</strong> This Week
-        <!--#end if #-->
-		<!--#if $loadavg#-->
-		&nbsp;&nbsp;&nbsp;&nbsp;<strong>$loadavg</strong> Load
-		<!--#end if#-->
-    </div>
-    <div class="left_stats">
-        <small>Showing:</small>&nbsp;<select id="history_view_preference">
-            <option value=0<!--#if $limit==0#--> selected<!--#end if#-->>Everything</option>
-            <option value=-1<!--#if $limit==-1#--> selected<!--#end if#-->>Active/Failed</option>
-            <option value=-2<!--#if $limit==-2#--> selected<!--#end if#-->>Latest 5 + A/F</option>
-            <option value=5<!--#if $limit==5#--> selected<!--#end if#-->>Latest 5</option>
-            <option value=10<!--#if $limit==10#--> selected<!--#end if#-->>Latest 10</option>
-            <option value=15<!--#if $limit==15#--> selected<!--#end if#-->>Latest 15</option>
-            <option value=20<!--#if $limit==20#--> selected<!--#end if#-->>Latest 20</option>
-            <option value=25<!--#if $limit==25#--> selected<!--#end if#-->>Latest 25</option>
-            <option value=30<!--#if $limit==30#--> selected<!--#end if#-->>Latest 30</option>
-            <option value=40<!--#if $limit==40#--> selected<!--#end if#-->>Latest 40</option>
-            <option value=50<!--#if $limit==50#--> selected<!--#end if#-->>Latest 50</option>
-            <option value=100<!--#if $limit==100#--> selected<!--#end if#-->>Latest 100</option>
-            <option value=200<!--#if $limit==200#--> selected<!--#end if#-->>Latest 200</option>
-        </select>&nbsp;<small>of</small>&nbsp;<strong>$cur</strong>&nbsp;<small>NZB<!--#if $cur != 1 #-->s<!--#end if#--></small>
-    </div>
-    <div class="history_logo">&nbsp;</div>
-</div>

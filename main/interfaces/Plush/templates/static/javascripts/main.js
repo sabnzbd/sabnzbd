@@ -55,21 +55,6 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}('(6($){$.J.K=6(f,g){8 5={y:7,l:I,H:0};5=$.u(5,g?{v:f,z:g}:f);8 d,b,k,i;8 h=6(3){d=3.G;b=3.B};8 m=6(3,2){2.4=o(2.4);9((w.x(k-d)+w.x(i-b))<5.y){$(2).D("n",h);2.j=1;c 5.v.t(2,[3])}E{k=d;i=b;2.4=r(6(){m(3,2)},5.l)}};8 C=6(3,2){2.4=o(2.4);2.j=0;c 5.z.t(2,[3])};8 q=6(e){8 p=(e.A=="s"?e.N:e.U)||e.T;R(p&&p!=a){S{p=p.O}P(e){p=a}}9(p==a){c Q}8 3=F.u({},e);8 2=a;9(2.4){2.4=o(2.4)}9(e.A=="s"){k=3.G;i=3.B;$(2).M("n",h);9(2.j!=1){2.4=r(6(){m(3,2)},5.l)}}E{$(2).D("n",h);9(2.j==1){2.4=r(6(){C(3,2)},5.H)}}};c a.s(q).L(q)}})(F);',57,57,'||ob|ev|hoverIntent_t|cfg|function||var|if|this|cY|return|cX||||track|pY|hoverIntent_s|pX|interval|compare|mousemove|clearTimeout||handleHover|setTimeout|mouseover|apply|extend|over|Math|abs|sensitivity|out|type|pageY|delay|unbind|else|jQuery|pageX|timeout|100|fn|hoverIntent|mouseout|bind|fromElement|parentNode|catch|false|while|try|relatedTarget|toElement'.split('|'),0,{}))
 
 
-/*
- * jQuery ifixpng plugin
- * (previously known as pngfix)
- * Version 3.1.2  (2008/09/01)
- * @requires jQuery v1.2.6 or above, or a lower version with the dimensions plugin
- * 
- * Based on the plugin by Kush M., http://jquery.khurshid.com
- *
- * Plugin page:
- * http://plugins.jquery.com/project/iFixPng2
- *
- */
-eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}(';(9($){$.b=9(G){$.b.z=G};$.b.s={K:/^1a\\(["\']?(.*\\.R([?].*)?)["\']?\\)$/i,h:/.*\\.R([?].*)?$/i},$.b.P=9(){o $.b.z||\'1e/z.1n\'};f g={p:$(\'p\').A(\'1o\'),N:$.L.1j&&$.L.1h<7,n:9(8){o"1k:1l.1m.1g(1f=19,18=1b,8=\'"+8+"\')"}};$.12.b=g.N?9(){9 w(Q,j,e,a,1d){Q.4({n:g.n(j),e:e,a:a}).A({8:$.b.P()}).t()}o 3.15(9(){f $$=$(3);6($$.O(\'h\')||$$.O(\'1A\')){f j,h;6(3.8&&3.8.M($.b.s.h)){j=(g.p&&3.8.1z(0,1)!=\'/\'&&3.8.1p(g.p)===-1)?g.p+3.8:3.8;6(!3.e||!3.a){$(H J()).T(\'E\',9(){w($$,j,3.e,3.a);$(3).Z()}).A(\'8\',j)}m w($$,j,3.e,3.a)}}m 6(3.Y){f k=$$.4(\'B\');6(k&&k.M($.b.s.K)&&3.v.1x==\'1s-1q\'){k=1t.$1;f x=3.v.1u||0,y=3.v.1v||0;6(x||y){f 4={},h;6(D x!=\'C\'){6(x==\'d\')4.d=0;m 6(x==\'I\')4.I=$$.e()%2===1?-1:0;m 4.d=x}6(D y!=\'C\'){6(y==\'F\')4.F=$$.a()%2===1?-1:0;m 6(y==\'c\')4.c=0;m 4.c=y}h=H J();$(h).T(\'E\',9(){f x,y,l={},r;6(/q|%/.14(4.c)){l.c="(3.13.S - 3.S) * "+(4.c==\'q\'?0.5:(11(4.c)/W));V 4.c}6(/q|%/.14(4.d)){l.d="(3.13.16 - 3.16) * "+(4.d==\'q\'?0.5:(11(4.d)/W));V 4.d}$$.t().4({B:\'10\'}).1w($(\'<U></U>\').4(4).4({e:3.e,a:3.a,u:\'17\',n:g.n(k)}));6(l.c||l.d){f X=$$.1y(\':1D\')[0];1B(r 1C l)X.Y.1r(r,l[r],\'1i\')}$(3).Z()});h.8=k}m{$$.4({B:\'10\',n:g.n(k)})}}}})}:9(){o 3};$.12.t=9(){o 3.15(9(){f $$=$(3);6($$.4(\'u\')!=\'17\')$$.4({u:\'1c\'})})}})(1E);',62,103,'|||this|css||if||src|function|height|ifixpng|top|left|width|var|hack|img||source|imageSrc|expr|else|filter|return|base|center|prop|regexp|positionFix|position|currentStyle|fixImage|||pixel|attr|backgroundImage|undefined|typeof|load|bottom|customPixel|new|right|Image|bg|browser|match|ltie7|is|getPixel|image|png|offsetHeight|one|div|delete|100|elem|style|remove|none|parseInt|fn|parentNode|test|each|offsetWidth|absolute|sizingMethod|true|url|crop|relative|hidden|images|enabled|AlphaImageLoader|version|JavaScript|msie|progid|DXImageTransform|Microsoft|gif|href|indexOf|repeat|setExpression|no|RegExp|backgroundPositionX|backgroundPositionY|prepend|backgroundRepeat|children|substring|input|for|in|first|jQuery'.split('|'),0,{}))
-
-
 /*! Copyright (c) 2008 Brandon Aaron (http://brandonaaron.net)
  * Dual licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) 
  * and GPL (http://www.opensource.org/licenses/gpl-license.php) licenses.
@@ -86,6 +71,172 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
  * Copyright (c) 2008 Michael Mitchell - http://www.michaelmitchell.co.nz
  */
 eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('(1($){$.13.14=1(a){a=$.B({3:\'H\',5:\'15/C-16\',6:\'\',v:I,o:1(){},p:1(){},q:1(){},7:{}},a);r D $.E(z,a)},$.E=1(f,g){2 h=z;2 i=D 17().18().19().1a(8);2 j=$(\'<w \'+\'1b="w\'+i+\'" \'+\'3="w\'+i+\'"\'+\'></w>\').s({J:\'1c\'});2 k=$(\'<C \'+\'1d="1e" \'+\'5="\'+g.5+\'" \'+\'6="\'+g.6+\'" \'+\'1f="w\'+i+\'"\'+\'></C>\').s({K:0,L:0});2 l=$(\'<M \'+\'3="\'+g.3+\'" \'+\'N="H" \'+\'/>\').s({O:\'P\',J:\'1g\',1h:-1i+\'t\',1j:0});f.1k(\'<Q></Q>\');k.R(l);f.S(k);f.S(j);2 m=f.1l().s({O:\'P\',T:f.1m()+\'t\',1n:f.1o()+\'t\',1p:\'U\',1q:\'1r\',K:0,L:0});l.s(\'1s\',-m.T()-10+\'t\');m.1t(1(e){l.s({V:e.1u-m.W().V+\'t\',X:e.1v-m.W().X+\'t\'})});l.1w(1(){h.q();u(h.v){h.F()}});$.B(z,{v:I,o:g.o,p:g.p,q:g.q,1x:1(){r l.9(\'G\')},7:1(a){2 a=a?a:x;u(a){g.7=$.B(g.7,a)}y{r g.7}},3:1(a){2 a=a?a:x;u(a){l.9(\'3\',G)}y{r l.9(\'3\')}},6:1(a){2 a=a?a:x;u(a){k.9(\'6\',a)}y{r k.9(\'6\')}},5:1(a){2 a=a?a:x;u(a){k.9(\'5\',a)}y{r k.9(\'5\')}},Y:1(c,d){2 d=d?d:x;1 A(a,b){1y(a){1z:1A D 1B(\'[Z.E.Y] \\\'\'+a+\'\\\' 1C 1D 1E A.\');4;n\'3\':h.3(b);4;n\'6\':h.6(b);4;n\'5\':h.5(b);4;n\'7\':h.7(b);4;n\'v\':h.v=b;4;n\'o\':h.o=b;4;n\'p\':h.p=b;4;n\'q\':h.q=b;4}}u(d){A(c,d)}y{$.11(c,1(a,b){A(a,b)})}},F:1(){z.o();$.11(g.7,1(a,b){k.R($(\'<M \'+\'N="U" \'+\'3="\'+a+\'" \'+\'G="\'+b+\'" \'+\'/>\'))});k.F();j.1F().1G(1(){2 a=12.1H(j.9(\'3\'));2 b=$(a.1I.12.1J).1K();h.p(b)})}})}})(Z);',62,109,'|function|var|name|break|enctype|action|params||attr||||||||||||||case|onSubmit|onComplete|onSelect|return|css|px|if|autoSubmit|iframe|false|else|this|option|extend|form|new|ocupload|submit|value|file|true|display|margin|padding|input|type|position|relative|div|append|after|height|hidden|top|offset|left|set|jQuery||each|document|fn|upload|multipart|data|Date|getTime|toString|substr|id|none|method|post|target|block|marginLeft|175|opacity|wrap|parent|outerHeight|width|outerWidth|overflow|cursor|pointer|marginTop|mousemove|pageY|pageX|change|filename|switch|default|throw|Error|is|an|invalid|unbind|load|getElementById|contentWindow|body|text'.split('|'),0,{}))
+
+
+/**
+ * Pagination jQuery plugin
+ *
+ * @author Gabriel Birke (birke *at* d-scribe *dot* de)
+ * @version 1.2
+ */
+jQuery.fn.pagination = function(maxentries, opts){
+	opts = jQuery.extend({
+		items_per_page:10,
+		num_display_entries:10,
+		current_page:0,
+		num_edge_entries:0,
+		link_to:"#",
+		prev_text:"Prev",
+		next_text:"Next",
+		ellipse_text:"...",
+		prev_show_always:true,
+		next_show_always:true,
+		callback:function(){return false;}
+	},opts||{});
+	
+	return this.each(function() {
+		/**
+		 * Calculate the maximum number of pages
+		 */
+		function numPages() {
+			return Math.ceil(maxentries/opts.items_per_page);
+		}
+		
+		/**
+		 * Calculate start and end point of pagination links depending on 
+		 * current_page and num_display_entries.
+		 * @return {Array}
+		 */
+		function getInterval()  {
+			var ne_half = Math.ceil(opts.num_display_entries/2);
+			var np = numPages();
+			var upper_limit = np-opts.num_display_entries;
+			var start = current_page>ne_half?Math.max(Math.min(current_page-ne_half, upper_limit), 0):0;
+			var end = current_page>ne_half?Math.min(current_page+ne_half, np):Math.min(opts.num_display_entries, np);
+			return [start,end];
+		}
+		
+		/**
+		 * This is the event handling function for the pagination links. 
+		 * @param {int} page_id The new page number
+		 */
+		function pageSelected(page_id, evt){
+			current_page = page_id;
+			drawLinks();
+			var continuePropagation = opts.callback(page_id, panel);
+			if (!continuePropagation) {
+				if (evt.stopPropagation) {
+					evt.stopPropagation();
+				}
+				else {
+					evt.cancelBubble = true;
+				}
+			}
+			return continuePropagation;
+		}
+		
+		/**
+		 * This function inserts the pagination links into the container element
+		 */
+		function drawLinks() {
+			panel.empty();
+			var interval = getInterval();
+			var np = numPages();
+			// This helper function returns a handler function that calls pageSelected with the right page_id
+			var getClickHandler = function(page_id) {
+				return function(evt){ return pageSelected(page_id,evt); }
+			}
+			// Helper function for generating a single link (or a span tag if it's the current page)
+			var appendItem = function(page_id, appendopts){
+				page_id = page_id<0?0:(page_id<np?page_id:np-1); // Normalize page id to sane value
+				appendopts = jQuery.extend({text:page_id+1, classes:""}, appendopts||{});
+				if(page_id == current_page){
+					var lnk = jQuery("<span class='current'>"+(appendopts.text)+"</span>");
+				}
+				else
+				{
+					var lnk = jQuery("<a>"+(appendopts.text)+"</a>")
+						.bind("click", getClickHandler(page_id))
+						; //.attr('href', opts.link_to.replace(/__id__/,page_id)); // modification by pairofdimes
+						
+						
+				}
+				if(appendopts.classes){lnk.addClass(appendopts.classes);}
+				panel.append(lnk);
+			}
+			// Generate "Previous"-Link
+			if(opts.prev_text && (current_page > 0 || opts.prev_show_always)){
+				appendItem(current_page-1,{text:opts.prev_text, classes:"prev"});
+			}
+			// Generate starting points
+			if (interval[0] > 0 && opts.num_edge_entries > 0)
+			{
+				var end = Math.min(opts.num_edge_entries, interval[0]);
+				for(var i=0; i<end; i++) {
+					appendItem(i);
+				}
+				if(opts.num_edge_entries < interval[0] && opts.ellipse_text)
+				{
+					jQuery("<span>"+opts.ellipse_text+"</span>").appendTo(panel);
+				}
+			}
+			// Generate interval links
+			for(var i=interval[0]; i<interval[1]; i++) {
+				appendItem(i);
+			}
+			// Generate ending points
+			if (interval[1] < np && opts.num_edge_entries > 0)
+			{
+				if(np-opts.num_edge_entries > interval[1]&& opts.ellipse_text)
+				{
+					jQuery("<span>"+opts.ellipse_text+"</span>").appendTo(panel);
+				}
+				var begin = Math.max(np-opts.num_edge_entries, interval[1]);
+				for(var i=begin; i<np; i++) {
+					appendItem(i);
+				}
+				
+			}
+			// Generate "Next"-Link
+			if(opts.next_text && (current_page < np-1 || opts.next_show_always)){
+				appendItem(current_page+1,{text:opts.next_text, classes:"next"});
+			}
+		}
+		
+		// Extract current_page from options
+		var current_page = opts.current_page;
+		// Create a sane value for maxentries and items_per_page
+		maxentries = (!maxentries || maxentries < 0)?1:maxentries;
+		opts.items_per_page = (!opts.items_per_page || opts.items_per_page < 0)?1:opts.items_per_page;
+		// Store DOM element for easy access from all inner functions
+		var panel = jQuery(this);
+		// Attach control functions to the DOM element 
+		this.selectPage = function(page_id){ pageSelected(page_id);}
+		this.prevPage = function(){ 
+			if (current_page > 0) {
+				pageSelected(current_page - 1);
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		this.nextPage = function(){ 
+			if(current_page < numPages()-1) {
+				pageSelected(current_page+1);
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+		// When all initialisation is done, draw the links
+		drawLinks();
+        // call callback function
+        //opts.callback(current_page, this); // modification by pairofdimes
+	});
+}
+
 
 
 /**
@@ -172,6 +323,8 @@ jQuery(function($) {
         historyViewPreference : 15,       // history nzb limiter
         focusedOnSpeedChanger : false,    // don't update speed limit when editing + queue refreshes
         nzbupload 			  : null,	  // used in kludge to fix jquery ocupload plugin, see initUpload()
+        histnoofslots:0,	// pagination placeholder
+        histcurpage:0,		// pagination placeholder
         
         
         /********************************************
@@ -227,12 +380,17 @@ jQuery(function($) {
         *********************************************
         ********************************************/
 
-        refreshHistory : function() {
+        refreshHistory : function(page) {
         
+        	if (typeof( page ) == 'undefined')
+				page = $.plush.histcurpage;
+			else if (page != $.plush.histcurpage)
+				$.plush.histcurpage = page;
+        	
             $.ajax({
                 type: "POST",
 				url: "history/",
-                data: 'limit='+$.plush.historyViewPreference,
+                data: 'start='+(page*10)+'&limit=10',
                 success: function(result){
                     $('#history').html(result);
                 }
@@ -389,7 +547,7 @@ jQuery(function($) {
                         url: "tapi",
 						data: "mode=queue&name=delete&value=all",
                         success: function(){
-                        	$.plush.refreshQueue()
+                        	$.plush.refreshQueue();
                         }
                     });
                 }
@@ -575,8 +733,8 @@ jQuery(function($) {
                 $('#queueTable').bind("mouseout", function(){ $.plush.skipRefresh=false; });
                 $('.box_fatbottom').bind("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
                 
-                // tooltips for options & time left / ETA
-                $('#time-left, select').tooltip({
+                // tooltips for time left / ETA
+                $('#time-left').tooltip({
                     extraClass:    "tooltip",
                     track:        true, 
                     fixPNG:        true
@@ -606,7 +764,7 @@ jQuery(function($) {
             
             // queue singular nzb deletion
             $('#queue').click(function(event) {
-                if ($(event.target).is('.queue_delete') && confirm('Delete NZB? Are you sure?') ) {
+                if ($(event.target).is('.queue_delete')) {
                     delid = $(event.target).parent().parent().attr('id');
                     $('#'+delid).fadeOut('fast');
 	                $.ajax({
@@ -634,7 +792,7 @@ jQuery(function($) {
 						url: "tapi",
                         data: 'mode=history&name=delete&value=all',
                         success: function(){
-                            $.plush.refreshHistory()
+                            $.plush.refreshHistory();
                         }
                     });
                 }
@@ -654,20 +812,26 @@ jQuery(function($) {
             });
             
             // this code will remain instantiated even when the contents of the history change
-            $('#history .left_stats').livequery(function() {
-
-                // history view limiter
-                $('#history_view_preference').change(function(){
-                    $.plush.historyViewPreference = $('#history_view_preference').val();
-                    $.cookie('history_view_preference', $.plush.historyViewPreference, { expires: 365 });
-                    $.plush.refreshHistory();
-                });
-
-            }); // end livequery
-            
-            // this code will remain instantiated even when the contents of the history change
             $('#historyTable').livequery(function() {
                 
+				if ($.plush.histnoofslots > 0) {
+					// pagination
+					$("#history-pagination").pagination( $.plush.histnoofslots , {
+						current_page: $.plush.histcurpage,
+						items_per_page: 10,
+						num_display_entries: 8,
+						num_edge_entries: 1,
+						prev_text: "&laquo;",
+						next_text: "&raquo;",
+						callback: $.plush.refreshHistory
+					});
+				} else {
+					$("#history-pagination").html('');
+				}
+
+                // update bottom right stats
+                $('#history_stats').html($.plush.histstats);
+
                 // tooltips for verbose notices
                 $('#history .verbose div, #history .tip').tooltip({
                     extraClass:    "tooltip",
@@ -698,9 +862,6 @@ jQuery(function($) {
                 track:        true, 
                 fixPNG:        true
             });
-            
-            // fix IE6 .png image transparencies
-            $('img[@src$=.png], div.history_logo, div.queue_logo, li.q_menu_addnzb, li.q_menu_pause, li.h_menu_verbose, li.h_menu_purge, div#time-left, div#speed').ifixpng();
             
         }, // end initEvents()
         

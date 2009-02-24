@@ -43,6 +43,37 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 #tooltip h3, #tooltip div { margin: 0; }
 
 
+/* for jQuery Pagination Plugin */
+.pagination {
+	font-size: 100%;
+	margin-left: -15px;
+	margin-top: -15px;
+}
+.pagination a {
+    text-decoration: none;
+	border: solid 1px #B1B1B1;
+	background:#E0E0E0;
+	color: #000;
+	cursor: pointer;
+}
+.pagination a, .pagination span {
+    display: block;
+    float: left;
+    padding: 0.3em 0.5em;
+    margin-right: 5px;
+	margin-bottom: 5px;
+}
+.pagination .current {
+    background: #FFF;
+    color: #000;
+	border: solid 1px #B1B1B1;
+}
+.pagination .current.prev, .pagination .current.next{
+	color:#FFF;
+	border-color:#B1B1B1;
+	background:#E0E0E0;
+}
+
 
 
 /* ---------------------------------------------------------------------------------------------------------------

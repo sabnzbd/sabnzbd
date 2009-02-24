@@ -1,6 +1,6 @@
 
 ==============================================
-== Plush 3.0 for SABnzbd+ 0.5 | Feb 09 2009 ==
+== Plush 3.0 for SABnzbd+ 0.5 | Feb 23 2009 ==
 
 ============
 ASSEMBLED BY
@@ -10,14 +10,13 @@ pairofdimes (See LICENSE-CC.txt)
 ==============
 SPECIAL THANKS
 
-shypike for making this all happen in the first place
-switch for bringing so many new enhancements to the web interfaces
-injectx for the new concept design and imagery
-real_scud for creating the new HTML/CSS layout
-inpheaux for the Config concept & assembly and SABnzbd+ logo
+switch for the API and so many new features
+shypike for making this all happen
+inpheaux for the Config concept/assembly and SABnzbd+ logo
+injectx for the initial layout concept, design and imagery
+real_scud for building out the initial HTML/CSS layout
 sbultez for creating numerous history verbosity icons
-rAf for pause/resume icons
-blis102 for the original Nova & Plush concepts
+rAf for nzb pause/resume icons
 
 ============
 KNOWN ISSUES
@@ -57,11 +56,6 @@ http://cherne.net/brian/resources/jquery.hoverIntent.html
 Brian Cherne
 See LICENSE-MIT & LICENSE-GPL
 
-jQuery ifixpng
-http://jquery.khurshid.com/ifixpng.php
-Copyright (c) 2007 Kush M.
-See LICENSE-MIT & LICENSE-GPL
-
 jQuery Live Query
 http://plugins.jquery.com/project/livequery
 Copyright (c) 2007 Brandon Aaron
@@ -71,6 +65,11 @@ jQuery One Click Upload
 http://www.michaelmitchell.co.nz
 Copyright (c) 2008 Michael Mitchell
 See LICENSE-MIT & LICENSE-GPL
+
+jQuery Pagination (with minor modifications from pairofdimes, where noted)
+http://plugins.jquery.com/project/pagination
+Author: Gabriel Birke, Describe Europe Ltd.
+See LICENSE-GPL
 
 jQuery preloadCssImages
 http://www.filamentgroup.com/lab/update_automatically_preload_images_from_css_with_jquery/
