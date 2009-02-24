@@ -840,7 +840,7 @@ class Wizard:
         info = self.info.copy()
         info['num'] = 'Five'
         info['number'] = 5
-        info['helpuri'] = 'http://sabnzbd.wikidot.com'
+        info['helpuri'] = 'http://sabnzbd.wikidot.com/'
         # Access_url is used to provide the user a link to sabnzbd depending on the host
         access_uri = 'localhost'
         cherryhost = cfg.CHERRYHOST.get()
@@ -1544,7 +1544,7 @@ class ConfigGeneral:
         return template.respond()
 
     @cherrypy.expose
-    def saveGeneral(self, host=None, port=None, 
+    def saveGeneral(self, host=None, port=None,
                     https_port=None, https_cert=None, https_key=None, enable_https=None,
                     web_username=None, web_password=None, web_dir = None,
                     web_dir2=None, web_color=None,
@@ -1553,15 +1553,15 @@ class ConfigGeneral:
 
         cfg.CHERRYHOST.set(host)
         cfg.CHERRYPORT.set(port)
-        
+
         cfg.ENABLE_HTTPS.set(enable_https)
         cfg.HTTPS_PORT.set(https_port)
         cfg.HTTPS_CERT.set(https_cert)
         cfg.HTTPS_KEY.set(https_key)
-        
+
         cfg.USERNAME.set(web_username)
         cfg.PASSWORD.set(web_password)
-        
+
         cfg.BANDWIDTH_LIMIT.set(bandwith_limit)
         cfg.RSS_RATE.set(rss_rate)
         cfg.REFRESH_RATE.set(refresh_rate)
@@ -2429,7 +2429,7 @@ def build_header(prim):
     if speed_limit <= 0:
         speed_limit = ''
 
-    header['helpuri'] = 'http://sabnzbd.wikidot.com'
+    header['helpuri'] = 'http://sabnzbd.wikidot.com/'
     header['diskspace1'] = "%.2f" % diskfree(cfg.DOWNLOAD_DIR.get_path())
     header['diskspace2'] = "%.2f" % diskfree(cfg.COMPLETE_DIR.get_path())
     header['diskspacetotal1'] = "%.2f" % disktotal(cfg.DOWNLOAD_DIR.get_path())

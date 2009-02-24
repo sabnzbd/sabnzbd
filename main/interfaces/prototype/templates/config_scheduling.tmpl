@@ -1,5 +1,5 @@
 <div id="formPanel">
-<a href="$helpuri/Configure+Scheduling" id="help">Help</a><h3>Scheduling configuration</h3>
+<a href="${helpuri}Configure+Scheduling" id="help">Help</a><h3>Scheduling configuration</h3>
 <br class="clear" />
 <div class="EntryBlock">
 <form class="cmxform" id="schedule">
@@ -8,7 +8,7 @@
  <br class="clear" />
  <%import time
 t = time.localtime()
-hour = t[3] 
+hour = t[3]
 if hour != 23:
     hour += 1
 else:
@@ -60,7 +60,7 @@ else:
 <form id="$line">
 
 <!--#set $schednum = $schednum+1#-->
-<% 
+<%
 m, h, day, action = line.split(' ', 3)
 if len(m) == 1:
     m = '0%s' % m
@@ -69,17 +69,17 @@ if day == "*":
 elif day == "1":
     day='Monday'
 elif day == "2":
-    day='Tuesday'    
+    day='Tuesday'
 elif day == "3":
-    day='Wednesday'    
+    day='Wednesday'
 elif day == "4":
-    day='Thursday' 
+    day='Thursday'
 elif day == "5":
     day='Friday'
 elif day == "6":
-    day='Saturday' 
+    day='Saturday'
 elif day == "7":
-    day='Sunday'    
+    day='Sunday'
 %>
 Task $schednum: <strong>$h:$m</strong> - $day - $action
 <input type="hidden" name="line" value="$line">

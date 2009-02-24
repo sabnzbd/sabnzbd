@@ -1,6 +1,6 @@
 <div id="formPanel">
-<a href="$helpuri/configure-categories" id="help">Help</a><h3>User-defined categories</h3><br class="clear" /><br class="clear" />
-    
+<a href="${helpuri}configure-categories" id="help">Help</a><h3>User-defined categories</h3><br class="clear" /><br class="clear" />
+
 
 Defines post-processing and storage.<br/>
 <!--#if $varExists('newzbinDetails')#-->
@@ -31,16 +31,16 @@ You can also specify the full path.<br/>
         <tr id="<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->" class="<!--#if $odd then "odd" else "even"#-->">
 
         <td><!--#if $slot.name#-->
-            
+
 
             <input type="submit" value="X" onclick="javascript:lr('config/categories/delete','name=<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->')">
-  
-            
+
+
             <!--#end if#-->
         </td>
 
- 
-        
+
+
             <td><input type="hidden" value="$slot.name" name="name"><input type="text" name="newname" value="$slot.name"></td>
 
             <td><select name="pp">
@@ -62,7 +62,7 @@ You can also specify the full path.<br/>
             <!--#end if#-->
 
             <td><input type="text" size=35 name="dir" value="$slot.dir"></td>
-            
+
             <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"></td>
 
             <td><input type="submit" value="Save" onclick="javascript:submitconfig('config/categories/save', 'submitstatus','<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'formPanel'<!--#end if#-->)">

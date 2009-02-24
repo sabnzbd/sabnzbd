@@ -1,5 +1,5 @@
 
-<a href="$helpuri/Configure+Sorting" id="help">Help</a><h3>Sorting configuration</h3>
+<a href="${helpuri}Configure+Sorting" id="help">Help</a><h3>Sorting configuration</h3>
 <!--action="config/directories/saveDirectories" method="post"-->
 <form id="configSorting" class="cmxform" action="">
 <div class="EntryBlock">
@@ -7,7 +7,7 @@
 <input id="complete_dir" type="hidden" value="$complete_dir" />
 <legend>Series Sorting</legend>
 <hr />
-    
+
     <label><span class="label">Enable Series Sorting:</span>
     <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> />
     <span class="tips">Enable sorting and renaming of episodes.</span></label>
@@ -259,7 +259,7 @@
     <input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="Year-Month Folders"/>
     <input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="Daily Folders"/><br class="clear" />
     Example: <span id="previewdate"></span>
-    
+
 </fieldset>
 
 

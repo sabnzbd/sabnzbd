@@ -1,5 +1,5 @@
 
-<a href="$helpuri/Configure+General" id="help">Help</a><h3>General configuration</h3>
+<a href="${helpuri}Configure+General" id="help">Help</a><h3>General configuration</h3>
 <form class="cmxform" id="configGeneral">
 
 <fieldset class="EntryFieldSet">
@@ -40,7 +40,7 @@
 			</select>
 			<span class="tips">Choose a user interface (restart required!).</span>
 		<br class="clear" />
-        
+
             <!--#if $web_colors#-->
             <label for "colorscheme" class="label">Color schema:</label>
             <select name="web_color" class="select">
@@ -57,7 +57,7 @@
             <span class="tips">Choose a color scheme for the current interface.</span>
             <!--#end if#-->
             <br class="clear" />
-            
+
 			<label for "userinterface" class="label">Secondary Skin:</label>
 
 			<select name="web_dir2" id="webdir2" class="select">
@@ -81,22 +81,22 @@
 		    <input class="radio" type="checkbox" name="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="1"' else ""#--> />
 			<span class="tips">Enable accessing the interface from a HTTPS address.</span></label>
 		<br class="clear" />
-		
+
 			<label for "https_port" class="label">HTTPS Port:</label>
 			<input type="text" name="https_port" value="$https_port">
 			<span class="tips">Port SABnzbd should listen on for HTTPS communication.</span>
 		<br class="clear" />
-		
+
 			<label for "https_cert" class="label">HTTPS Certificate:</label>
 			<input type="text" name="https_cert" value="$https_cert">
 			<span class="tips">File name or path to HTTPS Certificate.</span>
 		<br class="clear" />
-		
+
 			<label for "https_key" class="label">HTTPS Key:</label>
 			<input type="text" name="https_key" value="$https_key">
 			<span class="tips">File name or path to HTTPS Key.</span>
 		<br class="clear" />
-        
+
 </fieldset>
 
 <fieldset class="EntryFieldSet">
