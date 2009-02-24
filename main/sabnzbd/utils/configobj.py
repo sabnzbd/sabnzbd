@@ -117,7 +117,7 @@ except NameError:
     True, False = 1, 0
 
 
-__version__ = '4.5.1'
+__version__ = '4.5.3'
 
 __revision__ = '$Id: configobj.py 156 2006-01-31 14:57:08Z fuzzyman $'
 
@@ -2294,11 +2294,9 @@ class ConfigObj(Section):
             if section is self and entry == 'DEFAULT':
                 continue
             if copy:
-                section.comments[entry] = section._cs_section_comments[entry]
-                section.inline_comments[entry] = (
-                    section._cs_section_inline_comments[entry])
-            check = self.validate(validator, preserve_errors=preserve_errors,
-                copy=copy, section=section[entry])
+                section.comments[entry] = section._cs_section_comments.get(entry, [])
+                section.inline_comments[entry] = section._cs_section_inline_comments.get(entry, '')
+            check = self.validate(validator, preserve_errors=preserve_errors, copy=copy, section=section[entry])
             out[entry] = check
             if check == False:
                 ret_true = False
