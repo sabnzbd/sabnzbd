@@ -66,10 +66,10 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .pagination .current {
     background: #FFF;
     color: #000;
-	border: solid 1px #B1B1B1;
+	border: solid 1px #000;
 }
 .pagination .current.prev, .pagination .current.next{
-	color:#FFF;
+	color:#B1B1B1;
 	border-color:#B1B1B1;
 	background:#E0E0E0;
 }

@@ -322,9 +322,9 @@ jQuery(function($) {
         queueViewPreference   : 15,       // queue nzb limiter
         historyViewPreference : 15,       // history nzb limiter
         focusedOnSpeedChanger : false,    // don't update speed limit when editing + queue refreshes
-        nzbupload 			  : null,	  // used in kludge to fix jquery ocupload plugin, see initUpload()
-        histnoofslots:0,	// pagination placeholder
-        histcurpage:0,		// pagination placeholder
+        nzbupload:		null,	// used in kludge to fix jquery ocupload plugin, see initUpload()
+        histnoofslots:	0,		// pagination placeholder
+        histcurpage:	0,		// pagination placeholder
         
         
         /********************************************
