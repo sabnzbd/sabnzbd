@@ -43,7 +43,7 @@ import cherrypy
 if not cherrypy.__version__.startswith("3.2"):
     print "Sorry, requires Python module Cherrypy 3.2 (use the included version)"
     exit(1)
-    
+
 from cherrypy import _cpserver
 from cherrypy import _cpwsgi_server
 
@@ -463,14 +463,14 @@ def get_webhost(cherryhost, cherryport, https_port):
         cherryport = sabnzbd.cfg.CHERRYPORT.get_int()
     else:
         sabnzbd.cfg.CHERRYPORT.set(str(cherryport))
-        
+
     if https_port == None:
         https_port = sabnzbd.cfg.HTTPS_PORT.get_int()
     else:
         sabnzbd.cfg.HTTPS_PORT.set(str(https_port))
         # if the https port was specified, assume they want HTTPS enabling also
         sabnzbd.cfg.ENABLE_HTTPS.set(True)
-        
+
     return cherryhost, cherryport, browserhost, https_port
 
 def is_sabnzbd_running(url):
@@ -489,7 +489,7 @@ def is_sabnzbd_running(url):
             return False
     except:
         return False
-    
+
 def find_free_port(host, currentport, i=0):
     while i >=10 and currentport <= 49151:
         try:
@@ -547,7 +547,7 @@ def main():
     logger = logging.getLogger('')
     logger.setLevel(logging.WARNING)
     logger.addHandler(gui_log)
-    
+
     # Create a list of passed files to load on startup
     # or pass to an already running instance of sabnzbd
     upload_nzbs = []
@@ -644,7 +644,7 @@ def main():
             https_port = int(arg)
         elif opt in ('--testlog'):
             testlog = True
-            
+
     # Detect Vista or higher
     if os.name == 'nt':
         if platform.platform().find('Windows-32bit') >= 0:
@@ -685,7 +685,7 @@ def main():
 
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)
-    
+
     # If an instance of sabnzbd(same version) is already running on this port, launch the browser
     # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
     # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
@@ -702,7 +702,7 @@ def main():
                 if port > 0:
                     cfg.HTTPS_PORT.set(port)
                     cherryport = port
-    ## NonSSL       
+    ## NonSSL
     try:
         cherrypy.process.servers.check_port(browserhost, cherryport)
     except IOError, error:
@@ -715,7 +715,7 @@ def main():
                 if port > 0:
                     cfg.CHERRYPORT.set(port)
                     cherryport = port
-            
+
 
     if cherrypylogging == None:
         cherrypylogging = sabnzbd.cfg.LOG_WEB.get()
@@ -850,13 +850,13 @@ def main():
     except:
         logging.exception("Failed to start %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
         sabnzbd.halt()
-        
+
     # Upload any nzb/zip/rar/nzb.gz files from file association
     if upload_nzbs:
         from sabnzbd.utils.upload import add_local
         for f in upload_nzbs:
             add_local(f)
-            
+
     cherrylogtoscreen = False
     sabnzbd.WEBLOGFILE = None
     access_file = None
@@ -896,11 +896,11 @@ def main():
         # If either the HTTPS certificate or key do not exist, make some self-signed ones.
         if not (https_cert and os.path.exists(https_cert)) or not (https_key and os.path.exists(https_key)):
             create_https_certificates(https_cert, https_key)
-    
+
         if https_port and not (os.path.exists(https_cert) or os.path.exists(https_key)):
             logging.warning('Disabled HTTPS because of missing CERT and KEY files')
             https_port = False
-    
+
         if https_port:
             secure_server = _cpwsgi_server.CPWSGIServer()
             secure_server.bind_addr = (cherryhost, https_port)
@@ -912,7 +912,7 @@ def main():
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
-    
+
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
                  '/api' : {'tools.basic_auth.on' : False},
                  '/m/api' : {'tools.basic_auth.on' : False},
@@ -1030,19 +1030,6 @@ else:
     if __name__ == '__main__':
         try:
             from email import header
-            import cherrypy.filters.cachefilter
-            import cherrypy.filters.logdebuginfofilter
-            import cherrypy.filters.baseurlfilter
-            import cherrypy.filters.virtualhostfilter
-            import cherrypy.filters.decodingfilter
-            import cherrypy.filters.sessionauthenticatefilter
-            import cherrypy.filters.sessionfilter
-            import cherrypy.filters.staticfilter
-            import cherrypy.filters.nsgmlsfilter
-            import cherrypy.filters.tidyfilter
-            import cherrypy.filters.xmlrpcfilter
-            import cherrypy.filters.responseheadersfilter
-            import cherrypy.filters.encodingfilter
             import Cheetah.DummyTransaction
             import objc
             from Foundation import *
@@ -1067,8 +1054,9 @@ else:
                     AppHelper.stopEventLoop()
                 def stop(self):
                     logging.info('[osx] sabApp Quit - stopping main thread ')
-                    cherrypy.server.stop()
                     sabnzbd.halt()
+                    cherrypy.engine.exit()
+                    sabnzbd.SABSTOP = True
                     logging.info('[osx] sabApp Quit - main thread stopped')
 
             sabApp = startApp()
