@@ -323,7 +323,9 @@ jQuery(function($) {
         historyViewPreference : 15,       // history nzb limiter
         focusedOnSpeedChanger : false,    // don't update speed limit when editing + queue refreshes
         nzbupload:		null,	// used in kludge to fix jquery ocupload plugin, see initUpload()
-        histnoofslots:	0,		// pagination placeholder
+		histperpage:   	5,		// pagination nzbs per page
+        histnoofslots:	0,		// pagination - set upon history refresh
+        histprevslots:  0,		// pagination - to store the above
         histcurpage:	0,		// pagination placeholder
         
         
@@ -382,6 +384,7 @@ jQuery(function($) {
 
         refreshHistory : function(page) {
         
+        	// deal with pagination for start/limit
         	if (typeof( page ) == 'undefined')
 				page = $.plush.histcurpage;
 			else if (page != $.plush.histcurpage)
@@ -390,9 +393,12 @@ jQuery(function($) {
             $.ajax({
                 type: "POST",
 				url: "history/",
-                data: 'start='+(page*10)+'&limit=10',
+                data: 'start='+( page * $.plush.histperpage )+'&limit='+$.plush.histperpage,
                 success: function(result){
                     $('#history').html(result);
+
+                    // keep in mind the initialized livequery methods defined below
+                    // (uses vars set within history.tmpl to update other parts of the interface outside of the history table)
                 }
             });
             
@@ -813,21 +819,22 @@ jQuery(function($) {
             
             // this code will remain instantiated even when the contents of the history change
             $('#historyTable').livequery(function() {
-                
-				if ($.plush.histnoofslots > 0) {
-					// pagination
+
+				// (re)build pagination as needed
+				if ($.plush.histnoofslots > 0 && $.plush.histprevslots != $.plush.histnoofslots ) {
 					$("#history-pagination").pagination( $.plush.histnoofslots , {
 						current_page: $.plush.histcurpage,
-						items_per_page: 10,
+						items_per_page: $.plush.histperpage,
 						num_display_entries: 8,
 						num_edge_entries: 1,
 						prev_text: "&laquo;",
 						next_text: "&raquo;",
 						callback: $.plush.refreshHistory
 					});
-				} else {
-					$("#history-pagination").html('');
+				} else if ($.plush.histnoofslots == 0) {
+					$("#history-pagination").html(''); // remove pages if history empty
 				}
+				$.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
                 // update bottom right stats
                 $('#history_stats').html($.plush.histstats);
