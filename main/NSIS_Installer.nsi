@@ -1,5 +1,5 @@
 ;
-; Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+; Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
@@ -78,8 +78,11 @@ DirText "Select the directory to install SABnzbd+ in:"
   !define MUI_FINISHPAGE_RUN_TEXT "Start SABnzbd (hidden)"
   !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
   !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
-  !define MUI_FINISHPAGE_LINK "View the SABnzbdPlus Wiki"
-  !define MUI_FINISHPAGE_LINK_LOCATION "http://sabnzbd.wikidot.com/"
+  ;!define MUI_FINISHPAGE_LINK "View the SABnzbdPlus Wiki"
+  ;!define MUI_FINISHPAGE_LINK_LOCATION "http://sabnzbd.wikidot.com/"
+  !define MUI_FINISHPAGE_LINK "Support the project, Donate!"
+  !define MUI_FINISHPAGE_LINK_LOCATION "http://www.sabnzbd.org/contribute/"
+
   !insertmacro MUI_PAGE_FINISH
 
   !insertmacro MUI_UNPAGE_CONFIRM
@@ -151,7 +154,7 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 SectionEnd ; end of default section
 
-Section "Run at startup" startup
+Section /o "Run at startup" startup
     CreateShortCut "$SMPROGRAMS\Startup\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe" "-b0"
 SectionEnd ;
 
@@ -159,7 +162,7 @@ Section "Desktop Icon" desktop
     CreateShortCut "$DESKTOP\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
 SectionEnd ; end of desktop icon section
 
-Section "NZB File association" assoc
+Section /o "NZB File association" assoc
     ${registerExtension} "$INSTDIR\nzb.ico" "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
     ;${registerExtension} "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
 SectionEnd ; end of file association section
@@ -247,13 +250,13 @@ Section Uninstall
     Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - SafeMode.lnk"
     Delete "$SMPROGRAMS\$MUI_TEMP\SABnzbd - Documentation.url"
     RMDir  "$SMPROGRAMS\$MUI_TEMP"
-    
+
     Delete "$SMPROGRAMS\Startup\SABnzbd.lnk"
 
     Delete "$DESKTOP\SABnzbd.lnk"
 
     DeleteRegKey HKEY_CURRENT_USER  "Software\SABnzbd"
-    
+
     ${unregisterExtension} ".nzb" "NZB File"
 
 
