@@ -17,7 +17,8 @@
 			<br class="clear" />
 			<label class="label">Priority:</label>
 			<select  name="priority">
-				<option value="1" <!--#if $slot.priority == "1" then "selected" else ""#-->>High</option>
+				<option value="2" <!--#if $slot.priority == "2" then "selected" else ""#-->>Force</option>
+                <option value="1" <!--#if $slot.priority == "1" then "selected" else ""#-->>High</option>
 				<option value="0" <!--#if $slot.priority == "0" then "selected" else ""#-->>Normal</option>
 				<option value="-1" <!--#if $slot.priority == "-1" then "selected" else ""#-->>Low</option>
 			</select>
