@@ -302,7 +302,16 @@ elif target == 'binary':
 
     sys.argv[1] = 'py2exe'
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
-    options['options'] = {"py2exe": {"bundle_files": 3, "packages": "email,xml,Cheetah", "optimize": 2, "compressed": 0}}
+    options['options'] = {"py2exe":
+                              {
+                                "bundle_files": 3,
+                                "packages": "email,xml,Cheetah",
+                                "excludes": ["pywin", "pywin.debugger", "pywin.debugger.dbgcon", "pywin.dialogs",
+                                             "pywin.dialogs.list", "Tkconstants", "Tkinter", "tcl"],
+                                "optimize": 2,
+                                "compressed": 0
+                              }
+                         }
     options['zipfile'] = 'lib/sabnzbd.zip'
 
     # Generate the console-app
