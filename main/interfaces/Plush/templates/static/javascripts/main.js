@@ -301,32 +301,31 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 
 
 
+// ***************************************************************
+// Plush main code as follows, by pairofdimes (see LICENSE-CC.txt)
 
-// plush main code as follows, by pairofdimes (see LICENSE-CC.txt)
 
-jQuery(function($) {
+jQuery(function($) { // safely invoke $ selector
 	
-	$.plush = {
-		
+	$.plush = { // object definition
 		
 		/********************************************
 		*********************************************
 		
-			plush var defaults
+			Plush defaults
 		
 		*********************************************
 		********************************************/
 		
-		refreshRate   		: 30,   	// default refresh rate, overridden by cookie
-		skipRefresh   		: false,	// used when the cursor is hovering the queue
-		queueViewPreference   : 15,   	// queue nzb limiter
-		historyViewPreference : 15,   	// history nzb limiter
-		focusedOnSpeedChanger : false,	// don't update speed limit when editing + queue refreshes
-		histperpage:   	10,		// pagination - nzbs per page
-		histnoofslots:	0,		// pagination - set upon history refresh
-		histprevslots:  0,		// pagination - to store the above for next refresh
-		histcurpage:	0,		// restores current page upon pagination re-init
-		nzbupload:		null,	// used in kludge to fix jquery ocupload plugin, see initUpload()
+		refreshRate:   			30,   	// default refresh rate, overridden by cookie
+		skipRefresh:   			false,	// used when the cursor is hovering the queue
+		queueViewPreference:   	15,   	// queue nzb limiter
+		focusedOnSpeedChanger: 	false,	// don't update speed limit when editing + queue refreshes
+		histperpage:   			10,		// pagination - nzbs per page (feel free to modify)
+		histnoofslots:			0,		// pagination - this is set upon history refresh
+		histprevslots:  		0,		// pagination - stores the above for next refresh comparison
+		histcurpage:			0,		// pagination - restores current page upon re-init
+		nzbupload:				null,	// used in kludge to fix jquery ocupload plugin, see $.plush.initUpload()
 		
 		
 		/********************************************
@@ -416,7 +415,7 @@ jQuery(function($) {
 				}
 			});
 			
-		}, // end refreshQueue()
+		}, // end $.plush.refreshQueue()
 		
 		
 		/********************************************
@@ -456,7 +455,7 @@ jQuery(function($) {
 				}
 			});
 			
-		}, // end refreshHistory()
+		}, // end $.plush.refreshHistory()
 		
 				
 		/********************************************
@@ -482,7 +481,7 @@ jQuery(function($) {
 				$.plush.timeout = setTimeout("$.plush.refresh()", $.plush.refreshRate*1000);
 			}
 				
-		}, // end refresh()
+		}, // end $.plush.refresh()
 		
 		
 		
@@ -496,53 +495,13 @@ jQuery(function($) {
 		
 		initEvents : function() {
 			
+			// tooltips on hover
+			$('.tip').tooltip({
+				extraClass:	"tooltip",
+				track:		true, 
+				fixPNG:		true
+			});
 
-			/********************************************
-			*********************************************
-		
-				NZB Processing Methods
-				
-			*********************************************
-			********************************************/
-			
-			// Fetch NZB by URL/Newzbin Report ID
-			$('#addID').click(function(){ // also works when hitting enter because of <form>
-				if ($('#addID_input').val()!='enter URL / Newzbin ID') {
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val(),
-						success: function(result){
-							$.plush.refreshQueue();
-						}
-					});
-					$("#addID_input").val('enter URL / Newzbin ID');
-				}
-				return false; // aborts <form> submission
-			});
-			$('#addID_input').val('enter URL / Newzbin ID')
-			.focus( function(){
-				if ($(this).val()=="enter URL / Newzbin ID")
-					$(this).val('');
-			}).blur( function(){
-				if (!$(this).val())
-					$(this).val('enter URL / Newzbin ID');
-			});
-			
-			// NZB File Upload
-			$.plush.initUpload(); // kludge
-			
-			// Fetch Newzbin Bookmarks
-			$('#fetch_newzbin_bookmarks').click(function(){
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: "mode=newzbin&name=get_bookmarks",
-					success: function(result){
-						$.plush.refreshQueue();
-					}
-				});
-			});
 			
 			/********************************************
 			*********************************************
@@ -557,28 +516,6 @@ jQuery(function($) {
 				pathClass:  'current'
 			});
 			
-			// Refresh Rate main menu input
-			if ($.cookie('Plush2Refresh')) // restore from cookie
-				$.plush.refreshRate = $.cookie('Plush2Refresh');
-			$("#refreshRate-option").val($.plush.refreshRate).change( function() {
-				$.plush.refreshRate = $("#refreshRate-option").val();
-				$.cookie('Plush2Refresh', $.plush.refreshRate, { expires: 365 });
-				$.plush.refresh();
-			});
-			
-			// Priority toggle main menu input
-			if ( !$.cookie('queue_details') || ($.cookie('queue_details') != 0 && $.cookie('queue_details') != 1) )
-				$.cookie('queue_details', 1, { expires: 365 }); // default priorities to enabled
-			if ($.cookie('queue_details') == 1)
-				$("#priority-toggle").attr('checked','true'); // set toggled state of checkbox
-			$("#priority-toggle").change( function() {
-				if ($("#priority-toggle").attr('checked'))
-					$.cookie('queue_details', 1, { expires: 365 });
-				else
-					$.cookie('queue_details', 0, { expires: 365 });
-				$.plush.refreshQueue();
-			});
-			
 			// Max Speed main menu input
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
  								.blur(function(){ $.plush.focusedOnSpeedChanger = false; });
@@ -588,6 +525,21 @@ jQuery(function($) {
 					url: "tapi",
 					data: "mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()
 				});
+			});
+			
+			// Refresh Rate main menu input
+			if ($.cookie('Plush2Refresh')) // restore from cookie
+				$.plush.refreshRate = $.cookie('Plush2Refresh');
+			$("#refreshRate-option").val($.plush.refreshRate).change( function() {
+				$.plush.refreshRate = $("#refreshRate-option").val();
+				$.cookie('Plush2Refresh', $.plush.refreshRate, { expires: 365 });
+				$.plush.refresh();
+			});
+			
+			// sabnzbd shutdown
+			$('#shutdown_sabnzbd').click( function(){
+				if(confirm('Sure you want to shut down the SABnzbd application?'))
+					window.location='shutdown';
 			});
 			
 			// Upon Queue Completion main menu select
@@ -636,16 +588,71 @@ jQuery(function($) {
 				});
 			});
 		
-			// set up "shutdown sabnzbd" from main menu
-			$('#shutdown_sabnzbd').click( function(){
-				if(confirm('Sure you want to shut down the SABnzbd application?'))
-					window.location='shutdown';
+			// Priority toggle main menu input
+			if ( !$.cookie('queue_details') || ($.cookie('queue_details') != 0 && $.cookie('queue_details') != 1) )
+				$.cookie('queue_details', 1, { expires: 365 }); // default priorities to enabled
+			if ($.cookie('queue_details') == 1)
+				$("#priority-toggle").attr('checked','true'); // set toggled state of checkbox
+			$("#priority-toggle").change( function() {
+				if ($("#priority-toggle").attr('checked'))
+					$.cookie('queue_details', 1, { expires: 365 });
+				else
+					$.cookie('queue_details', 0, { expires: 365 });
+				$.plush.refreshQueue();
 			});
 			
 			// manual refresh
 			$('#manual_refresh_wrapper').click(function(event) {
 				$.plush.refreshQueue();
 				$.plush.refreshHistory();
+			});
+
+
+			/********************************************
+			*********************************************
+		
+				"Add NZB" Methods
+				
+			*********************************************
+			********************************************/
+			
+			// Fetch NZB by URL/Newzbin Report ID
+			$('#addID').click(function(){ // also works when hitting enter because of <form>
+				if ($('#addID_input').val()!='enter URL / Newzbin ID') {
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val(),
+						success: function(result){
+							$.plush.refreshQueue();
+						}
+					});
+					$("#addID_input").val('enter URL / Newzbin ID');
+				}
+				return false; // aborts <form> submission
+			});
+			$('#addID_input').val('enter URL / Newzbin ID')
+			.focus( function(){
+				if ($(this).val()=="enter URL / Newzbin ID")
+					$(this).val('');
+			}).blur( function(){
+				if (!$(this).val())
+					$(this).val('enter URL / Newzbin ID');
+			});
+			
+			// NZB File Upload
+			$.plush.initUpload(); // kludge
+			
+			// Fetch Newzbin Bookmarks
+			$('#fetch_newzbin_bookmarks').click(function(){
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: "mode=newzbin&name=get_bookmarks",
+					success: function(result){
+						$.plush.refreshQueue();
+					}
+				});
 			});
 			
 
@@ -665,7 +672,7 @@ jQuery(function($) {
 			$('#queueTable').live("mouseover", function(){ $.plush.skipRefresh=true; });
 			$('#queueTable').live("mouseout", function(){ $.plush.skipRefresh=false; });
 			$('.box_fatbottom').live("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
-
+			
 			// nzb pause/resume toggle ajax
 			$('#queueTable .download-grippie').live('click',function(event){
 				if ($(this).attr('class') == "download-grippie download-queued") {
@@ -692,7 +699,7 @@ jQuery(function($) {
 				}
 			});
 			
-			// queue singular nzb deletion
+			// queue singular nzb deletion ajax
 			$('#queue .queue_delete').live('click', function(event) {
 				delid = $(event.target).parent().parent().attr('id');
 				$('#'+delid).fadeOut('fast');
@@ -789,6 +796,10 @@ jQuery(function($) {
 				else
 					$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
 			});
+
+			// restore queue view preference (or set to default)
+			if ($.cookie('queue_view_preference'))
+				$.plush.queueViewPreference = $.cookie('queue_view_preference');
 			
 			
 			/********************************************
@@ -814,7 +825,7 @@ jQuery(function($) {
 			$('#historyTable').livequery(function() {
 
 				// (re)build pagination only when needed
-				if ($.plush.histnoofslots > 0 && 
+				if ($.plush.histnoofslots > $.plush.histperpage && 
 						Math.ceil($.plush.histprevslots/$.plush.histperpage) != 
 						Math.ceil($.plush.histnoofslots/$.plush.histperpage) ) {
 					
@@ -827,7 +838,7 @@ jQuery(function($) {
 						next_text: "&raquo;",
 						callback: $.plush.refreshHistory
 					});
-				} else if ($.plush.histnoofslots == 0) {
+				} else if ($.plush.histnoofslots <= $.plush.histperpage) {
 					$("#history-pagination").html(''); // remove pages if history empty
 				}
 				$.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
@@ -849,28 +860,7 @@ jQuery(function($) {
 			});
 			
 			
-			/********************************************
-			*********************************************
-		
-				Miscellaneous Methods
-				
-			*********************************************
-			********************************************/
-			
-			// restore queue/history view preferences (or set to defaults)
-			if ($.cookie('queue_view_preference'))
-				$.plush.queueViewPreference = $.cookie('queue_view_preference');
-			if ($.cookie('history_view_preference'))
-				$.plush.historyViewPreference = $.cookie('history_view_preference');
-			
-			// additional tooltips
-			$('.tip').tooltip({
-				extraClass:	"tooltip",
-				track:		true, 
-				fixPNG:		true
-			});
-			
-		}, // end initEvents()
+		}, // end $.plush.initEvents()
 		
    	
 		/********************************************
@@ -900,10 +890,9 @@ jQuery(function($) {
 					$.plush.initUpload(); // kludge
 				}
 			});
-			
-		}
+		} // end $.plush.initUpload()
 
-	}; // end plush object
+	}; // end $.plush object
 
 });
 
@@ -911,10 +900,10 @@ jQuery(function($) {
 // once the DOM is ready, run this
 jQuery(document).ready(function($){
 
-	// this is a jquery plugin
+	// jquery plugin, preloads all images from all stylesheets
 	$.preloadCssImages();
 
-	// initialize plush
+	// initialize Plush UI
 	$.plush.initEvents();
 
 	// initiate refresh cycle
