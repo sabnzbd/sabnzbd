@@ -35,6 +35,10 @@ def upload_file(url, fp):
         script = cfg.DIRSCAN_SCRIPT.get()
         priority = cfg.DIRSCAN_PRIORITY.get()
         url = '%sapi?mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (url, fp, pp, script, priority)
+        username = cfg.USERNAME.get()
+        if username:
+            password = cfg.PASSWORD.get()
+            url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
         u = urllib2.urlopen(url)
     except:
         logging.error("Failed to upload file: %s", fp)
@@ -49,7 +53,7 @@ def add_local(f):
             pp = cfg.DIRSCAN_PP.get()
             script = cfg.DIRSCAN_SCRIPT.get()
             priority = cfg.DIRSCAN_PRIORITY.get()
-            if get_ext(fn) in ('.zip','.rar', '.nzb.gz'):
+            if get_ext(fn) in ('.zip','.rar', '.gz'):
                 ProcessArchiveFile(fn, f, pp=pp, script=script, priority=priority, keep=True)
             elif get_ext(fn) in ('.nzb'):
                 ProcessSingleFile(fn, f, pp=pp, script=script, priority=priority, keep=True)
