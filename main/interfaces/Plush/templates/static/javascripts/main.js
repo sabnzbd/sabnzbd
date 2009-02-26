@@ -317,14 +317,14 @@ jQuery(function($) { // safely invoke $ selector
 		*********************************************
 		********************************************/
 		
-		refreshRate:   			30,   	// default refresh rate, overridden by cookie
-		skipRefresh:   			false,	// used when the cursor is hovering the queue
+		refreshRate:   			30,   	// (seconds) refresh rate, overridden by cookie
 		queueViewPreference:   	15,   	// queue nzb limiter
-		focusedOnSpeedChanger: 	false,	// don't update speed limit when editing + queue refreshes
 		histperpage:   			10,		// pagination - nzbs per page (feel free to modify)
 		histnoofslots:			0,		// pagination - this is set upon history refresh
 		histprevslots:  		0,		// pagination - stores the above for next refresh comparison
 		histcurpage:			0,		// pagination - restores current page upon re-init
+		skipRefresh:   			false,	// used when the cursor is hovering the queue
+		focusedOnSpeedChanger: 	false,	// don't update speed limit when editing + queue refreshes
 		nzbupload:				null,	// used in kludge to fix jquery ocupload plugin, see $.plush.initUpload()
 		
 		
@@ -355,19 +355,20 @@ jQuery(function($) { // safely invoke $ selector
 				data: 'limit='+$.plush.queueViewPreference,
 				success: function(result){
 					
-					// replace queue contents with queue.tmpl
+					// replace queue contents with queue.tmpl -- this file sets several stat vars via javascript
 					$('#queue').html(result);
 					
 					// refresh state notification
 					$('#manual_refresh').removeClass('refreshing');
 	
-					// tooltips for time left / ETA
+					// tooltip for ETA
+					$('#time-left').attr('title','ETA: '+$.plush.eta);
 					$('#time-left').tooltip({
 						extraClass:	"tooltip",
 						track:		true, 
 						fixPNG:		true
 					});
-	
+					
 					// set queue speed limit selector
 					if ($("#maxSpeed-option").val() != $.plush.speedlimit && !$.plush.focusedOnSpeedChanger)
 						$("#maxSpeed-option").val($.plush.speedlimit);
@@ -382,13 +383,10 @@ jQuery(function($) { // safely invoke $ selector
 					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_unpaused')
 						$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
 					
-					// set queue titlebar stats tooltip (ETA) 
-					$('#time-left').attr('title','ETA: '+$.plush.eta);
-					
 					// set page title + eta/kbpersec stats at top of queue
 					if ($.plush.noofslots < 1) {
 						if ($.plush.paused) document.title = 'PAUSED | SABnzbd+ Plush';
-						else				document.title = 'READY | SABnzbd+ Plush';
+						else				document.title = 'IDLE | SABnzbd+ Plush';
 						$('#stats_kbpersec').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
 					} else if ($.plush.kbpersec < 1 && $.plush.paused) {
@@ -406,11 +404,12 @@ jQuery(function($) { // safely invoke $ selector
 					if ($.plush.have_warnings > 0)
 						$('#last_warning').html($.plush.last_warning);
 					else
-						$('#last_warning').html('nothing to report');
+						$('#last_warning').html('none');
 	
 					// *** don't forget the live() & livequery() methods defined in $.plush.initEvents() ***
 				},
 				error: function() {
+					// failed refresh notification
 					$('#manual_refresh').addClass('refresh_skipped');
 				}
 			});
@@ -439,6 +438,8 @@ jQuery(function($) { // safely invoke $ selector
 				url: "history/",
 				data: 'start='+( page * $.plush.histperpage )+'&limit='+$.plush.histperpage,
 				success: function(result){
+					
+					// replace history contents with history.tmpl -- this file sets a couple stat vars via javascript
 					$('#history').html(result);
 
 					// update bottom right stats
@@ -450,33 +451,35 @@ jQuery(function($) { // safely invoke $ selector
 						track:		true, 
 						fixPNG:		true
 					});
-
+					
 					// *** don't forget the live() & livequery() methods defined in $.plush.initEvents() ***
 				}
 			});
 			
 		}, // end $.plush.refreshHistory()
 		
-				
+		
 		/********************************************
 		*********************************************
 		
-			$.plush.refresh() -- triggers refreshQueue & refreshHistory then calls itself
+			$.plush.refresh()
+			triggers refreshQueue & refreshHistory
+			then loops (calls itself) after $.plush.refreshRate seconds
 		
 		*********************************************
 		********************************************/
 		
-		refresh : function() { // calls itself after `refreshRate` seconds
+		refresh : function() {
 			
 			// clear timeout in case multiple refreshes are triggered
 			clearTimeout($.plush.timeout);
 			
 			if ($.plush.refreshRate > 0) {
-			
-				// ajax calls
+				
+				// ajax calls, event re-init, stat updates
 				$.plush.refreshQueue();
 				$.plush.refreshHistory();
-
+				
 				// loop
 				$.plush.timeout = setTimeout("$.plush.refresh()", $.plush.refreshRate*1000);
 			}
@@ -495,7 +498,7 @@ jQuery(function($) { // safely invoke $ selector
 		
 		initEvents : function() {
 			
-			// tooltips on hover
+			// static tooltips
 			$('.tip').tooltip({
 				extraClass:	"tooltip",
 				track:		true, 
@@ -518,9 +521,7 @@ jQuery(function($) { // safely invoke $ selector
 						type: "POST",
 						url: "tapi",
 						data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val(),
-						success: function(result){
-							$.plush.refreshQueue();
-						}
+						success: $.plush.refreshQueue
 					});
 					$("#addID_input").val('enter URL / Newzbin ID');
 				}
@@ -560,14 +561,12 @@ jQuery(function($) { // safely invoke $ selector
 			********************************************/
 			
 			// activate main menu
-			$("ul.sf-menu").superfish({ // also uses hoverIntent
-				pathClass:  'current'
-			});
+			$("ul.sf-menu").superfish(); // also uses hoverIntent
 			
-			// Max Speed main menu input
+			// Max Speed main menu input -- don't change value on refresh when focused
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
- 								.blur(function(){ $.plush.focusedOnSpeedChanger = false; });
-			$("#maxSpeed-option").change( function() {
+ 								  .blur(function(){ $.plush.focusedOnSpeedChanger = false; });
+			$("#maxSpeed-option").change( function() {	// works with hitting enter
 				$.ajax({
 					type: "POST",
 					url: "tapi",
@@ -575,7 +574,7 @@ jQuery(function($) { // safely invoke $ selector
 				});
 			});
 			
-			// Refresh Rate main menu input
+			// Refresh Rate selector
 			if ($.cookie('Plush2Refresh')) // restore from cookie
 				$.plush.refreshRate = $.cookie('Plush2Refresh');
 			$("#refreshRate-option").val($.plush.refreshRate).change( function() {
@@ -590,7 +589,7 @@ jQuery(function($) { // safely invoke $ selector
 					window.location='shutdown';
 			});
 			
-			// Upon Queue Completion main menu select
+			// Upon Queue Completion script selection
 			$("#onQueueFinish-option").change( function() {
 				$.ajax({
 					type: "POST",
@@ -606,9 +605,7 @@ jQuery(function($) { // safely invoke $ selector
 						type: "POST",
 						url: "tapi",
 						data: "mode=queue&name=delete&value=all",
-						success: function(){
-							$.plush.refreshQueue();
-						}
+						success: $.plush.refreshQueue
 					});
 				}
 			});
@@ -630,9 +627,7 @@ jQuery(function($) { // safely invoke $ selector
 					type: "POST",
 					url: "tapi",
 					data: "mode=queue&name=sort&sort="+sortParams,
-					success: function(){
-						$.plush.refreshQueue()
-					}
+					success: $.plush.refreshQueue
 				});
 			});
 		
@@ -650,10 +645,7 @@ jQuery(function($) { // safely invoke $ selector
 			});
 			
 			// manual refresh
-			$('#manual_refresh_wrapper').click(function(event) {
-				$.plush.refreshQueue();
-				$.plush.refreshHistory();
-			});
+			$('#manual_refresh_wrapper').click($.plush.refresh);
 			
 
 			/********************************************
@@ -673,7 +665,7 @@ jQuery(function($) { // safely invoke $ selector
 			$('#queueTable').live("mouseout", function(){ $.plush.skipRefresh=false; });
 			$('.box_fatbottom').live("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
 			
-			// nzb pause/resume toggle ajax
+			// individual nzb pause/resume toggle
 			$('#queueTable .download-grippie').live('click',function(event){
 				if ($(this).attr('class') == "download-grippie download-queued") {
 					$(this).toggleClass('download-queued').toggleClass('download-paused');
@@ -699,7 +691,7 @@ jQuery(function($) { // safely invoke $ selector
 				}
 			});
 			
-			// queue singular nzb deletion ajax
+			// singular nzb deletion
 			$('#queue .queue_delete').live('click', function(event) {
 				delid = $(event.target).parent().parent().attr('id');
 				$('#'+delid).fadeOut('fast');
@@ -710,7 +702,7 @@ jQuery(function($) { // safely invoke $ selector
 				});
 			});
 			
-			// same idea as above, but use plugin for functions/events not supported by live()
+			// same idea as live(), but use livequery() plugin for functions/events not supported by live()
 			$('#queueTable').livequery(function() {
 				
 				// queue nzb list limit
@@ -745,7 +737,7 @@ jQuery(function($) { // safely invoke $ selector
 					}
 				});
 				
-				// nzb change priority ajax
+				// nzb change priority
 				$('#queueTable .proc_priority').change(function(){
 					var nzbid = $(this).parent().parent().attr('id');
 					var oldPos = $('#'+nzbid)[0].rowIndex;
@@ -766,7 +758,7 @@ jQuery(function($) { // safely invoke $ selector
 					});
 				});
 				
-				// 3-in-1 change nzb [category + processing + script] ajax
+				// 3-in-1 change nzb [category + processing + script]
 				$('.change_cat, .change_opts, .change_script').change(function(){
 					$.ajax({
 						type: "POST",
@@ -777,7 +769,7 @@ jQuery(function($) { // safely invoke $ selector
 				
 			}); // end livequery
 			
-			// queue pause/resume
+			// queue pause/resume toggle
 			$('#pause_resume').click(function(event) {
 				if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
 					$.ajax({
@@ -820,10 +812,10 @@ jQuery(function($) { // safely invoke $ selector
 					data: "mode=history&name=delete&value="+delid
 				});
 			});
-
+			
 			// this code will remain instantiated even when the contents of the history change
 			$('#historyTable').livequery(function() {
-
+				
 				// (re)build pagination only when needed
 				if ($.plush.histnoofslots > $.plush.histperpage && 
 						Math.ceil($.plush.histprevslots/$.plush.histperpage) != 
@@ -852,13 +844,10 @@ jQuery(function($) { // safely invoke $ selector
 						type: "POST",
 						url: "tapi",
 						data: 'mode=history&name=delete&value=all',
-						success: function(){
-							$.plush.refreshHistory();
-						}
+						success: $.plush.refreshHistory
 					});
 				}
 			});
-			
 			
 		}, // end $.plush.initEvents()
 		
@@ -879,6 +868,7 @@ jQuery(function($) { // safely invoke $ selector
 			$.plush.nzbupload = null;
 			$('#addNZBbyFile').parent().html('<div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div>');
 			
+			// ocupload plugin allows file browser trigger off an html entity
 			$.plush.nzbupload = $('#addNZBbyFile').upload({
 				name: 'name',
 				action: 'tapi',
