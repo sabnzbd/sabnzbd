@@ -826,8 +826,8 @@ jQuery(function($) { // safely invoke $ selector
 						items_per_page: $.plush.histperpage,
 						num_display_entries: 8,
 						num_edge_entries: 1,
-						prev_text: "&laquo;",
-						next_text: "&raquo;",
+						prev_text: "&lt;",
+						next_text: "&gt;",
 						callback: $.plush.refreshHistory
 					});
 				} else if ($.plush.histnoofslots <= $.plush.histperpage) {
