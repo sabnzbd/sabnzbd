@@ -323,7 +323,7 @@ jQuery(function($) {
         historyViewPreference : 15,       // history nzb limiter
         focusedOnSpeedChanger : false,    // don't update speed limit when editing + queue refreshes
         nzbupload:		null,	// used in kludge to fix jquery ocupload plugin, see initUpload()
-		histperpage:   	5,		// pagination nzbs per page
+		histperpage:   	10,		// pagination nzbs per page
         histnoofslots:	0,		// pagination - set upon history refresh
         histprevslots:  0,		// pagination - to store the above
         histcurpage:	0,		// pagination placeholder
@@ -820,8 +820,11 @@ jQuery(function($) {
             // this code will remain instantiated even when the contents of the history change
             $('#historyTable').livequery(function() {
 
-				// (re)build pagination as needed
-				if ($.plush.histnoofslots > 0 && $.plush.histprevslots != $.plush.histnoofslots ) {
+				// (re)build pagination only when needed
+				if ($.plush.histnoofslots > 0 && 
+						Math.ceil($.plush.histprevslots/$.plush.histperpage) != 
+						Math.ceil($.plush.histnoofslots/$.plush.histperpage) ) {
+					
 					$("#history-pagination").pagination( $.plush.histnoofslots , {
 						current_page: $.plush.histcurpage,
 						items_per_page: $.plush.histperpage,
