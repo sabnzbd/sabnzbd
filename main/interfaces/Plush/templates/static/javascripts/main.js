@@ -502,6 +502,54 @@ jQuery(function($) { // safely invoke $ selector
 				fixPNG:		true
 			});
 
+
+			/********************************************
+			*********************************************
+		
+				"Add NZB" Methods
+				
+			*********************************************
+			********************************************/
+			
+			// Fetch NZB by URL/Newzbin Report ID
+			$('#addID').click(function(){ // also works when hitting enter because of <form>
+				if ($('#addID_input').val()!='enter URL / Newzbin ID') {
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val(),
+						success: function(result){
+							$.plush.refreshQueue();
+						}
+					});
+					$("#addID_input").val('enter URL / Newzbin ID');
+				}
+				return false; // aborts <form> submission
+			});
+			$('#addID_input').val('enter URL / Newzbin ID')
+			.focus( function(){
+				if ($(this).val()=="enter URL / Newzbin ID")
+					$(this).val('');
+			}).blur( function(){
+				if (!$(this).val())
+					$(this).val('enter URL / Newzbin ID');
+			});
+			
+			// NZB File Upload -- this needs to happen before $.superfish() for layout
+			$.plush.initUpload(); // kludge
+			
+			// Fetch Newzbin Bookmarks
+			$('#fetch_newzbin_bookmarks').click(function(){
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: "mode=newzbin&name=get_bookmarks",
+					success: function(result){
+						$.plush.refreshQueue();
+					}
+				});
+			});
+
 			
 			/********************************************
 			*********************************************
@@ -605,54 +653,6 @@ jQuery(function($) { // safely invoke $ selector
 			$('#manual_refresh_wrapper').click(function(event) {
 				$.plush.refreshQueue();
 				$.plush.refreshHistory();
-			});
-
-
-			/********************************************
-			*********************************************
-		
-				"Add NZB" Methods
-				
-			*********************************************
-			********************************************/
-			
-			// Fetch NZB by URL/Newzbin Report ID
-			$('#addID').click(function(){ // also works when hitting enter because of <form>
-				if ($('#addID_input').val()!='enter URL / Newzbin ID') {
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val(),
-						success: function(result){
-							$.plush.refreshQueue();
-						}
-					});
-					$("#addID_input").val('enter URL / Newzbin ID');
-				}
-				return false; // aborts <form> submission
-			});
-			$('#addID_input').val('enter URL / Newzbin ID')
-			.focus( function(){
-				if ($(this).val()=="enter URL / Newzbin ID")
-					$(this).val('');
-			}).blur( function(){
-				if (!$(this).val())
-					$(this).val('enter URL / Newzbin ID');
-			});
-			
-			// NZB File Upload
-			$.plush.initUpload(); // kludge
-			
-			// Fetch Newzbin Bookmarks
-			$('#fetch_newzbin_bookmarks').click(function(){
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: "mode=newzbin&name=get_bookmarks",
-					success: function(result){
-						$.plush.refreshQueue();
-					}
-				});
 			});
 			
 
@@ -874,7 +874,7 @@ jQuery(function($) { // safely invoke $ selector
 		********************************************/
 		
 		initUpload : function() {
-		
+
 			// kludge
 			$.plush.nzbupload = null;
 			$('#addNZBbyFile').parent().html('<div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div>');
@@ -890,6 +890,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.plush.initUpload(); // kludge
 				}
 			});
+			
 		} // end $.plush.initUpload()
 
 	}; // end $.plush object
