@@ -386,7 +386,8 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
 //-------------------------------------------------------------------------------------------------------------
 
     var queueItemXMLReader = new Ext.data.JsonReader({
-            root: 'mainqueue.slotinfo',
+            totalProperty: 'noofslots',
+            root: 'slots',
             id: 'nzo_id'
         }, [
             {name: 'name', mapping: 'filename'},
@@ -401,7 +402,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
         ]);
         
     var statusXMLReader = new Ext.data.XmlReader({
-            record: 'mainqueue',
+            record: '',
             id: 'version'
         }, [
             {name: 'cache_limit', mapping: 'cache_limit'},
