@@ -2952,25 +2952,27 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
     return (items, fetched_items, total_items)
 
 def xml_history(start=None, limit=None, search=None):
-    items, fetched_items, total_items = build_history(start=start, limit=limit, verbose=True, search=search)
+    history, pnfo_list, bytespersec = build_header(True)
+    history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search)
     status_lst = []
     status_lst.append('<?xml version="1.0" encoding="UTF-8" ?> \n')
     #Compile the history data
 
     xmlmaker = xml_factory()
-    status_lst.append(xmlmaker.run("history",items))
+    t = time.time()
+    status_lst.append(xmlmaker.run("history",history))
+    total = time.time() - t
 
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return ''.join(status_lst)
 
 def json_history(start=None, limit=None, search=None):
-    #items = {}
-    #items['history'],
-    items, fetched_items, total_items = build_history(start=start, limit=limit, verbose=True, search=search)
+    history, pnfo_list, bytespersec = build_header(True)
+    history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search)
     #Compile the history data
 
-    status_str = JsonWriter().write(items)
+    status_str = JsonWriter().write(history)
 
     cherrypy.response.headers['Content-Type'] = "application/json"
     cherrypy.response.headers['Pragma'] = 'no-cache'
@@ -3090,23 +3092,22 @@ class xml_factory:
 def queueStatus(start, limit):
     #gather the queue details
     info, pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit)
-    text = '<?xml version="1.0" encoding="UTF-8" ?><queue> \n'
+    text = ['<?xml version="1.0" encoding="UTF-8" ?><queue> \n']
 
     #Use xmlmaker to make an xml string out of info which is a tuple that contains lists/strings/dictionaries
     xmlmaker = xml_factory()
-    text += xmlmaker.run("mainqueue",info)
-    text += "</queue>"
+    text.append(xmlmaker.run("mainqueue",info))
+    text.append("</queue>")
 
     #output in xml with no caching
     cherrypy.response.headers['Content-Type'] = "text/xml"
     cherrypy.response.headers['Pragma'] = 'no-cache'
-    return text
+    return ''.join(text)
 
 def queueStatusJson(start, limit):
     #gather the queue details
     info = {}
     info['mainqueue'], pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
-
 
     status_str = JsonWriter().write(info)
 
