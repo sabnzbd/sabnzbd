@@ -517,7 +517,8 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     storeHistory = new Ext.data.Store({
         url: 'tapi?mode=history&output=json',
         reader: new Ext.data.JsonReader({
-            root: '',
+            totalProperty: 'noofslots',
+            root: 'slots',
             id: 'nzo_id'
         }, [
             {name: 'filename', mapping: 'name'},
