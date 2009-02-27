@@ -3042,14 +3042,15 @@ class xml_factory:
             if found:
                 text += found
             else:
-                text += '<%s>%s</%s>\n' % (str(key), xml_name(str(lst[key]), encoding='utf-8'), str(key))
+                value = lst[key]
+                if not isinstance(value, basestring):
+                    value = str(value)
+                text += '<%s>%s</%s>\n' % (str(key), xml_name(value, encoding='utf-8'), str(key))
 
         if keyw and text:
             return '<%s>%s</%s>\n' % (keyw,text,keyw)
         else:
             return ''
-
-
 
     def _list(self, keyw, lst, text = ''):
         #deal with lists
@@ -3065,7 +3066,9 @@ class xml_factory:
                 debug = 'tuple'
                 text += self._tuple(debug, cat)
             else:
-                text += '<item>%s</item>\n' % xml_name(str(cat), encoding='utf-8')
+                if not isinstance(cat, basestring):
+                    cat = str(cat)
+                text += '<item>%s</item>\n' % xml_name(cat, encoding='utf-8')
 
         if keyw and text:
             return '<%s>%s</%s>\n' % (keyw,text,keyw)
