@@ -2976,7 +2976,7 @@ def json_history(start=None, limit=None, search=None):
 
     cherrypy.response.headers['Content-Type'] = "application/json"
     cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str
+    return status_str.encode("ISO-8859-1", 'replace')
 
 
 def json_list(section, lst, headers=True):
@@ -3033,47 +3033,56 @@ class xml_factory:
         self.__text = ''
 
 
-    def _tuple(self, keyw, lst, text = ''):
+    def _tuple(self, keyw, lst, text=None):
+        if text == None:
+            text = []
+            
         for item in lst:
-            text += self.run(keyw, item)
-        return text
+            text.append(self.run(keyw, item))
+        return ''.join(text)
 
-    def _dict(self, keyw, lst, text = ''):
+    def _dict(self, keyw, lst, text=None):
+        if text == None:
+            text = []
+        
         for key in lst.keys():
             found = self.run(key,lst[key])
             if found:
-                text += found
+                text.append(found)
             else:
                 value = lst[key]
                 if not isinstance(value, basestring):
                     value = str(value)
-                text += '<%s>%s</%s>\n' % (str(key), xml_name(value, encoding='utf-8'), str(key))
+                text.append('<%s>%s</%s>\n' % (str(key), xml_name(value, encoding='utf-8'), str(key)))
 
         if keyw and text:
-            return '<%s>%s</%s>\n' % (keyw,text,keyw)
+            return '<%s>%s</%s>\n' % (keyw,''.join(text),keyw)
         else:
             return ''
 
-    def _list(self, keyw, lst, text = ''):
+    def _list(self, keyw, lst, text=None):
+        if text == None:
+            text = []
+            
         #deal with lists
         #found = False
         for cat in lst:
             if isinstance(cat, dict):
                 #debug = 'dict%s' % n
-                text += self._dict('slot', cat)
+                text.append(self._dict('slot', cat))
             elif isinstance(cat, list):
                 debug = 'list'
-                text  += self._list(debug, cat)
+                text.append(self._list(debug, cat))
             elif isinstance(cat, tuple):
                 debug = 'tuple'
-                text += self._tuple(debug, cat)
+                text.append(self._tuple(debug, cat))
             else:
                 if not isinstance(cat, basestring):
                     cat = str(cat)
-                text += '<item>%s</item>\n' % xml_name(cat, encoding='utf-8')
+                text.append('<item>%s</item>\n' % xml_name(cat, encoding='utf-8'))
 
         if keyw and text:
-            return '<%s>%s</%s>\n' % (keyw,text,keyw)
+            return '<%s>%s</%s>\n' % (keyw,''.join(text),keyw)
         else:
             return ''
 
@@ -3092,12 +3101,11 @@ class xml_factory:
 def queueStatus(start, limit):
     #gather the queue details
     info, pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit)
-    text = ['<?xml version="1.0" encoding="UTF-8" ?><queue> \n']
+    text = ['<?xml version="1.0" encoding="UTF-8" ?>']
 
     #Use xmlmaker to make an xml string out of info which is a tuple that contains lists/strings/dictionaries
     xmlmaker = xml_factory()
-    text.append(xmlmaker.run("mainqueue",info))
-    text.append("</queue>")
+    text.append(xmlmaker.run("queue",info))
 
     #output in xml with no caching
     cherrypy.response.headers['Content-Type'] = "text/xml"
@@ -3106,8 +3114,7 @@ def queueStatus(start, limit):
 
 def queueStatusJson(start, limit):
     #gather the queue details
-    info = {}
-    info['mainqueue'], pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
+    info, pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
 
     status_str = JsonWriter().write(info)
 
@@ -3125,7 +3132,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
         dictn = []
     #build up header full of basic information
     info, pnfo_list, bytespersec = build_header(prim)
-
     info['isverbose'] = verbose
     cookie = cherrypy.request.cookie
     if cookie.has_key('queue_details'):
@@ -3322,9 +3328,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
         n += 1
 
     if slotinfo:
-        info['slotinfo'] = slotinfo
+        info['slots'] = slotinfo
     else:
-        info['slotinfo'] = ''
+        info['slots'] = ''
         verboseList = []
 
     return info, pnfo_list, bytespersec, verboseList, dictn
