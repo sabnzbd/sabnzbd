@@ -52,7 +52,7 @@ Speed Limit:
             <th>Name</th><th>Remain/Total</th><th>ETA</th><th>AGE</th>
         </tr>
     <!--#set $odd = False#-->
-    <!--#for $slot in $slotinfo#-->
+    <!--#for $slot in $slots#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#--> $slot.priority $slot.status">
         <td><a class="verbosity_link" href="./tog_uid_verbose?uid=$slot.nzo_id"> <!--#if $slot.active then "-" else "+" #--> </a></td>
@@ -70,7 +70,7 @@ Speed Limit:
             <!--#end if#--> 
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
             <!--#for $i in xrange($noofslots)#-->
-                <option value="switch?uid1=$slot.nzo_id&uid2=$slotinfo[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
+                <option value="switch?uid1=$slot.nzo_id&uid2=$slots[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
             <!--#end for#-->
             </select></form></td>
             <!--#if $cat_list#-->

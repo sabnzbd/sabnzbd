@@ -60,7 +60,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 	</thead>
 	<!--#if $varExists('slotinfo')#-->
 		<!--#set $odd = False#-->
-		<!--#for $slot in $slotinfo#-->
+		<!--#for $slot in $slots#-->
 			<!--#set $odd = not $odd#-->
 			<tbody id="$slot.nzo_id">
 				<tr class="$slot.priority">

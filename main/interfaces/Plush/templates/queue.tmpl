@@ -26,7 +26,7 @@
 <!--#set $cur = 0#-->
 <!--#set $odd = False#-->
 <!--#if $varExists('slotinfo')#-->
-<!--#for $slot in $slotinfo#-->
+<!--#for $slot in $slots#-->
     <!--#if $limit == 0 or $cur < $limit#-->
     <!--#set $cur = $cur + 1#-->
     <!--#set $odd = not $odd#-->
