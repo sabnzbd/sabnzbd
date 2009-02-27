@@ -137,17 +137,9 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     background: url(../images/plush-default/q_pause_on.png) 0 0 no-repeat;
 }
 /* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
-.h_menu_verbose {
-    background: url(../images/plush-default/qh_verbosity.png) 0 100% no-repeat;
-    margin-right:6px;
-    padding-right:28px;
-    padding-bottom:24px;
-    cursor:pointer;
-    display:none;
-}
 .h_menu_purge {
-    background: url(../images/plush-default/h_purge.png) 0 100% no-repeat;
-    margin-right:6px;
+    background: url(../images/plush-default/h_purge.png) 0 0 no-repeat;
+    margin:4px;
     padding-right:28px;
     padding-bottom:24px;
     cursor:pointer;
@@ -261,6 +253,9 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     padding-left:29px;
     cursor: pointer;
 }
+.queueTable tr:hover td.download-grippie { /* IE7 */
+    background-color: #f9f9f9;
+}
 .queueTable td.download-title {
     width: 50%;
 }
@@ -285,6 +280,10 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .queueTable td.historyTitle {
     padding-left:29px;
     cursor: default;
+}
+.queueTable tr:hover td.historyTitle { /* IE7 */
+    background-color: #f9f9f9;
+    color: #000;
 }
 .queueTable .historyTitle.Loaded, .loading {
     background: url(../images/plush-default/hl_loaded.gif) 4px 50% no-repeat;

@@ -31,11 +31,11 @@
                 <!--#for $slot in $slotinfo#-->
                 <!--#set $odd = not $odd#-->
                 <!--#set $cur = $cur+1#-->
+                <form action="save" method="get">
                 <tr class="<!--#if $odd then "odd" else "even"#-->">
                     
                     
                     <td>
-                        <form action="save" method="get">
                         <input type="hidden" value="$slot.name" name="name"/>
                         <input type="text" name="newname" value="$slot.name"/>
                     </td>
@@ -67,18 +67,16 @@
                     <td nowrap>
                         
                         <input type="submit" value="<!--#if $cur == 1 then 'Add' else 'Save'#-->"/>
-                    
-                        </form>
-                    
+
                         <!--#if $slot.name#-->
-                        <form action="delete" method="get" style="display:inline">
-                            <input type="hidden" value="$slot.name" name="name"/>
-                            <input type="submit" value="X"/>
-                        </form>
+                        <input type="button" value="X" onclick='window.location="delete/?name=$slot.name";'/>
                         <!--#end if#-->
+                    
+                    
                     </td>
                     
                 </tr>
+                </form>
                 <!--#end for#-->
                 
             </table>

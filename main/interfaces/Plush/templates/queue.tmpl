@@ -22,7 +22,7 @@
 
 <span id="stats_noofslots">$noofslots</span>
 
-<table class="queueTable" id="queueTable">
+<table class="queueTable" id="queueTable" cellspacing="0">
 <!--#set $cur = 0#-->
 <!--#set $odd = False#-->
 <!--#if $varExists('slotinfo')#-->
@@ -55,6 +55,7 @@
     </td>
     
     <td class="options" nowrap>
+    	&nbsp;
     	<!--#if $queue_details == "1"#-->
         <select class="proc_priority"><optgroup label="Priority">
             <option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>Force</option>
