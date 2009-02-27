@@ -36,7 +36,7 @@ On queue finish:
 
 <!--#if float($mb)>0 #-->
 <!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
-<!--#if $varExists('slotinfo')#-->
+<!--#if $varExists('slots')#-->
 <center><strong>$perc%</strong> - <span id="left">$mbleft</span>/<span id="total">$mb</span> MB -
 Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
  <!--#end if#--><br /> </center>
@@ -58,7 +58,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
         <th class="actionsColumn center"></th>
 	</tr>
 	</thead>
-	<!--#if $varExists('slotinfo')#-->
+	<!--#if $varExists('slots')#-->
 		<!--#set $odd = False#-->
 		<!--#for $slot in $slots#-->
 			<!--#set $odd = not $odd#-->
