@@ -171,6 +171,10 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cfg.WEB_COLOR2.callback(guard_restart)
     cfg.LOG_DIR.callback(guard_restart)
     cfg.CACHE_DIR.callback(guard_restart)
+    cfg.HTTPS_PORT.callback(guard_restart)
+    cfg.HTTPS_CERT.callback(guard_restart)
+    cfg.HTTPS_KEY.callback(guard_restart)
+    cfg.ENABLE_HTTPS.callback(guard_restart)
 
     ### Set cache limit
     articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY.get())
