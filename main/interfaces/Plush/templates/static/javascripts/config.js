@@ -100,7 +100,7 @@ jQuery(document).ready(function($){
     $('.config_menu').corner("round tl bl");
     $('#config_container').corner("round");
     $('.rounded').corner("round");
-    
+
     switch(config_pane) {
         case 'Sorting':
             previewtv();
@@ -110,3 +110,170 @@ jQuery(document).ready(function($){
     };
 
 });
+
+
+// Sorting Config -- author: switch
+function tvAdd(val){
+    var tv = document.getElementById('tvfoldername'); 
+    tv.value = tv.value + val;
+    previewtv();
+}
+function tvSet(val){
+    var tv = document.getElementById('tvfoldername'); 
+    tv.value = val;
+    previewtv();
+}
+function tvClear(){
+    var tv = document.getElementById('tvfoldername'); 
+    tv.value = '';
+    previewtv();
+}
+function previewtv(){
+    var input = document.getElementById('tvfoldername').value;
+    var slash = "\\";
+    input.toLowerCase()
+    input = input.replace(/%ext/g,'avi');
+    input = input.replace(/%sn/g,'Show Name');
+    input = input.replace(/%s.n/g,'Show.Name');
+    input = input.replace(/%s_n/g,'Show_Name');
+    input = input.replace(/%0s/g,'01');
+    input = input.replace(/%s/g,'1');
+    input = input.replace(/%en/g,'Episode Name');
+    input = input.replace(/%e\.n/g,'Episode.Name');
+    input = input.replace(/%e\_n/g,'Episode_Name');
+    input = input.replace(/%0e/g,'05');
+    input = input.replace(/%e/g,'5');
+	input = input.replace(/%fn/g,'file');
+    var com = document.getElementById('complete_dir').value;
+    if (com.search("/") > 0)
+    {
+        slash = "/";
+        input = input.replace("\\","/", "g");
+    } else {
+        input = input.replace("/","\\", "g");
+    }
+    len = com.length
+    if (com.substring(len-1, len) == slash)
+    {
+        com = com.substring(0, len-1)
+    }
+    var outbox = document.getElementById('previewtv').innerHTML = com+slash+input;
+}
+
+function movieAdd(val){
+    var tv = document.getElementById('moviefoldername'); 
+    tv.value = tv.value + val;
+    previewmovie();
+}
+function movieSet(val, val2){
+    var tv = document.getElementById('moviefoldername'); 
+    tv.value = val;
+    var tv2 = document.getElementById('movieextra'); 
+    tv2.value = val2;
+    previewmovie();
+}
+function movieClear(){
+    var tv = document.getElementById('moviefoldername'); 
+    tv.value = '';
+    previewmovie();
+}
+function movieClearExtra(){
+    var tv = document.getElementById('movieextra'); 
+    tv.value = '';
+    previewmovie();
+}
+function movieExtraFolder(value)
+{
+   document.getElementById('movie_extra_folder').checked = value;
+}
+function previewmovie()
+{
+    var input = document.getElementById('moviefoldername').value;
+    var input2 = document.getElementById('movieextra').value;
+    extra = input2.replace(/%1/g,'1');
+    var slash = "\\";
+    ext = extra + '.avi'
+    input = input.replace(/.%ext/g,ext);
+    input = input.replace(/%ext/g,'avi');
+    input = input.replace(/%title/g,'Movie Name');
+    input = input.replace(/%.title/g,'Movie.Name');
+    input = input.replace(/%_title/g,'Movie_Name');
+    input = input.replace(/%y/g,'2000');
+    input = input.replace(/%decade/g,'00');
+	input = input.replace(/%0decade/g,'2000');
+	input = input.replace(/%fn/g,'file');
+    
+    var regex = /\{([^\{]*)\}/g;
+    var str = input;
+    var result;
+    while ((result = regex.exec(str)) != null)
+    {
+      var lower = result[0].toLowerCase();
+      input = input.replace(result[0],lower);
+    }
+    input = input.replace(/{/g,'');
+    input = input.replace(/}/g,'');
+    var com = document.getElementById('complete_dir').value;
+    if (com.search("/") > 0)
+    {
+        slash = "/";
+        input = input.replace("\\","/", "g");
+    } else {
+        input = input.replace("/","\\", "g");
+    }
+    len = com.length
+    if (com.substring(len-1, len) == slash)
+    {
+        com = com.substring(0, len-1)
+    }
+    var outbox = document.getElementById('previewmovie').innerHTML = com+slash+input;
+}
+function dateSet(val){
+    var tv = document.getElementById('datefoldername'); 
+    tv.value = val;
+    previewdate();
+}
+function dateClear(){
+    var tv = document.getElementById('datefoldername'); 
+    tv.value = '';
+    previewdate();
+}
+function previewdate(){
+    var input = document.getElementById('datefoldername').value;
+    var slash = "\\";
+    input.toLowerCase()
+    input = input.replace(/%ext/g,'avi');
+    input = input.replace(/%t/g,'Show Name');
+    input = input.replace(/%.t/g,'Show.Name');
+    input = input.replace(/%_t/g,'Show_Name');
+    input = input.replace(/%decade/g,'00');
+	input = input.replace(/%0decade/g,'2000');
+	input = input.replace(/%fn/g,'file');
+    input = input.replace(/%desc/g,'Episode Name');
+    input = input.replace(/%\.desc/g,'Episode.Name');
+    input = input.replace(/%\_desc/g,'Episode_Name');
+    input = input.replace(/%0d/g,'02');
+    input = input.replace(/%d/g,'2');
+    input = input.replace(/%0m/g,'01');
+    input = input.replace(/%m/g,'1');
+    input = input.replace(/%y/g,'2009');
+    var com = document.getElementById('complete_dir').value;
+    if (com.search("/") > 0)
+    {
+        slash = "/";
+        input = input.replace("\\","/", "g");
+    } else {
+        input = input.replace("/","\\", "g");
+    }
+    len = com.length
+    if (com.substring(len-1, len) == slash)
+    {
+        com = com.substring(0, len-1)
+    }
+    var outbox = document.getElementById('previewdate').innerHTML = com+slash+input;
+}
+function showDiv(id)
+{
+    disp = (document.getElementById(id).style.display == "block") ? "none" : "block";
+    document.getElementById(id).style.display = disp;
+}

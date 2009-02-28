@@ -735,7 +735,7 @@ body.nzo {background: #ddd;}
 body.nzo .config_menu {
     cursor:default;
 }
-body.nzo input {
+#config_nav input, #config_content input {
     cursor:pointer;
 }
 body.nzo .config_menu input {
@@ -771,6 +771,13 @@ table.nzoTable tr:hover {
     background-color: #333333;
     color: #FFF;
 }
+.nzo_save_form {
+	margin-left:120px;
+}
+.nzo_save_form div {
+	display: inline;
+	white-space:nowrap;
+}
 
 
 
@@ -781,6 +788,7 @@ table.nzoTable tr:hover {
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
+
 #config_go_back {
     text-align:center;
     background-position: 50% 50%;
@@ -1005,7 +1013,9 @@ fieldset.EntryFieldSet {
     width: 100%;
     overflow: auto;
 }
-
+#config_content a {
+	color: blue;
+}
 .left_links {
     float: left;
     margin: 5px 0 0 10px;
@@ -1067,3 +1077,12 @@ fieldset.EntryFieldSet {
     float: right;
     margin: 6px 10px 0 0;
 }
+
+.center { text-align: center; }
+.xsmall { font-size: x-small; }
+.config_body { background: #ddd; }
+#configbox_latest_warnings a { color: white; }
+.dir_helper { color:white; background-color:blue; }
+.manual_restart { color:white; background-color:red; }
+.optional { color:white; background-color:green; }
+.key_toggle { cursor:pointer; color:white; background-color:#333; }

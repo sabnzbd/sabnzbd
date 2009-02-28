@@ -2,10 +2,10 @@
 <!--#set global $help_uri="GUI+Connections"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-			<div style="text-align:center"><small>
+			<div class="center"><small>
 				Version:&nbsp;$version&nbsp;&nbsp;|&nbsp;&nbsp;Uptime:&nbsp;$uptime&nbsp;&nbsp;|&nbsp;&nbsp;
 				<a href="showlog">Show&nbsp;Logging</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="showweb">Show&nbsp;Weblogging</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-				Logging:&nbsp;<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value" style="font-size:x-small">
+				Logging:&nbsp;<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value" class="xsmall">
 					<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
 					<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
 					<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
@@ -37,7 +37,7 @@
 			<!--#if $warnings#-->
 				<fieldset class="EntryFieldSet">
 					<legend id="configbox_latest_warnings" style="background-color:darkred;">Latest Warnings
-						<small>(<a href="clearwarnings" style="color:white">clear</a>)&nbsp;</small>
+						<small>(<a href="clearwarnings">clear</a>)&nbsp;</small>
 					</legend>
 					<small><ol class="numbered_list">
 					<!--#for $warn in $warnings#-->
