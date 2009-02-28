@@ -47,8 +47,8 @@ Copyright (c) 2006 Klaus Hartl
 See LICENSE-MIT & LICENSE-GPL
 
 jQuery Corner
-http://www.malsup.com/jquery/corner
-Dave Methvin & Mike Alsup
+http://jquery.malsup.com/corner/
+Authors: Dave Methvin & Mike Alsup
 See LICENSE-MIT & LICENSE-GPL
 
 jQuery hoverIntent
