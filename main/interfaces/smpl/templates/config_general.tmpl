@@ -41,23 +41,6 @@
 			<span class="tips">Choose a user interface (restart required!).</span>
 		<br class="clear" />
 
-            <!--#if $web_colors#-->
-            <label for "colorscheme" class="label">Color schema:</label>
-            <select name="web_color" class="select">
-                <!--#for $webline in $web_colors#-->
-                    <!--#if $webline.lower() == $web_color.lower()#-->
-                        <option value="$webline" selected>$webline</option>
-                    <!--#else if not $web_color.lower() and $webline.lower() == 'white'#-->
-                        <option value="$webline" selected>$webline</option>
-                    <!--#else#-->
-                        <option value="$webline">$webline</option>
-                    <!--#end if#-->
-                <!--#end for#-->
-            </select>
-            <span class="tips">Choose a color scheme for the current interface.</span>
-            <!--#end if#-->
-            <br class="clear" />
-
 			<label for "userinterface" class="label">Secondary Skin:</label>
 
 			<select name="web_dir2" id="webdir2" class="select">

@@ -82,7 +82,14 @@
 		    <span class="tips">See the wiki for usage.</span></label>
 		<br class="clear" />
 
-    <!--#if not $nt#-->
+    <!--#if $have_nice#-->
+		    <span class="label">Nice parameters:</span>
+		    <input type="text" name="nice" value="$nice"/>
+		    <span class="tips">See the wiki for usage.</span></label>
+		<br class="clear" />
+    <!--#end if#-->
+
+    <!--#if $have_ionice#-->
 		    <span class="label">IONice parameters:</span>
 		    <input type="text" name="ionice" value="$ionice"/>
 		    <span class="tips">See the wiki for usage.</span></label>
