@@ -111,12 +111,16 @@ def Cat2OptsDef(fname, cat=None):
     if cat:
         try:
             pp = config.get_categories()[cat.lower()].pp.get()
+            if pp == '':
+                pp = cfg.DIRSCAN_PP.get()
             logging.debug('Job %s gets options %s', name, pp)
         except:
             pass
 
         try:
             script = config.get_categories()[cat.lower()].script.get()
+            if script == '' or Lower(script) == 'default':
+                script = cfg.DIRSCAN_SCRIPT.get()
             logging.debug('Job %s gets script %s', name, script)
         except:
             pass
