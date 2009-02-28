@@ -17,12 +17,20 @@ Which skin would you like to use for SABnzbd?<br /><br />
     </tr>
 </table>
 </div>
-<br class="clear"/><br/>
 </div>
 <hr /><br/>
 
 <table class="full-width">
     <tr>
+        <td><input class="bigbutton" type="button" onclick="document.location ='./'" value="&lsaquo; Previous" disabled/></td>
+        <td>
+            <div class="align-center">
+                <!--#for $step in xrange($steps)#-->
+                   <!--#set $step = $step + 1#-->
+                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span> 
+                <!--#end for#-->
+            </div>
+        </td>
         <td class="align-right"><input class="bigbutton" type="submit" value="Next &raquo;" /></td>
     </tr>
 </table>

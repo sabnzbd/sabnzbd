@@ -763,6 +763,7 @@ class Wizard:
         else:
             info['custom_host'] = False
 
+        info['enable_https'] = cfg.ENABLE_HTTPS.get()
         info['autobrowser'] = cfg.AUTOBROWSER.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
@@ -864,10 +865,17 @@ class Wizard:
         info['urls'] = []
         for sock in socks:
             if sock:
-                url = '%s://%s:%s/sabnzbd/' % (cherrypy.request.scheme, sock, cfg.CHERRYPORT.get())
+                if cfg.ENABLE_HTTPS.get():
+                    url = 'https://%s:%s/sabnzbd/' % (sock, cfg.HTTPS_PORT.get())
+                else:
+                    url = 'http://%s:%s/sabnzbd/' % (sock, cfg.CHERRYPORT.get())
+                    
                 info['urls'].append(url)
-        info['access_url'] = '%s://%s:%s/sabnzbd/' % (cherrypy.request.scheme, access_uri, \
-                                                      cfg.CHERRYPORT.get())
+                
+        if cfg.ENABLE_HTTPS.get():
+            info['access_url'] = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.HTTPS_PORT.get())
+        else:
+            info['access_url'] = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.CHERRYPORT.get())
 
         template = Template(file=os.path.join(self.__web_dir, 'five.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)

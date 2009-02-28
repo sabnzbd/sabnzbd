@@ -12,9 +12,4 @@
                 <div id="rightGreyText">Running SABnzbd+ Version $version</div>
                 <br /><h1>SABnzbd Quick-Start Wizard</h1> <h2>&raquo; Step $num</h2><br />
                 <hr />
-                <div class="align-center">
-                #for $step in xrange($steps)#
-                   #set $step = $step + 1#
-                    <span class="#if $step == $number then 'selected' else 'unselected'#">$step</span> 
-                #end for#
-                </div>
+               

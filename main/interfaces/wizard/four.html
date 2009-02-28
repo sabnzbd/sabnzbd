@@ -32,6 +32,14 @@
 <table class="full-width">
     <tr>
         <td><input class="bigbutton" type="button" onclick="document.location ='./three'" value="&lsaquo; Previous" /></td>
+        <td>
+            <div class="align-center">
+                <!--#for $step in xrange($steps)#-->
+                   <!--#set $step = $step + 1#-->
+                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span> 
+                <!--#end for#-->
+            </div>
+        </td>
         <td class="align-right"><input class="bigbutton" type="submit" value="Next &raquo;" /></td>
     </tr>
 </table>
