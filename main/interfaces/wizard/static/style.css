@@ -2,8 +2,9 @@ body {
 	font-size:13px;
 	font-family: sans-serif;
 	background:#DEDEAF;
-	padding-left:100px;
-    padding-right:100px;
+	padding-left:5%;
+    padding-right:5%;
+    padding-bottom:10px;
 	text-align:center;
 }
 
@@ -142,7 +143,7 @@ h1,h2 {
 }
 
 .bigger {
-    font-size:16px;
+    font-size:14px;
 }
 
 .padded {
@@ -150,7 +151,7 @@ h1,h2 {
 }
 
 .bigger input {
-    font-size:18px;
+    font-size:16px;
 }
 
 .required-star {
@@ -179,4 +180,19 @@ h1,h2 {
 
 .hidden {
     display:none;
+}
+
+.text-input{
+    width:130px;
+}
+.text-input-wide{
+    width:230px;
+}
+.text-input-thin{
+    width:50px;
+}
+/*Fix for inputs messing up when adding a class in chrome */
+.clearinput
+{
+    margin-bottom:6px;
 }

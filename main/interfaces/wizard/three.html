@@ -2,7 +2,7 @@
 <script type="text/javascript" src="static/javascript/jquery.js"></script>
 <script type="text/javascript" src="static/javascript/checkserver.js"></script>
 <h3>Server Details</h3>
-Please enter in the details of your primary usenet provider <a href="">[?]</a>
+Please enter in the details of your primary usenet provider.
 <div id="serverBlock" class="quoteBlock">
     In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended. <br/><br />
     Don't have a usenet provider? We recommend trying giganews. <br />
@@ -11,15 +11,15 @@ Please enter in the details of your primary usenet provider <a href="">[?]</a>
 <br /><br class="clear" />
 <form action="./four" method="post">
 <div id="serverDetails">
-    <label class="label">Host<span class="required-star">*</span></label><input class="validate-text-required" type="text" size="20" name="host" value="$host">
+    <label class="label">Host<span class="required-star">*</span></label><input class="validate-text-required clearinput text-input-wide" type="text" size="26" name="host" value="$host">
     <br class="clear" />
-    <label class="label">Port</label><input class="validate-numeric" type="text" size="2" name="port" value="$port">
+    <label class="label">Port</label><input class="validate-numeric text-input-thin" type="text" size="2" name="port" value="$port">
     <br class="clear" /><br class="clear" />
-    <label class="label">Username</label><input class="validate-text" type="text" size="20" name="username" value="$username">
+    <label class="label">Username</label><input class="validate-text clearinput text-input" type="text" size="12" name="username" value="$username">
     <br class="clear" />
-    <label class="label">Password</label><input class="validate-text" type="password" size="20" name="password" value="$password">
+    <label class="label">Password</label><input class="validate-text text-input" type="password" size="12" name="password" value="$password">
     <br class="clear" /><br class="clear" />
-    <label class="label">Connections<span class="required-star">*</span></label><input class="validate-numeric-required" type="text" size="2" name="connections" value="$connections">
+    <label class="label">Connections<span class="required-star">*</span></label><input class="validate-numeric-required text-input-thin" type="text" size="2" name="connections" value="$connections">
     <br class="clear" />
     <label><span class="label">SSL</span>
     <input class="validate-text" class="radio" type="checkbox" name="ssl" value="1" <!--#if $ssl == 1 then 'checked' else ''#-->></label>
