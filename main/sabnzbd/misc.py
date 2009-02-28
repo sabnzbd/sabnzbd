@@ -83,7 +83,7 @@ def Cat2Opts(cat, pp, script):
         try:
             script = config.get_categories()[Lower(cat)].script.get()
             # Get the default script
-            if script == '':
+            if script == '' or Lower(script) == 'default':
                 script = cfg.DIRSCAN_SCRIPT.get()
             logging.debug('Job gets script %s', script)
         except KeyError:
