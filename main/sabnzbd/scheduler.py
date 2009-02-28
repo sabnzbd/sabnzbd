@@ -25,7 +25,7 @@ import random
 import logging
 import time
 
-from sabnzbd.utils.kronos import ThreadedScheduler
+import sabnzbd.utils.kronos as kronos
 import sabnzbd.rss as rss
 import sabnzbd.newzbin as newzbin
 import sabnzbd.downloader as downloader
@@ -57,7 +57,7 @@ def init():
     bookmark_rate = cfg.BOOKMARK_RATE.get()
     schedlines = cfg.SCHEDULES.get()
 
-    __SCHED = ThreadedScheduler()
+    __SCHED = kronos.ThreadedScheduler()
 
     for schedule in schedlines:
         arguments = []
@@ -100,9 +100,9 @@ def init():
 
         logging.debug("scheduling action:%s arguments:%s", action_name, arguments)
 
-        #(action, taskname, initialdelay, interval, processmethod, actionargs)
-        __SCHED.addDaytimeTask(action, '', d, None, (h, m),
-                             __SCHED.PM_SEQUENTIAL, arguments)
+        #(action, taskname, initialdelay, interval, processmethod, arg_list, arg_dict)
+        __SCHED.add_daytime_task(action, '', d, None, (h, m),
+                             kronos.method.sequential, arguments, None)
 
     if need_rsstask:
         d = range(1, 8) # all days of the week
@@ -113,7 +113,7 @@ def init():
             h = int(at/60)
             m = at - h*60
             logging.debug("Scheduling RSS task %s %s:%s", d, h, m)
-            __SCHED.addDaytimeTask(rss.run_method, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
+            __SCHED.add_daytime_task(rss.run_method, '', d, None, (h, m), kronos.method.sequential, [], None)
 
 
     if need_versioncheck:
@@ -123,7 +123,7 @@ def init():
         d = (random.randint(1, 7), )
 
         logging.debug("Scheduling VersionCheck day=%s time=%s:%s", d, h, m)
-        __SCHED.addDaytimeTask(sabnzbd.misc.check_latest_version, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
+        __SCHED.add_daytime_task(sabnzbd.misc.check_latest_version, '', d, None, (h, m), kronos.method.sequential, [], None)
 
 
     if bookmarks:
@@ -135,7 +135,7 @@ def init():
             h = int(at/60)
             m = at - h*60
             logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
-            __SCHED.addDaytimeTask(newzbin.getBookmarksNow, '', d, None, (h, m), __SCHED.PM_SEQUENTIAL, [])
+            __SCHED.add_daytime_task(newzbin.getBookmarksNow, '', d, None, (h, m), kronos.method.sequential, [], None)
 
     # Subscribe to special schedule changes
     cfg.NEWZBIN_BOOKMARKS.callback(schedule_guard)

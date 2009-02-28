@@ -1,30 +1,38 @@
-Kronos.py is part of a larger package called Snakelet-plugins written by Irmen de Jong.
+Kronos.py is written by Irmen de Jong.
+Retreived from:
+http://www.razorvine.net/download/kronos.py
 
-http://sourceforge.net/project/showfiles.php?group_id=41175&package_id=131027
+Quote from the module:
+"""
+    This version has been extracted from the Turbogears source repository
+    and slightly changed to be completely stand-alone again.
+    Also some fixes have been made to make it work on Python 2.6 (sched module changes).
+    The version in Turbogears is based on the original stand-alone Kronos.
+"""
 
 It is covered by the following license.
-
+http://www.opensource.org/licenses/mit-license.php
 --------------------------------------------------------------------------------------------
-Snakelets Software License (MIT license):
+    The MIT License
 
+    Kronos.py is Copyright (c) Irmen de Jong.
 
-      Snakelets is Copyright (c) Irmen de Jong.
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
 
-      Permission is hereby granted, free of charge, to any person obtaining a copy of this
-      software and associated documentation files (the "Software"), to deal in the Software
-      without restriction, including without limitation the rights to use, copy, modify, merge,
-      publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-      to whom the Software is furnished to do so, subject to the following conditions:
-
-      The above copyright notice and this permission notice shall be included in all copies or
-      substantial portions of the Software.
-
-      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-      INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-      PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
-      FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-      OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-      DEALINGS IN THE SOFTWARE.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
 
 --------------------------------------------------------------------------------------------
