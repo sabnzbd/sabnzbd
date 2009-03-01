@@ -26,24 +26,6 @@
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
  */
-
-/**
- *  corner() takes a single string argument:  $('#myDiv').corner("effect corners width")
- *
- *  effect:  name of the effect to apply, such as round, bevel, notch, bite, etc (default is round). 
- *  corners: one or more of: top, bottom, tr, tl, br, or bl. 
- *           by default, all four corners are adorned. 
- *  width:   width of the effect; in the case of rounded corners this is the radius. 
- *           specify this value using the px suffix such as 10px (and yes, it must be pixels).
- *
- * @name corner
- * @type jQuery
- * @param String options Options which control the corner style
- * @cat Plugins/Corner
- * @return jQuery
- * @author Dave Methvin (http://methvin.com/jquery/jq-corner.html)
- * @author Mike Alsup   (http://jquery.malsup.com/corner/)
- */
 eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}(';(n($){8 S=(n(){8 F=12.18(\'F\');1W{F.l.U(\'4\',\'0+0\')}21(e){7 1B}7 1X})();n X(1K,p){7 x($.r(1K,p))||0};n M(s){8 s=x(s).1Y(16);7(s.1c<2)?\'0\'+s:s};n 1d(y){Y(;y&&y.2c.1s()!=\'29\';y=y.N){8 v=$.r(y,\'1x\');b(v.2a(\'C\')>=0){b($.1Q.22&&v==\'28(0, 0, 0, 0)\')27;8 C=v.A(/\\d+/g);7\'#\'+M(C[0])+M(C[1])+M(C[2])}b(v&&v!=\'1e\')7 v}7\'#23\'};n 1A(P,i,4){25(P){a\'h\':7 5.h(4*(1-5.G(5.W(i/4))));a\'1w\':7 5.h(4*(1+5.G(5.W(i/4))));a\'1v\':7 5.h(4*(1-5.G(5.26(i/4))));a\'1u\':7 5.h(4*(5.G(5.W((4-i-1)/4))));a\'1p\':7 5.h(4*(5.1P(i,4/i)));a\'1o\':7 5.h(4*(5.1P(4,(4-i-1))));a\'1i\':7 5.h(4*(5.1U(i)));a\'1h\':7 5.h(4*(5.G(i)));a\'1f\':7 5.h(4*(5.1Z(i)));a\'1l\':7 5.h(4*(5.20(i)));a\'1N\':7 5.h(4*(5.1V((4-i-1),4)));a\'1k\':7(i&1)?(i+1):4;a\'1n\':7(i&2)?(i+1):4;a\'1m\':7(i&3)?(i+1):4;a\'1g\':7(i%2)*4;a\'1t\':7 4;a\'1q\':7 i+1}};$.1I.I=n(o){b(6.1c==0){b(!$.24&&6.1y){8 s=6.1y,c=6.2b;$(n(){$(s,c).I(o)})}7 6}o=(o||"").1s();8 V=/V/.E(o);8 19=((o.A(/19:(#[0-1r-f]+)/)||[])[1]);8 17=((o.A(/17:(#[0-1r-f]+)/)||[])[1]);8 4=x((o.A(/(\\d+)m/)||[])[1])||10;8 1j=/h|1q|1t|1u|1w|1v|1p|1o|1i|1h|1g|1f|1N|1l|1m|1n|1k/;8 P=((o.A(1j)||[\'h\'])[0]);8 15={T:0,B:1};8 k={J:/Z|2h/.E(o),H:/Z|2E/.E(o),K:/11|2F/.E(o),O:/11|2C/.E(o)};b(!k.J&&!k.H&&!k.K&&!k.O)k={J:1,H:1,K:1,O:1};8 t=12.18(\'F\');t.l.2A=\'2z\';t.l.1b=\'2y\';t.l.1x=17||\'1e\';t.l.1C=\'14\';7 6.2w(n(2x){8 q={T:x($.r(6,\'2D\'))||0,R:x($.r(6,\'2H\'))||0,B:x($.r(6,\'2G\'))||0,L:x($.r(6,\'2B\'))||0};b(2u 6.l.1a!=2j)6.l.1a=1;b(!V)6.l.2d=\'D\';t.l.2i=19||1d(6.N);8 1S=$.2v(6,\'1b\');Y(8 j 2e 15){8 u=15[j];b((u&&(k.K||k.O))||(!u&&(k.J||k.H))){t.l.1C=\'D \'+(k[j+\'R\']?\'14\':\'D\')+\' D \'+(k[j+\'L\']?\'14\':\'D\');8 d=12.18(\'F\');$(d).2f(\'1H-I\');8 9=d.l;u?6.1F(d):6.1G(d,6.1J);b(u&&1S!=\'2g\'){b($.r(6,\'z\')==\'1O\')6.l.z=\'1z\';9.z=\'1R\';9.11=9.1T=9.1L=9.13=\'0\';b(S)9.U(\'4\',\'6.N.1E\');Q 9.4=\'1M%\'}Q b(!u&&$.1Q.2l){b($.r(6,\'z\')==\'1O\')6.l.z=\'1z\';9.z=\'1R\';9.Z=9.1T=9.2m=9.1L=9.13=\'0\';b(S){8 1D=X(6,\'2s\')+X(6,\'2t\');9.U(\'4\',\'6.N.1E - \'+1D+\'+ "m"\')}Q 9.4=\'1M%\'}Q{9.13=!u?\'-\'+q.T+\'m -\'+q.R+\'m \'+(q.T-4)+\'m -\'+q.L+\'m\':(q.B-4)+\'m -\'+q.R+\'m -\'+q.B+\'m -\'+q.L+\'m\'}Y(8 i=0;i<4;i++){8 w=5.2r(0,1A(P,i,4));8 e=t.2q(1B);e.l.2n=\'0 \'+(k[j+\'R\']?w:0)+\'m 0 \'+(k[j+\'L\']?w:0)+\'m\';u?d.1F(e):d.1G(e,d.1J)}}}})};$.1I.2o=n(){7 $(\'.1H-I\',6).2p()}})(2k);',62,168,'||||width|Math|this|return|var|ds|case|if||||||round|||opts|style|px|function|||pad|css||strip|bot|||parseInt|node|position|match||rgb|none|test|div|cos|TR|corner|TL|BL||hex2|parentNode|BR|fx|else||expr||setExpression|keep|asin|sz|for|top||bottom|document|margin|solid|edges||sc|createElement|cc|zoom|height|length|gpc|transparent|wicked|fray|tear|curl|re|dog|long|dog3|dog2|jut|slide|bevel|9a|toLowerCase|notch|bite|sharp|cool|backgroundColor|selector|relative|getWidth|false|borderStyle|bw|offsetWidth|appendChild|insertBefore|jquery|fn|firstChild|el|padding|100|sculpt|static|atan2|browser|absolute|cssHeight|left|atan|log|try|true|toString|tan|sqrt|catch|safari|ffffff|isReady|switch|acos|continue|rgba|html|indexOf|context|nodeName|border|in|addClass|auto|tl|borderColor|undefined|jQuery|msie|right|borderWidth|uncorner|remove|cloneNode|max|borderLeftWidth|borderRightWidth|typeof|curCSS|each|index|1px|hidden|overflow|paddingLeft|br|paddingTop|tr|bl|paddingBottom|paddingRight'.split('|'),0,{}))
 
 

@@ -36,11 +36,6 @@ http://sizzlejs.com/
 Copyright (c) 2009 The Dojo Foundation
 See LICENSE-MIT, LICENSE-BSD, & LICENSE-GPL
 
-jQuery BGiFrame
-http://plugins.jquery.com/project/bgiframe
-Copyright (c) 2006 Brandon Aaron
-See LICENSE-MIT & LICENSE-GPL
-
 jQuery Cookie
 http://www.stilbuero.de
 Copyright (c) 2006 Klaus Hartl
