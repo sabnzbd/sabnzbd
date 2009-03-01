@@ -66,7 +66,7 @@ http://www.michaelmitchell.co.nz
 Copyright (c) 2008 Michael Mitchell
 See LICENSE-MIT & LICENSE-GPL
 
-jQuery Pagination (with minor modifications from pairofdimes, where noted)
+jQuery Pagination (with modifications from pairofdimes, where noted)
 http://plugins.jquery.com/project/pagination
 Author: Gabriel Birke, Describe Europe Ltd.
 See LICENSE-GPL

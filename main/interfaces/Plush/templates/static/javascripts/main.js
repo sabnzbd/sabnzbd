@@ -74,7 +74,7 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 
 
 /**
- * Pagination jQuery plugin
+ * Pagination jQuery plugin -- with modifications by pairofdimes, where noted
  *
  * @author Gabriel Birke (birke *at* d-scribe *dot* de)
  * @version 1.2
