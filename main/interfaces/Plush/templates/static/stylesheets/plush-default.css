@@ -139,7 +139,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 /* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
 .h_menu_purge {
     background: url(../images/plush-default/h_purge.png) 0 0 no-repeat;
-    margin:4px;
+    margin:6px;
     padding-right:28px;
     padding-bottom:24px;
     cursor:pointer;
