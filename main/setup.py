@@ -261,7 +261,9 @@ data = [ 'README.txt',
          'interfaces/smpl/',
          'interfaces/Plush/',
          'interfaces/wizard/',
-         'win/'
+         'win/par2/',
+         'win/unzip/',
+         'win/unrar/'
        ]
 
 options = dict(
