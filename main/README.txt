@@ -13,6 +13,19 @@ There is an extensive Wiki on the use of SABnzbd.
 http://sabnzbd.wikidot.com/
 
 
+**WARNING**   **WARNING**   **WARNING**
+
+This is early-release Alpha software, we know it's still immature.
+Use at your own risk.
+Don't blame us if your downloads fail.
+
+You are invited to file problem reports on our forum:
+http://forums.sabnzbd.org
+
+**WARNING**   **WARNING**   **WARNING**
+
+
+
 *******************************************
 *** Upgrading from 0.4.x                ***
 *******************************************
