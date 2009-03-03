@@ -94,7 +94,7 @@ def guard_loglevel():
 
 
 #------------------------------------------------------------------------------
-class FilterCP3():
+class FilterCP3:
     ### Filter out all CherryPy3-Access logging that we receive,
     ### because we have the root logger
     def __init__(self):

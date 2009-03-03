@@ -51,10 +51,10 @@ You need to have Python installed and some modules.
 Unix/Linux/OSX
     Python-2.4.4            http://www.python.org
 OR
-    Python-2.5.2            http://www.python.org
+    Python-2.5.4            http://www.python.org
 
 Windows
-    Python-2.5.2            http://www.activestate.com
+    Python-2.5.4.3          http://www.activestate.com
 
 Essential modules
     cheetah-2.0.1           http://www.cheetahtemplate.org/
@@ -66,13 +66,10 @@ Essential modules
 Optional modules
     unrar >= 3.70           http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
-    pyopenssl => 0.7        http://sourceforge.net/projects/pyopenssl/
+    pyopenssl => 0.8        http://sourceforge.net/projects/pyopenssl/
 
 Unix/Linux/OSX (source)
     openssl => v0.9.8g      http://www.openssl.org/
-Windows (binaries)
-    openssl => v0.9.8g      http://www.slproweb.com/products/Win32OpenSSL.html
-                            (You only need libeay32.dll and ssleay32.dll)
 
 Embedded modules (no need to install)
     CherryPy-3.2pre         http://www.cherrypy.org
