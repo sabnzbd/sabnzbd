@@ -483,6 +483,15 @@ class MainPage:
         limit = kwargs.get('limit')
 
         if mode == 'addfile':
+            # When uploading via flash it will send the nzb in a kw arg called Filedata
+            flash_upload = kwargs.get('Filedata', '')
+            if flash_upload:
+                name = flash_upload
+            # Normal upload will send the nzb in a kw arg called nzbfile
+            normal_upload = kwargs.get('nzbfile', '')
+            if normal_upload:
+                name = normal_upload
+                
             if name.filename and name.value:
                 sabnzbd.add_nzbfile(name, pp, script, cat, priority)
                 return 'ok\n'
@@ -494,7 +503,7 @@ class MainPage:
                 if os.path.exists(name):
                     fn = get_filename(name)
                     if fn:
-                        if get_ext(name) in ('.zip','.rar', '.nzb.gz'):
+                        if get_ext(name) in ('.zip','.rar', '.gz'):
                             sabnzbd.dirscanner.ProcessArchiveFile(\
                                 fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
                         elif get_ext(name) in ('.nzb'):
