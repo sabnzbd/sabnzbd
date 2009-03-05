@@ -279,7 +279,7 @@ def GetProfileInfo(vista):
         sabnzbd.DIR_LCLDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_HOME = sabnzbd.DIR_PROG
         if os.name == 'nt':
-            # Ignore Win23 "logoff" signal
+            # Ignore Win32 "logoff" signal
             # This should work, but it doesn't
             # Instead the signal_handler will ignore the "logoff" signal
             #signal.signal(5, signal.SIG_IGN)
@@ -515,6 +515,18 @@ def check_for_sabnzbd(url, upload_nzbs):
         return True
     return False
 
+def copy_old_ini(ini):
+    # If no INI file found but old one exists, copy it
+    if not os.path.exists(ini):
+        old = "~/.sabnzbd/sabnzbd.ini"
+        if os.path.exists(old):
+            import shutil
+            try:
+                shutil.copyfile(old, ini)
+            except:
+                pass
+
+
 #------------------------------------------------------------------------------
 def main():
     global LOG_FLAG
@@ -661,6 +673,8 @@ def main():
         inifile = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
         if not os.path.exists(inifile):
             inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
+            if sabnzbd.DARWIN:
+                copy_old_ini(inifile)
 
     # If INI file at non-std location, then use program dir as $HOME
     if sabnzbd.DIR_LCLDATA != os.path.dirname(inifile):
@@ -978,6 +992,7 @@ def main():
         ### 3 sec polling tasks
         # Check for auto-restart request
         if cherrypy.engine.execv:
+            scheduler.stop()
             cherrypy.engine._do_execv()
 
         # Check for loglevel changes, ignore for non-final releases
