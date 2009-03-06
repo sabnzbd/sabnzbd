@@ -89,6 +89,14 @@ jQuery(document).ready(function($){
             previewmovie();
             previewdate();
             break;
+        case 'General':
+        	$('#sabnzbd_restart').click(function(){
+        		if (confirm("Are you sure you want to restart SABnzbd?\n\nSave your config first if you have made changes.\n\nWait 5-10 seconds then refresh the page.")) {
+        			$('#sabnzbd_restart').html('Restarting...');
+        			$.post('../../tapi', {mode: 'restart'} );
+        		}
+        	});
+        	break;
     };
 
 });

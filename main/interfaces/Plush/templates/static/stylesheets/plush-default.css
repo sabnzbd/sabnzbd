@@ -954,6 +954,11 @@ fieldset.EntryFieldSet {
     padding: 6px;
     padding-left:36px;
 }
+#sabnzbd_restart {
+    background-image: url(../images/plush-default/nzo/reload.png);
+    padding: 6px;
+    padding-left:36px;
+}
 
 
 #config_nzo_reload {

@@ -10,6 +10,11 @@
             <a class="rounded" id="save" onclick="document.fullform.submit();">Save Changes</a>
         </div>
     #end if#
+    #if $pane=="General"#
+        <div class="left_links">
+            <a class="rounded" id="sabnzbd_restart">Restart SABnzbd</a>
+        </div>
+    #end if#
     #if $pane=="Email"#
         <div class="left_links">
             <a class="rounded" id="test_email" href="../../connections/testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
