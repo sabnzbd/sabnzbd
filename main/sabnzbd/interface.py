@@ -772,6 +772,11 @@ class Wizard:
         else:
             info['custom_host'] = False
 
+        if sabnzbd.newswrapper.HAVE_SSL:
+            info['have_ssl'] = True
+        else:
+            info['have_ssl'] = False
+            
         info['enable_https'] = cfg.ENABLE_HTTPS.get()
         info['autobrowser'] = cfg.AUTOBROWSER.get()
 

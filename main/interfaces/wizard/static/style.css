@@ -196,3 +196,8 @@ h1,h2 {
 {
     margin-bottom:6px;
 }
+
+.disabled-text {
+    text-decoration: line-through;
+    color:#ccc;
+}
