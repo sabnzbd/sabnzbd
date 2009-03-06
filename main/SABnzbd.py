@@ -704,18 +704,19 @@ def main():
     # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
     # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
     ## SSL
-    try:
-        cherrypy.process.servers.check_port(browserhost, https_port)
-    except IOError, error:
-        if str(error) == 'Port not bound.':
-            pass
-        else:
-            url = 'https://%s:%s/' % (browserhost, https_port)
-            if not check_for_sabnzbd(url, upload_nzbs):
-                port = find_free_port(browserhost, https_port)
-                if port > 0:
-                    cfg.HTTPS_PORT.set(port)
-                    cherryport = port
+    if enable_https and https_port:
+        try:
+            cherrypy.process.servers.check_port(browserhost, https_port)
+        except IOError, error:
+            if str(error) == 'Port not bound.':
+                pass
+            else:
+                url = 'https://%s:%s/' % (browserhost, https_port)
+                if not check_for_sabnzbd(url, upload_nzbs):
+                    port = find_free_port(browserhost, https_port)
+                    if port > 0:
+                        cfg.HTTPS_PORT.set(port)
+                        cherryport = port
     ## NonSSL
     try:
         cherrypy.process.servers.check_port(browserhost, cherryport)
