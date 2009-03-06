@@ -523,28 +523,31 @@ def copy_old_files(newpath):
     # OSX only:
     # If no INI file found but old one exists, copy it
     # When copying the INI, also copy rss, bookmarks and watched-data
-
     if not os.path.exists(os.path.join(newpath, DEF_INI_FILE)):
+        if not os.path.exists(newpath):
+            os.mkdir(newpath)
         oldpath = os.environ['HOME'] + "/.sabnzbd"
         oldini = os.path.join(oldpath, DEF_INI_FILE)
         if os.path.exists(oldini):
             import shutil
             try:
-                shutil.copyfile(oldini, newpath)
+                shutil.copy(oldini, newpath)
             except:
                 pass
             oldpath = os.path.join(oldpath, DEF_CACHE_DIR)
             newpath = os.path.join(newpath, DEF_CACHE_DIR)
+            if not os.path.exists(newpath):
+                os.mkdir(newpath)            
             try:
-                shutil.copyfile(os.path.join(oldpath, RSS_FILE_NAME), newpath)
+                shutil.copy(os.path.join(oldpath, RSS_FILE_NAME), newpath)
             except:
                 pass
             try:
-                shutil.copyfile(os.path.join(oldpath, BOOKMARK_FILE_NAME), newpath)
+                shutil.copy(os.path.join(oldpath, BOOKMARK_FILE_NAME), newpath)
             except:
                 pass
             try:
-                shutil.copyfile(os.path.join(oldpath, SCAN_FILE_NAME), newpath)
+                shutil.copy(os.path.join(oldpath, SCAN_FILE_NAME), newpath)
             except:
                 pass
 
@@ -567,6 +570,11 @@ def main():
 
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
+    	
+    # No console logging needed for OSX app
+    noConsoleLoggingOSX = (sabnzbd.DIR_PROG.find('.app/Contents/Resources') > 0)
+    if noConsoleLoggingOSX:
+        consoleLogging = 1
 
     LOGLEVELS = (logging.WARNING, logging.INFO, logging.DEBUG)
 
@@ -696,7 +704,7 @@ def main():
         if not os.path.exists(inifile):
             inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
             if sabnzbd.DARWIN:
-                copy_old_ini(sabnzbd.DIR_LCLDATA)
+                copy_old_files(sabnzbd.DIR_LCLDATA)
 
     # If INI file at non-std location, then use program dir as $HOME
     if sabnzbd.DIR_LCLDATA != os.path.dirname(inifile):
@@ -826,6 +834,11 @@ def main():
                 console.setLevel(LOGLEVELS[logging_level])
                 console.setFormatter(logging.Formatter(format))
                 logger.addHandler(console)
+            if noConsoleLoggingOSX:
+                logging.info('Console logging for OSX App disabled')
+                so = file('/dev/null', 'a+')
+                os.dup2(so.fileno(), sys.stdout.fileno())
+                os.dup2(so.fileno(), sys.stderr.fileno())
         except AttributeError:
             pass
 
@@ -1045,12 +1058,13 @@ def main():
             if sabnzbd.DARWIN:
                 args = sys.argv[:]
                 args.insert(0, sys.executable)
+                #TO FIX : when executing from sources on osx, after a restart, process is detached from console
                 pid = os.fork()
                 if pid == 0:
                     #If OSX frozen restart of app instead of embedded python
                     if getattr(sys, 'frozen', None) == 'macosx_app':
                     	sys.executable = "/usr/bin/open"
-                    	args = ["/usr/bin/open",sabnzbd.MY_FULLNAME.replace("/Content/Resources/SABnzbd.py","")]
+                    	args = ["/usr/bin/open",sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd","")]
                     os.execv(sys.executable, args)
             else:
                 cherrypy.engine._do_execv()

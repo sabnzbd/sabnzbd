@@ -1,4 +1,4 @@
-#!/usr/b in/env python
+#!/usr/bin/env python
 #
 # Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
@@ -38,6 +38,7 @@ except ImportError:
 
 
 VERSION_FILE = 'sabnzbd/version.py'
+VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
 
 def DeleteFiles(name):
     ''' Delete one file or set of files from wild-card spec '''
@@ -99,6 +100,26 @@ def PatchVersion(name):
         ver.close()
     except:
         print "WARNING: cannot patch " + VERSION_FILE
+        
+        
+    if py2app:
+        import codecs 
+        try:
+            verapp = codecs.open(VERSION_FILEAPP,"rb","utf-16-le") 
+            textapp = verapp.read()
+            verapp.close()
+        except:
+            print "WARNING: cannot patch " + VERSION_FILEAPP
+            return
+    
+        textapp = textapp.replace(u'0.4.0' , name)
+    
+        try:
+            verapp = codecs.open(VERSION_FILEAPP,"wb","utf-16-le")
+            verapp.write(textapp)
+            verapp.close()
+        except:
+            print "WARNING: cannot patch " + VERSION_FILEAPP
 
 
 def PairList(src):
@@ -202,7 +223,10 @@ def Unix2Dos(name):
 
 
 print sys.argv[0]
-print
+
+#OSX if svnversion not installed install SCPlugin and execute these commands
+#sudo cp /Library/Contextual\ Menu\ Items/SCFinderPlugin.plugin/Contents/Resources/SCPluginUIDaemon.app/Contents/lib/lib* /usr/lib
+#sudo cp /Library/Contextual\ Menu\ Items/SCFinderPlugin.plugin/Contents/Resources/SCPluginUIDaemon.app/Contents/bin/svnversion /usr/bin
 
 SvnVersion = CheckPath('svnversion')
 SvnRevert = CheckPath('svn')
@@ -216,6 +240,8 @@ else:
 if not (SvnVersion and SvnRevert and ZipCmd and UnZipCmd and NSIS):
     exit(1)
 
+SvnRevertApp =  SvnRevert + ' revert '
+SvnUpdateApp = SvnRevert + ' update '
 SvnRevert =  SvnRevert + ' revert ' + VERSION_FILE
 
 if len(sys.argv) < 2:
@@ -238,6 +264,10 @@ fileIns = prod + '-win32-setup.exe'
 fileBin = prod + '-win32-bin.zip'
 fileWSr = prod + '-win32-src.zip'
 fileSrc = prod + '-src.tar.gz'
+fileDmg = prod + '-osx.dmg'
+fileOSr = prod + '-osx-src.tar.gz'
+fileImg = prod + '.sparseimage'
+
 
 PatchVersion(release)
 
@@ -283,18 +313,61 @@ options = dict(
 
 
 if target == 'app':
-    if not platform.platform == 'darwin':
+    if not platform.system() == 'Darwin':
         print "Sorry, only works on Apple OSX!"
         os.system(SvnRevert)
         exit(1)
 
-    options['data_files'] = ['interfaces/Default', 'interfaces/smpl', 'interfaces/Plush', 'interfaces/wizard','osx/osx',('',glob.glob("osx/resources/*"))]
+    #Create sparseimage from template
+    os.system("unzip sabnzbd-template.sparseimage.zip")
+    os.rename('sabnzbd-template.sparseimage', fileImg)
+
+    #mount sparseimage
+    os.system("hdiutil mount %s" % (fileImg))
+    
+    #build SABnzbd.py
+    sys.argv[1] = 'py2app'
+    options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]	      
     options['options'] = {'py2app': {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns'}}
     options['app'] = ['SABnzbd.py']
-    options['setup_requires'] = ['py2app']
+    options['setup_requires'] = ['py2app']    
 
     setup(**options)
+
+    #copy builded app to mounted sparseimage
+    os.system("cp -r dist/SABnzbd.app /Volumes/SABnzbd/>/dev/null")
+    
+    #cleanup src dir
+    os.system("rm -rf dist/>/dev/null")
+    os.system("rm -rf build/>/dev/null")
+    os.system("find ./ -name *.pyc | xargs rm")
+    os.system("rm -rf NSIS_Installer.nsi")
+    os.system("rm -rf win/")
+    os.system("rm -rf cherrypy*.zip")
+    
+    #Create src tar.gz
+    os.system("tar -czf %s ./ --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"sab*.tar.gz\" --exclude \"*.sparseimage\">/dev/null" % (fileOSr) )    
+
+    #Copy src tar.gz to mounted sparseimage
+    os.system("cp %s /Volumes/SABnzbd/>/dev/null" % (fileOSr))
+    
+    #Wait for enter from user
+    #For manually arrange icon position in mounted Volume...
+    wait = raw_input ("Press Enter to Finalize")
+    
+    #Unmount sparseimage
+    os.system("hdiutil eject /Volumes/SABnzbd/>/dev/null")
+    os.system("sleep 5")
+    #Convert sparseimage to read only compressed dmg
+    os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg,fileDmg))
+    #Remove sparseimage
+    os.system("rm %s>/dev/null" % (fileImg))
+
     os.system(SvnRevert)
+    os.system(SvnRevertApp + "NSIS_Installer.nsi")
+    os.system(SvnRevertApp + "cherrypy*.zip")
+    os.system(SvnRevertApp + VERSION_FILEAPP)
+    os.system(SvnUpdateApp)
 
 elif target == 'binary':
     if not py2exe:
