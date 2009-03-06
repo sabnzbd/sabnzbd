@@ -515,14 +515,32 @@ def check_for_sabnzbd(url, upload_nzbs):
         return True
     return False
 
-def copy_old_ini(ini):
+def copy_old_files(newpath):
+    # OSX only:
     # If no INI file found but old one exists, copy it
-    if not os.path.exists(ini):
-        old = "~/.sabnzbd/sabnzbd.ini"
-        if os.path.exists(old):
+    # When copying the INI, also copy rss, bookmarks and watched-data
+
+    if not os.path.exists(os.path.join(newpath, DEF_INI_FILE)):
+        oldpath = os.environ['HOME'] + "/.sabnzbd"
+        oldini = os.path.join(oldpath, DEF_INI_FILE)
+        if os.path.exists(oldini):
             import shutil
             try:
-                shutil.copyfile(old, ini)
+                shutil.copyfile(oldini, newpath)
+            except:
+                pass
+            oldpath = os.path.join(oldpath, DEF_CACHE_DIR)
+            newpath = os.path.join(newpath, DEF_CACHE_DIR)
+            try:
+                shutil.copyfile(os.path.join(oldpath, RSS_FILE_NAME), newpath)
+            except:
+                pass
+            try:
+                shutil.copyfile(os.path.join(oldpath, BOOKMARK_FILE_NAME), newpath)
+            except:
+                pass
+            try:
+                shutil.copyfile(os.path.join(oldpath, SCAN_FILE_NAME), newpath)
             except:
                 pass
 
@@ -674,7 +692,7 @@ def main():
         if not os.path.exists(inifile):
             inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
             if sabnzbd.DARWIN:
-                copy_old_ini(inifile)
+                copy_old_ini(sabnzbd.DIR_LCLDATA)
 
     # If INI file at non-std location, then use program dir as $HOME
     if sabnzbd.DIR_LCLDATA != os.path.dirname(inifile):
@@ -897,6 +915,7 @@ def main():
                             'log.access_file' : sabnzbd.WEBLOGFILE,
                             'engine.autoreload_frequency' : 100,
                             'engine.autoreload_on' : False,
+                            'engine.reexec_retry' : 100,
                             'tools.encode.on' : True,
                             'tools.gzip.on' : True,
                             'tools.sessions.on' : True,
@@ -990,11 +1009,7 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
-        ### 3 sec polling tasks
-        # Check for auto-restart request
-        if cherrypy.engine.execv:
-            scheduler.stop()
-            cherrypy.engine._do_execv()
+        time.sleep(3)
 
         # Check for loglevel changes, ignore for non-final releases
         if LOG_FLAG and (testlog or not testRelease):
@@ -1016,7 +1031,25 @@ def main():
         else:
             timer += 1
 
-        time.sleep(3)
+        ### 3 sec polling tasks
+        # Check for auto-restart request
+        if cherrypy.engine.execv:
+            scheduler.stop()
+            sabnzbd.halt()
+            cherrypy.engine.exit()
+            sabnzbd.SABSTOP = True
+            if sabnzbd.DARWIN:
+                args = sys.argv[:]
+                args.insert(0, sys.executable)
+                pid = os.fork()
+                if pid == 0:
+                    #If OSX frozen restart of app instead of embedded python
+                    if getattr(sys, 'frozen', None) == 'macosx_app':
+                    	sys.executable = "/usr/bin/open"
+                    	args = ["/usr/bin/open",sabnzbd.MY_FULLNAME.replace("/Content/Resources/SABnzbd.py","")]
+                    os.execv(sys.executable, args)
+            else:
+                cherrypy.engine._do_execv()
 
     config.save_config()
 
