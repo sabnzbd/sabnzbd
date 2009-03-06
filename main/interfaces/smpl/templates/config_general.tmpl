@@ -60,8 +60,8 @@
 <legend>HTTPS Support</legend>
 <hr />
 
-		    <label><span class="label">Enable HTTPS:</span>
-		    <input class="radio" type="checkbox" name="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="1"' else ""#--> />
+		    <label><span class="label">Enable HTTPS<!--#if int($have_ssl) == 0 then " (not-installed)" else ""#-->:</span>
+		    <input class="radio" type="checkbox" name="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
 			<span class="tips">Enable accessing the interface from a HTTPS address.</span></label>
 		<br class="clear" />
 

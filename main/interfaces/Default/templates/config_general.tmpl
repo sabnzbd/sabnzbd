@@ -61,8 +61,9 @@ Authentication password.<br>
 
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-<legend>HTTPS Support</i></legend>
-<label><input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> /> <strong>Enable HTTPS</strong></label><br/>
+<legend>HTTPS Support <i>(restart required)</i></legend>
+<label><input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /> 
+<strong>Enable HTTPS<!--#if int($have_ssl) == 0 then " (not-installed)" else ""#--></strong></label><br/>
 Enable accessing the interface from a HTTPS address.<br>
 <br/>
 <strong>HTTPS Port:</strong><br>

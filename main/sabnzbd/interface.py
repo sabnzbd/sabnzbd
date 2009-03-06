@@ -1517,6 +1517,11 @@ class ConfigGeneral:
 
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
+        
+        if sabnzbd.newswrapper.HAVE_SSL:
+            conf['have_ssl'] = 1
+        else:
+            conf['have_ssl'] = 0
 
         wlist = []
         wlist2 = ['None']
