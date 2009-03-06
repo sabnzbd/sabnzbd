@@ -704,6 +704,7 @@ def main():
     # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
     # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
     ## SSL
+    enable_https = sabnzbd.cfg.ENABLE_HTTPS.get()
     if enable_https and https_port:
         try:
             cherrypy.process.servers.check_port(browserhost, https_port)
@@ -906,7 +907,6 @@ def main():
 
     https_cert = sabnzbd.cfg.HTTPS_CERT.get_path()
     https_key = sabnzbd.cfg.HTTPS_KEY.get_path()
-    enable_https = sabnzbd.cfg.ENABLE_HTTPS.get()
     if enable_https:
         # If either the HTTPS certificate or key do not exist, make some self-signed ones.
         if not (https_cert and os.path.exists(https_cert)) or not (https_key and os.path.exists(https_key)):
