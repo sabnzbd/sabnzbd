@@ -760,7 +760,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// NZB File Upload -- uses uploadify plugin with flash
 			$("#fileUpload").fileUpload({
-				'uploader': 'static/uploader.swf',
+				'uploader': 'static/flash/uploader.swf',
 				'script': 'tapi',
 				'scriptData': {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val(), priority: $("#addID_priority").val()}, // this string ends up being static, see the bound change event below
 				'onAllComplete': $.plush.refreshQueue,

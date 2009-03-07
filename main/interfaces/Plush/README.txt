@@ -82,7 +82,7 @@ Copyright (c) 2006-2008 Jšrn Zaefferer
 See LICENSE-MIT & LICENSE-GPL
 
 jQuery Uploadify (with modifications from pairofdimes, where noted)
-(includes templates/static/uploader.swf)
+(includes templates/static/flash/*)
 http://www.ronniesan.com/articles/jquery-multiple-file-upload.php
 Copyright (C) 2009 by Ronnie Garcia, Co-developed by Travis Nickels
 See LICENSE-GPL3
