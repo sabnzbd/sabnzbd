@@ -349,3 +349,6 @@ span.unselected {
 #hiddenNav {
     /*display:none;*/
 }
+
+.underline{text-decoration:underline;}
+#hiddenTimedPause{display:none;}

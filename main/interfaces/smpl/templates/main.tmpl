@@ -338,6 +338,18 @@ function checkrefresh()
 	}
 }
 
+function timedPause(mins)
+{
+    if (mins == null)
+    {
+        mins = prompt("Pause for how many minutes?");
+    }
+    url = 'tapi?mode=config&name=set_pause&value=' + mins;
+    d = doSimpleXMLHttpRequest(url);
+    d.addCallback(loadingJSON);
+    toggle('hiddenTimedPause','blind',{duration:0.2})
+}
+
 
 function applyrefresh(value)
 {
@@ -889,7 +901,7 @@ function loadingJSON(){
             }
             else
             {
-			    document.getElementById("status").innerHTML = "<span class='paused'>Paused(" + pause_int +")</span>";
+			    document.getElementById("status").innerHTML = "<span class='paused'>Paused ("+pause_int+")</span>";
             }
             document.title = "SABnzbd+ | Paused";
             document.getElementById("status2").innerHTML = "Resume";
@@ -1024,8 +1036,18 @@ function loadingJSON(){
 					<li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">Connections</a></li>
     				<li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">Warnings(<span id="have_warnings">$have_warnings</span>)</a></li>
 					<br />
-					<li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a></li>
-                    <span class="small"></span><input type="text" id="speedbox" onChange="javascript:doSimpleXMLHttpRequest('tapi?mode=config&name=set_pause&value='+this.value);">
+					<li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a> <a onClick="toggle('hiddenTimedPause','blind',{duration:0.2})"><img src="static/images/bullet_arrow_down.png" border=0 /></a></li>
+					<ul id="hiddenTimedPause" class="secondul">
+						<li><a class="config" onClick="javascript:timedPause(5)">5 mins</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(15)">15 mins</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(30)">30 mins</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(60)">1 hour</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(120)">2 hour</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(180)">3 hour</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(300)">5 hour</a></li>
+                        <li><a class="config" onClick="javascript:timedPause()">Custom</a></li>
+
+					</ul>
 					<!--#if $varExists('newzbinDetails')#-->
 					<li><a onClick="getBookmarks()">GetBookmarks</a></li>
 					<!--#end if#-->
