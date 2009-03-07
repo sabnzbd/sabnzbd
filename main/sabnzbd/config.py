@@ -329,20 +329,17 @@ class ConfigServer:
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', True, add=False)
 
-        self.set_dict(values, all=True)
+        self.set_dict(values)
         add_to_database('servers', self.__name, self)
 
-    def set_dict(self, values, all=False):
+    def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections',
                    'fillserver', 'ssl', 'enable', 'optional'):
             try:
                 value = values[kw]
             except KeyError:
-                if all:
-                    value= None
-                else:
-                    continue
+                continue
             exec 'self.%s.set(value)' % kw
         return True
 
@@ -384,19 +381,16 @@ class ConfigCat():
         self.newzbin = OptionList(name, 'newzbin', add=False)
         self.priority = OptionNumber(name, 'priority', add=False)
 
-        self.set_dict(values, all=True)
+        self.set_dict(values)
         add_to_database('categories', self.__name, self)
 
-    def set_dict(self, values, all=False):
+    def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('pp', 'script', 'dir', 'newzbin', 'priority'):
             try:
                 value = values[kw]
             except KeyError:
-                if all:
-                    value= None
-                else:
-                    continue
+                continue
             if kw == 'newzbin':
                 exec 'self.%s.set_string(value)' % kw
             else:
@@ -494,19 +488,16 @@ class ConfigRSS:
         self.filters = OptionFilters(name, 'filters', add=False)
         self.filters.set([['', '', '', 'A', '*']])
 
-        self.set_dict(values, all=True)
+        self.set_dict(values)
         add_to_database('rss', self.__name, self)
 
-    def set_dict(self, values, all=False):
+    def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('uri', 'cat', 'pp', 'script', 'priority', 'enable'):
             try:
                 value = values[kw]
             except KeyError:
-                if all:
-                    value= None
-                else:
-                    continue
+                continue
             exec 'self.%s.set(value)' % kw
 
         self.filters.set_dict(values)
