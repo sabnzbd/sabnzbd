@@ -57,6 +57,10 @@ from sabnzbd.database import get_history_handle, build_history_info, unpack_hist
 
 from sabnzbd.constants import *
 
+from cherrypy.lib import safemime
+# Safe mime is needed for flash nzb uploads (see http://www.cherrypy.org/ticket/648)
+safemime.init()
+
 #------------------------------------------------------------------------------
 # Global constants
 
@@ -338,6 +342,8 @@ class MainPage:
         """Handler for API over http, for template use
         """
         return self.api_handler(kwargs)
+    # Fix to allow flash nzb uploads (see http://www.cherrypy.org/ticket/648)
+    tapi._cp_config = {'tools.safe_multipart.on': True}
 
     @cherrypy.expose
     def api(self, **kwargs):
@@ -350,6 +356,8 @@ class MainPage:
                 return "Missing authentication"
 
         return self.api_handler(kwargs)
+    # flash upload fix (see above)
+    api._cp_config = {'tools.safe_multipart.on': True}
 
 
     def api_handler(self, kwargs):
