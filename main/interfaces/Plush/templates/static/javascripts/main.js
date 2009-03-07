@@ -349,11 +349,12 @@ jQuery(function($) { // safely invoke $ selector
 					// refresh state notification
 					$('#manual_refresh').removeClass('refreshing');
 	
-					// tooltip for ETA
+					// tooltips
 					$('#time-left').attr('title','ETA: '+$.plush.eta);
-					$('#time-left').tooltip({
+					$('.download-title a, #time-left').tooltip({
 						extraClass:	"tooltip",
-						track:		true
+						showURL: false,
+						track: true
 					});
 					
 					// set queue speed limit selector
@@ -369,6 +370,12 @@ jQuery(function($) { // safely invoke $ selector
 						$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
 					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_unpaused')
 						$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
+						
+					// set queue pause interval
+					if ($.plush.pause_int == "0")
+						$('#pause_int').html("");
+					else
+						$('#pause_int').html($.plush.pause_int);
 					
 					// set page title + eta/kbpersec stats at top of queue
 					if ($.plush.noofslots < 1) {
@@ -596,26 +603,28 @@ jQuery(function($) { // safely invoke $ selector
 			});
 			
 			// 6-in-1 queue sort ajax (via main menu)
-			$('#sort_by_avg_age_asc, #sort_by_avg_age_desc, #sort_by_name_asc, #sort_by_name_desc, #sort_by_size_asc, #sort_by_size_desc').click(function() {
-			
-				switch($(this).attr('id')) {
-					case 'sort_by_avg_age_asc':	sortParams = "avg_age&dir=asc"; break;
-					case 'sort_by_avg_age_desc':sortParams = "avg_age&dir=desc";break;
-					case 'sort_by_name_asc':	sortParams = "name&dir=asc"; 	break;
-					case 'sort_by_name_desc':	sortParams = "name&dir=desc"; 	break;
-					case 'sort_by_size_asc':	sortParams = "size&dir=asc"; 	break;
-					case 'sort_by_size_desc':	sortParams = "size&dir=desc"; 	break;
-					default: return;
-				};
-				
+			$('.queue_sort').click(function(event) {
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=queue&name=sort&sort="+sortParams,
+					data: "mode=queue&name=sort&sort="+$(event.target).attr('rel'),
 					success: $.plush.refreshQueue
 				});
 			});
-		
+			
+			// pause intervals
+			$('.set_pause').click(function(event) {
+				var minutes = $(event.target).attr('rel');
+				if (minutes == "custom")
+					minutes = prompt("Pause for how many minutes?");
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: "mode=config&name=set_pause&value="+minutes,
+					success: $.plush.refreshQueue
+				});
+			});
+
 			// Priority toggle main menu input
 			if ( !$.cookie('queue_details') || ($.cookie('queue_details') != 0 && $.cookie('queue_details') != 1) )
 				$.cookie('queue_details', 1, { expires: 365 }); // default priorities to enabled
@@ -768,9 +777,10 @@ jQuery(function($) { // safely invoke $ selector
 						url: "tapi",
 						data: "mode=pause"
 					});
-				if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused')
+				if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused') {
 					$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
-				else
+					$('#pause_int').html("");
+				} else
 					$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
 			});
 

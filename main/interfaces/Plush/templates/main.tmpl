@@ -127,12 +127,24 @@
                 <li>
                     <a class="sf-with-ul">Sort</a>
                     <ul>
-                        <li><a class="pointer" id="sort_by_avg_age_asc">by Average Age <small>[Oldest&rarr;Newest]</small></a></li>
-                        <li><a class="pointer" id="sort_by_avg_age_desc">by Average Age <small>[Newest&rarr;Oldest]</small></a></li>
-                        <li><a class="pointer" id="sort_by_name_asc">by Name <small>[A&rarr;Z]</small></a></li>
-                        <li><a class="pointer" id="sort_by_name_desc">by Name <small>[Z&rarr;A]</small></a></li>
-                        <li><a class="pointer" id="sort_by_size_asc">by Size <small>[Smallest&rarr;Largest]</small></a></li>
-                        <li><a class="pointer" id="sort_by_size_desc">by Size <small>[Largest&rarr;Smallest]</small></a></li>
+                        <li><a class="queue_sort pointer" rel="avg_age&dir=asc">by Average Age <small>[Oldest&rarr;Newest]</small></a></li>
+                        <li><a class="queue_sort pointer" rel="avg_age&dir=desc">by Average Age <small>[Newest&rarr;Oldest]</small></a></li>
+                        <li><a class="queue_sort pointer" rel="name&dir=asc">by Name <small>[A&rarr;Z]</small></a></li>
+                        <li><a class="queue_sort pointer" rel="name&dir=desc">by Name <small>[Z&rarr;A]</small></a></li>
+                        <li><a class="queue_sort pointer" rel="size&dir=asc">by Size <small>[Smallest&rarr;Largest]</small></a></li>
+                        <li><a class="queue_sort pointer" rel="size&dir=desc">by Size <small>[Largest&rarr;Smallest]</small></a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="sf-with-ul">Pause</a>
+                    <ul>
+                        <li><a class="set_pause pointer" rel="5">Pause for 5 minutes</a></li>
+                        <li><a class="set_pause pointer" rel="15">Pause for 15 minutes</a></li>
+                        <li><a class="set_pause pointer" rel="30">Pause for 30 minutes</a></li>
+                        <li><a class="set_pause pointer" rel="60">Pause for 1 hour</a></li>
+                        <li><a class="set_pause pointer" rel="180">Pause for 3 hours</a></li>
+                        <li><a class="set_pause pointer" rel="360">Pause for 6 hours</a></li>
+                        <li><a class="set_pause pointer" rel="custom">Pause for Custom Interval...</a></li>
                     </ul>
                 </li>
                 <li><a id="queue_purge" class="pointer">Purge</a></li>
@@ -167,6 +179,7 @@
 
             <div id="queue-buttons">
                 <ul>
+                	<li><span id="pause_int"></span></li>
                     <li class="tip q_menu_pause <!--#if $paused then 'q_menu_paused' else 'q_menu_unpaused'#-->" title="Pause&nbsp;&frasl;&nbsp;Resume" id="pause_resume"></li>
                 </ul>
             </div>

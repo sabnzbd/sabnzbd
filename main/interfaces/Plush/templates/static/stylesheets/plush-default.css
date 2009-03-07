@@ -124,6 +124,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 
 /* overall pause/resume */
+#pause_int {
+	color: white;
+	padding-right:10px;
+	font-size:small;
+}
 .q_menu_pause {
     margin-right:6px;
     padding-right:32px;
