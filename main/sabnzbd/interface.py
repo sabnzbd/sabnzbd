@@ -303,11 +303,13 @@ class MainPage:
 
     @cherrypy.expose
     def pause(self, _dc = None):
+        scheduler.plan_resume(0)
         downloader.pause_downloader()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
     def resume(self, _dc = None):
+        scheduler.plan_resume(0)
         downloader.resume_downloader()
         raise Raiser(self.__root, _dc=_dc)
 
@@ -491,7 +493,7 @@ class MainPage:
             normal_upload = kwargs.get('nzbfile', '')
             if normal_upload:
                 name = normal_upload
-                
+
             if name.filename and name.value:
                 sabnzbd.add_nzbfile(name, pp, script, cat, priority)
                 return 'ok\n'
@@ -622,10 +624,12 @@ class MainPage:
                 return 'error\n'
 
         if mode == 'pause':
+            scheduler.plan_resume(0)
             downloader.pause_downloader()
             return 'ok\n'
 
         if mode == 'resume':
+            scheduler.plan_resume(0)
             downloader.resume_downloader()
             return 'ok\n'
 
@@ -666,7 +670,9 @@ class MainPage:
                     return 'ok\n'
                 else:
                     return 'error: Please submit a value\n'
-
+            elif name == 'set_pause':
+                scheduler.plan_resume(IntConv(value))
+                return 'ok\n'
             else:
                 return 'not implemented\n'
 
@@ -776,7 +782,7 @@ class Wizard:
             info['have_ssl'] = True
         else:
             info['have_ssl'] = False
-            
+
         info['enable_https'] = cfg.ENABLE_HTTPS.get()
         info['autobrowser'] = cfg.AUTOBROWSER.get()
 
@@ -883,9 +889,9 @@ class Wizard:
                     url = 'https://%s:%s/sabnzbd/' % (sock, cfg.HTTPS_PORT.get())
                 else:
                     url = 'http://%s:%s/sabnzbd/' % (sock, cfg.CHERRYPORT.get())
-                    
+
                 info['urls'].append(url)
-                
+
         if cfg.ENABLE_HTTPS.get():
             info['access_url'] = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.HTTPS_PORT.get())
         else:
@@ -1187,11 +1193,13 @@ class QueuePage:
 
     @cherrypy.expose
     def pause(self, _dc = None, start=None, limit=None):
+        scheduler.plan_resume(0)
         downloader.pause_downloader()
         raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
 
     @cherrypy.expose
     def resume(self, _dc = None, start=None, limit=None):
+        scheduler.plan_resume(0)
         downloader.resume_downloader()
         raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
 
@@ -1230,6 +1238,11 @@ class QueuePage:
     @cherrypy.expose
     def set_speedlimit(self, _dc = None, value=None):
         downloader.limit_speed(IntConv(value))
+        raise Raiser(self.__root, _dc=_dc)
+
+    @cherrypy.expose
+    def set_pause(self, _dc = None, value=None):
+        scheduler.plan_resume(IntConv(value))
         raise Raiser(self.__root, _dc=_dc)
 
 class HistoryPage:
@@ -1517,7 +1530,7 @@ class ConfigGeneral:
 
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
-        
+
         if sabnzbd.newswrapper.HAVE_SSL:
             conf['have_ssl'] = 1
         else:
@@ -2451,6 +2464,7 @@ def build_header(prim):
         color = ''
 
     header = { 'version':sabnzbd.__version__, 'paused':downloader.paused(),
+               'pause_int': scheduler.pause_int(),
                'uptime':uptime, 'color_scheme':color }
     speed_limit = downloader.get_limit()
     if speed_limit <= 0:
@@ -2710,6 +2724,7 @@ def json_qstatus():
 
     status = {
         "paused" : downloader.paused(),
+        "pause_int" : scheduler.pause_int(),
         "kbpersec" : bpsmeter.method.get_bps() / KIBI,
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
@@ -2745,6 +2760,7 @@ def xml_qstatus():
 
     status = {
         "paused" : downloader.paused(),
+        "pause_int" : scheduler.pause_int(),
         "kbpersec" : bpsmeter.method.get_bps() / KIBI,
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
@@ -3063,7 +3079,7 @@ class xml_factory:
     def _tuple(self, keyw, lst, text=None):
         if text == None:
             text = []
-            
+
         for item in lst:
             text.append(self.run(keyw, item))
         return ''.join(text)
@@ -3071,7 +3087,7 @@ class xml_factory:
     def _dict(self, keyw, lst, text=None):
         if text == None:
             text = []
-        
+
         for key in lst.keys():
             found = self.run(key,lst[key])
             if found:
@@ -3090,7 +3106,7 @@ class xml_factory:
     def _list(self, keyw, lst, text=None):
         if text == None:
             text = []
-            
+
         #deal with lists
         #found = False
         for cat in lst:

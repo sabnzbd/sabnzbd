@@ -4,7 +4,7 @@
     - <b>Sysload</b> $loadavg
 <!--#end if#-->
 <!--#if $paused#-->
-    - <b>PAUSED</b>
+    - <b>PAUSED</b><!--#if $pause_int != "0"#-->($pause_int)<!--#end if#-->
 <!--#end if#-->
 <br>
 <!--#if int($cache_limit)#-->

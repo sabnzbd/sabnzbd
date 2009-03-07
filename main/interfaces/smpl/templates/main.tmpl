@@ -37,7 +37,7 @@
 	var speed = $kbpersecrnd;
     var gDual = 0;
     var gUrl;
-    
+
     var gDeferrer;
     var gDeferrerTwo;
     var gRight;
@@ -47,17 +47,17 @@
 
 <script type="text/javascript">
     function tvAdd(val){
-        var tv = document.getElementById('tvfoldername'); 
+        var tv = document.getElementById('tvfoldername');
         tv.value = tv.value + val;
         previewtv();
     }
     function tvSet(val){
-        var tv = document.getElementById('tvfoldername'); 
+        var tv = document.getElementById('tvfoldername');
         tv.value = val;
         previewtv();
     }
     function tvClear(){
-        var tv = document.getElementById('tvfoldername'); 
+        var tv = document.getElementById('tvfoldername');
         tv.value = '';
         previewtv();
     }
@@ -92,26 +92,26 @@
         }
         var outbox = document.getElementById('previewtv').innerHTML = com+slash+input;
     }
-    
+
     function movieAdd(val){
-        var tv = document.getElementById('moviefoldername'); 
+        var tv = document.getElementById('moviefoldername');
         tv.value = tv.value + val;
         previewmovie();
     }
     function movieSet(val, val2){
-        var tv = document.getElementById('moviefoldername'); 
+        var tv = document.getElementById('moviefoldername');
         tv.value = val;
-        var tv2 = document.getElementById('movieextra'); 
+        var tv2 = document.getElementById('movieextra');
         tv2.value = val2;
         previewmovie();
     }
     function movieClear(){
-        var tv = document.getElementById('moviefoldername'); 
+        var tv = document.getElementById('moviefoldername');
         tv.value = '';
         previewmovie();
     }
     function movieClearExtra(){
-        var tv = document.getElementById('movieextra'); 
+        var tv = document.getElementById('movieextra');
         tv.value = '';
         previewmovie();
     }
@@ -135,7 +135,7 @@
         input = input.replace(/%decade/g,'00');
 		input = input.replace(/%0decade/g,'2000');
 		input = input.replace(/%fn/g,'file');
-        
+
         var regex = /\{([^\{]*)\}/g;
         var str = input;
         var result;
@@ -162,12 +162,12 @@
         var outbox = document.getElementById('previewmovie').innerHTML = com+slash+input;
     }
     function dateSet(val){
-        var tv = document.getElementById('datefoldername'); 
+        var tv = document.getElementById('datefoldername');
         tv.value = val;
         previewdate();
     }
     function dateClear(){
-        var tv = document.getElementById('datefoldername'); 
+        var tv = document.getElementById('datefoldername');
         tv.value = '';
         previewdate();
     }
@@ -209,7 +209,7 @@
     {
         disp = (document.getElementById(id).style.display == "block") ? "none" : "block";
         document.getElementById(id).style.display = disp;
-		
+
     }
     function showRow(id)
     {
@@ -218,7 +218,7 @@
 
 
     }
-    
+
 function setCookie(c_name,value,expiredays)
 {
 var exdate=new Date();
@@ -282,7 +282,7 @@ function toggleHistoryDetails(nzoID, row_obj, tog_id)
     {
         var histitems = cook.split(',');
         found = -1;
-        for(i=0; i<histitems.length; i++) 
+        for(i=0; i<histitems.length; i++)
         {
             if (histitems[i] == nzoID) found = i;
         }
@@ -373,13 +373,13 @@ function loadtitle() {
 		if (url.lastIndexOf('/') == url.length-1){
 			url = url.slice(0, url.length-1);
 		}
-		
+
         switch(url)
         {
             case 'dv1':
                 lr('queue/','', 1, 1);
                 lrb('history/','limit=50',1);
-                break;    
+                break;
             case 'dv2':
                 lr('queue/','', 1, 2);
                 lrb('history/','limit=50',1);
@@ -419,22 +419,22 @@ function loadtitle() {
 	var status2 = $pau;
 	var timerId2 = 0;
     var timerId3 = 0;
-    
-    
+
+
     function clearForm(obj, defText){
         text = obj.value;
         if (text == defText){
             obj.value = "";
         }
     }
-    
+
     function setForm(obj, defText){
         text = obj.value;
         if (text == ""){
             obj.value = defText;
         }
     }
-    
+
 	function toggle_paused()
 	{
     //Pause button toggle - XML request and instant word changing for the link and status
@@ -465,7 +465,7 @@ function loadtitle() {
 		d = doSimpleXMLHttpRequest('tapi/', {mode: 'queue', name: 'delete', value: elem, _dc: Math.random()});
 
 	}
-    
+
 	function deletenzf(nzo,elem)
 	{
     //deletes an item from the queue - passed variable is the id (uid) of the queue item to delete(and also the id of the queue element)
@@ -475,7 +475,7 @@ function loadtitle() {
 		d = doSimpleXMLHttpRequest('tapi/', {mode: 'queue', name: 'delete_nzf', value: nzo, value2: elem, _dc: Math.random()});
 
 	}
-    
+
 	function pausequeueitem(elem)
 	{
     //deletes an item from the queue - passed variable is the id (uid) of the queue item to delete(and also the id of the queue element)
@@ -486,7 +486,7 @@ function loadtitle() {
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
-    
+
 	function resumequeueitem(elem)
 	{
     //deletes an item from the queue - passed variable is the id (uid) of the queue item to delete(and also the id of the queue element)
@@ -497,18 +497,18 @@ function loadtitle() {
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
-    
+
 	function deletehistoryitem(elem, pnode)
 	{
     //deletes an item from the history - passed variable is the id (uid) of the history item to delete(and also the id of the history element)
         el = document.getElementById(elem)
         el.parentNode.removeChild(el);
-    
+
 		d = doSimpleXMLHttpRequest('tapi/', {mode: 'history', name: 'delete', value: elem, _dc: Math.random()});
 	}
-    
+
     function handleServerError(){}
-    
+
     function killTimer(){
         clearTimeout (timerId2);
     }
@@ -516,7 +516,7 @@ function loadtitle() {
         killTimer();
         timerId2 = setTimeout("startTimer()", time*1000);
     }
-    
+
     function startTimer(url, extra, dual){
         killTimer();
         if (url) gUrl = url
@@ -525,15 +525,15 @@ function loadtitle() {
         else dual = gDual
         timer="lr(\'"+url+"\', \'"+extra+"\', 1, "+dual+", 'Right')";
         timerId2 = setTimeout(timer, RefreshTime*1000);
- 
+
     }
-    
+
     function rssUrlEncode(url, uri ,cat ){
         var enc_uri = urlEncode(uri)
         location = url+"?uri="+enc_uri+"&cat="+cat+"&this_uri="+enc_uri
     }
-    
-	
+
+
 	function lr(url, extra, refresh, dual, pnode)
 	{
     //submits an ajax request and loads the retrieved data into the div called "Right". Can queue itself up to repeat the action based on the refresh rate
@@ -544,10 +544,10 @@ function loadtitle() {
                 document.getElementById('Container').style.width = "90%";
                 document.getElementById('Right').style.width = "100%";
                 removeElementClass('Right', "float");
-                
+
                 removeElementClass('Left', "right-border");
                 addElementClass('RightContainer', "left-border");
-                
+
                 document.getElementById('Right_bottom').style.width = "100%";
                 removeElementClass('Right_bottom', "float");
             }
@@ -555,10 +555,10 @@ function loadtitle() {
                 document.getElementById('Container').style.width = "99%";
                 document.getElementById('Right').style.width = "48%";
                 addElementClass('Right', "float");
-                
+
                 removeElementClass('RightContainer', "left-border");
                 addElementClass('Left', "right-border");
-                
+
                 document.getElementById('Right_bottom').style.width = "48%";
                 addElementClass('Right_bottom', "float");
             }
@@ -586,12 +586,12 @@ function loadtitle() {
             stopDeferer(gDeferrer);
             stopDeferer(gRight);
 		}
-        
+
         if (refresh > 0 && RefreshTime > 0) {
             gRight = callLater(RefreshTime, lr, url, extra, refresh, dual, pnode);
-        } 
-        
-		var gDeferrer = doSimpleXMLHttpRequest(url+append); 
+        }
+
+		var gDeferrer = doSimpleXMLHttpRequest(url+append);
 
 	    gDeferrer.addCallback(function (res)
 	    {
@@ -611,15 +611,15 @@ function loadtitle() {
 			stopDeferer(gDeferrerTwo);
 			stopDeferer(gRightBottom);
 		}
-        
+
 		gDeferrerTwo = doSimpleXMLHttpRequest(url+append);
 	    gDeferrerTwo.addCallback(function (res) {
             document.getElementById('Right_bottom').innerHTML = res.responseText;
         });
-        
+
         if (refresh && refresh!=-1 && RefreshTime > 0) {
             gRightBottom = callLater(RefreshTime, lrb, url, extra, refresh);
-        } 
+        }
 
 		//res.addErrback(handleServerError);
 	}
@@ -629,7 +629,7 @@ function loadtitle() {
             deferer.cancel();
         }
 	}
-    
+
     function pauseHistoryDeferer(pnode){
 	      if (pnode != 'Right_bottom') {
             stopDeferer(gRight);
@@ -639,7 +639,7 @@ function loadtitle() {
             stopDeferer(gDeferrerTwo);
           }
     }
-	
+
     function pauseQueueDeferer(pnode){
 	      if (pnode != 'Right_bottom') {
             stopDeferer(gRight);
@@ -649,7 +649,7 @@ function loadtitle() {
             stopDeferer(gDeferrerTwo);
           }
     }
-    
+
     function loadSearch(url, elem, extra, refresh, pnode, new_search){
         if (elem){
             var searchTerm = document.getElementById(elem).value;
@@ -666,7 +666,7 @@ function loadtitle() {
         lr(url, extra, refresh,-1,pnode);
 
     }
-    
+
 	function lrdual(url1, url2, refresh, pnode)
 	{
     killTimer()
@@ -691,7 +691,7 @@ function loadtitle() {
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
-    
+
 
 
 	function testemail()
@@ -744,7 +744,7 @@ function loadtitle() {
 			append += '&'+extra
 		}
         url = 'queue/tog_uid_verbose?uid='+nzo_id+append;
-		var res = doSimpleXMLHttpRequest(url);        
+		var res = doSimpleXMLHttpRequest(url);
 	    res.addCallback(function (res)
 	    {
           document.getElementById('Right').innerHTML = res.responseText;
@@ -800,7 +800,7 @@ function loadtitle() {
 	{
 		document.getElementById('Right').innerHTML = res.responseText;
 	}
-    
+
 	var replaceright2  = function (res)
 	{
 		document.getElementById('Right_bottom').innerHTML = res.responseText;
@@ -878,11 +878,19 @@ function loadingJSON(){
 
 		speed = info["kbpersec"].toFixed(0);
 		var paused = info["paused"];
+        var pause_int = info["pause_int"];
 		//if (paused==true) speed = 0;
 
 		if (paused == true)
 		{
-			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
+            if (pause_int == "0")
+            {
+			    document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
+            }
+            else
+            {
+			    document.getElementById("status").innerHTML = "<span class='paused'>Paused(" + pause_int +")</span>";
+            }
             document.title = "SABnzbd+ | Paused";
             document.getElementById("status2").innerHTML = "Resume";
             status2 = 1
@@ -890,7 +898,7 @@ function loadingJSON(){
 		} else if 	(speed>0)
 		{
 			document.getElementById("status").innerHTML = "<span class='downloading'>Downloading</span>";
-    		totalTimeRemain = info["timeleft"];   
+    		totalTimeRemain = info["timeleft"];
             dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"kB/s";
             document.title = dltitle;
             document.getElementById("status2").innerHTML = "Pause";
@@ -914,7 +922,7 @@ function loadingJSON(){
 	   	if (info["jobs"]!="") document.getElementById("downloadinfo").innerHTML = "Downloading: "+info["jobs"][0]["filename"];
         else document.getElementById("downloadinfo").innerHTML = "";
 		document.getElementById("have_warnings").innerHTML = info["have_warnings"];
-		
+
 
 	};
 	var metadataFetchFailed = function (err) {
@@ -946,7 +954,7 @@ function loadingJSON(){
 
    function chartReload(data) {
 
-        
+
        <!--#if $color_scheme  == 'black.css'#-->
        var colorScheme = "Black";
        <!--#else #-->
@@ -1017,6 +1025,7 @@ function loadingJSON(){
     				<li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">Warnings(<span id="have_warnings">$have_warnings</span>)</a></li>
 					<br />
 					<li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a></li>
+                    <span class="small"></span><input type="text" id="speedbox" onChange="javascript:doSimpleXMLHttpRequest('tapi?mode=config&name=set_pause&value='+this.value);">
 					<!--#if $varExists('newzbinDetails')#-->
 					<li><a onClick="getBookmarks()">GetBookmarks</a></li>
 					<!--#end if#-->
@@ -1034,13 +1043,13 @@ function loadingJSON(){
                 <center>
 				<img src="static/images/drive.png" title="Incomplete" /> <span class="small"><span id="ds1">${diskspace1}</span>GB</span><br />
 				<img src="static/images/drive_go.png" title="Complete" /> <span class="small"><span id="ds2">${diskspace2}</span>GB</span>
-                
+
                 <!--#if $loadavg#-->
                     SysLoad<br />
                     <span class="small"><span id="ds3">${loadavg}</span></span>
                 <!--#end if#-->
 				</center>
-				
+
 			</div>
 			<div id="RightContainer" class="left-border">
 <div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">

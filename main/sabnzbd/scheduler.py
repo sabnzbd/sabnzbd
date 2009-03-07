@@ -77,7 +77,7 @@ def init():
             d = [int(d)]
 
         if action_name == 'resume':
-            action = downloader.resume_downloader
+            action = scheduled_resume
             arguments = []
         elif action_name == 'pause':
             action = downloader.pause_downloader
@@ -160,7 +160,7 @@ def restart(force=False):
         SCHEDULE_GUARD_FLAG = False
         stop()
 
-        analyse()
+        analyse(downloader.paused())
 
         init()
         start()
@@ -269,3 +269,52 @@ def analyse(was_paused=False):
         except:
             pass
     config.save_config()
+
+
+#------------------------------------------------------------------------------
+# Support for single shot pause (=delayed resume)
+
+__PAUSE_END = None     # Moment when pause will end
+
+def scheduled_resume():
+    """ Scheduled resume, only when no oneshot resume is active
+    """
+    global __PAUSE_END
+    if __PAUSE_END == None:
+       downloader.resume_downloader
+
+def __oneshot_resume(when):
+    """ Called by delayed resume schedule
+        Only resumes if call comes at the planned time
+    """
+    global __PAUSE_END
+    if __PAUSE_END != None and (when > __PAUSE_END-5) and (when < __PAUSE_END+55):
+        __PAUSE_END = None
+        logging.debug('Resume after pause-interval')
+        downloader.resume_downloader()
+    else:
+        logging.debug('Ignoring cancelled resume')
+
+def plan_resume(interval):
+    """ Set a scheduled resume after the interval
+    """
+    global __SCHED, __PAUSE_END
+    if interval > 0:
+        __PAUSE_END = time.time() + (interval * 60)
+        logging.debug('Schedule resume at %s', __PAUSE_END)
+        __SCHED.add_single_task(__oneshot_resume, '', interval*60, kronos.method.sequential, [__PAUSE_END], None)
+        downloader.pause_downloader()
+    else:
+        __PAUSE_END = None
+        downloader.resume_downloader()
+
+def pause_int():
+    """ Return minutes:seconds until pause ends """
+    global __PAUSE_END
+    if __PAUSE_END == None:
+        return "0"
+    else:
+        val = __PAUSE_END - time.time()
+        min = int(val / 60L)
+        sec = int(val - min*60)
+        return "%d:%02d" % (min, sec)

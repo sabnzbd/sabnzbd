@@ -37,8 +37,10 @@ On queue finish:
     </optgroup>
 <!--#end if#-->
 </select>
-Speed Limit:
+| Speed Limit:
 <input id="speedbox" type="text" value="$speedlimit" onChange="location = './set_speedlimit?value='+this.value">KB/s
+| Pause for:
+<input id="speedbox" type="text" size=5 value="" onChange="location = './set_pause?value='+this.value">min
 </span>
 
 <br>
@@ -66,8 +68,8 @@ Speed Limit:
             <!--#else#-->
                 <form action="pause_nzo" method="get">
                 <input type="hidden" value="$slot.nzo_id" name="uid">
-                <input type="submit" value="Pause"></form>         
-            <!--#end if#--> 
+                <input type="submit" value="Pause"></form>
+            <!--#end if#-->
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
             <!--#for $i in xrange($noofslots)#-->
                 <option value="switch?uid1=$slot.nzo_id&uid2=$slots[i].nzo_id" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
