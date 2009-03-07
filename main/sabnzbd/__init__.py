@@ -407,9 +407,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         logging.error("Cannot create temp file for %s", filename)
 
     if ext.lower() in ('.zip', '.rar'):
-        dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority)
+        dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
     else:
-        dirscanner.ProcessSingleFile(filename, path, pp, script, cat, priority)
+        dirscanner.ProcessSingleFile(filename, path, pp, script, cat, priority=priority)
 
 
 ################################################################################
