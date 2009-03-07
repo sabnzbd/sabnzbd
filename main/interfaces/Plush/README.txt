@@ -1,6 +1,6 @@
 
-==============================================
-== Plush 3.0 for SABnzbd+ 0.5 | Feb 23 2009 ==
+=============================================
+== Plush 3.0 for SABnzbd+ 0.5 | Mar 7 2009 ==
 
 ============
 ASSEMBLED BY
@@ -56,11 +56,6 @@ http://plugins.jquery.com/project/livequery
 Copyright (c) 2007 Brandon Aaron
 See LICENSE-MIT & LICENSE-GPL
 
-jQuery One Click Upload
-http://www.michaelmitchell.co.nz
-Copyright (c) 2008 Michael Mitchell
-See LICENSE-MIT & LICENSE-GPL
-
 jQuery Pagination (with modifications from pairofdimes, where noted)
 http://plugins.jquery.com/project/pagination
 Author: Gabriel Birke, Describe Europe Ltd.
@@ -83,8 +78,14 @@ See LICENSE-MIT & LICENSE-GPL
 
 jQuery Tooltip
 http://bassistance.de/jquery-plugins/jquery-plugin-tooltip
-Copyright (c) 2006-2008 JÃ¶rn Zaefferer
+Copyright (c) 2006-2008 Jšrn Zaefferer
 See LICENSE-MIT & LICENSE-GPL
+
+jQuery Uploadify (with modifications from pairofdimes, where noted)
+(includes templates/static/uploader.swf)
+http://www.ronniesan.com/articles/jquery-multiple-file-upload.php
+Copyright (C) 2009 by Ronnie Garcia, Co-developed by Travis Nickels
+See LICENSE-GPL3
 
 Thanks goes out to inpheaux for supplying:
 Complete Config Skin

@@ -54,13 +54,6 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}('(5($){$.T($.4,{3:5(6,4,8){g t=2,q;7($.N(6))8=4,4=6,6=C;$.h($.3.j,5(i,9){7(t.d==9.d&&t.f==9.f&&6==9.6&&(!4||4.$e==9.4.$e)&&(!8||8.$e==9.8.$e))k(q=9)&&z});q=q||U $.3(2.d,2.f,6,4,8);q.A=z;q.v();k 2},W:5(6,4,8){g t=2;7($.N(6))8=4,4=6,6=C;$.h($.3.j,5(i,9){7(t.d==9.d&&t.f==9.f&&(!6||6==9.6)&&(!4||4.$e==9.4.$e)&&(!8||8.$e==9.8.$e)&&!2.A)$.3.B(9.b)});k 2}});$.3=5(d,f,6,4,8){2.d=d;2.f=f||O;2.6=6;2.4=4;2.8=8;2.u=[];2.A=z;2.b=$.3.j.I(2)-1;4.$e=4.$e||$.3.H++;7(8)8.$e=8.$e||$.3.H++;k 2};$.3.p={B:5(){g 9=2;7(2.6)2.u.12(2.6,2.4);G 7(2.8)2.u.h(5(i,m){9.8.x(m)});2.u=[];2.A=P},v:5(){7(2.A)k;g 9=2;g o=2.u,w=$(2.d,2.f),J=w.Z(o);2.u=w;7(2.6){J.10(2.6,2.4);7(o.s>0)$.h(o,5(i,m){7($.D(m,w)<0)$.Y.Q(m,9.6,9.4)})}G{J.h(5(){9.4.x(2)});7(2.8&&o.s>0)$.h(o,5(i,m){7($.D(m,w)<0)9.8.x(m)})}}};$.T($.3,{H:0,j:[],l:[],F:z,E:11,S:5(){7($.3.F&&$.3.l.s){g s=$.3.l.s;X(s--)$.3.j[$.3.l.V()].v()}},16:5(){$.3.F=z},R:5(){$.3.F=P;$.3.v()},L:5(){$.h(K,5(i,n){7(!$.4[n])k;g M=$.4[n];$.4[n]=5(){g r=M.x(2,K);$.3.v();k r}})},v:5(b){7(b!=C){7($.D(b,$.3.l)<0)$.3.l.I(b)}G $.h($.3.j,5(b){7($.D(b,$.3.l)<0)$.3.l.I(b)});7($.3.E)1f($.3.E);$.3.E=13($.3.S,1h)},B:5(b){7(b!=C)$.3.j[b].B();G $.h($.3.j,5(b){$.3.j[b].B()})}});$.3.L(\'1j\',\'1k\',\'1g\',\'1d\',\'17\',\'1e\',\'15\',\'14\',\'18\',\'19\',\'1c\',\'Q\');$(5(){$.3.R()});g y=$.p.y;$.p.y=5(a,c){g r=y.x(2,K);7(a&&a.d)r.f=a.f,r.d=a.d;7(1b a==\'1a\')r.f=c||O,r.d=a;k r};$.p.y.p=$.p})(1i);',62,83,'||this|livequery|fn|function|type|if|fn2|query||id||selector|lqguid|context|var|each||queries|return|queue|el||oEls|prototype|||length|self|elements|run|els|apply|init|false|stopped|stop|undefined|inArray|timeout|running|else|guid|push|nEls|arguments|registerPlugin|old|isFunction|document|true|remove|play|checkQueue|extend|new|shift|expire|while|event|not|bind|null|unbind|setTimeout|addClass|removeAttr|pause|wrap|removeClass|toggleClass|string|typeof|empty|before|attr|clearTimeout|after|20|jQuery|append|prepend'.split('|'),0,{}))
 
 
-/*
- * One Click Upload - jQuery Plugin
- * Copyright (c) 2008 Michael Mitchell - http://www.michaelmitchell.co.nz
- */
-eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('(1($){$.13.14=1(a){a=$.B({3:\'H\',5:\'15/C-16\',6:\'\',v:I,o:1(){},p:1(){},q:1(){},7:{}},a);r D $.E(z,a)},$.E=1(f,g){2 h=z;2 i=D 17().18().19().1a(8);2 j=$(\'<w \'+\'1b="w\'+i+\'" \'+\'3="w\'+i+\'"\'+\'></w>\').s({J:\'1c\'});2 k=$(\'<C \'+\'1d="1e" \'+\'5="\'+g.5+\'" \'+\'6="\'+g.6+\'" \'+\'1f="w\'+i+\'"\'+\'></C>\').s({K:0,L:0});2 l=$(\'<M \'+\'3="\'+g.3+\'" \'+\'N="H" \'+\'/>\').s({O:\'P\',J:\'1g\',1h:-1i+\'t\',1j:0});f.1k(\'<Q></Q>\');k.R(l);f.S(k);f.S(j);2 m=f.1l().s({O:\'P\',T:f.1m()+\'t\',1n:f.1o()+\'t\',1p:\'U\',1q:\'1r\',K:0,L:0});l.s(\'1s\',-m.T()-10+\'t\');m.1t(1(e){l.s({V:e.1u-m.W().V+\'t\',X:e.1v-m.W().X+\'t\'})});l.1w(1(){h.q();u(h.v){h.F()}});$.B(z,{v:I,o:g.o,p:g.p,q:g.q,1x:1(){r l.9(\'G\')},7:1(a){2 a=a?a:x;u(a){g.7=$.B(g.7,a)}y{r g.7}},3:1(a){2 a=a?a:x;u(a){l.9(\'3\',G)}y{r l.9(\'3\')}},6:1(a){2 a=a?a:x;u(a){k.9(\'6\',a)}y{r k.9(\'6\')}},5:1(a){2 a=a?a:x;u(a){k.9(\'5\',a)}y{r k.9(\'5\')}},Y:1(c,d){2 d=d?d:x;1 A(a,b){1y(a){1z:1A D 1B(\'[Z.E.Y] \\\'\'+a+\'\\\' 1C 1D 1E A.\');4;n\'3\':h.3(b);4;n\'6\':h.6(b);4;n\'5\':h.5(b);4;n\'7\':h.7(b);4;n\'v\':h.v=b;4;n\'o\':h.o=b;4;n\'p\':h.p=b;4;n\'q\':h.q=b;4}}u(d){A(c,d)}y{$.11(c,1(a,b){A(a,b)})}},F:1(){z.o();$.11(g.7,1(a,b){k.R($(\'<M \'+\'N="U" \'+\'3="\'+a+\'" \'+\'G="\'+b+\'" \'+\'/>\'))});k.F();j.1F().1G(1(){2 a=12.1H(j.9(\'3\'));2 b=$(a.1I.12.1J).1K();h.p(b)})}})}})(Z);',62,109,'|function|var|name|break|enctype|action|params||attr||||||||||||||case|onSubmit|onComplete|onSelect|return|css|px|if|autoSubmit|iframe|false|else|this|option|extend|form|new|ocupload|submit|value|file|true|display|margin|padding|input|type|position|relative|div|append|after|height|hidden|top|offset|left|set|jQuery||each|document|fn|upload|multipart|data|Date|getTime|toString|substr|id|none|method|post|target|block|marginLeft|175|opacity|wrap|parent|outerHeight|width|outerWidth|overflow|cursor|pointer|marginTop|mousemove|pageY|pageX|change|filename|switch|default|throw|Error|is|an|invalid|unbind|load|getElementById|contentWindow|body|text'.split('|'),0,{}))
-
-
 /**
  * Pagination jQuery plugin -- with modifications by pairofdimes, where noted
  *
@@ -284,7 +277,244 @@ eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 
 
 
+/*
+jQuery Uploadify v1.6.2 -- with modifications by pairofdimes, where noted
+Copyright (C) 2009 by Ronnie Garcia
+Co-developed by Travis Nickels
 
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+*/
+
+var flashVer = -1;
+if (navigator.plugins != null && navigator.plugins.length > 0) {
+	if (navigator.plugins["Shockwave Flash 2.0"] || navigator.plugins["Shockwave Flash"]) {
+		var swVer2 = navigator.plugins["Shockwave Flash 2.0"] ? " 2.0" : "";
+		var flashDescription = navigator.plugins["Shockwave Flash" + swVer2].description;
+		var descArray = flashDescription.split(" ");
+		var tempArrayMajor = descArray[2].split(".");			
+		var versionMajor = tempArrayMajor[0];
+		var versionMinor = tempArrayMajor[1];
+		var versionRevision = descArray[3];
+		if (versionRevision == "") {
+			versionRevision = descArray[4];
+		}
+		if (versionRevision[0] == "d") {
+			versionRevision = versionRevision.substring(1);
+		} else if (versionRevision[0] == "r") {
+			ersionRevision = versionRevision.substring(1);
+			if (versionRevision.indexOf("d") > 0) {
+				versionRevision = versionRevision.substring(0, versionRevision.indexOf("d"));
+			}
+		}
+		var flashVer = versionMajor + "." + versionMinor	 + "." + versionRevision;
+	}
+} else if ( $.browser.msie ) {
+	var version;
+	var axo;
+	var e;
+	try {
+		axo = new ActiveXObject("ShockwaveFlash.ShockwaveFlash.7");
+		version = axo.GetVariable("$version");
+	} catch (e) {
+	}	
+	flashVer = version.replace("WIN ","").replace(",",".");
+}
+flashVer = flashVer.split(".")[0];
+
+if(jQuery)(
+	function($){
+		$.extend($.fn,{
+			fileUpload:function(options) {
+				if (flashVer >= 9) {
+					$(this).each(function(){
+						settings = $.extend({
+						uploader:      'uploader.swf',
+						script:        'uploader.php',
+						folder:        '',
+						height:        30,
+						width:         110,
+						cancelImg:     'cancel.png',
+						wmode:         'opaque',
+						scriptAccess:  'sameDomain',
+						fileDataName:  'Filedata',
+						displayData:   'percentage',
+						onInit:        function() {},
+						onSelect:      function() {},
+						onCheck:       function() {},
+						onCancel:      function() {},
+						onError:       function() {},
+						onProgress:    function() {},
+						onComplete:    function() {}
+					}, options);
+					var pagePath = location.pathname;
+					pagePath = pagePath.split('/');
+					pagePath.pop();
+					pagePath = pagePath.join('/') + '/';
+					var data = '&pagepath=' + pagePath;
+					if (settings.buttonImg) data += '&buttonImg=' + escape(settings.buttonImg);
+					if (settings.buttonText) data += '&buttonText=' + escape(settings.buttonText);
+					if (settings.rollover) data += '&rollover=true';
+					data += '&script=' + settings.script;
+					data += '&folder=' + escape(settings.folder);
+					if (settings.scriptData) {
+						var scriptDataString = '';
+						for (var name in settings.scriptData) {
+							scriptDataString += '&' + name + '=' + settings.scriptData[name];
+						}
+						data += '&scriptData=' + escape(scriptDataString); 
+					}
+					data += '&btnWidth=' + settings.width;
+					data += '&btnHeight=' + settings.height;
+					data += '&wmode=' + settings.wmode;
+					if (settings.hideButton) data += '&hideButton=true';
+					if (settings.fileDesc) data += '&fileDesc=' + settings.fileDesc + '&fileExt=' + settings.fileExt;
+					if (settings.multi) data += '&multi=true';
+					if (settings.auto) data += '&auto=true';
+					if (settings.sizeLimit) data += '&sizeLimit=' + settings.sizeLimit;
+					if (settings.simUploadLimit) data += '&simUploadLimit=' + settings.simUploadLimit;
+					if (settings.checkScript) data += '&checkScript=' + settings.checkScript;
+					if (settings.fileDataName) data += '&fileDataName=' + settings.fileDataName;
+					if ($.browser.msie) {
+						flashElement = '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="' + settings.width + '" height="' + settings.height + '" id="' + $(this).attr("id")  + 'Uploader" class="fileUploaderBtn">\
+						<param name="movie" value="' + settings.uploader + '?fileUploadID=' + $(this).attr("id") + data + '" />\
+						<param name="quality" value="high" />\
+						<param name="wmode" value="' + settings.wmode + '" />\
+						<param name="allowScriptAccess" value="' + settings.scriptAccess + '">\
+						<param name="swfversion" value="9.0.0.0" />\
+						</object>';
+					} else {
+						flashElement = '<embed src="' + settings.uploader + '?fileUploadID=' + $(this).attr("id") + data + '" quality="high" width="' + settings.width + '" height="' + settings.height + '" id="' + $(this).attr("id") + 'Uploader" class="fileUploaderBtn" name="' + $(this).attr("id") + 'Uploader" allowScriptAccess="' + settings.scriptAccess + '" wmode="' + settings.wmode + '" type="application/x-shockwave-flash" />';
+					}
+					if (settings.onInit() !== false) {
+						$(this).css('display','none');
+						if ($.browser.msie) {
+							$(this).after('<div id="' + $(this).attr("id")  + 'Uploader"></div>');
+							document.getElementById($(this).attr("id")  + 'Uploader').outerHTML = flashElement;
+						} else {
+							$(this).after(flashElement);
+						}
+						$("#" + $(this).attr('id') + "Uploader").after('<div id="' + $(this).attr('id') + 'Queue" class="fileUploadQueue"></div>');
+					}
+					$(this).bind("rfuSelect", {'action': settings.onSelect}, function(event, queueID, fileObj) {
+						if (event.data.action(event, queueID, fileObj) !== false) {
+							var byteSize = Math.round(fileObj.size / 1024 * 100) * .01;
+							var suffix = 'KB';
+							if (byteSize > 1000) {
+								byteSize = Math.round(byteSize *.001 * 100) * .01;
+								suffix = 'MB';
+							}
+							var sizeParts = byteSize.toString().split('.');
+							if (sizeParts.length > 1) {
+								byteSize = sizeParts[0] + '.' + sizeParts[1].substr(0,2);
+							} else {
+								byteSize = sizeParts[0];
+							}
+							if (fileObj.name.length > 20) {
+								fileName = fileObj.name.substr(0,20) + '...';
+							} else {
+								fileName = fileObj.name;
+							}
+							/*$('#' + $(this).attr('id') + 'Queue').append('<div id="' + $(this).attr('id') + queueID + '" class="fileUploadQueueItem">\
+									<div class="cancel">\
+										<a href="javascript:$(\'#' + $(this).attr('id') + '\').fileUploadCancel(\'' + queueID + '\')"><img src="' + settings.cancelImg + '" border="0" /></a>\
+									</div>\
+									<span class="fileName">' + fileName + ' (' + byteSize + suffix + ')</span><span class="percentage">&nbsp;</span>\
+									<div class="fileUploadProgress" style="width: 100%;">\
+										<div id="' + $(this).attr('id') + queueID + 'ProgressBar" class="fileUploadProgressBar" style="width: 1px; height: 3px;"></div>\
+									</div>\
+								</div>');*/ // modification by pairofdimes
+						}
+					});
+					if (typeof(settings.onSelectOnce) == 'function') {
+						$(this).bind("rfuSelectOnce", settings.onSelectOnce);
+					}
+					$(this).bind("rfuCheckExist", {'action': settings.onCheck}, function(event, checkScript, fileQueue, folder, single) {
+						var postData = new Object();
+						postData.folder = pagePath + folder;
+						for (var queueID in fileQueue) {
+							postData[queueID] = fileQueue[queueID];
+							if (single) {
+								var singleFileID = queueID;
+							}
+						}
+						$.post(checkScript, postData, function(data) {
+							for(var key in data) {
+								if (event.data.action(event, checkScript, fileQueue, folder, single) !== false) {
+									var replaceFile = confirm('Do you want to replace the file \'' + data[key] + '\'?');
+									if (!replaceFile) {
+										document.getElementById($(event.target).attr('id') + 'Uploader').cancelFileUpload(key);
+									}
+								}
+							}
+							if (single) {
+								document.getElementById($(event.target).attr('id') + 'Uploader').startFileUpload(singleFileID, true);
+							} else {
+								document.getElementById($(event.target).attr('id') + 'Uploader').startFileUpload(null, true);
+							}
+						}, "json");
+					});
+					$(this).bind("rfuCancel", {'action': settings.onCancel}, function(event, queueID, fileObj, data) {
+						if (event.data.action(event, queueID, fileObj, data) !== false) {
+							$("#" + $(this).attr('id') + queueID).fadeOut(250, function() { $("#" + $(this).attr('id') + queueID).remove()});
+						}
+					});
+					$(this).bind("rfuClearQueue", {'action': settings.onClearQueue}, function() {
+						if (event.data.action() !== false) {
+							$('#' + $(this).attr('id') + 'Queue').contents().fadeOut(250, function() {$('#' + $(this).attr('id') + 'Queue').empty()});
+						}
+					});
+					$(this).bind("rfuError", {'action': settings.onError}, function(event, queueID, fileObj, errorObj) {
+						if (event.data.action(event, queueID, fileObj, errorObj) !== false) {
+							$("#" + $(this).attr('id') + queueID + " .fileName").text(errorObj.type + " Error - " + fileObj.name);
+							$("#" + $(this).attr('id') + queueID).css({'border': '3px solid #FBCBBC', 'background-color': '#FDE5DD'});
+						}
+					});
+					$(this).bind("rfuProgress", {'action': settings.onProgress, 'toDisplay': settings.displayData}, function(event, queueID, fileObj, data) {
+						if (event.data.action(event, queueID, fileObj, data) !== false) {
+							$("#" + $(this).attr('id') + queueID + "ProgressBar").css('width', data.percentage + '%');
+							if (event.data.toDisplay == 'percentage') displayData = ' - ' + data.percentage + '%';
+							if (event.data.toDisplay == 'speed') displayData = ' - ' + data.speed + 'KB/s';
+							if (event.data.toDisplay == null) displayData = ' ';
+							$("#" + $(this).attr('id') + queueID + " .percentage").text(displayData);
+						}
+					});
+					$(this).bind("rfuComplete", {'action': settings.onComplete}, function(event, queueID, fileObj, response, data) {
+						if (event.data.action(event, queueID, fileObj, unescape(response), data) !== false) {
+							$("#" + $(this).attr('id') + queueID).fadeOut(250, function() { $("#" + $(this).attr('id') + queueID).remove()});
+							$("#" + $(this).attr('id') + queueID + " .percentage").text(' - Completed');
+						}
+					});
+					if (typeof(settings.onAllComplete) == 'function') {
+						$(this).bind("rfuAllComplete", settings.onAllComplete);
+					}
+				});
+			}
+		},
+		fileUploadSettings:function(settingName, settingValue) {
+			$(this).each(function() {
+				document.getElementById($(this).attr('id') + 'Uploader').updateSettings(settingName,settingValue);
+			});
+		},
+		fileUploadStart:function(queueID) {
+			$(this).each(function() {
+				document.getElementById($(this).attr('id') + 'Uploader').startFileUpload(queueID, false);
+			});
+		},
+		fileUploadCancel:function(queueID) {
+			$(this).each(function() {
+				document.getElementById($(this).attr('id') + 'Uploader').cancelFileUpload(queueID);
+			});
+		},
+		fileUploadClearQueue:function() {
+			$(this).each(function() {
+				document.getElementById($(this).attr('id') + 'Uploader').clearFileUploadQueue();
+			});
+		}
+	})
+})(jQuery);
 
 
 
@@ -490,7 +720,7 @@ jQuery(function($) { // safely invoke $ selector
 		********************************************/
 		
 		initEvents : function() {
-			
+
 			// static tooltips
 			$('.tip').tooltip({
 				extraClass:	"tooltip",
@@ -528,8 +758,24 @@ jQuery(function($) { // safely invoke $ selector
 					$(this).val('enter URL / Newzbin ID');
 			});
 			
-			// NZB File Upload -- this needs to happen before $.superfish() for layout
-			$.plush.initUpload(); // kludge
+			// NZB File Upload -- uses uploadify plugin with flash
+			$("#fileUpload").fileUpload({
+				'uploader': 'static/uploader.swf',
+				'script': 'tapi',
+				'scriptData': {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val(), priority: $("#addID_priority").val()}, // this string ends up being static, see the bound change event below
+				'onAllComplete': $.plush.refreshQueue,
+				'fileDataName': 'name',
+				'fileDesc': 'NZB Files',
+				'fileExt': '*.nzb;*.rar;*.zip;*.gz',
+				//'wmode': 'transparent', // bugged
+				'buttonText': 'Upload',
+				'multi': true,
+				'auto': true
+			});
+			/* // broken at the moment
+			$('#processingContainer select').change(function(){ // fix the the static 'scriptData' option above
+				$('#fileUpload').fileUploadSettings('scriptData', {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val(), priority: $("#addID_priority").val()});
+			}); */
 			
 			// Fetch Newzbin Bookmarks
 			$('#fetch_newzbin_bookmarks').click(function(){
@@ -844,39 +1090,7 @@ jQuery(function($) { // safely invoke $ selector
 				}
 			});
 			
-		}, // end $.plush.initEvents()
-		
-   	
-		/********************************************
-		*********************************************
-		
-			$.plush.initUpload() -- initialize ajax nzb upload
-			
-			this is just a kludge until jquery ocupload plugin fixes multiple uploads
-		
-		*********************************************
-		********************************************/
-		
-		initUpload : function() {
-
-			// kludge
-			$.plush.nzbupload = null;
-			$('#addNZBbyFile').parent().html('<div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div>');
-			
-			// ocupload plugin allows file browser trigger off an html entity
-			$.plush.nzbupload = $('#addNZBbyFile').upload({
-				name: 'name',
-				action: 'tapi',
-				enctype: 'multipart/form-data',
-				params: {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val(), priority: $("#addID_priority").val()},
-				autoSubmit: true,
-				onComplete: function(){
-					$.plush.refreshQueue();
-					$.plush.initUpload(); // kludge
-				}
-			});
-			
-		} // end $.plush.initUpload()
+		} // end $.plush.initEvents()
 
 	}; // end $.plush object
 

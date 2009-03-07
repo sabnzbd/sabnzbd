@@ -49,8 +49,8 @@
             <a class="sf-with-ul">Add NZB</a>
             <ul>
                 <li><a><form><input type="text" id="addID_input" size="20" /><input type="submit" id="addID" value="Fetch" /></form></a></li>
-                <li><a><div id="addNZBbyFile"><input class="pointer" type="submit" value="Upload" /></div></a></li>
-                <li>
+                <li id="fileUploadContainer"><a class="tip" title="Allowed: .nzb .rar .zip .gz<br/>Multiple files selectable"><input name="fileUpload" id="fileUpload" type="file" /></a></li>
+                <li id="processingContainer">
                     <a>Processing</a>
                     <ul>
                     <li><a>Priority:
