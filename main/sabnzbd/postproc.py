@@ -203,6 +203,7 @@ class PostProcessor(Thread):
             script = nzo.get_script()
             group = nzo.get_group()
             cat = nzo.get_cat()
+            priority = nzo.get_priority()
 
             ## Collect the par files
             parTable = nzo.get_partable()
@@ -327,7 +328,7 @@ class PostProcessor(Thread):
                     CleanUpList(tmp_workdir_complete, True)
 
                     ## Check if this is an NZB-only download, if so redirect to queue
-                    nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat)
+                    nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat, priority=priority)
                     if nzb_list:
                         nzo.set_unpack_info('download', 'Sent %s to queue' % nzb_list)
                         try:
@@ -582,7 +583,7 @@ def prefix(path, pre):
     return os.path.join(p, pre + d)
 
 
-def NzbRedirect(wdir, pp, script, cat):
+def NzbRedirect(wdir, pp, script, cat, priority):
     """ Check if this job contains only NZB files,
         if so send to queue and remove if on CleanList
         Returns list of processed NZB's
@@ -598,7 +599,7 @@ def NzbRedirect(wdir, pp, script, cat):
     keep = not OnCleanUpList("x.nzb", False)
     for file in files:
         if file.lower().endswith('.nzb'):
-            dirscanner.ProcessSingleFile(file, os.path.join(wdir, file), pp, script, cat, keep=keep)
+            dirscanner.ProcessSingleFile(file, os.path.join(wdir, file), pp, script, cat, priority=priority, keep=keep)
             list.append(file)
 
     return list
