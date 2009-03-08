@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

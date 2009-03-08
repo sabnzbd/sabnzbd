@@ -1,16 +1,16 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -77,7 +77,7 @@ def encode_for_xml(ustr, encoding='ascii'):
 
 ################################################################################
 #
-# Map CodePage-850 characters to Python's pseudo-Unicode 8bit ASCII 
+# Map CodePage-850 characters to Python's pseudo-Unicode 8bit ASCII
 #
 # Use to transform 8-bit console output to plain Python strings
 #
@@ -100,7 +100,7 @@ gTABLE850 = string.maketrans(
     "\xF0\xD0\xCA\xCB\xC8\x7E\xCD\xCE\xCF\x7E\x7E\x7E\x7E\xA6\xCC\x7E"
     "\xD3\xDF\xD4\xD2\xF5\xD5\xB5\xFE\xDE\xDA\xDB\xD9\xFD\xDD\xAF\xB4"
     "\xAD\xB1\x5F\xBE\xB6\xA7\xF7\xB8\xB0\xA8\xB7\xB9\xB3\xB2\x7E\xA0" )
- 
+
 
 def TRANS(p):
     """ For Windows: Translate CP850 to Python's Latin-1

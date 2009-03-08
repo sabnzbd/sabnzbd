@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -145,7 +145,7 @@ def _assemble(nzo, nzf, path, dupe):
         md5 = new_md5()
     else:
         md5 = None
-    
+
     _type = nzf.get_type()
     decodetable = nzf.get_decodetable()
 
@@ -197,7 +197,7 @@ def _assemble(nzo, nzf, path, dupe):
     return path
 
 
-# For a full description of the par2 specification, visit: 
+# For a full description of the par2 specification, visit:
 # http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
 
 def GetMD5Hashes(name):
@@ -226,7 +226,7 @@ def ParseFilePacket(f, header):
 
     def ToInt(buf):
         return struct.unpack('<Q', buf)[0]
-        
+
     nothing = None, None
 
     if header != 'PAR2\0PKT':
@@ -254,7 +254,7 @@ def ParseFilePacket(f, header):
     # 16 : Hash for first 16K
     #  8 : File length
     # xx : Name (multiple of 4, padded with \0 if needed) **
-    
+
     # See if it's the right packet and get name + hash
     for offset in range(0, len, 8):
         if data[offset:offset+16] == "PAR 2.0\0FileDesc":

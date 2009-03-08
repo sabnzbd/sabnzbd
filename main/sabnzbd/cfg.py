@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -141,7 +141,7 @@ if os.name == 'nt':
     HTTPS_PORT = OptionStr('misc','https_port', DEF_PORT_WIN_SSL)
 else:
     HTTPS_PORT = OptionStr('misc','https_port', DEF_PORT_UNIX_SSL)
-    
+
 USERNAME = OptionStr('misc', 'username')
 PASSWORD = OptionPassword('misc', 'password')
 BANDWIDTH_LIMIT = OptionStr('misc', 'bandwith_limit', 0)

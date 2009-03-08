@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -470,7 +470,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         sabnzbd.cfg.HTTPS_PORT.set(str(https_port))
         # if the https port was specified, assume they want HTTPS enabling also
         sabnzbd.cfg.ENABLE_HTTPS.set(True)
-        
+
     if cherryport == https_port:
         sabnzbd.cfg.ENABLE_HTTPS.set(False)
         logging.error('HTTP and HTTPS ports cannot be the same')
@@ -537,7 +537,7 @@ def copy_old_files(newpath):
             oldpath = os.path.join(oldpath, DEF_CACHE_DIR)
             newpath = os.path.join(newpath, DEF_CACHE_DIR)
             if not os.path.exists(newpath):
-                os.mkdir(newpath)            
+                os.mkdir(newpath)
             try:
                 shutil.copy(os.path.join(oldpath, RSS_FILE_NAME), newpath)
             except:
@@ -570,7 +570,7 @@ def main():
 
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
     consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
-    	
+
     # No console logging needed for OSX app
     noConsoleLoggingOSX = (sabnzbd.DIR_PROG.find('.app/Contents/Resources') > 0)
     if noConsoleLoggingOSX:

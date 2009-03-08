@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -181,7 +181,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         logging.warning('Cannot read %s', path)
         logging.debug("Traceback: ", exc_info = True)
         return -2
-    
+
     if name:
         name = misc.sanitize_foldername(name)
 

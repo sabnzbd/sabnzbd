@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -409,18 +409,18 @@ class NzbQueue(TryList):
             nzo = self.__nzo_table[nzo_id]
             nzo_id_pos1 = -1
             pos = -1
-            
+
             for i in xrange(len(self.__nzo_list)):
                 if nzo_id == self.__nzo_list[i].nzo_id:
                     nzo_id_pos1 = i
                     break
-                
+
             # Check if nzo is already set to the priority
             if priority == nzo.get_priority():
                 return nzo_id_pos1
-            
+
             nzo.set_priority(priority)
-            
+
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
                 if priority == TOP_PRIORITY:
