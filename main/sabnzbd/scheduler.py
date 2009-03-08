@@ -281,7 +281,7 @@ def scheduled_resume():
     """
     global __PAUSE_END
     if __PAUSE_END == None:
-       downloader.resume_downloader
+       downloader.resume_downloader()
 
 def __oneshot_resume(when):
     """ Called by delayed resume schedule
