@@ -2029,7 +2029,6 @@ class ConfigNewzbin:
         cfg.PASSWORD_MATRIX.set(password_matrix)
 
         config.save_config()
-        scheduler.restart()
         raise Raiser(self.__root, _dc=_dc)
 
     @cherrypy.expose
@@ -2625,7 +2624,6 @@ class ConfigEmail:
                 return badParameterResponse('Incorrect value for %s: %s' % (kw, msg))
 
         config.save_config()
-        scheduler.restart()
         raise dcRaiser(self.__root, kwargs)
 
 def std_time(when):

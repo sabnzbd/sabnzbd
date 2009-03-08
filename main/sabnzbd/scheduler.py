@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -51,15 +51,9 @@ def init():
     """
     global __SCHED
 
-    need_rsstask = True
-    need_versioncheck = cfg.VERSION_CHECK.get()
-    bookmarks = cfg.NEWZBIN_BOOKMARKS.get()
-    bookmark_rate = cfg.BOOKMARK_RATE.get()
-    schedlines = cfg.SCHEDULES.get()
-
     __SCHED = kronos.ThreadedScheduler()
 
-    for schedule in schedlines:
+    for schedule in cfg.SCHEDULES.get():
         arguments = []
         argument_list = None
         try:
@@ -69,12 +63,18 @@ def init():
         if argument_list:
             arguments = argument_list.split()
 
-        m = int(m)
-        h = int(h)
-        if d == '*':
-            d = range(1, 8)
-        else:
+        action_name = action_name.lower()
+        try:
+            m = int(m)
+            h = int(h)
+        except:
+            logging.warning("Bad schedule %s at %s:%s", action_name, m, h)
+            continue
+
+        if d.isdigit():
             d = [int(d)]
+        else:
+            d = range(1, 8)
 
         if action_name == 'resume':
             action = scheduled_resume
@@ -98,49 +98,41 @@ def init():
             logging.warning("Unknown action: %s", action_name)
             continue
 
-        logging.debug("scheduling action:%s arguments:%s", action_name, arguments)
+        logging.debug("scheduling %s(%s) on days %s at %s:%s", action_name, arguments, d, h, m)
 
-        #(action, taskname, initialdelay, interval, processmethod, arg_list, arg_dict)
-        __SCHED.add_daytime_task(action, '', d, None, (h, m),
+        __SCHED.add_daytime_task(action, action_name, d, None, (h, m),
                              kronos.method.sequential, arguments, None)
 
-    if need_rsstask:
-        d = range(1, 8) # all days of the week
-        interval = cfg.RSS_RATE.get()
-        ran_m = random.randint(0,interval-1)
-        for n in range(0, 24*60, interval):
-            at = n + ran_m
-            h = int(at/60)
-            m = at - h*60
-            logging.debug("Scheduling RSS task %s %s:%s", d, h, m)
-            __SCHED.add_daytime_task(rss.run_method, '', d, None, (h, m), kronos.method.sequential, [], None)
+    # Set RSS check interval
+    interval = cfg.RSS_RATE.get()
+    delay = random.randint(0, interval-1)
+    logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
+    __SCHED.add_interval_task(rss.run_method, "RSS", delay*60, interval*60,
+                                  kronos.method.sequential, None, None)
 
-
-    if need_versioncheck:
+    if cfg.VERSION_CHECK.get():
         # Check for new release, once per week on random time
         m = random.randint(0, 59)
         h = random.randint(0, 23)
         d = (random.randint(1, 7), )
 
-        logging.debug("Scheduling VersionCheck day=%s time=%s:%s", d, h, m)
-        __SCHED.add_daytime_task(sabnzbd.misc.check_latest_version, '', d, None, (h, m), kronos.method.sequential, [], None)
+        logging.debug("Scheduling VersionCheck on day %s at %s:%s", d[0], h, m)
+        __SCHED.add_daytime_task(sabnzbd.misc.check_latest_version, 'VerCheck', d, None, (h, m),
+                                 kronos.method.sequential, [], None)
 
 
-    if bookmarks:
-        d = range(1, 8) # all days of the week
-        interval = bookmark_rate
-        ran_m = random.randint(0,interval-1)
-        for n in range(0, 24*60, interval):
-            at = n + ran_m
-            h = int(at/60)
-            m = at - h*60
-            logging.debug("Scheduling Bookmark task %s %s:%s", d, h, m)
-            __SCHED.add_daytime_task(newzbin.getBookmarksNow, '', d, None, (h, m), kronos.method.sequential, [], None)
+    if cfg.NEWZBIN_BOOKMARKS.get():
+        interval = cfg.BOOKMARK_RATE.get()
+        delay = random.randint(0, interval-1)
+        logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
+        __SCHED.add_interval_task(newzbin.getBookmarksNow, 'Bookmarks', delay*60, interval*60,
+                                  kronos.method.sequential, None, None)
 
     # Subscribe to special schedule changes
     cfg.NEWZBIN_BOOKMARKS.callback(schedule_guard)
     cfg.BOOKMARK_RATE.callback(schedule_guard)
     cfg.RSS_RATE.callback(schedule_guard)
+
 
 def start():
     """ Start the scheduler
@@ -156,14 +148,17 @@ def restart(force=False):
     """
     global __PARMS, SCHEDULE_GUARD_FLAG
 
-    if force or SCHEDULE_GUARD_FLAG:
-        SCHEDULE_GUARD_FLAG = False
-        stop()
+    if force:
+        SCHEDULE_GUARD_FLAG = True
+    else:
+        if SCHEDULE_GUARD_FLAG:
+            SCHEDULE_GUARD_FLAG = False
+            stop()
 
-        analyse(downloader.paused())
+            analyse(downloader.paused())
 
-        init()
-        start()
+            init()
+            start()
 
 
 def stop():
@@ -283,6 +278,7 @@ def scheduled_resume():
     if __PAUSE_END == None:
        downloader.resume_downloader()
 
+
 def __oneshot_resume(when):
     """ Called by delayed resume schedule
         Only resumes if call comes at the planned time
@@ -294,6 +290,7 @@ def __oneshot_resume(when):
         downloader.resume_downloader()
     else:
         logging.debug('Ignoring cancelled resume')
+
 
 def plan_resume(interval):
     """ Set a scheduled resume after the interval
@@ -307,6 +304,7 @@ def plan_resume(interval):
     else:
         __PAUSE_END = None
         downloader.resume_downloader()
+
 
 def pause_int():
     """ Return minutes:seconds until pause ends """
