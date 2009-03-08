@@ -322,6 +322,8 @@ if (navigator.plugins != null && navigator.plugins.length > 0) {
 	}	
 	flashVer = version.replace("WIN ","").replace(",",".");
 }
+if (flashVer == -1) // modification by pairofdimes
+	flashVer = '1.0';
 flashVer = flashVer.split(".")[0];
 
 if(jQuery)(
@@ -519,6 +521,11 @@ if(jQuery)(
 
 
 
+
+
+
+
+
 // ***************************************************************
 // Plush main code as follows, by pairofdimes (see LICENSE-CC.txt)
 
@@ -699,13 +706,18 @@ jQuery(function($) { // safely invoke $ selector
 			
 			if ($.plush.refreshRate > 0) {
 				
-				// ajax calls, event re-init, stat updates
 				$.plush.refreshQueue();
 				$.plush.refreshHistory();
 				
 				// loop
 				$.plush.timeout = setTimeout("$.plush.refresh()", $.plush.refreshRate*1000);
+
+			} else if (!$.plush.histstats) {
+				// initial load if refresh rate saved as "Disabled"
+				$.plush.refreshQueue();
+				$.plush.refreshHistory();
 			}
+			
 				
 		}, // end $.plush.refresh()
 		
@@ -757,7 +769,7 @@ jQuery(function($) { // safely invoke $ selector
 				if (!$(this).val())
 					$(this).val('enter URL / Newzbin ID');
 			});
-			
+
 			// NZB File Upload -- uses uploadify plugin with flash
 			$("#fileUpload").fileUpload({
 				'uploader': 'static/flash/uploader.swf',
@@ -772,10 +784,12 @@ jQuery(function($) { // safely invoke $ selector
 				'multi': true,
 				'auto': true
 			});
-			/* // broken at the moment
 			$('#processingContainer select').change(function(){ // fix the the static 'scriptData' option above
-				$('#fileUpload').fileUploadSettings('scriptData', {mode: "addfile", pp: $("#addID_pp").val(), script: $("#addID_script").val(), cat: $("#addID_cat").val(), priority: $("#addID_priority").val()});
-			}); */
+				$('#fileUpload').fileUploadSettings('scriptData', '&mode=addfile&pp='+$("#addID_pp").val()+'&script='+$("#addID_script").val()+'&cat='+$("#addID_cat").val()+'&priority='+$("#addID_priority").val());
+			});
+			
+			if (flashVer == "1")	// disable uploader when Flash isn't enabled
+				$('#fileUploadContainer').html('<a>Install Flash to upload!</a>').attr('id','');
 			
 			// Fetch Newzbin Bookmarks
 			$('#fetch_newzbin_bookmarks').click(function(){
