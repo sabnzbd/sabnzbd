@@ -25,11 +25,6 @@ import re
 import subprocess
 import logging
 from time import time
-try:
-    import Foundation #OSX
-    import platform
-except:
-    pass
 
 import sabnzbd
 from sabnzbd.codecs import TRANS, unicode2local
@@ -37,16 +32,15 @@ from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.misc import format_time_string
 import sabnzbd.cfg as cfg
 
-try:
-    from win32con import SW_HIDE
-    from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
-except ImportError:
-    pass
-
-# Define option handlers
-
+if sabnzbd.WIN32:
+    try:
+        from win32con import SW_HIDE
+        from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
+    except ImportError:
+        pass
 
 
+# Regex globals
 RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|s\d\d|r\d\d|\d\d\d)$', re.I)
 RAR_RE_V3 = re.compile(r'\.(?P<ext>part\d*)$', re.I)
 
@@ -69,7 +63,7 @@ def find_programs(curdir):
     """Find external programs
     """
     if sabnzbd.DARWIN:
-        if platform.machine() == 'i386':
+        if sabnzbd.DARWIN_INTEL:
             p = os.path.abspath(curdir + '/osx/par2/par2')
             if os.access(p, os.X_OK):
                 sabnzbd.newsunpack.PAR2_COMMAND = p
@@ -83,7 +77,7 @@ def find_programs(curdir):
         if os.access(p, os.X_OK):
             sabnzbd.newsunpack.RAR_COMMAND = p
 
-    if os.name == 'nt':
+    if sabnzbd.WIN32:
         p = os.path.abspath(curdir + '/win/par2/par2.exe')
         if os.access(p, os.X_OK):
             sabnzbd.newsunpack.PAR2_COMMAND = p
@@ -1004,7 +998,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 #-------------------------------------------------------------------------------
 
 def build_command(command):
-    if os.name != "nt":
+    if not sabnzbd.WIN32:
         if IONICE_COMMAND and cfg.ionice.get().strip():
             lst = cfg.ionice.get().split()
             lst.reverse()

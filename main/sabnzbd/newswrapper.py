@@ -22,11 +22,12 @@ sabnzbd.newswrapper
 import errno
 import socket
 from threading import Thread
-
 from nntplib import NNTPPermanentError
 from time import time
-from sabnzbd.constants import *
 import logging
+
+import sabnzbd
+from sabnzbd.constants import *
 
 try:
     from OpenSSL import SSL
@@ -109,7 +110,7 @@ class NNTP:
         try:
             # Windows must do the connection in a seperate thread due to non-blocking issues
             # If the server wants to be blocked (for testing) then use the linux route
-            if os.name == 'nt' and not block:
+            if sabnzbd.WIN32 and not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, self)).start()
             else:
                 self.sock.connect((self.host, self.port))

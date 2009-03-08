@@ -232,7 +232,7 @@ class RarFile:
         id = fd.read(len(RAR_ID))
         if id != RAR_ID:
             raise Exception("Not a Rar")
-        
+
         volume = 0  # first vol (.rar) is 0
         more_vols = 0
         while 1:
@@ -428,7 +428,7 @@ class RarFile:
 
             volume += 1
 
-        return buf            
+        return buf
 
     # put file compressed data into temporary .rar archive, and run
     # unrar on that, thus avoiding unrar going over whole archive
@@ -460,7 +460,7 @@ class RarFile:
     # extract using unrar
     def _extract_unrar(self, rarfile, inf):
         fn = inf.filename
-        if os.name == 'nt':
+        if sabnzbd.WIN32:
             # Windows unrar wants '\', not '/'
             fn = fn.replace("/", "\\")
         else:
@@ -468,7 +468,7 @@ class RarFile:
             fn = fn.replace("`", "\\`")
             fn = fn.replace('"', '\\"')
             fn = fn.replace("$", "\\$")
-        
+
         err, buf = sabnzbd.SimpleRarExtract(rarfile, fn)
         if err > 0:
             raise Exception("Error reading file")

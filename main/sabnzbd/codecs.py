@@ -25,9 +25,7 @@ from xml.sax.saxutils import escape
 
 import sabnzbd
 
-
-gNT = os.name == 'nt'
-gUTF = sys.getfilesystemencoding().lower() == 'utf-8'
+#gUTF = sys.getfilesystemencoding().lower() == 'utf-8'
 
 
 def name_fixer(p):
@@ -42,7 +40,7 @@ def name_fixer(p):
 def unicode2local(p):
     """ Convert Unicode filename to appropriate local encoding
     """
-    if gNT:
+    if sabnzbd.WIN32:
         return p.encode('Latin-1', 'replace').replace('?', '_')
     else:
         return p.encode('utf-8', 'replace').replace('?', '_')
@@ -105,8 +103,8 @@ gTABLE850 = string.maketrans(
 def TRANS(p):
     """ For Windows: Translate CP850 to Python's Latin-1
     """
-    global gTABLE850, gNT
-    if gNT:
+    global gTABLE850
+    if sabnzbd.WIN32:
         return p.translate(gTABLE850)
     else:
         return p

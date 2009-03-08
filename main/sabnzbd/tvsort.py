@@ -24,6 +24,7 @@ import logging
 import re
 
 
+import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename
 from sabnzbd.constants import series_match, date_match, year_match
 import sabnzbd.cfg as cfg
@@ -844,7 +845,7 @@ def stripFolders(folders):
 
     def strip_all(x):
         x = x.strip().strip('_')
-        if os.name == 'nt':
+        if sabnzbd.WIN32:
             # Don't want to strip . from folders such as /.sabnzbd/
             x = x.strip('.')
         x = x.strip()

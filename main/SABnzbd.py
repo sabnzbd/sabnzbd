@@ -28,8 +28,7 @@ import signal
 import re
 import glob
 import socket
-if os.name=='nt':
-    import platform
+import platform
 
 try:
     import Cheetah
@@ -82,7 +81,7 @@ try:
     import win32api
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
-    if os.name == 'nt':
+    if sabnzbd.WIN32:
         print "Sorry, requires Python module PyWin32."
         exit(1)
 
@@ -162,10 +161,10 @@ def print_help():
     print "  -w  --weblogging <0..2>  Set cherrypy logging (0= off, 1= on, 2= file-only) [*]"
     print
     print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
-    if os.name != 'nt':
-        print "  -d  --daemon             Fork daemon process"
-    else:
+    if sabnzbd.WIN32:
         print "  -d  --daemon             Use when run as a service"
+    else:
+        print "  -d  --daemon             Fork daemon process"
     print
     print "      --force              Discard web-port timeout (see Wiki!)"
     print "  -h  --help               Print this message"
@@ -278,14 +277,14 @@ def GetProfileInfo(vista):
         sabnzbd.DIR_APPDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_LCLDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_HOME = sabnzbd.DIR_PROG
-        if os.name == 'nt':
+        if sabnzbd.WIN32:
             # Ignore Win32 "logoff" signal
             # This should work, but it doesn't
             # Instead the signal_handler will ignore the "logoff" signal
             #signal.signal(5, signal.SIG_IGN)
             pass
         ok = True
-    elif os.name == 'nt':
+    elif sabnzbd.WIN32:
         specials = Get_User_ShellFolders()
         try:
             sabnzbd.DIR_APPDATA = '%s\\%s' % (specials['AppData'], DEF_WORKDIR)
@@ -370,7 +369,7 @@ def print_modules():
     else:
         logging.warning("unzip binary... NOT found!")
 
-    if os.name != 'nt':
+    if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
             logging.info("nice binary... found (%s)", sabnzbd.newsunpack.NICE_COMMAND)
         else:
@@ -456,7 +455,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         sabnzbd.AMBI_LOCALHOST = True
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
-    if ipv6 and ipv4 and cherryhost == '' and os.name == 'nt':
+    if ipv6 and ipv4 and cherryhost == '' and sabnzbd.WIN32:
         logging.warning("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
 
     if cherryport == None:
@@ -628,7 +627,7 @@ def main():
 
     for opt, arg in opts:
         if (opt in ('-d', '--daemon')):
-            if os.name != 'nt':
+            if not sabnzbd.WIN32:
                 fork = True
             AUTOBROWSER = False
             sabnzbd.DAEMON = True
@@ -688,7 +687,7 @@ def main():
             testlog = True
 
     # Detect Vista or higher
-    if os.name == 'nt':
+    if sabnzbd.WIN32:
         if platform.platform().find('Windows-32bit') >= 0:
             vista = True
             vista64 = 'ProgramFiles(x86)' in os.environ
@@ -844,7 +843,7 @@ def main():
 
     logging.info('--------------------------------')
     logging.info('%s-%s (rev=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
-    if os.name == 'nt':
+    if sabnzbd.WIN32:
         suffix = ''
         if vista: suffix = ' (=Vista)'
         if vista64: suffix = ' (=Vista64)'
@@ -889,7 +888,7 @@ def main():
     sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.WEB_COLOR2.get(),  web_dir2)
     sabnzbd.cfg.WEB_COLOR2.set(sabnzbd.WEB_COLOR2)
 
-    if fork and os.name != 'nt':
+    if fork and not sabnzbd.WIN32:
         daemonize()
 
     # Save the INI file

@@ -1468,7 +1468,7 @@ class ConfigSwitches:
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        conf['nt'] = os.name == 'nt'
+        conf['nt'] = sabnzbd.WIN32
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
 
@@ -1613,7 +1613,7 @@ class ConfigGeneral:
         cfg.BANDWIDTH_LIMIT.set(bandwith_limit)
         cfg.RSS_RATE.set(rss_rate)
         cfg.REFRESH_RATE.set(refresh_rate)
-        if cleanup_list and os.name == 'nt':
+        if cleanup_list and sabnzbd.WIN32:
             cleanup_list = cleanup_list.lower()
         cfg.CLEANUP_LIST.set_string(cleanup_list)
         cfg.CACHE_LIMIT.set(cache_limitstr)
@@ -2493,7 +2493,7 @@ def build_header(prim):
         header['webdir'] = sabnzbd.WEB_DIR2
 
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
-    header['nt'] = os.name == 'nt'
+    header['nt'] = sabnzbd.WIN32
     header['darwin'] = sabnzbd.DARWIN
 
     bytespersec = bpsmeter.method.get_bps()

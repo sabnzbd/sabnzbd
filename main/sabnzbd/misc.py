@@ -29,20 +29,14 @@ import tempfile
 import shutil
 import threading
 
-try:
-    # Try to import OSX library
-    import Foundation
-    HAVE_FOUNDATION = True
-except:
-    HAVE_FOUNDATION = False
-
-
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import *
 import nzbqueue
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+if sabnzbd.FOUNDATION:
+    import Foundation
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
@@ -133,7 +127,7 @@ def Cat2OptsDef(fname, cat=None):
 ################################################################################
 # sanitize_filename                                                            #
 ################################################################################
-if os.name == 'nt':
+if sabnzbd.WIN32:
     CH_ILLEGAL = r'\/<>?*:|"'
     CH_LEGAL   = r'++{}!@-#`'
 else:
@@ -196,7 +190,7 @@ def CreateAllDirs(path, umask=False):
     """ Create all required path elements and set umask on all
         Return True if last elelent could be made or exists """
     result = True
-    if os.name == 'nt':
+    if sabnzbd.WIN32:
         try:
             os.makedirs(path)
         except:
@@ -227,7 +221,7 @@ def CreateAllDirs(path, umask=False):
 # Real_Path                                                                    #
 ################################################################################
 def real_path(loc, path):
-    if not ((os.name == 'nt' and len(path)>1 and path[0].isalpha() and path[1] == ':') or \
+    if not ((sabnzbd.WIN32 and len(path)>1 and path[0].isalpha() and path[1] == ':') or \
             (path and (path[0] == '/' or path[0] == '\\'))
            ):
         path = loc + '/' + path
@@ -390,7 +384,7 @@ def panic_message(panic, a=None, b=None):
     if (not cfg.AUTOBROWSER.get()) or sabnzbd.DAEMON:
         return
 
-    if os.name == 'nt':
+    if sabnzbd.WIN32:
         os_str = 'Press Startkey+R and type the line (example):'
         prog_path = '"%s"' % sabnzbd.MY_FULLNAME
     else:
@@ -647,7 +641,7 @@ def ExitSab(value):
 #------------------------------------------------------------------------------
 def Notify(notificationName, message):
     """ Send a notification to the OS (OSX-only) """
-    if HAVE_FOUNDATION:
+    if sabnzbd.FOUNDATION:
         pool = Foundation.NSAutoreleasePool.alloc().init()
         nc = Foundation.NSDistributedNotificationCenter.defaultCenter()
         nc.postNotificationName_object_(notificationName, message)
@@ -845,7 +839,7 @@ def OnCleanUpList(filename, skip_nzb=False):
 
     if cfg.CLEANUP_LIST.get():
         ext = os.path.splitext(filename)[1].strip().strip('.')
-        if os.name == 'nt': ext = ext.lower()
+        if sabnzbd.WIN32: ext = ext.lower()
 
         for k in cfg.CLEANUP_LIST.get():
             item = k.strip().strip('.')
@@ -868,7 +862,7 @@ def get_filename(path):
 def loadavg():
     """ Return 1, 5 and 15 minute load average of host or "" if not supported
     """
-    if os.name == 'nt' or sabnzbd.DARWIN:
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
         return ""
     try:
         loadavgstr = open('/proc/loadavg', 'r').readline().strip()

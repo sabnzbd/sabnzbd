@@ -28,8 +28,7 @@ import urllib
 import time
 import re
 from xml.sax.saxutils import escape
-if os.name == 'nt':
-    import subprocess
+import subprocess
 
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
@@ -366,7 +365,7 @@ class PostProcessor(Thread):
                             workdir_complete = file_sorter.move(workdir_complete)
 
                     ## Set permissions right
-                    if cfg.UMASK.get() and (os.name != 'nt'):
+                    if cfg.UMASK.get() and not sabnzbd.WIN32:
                         perm_script(workdir_complete, cfg.UMASK.get())
 
                     ## Run the user script

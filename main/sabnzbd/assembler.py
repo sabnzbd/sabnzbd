@@ -27,8 +27,7 @@ import logging
 import struct
 from threading import Thread
 from time import sleep
-if os.name == 'nt':
-    import subprocess
+import subprocess
 try:
     import hashlib
     new_md5 = hashlib.md5

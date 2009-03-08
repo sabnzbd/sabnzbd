@@ -20,6 +20,7 @@ sabnzbd.cfg - Configuration Parameters
 """
 
 import os
+import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
@@ -133,11 +134,11 @@ DIRSCAN_DIR = OptionDir('misc', 'dirscan_dir', create=False)
 DIRSCAN_SPEED = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
 
 CHERRYHOST = OptionStr('misc','host', DEF_HOST)
-if os.name == 'nt':
+if sabnzbd.WIN32:
     CHERRYPORT = OptionStr('misc','port', DEF_PORT_WIN)
 else:
     CHERRYPORT = OptionStr('misc','port', DEF_PORT_UNIX)
-if os.name == 'nt':
+if sabnzbd.WIN32:
     HTTPS_PORT = OptionStr('misc','https_port', DEF_PORT_WIN_SSL)
 else:
     HTTPS_PORT = OptionStr('misc','https_port', DEF_PORT_UNIX_SSL)

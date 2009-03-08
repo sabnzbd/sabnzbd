@@ -30,22 +30,35 @@ import gzip
 import subprocess
 import time
 import cherrypy
-
-try:
-    import ctypes
-    KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
-except:
-    KERNEL32 = None
-
-try:
-    # Try to import OSX library
-    import Foundation
-    import subprocess
-    DARWIN = True
-except:
-    DARWIN = False
-
 from threading import RLock, Lock, Condition, Thread
+
+#------------------------------------------------------------------------
+# Determine platform flags
+
+WIN32 = DARWIN = DARWIN_INTEL = POSIX = FOUNDATION = False
+KERNEL32 = None
+
+if os.name == 'nt':
+    WIN32 = True
+    try:
+        import ctypes
+        KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
+    except:
+        pass
+elif os.name == 'posix':
+    POSIX = True
+    import platform
+    if platform.system().lower() == 'darwin':
+        DARWIN = True
+        try:
+            import Foundation
+            FOUNDATION = True
+        except:
+            pass
+        if platform.machine() == 'i386':
+            DARWIN_INTEL = True
+
+#------------------------------------------------------------------------
 
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.postproc as postproc
@@ -111,7 +124,7 @@ __INITIALIZED__ = False
 ################################################################################
 def sig_handler(signum = None, frame = None):
     global SABSTOP
-    if os.name == 'nt' and type(signum) != type(None) and DAEMON and signum==5:
+    if sabnzbd.WIN32 and type(signum) != type(None) and DAEMON and signum==5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if type(signum) != type(None):
@@ -389,7 +402,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
 
     filename = codecs.name_fixer(nzbfile.filename)
 
-    if os.name != 'nt':
+    if not sabnzbd.WIN32:
         # If windows client sends file to Unix server backslashed may
         # be included, so convert these
         filename = filename.replace('\\', '/')
@@ -443,7 +456,7 @@ def system_shutdown():
     while __INITIALIZED__:
         time.sleep(1.0)
 
-    if os.name == 'nt':
+    if sabnzbd.WIN32:
         try:
             import win32security
             import win32api
@@ -471,7 +484,7 @@ def system_shutdown():
 def system_hibernate():
     logging.info("Performing system hybernation")
     try:
-        if os.name == 'nt':
+        if sabnzbd.WIN32:
             subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
             time.sleep(10)
     except:
@@ -481,7 +494,7 @@ def system_hibernate():
 def system_standby():
     logging.info("Performing system standby")
     try:
-        if os.name == 'nt':
+        if sabnzbd.WIN32:
             subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
         elif DARWIN:
             subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
