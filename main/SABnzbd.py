@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.hexversion < 0x020403F0:
-    print "Sorry, requires Python 2.4.3 or higher."
+if sys.version_info < (2,4):
+    print "Sorry, requires Python 2.4 or higher."
     exit(1)
 
 import logging
