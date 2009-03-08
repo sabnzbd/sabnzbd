@@ -1,13 +1,5 @@
 List of known issues.
 
-*** Still under investigation ***
-
-- Shutdown-PC-on-empty-queue is reported to fail sometimes.
-  We have not been able to reproduce the problem. Also we do not know
-  whether the problem is that end-of-queue is not detected or that
-  the shutdown itself does not work.
-
-
 *** Known problems ***
 
 - The "Watched Folder" sometimes fails to delete the NZB files it has

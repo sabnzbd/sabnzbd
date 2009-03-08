@@ -21,6 +21,7 @@ Don't blame us if your downloads fail.
 
 You are invited to file problem reports on our forum:
 http://forums.sabnzbd.org
+Board = "Beta Releases"
 
 **WARNING**   **WARNING**   **WARNING**
 
