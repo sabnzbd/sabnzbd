@@ -214,14 +214,14 @@ class RSSQueue:
         if not d:
             logging.warning("Failed to retrieve RSS from %s", uri)
             return
-        elif 'bozo_exception' in d:
+
+        entries = d.get('entries')
+        if 'bozo_exception' in d and not entries:
             logging.warning("Failed to retrieve RSS from %s: %s", uri, str(d['bozo_exception']))
             return
-        elif not d['entries']:
+        if not entries:
             logging.info("RSS Feed was empty: %s", uri)
             return
-        entries = d['entries']
-
 
         # Filter out valid new links
         for entry in entries:
