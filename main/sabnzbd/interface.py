@@ -108,19 +108,13 @@ def ListScripts(default=False):
 
 def ListCats(default=False):
     """ Return list of categories """
-    content = False
-    if default:
-        lst = ['Default', 'None']
-    else:
-        lst = ['None']
+    lst = sorted(config.get_categories().keys())
+    if lst:
+        lst.insert(0, 'None')
+        if default:
+            lst.insert(0, 'Default')
+    return lst
 
-    for cat in sorted(config.get_categories().keys()):
-        content = True
-        lst.append(cat)
-    if content:
-        return lst
-    else:
-        return []
 
 def ConvertSpecials(p):
     """ Convert None to 'None' and 'Default' to ''
