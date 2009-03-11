@@ -58,21 +58,22 @@
 		</form>
 	<!--#end if#-->
 		
-    <form action="bulk_operation">
+    <form action="bulk_operation" id="bulk_operation">
+    <input type="hidden" name="action_key" id="action_key" />
     
     <div id="config_nav">
         <ul>
             <li><a class="config_menu" id="config_nzo_reload" onclick="document.location.reload()">Reload</a></li>
-            <br/>
-            <li><a class="config_menu" id="config_nzo_delete"><input type="submit" name="action_key" value="Delete" /></a></li>
-            <li><a class="config_menu" id="config_nzo_top"><input type="submit" name="action_key" value="Top" /></a></li>
-            <li><a class="config_menu" id="config_nzo_up"><input type="submit" name="action_key" value="Up" /></a></li>
-            <li><a class="config_menu" id="config_nzo_down"><input type="submit" name="action_key" value="Down" /></a></li>
-            <li><a class="config_menu" id="config_nzo_bottom"><input type="submit" name="action_key" value="Bottom" /></a></li>
-            <br/>Selection:
-            <li><a class="config_menu" id="config_nzo_select_all">ALL</a></li>
-            <li><a class="config_menu" id="config_nzo_select_none">NONE</a></li>
-            <li><a class="config_menu" id="config_nzo_select_invert">INVERT</a></li>
+            <br/>&nbsp;Operation:
+            <li><a class="config_menu" id="config_nzo_delete">Delete</a></li>
+            <li><a class="config_menu" id="config_nzo_top">Top</a></li>
+            <li><a class="config_menu" id="config_nzo_up">Up</a></li>
+            <li><a class="config_menu" id="config_nzo_down">Down</a></li>
+            <li><a class="config_menu" id="config_nzo_bottom">Bottom</a></li>
+            <br/>&nbsp;Selection:
+            <li><a class="config_menu" id="config_nzo_select_all">All</a></li>
+            <li><a class="config_menu" id="config_nzo_select_none">None</a></li>
+            <li><a class="config_menu" id="config_nzo_select_invert">Invert</a></li>
         </ul>
     </div>
     

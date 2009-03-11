@@ -59,12 +59,33 @@ jQuery(document).ready(function($){
 	// this is a jquery plugin
 	$.preloadCssImages();
     
+    // queued nzb file listing page
     if (config_pane=="NZO") {
+    
         $('.config_menu').corner("round tl bl");
         $('#config_container').corner("round");
-        $('.nzf_row').click(function(event) {
-            $('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked'));
+        
+        $('#config_nzo_delete').click(function(){
+        	$('#action_key').val('Delete');
+        	$('#bulk_operation').submit();
         });
+        $('#config_nzo_top').click(function(){
+        	$('#action_key').val('Top');
+        	$('#bulk_operation').submit();
+        });
+        $('#config_nzo_up').click(function(){
+        	$('#action_key').val('Up');
+        	$('#bulk_operation').submit();
+        });
+        $('#config_nzo_down').click(function(){
+        	$('#action_key').val('Down');
+        	$('#bulk_operation').submit();
+        });
+        $('#config_nzo_bottom').click(function(){
+        	$('#action_key').val('Bottom');
+        	$('#bulk_operation').submit();
+        });
+        
         $("#config_nzo_select_all").click(function(){
             $("INPUT[type='checkbox']").attr('checked', true);
         });
@@ -76,6 +97,11 @@ jQuery(document).ready(function($){
                 $(this).attr('checked', !$(this).attr('checked'));
             });
         });
+
+        $('.nzf_row').click(function(event) {
+            $('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked'));
+        });
+
         return;
     }
     

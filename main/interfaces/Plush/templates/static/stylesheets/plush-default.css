@@ -742,14 +742,11 @@ ul.sf-navbar .current ul ul {
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 body.nzo {background: #ddd;}
-body.nzo .config_menu {
-    cursor:default;
+body.nzo #config_nav {
+	cursor:default;
 }
-#config_nav input, #config_content input {
+body.nzo #config_content input, body.nzo #config_nav a {
     cursor:pointer;
-}
-body.nzo .config_menu input {
-    width:60px;
 }
 table.nzoTable {
     font-size: 9pt;
@@ -971,37 +968,15 @@ fieldset.EntryFieldSet {
 }
 
 
-#config_nzo_reload {
-    background-image: url(../images/plush-default/nzo/reload.png);
-    cursor:pointer;
-}
-#config_nzo_delete {
-    background-image: url(../images/plush-default/nzo/delete.png);
-}
-#config_nzo_top {
-    background-image: url(../images/plush-default/nzo/top.png);
-}
-#config_nzo_up {
-    background-image: url(../images/plush-default/nzo/up.png);
-}
-#config_nzo_down {
-    background-image: url(../images/plush-default/nzo/down.png);
-}
-#config_nzo_bottom {
-    background-image: url(../images/plush-default/nzo/bottom.png);
-}
-#config_nzo_select_all {
-    background-image: url(../images/plush-default/nzo/select_all.png);
-    cursor:pointer;
-}
-#config_nzo_select_none {
-    background-image: url(../images/plush-default/nzo/select_none.png);
-    cursor:pointer;
-}
-#config_nzo_select_invert {
-    background-image: url(../images/plush-default/nzo/select_invert.png);
-    cursor:pointer;
-}
+#config_nzo_reload {		background-image: url(../images/plush-default/nzo/reload.png); }
+#config_nzo_delete {    	background-image: url(../images/plush-default/nzo/delete.png); }
+#config_nzo_top {    		background-image: url(../images/plush-default/nzo/top.png); }
+#config_nzo_up {     		background-image: url(../images/plush-default/nzo/up.png); }
+#config_nzo_down {    		background-image: url(../images/plush-default/nzo/down.png); }
+#config_nzo_bottom {    	background-image: url(../images/plush-default/nzo/bottom.png); }
+#config_nzo_select_all {    background-image: url(../images/plush-default/nzo/select_all.png); }
+#config_nzo_select_none {   background-image: url(../images/plush-default/nzo/select_none.png); }
+#config_nzo_select_invert { background-image: url(../images/plush-default/nzo/select_invert.png); }
 
 #config_container {
     background: #bbb;
