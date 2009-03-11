@@ -1726,13 +1726,19 @@ def handle_server(kwargs, root=None):
     # between INI format and IPV6 notation
     server = '%s:%s' % (host.replace('[','{').replace(']','}'), port)
 
-    svr = config.get_config('servers', server)
+    svr = None
+    old_server = kwargs.get('server')
+    if old_server:
+        svr = config.get_config('servers', old_server)
+    if not svr:
+        svr = config.get_config('servers', server)
+
     if svr:
-        old_server = server
-        for kw in ('fillserver', 'ssl', 'enable'):
+        for kw in ('fillserver', 'ssl', 'enable', 'optional'):
             if kw not in kwargs.keys():
                 kwargs[kw] = None
         svr.set_dict(kwargs)
+        svr.rename(server)
     else:
         old_server = None
         config.ConfigServer(server, kwargs)

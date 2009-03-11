@@ -365,6 +365,12 @@ class ConfigServer:
         """ Remove from database """
         delete_from_database('servers', self.__name)
 
+    def rename(self, name):
+        """ Give server new identity """
+        delete_from_database('servers', self.__name)
+        self.__name = name
+        add_to_database('servers', self.__name, self)
+
     def ident(self):
         return 'servers', self.__name
 
