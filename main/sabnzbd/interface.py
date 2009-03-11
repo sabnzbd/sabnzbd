@@ -1664,7 +1664,7 @@ class ConfigServer:
         new = {}
         servers = config.get_servers()
         for svr in servers:
-            new[svr] = servers[svr].get_dict()
+            new[svr] = servers[svr].get_dict(safe=True)
         conf['servers'] = new
 
         if sabnzbd.newswrapper.HAVE_SSL:
