@@ -3,10 +3,10 @@
 <script type="text/javascript" src="static/javascript/checkserver.js"></script>
 <h3>Server Details</h3>
 Please enter in the details of your primary usenet provider.
-<div id="serverBlock" class="quoteBlock">
+<div id="serverBlock" class="quoteBlock"><span class="bold">Help</span><br />
     In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended. <br/><br />
-    Don't have a usenet provider? We recommend trying giganews. <br />
-    <a href="http://www.giganews.com/?a=SABnzbd" target="_blank"><img src="http://www.giganews.com/banners/gn_sig.jpg" border="0"></a> 
+    Don't have a usenet provider? We recommend trying Giganews. <br />
+    <p class="align-center"><a href="http://www.giganews.com/?a=SABnzbd" target="_blank"><img src="http://www.giganews.com/banners/gn_sig.jpg" border="0"></a></p>
 </div>
 <br /><br class="clear" />
 <form action="./four" method="post">
@@ -26,14 +26,13 @@ Please enter in the details of your primary usenet provider.
     <br class="clear" />
 </div>
 <br/>
-<input class="bigbutton" id="serverTest" type="button" value="Test Server" />
-<br/>
-<div class="quoteBlock"><span id="serverResponse"></span></div>
+<input id="serverTest" type="button" value="Test Server" />
+<div id="serverQuote" class="quoteBlock"><span id="serverResponse">Click to test the entered details.</span></div>
 </div>
 <hr /><br/>
 <table class="full-width">
     <tr>
-        <td><input class="bigbutton" type="button" onclick="document.location ='./'" value="&lsaquo; Previous" /></td>
+        <td><input class="bigbutton" type="button" onclick="document.location ='./two'" value="&lsaquo; Previous" /></td>
         <td>
             <div class="align-center">
                 <!--#for $step in xrange($steps)#-->
