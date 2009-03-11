@@ -187,7 +187,7 @@ def encrypt_pwd(pwd):
 def set_auth(conf):
     """ Set the authentication for CherryPy
     """
-    if cfg.USERNAME.get():
+    if cfg.USERNAME.get() and cfg.PASSWORD.get():
         conf.update({'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
                             'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd})
         conf.update({'/api':{'tools.basic_auth.on' : False},
