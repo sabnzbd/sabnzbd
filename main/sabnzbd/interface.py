@@ -867,23 +867,50 @@ class Wizard:
         # Access_url is used to provide the user a link to sabnzbd depending on the host
         access_uri = 'localhost'
         cherryhost = cfg.CHERRYHOST.get()
+        
         if cherryhost == '0.0.0.0':
             import socket
-            # Grab a list of all ips for the hostname
             host = socket.gethostname()
-            addr = socket.gethostbyname_ex(host)[2]
-            if cherrypy.request.headers.has_key('host') and \
-               not 'localhost' in cherrypy.request.headers['host']:
+            socks = [host]
+            # Grab a list of all ips for the hostname
+            addresses = socket.getaddrinfo(host, None)
+            for addr in addresses:
+                address = addr[4][0]
+                # Filter out ipv6 addresses (should not be allowed)
+                if ':' not in address:
+                    socks.append(address)
+            if cherrypy.request.headers.has_key('host'):
+                host = cherrypy.request.headers['host']
                 access_uri = host
-                socks = [host]
+                socks.insert(0, host)
             else:
-                socks = ['localhost', host]
-            socks.extend(addr)
+                socks.insert(0, 'localhost')
+            
+        elif cherryhost == '::':
+            import socket
+            host = socket.gethostname()
+            socks = [host]
+            # Grab a list of all ips for the hostname
+            addresses = socket.getaddrinfo(host, None)
+            for addr in addresses:
+                address = addr[4][0]
+                # Only ipv6 addresses will work
+                if ':' in address:
+                    address = '[%s]' % address 
+                    socks.append(address)
+            if cherrypy.request.headers.has_key('host'):
+                host = cherrypy.request.headers['host']
+                access_uri = host
+                socks.insert(0, host)
+            else:
+                socks.insert(0, 'localhost')
+            
         elif not cherryhost:
             import socket
             socks = [socket.gethostname()]
         else:
             socks = [cherryhost]
+            
         info['urls'] = []
         for sock in socks:
             if sock:

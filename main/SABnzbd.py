@@ -416,6 +416,7 @@ def get_webhost(cherryhost, cherryport, https_port):
             hostip = ip
             break
 
+    # A blank host will use the local ip address
     if cherryhost == '':
         if ipv6 and ipv4:
             # To protect Firefox users, use numeric IP
@@ -424,19 +425,32 @@ def get_webhost(cherryhost, cherryport, https_port):
         else:
             cherryhost = socket.gethostname()
             browserhost = cherryhost
+	 
+    # 0.0.0.0 will listen on all ipv4 interfaces (no ipv6 addresses)
     elif cherryhost == '0.0.0.0':
         # Just take the gamble for this
         cherryhost = '0.0.0.0'
         browserhost = localhost
+	
+    # :: will listen on all ipv6 interfaces (no ipv4 addresses)
+    elif cherryhost in ('::','[::]'):
+	cherryhost = cherryhost.strip('[').strip(']')
+	# Assume '::1' == 'localhost'
+	browserhost = localhost
+	
+    # IPV6 address
     elif cherryhost.find('[') >= 0 or cherryhost.find(':') >= 0:
-        # IPV6
         browserhost = cherryhost
+	
+    # IPV6 numeric address
     elif cherryhost.replace('.', '').isdigit():
         # IPV4 numerical
         browserhost = cherryhost
+	
     elif cherryhost == localhost:
         cherryhost = localhost
         browserhost = localhost
+	
     else:
         # If on Vista and/or APIPA, use numerical IP, to help FireFoxers
         if ipv6 and ipv4:
