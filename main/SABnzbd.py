@@ -495,8 +495,8 @@ def is_sabnzbd_running(url):
     try:
         url = '%sapi?mode=version' % (url)
         username = cfg.USERNAME.get()
-        if username:
-            password = cfg.PASSWORD.get()
+	password = cfg.PASSWORD.get()
+        if username and password:
             url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
         s = urllib2.urlopen(url)
         ver = s.read()

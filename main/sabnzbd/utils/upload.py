@@ -36,8 +36,8 @@ def upload_file(url, fp):
         priority = cfg.DIRSCAN_PRIORITY.get()
         url = '%sapi?mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (url, fp, pp, script, priority)
         username = cfg.USERNAME.get()
-        if username:
-            password = cfg.PASSWORD.get()
+        password = cfg.PASSWORD.get()
+        if username and password:
             url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
         u = urllib2.urlopen(url)
     except:
