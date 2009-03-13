@@ -12,7 +12,7 @@ $(document).ready(function() {
         url: "../tapi",
         data: "mode=restart",
         complete: function(result){
-            setTimeout(complete,5000);
+            setTimeout(complete,7000);
         }
     });
 });
