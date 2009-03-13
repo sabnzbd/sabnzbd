@@ -151,7 +151,7 @@ RSS_RATE = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
 CACHE_LIMIT = OptionStr('misc', 'cache_limit')
 WEB_DIR = OptionStr('misc', 'web_dir', 'Default')
 WEB_DIR2 = OptionStr('misc', 'web_dir2')
-WEB_COLOR = OptionStr('misc', 'web_color')
+WEB_COLOR = OptionStr('misc', 'web_color', 'darkblue')
 WEB_COLOR2 = OptionStr('misc', 'web_color2')
 CLEANUP_LIST = OptionList('misc', 'cleanup_list')
 
