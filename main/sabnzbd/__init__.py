@@ -387,6 +387,7 @@ def backup_nzb(filename, data):
             _f.close()
         except:
             logging.error("Saving %s to %s failed", backup_name, cfg.NZB_BACKUP_DIR.get_path())
+            logging.debug("Traceback: ", exc_info = True)
 
         os.chdir(here)
 
@@ -418,6 +419,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         os.close(f)
     except:
         logging.error("Cannot create temp file for %s", filename)
+        logging.debug("Traceback: ", exc_info = True)
 
     if ext.lower() in ('.zip', '.rar'):
         dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
@@ -489,6 +491,7 @@ def system_hibernate():
             time.sleep(10)
     except:
         logging.error("Failed to hibernate system")
+        logging.debug("Traceback: ", exc_info = True)
 
 
 def system_standby():
@@ -501,6 +504,7 @@ def system_standby():
         time.sleep(10)
     except:
         logging.error("Failed to standby system")
+        logging.debug("Traceback: ", exc_info = True)
 
 
 def shutdown_program():
@@ -618,6 +622,7 @@ def save_data(data, _id, do_pickle = True, doze=0):
         _f.close()
     except:
         logging.error("Saving %s failed", path)
+        logging.debug("Traceback: ", exc_info = True)
 
 
 @synchronized(IO_LOCK)
@@ -643,6 +648,7 @@ def load_data(_id, remove = True, do_pickle = True):
             remove_data(_id)
     except:
         logging.error("Loading %s failed", path)
+        logging.debug("Traceback: ", exc_info = True)
 
     return data
 
