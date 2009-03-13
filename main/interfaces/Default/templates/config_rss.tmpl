@@ -39,29 +39,38 @@ When a feed is added, it will only pick up new items and not anything already in
 
             <!--#if $rss[$feed]['pick_cat']#-->
                 <select name="cat">
-                <!--#for $ct in $cat_list#-->
-                    <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
-                <!--#end for#-->
+                    <optgroup label="Category">
+                        <!--#for $ct in $cat_list#-->
+                            <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
+                        <!--#end for#-->
+                    </optgroup>
                 </select>
             <!--#end if#-->
             <select name="pp">
-                <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>Default</option>
-                <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Download</option>
-                <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
-                <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>+Unpack</option>
-                <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>+Delete</option>
+                <optgroup label="PP">
+                    <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>Default</option>
+                    <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Download</option>
+                    <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
+                    <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>+Unpack</option>
+                    <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>+Delete</option>
+                </optgroup>
             </select>
             <!--#if $rss[$feed]['pick_script']#-->
                 <select name="script">
-                <!--#for $sc in $script_list#-->
-                    <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
-                <!--#end for#-->
+                    <optgroup label="Script">
+                        <!--#for $sc in $script_list#-->
+                            <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
+                        <!--#end for#-->
+                    </optgroup>
                 </select>
             <!--#end if#-->
             <select name="priority">
-                <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
-                <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>Normal</option>
-                <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>Low</option>
+                <optgroup label="Priority">
+                    <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>Force</option>
+                    <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
+                    <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>Normal</option>
+                    <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>Low</option>
+                </optgroup>
             </select>
 
             <input type="hidden" name="feed" value="$feed"/>
