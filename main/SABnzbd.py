@@ -563,7 +563,30 @@ def copy_old_files(newpath):
                 shutil.copy(os.path.join(oldpath, SCAN_FILE_NAME), newpath)
             except:
                 pass
-
+	    
+def cherrypy_logging(log_path):
+    log = cherrypy.log
+    log.access_file = ''
+    log.error_file = ''
+    # Max size of 512KB
+    maxBytes = getattr(log, "rot_maxBytes", 524288)
+    # cherrypy.log cherrypy.log.1 cherrypy.log.2
+    backupCount = getattr(log, "rot_backupCount", 3)
+    
+    # Make a new RotatingFileHandler for the error log.
+    fname = getattr(log, "rot_error_file", log_path)
+    h = logging.handlers.RotatingFileHandler(fname, 'a', maxBytes, backupCount)
+    h.setLevel(logging.DEBUG)
+    h.setFormatter(cherrypy._cplogging.logfmt)
+    log.error_log.addHandler(h)
+    '''
+    # Make a new RotatingFileHandler for the access log.
+    fname = getattr(log, "rot_access_file", "access.log")
+    h = handlers.RotatingFileHandler(fname, 'a', maxBytes, backupCount)
+    h.setLevel(logging.DEBUG)
+    h.setFormatter(cherrypy._cplogging.logfmt)
+    log.access_log.addHandler(h)
+    '''
 
 #------------------------------------------------------------------------------
 def main():
@@ -928,6 +951,8 @@ def main():
     if cherrypylogging:
         if logdir:
             sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
+	    # Define our custom logger for cherrypy errors
+	    cherrypy_logging(sabnzbd.WEBLOGFILE)
         if not fork:
             try:
                 x= sys.stderr.fileno
@@ -941,8 +966,6 @@ def main():
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
                             'log.screen': cherrylogtoscreen,
-                            'log.error_file' : None,
-                            'log.access_file' : sabnzbd.WEBLOGFILE,
                             'engine.autoreload_frequency' : 100,
                             'engine.autoreload_on' : False,
                             'engine.reexec_retry' : 100,
