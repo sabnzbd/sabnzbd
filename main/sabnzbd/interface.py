@@ -798,6 +798,7 @@ class Wizard:
         if kwargs:
             if 'access' in kwargs:
                 cfg.CHERRYHOST.set(kwargs['access'])
+            cfg.ENABLE_HTTPS.set(kwargs.get('enable_https',0))
             cfg.AUTOBROWSER.set(kwargs.get('autobrowser',0))
         info = self.info.copy()
         info['num'] = 'Three'
