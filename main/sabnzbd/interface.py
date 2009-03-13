@@ -2945,19 +2945,24 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
 
     def matches_search(text, search_text):
         # Replace * with .* and ' ' with .
-        search_text = search_text.replace('*','.*').replace(' ','.*')
+        search_text = search_text.strip().replace('*','.*').replace(' ','.*') + '.*?'
         try:
-            re_search = re.compile(search_text)
+            re_search = re.compile(search_text, re.I)
         except:
             logging.error('Failed to compile regex for search term: %s', search_text)
             return False
         return re_search.search(text)
 
+    # Grab any items that are active or queued in postproc
     queue = postproc.history_queue()
+    
+    # Filter out any items that don't match the search
     if search:
         queue = [nzo for nzo in queue if matches_search(nzo.get_original_dirname(), search)]
 
+    # Multi-page support for postproc items
     if start > len(queue):
+        # On a page where we shouldn't show postproc items
         queue = []
     else:
         try:
@@ -2968,11 +2973,12 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
                     queue = queue[start:]
         except:
             pass
+    # Remove the amount of postproc items from the db request for history items
     limit -= len(queue)
 
-
-
+    # Aquire the db instance
     history_db = cherrypy.thread_data.history_db
+    # Fetch history items
     items, fetched_items, total_items = history_db.fetch_history(start,limit,search)
 
     # Fetch which items should show details from the cookie
@@ -2992,20 +2998,11 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
             details_show_all = True
         k = k.split(',')
     k.extend(verbose_list)
-    '''
-    # Remove any non-existent nzo_ids out of the cookie
-    m = [item['nzo_id'] for item in items]
-    uniq = [x for x in k if x in m]
-    future_cookie = cherrypy.response.cookie
-    future_cookie['history_verbosity'] = ','.join(uniq)
-    future_cookie['history_verbosity']['path'] = c_path
-    future_cookie['history_verbosity']['max-age'] = c_age
-    future_cookie['history_verbosity']['version'] = c_version
-    '''
 
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
 
+    # Add the postproc items to the top of the history
     items = get_active_history(queue, items)
 
     # Unreverse the queue
@@ -3539,9 +3536,9 @@ def format_history_for_queue():
 
 def get_active_history(queue=None, items=None):
     # Get the currently in progress and active history queue.
-    if not items:
+    if items == None:
         items = []
-    if not queue:
+    if queue == None:
         queue = postproc.history_queue()
 
     for nzo in queue:
