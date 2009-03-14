@@ -18,12 +18,12 @@
                 <form action="upd_rss_feed" method="post">
                 <fieldset class="EntryFieldSet">
 
-                    <legend style="padding-left:4px; color:white; background-color:<!--#if $rss[$feed]['enable'] then 'darkgreen' else 'darkred'#-->"><input type="checkbox" onclick="this.form.action='toggle_rss_feed';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>&nbsp;$feed</legend>
+                    <legend style="padding-left:4px; color:white; background-color:<!--#if $rss[$feed]['enable'] then 'darkgreen' else 'darkred'#-->"><input type="checkbox" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>&nbsp;$feed</legend>
 
                     <input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 		
-		            <input type="submit" onclick="this.form.action='test_rss_feed'; this.form.submit(); return false;" value="Preview"/>
-		            <input type="submit" onclick="this.form.action='download_rss_feed'; this.form.submit(); return false;" value="Force Download"/>
+		            <input type="button" class="preview_feed" value="Preview"/>
+		            <input type="button" class="download_feed" value="Force Download"/>
 					&nbsp;&nbsp;&nbsp;&nbsp;
 		            <select name="priority"><optgroup label="Priority">
 		                <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>Force</option>
@@ -55,7 +55,7 @@
 
                     <input type="hidden" name="feed" value="$feed"/>
 		            <input type="submit" value="Save"/>
-					<input type="submit" onclick="if(confirm('Are you sure you want to remove this feed?')){this.form.action='del_rss_feed';  this.form.submit();} return false;" value="X"/>
+					<input type="button" value="X" class="delete_feed"/>
 
                 </form>
 
@@ -130,7 +130,7 @@
                     <tr class="odd">
 
                         <td><form>
-                            <select onchange="location = this.options[this.selectedIndex].value;">
+                            <select class="filter_order">
                             <!--#for $i in xrange($rss[$feed]['filtercount'])#-->
                                 <option value="pos_rss_filter?feed=$feed&current=$fnum&new=$i" <!--#if int($i) == int($fnum) then "selected" else ""#-->>$i</option>
                             <!--#end for#-->

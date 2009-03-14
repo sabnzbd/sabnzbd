@@ -5,7 +5,7 @@
 			<div class="center"><small>
 				Version:&nbsp;$version&nbsp;&nbsp;|&nbsp;&nbsp;Uptime:&nbsp;$uptime&nbsp;&nbsp;|&nbsp;&nbsp;
 				<a href="showlog">Show&nbsp;Logging</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="showweb">Show&nbsp;Weblogging</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-				Logging:&nbsp;<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value" class="xsmall">
+				Logging:&nbsp;<select class="xsmall" id="logging_level">
 					<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
 					<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
 					<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>

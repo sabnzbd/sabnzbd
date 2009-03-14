@@ -29,11 +29,11 @@
                 <legend id="configbox_bookmark_processing">Newzbin&nbsp;Bookmark&nbsp;Processing</legend>
 	
 				<br/>
-                <input type="button" value="Get Bookmarks Now" onclick="window.location='getBookmarks';" />
+                <input type="button" id="getBookmarks" value="Get Bookmarks Now" />
                 <!--#if $bookmarks_list#-->
-                <input type="button" value="Hide Processed Bookmarks" onclick="window.location='hideBookmarks';" />
+                <input type="button" id="hideBookmarks" value="Hide Processed Bookmarks" />
                 <!--#else#-->
-                <input type="button" value="Show Processed Bookmarks" onclick="window.location='showBookmarks';" />
+                <input type="button" id="showBookmarks" value="Show Processed Bookmarks" />
                 <!--#end if#-->
                 
                 <br/><br/>

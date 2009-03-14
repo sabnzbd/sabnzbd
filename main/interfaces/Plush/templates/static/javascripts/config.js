@@ -45,76 +45,77 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 
 
 
-/***************************************/
-/***************************************/
-/***************************************/
-/***************************************/
-/* plush config/nzo                    */
-/***************************************/
-/***************************************/
-/***************************************/
-/***************************************/
+
+// *****************************************************************
+// Plush config code as follows, by pairofdimes (see LICENSE-CC.txt)
+
+
 jQuery(document).ready(function($){
 
 	// this is a jquery plugin
 	$.preloadCssImages();
     
-    // queued nzb file listing page
-    if (config_pane=="NZO") {
-    
-        $('.config_menu').corner("round tl bl");
-        $('#config_container').corner("round");
-        
-        $('#config_nzo_delete').click(function(){
-        	$('#action_key').val('Delete');
-        	$('#bulk_operation').submit();
-        });
-        $('#config_nzo_top').click(function(){
-        	$('#action_key').val('Top');
-        	$('#bulk_operation').submit();
-        });
-        $('#config_nzo_up').click(function(){
-        	$('#action_key').val('Up');
-        	$('#bulk_operation').submit();
-        });
-        $('#config_nzo_down').click(function(){
-        	$('#action_key').val('Down');
-        	$('#bulk_operation').submit();
-        });
-        $('#config_nzo_bottom').click(function(){
-        	$('#action_key').val('Bottom');
-        	$('#bulk_operation').submit();
-        });
-        
-        $("#config_nzo_select_all").click(function(){
-            $("INPUT[type='checkbox']").attr('checked', true);
-        });
-        $("#config_nzo_select_none").click(function(){
-            $("INPUT[type='checkbox']").attr('checked', false);
-        });
-        $("#config_nzo_select_invert").click(function(){
-            $("INPUT[type='checkbox']").each( function() {
-                $(this).attr('checked', !$(this).attr('checked'));
-            });
-        });
-
-        $('.nzf_row').click(function(event) {
-            $('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked'));
-        });
-
-        return;
-    }
-    
+    // rounding
     $('.config_menu').corner("round tl bl");
     $('#config_container').corner("round");
     $('.rounded').corner("round");
 
     switch(config_pane) {
-        case 'Sorting':
-            previewtv();
-            previewmovie();
-            previewdate();
-            break;
+
+		// not a config page, rather queued nzb file listing page
+		case 'NZO':
+	        $('#config_nzo_reload').click(function(){ document.location.reload(); });
+
+	        // operations
+	        $('#config_nzo_delete').click(function(){
+	        	$('#action_key').val('Delete');
+	        	$('#bulk_operation').submit();
+	        });
+	        $('#config_nzo_top').click(function(){
+	        	$('#action_key').val('Top');
+	        	$('#bulk_operation').submit();
+	        });
+	        $('#config_nzo_up').click(function(){
+	        	$('#action_key').val('Up');
+	        	$('#bulk_operation').submit();
+	        });
+	        $('#config_nzo_down').click(function(){
+	        	$('#action_key').val('Down');
+	        	$('#bulk_operation').submit();
+	        });
+	        $('#config_nzo_bottom').click(function(){
+	        	$('#action_key').val('Bottom');
+	        	$('#bulk_operation').submit();
+	        });
+
+	        // selections
+	        $("#config_nzo_select_all").click(function(){
+	            $("INPUT[type='checkbox']").attr('checked', true);
+	        });
+	        $("#config_nzo_select_none").click(function(){
+	            $("INPUT[type='checkbox']").attr('checked', false);
+	        });
+	        $("#config_nzo_select_invert").click(function(){
+	            $("INPUT[type='checkbox']").each( function() {
+	                $(this).attr('checked', !$(this).attr('checked'));
+	            });
+	        });
+
+	        // click filenames to select
+	        $('.nzf_row').click(function(event) {
+	            $('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked'));
+	        });
+
+	        return; // skip the rest of the config methods
+			break;
+        
+        
+        case 'Connections':
+        	$('#logging_level').change(function(event){
+				window.location = './change_loglevel?loglevel='+$(event.target).val();
+			});
+			break;
+        
         case 'General':
         	$('#sabnzbd_restart').click(function(){
         		if (confirm("Are you sure you want to restart SABnzbd?\n\nSave your config first if you have made changes.\n\nWait 5-10 seconds then refresh the page.")) {
@@ -123,12 +124,75 @@ jQuery(document).ready(function($){
         		}
         	});
         	break;
+
+		case 'Servers':
+        	$('form :button').click(function(event){ // delete server
+				if(confirm('Are you sure you want to remove this server?'))
+					$(event.target).parents('form:first').attr('action','delServer').submit();
+				return false;
+			});
+			break;
+
+        case 'Categories':
+        	$(':button').click(function(event){ // delete category
+        		window.location="delete/?name="+$(event.target).attr('name');
+        	});
+        	break;
+
+        case 'RSS':
+        	$(':checkbox').click(function(event){ // toggle feed
+				$(event.target).parents('form:first').attr('action','toggle_rss_feed').submit();
+				return false;
+			});
+        	$('.preview_feed').click(function(event){
+				$(event.target).parents('form:first').attr('action','test_rss_feed').submit();
+				return false;
+			});
+        	$('.download_feed').click(function(event){
+				$(event.target).parents('form:first').attr('action','download_rss_feed').submit();
+				return false;
+			});
+        	$('.delete_feed').click(function(event){
+				if(confirm('Are you sure you want to remove this feed?'))
+					$(event.target).parents('form:first').attr('action','del_rss_feed').submit();
+				return false;
+			});
+        	$('.filter_order').change(function(event){ // update filter order
+				window.location = $(event.target).val();
+			});
+			break;
+
+        case 'Email':
+            $('#test_email').click(function(){
+				return confirm('This will send a test email to your account.')
+		    });
+		    break;
+        	
+        case 'NZB Sites':
+        	$('#getBookmarks').click(function(){ window.location='getBookmarks'; });
+        	$('#hideBookmarks').click(function(){ window.location='hideBookmarks'; });
+        	$('#showBookmarks').click(function(){ window.location='showBookmarks'; });
+        	break;
+
+        case 'Sorting':
+            previewtv(); previewmovie(); previewdate(); // display sorting previews -- these functions are defined below
+            break;
+
     };
+    
+    // page's save button for those pages that use it
+    $('#save').click(function(){
+    	$('form').submit();
+    });
 
-});
+}); // end Plush code
 
 
-// Sorting Config -- author: switch
+
+
+// *********************************************************
+// the following is for the Sorting Config -- author: switch
+
 function tvAdd(val){
     var tv = document.getElementById('tvfoldername'); 
     tv.value = tv.value + val;

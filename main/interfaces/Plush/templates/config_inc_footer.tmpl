@@ -7,7 +7,7 @@
         </div>
     #else if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="NZB Sites" or $pane=="Sorting"#
         <div class="left_links config_margin">
-            <a class="rounded" id="save" onclick="document.fullform.submit();">Save Changes</a>
+            <a class="rounded" id="save">Save Changes</a>
         </div>
     #end if#
     #if $pane=="General"#
@@ -17,7 +17,7 @@
     #end if#
     #if $pane=="Email"#
         <div class="left_links">
-            <a class="rounded" id="test_email" href="../../connections/testmail" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a>
+            <a class="rounded" id="test_email" href="../../connections/testmail">Test Email</a>
         </div>
     #end if#
 

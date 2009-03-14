@@ -69,7 +69,7 @@
                         <input type="submit" value="<!--#if $cur == 1 then 'Add' else 'Save'#-->"/>
 
                         <!--#if $slot.name#-->
-                        <input type="button" value="X" onclick='window.location="delete/?name=$slot.name";'/>
+                        <input type="button" value="X" name="$slot.name" />
                         <!--#end if#-->
                     
                     
