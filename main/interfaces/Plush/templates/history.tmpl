@@ -42,7 +42,7 @@
         <!--#end if#-->
 	    <!--#for $stage in $line.stage_log#-->
             <!--#for $action in $stage.actions#-->
-                <div class="hv_$stage.name" title='<!--#echo $stage.name.replace("'","&rsquo;").title() #--> &bull; <!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
+                <div class="hv_$stage.name" title='<!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
             <!--#end for#-->
         <!--#end for#-->
         <!--#if $line.script_log #-->
