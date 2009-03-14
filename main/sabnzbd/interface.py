@@ -1730,13 +1730,12 @@ class ConfigServer:
 
 def handle_server(kwargs, root=None):
     """ Internal server handler """
-    try:
-        host = kwargs['host']
-    except:
+    host = kwargs.get('host', '').strip()
+    if not host:
         return badParameterResponse('Error: Need host name.')
 
-    port = kwargs.get('port', '')
-    if not port.strip():
+    port = kwargs.get('port', '').strip()
+    if not port:
         if not kwargs.get('ssl', '').strip():
             port = '119'
         else:
