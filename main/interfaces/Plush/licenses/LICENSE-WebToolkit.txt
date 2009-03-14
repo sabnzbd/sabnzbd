@@ -1,0 +1,11 @@
+
+The module webtoolkit.aim.js is extracted from this source:
+http://www.webtoolkit.info/demo/javascript/aim/webtoolkit.aim.js
+
+The module does not include an explicit license.
+In a private communication the author has told us that we can
+assume the GPL3 license.
+
+The home of the module is:
+    http://www.webtoolkit.info/ajax-file-upload.html
+

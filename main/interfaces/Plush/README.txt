@@ -1,6 +1,6 @@
 
-=============================================
-== Plush 3.0 for SABnzbd+ 0.5 | Mar 7 2009 ==
+==============================================
+== Plush 3.0 for SABnzbd+ 0.5 | Mar 13 2009 ==
 
 ============
 ASSEMBLED BY
@@ -81,11 +81,10 @@ http://bassistance.de/jquery-plugins/jquery-plugin-tooltip
 Copyright (c) 2006-2008 Jšrn Zaefferer
 See LICENSE-MIT & LICENSE-GPL
 
-jQuery Uploadify (with modifications from pairofdimes, where noted)
-(includes templates/static/flash/*)
-http://www.ronniesan.com/articles/jquery-multiple-file-upload.php
-Copyright (C) 2009 by Ronnie Garcia, Co-developed by Travis Nickels
-See LICENSE-GPL3
+WebToolkit
+http://www.webtoolkit.info/ajax-file-upload.html
+Copyright (c) 2006-2008 www.webtoolkit.info
+See LICENSE-GPL3 & LICENSE-WebToolkit
 
 Thanks goes out to inpheaux for supplying:
 Complete Config Skin

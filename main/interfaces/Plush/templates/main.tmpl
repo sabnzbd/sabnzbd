@@ -49,7 +49,11 @@
             <a class="sf-with-ul">Add NZB</a>
             <ul>
                 <li><a><form><input type="text" id="addID_input" size="20" /><input type="submit" id="addID" value="Fetch" /></form></a></li>
-                <li id="fileUploadContainer"><a class="tip" title="Allowed: .nzb .rar .zip .gz<br/>Multiple files selectable"><input name="fileUpload" id="fileUpload" type="file" /></a></li>
+                <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
+                <li><a class="tip" title="Upload: .nzb .rar .zip .gz">
+					<input type="hidden" name="mode" value="addfile" />
+					<input type="file" id="uploadNZBFile" name="name" size="10" />
+				</a></li>
                 <li id="processingContainer">
                     <a>Processing</a>
                     <ul>
@@ -88,11 +92,12 @@
                         </select>
                     <!--#end if#-->
                     </a></li>
+					<!--#if $varExists('newzbinDetails')#-->
+	                <li><a><input title="Fetch Newzbin Bookmarks" id="fetch_newzbin_bookmarks" class="tip pointer" type="button" value="Fetch Bookmarks" /></a></li>
+					<!--#end if#-->
                     </ul>
                 </li>
-				<!--#if $varExists('newzbinDetails')#-->
-                <li><a><input title="Fetch Newzbin Bookmarks" id="fetch_newzbin_bookmarks" class="tip pointer" type="submit" value="Bookmarks" /></a></li>
-				<!--#end if#-->
+				</form>
             </ul>
         </li>
         <li>
