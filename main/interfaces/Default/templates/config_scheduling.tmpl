@@ -1,6 +1,6 @@
 <!--#set global $topmenu="config"#-->
 <!--#set global $statpath="../.."#-->
-<!--#set global $helpsubject="Configure+Scheduling"#-->
+<!--#set global $helpsubject="Configure+Scheduling+V2"#-->
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 <!--#set global $submenu="scheduling"#-->
@@ -41,13 +41,13 @@ Hour:<br>
 <option value="6">Saturdays
 <option value="7">Sundays
 </select>
-<br>Action:<br> 
+<br>Action:<br>
 <select name="action">
 <!--#for $action in $actions#-->
     <option value="$action">$action
 <!--#end for#-->
 </select>
-<br>Arguments:<br> 
+<br>Arguments:<br>
 <input type="text" size="20" name="arguments" value="">
 <p><input type="submit" value="Add Schedule"></p>
 </fieldset>
@@ -60,7 +60,7 @@ Hour:<br>
 <form action="delSchedule" method="post">
 <fieldset class="EntryFieldSet">
 <!--#set $schednum = $schednum+1#-->
-<% 
+<%
 m, h, day, action = line.split(' ', 3)
 if len(m) == 1:
     m = '0%s' % m
@@ -69,17 +69,17 @@ if day == "*":
 elif day == "1":
     day='Monday'
 elif day == "2":
-    day='Tuesday'    
+    day='Tuesday'
 elif day == "3":
-    day='Wednesday'    
+    day='Wednesday'
 elif day == "4":
-    day='Thursday' 
+    day='Thursday'
 elif day == "5":
     day='Friday'
 elif day == "6":
-    day='Saturday' 
+    day='Saturday'
 elif day == "7":
-    day='Sunday'    
+    day='Sunday'
 %>
 Task $schednum: <strong>$h:$m</strong> - $day - $action
 <input type="hidden" name="line" value="$line">

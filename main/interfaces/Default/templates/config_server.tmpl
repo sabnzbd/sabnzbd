@@ -1,6 +1,6 @@
 <!--#set global $topmenu="config"#-->
 <!--#set global $statpath="../.."#-->
-<!--#set global $helpsubject="Configure+Servers"#-->
+<!--#set global $helpsubject="Configure+Servers+V2"#-->
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 <!--#set global $submenu="servers"#-->
@@ -23,6 +23,7 @@
         <input type="checkbox" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->>&nbsp;SSL<br/>
       <!--#end if#-->
       <input type="checkbox" name="fillserver" value="1">&nbsp;Backup server<br>
+      <input type="checkbox" name="optional" value="1">&nbsp;Optional<br>
       <input type="checkbox" name="enable" value="1" checked="1">&nbsp;Enable<br>
       <p><input type="submit" value="Add Server"></p>
     </fieldset>
@@ -45,6 +46,7 @@
          <input type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 then "checked=1" else ""#-->/>&nbsp;SSL<br/>
       <!--#end if#-->
       <input type="checkbox" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> />&nbsp;Backup server<br/>
+      <input type="checkbox" name="optional" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> />&nbsp;Optional<br/>
       <input type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> />&nbsp;Enable<br/>
       <input type="hidden" name="server" value="$server">
       <p><input type="submit" value="Save Changes"></p>

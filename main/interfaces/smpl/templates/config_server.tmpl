@@ -1,5 +1,5 @@
 
-<a href="${helpuri}Configure+Servers" id="help">Help</a><h3>Server configuration</h3>
+<a href="${helpuri}Configure+Servers+V2" id="help">Help</a><h3>Server configuration</h3>
 <div class="EntryBlock">
  <!--#set $slist = $servers.keys()#-->
  <!--#$slist.sort()#-->
@@ -28,6 +28,10 @@
 
             <label><span class="label">Backup Server:</span>
 			<input class="radio" type="checkbox" name="fillserver" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /></label>
+            </label><br class="clear" />
+
+            <label><span class="label">Optional:</span>
+			<input class="radio" type="checkbox" name="optional" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> /></label>
             </label><br class="clear" />
 
             <label><span class="label">Enable:</span>
@@ -75,6 +79,10 @@
 
 			<label><span class="label">Backup Server:</span>
 				<input class="radio" type="checkbox" name="fillserver" value="1"></label>
+ 		<br class="clear" />
+
+			<label><span class="label">Optional:</span>
+				<input class="radio" type="checkbox" name="optional" value="1"></label>
  		<br class="clear" />
 
 			<label><span class="label">Enable:</span>

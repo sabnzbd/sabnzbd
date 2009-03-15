@@ -34,7 +34,15 @@ from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.bpsmeter as bpsmeter
+import sabnzbd.scheduler
 import sabnzbd.nzbqueue
+
+#------------------------------------------------------------------------------
+# Timeout penalty in minutes for each cause
+_PENALTY_UNKNOWN = 3
+_PENALTY_502     = 5
+_PENALTY_TIMEOUT = 10
+_PENALTY_SHARE   = 15
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -175,6 +183,7 @@ class Server:
         self.busy_threads = []
         self.idle_threads = []
         self.active = True
+        self.bad_cons = 0
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
@@ -241,6 +250,7 @@ class Downloader(Thread):
         """ Setup or re-setup single server
             When oldserver is defined and in use, delay startup.
             Return True when newserver is primary
+            Note that the server names are "host:port" strings!
         """
 
         primary = False
@@ -342,6 +352,13 @@ class Downloader(Thread):
                             self.__reset_nw(nw, "", warn=False)
                         else:
                             self.__reset_nw(nw, "timed out")
+                        server.bad_cons += 1
+                        if server.optional and server.active and (server.bad_cons/server.threads) > 3:
+                            server.bad_cons = 0
+                            server.active = False
+                            self.init_server(server.id, None)
+                            logging.warning('Server %s will be ignored for %s minutes', server.id, _PENALTY_TIMEOUT)
+                            sabnzbd.scheduler.plan_server(self.init_server, [None, server.id], _PENALTY_TIMEOUT)
 
                 if server.restart:
                     if not server.busy_threads:
@@ -519,6 +536,7 @@ class Downloader(Thread):
                         except NNTPPermanentError, error:
                             # Handle login problems
                             block = False
+                            penalty = 0
                             msg = error.response
                             ecode = msg[:3]
                             if ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
@@ -531,19 +549,26 @@ class Downloader(Thread):
                                 logging.error('Too many connections to server %s:%s',  server.host, server.port)
                                 self.__reset_nw(nw, None, warn=False, destroy=True)
                                 server.threads -= 1
+                            elif (ecode == '502') and clues_too_many_ip(msg):
+                                # Account sharing?
+                                logging.info("Probable account sharing")
+                                penalty = _PENALTY_SHARE
                             elif ecode == '502':
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    logging.error('Cannot connect to server %s:%s [%s]',  server.host, server.port, msg)
-                                block = True
+                                    logging.warning('Cannot connect to server %s:%s [%s]',  server.host, server.port, msg)
+                                penalty = _PENALTY_502
                             else:
                                 # Unknown error, just keep trying
-                                # In the future we will give this server a penalty timeout
                                 logging.error('Cannot connect to server %s:%s [%s]',  server.host, server.port, msg)
-                            if block:
+                                penalty = _PENALTY_UNKNOWN
+                            if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
                                     self.init_server(server, None)
+                                    if penalty and server.optional:
+                                       logging.info('Server %s ignored for %s minutes', server.id, penalty)
+                                       sabnzbd.scheduler.plan_server(self.init_server, [None, server.id], penalty)
                                 self.__reset_nw(nw, None, warn=False)
                             continue
                         except:
@@ -685,6 +710,16 @@ def clues_too_many(text):
     """
     text = text.lower()
     for clue in ('exceed', 'connections', 'too many', 'threads', 'limit'):
+        if text.find(clue) >= 0:
+            return True
+    return False
+
+
+def clues_too_many_ip(text):
+    """ Check for any "account sharing" clues in the response code
+    """
+    text = text.lower()
+    for clue in ('simultaneous ip'):
         if text.find(clue) >= 0:
             return True
     return False

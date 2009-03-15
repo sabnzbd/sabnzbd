@@ -1,11 +1,11 @@
 <!--#set global $pane="Scheduling"#-->
-<!--#set global $help_uri="Configure+Scheduling"#-->
+<!--#set global $help_uri="Configure+Scheduling+V2"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
             <div class="EntryBlock">
             <form action="addSchedule" method="post">
             <fieldset class="EntryFieldSet">
-                
+
                 <legend id="configbox_add_schedule">Add&nbsp;Schedule</legend>
 <%import time
 t = time.localtime()
@@ -29,7 +29,7 @@ else:
                         <!--#end for#-->
                         </select>
                     </td></tr>
-                    
+
                     <tr><td align=right>
                         <div class="sucker">Frequency:</div>
                     </td><td>
@@ -44,7 +44,7 @@ else:
                             <option value="7">Sundays</option>
                         </select>
                     </td></tr>
-                    
+
                     <tr><td align=right>
                         <div class="sucker">Action:</div>
                     </td><td>
@@ -54,26 +54,26 @@ else:
                             <!--#end for#-->
                         </select>
                     </td></tr>
-                    
+
                     <tr><td align=right>
                         <div class="sucker">Arguments:</div>
                     </td><td>
                         <input type="text" size="20" name="arguments" value=""/>
                     </td></tr>
-                    
+
                     <tr><td>
                     </td><td>
                         <br/><input type="submit" value="Add"/>
                     </td></tr>
-                    
+
                 </table>
-                
-                
-                
+
+
+
             </fieldset>
             </form>
             </div>
-            
+
             <!--#if $schedlines#-->
             <div class="EntryBlock">
             <fieldset class="EntryFieldSet">
@@ -82,7 +82,7 @@ else:
             <!--#set $schednum = 0#-->
             <!--#for $line in $schedlines#-->
                 <!--#set $schednum = $schednum+1#-->
-<% 
+<%
 m, h, day, action = line.split(' ', 3)
 if len(m) == 1:
     m = '0%s' % m
@@ -91,17 +91,17 @@ if day == "*":
 elif day == "1":
     day='Monday'
 elif day == "2":
-    day='Tuesday'    
+    day='Tuesday'
 elif day == "3":
-    day='Wednesday'    
+    day='Wednesday'
 elif day == "4":
-    day='Thursday' 
+    day='Thursday'
 elif day == "5":
     day='Friday'
 elif day == "6":
-    day='Saturday' 
+    day='Saturday'
 elif day == "7":
-    day='Sunday'    
+    day='Sunday'
 %>
 	            <form action="delSchedule" method="post">
 	            <input type="hidden" name="line" value="$line"/>
@@ -112,7 +112,7 @@ elif day == "7":
                 	<td>$action</td>
                 </tr>
 				</form>
-                
+
             <!--#end for#-->
             </table>
             </fieldset>

@@ -1,14 +1,14 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="Configure+Servers"#-->
+<!--#set global $help_uri="Configure+Servers+V2"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
             <div class="EntryBlock">
-                
+
             <form action="addServer" method="post">
             <fieldset class="EntryFieldSet">
-                
+
                 <legend id="configbox_add_server">Add&nbsp;Usenet&nbsp;Server</legend>
-                
+
                 <table cellpadding=2>
                     <tr><td align="right"><div class="sucker">Host / IP:</div></td><td><input type="text" size="25" name="host"/></td></tr>
                     <tr><td align="right"><div class="sucker">Port:</div></td><td><input type="text" size="10" name="port"/></td></tr>
@@ -16,13 +16,13 @@
                     <tr><td align="right"><div class="sucker">Username:</div></td><td><input type="text" size="25" name="username"/></td></tr>
                     <tr><td align="right"><div class="sucker">Password:</div></td><td><input type="password" size="25" name="password"/></td></tr>
                 </table>
-                
+
                 <br/>
-                
+
                 <table>
                 <tr><td align="right"><div class="sucker">#&nbsp;Connections:</div></td><td><input type="text" size="5" name="connections"/></td></tr>
                 <tr><td align="right"><div class="sucker">Timeout:</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>seconds</small></td></tr>
-                
+
                 <td><td colspan="2">&nbsp;</td></tr>
 
                 <tr>
@@ -37,14 +37,18 @@
                 	<td align="right"><input type="checkbox" name="fillserver" id="fillserver" value="1"/></td>
                 	<td><label for="fillserver"><strong>Backup&nbsp;Server</strong></label></td>
                 </tr>
-                
+                <tr>
+                	<td align="right"><input type="checkbox" name="optional" id="optional" value="1"/></td>
+                	<td><label for="optional"><strong>Optional</strong></label></td>
+                </tr>
+
                 <tr><td></td><td><br/><input type="submit" value="Add"/></td></tr>
-                
+
                 </table>
-                
+
             </fieldset>
             </form>
-            
+
             <!--#set $slist = $servers.keys()#-->
             <!--#$slist.sort()#-->
 		    <!--#set $cur = 0#-->
@@ -52,9 +56,9 @@
 		    <!--#set $cur = $cur + 1#-->
             <form action="saveServer" method="post">
             <fieldset class="EntryFieldSet">
-                
+
                 <legend id="<!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server</legend>
-                
+
                 <table cellpadding=2>
                     <tr><td align="right"><div class="sucker">Host / IP:</div></td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>
                     <tr><td align="right"><div class="sucker">Port:</div></td><td><input type="text" size="10" name="port" value="$servers[$server]['port']"/></td></tr>
@@ -62,9 +66,9 @@
                     <tr><td align="right"><div class="sucker">Username:</div></td><td><input type="text" size="25" name="username" value="$servers[$server]['username']"/></td></tr>
                     <tr><td align="right"><div class="sucker">Password:</div></td><td><input type="password" size="25" name="password" value="$servers[$server]['password']"/></td></tr>
                 </table>
-                
+
                 <br/>
-                
+
                 <table>
                 <tr>
                     <td align="right"><div class="sucker">#&nbsp;Connections:</div></td>
@@ -87,19 +91,23 @@
                     <td align="right"><input type="checkbox" name="fillserver" id="fillserver$cur" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /></td>
                     <td><label for="fillserver$cur"><strong>Backup&nbsp;Server</strong></label></td>
                 </tr>
-                
+                <tr>
+                    <td align="right"><input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> /></td>
+                    <td><label for="optional$cur"><strong>Optional&nbsp;Server</strong></label></td>
+                </tr>
+
                 <tr><td></td><td>
                     <br/><input type="hidden" name="server" value="$server"/>
                     <input type="submit" value="Save"/>
                     <input type="button" value="X"/>
                 </td></tr>
-                
+
                 </table>
-                
+
             </fieldset>
             </form>
             <!--#end for#-->
-            
+
             </div>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

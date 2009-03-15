@@ -28,7 +28,7 @@ import time
 import sabnzbd.utils.kronos as kronos
 import sabnzbd.rss as rss
 import sabnzbd.newzbin as newzbin
-import sabnzbd.downloader as downloader
+import sabnzbd.downloader
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -80,7 +80,7 @@ def init():
             action = scheduled_resume
             arguments = []
         elif action_name == 'pause':
-            action = downloader.pause_downloader
+            action = sabnzbd.downloader.pause_downloader
             arguments = []
         elif action_name == 'shutdown':
             action = sabnzbd.shutdown_program
@@ -89,7 +89,7 @@ def init():
             action = sabnzbd.restart_program
             arguments = []
         elif action_name == 'speedlimit' and arguments != []:
-            action = downloader.limit_speed
+            action = sabnzbd.downloader.limit_speed
         elif action_name == 'enable_server' and arguments != []:
             action = sabnzbd.enable_server
         elif action_name == 'disable_server' and arguments != []:
@@ -155,7 +155,7 @@ def restart(force=False):
             SCHEDULE_GUARD_FLAG = False
             stop()
 
-            analyse(downloader.paused())
+            analyse(sabnzbd.downloader.paused())
 
             init()
             start()
@@ -255,9 +255,9 @@ def analyse(was_paused=False):
                 logging.warning('Schedule for non-existing server %s', value)
 
     if not was_paused:
-        downloader.set_paused(paused)
+        sabnzbd.downloader.set_paused(paused)
     if speedlimit:
-        downloader.limit_speed(speedlimit)
+        sabnzbd.downloader.limit_speed(speedlimit)
     for serv in servers:
         try:
             config.get_config('servers', serv).enable.set(servers[serv])
@@ -276,7 +276,7 @@ def scheduled_resume():
     """
     global __PAUSE_END
     if __PAUSE_END == None:
-       downloader.resume_downloader()
+       sabnzbd.downloader.resume_downloader()
 
 
 def __oneshot_resume(when):
@@ -287,7 +287,7 @@ def __oneshot_resume(when):
     if __PAUSE_END != None and (when > __PAUSE_END-5) and (when < __PAUSE_END+55):
         __PAUSE_END = None
         logging.debug('Resume after pause-interval')
-        downloader.resume_downloader()
+        sabnzbd.downloader.resume_downloader()
     else:
         logging.debug('Ignoring cancelled resume')
 
@@ -300,10 +300,10 @@ def plan_resume(interval):
         __PAUSE_END = time.time() + (interval * 60)
         logging.debug('Schedule resume at %s', __PAUSE_END)
         __SCHED.add_single_task(__oneshot_resume, '', interval*60, kronos.method.sequential, [__PAUSE_END], None)
-        downloader.pause_downloader()
+        sabnzbd.downloader.pause_downloader()
     else:
         __PAUSE_END = None
-        downloader.resume_downloader()
+        sabnzbd.downloader.resume_downloader()
 
 
 def pause_int():
@@ -316,3 +316,10 @@ def pause_int():
         min = int(val / 60L)
         sec = int(val - min*60)
         return "%d:%02d" % (min, sec)
+
+
+#------------------------------------------------------------------------------
+def plan_server(action, parms, penalty):
+    """ Plan to re-activate server after "penalty" minutes
+    """
+    __SCHED.add_single_task(action, '', penalty*60, kronos.method.sequential, parms, None)
