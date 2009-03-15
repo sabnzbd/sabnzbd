@@ -1,6 +1,6 @@
 
 ==============================================
-== Plush 3.0 for SABnzbd+ 0.5 | Mar 13 2009 ==
+== Plush 3.0 for SABnzbd+ 0.5 | Mar 15 2009 ==
 
 ============
 ASSEMBLED BY
@@ -112,7 +112,7 @@ templates/static/images/plush-default/config/*.png
 ...with the exception of config/rss.png which comes from http://feedicons.com/
 
 All other imagery provided by injectx and real_scud; thank you both for the skin.
-...with the exceptions of shadow.png and arrows-ffffff.png which come from http://users.tpg.com.au/j_birch/plugins/superfish
+...with the exceptions of shadow.png and arrows-ffffff.png which are part of the jQuery Superfish plugin -- See LICENSE-MIT & LICENSE-GPL
 
 =======
 CONTACT
