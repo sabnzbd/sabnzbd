@@ -2766,6 +2766,7 @@ def json_qstatus():
         "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
         "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
         "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()),
+        "loadavg" : loadavg(),
         "jobs" : jobs
     }
     status_str= JsonWriter().write(status)
@@ -2802,6 +2803,7 @@ def xml_qstatus():
         "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
         "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
         "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()),
+        "loadavg" : loadavg(),
         "jobs" : jobs
     }
 
