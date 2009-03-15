@@ -23,11 +23,13 @@ import os
 import logging
 import re
 
-
 import sabnzbd
-from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename
+from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename, get_ext
 from sabnzbd.constants import series_match, date_match, year_match
 import sabnzbd.cfg as cfg
+
+# Do not rename .vob files as they are usually DVD's
+EXCLUDED_FILE_EXTS = ['.vob']
 
 replace_prev = {'\\':'/'}
 replace_after = {
@@ -266,6 +268,9 @@ class SeriesSorter:
         path = path.replace('%sn', self.show_info['show_name'])
         path = path.replace('%s.n', self.show_info['show_name_two'])
         path = path.replace('%s_n', self.show_info['show_name_three'])
+        
+        # If no descriptions were found we need to replace %en and eat up surrounding characters
+        path = removeDescription(path, '%e[\._]?n')
 
         # Replace season number
         path = path.replace('%s', self.show_info['season_num'])
@@ -277,7 +282,7 @@ class SeriesSorter:
             path = path.replace('%e.n', self.show_info['ep_name_two'])
             path = path.replace('%e_n', self.show_info['ep_name_three'])
 
-        # Replace season number
+        # Replace episode number
         path = path.replace('%e', self.show_info['episode_num'])
         path = path.replace('%0e', self.show_info['episode_num_alt'])
 
@@ -287,9 +292,6 @@ class SeriesSorter:
 
         # Lowercase all characters encased in {}
         path = toLowercase(path)
-
-        # If no descriptions were found we need to replace %en and eat up surrounding characters
-        path = removeDescription(path, '%e[\._]?n')
 
         # Split the last part of the path up for the renamer
         if extension:
@@ -314,23 +316,23 @@ class SeriesSorter:
                 filepath = file.replace('_UNPACK_', '')
             else:
                 filepath = os.path.join(current_path, file)
+                
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
-                if size > 130000000:
-                    if 'sample' not in file:
-                        tmp, ext = os.path.splitext(file)
-                        newname = "%s%s" % (self.filename_set,ext)
-                        newname = newname.replace('%fn',tmp)
-                        newpath = os.path.join(current_path, newname)
-                        if not os.path.exists(newpath):
-                            try:
-                                logging.debug("Rename: %s to %s", filepath,newpath)
-                                os.rename(filepath,newpath)
-                            except:
-                                logging.error("Failed to rename: %s to %s", current_path, newpath)
-                                logging.debug("Traceback: ", exc_info = True)
-                            rename_similar(current_path, file, self.filename_set)
-                            break
+                if size > 130000000 and 'sample' not in file and get_ext(file) not in EXCLUDED_FILE_EXTS:
+                    tmp, ext = os.path.splitext(file)
+                    newname = "%s%s" % (self.filename_set,ext)
+                    newname = newname.replace('%fn',tmp)
+                    newpath = os.path.join(current_path, newname)
+                    if not os.path.exists(newpath):
+                        try:
+                            logging.debug("Rename: %s to %s", filepath,newpath)
+                            os.rename(filepath,newpath)
+                        except:
+                            logging.error("Failed to rename: %s to %s", current_path, newpath)
+                            logging.debug("Traceback: ", exc_info = True)
+                        rename_similar(current_path, file, self.filename_set)
+                        break
 
 
 def check_for_sequence(regex, files):
@@ -516,9 +518,9 @@ class GenericSorter:
                 filepath = os.path.join(current_path, _file)
             if os.path.exists(filepath):
                 size = os.stat(filepath).st_size
-                if size > 314572800:
-                    if 'sample' not in _file:
-                        return True
+                if size > 314572800 and 'sample' not in _file \
+                   and get_ext(_file) not in EXCLUDED_FILE_EXTS:
+                    return True
             return False
 
         renamed = False
