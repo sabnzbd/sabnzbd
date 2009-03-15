@@ -337,8 +337,11 @@ class Downloader(Thread):
         while 1:
             for server in self.servers:
                 for nw in server.busy_threads[:]:
-                    if nw.timeout and time.time() > nw.timeout:
-                        self.__reset_nw(nw, "timed out")
+                    if nw.nntp.error_msg or (nw.timeout and time.time() > nw.timeout):
+                        if nw.nntp.error_msg:
+                            self.__reset_nw(nw, "", warn=False)
+                        else:
+                            self.__reset_nw(nw, "timed out")
 
                 if server.restart:
                     if not server.busy_threads:
@@ -597,6 +600,7 @@ class Downloader(Thread):
 
         if nw.nntp:
             fileno = nw.nntp.sock.fileno()
+            nw.nntp.error_msg = None
 
         if warn and errormsg:
             logging.warning('Thread %s@%s:%s: ' + errormsg,

@@ -76,7 +76,11 @@ def con(sock, host, port, sslenabled, nntp):
                     select.select([sock], [], [], 1.0)
     except socket.error, e:
         try:
-            (_errno, strerror) = e
+            if isinstance(e, tuple):
+                (_errno, strerror) = e
+            else:
+                (_errno, strerror) = (errno.ETIMEDOUT, str(e))
+                e = (_errno, strerror)
             #expected, do nothing
             if _errno == errno.EINPROGRESS:
                 pass
@@ -92,6 +96,7 @@ class NNTP:
         self.port = port
         self.nntp = nntp
         self.blocking = block
+        self.error_msg = None
         res= GetServerParms(self.host, self.port)
         if not res:
             raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
@@ -141,8 +146,9 @@ class NNTP:
             error = 'This server does not allow SSL on this port'
         msg = "Failed to connect: %s" % (str(error))
         msg = "%s %s@%s:%s" % (msg, self.nntp.thrdnum, self.host, self.port)
+        self.error_msg = msg
         if self.blocking:
-            raise socket.error(msg)
+            raise socket.error(errno.ECONNREFUSED, msg)
         else:
             logging.error(msg)
 
