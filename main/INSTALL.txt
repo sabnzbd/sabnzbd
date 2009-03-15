@@ -63,10 +63,13 @@ Essential modules
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
                             http://chuchusoft.com/par2_tbb/index.html (multi-core)
 
+Essential modules for python 2.4 ONLY
+    pysqlite3 >= 2.3.4      http://pysqlite.org (python-pysqlite2)
+
 Optional modules
     unrar >= 3.70           http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
-    pyopenssl => 0.8        http://sourceforge.net/projects/pyopenssl/
+    pyopenssl >= 0.6        http://sourceforge.net/projects/pyopenssl/
 
 Unix/Linux/OSX (source)
     openssl => v0.9.8g      http://www.openssl.org/
