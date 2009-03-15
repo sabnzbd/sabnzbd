@@ -50,7 +50,7 @@ try:
     from sqlite3 import version as sqlite3_version
 except:
     try:
-        from pysqlite2.sqlite3 import version as sqlite3_version
+        from pysqlite2.dbapi2 import version as sqlite3_version
     except:
         print "Sorry, requires Python module sqlite3 (pysqlite2 in python2.4)"
         if os.name != 'nt':
