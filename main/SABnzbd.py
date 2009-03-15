@@ -18,7 +18,7 @@
 import sys
 if sys.version_info < (2,4):
     print "Sorry, requires Python 2.4 or higher."
-    exit(1)
+    sys.exit(1)
 
 import logging
 import logging.handlers
@@ -36,12 +36,12 @@ try:
         raise ValueError
 except:
     print "Sorry, requires Python module Cheetah 2.0rc7 or higher."
-    exit(1)
+    sys.exit(1)
 
 import cherrypy
 if not cherrypy.__version__.startswith("3.2"):
     print "Sorry, requires Python module Cherrypy 3.2 (use the included version)"
-    exit(1)
+    sys.exit(1)
 
 from cherrypy import _cpserver
 from cherrypy import _cpwsgi_server
@@ -55,7 +55,7 @@ except:
         print "Sorry, requires Python module sqlite3 (pysqlite2 in python2.4)"
         if os.name != 'nt':
             print "Try: apt-get install python-pysqlite2"
-        exit(1)
+        sys.exit(1)
 
 import sabnzbd
 from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
@@ -83,7 +83,7 @@ try:
 except ImportError:
     if sabnzbd.WIN32:
         print "Sorry, requires Python module PyWin32."
-        exit(1)
+        sys.exit(1)
 
 
 def guard_loglevel():
@@ -99,7 +99,14 @@ class FilterCP3:
     def __init__(self):
         pass
     def filter(self, record):
-        return not (record.module == '_cplogging' and record.funcName == 'access')
+        _cplogging = record.module == '_cplogging'
+        # Python2.4 fix
+        # record has no attribute called funcName under python 2.4
+        if hasattr(record, 'funcName'):
+            access = record.funcName == 'access'
+        else:
+            access = True
+        return not (_cplogging and access)
 
 
 class guiHandler(logging.Handler):
@@ -1040,10 +1047,13 @@ def main():
                 sabnzbd.halt()
                 ExitSab(2)
         else:
+	    logging.debug("Failed to start web-interface: ", exc_info = True)
             Bail_Out(browserhost, cherryport)
     except socket.error, error:
+	logging.debug("Failed to start web-interface: ", exc_info = True)
         Bail_Out(browserhost, cherryport, access=True)
     except:
+	logging.debug("Failed to start web-interface: ", exc_info = True)
         Bail_Out(browserhost, cherryport)
 
     # Wait for server to become ready
