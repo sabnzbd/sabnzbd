@@ -375,7 +375,7 @@ class ConfigServer:
         return 'servers', self.__name
 
 
-class ConfigCat():
+class ConfigCat:
     """ Class defining a single category """
     def __init__(self, name, values):
         self.__name = name
