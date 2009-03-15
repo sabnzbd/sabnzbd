@@ -1,30 +1,9 @@
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 This copyright and license notice covers the following images in the
 directory templates/static/images:
-    hv_join.png
-    hv_par2.png
-    hv_unrar.png
-    hv_unzip.png
-    icon_config_close.png
-    icon_config_connections.png
-    icon_config_directories.png
-    icon_config_disconnect.png
-    icon_config_email.png
-    icon_config_general.png
-    icon_config_help.png
-    icon_config_rss.png
-    icon_config_scheduling.png
-    icon_config_servers.png
-    icon_config_switches.png
-    icon_config_test_email.png
-    nzo_bottom.png
-    nzo_delete.png
-    nzo_down.png
-    nzo_reload.png
-    nzo_top.png
-    nzo_up.png
-    o_sidebyside.png
-    o_topbottom.png
+    kgpg.png
+    messagebox_critical.png
+    browser.png
 
 Note the license notice contains an add-on.
 ************************************************************************
