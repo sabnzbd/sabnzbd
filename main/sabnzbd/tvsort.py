@@ -269,9 +269,6 @@ class SeriesSorter:
         path = path.replace('%s.n', self.show_info['show_name_two'])
         path = path.replace('%s_n', self.show_info['show_name_three'])
         
-        # If no descriptions were found we need to replace %en and eat up surrounding characters
-        path = removeDescription(path, '%e[\._]?n')
-
         # Replace season number
         path = path.replace('%s', self.show_info['season_num'])
         path = path.replace('%0s', self.show_info['season_num_alt'])
@@ -281,6 +278,9 @@ class SeriesSorter:
             path = path.replace('%en', self.show_info['ep_name'])
             path = path.replace('%e.n', self.show_info['ep_name_two'])
             path = path.replace('%e_n', self.show_info['ep_name_three'])
+            
+        # If no descriptions were found we need to replace %en and eat up surrounding characters
+        path = removeDescription(path, '%e[\._]?n')
 
         # Replace episode number
         path = path.replace('%e', self.show_info['episode_num'])
