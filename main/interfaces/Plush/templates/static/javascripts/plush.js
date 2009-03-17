@@ -566,7 +566,7 @@ jQuery(function($) { // safely invoke $ selector
 			$(window).bind('resize', function() {
 				$('.sf-menu, .sf-navbar').attr('style','margin-left:'+ ($(window).width()/2-250) +'px;');
 			});
-			if ($.browser.mozilla) $('.sf-navbar input').attr('style','margin: -2px;');
+			if ($.browser.mozilla) $('.sf-navbar input').attr('style','margin: -4px 0px;');
 			else if ($.browser.safari) $('.sf-navbar input').attr('style','margin: -1px 0px 0px -1px;');
 
 			
