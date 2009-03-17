@@ -1,6 +1,6 @@
 
 ==============================================
-== Plush 3.0 for SABnzbd+ 0.5 | Mar 15 2009 ==
+== Plush 3.0 for SABnzbd+ 0.5 | Mar 16 2009 ==
 
 ============
 ASSEMBLED BY
@@ -12,7 +12,7 @@ SPECIAL THANKS
 
 switch for the API and so many new features
 shypike for making this all happen
-inpheaux for the Config concept/assembly and SABnzbd+ logo
+inpheaux for the Config concept/assembly, main menu styling, SABnzbd+ logo, & favicon
 injectx for the initial layout concept, design and imagery
 real_scud for building out the initial HTML/CSS layout
 sbultez for creating numerous history verbosity icons

@@ -477,7 +477,7 @@ tr:hover .history_added  {
 
     MAIN MENU -- courtesy of jquery superfish plugin
     See LICENSE-MIT & LICENSE-GPL
-    with modifications by pairofdimes
+    with modifications by pairofdimes & inpheaux
 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
@@ -627,9 +627,7 @@ li.sfHover > a > .sf-sub-indicator {
 .sf-navbar {
     background:        #B1B1B1;
     height:            2.5em;
-    padding-bottom:    1.4em;
     position:        relative;
-margin-left:38px;
 }
 .sf-navbar li {
     background:        #B1B1B1;
