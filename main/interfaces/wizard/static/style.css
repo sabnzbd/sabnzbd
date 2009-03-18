@@ -207,3 +207,15 @@ h1,h2 {
     height:16px;
     display:inline;
 }
+
+.skin-select {
+    height:190px;
+}
+
+.skin-select img{
+    cursor: pointer;
+}
+
+.skin-select-plush img{
+    margin-top:30px;
+}
