@@ -368,7 +368,11 @@ class Bookmarks:
 
         if rcode == '200':
             if delete:
-                self.bookmarks.remove(delete)
+                if data.startswith('1'):
+                    logging.info('Deleted newzbin bookmark %s', msgid)
+                    self.bookmarks.remove(delete)
+                else:
+                    logging.warning('Could not delete newzbin bookmark %s', msgid)
             else:
                 for line in data.split('\n'):
                     try:
