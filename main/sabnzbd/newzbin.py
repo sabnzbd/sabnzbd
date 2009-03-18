@@ -322,7 +322,7 @@ class Bookmarks:
                 conn = httplib.HTTPConnection('www.newzbin.com')
 
             if delete:
-                logging.info('Deleting Newzbin bookmark %s', delete)
+                logging.debug('Trying to delete Newzbin bookmark %s', delete)
                 postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'delete', \
                              'reportids' : delete }
             else:
@@ -369,10 +369,10 @@ class Bookmarks:
         if rcode == '200':
             if delete:
                 if data.startswith('1'):
-                    logging.info('Deleted newzbin bookmark %s', msgid)
+                    logging.info('Deleted newzbin bookmark %s', delete)
                     self.bookmarks.remove(delete)
                 else:
-                    logging.warning('Could not delete newzbin bookmark %s', msgid)
+                    logging.warning('Could not delete newzbin bookmark %s', delete)
             else:
                 for line in data.split('\n'):
                     try:
@@ -393,6 +393,6 @@ class Bookmarks:
         return self.bookmarks
 
     def del_bookmark(self, msgid):
-        logging.debug('Try delete newzbin bookmark %s', msgid)
+        msgid = str(msgid)
         if msgid in self.bookmarks:
             self.run(msgid)
