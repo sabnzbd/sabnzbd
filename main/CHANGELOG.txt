@@ -1,4 +1,16 @@
 -------------------------------------------------------------------------------
+0.5.0Alpha2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+* Fixed failing delete-bookmark-on-newzbin feature.
+* Wizard improvements
+* Plush improvements
+* par2 for OSX replaced
+* Added penalty timeout for unresponsive servers (when flagged as "optional").
+* Fixed some incompatibilities with Python 2.4 and 2.6
+* TV sorting improved
+* Support for :: or [::] as valid hostnames. :: listens on all ipv6 addresses.
+* Allow non-conforming RSS feeds (fixes nzbmatrix.com issue)
+-------------------------------------------------------------------------------
 0.5.0Alpha1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Core Stuff:
