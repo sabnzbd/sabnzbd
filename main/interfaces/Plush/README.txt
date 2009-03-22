@@ -73,7 +73,7 @@ See LICENSE-MIT & LICENSE-GPL
 
 jQuery Table Drag & Drop
 http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin
-Copyright (c) 1998-2008 Isocra Consulting Ltd.
+Copyright (c) 2008 Denis Howlett
 See LICENSE-MIT & LICENSE-GPL
 
 jQuery Tooltip
