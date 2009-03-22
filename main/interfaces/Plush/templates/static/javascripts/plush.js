@@ -511,7 +511,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Fetch NZB by URL/Newzbin Report ID
 			$('#addID').click(function(){ // also works when hitting enter because of <form>
-				if ($('#addID_input').val()!='enter URL / Newzbin ID') {
+				if ($('#addID_input').val()!='enter URL') {
 					$.ajax({
 						type: "POST",
 						url: "tapi",
@@ -522,13 +522,13 @@ jQuery(function($) { // safely invoke $ selector
 				}
 				return false; // aborts <form> submission
 			});
-			$('#addID_input').val('enter URL / Newzbin ID')
+			$('#addID_input').val('enter URL')
 			.focus( function(){
-				if ($(this).val()=="enter URL / Newzbin ID")
+				if ($(this).val()=="enter URL")
 					$(this).val('');
 			}).blur( function(){
 				if (!$(this).val())
-					$(this).val('enter URL / Newzbin ID');
+					$(this).val('enter URL');
 			});
 
 			// Upload NZB ajax with webtoolkit
