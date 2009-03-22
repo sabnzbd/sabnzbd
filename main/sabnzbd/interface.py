@@ -868,7 +868,7 @@ class Wizard:
         # Access_url is used to provide the user a link to sabnzbd depending on the host
         access_uri = 'localhost'
         cherryhost = cfg.CHERRYHOST.get()
-        
+
         if cherryhost == '0.0.0.0':
             import socket
             host = socket.gethostname()
@@ -886,7 +886,7 @@ class Wizard:
                 socks.insert(0, host)
             else:
                 socks.insert(0, 'localhost')
-            
+
         elif cherryhost == '::':
             import socket
             host = socket.gethostname()
@@ -897,7 +897,7 @@ class Wizard:
                 address = addr[4][0]
                 # Only ipv6 addresses will work
                 if ':' in address:
-                    address = '[%s]' % address 
+                    address = '[%s]' % address
                     socks.append(address)
             if cherrypy.request.headers.has_key('host'):
                 host = cherrypy.request.headers['host']
@@ -905,13 +905,13 @@ class Wizard:
                 socks.insert(0, host)
             else:
                 socks.insert(0, 'localhost')
-            
+
         elif not cherryhost:
             import socket
             socks = [socket.gethostname()]
         else:
             socks = [cherryhost]
-            
+
         info['urls'] = []
         for sock in socks:
             if sock:
@@ -1798,7 +1798,6 @@ class ConfigRss:
         pick_cat = conf['cat_list'] != []
 
         rss = {}
-        unum = 1
         feeds = config.get_rss()
         for feed in feeds:
             rss[feed] = feeds[feed].get_dict()
@@ -1809,8 +1808,12 @@ class ConfigRss:
             rss[feed]['pick_cat'] = pick_cat
             rss[feed]['pick_script'] = pick_script
 
-            unum += 1
         conf['rss'] = rss
+
+        # Find a unique new Feed name
+        unum = 1
+        while 'Feed'+str(unum) in feeds:
+            unum += 1
         conf['feed'] = 'Feed' + str(unum)
 
         template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
@@ -2956,7 +2959,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
 
     # Grab any items that are active or queued in postproc
     queue = postproc.history_queue()
-    
+
     # Filter out any items that don't match the search
     if search:
         queue = [nzo for nzo in queue if matches_search(nzo.get_original_dirname(), search)]
