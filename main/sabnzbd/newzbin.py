@@ -122,6 +122,23 @@ def grab(msgid, future_nzo):
 # DirectNZB support
 ################################################################################
 
+_gFailures = 0
+def _warn_user(msg):
+    """ Warn user if too many soft newzbin errors occurred
+    """
+    global _gFailures
+    _gFailures += 1
+    if _gFailures > 5:
+        logging.warning(msg)
+        _gFailures = 0
+    else:
+        logging.debug(msg)
+
+def _access_ok():
+    global _gFailures
+    _gFailures = 0
+
+
 class MSGIDGrabber(Thread):
     """ Thread for msgid-grabber queue """
     def __init__(self):
@@ -216,7 +233,7 @@ def _grabnzb(msgid):
         conn.request('POST', fetchurl, postdata, headers)
         response = conn.getresponse()
     except:
-        logging.warning('Problem accessing Newzbin server, wait 5 min.')
+        _warn_user('Problem accessing Newzbin server, wait 5 min.')
         return retry
 
     # Save debug info if we have to
@@ -247,6 +264,12 @@ def _grabnzb(msgid):
     # 500 = Internal Server Error, please report to Administrator
     # 503 = Service Unavailable, site is currently down
 
+    if rcode in ('500', '503'):
+        _warn_user('Newzbin has a server problem (%s, %s), wait 5 min.' % (rcode, rtext))
+        return retry
+
+    _access_ok()
+
     if rcode == '450':
         wait_re = re.compile('wait (\d+) seconds')
         try:
@@ -269,10 +292,6 @@ def _grabnzb(msgid):
     if rcode in ('400', '404'):
         logging.error("Newzbin report %s not found", msgid)
         return nothing
-
-    if rcode in ('500', '503'):
-        logging.warning('Newzbin has a server problem (%s, %s), wait 5 min.', rcode, rtext)
-        return retry
 
     if rcode != '200':
         logging.error('Newzbin gives undocumented error code (%s, %s)', rcode, rtext)
@@ -336,7 +355,7 @@ class Bookmarks:
             conn.request('POST', fetchurl, postdata, headers)
             response = conn.getresponse()
         except:
-            logging.warning('Problem accessing Newzbin server.')
+            _warn_user('Problem accessing Newzbin server.')
             return
 
         data = response.read()
@@ -355,6 +374,9 @@ class Bookmarks:
         # 500 = Internal Server Error, please report to Administrator
         # 503 = Service Unavailable, site is currently down
 
+        if rcode not in ('500', '503'):
+            _access_ok()
+
         if rcode == '204':
             logging.debug("No bookmarks set")
         elif rcode in ('401', '403'):
@@ -362,11 +384,8 @@ class Bookmarks:
         elif rcode in ('402'):
             logging.warning("You have no credit on your Newzbin account")
         elif rcode in ('500', '503'):
-            logging.warning('Newzbin has a server problem (%s).', rcode)
-        elif rcode != '200':
-            logging.error('Newzbin gives undocumented error code (%s)', rcode)
-
-        if rcode == '200':
+            _warn_user('Newzbin has a server problem (%s).' % rcode)
+        elif rcode == '200':
             if delete:
                 if data.startswith('1'):
                     logging.info('Deleted newzbin bookmark %s', delete)
@@ -383,6 +402,9 @@ class Bookmarks:
                         self.bookmarks.append(msgid)
                         logging.info("Found new bookmarked msgid %s (%s)", msgid, text)
                         sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.DIRSCAN_PRIORITY.get())
+        else:
+            logging.error('Newzbin gives undocumented error code (%s)', rcode)
+
         self.__busy = False
 
     @synchronized(BOOK_LOCK)
