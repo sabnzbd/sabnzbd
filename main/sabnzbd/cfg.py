@@ -65,7 +65,7 @@ EMAIL_ACCOUNT= OptionStr('misc', 'email_account')
 EMAIL_PWD    = OptionPassword('misc', 'email_pwd')
 EMAIL_ENDJOB = OptionNumber('misc', 'email_endjob', 0, 0, 2)
 EMAIL_FULL   = OptionBool('misc', 'email_full', False)
-EMAIL_DIR    = OptionDir('misc', 'email_dir', create=False, validate_dir_exists)
+EMAIL_DIR    = OptionDir('misc', 'email_dir', create=False, validation=validate_dir_exists)
 
 DIRSCAN_PP = OptionNumber('misc', 'dirscan_opts', 3, 0, 3)
 VERSION_CHECK = OptionBool('misc', 'check_new_rel', True)
