@@ -41,7 +41,8 @@ from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, loadavg, \
-     to_units, from_units, SameFile, diskfree, disktotal, get_ext, get_filename
+     to_units, from_units, SameFile, diskfree, disktotal, get_ext,\
+     get_filename, Cat2Opts
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
 from sabnzbd.codecs import TRANS, xml_name
@@ -537,13 +538,7 @@ class MainPage:
                 if cat == 'None':
                     cat = None
                 nzbqueue.change_cat(nzo_id, cat)
-                item = config.get_config('categories', cat)
-                if item:
-                    script = item.script.get()
-                    pp = item.pp.get()
-                else:
-                    script = cfg.DIRSCAN_SCRIPT.get()
-                    pp = cfg.DIRSCAN_PP.get()
+                cat, pp, script = Cat2Opts(cat, None, None)
 
                 nzbqueue.change_script(nzo_id, script)
                 nzbqueue.change_opts(nzo_id, pp)
