@@ -187,6 +187,7 @@ class OptionDir(Option):
         """
         error = None
         if value != None and value != self.get():
+            value = value.strip()
             if self.__validation:
                 error, val = self.__validation(self.__root, value)
             if not error:
@@ -835,7 +836,7 @@ def validate_no_unc(root, value):
     if value and not value.startswith(r'\\'):
         return None, value
     else:
-        return 'UNC path %s not allowed here' % value, None
+        return 'UNC path "%s" not allowed here' % value, None
 
 
 def validate_safedir(root, value):
@@ -844,3 +845,12 @@ def validate_safedir(root, value):
         return validate_no_unc(root, value)
     else:
         return 'Error: Queue not empty, cannot change folder.', None
+
+
+def validate_dir_exists(root, value):
+    """ Check if directory exists """
+    p = sabnzbd.misc.real_path(root, value)
+    if os.path.exists(p):
+        return None, value
+    else:
+        return 'Folder "%s" does not exist' % p, None

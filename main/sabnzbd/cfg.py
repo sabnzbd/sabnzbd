@@ -24,7 +24,7 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
-                           validate_octal, validate_safedir
+                           validate_octal, validate_safedir, validate_dir_exists
 
 #------------------------------------------------------------------------------
 # Email validation support
@@ -125,7 +125,7 @@ UMASK = OptionStr('misc', 'permissions', '', validation=validate_octal)
 DOWNLOAD_DIR = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=validate_safedir)
 DOWNLOAD_FREE = OptionStr('misc', 'download_free')
 COMPLETE_DIR = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, apply_umask=True)
-SCRIPT_DIR = OptionDir('misc', 'script_dir', create=False)
+SCRIPT_DIR = OptionDir('misc', 'script_dir', create=False, validation=validate_dir_exists)
 NZB_BACKUP_DIR = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
 CACHE_DIR = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
 ADMIN_DIR = OptionDir('misc', 'admin_dir', 'admin', validation=validate_safedir)
