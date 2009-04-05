@@ -19,7 +19,7 @@ Credits
 Javascript library - Mochikit http://www.mochikit.com/
 Javascript canvas library - Plotkit http://www.liquidx.net/plotkit/
 Canvas IE support - Excanvas http://sourceforge.net/projects/excanvas/
-Crystal delete icon - http://www.everaldo.com/crystal/?action=license
+Silk icons - http://www.famfamfam.com/lab/icons/silk/
 
 
 Changelog 
