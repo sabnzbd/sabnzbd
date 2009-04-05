@@ -138,20 +138,16 @@ def Raiser(root, **kwargs):
 
 
 def queueRaiser(root, kwargs):
-    args = {}
-    for key in ('start', 'limit', 'search', '_dc'):
-        val = kwargs.get(key)
-        if val:
-            args[key] = val
-    root = '%s?%s' % (root, urllib.urlencode(args))
-    return cherrypy.HTTPRedirect(root)
+    return Raiser(root, start=kwargs.get('start'),
+                        limit=kwargs.get('limit'),
+                        search=kwargs.get('search'),
+                        _dc=kwargs.get('_dc'))
 
 def dcRaiser(root, kwargs):
-    if '_dc' in kwargs:
-        return Raiser(root, _dc=kwargs['_dc'])
-    else:
-        return Raiser(root)
+    return Raiser(root, _dc=kwargs.get('_dc'))
 
+
+#------------------------------------------------------------------------------
 def IntConv(value):
     """Safe conversion to int"""
     try:
@@ -214,24 +210,22 @@ def set_auth(conf):
 def check_session(kwargs):
     """ Check session key """
     key = kwargs.get('session')
-    ####TEMPORARY
-    return None
-    ####
-    if key == sabnzbd.API_KEY:
-        msg = None
-    elif not key:
-        msg = 'error: Session Key Required'
-    else:
-        msg = 'error: Session Key Incorrect'
+    msg = None
+    if not key:
+        #logging.warning('Missing Session key')
+        #msg = 'error: Session Key Required'
+        pass
+    elif key != sabnzbd.API_KEY:
+        #logging.warning('Incorrect Session key')
+        #msg = 'error: Session Key Incorrect'
+        pass
     return msg
 
 
 def check_apikey(kwargs):
     """ Check api key """
     if cfg.USERNAME.get() and cfg.PASSWORD.get():
-        ma_username = kwargs.get('ma_username')
-        ma_password = kwargs.get('ma_password')
-        if ma_password == cfg.PASSWORD.get() and ma_username == cfg.USERNAME.get():
+        if kwargs.get('ma_username') == cfg.PASSWORD.get() and kwargs.get('ma_password') == cfg.USERNAME.get():
             return None
         else:
             logging.warning("Authentication missing, please enter username/password from Config->General "
