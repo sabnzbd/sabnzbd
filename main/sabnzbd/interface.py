@@ -128,11 +128,22 @@ def ConvertSpecials(p):
 
 
 def Raiser(root, **kwargs):
-    args_copy = kwargs.copy()
-    for key, value in args_copy.iteritems():
-        if value == None:
-            kwargs.pop(key)
-    root = '%s?%s' % (root, urllib.urlencode(kwargs))
+    args = {}
+    for key in kwargs:
+        val = kwargs.get(key)
+        if val:
+            args[key] = val
+    root = '%s?%s' % (root, urllib.urlencode(args))
+    return cherrypy.HTTPRedirect(root)
+
+
+def queueRaiser(root, kwargs):
+    args = {}
+    for key in ('start', 'limit', 'search', '_dc'):
+        val = kwargs.get(key)
+        if val:
+            args[key] = val
+    root = '%s?%s' % (root, urllib.urlencode(args))
     return cherrypy.HTTPRedirect(root)
 
 def dcRaiser(root, kwargs):
@@ -200,6 +211,47 @@ def set_auth(conf):
         conf.update({'tools.basic_auth.on':False})
 
 
+def check_session(kwargs):
+    """ Check session key """
+    key = kwargs.get('session')
+    ####TEMPORARY
+    return None
+    ####
+    if key == sabnzbd.API_KEY:
+        msg = None
+    elif not key:
+        msg = 'error: Session Key Required'
+    else:
+        msg = 'error: Session Key Incorrect'
+    return msg
+
+
+def check_apikey(kwargs):
+    """ Check api key """
+    if cfg.USERNAME.get() and cfg.PASSWORD.get():
+        ma_username = kwargs.get('ma_username')
+        ma_password = kwargs.get('ma_password')
+        if ma_password == cfg.PASSWORD.get() and ma_username == cfg.USERNAME.get():
+            return None
+        else:
+            logging.warning("Authentication missing, please enter username/password from Config->General "
+                            "into your 3rd party program:")
+            return "error: Missing authentication"
+
+    key = kwargs.get('apikey')
+    ####TEMPORARY
+    return None
+    ####
+    if not key:
+        logging.warning("API Key missing, please enter the api key from Config->General "
+                        "into your 3rd party program:")
+        return 'error: API Key Required'
+    elif key != sabnzbd.API_KEY:
+        logging.warning("API Key incorrect, Use the api key from Config->General "
+                        "in your 3rd party program:")
+        return 'error: API Key Incorrect'
+    else:
+        return None
 
 #------------------------------------------------------------------------------
 class NoPage:
@@ -230,9 +282,8 @@ class MainPage:
 
 
     @cherrypy.expose
-    def index(self, _dc=None, skip_wizard=False):
-        # IMPORTANT: Remove the 'not' when done testing
-        if skip_wizard or config.get_servers():
+    def index(self, **kwargs):
+        if kwargs.get('skip_wizard') or config.get_servers():
             info, pnfo_list, bytespersec = build_header(self.__prim)
 
             if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get_stars():
@@ -257,8 +308,16 @@ class MainPage:
             raise cherrypy.HTTPRedirect('/wizard/')
 
 
-    @cherrypy.expose
-    def addID(self, id = None, pp=None, script=None, cat=None, redirect = None, priority=NORMAL_PRIORITY):
+    def add_handler(self, kwargs):
+        id = kwargs.get('id', '')
+        if not id:
+            id = kwargs.get('url', '')
+        pp = kwargs.get('pp')
+        script = kwargs.get('script')
+        cat = kwargs.get('cat')
+        priority =  kwargs.get('priority', NORMAL_PRIORITY)
+        redirect = kwargs.get('redirect')
+
         RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
         newzbin_url = RE_NEWZBIN_URL.search(id.lower())
 
@@ -275,67 +334,76 @@ class MainPage:
 
 
     @cherrypy.expose
-    def addURL(self, url = None, pp=None, script=None, cat=None, redirect = None, priority=NORMAL_PRIORITY):
-        url = Strip(url)
-        if url and (url.isdigit() or len(url)==5):
-            sabnzbd.add_msgid(url, pp, script, cat, priority)
-        elif url:
-            sabnzbd.add_url(url, pp, script, cat, priority)
-        if not redirect:
-            redirect = self.__root
-        raise cherrypy.HTTPRedirect(redirect)
+    def addID(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        raise self.add_handler(kwargs)
 
 
     @cherrypy.expose
-    def addFile(self, nzbfile, pp=None, script=None, cat=None, _dc = None, priority=NORMAL_PRIORITY):
-        if nzbfile.filename and nzbfile.value:
-            sabnzbd.add_nzbfile(nzbfile, pp, script, cat, priority)
-        raise Raiser(self.__root, _dc=_dc)
+    def addURL(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        raise self.add_handler(kwargs)
+
 
     @cherrypy.expose
-    def shutdown(self, _dc=None):
-        yield "Initiating shutdown..."
-        sabnzbd.halt()
-        yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+    def addFile(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        nzbfile = kwargs.get('nzbfile')
+        if nzbfile != None and nzbfile.filename and nzbfile.value:
+            sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
+                                kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def pause(self, _dc = None):
+    def shutdown(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg:
+            yield msg
+        else:
+            yield "Initiating shutdown..."
+            sabnzbd.halt()
+            yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
+            cherrypy.engine.exit()
+            sabnzbd.SABSTOP = True
+
+    @cherrypy.expose
+    def pause(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
         scheduler.plan_resume(0)
         downloader.pause_downloader()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def resume(self, _dc = None):
+    def resume(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
         scheduler.plan_resume(0)
         downloader.resume_downloader()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def debug(self):
-        return '''cache_limit: %s<br>
-               cache_size: %s<br>
-               downloaded_items: %s<br>
-               nzo_list: %s<br>
-               article_list: %s<br>
-               nzo_table: %s<br>
-               nzf_table: %s<br>
-               article_table: %s<br>
-               try_list: %s''' % nzbqueue.debug()
+    def rss(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
 
-    @cherrypy.expose
-    def rss(self, mode='history', limit=50, search=None):
-        url = cherrypy.url()
-        if mode == 'history':
-            return rss_history(url, limit=limit, search=search)
-        elif mode == 'warnings':
+        if kwargs.get('mode') == 'history':
+            return rss_history(cherrypy.url(), limit=kwargs.get('limit',50), search=kwargs.get('search'))
+        elif kwargs.get('mode') == 'warnings':
             return rss_warnings()
 
     @cherrypy.expose
     def tapi(self, **kwargs):
         """Handler for API over http, for template use
         """
+        msg = check_session(kwargs)
+        if msg: return msg
         return self.api_handler(kwargs)
     # Fix to allow flash nzb uploads (see http://www.cherrypy.org/ticket/648)
     tapi._cp_config = {'tools.safe_multipart.on': True}
@@ -344,12 +412,8 @@ class MainPage:
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        if cfg.USERNAME.get() and cfg.PASSWORD.get():
-            ma_username = kwargs.get('ma_username')
-            ma_password = kwargs.get('ma_password')
-            if not (ma_password == cfg.PASSWORD.get() and ma_username == cfg.USERNAME.get()):
-                return "Missing authentication"
-
+        msg = check_apikey(kwargs)
+        if msg: return msg
         return self.api_handler(kwargs)
     # flash upload fix (see above)
     api._cp_config = {'tools.safe_multipart.on': True}
@@ -711,18 +775,30 @@ class MainPage:
         return 'not implemented\n'
 
     @cherrypy.expose
-    def scriptlog(self, name=None, _dc=None):
+    def scriptlog(self, **kwargs):
         """ Duplicate of scriptlog of History, needed for some skins """
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        name = kwargs.get('name')
         if name:
             history_db = cherrypy.thread_data.history_db
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
-            raise Raiser(self.__root, _dc=_dc)
+            raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def retry(self, url=None, pp=None, cat=None, script=None, _dc=None):
+    def retry(self, **kwargs):
         """ Duplicate of retry of History, needed for some skins """
-        if url: url = url.strip()
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        url = kwargs.get('url', '')
+        pp = kwargs.get('pp')
+        cat = kwargs.get('cat')
+        script = kwargs.get('script')
+
+        url = url.strip()
         if url and (url.isdigit() or len(url)==5):
             sabnzbd.add_msgid(url, pp, script, cat)
         elif url:
@@ -730,7 +806,7 @@ class MainPage:
         if url:
             return ShowOK(url)
         else:
-            raise Raiser(self.__root, _dc=_dc)
+            raise dcRaiser(self.__root, kwargs)
 
 class Wizard:
     def __init__(self, web_dir, root, prim):
@@ -866,13 +942,13 @@ class Wizard:
         info['num'] = 'Five'
         info['number'] = 5
         info['helpuri'] = 'http://sabnzbd.wikidot.com/'
-        
+
         info['access_url'], info['urls'] = self.get_access_info()
 
         template = Template(file=os.path.join(self.__web_dir, 'five.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
-    
+
     def get_access_info(self):
         ''' Build up a list of url's that sabnzbd can be accessed from '''
         # Access_url is used to provide the user a link to sabnzbd depending on the host
@@ -941,7 +1017,7 @@ class Wizard:
             access_url = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.HTTPS_PORT.get())
         else:
             access_url = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.CHERRYPORT.get())
-            
+
         return access_url, urls
 
     @cherrypy.expose
@@ -985,6 +1061,9 @@ class NzoPage:
         # /nzb/SABnzbd_nzo_xxxxx/files
         # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
         # /nzb/SABnzbd_nzo_xxxxx/save
+
+        msg = check_session(kwargs)
+        if msg: return msg
 
         info, pnfo_list, bytespersec = build_header(self.__prim)
         nzo_id = None
@@ -1138,7 +1217,13 @@ class QueuePage:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None, start=None, limit=None, dummy2=None):
+    def index(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        start = kwargs.get('start')
+        limit = kwargs.get('limit')
+        dummy2 = kwargs.get('dummy2')
 
         info, pnfo_list, bytespersec, self.__verboseList, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verboseList, self.__dict__, start=start, limit=limit, dummy2=dummy2)
 
@@ -1149,66 +1234,98 @@ class QueuePage:
 
 
     @cherrypy.expose
-    def delete(self, uid = None, _dc = None, start=None, limit=None):
+    def delete(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        uid = kwargs.get('uid')
         if uid:
             nzbqueue.remove_nzo(uid, False)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def purge(self, _dc = None, start=None, limit=None):
+    def purge(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         nzbqueue.remove_all_nzo()
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def removeNzf(self, nzo_id = None, nzf_id = None, _dc = None, start=None, limit=None):
+    def removeNzf(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzo_id = kwargs.get('nzo_id')
+        nzf_id = kwargs.get('nzf_id')
         if nzo_id and nzf_id:
             nzbqueue.remove_nzf(nzo_id, nzf_id)
-        raise Raiser(self.__root,  _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def tog_verbose(self, _dc = None, start=None, limit=None):
+    def tog_verbose(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         self.__verbose = not self.__verbose
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def tog_uid_verbose(self, uid, _dc = None, start=None, limit=None):
+    def tog_uid_verbose(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        uid = kwargs.get('uid')
         if self.__verboseList.count(uid):
             self.__verboseList.remove(uid)
         else:
             self.__verboseList.append(uid)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def change_queue_complete_action(self, action = None, _dc = None, start=None, limit=None):
+    def change_queue_complete_action(self, **kwargs):
         """
         Action or script to be performed once the queue has been completed
         Scripts are prefixed with 'script_'
         """
-        sabnzbd.change_queue_complete_action(action)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        msg = check_session(kwargs)
+        if msg: return msg
+        sabnzbd.change_queue_complete_action(kwargs.get('action'))
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def switch(self, uid1 = None, uid2 = None, _dc = None, start=None, limit=None):
+    def switch(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        uid1 = kwargs.get('uid1')
+        uid2 = kwargs.get('uid2')
         if uid1 and uid2:
             nzbqueue.switch(uid1, uid2)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def change_opts(self, nzo_id = None, pp = None, _dc = None, start=None, limit=None):
+    def change_opts(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzo_id = kwargs.get('nzo_id')
+        pp = kwargs.get('pp', '')
         if nzo_id and pp and pp.isdigit():
             nzbqueue.change_opts(nzo_id, int(pp))
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def change_script(self, nzo_id = None, script = None, _dc = None, start=None, limit=None):
+    def change_script(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzo_id = kwargs.get('nzo_id')
+        script = kwargs.get('script', '')
         if nzo_id and script:
             if script == 'None':
                 script = None
             nzbqueue.change_script(nzo_id, script)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def change_cat(self, nzo_id = None, cat = None, _dc = None, start=None, limit=None):
+    def change_cat(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzo_id = kwargs.get('nzo_id')
+        cat = kwargs.get('cat', '')
         if nzo_id and cat:
             if cat == 'None':
                 cat = None
@@ -1224,69 +1341,93 @@ class QueuePage:
             nzbqueue.change_script(nzo_id, script)
             nzbqueue.change_opts(nzo_id, pp)
 
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def shutdown(self):
-        yield "Initiating shutdown..."
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
-        sabnzbd.SABSTOP = True
+    def shutdown(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg:
+            yield msg
+        else:
+            yield "Initiating shutdown..."
+            sabnzbd.halt()
+            cherrypy.engine.exit()
+            yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
+            sabnzbd.SABSTOP = True
 
     @cherrypy.expose
-    def pause(self, _dc = None, start=None, limit=None):
+    def pause(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         scheduler.plan_resume(0)
         downloader.pause_downloader()
-        raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def resume(self, _dc = None, start=None, limit=None):
+    def resume(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         scheduler.plan_resume(0)
         downloader.resume_downloader()
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def pause_nzo(self, uid=None, _dc = None, start=None, limit=None):
-        items = uid.split(',')
-        nzbqueue.pause_multiple_nzo(items)
-        raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
+    def pause_nzo(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        uid = kwargs.get('uid', '')
+        nzbqueue.pause_multiple_nzo(uid.split(','))
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def resume_nzo(self, uid=None, _dc = None, start=None, limit=None):
-        items = uid.split(',')
-        nzbqueue.resume_multiple_nzo(items)
-        raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
+    def resume_nzo(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        uid = kwargs.get('uid', '')
+        nzbqueue.resume_multiple_nzo(uid.split(','))
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def set_priority(self, nzo_id=None, priority=None, _dc = None, start=None, limit=None):
-        nzbqueue.set_priority(nzo_id, priority)
-        raise Raiser(self.__root,_dc=_dc, start=start, limit=limit)
+    def set_priority(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzbqueue.set_priority(kwargs.get('nzo_id'), kwargs.get('priority'))
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def sort_by_avg_age(self, _dc = None, start=None, limit=None, dir=None):
-        nzbqueue.sort_queue('avg_age',dir)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+    def sort_by_avg_age(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzbqueue.sort_queue('avg_age', kwargs.get('dir'))
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def sort_by_name(self, _dc = None, start=None, limit=None, dir=None):
-        nzbqueue.sort_queue('name',dir)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+    def sort_by_name(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzbqueue.sort_queue('name', kwargs.get('dir'))
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def sort_by_size(self, _dc = None, start=None, limit=None, dir=None):
-        nzbqueue.sort_queue('size',dir)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit)
+    def sort_by_size(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzbqueue.sort_queue('size', kwargs.get('dir'))
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def set_speedlimit(self, _dc = None, value=None):
-        downloader.limit_speed(IntConv(value))
-        raise Raiser(self.__root, _dc=_dc)
+    def set_speedlimit(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        downloader.limit_speed(IntConv(kwargs.get('value')))
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def set_pause(self, _dc = None, value=None):
-        scheduler.plan_resume(IntConv(value))
-        raise Raiser(self.__root, _dc=_dc)
+    def set_pause(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        scheduler.plan_resume(IntConv(kwargs.get('value')))
+        raise dcRaiser(self.__root, kwargs)
 
 class HistoryPage:
     def __init__(self, web_dir, root, prim):
@@ -1297,7 +1438,14 @@ class HistoryPage:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None, start=None, limit=None, dummy2=None, search=None):
+    def index(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        start = kwargs.get('start')
+        limit = kwargs.get('limit')
+        search = kwargs.get('search')
+
         history, pnfo_list, bytespersec = build_header(self.__prim)
 
         history['isverbose'] = self.__verbose
@@ -1331,32 +1479,44 @@ class HistoryPage:
         return template.respond()
 
     @cherrypy.expose
-    def purge(self, _dc = None, start=None, limit=None, search=None):
+    def purge(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         history_db = cherrypy.thread_data.history_db
         history_db.remove_history()
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def delete(self, job=None, _dc = None, start=None, limit=None, search=None):
+    def delete(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        job = kwargs.get('job')
         if job:
             jobs = job.split(',')
             history_db = cherrypy.thread_data.history_db
             history_db.remove_history(jobs)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def purge_failed(self, _dc = None, start=None, limit=None, search=None):
+    def purge_failed(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         history_db = cherrypy.thread_data.history_db
         history_db.remove_failed()
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def reset(self, _dc = None, start=None, limit=None, search=None):
+    def reset(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         #sabnzbd.reset_byte_counter()
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def tog_verbose(self, _dc = None, start=None, limit=None, jobs=None, search=None):
+    def tog_verbose(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        jobs = kwargs.get('jobs')
         if not jobs:
             self.__verbose = not self.__verbose
             self.__verbose_list = []
@@ -1370,20 +1530,28 @@ class HistoryPage:
                         self.__verbose_list.remove(job)
                     else:
                         self.__verbose_list.append(job)
-        raise Raiser(self.__root, _dc=_dc, start=start, limit=limit, search=search)
+        raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def scriptlog(self, name=None, _dc=None, start=None, limit=None, search=None):
+    def scriptlog(self, **kwargs):
         """ Duplicate of scriptlog of History, needed for some skins """
+        msg = check_session(kwargs)
+        if msg: return msg
+        name = kwargs.get('name')
         if name:
             history_db = cherrypy.thread_data.history_db
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
-            raise Raiser(self.__root, _dc=_dc)
+            raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def retry(self, url=None, pp=None, cat=None, script=None, _dc=None):
-        if url: url = url.strip()
+    def retry(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        url = kwargs.get('url', '').strip()
+        pp = kwargs.get('pp')
+        cat = kwargs.get('cat')
+        script = kwargs.get('script')
         if url and (url.isdigit() or len(url)==5):
             sabnzbd.add_msgid(url, pp, script, cat)
         elif url:
@@ -1391,7 +1559,7 @@ class HistoryPage:
         if url:
             return ShowOK(url)
         else:
-            raise Raiser(self.__root, _dc=_dc)
+            raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
 class ConfigPage:
@@ -1428,10 +1596,14 @@ class ConfigPage:
 
     @cherrypy.expose
     def restart(self, **kwargs):
-        yield RESTART_MSG1
-        sabnzbd.halt()
-        yield RESTART_MSG2
-        cherrypy.engine.restart()
+        msg = check_session(kwargs)
+        if msg:
+            yield msg
+        else:
+            yield RESTART_MSG1
+            sabnzbd.halt()
+            yield RESTART_MSG2
+            cherrypy.engine.restart()
 
 
 #------------------------------------------------------------------------------
@@ -1469,6 +1641,8 @@ class ConfigDirectories:
 
     @cherrypy.expose
     def saveDirectories(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
 
         for kw in LIST_DIRPAGE:
             value = kwargs.get(kw)
@@ -1518,6 +1692,8 @@ class ConfigSwitches:
 
     @cherrypy.expose
     def saveSwitches(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
 
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
@@ -1531,11 +1707,11 @@ class ConfigSwitches:
 
 
 #------------------------------------------------------------------------------
-LIST_GENERAL = (
+GENERAL_LIST = (
     'host', 'port', 'username', 'password',
     'bandwith_limit', 'refresh_rate', 'rss_rate',
-    'cache_limit', 'web_dir', 'web_dir2',
-    'cleanup_list'
+    'cache_limit',
+    'enable_https', 'https_port', 'https_cert', 'https_key'
     )
 
 class ConfigGeneral:
@@ -1627,32 +1803,26 @@ class ConfigGeneral:
         return template.respond()
 
     @cherrypy.expose
-    def saveGeneral(self, host=None, port=None,
-                    https_port=None, https_cert=None, https_key=None, enable_https=None,
-                    web_username=None, web_password=None, web_dir = None,
-                    web_dir2=None, web_color=None,
-                    refresh_rate=None, rss_rate=None,
-                    bandwith_limit=None, cleanup_list=None, cache_limitstr=None, _dc=None):
+    def saveGeneral(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
 
-        cfg.CHERRYHOST.set(host)
-        cfg.CHERRYPORT.set(port)
+        # Handle general options
+        for kw in GENERAL_LIST:
+            item = config.get_config('misc', kw)
+            value = kwargs.get(kw)
+            msg = item.set(value)
+            if msg:
+                return badParameterResponse(msg)
 
-        cfg.ENABLE_HTTPS.set(enable_https)
-        cfg.HTTPS_PORT.set(https_port)
-        cfg.HTTPS_CERT.set(https_cert)
-        cfg.HTTPS_KEY.set(https_key)
-
-        cfg.USERNAME.set(web_username)
-        cfg.PASSWORD.set(web_password)
-
-        cfg.BANDWIDTH_LIMIT.set(bandwith_limit)
-        cfg.RSS_RATE.set(rss_rate)
-        cfg.REFRESH_RATE.set(refresh_rate)
+        # Handle special options
+        cleanup_list = kwargs.get('cleanup_list')
         if cleanup_list and sabnzbd.WIN32:
             cleanup_list = cleanup_list.lower()
         cfg.CLEANUP_LIST.set_string(cleanup_list)
-        cfg.CACHE_LIMIT.set(cache_limitstr)
 
+        web_dir = kwargs.get('web_dir')
+        web_dir2 = kwargs.get('web_dir2')
         change_web_dir(web_dir)
         try:
             web_dir2, web_color2 = web_dir2.split(' - ')
@@ -1670,7 +1840,7 @@ class ConfigGeneral:
 
         # Update CherryPy authentication
         set_auth(cherrypy.config)
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
 def change_web_dir(web_dir):
         try:
@@ -1729,7 +1899,10 @@ class ConfigServer:
 
 
     @cherrypy.expose
-    def delServer(self, *args, **kwargs):
+    def delServer(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
         if 'server' in kwargs:
             server = kwargs['server']
             svr = config.get_config('servers', server)
@@ -1743,6 +1916,9 @@ class ConfigServer:
 
 def handle_server(kwargs, root=None):
     """ Internal server handler """
+    msg = check_session(kwargs)
+    if msg: return msg
+
     host = kwargs.get('host', '').strip()
     if not host:
         return badParameterResponse('Error: Need host name.')
@@ -1835,6 +2011,8 @@ class ConfigRss:
 
     @cherrypy.expose
     def upd_rss_feed(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         try:
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
@@ -1847,6 +2025,8 @@ class ConfigRss:
 
     @cherrypy.expose
     def toggle_rss_feed(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         try:
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
@@ -1858,6 +2038,8 @@ class ConfigRss:
 
     @cherrypy.expose
     def add_rss_feed(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         feed= Strip(kwargs.get('feed'))
         uri = Strip(kwargs.get('uri'))
         try:
@@ -1871,35 +2053,45 @@ class ConfigRss:
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def upd_rss_filter(self, feed=None, index=None, filter_text=None,
-                       filter_type=None, cat=None, pp=None, script=None, _dc=None):
+    def upd_rss_filter(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         try:
-            cfg = config.get_rss()[feed]
+            cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
-            raise Raiser(self.__root, _dc=_dc)
+            raise dcRaiser(self.__root, kwargs)
 
+        pp = kwargs.get('pp')
         if IsNone(pp): pp = ''
-        script = ConvertSpecials(script)
-        cat = ConvertSpecials(cat)
+        script = ConvertSpecials(kwargs.get('script'))
+        cat = ConvertSpecials(kwargs.get('cat'))
 
-        cfg.filters.update(int(index), (cat, pp, script, filter_type, filter_text))
+        cfg.filters.update(int(kwargs.get('index',0)), (cat, pp, script, kwargs.get('filter_type'), kwargs.get('filter_text')))
         config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def pos_rss_filter(self, feed=None, current=None, new=None, _dc=None):
+    def pos_rss_filter(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        feed = kwargs.get('feed')
+        current = kwargs.get('current', 0)
+        new = kwargs.get('new', 0)
+
         try:
             cfg = config.get_rss()[feed]
         except KeyError:
-            raise Raiser(self.__root, _dc=_dc)
+            raise dcRaiser(self.__root, kwargs)
 
         if current != new:
             cfg.filters.move(int(current), int(new))
             config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def del_rss_feed(self, *args, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         try:
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
@@ -1913,18 +2105,22 @@ class ConfigRss:
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def del_rss_filter(self, feed=None, index=None, _dc=None):
+    def del_rss_filter(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         try:
-            cfg = config.get_rss()[feed]
+            cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
-            raise Raiser(self.__root, _dc=_dc)
+            raise dcRaiser(self.__root, kwargs)
 
-        cfg.filters.delete(int(index))
+        cfg.filters.delete(int(kwargs.get('index', 0)))
         config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def download_rss_feed(self, *args, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         if 'feed' in kwargs:
             feed = kwargs['feed']
             sabnzbd.rss.run_feed(feed, download=True)
@@ -1933,6 +2129,8 @@ class ConfigRss:
 
     @cherrypy.expose
     def test_rss_feed(self, *args, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         if 'feed' in kwargs:
             feed = kwargs['feed']
             sabnzbd.rss.run_feed(feed, download=False)
@@ -1941,14 +2139,21 @@ class ConfigRss:
 
 
     @cherrypy.expose
-    def rss_download(self, feed=None, id=None, cat=None, pp=None, script=None, _dc=None, priority=NORMAL_PRIORITY):
+    def rss_download(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        feed = kwargs.get('feed')
+        id = kwargs.get('id')
+        cat = kwargs.get('cat')
+        script = kwargs.get('script')
+        priority = kwargs.get('priority', NORMAL_PRIORITY)
         if id and id.isdigit():
             sabnzbd.add_msgid(id, pp, script, cat, priority)
         elif id:
             sabnzbd.add_url(id, pp, script, cat, priority)
         # Need to pass the title instead
         sabnzbd.rss.flag_downloaded(feed, id)
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
 
 #------------------------------------------------------------------------------
@@ -1980,8 +2185,15 @@ class ConfigScheduling:
         return template.respond()
 
     @cherrypy.expose
-    def addSchedule(self, minute = None, hour = None, dayofweek = None,
-                    action = None, arguments = None, _dc = None):
+    def addSchedule(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        minute = kwargs.get('minute')
+        hour = kwargs.get('hour')
+        dayofweek = kwargs.get('dayofweek')
+        action = kwargs.get('action')
+        arguments = kwargs.get('arguments')
 
         arguments = arguments.strip().lower()
         if arguments in ('on', 'enable'):
@@ -2012,20 +2224,23 @@ class ConfigScheduling:
 
         config.save_config()
         scheduler.restart(force=True)
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def delSchedule(self, line = None, _dc = None):
+    def delSchedule(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
         schedules = cfg.SCHEDULES.get()
+        line = kwargs.get('line')
         if line and line in schedules:
             schedules.remove(line)
             cfg.SCHEDULES.set(schedules)
         config.save_config()
         scheduler.restart(force=True)
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
-
 class ConfigNewzbin:
     def __init__(self, web_dir, root, prim):
         self.__root = root
@@ -2056,48 +2271,54 @@ class ConfigNewzbin:
         return template.respond()
 
     @cherrypy.expose
-    def saveNewzbin(self, username_newzbin = None, password_newzbin = None,
-                    newzbin_bookmarks = None,
-                    newzbin_unbookmark = None, bookmark_rate = None,
-                    username_matrix = None, password_matrix = None, _dc = None):
+    def saveNewzbin(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
 
+        cfg.USERNAME_NEWZBIN.set(kwargs.get('username_newzbin'))
+        cfg.PASSWORD_NEWZBIN.set(kwargs.get('password_newzbin'))
+        cfg.NEWZBIN_BOOKMARKS.set(kwargs.get('newzbin_bookmarks'))
+        cfg.NEWZBIN_UNBOOKMARK.set(kwargs.get('newzbin_unbookmark'))
+        cfg.BOOKMARK_RATE.set(kwargs.get('bookmark_rate'))
 
-        cfg.USERNAME_NEWZBIN.set(username_newzbin)
-        cfg.PASSWORD_NEWZBIN.set(password_newzbin)
-        cfg.NEWZBIN_BOOKMARKS.set(newzbin_bookmarks)
-        cfg.NEWZBIN_UNBOOKMARK.set(newzbin_unbookmark)
-        cfg.BOOKMARK_RATE.set(bookmark_rate)
-
-        cfg.USERNAME_MATRIX.set(username_matrix)
-        cfg.PASSWORD_MATRIX.set(password_matrix)
+        cfg.USERNAME_MATRIX.set(kwargs.get('username_matrix'))
+        cfg.PASSWORD_MATRIX.set(kwargs.get('password_matrix'))
 
         config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def saveMatrix(self, username_matrix = None, password_matrix = None, _dc = None):
+    def saveMatrix(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
 
-        cfg.USERNAME_MATRIX.set(username_matrix)
-        cfg.PASSWORD_MATRIX.set(password_matrix)
+        cfg.USERNAME_MATRIX.set(kwargs.get('username_matrix'))
+        cfg.PASSWORD_MATRIX.set(kwargs.get('password_matrix'))
 
         config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
 
     @cherrypy.expose
-    def getBookmarks(self, _dc = None):
+    def getBookmarks(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         newzbin.getBookmarksNow()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def showBookmarks(self, _dc = None):
+    def showBookmarks(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         self.__bookmarks = newzbin.getBookmarksList()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def hideBookmarks(self, _dc = None):
+    def hideBookmarks(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         self.__bookmarks = []
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
 
@@ -2138,18 +2359,22 @@ class ConfigCats:
         return template.respond()
 
     @cherrypy.expose
-    def delete(self, name = None, _dc = None):
+    def delete(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        name = kwargs.get('name')
         if name:
             config.delete('categories', name)
             config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def save(self, **kwargs):
-        newname = Strip(kwargs.get('newname'))
-        name = kwargs.get('name')
-        _dc = kwargs.get('_dc')
+        msg = check_session(kwargs)
+        if msg: return msg
 
+        newname = kwargs.get('newname', '').strip()
+        name = kwargs.get('name')
         if newname:
             if name:
                 config.delete('categories', name)
@@ -2157,13 +2382,16 @@ class ConfigCats:
             config.ConfigCat(name, kwargs)
 
         config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def init_newzbin(self, _dc = None):
-        config.define_categories()
+    def init_newzbin(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        config.define_categories(force=True)
         config.save_config()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
 
 SORT_LIST = ( \
@@ -2198,6 +2426,8 @@ class ConfigSorting:
 
     @cherrypy.expose
     def saveSorting(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
 
         try:
             kwargs['movie_categories'] = kwargs['movie_cat']
@@ -2216,8 +2446,7 @@ class ConfigSorting:
                 return badParameterResponse(msg)
 
         config.save_config()
-        _dc = kwargs.get('_dc', '')
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
 
 #------------------------------------------------------------------------------
@@ -2285,12 +2514,16 @@ class ConnectionInfo:
         return template.respond()
 
     @cherrypy.expose
-    def disconnect(self, _dc = None):
+    def disconnect(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         downloader.disconnect()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def testmail(self, _dc = None):
+    def testmail(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         logging.info("Sending testmail")
         pack = {}
         pack['download'] = ['action 1', 'action 2']
@@ -2299,10 +2532,12 @@ class ConnectionInfo:
         self.__lastmail= email.endjob('Test Job', 123, 'unknown', True,
                                       os.path.normpath(os.path.join(cfg.COMPLETE_DIR.get_path(), '/unknown/Test Job')),
                                       str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n', 0)
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def showlog(self):
+    def showlog(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         try:
             sabnzbd.LOGHANDLER.flush()
         except:
@@ -2310,23 +2545,29 @@ class ConnectionInfo:
         return cherrypy.lib.static.serve_file(sabnzbd.LOGFILE, "application/x-download", "attachment")
 
     @cherrypy.expose
-    def showweb(self):
+    def showweb(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         if sabnzbd.WEBLOGFILE:
             return cherrypy.lib.static.serve_file(sabnzbd.WEBLOGFILE, "application/x-download", "attachment")
         else:
             return "Web logging is off!"
 
     @cherrypy.expose
-    def clearwarnings(self, _dc = None):
+    def clearwarnings(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
         sabnzbd.GUIHANDLER.clear()
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def change_loglevel(self, loglevel=None, _dc = None):
-        cfg.LOG_LEVEL.set(loglevel)
+    def change_loglevel(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        cfg.LOG_LEVEL.set(kwargs.get('loglevel'))
         config.save_config()
 
-        raise Raiser(self.__root, _dc=_dc)
+        raise dcRaiser(self.__root, kwargs)
 
 
 def Protected():
@@ -2660,6 +2901,8 @@ class ConfigEmail:
 
     @cherrypy.expose
     def saveEmail(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
 
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(kwargs.get(kw))

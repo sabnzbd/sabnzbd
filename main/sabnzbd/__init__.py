@@ -116,6 +116,8 @@ WEB_COLOR2 = None
 SABSTOP = False
 RESTART_REQ = False
 
+API_KEY = 'hello'
+
 __INITIALIZED__ = False
 
 

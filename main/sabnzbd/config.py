@@ -725,7 +725,7 @@ def get_servers():
         return {}
 
 
-def define_categories():
+def define_categories(force=False):
     """ Define categories listed in the Setup file
         return a list of ConfigCat instances
     """
@@ -737,6 +737,9 @@ def define_categories():
         for cat in CFG['categories']:
             ConfigCat(cat, CFG['categories'][cat])
     except KeyError:
+        force = True
+
+    if force:
         for cat in cats:
             val = { 'newzbin' : cat, 'dir' : cat }
             ConfigCat(cat.lower(), val)
