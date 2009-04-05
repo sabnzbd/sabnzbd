@@ -866,6 +866,15 @@ class Wizard:
         info['num'] = 'Five'
         info['number'] = 5
         info['helpuri'] = 'http://sabnzbd.wikidot.com/'
+        
+        info['access_url'], info['urls'] = self.get_access_info()
+
+        template = Template(file=os.path.join(self.__web_dir, 'five.html'),
+                            searchList=[info], compilerSettings=DIRECTIVES)
+        return template.respond()
+    
+    def get_access_info(self):
+        ''' Build up a list of url's that sabnzbd can be accessed from '''
         # Access_url is used to provide the user a link to sabnzbd depending on the host
         access_uri = 'localhost'
         cherryhost = cfg.CHERRYHOST.get()
@@ -879,7 +888,7 @@ class Wizard:
             for addr in addresses:
                 address = addr[4][0]
                 # Filter out ipv6 addresses (should not be allowed)
-                if ':' not in address:
+                if ':' not in address and address not in socks:
                     socks.append(address)
             if cherrypy.request.headers.has_key('host'):
                 host = cherrypy.request.headers['host']
@@ -900,7 +909,8 @@ class Wizard:
                 # Only ipv6 addresses will work
                 if ':' in address:
                     address = '[%s]' % address
-                    socks.append(address)
+                    if address not in socks:
+                        socks.append(address)
             if cherrypy.request.headers.has_key('host'):
                 host = cherrypy.request.headers['host']
                 host = host.rsplit(':')[0]
@@ -912,10 +922,12 @@ class Wizard:
         elif not cherryhost:
             import socket
             socks = [socket.gethostname()]
+            access_uri = socket.gethostname()
         else:
             socks = [cherryhost]
+            access_uri = cherryhost
 
-        info['urls'] = []
+        urls = []
         for sock in socks:
             if sock:
                 if cfg.ENABLE_HTTPS.get():
@@ -923,16 +935,14 @@ class Wizard:
                 else:
                     url = 'http://%s:%s/sabnzbd/' % (sock, cfg.CHERRYPORT.get())
 
-                info['urls'].append(url)
+                urls.append(url)
 
         if cfg.ENABLE_HTTPS.get():
-            info['access_url'] = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.HTTPS_PORT.get())
+            access_url = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.HTTPS_PORT.get())
         else:
-            info['access_url'] = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.CHERRYPORT.get())
-
-        template = Template(file=os.path.join(self.__web_dir, 'five.html'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
-        return template.respond()
+            access_url = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.CHERRYPORT.get())
+            
+        return access_url, urls
 
     @cherrypy.expose
     def servertest(self, **kwargs):
