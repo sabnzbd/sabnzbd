@@ -21,12 +21,19 @@ sabnzbd.codecs - Unicoded filename support
 
 import os
 import sys
+import locale
 from xml.sax.saxutils import escape
 
 import sabnzbd
 
-#gUTF = sys.getfilesystemencoding().lower() == 'utf-8'
+gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
 
+def reliable_unpack_names():
+    """ See if it is safe to rely on unrar names """
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        return True
+    else:
+        return gUTF
 
 def name_fixer(p):
     """ Return UTF-8 encoded string, if appropriate for the platform """

@@ -27,7 +27,7 @@ import logging
 from time import time
 
 import sabnzbd
-from sabnzbd.codecs import TRANS, unicode2local
+from sabnzbd.codecs import TRANS, unicode2local, reliable_unpack_names
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.misc import format_time_string
 import sabnzbd.cfg as cfg
@@ -570,20 +570,23 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
     p.wait()
 
 
-    all_found = True
-    for path in expected_files:
-        path = unicode2local(path)
-        fullpath = os.path.join(extraction_path, path)
-        if path.endswith('/') or os.path.exists(fullpath):
-            logging.debug("Checking existance of %s", fullpath)
-        else:
-            all_found = False
-            logging.warning("Missing expected file: %s => unrar error?", path)
+    if reliable_unpack_names():
+        all_found = True
+        for path in expected_files:
+            path = unicode2local(path)
+            fullpath = os.path.join(extraction_path, path)
+            if path.endswith('/') or os.path.exists(fullpath):
+                logging.debug("Checking existance of %s", fullpath)
+            else:
+                all_found = False
+                logging.warning("Missing expected file: %s => unrar error?", path)
 
-    if not all_found:
-        nzo.set_fail_msg('Unpacking failed, an expected file was not unpacked')
-        nzo.set_unpack_info('unpack', 'ERROR: An expected file was not unpacked', set=setname)
-        return ((), ())
+        if not all_found:
+            nzo.set_fail_msg('Unpacking failed, an expected file was not unpacked')
+            nzo.set_unpack_info('unpack', 'ERROR: An expected file was not unpacked', set=setname)
+            return ((), ())
+    else:
+        logging.info('Skipping unrar file check due to unreliable file names')
 
     msg = 'Unpacked %d file%s/folder%s in %s' % (len(extracted), add_s(len(extracted)), add_s(len(extracted)), format_time_string(time() - start))
     nzo.set_unpack_info('unpack', '[%s] %s' % (setname, msg), set=setname)
