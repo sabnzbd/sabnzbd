@@ -179,7 +179,7 @@ h1,h2 {
 }
 
 .hidden {
-    display:none;
+    display:none !important;
 }
 
 .text-input{
@@ -218,4 +218,15 @@ h1,h2 {
 
 .skin-select-plush img{
     margin-top:30px;
+}
+
+.tips {
+    display:inline;
+    font-style:italic;
+    color:#888;
+}
+
+.error-text {
+    display:inline;
+    color:red;
 }

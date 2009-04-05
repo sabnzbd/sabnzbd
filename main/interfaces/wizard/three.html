@@ -11,18 +11,25 @@ Please enter in the details of your primary usenet provider.
 <br /><br class="clear" />
 <form action="./four" method="post">
 <div id="serverDetails">
-    <label class="label">Host<span class="required-star">*</span></label><input class="validate-text-required clearinput text-input-wide" type="text" size="26" name="host" value="$host">
+    <label class="label">Host<span class="required-star">*</span></label><input id="host" class="clearinput text-input-wide" type="text" size="26" name="host" value="$host"> 
+    <div id="host-tip" class="tips">E.g. news.giganews.com</div>
+    <div id="host-error" class="error-text hidden">This field is required.</div>
     <br class="clear" />
-    <label class="label">Port</label><input class="validate-numeric text-input-thin" type="text" size="2" name="port" value="$port">
+    <label class="label">Port</label><input id="port" class="text-input-thin" type="text" size="2" name="port" value="$port">
+    <div id="port-tip" class="tips">E.g. 119 or 563 for SSL</div>
+    <div id="port-error" class="error-text hidden">Please enter a whole number.</div>
     <br class="clear" /><br class="clear" />
     <label class="label">Username</label><input class="validate-text clearinput text-input" type="text" size="12" name="username" value="$username">
     <br class="clear" />
     <label class="label">Password</label><input class="validate-text text-input" type="password" size="12" name="password" value="$password">
     <br class="clear" /><br class="clear" />
-    <label class="label">Connections<span class="required-star">*</span></label><input class="validate-numeric-required text-input-thin" type="text" size="2" name="connections" value="$connections">
+    <label class="label">Connections<span class="required-star">*</span></label><input id="connections" class="text-input-thin" type="text" size="2" name="connections" value="$connections">
+    <div id="connections-tip" class="tips">The number of connections allowed by your provider E.g. 8 or 20</div>
+    <div id="connections-error" class="error-text hidden">Please enter a whole number.</div>
     <br class="clear" />
     <label><span class="label">SSL</span>
     <input class="validate-text" class="radio" type="checkbox" name="ssl" value="1" <!--#if $ssl == 1 then 'checked' else ''#-->></label>
+    <div class="tips">Select only if your provider allows SSL connections.</div>
     <br class="clear" />
 </div>
 <br/>
@@ -42,7 +49,7 @@ Please enter in the details of your primary usenet provider.
                 <!--#end for#-->
             </div>
         </td>
-        <td class="align-right"><input class="bigbutton" type="submit" value="Next &raquo;" /></td>
+        <td class="align-right"><input id="next-button" class="bigbutton" type="submit" value="Next &raquo;" /></td>
     </tr>
 </table>
 </div>

@@ -1,4 +1,15 @@
+function checkRequired()
+{
+    if ($("#host").val() && $("#connections").val())
+    {
+        $("#next-button").removeAttr("disabled");
+    } else {
+        $("#next-button").attr("disabled","disabled");
+    }
+}
+
 $(document).ready(function() {
+    checkRequired()
     $("#serverTest").click(function(){
         $('#serverResponse').html('Checking...');
         $.ajax({
@@ -48,6 +59,52 @@ $(document).ready(function() {
         } else {
             $(this).removeClass("correct");
             $(this).addClass("incorrect");
+        }
+    });
+    
+    $("#connections").bind('keyup blur',function(){
+        if (this.value && isFinite(this.value)){
+            $(this).removeClass("incorrect");
+            $(this).addClass("correct");
+            $("#connections-tip").removeClass("hidden");
+            $("#connections-error").addClass("hidden");
+            checkRequired();
+        } else {
+            $(this).removeClass("correct");
+            $(this).addClass("incorrect");
+            $("#connections-tip").addClass("hidden");
+            $("#connections-error").removeClass("hidden");
+            checkRequired();
+        }
+    });
+    
+    $("#port").bind('keyup blur',function(){
+        if (!this.value || isFinite(this.value)){
+            $(this).removeClass("incorrect");
+            $(this).addClass("correct");
+            $("#port-tip").removeClass("hidden");
+            $("#port-error").addClass("hidden");
+        } else {
+            $(this).removeClass("correct");
+            $(this).addClass("incorrect");
+            $("#port-tip").addClass("hidden");
+            $("#port-error").removeClass("hidden");
+        }
+    });
+    
+    $("#host").bind('keyup blur',function(){
+        if (this.value){
+            $(this).removeClass("incorrect");
+            $(this).addClass("correct");
+            $("#host-tip").removeClass("hidden");
+            $("#host-error").addClass("hidden");
+            checkRequired();
+        } else {
+            $(this).removeClass("correct");
+            $(this).addClass("incorrect");
+            $("#host-tip").addClass("hidden");
+            $("#host-error").removeClass("hidden");
+            checkRequired();
         }
     });
 });

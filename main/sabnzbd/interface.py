@@ -883,6 +883,7 @@ class Wizard:
                     socks.append(address)
             if cherrypy.request.headers.has_key('host'):
                 host = cherrypy.request.headers['host']
+                host = host.rsplit(':')[0]
                 access_uri = host
                 socks.insert(0, host)
             else:
@@ -902,6 +903,7 @@ class Wizard:
                     socks.append(address)
             if cherrypy.request.headers.has_key('host'):
                 host = cherrypy.request.headers['host']
+                host = host.rsplit(':')[0]
                 access_uri = host
                 socks.insert(0, host)
             else:
