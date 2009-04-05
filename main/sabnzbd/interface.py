@@ -782,6 +782,8 @@ class Wizard:
 
         info['enable_https'] = cfg.ENABLE_HTTPS.get()
         info['autobrowser'] = cfg.AUTOBROWSER.get()
+        info['web_user'] = cfg.USERNAME.get()
+        info['web_pass'] = cfg.PASSWORD.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=DIRECTIVES)
@@ -795,6 +797,10 @@ class Wizard:
                 cfg.CHERRYHOST.set(kwargs['access'])
             cfg.ENABLE_HTTPS.set(kwargs.get('enable_https',0))
             cfg.AUTOBROWSER.set(kwargs.get('autobrowser',0))
+            cfg.USERNAME.set(kwargs.get('web_user', ''))
+            cfg.PASSWORD.set(kwargs.get('web_pass', ''))
+            if not cfg.USERNAME.get() or not cfg.PASSWORD.get():
+                set_auth(cherrypy.config)
         info = self.info.copy()
         info['num'] = 'Three'
         info['number'] = 3
