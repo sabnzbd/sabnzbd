@@ -26,7 +26,11 @@ from xml.sax.saxutils import escape
 
 import sabnzbd
 
-gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
+try:
+    gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
+except:
+    # Incorrect locale implementation, assume the worst
+    gUTF = False
 
 def reliable_unpack_names():
     """ See if it is safe to rely on unrar names """
