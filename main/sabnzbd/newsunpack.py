@@ -302,21 +302,31 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         for joinable_set in joinable_sets:
             try:
                 expected_size = 0
+                # Make sure there are no missing files in the file sequence
+                # Add 1 to the value before adding to take into account .000
                 for i in xrange(len(joinable_sets[joinable_set])+1):
                     expected_size += i
                 logging.debug("FJN, expsize: %s", expected_size)
 
+                # Add together the values of .001 (+1 for .000)
+                # To work out the actual size
                 real_size = 0
                 for joinable in joinable_sets[joinable_set]:
                     head, tail = os.path.splitext(joinable)
                     if tail == '.ts':
                         match, set, num = match_ts(joinable)
-                        real_size += num
+                        real_size += num+1
                     else:
                         real_size += int(tail[1:])
                 logging.debug("FJN, realsize: %s", real_size)
 
-                if real_size == expected_size:
+                if real_size != expected_size:
+                    msg = 'Expected size did not equal actual size'
+                    nzo.set_fail_msg('File join failed, %s' % msg)
+                    nzo.set_unpack_info('filejoin', '[%s] Error "%s" while running file_join ' % (joinable_set, msg))
+                    logging.error('Error "%s" while' + \
+                              ' running file_join on %s', msg, nzo.get_dirname())
+                else:
                     joinable_sets[joinable_set].sort()
                     filename = joinable_set
 
