@@ -493,7 +493,8 @@ class NzbQueue(TryList):
                 if not nzo.get_status() == 'Paused' and not nzo.get_status() == 'Fetching':
                     return not nzo.server_in_try_list(server)
         else:
-            return not self.server_in_try_list(server)
+            if not nzo.get_status() == 'Paused' and not nzo.get_status() == 'Fetching':
+                return not self.server_in_try_list(server)
 
     @synchronized(NZBQUEUE_LOCK)
     def has_forced_items(self):
