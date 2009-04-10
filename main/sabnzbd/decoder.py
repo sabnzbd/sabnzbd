@@ -171,7 +171,7 @@ class Decoder(Thread):
         return new_server_found
 #-------------------------------------------------------------------------------
 
-YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in range(256)])
+YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 def decode(article, data):
     data = strip(data)
     ## No point in continuing if we don't have any data left
@@ -212,9 +212,9 @@ def decode(article, data):
                 for i in (0, 9, 10, 13, 27, 32, 46, 61):
                     j = '=%c' % (i + 64)
                     data = data.replace(j, chr(i))
-                    decoded_data = data.translate(YDEC_TRANS)
-                    crc = binascii.crc32(decoded_data)
-                    partcrc = '%08X' % (crc & 2**32L - 1)
+                decoded_data = data.translate(YDEC_TRANS)
+                crc = binascii.crc32(decoded_data)
+                partcrc = '%08X' % (crc & 2**32L - 1)
 
             if ypart:
                 crcname = 'pcrc32'
