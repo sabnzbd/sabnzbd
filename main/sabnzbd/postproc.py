@@ -589,7 +589,11 @@ def NzbRedirect(wdir, pp, script, cat, priority):
     """
     list = []
 
-    files = os.listdir(wdir)
+    try:
+        files = os.listdir(wdir)
+    except:
+        files = []
+
     for file in files:
         if os.path.splitext(file)[1].lower() != '.nzb':
             return list
