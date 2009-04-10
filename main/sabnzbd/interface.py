@@ -1703,7 +1703,7 @@ class ConfigSwitches:
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
     'host', 'port', 'username', 'password',
-    'bandwith_limit', 'refresh_rate', 'rss_rate',
+    'refresh_rate', 'rss_rate',
     'cache_limit',
     'enable_https', 'https_port', 'https_cert', 'https_key'
     )
@@ -1829,6 +1829,12 @@ class ConfigGeneral:
         elif os.path.exists(web_dir2_path):
             cfg.WEB_DIR2.set(web_dir2)
         cfg.WEB_COLOR2.set(web_color2)
+        
+        bandwidth_limit = kwargs.get('bandwith_limit')
+        if bandwidth_limit != None:
+            bandwidth_limit = IntConv(bandwidth_limit)
+            cfg.BANDWIDTH_LIMIT.set(bandwidth_limit)
+            downloader.limit_speed(bandwidth_limit)
 
         config.save_config()
 

@@ -145,7 +145,7 @@ else:
 
 USERNAME = OptionStr('misc', 'username')
 PASSWORD = OptionPassword('misc', 'password')
-BANDWIDTH_LIMIT = OptionStr('misc', 'bandwith_limit', 0)
+BANDWIDTH_LIMIT = OptionNumber('misc', 'bandwith_limit', 0)
 REFRESH_RATE = OptionNumber('misc', 'refresh_rate', 0)
 RSS_RATE = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
 CACHE_LIMIT = OptionStr('misc', 'cache_limit')
