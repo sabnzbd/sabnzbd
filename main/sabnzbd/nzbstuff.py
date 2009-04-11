@@ -397,7 +397,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
     def endDocument(self):
         """ End of the file """
-        self.nzo._NzbObject__group = self.groups[0]
+        self.nzo._NzbObject__group = self.groups
         self.nzo._NzbObject__avg_date = datetime.datetime.fromtimestamp(self.avg_age / self.valids)
         if self.skipped_files:
             logging.warning('Failed to import %s files from %s',
@@ -435,7 +435,7 @@ class NzbObject(TryList):
             self.__url = str(url)     # Either newzbin-id or URL queued (future-type only)
         else:
             self.__url = ''
-        self.__group = None
+        self.__group = []
         self.__avg_date = datetime.datetime.fromtimestamp(0.0)
         self.__dirprefix = []
 
@@ -520,8 +520,11 @@ class NzbObject(TryList):
 
         sabnzbd.backup_nzb(filename, nzb)
 
-        if cat == None:
-            cat = CatConvert(self.__group)
+        if cat is None:
+            for grp in self.__group:
+                cat = CatConvert(grp)
+                if cat:
+                    break
 
         # Determine category and find pp/script values
         if cat and pp is None:
@@ -544,7 +547,7 @@ class NzbObject(TryList):
             self.__script = cfg.DIRSCAN_SCRIPT.get()
 
         if cfg.CREATE_GROUP_FOLDERS.get():
-            self.__dirprefix.append(self.__group)
+            self.__dirprefix.append(self.get_group())
 
         if cfg.AUTO_SORT.get():
             self.__files.sort(cmp=_nzf_cmp_date)
@@ -869,7 +872,10 @@ class NzbObject(TryList):
     #        return ''
 
     def get_group(self):
-        return self.__group
+        if self.__group:
+            return self.__group[0]
+        else:
+            return None
 
     def purge_data(self):
         nzf_ids = []
