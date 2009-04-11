@@ -419,34 +419,15 @@ class NzbObject(TryList):
                  priority=NORMAL_PRIORITY, status="Queued", nzo_info=None):
         TryList.__init__(self)
 
-        if cat and pp == None:
-            try:
-                pp = config.get_categories()[cat.lower()].pp.get()
-            except:
-                pass
-        if cat and script == None:
-            try:
-                script = config.get_categories()[cat.lower()].script.get()
-            except:
-                pass
-
-        if pp == None and futuretype:
-            r = u = d = None
-        else:
-            r, u, d = sabnzbd.pp_to_opts(pp)
-
-        if script == None and not futuretype:
-            script = cfg.DIRSCAN_SCRIPT.get()
-
         self.__filename = filename    # Original filename
         self.__dirname = filename     # Keeps track of the working folder
         self.__original_dirname = filename # Used for folder name for final unpack
         self.__created = False        # dirprefixes + dirname created
         self.__bytes = 0              # Original bytesize
         self.__bytes_downloaded = 0   # Downloaded byte
-        self.__repair = r             # True if we want to repair this set
-        self.__unpack = u             # True if we want to unpack this set
-        self.__delete = d             # True if we want to delete this set
+        self.__repair = None          # True if we want to repair this set
+        self.__unpack = None          # True if we want to unpack this set
+        self.__delete = None          # True if we want to delete this set
         self.__script = script        # External script for this set
         self.__msgid = '0'            # Newzbin msgid
         self.__cat = cat              # Newzbin category
@@ -539,8 +520,28 @@ class NzbObject(TryList):
 
         sabnzbd.backup_nzb(filename, nzb)
 
-        if self.__cat == None:
-            self.__cat = CatConvert(self.__group)
+        if cat == None:
+            cat = CatConvert(self.__group)
+
+        # Determine category and find pp/script values
+        if cat and pp is None:
+            try:
+                pp = config.get_categories()[cat.lower()].pp.get()
+            except KeyError:
+                pass
+        if cat and script is None:
+            try:
+                script = config.get_categories()[cat.lower()].script.get()
+            except KeyError:
+                pass
+        self.__cat = cat
+
+        if pp is None:
+            pp = cfg.DIRSCAN_PP.get()
+        self.__repair, self.__unpack, self.__delete = sabnzbd.pp_to_opts(pp)
+
+        if script is None:
+            self.__script = cfg.DIRSCAN_SCRIPT.get()
 
         if cfg.CREATE_GROUP_FOLDERS.get():
             self.__dirprefix.append(self.__group)

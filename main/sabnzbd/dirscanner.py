@@ -77,6 +77,22 @@ def save():
 # Body
 ################################################################################
 
+RE_CAT = re.compile(r'^{{(\w+)}}(.+)') # Category prefix
+def name_to_cat(fname, cat=None):
+    """
+        Translate Get options associated with the category.
+        Category options have priority over default options.
+    """
+    if cat is None:
+        m = RE_CAT.search(fname)
+        if m and m.group(1) and m.group(2):
+            cat = m.group(1).lower()
+            fname = m.group(2)
+            logging.debug('Job %s has category %s', fname, cat)
+
+    return fname, cat
+
+
 def CompareStat(tup1, tup2):
     """ Test equality of two stat-tuples, content-related parts only """
     if tup1.st_ino   != tup2.st_ino:   return False
@@ -94,10 +110,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     if catdir == None:
         catdir = cat
 
-    _cat, name, _pp, _script = misc.Cat2OptsDef(filename, catdir)
-    if cat == None: cat = _cat
-    if pp == None: pp = _pp
-    if script == None: script = _script
+    filename, cat = name_to_cat(filename, catdir)
 
     if path.lower().endswith('.zip'):
         try:
@@ -182,13 +195,10 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         logging.debug("Traceback: ", exc_info = True)
         return -2
 
-    if name:
-        name = misc.sanitize_foldername(name)
 
-    _cat, name, _pp, _script = misc.Cat2OptsDef(name, catdir)
-    if cat == None: cat = _cat
-    if pp == None: pp = _pp
-    if script == None: script = _script
+    if name:
+        name, cat = name_to_cat(name, catdir)
+        name = misc.sanitize_foldername(name)
 
     try:
         nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority)

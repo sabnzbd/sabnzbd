@@ -41,7 +41,6 @@ if sabnzbd.FOUNDATION:
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
 RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
-RE_CAT = re.compile(r'^{{(\w+)}}(.+)') # Category prefix
 
 PANIC_NONE  = 0
 PANIC_PORT  = 1
@@ -84,43 +83,6 @@ def Cat2Opts(cat, pp, script):
             script = cfg.DIRSCAN_SCRIPT.get()
 
     return cat, pp, script
-
-
-def Cat2OptsDef(fname, cat=None):
-    """
-        Get options associated with the category.
-        Category options have priority over default options.
-    """
-    pp = cfg.DIRSCAN_PP.get()
-    script = cfg.DIRSCAN_SCRIPT.get()
-    name = fname
-
-    if cat == None:
-        m = RE_CAT.search(fname)
-        if m and m.group(1) and m.group(2):
-            cat = m.group(1).lower()
-            name = m.group(2)
-            logging.debug('Job %s has category %s', name, cat)
-
-    if cat:
-        try:
-            pp = config.get_categories()[cat.lower()].pp.get()
-            if pp == '':
-                pp = cfg.DIRSCAN_PP.get()
-            logging.debug('Job %s gets options %s', name, pp)
-        except:
-            pass
-
-        try:
-            script = config.get_categories()[cat.lower()].script.get()
-            if script == '' or Lower(script) == 'default':
-                script = cfg.DIRSCAN_SCRIPT.get()
-            logging.debug('Job %s gets script %s', name, script)
-        except:
-            pass
-
-    return cat, name, pp, script
-
 
 
 
