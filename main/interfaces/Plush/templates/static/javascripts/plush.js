@@ -333,7 +333,7 @@ jQuery(function($) { // safely invoke $ selector
 			}
 
 			// Deal with pagination for start/limit
-			if (typeof( page ) == 'undefined' || page == "ok\n" )
+			if (typeof( page ) == 'undefined' || page == "ok\n" || page < 0 )
 				page = $.plush.queuecurpage;
 			else if (page != $.plush.queuecurpage)
 				$.plush.queuecurpage = page;
@@ -718,16 +718,23 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=queue&name=delete&value="+delid
+					data: "mode=queue&name=delete&value="+delid,
+					success: function(){
+						if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+							$.plush.skipRefresh = false;
+							$.plush.queueforcerepagination = true;
+							$.plush.refreshQueue($.plush.queuecurpage-1);
+						}
+					}
 				});
 			});
 			
 			// Pagination per-page selection
 			$("#queue-pagination-perpage").change(function(event){
+				$.plush.queuecurpage = Math.floor($.plush.queuecurpage * $.plush.queueperpage / $(event.target).val() );
 				$.plush.queueperpage = $(event.target).val();
 				$.cookie('queue_perpage', $.plush.queueperpage);
 				$.plush.queueforcerepagination = true;
-				$.plush.queuecurpage = 0; // refactor?
 				$.plush.refreshQueue();
 			});
 
@@ -747,6 +754,8 @@ jQuery(function($) { // safely invoke $ selector
 						Math.ceil($.plush.queuenoofslots/$.plush.queueperpage) ) {
 					
 					$.plush.queueforcerepagination = false;
+					if ( $("#queueTable tr:visible").length - 1 < 1 ) // don't leave stranded on non-page
+						$.plush.queuecurpage--;
 					$("#queue-pagination").pagination( $.plush.queuenoofslots , {
 						current_page: $.plush.queuecurpage,
 						items_per_page: $.plush.queueperpage,
@@ -856,16 +865,22 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=history&name=delete&value="+delid
+					data: "mode=history&name=delete&value="+delid,
+					success: function(){
+						if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+							$.plush.histforcerepagination = true;
+							$.plush.refreshHistory($.plush.histcurpage-1);
+						}
+					}
 				});
 			});
 			
 			// Pagination per-page selection
 			$("#history-pagination-perpage").change(function(event){
+				$.plush.histcurpage = Math.floor($.plush.histcurpage * $.plush.histperpage / $(event.target).val() );
 				$.plush.histperpage = $(event.target).val();
 				$.cookie('history_perpage', $.plush.histperpage);
 				$.plush.histforcerepagination = true;
-				$.plush.histcurpage = 0; // refactor?
 				$.plush.refreshHistory();
 			});
 
@@ -884,6 +899,8 @@ jQuery(function($) { // safely invoke $ selector
 						Math.ceil($.plush.histnoofslots/$.plush.histperpage) ) {
 					
 					$.plush.histforcerepagination = false;
+					if ( $("#historyTable tr:visible").length - 1 < 1 ) // don't leave stranded on non-page
+						$.plush.histcurpage--;
 					$("#history-pagination").pagination( $.plush.histnoofslots , {
 						current_page: $.plush.histcurpage,
 						items_per_page: $.plush.histperpage,
