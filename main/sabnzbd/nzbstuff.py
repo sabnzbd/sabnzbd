@@ -436,7 +436,7 @@ class NzbObject(TryList):
         else:
             self.__url = ''
         self.__group = None
-        self.__avg_date = 0
+        self.__avg_date = datetime.datetime.fromtimestamp(0.0)
         self.__dirprefix = []
 
         self.__partable = {}          # Holds one parfile-name for each set
