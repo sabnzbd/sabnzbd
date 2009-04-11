@@ -313,9 +313,8 @@ jQuery(function($) { // safely invoke $ selector
 		********************************************/
 		
 		refreshRate:   			30,   	// (seconds) refresh rate, overridden by cookie
-		queueViewPreference:   	15,   	// queue nzb limit
+		queueperpage:   		10,		// pagination - nzbs per page
 		histperpage:   			10,		// pagination - nzbs per page
-		
 		
 		/********************************************
 		*********************************************
@@ -325,13 +324,19 @@ jQuery(function($) { // safely invoke $ selector
 		*********************************************
 		********************************************/
 		
-		refreshQueue : function() {
+		refreshQueue : function(page) {
 			
 			// Skip refresh if cursor hovers queue, to prevent annoyance
 			if ($.plush.skipRefresh) {
 				$('#manual_refresh').addClass('refresh_skipped');
 				return false;
 			}
+
+			// Deal with pagination for start/limit
+			if (typeof( page ) == 'undefined' || page == "ok\n" )
+				page = $.plush.queuecurpage;
+			else if (page != $.plush.queuecurpage)
+				$.plush.queuecurpage = page;
 
 			// Refresh state notification
 			$('#manual_refresh').removeClass('refresh_skipped').addClass('refreshing');
@@ -340,7 +345,7 @@ jQuery(function($) { // safely invoke $ selector
 			$.ajax({
 				type: "POST",
 				url: "queue/",
-				data: 'limit='+$.plush.queueViewPreference,
+				data: 'start='+( page * $.plush.queueperpage )+'&limit='+$.plush.queueperpage,
 				success: function(result){
 					
 					// Replace queue contents with queue.tmpl -- this file also sets several stat vars via javascript
@@ -378,13 +383,13 @@ jQuery(function($) { // safely invoke $ selector
 						$('#pause_int').html($.plush.pause_int);
 					
 					// Page title + eta/kbpersec stats at top of queue
-					if ($.plush.noofslots < 1) {
+					if ($.plush.queuenoofslots < 1) {
 						if ($.plush.paused) document.title = 'PAUSED | SABnzbd+ Plush';
 						else				document.title = 'IDLE | SABnzbd+ Plush';
 						$('#stats_kbpersec').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
 					} else if ($.plush.kbpersec < 1 && $.plush.paused) {
-						document.title = 'PAUSED | '+$.plush.mbleft+' MB left | '+$.plush.noofslots+' NZBs';
+						document.title = 'PAUSED | '+$.plush.mbleft+' MB left | '+$.plush.queuenoofslots+' NZBs';
 						$('#stats_kbpersec').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
 					} else {
@@ -392,6 +397,9 @@ jQuery(function($) { // safely invoke $ selector
 						$('#stats_kbpersec').html($.plush.kbpersec);
 						$('#stats_eta').html($.plush.timeleft);
 					}
+
+					// Update bottom right stats
+					$('#queue_stats').html($.plush.queuestats);
 					
 					// Update warnings count/latest warning text in main menu
 					$('#have_warnings').html('('+$.plush.have_warnings+')');
@@ -458,16 +466,17 @@ jQuery(function($) { // safely invoke $ selector
 			$.plush.refresh()
 			triggers refreshQueue & refreshHistory
 			then loops (calls itself) after $.plush.refreshRate seconds
+			accepts 'force' boolean, used by manual refresh event (in event of refresh otherwise disabled)
 		
 		*********************************************
 		********************************************/
 		
-		refresh : function() {
+		refresh : function(force) {
 			
 			// Clear timeout in case multiple refreshes are triggered
 			clearTimeout($.plush.timeout);
 			
-			if ($.plush.refreshRate > 0) {
+			if (force || $.plush.refreshRate > 0) {
 				
 				$.plush.refreshQueue();
 				$.plush.refreshHistory();
@@ -654,7 +663,9 @@ jQuery(function($) { // safely invoke $ selector
 			});
 			
 			// Manual refresh
-			$('#manual_refresh_wrapper').click($.plush.refresh);
+			$('#manual_refresh_wrapper').click(function(){
+				$.plush.refresh(true);
+			});
 			
 
 			/********************************************
@@ -711,16 +722,44 @@ jQuery(function($) { // safely invoke $ selector
 				});
 			});
 			
+			// Pagination per-page selection
+			$("#queue-pagination-perpage").change(function(event){
+				$.plush.queueperpage = $(event.target).val();
+				$.cookie('queue_perpage', $.plush.queueperpage);
+				$.plush.queueforcerepagination = true;
+				$.plush.queuecurpage = 0; // refactor?
+				$.plush.refreshQueue();
+			});
+
+			// Restore saved queue per-page preference
+			if ($.cookie('queue_perpage'))
+				$.plush.queueperpage = $.cookie('queue_perpage');
+			$("#queue-pagination-perpage").val($.plush.queueperpage);
+			$.plush.queuecurpage = "0"; // default 1st page
+			
 			// Sustained binding of events for elements added to DOM
 			// Same idea as jQuery live(), but use jQuery livequery() plugin for functions/events not supported by live()
 			$('#queueTable').livequery(function() {
 				
-				// NZB list limit
-				$('#queue_view_preference').change(function(){
-					$.plush.queueViewPreference = $('#queue_view_preference').val();
-					$.cookie('queue_view_preference', $.plush.queueViewPreference, { expires: 365 });
-					$.plush.refreshQueue();
-				});
+				// Build pagination only when needed
+				if ( ( $.plush.queueforcerepagination && $.plush.queuenoofslots > $.plush.queueperpage) || $.plush.queuenoofslots > $.plush.queueperpage && 
+						Math.ceil($.plush.queueprevslots/$.plush.queueperpage) != 
+						Math.ceil($.plush.queuenoofslots/$.plush.queueperpage) ) {
+					
+					$.plush.queueforcerepagination = false;
+					$("#queue-pagination").pagination( $.plush.queuenoofslots , {
+						current_page: $.plush.queuecurpage,
+						items_per_page: $.plush.queueperpage,
+						num_display_entries: 8,
+						num_edge_entries: 1,
+						prev_text: "&laquo; Prev",
+						next_text: "Next &raquo;",
+						callback: $.plush.refreshQueue
+					});
+				} else if ($.plush.queuenoofslots <= $.plush.queueperpage) {
+					$("#queue-pagination").html(''); // remove pages if history empty
+				}
+				$.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
 				
 				// Drag and drop sorting
 				$("#queueTable").tableDnD({
@@ -733,7 +772,7 @@ jQuery(function($) { // safely invoke $ selector
 								$.ajax({
 									type: "POST",
 									url: "tapi",
-									data: "mode=switch&value="+row.id+"&value2="+i,
+									data: "mode=switch&value="+row.id+"&value2="+(i + $.plush.queuecurpage * $.plush.queueperpage),
 									success: function(result){
 										// change priority of the nzb if necessary (priority is returned by API)
 										var newPriority = $.trim(result.substring(result.length-2));
@@ -750,20 +789,21 @@ jQuery(function($) { // safely invoke $ selector
 				// NZB change priority
 				$('#queueTable .proc_priority').change(function(){
 					var nzbid = $(this).parent().parent().attr('id');
-					var oldPos = $('#'+nzbid)[0].rowIndex;
+					var oldPos = $('#'+nzbid)[0].rowIndex + $.plush.queuecurpage * $.plush.queueperpage;
 					$.ajax({
 						type: "POST",
 						url: "tapi",
 						data: 'mode=queue&name=priority&value='+nzbid+'&value2='+$(this).val(),
 						success: function(newPos){
 							// reposition the nzb if necessary (new position is returned by the API)
-							if ($.plush.queueViewPreference != 0 && $.plush.queueViewPreference <= parseInt(newPos)) {
+							if (parseInt(newPos) < $.plush.queuecurpage * $.plush.queueperpage
+							 		|| ($.plush.queuecurpage + 1) * $.plush.queueperpage < parseInt(newPos)) {
 								$.plush.skipRefresh = false;
 								$.plush.refreshQueue();
 							} else if (oldPos < newPos)
-								$('#'+nzbid).insertAfter($('#queueTable tr:eq('+ newPos +')'));
+								$('#'+nzbid).insertAfter($('#queueTable tr:eq('+ (newPos - $.plush.queuecurpage * $.plush.queueperpage) +')'));
 							else if (oldPos > newPos)
-								$('#'+nzbid).insertBefore($('#queueTable tr:eq('+ newPos +')'));
+								$('#'+nzbid).insertBefore($('#queueTable tr:eq('+ (newPos - $.plush.queuecurpage * $.plush.queueperpage) +')'));
 						}
 					});
 				});
@@ -800,10 +840,6 @@ jQuery(function($) { // safely invoke $ selector
 					$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
 			});
 			
-			// Restore saved queue view preference
-			if ($.cookie('queue_view_preference'))
-				$.plush.queueViewPreference = $.cookie('queue_view_preference');
-			
 			
 			/********************************************
 			*********************************************
@@ -834,16 +870,16 @@ jQuery(function($) { // safely invoke $ selector
 			});
 
 			// Restore saved history per-page preference
-			if ($.cookie('history_perpage')) {
+			if ($.cookie('history_perpage'))
 				$.plush.histperpage = $.cookie('history_perpage');
-				$("#history-pagination-perpage").val($.plush.histperpage);
-			}
+			$("#history-pagination-perpage").val($.plush.histperpage);
+			$.plush.histcurpage = "0"; // default 1st page
 
 			// Sustained binding of events for elements added to DOM
 			$('#historyTable').livequery(function() {
 				
 				// Build pagination only when needed
-				if ($.plush.histforcerepagination || $.plush.histnoofslots > $.plush.histperpage && 
+				if ( ( $.plush.histforcerepagination && $.plush.histnoofslots > $.plush.histperpage) || $.plush.histnoofslots > $.plush.histperpage && 
 						Math.ceil($.plush.histprevslots/$.plush.histperpage) != 
 						Math.ceil($.plush.histnoofslots/$.plush.histperpage) ) {
 					

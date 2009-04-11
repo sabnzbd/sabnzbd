@@ -9,12 +9,13 @@
         $.plush.finishaction 	= '$finishaction';
         $.plush.paused          = <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
         $.plush.pause_int		= '$pause_int';
-        $.plush.noofslots      	= $noofslots;
+        $.plush.queuenoofslots  = $noofslots;
         $.plush.mbleft          = <!--#echo "%.0f" % float($mbleft)#-->;
         $.plush.kbpersec      	= <!--#echo "%.0f" % float($kbpersec)#-->;
         $.plush.timeleft      	= '$timeleft';
         $.plush.eta             = '$eta';
         $.plush.have_warnings	= $have_warnings;
+        $.plush.queuestats		= '<!--#if $noofslots > 0#--><strong>$mbleft&nbsp;of&nbsp;$mb&nbsp;MB</strong>&nbsp;Remaining&nbsp;&nbsp;&nbsp;&nbsp;<!--#end if#--><!--#if $diskspace1 == $diskspace2#--><strong class="<!--#if float($diskspace1) < float($mb)/1024 #-->stats_incomplete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free&nbsp;Space</small></span><!--#else#--><strong class="<!--#if float($diskspace1) < float($mb)/1024 #-->stats_incomplete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free&nbsp;(Temp)<strong class="<!--#if float($diskspace2) < float($mb)/1024 #-->stats_complete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_complete_freespace<!--#end if#-->">$diskspace2&nbsp;GB</strong>&nbsp;Free&nbsp;Space<!--#end if#-->';
         $.plush.last_warning 	= "<!--#echo $last_warning.replace("\n"," ").replace('"',"&quot;") #-->";
     });
 </script>
@@ -92,37 +93,3 @@
 <!--#end for#-->
 <!--#end if#-->
 </table>
-
-<div class="box_fatbottom">
-    
-    <div class="right_stats">
-        <!--#if $noofslots > 0#-->
-        <strong>$mbleft&nbsp;of&nbsp;$mb&nbsp;MB</strong>&nbsp;Remaining&nbsp;&nbsp;&nbsp;&nbsp;
-        <!--#end if#-->
-        <!--#if $diskspace1 == $diskspace2#-->
-        <strong class="<!--#if float($diskspace1) < float($mb)/1024 #-->stats_incomplete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free&nbsp;Space</small></span>
-        <!--#else#-->
-        <strong class="<!--#if float($diskspace1) < float($mb)/1024 #-->stats_incomplete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong>&nbsp;Free&nbsp;(Temp)
-        <strong class="<!--#if float($diskspace2) < float($mb)/1024 #-->stats_complete_freespace_needspace" title="Not enough disk space to complete downloads!<!--#else#-->stats_complete_freespace<!--#end if#-->">$diskspace2&nbsp;GB</strong>&nbsp;Free&nbsp;Space
-        <!--#end if#-->
-    </div>
-    
-    <div class="left_stats">
-        <small>Showing:</small>&nbsp;<select id="queue_view_preference">
-            <option value=0<!--#if $limit==0#--> selected<!--#end if#-->>Everything</option>
-            <option value=1<!--#if $limit==1#--> selected<!--#end if#-->>#1 Only</option>
-            <option value=2<!--#if $limit==2#--> selected<!--#end if#-->>Top 2</option>
-            <option value=5<!--#if $limit==5#--> selected<!--#end if#-->>Top 5</option>
-            <option value=10<!--#if $limit==10#--> selected<!--#end if#-->>Top 10</option>
-            <option value=15<!--#if $limit==15#--> selected<!--#end if#-->>Top 15</option>
-            <option value=20<!--#if $limit==20#--> selected<!--#end if#-->>Top 20</option>
-            <option value=25<!--#if $limit==25#--> selected<!--#end if#-->>Top 25</option>
-            <option value=30<!--#if $limit==30#--> selected<!--#end if#-->>Top 30</option>
-            <option value=40<!--#if $limit==40#--> selected<!--#end if#-->>Top 40</option>
-            <option value=50<!--#if $limit==50#--> selected<!--#end if#-->>Top 50</option>
-            <option value=100<!--#if $limit==100#--> selected<!--#end if#-->>Top 100</option>
-            <option value=200<!--#if $limit==200#--> selected<!--#end if#-->>Top 200</option>
-        </select>&nbsp;<small>of</small>&nbsp;<strong>$noofslots</strong>&nbsp;<small>NZB<!--#if $noofslots != 1 #-->s<!--#end if#--></small>&nbsp;&nbsp;&nbsp;&nbsp;
-    </div>
-    
-</div>

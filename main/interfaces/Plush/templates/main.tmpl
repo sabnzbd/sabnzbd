@@ -210,6 +210,22 @@
                 <p class="loading">&nbsp;</p>
                 <input type="hidden" id="queue_view_preference" value="" />
             </div>
+			<div class="box_fatbottom">
+			    <div class="right_stats" id="queue_stats" nowrap></div>
+			    <div class="left_stats">
+			    	<select id="queue-pagination-perpage" class="pagination-perpage">
+			    		<option value="5">5 / page</option>
+			    		<option value="10">10 / page</option>
+			    		<option value="20">20 / page</option>
+			    		<option value="30">30 / page</option>
+			    		<option value="40">40 / page</option>
+			    		<option value="50">50 / page</option>
+			    		<option value="9999999">Everything</option>
+			    	</select>
+			    	<div id="queue-pagination" class="pagination"></div>
+			    </div>
+			</div>
+
 
             <!-- History Menu/Banner -->
             <div class="box_banner_history">
@@ -230,11 +246,13 @@
 			    <div class="right_stats" id="history_stats" nowrap></div>
 			    <div class="left_stats">
 			    	<select id="history-pagination-perpage" class="pagination-perpage">
+			    		<option value="5">5 / page</option>
 			    		<option value="10">10 / page</option>
 			    		<option value="20">20 / page</option>
 			    		<option value="30">30 / page</option>
 			    		<option value="40">40 / page</option>
 			    		<option value="50">50 / page</option>
+			    		<option value="9999999">Everything</option>
 			    	</select>
 			    	<div id="history-pagination" class="pagination"></div>
 			    	<a name="p"></a>
