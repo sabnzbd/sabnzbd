@@ -824,14 +824,30 @@ jQuery(function($) { // safely invoke $ selector
 				});
 			});
 			
+			// Pagination per-page selection
+			$("#history-pagination-perpage").change(function(event){
+				$.plush.histperpage = $(event.target).val();
+				$.cookie('history_perpage', $.plush.histperpage);
+				$.plush.histforcerepagination = true;
+				$.plush.histcurpage = 0; // refactor?
+				$.plush.refreshHistory();
+			});
+
+			// Restore saved history per-page preference
+			if ($.cookie('history_perpage')) {
+				$.plush.histperpage = $.cookie('history_perpage');
+				$("#history-pagination-perpage").val($.plush.histperpage);
+			}
+
 			// Sustained binding of events for elements added to DOM
 			$('#historyTable').livequery(function() {
 				
 				// Build pagination only when needed
-				if ($.plush.histnoofslots > $.plush.histperpage && 
+				if ($.plush.histforcerepagination || $.plush.histnoofslots > $.plush.histperpage && 
 						Math.ceil($.plush.histprevslots/$.plush.histperpage) != 
 						Math.ceil($.plush.histnoofslots/$.plush.histperpage) ) {
 					
+					$.plush.histforcerepagination = false;
 					$("#history-pagination").pagination( $.plush.histnoofslots , {
 						current_page: $.plush.histcurpage,
 						items_per_page: $.plush.histperpage,

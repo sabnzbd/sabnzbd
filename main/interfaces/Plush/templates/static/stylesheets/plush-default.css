@@ -44,10 +44,14 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 
 /* for jQuery Pagination Plugin */
+.pagination-perpage {
+	float:left;
+}
 .pagination {
 	font-size: 100%;
 	margin-left: -15px;
 	margin-top: -15px;
+	float:left;
 }
 .pagination a {
     text-decoration: none;
