@@ -432,32 +432,32 @@ def get_webhost(cherryhost, cherryport, https_port):
         else:
             cherryhost = socket.gethostname()
             browserhost = cherryhost
-	 
+
     # 0.0.0.0 will listen on all ipv4 interfaces (no ipv6 addresses)
     elif cherryhost == '0.0.0.0':
         # Just take the gamble for this
         cherryhost = '0.0.0.0'
         browserhost = localhost
-	
+
     # :: will listen on all ipv6 interfaces (no ipv4 addresses)
     elif cherryhost in ('::','[::]'):
 	cherryhost = cherryhost.strip('[').strip(']')
 	# Assume '::1' == 'localhost'
 	browserhost = localhost
-	
+
     # IPV6 address
     elif cherryhost.find('[') >= 0 or cherryhost.find(':') >= 0:
         browserhost = cherryhost
-	
+
     # IPV6 numeric address
     elif cherryhost.replace('.', '').isdigit():
         # IPV4 numerical
         browserhost = cherryhost
-	
+
     elif cherryhost == localhost:
         cherryhost = localhost
         browserhost = localhost
-	
+
     else:
         # If on Vista and/or APIPA, use numerical IP, to help FireFoxers
         if ipv6 and ipv4:
@@ -570,7 +570,8 @@ def copy_old_files(newpath):
                 shutil.copy(os.path.join(oldpath, SCAN_FILE_NAME), newpath)
             except:
                 pass
-	    
+
+
 def cherrypy_logging(log_path):
     log = cherrypy.log
     log.access_file = ''
@@ -579,7 +580,7 @@ def cherrypy_logging(log_path):
     maxBytes = getattr(log, "rot_maxBytes", 524288)
     # cherrypy.log cherrypy.log.1 cherrypy.log.2
     backupCount = getattr(log, "rot_backupCount", 3)
-    
+
     # Make a new RotatingFileHandler for the error log.
     fname = getattr(log, "rot_error_file", log_path)
     h = logging.handlers.RotatingFileHandler(fname, 'a', maxBytes, backupCount)
@@ -668,6 +669,7 @@ def main():
     vista64 = False
     force_web = False
     https = False
+    re_argv = [sys.argv[0]]
 
     for opt, arg in opts:
         if (opt in ('-d', '--daemon')):
@@ -676,11 +678,14 @@ def main():
             AUTOBROWSER = False
             sabnzbd.DAEMON = True
             consoleLogging = False
+            re_argv.append(opt)
         elif opt in ('-h', '--help'):
             print_help()
             ExitSab(0)
         elif opt in ('-f', '--config-file'):
             inifile = arg
+            re_argv.append(opt)
+            re_argv.append(arg)
         elif opt in ('-t', '--templates'):
             web_dir = arg
         elif opt in ('-2', '--template2'):
@@ -725,10 +730,14 @@ def main():
                 pass
         elif opt in ('--force'):
             force_web = True
+            re_argv.append(opt)
         elif opt in ('--https'):
             https_port = int(arg)
+            re_argv.append(opt)
+            re_argv.append(arg)
         elif opt in ('--testlog'):
             testlog = True
+            re_argv.append(opt)
 
     # Detect Vista or higher
     if sabnzbd.WIN32:
@@ -1003,7 +1012,6 @@ def main():
             adapter = _cpserver.ServerAdapter(cherrypy.engine, secure_server, secure_server.bind_addr)
             adapter.subscribe()
 
-
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
 
@@ -1101,6 +1109,9 @@ def main():
             sabnzbd.halt()
             cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
+            if downloader.paused():
+                re_argv.append('-p')
+            sys.argv = re_argv
             if sabnzbd.DARWIN:
                 args = sys.argv[:]
                 args.insert(0, sys.executable)
