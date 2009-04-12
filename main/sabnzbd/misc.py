@@ -398,7 +398,7 @@ def panic_xport(host, port):
 def panic_queue(name):
     launch_a_browser(panic_message(PANIC_QUEUE, name, 0))
 
-def panic_templ(name):
+def panic_tmpl(name):
     launch_a_browser(panic_message(PANIC_TEMPL, name, 0))
 
 def panic(reason, remedy=""):
