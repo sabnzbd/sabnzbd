@@ -486,18 +486,21 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def has_articles_for(self, server):
+        ''' Check whether there are any pending articles for the downloader '''
         if not self.__nzo_list:
             return False
         elif self.__top_only:
             for nzo in self.__nzo_list:
-                if not nzo.get_status() == 'Paused' and not nzo.get_status() == 'Fetching':
+                # Ignore any items that are in a paused or fetching state
+                if nzo.get_status() not in ('Paused', 'Fetching'):
                     return not nzo.server_in_try_list(server)
         else:
-            if not nzo.get_status() == 'Paused' and not nzo.get_status() == 'Fetching':
-                return not self.server_in_try_list(server)
+            return not self.server_in_try_list(server)
 
     @synchronized(NZBQUEUE_LOCK)
     def has_forced_items(self):
+        ''' Check if the queue contains any Forced 
+        Priority items to download while paused '''
         for nzo in self.__nzo_list:
             if nzo.get_priority() == TOP_PRIORITY:
                 return True
