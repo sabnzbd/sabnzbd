@@ -30,7 +30,7 @@ from threading import Thread, RLock
 
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import Panic_Queue, ExitSab, sanitize_foldername
+from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername
 import sabnzbd.database as database
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -76,8 +76,8 @@ class NzbQueue(TryList):
                     logging.error("Incompatible queuefile found, cannot proceed")
                     self.__downloaded_items = []
                     nzo_ids = []
-                    Panic_Queue(os.path.join(cfg.CACHE_DIR.get_path(),QUEUE_FILE_NAME))
-                    ExitSab(2)
+                    panic_queue(os.path.join(cfg.CACHE_DIR.get_path(),QUEUE_FILE_NAME))
+                    exit_sab(2)
             except ValueError:
                 logging.error("Error loading %s, corrupt file " + \
                               "detected", os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME))
@@ -116,13 +116,13 @@ class NzbQueue(TryList):
             try:
                 logging.info("Regenerating item: %s", nzo_id)
                 r, u, d = future.get_repair_opts()
-                if not r == None:
+                if not r is None:
                     pp = sabnzbd.opts_to_pp(r, u, d)
                 scr = future.get_script()
-                if scr == None:
+                if scr is None:
                     scr = script
                 categ = future.get_cat()
-                if categ == None:
+                if categ is None:
                     categ = cat
 
                 try:
@@ -389,7 +389,7 @@ class NzbQueue(TryList):
                 reverse = True
             else:
                 reverse = False
-        if reverse == None:
+        if reverse is None:
             reverse = False
         if field.lower() == 'name':
             self.sort_by_name(reverse)
@@ -641,12 +641,12 @@ def _nzo_date_cmp(nzo1, nzo2):
     avg_date1 = nzo1.get_avg_date()
     avg_date2 = nzo2.get_avg_date()
 
-    if avg_date1 == None and avg_date2 == None:
+    if avg_date1 is None and avg_date2 is None:
         return 0
 
-    if avg_date1 == None:
+    if avg_date1 is None:
         avg_date1 = datetime.datetime.now()
-    elif avg_date2 == None:
+    elif avg_date2 is None:
         avg_date2 = datetime.datetime.now()
 
     return cmp(avg_date1, avg_date2)

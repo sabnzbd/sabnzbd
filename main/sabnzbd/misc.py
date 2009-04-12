@@ -50,21 +50,21 @@ PANIC_FWALL = 4
 PANIC_OTHER = 5
 PANIC_XPORT = 6
 
-def Lower(txt):
+def safe_lower(txt):
     if txt:
         return txt.lower()
     else:
         return ''
 
 
-def Cat2Opts(cat, pp, script):
+def cat_to_opts(cat, pp, script):
     """
         Derive options from category, if option not already defined.
         Specified options have priority over category-options
     """
     if not pp:
         try:
-            pp = config.get_categories()[Lower(cat)].pp.get()
+            pp = config.get_categories()[safe_lower(cat)].pp.get()
             # Get the default pp
             if pp == '':
                 pp = cfg.DIRSCAN_PP.get()
@@ -74,9 +74,9 @@ def Cat2Opts(cat, pp, script):
 
     if not script:
         try:
-            script = config.get_categories()[Lower(cat)].script.get()
+            script = config.get_categories()[safe_lower(cat)].script.get()
             # Get the default script
-            if script == '' or Lower(script) == 'default':
+            if script == '' or safe_lower(script) == 'default':
                 script = cfg.DIRSCAN_SCRIPT.get()
             logging.debug('Job gets script %s', script)
         except KeyError:
@@ -148,7 +148,7 @@ def sanitize_foldername(name):
 ################################################################################
 # DirPermissions                                                               #
 ################################################################################
-def CreateAllDirs(path, umask=False):
+def create_all_dirs(path, umask=False):
     """ Create all required path elements and set umask on all
         Return True if last elelent could be made or exists """
     result = True
@@ -198,7 +198,7 @@ def create_real_path(name, loc, path, umask=False):
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
-            if not CreateAllDirs(my_dir, umask):
+            if not create_all_dirs(my_dir, umask):
                 logging.error('Cannot create directory %s', my_dir)
                 return (False, my_dir)
 
@@ -211,13 +211,13 @@ def create_real_path(name, loc, path, umask=False):
         return (False, "")
 
 ################################################################################
-# Get_User_ShellFolders
+# get_user_shellfolders
 #
 # Return a dictionary with Windows Special Folders
 # Read info from the registry
 ################################################################################
 
-def Get_User_ShellFolders():
+def get_user_shellfolders():
     import _winreg
     values = {}
 
@@ -385,23 +385,23 @@ def panic_message(panic, a=None, b=None):
     return url
 
 
-def Panic_FWall(vista):
+def panic_fwall(vista):
     launch_a_browser(panic_message(PANIC_FWALL, vista))
 
-def Panic_Port(host, port):
+def panic_port(host, port):
     launch_a_browser(panic_message(PANIC_PORT, host, port))
 
-def Panic_XPort(host, port):
+def panic_xport(host, port):
     launch_a_browser(panic_message(PANIC_XPORT, host, port))
     logging.error('You have no permisson to use port %s', port)
 
-def Panic_Queue(name):
+def panic_queue(name):
     launch_a_browser(panic_message(PANIC_QUEUE, name, 0))
 
-def Panic_Templ(name):
+def panic_templ(name):
     launch_a_browser(panic_message(PANIC_TEMPL, name, 0))
 
-def Panic(reason, remedy=""):
+def panic(reason, remedy=""):
     print "\nFatal error:\n  %s\n%s" % (reason, remedy)
     launch_a_browser(panic_message(PANIC_OTHER, reason, remedy))
 
@@ -464,7 +464,7 @@ def error_page_401(status, message, traceback, version):
 #
 ################################################################################
 
-def ConvertVersion(text):
+def convert_version(text):
     """ Convert version string to numerical value and a testversion indicator """
     version = 0
     test = True
@@ -488,7 +488,7 @@ def check_latest_version():
     if not cfg.VERSION_CHECK.get():
         return
 
-    current, testver = ConvertVersion(sabnzbd.__version__)
+    current, testver = convert_version(sabnzbd.__version__)
     if not current:
         logging.debug("Unsupported release number (%s), will not check", sabnzbd.__version__)
         return
@@ -519,8 +519,8 @@ def check_latest_version():
         url_beta = url
 
 
-    latest, dummy = ConvertVersion(latest_label)
-    latest_test, dummy = ConvertVersion(latest_testlabel)
+    latest, dummy = convert_version(latest_label)
+    latest_test, dummy = convert_version(latest_testlabel)
 
     logging.debug("Checked for a new release, cur= %s, latest= %s (on %s)", current, latest, url)
 
@@ -577,7 +577,7 @@ def to_units(val):
         return "%.0f" % val
 
 #------------------------------------------------------------------------------
-def SameFile(a, b):
+def same_file(a, b):
     """ Return True if both paths are identical """
 
     if "samefile" in os.path.__dict__:
@@ -594,14 +594,14 @@ def SameFile(a, b):
             return False
 
 #------------------------------------------------------------------------------
-def ExitSab(value):
+def exit_sab(value):
     sys.stderr.flush()
     sys.stdout.flush()
     sys.exit(value)
 
 
 #------------------------------------------------------------------------------
-def Notify(notificationName, message):
+def notify(notificationName, message):
     """ Send a notification to the OS (OSX-only) """
     if sabnzbd.FOUNDATION:
         pool = Foundation.NSAutoreleasePool.alloc().init()
@@ -611,7 +611,7 @@ def Notify(notificationName, message):
 
 
 #------------------------------------------------------------------------------
-def SplitHost(srv):
+def split_host(srv):
     """ Split host:port notation, allowing for IPV6 """
     # Cannot use split, because IPV6 of "a:b:c:port" notation
     # Split on the last ':'
@@ -672,7 +672,7 @@ def create_dirs(dirpath):
     """ Create directory tree, obeying permissions """
     if not os.path.exists(dirpath):
         logging.info('Creating directories: %s', dirpath)
-        if not CreateAllDirs(dirpath, True):
+        if not create_all_dirs(dirpath, True):
             logging.error("Failed making (%s)", dirpath)
             logging.debug("Traceback: ", exc_info = True)
             return None
@@ -720,7 +720,7 @@ def cleanup_empty_directories(path):
 
 
 @synchronized(DIR_LOCK)
-def getFilepath(path, nzo, filename):
+def get_filepath(path, nzo, filename):
     """ Create unique filepath """
     # This procedure is only used by the Assembler thread
     # It does no umask setting
@@ -754,7 +754,7 @@ def getFilepath(path, nzo, filename):
     return fullPath
 
 
-def BadFetch(nzo, url, retry=False, archive=False):
+def bad_fetch(nzo, url, retry=False, archive=False):
     """ Create History entry for failed URL Fetch """
     logging.error("Error getting url %s", url)
 
@@ -796,7 +796,7 @@ def BadFetch(nzo, url, retry=False, archive=False):
     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
 
 
-def OnCleanUpList(filename, skip_nzb=False):
+def on_cleanup_list(filename, skip_nzb=False):
     """ Return True if a filename matches the clean-up list """
 
     if cfg.CLEANUP_LIST.get():

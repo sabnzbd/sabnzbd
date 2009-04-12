@@ -133,7 +133,7 @@ class URLGrabber(Thread):
                                 break
 
             if not fn:
-                misc.BadFetch(future_nzo, url, retry=filename)
+                misc.bad_fetch(future_nzo, url, retry=filename)
                 continue
 
             if not filename:
@@ -145,7 +145,7 @@ class URLGrabber(Thread):
             script = future_nzo.get_script()
             cat = future_nzo.get_cat()
             priority = future_nzo.get_priority()
-            cat, pp, script = misc.Cat2Opts(cat, pp, script)
+            cat, pp, script = misc.cat_to_opts(cat, pp, script)
 
 
             if os.path.splitext(filename)[1].lower() == '.nzb':
@@ -155,7 +155,7 @@ class URLGrabber(Thread):
                 elif res == -2:
                     self.add(url, future_nzo)
                 else:
-                    misc.BadFetch(future_nzo, url, retry=False)
+                    misc.bad_fetch(future_nzo, url, retry=False)
             else:
                 if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
                     nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
@@ -164,7 +164,7 @@ class URLGrabber(Thread):
                         os.remove(fn)
                     except:
                         pass
-                    misc.BadFetch(future_nzo, url, retry=False, archive=True)
+                    misc.bad_fetch(future_nzo, url, retry=False, archive=True)
 
             # Don't pound the website!
             time.sleep(2.0)

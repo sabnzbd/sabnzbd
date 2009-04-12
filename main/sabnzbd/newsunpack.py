@@ -1115,13 +1115,13 @@ def QuickCheck(set, nzo):
     """ Check all on-the-fly md5sums of a set """
 
     md5pack = nzo.get_md5pack(set)
-    if md5pack == None:
+    if md5pack is None:
         return False
 
     result = False
     nzf_list = nzo.get_files()
     for file in md5pack:
-        if sabnzbd.misc.OnCleanUpList(file, False):
+        if sabnzbd.misc.on_cleanup_list(file, False):
             result = True
             continue
         found = False

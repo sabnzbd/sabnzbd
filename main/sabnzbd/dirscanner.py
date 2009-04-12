@@ -107,7 +107,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns: -1==Error/Retry, 0==OK, 1==Ignore
     """
-    if catdir == None:
+    if catdir is None:
         catdir = cat
 
     filename, cat = name_to_cat(filename, catdir)
@@ -172,7 +172,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
     """
-    if catdir == None:
+    if catdir is None:
         catdir = cat
 
     try:

@@ -34,7 +34,7 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.newsunpack import build_command
-from sabnzbd.misc import to_units, from_units, SplitHost
+from sabnzbd.misc import to_units, from_units, split_host
 import sabnzbd.cfg as cfg
 
 
@@ -51,7 +51,7 @@ def send(message):
     if cfg.EMAIL_SERVER.get() and cfg.EMAIL_TO.get() and cfg.EMAIL_FROM.get():
 
         failure = "Email failed"
-        server, port = SplitHost(cfg.EMAIL_SERVER.get())
+        server, port = split_host(cfg.EMAIL_SERVER.get())
         if not port:
             port = 25
 

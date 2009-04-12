@@ -1014,7 +1014,7 @@ class NzbObject(TryList):
         return self.__repair, self.__unpack, self.__delete
 
     def get_pp(self):
-        if self.__repair == None:
+        if self.__repair is None:
             return None
         else:
             return sabnzbd.opts_to_pp(self.__repair, self.__unpack, self.__delete)

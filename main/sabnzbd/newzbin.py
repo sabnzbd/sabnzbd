@@ -37,7 +37,7 @@ from threading import *
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import Cat2Opts, sanitize_foldername, BadFetch
+from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch
 from sabnzbd.nzbstuff import CatConvert
 from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
@@ -183,7 +183,7 @@ class MSGIDGrabber(Thread):
                 cat = nzo.get_cat()
                 if not cat:
                     cat = CatConvert(newzbin_cat)
-                cat, pp, script = Cat2Opts(cat, pp, script)
+                cat, pp, script = cat_to_opts(cat, pp, script)
 
                 priority = nzo.get_priority()
                 try:
@@ -197,7 +197,7 @@ class MSGIDGrabber(Thread):
                     sleeper(int(filename))
                 else:
                     # Fatal error, give up on this one
-                    BadFetch(nzo, msgid, retry=False)
+                    bad_fetch(nzo, msgid, retry=False)
                     msgid = None
 
             # Keep some distance between the grabs

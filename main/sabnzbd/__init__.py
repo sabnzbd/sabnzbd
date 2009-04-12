@@ -684,7 +684,7 @@ def pp_to_opts(pp):
 
 def opts_to_pp(repair, unpack, delete):
     """ Convert (repair, unpack, delete) to numeric process options """
-    if repair == None:
+    if repair is None:
         return None
     pp = 0
     if repair: pp += 1

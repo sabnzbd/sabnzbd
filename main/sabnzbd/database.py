@@ -136,7 +136,7 @@ class HistoryDB:
         return self.execute('''DELETE FROM history WHERE status="Failed"''', save=True)
 
     def remove_history(self, jobs=None):
-        if jobs == None:
+        if jobs is None:
             self.remove_all()
         else:
             if type(jobs) == type(''):

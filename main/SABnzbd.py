@@ -62,9 +62,9 @@ from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
 from sabnzbd.interface import *
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
-from sabnzbd.misc import Get_User_ShellFolders, launch_a_browser, from_units, \
-     check_latest_version, Panic_Templ, Panic_Port, Panic_FWall, Panic, ExitSab, \
-     Panic_XPort, Notify, SplitHost, ConvertVersion, get_ext, create_https_certificates
+from sabnzbd.misc import get_user_shellfolders, launch_a_browser, from_units, \
+     check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
+     panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -226,18 +226,18 @@ def Bail_Out(browserhost, cherryport, access=False):
     """
     logging.error("Failed to start web-interface")
     if access:
-        Panic_XPort(browserhost, cherryport)
+        panic_xport(browserhost, cherryport)
     else:
-        Panic_Port(browserhost, cherryport)
+        panic_port(browserhost, cherryport)
     sabnzbd.halt()
-    ExitSab(2)
+    exit_sab(2)
 
 #------------------------------------------------------------------------------
 def Web_Template(key, defweb, wdir):
     """ Determine a correct web template set,
         return full template path
     """
-    if wdir == None:
+    if wdir is None:
         try:
             wdir = key.get()
         except:
@@ -259,8 +259,8 @@ def Web_Template(key, defweb, wdir):
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
             logging.exception('Cannot find standard template: %s', full_dir)
-            Panic_Templ(full_dir)
-            ExitSab(1)
+            panic_tmpl(full_dir)
+            exit_sab(1)
 
     return real_path(full_dir, "templates")
 
@@ -292,7 +292,7 @@ def GetProfileInfo(vista):
             pass
         ok = True
     elif sabnzbd.WIN32:
-        specials = Get_User_ShellFolders()
+        specials = get_user_shellfolders()
         try:
             sabnzbd.DIR_APPDATA = '%s\\%s' % (specials['AppData'], DEF_WORKDIR)
             sabnzbd.DIR_LCLDATA = '%s\\%s' % (specials['Local AppData'], DEF_WORKDIR)
@@ -341,9 +341,9 @@ def GetProfileInfo(vista):
         ok = True
 
     if not ok:
-        Panic("Cannot access the user profile.",
+        panic("Cannot access the user profile.",
               "Please start with sabnzbd.ini file in another location")
-        ExitSab(2)
+        exit_sab(2)
 
 
 #------------------------------------------------------------------------------
@@ -397,7 +397,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     """ Determine the webhost address and port,
         return (host, port, browserhost)
     """
-    if cherryhost == None:
+    if cherryhost is None:
         cherryhost = sabnzbd.cfg.CHERRYHOST.get()
     else:
         sabnzbd.cfg.CHERRYHOST.set(cherryhost)
@@ -479,12 +479,12 @@ def get_webhost(cherryhost, cherryport, https_port):
     if ipv6 and ipv4 and cherryhost == '' and sabnzbd.WIN32:
         logging.warning("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
 
-    if cherryport == None:
+    if cherryport is None:
         cherryport = sabnzbd.cfg.CHERRYPORT.get_int()
     else:
         sabnzbd.cfg.CHERRYPORT.set(str(cherryport))
 
-    if https_port == None:
+    if https_port is None:
         https_port = sabnzbd.cfg.HTTPS_PORT.get_int()
     else:
         sabnzbd.cfg.HTTPS_PORT.set(str(https_port))
@@ -535,7 +535,7 @@ def check_for_sabnzbd(url, upload_nzbs):
         else:
             # Launch the web browser and quit since sabnzbd is already running
             launch_a_browser(url, force=True)
-        ExitSab(0)
+        exit_sab(0)
         return True
     return False
 
@@ -651,7 +651,7 @@ def main():
                                     'version', 'https=', 'testlog'])
     except getopt.GetoptError:
         print_help()
-        ExitSab(2)
+        exit_sab(2)
 
     fork = False
     pause = False
@@ -681,7 +681,7 @@ def main():
             re_argv.append(opt)
         elif opt in ('-h', '--help'):
             print_help()
-            ExitSab(0)
+            exit_sab(0)
         elif opt in ('-f', '--config-file'):
             inifile = arg
             re_argv.append(opt)
@@ -691,7 +691,7 @@ def main():
         elif opt in ('-2', '--template2'):
             web_dir2 = arg
         elif opt in ('-s', '--server'):
-            (cherryhost, cherryport) = SplitHost(arg)
+            (cherryhost, cherryport) = split_host(arg)
         elif opt in ('-n', '--nobrowser'):
             AUTOBROWSER = False
         elif opt in ('-b', '--browser'):
@@ -708,7 +708,7 @@ def main():
                 cherrypylogging = -1
             if cherrypylogging < 0 or cherrypylogging > 2:
                 print_help()
-                ExitSab(1)
+                exit_sab(1)
         elif opt in ('-l', '--logging'):
             try:
                 logging_level = int(arg)
@@ -716,10 +716,10 @@ def main():
                 logging_level = -1
             if logging_level < 0 or logging_level > 2:
                 print_help()
-                ExitSab(1)
+                exit_sab(1)
         elif opt in ('-v', '--version'):
             print_version()
-            ExitSab(0)
+            exit_sab(0)
         elif opt in ('-p', '--pause'):
             pause = True
         elif opt in ('--delay'):
@@ -769,15 +769,15 @@ def main():
         try:
             os.makedirs(sabnzbd.DIR_LCLDATA)
         except IOError:
-            Panic('Cannot create folder "%s".' % sabnzbd.DIR_LCLDATA, 'Check specified INI file location.')
-            ExitSab(1)
+            panic('Cannot create folder "%s".' % sabnzbd.DIR_LCLDATA, 'Check specified INI file location.')
+            exit_sab(1)
 
     sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA, sabnzbd.DIR_PROG, sabnzbd.DIR_INTERFACES)
 
     if not config.read_config(inifile):
-        Panic('"%s" is not a valid configuration file.' % inifile, \
+        panic('"%s" is not a valid configuration file.' % inifile, \
               'Specify a correct file or delete this file.')
-        ExitSab(1)
+        exit_sab(1)
 
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)
@@ -815,17 +815,17 @@ def main():
                     cherryport = port
 
 
-    if cherrypylogging == None:
+    if cherrypylogging is None:
         cherrypylogging = sabnzbd.cfg.LOG_WEB.get()
     else:
         sabnzbd.cfg.LOG_WEB.set(cherrypylogging)
 
-    if logging_level == None:
+    if logging_level is None:
         logging_level = sabnzbd.cfg.LOG_LEVEL.get()
     else:
         sabnzbd.cfg.LOG_LEVEL.set(logging_level)
 
-    ver, testRelease = ConvertVersion(sabnzbd.__version__)
+    ver, testRelease = convert_version(sabnzbd.__version__)
     if testRelease and not testlog:
         logging_level = 2
         cherrypylogging = 1
@@ -860,7 +860,7 @@ def main():
     except IOError:
         print "Error:"
         print "Can't write to logfile"
-        ExitSab(2)
+        exit_sab(2)
 
     if fork:
         try:
@@ -924,7 +924,7 @@ def main():
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting',
                       sabnzbd.MY_NAME, sabnzbd.__version__)
-        ExitSab(2)
+        exit_sab(2)
 
     os.chdir(sabnzbd.DIR_PROG)
 
@@ -1051,9 +1051,9 @@ def main():
     except IOError, error:
         if str(error) == 'Port not bound.':
             if not force_web:
-                Panic_FWall(vista)
+                panic_fwall(vista)
                 sabnzbd.halt()
-                ExitSab(2)
+                exit_sab(2)
         else:
 	    logging.debug("Failed to start web-interface: ", exc_info = True)
             Bail_Out(browserhost, cherryport)
@@ -1072,7 +1072,7 @@ def main():
     else:
         launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
 
-    Notify("SAB_Launched", None)
+    notify("SAB_Launched", None)
 
     # Now's the time to check for a new version
     check_latest_version()
@@ -1128,7 +1128,7 @@ def main():
 
     config.save_config()
 
-    Notify("SAB_Shutdown", None)
+    notify("SAB_Shutdown", None)
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()

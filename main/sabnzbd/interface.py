@@ -41,8 +41,8 @@ from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, loadavg, \
-     to_units, from_units, SameFile, diskfree, disktotal, get_ext,\
-     get_filename, Cat2Opts
+     to_units, from_units, diskfree, disktotal, get_ext,\
+     get_filename, cat_to_opts
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
 from sabnzbd.codecs import TRANS, xml_name
@@ -120,7 +120,7 @@ def ListCats(default=False):
 def ConvertSpecials(p):
     """ Convert None to 'None' and 'Default' to ''
     """
-    if p == None:
+    if p is None:
         p = 'None'
     elif p.lower() == 'default':
         p = ''
@@ -596,7 +596,7 @@ class MainPage:
                 if cat == 'None':
                     cat = None
                 nzbqueue.change_cat(nzo_id, cat)
-                cat, pp, script = Cat2Opts(cat, None, None)
+                cat, pp, script = cat_to_opts(cat, None, None)
 
                 nzbqueue.change_script(nzo_id, script)
                 nzbqueue.change_opts(nzo_id, pp)
@@ -3368,7 +3368,7 @@ class xml_factory:
 
 
     def _tuple(self, keyw, lst, text=None):
-        if text == None:
+        if text is None:
             text = []
 
         for item in lst:
@@ -3376,7 +3376,7 @@ class xml_factory:
         return ''.join(text)
 
     def _dict(self, keyw, lst, text=None):
-        if text == None:
+        if text is None:
             text = []
 
         for key in lst.keys():
@@ -3395,7 +3395,7 @@ class xml_factory:
             return ''
 
     def _list(self, keyw, lst, text=None):
-        if text == None:
+        if text is None:
             text = []
 
         #deal with lists
@@ -3796,9 +3796,9 @@ def format_history_for_queue():
 
 def get_active_history(queue=None, items=None):
     # Get the currently in progress and active history queue.
-    if items == None:
+    if items is None:
         items = []
-    if queue == None:
+    if queue is None:
         queue = postproc.history_queue()
 
     for nzo in queue:

@@ -36,7 +36,7 @@ except:
     new_md5 = md5.new
 
 import sabnzbd
-from sabnzbd.misc import getFilepath, sanitize_filename, get_unique_path
+from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path
 import sabnzbd.cfg as cfg
 import sabnzbd.articlecache
 import sabnzbd.postproc
@@ -106,7 +106,7 @@ class Assembler(Thread):
 
                 dupe = nzo.check_for_dupe(nzf)
 
-                filepath = getFilepath(cfg.DOWNLOAD_DIR.get_path(), nzo, filename)
+                filepath = get_filepath(cfg.DOWNLOAD_DIR.get_path(), nzo, filename)
 
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.get_type())
@@ -121,7 +121,7 @@ class Assembler(Thread):
                             logging.error('Disk error on creating file %s', filepath)
 
                     setname = nzf.get_setname()
-                    if cfg.QUICK_CHECK.get() and nzf.is_par2() and (nzo.get_md5pack(setname) == None):
+                    if cfg.QUICK_CHECK.get() and nzf.is_par2() and (nzo.get_md5pack(setname) is None):
                         nzo.set_md5pack(setname, GetMD5Hashes(filepath))
                         logging.debug('Got md5pack for set %s', setname)
 

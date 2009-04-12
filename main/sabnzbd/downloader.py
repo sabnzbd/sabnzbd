@@ -29,7 +29,7 @@ import sabnzbd
 from sabnzbd.decorators import synchronized_CV, CV
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper
-from sabnzbd.misc import Notify
+from sabnzbd.misc import notify
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -294,12 +294,12 @@ class Downloader(Thread):
 
     def resume(self):
         logging.info("Resuming")
-        Notify("SAB_Resume", None)
+        notify("SAB_Resume", None)
         self.paused = False
 
     def pause(self):
         logging.info("Pausing")
-        Notify("SAB_Paused", None)
+        notify("SAB_Paused", None)
         self.paused = True
         if self.is_paused():
             bpsmeter.method.reset()

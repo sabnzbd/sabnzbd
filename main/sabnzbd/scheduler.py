@@ -275,7 +275,7 @@ def scheduled_resume():
     """ Scheduled resume, only when no oneshot resume is active
     """
     global __PAUSE_END
-    if __PAUSE_END == None:
+    if __PAUSE_END is None:
        sabnzbd.downloader.resume_downloader()
 
 
@@ -309,7 +309,7 @@ def plan_resume(interval):
 def pause_int():
     """ Return minutes:seconds until pause ends """
     global __PAUSE_END
-    if __PAUSE_END == None:
+    if __PAUSE_END is None:
         return "0"
     else:
         val = __PAUSE_END - time.time()

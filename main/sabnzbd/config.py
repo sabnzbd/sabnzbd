@@ -148,7 +148,7 @@ class OptionBool(Option):
         Option.__init__(self, section, keyword, int(default_val), add=add)
 
     def set(self, value):
-        if value == None:
+        if value is None:
             value = 0
         try:
             self._Option__set(int(value))
@@ -202,7 +202,7 @@ class OptionDir(Option):
 class OptionList(Option):
     """ List option class """
     def __init__(self, section, keyword, default_val=None, add=True):
-        if default_val == None:
+        if default_val is None:
             default_val = []
         Option.__init__(self, section, keyword, default_val, add=add)
 
@@ -270,7 +270,7 @@ class OptionPassword(Option):
     def get(self):
         """ Return decoded password """
         value = self._Option__value
-        if value == None:
+        if value is None:
             return self._Option__default_val
         else:
             return decode_password(value, self.ident())

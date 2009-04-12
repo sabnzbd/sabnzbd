@@ -35,7 +35,7 @@ from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread, RLock
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          cleanup_empty_directories, get_unique_filename, \
-                         OnCleanUpList
+                         on_cleanup_list
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME, POSTPROC_QUEUE_FILE_NAME, POSTPROC_QUEUE_VERSION
 from sabnzbd.codecs import TRANS
@@ -110,7 +110,7 @@ class PostProcessor(Thread):
         else:
             self.load()
 
-        if self.history_queue == None:
+        if self.history_queue is None:
             self.history_queue = []
 
         if queue:
@@ -566,7 +566,7 @@ def CleanUpList(wdir, skip_nzb):
         except:
             files = ()
         for _file in files:
-            if OnCleanUpList(_file, skip_nzb):
+            if on_cleanup_list(_file, skip_nzb):
                 path = os.path.join(wdir, _file)
                 try:
                     logging.info("Removing unwanted file %s", path)
@@ -599,7 +599,7 @@ def NzbRedirect(wdir, pp, script, cat, priority):
             return list
 
     # Process all NZB files
-    keep = not OnCleanUpList("x.nzb", False)
+    keep = not on_cleanup_list("x.nzb", False)
     for file in files:
         if file.lower().endswith('.nzb'):
             dirscanner.ProcessSingleFile(file, os.path.join(wdir, file), pp, script, cat, priority=priority, keep=keep)
