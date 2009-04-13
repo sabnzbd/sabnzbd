@@ -20,21 +20,17 @@ sabnzbd.email - Send notification emails
 """
 #------------------------------------------------------------------------------
 
-from utils import ssmtplib
+from sabnzbd.utils import ssmtplib
 import smtplib
 import os
 import logging
 import subprocess
 import re
-import datetime
 import time
-import tempfile
-import socket
 import glob
 from sabnzbd.constants import *
 import sabnzbd
-from sabnzbd.newsunpack import build_command
-from sabnzbd.misc import to_units, from_units, split_host
+from sabnzbd.misc import to_units, split_host
 import sabnzbd.cfg as cfg
 
 
@@ -55,7 +51,7 @@ def send(message):
         if not port:
             port = 25
 
-        logging.info("Connecting to server %s:%s",server, port)
+        logging.info("Connecting to server %s:%s", server, port)
 
         try:
             mailconn = ssmtplib.SMTP_SSL(server, port)

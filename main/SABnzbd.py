@@ -25,10 +25,10 @@ import logging.handlers
 import os
 import getopt
 import signal
-import re
 import glob
 import socket
 import platform
+import time
 
 try:
     import Cheetah
@@ -58,16 +58,16 @@ except:
         sys.exit(1)
 
 import sabnzbd
-from sabnzbd.utils.configobj import ConfigObj, ConfigObjError
-from sabnzbd.interface import *
+import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
-from sabnzbd.misc import get_user_shellfolders, launch_a_browser, from_units, \
+from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
      check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
      panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
+import sabnzbd.downloader as downloader
 from threading import Thread
 
 LOG_FLAG = False  # Global for this module, signalling loglevel change
@@ -441,9 +441,9 @@ def get_webhost(cherryhost, cherryport, https_port):
 
     # :: will listen on all ipv6 interfaces (no ipv4 addresses)
     elif cherryhost in ('::','[::]'):
-	cherryhost = cherryhost.strip('[').strip(']')
-	# Assume '::1' == 'localhost'
-	browserhost = localhost
+        cherryhost = cherryhost.strip('[').strip(']')
+        # Assume '::1' == 'localhost'
+        browserhost = localhost
 
     # IPV6 address
     elif cherryhost.find('[') >= 0 or cherryhost.find(':') >= 0:
@@ -501,8 +501,8 @@ def is_sabnzbd_running(url):
     import urllib2
     try:
         url = '%sapi?mode=version' % (url)
-        username = cfg.USERNAME.get()
-	password = cfg.PASSWORD.get()
+        username = sabnzbd.cfg.USERNAME.get()
+        password = sabnzbd.cfg.PASSWORD.get()
         if username and password:
             url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
         s = urllib2.urlopen(url)
@@ -668,7 +668,6 @@ def main():
     vista = False
     vista64 = False
     force_web = False
-    https = False
     re_argv = [sys.argv[0]]
 
     for opt, arg in opts:
@@ -798,7 +797,7 @@ def main():
                 if not check_for_sabnzbd(url, upload_nzbs):
                     port = find_free_port(browserhost, https_port)
                     if port > 0:
-                        cfg.HTTPS_PORT.set(port)
+                        sabnzbd.cfg.HTTPS_PORT.set(port)
                         cherryport = port
     ## NonSSL
     try:
@@ -811,7 +810,7 @@ def main():
             if not check_for_sabnzbd(url, upload_nzbs):
                 port = find_free_port(browserhost, cherryport)
                 if port > 0:
-                    cfg.CHERRYPORT.set(port)
+                    sabnzbd.cfg.CHERRYPORT.set(port)
                     cherryport = port
 
 
@@ -962,13 +961,12 @@ def main():
 
     cherrylogtoscreen = False
     sabnzbd.WEBLOGFILE = None
-    access_file = None
 
     if cherrypylogging:
         if logdir:
             sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-	    # Define our custom logger for cherrypy errors
-	    cherrypy_logging(sabnzbd.WEBLOGFILE)
+        # Define our custom logger for cherrypy errors
+        cherrypy_logging(sabnzbd.WEBLOGFILE)
         if not fork:
             try:
                 x= sys.stderr.fileno
@@ -1034,7 +1032,7 @@ def main():
         appconfig['/sabnzbd/m/wizard/static'] = wizard_static
         appconfig['/m/wizard/static'] = wizard_static
 
-    login_page = MainPage(web_dir, '/', web_dir2, '/m/', first=2)
+    login_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir2, '/m/', first=2)
     cherrypy.tree.mount(login_page, '/', config=appconfig)
 
     # Set authentication for CherryPy
@@ -1055,13 +1053,13 @@ def main():
                 sabnzbd.halt()
                 exit_sab(2)
         else:
-	    logging.debug("Failed to start web-interface: ", exc_info = True)
+            logging.debug("Failed to start web-interface: ", exc_info = True)
             Bail_Out(browserhost, cherryport)
     except socket.error, error:
-	logging.debug("Failed to start web-interface: ", exc_info = True)
+        logging.debug("Failed to start web-interface: ", exc_info = True)
         Bail_Out(browserhost, cherryport, access=True)
     except:
-	logging.debug("Failed to start web-interface: ", exc_info = True)
+        logging.debug("Failed to start web-interface: ", exc_info = True)
         Bail_Out(browserhost, cherryport)
 
     # Wait for server to become ready
