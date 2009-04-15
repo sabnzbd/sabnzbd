@@ -58,9 +58,9 @@ from sabnzbd.database import get_history_handle, build_history_info, unpack_hist
 
 from sabnzbd.constants import *
 
-from cherrypy.lib import safemime
+#from cherrypy.lib import safemime
 # Safe mime is needed for flash nzb uploads (see http://www.cherrypy.org/ticket/648)
-safemime.init()
+#safemime.init()
 
 #------------------------------------------------------------------------------
 # Global constants
@@ -1829,7 +1829,7 @@ class ConfigGeneral:
         elif os.path.exists(web_dir2_path):
             cfg.WEB_DIR2.set(web_dir2)
         cfg.WEB_COLOR2.set(web_color2)
-        
+
         bandwidth_limit = kwargs.get('bandwith_limit')
         if bandwidth_limit != None:
             bandwidth_limit = IntConv(bandwidth_limit)
@@ -2145,6 +2145,7 @@ class ConfigRss:
         feed = kwargs.get('feed')
         id = kwargs.get('id')
         cat = kwargs.get('cat')
+        pp = kwargs.get('pp')
         script = kwargs.get('script')
         priority = kwargs.get('priority', NORMAL_PRIORITY)
         if id and id.isdigit():
