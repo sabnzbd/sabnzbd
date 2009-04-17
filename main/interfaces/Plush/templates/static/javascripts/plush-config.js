@@ -224,20 +224,38 @@ function previewtv(){
     input = input.replace(/%0e/g,'05');
     input = input.replace(/%e/g,'5');
 	input = input.replace(/%fn/g,'file');
+
+    document.getElementById('previewtv').innerHTML = getOutput(input);
+}
+
+function getOutput(input){
+    var slash = "\\";
     var com = document.getElementById('complete_dir').value;
-    if (com.search("/") > 0)
-    {
-        slash = "/";
-        input = input.replace("\\","/", "g");
-    } else {
-        input = input.replace("/","\\", "g");
+    
+    // For some reason a simply replace() doesn't replace multiple / characters
+    // Work out whether we are using / or \
+    for (i=0; i<com.length; i++){
+        if (com[i] == "/") slash = "/";
     }
+    
+    // Replace / or \ with whatever complete_dir uses
+    for (i=0; i<input.length; i++){
+        if (input[i] == "/") {
+            input = input.replace("/",slash, "gi");
+        } else if (input[i] == "\\") {
+            input = input.replace("\\",slash, "gi");
+        }
+    }
+    
+    // If the complete_dir ends in / or \, then strip that character
     len = com.length
     if (com.substring(len-1, len) == slash)
     {
         com = com.substring(0, len-1)
     }
-    var outbox = document.getElementById('previewtv').innerHTML = com+slash+input;
+    
+    output = com+slash+input;
+    return output
 }
 
 function movieAdd(val){
@@ -293,20 +311,8 @@ function previewmovie()
     }
     input = input.replace(/{/g,'');
     input = input.replace(/}/g,'');
-    var com = document.getElementById('complete_dir').value;
-    if (com.search("/") > 0)
-    {
-        slash = "/";
-        input = input.replace("\\","/", "g");
-    } else {
-        input = input.replace("/","\\", "g");
-    }
-    len = com.length
-    if (com.substring(len-1, len) == slash)
-    {
-        com = com.substring(0, len-1)
-    }
-    var outbox = document.getElementById('previewmovie').innerHTML = com+slash+input;
+
+    document.getElementById('previewmovie').innerHTML = getOutput(input);
 }
 function dateSet(val){
     var tv = document.getElementById('datefoldername'); 
@@ -337,20 +343,8 @@ function previewdate(){
     input = input.replace(/%0m/g,'01');
     input = input.replace(/%m/g,'1');
     input = input.replace(/%y/g,'2009');
-    var com = document.getElementById('complete_dir').value;
-    if (com.search("/") > 0)
-    {
-        slash = "/";
-        input = input.replace("\\","/", "g");
-    } else {
-        input = input.replace("/","\\", "g");
-    }
-    len = com.length
-    if (com.substring(len-1, len) == slash)
-    {
-        com = com.substring(0, len-1)
-    }
-    var outbox = document.getElementById('previewdate').innerHTML = com+slash+input;
+
+    document.getElementById('previewdate').innerHTML = getOutput(input);
 }
 function showDiv(id)
 {
