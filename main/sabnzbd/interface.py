@@ -58,10 +58,6 @@ from sabnzbd.database import get_history_handle, build_history_info, unpack_hist
 
 from sabnzbd.constants import *
 
-from cherrypy.lib import safemime
-# Safe mime is needed for flash nzb uploads (see http://www.cherrypy.org/ticket/648)
-safemime.init()
-
 #------------------------------------------------------------------------------
 # Global constants
 
@@ -165,13 +161,7 @@ def List2String(lst):
     """ Return list as a comma-separated string """
     if type(lst) == type(""):
         return lst
-    txt = ''
-    r = len(lst)
-    for n in xrange(r):
-        txt += lst[n]
-        if n < r-1: txt += ', '
-
-    return txt
+    return ', '.join(lst)
 
 def Strip(txt):
     """ Return stripped string, can handle None """
@@ -399,8 +389,6 @@ class MainPage:
         msg = check_session(kwargs)
         if msg: return msg
         return self.api_handler(kwargs)
-    # Fix to allow flash nzb uploads (see http://www.cherrypy.org/ticket/648)
-    tapi._cp_config = {'tools.safe_multipart.on': True}
 
     @cherrypy.expose
     def api(self, **kwargs):
@@ -409,8 +397,6 @@ class MainPage:
         msg = check_apikey(kwargs)
         if msg: return msg
         return self.api_handler(kwargs)
-    # flash upload fix (see above)
-    api._cp_config = {'tools.safe_multipart.on': True}
 
 
     def api_handler(self, kwargs):
@@ -1065,6 +1051,7 @@ class NzoPage:
         for a in args:
             if a.startswith('SABnzbd_nzo'):
                 nzo_id = a
+                break
 
         if nzo_id:
             # /SABnzbd_nzo_xxxxx/bulk_operation
@@ -1115,6 +1102,7 @@ class NzoPage:
                 slot['script'] = script
                 slot['priority'] = str(priority)
                 slot['unpackopts'] = str(unpackopts)
+                break
 
         info['slot'] = slot
         info['script_list'] = ListScripts()
@@ -1144,6 +1132,7 @@ class NzoPage:
                             'age':calc_age(date),
                             'checked':checked}
                     active.append(line)
+                break
 
         info['active_files'] = active
         return info
