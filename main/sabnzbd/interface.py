@@ -58,9 +58,9 @@ from sabnzbd.database import get_history_handle, build_history_info, unpack_hist
 
 from sabnzbd.constants import *
 
-#from cherrypy.lib import safemime
+from cherrypy.lib import safemime
 # Safe mime is needed for flash nzb uploads (see http://www.cherrypy.org/ticket/648)
-#safemime.init()
+safemime.init()
 
 #------------------------------------------------------------------------------
 # Global constants
