@@ -1315,8 +1315,7 @@ class QueuePage:
             nzbqueue.change_cat(nzo_id, cat)
             item = config.get_config('categories', cat)
             if item:
-                script = item.script.get()
-                pp = item.pp.get()
+                cat, pp, script = cat_to_opts(cat)
             else:
                 script = cfg.DIRSCAN_SCRIPT.get()
                 pp = cfg.DIRSCAN_PP.get()
