@@ -145,8 +145,7 @@ class URLGrabber(Thread):
             script = future_nzo.get_script()
             cat = future_nzo.get_cat()
             priority = future_nzo.get_priority()
-            cat, pp, script = misc.cat_to_opts(cat, pp, script)
-
+            cat, pp, script, priority = misc.cat_to_opts(cat, pp, script, priority)
 
             if os.path.splitext(filename)[1].lower() == '.nzb':
                 res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority)

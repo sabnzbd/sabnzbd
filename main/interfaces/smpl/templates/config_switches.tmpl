@@ -76,6 +76,15 @@
 		    <span class="tips">Use the following script if not defined by a category.</span>
 		<br class="clear" />
 
+		    <span class="label">Default Priority:</span>
+            <select name="dirscan_priority" id="dirscan_priority" class="select">
+                <option value="2" <!--#if $dirscan_priority == 2 then 'selected' else ''#--> >Force</option>
+                <option value="1" <!--#if $dirscan_priority == 1 then 'selected' else ''#--> >High</option>
+                <option value="0" <!--#if $dirscan_priority == 0 then 'selected' else ''#--> >Normal</option>
+                <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >Low</option>
+        </select>
+		    <span class="tips">Use the following priority if not defined by a category.</span>
+		<br class="clear" />
 
 		    <span class="label">Extra PAR2 parameters:</span>
 		    <input type="text" name="par_option" value="$par_option"/>

@@ -183,9 +183,11 @@ class MSGIDGrabber(Thread):
                 cat = nzo.get_cat()
                 if not cat:
                     cat = CatConvert(newzbin_cat)
-                cat, pp, script = cat_to_opts(cat, pp, script)
 
                 priority = nzo.get_priority()
+
+                cat, pp, script, priority = cat_to_opts(cat, pp, script, priority)
+
                 try:
                     sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
                 except:

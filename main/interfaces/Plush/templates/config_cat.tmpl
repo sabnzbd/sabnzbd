@@ -18,6 +18,7 @@
                 <tr>
                     <th>Category Name</th>
                     <th>Processing</th>
+                    <th>Priority</th>
                     <!--#if $script_list#-->
                     <th>Script</th>
                     <!--#end if#-->
@@ -47,6 +48,16 @@
                             <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>+Repair</option>
                             <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+R+Unpack</option>
                             <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+R+U+Delete</option>
+                        </select>
+                    </td>
+                    
+                    <td>
+                        <select name="priority">
+                            <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>Default</option>
+                            <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>Force</option>
+                            <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>High</option>
+                            <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>Normal</option>
+                            <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>Low</option>
                         </select>
                     </td>
                     

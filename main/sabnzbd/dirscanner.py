@@ -110,7 +110,10 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     if catdir is None:
         catdir = cat
 
-    filename, cat = name_to_cat(filename, catdir)
+    _cat, name, _pp, _script, _priority = misc.Cat2OptsDef(filename, catdir)
+    if cat == None: cat = _cat
+    if pp == None: pp = _pp
+    if script == None: script = _script
 
     if path.lower().endswith('.zip'):
         try:
@@ -199,6 +202,11 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     if name:
         name, cat = name_to_cat(name, catdir)
         name = misc.sanitize_foldername(name)
+
+    _cat, name, _pp, _script, _priority = misc.Cat2OptsDef(name, catdir)
+    if cat == None: cat = _cat
+    if pp == None: pp = _pp
+    if script == None: script = _script
 
     try:
         nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority)

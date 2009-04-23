@@ -766,6 +766,10 @@ def change_cat(nzo_id, cat):
     global __NZBQ
     if __NZBQ: __NZBQ.change_cat(nzo_id, cat)
 
+def change_priority(nzo_id, priority):
+    global __NZBQ
+    if __NZBQ: __NZBQ.change_priority(nzo_id, priority)
+
 def change_name(nzo_id, name):
     global __NZBQ
     if __NZBQ: __NZBQ.change_name(nzo_id, name)

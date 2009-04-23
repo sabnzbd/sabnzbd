@@ -491,7 +491,7 @@ class ConfigRSS:
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', add=False)
         self.enable = OptionBool(name, 'enable', add=False)
-        self.priority = OptionNumber(name, 'priority', 0, -1, 2, add=False)
+        self.priority = OptionNumber(name, 'priority', -100, -100, 2, add=False)
         self.filters = OptionFilters(name, 'filters', add=False)
         self.filters.set([['', '', '', 'A', '*']])
 

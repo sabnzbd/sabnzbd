@@ -70,7 +70,7 @@ EMAIL_DIR    = OptionDir('misc', 'email_dir', create=False, validation=validate_
 DIRSCAN_PP = OptionNumber('misc', 'dirscan_opts', 3, 0, 3)
 VERSION_CHECK = OptionBool('misc', 'check_new_rel', True)
 DIRSCAN_SCRIPT = OptionStr('misc', 'dirscan_script', 'None')
-DIRSCAN_PRIORITY = OptionNumber('misc', 'dirscan_priority', 0)
+DIRSCAN_PRIORITY = OptionNumber('misc', 'dirscan_priority', NORMAL_PRIORITY)
 AUTOBROWSER = OptionBool('misc', 'auto_browser', True)
 REPLACE_ILLEGAL = OptionBool('misc', 'replace_illegal', True)
 

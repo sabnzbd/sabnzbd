@@ -62,6 +62,16 @@
     </select>
     <br>
     <br>
+    <strong>Default Priority:</strong><br>
+    Used when no priority is defined by the category.<br>
+    <select name="dirscan_priority">
+        <option value="2" <!--#if $dirscan_priority == 2 then 'selected' else ''#--> >Force</option>
+        <option value="1" <!--#if $dirscan_priority == 1 then 'selected' else ''#--> >High</option>
+        <option value="0" <!--#if $dirscan_priority == 0 then 'selected' else ''#--> >Normal</option>
+        <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >Low</option>
+    </select>
+    <br>
+    <br>
     <strong>Extra PAR2 parameters:</strong><br/>
     Read the Wiki Help on this!<br/>
     <input type="text" name="par_option" value="$par_option"/>

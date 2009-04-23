@@ -57,7 +57,7 @@ def safe_lower(txt):
         return ''
 
 
-def cat_to_opts(cat, pp, script):
+def cat_to_opts(cat, pp=None, script=None, priority=None):
     """
         Derive options from category, if option not already defined.
         Specified options have priority over category-options
@@ -82,9 +82,17 @@ def cat_to_opts(cat, pp, script):
         except KeyError:
             script = cfg.DIRSCAN_SCRIPT.get()
 
-    return cat, pp, script
+    if not priority or priority == -100:
+        try:
+            priority = config.get_categories()[safe_lower(cat)].priority.get()
+            # Get the default priority
+            if priority == -100:
+                priority = cfg.DIRSCAN_PRIORITY.get()
+            logging.debug('Job gets priority %s', script)
+        except KeyError:
+            priority = cfg.DIRSCAN_PRIORITY.get()
 
-
+    return cat, pp, script, priority
 
 ################################################################################
 # sanitize_filename                                                            #

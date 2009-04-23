@@ -21,6 +21,7 @@ Relative folders are based on $defdir<br/>
             <th></th>
             <th>Category</th>
             <th>&nbsp;Mode&nbsp;</th>
+            <th>&nbsp;Priority&nbsp;</th>
             <!--#if $script_list#--><th>Script</th><!--#end if#-->
             <th>Folder/Path</th>
             <th><!--#if $varExists('newzbinDetails') then "NewzBin/Groups" else "Groups"#--></th>
@@ -49,6 +50,17 @@ Relative folders are based on $defdir<br/>
            <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+Unpack</option>
            <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+Delete</option>
            </select>
+        </td>
+
+        <td><select name="priority">
+                <optgroup label="Priority">
+                    <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>Default</option>
+                    <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>Force</option>
+                    <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>High</option>
+                    <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>Normal</option>
+                    <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>Low</option>
+                </optgroup>
+            </select>
         </td>
 
         <!--#if $script_list#-->

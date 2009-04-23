@@ -66,6 +66,7 @@ When a feed is added, it will only pick up new items and not anything already in
             <!--#end if#-->
             <select name="priority">
                 <optgroup label="Priority">
+                    <option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>Default</option>
                     <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>Force</option>
                     <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
                     <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>Normal</option>

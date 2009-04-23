@@ -91,6 +91,17 @@
 
                     </td><td>
 
+                        <strong>Default Priority:</strong><br/>
+                        <small>Used when no priority is defined by the category.</small><br/>
+                        <select name="dirscan_priority">
+                            <option value="2" <!--#if $dirscan_priority == 2 then 'selected' else ''#--> >Force</option>
+                            <option value="1" <!--#if $dirscan_priority == 1 then 'selected' else ''#--> >High</option>
+                            <option value="0" <!--#if $dirscan_priority == 0 then 'selected' else ''#--> >Normal</option>
+                            <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >Low</option>                        </select>
+
+                    </td><td>
+                    
+
                         <strong>Extra PAR2 Parameters:</strong><br/>
                         <small>Read the <a href="$helpuri$help_uri" target="_blank">Wiki Help</a> on this!</small><br/>
                         <input type="text" name="par_option" value="$par_option"/>

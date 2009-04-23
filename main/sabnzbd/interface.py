@@ -299,7 +299,7 @@ class MainPage:
         pp = kwargs.get('pp')
         script = kwargs.get('script')
         cat = kwargs.get('cat')
-        priority =  kwargs.get('priority', NORMAL_PRIORITY)
+        priority =  kwargs.get('priority')
         redirect = kwargs.get('redirect')
 
         RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
@@ -582,9 +582,10 @@ class MainPage:
                 if cat == 'None':
                     cat = None
                 nzbqueue.change_cat(nzo_id, cat)
-                cat, pp, script = cat_to_opts(cat, None, None)
+                cat, pp, script, cat_priority = cat_to_opts(cat)
 
                 nzbqueue.change_script(nzo_id, script)
+                nzbqueue.change_priority(nzo_id, cat_priority)
                 nzbqueue.change_opts(nzo_id, pp)
                 return 'ok\n'
             else:
@@ -1315,13 +1316,15 @@ class QueuePage:
             nzbqueue.change_cat(nzo_id, cat)
             item = config.get_config('categories', cat)
             if item:
-                cat, pp, script = cat_to_opts(cat)
+                cat, pp, script, priority = cat_to_opts(cat)
             else:
                 script = cfg.DIRSCAN_SCRIPT.get()
                 pp = cfg.DIRSCAN_PP.get()
+                priority = cfg.DIRSCAN_PRIORITY.get()
 
             nzbqueue.change_script(nzo_id, script)
             nzbqueue.change_opts(nzo_id, pp)
+            nzbqueue.change_priority(nzo_id, priority)
 
         raise queueRaiser(self.__root, kwargs)
 
@@ -1642,7 +1645,8 @@ SWITCH_LIST = \
      'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
      'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
      'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
-     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'nice', 'ionice'
+     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'nice', 'ionice',
+     'dirscan_priority'
     )
 
 #------------------------------------------------------------------------------
@@ -2334,7 +2338,7 @@ class ConfigCats:
         conf['defdir'] = cfg.COMPLETE_DIR.get_path()
 
 
-        empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'' }
+        empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'', 'priority':-100 }
         slotinfo = []
         slotinfo.append(empty)
         for cat in sorted(categories):
