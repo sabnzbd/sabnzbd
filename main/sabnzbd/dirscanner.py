@@ -102,7 +102,7 @@ def CompareStat(tup1, tup2):
     return True
 
 
-def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=NORMAL_PRIORITY):
+def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=None):
     """ Analyse ZIP file and create job(s).
         Accepts ZIP files with ONLY nzb/nfo/folder files in it.
         returns: -1==Error/Retry, 0==OK, 1==Ignore
@@ -110,10 +110,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     if catdir is None:
         catdir = cat
 
-    _cat, name, _pp, _script, _priority = misc.Cat2OptsDef(filename, catdir)
-    if cat == None: cat = _cat
-    if pp == None: pp = _pp
-    if script == None: script = _script
+    filename, cat = name_to_cat(filename, catdir)
+    cat, pp, script, priority = misc.cat_to_opts(cat, pp, script, priority)
 
     if path.lower().endswith('.zip'):
         try:
@@ -170,7 +168,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     return status
 
 
-def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=NORMAL_PRIORITY):
+def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=None):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
@@ -201,12 +199,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
 
     if name:
         name, cat = name_to_cat(name, catdir)
+        cat, pp, script, priority = misc.cat_to_opts(cat, pp, script, priority)
         name = misc.sanitize_foldername(name)
-
-    _cat, name, _pp, _script, _priority = misc.Cat2OptsDef(name, catdir)
-    if cat == None: cat = _cat
-    if pp == None: pp = _pp
-    if script == None: script = _script
 
     try:
         nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority)
