@@ -57,19 +57,19 @@
     </td>
     
     <td class="options" nowrap>
+        <!--#if $cat_list#-->
+        <select class="change_cat"><optgroup label="Category">
+            <!--#for $ct in $cat_list#-->
+            <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+            <!--#end for#-->
+        </optgroup></select>
+        <!--#end if#-->
     	<!--#if $queue_details == "1"#-->
         <select class="proc_priority"><optgroup label="Priority">
             <option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>Force</option>
             <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
             <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
             <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
-        </optgroup></select>
-        <!--#end if#-->
-        <!--#if $cat_list#-->
-        <select class="change_cat"><optgroup label="Category">
-            <!--#for $ct in $cat_list#-->
-            <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
-            <!--#end for#-->
         </optgroup></select>
         <!--#end if#-->
         <select class="change_opts"><optgroup label="Processing">
