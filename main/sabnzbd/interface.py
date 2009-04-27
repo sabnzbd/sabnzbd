@@ -719,13 +719,14 @@ class MainPage:
             elif name == 'set_pause':
                 scheduler.plan_resume(IntConv(value))
                 return 'ok\n'
-            else:
-                return 'not implemented\n'
                 
             elif name == 'set_apikey':
                 cfg.API_KEY.set(create_api_key())
                 config.save_config()
                 return str(cfg.API_KEY.get())
+            
+            else:
+                return 'not implemented\n'
 
         if mode == 'get_cats':
             if output == 'json':
