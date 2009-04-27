@@ -721,6 +721,11 @@ class MainPage:
                 return 'ok\n'
             else:
                 return 'not implemented\n'
+                
+            elif name == 'set_apikey':
+                cfg.API_KEY.set(create_api_key())
+                config.save_config()
+                return str(cfg.API_KEY.get())
 
         if mode == 'get_cats':
             if output == 'json':
@@ -1836,6 +1841,16 @@ class ConfigGeneral:
 
         # Update CherryPy authentication
         set_auth(cherrypy.config)
+        raise dcRaiser(self.__root, kwargs)
+        
+    @cherrypy.expose
+    def generateAPIKey(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+
+        logging.debug('API Key Changed')
+        cfg.API_KEY.set(create_api_key())
+        config.save_config()
         raise dcRaiser(self.__root, kwargs)
 
 def change_web_dir(web_dir):
