@@ -386,7 +386,7 @@ class ConfigCat:
         self.script = OptionStr(name, 'script', 'Default', add=False)
         self.dir = OptionDir(name, 'dir', add=False, create=False)
         self.newzbin = OptionList(name, 'newzbin', add=False)
-        self.priority = OptionNumber(name, 'priority', add=False)
+        self.priority = OptionNumber(name, 'priority', -100, add=False)
 
         self.set_dict(values)
         add_to_database('categories', self.__name, self)
@@ -857,3 +857,21 @@ def validate_dir_exists(root, value):
         return None, value
     else:
         return 'Folder "%s" does not exist' % p, None
+    
+def create_api_key():
+    import time
+    try:
+        from hashlib import md5
+    except ImportError:
+        from md5 import md5
+    import random
+    # Create some values to seed md5
+    t = str(time.time())
+    r = str(random.random())
+    # Create the md5 instance and give it the current time
+    m = md5(t)
+    # Update the md5 instance with the random variable
+    m.update(r)
+    
+    # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
+    return m.hexdigest()

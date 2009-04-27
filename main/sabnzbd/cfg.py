@@ -24,7 +24,8 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
-                           validate_octal, validate_safedir, validate_dir_exists
+                           validate_octal, validate_safedir, validate_dir_exists, \
+                           create_api_key
 
 #------------------------------------------------------------------------------
 # Email validation support
@@ -167,6 +168,8 @@ ENABLE_HTTPS = OptionBool('misc', 'enable_https', False)
 
 # Internal options, not saved in INI file
 DEBUG_DELAY = OptionNumber('misc', 'debug_delay', 0, add=False)
+
+API_KEY = OptionStr('misc','api_key', create_api_key())
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

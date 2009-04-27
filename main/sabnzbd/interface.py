@@ -205,7 +205,7 @@ def check_session(kwargs):
         #logging.warning('Missing Session key')
         #msg = 'error: Session Key Required'
         pass
-    elif key != sabnzbd.API_KEY:
+    elif key != cfg.API_KEY.get():
         #logging.warning('Incorrect Session key')
         #msg = 'error: Session Key Incorrect'
         pass
@@ -230,7 +230,7 @@ def check_apikey(kwargs):
         logging.warning("API Key missing, please enter the api key from Config->General "
                         "into your 3rd party program:")
         return 'error: API Key Required'
-    elif key != sabnzbd.API_KEY:
+    elif key != cfg.API_KEY.get():
         logging.warning("API Key incorrect, Use the api key from Config->General "
                         "in your 3rd party program:")
         return 'error: API Key Incorrect'
@@ -405,6 +405,10 @@ class MainPage:
         mode = kwargs.get('mode')
         output = kwargs.get('output')
 
+        #Need to put version checking here so it requires no auth
+        
+        #Need to put api/tapi auth here so version checking requires no auth
+        
         if mode == 'set_config':
             res = config.set_config(kwargs)
             if output == 'json':
@@ -1565,7 +1569,7 @@ class ConfigPage:
 
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
         conf['configfn'] = config.get_filename()
@@ -1605,7 +1609,7 @@ class ConfigDirectories:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
@@ -1657,7 +1661,7 @@ class ConfigSwitches:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
@@ -1707,7 +1711,7 @@ class ConfigGeneral:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         def ListColors(web_dir):
             lst = []
             web_dir = os.path.join(sabnzbd.DIR_INTERFACES ,web_dir)
@@ -1858,7 +1862,7 @@ class ConfigServer:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
@@ -1966,7 +1970,7 @@ class ConfigRss:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
@@ -2158,7 +2162,7 @@ class ConfigScheduling:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
@@ -2242,7 +2246,7 @@ class ConfigNewzbin:
         self.__bookmarks = []
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
@@ -2322,7 +2326,7 @@ class ConfigCats:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
@@ -2401,7 +2405,7 @@ class ConfigSorting:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
@@ -2452,7 +2456,7 @@ class ConnectionInfo:
         self.__lastmail = None
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         header, pnfo_list, bytespersec = build_header(self.__prim)
 
         header['logfile'] = sabnzbd.LOGFILE
@@ -2772,6 +2776,8 @@ def build_header(prim):
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32
     header['darwin'] = sabnzbd.DARWIN
+    
+    header['session'] = cfg.API_KEY.get()
 
     bytespersec = bpsmeter.method.get_bps()
     qnfo = nzbqueue.queue_info()
@@ -2873,7 +2879,7 @@ class ConfigEmail:
         self.__prim = prim
 
     @cherrypy.expose
-    def index(self, _dc = None):
+    def index(self, **kwargs):
         if cfg.CONFIGLOCK.get():
             return Protected()
 
