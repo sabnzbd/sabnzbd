@@ -42,6 +42,7 @@
     var gDeferrerTwo;
     var gRight;
     var gRightBottom;
+    var session = "$session";
 	</script>
 
 
@@ -338,7 +339,7 @@ function timedPause(mins)
     {
         mins = prompt("Pause for how many minutes?");
     }
-    url = 'tapi?mode=config&name=set_pause&value=' + mins;
+    url = 'tapi?mode=config&name=set_pause&value=' + mins +'&session='+session;
     d = doSimpleXMLHttpRequest(url);
     d.addCallback(loadingJSON);
     toggle('hiddenTimedPause','blind',{duration:0.2})
@@ -449,7 +450,7 @@ function loadtitle() {
 			status2 = 0;
 			document.getElementById("status").innerHTML = "<span class='idle'>Idle</span>";
 			document.getElementById("status2").innerHTML = "Pause";
-			doSimpleXMLHttpRequest("tapi?mode=resume");
+			doSimpleXMLHttpRequest("tapi?mode=resume&session="+session);
 		}
 		else
 		{
@@ -457,7 +458,7 @@ function loadtitle() {
 			document.getElementById("status").innerHTML = "<span class='paused'>Paused</span>";
 			document.getElementById("speed").innerHTML = "0";
 			document.getElementById("status2").innerHTML = "Resume";
-			doSimpleXMLHttpRequest("tapi?mode=pause");
+			doSimpleXMLHttpRequest("tapi?mode=pause&session="+session);
 
 		}
 	}
@@ -468,7 +469,7 @@ function loadtitle() {
         el = document.getElementById(elem)
         el.parentNode.removeChild(el);
 
-		d = doSimpleXMLHttpRequest('tapi/', {mode: 'queue', name: 'delete', value: elem, _dc: Math.random()});
+		d = doSimpleXMLHttpRequest('tapi/', {mode: 'queue', name: 'delete', value: elem, _dc: Math.random(), session: session});
 
 	}
 
@@ -478,7 +479,7 @@ function loadtitle() {
         el = document.getElementById(elem)
         el.parentNode.removeChild(el);
 
-		d = doSimpleXMLHttpRequest('tapi/', {mode: 'queue', name: 'delete_nzf', value: nzo, value2: elem, _dc: Math.random()});
+		d = doSimpleXMLHttpRequest('tapi/', {mode: 'queue', name: 'delete_nzf', value: nzo, value2: elem, _dc: Math.random(), session:session});
 
 	}
 
@@ -488,7 +489,7 @@ function loadtitle() {
         val1 = document.getElementById(elem).innerHTML;
         val1="";
 
-		d = doSimpleXMLHttpRequest('queue/pause_nzo', {uid: elem, _dc: Math.random()});
+		d = doSimpleXMLHttpRequest('queue/pause_nzo', {uid: elem, _dc: Math.random(), session:session});
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
@@ -499,7 +500,7 @@ function loadtitle() {
         val1 = document.getElementById(elem).innerHTML;
         val1="";
 
-		d = doSimpleXMLHttpRequest('queue/resume_nzo', {uid: elem, _dc: Math.random()});
+		d = doSimpleXMLHttpRequest('queue/resume_nzo', {uid: elem, _dc: Math.random(), session:session});
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
@@ -510,7 +511,7 @@ function loadtitle() {
         el = document.getElementById(elem)
         el.parentNode.removeChild(el);
 
-		d = doSimpleXMLHttpRequest('tapi/', {mode: 'history', name: 'delete', value: elem, _dc: Math.random()});
+		d = doSimpleXMLHttpRequest('tapi/', {mode: 'history', name: 'delete', value: elem, _dc: Math.random(), session: session});
 	}
 
     function handleServerError(){}
@@ -582,7 +583,7 @@ function loadtitle() {
 
 	}
     function lra(url, extra, refresh, dual, pnode){
-        append = '?_dc='+Math.random();
+        append = '?_dc='+Math.random()+'&session='+session;
         if (extra){
             append = append+'&'+extra;
         }
@@ -608,7 +609,7 @@ function loadtitle() {
 	function lrb(url, extra, refresh)
 	{
 		//similar to lra() but loads the response in the right_bottom container
-        append = '?_dc='+Math.random();
+        append = '?_dc='+Math.random()+'&session='+session;
         if (extra){
             append = append+'&'+extra;
         }
@@ -688,7 +689,7 @@ function loadtitle() {
 
 	function changequeuedetails(page, extra)
 	{
-        append = '&_dc='+Math.random();
+        append = '&_dc='+Math.random()+'&session='+session;
 		if (extra) {
 			append += '&'+extra
 		}
@@ -702,7 +703,7 @@ function loadtitle() {
 
 	function testemail()
 	{
-		d = doSimpleXMLHttpRequest('connections/testmail');
+		d = doSimpleXMLHttpRequest('connections/testmail&session='+session);
 		d.addCallback(function (d)
         {
         alert("E-Mail Sent");
@@ -712,7 +713,7 @@ function loadtitle() {
 
 	function getBookmarks()
 	{
-		d = doSimpleXMLHttpRequest('tapi?mode=newzbin&name=get_bookmarks');
+		d = doSimpleXMLHttpRequest('tapi?mode=newzbin&name=get_bookmarks&session='+session);
 	}
 
 	function changequeueoptions(page)
@@ -720,17 +721,6 @@ function loadtitle() {
 		d = doSimpleXMLHttpRequest('queue/'+page);
 	}
 
-	function reloadqueue()
-	{
-		var res = doXHR('queue',
-	    {
-		    method:'POST',
-            sendContent:'?asshole='+Math.random()
-
-	    });
-		res.addCallback(replaceright);
-		res.addErrback(handleServerError);
-	}
 	//based from Mochikit documentation - finds all the form values for an element and returns formatted query string
 	function getFormValues(element)
 	{
@@ -745,7 +735,7 @@ function loadtitle() {
 
     function toggle_verbosity(nzo_id, extra)
     {
-        append = '&_dc='+Math.random();
+        append = '&_dc='+Math.random()+'&session='+session;
 		if (extra) {
 			append += '&'+extra
 		}
@@ -761,7 +751,7 @@ function loadtitle() {
 	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post
 	function submitconfig(extra, saveelement, element, url2, refresh)
 	{
-        append = '?_dc='+Math.random();
+        append = '?_dc='+Math.random()+'&session='+session;
 		var values = [];
 		var elementt;
 		if (element) elementt = document.getElementById(element);
@@ -870,13 +860,37 @@ function invert()
     }
 }
 
+function shutdown()
+{
+    window.location='shutdown?session='+session;
+}
+
+function restart()
+{
+    window.location='config/restart?session='+session;
+}
+
+function generateAPIKey()
+{
+    session = document.getElementById('apikey').value;
+    url = "tapi?mode=config&name=set_apikey&apikey="+session;
+    var res = doSimpleXMLHttpRequest(url);
+    res.addCallback(function (res)
+    {
+        session = res.responseText;
+        document.getElementById('apikey').value = res.responseText;
+        document.getElementById('addNewSession1').value = res.responseText;
+        document.getElementById('addNewSession2').value = res.responseText;
+    })
+}
+
 //loads up the json for the queue page and changes the values in the document
 function loadingJSON(){
 	if (RefreshTime>0) {
 	clearTimeout ( jsontimeout );
 	jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);
 	}
-	var url = "tapi?mode=qstatus&output=json&_dc="+Math.random();
+	var url = "tapi?mode=qstatus&output=json&_dc="+Math.random()+"&session="+session;
 	var d = loadJSONDoc(url);
 	var gotMetadata = function (info)
 	{
@@ -1048,15 +1062,15 @@ function loadingJSON(){
 					<li><a onClick="getBookmarks()">GetBookmarks</a></li>
 					<!--#end if#-->
 					<br />
-					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to restart SABnzbd?')){window.location='config/restart';}">Restart</a></li>
-					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){window.location='shutdown';}">Shutdown</a></li>
+					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to restart SABnzbd?')){restart()}">Restart</a></li>
+					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('Are you sure you want to shut down the SABnzbd application?')){shutdown()}">Shutdown</a></li>
                     <br/>
         			<li><a href="$helpuri" target="_blank">Wiki</a></li>
         			<li><a href="http://forums.sabnzbd.org" target="_blank">Forums</a></li>
                     <li><a href="http://sabnzbd.org/live-chat/" target="_blank">IRC</a></li>
 				</ul>
 				<!--<input type="checkbox" name="enable_speedlimit" />-->
-				<span class="small">Speedlimit: </span><input type="text" id="speedbox" value="$speedlimit" onChange="javascript:doSimpleXMLHttpRequest('tapi?mode=config&name=set_speedlimit&value='+this.value);">
+				<span class="small">Speedlimit: </span><input type="text" id="speedbox" value="$speedlimit" onChange="javascript:doSimpleXMLHttpRequest('tapi?mode=config&name=set_speedlimit&value='+this.value+'&session='+session);">
 				<br /><br />
                 <center>
 				<img src="static/images/drive.png" title="Incomplete" /> <span class="small"><span id="ds1">${diskspace1}</span>GB</span><br />
@@ -1109,6 +1123,7 @@ function loadingJSON(){
                 <option value="-1">Low</option>
             </optgroup>
         </select>
+        <input type="hidden" value="$session" id="addNewSession1" name="session">
         <input type="submit" class="submitindent2"  value="Add">
     </form>
     <form action="addFile" method="post" enctype="multipart/form-data">
@@ -1149,6 +1164,7 @@ function loadingJSON(){
                 <option value="-1">Low</option>
             </optgroup>
         </select>
+        <input type="hidden" value="$session" id="addNewSession2" name="session">
         <input type="submit" class="submitindent2"  value="Add">
     </form>
 </div>
