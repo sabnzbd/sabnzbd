@@ -49,6 +49,7 @@ Hour:<br>
 </select>
 <br>Arguments:<br>
 <input type="text" size="20" name="arguments" value="">
+<input type="hidden" name="session" value="$session">
 <p><input type="submit" value="Add Schedule"></p>
 </fieldset>
 </form>
@@ -83,6 +84,7 @@ elif day == "7":
 %>
 Task $schednum: <strong>$h:$m</strong> - $day - $action
 <input type="hidden" name="line" value="$line">
+<input type="hidden" name="session" value="$session">
 <input type="submit" value="Remove">
 </fieldset>
 </form><br />

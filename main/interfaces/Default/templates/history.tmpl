@@ -3,11 +3,11 @@
 <!--#set global $helpsubject="GUI+History"#-->
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
-<span class="SubMenu"><a href="./purge/">Purge history</a> |
+<span class="SubMenu"><a href="./purge?session=$session">Purge history</a> |
     <!--#if $isverbose#-->
-        <a href="./tog_verbose/">Hide details</a>
+        <a href="./tog_verbose?session=$session">Hide details</a>
     <!--#else#-->
-        <a href="./tog_verbose/">Show details</a>
+        <a href="./tog_verbose?session=$session">Show details</a>
     <!--#end if#-->
 </span>
 
@@ -26,7 +26,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
 %>
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td><a class="verbosity_link" href="./tog_verbose/?jobs=$line.nzo_id">
+        <td><a class="verbosity_link" href="./tog_verbose?session=$session&jobs=$line.nzo_id">
         <!--#if $line.show_details then '-' else '+'#-->
         </a></td>
         <td>$compl</td>
@@ -36,6 +36,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
 			<!--#if not $line.loaded#-->
 				<form action="delete" method="get">
 				<input type="hidden" value="$line.nzo_id" name="job">
+                <input type="hidden" name="session" value="$session">
 				<input type="submit" value="Del"></form>
 			<!--#end if#-->
         </td>

@@ -16,7 +16,7 @@ Use it when you think the program has a stability problem.<br/>
 Downloading will be paused before the restart and resume afterwards.<br/><br/>
 
 <form action="saveGeneral" method="post">
-<input type="submit" onclick="this.form.action='restart'; this.form.submit(); return false;" value="Restart"/>
+<input type="submit" onclick="this.form.action='restart?session=$session'; this.form.submit(); return false;" value="Restart"/>
 </form>
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

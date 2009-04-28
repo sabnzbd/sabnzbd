@@ -14,6 +14,7 @@
 <legend>New feed URI</legend>
     <input type="text" size="10" name="feed" value="$feed"/>&nbsp;
     <input type="text" size="104" name="uri" value=""/><br/><br/>
+    <input type="hidden" name="session" value="$session">
     <input type="submit" value="Add"/>
 </fieldset>
 </form>
@@ -28,13 +29,13 @@ When a feed is added, it will only pick up new items and not anything already in
     <div class="EntryBlock">
     <form action="upd_rss_feed" method="post">
         <fieldset class="EntryFieldSet">
-            <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="this.form.action='toggle_rss_feed';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
+            <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
             Feed $feed</legend>
 
             <input type="text" size="105" name="uri" value="$rss[$feed]['uri']"/>
-            <input type="submit" onclick="this.form.action='del_rss_feed';  this.form.submit(); return false;" value="Delete Feed"/>
-            <input type="submit" onclick="this.form.action='test_rss_feed'; this.form.submit(); return false;" value="Preview"/>
-            <input type="submit" onclick="this.form.action='download_rss_feed'; this.form.submit(); return false;" value="Force Download"/>
+            <input type="submit" onclick="this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;" value="Delete Feed"/>
+            <input type="submit" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="Preview"/>
+            <input type="submit" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="Force Download"/>
             <br/><br/>
 
             <!--#if $rss[$feed]['pick_cat']#-->
@@ -75,6 +76,7 @@ When a feed is added, it will only pick up new items and not anything already in
             </select>
 
             <input type="hidden" name="feed" value="$feed"/>
+            <input type="hidden" name="session" value="$session">
             <input type="submit" value="Save"/>
             <br />
 
@@ -134,6 +136,7 @@ When a feed is added, it will only pick up new items and not anything already in
         <!--#end if#-->
         <input type="hidden" value="$rss[$feed]['filtercount']" name="index">
         <input type="hidden" value="$feed" name="feed">
+        <input type="hidden" name="session" value="$session">
         <td><input type="submit" value="Save"></td>
         </tr>
         </form>
@@ -145,12 +148,13 @@ When a feed is added, it will only pick up new items and not anything already in
             <form action="del_rss_filter" method="post">
             <input type="hidden" value="$fnum" name="index">
             <input type="hidden" value="$feed" name="feed">
+            <input type="hidden" name="session" value="$session">
             <input type="submit" value="X"></form>
         </td>
 
         <td><form><select onchange="location = this.options[this.selectedIndex].value;">
         <!--#for $i in xrange($rss[$feed]['filtercount'])#-->
-            <option value="pos_rss_filter?feed=$feed&current=$fnum&new=$i" <!--#if int($i) == int($fnum) then "selected" else ""#-->>$i</option>
+            <option value="pos_rss_filter?session=$session&feed=$feed&current=$fnum&new=$i" <!--#if int($i) == int($fnum) then "selected" else ""#-->>$i</option>
         <!--#end for#-->
         </select>
         <input type="hidden" value="$feed" name="feed">
@@ -195,6 +199,7 @@ When a feed is added, it will only pick up new items and not anything already in
         <td>
         <input type="hidden" name="index" value="$fnum"/>
         <input type="hidden" name="feed" value="$feed"/>
+        <input type="hidden" name="session" value="$session">
         <input type="submit" value="Save"/>
         </td>
         </form>

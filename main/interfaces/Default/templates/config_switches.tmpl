@@ -120,10 +120,11 @@
     <br/>
     <strong>Ignore Samples:</strong><br>
     Filter out sample files from the queue.<br>
-    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> Off 
-    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> Delete after download 
-    <input class="radio" type="radio" name="ignore_samples" value="2" <!--#if $ignore_samples == 2 then 'checked="1"' else ""#--> /> Do not download 
+    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> Off
+    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> Delete after download
+    <input class="radio" type="radio" name="ignore_samples" value="2" <!--#if $ignore_samples == 2 then 'checked="1"' else ""#--> /> Do not download
     <br>
+    <input type="hidden" name="session" value="$session">
   </fieldset>
 </div>
 <p><input type="submit" value="Save Changes"></p>

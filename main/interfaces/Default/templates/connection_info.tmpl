@@ -5,12 +5,12 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 <span class="SubMenu">
-<a href="./disconnect/">Force Disconnect</a> |
-<a href="./testmail/" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a> |
-<a href="./showlog/">Show logging</a> |
-<a href="./showweb/">Show Weblogging</a>
+<a href="./disconnect?session=$session">Force Disconnect</a> |
+<a href="./testmail?session=$session" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a> |
+<a href="./showlog?session=$session">Show logging</a> |
+<a href="./showweb?session=$session">Show Weblogging</a>
 Logging:
-<select onChange="location = './change_loglevel?loglevel='+this.options[this.selectedIndex].value">
+<select onChange="location = './change_loglevel?session=$session&loglevel='+this.options[this.selectedIndex].value">
     <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
     <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
     <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
@@ -37,7 +37,7 @@ Logging:
     $lastmail
 <!--#end if#-->
 <!--#if $warnings#-->
-    <h2>Last warnings (<a href="./clearwarnings/">clear</a>)</h2>
+    <h2>Last warnings (<a href="./clearwarnings?session=$session">clear</a>)</h2>
     <!--#for $warn in $warnings#-->
         $warn<br/>
     <!--#end for#-->

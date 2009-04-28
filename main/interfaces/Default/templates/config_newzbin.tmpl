@@ -30,12 +30,12 @@ Set your password here.<br>
 <legend>Bookmark processing</legend>
 <label><input type="checkbox" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> <strong>Auto fetch bookmarks:</strong></label><br>
 Automatically get jobs from your bookmarks?<br>
-<a href="getBookmarks/">Get bookmarks now</a>
+<a href="getBookmarks?session=$session">Get bookmarks now</a>
 <br>
 <!--#if $bookmarks_list#-->
-    <a href="hideBookmarks/">Hide processed bookmarks</a>
+    <a href="hideBookmarks?session=$session">Hide processed bookmarks</a>
 <!--#else#-->
-    <a href="showBookmarks/">Show processed bookmarks</a>
+    <a href="showBookmarks?session=$session">Show processed bookmarks</a>
 <!--#end if#-->
 <br/>
 <br/>
@@ -55,6 +55,7 @@ In minutes (at least 15 min).<br>
     <!--#end for#-->
     </fieldset>
 <!--#end if#-->
+<input type="hidden" name="session" value="$session">
 <p><input type="submit" value="Save Changes"></p>
 </form>
 
@@ -79,6 +80,7 @@ Set your password here.<br>
 <input type="password" name="password_matrix" value="$password_matrix">
 </fieldset>
 </div>
+<input type="hidden" name="session" value="$session">
 <p><input type="submit" value="Save Changes"></p>
 </form>
 

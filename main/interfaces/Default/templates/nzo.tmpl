@@ -65,7 +65,7 @@
 			<option value="2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
 			<option value="3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
 		</select>
-		
+
 		<!--#if $slot.priority != '2'#-->
 			<br />
 			<label class="label">Priority:</label><br />
@@ -98,12 +98,13 @@
 		<input type="submit" size="40" value="Save Changes">
 	</form>
 	<br />
-	
+
 	<br /><br /><br />
 <!--#end if#-->
 
 <!--#if $varExists('active_files')#-->
 	<form action="bulk_operation">
+      <input type="hidden" name="session" value="$session">
 	  <input type="submit" name="action_key" value="Delete">
 	  <input type="submit" name="action_key" value="Top">
 	  <input type="submit" name="action_key" value="Up">

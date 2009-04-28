@@ -406,9 +406,9 @@ class MainPage:
         output = kwargs.get('output')
 
         #Need to put version checking here so it requires no auth
-        
+
         #Need to put api/tapi auth here so version checking requires no auth
-        
+
         if mode == 'set_config':
             res = config.set_config(kwargs)
             if output == 'json':
@@ -719,12 +719,12 @@ class MainPage:
             elif name == 'set_pause':
                 scheduler.plan_resume(IntConv(value))
                 return 'ok\n'
-                
+
             elif name == 'set_apikey':
                 cfg.API_KEY.set(create_api_key())
                 config.save_config()
                 return str(cfg.API_KEY.get())
-            
+
             else:
                 return 'not implemented\n'
 
@@ -768,8 +768,7 @@ class MainPage:
     @cherrypy.expose
     def scriptlog(self, **kwargs):
         """ Duplicate of scriptlog of History, needed for some skins """
-        msg = check_session(kwargs)
-        if msg: return msg
+        # No session key check, due to fixed URLs
 
         name = kwargs.get('name')
         if name:
@@ -1053,9 +1052,6 @@ class NzoPage:
         # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
         # /nzb/SABnzbd_nzo_xxxxx/save
 
-        msg = check_session(kwargs)
-        if msg: return msg
-
         info, pnfo_list, bytespersec = build_header(self.__prim)
         nzo_id = None
 
@@ -1212,9 +1208,6 @@ class QueuePage:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         dummy2 = kwargs.get('dummy2')
@@ -1434,9 +1427,6 @@ class HistoryPage:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-
         start = kwargs.get('start')
         limit = kwargs.get('limit')
         search = kwargs.get('search')
@@ -1530,8 +1520,8 @@ class HistoryPage:
     @cherrypy.expose
     def scriptlog(self, **kwargs):
         """ Duplicate of scriptlog of History, needed for some skins """
-        msg = check_session(kwargs)
-        if msg: return msg
+        # No session key check, due to fixed URLs
+
         name = kwargs.get('name')
         if name:
             history_db = cherrypy.thread_data.history_db
@@ -1843,7 +1833,7 @@ class ConfigGeneral:
         # Update CherryPy authentication
         set_auth(cherrypy.config)
         raise dcRaiser(self.__root, kwargs)
-        
+
     @cherrypy.expose
     def generateAPIKey(self, **kwargs):
         msg = check_session(kwargs)
@@ -2705,8 +2695,8 @@ def ShowRssLog(feed, all):
                 pp = '&pp=' + escape(str(job[4]))
             else:
                 pp = ''
-            badStr += '<a href="rss_download?feed=%s&id=%s%s%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
-                   (qfeed, name, cat, pp, xml_name(job[1]))
+            badStr += '<a href="rss_download?session=%s&feed=%s&id=%s%s%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
+                   (cfg.API_KEY.get() ,qfeed, name, cat, pp, xml_name(job[1]))
 
     if all:
         return '''
@@ -2792,7 +2782,7 @@ def build_header(prim):
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32
     header['darwin'] = sabnzbd.DARWIN
-    
+
     header['session'] = cfg.API_KEY.get()
 
     bytespersec = bpsmeter.method.get_bps()
