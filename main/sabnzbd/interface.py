@@ -42,7 +42,7 @@ from Cheetah.Template import Template
 import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, loadavg, \
      to_units, from_units, diskfree, disktotal, get_ext,\
-     get_filename, cat_to_opts, create_api_key
+     get_filename, cat_to_opts
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
 from sabnzbd.codecs import TRANS, xml_name
@@ -721,7 +721,7 @@ class MainPage:
                 return 'ok\n'
 
             elif name == 'set_apikey':
-                cfg.API_KEY.set(create_api_key())
+                cfg.API_KEY.set(config.create_api_key())
                 config.save_config()
                 return str(cfg.API_KEY.get())
 
@@ -1840,7 +1840,7 @@ class ConfigGeneral:
         if msg: return msg
 
         logging.debug('API Key Changed')
-        cfg.API_KEY.set(create_api_key())
+        cfg.API_KEY.set(config.create_api_key())
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 
