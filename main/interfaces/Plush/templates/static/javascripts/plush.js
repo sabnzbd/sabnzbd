@@ -524,7 +524,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val(),
+						data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val()+'&apikey='+$.plush.apikey,
 						success: $.plush.refreshQueue
 					});
 					$("#addID_input").val('');
@@ -551,7 +551,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=newzbin&name=get_bookmarks",
+					data: "mode=newzbin&name=get_bookmarks&apikey="+$.plush.apikey,
 					success: function(result){
 						$.plush.refreshQueue();
 					}
@@ -586,7 +586,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()
+					data: "mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+'&apikey='+$.plush.apikey
 				});
 			});
 			
@@ -602,7 +602,7 @@ jQuery(function($) { // safely invoke $ selector
 			// Sabnzbd shutdown
 			$('#shutdown_sabnzbd').click( function(){
 				if(confirm('Sure you want to shut down the SABnzbd application?'))
-					window.location='shutdown';
+					window.location='shutdown?session='+$.plush.apikey;
 			});
 			
 			// Queue "Upon Completion" script
@@ -610,7 +610,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()
+					data: "mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()+'&apikey='+$.plush.apikey
 				});
 			});
 					
@@ -620,7 +620,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=delete&value=all",
+						data: "mode=queue&name=delete&value=all&apikey="+$.plush.apikey,
 						success: $.plush.refreshQueue
 					});
 				}
@@ -631,7 +631,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=queue&name=sort&sort="+$(event.target).attr('rel'),
+					data: "mode=queue&name=sort&sort="+$(event.target).attr('rel')+'&apikey='+$.plush.apikey,
 					success: $.plush.refreshQueue
 				});
 			});
@@ -644,7 +644,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=config&name=set_pause&value="+minutes,
+					data: "mode=config&name=set_pause&value="+minutes+'&apikey='+$.plush.apikey,
 					success: $.plush.refreshQueue
 				});
 			});
@@ -692,21 +692,21 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=pause&value="+$(this).parent().attr('id')
+						data: "mode=queue&name=pause&value="+$(this).parent().attr('id')+'&apikey='+$.plush.apikey
 					});
 				} else if ($(this).attr('class') == "download-grippie download-active") {
 					$(this).toggleClass('download-active').toggleClass('download-paused');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=pause&value="+$(this).parent().attr('id')
+						data: "mode=queue&name=pause&value="+$(this).parent().attr('id')+'&apikey='+$.plush.apikey
 					});
 				} else {
 					$(this).toggleClass('download-queued').toggleClass('download-paused');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=resume&value="+$(this).parent().attr('id')
+						data: "mode=queue&name=resume&value="+$(this).parent().attr('id')+'&apikey='+$.plush.apikey
 					});
 				}
 			});
@@ -718,7 +718,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=queue&name=delete&value="+delid,
+					data: "mode=queue&name=delete&value="+delid+'&apikey='+$.plush.apikey,
 					success: function(){
 						if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
 							$.plush.skipRefresh = false;
@@ -781,7 +781,7 @@ jQuery(function($) { // safely invoke $ selector
 								$.ajax({
 									type: "POST",
 									url: "tapi",
-									data: "mode=switch&value="+row.id+"&value2="+(i + $.plush.queuecurpage * $.plush.queueperpage),
+									data: "mode=switch&value="+row.id+"&value2="+(i + $.plush.queuecurpage * $.plush.queueperpage)+'&apikey='+$.plush.apikey,
 									success: function(result){
 										// change priority of the nzb if necessary (priority is returned by API)
 										var newPriority = $.trim(result.substring(result.length-2));
@@ -802,7 +802,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: 'mode=queue&name=priority&value='+nzbid+'&value2='+$(this).val(),
+						data: 'mode=queue&name=priority&value='+nzbid+'&value2='+$(this).val()+'&apikey='+$.plush.apikey,
 						success: function(newPos){
 							// reposition the nzb if necessary (new position is returned by the API)
 							if (parseInt(newPos) < $.plush.queuecurpage * $.plush.queueperpage
@@ -822,7 +822,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode="+$(this).attr('class')+"&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()
+						data: "mode="+$(this).attr('class')+"&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&apikey='+$.plush.apikey
 					});
 				});
 				
@@ -834,13 +834,13 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=resume"
+						data: "mode=resume&apikey="+$.plush.apikey
 					});
 				else
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=pause"
+						data: "mode=pause&apikey="+$.plush.apikey
 					});
 				if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused') {
 					$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
@@ -865,7 +865,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=history&name=delete&value="+delid,
+					data: "mode=history&name=delete&value="+delid+'&apikey='+$.plush.apikey,
 					success: function(){
 						if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
 							$.plush.histforcerepagination = true;
@@ -923,7 +923,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: 'mode=history&name=delete&value=all',
+						data: 'mode=history&name=delete&value=all&apikey='+$.plush.apikey,
 						success: $.plush.refreshHistory
 					});
 				}

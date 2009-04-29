@@ -3,7 +3,7 @@
 
     #if $pane=="Connections"#
         <div class="left_links config_margin">
-            <a class="rounded" id="force_disconnect" href="disconnect">Force Disconnect</a>
+            <a class="rounded" id="force_disconnect" href="disconnect?session=$session">Force Disconnect</a>
         </div>
     #else if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="NZB Sites" or $pane=="Sorting"#
         <div class="left_links config_margin">
@@ -17,7 +17,7 @@
     #end if#
     #if $pane=="Email"#
         <div class="left_links">
-            <a class="rounded" id="test_email" href="../../connections/testmail">Test Email</a>
+            <a class="rounded" id="test_email" href="../../connections/testmail?session=$session">Test Email</a>
         </div>
     #end if#
 

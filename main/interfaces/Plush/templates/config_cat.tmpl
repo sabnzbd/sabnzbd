@@ -2,95 +2,97 @@
 <!--#set global $help_uri="configure-categories"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-            <div class="center"><small>
-            Defines post-processing and storage.&nbsp;&nbsp;|&nbsp;&nbsp;
-            <!--#if $varExists('newzbinDetails')#-->
-            The Newzbin column will map listed Newzbin categories to your own.&nbsp;&nbsp;|&nbsp;&nbsp;
-            <!--#end if#-->
-            Relative folders are based on:
-            <font color=blue>$defdir</font></small><br/>
-            <!--#if not $have_cats#-->
-            <small>Click <a href="init_newzbin"><b>HERE</b></a> to setup Newzbin categories.</small><br/>
-            <!--#end if#-->
-            </div>
-            
-            <table id="catTable">
-                <tr>
-                    <th>Category Name</th>
-                    <th>Processing</th>
-                    <th>Priority</th>
-                    <!--#if $script_list#-->
-                    <th>Script</th>
-                    <!--#end if#-->
-                    <th>Folder</th>
-                    <th><!--#if $varExists('newzbinDetails') then "Newzbin / Groups" else "Groups"#--></th>
-                    <th></th>
-                </tr>
-                
-                <!--#set $odd = False#-->
-                <!--#set $cur = 0#-->
-                <!--#for $slot in $slotinfo#-->
-                <!--#set $odd = not $odd#-->
-                <!--#set $cur = $cur+1#-->
-                <form action="save" method="get">
-                <tr class="<!--#if $odd then "odd" else "even"#-->">
-                    
-                    
-                    <td>
-                        <input type="hidden" value="$slot.name" name="name"/>
-                        <input type="text" name="newname" value="$slot.name"/>
-                    </td>
-                    
-                    <td>
-                        <select name="pp">
-                            <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
-                            <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>(Skip)</option>
-                            <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>+Repair</option>
-                            <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+R+Unpack</option>
-                            <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+R+U+Delete</option>
-                        </select>
-                    </td>
-                    
-                    <td>
-                        <select name="priority">
-                            <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>Default</option>
-                            <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>Force</option>
-                            <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>High</option>
-                            <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>Normal</option>
-                            <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>Low</option>
-                        </select>
-                    </td>
-                    
-                    <!--#if $script_list#-->
-                    <td>
-                        <select name="script">
-                        <!--#for $sc in $script_list#-->
-                            <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
-                        <!--#end for#-->
-                        </select>
-                    </td>
-                    <!--#end if#-->
-                    
-                    <td><input type="text" size=35 name="dir" value="$slot.dir"/></td>
-                    
-                    <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"/></td>
-                    
-                    <td nowrap>
-                        
-                        <input type="submit" value="<!--#if $cur == 1 then 'Add' else 'Save'#-->"/>
+<div class="center"><small>
+Defines post-processing and storage.&nbsp;&nbsp;|&nbsp;&nbsp;
+<!--#if $varExists('newzbinDetails')#-->
+The Newzbin column will map listed Newzbin categories to your own.&nbsp;&nbsp;|&nbsp;&nbsp;
+<!--#end if#-->
+Relative folders are based on:
+<font color=blue>$defdir</font></small><br/>
+<!--#if not $have_cats#-->
+<small>Click <a href="init_newzbin"><b>HERE</b></a> to setup Newzbin categories.</small><br/>
+<!--#end if#-->
+</div>
 
-                        <!--#if $slot.name#-->
-                        <input type="button" value="X" name="$slot.name" />
-                        <!--#end if#-->
-                    
-                    
-                    </td>
-                    
-                </tr>
-                </form>
-                <!--#end for#-->
-                
-            </table>
-            &nbsp;
+<table id="catTable">
+    <tr>
+        <th>Category Name</th>
+        <th>Processing</th>
+        <th>Priority</th>
+        <!--#if $script_list#-->
+        <th>Script</th>
+        <!--#end if#-->
+        <th>Folder</th>
+        <th><!--#if $varExists('newzbinDetails') then "Newzbin / Groups" else "Groups"#--></th>
+        <th></th>
+    </tr>
+    
+    <!--#set $odd = False#-->
+    <!--#set $cur = 0#-->
+    <!--#for $slot in $slotinfo#-->
+    <!--#set $odd = not $odd#-->
+    <!--#set $cur = $cur+1#-->
+
+    <form action="save" method="get">
+	<input type="hidden" name="session" value="$session">
+
+    <tr class="<!--#if $odd then "odd" else "even"#-->">
+        
+        
+        <td>
+            <input type="hidden" value="$slot.name" name="name"/>
+            <input type="text" name="newname" value="$slot.name"/>
+        </td>
+        
+        <td>
+            <select name="pp">
+                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
+                <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>(Skip)</option>
+                <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>+Repair</option>
+                <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+R+Unpack</option>
+                <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+R+U+Delete</option>
+            </select>
+        </td>
+        
+        <td>
+            <select name="priority">
+                <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>Default</option>
+                <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>Force</option>
+                <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>High</option>
+                <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>Normal</option>
+                <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>Low</option>
+            </select>
+        </td>
+        
+        <!--#if $script_list#-->
+        <td>
+            <select name="script">
+            <!--#for $sc in $script_list#-->
+                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+            <!--#end for#-->
+            </select>
+        </td>
+        <!--#end if#-->
+        
+        <td><input type="text" size=35 name="dir" value="$slot.dir"/></td>
+        
+        <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"/></td>
+        
+        <td nowrap>
+            
+            <input type="submit" value="<!--#if $cur == 1 then 'Add' else 'Save'#-->"/>
+
+            <!--#if $slot.name#-->
+            <input type="button" value="X" name="$slot.name" />
+            <!--#end if#-->
+        
+        </td>
+        
+    </tr>
+    </form>
+    <!--#end for#-->
+    
+</table>
+&nbsp;
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

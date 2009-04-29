@@ -2,9 +2,11 @@
 <!--#set global $help_uri="Configure+Scheduling+V2"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-            <div class="EntryBlock">
             <form action="addSchedule" method="post">
-            <fieldset class="EntryFieldSet">
+			<input type="hidden" name="session" value="$session">
+            
+            <div class="EntryBlock">
+			<fieldset class="EntryFieldSet">
 
                 <legend id="configbox_add_schedule">Add&nbsp;Schedule</legend>
 <%import time
@@ -104,6 +106,7 @@ elif day == "7":
     day='Sunday'
 %>
 	            <form action="delSchedule" method="post">
+				<input type="hidden" name="session" value="$session">
 	            <input type="hidden" name="line" value="$line"/>
                 <tr>
                 	<td><input type="submit" value="X"/></td>

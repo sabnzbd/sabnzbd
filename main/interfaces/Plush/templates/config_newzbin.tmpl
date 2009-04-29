@@ -2,87 +2,89 @@
 <!--#set global $help_uri="Configure+Newzbin"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
     
-            <form action="saveNewzbin" method="post" name="fullform">
-            <div class="EntryBlock">
-            <fieldset class="EntryFieldSet">
-                
-                <legend id="configbox_newzbin_account_info">Newzbin&nbsp;Account&nbsp;Info</legend>
-                
-                <strong class="optional">&nbsp;Optional&nbsp;</strong><br/>
-                <small>If you have an account at <a href="https://www.newzbin.com" target="_blank">Newzbin.com</a>,<br/>you can enter your account info here;<br/>this will unlock extra functionality.</small><br/><br/>
-                
-                <strong>Username:</strong><br/>
-                <small>Set your Newzbin username here.</small><br/>
-                <input type="text" name="username_newzbin" value="$username_newzbin"/>
-                
-                <br/><br/>
-                <strong>Password:</strong><br/>
-                <small>Set your Newzbin password here.</small><br/>
-                <input type="password" name="password_newzbin" value="$password_newzbin"/>
-                
-            </fieldset>
-            </div>
-            
-            <div class="EntryBlock">
-            <fieldset class="EntryFieldSet">
-                
-                <legend id="configbox_bookmark_processing">Newzbin&nbsp;Bookmark&nbsp;Processing</legend>
-	
-				<br/>
-                <input type="button" id="getBookmarks" value="Get Bookmarks Now" />
-                <!--#if $bookmarks_list#-->
-                <input type="button" id="hideBookmarks" value="Hide Processed Bookmarks" />
-                <!--#else#-->
-                <input type="button" id="showBookmarks" value="Show Processed Bookmarks" />
-                <!--#end if#-->
-                
-                <br/><br/>
-                <input type="checkbox" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> />
-                <strong>Auto Fetch Bookmarks</strong><br/>
-                <small>Automatically fetches jobs from your bookmarks.</small><br/>
-                
-                <br/>
-                <input type="checkbox" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> />
-                <strong>Un-bookmark If Download Complete</strong><br/>
-                <small>Remove from bookmark list, when download is complete.</small><br/>
-                
-                <br/>
-                <strong>Checking Interval:</strong><br/>
-                <small>In minutes.</small><br/>
-                <input type="text" name="bookmark_rate" size="6" value="$bookmark_rate"/><small>&nbsp;(at&nbsp;least&nbsp;15&nbsp;min)</small>
-                
-            </fieldset>
-            </div>
-            <!--#if $bookmarks_list#-->
-            <fieldset class="EntryFieldSet">
-                
-                <legend id="configbox_processed_bookmarks">Processed Bookmarks</legend>
-                
-                <!--#for $msgid in $bookmarks_list#-->
-                <a href="https://www.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a><br/>
-                <!--#end for#-->
-                
-            </fieldset>
-            <!--#end if#-->
-            <div class="EntryBlock">
-            <fieldset class="EntryFieldSet">
-                
-                <legend id="configbox_newzbin_account_info">NzbMatrix&nbsp;Account&nbsp;Info</legend>
-                
-                <strong class="optional">&nbsp;Optional&nbsp;</strong><br/>
-                <small>If you have an account at <a href="https://nzbmatrix.com" target="_blank">NzbMatrix.com</a>,<br/>you can enter your account info here.<br/>This is required if you want to use the RSS feeds of this site.</small><br/><br/>
-                
-                <strong>Username:</strong><br/>
-                <small>Set your NzbMatrix username here.</small><br/>
-                <input type="text" name="username_matrix" value="$username_matrix"/>
-                
-                <br/><br/>
-                <strong>Password:</strong><br/>
-                <small>Set your NzbMatrix password here.</small><br/>
-                <input type="password" name="password_matrix" value="$password_matrix"/>
-                
-            </fieldset>
-            </div>
-            </form>
+<form action="saveNewzbin" method="post" name="fullform">
+<input type="hidden" name="session" value="$session">
+
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+    
+    <legend id="configbox_newzbin_account_info">Newzbin&nbsp;Account&nbsp;Info</legend>
+    
+    <strong class="optional">&nbsp;Optional&nbsp;</strong><br/>
+    <small>If you have an account at <a href="https://www.newzbin.com" target="_blank">Newzbin.com</a>,<br/>you can enter your account info here;<br/>this will unlock extra functionality.</small><br/><br/>
+    
+    <strong>Username:</strong><br/>
+    <small>Set your Newzbin username here.</small><br/>
+    <input type="text" name="username_newzbin" value="$username_newzbin"/>
+    
+    <br/><br/>
+    <strong>Password:</strong><br/>
+    <small>Set your Newzbin password here.</small><br/>
+    <input type="password" name="password_newzbin" value="$password_newzbin"/>
+    
+</fieldset>
+</div>
+
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+    
+    <legend id="configbox_bookmark_processing">Newzbin&nbsp;Bookmark&nbsp;Processing</legend>
+
+	<br/>
+    <input type="button" id="getBookmarks" value="Get Bookmarks Now" />
+    <!--#if $bookmarks_list#-->
+    <input type="button" id="hideBookmarks" value="Hide Processed Bookmarks" />
+    <!--#else#-->
+    <input type="button" id="showBookmarks" value="Show Processed Bookmarks" />
+    <!--#end if#-->
+    
+    <br/><br/>
+    <input type="checkbox" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> />
+    <strong>Auto Fetch Bookmarks</strong><br/>
+    <small>Automatically fetches jobs from your bookmarks.</small><br/>
+    
+    <br/>
+    <input type="checkbox" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> />
+    <strong>Un-bookmark If Download Complete</strong><br/>
+    <small>Remove from bookmark list, when download is complete.</small><br/>
+    
+    <br/>
+    <strong>Checking Interval:</strong><br/>
+    <small>In minutes.</small><br/>
+    <input type="text" name="bookmark_rate" size="6" value="$bookmark_rate"/><small>&nbsp;(at&nbsp;least&nbsp;15&nbsp;min)</small>
+    
+</fieldset>
+</div>
+<!--#if $bookmarks_list#-->
+<fieldset class="EntryFieldSet">
+    
+    <legend id="configbox_processed_bookmarks">Processed Bookmarks</legend>
+    
+    <!--#for $msgid in $bookmarks_list#-->
+    <a href="https://www.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a><br/>
+    <!--#end for#-->
+    
+</fieldset>
+<!--#end if#-->
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+    
+    <legend id="configbox_newzbin_account_info">NzbMatrix&nbsp;Account&nbsp;Info</legend>
+    
+    <strong class="optional">&nbsp;Optional&nbsp;</strong><br/>
+    <small>If you have an account at <a href="https://nzbmatrix.com" target="_blank">NzbMatrix.com</a>,<br/>you can enter your account info here.<br/>This is required if you want to use the RSS feeds of this site.</small><br/><br/>
+    
+    <strong>Username:</strong><br/>
+    <small>Set your NzbMatrix username here.</small><br/>
+    <input type="text" name="username_matrix" value="$username_matrix"/>
+    
+    <br/><br/>
+    <strong>Password:</strong><br/>
+    <small>Set your NzbMatrix password here.</small><br/>
+    <input type="password" name="password_matrix" value="$password_matrix"/>
+    
+</fieldset>
+</div>
+</form>
             
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

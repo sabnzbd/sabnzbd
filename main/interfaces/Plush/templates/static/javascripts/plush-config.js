@@ -112,15 +112,27 @@ jQuery(document).ready(function($){
         
         case 'Connections':
         	$('#logging_level').change(function(event){
-				window.location = './change_loglevel?loglevel='+$(event.target).val();
+				window.location = './change_loglevel?loglevel='+$(event.target).val()+'&session='+apikey;
 			});
 			break;
         
         case 'General':
+			$('#apikey').click(function(){ $('#apikey').select() });
+			$('#generate_new_apikey').click(function(){
+				$.ajax({
+					type: "POST",
+					url: "../../api",
+					data: "mode=config&name=set_apikey&apikey="+$('#apikey').val(),
+					success: function(msg){
+						$('#apikey').val(msg);
+						$('#hiddenSession').val(msg);
+					}
+				});
+			});
         	$('#sabnzbd_restart').click(function(){
         		if (confirm("Are you sure you want to restart SABnzbd?\n\nSave your config first if you have made changes.\n\nWait 5-10 seconds then refresh the page.")) {
         			$('#sabnzbd_restart').html('Restarting...');
-        			$.post('../../tapi', {mode: 'restart'} );
+        			$.post('../../tapi', {mode: 'restart', session: apikey} );
         		}
         	});
         	break;
@@ -135,7 +147,7 @@ jQuery(document).ready(function($){
 
         case 'Categories':
         	$(':button').click(function(event){ // delete category
-        		window.location="delete/?name="+$(event.target).attr('name');
+        		window.location="delete/?name="+$(event.target).attr('name')+'&session='+apikey;
         	});
         	break;
 
@@ -158,20 +170,20 @@ jQuery(document).ready(function($){
 				return false;
 			});
         	$('.filter_order').change(function(event){ // update filter order
-				window.location = $(event.target).val();
+				window.location = $(event.target).val()+'&session='+apikey;
 			});
 			break;
 
         case 'Email':
             $('#test_email').click(function(){
-				return confirm('This will send a test email to your account.')
+				return confirm('This will send a test email to your account.');
 		    });
 		    break;
         	
         case 'NZB Sites':
-        	$('#getBookmarks').click(function(){ window.location='getBookmarks'; });
-        	$('#hideBookmarks').click(function(){ window.location='hideBookmarks'; });
-        	$('#showBookmarks').click(function(){ window.location='showBookmarks'; });
+        	$('#getBookmarks').click(function(){ window.location='getBookmarks&session='+apikey; });
+        	$('#hideBookmarks').click(function(){ window.location='hideBookmarks&session='+apikey; });
+        	$('#showBookmarks').click(function(){ window.location='showBookmarks&session='+apikey; });
         	break;
 
         case 'Sorting':

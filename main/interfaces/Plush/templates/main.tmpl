@@ -13,6 +13,12 @@
 
     <script type="text/javascript" src="static/javascripts/plush.js?$version"></script>
 
+	<script type="text/javascript">
+	    jQuery(function($){
+        	$.plush.apikey = "$session";
+		});
+    </script>
+
 </head>
 <body>
 
@@ -50,6 +56,7 @@
             <ul>
                 <li><a><form><input type="text" id="addID_input" size="18" /><input type="submit" id="addID" value="Fetch" /></form></a></li>
                 <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="apikey" value="$session" />
                 <li><a class="tip" title="Upload: .nzb .rar .zip .gz">
 					<input type="hidden" name="mode" value="addfile" />
 					<input type="file" id="uploadNZBFile" name="name" size="10" />

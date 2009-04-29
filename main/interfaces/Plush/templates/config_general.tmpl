@@ -2,133 +2,139 @@
 <!--#set global $help_uri="Configure+General"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-            <form action="saveGeneral" method="post" name="fullform">
+<form action="saveGeneral" method="post" name="fullform">
+<input type="hidden" id="hiddenSession" name="session" value="$session">
 
-            <div class="center"><small><i>Config File:</i> <font color=blue>$configfn</font></small></div>
-            
-            <div class="EntryBlock">
-            <fieldset class="EntryFieldSet">
-                
-                <legend id="configbox_web_server">SABnzbd&nbsp;Web&nbsp;Server</legend>
-                
-                <strong class="manual_restart">&nbsp;Changes require SABnzbd restart!&nbsp;</strong>
-                
-                <br/><br/>
-                <table cellpadding=2>
-                <tr><td>
-                <strong>Web Host:</strong><br/>
-                <small>Host SABnzbd should listen on.</small><br/>
-                <input type="text" name="host" value="$host"/>
-                
-                </td><td>
-                <strong>Web Port:</strong><br/>
-                <small>Port SABnzbd should listen on.</small><br/>
-                <input type="text" name="port" size=8 value="$port"/>
-                
-                </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
-                <strong>Web Username:</strong><br/>
-                <small>Authentication Username.</small><br/>
-                <input type="text" name="web_username" value="$username"/>
-                
-                </td><td>
-                <strong>Web Password:</strong><br/>
-                <small>Authentication Password.</small><br/>
-                <input type="password" name="web_password" value="$password"/>
-                </td></tr>
-                </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
-                
-                <strong>Web Interface:</strong><br/>
-                <small>Choose a skin.</small><br/>
-                <select name="web_dir">
-                <!--#for $webline in $web_list#-->
-                <!--#if $webline.lower() == $web_dir.lower()#-->
-                    <option value="$webline" selected>$webline</option>
-                <!--#else#-->
-                    <option value="$webline">$webline</option>
-                <!--#end if#-->
-                <!--#end for#-->
-                </select>
-                
-                </td><td>
-                <strong>Secondary Web Interface:</strong><br/>
-                <small>Activate a secondary skin.</small><br/>
-                <select name="web_dir2">
-                <!--#for $webline in $web_list2#-->
-                <!--#if $webline.lower() == $web_dir2.lower()#-->
-                    <option value="$webline" selected>$webline</option>
-                <!--#else#-->
-                    <option value="$webline">$webline</option>
-                <!--#end if#-->
-                <!--#end for#-->
-                </select>
-                </td></tr>
-                </table>
-                                                
-            </fieldset>
-            </div>
-            
-            <div class="EntryBlock">
-            <fieldset class="EntryFieldSet">
-                <legend id="configbox_web_server">HTTPS&nbsp;Support</legend>
-                
-                    <input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-                    <strong>Enable HTTPS<!--#if int($have_ssl) == 0 then " (not-installed)" else ""#--></strong><br/>
-                    <small>Enable accessing the interface from a HTTPS address.</small>
+<div class="center"><small><i>Config File:</i> <font color=blue>$configfn</font></small></div>
 
-					<br/><br/>
-                    <strong>HTTPS Port:</strong><br/>
-                    <small>Port SABnzbd should listen on for HTTPS communication.</small><br/>
-                    <input type="text" name="https_port" size="8" value="$https_port"/>
-                    
-					<br/><br/>
-                    <strong>HTTPS Certificate:</strong><br/>
-                    <small>File name or path to HTTPS Certificate.</small><br/>
-                    <input type="text" name="https_cert" value="$https_cert"/>
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+    
+    <legend id="configbox_web_server">SABnzbd&nbsp;Web&nbsp;Server</legend>
+    
+    <strong class="manual_restart">&nbsp;Changes require SABnzbd restart!&nbsp;</strong>
+    
+    <br/><br/>
+    <table cellpadding=2>
+    <tr><td>
+    <strong>Web Host:</strong><br/>
+    <small>Host SABnzbd should listen on.</small><br/>
+    <input type="text" name="host" value="$host"/>
+    
+    </td><td>
+    <strong>Web Port:</strong><br/>
+    <small>Port SABnzbd should listen on.</small><br/>
+    <input type="text" name="port" size=8 value="$port"/>
+    
+    </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
+    <strong>Web Username:</strong><br/>
+    <small>Authentication Username.</small><br/>
+    <input type="text" name="web_username" value="$username"/>
+    
+    </td><td>
+    <strong>Web Password:</strong><br/>
+    <small>Authentication Password.</small><br/>
+    <input type="password" name="web_password" value="$password"/>
+    </td></tr>
+    </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
+    
+    <strong>Web Interface:</strong><br/>
+    <small>Choose a skin.</small><br/>
+    <select name="web_dir">
+    <!--#for $webline in $web_list#-->
+    <!--#if $webline.lower() == $web_dir.lower()#-->
+        <option value="$webline" selected>$webline</option>
+    <!--#else#-->
+        <option value="$webline">$webline</option>
+    <!--#end if#-->
+    <!--#end for#-->
+    </select>
+    
+    </td><td>
+    <strong>Secondary Web Interface:</strong><br/>
+    <small>Activate a secondary skin.</small><br/>
+    <select name="web_dir2">
+    <!--#for $webline in $web_list2#-->
+    <!--#if $webline.lower() == $web_dir2.lower()#-->
+        <option value="$webline" selected>$webline</option>
+    <!--#else#-->
+        <option value="$webline">$webline</option>
+    <!--#end if#-->
+    <!--#end for#-->
+    </select>
+    </td></tr>
+    </table>
 
-					<br/><br/>
-                    <strong>HTTPS Key:</strong><br/>
-                    <small>File name or path to HTTPS Key.</small><br/>
-                    <input type="text" name="https_key" value="$https_key"/>
-                    
-                    <br/>&nbsp;
-            </fieldset>
-            </div>
-            
-            <div class="EntryBlock">
-            <fieldset class="EntryFieldSet">
-                
-                <legend id="configbox_tuning">Tuning</legend>
-                <!--
-                <strong>Queue Auto-Refresh Interval:</strong><br/>
-                <small>Not used in Plush!
-                <br/>Refresh interval of the queue web-interface page.</small><br/>
-                <input type="text" name="refresh_rate" value="$refresh_rate" size=8 /><small>&nbsp;(seconds;&nbsp;0&nbsp;=&nbsp;none)</small>
-                <br/><br/>
-                -->
-                
-                <strong>RSS Checking Interval:</strong><br/>
-                <small>In minutes.</small><br/>
-                <input type="text" name="rss_rate" value="$rss_rate" size=8 /><small>&nbsp;(at&nbsp;least&nbsp;15&nbsp;min)</small>
-                
-                <br/><br/>
-                <strong>Download Speed Limit:</strong><br/>
-                <small>Download speed limit in kilobytes per second.</small><br/>
-                <input type="text" name="bandwith_limit" value="$bandwith_limit" size=8 /><small>&nbsp;(KB/s)</small>
-                
-                <br/><br/>
-                <strong>Article Cache Limit:</strong><br/>
-                <small>Cache articles in memory to reduce disk access.</small><br/>
-                <input type="text" name="cache_limitstr" value="$cache_limitstr" size=8 />
-                
-                <br/><br/>
-                <strong>Cleanup List:</strong><br/>
-                <small>List of file extensions that should be deleted after download.<br/>
-                For example: ".nfo," or ".nfo, .sfv"</small><br/>
-                <input type="text" name="cleanup_list" value="$cleanup_list" size=40 />
-                
-            </fieldset>
-            </div>
-            
-            </form>
+	<br/><br/>
+	<strong>API Key:</strong><br />
+	<input type="text" style="width:250px;border:none;" id="apikey" value="$session">
+	<input type="button" style="float:none;display:inline;" size="40" value="Generate New Key" id="generate_new_apikey">
+                                    
+</fieldset>
+</div>
+
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+    <legend id="configbox_web_server">HTTPS&nbsp;Support</legend>
+    
+        <input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+        <strong>Enable HTTPS<!--#if int($have_ssl) == 0 then " (not-installed)" else ""#--></strong><br/>
+        <small>Enable accessing the interface from a HTTPS address.</small>
+
+		<br/><br/>
+        <strong>HTTPS Port:</strong><br/>
+        <small>Port SABnzbd should listen on for HTTPS communication.</small><br/>
+        <input type="text" name="https_port" size="8" value="$https_port"/>
+        
+		<br/><br/>
+        <strong>HTTPS Certificate:</strong><br/>
+        <small>File name or path to HTTPS Certificate.</small><br/>
+        <input type="text" name="https_cert" value="$https_cert"/>
+
+		<br/><br/>
+        <strong>HTTPS Key:</strong><br/>
+        <small>File name or path to HTTPS Key.</small><br/>
+        <input type="text" name="https_key" value="$https_key"/>
+        
+        <br/>&nbsp;
+</fieldset>
+</div>
+
+<div class="EntryBlock">
+<fieldset class="EntryFieldSet">
+    
+    <legend id="configbox_tuning">Tuning</legend>
+    <!--
+    <strong>Queue Auto-Refresh Interval:</strong><br/>
+    <small>Not used in Plush!
+    <br/>Refresh interval of the queue web-interface page.</small><br/>
+    <input type="text" name="refresh_rate" value="$refresh_rate" size=8 /><small>&nbsp;(seconds;&nbsp;0&nbsp;=&nbsp;none)</small>
+    <br/><br/>
+    -->
+    
+    <strong>RSS Checking Interval:</strong><br/>
+    <small>In minutes.</small><br/>
+    <input type="text" name="rss_rate" value="$rss_rate" size=8 /><small>&nbsp;(at&nbsp;least&nbsp;15&nbsp;min)</small>
+    
+    <br/><br/>
+    <strong>Download Speed Limit:</strong><br/>
+    <small>Download speed limit in kilobytes per second.</small><br/>
+    <input type="text" name="bandwith_limit" value="$bandwith_limit" size=8 /><small>&nbsp;(KB/s)</small>
+    
+    <br/><br/>
+    <strong>Article Cache Limit:</strong><br/>
+    <small>Cache articles in memory to reduce disk access.</small><br/>
+    <input type="text" name="cache_limitstr" value="$cache_limitstr" size=8 />
+    
+    <br/><br/>
+    <strong>Cleanup List:</strong><br/>
+    <small>List of file extensions that should be deleted after download.<br/>
+    For example: ".nfo," or ".nfo, .sfv"</small><br/>
+    <input type="text" name="cleanup_list" value="$cleanup_list" size=40 />
+    
+</fieldset>
+</div>
+
+</form>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->
