@@ -29,30 +29,33 @@
     <td class="verbose">
         <!--#if $line.report #-->
             <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">
-                <div class="hv_report" title='Open NewzBin Report $line.report'>&nbsp;</div>
+                <div class="hv_report pointer" title='Open Source URL<br/><br/>https://www.newzbin.com/browse/post/$line.report'>&nbsp;</div>
             </a>
+        <!--#else#-->
+            <div class="hv_report hvFaded">&nbsp;</div>
         <!--#end if#-->
         <!--#if $line.url_info #-->
             <a href="$line.url_info" target="_blank">
-                <div class="hv_url" title="Open URL<br/>$line.url_info">&nbsp;</div>
+                <div class="hv_url pointer" title="Open Informational URL<br/><br/>$line.url_info">&nbsp;</div>
             </a>
+        <!--#else#-->
+            <div class="hv_url hvFaded">&nbsp;</div>
         <!--#end if#-->
-        <!--#if not $line.fail_message#-->
-            <div class="hv_stats" title='Size: $line.size<br/><br/>Path:<br/><!--#echo $line.path.replace("'","&rsquo;") #--><br/><br/>Storage:<br/><!--#echo $line.storage.replace("'","&rsquo;") #-->'>&nbsp;</div>
-        <!--#end if#-->
+        <div class="hv_stats" title='<!--#if $line.size#-->Size: $line.size<br/><br/><!--#end if#--><!--#if $line.path#-->Path:<br/><!--#echo $line.path.replace("'","&rsquo;") #--><br/><br/><!--#end if#--><!--#if $line.storage#-->Storage:<br/><!--#echo $line.storage.replace("'","&rsquo;") #--><!--#end if#-->'>&nbsp;</div>
 	    <!--#for $stage in $line.stage_log#-->
-            <!--#for $action in $stage.actions#-->
-                <div class="hv_$stage.name" title='<!--#echo $action.replace("'","&rsquo;") #-->'>&nbsp;</div>
-            <!--#end for#-->
+            <!--#if $stage.name == "script"#-->
+                <a href="scriptlog?name=$line.nzo_id">
+                    <div class="hv_$stage.name pointer" title='View Script Log<br/><br/><!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br/><!--#end for#-->'>&nbsp;</div>
+                </a>
+            <!--#else#-->
+                <div class="hv_$stage.name" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br/><!--#end for#-->'>&nbsp;</div>
+            <!--#end if#-->
         <!--#end for#-->
-        <!--#if $line.script_log #-->
-            <span class="hvMessage">&raquo;&nbsp;<a href="scriptlog?name=$line.nzo_id" title="<!--#echo $line.script_line.replace("'","&rsquo;") #-->">View&nbsp;Script&nbsp;Log</a>&nbsp;</span>
-        <!--#end if#-->
         <!--#if $line.action_line#-->
-        <span class="hvMessage">&raquo;&nbsp;$line.action_line&nbsp;</span><br/>
+        <h3 class="hvMessage">&raquo;&nbsp;$line.action_line&nbsp;</h3>
         <!--#end if#-->
         <!--#if $line.fail_message#-->
-        <span class="hvMessage">&raquo;&nbsp;$line.fail_message&nbsp;</span><br/>
+        <h3 class="hvMessage">&raquo;&nbsp;$line.fail_message&nbsp;</h3>
         <!--#end if#-->
     </td>
     

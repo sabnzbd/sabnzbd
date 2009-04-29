@@ -450,6 +450,9 @@ tr:hover .history_added  {
     width: 16px;
     margin-right: 2px;
 }
+.verbose .pointer {
+    cursor: pointer;
+}
 
 /* history verbosity icons */
 .hv_report { background: url(../images/plush-default/hv_report.png) 0 50% no-repeat; }
@@ -457,18 +460,18 @@ tr:hover .history_added  {
 .hv_stats { background: url(../images/plush-default/hv_avgspeed.png) 0 50% no-repeat; }
 .hv_download { background: url(../images/plush-default/hv_timetaken.png) 0 50% no-repeat; }
 .hv_repair { background: url(../images/plush-default/hv_par.png) 0 50% no-repeat; }
-.hv_file_join { background: url(../images/plush-default/hv_join.png) 0 50% no-repeat; }
-/*.hv_FJN { background: url(../images/plush-default/hv_join.png) 0 50% no-repeat; }*/
+.hv_filejoin { background: url(../images/plush-default/hv_join.png) 0 50% no-repeat; }
 .hv_unpack { background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat; }
-/*
-.hv_ZIP { background: url(../images/plush-default/hv_unzip.png) 0 50% no-repeat; }
-.hv_UNP { background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat; }
-.hv_DEL { background: url(../images/plush-default/hv_del.png) 0 50% no-repeat; }*/
 .hv_script { display:inline; background: url(../images/plush-default/hv_userscript.png) 0 50% no-repeat; }
+
+.hvFaded {filter:alpha(opacity=25);-moz-opacity:.25;opacity:.25;}
+
 .hvMessage {
     font-weight: bold;
     color: red;
     font-size: 60%;
+	clear:both;
+	width: 100%;
 }
 
 
