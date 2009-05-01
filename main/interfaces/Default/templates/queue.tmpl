@@ -6,30 +6,30 @@
 
 <span class="SubMenu">
 <!--#if $paused#-->
-    <a href="./resume?session=$session">Resume</a>
+    <a href="./resume?session=$session">$T('link-resume')</a>
 <!--#else#-->
-    <a href="./pause?session=$session">Pause</a>
+    <a href="./pause?session=$session">$T('link-pause')</a>
 <!--#end if#-->|
-<a href="./sort_by_name?session=$session">Sort by name</a> |
-<a href="./sort_by_avg_age?session=$session">Sort by age</a> |
-<a href="./sort_by_size?session=$session">Sort by size</a> |
+<a href="./sort_by_name?session=$session">$T('link-sortByName')</a> |
+<a href="./sort_by_avg_age?session=$session">$T('link-sortByAge')</a> |
+<a href="./sort_by_size?session=$session">$T('link-sortBySize')</a> |
 <!--#if $isverbose#-->
-    <a href="./tog_verbose?session=$session">Hide files</a>
+    <a href="./tog_verbose?session=$session">$T('link-hideFiles')</a>
 <!--#else#-->
-    <a href="./tog_verbose?session=$session">Show files</a>
+    <a href="./tog_verbose?session=$session">$T('link-showFiles')</a>|
 <!--#end if#-->
-On queue finish:
+$T('onQueueFinish'):
 <select onChange="location = './change_queue_complete_action?action='+this.options[this.selectedIndex].value+'&session=$session'">
 <option value=""></option>
     <optgroup label="Actions">
         <!--#if $nt or $darwin#-->
-        <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>Shutdown PC</option>
-        <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>Standby PC</option>
+        <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>$T('shutdownPc')</option>
+        <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>$T('standbyPc')</option>
         <!--#end if#-->
         <!--#if $nt#-->
-        <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>Hibernate PC</option>
+        <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>$T('hibernatePc')</option>
         <!--#end if#-->
-        <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
+        <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>$T('shutdownSab')</option>
     </optgroup>
 <!--#if $script_list#-->
     <optgroup label="Scripts">
@@ -41,10 +41,10 @@ On queue finish:
     </optgroup>
 <!--#end if#-->
 </select>
-| Speed Limit:
-<input id="speedbox" type="text" value="$speedlimit" onChange="location = './set_speedlimit?session=$session&value='+this.value">KB/s
-| Pause for:
-<input id="speedbox" type="text" size=5 value="" onChange="location = './set_pause?session=$session&value='+this.value">min
+| $T('speedLimit'):
+<input id="speedbox" type="text" value="$speedlimit" onChange="location = './set_speedlimit?session=$session&value='+this.value">$T('KBs')
+| $T('pauseFor'):
+<input id="speedbox" type="text" size=5 value="" onChange="location = './set_pause?session=$session&value='+this.value">$T('minute')
 </span>
 
 <br>
@@ -52,10 +52,10 @@ On queue finish:
 <!--#if $varExists('slots')#-->
     <table id="queueTable">
         <tr> <th></th><th></th><th></th>
-            <!--#if $cat_list#--><th>Category</th><!--#end if#-->
-            <th>Mode</th><th>Priority</th>
-            <!--#if $script_list#--><th>Script</th><!--#end if#-->
-            <th>Name</th><th>Remain/Total</th><th>ETA</th><th>AGE</th>
+            <!--#if $cat_list#--><th>$T('category')</th><!--#end if#-->
+            <th>$T('mode')</th><th>$T('priority')</th>
+            <!--#if $script_list#--><th>$T('script')</th><!--#end if#-->
+            <th>$T('name')</th><th>$T('remainTotal')</th><th>$T('eta')</th><th>$T('age')</th>
         </tr>
     <!--#set $odd = False#-->
     <!--#for $slot in $slots#-->
@@ -65,17 +65,17 @@ On queue finish:
         <td><form action="delete" method="get">
             <input type="hidden" name="session" value="$session">
             <input type="hidden" value="$slot.nzo_id" name="uid">
-            <input type="submit" value="Del"></form>
+            <input type="submit" value="$T('button-del')"></form>
             <!--#if $slot.status == 'Paused'#-->
                 <form action="resume_nzo" method="get">
                 <input type="hidden" value="$slot.nzo_id" name="uid">
                 <input type="hidden" value="$session" name="session">
-                <input type="submit" value="Resume"></form>
+                <input type="submit" value="$T('button-resume')"></form>
             <!--#else#-->
                 <form action="pause_nzo" method="get">
                 <input type="hidden" value="$slot.nzo_id" name="uid">
                 <input type="hidden" value="$session" name="session">
-                <input type="submit" value="Pause"></form>
+                <input type="submit" value="$T('button-pause')"></form>
             <!--#end if#-->
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
             <!--#for $i in xrange($noofslots)#-->

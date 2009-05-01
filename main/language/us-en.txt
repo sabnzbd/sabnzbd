@@ -9,6 +9,11 @@ yes               Yes
 no                No
 default           Default
 none              None
+KBs               KB/s
+minute            min
+second            sec
+month             Month
+day               Day
 
 # General template elements
 signOn            The automatic usenet download tool
@@ -23,8 +28,18 @@ menu-config       Config
 menu-cons         Connections
 menu-help         Help
 menu-wiki         Wiki
-menu-forum        Forum
+menu-forums       Forum
 menu-irc          IRC
+cmenu-general     General
+cmenu-folders     Folders
+cmenu-switches    Switches
+cmenu-servers     Servers
+cmenu-scheduling  Scheduling
+cmenu-rss         RSS
+cmenu-email       Email
+cmenu-newzbin     Index Sites
+cmenu-cat         Categories
+cmenu-sorting     Sorting
 
 # Footer
 ft-download       Download Dir
@@ -60,6 +75,26 @@ pr-high           High
 pr-low            Low
 
 # Queue page
+link-sortByName   Sort by name
+link-sortByAge    Sort by age
+link-sortBySize   Sort by size
+link-hideFiles    Hide files
+link-showFiles    Show files
+onQueueFinish     On queue finish
+shutdownPc        Shutdown PC
+standbyPc         Standby PC
+hibernatePc       Hibernate PC
+shutdownSab       Shutdown SABnzbd
+speedLimit        Speed Limit
+pauseFor          Pause for
+mode              Mode
+name              Name
+remainTotal       Remain/Total
+eta               ETA
+age               AGE
+button-del        Del
+button-resume     Resume
+button-pause      Pause
 
 # Config->General
 opt-language      Language
