@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-    <title>SABnzbd+ $version - Queued: $mbleft MB</title>
+    <title>SABnzbd+ $version - $T('queued'): $mbleft MB</title>
     <link rel="stylesheet" type="text/css" href="$statpath/static/stylesheets/default.css"/>
     <link rel="stylesheet" type="text/css" href="$statpath/static/stylesheets/defaultcolors.css"/>
     <!--#if $color_scheme#-->
@@ -13,51 +13,51 @@
     <link rel="shortcut icon" href="$statpath/static/images/favicon.ico" />
 </head>
 <body>
-<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">The automatic usenet download tool</span></h1>
+<h1><span id="first">SAB</span><span id="second">nzbd+</span><span id="third"> $version</span><span id="catchfrase">$T('signOn')</span></h1>
 
 <!--#set $mypath=$statpath+"/"+$topmenu#-->
 
 <span class="MainMenu">
 <!--#if $topmenu==''#-->
-    <a class="current" href="$mypath">Home</a> |
+    <a class="current" href="$mypath">$T('menu-home')</a> |
 <!--#else#-->
-    <a href="$statpath">Home</a> |
+    <a href="$statpath">$T('menu-home')</a> |
 <!--#end if#-->
 
 <!--#if $topmenu=='queue'#-->
-    <a class="current" href="$mypath/">Queue</a> |
+    <a class="current" href="$mypath/">$T('menu-queue')</a> |
 <!--#else#-->
-    <a href="$statpath/queue/">Queue</a> |
+    <a href="$statpath/queue/">$T('menu-queue')</a> |
 <!--#end if#-->
 
 <!--#if $topmenu=='history'#-->
-    <a class="current" href="$mypath/">History</a> |
+    <a class="current" href="$mypath/">$T('menu-history')</a> |
 <!--#else#-->
-    <a href="$statpath/history/">History</a> |
+    <a href="$statpath/history/">$T('menu-history')</a> |
 <!--#end if#-->
 
 <!--#if $topmenu=='config'#-->
-    <a class="current" href="$mypath/">Config</a> |
+    <a class="current" href="$mypath/">$T('menu-config')</a> |
 <!--#else#-->
-    <a href="$statpath/config/">Config</a> |
+    <a href="$statpath/config/">$T('menu-config')</a> |
 <!--#end if#-->
 
 <!--#if $topmenu=='connections'#-->
-    <a class="current" href="$mypath/">Connections</a> |
+    <a class="current" href="$mypath/">$T('menu-cons')</a> |
 <!--#else#-->
-    <a href="$statpath/connections/">Connections</a> |
+    <a href="$statpath/connections/">$T('menu-cons')</a> |
 <!--#end if#-->
 
 <!--[if IE]>
-    <a href="$helpuri$helpsubject/" target="_blank">Help</a>
+    <a href="$helpuri$helpsubject/" target="_blank">$T('menu-help')</a>
 <![endif]-->
 <comment>
 <ul id="nav">
-    <li><a href="$helpuri$helpsubject/" target="_blank">Help</a>
+    <li><a href="$helpuri$helpsubject/" target="_blank">$T('menu-help')</a>
 		<ul>
-			<li><a href="$helpuri$helpsubject/" target="_blank">Wiki</a></li>
-			<li><a href="http://forums.sabnzbd.org/" target="_blank">Forums</a></li>
-			<li><a href="http://www.sabnzbd.org/live-chat/" target="_blank">IRC</a></li>
+			<li><a href="$helpuri$helpsubject/" target="_blank">$T('menu-wiki')</a></li>
+			<li><a href="http://forums.sabnzbd.org/" target="_blank">$T('menu-forums')</a></li>
+			<li><a href="http://www.sabnzbd.org/live-chat/" target="_blank">$T('menu-irc')</a></li>
 		</ul>
 	</li>
 </ul>

@@ -78,7 +78,7 @@ import sabnzbd.config as config
 import sabnzbd.bpsmeter
 import sabnzbd.cfg as cfg
 import sabnzbd.database
-
+import sabnzbd.lang as lang
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 
@@ -93,6 +93,7 @@ DIR_APPDATA = None
 DIR_LCLDATA = None
 DIR_PROG = None
 DIR_INTERFACES = None
+DIR_LANGUAGE = None
 
 QUEUECOMPLETE = None #stores the nice name of the action
 QUEUECOMPLETEACTION = None #stores the name of the function to be called
@@ -191,6 +192,9 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     ### Set cache limit
     articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY.get())
+
+    ### Set language files
+    lang.install_language(DIR_LANGUAGE, cfg.LANGUAGE.get())
 
     ###
     ### Initialize threads

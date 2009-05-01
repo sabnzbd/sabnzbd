@@ -100,20 +100,20 @@ def PatchVersion(name):
         ver.close()
     except:
         print "WARNING: cannot patch " + VERSION_FILE
-        
-        
+
+
     if py2app:
-        import codecs 
+        import codecs
         try:
-            verapp = codecs.open(VERSION_FILEAPP,"rb","utf-16-le") 
+            verapp = codecs.open(VERSION_FILEAPP,"rb","utf-16-le")
             textapp = verapp.read()
             verapp.close()
         except:
             print "WARNING: cannot patch " + VERSION_FILEAPP
             return
-    
+
         textapp = textapp.replace(u'0.4.0' , name)
-    
+
         try:
             verapp = codecs.open(VERSION_FILEAPP,"wb","utf-16-le")
             verapp.write(textapp)
@@ -287,6 +287,7 @@ data = [ 'README.txt',
          'Sample-PostProc.sh',
          'PKG-INFO',
          'licenses/',
+         'language/',
          'interfaces/Default/',
          'interfaces/smpl/',
          'interfaces/Plush/',
@@ -324,19 +325,19 @@ if target == 'app':
 
     #mount sparseimage
     os.system("hdiutil mount %s" % (fileImg))
-    
+
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
-    options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]	      
+    options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]
     options['options'] = {'py2app': {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns'}}
     options['app'] = ['SABnzbd.py']
-    options['setup_requires'] = ['py2app']    
+    options['setup_requires'] = ['py2app']
 
     setup(**options)
 
     #copy builded app to mounted sparseimage
     os.system("cp -r dist/SABnzbd.app /Volumes/SABnzbd/>/dev/null")
-    
+
     #cleanup src dir
     os.system("rm -rf dist/>/dev/null")
     os.system("rm -rf build/>/dev/null")
@@ -344,17 +345,17 @@ if target == 'app':
     os.system("rm -rf NSIS_Installer.nsi")
     os.system("rm -rf win/")
     os.system("rm -rf cherrypy*.zip")
-    
+
     #Create src tar.gz
-    os.system("tar -czf %s ./ --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"sab*.tar.gz\" --exclude \"*.sparseimage\">/dev/null" % (fileOSr) )    
+    os.system("tar -czf %s ./ --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"sab*.tar.gz\" --exclude \"*.sparseimage\">/dev/null" % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
     os.system("cp %s /Volumes/SABnzbd/>/dev/null" % (fileOSr))
-    
+
     #Wait for enter from user
     #For manually arrange icon position in mounted Volume...
     wait = raw_input ("Press Enter to Finalize")
-    
+
     #Unmount sparseimage
     os.system("hdiutil eject /Volumes/SABnzbd/>/dev/null")
     os.system("sleep 5")

@@ -1,0 +1,67 @@
+# -*- coding: latin-1 -*-
+# United States # English
+
+special-decimal   .
+special-1000      ,
+
+# General texts
+yes               Yes
+no                No
+default           Default
+none              None
+
+# General template elements
+signOn            The automatic usenet download tool
+button-save       Save
+queued            Queued
+
+# Header
+menu-home         Home
+menu-queue        Queue
+menu-history      History
+menu-config       Config
+menu-cons         Connections
+menu-help         Help
+menu-wiki         Wiki
+menu-forum        Forum
+menu-irc          IRC
+
+# Footer
+ft-download       Download Dir
+ft-complete       Complete Dir
+ft-speed          Download speed
+ft-queued         Queued
+ft-paused         PAUSED
+ft-buffer@2       %s articles in %s bytes
+ft-sysload        Sysload
+ft-warning        WARNINGS
+ft-newRelease@1   New release %s available at
+
+# Main page
+addNewJobs        Add new downloads
+shutdownOK?       Are you sure you want to shutdown SABnzbd?
+link-shutdown     Shutdown
+link-pause        Pause
+link-resume       Resume
+button-add        Add
+add               Add
+reportId          Report-id
+addFile           Add File
+category          Category
+pp                PP
+script            Script
+priority          Priority
+pp-repair         +Repair
+pp-unpack         +Unpack
+pp-delete         +Delete
+pr-force          Force
+pr-normal         Normal
+pr-high           High
+pr-low            Low
+
+# Queue page
+
+# Config->General
+opt-language      Language
+explain-language  Select interface language
+warning-ambiLocalhost Warning: LOCALHOST is ambiguous, use numerical IP-address.

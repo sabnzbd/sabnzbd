@@ -57,6 +57,7 @@ import sabnzbd.nzbqueue as nzbqueue
 from sabnzbd.database import get_history_handle, build_history_info, unpack_history_info
 
 from sabnzbd.constants import *
+from sabnzbd.lang import T, Tspec, list_languages, reset_language
 
 #------------------------------------------------------------------------------
 # Global constants
@@ -77,7 +78,7 @@ def check_server(host, port):
     """ Check if server address resolves properly """
 
     if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
-        return badParameterResponse('Warning: LOCALHOST is ambiguous, use numerical IP-address.')
+        return badParameterResponse(T('warning-ambiLocalhost'))
 
     if GetServerParms(host, port):
         return ""
@@ -118,7 +119,7 @@ def ConvertSpecials(p):
     """
     if p is None:
         p = 'None'
-    elif p.lower() == 'default':
+    elif p.lower() == T('default').lower():
         p = ''
     return p
 
@@ -721,7 +722,7 @@ class MainPage:
                 return 'ok\n'
 
             elif name == 'set_apikey':
-                cfg.API_KEY.set(config.create_api_key())
+                cfg.API_KEY.set(create_api_key())
                 config.save_config()
                 return str(cfg.API_KEY.get())
 
@@ -1770,6 +1771,13 @@ class ConfigGeneral:
 
         conf['web_dir']  = add_color(cfg.WEB_DIR.get(), cfg.WEB_COLOR.get())
         conf['web_dir2'] = add_color(cfg.WEB_DIR2.get(), cfg.WEB_COLOR2.get())
+
+        conf['language'] = cfg.LANGUAGE.get()
+        list = list_languages(sabnzbd.DIR_LANGUAGE)
+        if len(list) < 2:
+            list = []
+        conf['lang_list'] = list
+
         conf['host'] = cfg.CHERRYHOST.get()
         conf['port'] = cfg.CHERRYPORT.get()
         conf['https_port'] = cfg.HTTPS_PORT.get()
@@ -1802,6 +1810,11 @@ class ConfigGeneral:
                 return badParameterResponse(msg)
 
         # Handle special options
+        language = kwargs.get('language')
+        if language and language != cfg.LANGUAGE.get():
+            cfg.LANGUAGE.set(language)
+            reset_language(language)
+
         cleanup_list = kwargs.get('cleanup_list')
         if cleanup_list and sabnzbd.WIN32:
             cleanup_list = cleanup_list.lower()
@@ -1840,7 +1853,7 @@ class ConfigGeneral:
         if msg: return msg
 
         logging.debug('API Key Changed')
-        cfg.API_KEY.set(config.create_api_key())
+        cfg.API_KEY.set(create_api_key())
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 
@@ -2757,7 +2770,7 @@ def build_header(prim):
     else:
         color = ''
 
-    header = { 'version':sabnzbd.__version__, 'paused':downloader.paused(),
+    header = { 'T': T, 'Tspec': Tspec, 'version':sabnzbd.__version__, 'paused':downloader.paused(),
                'pause_int': scheduler.pause_int(),
                'uptime':uptime, 'color_scheme':color }
     speed_limit = downloader.get_limit()

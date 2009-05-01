@@ -42,7 +42,7 @@ When a feed is added, it will only pick up new items and not anything already in
                 <select name="cat">
                     <optgroup label="Category">
                         <!--#for $ct in $cat_list#-->
-                            <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
+                            <option value="$ct[0]" <!--#if $ct[0] == $rss[$feed]['cat'] then "selected" else ""#-->>$ct[1]</option>
                         <!--#end for#-->
                     </optgroup>
                 </select>
@@ -60,7 +60,7 @@ When a feed is added, it will only pick up new items and not anything already in
                 <select name="script">
                     <optgroup label="Script">
                         <!--#for $sc in $script_list#-->
-                            <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
+                            <option value="$sc[0]" <!--#if $sc[0] == $rss[$feed]['script'] then "selected" else ""#-->>$sc[1]</option>
                         <!--#end for#-->
                     </optgroup>
                 </select>
@@ -111,7 +111,7 @@ When a feed is added, it will only pick up new items and not anything already in
           <td>
             <select name="cat">
             <!--#for $ct in $cat_list#-->
-                <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
+                <option value="$ct[0]" <!--#if $ct[0] == $rss[$feed]['cat'] then "selected" else ""#-->>$ct[1]</option>
             <!--#end for#-->
             </select>
           </td>
@@ -129,7 +129,7 @@ When a feed is added, it will only pick up new items and not anything already in
           <td>
             <select name="script">
             <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
+                <option value="$sc[0]" <!--#if $sc[0] == $rss[$feed]['script'] then "selected" else ""#-->>$sc[1]</option>
             <!--#end for#-->
             </select>
           </td>

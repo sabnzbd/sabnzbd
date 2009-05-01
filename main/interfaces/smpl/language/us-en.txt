@@ -1,0 +1,5 @@
+# -*- coding: latin-1 -*-
+# United States # English
+
+thisWeek        This week
+thisMonth       This month

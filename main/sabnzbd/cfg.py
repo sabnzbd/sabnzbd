@@ -166,6 +166,8 @@ HTTPS_CERT = OptionDir('misc', 'https_cert', 'server.cert', create=False)
 HTTPS_KEY = OptionDir('misc', 'https_key', 'server.key', create=False)
 ENABLE_HTTPS = OptionBool('misc', 'enable_https', False)
 
+LANGUAGE = OptionStr('misc', 'language', 'us-en')
+
 # Internal options, not saved in INI file
 DEBUG_DELAY = OptionNumber('misc', 'debug_delay', 0, add=False)
 

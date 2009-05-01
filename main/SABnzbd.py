@@ -68,6 +68,8 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader as downloader
+import sabnzbd.lang
+
 from threading import Thread
 
 LOG_FLAG = False  # Global for this module, signalling loglevel change
@@ -261,6 +263,8 @@ def Web_Template(key, defweb, wdir):
             logging.exception('Cannot find standard template: %s', full_dir)
             panic_tmpl(full_dir)
             exit_sab(1)
+
+    sabnzbd.lang.install_language(real_path(full_dir, DEF_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), wdir)
 
     return real_path(full_dir, "templates")
 
@@ -607,6 +611,7 @@ def main():
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_INTERFACES = real_path(sabnzbd.DIR_PROG, DEF_INTERFACES)
+    sabnzbd.DIR_LANGUAGE = real_path(sabnzbd.DIR_PROG, DEF_LANGUAGE)
 
     if getattr(sys, 'frozen', None) == 'macosx_app':
         # Correct path if frozen with py2app (OSX)
@@ -929,7 +934,9 @@ def main():
 
     web_dir  = Web_Template(sabnzbd.cfg.WEB_DIR,  DEF_STDINTF,  web_dir)
     web_dir2 = Web_Template(sabnzbd.cfg.WEB_DIR2, '', web_dir2)
+
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
+    sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), 'wizard')
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2

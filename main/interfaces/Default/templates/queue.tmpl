@@ -85,7 +85,7 @@ On queue finish:
             <!--#if $cat_list#-->
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
                 <!--#for $ct in $cat_list#-->
-                    <option value="change_cat?session=$session&nzo_id=$slot.nzo_id&cat=$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+                    <option value="change_cat?session=$session&nzo_id=$slot.nzo_id&cat=$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
                 <!--#end for#-->
                 </select></form>
             </td>
@@ -111,7 +111,7 @@ On queue finish:
             <!--#if $script_list#-->
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
                 <!--#for $sc in $script_list#-->
-                    <option value="change_script?session=$session&nzo_id=$slot.nzo_id&script=$sc" <!--#if $slot.script == $sc then "selected" else ""#-->>$sc</option>
+                    <option value="change_script?session=$session&nzo_id=$slot.nzo_id&script=$sc" <!--#if $slot.script == $sc then "selected" else ""#-->>$Tspec($sc)</option>
                 <!--#end for#-->
                 </select></form>
             </td>

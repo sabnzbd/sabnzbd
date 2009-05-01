@@ -45,6 +45,20 @@ Activate a secondary skin (restart required!).<br>
         <!--#end if#-->
     <!--#end for#-->
 </select>
+<!--#if $lang_list#-->
+<br/><br/>
+<strong>$T('opt-language')</strong><br/>
+$T('explain-language')<br/>
+<select name="language">
+    <!--#for $webline in $lang_list#-->
+        <!--#if $webline[0].lower() == $language.lower()#-->
+            <option value="$webline[0]" selected>$webline[1]</option>
+        <!--#else#-->
+            <option value="$webline[0]">$webline[1]</option>
+        <!--#end if#-->
+    <!--#end for#-->
+</select>
+<!--#end if#-->
 </fieldset>
 </div>
 <fieldset class="EntryFieldSet">

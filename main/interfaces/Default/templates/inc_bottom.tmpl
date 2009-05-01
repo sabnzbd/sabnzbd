@@ -1,30 +1,32 @@
 <div class="footer">
-<b>Download Dir:</b> $diskspace1 GB - <b>Complete Dir:</b> $diskspace2 GB - <b>Download speed:</b> $kbpersec KB/s - <b>Queued:</b> $mbleft/$mb MB
+<b>$T('ft-download'):</b> $diskspace1 GB - <b>$T('ft-complete'):</b> $diskspace2 GB - <b>$T('ft-speed'):</b> $kbpersec KB/s - <b>$T('ft-queued'):</b> $mbleft/$mb MB
 <!--#if $loadavg#-->
-    - <b>Sysload</b> $loadavg
+    - <b>$T('ft-sysload')</b> $loadavg
 <!--#end if#-->
 <!--#if $paused#-->
-    - <b>PAUSED</b><!--#if $pause_int != "0"#-->($pause_int)<!--#end if#-->
+    - <b>$T('ft-paused')</b><!--#if $pause_int != "0"#-->($pause_int)<!--#end if#-->
 <!--#end if#-->
 <br>
 <!--#if int($cache_limit)#-->
-<b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br>
+<!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->
+$msg<br>
 <!--#end if#-->
 <!--#if $new_release#-->
-    <b>New release $new_release available at <a href="$new_rel_url/" target="_blank">SF.net</a></b><br>
+    <!--#set $msg=$T('ft-newRelease@1')%($new_release)#-->
+    <b>$msg <a href="$new_rel_url/" target="_blank">SF.net</a></b><br>
 <!--#end if#-->
 <!--#if $have_warnings != "0"#-->
-    <strong><a href="$statpath/connections/">WARNINGS($have_warnings)!</a></strong>
+    <strong><a href="$statpath/connections/">$T('ft-warning')($have_warnings)!</a></strong>
 <!--#end if#-->
 </div>
 <!--#set $kbpersecrnd = str(int(float($kbpersec)))#-->
 <!--#set $mbleftrnd = str(int(float($mbleft)))#-->
 <!--#set $mbrnd = str(int(float($mb)))#-->
 <div id='SABData' style='visibility: hidden'>
-    <b>&nbsp;SAB:</b> <!--#if $paused then "<blink><b>PAUSED</b></blink>" else $kbpersecrnd + " KB/s"#--> <b>Q:</b> $mbleftrnd/$mbrnd MB<b>&nbsp; Comp:</b> $diskspace2 GB
+    <b>&nbsp;SAB:</b> <!--#if $paused then "<blink><b>$T('ft-paused')</b></blink>" else $kbpersecrnd + " KB/s"#--> <b>Q:</b> $mbleftrnd/$mbrnd MB<b>&nbsp; Comp:</b> $diskspace2 GB
 </div>
 <!--#if self.varExists('warning') and $warning#-->
-        <h2>WARNING</h2>
+        <h2>$T('ft-warning')</h2>
         <b>$warning</b>
 <!--#end if#-->
 </body>
