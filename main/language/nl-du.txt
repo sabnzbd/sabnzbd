@@ -1,0 +1,403 @@
+﻿# -*- coding: UTF-8 -*-
+# Nederland # Nederlands
+
+special-decimal   .
+special-1000      ,
+
+# General texts
+yes               Ja
+no                Nee
+default           Standaard
+none              Geen
+KBs               KB/s
+hour              uur
+minute            min
+second            sec
+month             maand
+day               dag
+daily             dagelijks
+monday            maandag
+tuesday           dinsdag
+wednesday         woensdag
+thursday          donderdag
+friday            vrijdag
+saturday          zaterdag
+sunday            zondag
+
+# General template elements
+signOn            Het automatisch download wonder
+button-save       Opslaan
+queued            Rij
+button-back       Terug
+
+# Header
+menu-home         Opdrachten
+menu-queue        Wachtrij
+menu-history      Geschiedenis
+menu-config       Instellen
+menu-cons         Verbindingen
+menu-help         Hulp
+menu-wiki         Wiki
+menu-forums       Forum
+menu-irc          IRC
+cmenu-general     Algemeen
+cmenu-folders     Mappen
+cmenu-switches    Opties
+cmenu-servers     Usenet
+cmenu-scheduling  Agenderen
+cmenu-rss         RSS
+cmenu-email       Email
+cmenu-newzbin     Index sites
+cmenu-cat         Categorieën
+cmenu-sorting     Sorteren
+
+# Footer
+ft-download       Download map
+ft-complete       Complete map
+ft-speed          Snelheid
+ft-queued         Wachtend
+ft-paused         PAUZE
+ft-buffer@2       %s artikelen in %s bytes
+ft-sysload        Sysload
+ft-warning        WAARSCHUWINGEN
+ft-newRelease@1   Nieuwe versie %s beschikbaar op
+
+# Main page
+addNewJobs        Opdrachten toevoegen
+shutdownOK?       Weet je zeker dat je SABnzbd wilt afsluiten?
+link-shutdown     Afsluiten
+link-pause        Pauze
+link-resume       Doorgaan
+button-add        Toevoegen
+add
+reportId          Newzbin rapport
+addFile           Bestand
+category          Categorie
+priority          Prioriteit
+pp-none           Download
+pp-repair         +Repareren
+pp-unpack         +Uitpakken
+pp-delete         +Opschonen
+pp-n
+pp-r              R
+pp-u              U
+pp-d              O
+pr-force          Forceren
+pr-normal         Normaal
+pr-high           Hoog
+pr-low            Laag
+
+
+# Queue page
+link-sortByName   Op naam
+link-sortByAge    Op leeftijd
+link-sortBySize   Op grootte
+link-hideFiles    Verberg bestanden
+link-showFiles    Toon bestanden
+onQueueFinish     Bij lege rij
+shutdownPc        PC afsluiten
+standbyPc         PC standby
+hibernatePc       PC slapen
+shutdownSab       SABnzbd afsluiten
+speedLimit        Max. snelheid
+pauseFor          Pauzeer
+name              Naam
+mode              Modus
+remainTotal       Te doen/Totaal
+eta               Klaar om
+age               Leeftijd
+button-del        Wis
+button-resume     Doorgaan
+button-pause      Pauzeer
+
+# History page
+purgeHist         Alles wissen
+hideDetails       Verberg details
+showDetails       Toon details
+sizeHist          Geschiedenis omvang
+completed         Voltooid
+size              Grootte
+status            Status
+
+# Connections page
+link-forceDisc    Verbreek verbindingen
+askTestEmail      Hiermee stuur je een test email.
+link-showLog      Toon log info
+link-showWeblog   Toon weblog info
+link-testEmail    Test Email
+logging           Loggen
+log-errWarn       Fouten/Waarschuwingen
+log-info          + Info
+log-debug         + Debug
+connections       Verbindingen
+thread            Draad
+emailResult       Test resultaat email
+lastWarnings      Recentste waarschuwingen en fouten
+clearWarnings     Wissen
+
+# Configuration
+configuration     Instellingen
+confgFile         Instellingen bestand
+explain-Restart   De knop hier onder zal SABnzbd herstarten.\n\
+                  Dit kan nuttig zijn wanneer je vermoedt dat het programma niet stabiel is.\n\
+                  Het downloaden zal vóór de herstart gestopt worden en daarna weer doorgaan.
+button-restart    Herstarten
+
+# Config->General
+generalConfig     generalConfig          Algemene instellingen
+webServer              Web server (<i>herstart nodig</i>)
+opt-host               Host
+explain-host           Host adres waar op SABnzbd luistert
+opt-port               Poort
+explain-port           Poort waar op SABnzbd luistert
+opt-web_dir            Gebruikersinterface
+explain-web_dir        Kies een skin (<i>herstart nodig</i>)
+opt-web_dir2           Secundair Gebruikersinterface
+explain-web_dir2       Aktiveer secundaire skin (<i>herstart nodig</i>)
+webAuth                Web server authenticatie
+opt-web_username       Gebruikersnaam
+explain-web_username   Gebruikersnaam voor web login
+opt-web_password       Wachtwoord
+explain-web_password   Wachtwoord voor web login
+httpsSupport           HTTPS ondersteuning (<i>herstart nodig</i>)
+opt-enable_https       Maak HTTPS mogelijk
+opt-notInstalled       niet geinstalleerd
+explain-enable_https   Maak gebruik van HTTPS adressen mogelijk
+opt-https_port         HTTPS Poort
+explain-https_port     Poort die SABnzbd gebruikt voor HTTPS communicatie
+opt-https_cert         HTTPS Certificaat
+explain-https_cert     Naam of pad van het HTTPS Certificaat bestand
+opt-https_key          HTTPS Sleutelbestand
+explain-https_key      Naam of pad van het HTTPS Sleutel bestand
+tuning                 Afstelling
+opt-refresh_rate       Verversingsinterval van de Wachtrij
+explain-refresh_rate   Verversingsinterval van het de Wachtrij pagina (sec, 0= geen)
+opt-rss_rate           RSS uitlees interval
+explain-rss_rate       Aantal minuten tussen de RSS uitlezingen (minimaal 15)
+opt-bandwith_limit     Download snelheidsbeperking
+explain-bandwith_limit Download snelheidsbeperking kilobytes per seconde (kB/s)
+opt-cache_limitstr     Artikel buffer beperking
+explain-cache_limitstr Bewaar de artikelen in het werkgeheugen (verminderd schijf gebruik)
+opt-cleanup_list       Opschoon lijst
+explain-cleanup_list   Lijst van bestand extensies die verwijderd worden\n\
+                       Voorbeeld: ".nfo," of ".nfo, .sfv"
+button-saveChanges     Opslaan
+opt-language           Taal
+explain-language       Kies andere taal
+
+warning-ambiLocahost Waarschuwing: LOCALHOST is niet eenduidig, gebruik een numeriek IP-adres.
+
+# Config->Folders
+folderConfig            Map instellingen
+explain-folderConfig    <em>Let op:</em> mappen worden vanzelf aangemaakt bij "Opslaan".
+userFolders             Gebruikersmappen
+in                      In
+opt-download_dir        Tijdelijke download map
+explain-download_dir    Plaats om onbewerkte downloads op te slaan\n\
+                        <i>Kan alleen gewijzigd worden als de wachtrij leeg is</i>
+opt-download_free       Minimale vrije ruimte voor tijdelijke download map
+explain-download_free   Download wordt gepauzeerd als er te weinig ruimte vrij is
+opt-complete_dir        Map voor verwerkte downloads
+explain-complete_dir    (kan aangepast worden door de categorieën)
+opt-permissions         Toegangsrechten voor verwerkte downloads
+explain-permissions     Zet toegangsrechten voor verwerkte bestanden/mappen, alleen octale notatie!
+opt-dirscan_dir         Bewaakte map
+explain-dirscan_dir     .nzb en .zip bestanden in deze map worden automatisch gedownload
+opt-dirscan_speed       Leestempo bewaakte map
+explain-dirscan_speed   Aantal seconden tussen lezen van de bewaakte map
+opt-script_dir          Map met gebruikers scripts
+explain-script_dir      Map waarin zich de script bestanden voor nabewerking bevinden
+opt-email_dir           Map met email sjablonen
+explain-email_dir       Map waarin zich de email sjablonen bevinden
+systemFolders           Systeem folders
+opt-cache_dir           Cache mappen
+explain-cache_dir       Map gebruikt voor tijdelijke opslag\n\
+                        <i>Kan alleen gewijzigd worden als de wachtrij leeg is</i>\n\
+                        <i>Vereist een herstart.</i>
+opt-log_dir             Map voor logging
+explain-log_dir         Map waarin de log bestanden worden opgeslagen\n\
+                        <i>Vereist een herstart</i>
+opt-nzb_backup_dir      Map voor het bewaren van nzb bestanden
+explain-nzb_backup_dir  Map waar reserve kopieën opgeslagen worden.
+
+# Config->Switches
+switchesConfig           Diverse instellingen
+processingSwitches       Nabewerking instellingen
+opt-quick_check          Snelle controle toestaan
+explain-quick_check      Geen uitgebreide PAR2 controle als files 100% in orde zijn.
+opt-enable_unrar         Unrar toestaan
+explain-enable_unrar     Uitpakken van RAR archieven toestaan.
+opt-enable_unzip         Unzip toestaan
+explain-enable_unzip     Uitpakken van ZIP archieven toestaan.
+opt-enable_filejoin      Samenvoegen van bestanden toestaan
+explain-enable_filejoin  Voeg bestanden eindigend met .001, .002 enz. samen tot één file.
+opt-enable_tsjoin        Samenvoegen van TS bestanden toestaan
+explain-ts_join          Voeg bestanden eindigend met .001.ts, .002.ts enz. samen tot één file.
+opt-enable_par_cleanup   PAR bestanden opruimen
+explain-enable_par_cleanup Ruim PAR bestanden op (na succesvolle verificatie/reparatie).
+opt-fail_on_crc          Verwijder artikelen met yEnc crc fouten
+explain-fail_on_crc      Probeer deze artikelen opnieuw te downloaden van een reserve server.
+opt-top_only             Download alleen artikelen van het begin van de wachtrij
+explain-top_only         Aanzetten zal leiden tot minder geheugen gebruik.\n\
+                         Uitzetten om te voorkomen dat langzame opdrachten de wachtrij blokkeren.
+opt-safe_postproc        Verwerk alleen correct geverifieerde downloads
+explain-safe_postproc    Voer de nabewerking alleen uit op downloads die alle PAR2 controles hebben doorlopen.
+opt-no_dupes             Download geen dubbele opdrachten.
+explain-no_dupes         Sla een opdracht over wanneer de NZB al als reserve bestand is opgeslagen.
+opt-dirscan_opts         Standaard nabewerking
+explain-dirscan_opts     Wordt gebruikt wanneer de categorie geen nabewerking opgeeft.
+opt-dirscan_script       Standaard script
+explain-dirscan_script   Wordt gebruikt wanneer de categorie geen script opgeeft.
+opt-dirscan_priority     Standaard prioriteit
+explain-dirscan_priority Wordt gebruikt wanneer de categorie geen prioriteit opgeeft.
+opt-par_option           Extra PAR2 parameters:
+explain-par_option       Lees hier voor de Wiki pagina!
+opt-nice                 "Nice" parameters
+explain-nice             Lees hier voor de Wiki pagina!
+opt-ionice               "IONice" parameters
+explain-ionice           Lees hier voor de Wiki pagina!
+otherSwitches            Diverse instellingen
+opt-auto_disconnect      Verbreek verbindingen wanneer er niets te doen is
+explain-auto_disconnect  Verbreek verbindingen wanneer de wachtrij leeg is of er gepauzeerd wordt.
+opt-send_group           Verzend groep
+explain-send_group       Verzend de groepsnaam naar de server.
+opt-auto_sort            Sorteer op leeftijd
+explain-auto_sort        Automatisch sorteren op basis van gemiddelde leeftijd.
+opt-check_new_rel        Informeer naar nieuwe versies
+explain-check_new_rel    Informeer iedere week naar nieuwe SABnzbd versies.
+opt-replace_spaces       Vervang spaties in map namen
+explain-replace_spaces   Vervang spaties door onderliggende streepjes in map namen.
+opt-replace_illegal      Vervang verboden tekens in map namen
+explain-replace_illegal  Vervang verboden tekens in map namen door gelijkende tekens (anders verwijderen).
+opt-auto_browser         Start web browser bij opstarten
+explain-auto_browser     Start de web browser wanneer SABnzbd opstart.
+opt-pause_on_post_processing Onderbreek downloaden tijdens nabewerken
+explain-pause_on_post_processing Onderbreek downloaden tijdens nabewerken.
+opt-ignore_samples       Verwerking van "sample" bestanden
+explain-ignore_samples   Wat te doen met "sample" bestanden?
+igsam-off                Behouden
+igsam-del                Vewijderen na download
+igsam-not                Niet downloaden
+
+# Config->Server
+configServer             Usernet servers
+addServer                Voeg server toe
+srv-host                 Server naam
+srv-port                 Poort nummer
+srv-username             Gebruikersnaam
+srv-password             Wachtwoord
+srv-timeout              Tijdslimiet
+srv-connections          Verbindingen
+srv-ssl                  SSL
+srv-fillserver           Reserve server
+srv-optional             Optioneel
+srv-enable               Aktief
+button-addServer         Voeg toe
+button-delServer         Verwijder
+
+# Config->Scheduling
+configSchedule           Agenda instellen
+addSchedule              Taak toevoegen
+sch-frequency            Frequentie
+sch-action               Aktie
+sch-arguments            Parameters
+button-addSchedule       Voeg toe
+button-delSchedule       Verwijder
+currentSchedules         Huidige taken
+sch-task                 Taak
+sch-disable_server       Server uit:
+sch-enable_server        Server aan:
+sch-resume               Doorgaan
+sch-pause                Pauze
+sch-shutdown             Afsluiten
+sch-restart              Herstarten
+sch-speedlimit           Maximum snelheid
+
+
+# Config->RSS
+configRSS                RSS Stroom Definities
+newFeedURI               Nieuwe Stroom
+explain-RSS              Om de RSS stroom automatisch te verwerken, vink het selectievlakje bij de definitie naam aan.\n\
+                         De lees-frequentie is in te stellen op de "Algemene instellingen" pagina.\n\
+                         Wanneer een nieuwe stroom wordt gedefinieerd, zullen alleen nieuwe items gevonden worden en geen bestaande,\
+                         behalve wanneer je de op "Forceer download" klikt.
+feedDefinition           Stroom Definitie
+feed                     Stroom
+button-delFeed           Verwijder
+button-preFeed           Voorbeeld
+button-forceFeed         Forceer download
+rss-order                Volgorde
+rss-type                 Type
+rss-filter               Filter
+rss-accept               Accepteren
+rss-reject               Verwerpen
+rss-delFilter            X
+rss-matched              Geselecteerd
+rss-notMatched           Niet geselecteerd
+rss-done                 Gedaan
+rss-downloaded           Tot nu toe gedaan
+link-download            Download
+
+# Config->Email
+configEmail              Email berichten
+emailOptions             Email Opties
+opt-email_endjob         Zend email bij eind opdracht
+email-never              Nooit
+email-always             Altijd
+email-errorOnly          Alleen bij fouten
+opt-email_full           Zend email wanneer de harde schijf vol is
+explain-email_full       Zend email wanneer SABnzbd gestopt is vanwege een volle harde schijf.
+emailAccount             Email gegevens
+opt-email_server         SMTP email server
+explain-email_server     Het adres van je Internet providers email server.
+opt-email_to             Email bestemming
+explain-email_to         Adres waarnaar de email verstuurd wordt.
+opt-email_from           Email afzender
+explain-email_from       Wie zou de email gestuurd moeten hebben?
+opt-email_account        OPTIE: Account gebruikersnaan
+explain-email_account    Wanneer authenticatie nodig is, gebruikersnaam.
+opt-email_pwd            OPTIE: Account wachtwoord
+explain-email_pwd        Wanneer authenticatie nodig is, wachtwoord.
+
+# Config->Newzbin
+explain-newzbin          Wanneer je een account bij <strong>www.newzbin.com</strong> hebt,\
+                         kun je hier je gegevens invullen.\n\
+                         Dit maakt extra mogelijkheden beschikbaar.
+accountInfo              Account info
+opt-username_newzbin     Gebruikersnaam
+explain-username_newzbin Vul hier je gebruikersnaam in.
+opt-password_newzbin     Wachtwoord
+explain-password_newzbin Vul hier je wachtwoord in.
+newzbinBookmarks         Automatische <i>bookmark</i> verwerking
+opt-newzbin_bookmarks    <i>Bookmarks</i> verwerken
+explain-newzbin_bookmarks Download alle rapported die <i>bookmarked</i> zijn?
+link-getBookmarks        Download nu alle <i>bookmarks</i>
+link-HideBM              Verberg verwerkte <i>bookmarks</i>
+link-ShowBM              Toon verwerkte <i>bookmarks</i>
+opt-newzbin_unbookmark   Automatisch <i>bookmark</i> verwijderen
+explain-newzbin_unbookmark Verwijder <i>bookmark</i> status na voltooide download.
+opt-bookmark_rate        Lees interval
+explain-bookmark_rate    In minuten (minimaal 15).
+processedBM              Verwerkte <i>bookmarks</i>
+explain-nzbmatrix        Wanneer je een account bij <strong>www.nzbmatrix.com</strong> hebt,\
+                         kun je hier je gegevens invullen.\n\
+                         Dit is nodig om RSS stromen van deze site te kunnen verwerken.
+opt-username_matrix      Gebruikersnaam
+explain-username_matrix  Vul hier je gebruikersnaam in.
+opt-password_matrix      Wachtwoord
+explain-password_matrix  Vul hier je wachtwoord in.
+
+# Config->Cat
+configCat                Categorieën voor nabewerking
+explain-configCat        Bepalend voor nabewerking en opslag.
+explain-catNewzbin       De Newzbin kolom beeldt newzbin categorieën af op je eigen categorieën.
+link-initCat             Klik hier om de standaard newzbin categorieën in te vullen.
+explain-relFolder        De relatieve mappen zijn gebaseerd op
+catFolderPath            Map/Pad
+catNewzbin               NewzBin
+catGroups                Groepen
+button-delCat            X
+
+# Config->Sorting
+sort-show                Show
+sort-name                Naam

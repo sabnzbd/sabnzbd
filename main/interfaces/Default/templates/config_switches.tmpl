@@ -6,51 +6,51 @@
 <!--#set global $submenu="switches"#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
-<h2>Switches configuration</h2>
+<h2>$T('switchesConfig')</h2>
 <form action="saveSwitches" method="post">
 <div class="EntryBlock">
   <fieldset class="EntryFieldSet">
-    <legend>Processing switches</legend>
-    <label><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /> <strong>Enable Quick Check</strong></label><br/>
-    Skip par2 checking when files are 100% valid.<br>
+    <legend>$T('processingSwitches')</legend>
+    <label><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /> <strong>$T('opt-quick_check')</strong></label><br/>
+    $T('explain-quick_check')<br>
     <br/>
-    <label><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> <strong>Enable Unrar</strong></label><br>
-    Enable built-in unrar functionality.<br>
+    <label><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /> <strong>$T('opt-enable_unrar')</strong></label><br>
+    $T('explain-enable_unrar')<br>
     <br>
-    <label><input type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> <strong>Enable Unzip</strong></label><br>
-    Enable built-in unzip functionality.<br>
+    <label><input type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /> <strong>$T('opt-enable_unzip')</strong></label><br>
+    $T('explain-enable_unzip')<br>
     <br>
-    <label><input type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> <strong>Enable Filejoin</strong></label><br>
-    Join files ending in .001, .002 etc. into one file.<br>
+    <label><input type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /> <strong>$T('opt-enable_filejoin')</strong></label><br>
+    $T('explain-enable_filejoin')<br>
     <br>
-    <label><input type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> /> <strong>Enable TS Joining</strong></label><br>
-    Join files ending in .001.ts, .002.ts etc. into one file.<br>
+    <label><input type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> /> <strong>$T('opt-enable_tsjoin')</strong></label><br>
+    $T('explain-ts_join')<br>
     <br>
-    <label><input type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> <strong>Enable Par Cleanup</strong></label><br>
-    Cleanup par files (if verifiying/repairing succeded).<br>
+    <label><input type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /> <strong>$T('opt-enable_par_cleanup')</strong></label><br>
+    $T('explain-enable_par_cleanup')<br>
     <br>
-    <label><input type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> <strong>Fail on yEnc crc Errors</strong></label><br>
-    Use backup servers on yEnc crc errors.<br>
+    <label><input type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /> <strong>$T('opt-fail_on_crc')</strong></label><br>
+    $T('explain-fail_on_crc')<br>
     <br>
-    <label><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> <strong>Only get articles for top of the queue</strong></label><br>
-    Enable for less memory usage.<br/> Disable to prevent slow jobs from blocking the queue<br/>
+    <label><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /> <strong>$T('opt-top_only')</strong></label><br>
+    $T('explain-top_only')<br/>
     <br>
-    <label><input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> <strong>Post-process only verified jobs</strong></label><br>
-    Only perform post-processing on jobs that passed all PAR2 checks.<br>
+    <label><input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /> <strong>$T('opt-safe_postproc')</strong></label><br>
+    $T('explain-safe_postproc')<br>
     <br>
-    <label><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /> <strong>Do not download same job twice</strong></label><br>
-    Skip job if a backed-up NZB with the same name exists.<br>
+    <label><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /> <strong>$T('opt-no_dupes')</strong></label><br>
+    $T('explain-no_dupes')<br>
     <br>
-    <strong>Default post-processing:</strong><br>
-    Used when no post-processing is defined by the category.<br>
-    <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> None
-    <input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> +Repair
-    <input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> +Unpack
-    <input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> +Delete
+    <strong>$T('opt-dirscan_opts'):</strong><br>
+    $T('explain-dirscan_opts')<br>
+    <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> $T('none')
+    <input type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then "checked=1" else ""#--> /> $T('pp-repair')
+    <input type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then "checked=1" else ""#--> /> $T('pp-unpack')
+    <input type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then "checked=1" else ""#--> /> $T('pp-delete')
     <br>
     <br>
-    <strong>Default user script:</strong><br>
-    Used when no user script is defined by the category.<br>
+    <strong>$T('opt-dirscan_script'):</strong><br>
+    $T('explain-dirscan_script')<br>
     <select name="dirscan_script">
     <!--#for $sc in $script_list#-->
         <!--#if $sc.lower() == $dirscan_script.lower()#-->
@@ -62,72 +62,72 @@
     </select>
     <br>
     <br>
-    <strong>Default Priority:</strong><br>
-    Used when no priority is defined by the category.<br>
+    <strong>$T('opt-dirscan_priority'):</strong><br>
+    $T('explain-dirscan_priority')<br>
     <select name="dirscan_priority">
-        <option value="2" <!--#if $dirscan_priority == 2 then 'selected' else ''#--> >Force</option>
-        <option value="1" <!--#if $dirscan_priority == 1 then 'selected' else ''#--> >High</option>
-        <option value="0" <!--#if $dirscan_priority == 0 then 'selected' else ''#--> >Normal</option>
-        <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >Low</option>
+        <option value="2" <!--#if $dirscan_priority == 2 then 'selected' else ''#--> >$T('pr-force')</option>
+        <option value="1" <!--#if $dirscan_priority == 1 then 'selected' else ''#--> >$T('pr-high')</option>
+        <option value="0" <!--#if $dirscan_priority == 0 then 'selected' else ''#--> >$T('pr-normal')</option>
+        <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >$T('pr-low')</option>
     </select>
     <br>
     <br>
-    <strong>Extra PAR2 parameters:</strong><br/>
-    Read the Wiki Help on this!<br/>
+    <strong>$T('opt-par_option'):</strong><br/>
+    $T('explain-par_option')<br/>
     <input type="text" name="par_option" value="$par_option"/>
     <br>
     <br>
 <!--#if $have_nice#-->
-    <strong>Nice parameters:</strong><br/>
-    Read the Wiki Help on this!<br/>
+    <strong>$T('opt-nice'):</strong><br/>
+    $T('explain-nice')<br/>
     <input type="text" name="nice" value="$nice"/>
     <br>
     <br>
 <!--#end if#-->
 <!--#if $have_ionice#-->
-    <strong>IONice parameters:</strong><br/>
-    Read the Wiki Help on this!<br/>
+    <strong>$T('opt-ionice'):</strong><br/>
+    $T('explain-ionice')<br/>
     <input type="text" name="ionice" value="$ionice"/>
     <br>
     <br>
 <!--#end if#-->
   </fieldset>
   <fieldset class="EntryFieldSet">
-    <legend>Other switches</legend>
-    <label><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> <strong>Disconnect on empty queue</strong></label><br>
-    Disconnect from Usenet server(s) when queue is empty or paused.<br>
+    <legend>$T('otherSwitches')</legend>
+    <label><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /> <strong>$T('opt-auto_disconnect')</strong></label><br>
+    $T('explain-auto_disconnect')<br>
     <br>
-    <label><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> <strong>Send Group</strong></label><br>
-    Send group command before requesting articles.<br>
+    <label><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /> <strong>$T('opt-send_group')</strong></label><br>
+    $T('explain-send_group')<br>
     <br>
-    <label><input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> <strong>Sort by age</strong></label><br>
-    Automatically sort items by (average) age.<br>
+    <label><input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /> <strong>$T('opt-auto_sort')</strong></label><br>
+    $T('explain-auto_sort')<br>
     <br>
-    <label><input type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> /> <strong>Check for new release</strong></label><br>
-    Weekly check for new SABnzbd release.<br>
+    <label><input type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> /> <strong>$T('opt-check_new_rel')</strong></label><br>
+    $T('explain-check_new_rel')<br>
     <br>
-    <label><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> <strong>Replace spaces in foldername</strong></label><br>
-    Replace spaces with underscores in foldernames.<br>
+    <label><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /> <strong>$T('opt-replace_spaces')</strong></label><br>
+    $T('explain-replace_spaces')<br>
     <br>
-    <label><input type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> /> <strong>Replace illegal characters in foldernames</strong></label><br>
-    Replace illegal characters in foldernames by equivalents (otherwise remove).<br>
+    <label><input type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> /> <strong>$T('opt-replace_illegal')</strong></label><br>
+    $T('explain-replace_illegal')<br>
     <br>
-    <label><input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> <strong>Launch browser on startup</strong></label><br>
-    Launch the browser when starting SABnzbd.<br>
+    <label><input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /> <strong>$T('opt-auto_browser')</strong></label><br>
+    $T('explain-auto_browser')<br>
     <br>
-    <label><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> <strong>Pause downloading during post processing</strong></label><br>
-    Pauses downloading at the start of post processing and resumes when finished.<br>
+    <label><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> <strong>$T('opt-pause_on_post_processing')</strong></label><br>
+    $T('explain-pause_on_post_processing')<br>
     <br/>
-    <strong>Ignore Samples:</strong><br>
-    Filter out sample files from the queue.<br>
-    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> Off
-    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> Delete after download
-    <input class="radio" type="radio" name="ignore_samples" value="2" <!--#if $ignore_samples == 2 then 'checked="1"' else ""#--> /> Do not download
+    <strong>$T('opt-ignore_samples'):</strong><br>
+    $T('explain-ignore_samples')<br>
+    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> $T('igsam-off')
+    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> $T('igsam-del')
+    <input class="radio" type="radio" name="ignore_samples" value="2" <!--#if $ignore_samples == 2 then 'checked="1"' else ""#--> /> $T('igsam-not')
     <br>
     <input type="hidden" name="session" value="$session">
   </fieldset>
 </div>
-<p><input type="submit" value="Save Changes"></p>
+<p><input type="submit" value="$T('button-saveChanges')"></p>
 </form>
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

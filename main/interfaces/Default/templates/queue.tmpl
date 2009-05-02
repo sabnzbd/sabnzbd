@@ -91,20 +91,20 @@ $T('onQueueFinish'):
             </td>
             <!--#end if#-->
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
-                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
-                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
-                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
-                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
+                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->>$T('pp-n')</option>
+                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>$T('pp-r')</option>
+                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>$T('pp-u')</option>
+                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>$T('pp-d')</option>
                 </select></form>
             </td>
             <td>
             <!--#if $slot.priority#-->
             <form>
             <select onchange="location = this.options[this.selectedIndex].value;">
-                    <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>Force</option>
-					<option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
-                    <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
-                    <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
+                    <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>$T('pr-force')</option>
+					<option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=1" <!--#if $slot.priority == "High" then "selected" else ""#-->>$T('pr-high')</option>
+                    <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>$T('pr-normal')</option>
+                    <option value="set_priority?session=$session&nzo_id=$slot.nzo_id&priority=-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
                 </select></form>
             <!--#end if#-->
             </td>

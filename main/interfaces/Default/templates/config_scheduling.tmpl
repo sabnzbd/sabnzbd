@@ -6,11 +6,11 @@
 <!--#set global $submenu="scheduling"#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
-<h2>Scheduling configuration</h2>
+<h2>$T('configSchedule')</h2>
 <div class="EntryBlock">
 <form action="addSchedule" method="post">
 <fieldset class="EntryFieldSet">
-<legend>Add schedule</legend>
+<legend>$T('addSchedule')</legend>
  <%import time
 t = time.localtime()
 hour = t[3]
@@ -18,7 +18,7 @@ if hour != 23:
     hour += 1
 else:
     hour = 0 %>
-Hour:<br>
+$T('hour'):<br>
 <select name="hour">
 <!--#for $i in range(24)#-->
 <option value="$i" <!--#if hour == i then "selected=1" else ""#-->> $i</option>
@@ -30,62 +30,41 @@ Hour:<br>
 <option value="$i">$i
 <!--#end for#-->
 </select>
-<br>Frequency: <br>
+<br>$T('sch-frequency'): <br>
 <select name="dayofweek">
-<option value="*" selected>Daily
-<option value="1">Mondays
-<option value="2">Tuesdays
-<option value="3">Wednesdays
-<option value="4">Thursdays
-<option value="5">Fridays
-<option value="6">Saturdays
-<option value="7">Sundays
+<option value="*" selected>$T('daily')
+<option value="1">$T('monday')
+<option value="2">$T('tuesday')
+<option value="3">$T('wednesday')
+<option value="4">$T('thursday')
+<option value="5">$T('friday')
+<option value="6">$T('saturday')
+<option value="7">$T('sunday')
 </select>
-<br>Action:<br>
+<br>$T('sch-action'):<br>
 <select name="action">
 <!--#for $action in $actions#-->
-    <option value="$action">$action
+    <option value="$action">$actions_lng[$action]
 <!--#end for#-->
 </select>
-<br>Arguments:<br>
+<br>$T('sch-arguments'):<br>
 <input type="text" size="20" name="arguments" value="">
 <input type="hidden" name="session" value="$session">
-<p><input type="submit" value="Add Schedule"></p>
+<p><input type="submit" value="$T('button-addSchedule')"></p>
 </fieldset>
 </form>
 </div>
-<h3>Current Schedules:</h3>
+<h3>$T('currentSchedules'):</h3>
 <div class="EntryBlock">
 <!--#set $schednum = 0#-->
 <!--#for $line in $schedlines#-->
 <form action="delSchedule" method="post">
 <fieldset class="EntryFieldSet">
-<!--#set $schednum = $schednum+1#-->
-<%
-m, h, day, action = line.split(' ', 3)
-if len(m) == 1:
-    m = '0%s' % m
-if day == "*":
-    day="Daily"
-elif day == "1":
-    day='Monday'
-elif day == "2":
-    day='Tuesday'
-elif day == "3":
-    day='Wednesday'
-elif day == "4":
-    day='Thursday'
-elif day == "5":
-    day='Friday'
-elif day == "6":
-    day='Saturday'
-elif day == "7":
-    day='Sunday'
-%>
-Task $schednum: <strong>$h:$m</strong> - $day - $action
+$T('sch-task') $taskinfo[$schednum][0]: <strong>$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</strong> - $taskinfo[$schednum][3] - $taskinfo[$schednum][4]
+<!--#set $schednum += 1#-->
 <input type="hidden" name="line" value="$line">
 <input type="hidden" name="session" value="$session">
-<input type="submit" value="Remove">
+<input type="submit" value="$T('button-delSchedule')">
 </fieldset>
 </form><br />
 <!--#end for#-->

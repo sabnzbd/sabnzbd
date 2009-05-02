@@ -10,15 +10,26 @@ no                No
 default           Default
 none              None
 KBs               KB/s
+hour              hour
 minute            min
 second            sec
 month             Month
 day               Day
+daily             Daily
+monday            Monday
+tuesday           Tuesday
+wednesday         Wednesday
+thursday          Thursday
+friday            Friday
+saturday          Saturday
+sunday            Sunday
+
 
 # General template elements
 signOn            The automatic usenet download tool
 button-save       Save
 queued            Queued
+button-back       Back
 
 # Header
 menu-home         Home
@@ -66,9 +77,14 @@ category          Category
 pp                PP
 script            Script
 priority          Priority
+pp-none           Download
 pp-repair         +Repair
 pp-unpack         +Unpack
 pp-delete         +Delete
+pp-n
+pp-r              R
+pp-u              U
+pp-d              D
 pr-force          Force
 pr-normal         Normal
 pr-high           High
@@ -96,7 +112,294 @@ button-del        Del
 button-resume     Resume
 button-pause      Pause
 
+# History page
+purgeHist         Purge history
+hideDetails       Hide details
+showDetails       Show details
+sizeHist          History Size
+completed         Completed
+size              Size
+status            Status
+
+# Connections page
+link-forceDisc    Force Disconnect
+askTestEmail      This will send a test email to your account.
+link-showLog      Show logging
+link-showWeblog   Show Weblogging
+link-testEmail    Test Email
+logging           Logging
+log-errWarn       Errors/Warning
+log-info          + Info
+log-debug         + Debug
+connections       Connections
+thread            Thread
+emailResult       Email test result
+lastWarnings      Last warnings
+clearWarnings     clear
+
+# Configuration
+configuration     Configuration
+confgFile         Configfile
+explain-Restart   The button below will restart SABnzbd.\n\
+                  Use it when you think the program has a stability problem.\n\
+                  Downloading will be paused before the restart and resume afterwards.
+button-restart    Restart
+
 # Config->General
-opt-language      Language
-explain-language  Select interface language
+generalConfig         General configuration
+webServer             Web server (<i>restart required</i>)
+opt-host              Host
+explain-host          Host SABnzbd should listen on
+opt-port              Port
+explain-port          Port SABnzbd should listen on
+opt-web_dir           User interface
+explain-web_dir       Choose a skin (restart required!)
+opt-web_dir2          Secondary User Interface
+explain-web_dir2      Activate a secondary skin (restart required!)
+webAuth               Web server authentication
+opt-web_username      Username
+explain-web_username  Authentication username
+opt-web_password      Password
+explain-web_password  Authentication password.
+httpsSupport          HTTPS Support (restart required)
+opt-enable_https      Enable HTTPS
+opt-notInstalled      not installed
+explain-enable_https  Enable accessing the interface from a HTTPS address.
+opt-https_port        HTTPS Port
+explain-https_port    Port SABnzbd should listen on for HTTPS communication.
+opt-https_cert        HTTPS Certificate
+explain-https_cert    File name or path to HTTPS Certificate.
+opt-https_key         HTTPS Key
+explain-https_key     File name or path to HTTPS Key.
+tuning                Tuning
+opt-refresh_rate      Queue auto refresh interval:
+explain-refresh_rate  Refresh interval of the queue web-interface page(sec, 0= none)
+opt-rss_rate          RSS checking interval
+explain-rss_rate      Checking interval (minutes, at least 15)
+opt-bandwith_limit    Download speed limit
+explain-bandwith_limit Download speed limit in kilobytes per second(kB/s)
+opt-cache_limitstr    Article Cache Limit
+explain-cache_limitstr Cache articles in memory (reduce disk access).
+opt-cleanup_list      Cleanup List
+explain-cleanup_list  List of file (extensions) that should be deleted after download\n\
+                      For example: ".nfo," or ".nfo, .sfv"
+button-saveChanges    Save Changes
+opt-language          Language
+explain-language      Select interface language
 warning-ambiLocalhost Warning: LOCALHOST is ambiguous, use numerical IP-address.
+
+# Config->Folders
+folderConfig            Folder configuration
+explain-folderConfig    <em>NOTE:</em> Folders will be created automatically when Saving.
+userFolders             User Folders
+in                      In
+opt-download_dir        Temporary Download Folder
+explain-download_dir    Location to store unprocessed downloads.\n\
+                        <i>Can only be changed when queue is empty.</i>
+opt-download_free       Minimum free space for Temporary Download Folder
+explain-download_free   Auto-pause when free space is beneath this value
+opt-complete_dir        Completed Download Folder
+explain-complete_dir    (can be overruled by user-defined categories)
+opt-permissions         Permissions for completed downloads
+explain-permissions     Set permissions pattern for completed files/folders, octal notation only!
+opt-dirscan_dir         Watched Folder
+explain-dirscan_dir     Folder to monitor for .nzb and .zip files
+opt-dirscan_speed       Watched Folder scan speed
+explain-dirscan_speed   Number of seconds between scans for .nzb files
+opt-script_dir          Folder containing the user scripts
+explain-script_dir      Folder containing user scripts for post-processing
+opt-email_dir           Folder containing email templates
+explain-email_dir       Folder containing user defined email templates
+systemFolders           System folders
+opt-cache_dir           Cache folder
+explain-cache_dir       Location for temporary storage.\n\
+                        <i>Can only be changed when queue is empty.</i>\n\
+                        <i>Requires restart.</i>
+opt-log_dir             Log folder
+explain-log_dir         Location of log files for SABnzbd.\n\
+                        <i>Requires restart.</i>
+opt-nzb_backup_dir      Backup folder for .nzb
+explain-nzb_backup_dir  Location where .nzb will be backed up
+
+# Config->Switches
+switchesConfig           Switches configuration
+processingSwitches       Processing switches
+opt-quick_check          Enable Quick Check
+explain-quick_check      Skip par2 checking when files are 100% valid.
+opt-enable_unrar         Enable Unrar
+explain-enable_unrar     Enable built-in unrar functionality.
+opt-enable_unzip         Enable Unzip
+explain-enable_unzip     Enable built-in unzip functionality.
+opt-enable_filejoin      Enable Filejoin
+explain-enable_filejoin  Join files ending in .001, .002 etc. into one file.
+opt-enable_tsjoin        Enable TS Joining
+explain-ts_join          Join files ending in .001.ts, .002.ts etc. into one file.
+opt-enable_par_cleanup   Enable Par Cleanup
+explain-enable_par_cleanup Cleanup par files (if verifiying/repairing succeded).
+opt-fail_on_crc          Fail on yEnc crc Errors
+explain-fail_on_crc      Use backup servers on yEnc crc errors.
+opt-top_only             Only get articles for top of the queue
+explain-top_only         Enable for less memory usage.\n\
+                         Disable to prevent slow jobs from blocking the queue.
+opt-safe_postproc        Post-process only verified jobs
+explain-safe_postproc    Only perform post-processing on jobs that passed all PAR2 checks.
+opt-no_dupes             Do not download same job twice.
+explain-no_dupes         Skip job if a backed-up NZB with the same name exists.
+opt-dirscan_opts         Default post-processing
+explain-dirscan_opts     Used when no post-processing is defined by the category.
+opt-dirscan_script       Default user script
+explain-dirscan_script   Used when no user script is defined by the category.
+opt-dirscan_priority     Default Priority
+explain-dirscan_priority Used when no priority is defined by the category.
+opt-par_option           Extra PAR2 parameters:
+explain-par_option       Read the Wiki Help on this!
+opt-nice                 Nice parameters
+explain-nice             Read the Wiki Help on this!
+opt-ionice               IONice parameters
+explain-ionice           Read the Wiki Help on this!
+otherSwitches            Other switches
+opt-auto_disconnect      Disconnect on empty queue
+explain-auto_disconnect  Disconnect from Usenet server(s) when queue is empty or paused.
+opt-send_group           Send Group
+explain-send_group       Send group command before requesting articles.
+opt-auto_sort            Sort by age
+explain-auto_sort        Automatically sort items by (average) age.
+opt-check_new_rel        Check for new release
+explain-check_new_rel    Weekly check for new SABnzbd release.
+opt-replace_spaces       Replace spaces in foldername
+explain-replace_spaces   Replace spaces with underscores in foldernames.
+opt-replace_illegal      Replace illegal characters in foldernames
+explain-replace_illegal  Replace illegal characters in foldernames by equivalents (otherwise remove).
+opt-auto_browser         Launch browser on startup
+explain-auto_browser     Launch the browser when starting SABnzbd.
+opt-pause_on_post_processing Pause downloading during post processing
+explain-pause_on_post_processing Pauses downloading at the start of post processing and resumes when finished.
+opt-ignore_samples       Ignore Samples
+explain-ignore_samples   Filter out sample files from the queue.
+igsam-off                Off
+igsam-del                Delete after download
+igsam-not                Do not download
+
+# Config->Server
+configServer             Server configuration
+addServer                Add server
+srv-host                 Host
+srv-port                 Port
+srv-username             Username
+srv-password             Password
+srv-timeout              Timeout
+srv-connections          Connections
+srv-ssl                  SSL
+srv-fillserver           Backup server
+srv-optional             Optional
+srv-enable               Enable
+button-addServer         Add Server
+button-delServer         Remove Server
+
+# Config->Scheduling
+configSchedule           Scheduling configuration
+addSchedule              Add schedule
+sch-frequency            Frequency
+sch-action               Action
+sch-arguments            Arguments
+button-addSchedule       Add Schedule
+button-delSchedule       Remove
+currentSchedules         Current Schedules
+sch-task                 Task
+sch-disable_server       disable server
+sch-enable_server        enable server
+sch-resume               Resume
+sch-pause                Pause
+sch-shutdown             Shutdown
+sch-restart              Restart
+sch-speedlimit           Speedlimit
+
+# Config->RSS
+configRSS                RSS Configuration
+newFeedURI               New feed URI
+explain-RSS              The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.\n\
+                         The checking frequency is in the General page of the configuration.\n\
+                         When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".
+feedDefinition           Feed Definition
+feed                     Feed
+button-delFeed           Delete Feed
+button-preFeed           Preview
+button-forceFeed         Force Download
+rss-order                Order
+rss-type                 Type
+rss-filter               Filter
+rss-accept               Accept
+rss-reject               Reject
+rss-delFilter            X
+rss-matched              Matched
+rss-notMatched           Not matched
+rss-done                 Downloaded
+rss-downloaded           Downloaded so far
+link-download            Download
+
+# Config->Email
+configEmail              Email Notification
+emailOptions             Email Options
+opt-email_endjob         Email notification on job completion
+email-never              Never
+email-always             Always
+email-errorOnly          Error-only
+opt-email_full           Disk full notifications
+explain-email_full       Send email when disk is full and SABnzbd is paused.
+opt-email_dir            Folder containing email templates
+explain-email_dir        Folder containing user defined email templates.\n\
+                         Relative to
+emailAccount             Email Account Settings
+opt-email_server         SMTP server
+explain-email_server     Set your ISP's server for outgoing email.
+opt-email_to             Email recipient
+explain-email_to         Email address to send the email to.
+opt-email_from           Email sender
+explain-email_from       Who should we say sent the email?
+opt-email_account        OPTIONAL: Account name
+explain-email_account    For authenticated email, account name.
+opt-email_pwd            OPTIONAL: Account password
+explain-email_pwd        For authenticated email, password.
+
+# Config->Newzbin
+explain-newzbin          If you have an account at <strong>www.newzbin.com</strong>,\
+                         you can enter your account info here.\n\
+                         This will unlock extra functionality.
+accountInfo              Account info
+opt-username_newzbin     Username
+explain-username_newzbin Set your username here.
+opt-password_newzbin     Password
+explain-password_newzbin Set your password here.
+newzbinBookmarks         Bookmark processing
+opt-newzbin_bookmarks    Auto fetch bookmarks
+explain-newzbin_bookmarks Automatically get jobs from your bookmarks?
+link-getBookmarks        Get bookmarks now
+link-HideBM              Hide processed bookmarks
+link-ShowBM              Show processed bookmarks
+opt-newzbin_unbookmark   Un-bookmark if download complete
+explain-newzbin_unbookmark Remove from bookmark list, when download is complete.
+opt-bookmark_rate        Checking interval
+explain-bookmark_rate    In minutes (at least 15 min).
+processedBM              Processed bookmarks
+explain-nzbmatrix        If you have an account at <strong>www.nzbmatrix.com</strong>,\
+                         you can enter your account info here.\n\
+                         This is required if you want to use the RSS feeds of this site.
+opt-username_matrix      Username
+explain-username_matrix  Set your username here.
+opt-password_matrix      Password
+explain-password_matrix  Set your password here.
+
+# Config->Cat
+configCat                User-defined categories
+explain-configCat        Defines post-processing and storage.
+explain-catNewzbin       The Newzbin column will map listed Newzbin categories to your own.
+link-initCat             Click here to setup newzbin categories.
+explain-relFolder        Relative folders are based on
+catFolderPath            Folder/Path
+catNewzbin               NewzBin
+catGroups                Groups
+button-delCat            X
+
+# Config->Sorting
+sort-show                Show
+sort-name                Name

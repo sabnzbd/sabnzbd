@@ -5,54 +5,53 @@
 
 <!--#set global $submenu="email"#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
-<h2>Email Notification</h2>
+<h2>$T('configEmail')</h2>
 <form action="saveEmail" method="post">
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-<legend>Email Options</legend>
-<strong>Email notification on job completion</strong><br/>
-    <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> Never
-    <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> Always
-    <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> Error-only
+<legend>$T('emailOptions')</legend>
+<strong>$T('opt-email_endjob')</strong><br/>
+    <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> $T('email-never')
+    <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> $T('email-always')
+    <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> $T('email-errorOnly')
 <br/><br/>
-<label><input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> <strong>Disk full notifications:</strong></label><br>
-Send email when disk is full and SABnzbd is paused.<br/>
+<label><input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> /> <strong>$T('opt-email_full'):</strong></label><br>
+$T('explain-email_full')<br/>
 <br/>
-<strong>Folder containing email templates:</strong><br/>
-Folder containing user defined email templates.<br/>
-(Relative to $my_home)<br/>
+<strong>$T('opt-email_dir'):</strong><br/>
+$T('explain-email_dir')<br/>
 <input type="text" size="40" name="email_dir" value="$email_dir">
 </fieldset>
 </div>
 <fieldset class="EntryFieldSet">
-<legend>Email Account Settings</legend>
-<strong>SMTP server:</strong><br>
-Set your ISP's server for outgoing email.<br>
+<legend>$T('emailAccount')</legend>
+<strong>$T('opt-email_server'):</strong><br>
+$T('explain-email_server').<br>
 <input type="text" size="35" name="email_server" value="$email_server">
 <br>
 <br>
-<strong>Email recipient:</strong><br>
-Email address to send the email to.<br>
+<strong>$T('opt-email_to'):</strong><br>
+$T('explain-email_to')<br>
 <input type="text" size="35" name="email_to" value="$email_to">
 <br>
 <br>
-<strong>Email sender:</strong><br>
-Who should we say sent the email?<br>
+<strong>$T('opt-email_from'):</strong><br>
+$T('explain-email_from')<br>
 <input type="text" size="35" name="email_from" value="$email_from">
 <br>
 <br>
-<strong>OPTIONAL: Account name:</strong><br>
-For authenticated email, account name.<br>
+<strong>$T('opt-email_account'):</strong><br>
+$T('explain-email_account')<br>
 <input type="text" size="35" name="email_account" value="$email_account">
 <br>
 <br>
-<strong>OPTIONAL: Account password:</strong><br>
-For authenticated email, password.<br>
+<strong>$T('opt-email_pwd'):</strong><br>
+$T('explain-email_pwd')<br>
 <input type="password" size="35" name="email_pwd" value="$email_pwd">
 <input type="hidden" name="session" value="$session">
 </fieldset>
 </div>
-<p><input type="submit" value="Save Changes"></p>
+<p><input type="submit" value="$T('button-saveChanges')"></p>
 </form>
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

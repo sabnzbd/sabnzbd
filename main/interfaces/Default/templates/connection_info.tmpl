@@ -5,19 +5,20 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 <span class="SubMenu">
-<a href="./disconnect?session=$session">Force Disconnect</a> |
-<a href="./testmail?session=$session" onclick="javascript:return confirm('This will send a test email to your account.')">Test Email</a> |
-<a href="./showlog?session=$session">Show logging</a> |
-<a href="./showweb?session=$session">Show Weblogging</a>
-Logging:
+<!--#set $msg=$T('askTestEmail')#-->
+<a href="./disconnect?session=$session">$T('link-forceDisc')</a> |
+<a href="./testmail?session=$session" onclick="javascript:return confirm('$msg')">$T('link-testEmail')</a> |
+<a href="./showlog?session=$session">$T('link-showLog')</a> |
+<a href="./showweb?session=$session">$T('link-showWeblog')</a>
+$T('logging'):
 <select onChange="location = './change_loglevel?session=$session&loglevel='+this.options[this.selectedIndex].value">
-    <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
-    <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
-    <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
+    <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
+    <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
+    <option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
 </select>
 </span>
 
-<h2>Connections</h2>
+<h2>$T('connections')</h2>
 <!--#if $servers#-->
     <ul>
     <!--#for $server in $servers#-->
@@ -25,7 +26,7 @@ Logging:
             $server[0]:$server[1]: $server[2]<!--#if $server[5] then "" else " (blocked)"#-->
             <ul>
             <!--#for $thrd in $server[3]#-->
-                <li>Thread #$thrd[0] -&gt; $thrd[1] -&gt; $thrd[2] -&gt; $thrd[3]</li>
+                <li>$T('thread') #$thrd[0] -&gt; $thrd[1] -&gt; $thrd[2] -&gt; $thrd[3]</li>
             <!--#end for#-->
             </ul>
         </li>
@@ -33,11 +34,11 @@ Logging:
     </ul>
 <!--#end if#-->
 <!--#if $lastmail#-->
-    <h2>Email test result</h2>
+    <h2>$T('emailResult')</h2>
     $lastmail
 <!--#end if#-->
 <!--#if $warnings#-->
-    <h2>Last warnings (<a href="./clearwarnings?session=$session">clear</a>)</h2>
+    <h2>$T('lastWarnings') (<a href="./clearwarnings?session=$session">$T('clearWarnings')</a>)</h2>
     <!--#for $warn in $warnings#-->
         $warn<br/>
     <!--#end for#-->

@@ -6,17 +6,15 @@
 <!--#set global $submenu=""#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
-<h2>Configuration</h2>
+<h2>$T('configuration')</h2>
 <p>
-<b>Configfile:</b> $configfn
+<b>$T('confgFile'):</b> $configfn
 </p>
 
-The button below will restart SABnzbd.<br/>
-Use it when you think the program has a stability problem.<br/>
-Downloading will be paused before the restart and resume afterwards.<br/><br/>
+$T('explain-Restart')<br/><br/>
 
 <form action="saveGeneral" method="post">
-<input type="submit" onclick="this.form.action='restart?session=$session'; this.form.submit(); return false;" value="Restart"/>
+<input type="submit" onclick="this.form.action='restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
 </form>
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

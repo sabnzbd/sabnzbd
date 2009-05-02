@@ -3,22 +3,22 @@
 <!--#set global $helpsubject="GUI+History"#-->
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
-<span class="SubMenu"><a href="./purge?session=$session">Purge history</a> |
+<span class="SubMenu"><a href="./purge?session=$session">$T('purgeHist')</a> |
     <!--#if $isverbose#-->
-        <a href="./tog_verbose?session=$session">Hide details</a>
+        <a href="./tog_verbose?session=$session">$T('hideDetails')</a>
     <!--#else#-->
-        <a href="./tog_verbose?session=$session">Show details</a>
+        <a href="./tog_verbose?session=$session">$T('showDetails')</a>
     <!--#end if#-->
 </span>
 
 <br>
 <p>
-<strong>History Size: $total_size</strong>
+<strong>$T('sizeHist'): $total_size</strong>
 </p>
 <% import datetime %>
 <!--#if $lines#-->
 <table id="historyTable">
-    <tr><th></th><th>Completed</th><th>Name</th><th>Size</th><th>Status</th><th></th></tr>
+    <tr><th></th><th>$T('completed')</th><th>$T('name')</th><th>$T('size')</th><th>$T('status')</th><th></th></tr>
     <!--#set $odd = False#-->
     <!--#for $line in $lines #-->
 <%
@@ -37,7 +37,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
 				<form action="delete" method="get">
 				<input type="hidden" value="$line.nzo_id" name="job">
                 <input type="hidden" name="session" value="$session">
-				<input type="submit" value="Del"></form>
+				<input type="submit" value="$T('button-del')"></form>
 			<!--#end if#-->
         </td>
         </tr>

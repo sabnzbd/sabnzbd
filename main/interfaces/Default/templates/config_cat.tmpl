@@ -6,25 +6,25 @@
 <!--#set global $submenu="categories"#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
-<h2>User-defined categories</h2>
-Defines post-processing and storage.<br/>
+<h2>$T('configCat')</h2>
+$T('explain-configCat')<br/>
 <!--#if $varExists('newzbinDetails')#-->
-    The Newzbin column will map listed Newzbin categories to your own.<br/>
+    $T('explain-catNewzbin')<br/>
     <!--#if not $have_cats#-->
-        <br/>Click <a href="init_newzbin?session=$session"><b>HERE</b></a> to setup newzbin categories.<br/><br/>
+        <br/><a href="init_newzbin?session=$session">$T('link-initCat')</a><br/><br/>
     <!--#end if#-->
 <!--#end if#-->
-Relative folders are based on $defdir<br/>
+$T('explain-relFolder') $defdir<br/>
 <br/>
     <table id="catTable">
         <tr>
             <th></th>
-            <th>Category</th>
-            <th>&nbsp;Mode&nbsp;</th>
-            <th>&nbsp;Priority&nbsp;</th>
-            <!--#if $script_list#--><th>Script</th><!--#end if#-->
-            <th>Folder/Path</th>
-            <th><!--#if $varExists('newzbinDetails') then "NewzBin/Groups" else "Groups"#--></th>
+            <th>$T('category')</th>
+            <th>&nbsp;$T('mode')&nbsp;</th>
+            <th>&nbsp;$T('priority')&nbsp;</th>
+            <!--#if $script_list#--><th>$T('script')</th><!--#end if#-->
+            <th>$T('catFolderPath')</th>
+            <th><!--#if $varExists('newzbinDetails')#--> $T('catNewzbin')/ <!--#end if#--> $T('catGroups')</th>
             <th></th>
         </tr>
     <!--#set $odd = False#-->
@@ -36,7 +36,7 @@ Relative folders are based on $defdir<br/>
             <form action="delete" method="get">
             <input type="hidden" value="$slot.name" name="name">
             <input type="hidden" value="$session" name="session">
-            <input type="submit" value="X"></form>
+            <input type="submit" value="$T('button-delCat')"></form>
             <!--#end if#-->
         </td>
 
@@ -46,21 +46,21 @@ Relative folders are based on $defdir<br/>
         <td><input type="text" name="newname" value="$slot.name"></td>
 
         <td><select name="pp">
-           <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
-           <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>Download</option>
-           <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>+Repair</option>
-           <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+Unpack</option>
-           <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+Delete</option>
+           <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+           <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-none')</option>
+           <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-repair')</option>
+           <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
+           <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>$T('pp-delete')</option>
            </select>
         </td>
 
         <td><select name="priority">
                 <optgroup label="Priority">
-                    <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>Default</option>
-                    <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>Force</option>
-                    <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>High</option>
-                    <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>Normal</option>
-                    <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>Low</option>
+                    <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
+                    <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>$T('pr-force')</option>
+                    <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>$T('pr-high')</option>
+                    <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
+                    <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>$T('pr-low')</option>
                 </optgroup>
             </select>
         </td>
@@ -68,7 +68,7 @@ Relative folders are based on $defdir<br/>
         <!--#if $script_list#-->
         <td><select name="script">
             <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
             <!--#end for#-->
             </select>
         </td>
@@ -78,7 +78,7 @@ Relative folders are based on $defdir<br/>
 
         <td><input type="text" size=30 name="newzbin" value="$slot.newzbin"></td>
 
-        <td><input type="submit" value="Save"></td>
+        <td><input type="submit" value="$T('button-save')"></td>
         </form>
 
     <!--#end for#-->

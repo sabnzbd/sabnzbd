@@ -292,6 +292,13 @@ class MainPage:
             # Redirect to the setup wizard
             raise cherrypy.HTTPRedirect('/wizard/')
 
+    #@cherrypy.expose
+    #def reset_lang(self, **kwargs):
+    #    msg = check_session(kwargs)
+    #    if msg: return msg
+    #    reset_language(cfg.LANGUAGE.get())
+    #    raise dcRaiser(self.__root, kwargs)
+
 
     def add_handler(self, kwargs):
         id = kwargs.get('id', '')
@@ -2182,19 +2189,51 @@ class ConfigScheduling:
 
     @cherrypy.expose
     def index(self, **kwargs):
+        def get_days():
+            days = {}
+            days["*"] = T('daily')
+            days["1"] = T('monday')
+            days["2"] = T('tuesday')
+            days["3"] = T('wednesday')
+            days["4"] = T('thursday')
+            days["5"] = T('friday')
+            days["6"] = T('saturday')
+            days["7"] = T('sunday')
+            return days
+
         if cfg.CONFIGLOCK.get():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        conf['schedlines'] = []
-        for ev in scheduler.sort_schedules(forward=True):
-            conf['schedlines'].append(ev[3])
-
         actions = ['resume', 'pause', 'shutdown', 'restart', 'speedlimit']
+        days = get_days()
+        conf['schedlines'] = []
+        snum = 1
+        conf['taskinfo'] = []
+        for ev in scheduler.sort_schedules(forward=True):
+            line = ev[3]
+            conf['schedlines'].append(line)
+            m, h, day, action = line.split(' ', 3)
+            action = action.strip()
+            if action in actions:
+                action = T("sch-" + action)
+            else:
+                act, server = action.split()
+                action = T("sch-" + act) + ' ' + server
+            item = (snum, h, '%02d' % int(m), days[day], action)
+            conf['taskinfo'].append(item)
+            snum += 1
+
+
+        actions_lng = {}
+        for action in actions:
+            actions_lng[action] = T("sch-" + action)
         for server in config.get_servers():
             actions.append(server)
+            actions_lng[server] = server
         conf['actions'] = actions
+        conf['actions_lng'] = actions_lng
 
         template = Template(file=os.path.join(self.__web_dir, 'config_scheduling.tmpl'),
                             searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2708,8 +2747,8 @@ def ShowRssLog(feed, all):
                 pp = '&pp=' + escape(str(job[4]))
             else:
                 pp = ''
-            badStr += '<a href="rss_download?session=%s&feed=%s&id=%s%s%s">Download</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
-                   (cfg.API_KEY.get() ,qfeed, name, cat, pp, xml_name(job[1]))
+            badStr += '<a href="rss_download?session=%s&feed=%s&id=%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
+                   (cfg.API_KEY.get() ,qfeed, name, cat, pp, T('link-download'), xml_name(job[1]))
 
     if all:
         return '''
@@ -2720,21 +2759,21 @@ def ShowRssLog(feed, all):
 </head>
 <body>
                <form>
-               <input type="submit" onclick="this.form.action='.'; this.form.submit(); return false;" value="Back"/>
+               <input type="submit" onclick="this.form.action='.'; this.form.submit(); return false;" value="%s"/>
                </form>
                <h3>%s</h3>
-               <b>Matched</b><br/>
+               <b>%s</b><br/>
                %s
                <br/>
-               <b>Not matched</b><br/>
+               <b>%s</b><br/>
                %s
                <br/>
-               <b>Downloaded</b><br/>
+               <b>%s</b><br/>
                %s
                <br/>
 </body>
 </html>
-''' % (escape(feed), escape(feed), goodStr, badStr, doneStr)
+''' % (escape(feed), T('button-back'), escape(feed), T('rss-matched'), goodStr, T('rss-notMatched'), badStr, T('rss-done'), doneStr)
     else:
         return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -2744,15 +2783,15 @@ def ShowRssLog(feed, all):
 </head>
 <body>
                <form>
-               <input type="submit" onclick="this.form.action='.'; this.form.submit(); return false;" value="Back"/>
+               <input type="submit" onclick="this.form.action='.'; this.form.submit(); return false;" value="%s"/>
                </form>
                <h3>%s</h3>
-               <b>Downloaded so far</b><br/>
+               <b>%s</b><br/>
                %s
                <br/>
 </body>
 </html>
-''' % (escape(feed), escape(feed), doneStr)
+''' % (escape(feed), T('button-back'), escape(feed), T('rss-downloaded'), doneStr)
 
 
 def build_header(prim):

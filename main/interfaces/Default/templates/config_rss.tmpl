@@ -6,36 +6,34 @@
 <!--#set global $submenu="rss"#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
-<h2>RSS Configuration</h2>
+<h2>$T('configRSS')</h2>
 
 <div class="EntryBlock">
 <form action="add_rss_feed" method="post">
 <fieldset class="EntryFieldSet">
-<legend>New feed URI</legend>
+<legend>$T('newFeedURI')</legend>
     <input type="text" size="10" name="feed" value="$feed"/>&nbsp;
     <input type="text" size="104" name="uri" value=""/><br/><br/>
     <input type="hidden" name="session" value="$session">
-    <input type="submit" value="Add"/>
+    <input type="submit" value="$T('button-add')"/>
 </fieldset>
 </form>
 </div>
 
-<p>The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />
-The checking frequency is in the General page of the configuration<br />
-When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download"</p>
+<p>$T('explain-RSS')</p>
 
 <!--#for $feed in $rss#-->
-    <h3>Feed Definition</h3>
+    <h3>$T('feedDefinition')</h3>
     <div class="EntryBlock">
     <form action="upd_rss_feed" method="post">
         <fieldset class="EntryFieldSet">
             <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
-            Feed $feed</legend>
+            $T('feed') $feed</legend>
 
             <input type="text" size="105" name="uri" value="$rss[$feed]['uri']"/>
-            <input type="submit" onclick="this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;" value="Delete Feed"/>
-            <input type="submit" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="Preview"/>
-            <input type="submit" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="Force Download"/>
+            <input type="submit" onclick="this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;" value="$T('button-delFeed')"/>
+            <input type="submit" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-preFeed')"/>
+            <input type="submit" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-forceFeed')"/>
             <br/><br/>
 
             <!--#if $rss[$feed]['pick_cat']#-->
@@ -49,11 +47,11 @@ When a feed is added, it will only pick up new items and not anything already in
             <!--#end if#-->
             <select name="pp">
                 <optgroup label="PP">
-                    <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>Default</option>
-                    <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Download</option>
-                    <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
-                    <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>+Unpack</option>
-                    <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>+Delete</option>
+                    <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>$T('default')</option>
+                    <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>$T('pp-none')</option>
+                    <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>$T('pp-repair')</option>
+                    <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>$T('pp-unpack')</option>
+                    <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>$T('pp-delete')</option>
                 </optgroup>
             </select>
             <!--#if $rss[$feed]['pick_script']#-->
@@ -67,17 +65,17 @@ When a feed is added, it will only pick up new items and not anything already in
             <!--#end if#-->
             <select name="priority">
                 <optgroup label="Priority">
-                    <option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>Default</option>
-                    <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>Force</option>
-                    <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
-                    <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>Normal</option>
-                    <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>Low</option>
+                    <option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>$T('default')</option>
+                    <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>$T('pr-force')</option>
+                    <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>$T('pr-high')</option>
+                    <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
+                    <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>$T('pr-low')</option>
                 </optgroup>
             </select>
 
             <input type="hidden" name="feed" value="$feed"/>
             <input type="hidden" name="session" value="$session">
-            <input type="submit" value="Save"/>
+            <input type="submit" value="$T('button-save')"/>
             <br />
 
     </form>
@@ -87,12 +85,12 @@ When a feed is added, it will only pick up new items and not anything already in
     <table>
         <tr>
             <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            <th>Order</th>
-            <th>Type</th>
-            <th>Filter</th>
-            <!--#if $rss[$feed]['pick_cat'] then "<th>Category</th>" else ""#-->
+            <th>$T('rss-order')</th>
+            <th>$T('rss-type')</th>
+            <th>$T('rss-filter')</th>
+            <!--#if $rss[$feed]['pick_cat']#--><th>$T('category')</th><!--#end if#-->
             <th>Mode</th>
-            <!--#if $rss[$feed]['pick_script'] then "<th>Script</th>" else ""#-->
+            <!--#if $rss[$feed]['pick_script']#--><th>$T('script')</th><!--#end if#-->
             <th></th>
         </tr>
 
@@ -102,8 +100,8 @@ When a feed is added, it will only pick up new items and not anything already in
         <td></td>
         <td>
             <select name="filter_type">
-                <option value="A" selected /> Accept</option>
-                <option value="R" /> Reject</option>
+                <option value="A" selected /> $T('rss-accept')</option>
+                <option value="R" /> $T('rss-reject')</option>
             </select>
         </td>
         <td><input type="text" size="60" name="filter_text" value=""></td>
@@ -118,11 +116,11 @@ When a feed is added, it will only pick up new items and not anything already in
         <!--#end if#-->
         <td>
           <select name="pp">
-              <option value="" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Default</option>
-              <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Download</option>
-              <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
-              <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>+Unpack</option>
-              <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>+Delete</option>
+              <option value="" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>$T('default')</option>
+              <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>$T('pp-none')</option>
+              <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>$T('pp-repair')</option>
+              <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>$T('pp-unpack')</option>
+              <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>$T('pp-delete')</option>
           </select>
         </td>
         <!--#if $rss[$feed]['pick_script']#-->
@@ -137,7 +135,7 @@ When a feed is added, it will only pick up new items and not anything already in
         <input type="hidden" value="$rss[$feed]['filtercount']" name="index">
         <input type="hidden" value="$feed" name="feed">
         <input type="hidden" name="session" value="$session">
-        <td><input type="submit" value="Save"></td>
+        <td><input type="submit" value="$T('button-save')"></td>
         </tr>
         </form>
 
@@ -149,7 +147,7 @@ When a feed is added, it will only pick up new items and not anything already in
             <input type="hidden" value="$fnum" name="index">
             <input type="hidden" value="$feed" name="feed">
             <input type="hidden" name="session" value="$session">
-            <input type="submit" value="X"></form>
+            <input type="submit" value="$T('rss-delFilter')"></form>
         </td>
 
         <td><form><select onchange="location = this.options[this.selectedIndex].value;">
@@ -163,8 +161,8 @@ When a feed is added, it will only pick up new items and not anything already in
         <form action="upd_rss_filter" method="get">
         <td>
         <select name="filter_type">
-            <option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> Accept</option>
-            <option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> Reject</option>
+            <option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> $T('rss-accept')</option>
+            <option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> $T('rss-reject')</option>
         </select>
         </td>
 
@@ -180,11 +178,11 @@ When a feed is added, it will only pick up new items and not anything already in
         <!--#end if#-->
         <td>
         <select name="pp">
-            <option value="" <!--#if $filter[1] == "0" then 'selected' else ''#-->>Default</option>
-            <option value="0" <!--#if $filter[1] == "0" then 'selected' else ''#-->>Download</option>
-            <option value="1" <!--#if $filter[1] == "1" then 'selected' else ''#-->>+Repair</option>
-            <option value="2" <!--#if $filter[1] == "2" then 'selected' else ''#-->>+Unpack</option>
-            <option value="3" <!--#if $filter[1] == "3" then 'selected' else ''#-->>+Delete</option>
+            <option value="" <!--#if $filter[1] == "0" then 'selected' else ''#-->>$T('default')</option>
+            <option value="0" <!--#if $filter[1] == "0" then 'selected' else ''#-->>$T('pp-none')</option>
+            <option value="1" <!--#if $filter[1] == "1" then 'selected' else ''#-->>$T('pp-repair')</option>
+            <option value="2" <!--#if $filter[1] == "2" then 'selected' else ''#-->>$T('pp-unpack')</option>
+            <option value="3" <!--#if $filter[1] == "3" then 'selected' else ''#-->>$T('pp-delete')</option>
         </select>
         </td>
         <!--#if $rss[$feed]['pick_script']#-->
@@ -200,7 +198,7 @@ When a feed is added, it will only pick up new items and not anything already in
         <input type="hidden" name="index" value="$fnum"/>
         <input type="hidden" name="feed" value="$feed"/>
         <input type="hidden" name="session" value="$session">
-        <input type="submit" value="Save"/>
+        <input type="submit" value="$T('button-save')"/>
         </td>
         </form>
         </tr>
