@@ -60,7 +60,7 @@ When a feed is added, it will only pick up new items and not anything already in
                 <select name="script">
                     <optgroup label="Script">
                         <!--#for $sc in $script_list#-->
-                            <option value="$sc[0]" <!--#if $sc[0] == $rss[$feed]['script'] then "selected" else ""#-->>$sc[1]</option>
+                            <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
                         <!--#end for#-->
                     </optgroup>
                 </select>
@@ -129,7 +129,7 @@ When a feed is added, it will only pick up new items and not anything already in
           <td>
             <select name="script">
             <!--#for $sc in $script_list#-->
-                <option value="$sc[0]" <!--#if $sc[0] == $rss[$feed]['script'] then "selected" else ""#-->>$sc[1]</option>
+                <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
             <!--#end for#-->
             </select>
           </td>
