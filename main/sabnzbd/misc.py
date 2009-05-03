@@ -35,6 +35,8 @@ from sabnzbd.constants import *
 import nzbqueue
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+from sabnzbd.lang import T
+
 if sabnzbd.FOUNDATION:
     import Foundation
 
@@ -207,13 +209,13 @@ def create_real_path(name, loc, path, umask=False):
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error('Cannot create directory %s', my_dir)
+                logging.error(T('error-createDir@1'), my_dir)
                 return (False, my_dir)
 
         if os.access(my_dir, os.R_OK + os.W_OK):
             return (True, my_dir)
         else:
-            logging.error('%s directory: %s error accessing', name, my_dir)
+            logging.error(T('error-accessDir@2'), name, my_dir)
             return (False, my_dir)
     else:
         return (False, "")
@@ -233,14 +235,14 @@ def get_user_shellfolders():
     try:
         hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
     except WindowsError:
-        logging.error("Cannot connect to registry hive HKEY_CURRENT_USER.")
+        logging.error(T('error-regConnect'))
         return values
 
     # Then open the registry key where Windows stores the Shell Folder locations
     try:
         key = _winreg.OpenKey(hive, "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
     except WindowsError:
-        logging.error('Cannot open registry key "%s".', "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
+        logging.error(T('error-regOpen@1'), "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
         _winreg.CloseKey(hive)
         return values
 
@@ -261,7 +263,7 @@ def get_user_shellfolders():
         return values
     except WindowsError:
         # On error, return empty dict.
-        logging.error("Failed to read registry keys for special folders")
+        logging.error(T('error-regSpecial'))
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
         return {}
@@ -401,7 +403,7 @@ def panic_port(host, port):
 
 def panic_xport(host, port):
     launch_a_browser(panic_message(PANIC_XPORT, host, port))
-    logging.error('You have no permisson to use port %s', port)
+    logging.error(T('error-portNoAccess@1'), port)
 
 def panic_queue(name):
     launch_a_browser(panic_message(PANIC_QUEUE, name, 0))
@@ -428,7 +430,7 @@ def launch_a_browser(url, force=False):
         try:
             webbrowser.open(url, 1, 1)
         except:
-            logging.warning("Cannot launch the browser, probably not found")
+            logging.warning(T('warn-noBrowser'))
             logging.debug("Traceback: ", exc_info = True)
 
 
@@ -681,7 +683,7 @@ def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
-            logging.error("Failed making (%s)", dirpath)
+            logging.error(T('error-makeFile@1'), dirpath)
             logging.debug("Traceback: ", exc_info = True)
             return None
     return dirpath
@@ -706,7 +708,7 @@ def move_to_path(path, new_path, unique=True):
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
-                logging.error("Failed moving %s to %s", path, new_path)
+                logging.error(T('error-moveFile@2'), path, new_path)
                 logging.debug("Traceback: ", exc_info = True)
     return new_path
 
@@ -764,7 +766,7 @@ def get_filepath(path, nzo, filename):
 
 def bad_fetch(nzo, url, retry=False, archive=False):
     """ Create History entry for failed URL Fetch """
-    logging.error("Error getting url %s", url)
+    logging.error(T('error-urlGet@1'), url)
 
     pp = nzo.get_pp()
     if pp:
@@ -790,15 +792,15 @@ def bad_fetch(nzo, url, retry=False, archive=False):
         nzo.set_original_dirname(url)
 
     if retry:
-        nzo.set_fail_msg('URL Fetching failed, <a href="./retry?session=%s&url=%s%s%s%s">Try again</a>' % \
+        nzo.set_fail_msg(T('his-retryURL1')+'URL Fetching failed, <a href="./retry?session=%s&url=%s%s%s%s">' + T('his-retryURL2') + '</a>' % \
                          (cfg.API_KEY.get(), urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)))
     else:
         if archive:
-            msg = 'Failed, Unusable archive file'
+            msg = T('his-badArchive')
         elif not '://' in url:
-            msg = 'Failed to fetch newzbin report'
+            msg = T('his-cannotGetReport')
         else:
-            msg = 'Failed to add url'
+            msg = T('his-failedURL')
         nzo.set_fail_msg(msg)
 
     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
@@ -924,7 +926,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
              TYPE_RSA, TYPE_DSA, serial
     except:
-        logging.warning('pyopenssl module missing, please install for https access')
+        logging.warning(T('warn-pyopenssl'))
         return False
 
     # Create the CA Certificate
@@ -943,7 +945,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except:
-        logging.error('Error creating SSL key and certificate')
+        logging.error(T('error-sslFiles'))
         logging.debug("Traceback: ", exc_info = True)
         return False
 

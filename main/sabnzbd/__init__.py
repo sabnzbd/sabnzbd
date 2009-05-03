@@ -31,6 +31,7 @@ import subprocess
 import time
 import cherrypy
 from threading import RLock, Lock, Condition, Thread
+from sabnzbd.lang import T
 
 #------------------------------------------------------------------------
 # Determine platform flags
@@ -129,7 +130,7 @@ def sig_handler(signum = None, frame = None):
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if type(signum) != type(None):
-        logging.warning('Signal %s caught, saving and exiting...', signum)
+        logging.warning(T('warn-signal@1'), signum)
     try:
         save_state()
     finally:
@@ -422,7 +423,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         os.write(f, nzbfile.value)
         os.close(f)
     except:
-        logging.error("Cannot create temp file for %s", filename)
+        logging.error(T('error-tempFile@1'), filename)
         logging.debug("Traceback: ", exc_info = True)
 
     if ext.lower() in ('.zip', '.rar'):
@@ -438,7 +439,7 @@ def enable_server(server):
     try:
         config.get_config('servers', server).enable.set(1)
     except:
-        logging.warning('Trying to set status of non-existing server %s', server)
+        logging.warning(T('warn-noServer@1'), server)
         return
     config.save_config()
     downloader.update_server(server, server)
@@ -449,7 +450,7 @@ def disable_server(server):
     try:
         config.get_config('servers', server).enable.set(0)
     except:
-        logging.warning('Trying to set status of non-existing server %s', server)
+        logging.warning(T('warn-noServer@1'), server)
         return
     config.save_config()
     downloader.update_server(server, server)
@@ -494,7 +495,7 @@ def system_hibernate():
             subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
             time.sleep(10)
     except:
-        logging.error("Failed to hibernate system")
+        logging.error(T('error-hibernate'))
         logging.debug("Traceback: ", exc_info = True)
 
 
@@ -507,7 +508,7 @@ def system_standby():
             subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
         time.sleep(10)
     except:
-        logging.error("Failed to standby system")
+        logging.error(T('error-standby'))
         logging.debug("Traceback: ", exc_info = True)
 
 
@@ -585,7 +586,7 @@ def keep_awake():
 def CheckFreeSpace():
     if cfg.DOWNLOAD_FREE.get() and not downloader.paused():
         if misc.diskfree(cfg.DOWNLOAD_DIR.get_path()) < cfg.DOWNLOAD_FREE.get_float() / GIGI:
-            logging.warning('Too little diskspace forcing PAUSE')
+            logging.warning(T('warn-noSpace'))
             # Pause downloader, but don't save, since the disk is almost full!
             downloader.pause_downloader(save=False)
             email.diskfull()
@@ -604,7 +605,7 @@ def get_new_id(prefix):
         head, tail = os.path.split(l)
         return tail
     except:
-        logging.error("Failure in tempfile.mkstemp")
+        logging.error(T('error-failMkstemp'))
         logging.debug("Traceback: ", exc_info = True)
 
 
@@ -625,7 +626,7 @@ def save_data(data, _id, do_pickle = True, doze=0):
         _f.flush()
         _f.close()
     except:
-        logging.error("Saving %s failed", path)
+        logging.error(T('error-saveX@1'), path)
         logging.debug("Traceback: ", exc_info = True)
 
 
@@ -651,7 +652,7 @@ def load_data(_id, remove = True, do_pickle = True):
         if remove:
             remove_data(_id)
     except:
-        logging.error("Loading %s failed", path)
+        logging.error(T('error-loading@1'), path)
         logging.debug("Traceback: ", exc_info = True)
 
     return data

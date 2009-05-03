@@ -32,6 +32,7 @@ import sabnzbd.downloader
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+from sabnzbd.lang import T
 
 
 __SCHED = None  # Global pointer to Scheduler instance
@@ -68,7 +69,7 @@ def init():
             m = int(m)
             h = int(h)
         except:
-            logging.warning("Bad schedule %s at %s:%s", action_name, m, h)
+            logging.warning(T('warn-badSched@3'), action_name, m, h)
             continue
 
         if d.isdigit():
@@ -95,7 +96,7 @@ def init():
         elif action_name == 'disable_server' and arguments != []:
             action = sabnzbd.disable_server
         else:
-            logging.warning("Unknown action: %s", action_name)
+            logging.warning(T('warn-badSchedAction@1'), action_name)
             continue
 
         logging.debug("scheduling %s(%s) on days %s at %s:%s", action_name, arguments, d, h, m)
@@ -247,12 +248,12 @@ def analyse(was_paused=False):
             try:
                 servers[value] = 1
             except:
-                logging.warning('Schedule for non-existing server %s', value)
+                logging.warning(T('warn-schedNoServer@1'), value)
         elif action == 'disable_server':
             try:
                 servers[value] = 0
             except:
-                logging.warning('Schedule for non-existing server %s', value)
+                logging.warning(T('warn-schedNoServer@1'), value)
 
     if not was_paused:
         sabnzbd.downloader.set_paused(paused)

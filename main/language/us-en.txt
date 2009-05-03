@@ -421,8 +421,9 @@ nzo-age                  Age
 nzo-selection            Selection
 
 # Internal texts
-msg-warning-ambiLocalhost    Warning: LOCALHOST is ambiguous, use numerical IP-address.
+msg-warning-ambiLocalhost Warning: LOCALHOST is ambiguous, use numerical IP-address.
 msg-invalidServer@2      Server address "%s:%s" is not valid.
+
 warn-missingKey          Missing Session key
 error-missingKey         Error: Session Key Required
 warn-badSession          Incorrect Session key
@@ -437,3 +438,139 @@ warn-apikeyBad           API Key incorrect, Use the api key from Config->General
                          in your 3rd party program:
 error-apikeyBad          Error: API Key Incorrect
 error-noSecUI            Error: No secondary interface defined.
+
+his-badArchive           Failed, Unusable archive file
+his-cannotGetReport      Failed to fetch newzbin report
+his-failedURL            Failed to add url
+his-retryURL1            URL Fetching failed
+his-retryURL2            Try again
+
+# Errors and Warnings
+error-noPar2             par2 binary... NOT found!
+error-noStartup@2        Initializing %s-%s failed, aborting
+error-noWebUi            Failed to start web-interface
+error-noYEnc             _yenc module... NOT found!
+error-sameHTTP-HTTPS     HTTP and HTTPS ports cannot be the same
+warn-0000                Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access
+warn-noCertKey           Disabled HTTPS because of missing CERT and KEY files
+warn-noSkin@1            Cannot find web template: %s, trying standard template
+warn-noUnrar             unrar binary... NOT found
+warn-noUnzip             unzip binary... NOT found!
+error-failMkstemp        Failure in tempfile.mkstemp
+error-fetchReport@1      Error Fetching msgid %s from www.newzbin.com -
+error-hibernate          Failed to hibernate system
+error-loading@1          Loading %s failed
+error-saveX@1            Saving %s failed
+error-saveXtoY@2         Saving %s to %s failed
+error-standby            Failed to standby system
+error-tempFile@1         Cannot create temp file for %s
+warn-noServer@1          Trying to set status of non-existing server %s
+warn-noSpace             Too little diskspace forcing PAUSE
+warn-signal@1            Signal %s caught, saving and exiting...
+warn-flushFailed@1       Flushing %s failed -> no art_id
+error-diskError@1        Disk error on creating file %s
+error-diskFull           Disk full! Forcing Pause
+warn-artMissing@1        %s missing
+error-badIni@1           Invalid Config file %s
+error-createIni@1        Cannot create Config file %s
+error-encPw@1            Incorrectly encoded password %s
+error-version@2          Incorrect version number %s in %s"
+error-badHisNewline@1    Invalid stage logging in history for %s (\\r\\n)
+error-badHisSemic@1      Invalid stage logging in history for %s (;)
+error-sqlClose           Failed to close database, see log
+error-sqlCmd             SQL Command Failed, see log
+error-sqlCommit          SQL Commit Failed, see log
+error-decode@1           Decoding %s failed
+error-decodeUnknown@1    Unknown Error while decoding %s
+warn-artAllMissing@1     %s => missing from all servers, discarding
+warn-badYEnc@1           Badly formed yEnc article in %s
+warn-crcError@3          CRC Error in %s (%s -> %s)
+error-readWatched@1      Cannot read Watched Folder %s
+error-remove@1           Error removing %s
+warn-noRead@1            Cannot read %s
+error-except             Exception?
+error-noInit@3           Failed to initialize %s@%s:%s
+error-serverFailed@4     Connecting %s@%s:%s failed, message=%s
+error-serverLogin@2      Failed login for server %s:%s
+error-serverNoConn@3     Cannot connect to server %s:%s [%s]
+error-serverTooMany@2    Too many connections to server %s:%s
+warn-ignoreServer@2      Server %s will be ignored for %s minutes
+warn-noActiveServers     No active primary servers defined, will not download!
+warn-noConnectServer@3   Cannot connect to server %s:%s [%s]
+warn-thread@3            Thread %s@%s:%s:
+error-mailAuth           Failed to authenticate to mail server
+error-mailNoConn         Failed to connect to mail server
+error-mailSend           Failed to send e-mail
+error-mailTempl@1        Cannot find email templates in %s
+error-mailTLS            Failed to initiate TLS connection
+warn-noEmailClose        Failed to close mail connection
+error-regex@1            Failed to compile regex for search term: %s
+error-accessDir@2        %s directory: %s error accessing
+error-createDir@1        Cannot create directory %s
+error-makeFile@1         Failed making (%s)
+error-moveFile@2         Failed moving %s to %s
+error-portNoAccess@1     You have no permisson to use port %s
+error-regConnect         Cannot connect to registry hive HKEY_CURRENT_USER.
+error-regOpen@1          Cannot open registry key "%s".
+error-regSpecial         Failed to read registry keys for special folders
+error-sslFiles           Error creating SSL key and certificate
+error-urlGet@1           Error getting url %s
+warn-noBrowser           Cannot launch the browser, probably not found
+warn-pyopenssl           pyopenssl module missing, please install for https access
+error-fileJoin@2         Error "%s" while running file_join on %s
+error-filePar2@2         Error %s while running par2_repair on set %s
+error-fileRead@1         notrar(): reading %s failed
+error-fileUnrar@2        Error "%s" while running rar_unpack on %s
+error-fileUnzip@2        Error "%s" while running unzip() on %s
+warn-cannotFind@1        ERROR: unable to find "%s"
+warn-crcFailed@1         ERROR: CRC failed in "%s"
+warn-delFailed@1         Deleting %s failed!
+warn-encrypted           ERROR: encrypted file:
+warn-error@1             ERROR: %s
+warn-MissExpectedFile@1  Missing expected file: %s => unrar error?
+warn-writeError@1        ERROR: write error (%s)
+error-connect@1          Failed to connect: %s
+error-newsSSL            This server does not allow SSL on this port
+error-noSSL              Error importing OpenSSL module. Connecting with NON-SSL
+error-nbInfo@1           Newzbin server fails to give info for %s
+error-nbProtocol         Newzbin server changed its protocol
+error-nbReport@1         Newzbin report %s not found
+error-nbUnkownError@1    Newzbin gives undocumented error code (%s)
+error-nbUnkownError@2    Newzbin gives undocumented error code (%s, %s)
+error-nbUpdate@1         Failed to update newzbin job %s
+warn-nbCredit            You have no credit on your Newzbin account
+warn-nbNoAuth            Unauthorised, check your newzbin username/password
+warn-nbNoDelBM@1         Could not delete newzbin bookmark %s
+error-qAdd@1             Error while adding %s, removing
+error-qBad               Incompatible queuefile found, cannot proceed
+error-qCorruptFile@1     Error loading %s, corrupt file detected
+warn-unknownEncoding@1   %s -> Unknown encoding
+error-qDupPart@3         Duplicate part %s, but different ID-s (%s // %s)
+error-qImport@1          Error importing %s
+warn-badImport@2         Failed to import %s files from %s
+warn-badNZB@3            Invalid NZB file %s, skipping (reason=%s, line=%s)
+warn-emptyFile@1         File %s is empty, skipping
+warn-skipDup@1           Skipping duplicate NZB "%s"
+error-ppCleanup@1        Cleanup of %s failed.
+error-ppDelFailed@1      Removing %s failed
+error-ppDelNzo           Failed to remove nzo from postproc queue (id)
+error-ppDelWorkdir@1     Error removing workdir (%s)
+error-ppFailed@1         Post Processing Failed for %s
+error-ppLogFile@1        Cannot create logfile %s
+error-ppPermissions@1    Cannot change permissions of %s
+error-ppRename@2         Error renaming "%s" to "%s"
+warn-badPPQueue@2        Failed to load postprocessing queue: Wrong version (need:%s, found:%s)
+error-rssBadFeed@1       Incorrect RSS feed description "%s"
+error-rssRegex@1         Could not compile regex: %s
+warn-emptyRSS@2          [%s]: Empty RSS entry found (%s)
+warn-failRSS@1           Failed to retrieve RSS from %s
+warn-failRSS@2           Failed to retrieve RSS from %s: %s
+warn-badSched@3          Bad schedule %s at %s:%s
+warn-badSchedAction@1    Unknown action: %s
+warn-schedNoServer@1     Schedule for non-existing server %s
+error-tvInfo@1           Error getting TV info (%s)
+error-tvRename@2         Failed to rename: %s to %s
+error-tvSimRename@2      Failed to rename similar file: %s to %s
+error-tvTemp@1           Cannot create temp file for %s
+warn-matrixBadRep@1      Invalid nzbmatrix report number %s
+warn-matrixFail          Problem accessing nzbmatrix server.

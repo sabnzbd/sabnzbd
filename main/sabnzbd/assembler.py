@@ -41,6 +41,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.articlecache
 import sabnzbd.postproc
 import sabnzbd.downloader
+from sabnzbd.lang import T
 
 
 #------------------------------------------------------------------------------
@@ -115,10 +116,10 @@ class Assembler(Thread):
                     except IOError, (errno, strerror):
                         # 28 == disk full => pause downloader
                         if errno == 28:
-                            logging.error('Disk full! Forcing Pause')
+                            logging.error(T('error-diskFull'))
                             sabnzbd.downloader.pause_downloader()
                         else:
-                            logging.error('Disk error on creating file %s', filepath)
+                            logging.error(T('error-diskError@1'), filepath)
 
                     setname = nzf.get_setname()
                     if cfg.QUICK_CHECK.get() and nzf.is_par2() and (nzo.get_md5pack(setname) is None):
@@ -155,7 +156,7 @@ def _assemble(nzo, nzf, path, dupe):
         data = sabnzbd.articlecache.method.load_article(article)
 
         if not data:
-            logging.warning('%s missing', article)
+            logging.warning(T('warn-artMissing@1'), article)
         else:
             # yenc data already decoded, flush it out
             if _type == 'yenc':

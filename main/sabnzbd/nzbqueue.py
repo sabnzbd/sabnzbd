@@ -38,6 +38,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.articlecache
 import sabnzbd.downloader
 import sabnzbd.assembler
+from sabnzbd.lang import T
 
 
 def DeleteLog(name):
@@ -73,13 +74,13 @@ class NzbQueue(TryList):
             try:
                 queue_vers, nzo_ids, self.__downloaded_items = data
                 if not queue_vers == QUEUE_VERSION:
-                    logging.error("Incompatible queuefile found, cannot proceed")
+                    logging.error(T('error-qBad'))
                     self.__downloaded_items = []
                     nzo_ids = []
                     panic_queue(os.path.join(cfg.CACHE_DIR.get_path(),QUEUE_FILE_NAME))
                     exit_sab(2)
             except ValueError:
-                logging.error("Error loading %s, corrupt file detected",
+                logging.error(T('error-qCorruptFile@1'),
                               os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME))
 
             for nzo_id in nzo_ids:
@@ -139,7 +140,7 @@ class NzbQueue(TryList):
 
                 self.reset_try_list()
             except:
-                logging.error("Error while adding %s, removing", nzo_id)
+                logging.error(T('error-qAdd@1'), nzo_id)
                 logging.debug("Traceback: ", exc_info = True)
                 self.remove(nzo_id, False)
         else:
@@ -553,7 +554,7 @@ class NzbQueue(TryList):
                 sabnzbd.assembler.process((nzo, nzf))
 
             else:
-                logging.warning('%s -> Unknown encoding',
+                logging.warning(T('warn-unknownEncoding@1'),
                                 filename)
 
         if post_done:

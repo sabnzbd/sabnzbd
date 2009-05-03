@@ -30,6 +30,7 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 
 import sabnzbd.utils.feedparser as feedparser
+from sabnzbd.lang import T
 
 __RSS = None  # Global pointer to RSS-scanner instance
 
@@ -114,7 +115,7 @@ def ConvertFilter(text):
     try:
         return re.compile(txt, re.I)
     except:
-        logging.error("Could not compile regex: %s", text)
+        logging.error(T('error-rssRegex@1'), text)
         return None
 
 
@@ -169,7 +170,7 @@ class RSSQueue:
         try:
             cfg = config.get_rss()[feed]
         except KeyError:
-            logging.error('Incorrect RSS feed description "%s"', feed)
+            logging.error(T('error-rssBadFeed@1'), feed)
             logging.debug("Traceback: ", exc_info = True)
             return
 
@@ -212,12 +213,12 @@ class RSSQueue:
         d = feedparser.parse(uri)
         logging.debug("Done parsing %s", uri)
         if not d:
-            logging.warning("Failed to retrieve RSS from %s", uri)
+            logging.warning(T('warn-failRSS@1'), uri)
             return
 
         entries = d.get('entries')
         if 'bozo_exception' in d and not entries:
-            logging.warning("Failed to retrieve RSS from %s: %s", uri, str(d['bozo_exception']))
+            logging.warning(T('warn-failRSS@2'), uri, str(d['bozo_exception']))
             return
         if not entries:
             logging.info("RSS Feed was empty: %s", uri)
@@ -422,5 +423,5 @@ def _get_link(uri, entry):
     if link and link.lower().find('http') >= 0:
         return link
     else:
-        logging.warning('[%s]: Empty RSS entry found (%s)', link)
+        logging.warning(T('warn-emptyRSS@2'), link)
         return None

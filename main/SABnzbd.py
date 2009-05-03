@@ -226,7 +226,7 @@ def daemonize():
 def Bail_Out(browserhost, cherryport, access=False):
     """Abort program because of CherryPy troubles
     """
-    logging.error("Failed to start web-interface")
+    logging.error(T('error-noWebUi'))
     if access:
         panic_xport(browserhost, cherryport)
     else:
@@ -256,7 +256,7 @@ def Web_Template(key, defweb, wdir):
     logging.info("Web dir is %s", full_dir)
 
     if not os.path.exists(full_main):
-        logging.warning('Cannot find web template: %s, trying standard template', full_main)
+        logging.warning(T('warn-noSkin@1'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
@@ -358,14 +358,14 @@ def print_modules():
         logging.info("_yenc module... found!")
     else:
         if hasattr(sys, "frozen"):
-            logging.error("_yenc module... NOT found!")
+            logging.error(T('error-noYEnc'))
         else:
             logging.info("_yenc module... NOT found!")
 
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
-        logging.error("par2 binary... NOT found!")
+        logging.error(T('error-noPar2'))
 
     if sabnzbd.newsunpack.PAR2C_COMMAND:
         logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
@@ -373,12 +373,12 @@ def print_modules():
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
     else:
-        logging.warning("unrar binary... NOT found")
+        logging.warning(T('warn-noUnrar'))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
     else:
-        logging.warning("unzip binary... NOT found!")
+        logging.warning(T('warn-noUnzip'))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
@@ -481,7 +481,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
     if ipv6 and ipv4 and cherryhost == '' and sabnzbd.WIN32:
-        logging.warning("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
+        logging.warning(T('warn-0000'))
 
     if cherryport is None:
         cherryport = sabnzbd.cfg.CHERRYPORT.get_int()
@@ -497,7 +497,7 @@ def get_webhost(cherryhost, cherryport, https_port):
 
     if cherryport == https_port:
         sabnzbd.cfg.ENABLE_HTTPS.set(False)
-        logging.error('HTTP and HTTPS ports cannot be the same')
+        logging.error(T('error-sameHTTP-HTTPS'))
 
     return cherryhost, cherryport, browserhost, https_port
 
@@ -926,7 +926,7 @@ def main():
     init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True)
 
     if not init_ok:
-        logging.error('Initializing %s-%s failed, aborting',
+        logging.error(T('error-noStartup@2'),
                       sabnzbd.MY_NAME, sabnzbd.__version__)
         exit_sab(2)
 
@@ -1006,7 +1006,7 @@ def main():
             create_https_certificates(https_cert, https_key)
 
         if https_port and not (os.path.exists(https_cert) or os.path.exists(https_key)):
-            logging.warning('Disabled HTTPS because of missing CERT and KEY files')
+            logging.warning(T('warn-noCertKey'))
             https_port = False
 
         if https_port:

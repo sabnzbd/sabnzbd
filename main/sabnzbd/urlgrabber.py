@@ -42,6 +42,7 @@ import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.cfg as cfg
+from sabnzbd.lang import T
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -230,12 +231,12 @@ def _grab_nzbmatrix(url):
         # save the filename from the headers
         filename = response.info()["Content-Disposition"].split("\"")[1]
     except:
-        logging.warning('Problem accessing nzbmatrix server.')
+        logging.warning(T('warn-matrixFail'))
         return (None, True)
 
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably an invalid report number
-        logging.warning('Invalid nzbmatrix report number %s', msgid)
+        logging.warning(T('warn-matrixBadRep@1'), msgid)
         return (None, False)
 
     # save the file to disk
@@ -247,7 +248,7 @@ def _grab_nzbmatrix(url):
         os.write(fn, data)
         os.close(fn)
     except:
-        logging.error("Cannot create temp file for %s", filename)
+        logging.error(T('error-tvTemp@1'), filename)
         logging.debug("Traceback: ", exc_info = True)
         path = None
 

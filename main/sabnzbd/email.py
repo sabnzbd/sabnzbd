@@ -32,6 +32,7 @@ from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host
 import sabnzbd.cfg as cfg
+from sabnzbd.lang import T
 
 
 ################################################################################
@@ -70,10 +71,10 @@ def send(message):
                     mailconn = smtplib.SMTP(server, port)
                     mailconn.ehlo()
                 except:
-                    logging.error("Failed to connect to mail server")
+                    logging.error(T('error-mailNoConn'))
                     return failure
             else:
-                logging.error("Failed to connect to mail server")
+                logging.error(T('error-mailNoConn'))
                 return failure
 
         # TLS support
@@ -86,7 +87,7 @@ def send(message):
                     mailconn.starttls()
                     mailconn.ehlo()
                 except:
-                    logging.error("Failed to initiate TLS connection")
+                    logging.error(T('error-mailTLS'))
                     return failure
 
         # Authentication
@@ -94,19 +95,19 @@ def send(message):
             try:
                 mailconn.login(cfg.EMAIL_ACCOUNT.get(), cfg.EMAIL_PWD.get())
             except:
-                logging.error("Failed to authenticate to mail server")
+                logging.error(T('error-mailAuth'))
                 return failure
 
         try:
             mailconn.sendmail(cfg.EMAIL_FROM.get(), cfg.EMAIL_TO.get(), message)
         except:
-            logging.error("Failed to send e-mail")
+            logging.error(T('error-mailSend'))
             return failure
 
         try:
             mailconn.close()
         except:
-            logging.warning("Failed to close mail connection")
+            logging.warning(T('warn-noEmailClose'))
 
         logging.info("Notification e-mail succesfully sent")
         return "Email succeeded"
@@ -145,7 +146,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     try:
         lst = glob.glob(os.path.join(path, '*.tmpl'))
     except:
-        logging.error('Cannot find email templates in %s', path)
+        logging.error(T('error-mailTempl@1'), path)
         lst = []
 
     ret = "No templates found"

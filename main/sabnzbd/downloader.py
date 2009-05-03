@@ -36,6 +36,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.bpsmeter as bpsmeter
 import sabnzbd.scheduler
 import sabnzbd.nzbqueue
+from sabnzbd.lang import T
 
 #------------------------------------------------------------------------------
 # Timeout penalty in minutes for each cause
@@ -241,7 +242,7 @@ class Downloader(Thread):
                 primary = True
 
         if not primary:
-            logging.warning('No active primary servers defined, will not download!')
+            logging.warning(T('warn-noActiveServers'))
 
         self.decoder = Decoder(self.servers)
 
@@ -357,7 +358,7 @@ class Downloader(Thread):
                             server.bad_cons = 0
                             server.active = False
                             self.init_server(server.id, None)
-                            logging.warning('Server %s will be ignored for %s minutes', server.id, _PENALTY_TIMEOUT)
+                            logging.warning(T('warn-ignoreServer@2'), server.id, _PENALTY_TIMEOUT)
                             sabnzbd.scheduler.plan_server(self.init_server, [None, server.id], _PENALTY_TIMEOUT)
 
                 if server.restart:
@@ -415,7 +416,7 @@ class Downloader(Thread):
                                 nw.init_connect()
                                 self.write_fds[nw.nntp.sock.fileno()] = nw
                             except:
-                                logging.error("Failed to initialize %s@%s:%s",
+                                logging.error(T('error-noInit@3'),
                                                   nw.thrdnum, server.host,
                                                   server.port)
                                 logging.debug("Traceback: ", exc_info = True)
@@ -542,11 +543,11 @@ class Downloader(Thread):
                             if ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
-                                    logging.error('Failed login for server %s:%s',  server.host, server.port)
+                                    logging.error(T('error-serverLogin@2'),  server.host, server.port)
                                 block = True
                             elif (ecode in ('502', '400')) and clues_too_many(msg):
                                 # Too many connections: remove this thread and reduce thread-setting for server
-                                logging.error('Too many connections to server %s:%s',  server.host, server.port)
+                                logging.error(T('error-serverTooMany@2'),  server.host, server.port)
                                 self.__reset_nw(nw, None, warn=False, destroy=True)
                                 server.threads -= 1
                             elif (ecode == '502') and clues_too_many_ip(msg):
@@ -556,11 +557,11 @@ class Downloader(Thread):
                             elif ecode == '502':
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    logging.warning('Cannot connect to server %s:%s [%s]',  server.host, server.port, msg)
+                                    logging.warning(T('warn-noConnectServer@3'),  server.host, server.port, msg)
                                 penalty = _PENALTY_502
                             else:
                                 # Unknown error, just keep trying
-                                logging.error('Cannot connect to server %s:%s [%s]',  server.host, server.port, msg)
+                                logging.error(T('error-serverNoConn@3'),  server.host, server.port, msg)
                                 penalty = _PENALTY_UNKNOWN
                             if block or (penalty and server.optional):
                                 if server.active:
@@ -572,7 +573,7 @@ class Downloader(Thread):
                                 self.__reset_nw(nw, None, warn=False)
                             continue
                         except:
-                            logging.error("Connecting %s@%s:%s failed, message=%s",
+                            logging.error(T('error-serverFailed@4'),
                                               nw.thrdnum,
                                               nw.server.host, nw.server.port, nw.lines[0])
                             # No reset-warning needed, above logging is sufficient
@@ -672,7 +673,7 @@ class Downloader(Thread):
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except:
-            logging.error("Exception?")
+            logging.error(T('error-except'))
             self.__reset_nw(nw, "server broke off connection")
 
     def __send_group(self, nw):
@@ -690,7 +691,7 @@ class Downloader(Thread):
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except:
-            logging.error("Exception?")
+            logging.error(T('error-except'))
             self.__reset_nw(nw, "server broke off connection")
 
 

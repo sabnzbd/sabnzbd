@@ -38,6 +38,7 @@ from threading import Thread
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_VERSION, DB_HISTORY_NAME
+from sabnzbd.lang import T
 
 __HISTORY_DB = None  # Will contain full path to history database
 
@@ -75,7 +76,7 @@ class HistoryDB:
                 self.save()
             return True
         except:
-            logging.error('SQL Command Failed, see log')
+            logging.error(T('error-sqlCmd'))
             logging.debug("SQL: %s" , command)
             logging.debug("Traceback: ", exc_info = True)
             try:
@@ -118,7 +119,7 @@ class HistoryDB:
         try:
             self.con.commit()
         except:
-            logging.error('SQL Commit Failed, see log')
+            logging.error(T('error-sqlCommit'))
             logging.debug("Traceback: ", exc_info = True)
 
     def close(self):
@@ -126,7 +127,7 @@ class HistoryDB:
             self.c.close()
             self.con.close()
         except:
-            logging.error('Failed to close database, see log')
+            logging.error(T('error-sqlClose'))
             logging.debug("Traceback: ", exc_info = True)
 
     def remove_all(self):
@@ -332,7 +333,7 @@ def unpack_history_info(item):
         try:
             lines = item['stage_log'].split('\r\n')
         except:
-            logging.error('Invalid stage logging in history for %s (\\r\\n)', item['name'])
+            logging.error(T('error-badHisNewline@1'), item['name'])
             logging.debug('Lines: %s', item['stage_log'])
             lines = []
         item['stage_log'] = []
@@ -349,7 +350,7 @@ def unpack_history_info(item):
             try:
                 logs = logs.split(';')
             except:
-                logging.error('Invalid stage logging in history for %s (;)', item['name'])
+                logging.error(T('error-badHisSemic@1'), item['name'])
                 logging.debug('Logs: %s', logs)
                 logs = []
             for log in logs:

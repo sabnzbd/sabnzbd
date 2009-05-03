@@ -3263,7 +3263,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
         try:
             re_search = re.compile(search_text, re.I)
         except:
-            logging.error('Failed to compile regex for search term: %s', search_text)
+            logging.error(T('error-regex@1'), search_text)
             return False
         return re_search.search(text)
 

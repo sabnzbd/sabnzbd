@@ -27,6 +27,7 @@ import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename, get_ext
 from sabnzbd.constants import series_match, date_match, year_match
 import sabnzbd.cfg as cfg
+from sabnzbd.lang import T
 
 # Do not rename .vob files as they are usually DVD's
 EXCLUDED_FILE_EXTS = ['.vob']
@@ -246,7 +247,7 @@ class SeriesSorter:
             return True
 
         except:
-            logging.error("Error getting TV info (%s)", self.original_dirname)
+            logging.error(T('error-tvInfo@1'), self.original_dirname)
             logging.debug("Traceback: ", exc_info = True)
             return False
 
@@ -329,7 +330,7 @@ class SeriesSorter:
                             logging.debug("Rename: %s to %s", filepath,newpath)
                             os.rename(filepath,newpath)
                         except:
-                            logging.error("Failed to rename: %s to %s", current_path, newpath)
+                            logging.error(T('error-tvRename@2'), current_path, newpath)
                             logging.debug("Traceback: ", exc_info = True)
                         rename_similar(current_path, file, self.filename_set)
                         break
@@ -544,7 +545,7 @@ class GenericSorter:
                     logging.debug("Rename: %s to %s", filepath,newpath)
                     os.rename(filepath,newpath)
                 except:
-                    logging.error("Failed to rename: %s to %s", filepath,newpath)
+                    logging.error(T('error-tvRename@2'), filepath,newpath)
                     logging.debug("Traceback: ", exc_info = True)
                 rename_similar(current_path, file, self.filename_set)
         ## Sequence File Handling
@@ -565,7 +566,7 @@ class GenericSorter:
                         logging.debug("Rename: %s to %s", filepath,newpath)
                         os.rename(filepath,newpath)
                     except:
-                        logging.error("Failed to rename: %s to %s", filepath,newpath)
+                        logging.error(T('error-tvRename@2'), filepath,newpath)
                         logging.debug("Traceback: ", exc_info = True)
                     rename_similar(current_path, file, self.filename_set)
             else:
@@ -757,7 +758,7 @@ class DateSorter:
                                 logging.debug("Rename: %s to %s", filepath,newpath)
                                 os.rename(filepath,newpath)
                             except:
-                                logging.error("Failed to rename: %s to %s", current_path, newpath)
+                                logging.error(T('error-tvRename@2'), current_path, newpath)
                                 logging.debug("Traceback: ", exc_info = True)
                             rename_similar(current_path, file, self.filename_set)
                             break
@@ -872,7 +873,7 @@ def rename_similar(path, file, name):
                         logging.debug("Rename: %s to %s", fpath,newpath)
                         os.rename(fpath,newpath)
                     except:
-                        logging.error("Failed to rename similar file: %s to %s", path, newpath)
+                        logging.error(T('error-tvSimRename@2'), path, newpath)
                         logging.debug("Traceback: ", exc_info = True)
 
 
