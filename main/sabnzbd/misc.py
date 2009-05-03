@@ -240,7 +240,7 @@ def get_user_shellfolders():
     try:
         key = _winreg.OpenKey(hive, "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
     except WindowsError:
-        logging.error("Cannot open registry key Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders.")
+        logging.error('Cannot open registry key "%s".', "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
         _winreg.CloseKey(hive)
         return values
 

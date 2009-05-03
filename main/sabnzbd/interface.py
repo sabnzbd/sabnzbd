@@ -78,12 +78,12 @@ def check_server(host, port):
     """ Check if server address resolves properly """
 
     if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
-        return badParameterResponse(T('warning-ambiLocalhost'))
+        return badParameterResponse(T('msg-warning-ambiLocalhost'))
 
     if GetServerParms(host, port):
         return ""
     else:
-        return badParameterResponse('Server address "%s:%s" is not valid.' % (host, port))
+        return badParameterResponse(T('msg-invalidServer@2') % (host, port))
 
 
 def ListScripts(default=False):
@@ -203,12 +203,12 @@ def check_session(kwargs):
     key = kwargs.get('session')
     msg = None
     if not key:
-        #logging.warning('Missing Session key')
-        #msg = 'error: Session Key Required'
+        #logging.warning(T('warn-missingKey'))
+        #msg = T('error-missingKey')
         pass
     elif key != cfg.API_KEY.get():
-        #logging.warning('Incorrect Session key')
-        #msg = 'error: Session Key Incorrect'
+        #logging.warning(T('warn-badKey'))
+        #msg = T('error-badKey')
         pass
     return msg
 
@@ -219,22 +219,19 @@ def check_apikey(kwargs):
         if kwargs.get('ma_username') == cfg.PASSWORD.get() and kwargs.get('ma_password') == cfg.USERNAME.get():
             return None
         else:
-            logging.warning("Authentication missing, please enter username/password from Config->General "
-                            "into your 3rd party program:")
-            return "error: Missing authentication"
+            logging.warning(T('warn-authMissing'))
+            return T('error-authMissing')
 
     key = kwargs.get('apikey')
     ####TEMPORARY
     return None
     ####
     if not key:
-        logging.warning("API Key missing, please enter the api key from Config->General "
-                        "into your 3rd party program:")
-        return 'error: API Key Required'
+        logging.warning(T('warn-apikeyNone'))
+        return T('error-apikeyNone')
     elif key != cfg.API_KEY.get():
-        logging.warning("API Key incorrect, Use the api key from Config->General "
-                        "in your 3rd party program:")
-        return 'error: API Key Incorrect'
+        logging.warning(T('warn-apikeyBad'))
+        return T('error-apikeyBad')
     else:
         return None
 
@@ -245,7 +242,7 @@ class NoPage:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        return badParameterResponse('Error: No secondary interface defined.')
+        return badParameterResponse(T('error-noSecUI'))
 
 
 #------------------------------------------------------------------------------

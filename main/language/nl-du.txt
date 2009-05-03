@@ -10,6 +10,7 @@ no                Nee
 default           Standaard
 none              Geen
 KBs               KB/s
+MB                MB
 hour              uur
 minute            min
 second            sec
@@ -401,3 +402,22 @@ button-delCat            X
 # Config->Sorting
 sort-show                Show
 sort-name                Naam
+
+# NZO
+nzoDetails               Bewerk NZB Details
+nzoName                  Naam
+nzo-delete               Verwijder
+nzo-top                  Boven
+nzo-up                   Hoger
+nzo-down                 Lager
+nzo-bottom               Onder
+nzo-all                  alles
+nzo-none                 geen
+nzo-invert               omkeren
+nzo-filename             Bestandsnaam
+nzo-subject              Onderwerp
+nzo-age                  Leeftijd
+nzo-selection            Selectie
+
+
+# Internal texts

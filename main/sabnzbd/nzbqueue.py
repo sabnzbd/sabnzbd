@@ -79,8 +79,8 @@ class NzbQueue(TryList):
                     panic_queue(os.path.join(cfg.CACHE_DIR.get_path(),QUEUE_FILE_NAME))
                     exit_sab(2)
             except ValueError:
-                logging.error("Error loading %s, corrupt file " + \
-                              "detected", os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME))
+                logging.error("Error loading %s, corrupt file detected",
+                              os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME))
 
             for nzo_id in nzo_ids:
                 nzo = sabnzbd.load_data(nzo_id, remove = False)
@@ -499,7 +499,7 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def has_forced_items(self):
-        ''' Check if the queue contains any Forced 
+        ''' Check if the queue contains any Forced
         Priority items to download while paused '''
         for nzo in self.__nzo_list:
             if nzo.get_priority() == TOP_PRIORITY:

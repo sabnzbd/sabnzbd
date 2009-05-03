@@ -324,8 +324,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                     msg = 'Expected size did not equal actual size'
                     nzo.set_fail_msg('File join failed, %s' % msg)
                     nzo.set_unpack_info('filejoin', '[%s] Error "%s" while running file_join ' % (joinable_set, msg))
-                    logging.error('Error "%s" while' + \
-                              ' running file_join on %s', msg, nzo.get_dirname())
+                    logging.error('Error "%s" while running file_join on %s', msg, nzo.get_dirname())
                 else:
                     joinable_sets[joinable_set].sort()
                     filename = joinable_set
@@ -381,8 +380,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 msg = sys.exc_info()[1]
                 nzo.set_fail_msg('File join failed, %s' % msg)
                 nzo.set_unpack_info('filejoin', '[%s] Error "%s" while running file_join ' % (joinable_set, msg))
-                logging.error('Error "%s" while' + \
-                              ' running file_join on %s', msg, nzo.get_dirname())
+                logging.error('Error "%s" while running file_join on %s', msg, nzo.get_dirname())
                 return True, []
 
         return False, newfiles
@@ -390,8 +388,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
         msg = sys.exc_info()[1]
         nzo.set_fail_msg('File join failed, %s' % msg)
         nzo.set_unpack_info('filejoin', 'Error "%s" while running file_join ' % (msg))
-        logging.error('Error "%s" while' + \
-                      ' running file_join on %s', msg, nzo.get_dirname())
+        logging.error('Error "%s" while running file_join on %s', msg, nzo.get_dirname())
         return True, []
 
 
@@ -469,8 +466,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
         setname = nzo.get_dirname()
         nzo.set_unpack_info('unpack', '[%s] Error "%s" while running rar_unpack' % (setname, msg))
 
-        logging.error('Error "%s" while' + \
-                          ' running rar_unpack on %s', msg, setname)
+        logging.error('Error "%s" while running rar_unpack on %s', msg, setname)
         return True, ''
 
 def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
@@ -657,8 +653,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
     except:
         msg = sys.exc_info()[1]
         nzo.set_fail_msg('Unpacking failed, %s' % msg)
-        logging.error('Error "%s" while' + \
-                          ' running unzip() on %s', msg, nzo.get_dirname())
+        logging.error('Error "%s" while running unzip() on %s', msg, nzo.get_dirname())
         return True
 
 def ZIP_Extract(zipfile, extraction_path):
@@ -789,8 +784,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     except:
         msg = sys.exc_info()[1]
         nzo.set_fail_msg('Repairing failed, %s' % msg)
-        logging.error('Error "%s" while' + \
-                          ' running par2_repair on set %s', msg, setname)
+        logging.error('Error "%s" while running par2_repair on set %s', msg, setname)
 
     return readd, result
 

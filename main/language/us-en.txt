@@ -10,6 +10,7 @@ no                No
 default           Default
 none              None
 KBs               KB/s
+MB                MB
 hour              hour
 minute            min
 second            sec
@@ -186,7 +187,6 @@ explain-cleanup_list  List of file (extensions) that should be deleted after dow
 button-saveChanges    Save Changes
 opt-language          Language
 explain-language      Select interface language
-warning-ambiLocalhost Warning: LOCALHOST is ambiguous, use numerical IP-address.
 
 # Config->Folders
 folderConfig            Folder configuration
@@ -403,3 +403,37 @@ button-delCat            X
 # Config->Sorting
 sort-show                Show
 sort-name                Name
+
+# NZO
+nzoDetails               Edit NZB Details
+nzoName                  Name
+nzo-delete               Delete
+nzo-top                  Top
+nzo-up                   Up
+nzo-down                 Down
+nzo-bottom               Bottom
+nzo-all                  all
+nzo-none                 none
+nzo-invert               invert
+nzo-filename             Filename
+nzo-subject              Subject
+nzo-age                  Age
+nzo-selection            Selection
+
+# Internal texts
+msg-warning-ambiLocalhost    Warning: LOCALHOST is ambiguous, use numerical IP-address.
+msg-invalidServer@2      Server address "%s:%s" is not valid.
+warn-missingKey          Missing Session key
+error-missingKey         Error: Session Key Required
+warn-badSession          Incorrect Session key
+error-badKey             Error: Session Key Incorrect
+warn-authMissing         Authentication missing, please enter username/password from Config-&gt;General\
+                         into your 3rd party program:
+error-authMissing        Error: Missing authentication
+warn-apikeyNone          API Key missing, please enter the api key from Config->General\
+                         into your 3rd party program:
+error-apikeyNone         API Key Required
+warn-apikeyBad           API Key incorrect, Use the api key from Config->General\
+                         in your 3rd party program:
+error-apikeyBad          Error: API Key Incorrect
+error-noSecUI            Error: No secondary interface defined.
