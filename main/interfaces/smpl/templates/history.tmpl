@@ -6,8 +6,8 @@
 </div>
 
 <div class="centerLinks"><br />
-    <a onClick="if(confirm('Delete the all items from the history?')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('purgeHist')</a> | 
-	<a onClick="if(confirm('Delete the all failed items from the history?')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">Purge failed items</a> | 
+    <a onClick="if(confirm('$T('smpl-purgehistOK?')')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('smpl-purgehist')</a> | 
+	<a onClick="if(confirm('$T('smpl-purgefailhistOK?')')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('smpl-purgefailhist')</a> | 
 	<a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then $T('hideDetails') else $T('showDetails')#--></a></span>
 </div>
 
@@ -18,8 +18,8 @@
 <tr>
 <th class="expandColumn"></th>
 <th>$T('name')</th>
-<th class="linksColumn">$T('links')</th>
-<th class="sizeColumn">$T('size')</th>
+<th class="linksColumn">$T('smpl-links')</th>
+<th class="sizeColumn">$T('smpl-size')</th>
 <th class="statusColumn">$T('status')</th>
 <th class="actionsColumn"></th>
 </tr>
@@ -64,7 +64,7 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
                 <span class="left-margin">$line.category</span><br />
             <!--#end if#-->
             <!--#if $line.storage#-->
-                <span class="bold">Path: </span><br />
+                <span class="bold">$T('smpl-path'): </span><br />
                 <span class="left-margin">$line.storage</span>
             <!--#end if#-->
             <br />
@@ -78,16 +78,29 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
 <!--#end if#-->
 </table>
 <div class="centerLinks">
-    $T('size'): <span class="bold">$total_size</span> |  $T('thisMonth'): <span class="bold">$month_size</span> | $T('thisWeek'): <span class="bold">$week_size</span>
+    $T('smpl-size'): <span class="bold">$total_size</span> |  $T('smpl-thisMonth'): <span class="bold">$month_size</span> | $T('smpl-thisWeek'): <span class="bold">$week_size</span>
 </div>
 <br />
 <!--#if $finish == 0#-->
-No results
+$T('smpl-noresult')
 <!--#elif $finish == 1#-->
-Showing 1 result
+$T('smpl-oneresult')
 <!--#else#-->
 
-Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noofslots then $noofslots else $finish#--> out of $noofslots results
+    <!--#if $finish > 0#-->
+        <!--#set $x = $start+1#-->
+    <!--#else#-->
+        <!--#set $x = 0#-->
+    <!--#end if#-->
+
+    <!--#if $finish > $noofslots#-->
+        <!--#set $y = $start+1#-->
+    <!--#else#-->
+        <!--#set $y = $finish#-->
+    <!--#end if#-->
+
+    <!--#set $numres = $T('smpl-numresults@3') % ($x, $y, $noofslots)#-->
+    $numres
 <!--#end if#-->
 <br />
 <div class="centerLinks">
@@ -104,12 +117,12 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noo
         <!--#set $currentpage = int($newfinish / $limit)#-->
         <!--#set $offset = 0#-->
         <!--#if $currentpage == 1#-->
-            <span class="unselected">&laquo;$T('first')</span> 
-            <span class="unselected">&lsaquo;$T('previous')</span> 
+            <span class="unselected">&laquo;$T('smpl-first')</span> 
+            <span class="unselected">&lsaquo;$T('smpl-previous')</span> 
         <!--#else#-->
             <!--#set $new_start = $start-$limit#-->
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;$T('first')</a> 
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$new_start', 1,this.parentNode.parentNode.id);">&lsaquo;$T('previous')</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;$T('smpl-first')</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$new_start', 1,this.parentNode.parentNode.id);">&lsaquo;$T('smpl-previous')</a> 
         <!--#end if#-->
         <!--#for $i in $range($pages)#-->
             <!--#set $i = $i+1#-->
@@ -121,12 +134,12 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noo
             <!--#set $offset = $offset + $limit#-->
         <!--#end for#-->
         <!--#if $currentpage == $pages#-->
-            <span class="unselected">Next&rsaquo;</span> <span class="unselected">Last&raquo;</span>
+            <span class="unselected">$T('smpl-next')&rsaquo;</span> <span class="unselected">$T('smpl-last')&raquo;</span>
         <!--#else#-->
             <!--#set $first_start = $start+$limit#-->
             <!--#set $second_start = (($pages-1)*$limit)#-->
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$first_start', 1,this.parentNode.parentNode.id);">$T('next')&rsaquo;</a> 
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$second_start', 1,this.parentNode.parentNode.id);">$T('last')<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$first_start', 1,this.parentNode.parentNode.id);">$T('smpl-next')&rsaquo;</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$second_start', 1,this.parentNode.parentNode.id);">$T('smpl-last')<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
         <!--#end if#-->
     <!--#end if#-->
 </div>

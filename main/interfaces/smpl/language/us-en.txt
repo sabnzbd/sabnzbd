@@ -20,6 +20,7 @@ progress        Progress
 delete          Delete
 downloading     Downloading
 idle            Idle
+paused          Paused
 emailsent       Email Sent!
 saving          Saving..
 saved           Saved
@@ -30,3 +31,18 @@ refresr         Refresh Rate
 restartOK?      Are you sure you want to restart SABnzbd?
 warnings        Warnings
 getbookmarks    Get Bookmarks
+purgehistOK?    Delete the all items from the history?
+purgefailhistOK? Delete the all failed items from the history?
+purgehist       Delete All
+purgefailhist   Delete Failed Items
+path            Path
+age             Age
+speed           Speed
+numresults@3    Showing %s to %s out of %s results
+oneresult       Showing 1 result
+noresult        No results
+custom          Custom
+minutes         minutes
+seconds         seconds
+mins            mins
+hour            hour

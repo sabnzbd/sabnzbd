@@ -414,12 +414,12 @@ function loadtitle() {
 <!--#set $pau = "0"#-->
 <!--#if $paused #-->
 <!--#set $pau = "1"#-->
-<!--#set $status = "<span class='paused'>"+$T('paused')+"</span>"#-->
+<!--#set $status = "<span class='paused'>"+$T('smpl-paused')+"</span>"#-->
 <!--#set $statusstr2 = $T('link-resume')#-->
 <!--#else if float($kbpersecrnd)>0 #-->
-<!--#set $status = "<span class='downloading'>$T('downloading')</span>"#-->
+<!--#set $status = "<span class='downloading'>$T('smpl-downloading')</span>"#-->
 <!--#else if float($kbpersecrnd) == 0 #-->
-<!--#set $status = "<span class='idle'>$T('idle')</span>"#-->
+<!--#set $status = "<span class='idle'>$T('smpl-idle')</span>"#-->
 <!--#end if#-->
 
 <script type="text/javascript">
@@ -448,14 +448,14 @@ function loadtitle() {
 		if (status2 == 1)
 		{
 			status2 = 0;
-			document.getElementById("status").innerHTML = "<span class='idle'>$T('idle')</span>";
+			document.getElementById("status").innerHTML = "<span class='idle'>$T('smpl-idle')</span>";
 			document.getElementById("status2").innerHTML = "$T('link-pause')";
 			doSimpleXMLHttpRequest("tapi?mode=resume&session="+session);
 		}
 		else
 		{
 			status2 = 1;
-			document.getElementById("status").innerHTML = "<span class='paused'>$T('paused')</span>";
+			document.getElementById("status").innerHTML = "<span class='paused'>$T('smpl-paused')</span>";
 			document.getElementById("speed").innerHTML = "0";
 			document.getElementById("status2").innerHTML = "$T('link-resume')";
 			doSimpleXMLHttpRequest("tapi?mode=pause&session="+session);
@@ -766,13 +766,13 @@ function loadtitle() {
 
 	    });
 		if (saveelement) {
-			saveelement.value = "$T('saving')"
+			saveelement.value = "$T('smpl-saving')"
 			saveelement.disabled = true
 		}
 	    d.addCallback(function (result)
 	    {
 		  if (saveelement) {
-			  saveelement.value = "$T('saved')"
+			  saveelement.value = "$T('smpl-saved')"
 			  saveelement.disabled = false
 		  }
           if(url2 == "1") {replaceright(result);}
@@ -783,7 +783,7 @@ function loadtitle() {
 	    d.addErrback( function (result)
 	    {
 		  if (saveelement) {
-			  saveelement.value = "$T('failed')"
+			  saveelement.value = "$T('smpl-failed')"
 			  saveelement.disabled = false
 		  }
 	    });
@@ -905,19 +905,19 @@ function loadingJSON(){
 		{
             if (pause_int == "0")
             {
-			    document.getElementById("status").innerHTML = "<span class='paused'>$T('paused')</span>";
+			    document.getElementById("status").innerHTML = "<span class='paused'>$T('smpl-paused')</span>";
             }
             else
             {
-			    document.getElementById("status").innerHTML = "<span class='paused'>$T('paused') ("+pause_int+")</span>";
+			    document.getElementById("status").innerHTML = "<span class='paused'>$T('smpl-paused') ("+pause_int+")</span>";
             }
-            document.title = "SABnzbd+ | $T('paused')";
+            document.title = "SABnzbd+ | $T('smpl-paused')";
             document.getElementById("status2").innerHTML = "$T('link-resume')";
             status2 = 1
 						//alert("paused");
 		} else if 	(speed>0)
 		{
-			document.getElementById("status").innerHTML = "<span class='downloading'>$T('downloading')</span>";
+			document.getElementById("status").innerHTML = "<span class='downloading'>$T('smpl-downloading')</span>";
     		totalTimeRemain = info["timeleft"];
             dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"kB/s";
             document.title = dltitle;
@@ -925,8 +925,8 @@ function loadingJSON(){
             status2 = 0
 						//alert("down");
 		} else {
-			document.getElementById("status").innerHTML = "<span class='idle'>$T('idle')</span>";
-            document.title = "SABnzbd+ | $T('idle')";
+			document.getElementById("status").innerHTML = "<span class='idle'>$T('smpl-idle')</span>";
+            document.title = "SABnzbd+ | $T('smpl-idle')";
             document.getElementById("status2").innerHTML = "$T('link-pause')";
             status2 = 0
 						//alert("idle");
@@ -939,7 +939,7 @@ function loadingJSON(){
 		document.getElementById("ds2").innerHTML = info["diskspace2"].toFixed(2);
         //var perc1 = 1 - (info["jobs"][0]["mbleft"].toFixed(2) / info["jobs"][0]["mb"].toFixed(2))
         //alert(info["jobs"][0]);
-	   	if (info["jobs"]!="") document.getElementById("downloadinfo").innerHTML = "$T('downloading'): "+info["jobs"][0]["filename"];
+	   	if (info["jobs"]!="") document.getElementById("downloadinfo").innerHTML = "$T('smpl-downloading'): "+info["jobs"][0]["filename"];
         else document.getElementById("downloadinfo").innerHTML = "";
 		document.getElementById("have_warnings").innerHTML = info["have_warnings"];
         load = document.getElementById("loadavg")
@@ -1011,7 +1011,7 @@ function loadingJSON(){
 		<div id="Header">
 			<p class="status">
 				$T('status'): <span id="status">$status</span><br />
-				$T('speed'): <span id="speed">$kbpersecrnd</span> kB/s<br />
+				$T('smpl-speed'): <span id="speed">$kbpersecrnd</span> kB/s<br />
 				$T('menu-queue'): <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
 			</p>
 		<div id="logo">
@@ -1020,7 +1020,7 @@ function loadingJSON(){
 		</div>
             <!-- <div id="divchart"><canvas id="graph" height="70" width="700"></canvas></div> -->
 			<br />
-<div class="centerLinks header-margin light-grey"><a onclick="javascript:toggle('addNew','',{duration:0.2})">[$T('toggleadd')]</a></div>
+<div class="centerLinks header-margin light-grey"><a onclick="javascript:toggle('addNew','',{duration:0.2})">[$T('smpl-toggleadd')]</a></div>
 		</div>
 		<div id="Content">
 			<div id="Left">
@@ -1044,22 +1044,22 @@ function loadingJSON(){
                         <li><a class="config" href="#/config/sorting/" onClick="lr('config/sorting/', '', 0, 0);">$T('cmenu-sorting')</a></li>
 					</ul>
 					<li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">$T('menu-cons')</a></li>
-    				<li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">$T('warnings')(<span id="have_warnings">$have_warnings</span>)</a></li>
+    				<li><a href="#/connections/" onClick="lr('connections/','', 1, 0);">$T('smpl-warnings')(<span id="have_warnings">$have_warnings</span>)</a></li>
 					<br />
 					<li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a> <a onClick="toggle('hiddenTimedPause','blind',{duration:0.2})"><img src="static/images/bullet_arrow_down.png" border=0 /></a></li>
 					<ul id="hiddenTimedPause" class="secondul">
-						<li><a class="config" onClick="javascript:timedPause(5)">5 mins</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(15)">15 mins</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(30)">30 mins</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(60)">1 hour</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(120)">2 hour</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(180)">3 hour</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(300)">5 hour</a></li>
-                        <li><a class="config" onClick="javascript:timedPause()">Custom</a></li>
+						<li><a class="config" onClick="javascript:timedPause(5)">5 $T("smpl-mins")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(15)">15 $T("smpl-mins")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(30)">30 $T("smpl-mins")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(60)">1 $T("smpl-hour")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(120)">2 $T("smpl-hour")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(180)">3 $T("smpl-hour")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(300)">5 $T("smpl-hour")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause()">$T("smpl-custom")</a></li>
 
 					</ul>
 					<!--#if $varExists('newzbinDetails')#-->
-					<li><a onClick="getBookmarks()">$T('getbookmarks')</a></li>
+					<li><a onClick="getBookmarks()">$T('smpl-getbookmarks')</a></li>
 					<!--#end if#-->
 					<br />
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('$T('restartOK?')')){restart()}">$T('button-restart')</a></li>
@@ -1175,16 +1175,16 @@ function loadingJSON(){
 		<div id="Footer">
 			<div id="divchart"><canvas id="graph" height="100" width="700"></canvas></div>
 			<span id="downloadinfo"></span><br /><br />
-			<p id="versions">$T("refreshr"): <select id="refreshrate" onchange="javascript:applyrefresh(this.options[this.selectedIndex].value)">
-				<option value="2" >2 $T("seconds")</option>
-				<option value="3" >3 $T("seconds")</option>
-				<option value="5" selected="selected">5 $T("seconds")</option>
-				<option value="10" >10 $T("seconds")</option>
-				<option value="15" >15 $T("seconds")</option>
-				<option value="30" >30 $T("seconds")</option>
-				<option value="60" >1 $T("minute")</option>
-				<option value="180" >3 $T("minutes")</option>
-				<option value="300" >5 $T("minutes")</option>
+			<p id="versions">$T("smpl-refreshr"): <select id="refreshrate" onchange="javascript:applyrefresh(this.options[this.selectedIndex].value)">
+				<option value="2" >2 $T("smpl-seconds")</option>
+				<option value="3" >3 $T("smpl-seconds")</option>
+				<option value="5" selected="selected">5 $T("smpl-seconds")</option>
+				<option value="10" >10 $T("smpl-seconds")</option>
+				<option value="15" >15 $T("smpl-seconds")</option>
+				<option value="30" >30 $T("smpl-seconds")</option>
+				<option value="60" >1 $T("smpl-minute")</option>
+				<option value="180" >3 $T("smpl-minutes")</option>
+				<option value="300" >5 $T("smpl-minutes")</option>
 				<option value="0" >$T("none")</option>
 			</select>
             <br />sabnzbd version: $version | smpl version: 1.3</a></p>
