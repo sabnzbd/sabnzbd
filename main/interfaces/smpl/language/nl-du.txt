@@ -1,0 +1,49 @@
+# -*- coding: UTF-8 -*-
+# Nederland # Dutch
+
+thisWeek        Deze week
+thisMonth       Deze maand
+size            Omvang
+links           Links
+first           Eerste
+previous        Vorige
+next            Volgende
+last            Laatste
+edit            Wijzig
+editDetails     Bewerk details
+showEdit        Toon opties voor wijzigen
+hideEdit        Verberg opties voor wijzigen
+timeleft        Te Gaan
+purgeQueue      Alles Verwijderen
+purgeQueueConf  Verwijder alle elementen uit de wachtrij?
+progress        Voortgang
+delete          Verwijder
+downloading     Downloaden
+idle            Niets te doen
+paused          Pauze
+emailsent       Email verstuurd
+saving          Opslaan..
+saved           Opgeslagen
+failed          Mislukt
+speed           Snelheid
+toggleadd       Wissel "NZB Toevoegen"
+refresr         Verversingstempo
+restartOK?      Weet je zeker dat je SABnzbd wilt herstarten?
+warnings        Meldingen
+getbookmarks    "Bookmarks" ophalen
+purgehistOK?    Verwijder alle elementen uit de Geschiedenis?
+purgefailhistOK? Verwijder alle mislukte elementen uit de Geschiedenis?
+purgehist       Alles verwijderen
+purgefailhist   Alle mislukte elementen verwijderen
+path            Pad
+age             Leeftijd
+numresults@3    Toon %s t/m %s van %s resultaten
+oneresult       Toon één resultaat
+noresult        Geen resultaten
+custom          Aangepast
+minutes         minuten
+seconds         seconden
+mins            mins
+hour            uur
+dualView1       Dubbel1
+dualView2       Dubbel2

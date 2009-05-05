@@ -78,20 +78,20 @@
         input = input.replace(/%0e/g,'05');
         input = input.replace(/%e/g,'5');
 		input = input.replace(/%fn/g,'file');
-        
+
         document.getElementById('previewtv').innerHTML = getOutput(input);
     }
-    
+
     function getOutput(input){
         var slash = "\\";
         var com = document.getElementById('complete_dir').value;
-        
+
         // For some reason a simply replace() doesn't replace multiple / characters
         // Work out whether we are using / or \
         for (i=0; i<com.length; i++){
             if (com[i] == "/") slash = "/";
         }
-        
+
         // Replace / or \ with whatever complete_dir uses
         for (i=0; i<input.length; i++){
             if (input[i] == "/") {
@@ -100,14 +100,14 @@
                 input = input.replace("\\",slash, "gi");
             }
         }
-        
+
         // If the complete_dir ends in / or \, then strip that character
         len = com.length
         if (com.substring(len-1, len) == slash)
         {
             com = com.substring(0, len-1)
         }
-        
+
         output = com+slash+input;
         return output
     }
@@ -165,7 +165,7 @@
         }
         input = input.replace(/{/g,'');
         input = input.replace(/}/g,'');
-        
+
         document.getElementById('previewmovie').innerHTML = getOutput(input);
     }
     function dateSet(val){
@@ -1028,8 +1028,8 @@ function loadingJSON(){
 					<li><a class="current" href="./">$T('menu-home')</a></li>
 					<li><a href="#/queue/" onClick="lr('queue/', 'limit=15', 1, 0);">$T('menu-queue')</a></li>
 					<li><a href="#/history/" onClick="lr('history/','limit=15', 1, 0);">$T('menu-history')</a></li>
-                    <li><a href="#/dv1/" onClick="lr('queue/','', 1, 1);lrb('history/','limit=15',1);">DualView1</a></li>
-                    <li><a href="#/dv2/" onClick="lr('queue/','', 1, 2);lrb('history/','limit=15',1);">DualView2</a></li>
+                    <li><a href="#/dv1/" onClick="lr('queue/','', 1, 1);lrb('history/','limit=15',1);">$T('smpl-dualView1')</a></li>
+                    <li><a href="#/dv2/" onClick="lr('queue/','', 1, 2);lrb('history/','limit=15',1);">$T('smpl-dualView2')</a></li>
 					<li><a href="#/config/" onClick="toggle('hiddenNav','blind',{duration:0.2})">$T('menu-config')</a></li>
 					<ul id="hiddenNav" class="secondul">
 						<li><a class="config" href="#/config/general/" onClick="lr('config/general/','', 0, 0);">$T('cmenu-general')</a></li>
