@@ -1,121 +1,130 @@
 
-<a href="${helpuri}Configure+General" id="help">Help</a><h3>General configuration</h3>
+<a href="${helpuri}Configure+General" id="help">Help</a><h3>$T('generalConfig')</h3>
 <form class="cmxform" id="configGeneral">
 
 <fieldset class="EntryFieldSet">
-<legend>Web server</legend>
+<legend>$T('webServer')</legend>
 <hr />
-
-
-			<label for "host" class="label">Host:</label>
+			<label for "host" class="label">$T('opt-host'):</label>
 			<input type="text" name="host" value="$host">
-			<span class="tips">Host SABnzbd should listen on.</span>
+			<span class="tips">$T('explain-host')</span>
 		<br class="clear" />
 
-			<label for "port" class="label">Port:</label>
+			<label for "port" class="label">$T('opt-port'):</label>
 			<input type="text" name="port" value="$port">
-			<span class="tips">Port SABnzbd should listen on.</span>
+			<span class="tips">$T('explain-port')</span>
 		<br class="clear" />
+        
+        <label for "userinterface" class="label">$T('opt-web_dir'):</label>
 
-			<label for "webuser" class="label">Web username:</label>
-			<input type="text" name="web_username" value="$username">
-			<span class="tips">Protect access to SABnzbd.</span>
+        <select name="web_dir" id="webdir" class="select">
+            <!--#for $webline in $web_list#-->
+                <!--#if $webline.lower() == $web_dir.lower()#-->
+                    <option value="$webline" selected>$webline</option>
+                <!--#else#-->
+                    <option value="$webline">$webline</option>
+                <!--#end if#-->
+            <!--#end for#-->
+        </select>
+        <span class="tips">$T('explain-web_dir')</span>
+        <br class="clear" />
+        
+        <label for "userinterface" class="label">$T('opt-web_dir2'):</label>
+        <select name="web_dir2" id="webdir2" class="select">
+            <!--#for $webline in $web_list2#-->
+                <!--#if $webline.lower() == $web_dir2.lower()#-->
+                    <option value="$webline" selected>$webline</option>
+                <!--#else#-->
+                    <option value="$webline">$webline</option>
+                <!--#end if#-->
+            <!--#end for#-->
+        </select>
+        <span class="tips">$T('explain-web_dir2')</span>
 		<br class="clear" />
-
-			<label for "webpass" class="label">Web password:</label>
-			<input type="password" name="web_password" value="$password">
-			<span class="tips">Protect access to SABnzbd.</span>
+        
+        <label for "language" class="label">$T('opt-language'):</label>
+        <select name="language" id="language" class="select">
+        <!--#for $webline in $lang_list#-->
+            <!--#if $webline[0].lower() == $language.lower()#-->
+                <option value="$webline[0]" selected>$webline[1]</option>
+            <!--#else#-->
+                <option value="$webline[0]">$webline[1]</option>
+            <!--#end if#-->
+        <!--#end for#-->
+        </select>
+        <span class="tips">$T('explain-language')</span>
 		<br class="clear" />
-
-			<label for "userinterface" class="label">Main Skin:</label>
-
-			<select name="web_dir" id="webdir" class="select">
-			    <!--#for $webline in $web_list#-->
-			        <!--#if $webline.lower() == $web_dir.lower()#-->
-			            <option value="$webline" selected>$webline</option>
-			        <!--#else#-->
-			            <option value="$webline">$webline</option>
-			        <!--#end if#-->
-			    <!--#end for#-->
-			</select>
-			<span class="tips">Choose a user interface (restart required!).</span>
-		<br class="clear" />
-
-			<label for "userinterface" class="label">Secondary Skin:</label>
-
-			<select name="web_dir2" id="webdir2" class="select">
-			    <!--#for $webline in $web_list2#-->
-			        <!--#if $webline.lower() == $web_dir2.lower()#-->
-			            <option value="$webline" selected>$webline</option>
-			        <!--#else#-->
-			            <option value="$webline">$webline</option>
-			        <!--#end if#-->
-			    <!--#end for#-->
-			</select>
-			<span class="tips">Choose a secondary user interface (restart required!). Located at /sabnzbd/m/</span>
-		<br class="clear" />
+        
         <label class="label">API Key:</label> <input type="text" style="width:250px;border:none;" onclick="this.select()" id="apikey" value="$session"> <input type="button" style="float:none;display:inline;" size="40" value="Generate new key" onclick="javascript:generateAPIKey()">
         <br class="clear" />
+</fieldset>
+<fieldset class="EntryFieldSet">
+<legend>$T('webAuth')</legend>
+<hr />
+        <label for "webuser" class="label">$T('opt-web_username'):</label>
+        <input type="text" name="web_username" value="$username">
+        <span class="tips">$T('explain-web_username')</span>
+		<br class="clear" />
+
+        <label for "webpass" class="label">$T('opt-web_password'):</label>
+        <input type="password" name="web_password" value="$password">
+        <span class="tips">$T('explain-web_password')</span>
+		<br class="clear" />
 
 </fieldset>
 <fieldset class="EntryFieldSet">
-<legend>HTTPS Support</legend>
+<legend>$T('httpsSupport')</legend>
 <hr />
 
-		    <label><span class="label">Enable HTTPS<!--#if int($have_ssl) == 0 then " (not-installed)" else ""#-->:</span>
+		    <label><span class="label">$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('not-installed') else ""#-->:</span>
 		    <input class="radio" type="checkbox" name="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-			<span class="tips">Enable accessing the interface from a HTTPS address.</span></label>
+			<span class="tips">$T('explain-enable_https')</span></label>
 		<br class="clear" />
 
-			<label for "https_port" class="label">HTTPS Port:</label>
+			<label for "https_port" class="label">$T('opt-https_port'):</label>
 			<input type="text" name="https_port" value="$https_port">
-			<span class="tips">Port SABnzbd should listen on for HTTPS communication (different than the HTTP port).</span>
+			<span class="tips">$T('explain-https_port')</span>
 		<br class="clear" />
 
-			<label for "https_cert" class="label">HTTPS Certificate:</label>
+			<label for "https_cert" class="label">$T('opt-https_cert'):</label>
 			<input type="text" name="https_cert" value="$https_cert">
-			<span class="tips">File name or path to HTTPS Certificate (will be created if does not exist).</span>
+			<span class="tips">$T('explain-https_cert')</span>
 		<br class="clear" />
 
-			<label for "https_key" class="label">HTTPS Key:</label>
+			<label for "https_key" class="label">$T('opt-https_key'):</label>
 			<input type="text" name="https_key" value="$https_key">
-			<span class="tips">File name or path to HTTPS Key (will be created if does not exist).</span>
+			<span class="tips">$T('explain-https_key')</span>
 		<br class="clear" />
 
 </fieldset>
 
 <fieldset class="EntryFieldSet">
-<legend>Tuning</legend>
+<legend>$T('tuning')</legend>
 <hr />
 
-
-			<label for "qrefresh" class="label">Queue auto refresh interval:</label>
-
+			<label for "qrefresh" class="label">$T('opt-refresh_rate'):</label>
 			<input type="text" name="refresh_rate" value="$refresh_rate">
-			<span class="tips">Refresh interval of the queue web-interface page(sec, 0= none)</span>
+			<span class="tips">$T('explain-refresh_rate')</span>
 		<br class="clear" />
 
-			<label for "rsscheck" class="label">RSS checking interval:</label>
-
+			<label for "rsscheck" class="label">$T('opt-rss_rate'):</label>
 			<input type="text" name="rss_rate" value="$rss_rate">
-			<span class="tips">Checking interval (minutes, at least 15))</span>
+			<span class="tips">$T('explain-rss_rate')</span>
 		<br class="clear" />
 
-			<label for "bandwidth limit" class="label">Download Speed Limit:</label>
+			<label for "bandwidth limit" class="label">$T('opt-bandwith_limit'):</label>
 			<input type="text" name="bandwith_limit" value="$bandwith_limit">
-			<span class="tips">Download speed limit in kilobytes per second(kB/s).</span>
+			<span class="tips">$T('explain-bandwith_limit')</span>
 		<br class="clear" />
 
-			<label for "cachelimit" class="label">Article Cache Limit:</label>
+			<label for "cachelimit" class="label">$T('opt-cache_limitstr'):</label>
 			<input type="text" name="cache_limitstr" value="$cache_limitstr">
-			<span class="tips">Cache articles in memory (reduce disk access).</span>
+			<span class="tips">$T('explain-cache_limitstr')</span>
 		<br class="clear" />
 
-			<label for "cleanuplist" class="label">Cleanup List:</label>
-
+			<label for "cleanuplist" class="label">$T('opt-cleanup_list'):</label>
 			<input type="text" name="cleanup_list" value="$cleanup_list">
-			<span class="tips">List of file (extensions) that should be deleted after download.
-			For example: ".nfo," or ".nfo, .sfv"</span>
+			<span class="tips">$T('explain-cleanup_list')</span>
 		<br class="clear" />
 
 
@@ -123,7 +132,6 @@
 
 
 <p>
-
-<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/general/saveGeneral', this, 'configGeneral')">
+    <input type="button" size="40" value="$T('button-saveChanges')" onclick="javascript:submitconfig('config/general/saveGeneral', this, 'configGeneral')">
 </p>
 </form>

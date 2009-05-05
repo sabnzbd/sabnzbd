@@ -1,8 +1,9 @@
-<a href="${helpuri}Configure+Scheduling+V2" id="help">Help</a><h3>Scheduling configuration</h3>
+<a href="${helpuri}Configure+Scheduling+V2" id="help">Help</a>
+<h3>$T('configSchedule')</h3>
 <div class="EntryBlock">
 <form class="cmxform" id="schedule">
 <fieldset class="EntryFieldSet">
-<legend>Add schedule</legend>
+<legend>$T('addSchedule')</legend>
  <hr />
  <br class="clear" />
  <%import time
@@ -25,65 +26,43 @@ else:
 <!--#end for#-->
 </select>
 <br class="clear" />
-<label class="label">Frequency:</label>
+<label class="label">$T('sch-frequency'):</label>
 <select name="dayofweek">
-<option value="*" selected>Daily
-<option value="1">Mondays
-<option value="2">Tuesdays
-<option value="3">Wednesdays
-<option value="4">Thursdays
-<option value="5">Fridays
-<option value="6">Saturdays
-<option value="7">Sundays
+<option value="*" selected>$T('daily')
+<option value="1">$T('monday')
+<option value="2">$T('tuesday')
+<option value="3">$T('wednesday')
+<option value="4">$T('thursday')
+<option value="5">$T('friday')
+<option value="6">$T('saturday')
+<option value="7">$T('sunday')
 </select>
 <br class="clear" />
-<label class="label">Action:</label>
+<label class="label">$T('sch-action'):</label>
 <select name="action">
 <!--#for $action in $actions#-->
-    <option value="$action">$action
+    <option value="$action">$actions_lng[$action]
 <!--#end for#-->
 </select>
 <br class="clear" />
-<label class="label">Arguments:</label>
+<label class="label">$T('sch-arguments'):</label>
 <input class="schedulesubmit" type="text" size="20" name="arguments" value="">
 <br class="clear" />
 <p>
-	<input type="button" size="40" value="Add Schedule" onclick="javascript:submitconfig('config/scheduling/addSchedule', this,'schedule', 'config/scheduling','0')">
+	<input type="button" size="40" value="$T('button-addSchedule')" onclick="javascript:submitconfig('config/scheduling/addSchedule', this,'schedule', 'config/scheduling','0')">
 </p>
 </fieldset>
 </form>
 </div>
-<h3>Current Schedules:</h3><br />
+<h3>$T('currentSchedules'):</h3><br />
 <div class="EntryBlock">
 <!--#set $schednum = 0#-->
 <!--#for $line in $schedlines#-->
 <form id="$line">
-<input class="schedulesubmit" type="button" size="5" value="X" onclick="javascript:submitconfig('config/scheduling/delSchedule', '', '$line', 'config/scheduling','0')">
-<!--#set $schednum = $schednum+1#-->
-<%
-m, h, day, action = line.split(' ', 3)
-if len(m) == 1:
-    m = '0%s' % m
-if day == "*":
-    day="Daily"
-elif day == "1":
-    day='Monday'
-elif day == "2":
-    day='Tuesday'
-elif day == "3":
-    day='Wednesday'
-elif day == "4":
-    day='Thursday'
-elif day == "5":
-    day='Friday'
-elif day == "6":
-    day='Saturday'
-elif day == "7":
-    day='Sunday'
-%>
-Task $schednum: <strong>$h:$m</strong> - $day - $action
+<input class="schedulesubmit" type="button" size="5" value="$T('button-delFeed')" onclick="javascript:submitconfig('config/scheduling/delSchedule', '', '$line', 'config/scheduling','0')">
+$T('sch-task') $taskinfo[$schednum][0]: <strong>$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</strong> - $taskinfo[$schednum][3] - $taskinfo[$schednum][4]
 <input type="hidden" name="line" value="$line">
-
+<!--#set $schednum = $schednum+1#-->
 
 </form>
 <!--#end for#-->

@@ -2,37 +2,36 @@
 <script type="text/javascript">
 MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 </script>
-<h2>RSS Configuration</h2>
+<h2>$T('configRSS')</h2>
 
 <div class="EntryBlock" id="add_rss_feed">
 <fieldset class="EntryFieldSet">
-<legend>New feed URI</legend>
+<legend>$T('newFeedURI')</legend>
 
     <input type="text" size="10" name="feed" value="$feed"/>
     <input type="text" size="80" name="uri" value=""/>
-    <input type="submit" value="Add" onclick="javascript:submitconfig('config/rss/add_rss_feed', '','add_rss_feed', '1')"   />
+    <input type="submit" value="$T('button-add')" onclick="javascript:submitconfig('config/rss/add_rss_feed', '','add_rss_feed', '1')"   />
 </fieldset>
 </div>
 
-<p>The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.<br />
-The checking frequency is in the General page of the configuration<br />
-When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download"</p>
+<p>$T('explain-RSS')</p>
 <!--#for $feed in $rss#-->
 
 <fieldset class="EntryFieldSet">
-    <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/> Feed $feed</legend>
+    <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/> 
+    $T('feed') $feed</legend>
     <hr />
     <div class="EntryBlock" id="update_$feed">
 
             <input type="text" size="92" name="uri" value="$rss[$feed]['uri']"/>
-            <input type="submit" onclick="javascript:submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )" value="Delete Feed"/>
-            <input type="submit" onClick="javascript:location='./config/rss/test_rss_feed?feed=$feed&session=$session'" value="Preview"/>
-            <input type="submit" onClick="javascript:location='./config/rss/download_rss_feed?feed=$feed&session=$session'" value="Force-Download"/>
+            <input type="submit" onclick="javascript:submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )" value="$T('button-delFeed')"/>
+            <input type="submit" onClick="javascript:location='./config/rss/test_rss_feed?feed=$feed&session=$session'" value="$T('button-preFeed')"/>
+            <input type="submit" onClick="javascript:location='./config/rss/download_rss_feed?feed=$feed&session=$session'" value="$T('button-forceFeed')"/>
             <br/><br/>
 
             <!--#if $rss[$feed]['pick_cat']#-->
                 <select name="cat">
-                    <optgroup label="Category">
+                    <optgroup label="$T('category')">
                         <!--#for $ct in $cat_list#-->
                             <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
                         <!--#end for#-->
@@ -40,7 +39,7 @@ When a feed is added, it will only pick up new items and not anything already in
                 </select>
             <!--#end if#-->
             <select name="pp">
-                <optgroup label="PP">
+                <optgroup label="$T('pp')">
                     <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>Default</option>
                     <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Download</option>
                     <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
@@ -50,7 +49,7 @@ When a feed is added, it will only pick up new items and not anything already in
             </select>
             <!--#if $rss[$feed]['pick_script']#-->
                 <select name="script">
-                        <optgroup label="Script">
+                        <optgroup label="$T('script')">
                         <!--#for $sc in $script_list#-->
                             <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
                         <!--#end for#-->
@@ -58,7 +57,7 @@ When a feed is added, it will only pick up new items and not anything already in
                 </select>
             <!--#end if#-->
             <select name="priority">
-            <optgroup label="Priority">
+            <optgroup label="$T('priority')">
                     <option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>Default</option>
                     <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>Force</option>
                     <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
@@ -68,7 +67,7 @@ When a feed is added, it will only pick up new items and not anything already in
             </select>
             <input type="hidden" name="feed" value="$feed"/>
             <!--<input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>Scheduled -->
-            <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_feed', this,'update_$feed','1' )" />
+            <input type="submit" value="$T('button-save')" onclick="javascript:submitconfig('config/rss/upd_rss_feed', this,'update_$feed','1' )" />
 
         </fieldset>
 
@@ -79,12 +78,12 @@ When a feed is added, it will only pick up new items and not anything already in
     <thead>
         <tr>
             <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
-            <th>Order</th>
-            <th>Type</th>
-            <th>Filter</th>
-            <!--#if $rss[$feed]['pick_cat'] then "<th>Category</th>" else ""#-->
+            <th>$T('rss-order')</th>
+            <th>$T('rss-type')</th>
+            <th>$T('rss-filter')</th>
+            <!--#if $rss[$feed]['pick_cat'] then "<th>$T('category')</th>" else ""#-->
             <th>Mode</th>
-            <!--#if $rss[$feed]['pick_script'] then "<th>Script</th>" else ""#-->
+            <!--#if $rss[$feed]['pick_script'] then "<th>$T('script')</th>" else ""#-->
             <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
     </thead>
@@ -94,8 +93,8 @@ When a feed is added, it will only pick up new items and not anything already in
         <td></td>
         <td>
             <select name="filter_type">
-                <option value="A" selected /> Accept</option>
-                <option value="R" /> Reject</option>
+                <option value="A" selected /> $T('rss-accept')</option>
+                <option value="R" /> $T('rss-reject')</option>
             </select>
         </td>
         <td><input type="text" size="40" class="filter_text fill-td" name="filter_text" value=""></td>
@@ -129,7 +128,7 @@ When a feed is added, it will only pick up new items and not anything already in
         <td>
         <input type="hidden" value="$rss[$feed]['filtercount']" name="index">
         <input type="hidden" value="$feed" name="feed">
-        <input type="submit" value="Save"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', this,'$feed+new_filter','1' )">
+        <input type="submit" value="$T('button-save')"  onclick="javascript:submitconfig('config/rss/upd_rss_filter', this,'$feed+new_filter','1' )">
         </td>
     </tr>
 
@@ -141,7 +140,7 @@ When a feed is added, it will only pick up new items and not anything already in
     <!--#for $filter in $rss[$feed].filters#-->
     <tr class="odd" id="$feed+$fnum">
         <td>
-            <input type="submit" value="X" onclick="javascript:lr('config/rss/del_rss_filter','index=$fnum&feed=$feed')" />
+            <input type="submit" value="$T('rss-delFilter')" onclick="javascript:lr('config/rss/del_rss_filter','index=$fnum&feed=$feed')" />
         </td>
 
         <td>
@@ -153,8 +152,8 @@ When a feed is added, it will only pick up new items and not anything already in
         </td>
         <td>
 			<select name="filter_type">
-				<option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> Accept</option>
-				<option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> Reject</option>
+				<option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> $T('rss-accept')</option>
+				<option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> $T('rss-reject')</option>
 			</select>
         </td>
         <td>
@@ -190,7 +189,7 @@ When a feed is added, it will only pick up new items and not anything already in
         <td>
         <input type="hidden" name="index" value="$fnum"/>
         <input type="hidden" name="feed" value="$feed"/>
-        <input type="submit" value="Save" onclick="javascript:submitconfig('config/rss/upd_rss_filter', this,'$feed+$fnum','1' )"/>
+        <input type="submit" value="$T('button-save')" onclick="javascript:submitconfig('config/rss/upd_rss_filter', this,'$feed+$fnum','1' )"/>
         </td>
 
     </tr>

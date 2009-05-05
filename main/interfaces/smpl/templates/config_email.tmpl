@@ -1,66 +1,70 @@
 
-<a href="${helpuri}Configure+Email" id="help">Help</a><h3>Email Notification</h3>
+<a href="${helpuri}Configure+Email" id="help">Help</a><h3>$T('configEmail')</h3>
 <form id="configEmail" class="cmxform" >
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-<legend>Email Options</legend>
+<legend>$T('emailOptions')</legend>
  <hr />
 
 
-            <span class="label">Job completion:</span>
-                <input class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> Never
-                <input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> Always
-                <input class="radio" type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> Error-only
+            <span class="label">$T('opt-email_endjob'):</span>
+                <input class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> $T('email-never')
+                <input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> $T('email-always')
+                <input class="radio" type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> $T('email-errorOnly')
 			<span class="tips">Send email when job is completed.</span>
 		<br class="clear" />
 
-			<label><span class="label">Disk full notifications:</span>
+			<label><span class="label">$T('opt-email_full'):</span>
 			<input class="radio" type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
-			<span class="tips">Send email when disk is full and SABnzbd is paused.</span></label>
+			<span class="tips">$T('explain-email_full')</span></label>
 		<br class="clear" />
+        
+
+        <label class="label">$T('opt-email_dir'):</label>
+
+        <input type="text" size="35" name="email_dir" value="$email_dir">
+        <span class="tips">$T('explain-email_dir')</span>
+        <br class="clear" />
 
 </fieldset>
 
 <fieldset class="EntryFieldSet">
-<legend>Email Account Settings</legend>
+<legend>$T('emailAccount')</legend>
 <hr />
 
 
-			<label class="label">SMTP server:</label>
+			<label class="label">$T('opt-email_server'):</label>
 
 			<input type="text" size="35" name="email_server" value="$email_server">
-			<span class="tips">Set your ISP's server for outgoing email.</span>
+			<span class="tips">$T('explain-email_server').</span>
             <br class="clear" />
 
-			<label class="label">Email recipient:</label>
+			<label class="label">$T('opt-email_to'):</label>
 
 			<input type="text" size="35" name="email_to" value="$email_to">
-			<span class="tips">Email address to send the email to.</span>
+			<span class="tips">$T('explain-email_to').</span>
             <br class="clear" />
 
-			<label class="label">Email sender:</label>
-
+			<label class="label">$T('opt-email_from'):</label>
 			<input type="text" size="35" name="email_from" value="$email_from">
-			<span class="tips">Email address the message appears to come from.</span>
+			<span class="tips">$T('explain-email_from').</span>
             <br class="clear" />
 
-			<label class="label">OPTIONAL: Account name:</label>
-
+			<label class="label">$T('opt-email_account'):</label>
 			<input type="text" size="35" name="email_account" value="$email_account">
-			<span class="tips">For authenticated email, account name.</span>
+			<span class="tips">$T('explain-email_account').</span>
             <br class="clear" />
 
-			<label class="label">OPTIONAL: Account password:</label>
-
+			<label class="label">$T('opt-email_pwd'):</label>
 			<input type="password" size="35" name="email_pwd" value="$email_pwd">
-			<span class="tips">For authenticated email, password.	</span>
+			<span class="tips">$T('explain-email_pwd').</span>
             <br class="clear" />
 
 </fieldset>
 </div>
 
 <p>
-	<input type="button" size="40" value="Save Changes" onclick="javascript:submitconfig('config/email/saveEmail', this, 'configEmail')">
+	<input type="button" size="40" value="$T('button-saveChanges')" onclick="javascript:submitconfig('config/email/saveEmail', this, 'configEmail')">
 </p>
 <br class="clear" />
 <a class="config" onClick="testemail();">Test E-Mail</a>

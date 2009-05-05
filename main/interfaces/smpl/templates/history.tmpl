@@ -6,9 +6,9 @@
 </div>
 
 <div class="centerLinks"><br />
-    <a onClick="if(confirm('Delete the all items from the history?')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">Purge history</a> | 
+    <a onClick="if(confirm('Delete the all items from the history?')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('purgeHist')</a> | 
 	<a onClick="if(confirm('Delete the all failed items from the history?')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">Purge failed items</a> | 
-	<a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then "Hide details" else "Show details"#--></a></span>
+	<a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then $T('hideDetails') else $T('showDetails')#--></a></span>
 </div>
 
 <% import datetime %>
@@ -17,10 +17,10 @@
 <table id="historyTable">
 <tr>
 <th class="expandColumn"></th>
-<th>Name</th>
-<th class="linksColumn">Links</th>
-<th class="sizeColumn">Size</th>
-<th class="statusColumn">Status</th>
+<th>$T('name')</th>
+<th class="linksColumn">$T('links')</th>
+<th class="sizeColumn">$T('size')</th>
+<th class="statusColumn">$T('status')</th>
 <th class="actionsColumn"></th>
 </tr>
     <!--#for $line in $lines #-->
@@ -60,7 +60,7 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
                 <!--#end for#-->
             <!--#end for#-->
             <!--#if $line.category#-->
-                <span class="bold">Category: </span><br />
+                <span class="bold">$T('category'): </span><br />
                 <span class="left-margin">$line.category</span><br />
             <!--#end if#-->
             <!--#if $line.storage#-->
@@ -78,7 +78,7 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
 <!--#end if#-->
 </table>
 <div class="centerLinks">
-    Size: <span class="bold">$total_size</span> | This month: <span class="bold">$month_size</span> | This week: <span class="bold">$week_size</span>
+    $T('size'): <span class="bold">$total_size</span> |  $T('thisMonth'): <span class="bold">$month_size</span> | $T('thisWeek'): <span class="bold">$week_size</span>
 </div>
 <br />
 <!--#if $finish == 0#-->
@@ -104,12 +104,12 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noo
         <!--#set $currentpage = int($newfinish / $limit)#-->
         <!--#set $offset = 0#-->
         <!--#if $currentpage == 1#-->
-            <span class="unselected">&laquo;First</span> 
-            <span class="unselected">&lsaquo;Prev</span> 
+            <span class="unselected">&laquo;$T('first')</span> 
+            <span class="unselected">&lsaquo;$T('previous')</span> 
         <!--#else#-->
             <!--#set $new_start = $start-$limit#-->
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;First</a> 
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$new_start', 1,this.parentNode.parentNode.id);">&lsaquo;Prev</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;$T('first')</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$new_start', 1,this.parentNode.parentNode.id);">&lsaquo;$T('previous')</a> 
         <!--#end if#-->
         <!--#for $i in $range($pages)#-->
             <!--#set $i = $i+1#-->
@@ -125,8 +125,8 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noo
         <!--#else#-->
             <!--#set $first_start = $start+$limit#-->
             <!--#set $second_start = (($pages-1)*$limit)#-->
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$first_start', 1,this.parentNode.parentNode.id);">Next&rsaquo;</a> 
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$second_start', 1,this.parentNode.parentNode.id);">Last<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$first_start', 1,this.parentNode.parentNode.id);">$T('next')&rsaquo;</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$second_start', 1,this.parentNode.parentNode.id);">$T('last')<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
         <!--#end if#-->
     <!--#end if#-->
 </div>

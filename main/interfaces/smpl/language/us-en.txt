@@ -3,3 +3,30 @@
 
 thisWeek        This week
 thisMonth       This month
+size            Size
+links           Links
+first           First
+previous        Prev
+next            Next
+last            Last
+edit            Edit
+editDetails     Edit Details
+showEdit        Show Edit Options
+hideEdit        Hide Edit Options
+timeleft        Timeleft
+purgeQueue      Delete All
+purgeQueueConf  Delete the all items from the queue?
+progress        Progress
+delete          Delete
+downloading     Downloading
+idle            Idle
+emailsent       Email Sent!
+saving          Saving..
+saved           Saved
+failed          Failed
+speed           Speed
+toggleadd       Toggle Add NZB
+refresr         Refresh Rate
+restartOK?      Are you sure you want to restart SABnzbd?
+warnings        Warnings
+getbookmarks    Get Bookmarks

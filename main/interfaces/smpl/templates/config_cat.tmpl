@@ -1,27 +1,27 @@
-<a href="${helpuri}configure-categories" id="help">Help</a><h3>User-defined categories</h3>
+<a href="${helpuri}configure-categories" id="help">Help</a>
+<h3>$T('configCat')</h3>
 
-
-Defines post-processing and storage.<br/>
+$T('explain-configCat').<br/>
 <!--#if $varExists('newzbinDetails')#-->
-    The Newzbin column will map listed Newzbin categories to your own.<br/>
+    $T('explain-catNewzbin').<br/>
     <!--#if not $have_cats#-->
-        <br/>Click <a href="javascript:lr('config/categories/init_newzbin')"><b>HERE</b></a> to setup newzbin categories.<br/><br/>
+        <br/>
+        <a href="javascript:lr('config/categories/init_newzbin')">$T('link-initCat')</a><br/><br/>
     <!--#end if#-->
 <!--#end if#-->
 <br/>
-Relative folders are based on $defdir<br/>
-You can also specify the full path.<br/>
+$T('explain-relFolder') $defdir<br/>
 <br/>
     <table id="historyTable">
     <thead>
         <tr>
             <th></th>
-            <th>Category</th>
-            <th>Mode</th>
-            <th>Priority</th>
-            <!--#if $script_list#--><th>Script</th><!--#end if#-->
-            <th>Folder/Path</th>
-            <th><!--#if $varExists('newzbinDetails') then "NewzBin/Groups" else "Groups"#--></th>
+            <th>$T('category')</th>
+            <th>$T('mode')</th>
+            <th>$T('priority')</th>
+            <!--#if $script_list#--><th>$T('script')</th><!--#end if#-->
+            <th>$T('catFolderPath')</th>
+            <th><!--#if $varExists('newzbinDetails') then "$T('catNewzbin')/" else ""#-->$T('catGroups')</th>
             <th></th>
         </tr>
     </thead>
@@ -29,13 +29,8 @@ You can also specify the full path.<br/>
     <!--#for $slot in $slotinfo#-->
         <!--#set $odd = not $odd#-->
         <tr id="<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->" class="<!--#if $odd then "odd" else "even"#-->">
-
         <td><!--#if $slot.name#-->
-
-
-            <input type="submit" value="X" onclick="javascript:lr('config/categories/delete','name=<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->')">
-
-
+            <input type="submit" value="$T('button-delCat')" onclick="javascript:lr('config/categories/delete','name=<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->')">
             <!--#end if#-->
         </td>
 
@@ -43,18 +38,21 @@ You can also specify the full path.<br/>
 
             <td><input type="hidden" value="$slot.name" name="name"><input type="text" class="fill-td" name="newname" value="$slot.name"></td>
 
-            <td><select name="pp">
-                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
-               <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->></option>
-               <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>R</option>
-               <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>U</option>
-               <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>D</option>
+            <td>
+                <select name="pp">
+                    <optgroup label="$T('pp')">
+                        <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
+                        <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->></option>
+                        <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>R</option>
+                        <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>U</option>
+                        <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>D</option>
+                    </optgroup>
                </select>
             </td>
             
             <td>
                 <select name="priority">
-                    <optgroup label="Priority">
+                    <optgroup label="$T('priority')">
                         <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>Default</option>
                         <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>Force</option>
                         <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>High</option>
@@ -65,10 +63,13 @@ You can also specify the full path.<br/>
             </td>
 
             <!--#if $script_list#-->
-            <td><select name="script">
+            <td>
+            <select name="script">
+                <optgroup label="$T('script')">
                 <!--#for $sc in $script_list#-->
                     <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
                 <!--#end for#-->
+                </optgroup>
                 </select>
             </td>
             <!--#end if#-->
@@ -77,7 +78,7 @@ You can also specify the full path.<br/>
 
             <td><input type="text" class="fill-td" size=35 name="newzbin" value="$slot.newzbin"></td>
 
-            <td><input type="submit" class="fill-td" value="Save" onclick="javascript:submitconfig('config/categories/save', this,'<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'1'<!--#end if#-->)">
+            <td><input type="submit" class="fill-td" value="$T('button-save')" onclick="javascript:submitconfig('config/categories/save', this,'<!--#if $slot.name#-->$slot.name<!--#else#-->newcat<!--#end if#-->'<!--#if not $slot.name#-->,'1'<!--#end if#-->)">
             </td>
 </tr>
 

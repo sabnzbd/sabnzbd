@@ -1,10 +1,10 @@
 
 <h3>Queue</h3>
 <div class="centerLinks">
-<a onClick="if(confirm('Delete the all items from the queue?')){lr('queue/purge','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);}">Delete All</a> |
-<a onClick="setCookie('queue_details','<!--#if $queue_details =='1' then "0" else "1"#-->',30);lr('queue','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);"><!--#if $queue_details == '1' then "Hide" else "Show"#--> Edit options</a> |
-<a onClick="lr('queue/tog_verbose','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);"><!--#if $isverbose then "Hide" else "Show"#--> All Files</a> |
-On queue finish:
+<a onClick="if(confirm('$T('purgeQueueConf')')){lr('queue/purge','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);}">$T('purgeQueue')</a> |
+<a onClick="setCookie('queue_details','<!--#if $queue_details =='1' then "0" else "1"#-->',30);lr('queue','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);"><!--#if $queue_details == '1' then $T('hideEdit') else $T('showEdit')#--></a> |
+<a onClick="lr('queue/tog_verbose','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);"><!--#if $isverbose then $T('link-hideFiles') else $T('link-showFiles')#--></a> |
+$T('onQueueFinish'):
 <select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onChange="javascript:changequeuedetails('queue/change_queue_complete_action?action='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
 <option value=""></option>
     <optgroup label="Actions">
@@ -18,7 +18,7 @@ On queue finish:
         <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
     </optgroup>
 <!--#if $script_list#-->
-    <optgroup label="Scripts">
+    <optgroup label="$T('scripts')">
     <!--#for $sc in $script_list#-->
         <!--#if $sc != 'None'#-->
         <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
@@ -38,7 +38,7 @@ On queue finish:
 <!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
 <!--#if $varExists('slots')#-->
 <center><strong>$perc%</strong> - <span id="left">$mbleft</span>/<span id="total">$mb</span> MB -
-Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
+Timeleft: <strong>$timeleft</strong> $T('eta'): <strong>$eta</strong>
  <!--#end if#--><br /> </center>
  <!--#end if#-->
  <table id="queueTable" class="datagrid">
@@ -47,14 +47,14 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
     <tr>
 		<th class="expandColumn center"></th>
         <th class="orderColumn center"></th>
-		<th>Name <a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
+		<th>$T('name') <a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_name','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
 		<!--#if $queue_details == '1'#-->
-			<th class="center">Edit</th>
+			<th class="center">$T('edit')</th>
 		<!--#end if#-->
-		<th class="center">Progress</th>
-        <th class="timeleftColumn center">Timeleft</th>
-		<th class="ageColumn center">Age <a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
-        <th class="sizeColumn center">Size <a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
+		<th class="center">$T('progress')</th>
+        <th class="timeleftColumn center">$T('timeleft')</th>
+		<th class="ageColumn center">$T('age') <a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_avg_age','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
+        <th class="sizeColumn center">$T('size') <a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=asc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/up.gif" /></a><a class="columnLinks" onClick="javascript:lr('queue/sort_by_size','limit=$limit&start=$start&dir=desc', -1,-1, this.parentNode.parentNode.id);"><img src="static/images/down.gif" /></a></th>
         <th class="actionsColumn center"></th>
 	</tr>
 	</thead>
@@ -80,7 +80,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 					<!--#if $queue_details == '1'#-->
 					<td>
 						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);"onchange="javascript:changequeuedetails('queue/change_opts?nzo_id='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
-							<optgroup label="PP">
+							<optgroup label="$T('pp')">
 								<option value="$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
 								<option value="$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
 								<option value="$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
@@ -91,7 +91,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 
 						<!--#if $slot.priority#-->
 						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/set_priority?nzo_id=$slot.nzo_id&priority='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
-							<optgroup label="Priority">
+							<optgroup label="$T('priority')">
 								<option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>Force</option>
 								<option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
 								<option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
@@ -101,7 +101,7 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 						<!--#end if#-->
 					<!--#if $script_list#-->
 							<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_script?nzo_id=$slot.nzo_id&script='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
-							<optgroup label="Script">
+							<optgroup label="$T('script')">
 							<!--#for $sc in $script_list#-->
 								<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
 							<!--#end for#-->
@@ -111,9 +111,9 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 
 						<!--#if $cat_list#-->
 						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_cat?nzo_id=$slot.nzo_id&cat='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
-							<optgroup label="Category">
+							<optgroup label="$T('category')">
 							<!--#for $ct in $cat_list#-->
-								<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+								<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
 							<!--#end for#-->
 							</optgroup>
 							</select>
@@ -131,11 +131,11 @@ Timeleft: <strong>$timeleft</strong> ETA: <strong>$eta</strong>
 					<td class="center">$slot.size</td>
 					<td class="right_align">
 						<!--#if $slot.status == 'Paused'#-->
-							<a title="Resume" onClick="resumequeueitem('$slot.nzo_id');"><img class="resumeicon" src="static/images/control_play.png" /></a>
+							<a title="$T('link-resume')" onClick="resumequeueitem('$slot.nzo_id');"><img class="resumeicon" src="static/images/control_play.png" /></a>
 						<!--#else#-->
-							<a title="Pause" onClick="pausequeueitem('$slot.nzo_id');"><img class="pauseicon" src="static/images/control_pause.png" /></a>
+							<a title="$T('link-pause')" onClick="pausequeueitem('$slot.nzo_id');"><img class="pauseicon" src="static/images/control_pause.png" /></a>
 						<!--#end if#-->
-						<a title="Delete" onClick="deletequeueitem('$slot.nzo_id');"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
+						<a title="$T('delete')" onClick="deletequeueitem('$slot.nzo_id');"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
 					</td>
 				</tr>
 				<!--#set $oddLine = False#-->
@@ -181,11 +181,11 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noo
         <!--#set $currentpage = int($newfinish / $limit)#-->
         <!--#set $offset = 0#-->
         <!--#if $currentpage == 1#-->
-            <span class="unselected">&laquo;First</span> 
-            <span class="unselected">&lsaquo;Prev</span> 
+            <span class="unselected">&laquo;$T('first')</span> 
+            <span class="unselected">&lsaquo;$T('previous')</span> 
         <!--#else#-->
-            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=0', 1,-1,this.parentNode.parentNode.id);">&laquo;First</a> 
-            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,-1,this.parentNode.parentNode.id);">&lsaquo;Prev</a> 
+            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=0', 1,-1,this.parentNode.parentNode.id);">&laquo;$T('first')</a> 
+            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,-1,this.parentNode.parentNode.id);">&lsaquo;$T('previous')</a> 
         <!--#end if#-->
         <!--#for $i in $range($pages)#-->
             <!--#set $i = $i+1#-->
@@ -197,11 +197,11 @@ Showing <!--#if $finish > 0 then $start+1 else '0'#--> to <!--#if $finish > $noo
             <!--#set $offset = $offset + $limit#-->
         <!--#end for#-->
         <!--#if $currentpage == $pages#-->
-            <span class="unselected">Next&rsaquo;</span> 
-            <span class="unselected">Last&raquo;</span>
+            <span class="unselected">$T('next')&rsaquo;</span> 
+            <span class="unselected">$T('last')&raquo;</span>
         <!--#else#-->
-            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start+$limit#-->',1,-1,this.parentNode.parentNode.id);">Next&rsaquo;</a> 
-            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,-1,this.parentNode.parentNode.id);">Last<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
+            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start+$limit#-->',1,-1,this.parentNode.parentNode.id);">$T('next')&rsaquo;</a> 
+            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,-1,this.parentNode.parentNode.id);">$T('last')<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
         <!--#end if#-->
     <!--#end if#-->
 </div>
