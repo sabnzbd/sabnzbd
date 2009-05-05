@@ -85,7 +85,7 @@ def install_language(path, language, prefix='', dic=None):
 
     name = os.path.join(path, 'us-en.txt')
     if os.path.exists(name):
-       _parse_lang_file(dic, name, prefix)
+        _parse_lang_file(dic, name, prefix)
 
 
 def list_languages(path):

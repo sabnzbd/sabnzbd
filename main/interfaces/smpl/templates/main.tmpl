@@ -419,7 +419,7 @@ function loadtitle() {
 <!--#else if float($kbpersecrnd)>0 #-->
 <!--#set $status = "<span class='downloading'>$T('smpl-downloading')</span>"#-->
 <!--#else if float($kbpersecrnd) == 0 #-->
-<!--#set $status = "<span class='idle'>$T('smpl-idle')</span>"#-->
+<!--#set $status = "<span class='idle'>"+$T('smpl-idle')+"</span>"#-->
 <!--#end if#-->
 
 <script type="text/javascript">
@@ -1062,7 +1062,7 @@ function loadingJSON(){
 					<li><a onClick="getBookmarks()">$T('smpl-getbookmarks')</a></li>
 					<!--#end if#-->
 					<br />
-					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('$T('restartOK?')')){restart()}">$T('button-restart')</a></li>
+					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('$T('smpl-restartOK?')')){restart()}">$T('button-restart')</a></li>
 					<li><a style="text-decoration:underline;cursor:pointer;" onClick="if(confirm('$T('shutdownOK?')')){shutdown()}">$T('link-shutdown')</a></li>
                     <br/>
         			<li><a href="$helpuri" target="_blank">$T('menu-wiki')</a></li>

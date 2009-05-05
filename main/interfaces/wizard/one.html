@@ -1,0 +1,76 @@
+<!--#include $webdir + "/inc_top.tmpl"#-->
+<script type="text/javascript">
+function selectSkin(skin)
+{
+    var elem = document.getElementById(skin);
+    elem.checked = "checked";
+}
+</script>
+
+<form action="two" method="post">
+<div class="bigger">
+<h3>$T('wizard-skin')</h3>
+$T('wizard-explain-skin')<br /><br />
+<div class="full-width">
+    <table class="full-width align-center">
+        <tr>
+            <td class="align-center">
+                <div class="skin-select">
+                    <label for="radio_default" onclick="javascript:selectSkin('radio_default')">
+                        <img src="static/images/default-th.png" border="0" />
+                    </label>
+                </div>
+                <br />
+                <a href="static/images/default.png" target="_blank">+$T('wizard-zoom')</a>
+            </td>
+            <td class="align-center">
+                <div class="skin-select skin-select-plush">
+                    <label for="radio_plush" onclick="javascript:selectSkin('radio_plush')">
+                        <img src="static/images/plush-th.png" border="0" />
+                    </label>
+                </div>
+                <br />
+                <a href="static/images/plush.png" target="_blank">+$T('wizard-zoom')</a>
+            </td>
+            <td class="align-center">
+                <div class="skin-select">
+                    <label for="radio_smpl" onclick="javascript:selectSkin('radio_smpl')">
+                        <img src="static/images/smpl-th.png" border="0" />
+                    </label>
+                </div>
+                <br />
+                <a href="static/images/smpl.png" target="_blank">+$T('wizard-zoom')</a>
+           </td>
+        </tr>
+        <tr>
+            <td class="align-center"><br/><input type="radio" name="skin" id="radio_default" value="Default" <!--#if $skin == 'default' then 'checked="checked"' else ''#-->><br /><label for="radio_default">Default</label></td>
+            <td class="align-center"><br/><input type="radio" name="skin" id="radio_plush" value="Plush" <!--#if $skin == 'plush' then 'checked="checked"' else ''#-->><br /><label for="radio_plush">Plush</label></td>
+            <td class="align-center"><br/><input type="radio" name="skin" id="radio_smpl" value="smpl" <!--#if $skin == 'smpl' then 'checked="checked"' else ''#-->><br /><label for="radio_smpl">SMPL</label></td>
+        </tr>
+    </table>
+</div>
+</div>
+</div>
+<hr />
+<br/>
+<div class="full-width">
+    <table class="full-width">
+        <tr>
+            <td>
+                <input class="bigbutton" type="button" onclick="document.location ='./'" value="&lsaquo; $T('wizard-previous')"/>
+            </td>
+            <td>
+                <div class="align-center">
+                    <!--#for $step in xrange($steps)#-->
+                       <!--#set $step = $step + 1#-->
+                        <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span> 
+                    <!--#end for#-->
+                </div>
+            </td>
+            <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
+        </tr>
+    </table>
+</div>
+</form>
+			
+<!--#include $webdir + "/inc_bottom.tmpl"#-->

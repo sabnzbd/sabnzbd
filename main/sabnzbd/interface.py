@@ -810,15 +810,18 @@ class Wizard:
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps':5, 'version':sabnzbd.__version__}
+                     'steps':5, 'version':sabnzbd.__version__,
+                     'T': T}
 
     @cherrypy.expose
     def index(self, **kwargs):
+        
         info = self.info.copy()
-        info['num'] = 'One'
-        info['number'] = 1
-        info['skin'] = cfg.WEB_DIR.get().lower()
-
+        info['num'] = ''
+        info['number'] = 0
+        info['lang'] = cfg.LANGUAGE.get()
+        info['languages'] = list_languages(sabnzbd.DIR_LANGUAGE)
+        
         if not os.path.exists(self.__web_dir):
             # If the wizard folder does not exist, simply load the normal page
             raise cherrypy.HTTPRedirect('')
@@ -826,6 +829,23 @@ class Wizard:
             template = Template(file=os.path.join(self.__web_dir, 'index.html'),
                                 searchList=[info], compilerSettings=DIRECTIVES)
             return template.respond()
+        
+    @cherrypy.expose
+    def one(self, **kwargs):
+        # Handle special options
+        language = kwargs.get('lang')
+        if language and language != cfg.LANGUAGE.get():
+            cfg.LANGUAGE.set(language)
+            reset_language(language)
+                
+        info = self.info.copy()
+        info['num'] = '&raquo; %s' % T('wizard-step-one')
+        info['number'] = 1
+        info['skin'] = cfg.WEB_DIR.get().lower()
+
+        template = Template(file=os.path.join(self.__web_dir, 'one.html'),
+                                searchList=[info], compilerSettings=DIRECTIVES)
+        return template.respond()
 
     @cherrypy.expose
     def two(self, **kwargs):
@@ -835,7 +855,7 @@ class Wizard:
                 change_web_dir(kwargs['skin'])
 
         info = self.info.copy()
-        info['num'] = 'Two'
+        info['num'] = '&raquo; %s' % T('wizard-step-two')
         info['number'] = 2
 
         host = cfg.CHERRYHOST.get()
@@ -873,7 +893,7 @@ class Wizard:
             if not cfg.USERNAME.get() or not cfg.PASSWORD.get():
                 set_auth(cherrypy.config)
         info = self.info.copy()
-        info['num'] = 'Three'
+        info['num'] = '&raquo; %s' % T('wizard-step-three')
         info['number'] = 3
 
         servers = config.get_servers()
@@ -908,7 +928,7 @@ class Wizard:
             handle_server(kwargs)
 
         info = self.info.copy()
-        info['num'] = 'Four'
+        info['num'] = '&raquo; %s' % T('wizard-step-four')
         info['number'] = 4
         info['newzbin_user'] = cfg.USERNAME_NEWZBIN.get()
         info['newzbin_pass'] = cfg.PASSWORD_NEWZBIN.get_stars()
@@ -934,7 +954,7 @@ class Wizard:
         config.save_config()
 
         info = self.info.copy()
-        info['num'] = 'Five'
+        info['num'] = '&raquo; %s' % T('wizard-step-five')
         info['number'] = 5
         info['helpuri'] = 'http://sabnzbd.wikidot.com/'
 

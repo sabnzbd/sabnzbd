@@ -1,10 +1,9 @@
 function complete(){
-    result = "Setup is now complete!"
-    cls = "success"
-    r = '<span class="' + cls + '">' + result + '</span>';
-    $('#restart').html(r);
     $(".hidden").fadeIn("slow");
     $(".disabled").removeAttr('disabled');
+    $('#restarting').addClass("hidden");
+    $('#complete').removeClass("hidden");
+    $('#tips').removeClass("hidden");
 }
 $(document).ready(function() {
     $.ajax({

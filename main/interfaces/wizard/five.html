@@ -2,11 +2,15 @@
 <script type="text/javascript" src="static/javascript/jquery.js"></script>
 <script type="text/javascript" src="static/javascript/restart.js"></script>
 <br/><br/>
-<h4 id="restart" class="align-center">Restarting SABnzbd...</h4><br />
+<h4 id="restarting" class="align-center">$T('wizard-restarting')</h4>
+<h4 id="complete" class="align-center success hidden">$T('wizard-complete')</h4>
+<br />
 <br/>
-<div class="hidden">
-SABnzbd will now be running in the background. <span class="bold">Closing any browser windows/tabs will NOT close SABnzbd.</span><br/>
-After SABnzbd has finished restarting you will be able to access it at the following location<!--#if len($urls) > 1#-->s<!--#end if#-->:<br/><br/>
+<div id="tips" class="hidden">
+$T('wizard-tip1') <span class="bold">$T('wizard-tip2')</span><br/>
+<!--#if len($urls) > 1#--><!--#set $s = 's'#--><!--#else#--><!--#set $s = ''#--><!--#end if#-->
+<!--#set $tip3 = $T('wizard-tip3@1') % $s#-->
+$tip3:<br/><br/>
 <div class="quoteBlock">
 <!--#set $i = 0#-->
 <!--#for $url in $urls#-->
@@ -14,16 +18,16 @@ After SABnzbd has finished restarting you will be able to access it at the follo
     <a href="$url">$url</a><!--#if $i != len($urls)#--><br /><!--#end if#-->
 <!--#end for#-->
 </div><br/>
-It is recommended you right click and bookmark this location and use this bookmark to access SABnzbd when it is running in the background.
+$T('wizard-tip4')
 <br/><br/>
-Further help can be found on our <a href="$helpuri">wiki</a>
+$T('wizard-tip-wiki') <a href="$helpuri">wiki</a>
 </div>
 </div>
 <hr /><br/>
 <div class="full-width">
 <table class="full-width">
     <tr class="align-center">
-        <td><input class="bigbutton disabled" type="button" onclick="document.location ='$access_url'" value="Go to SABnzbd" disabled="disabled"/></td>
+        <td><input class="bigbutton disabled" type="button" onclick="document.location ='$access_url'" value="$T('wizard-goto')" disabled="disabled"/></td>
     </tr>
 </table>
 </div>

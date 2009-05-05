@@ -1,39 +1,27 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 <form action="./five" method="post">
-<p>If you are a member of newzbin or nzbmatrix, you may enter your username and password here so we can fetch their nzb's. This stage can be skipped if you don't use either services.</p>
+<p>$T('wizard-index-explain')</p>
 <div id="serverDetails">
-<h3><a href="http://newzbin.com" target="_blank">Newzbin.com</a> (Optional)</h3>
-    <label class="label">Username:</label><input type="text" size="20" value="$newzbin_user" name="newzbin_user">
+<h3><a href="http://newzbin.com" target="_blank">Newzbin.com</a> ($T('wizard-optional'))</h3>
+    <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$newzbin_user" name="newzbin_user">
     <br class="clear" />
-    <label class="label">Password:</label><input type="password" size="20" value="$newzbin_pass" name="newzbin_pass">
+    <label class="label">$T('srv-password'):</label><input type="password" size="20" value="$newzbin_pass" name="newzbin_pass">
     <br class="clear" />
-    <input type="checkbox" name="newzbin_bookmarks" id="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks == 1 then 'checked="checked"' else ''#-->> <label for="newzbin_bookmarks">Automatically download bookmarked posts.</label><br />
-    <!--
-    <a href="">Test Newzbin details</a>
-    <br/>
-    <div class="quoteBlock"><span class="success">Username and password are correct!</span></div>
-    <br/>
-    -->
+    <input type="checkbox" name="newzbin_bookmarks" id="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks == 1 then 'checked="checked"' else ''#-->> <label for="newzbin_bookmarks">$T('wizard-index-bookmark')</label><br />
 
-<h3><a href="http://nzbmatrix.com" target="_blank">NZBMatrix.com</a> (Optional)</h3>
-    <label class="label">Username:</label><input type="text" size="20" value="$matrix_user" name="matrix_user">
-    <br class="clear" />
-    <label class="label">Password:</label><input type="password" size="20" value="$matrix_pass" name="matrix_pass">
 
-<!--
-<a href="">Test NZBMatrix details</a>
-<br/>
-<div class="quoteBlock"><span class="success">Username and password are correct!</span></div>
-<br/>
--->
+<h3><a href="http://nzbmatrix.com" target="_blank">NZBMatrix.com</a> ($T('wizard-optional'))</h3>
+    <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$matrix_user" name="matrix_user">
+    <br class="clear" />
+    <label class="label">$T('srv-password'):</label><input type="password" size="20" value="$matrix_pass" name="matrix_pass">
 </div></div>
 
 <hr /><br/>
 <div class="full-width">
 <table class="full-width">
     <tr>
-        <td><input class="bigbutton" type="button" onclick="document.location ='./three'" value="&lsaquo; Previous" /></td>
+        <td><input class="bigbutton" type="button" onclick="document.location ='./three'" value="&lsaquo; $T('wizard-previous')" /></td>
         <td>
             <div class="align-center">
                 <!--#for $step in xrange($steps)#-->
@@ -42,7 +30,7 @@
                 <!--#end for#-->
             </div>
         </td>
-        <td class="align-right"><input class="bigbutton" type="submit" value="Next &raquo;" /></td>
+        <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
     </tr>
 </table>
 </div>

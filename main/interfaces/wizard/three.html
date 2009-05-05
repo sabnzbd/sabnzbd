@@ -1,46 +1,47 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 <script type="text/javascript" src="static/javascript/jquery.js"></script>
 <script type="text/javascript" src="static/javascript/checkserver.js"></script>
-<h3>Server Details</h3>
-Please enter in the details of your primary usenet provider.
-<div id="serverBlock" class="quoteBlock"><span class="bold">Help</span><br />
-    In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended. <br/><br />
-    Don't have a usenet provider? We recommend trying <a href="http://www.giganews.com/?a=SABnzbd" target="_blank">Giganews</a> or <a href="http://www.powerusenet.com/?r=SABnzbd" target="_blank">Powerusenet</a>. <br />
+<h3>$T('wizard-server')</h3>
+$T('wizard-explain-server')
+<div id="serverBlock" class="quoteBlock"><span class="bold">$T('wizard-server-help')</span><br />
+    $T('wizard-server-help1')<br/><br />
+    <!--#set $msg = $T('wizard-server-help2@2') % ('<a href="http://www.giganews.com/?a=SABnzbd" target="_blank">Giganews</a>','<a href="http://www.powerusenet.com/?r=SABnzbd" target="_blank">Powerusenet</a>')#-->
+    $msg<br />
     <p class="align-center"><a href="http://www.giganews.com/?a=SABnzbd" target="_blank"><img src="http://www.giganews.com/banners/gn_sig.jpg" border="0"></a></p>
 </div>
 <br /><br class="clear" />
 <form action="./four" method="post">
 <div id="serverDetails">
-    <label class="label">Host<span class="required-star">*</span></label><input id="host" class="clearinput text-input-wide" type="text" size="26" name="host" value="$host"> 
+    <label class="label">$T('srv-host')<span class="required-star">*</span></label><input id="host" class="clearinput text-input-wide" type="text" size="26" name="host" value="$host"> 
     <div id="host-tip" class="tips">E.g. news.giganews.com</div>
-    <div id="host-error" class="error-text hidden">This field is required.</div>
+    <div id="host-error" class="error-text hidden">$T('wizard-server-required')</div>
     <br class="clear" />
-    <label class="label">Port</label><input id="port" class="text-input-thin" type="text" size="2" name="port" value="$port">
+    <label class="label">$T('srv-port')</label><input id="port" class="text-input-thin" type="text" size="2" name="port" value="$port">
     <div id="port-tip" class="tips">E.g. 119 or 563 for SSL</div>
-    <div id="port-error" class="error-text hidden">Please enter a whole number.</div>
+    <div id="port-error" class="error-text hidden">$T('wizard-server-number')</div>
     <br class="clear" /><br class="clear" />
-    <label class="label">Username</label><input class="validate-text clearinput text-input" type="text" size="12" name="username" value="$username">
+    <label class="label">$T('srv-username')</label><input class="validate-text clearinput text-input" type="text" size="12" name="username" value="$username">
     <br class="clear" />
-    <label class="label">Password</label><input class="validate-text text-input" type="password" size="12" name="password" value="$password">
+    <label class="label">$T('srv-password')</label><input class="validate-text text-input" type="password" size="12" name="password" value="$password">
     <br class="clear" /><br class="clear" />
-    <label class="label">Connections<span class="required-star">*</span></label><input id="connections" class="text-input-thin" type="text" size="2" name="connections" value="$connections">
-    <div id="connections-tip" class="tips">The number of connections allowed by your provider E.g. 8 or 20</div>
-    <div id="connections-error" class="error-text hidden">Please enter a whole number.</div>
+    <label class="label">$T('srv-connections')<span class="required-star">*</span></label><input id="connections" class="text-input-thin" type="text" size="2" name="connections" value="$connections">
+    <div id="connections-tip" class="tips">$T('wizard-server-con-explain') E.g. 8 or 20</div>
+    <div id="connections-error" class="error-text hidden">$T('wizard-server-number')</div>
     <br class="clear" />
-    <label><span class="label">SSL</span>
+    <label><span class="label">$T('srv-ssl')</span>
     <input class="validate-text" class="radio" type="checkbox" name="ssl" value="1" <!--#if $ssl == 1 then 'checked' else ''#-->></label>
-    <div class="tips">Select only if your provider allows SSL connections.</div>
+    <div class="tips">$T('wizard-server-ssl-explain')</div>
     <br class="clear" />
 </div>
 <br/>
 <input id="serverTest" type="button" value="Test Server" />
-<div id="serverQuote" class="quoteBlock"><span id="serverResponse">Click to test the entered details.</span></div>
+<div id="serverQuote" class="quoteBlock"><span id="serverResponse">$T('wizard-server-text')</span></div>
 </div>
 <hr /><br/>
 <div class="full-width">
 <table class="full-width">
     <tr>
-        <td><input class="bigbutton" type="button" onclick="document.location ='./two'" value="&lsaquo; Previous" /></td>
+        <td><input class="bigbutton" type="button" onclick="document.location ='./two'" value="&lsaquo; $T('wizard-previous')" /></td>
         <td>
             <div class="align-center">
                 <!--#for $step in xrange($steps)#-->
@@ -49,7 +50,7 @@ Please enter in the details of your primary usenet provider.
                 <!--#end for#-->
             </div>
         </td>
-        <td class="align-right"><input id="next-button" class="bigbutton" type="submit" value="Next &raquo;" /></td>
+        <td class="align-right"><input id="next-button" class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
     </tr>
 </table>
 </div>
