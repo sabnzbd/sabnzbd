@@ -1,6 +1,8 @@
 # -*- coding: latin-1 -*-
 # United States # English
 
+quickstart           SABnzbd Quick-Start Wizard
+
 previous             Previous
 next                 Next
 zoom                 Zoom
