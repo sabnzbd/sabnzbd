@@ -60,7 +60,7 @@ ft-queued         Wachtend
 ft-paused         PAUZE
 ft-buffer@2       %s artikelen in %s bytes
 ft-sysload        Sysload
-ft-warning        WAARSCHUWINGEN
+ft-warning        MELDINGEN
 ft-newRelease@1   Nieuwe versie %s beschikbaar op
 
 # Main page
@@ -133,7 +133,7 @@ log-debug         + Debug
 connections       Verbindingen
 thread            Draad
 emailResult       Test resultaat email
-lastWarnings      Recentste waarschuwingen en fouten
+lastWarnings      Recentste meldingen
 clearWarnings     Wissen
 
 # Configuration
@@ -281,7 +281,7 @@ igsam-del                Vewijderen na download
 igsam-not                Niet downloaden
 
 # Config->Server
-configServer             Usernet servers
+configServer             Usenet servers
 addServer                Voeg server toe
 srv-host                 Server naam
 srv-port                 Poort nummer
