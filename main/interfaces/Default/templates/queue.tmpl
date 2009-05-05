@@ -32,7 +32,7 @@ $T('onQueueFinish'):
         <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>$T('shutdownSab')</option>
     </optgroup>
 <!--#if $script_list#-->
-    <optgroup label="Scripts">
+    <optgroup label="$T('scripts')">
     <!--#for $sc in $script_list#-->
         <!--#if $sc != 'None'#-->
         <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>

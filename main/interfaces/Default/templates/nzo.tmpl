@@ -69,7 +69,7 @@
 		<!--#if $slot.priority != '2'#-->
 			<br />
 			<label class="label">$T('priority'):</label><br />
-			<select  name="priority">
+			<select name="priority">
 				<option value="1" <!--#if $slot.priority == "1" then "selected" else ""#-->>$T('pr-high')</option>
 				<option value="0" <!--#if $slot.priority == "0" then "selected" else ""#-->>$T('pr-normal')</option>
 				<option value="-1" <!--#if $slot.priority == "-1" then "selected" else ""#-->>$T('pr-low')</option>

@@ -54,7 +54,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
                      <br />
             <!--#end for#-->
             <!--#if $line.category#-->
-                <dt>Category</dt>
+                <dt>$T('category')</dt>
                 <dd>$line.category</dd>
                 <br />
             <!--#end if#-->

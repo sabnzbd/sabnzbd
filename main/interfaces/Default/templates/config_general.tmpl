@@ -77,7 +77,7 @@ $T('explain-web_password')<br>
 <fieldset class="EntryFieldSet">
 <legend>$T('httpsSupport')</legend>
 <label><input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-<strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " $T('not-installed')" else ""#--></strong></label><br/>
+<strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('not-installed') else ""#--></strong></label><br/>
 $T('explain-enable_https')<br>
 <br/>
 <strong>$T('opt-https_port'):</strong><br>
