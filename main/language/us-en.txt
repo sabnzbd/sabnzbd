@@ -150,19 +150,19 @@ button-restart    Restart
 generalConfig         General configuration
 webServer             Web server (<i>restart required</i>)
 opt-host              Host
-explain-host          Host SABnzbd should listen on
+explain-host          Host SABnzbd should listen on.
 opt-port              Port
-explain-port          Port SABnzbd should listen on
+explain-port          Port SABnzbd should listen on.
 opt-web_dir           User interface
-explain-web_dir       Choose a skin (restart required!)
+explain-web_dir       Choose a skin (restart required!).
 opt-web_dir2          Secondary User Interface
-explain-web_dir2      Activate a secondary skin (restart required!)
+explain-web_dir2      Activate a secondary skin (restart required!).
 webAuth               Web server authentication
 opt-web_username      Username
-explain-web_username  Authentication username
+explain-web_username  Authentication username.
 opt-web_password      Password
 explain-web_password  Authentication password.
-httpsSupport          HTTPS Support (restart required)
+httpsSupport          HTTPS Support (restart required).
 opt-enable_https      Enable HTTPS
 opt-notInstalled      not installed
 explain-enable_https  Enable accessing the interface from a HTTPS address.
@@ -174,9 +174,9 @@ opt-https_key         HTTPS Key
 explain-https_key     File name or path to HTTPS Key.
 tuning                Tuning
 opt-refresh_rate      Queue auto refresh interval:
-explain-refresh_rate  Refresh interval of the queue web-interface page(sec, 0= none)
+explain-refresh_rate  Refresh interval of the queue web-interface page(sec, 0= none).
 opt-rss_rate          RSS checking interval
-explain-rss_rate      Checking interval (minutes, at least 15)
+explain-rss_rate      Checking interval (minutes, at least 15).
 opt-bandwith_limit    Download speed limit
 explain-bandwith_limit Download speed limit in kilobytes per second(kB/s)
 opt-cache_limitstr    Article Cache Limit
@@ -197,19 +197,19 @@ opt-download_dir        Temporary Download Folder
 explain-download_dir    Location to store unprocessed downloads.\n\
                         <i>Can only be changed when queue is empty.</i>
 opt-download_free       Minimum free space for Temporary Download Folder
-explain-download_free   Auto-pause when free space is beneath this value
+explain-download_free   Auto-pause when free space is beneath this value.
 opt-complete_dir        Completed Download Folder
-explain-complete_dir    (can be overruled by user-defined categories)
+explain-complete_dir    (can be overruled by user-defined categories).
 opt-permissions         Permissions for completed downloads
 explain-permissions     Set permissions pattern for completed files/folders, octal notation only!
 opt-dirscan_dir         Watched Folder
-explain-dirscan_dir     Folder to monitor for .nzb and .zip files
+explain-dirscan_dir     Folder to monitor for .nzb and .zip files.
 opt-dirscan_speed       Watched Folder scan speed
-explain-dirscan_speed   Number of seconds between scans for .nzb files
+explain-dirscan_speed   Number of seconds between scans for .nzb files.
 opt-script_dir          Folder containing the user scripts
-explain-script_dir      Folder containing user scripts for post-processing
+explain-script_dir      Folder containing user scripts for post-processing.
 opt-email_dir           Folder containing email templates
-explain-email_dir       Folder containing user defined email templates
+explain-email_dir       Folder containing user defined email templates.
 systemFolders           System folders
 opt-cache_dir           Cache folder
 explain-cache_dir       Location for temporary storage.\n\
@@ -219,7 +219,7 @@ opt-log_dir             Log folder
 explain-log_dir         Location of log files for SABnzbd.\n\
                         <i>Requires restart.</i>
 opt-nzb_backup_dir      Backup folder for .nzb
-explain-nzb_backup_dir  Location where .nzb will be backed up
+explain-nzb_backup_dir  Location where .nzb will be backed up.
 
 # Config->Switches
 switchesConfig           Switches configuration
@@ -243,7 +243,7 @@ explain-top_only         Enable for less memory usage.\n\
                          Disable to prevent slow jobs from blocking the queue.
 opt-safe_postproc        Post-process only verified jobs
 explain-safe_postproc    Only perform post-processing on jobs that passed all PAR2 checks.
-opt-no_dupes             Do not download same job twice.
+opt-no_dupes             Do not download same job twice
 explain-no_dupes         Skip job if a backed-up NZB with the same name exists.
 opt-dirscan_opts         Default post-processing
 explain-dirscan_opts     Used when no post-processing is defined by the category.

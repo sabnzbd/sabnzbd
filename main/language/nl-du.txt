@@ -145,40 +145,40 @@ explain-Restart   De knop hier onder zal SABnzbd herstarten.\n\
 button-restart    Herstarten
 
 # Config->General
-generalConfig     generalConfig          Algemene instellingen
+generalConfig          Algemene instellingen
 webServer              Web server (<i>herstart nodig</i>)
 opt-host               Host
-explain-host           Host adres waar op SABnzbd luistert
+explain-host           Host adres waar op SABnzbd luistert.
 opt-port               Poort
-explain-port           Poort waar op SABnzbd luistert
+explain-port           Poort waar op SABnzbd luistert.
 opt-web_dir            Gebruikersinterface
-explain-web_dir        Kies een skin (<i>herstart nodig</i>)
+explain-web_dir        Kies een skin (<i>herstart nodig</i>).
 opt-web_dir2           Secundair Gebruikersinterface
-explain-web_dir2       Aktiveer secundaire skin (<i>herstart nodig</i>)
+explain-web_dir2       Aktiveer secundaire skin (<i>herstart nodig</i>).
 webAuth                Web server authenticatie
 opt-web_username       Gebruikersnaam
-explain-web_username   Gebruikersnaam voor web login
+explain-web_username   Gebruikersnaam voor web login.
 opt-web_password       Wachtwoord
-explain-web_password   Wachtwoord voor web login
+explain-web_password   Wachtwoord voor web login.
 httpsSupport           HTTPS ondersteuning (<i>herstart nodig</i>)
 opt-enable_https       Maak HTTPS mogelijk
 opt-notInstalled       niet geinstalleerd
-explain-enable_https   Maak gebruik van HTTPS adressen mogelijk
+explain-enable_https   Maak gebruik van HTTPS adressen mogelijk.
 opt-https_port         HTTPS Poort
 explain-https_port     Poort die SABnzbd gebruikt voor HTTPS communicatie
 opt-https_cert         HTTPS Certificaat
-explain-https_cert     Naam of pad van het HTTPS Certificaat bestand
+explain-https_cert     Naam of pad van het HTTPS Certificaat bestand.
 opt-https_key          HTTPS Sleutelbestand
-explain-https_key      Naam of pad van het HTTPS Sleutel bestand
+explain-https_key      Naam of pad van het HTTPS Sleutel bestand.
 tuning                 Afstelling
 opt-refresh_rate       Verversingsinterval van de Wachtrij
-explain-refresh_rate   Verversingsinterval van het de Wachtrij pagina (sec, 0= geen)
+explain-refresh_rate   Verversingsinterval van het de Wachtrij pagina (sec, 0= geen).
 opt-rss_rate           RSS uitlees interval
-explain-rss_rate       Aantal minuten tussen de RSS uitlezingen (minimaal 15)
+explain-rss_rate       Aantal minuten tussen de RSS uitlezingen (minimaal 15).
 opt-bandwith_limit     Download snelheidsbeperking
-explain-bandwith_limit Download snelheidsbeperking kilobytes per seconde (kB/s)
+explain-bandwith_limit Download snelheidsbeperking kilobytes per seconde (kB/s).
 opt-cache_limitstr     Artikel buffer beperking
-explain-cache_limitstr Bewaar de artikelen in het werkgeheugen (verminderd schijf gebruik)
+explain-cache_limitstr Bewaar de artikelen in het werkgeheugen (verminderd schijf gebruik).
 opt-cleanup_list       Opschoon lijst
 explain-cleanup_list   Lijst van bestand extensies die verwijderd worden\n\
                        Voorbeeld: ".nfo," of ".nfo, .sfv"
@@ -195,21 +195,21 @@ userFolders             Gebruikersmappen
 in                      In
 opt-download_dir        Tijdelijke download map
 explain-download_dir    Plaats om onbewerkte downloads op te slaan\n\
-                        <i>Kan alleen gewijzigd worden als de wachtrij leeg is</i>
+                        <i>Kan alleen gewijzigd worden als de wachtrij leeg is.</i>
 opt-download_free       Minimale vrije ruimte voor tijdelijke download map
 explain-download_free   Download wordt gepauzeerd als er te weinig ruimte vrij is
 opt-complete_dir        Map voor verwerkte downloads
-explain-complete_dir    (kan aangepast worden door de categorieën)
+explain-complete_dir    (kan aangepast worden door de categorieën).
 opt-permissions         Toegangsrechten voor verwerkte downloads
 explain-permissions     Zet toegangsrechten voor verwerkte bestanden/mappen, alleen octale notatie!
 opt-dirscan_dir         Bewaakte map
-explain-dirscan_dir     .nzb en .zip bestanden in deze map worden automatisch gedownload
+explain-dirscan_dir     .nzb en .zip bestanden in deze map worden automatisch gedownload.
 opt-dirscan_speed       Leestempo bewaakte map
-explain-dirscan_speed   Aantal seconden tussen lezen van de bewaakte map
+explain-dirscan_speed   Aantal seconden tussen lezen van de bewaakte map.
 opt-script_dir          Map met gebruikers scripts
-explain-script_dir      Map waarin zich de script bestanden voor nabewerking bevinden
+explain-script_dir      Map waarin zich de script bestanden voor nabewerking bevinden.
 opt-email_dir           Map met email sjablonen
-explain-email_dir       Map waarin zich de email sjablonen bevinden
+explain-email_dir       Map waarin zich de email sjablonen bevinden.
 systemFolders           Systeem folders
 opt-cache_dir           Cache mappen
 explain-cache_dir       Map gebruikt voor tijdelijke opslag\n\
@@ -217,7 +217,7 @@ explain-cache_dir       Map gebruikt voor tijdelijke opslag\n\
                         <i>Vereist een herstart.</i>
 opt-log_dir             Map voor logging
 explain-log_dir         Map waarin de log bestanden worden opgeslagen\n\
-                        <i>Vereist een herstart</i>
+                        <i>Vereist een herstart</i>.
 opt-nzb_backup_dir      Map voor het bewaren van nzb bestanden
 explain-nzb_backup_dir  Map waar reserve kopieën opgeslagen worden.
 
