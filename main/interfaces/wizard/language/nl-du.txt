@@ -1,0 +1,56 @@
+# -*- coding: UTF-8 -*-
+# Nederland # Nederlands
+
+quickstart           SABnzbd Snelstart Hulp
+
+previous             Vorige
+next                 Volgende
+zoom                 Inzoomen
+
+skin                 Uiterlijk
+explain-skin         Welk uiterlijk moet SABnzbd gebruiken?
+
+access               Toegang
+access-anypc         Ik wil SABnzbd kunnen gebruiken vanaf iedere PC in mijn thuisnetwerk.
+access-mypc          Ik wil SABnzbd alleen vanaf deze PC kunnen gebruiken.
+access-pass          Wachtwoord beveiliging voor SABnzbd (aanbevolen)
+access-https         Maak HTTPS (beveiligd) verkeer mogelijk.
+
+misc                 Diversen
+misc-browser         Start de web browser wanneer SABnzbd opstart.
+
+server               Server instellingen
+explain-server       Vul hier de gegevens van je primaire Usenet server in.
+server-help          Hulp
+server-help1         Om te kunnen downloaded van Usenet, heb je een provider nodig.\
+                     Je Internet bedrijf heeft misschien een server,\
+                     maar we bevelen een betaalde server aan.
+server-help2@2       Heb je nog geen Usenet provider? Wij bevelen %s of %s aan.
+server-con-explain   Het aantal verbindingen dat je provider toestaat
+server-ssl-explain   Vink dit alleen aan als je provider SSL verbindingen toestaat.
+server-text          Klik om de verbinding te testen.
+server-required      Verplicht veld
+server-number        Vul hier een geheel getal in.
+
+index-explain        Wanneer je een Newzbin of een nzbmatrix abonnement hebt, kun je hiet je gegevens invullen,\
+                     zodat SABnzbd NZB bestanden kan ophalen.\
+                     Je kunt dit overslaan als je deze diensten niet gebruikt.
+index-bookmark       Automatisch ophalen van newzbin bookmarks.
+optional             Niet verplicht
+example              Voorbeeld
+button-testServer    Test Server
+
+restarting           SABnzbd herstart nu...
+complete             Instellen is klaar!
+tip1                 SABnzbd werkt op de achtergrond.
+tip2                 Afsluiten van de browser vensters zal SABnzbd <b>niet</b< stoppen..
+tip3@1               Nadat SABnzbd de herstart heeft uitgevoerd, kun je naar lokatie %s voor de bediening.
+tip4                 Tip: maak een "Bladwijzer" of "Favoriet" voor deze lokatie, zodat je SABnzbd gemakkelijk terug kunt vinden.
+tip-wiki             Voor meer informatie: zie onze
+goto                 Ga naar SABnzbd
+
+step-one             Stap Een
+step-two             Stap Twee
+step-three           Stap Drie
+step-four            Stap Vier
+step-five            Stap Vijf

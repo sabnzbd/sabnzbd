@@ -13,7 +13,7 @@ $T('wizard-explain-server')
 <form action="./four" method="post">
 <div id="serverDetails">
     <label class="label">$T('srv-host')<span class="required-star">*</span></label><input id="host" class="clearinput text-input-wide" type="text" size="26" name="host" value="$host"> 
-    <div id="host-tip" class="tips">E.g. news.giganews.com</div>
+    <div id="host-tip" class="tips">$T('wizard-example') news.giganews.com</div>
     <div id="host-error" class="error-text hidden">$T('wizard-server-required')</div>
     <br class="clear" />
     <label class="label">$T('srv-port')</label><input id="port" class="text-input-thin" type="text" size="2" name="port" value="$port">
@@ -34,7 +34,7 @@ $T('wizard-explain-server')
     <br class="clear" />
 </div>
 <br/>
-<input id="serverTest" type="button" value="Test Server" />
+<input id="serverTest" type="button" value="$T('wizard-button-testServer')" />
 <div id="serverQuote" class="quoteBlock"><span id="serverResponse">$T('wizard-server-text')</span></div>
 </div>
 <hr /><br/>

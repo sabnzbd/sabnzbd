@@ -33,6 +33,8 @@ server-number        Please enter a whole number.
 index-explain        If you are a member of newzbin or nzbmatrix, you may enter your username and password here so we can fetch their nzb's. This stage can be skipped if you don't use either services.
 index-bookmark       Automatically download bookmarked posts.
 optional             Optional
+example              E.g.
+button-testServer    Test Server
 
 restarting           Restarting SABnzbd...
 complete             Setup is now complete!
