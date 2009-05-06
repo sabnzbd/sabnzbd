@@ -8,48 +8,52 @@
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
     
-    <legend id="configbox_email_options">Email&nbsp;Options</legend>
+    <legend id="configbox_email_options">$T('emailOptions')</legend>
     
-    <strong>Email notification on job completion</strong><br/>
-        <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> Never
-        <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> Always
-        <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> Error-only
-    <br/><br/>
+    <strong>$T('opt-email_endjob')</strong><br/>
+        <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> $T('email-never')
+        <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> $T('email-always')
+        <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> $T('email-errorOnly')
 
+    <br/><br/>
     <input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
-    <strong>Disk Full Notifications</strong><br/>
-    <small>Send email when disk is full and SABnzbd is paused.</small><br/>
+    <strong>$T('opt-email_full')</strong><br/>
+    <small>$T('explain-email_full')</small><br/>
     
+    <br/><br/>
+	<strong>$T('opt-email_dir'):</strong><br/>
+	$T('explain-email_dir')<br/>
+	<input type="text" size="40" name="email_dir" value="$email_dir">
     
 </fieldset>
 </div>
 
 <fieldset class="EntryFieldSet">
     
-    <legend id="configbox_email_account_settings">Email&nbsp;Account&nbsp;Settings</legend>
+    <legend id="configbox_email_account_settings">$T('emailAccount')</legend>
     
-    <strong>SMTP Server:</strong><br/>
-    <small>Set your ISP's server for outgoing email.</small><br/>
+    <strong>$T('opt-email_server'):</strong><br/>
+    <small>$T('explain-email_server')</small><br/>
     <input type="text" size="35" name="email_server" value="$email_server"/>
     
     <br/><br/>
-    <strong>Email Recipient:</strong><br/>
-    <small>Email address to send the email to.</small><br/>
+    <strong>$T('opt-email_to'):</strong><br/>
+    <small>$T('explain-email_to')</small><br/>
     <input type="text" size="35" name="email_to" value="$email_to"/>
     
     <br/><br/>
-    <strong>Email Sender:</strong><br/>
-    <small>Who should we say sent the email?</small><br/>
+    <strong>$T('opt-email_from'):</strong><br/>
+    <small>$T('explain-email_from')</small><br/>
     <input type="text" size="35" name="email_from" value="$email_from"/>
     
     <br/><br/>
-    <strong>OPTIONAL: Account Name:</strong><br/>
-    <small>For authenticated email, account name.</small><br/>
+    <strong>$T('opt-email_account'):</strong><br/>
+    <small>$T('explain-email_account')</small><br/>
     <input type="text" size="35" name="email_account" value="$email_account"/>
     
     <br/><br/>
-    <strong>OPTIONAL: Account Password:</strong><br/>
-    <small>For authenticated email, password.</small><br/>
+    <strong>$T('opt-email_pwd'):</strong><br/>
+    <small>$T('explain-email_pwd')</small><br/>
     <input type="password" size="35" name="email_pwd" value="$email_pwd"/>
     
 </fieldset>

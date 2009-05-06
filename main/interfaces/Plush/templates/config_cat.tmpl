@@ -3,27 +3,24 @@
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
 <div class="center"><small>
-Defines post-processing and storage.&nbsp;&nbsp;|&nbsp;&nbsp;
-<!--#if $varExists('newzbinDetails')#-->
-The Newzbin column will map listed Newzbin categories to your own.&nbsp;&nbsp;|&nbsp;&nbsp;
-<!--#end if#-->
-Relative folders are based on:
-<font color=blue>$defdir</font></small><br/>
-<!--#if not $have_cats#-->
-<small>Click <a href="init_newzbin"><b>HERE</b></a> to setup Newzbin categories.</small><br/>
-<!--#end if#-->
-</div>
+	$T('explain-configCat')&nbsp;&nbsp;|&nbsp;&nbsp;
+	$T('explain-relFolder') <font color=blue>$defdir</font>&nbsp;&nbsp;|&nbsp;&nbsp;
+	<!--#if $varExists('newzbinDetails')#-->
+	    $T('explain-catNewzbin')
+	    <!--#if not $have_cats#-->
+	        <br/><a href="init_newzbin?session=$session">$T('link-initCat')</a>
+	    <!--#end if#-->
+	<!--#end if#-->
+</small></div>
 
 <table id="catTable">
     <tr>
-        <th>Category Name</th>
-        <th>Processing</th>
-        <th>Priority</th>
-        <!--#if $script_list#-->
-        <th>Script</th>
-        <!--#end if#-->
-        <th>Folder</th>
-        <th><!--#if $varExists('newzbinDetails') then "Newzbin / Groups" else "Groups"#--></th>
+        <th align="center">$T('category')</th>
+        <th align="center">$T('mode')</th>
+        <th align="center">$T('priority')</th>
+        <!--#if $script_list#--><th align="center">$T('script')</th><!--#end if#-->
+        <th align="center">$T('catFolderPath')</th>
+        <th align="center"><!--#if $varExists('newzbinDetails')#--> $T('catNewzbin') / <!--#end if#--> $T('catGroups')</th>
         <th></th>
     </tr>
     
@@ -46,21 +43,21 @@ Relative folders are based on:
         
         <td>
             <select name="pp">
-                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
-                <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>(Skip)</option>
-                <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>+Repair</option>
-                <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>+R+Unpack</option>
-                <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>+R+U+Delete</option>
+                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+                <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-none')</option>
+                <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-repair')</option>
+                <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
+                <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>$T('pp-delete')</option>
             </select>
         </td>
         
         <td>
             <select name="priority">
-                <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>Default</option>
-                <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>Force</option>
-                <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>High</option>
-                <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>Normal</option>
-                <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>Low</option>
+                <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
+                <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>$T('pr-force')</option>
+                <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>$T('pr-high')</option>
+                <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
+                <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>$T('pr-low')</option>
             </select>
         </td>
         
@@ -80,10 +77,10 @@ Relative folders are based on:
         
         <td nowrap>
             
-            <input type="submit" value="<!--#if $cur == 1 then 'Add' else 'Save'#-->"/>
+            <input type="submit" value="<!--#if $cur == 1 then $T('button-add') else $T('button-save')#-->"/>
 
             <!--#if $slot.name#-->
-            <input type="button" value="X" name="$slot.name" />
+            <input type="button" value="$T('button-delCat')" name="$slot.name" />
             <!--#end if#-->
         
         </td>

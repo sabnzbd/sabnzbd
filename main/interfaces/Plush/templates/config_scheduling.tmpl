@@ -8,7 +8,7 @@
             <div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 
-                <legend id="configbox_add_schedule">Add&nbsp;Schedule</legend>
+                <legend id="configbox_add_schedule">$T('addSchedule')</legend>
 <%import time
 t = time.localtime()
 hour = t[3]
@@ -19,7 +19,7 @@ else:
 
                 <table>
                     <tr><td align=right>
-                        <div class="sucker">Hour&nbsp;:&nbsp;Minute:</div>
+                        <div class="sucker">$T('hour'):</div>
                     </td><td>
                         <select name="hour">
                         <!--#for $i in range(24)#-->
@@ -33,39 +33,39 @@ else:
                     </td></tr>
 
                     <tr><td align=right>
-                        <div class="sucker">Frequency:</div>
+                        <div class="sucker">$T('sch-frequency'):</div>
                     </td><td>
                         <select name="dayofweek">
-                            <option value="*" selected>Daily</option>
-                            <option value="1">Mondays</option>
-                            <option value="2">Tuesdays</option>
-                            <option value="3">Wednesdays</option>
-                            <option value="4">Thursdays</option>
-                            <option value="5">Fridays</option>
-                            <option value="6">Saturdays</option>
-                            <option value="7">Sundays</option>
+                            <option value="*" selected>$T('daily')</option>
+                            <option value="1">$T('monday')</option>
+                            <option value="2">$T('tuesday')</option>
+                            <option value="3">$T('wednesday')</option>
+                            <option value="4">$T('thursday')</option>
+                            <option value="5">$T('friday')</option>
+                            <option value="6">$T('saturday')</option>
+                            <option value="7">$T('sunday')</option>
                         </select>
                     </td></tr>
 
                     <tr><td align=right>
-                        <div class="sucker">Action:</div>
+                        <div class="sucker">$T('sch-action'):</div>
                     </td><td>
                         <select name="action">
                             <!--#for $action in $actions#-->
-                                <option value="$action">$action
+                                <option value="$action">$actions_lng[$action]
                             <!--#end for#-->
                         </select>
                     </td></tr>
 
                     <tr><td align=right>
-                        <div class="sucker">Arguments:</div>
+                        <div class="sucker">$T('sch-arguments'):</div>
                     </td><td>
                         <input type="text" size="20" name="arguments" value=""/>
                     </td></tr>
 
                     <tr><td>
                     </td><td>
-                        <br/><input type="submit" value="Add"/>
+                        <br/><input type="submit" value="$T('button-addSchedule')"/>
                     </td></tr>
 
                 </table>
@@ -79,7 +79,7 @@ else:
             <!--#if $schedlines#-->
             <div class="EntryBlock">
             <fieldset class="EntryFieldSet">
-            <legend id="configbox_current_schedules">Current&nbsp;Schedules</legend>
+            <legend id="configbox_current_schedules">$T('currentSchedules')</legend>
             <table>
             <!--#set $schednum = 0#-->
             <!--#for $line in $schedlines#-->
@@ -109,7 +109,7 @@ elif day == "7":
 				<input type="hidden" name="session" value="$session">
 	            <input type="hidden" name="line" value="$line"/>
                 <tr>
-                	<td><input type="submit" value="X"/></td>
+                	<td><input type="submit" value="$T('button-delSchedule')"/></td>
                 	<td align="right"><strong>$h:$m</strong></td>
                 	<td>$day</td>
                 	<td>$action</td>

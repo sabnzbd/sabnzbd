@@ -2,15 +2,16 @@
 <!--#set global $help_uri="GUI+Connections"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-<div class="center"><small>
-	Version:&nbsp;$version&nbsp;&nbsp;|&nbsp;&nbsp;Uptime:&nbsp;$uptime&nbsp;&nbsp;|&nbsp;&nbsp;
-	<a href="showlog?session=$session">Show&nbsp;Logging</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="showweb?session=$session">Show&nbsp;Weblogging</a>&nbsp;&nbsp;|&nbsp;&nbsp;
-	Logging:&nbsp;<select class="xsmall" id="logging_level">
-		<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>Errors/Warning</option>
-		<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>+ Info</option>
-		<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>+ Debug</option>
+<div class="center" nowrap><small>
+	Version: $version &sdot; Uptime: $uptime &sdot;
+	<a href="showlog?session=$session">$T('link-showLog')</a> &sdot;
+	<a href="showweb?session=$session">$T('link-showWeblog')</a> &sdot;
+	$T('logging'): <select class="xsmall" id="logging_level">
+		<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
+		<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
+		<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
 	</select>
-	<!--#if int($cache_limit)#-->&nbsp;&nbsp;|&nbsp;&nbsp;<b>$cache_art</b>&nbsp;articles&nbsp;buffered&nbsp;in&nbsp;<b>$cache_size</b>&nbsp;bytes<!--#end if#-->
+	<!--#if int($cache_limit)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#-->
 </small></div>
 
 <!--#if $servers#-->
@@ -22,22 +23,22 @@
 		<!--#for $thrd in $server[3]#-->
 			<li>&rArr; $thrd[1]<br/>&rArr; $thrd[2]<br/>&rArr; $thrd[3]</li>
 		<!--#end for#-->
-		</ol><!--#else#-->No connections<!--#end if#--></small>
+		</ol><!--#else#-->$T('none')<!--#end if#--></small>
 	</fieldset>
     <!--#end for#-->
 <!--#end if#-->
 
 <!--#if $lastmail#-->
 	<fieldset class="EntryFieldSet">
-		<legend id="configbox_email_options" style="background-color:darkblue;">Email Test Result</legend>
+		<legend id="configbox_email_options" style="background-color:darkblue;">$T('emailResult')</legend>
 		<small>$lastmail</small>
 	</fieldset>
 <!--#end if#-->
 
 <!--#if $warnings#-->
 	<fieldset class="EntryFieldSet">
-		<legend id="configbox_latest_warnings" style="background-color:darkred;">Latest Warnings
-			<small>(<a href="clearwarnings?session=$session">clear</a>)&nbsp;</small>
+		<legend id="configbox_latest_warnings" style="background-color:darkred;">$T('lastWarnings')
+			<small>(<a href="clearwarnings?session=$session">$T('clearWarnings')</a>)&nbsp;</small>
 		</legend>
 		<small><ol class="numbered_list">
 		<!--#for $warn in $warnings#-->

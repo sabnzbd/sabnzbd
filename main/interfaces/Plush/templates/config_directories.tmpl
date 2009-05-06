@@ -5,74 +5,74 @@
 <form action="saveDirectories" method="post" name="fullform">
 <input type="hidden" name="session" value="$session">
 
-    <div class="center"><small><em>NOTE:</em> You may use absolute paths to save outside of the default folders (in blue). Folders will be created automatically when saving.</small></div>
+    <div class="center"><small>$T('explain-folderConfig') You may use absolute paths to save outside of the default folders (in blue).</small></div>
     
     <div class="EntryBlock">
     <fieldset class="EntryFieldSet">
         
-        <legend id="configbox_user_folders">User&nbsp;Folders</legend>
-        <strong class="dir_helper">&nbsp;In&nbsp;"$my_home"&nbsp;</strong>
+        <legend id="configbox_user_folders">$T('userFolders')</legend>
+        <strong class="dir_helper">&nbsp;$T('in')&nbsp;"$my_home"&nbsp;</strong>
         
         <br/><br/>
-        <strong>Temporary Download Folder:</strong><br/>
-        <small>Location to store unprocessed downloads.</small><br/>
+        <strong>$T('opt-download_dir'):</strong><br/>
+        <small>$T('explain-download_dir')</small><br/>
         <input type="text" size="40" name="download_dir" value="$download_dir">
         
         <br/><br/>
-        <strong>Minimum Free Space for Temp. Download Folder:</strong><br/>
-        <small>Auto-pause when free space is beneath this value.</small><br/>
+        <strong>$T('opt-download_free'):</strong><br/>
+        <small>$T('explain-download_free')</small><br/>
         <input type="text" size="8" name="download_free" value="$download_free">&nbsp;<small>(bytes; optionally follow with K,M,G,T,P e.g. 500M 2G)</small>
         
         <br/><br/>
-        <strong>Completed Download Folder:</strong><br/>
-        <small>(can be overruled by user-defined categories)</small><br/>
+        <strong>$T('opt-complete_dir'):</strong><br/>
+        <small>$T('explain-complete_dir')</small><br/>
         <input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
         
         <!--#if not $nt#-->
         <br/><br/>
-        <strong>Permissions for Completed Downloads:</strong><br/>
-        <small>Set permissions pattern for completed files/folders, octal notation only!</small><br/>
+        <strong>$T('opt-permissions'):</strong><br/>
+        <small>$T('explain-permissions')</small><br/>
         <input type="text" size="10" name="permissions" value="$permissions">
         <!--#end if#-->
         
         <br/><br/>
-        <strong>Watched Folder:</strong><br/>
-        <small>Folder to monitor for .nzb and .zip files.</small><br/>
+        <strong>$T('opt-dirscan_dir'):</strong><br/>
+        <small>$T('explain-dirscan_dir')</small><br/>
         <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
         
         <br/><br/>
-        <strong>Watched Folder Scan Speed:</strong><br/>
-        <small>Number of seconds between scans for .nzb files.</small><br/>
-        <input type="text" size="8" name="dirscan_speed" value="$dirscan_speed">&nbsp;<small>(seconds)</small>
+        <strong>$T('opt-dirscan_speed'):</strong><br/>
+        <small>$T('explain-dirscan_speed')</small><br/>
+        <input type="text" size="8" name="dirscan_speed" value="$dirscan_speed">
         
         <br/><br/>
-        <strong>Folder Containing the User Scripts:</strong><br/>
-        <small>Folder containing user scripts for post-processing.</small><br/>
+        <strong>$T('opt-script_dir'):</strong><br/>
+        <small>$T('explain-script_dir')</small><br/>
         <input type="text" size="40" name="script_dir" value="$script_dir">
 
         <br/><br/>
-        <strong>Folder Containing Email Templates:</strong><br/>
-        <small>Folder containing user defined email templates.</small><br/>
+        <strong>$T('opt-email_dir'):</strong><br/>
+        <small>$T('explain-email_dir')</small><br/>
         <input type="text" size="40" name="email_dir" value="$email_dir">
     </fieldset>
     
     <fieldset class="EntryFieldSet">
         
-        <legend id="configbox_system_folders">System&nbsp;Folders</legend>
-        <strong class="dir_helper">&nbsp;In&nbsp;"$my_lcldata"&nbsp;</strong><br/><br/>
+        <legend id="configbox_system_folders">$T('systemFolders')</legend>
+        <strong class="dir_helper">&nbsp;$T('in')&nbsp;"$my_lcldata"&nbsp;</strong><br/><br/>
         
-        <strong>Cache Folder:</strong><br/>
-        <small>Location for temporary storage.</small><br/>
+        <strong>$T('opt-cache_dir'):</strong><br/>
+        <small>$T('explain-cache_dir')</small><br/>
         <input type="text" size="40" name="cache_dir" value="$cache_dir">
         
         <br/><br/>
-        <strong>Log Folder:</strong><br/>
-        <small>Location of log files for SABnzbd.</small><br/>
+        <strong>$T('opt-log_dir'):</strong><br/>
+        <small>$T('explain-log_dir')</small><br/>
         <input type="text" size="40" name="log_dir" value="$log_dir">
         
         <br/><br/>
-        <strong>Backup Folder for .nzb:</strong><br/>
-        <small>Location where .nzb will be backed up.</small><br/>
+        <strong>$T('opt-nzb_backup_dir'):</strong><br/>
+        <small>$T('explain-nzb_backup_dir')</small><br/>
         <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
     </fieldset>
     

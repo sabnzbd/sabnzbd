@@ -7,13 +7,15 @@
 
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet" style="white-space: nowrap">
-<legend id="configbox_new_feed_url">New&nbsp;Feed&nbsp;URL</legend>
+<legend id="configbox_new_feed_url">$T('newFeedURI')</legend>
     <input type="text" size="10" name="feed" value="$feed"/>
     <input type="text" size="104" name="uri"/>
-    <input type="submit" value="Add"/>
+    <input type="submit" value="$T('button-add')"/>
 </fieldset>
 </form>
 </div>
+
+<small><p>$T('explain-RSS')</p></small>
 
 <!--#for $feed in $rss#-->
     <form action="upd_rss_feed" method="post">
@@ -26,32 +28,33 @@
 
         <input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 
-        <input type="button" class="preview_feed" value="Preview"/>
-        <input type="button" class="download_feed" value="Force Download"/>
+        <input type="button" class="preview_feed" value="$T('button-preFeed')"/>
+        <input type="button" class="download_feed" value="$T('button-forceFeed')"/>
 		&nbsp;&nbsp;&nbsp;&nbsp;
-        <select name="priority"><optgroup label="Priority">
-            <option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>Default</option>
-            <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>Force</option>
-            <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>High</option>
-            <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>Normal</option>
-            <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>Low</option>
+
+        <select name="priority"><optgroup label="$T('priority')">
+            <option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>$T('default')</option>
+            <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>$T('pr-force')</option>
+            <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>$T('pr-high')</option>
+            <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
+            <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>$T('pr-low')</option>
         </optgroup></select>
         <!--#if $rss[$feed]['pick_cat']#-->
-        <select name="cat"><optgroup label="Category">
+        <select name="cat"><optgroup label="$T('category')">
         <!--#for $ct in $cat_list#-->
             <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
         <!--#end for#-->
         </optgroup></select>
         <!--#end if#-->
-        <select name="pp"><optgroup label="Processing">
-            <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>Default</option>
-            <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>(Skip)</option>
-            <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
-            <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>+R+Unpack</option>
-            <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>+R+U+Delete</option>
+        <select name="pp"><optgroup label="$T('pp')">
+            <option value="" <!--#if $rss[$feed]['pp'] == "" then 'selected' else ''#-->>$T('default')</option>
+            <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>$T('pp-none')</option>
+            <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>$T('pp-repair')</option>
+            <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>$T('pp-unpack')</option>
+            <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>$T('pp-delete')</option>
         </optgroup></select>
         <!--#if $rss[$feed]['pick_script']#-->
-        <select name="script"><optgroup label="Script">
+        <select name="script"><optgroup label="$T('script')">
         <!--#for $sc in $script_list#-->
             <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
         <!--#end for#-->
@@ -59,8 +62,8 @@
         <!--#end if#-->
 
         <input type="hidden" name="feed" value="$feed"/>
-        <input type="submit" value="Save"/>
-		<input type="button" value="X" class="delete_feed"/>
+        <input type="submit" value="$T('button-save')"/>
+		<input type="button" value="$T('button-delFeed')" class="delete_feed"/>
 
     </form>
 
@@ -68,12 +71,12 @@
 
     <table style="clear:both;">
         <tr>
-            <th>Order</th>
-            <th>Type</th>
-            <th>Filter</th>
-            <!--#if $rss[$feed]['pick_cat'] then "<th>Category</th>" else ""#-->
-            <th>Processing</th>
-            <!--#if $rss[$feed]['pick_script'] then "<th>Script</th>" else ""#-->
+            <th>$T('rss-order')</th>
+            <th>$T('rss-type')</th>
+            <th>$T('rss-filter')</th>
+            <!--#if $rss[$feed]['pick_cat'] then "<th>"+$T('category')+"</th>" else ""#-->
+            <th>$T('pp')</th>
+            <!--#if $rss[$feed]['pick_script'] then "<th>"+$T('script')+"</th>" else ""#-->
             <th></th>
         </tr>
 
@@ -86,8 +89,8 @@
 
             <td>
                 <select name="filter_type">
-                    <option value="A" selected /> Accept</option>
-                    <option value="R" /> Reject</option>
+                    <option value="A" selected /> $T('rss-accept')</option>
+                    <option value="R" /> $T('rss-reject')</option>
                 </select>
             </td>
             <td><input type="text" size="60" name="filter_text" value=""></td>
@@ -104,11 +107,11 @@
 
             <td>
                 <select name="pp">
-                    <option value="" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>Default</option>
-                    <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>(Skip)</option>
-                    <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>+Repair</option>
-                    <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>+R+Unpack</option>
-                    <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>+R+U+Delete</option>
+                    <option value="" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>$T('default')</option>
+                    <option value="0" <!--#if $rss[$feed]['pp'] == "0" then 'selected' else ''#-->>$T('pp-none')</option>
+                    <option value="1" <!--#if $rss[$feed]['pp'] == "1" then 'selected' else ''#-->>$T('pp-repair')</option>
+                    <option value="2" <!--#if $rss[$feed]['pp'] == "2" then 'selected' else ''#-->>$T('pp-unpack')</option>
+                    <option value="3" <!--#if $rss[$feed]['pp'] == "3" then 'selected' else ''#-->>$T('pp-delete')</option>
                 </select>
             </td>
 
@@ -126,7 +129,7 @@
             <td colspan="2">
                 <input type="hidden" value="$rss[$feed]['filtercount']" name="index"/>
                 <input type="hidden" value="$feed" name="feed"/>
-                <input type="submit" value="Add"/>
+                <input type="submit" value="$T('button-add')"/>
             </td>
 
         </tr>
@@ -151,8 +154,8 @@
 
             <td>
                 <select name="filter_type">
-                    <option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> Accept</option>
-                    <option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> Reject</option>
+                    <option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> $T('rss-accept')</option>
+                    <option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> $T('rss-reject')</option>
                 </select>
             </td>
 
@@ -170,11 +173,11 @@
 
             <td>
                 <select name="pp">
-                    <option value="" <!--#if $filter[1] == "0" then 'selected' else ''#-->>Default</option>
-                    <option value="0" <!--#if $filter[1] == "0" then 'selected' else ''#-->>(Skip)</option>
-                    <option value="1" <!--#if $filter[1] == "1" then 'selected' else ''#-->>+Repair</option>
-                    <option value="2" <!--#if $filter[1] == "2" then 'selected' else ''#-->>+R+Unpack</option>
-                    <option value="3" <!--#if $filter[1] == "3" then 'selected' else ''#-->>+R+U+Delete</option>
+                    <option value="" <!--#if $filter[1] == "0" then 'selected' else ''#-->>$T('default')</option>
+                    <option value="0" <!--#if $filter[1] == "0" then 'selected' else ''#-->>$T('pp-none')</option>
+                    <option value="1" <!--#if $filter[1] == "1" then 'selected' else ''#-->>$T('pp-repair')</option>
+                    <option value="2" <!--#if $filter[1] == "2" then 'selected' else ''#-->>$T('pp-unpack')</option>
+                    <option value="3" <!--#if $filter[1] == "3" then 'selected' else ''#-->>$T('pp-delete')</option>
                 </select>
             </td>
 
@@ -191,7 +194,7 @@
             <td>
                 <input type="hidden" name="index" value="$fnum"/>
                 <input type="hidden" name="feed" value="$feed"/>
-                <input type="submit" value="Save"/>
+                <input type="submit" value="$T('button-save')"/>
 				</form>
             </td>
             
@@ -200,7 +203,7 @@
 					<input type="hidden" name="session" value="$session">
                     <input type="hidden" value="$fnum" name="index"/>
                     <input type="hidden" value="$feed" name="feed"/>
-                    <input type="submit" value="X"/>
+                    <input type="submit" value="$T('rss-delFilter')"/>
                 </form>
 			</td>
 			
