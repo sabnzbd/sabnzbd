@@ -37,8 +37,11 @@ def upload_file(url, fp):
         url = '%sapi?mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (url, fp, pp, script, priority)
         username = cfg.USERNAME.get()
         password = cfg.PASSWORD.get()
+        apikey = cfg.API_KEY.get()
         if username and password:
             url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
+        if apikey:
+            url = '%s&apikey=%s' % (url, apikey)
         u = urllib2.urlopen(url)
     except:
         logging.error("Failed to upload file: %s", fp)

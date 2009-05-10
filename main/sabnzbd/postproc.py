@@ -37,7 +37,8 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
                          cleanup_empty_directories, get_unique_filename, \
                          on_cleanup_list
 from sabnzbd.tvsort import Sorter
-from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME, POSTPROC_QUEUE_FILE_NAME, POSTPROC_QUEUE_VERSION
+from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME, POSTPROC_QUEUE_FILE_NAME, \
+     POSTPROC_QUEUE_VERSION, sample_match
 from sabnzbd.codecs import TRANS
 import sabnzbd.newzbin
 import sabnzbd.email as email
@@ -632,7 +633,7 @@ def get_last_line(txt):
     return line
 
 def remove_samples(path):
-    RE_SAMPLE = re.compile('(^|[\W_])sample\d*[\W_]', re.I)
+    RE_SAMPLE = re.compile(sample_match, re.I)
     for root, dirs, files in os.walk(path):
         for _file in files:
             if RE_SAMPLE.search(_file):

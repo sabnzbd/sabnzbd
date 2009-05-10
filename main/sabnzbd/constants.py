@@ -113,3 +113,5 @@ date_match = ['(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
               '(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
 
 year_match = '[\(|\.](\d{4})' # Something (Year or .Year
+
+sample_match = '((^|[\W_])sample\d*[\W_])|(-s\.)|(^s-)' # something-sample.avi s-something.avi something-s.avi
