@@ -41,11 +41,11 @@ $T('explain-relFolder') $defdir<br/>
             <td>
                 <select name="pp">
                     <optgroup label="$T('pp')">
-                        <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>Default</option>
-                        <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->></option>
-                        <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>R</option>
-                        <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>U</option>
-                        <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>D</option>
+                        <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+                        <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-n')</option>
+                        <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-r')</option>
+                        <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-u')</option>
+                        <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>$T('pp-d')</option>
                     </optgroup>
                </select>
             </td>
@@ -53,11 +53,11 @@ $T('explain-relFolder') $defdir<br/>
             <td>
                 <select name="priority">
                     <optgroup label="$T('priority')">
-                        <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>Default</option>
-                        <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>Force</option>
-                        <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>High</option>
-                        <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>Normal</option>
-                        <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>Low</option>
+                        <option value="-100" selected>$T('default')</option>
+                        <option value="2">$T('pr-force')</option>
+                        <option value="1">$T('pr-high')</option>
+                        <option value="0">$T('pr-normal')</option>
+                        <option value="-1">$T('pr-low')</option>>
                     </optgroup>
                 </select>
             </td>
@@ -67,7 +67,7 @@ $T('explain-relFolder') $defdir<br/>
             <select name="script">
                 <optgroup label="$T('script')">
                 <!--#for $sc in $script_list#-->
-                    <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                    <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>Tspec($sc)</option>
                 <!--#end for#-->
                 </optgroup>
                 </select>

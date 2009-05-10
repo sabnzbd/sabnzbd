@@ -30,10 +30,6 @@ $T('onQueueFinish'):
 
 </div>
 
-<!--#if int($cache_limit)#-->
-<center><b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br></center>
-<!--#end if#-->
-
 <!--#if float($mb)>0 #-->
 <!--#set $perc = round( (1-(float($mbleft) / float($mb))) * 100, 2)#-->
 <!--#if $varExists('slots')#-->
@@ -158,7 +154,9 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('smpl-eta'): <strong>$eta</st
 		<!--#end for#-->
 	<!--#end if#-->
     </table>
-
+<!--#if int($cache_limit)#-->
+<center><b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br></center>
+<!--#end if#-->
 <br />
 <!--#set $start = int($start)#-->
 <!--#if $finish == 0 and $noofslots == 0#-->
