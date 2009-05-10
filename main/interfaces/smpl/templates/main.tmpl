@@ -483,24 +483,24 @@ function loadtitle() {
 
 	}
 
-	function pausequeueitem(elem)
+	function pausequeueitem(elem, start, limit)
 	{
     //deletes an item from the queue - passed variable is the id (uid) of the queue item to delete(and also the id of the queue element)
         val1 = document.getElementById(elem).innerHTML;
         val1="";
-
-		d = doSimpleXMLHttpRequest('queue/pause_nzo', {uid: elem, _dc: Math.random(), session:session});
+        url = 'queue/pause_nzo'
+		d = doSimpleXMLHttpRequest(url, {uid: elem, _dc: Math.random(), session:session, start:start, limit:limit});
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
 
-	function resumequeueitem(elem)
+	function resumequeueitem(elem, start, limit)
 	{
     //deletes an item from the queue - passed variable is the id (uid) of the queue item to delete(and also the id of the queue element)
         val1 = document.getElementById(elem).innerHTML;
         val1="";
-
-		d = doSimpleXMLHttpRequest('queue/resume_nzo', {uid: elem, _dc: Math.random(), session:session});
+        url = 'queue/resume_nzo'
+		d = doSimpleXMLHttpRequest(url, {uid: elem, _dc: Math.random(), session:session, start:start, limit:limit});
 		d.addCallback(replaceright);
 		d.addErrback(handleServerError);
 	}
