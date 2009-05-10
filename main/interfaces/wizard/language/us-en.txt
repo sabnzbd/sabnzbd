@@ -2,6 +2,7 @@
 # United States # English
 
 quickstart           SABnzbd Quick-Start Wizard
+version              SABnzbd Version
 
 previous             Previous
 next                 Next
