@@ -1,0 +1,576 @@
+# -*- coding: latin-1 -*-
+# France # Français
+
+special-decimal   .
+special-1000      .
+
+# General texts
+yes               Oui
+no                Non
+default           Défaut
+none              Aucun
+KBs               KB/s
+MB                MB
+hour              heure
+minute            min
+second            sec
+month             Mois
+day               Jour
+daily             Quotidien
+monday            Lundi
+tuesday           Mardi
+wednesday         Mercredi
+thursday          Jeudi
+friday            Vendredi
+saturday          Samedi
+sunday            Dimanche
+
+
+# General template elements
+signOn            Le téléchargement usenet tout inclus
+button-save       Enregistrer
+queued            En attente
+button-back       Retour
+
+# Header
+menu-home         Accueil
+menu-queue        Queue
+menu-history      Historique
+menu-config       Config
+menu-cons         Connexions
+menu-help         Aide
+menu-wiki         Wiki
+menu-forums       Forum
+menu-irc          IRC
+cmenu-general     Général
+cmenu-folders     Dossiers
+cmenu-switches    Options
+cmenu-servers     Serveurs
+cmenu-scheduling  Plannification
+cmenu-rss         RSS
+cmenu-email       Email
+cmenu-newzbin     Sites Index
+cmenu-cat         Catégories
+cmenu-sorting     Classement
+
+# Footer
+ft-download       Dossier de téléchargement
+ft-complete       Dossier complets
+ft-speed          Débit de téléchargement
+ft-queued         En attente
+ft-paused         EN PAUSE
+ft-buffer@2       %s articles dans %s bytes
+ft-sysload        Sysload
+ft-warning        AVERTISSEMENTS
+ft-newRelease@1   Une nouvelle version %s est disponible 
+
+# Main page
+addNewJobs        Ajouter de nouveaux téléchargements
+shutdownOK?       Etes-vous surs de vouloir quitter SABnzbd ?
+link-shutdown     Eteindre
+link-pause        Pause
+link-resume       Reprendre
+button-add        Ajouter
+add               Ajouter
+reportId          Report-id
+addFile           Ajouter un fichier
+category          Catégorie
+pp                PP
+script            Script
+priority          Priorité
+pp-none           Télécharger
+pp-repair         +Réparer
+pp-unpack         +Décompresser
+pp-delete         +Supprimer
+pp-n
+pp-r              R
+pp-u              D
+pp-d              S
+pr-force          Forcer
+pr-normal         Normal
+pr-high           Haute
+pr-low            Basse
+
+# Queue page
+link-sortByName   Trier par nom
+link-sortByAge    Trier par âge
+link-sortBySize   Trier par taille
+link-hideFiles    Masquer fichiers
+link-showFiles    Afficher fichiers
+onQueueFinish     En fin de queue
+shutdownPc        Eteindre PC
+standbyPc         Mettre en veille PC
+hibernatePc       Mettre en hibernation PC
+shutdownSab       Quitter SABnzbd
+speedLimit        Limite de vitesse
+pauseFor          Pause pour
+mode              Mode
+name              Nom
+remainTotal       Restant/Total
+eta               TRE
+age               AGE
+button-del        Supprimer
+button-resume     Reprendre
+button-pause      Pause
+
+# History page
+purgeHist         Effacer l'historique
+hideDetails       Masquer détails
+showDetails       Afficher détails
+sizeHist          Taille Historique
+completed         Terminés
+size              Taille
+status            Statut
+
+# Connections page
+link-forceDisc    Forcer Déconnexion
+askTestEmail      Cela enverra un mail de test à votre adresse.
+link-showLog      Afficher les logs
+link-showWeblog   Afficher les weblogs
+link-testEmail    Test Email
+logging           Logging
+log-errWarn       Erreurs/Avertissements
+log-info          + Info
+log-debug         + Debug
+connections       Connexions
+thread            Thread
+emailResult       Résultat du test Email 
+lastWarnings      Derniers avertissements
+clearWarnings     effacer
+
+# Configuration
+configuration     Configuration
+confgFile         FichierConfig
+explain-Restart   Le bouton ci-dessous redémarrera SABnzbd.\n\
+                  Utilisez le si vous pensez avoir un problème de stabilité.\n\
+                  Les téléchargements en cours seront mis en pause puis repris.
+button-restart    Redémarrer
+
+# Config->General
+generalConfig         Configuration Générale
+webServer             Serveur Web (<i>redémarrage requis</i>)
+opt-host              Hôte
+explain-host          Hôte sur lequel SABnzbd doit attendre les connexions.
+opt-port              Port
+explain-port          Port sur lequel SABnzbd doit attendre les connexions.
+opt-web_dir           Interface Utilisateur
+explain-web_dir       Choisissez un thème (redémarrage requis !).
+opt-web_dir2          Seconde Interface Utilisateur
+explain-web_dir2      Choisissez un thème pour la 2nde interface web (redémarrage requis !).
+webAuth               Autentification serveur Web
+opt-web_username      Identifiant
+explain-web_username  Nom d'utilisateur pour l'autentification.
+opt-web_password      Mot de passe
+explain-web_password  Mot de passe pour l'autentification.
+httpsSupport          Support HTTPS (redémarrage requis !).
+opt-enable_https      Active HTTPS
+opt-notInstalled      non installé
+explain-enable_https  Active l'accès à l'interface via une adresse HTTPS.
+opt-https_port        Port HTTPS
+explain-https_port    Port sur lequel SABnzbd doit attendre les connexions HTTPS.
+opt-https_cert        Certificat HTTPS
+explain-https_cert    Fichier or chemin du certificat HTTPS.
+opt-https_key         Clé HTTPS
+explain-https_key     Fichier or chemin de la clé HTTPS.
+tuning                Tuning
+opt-refresh_rate      Intervalle de rafraichissement de la queue :
+explain-refresh_rate  Intervalle de rafraichissement dans l'interface web (en sec, 0=aucun).
+opt-rss_rate          Invervalle de vérification RSS
+explain-rss_rate      Intervalle de vérification (enminutes, au moins 15).
+opt-bandwith_limit    Limite de vitesse de téléchargement
+explain-bandwith_limit Limite de vitesse de téléchargement en kilobytes par second(kB/s)
+opt-cache_limitstr    Limite d'Article en cache
+explain-cache_limitstr Permet de mettre en cache en RAM les articles (réduit les accès disques).
+opt-cleanup_list      Liste de nettoyage
+explain-cleanup_list  Liste de fichiers (extensions) qui doivent être supprimés après téléchargement\n\
+                      Par exemple: ".nfo," or ".nfo, .sfv"
+button-saveChanges    Enregistrer les modifications
+opt-language          Langage
+explain-language      Séléctionner la langue de l'interface
+
+# Config->Folders
+folderConfig            Configuration des dossiers
+explain-folderConfig    <em>NOTE:</em> Les dossiers seront créés automatiquement lors de l'Enregistrement.
+userFolders             Dossiers Utilisateur
+in                      Dans
+opt-download_dir        Dossier de téléchargement temporaire
+explain-download_dir    Endroit où sont stockés les téléchargements non post-traités.\n\
+                        <i>Ne peut être modifié que lorsque la queue est vide.</i>
+opt-download_free       Espace disque minimum pour le Dossier de téléchargement temporaire
+explain-download_free   Met en pause les téléchargements si l'espace passe en dessous de ce montant.
+opt-complete_dir        Dossier des téléchargements terminés
+explain-complete_dir    (peut être remplacé par les catégories utilisateur).
+opt-permissions         Permissions pour le dossier de téléchargement terminés
+explain-permissions     Affecter le modèle de permissions pour les dossiers/fichiers des téléchargements terminés, notation octale uniquement !
+opt-dirscan_dir         Dossier à scanner
+explain-dirscan_dir     Dossier à scanner pour les fichiers .nzb et .zip.
+opt-dirscan_speed       Intervalle de scan
+explain-dirscan_speed   Nombre de secondes entre les scans de fichiers .nzb.
+opt-script_dir          Dossier contenant les scripts utilisateurs
+explain-script_dir      Dossier contenant les scripts utilisateurs utilisés lors du post-traitement.
+opt-email_dir           Dossier contenant les modèles d'email
+explain-email_dir       Dossier contenant les modèles d'email définis par l'utilisateur.
+systemFolders           Dossier Système
+opt-cache_dir           Dossier du Cache
+explain-cache_dir       pour le stockage temporaire.\n\
+                        <i>Ne peut être modifié que lorsque la queue est vide.</i>\n\
+                        <i>Redémarrage requis !</i>
+opt-log_dir             Dossier de Log
+explain-log_dir         pour le stockage des fichiers de log de SABnzbd.\n\
+                        <i>Redémarrage requis !</i>
+opt-nzb_backup_dir      Dossier de sauvegarde des fichiers .nzb
+explain-nzb_backup_dir  pour la sauvegarde des fichier .nzb.
+
+# Config->Switches
+switchesConfig           Configuration des options
+processingSwitches       Options de traitement
+opt-quick_check          Activer le Quick Check
+explain-quick_check      Ne pas vérifier avec par2 si tous les fichiers sont 100% valides.
+opt-enable_unrar         Activer Unrar
+explain-enable_unrar     Activer la fonctionnalité unrar intégrée.
+opt-enable_unzip         Activer Unzip
+explain-enable_unzip     Activer la fonctionnalité unzip intégrée.
+opt-enable_filejoin      Activer Concaténation
+explain-enable_filejoin  Concatène les fichiers en .001, .002, etc. en un fichier.
+opt-enable_tsjoin        Activer Concaténation TS
+explain-ts_join          Concatène les fichiers en .001.ts, .002.ts, etc. en un fichier.
+opt-enable_par_cleanup   Activer Nettoyage Par
+explain-enable_par_cleanup Supprimier les fichiers par (uniquement si la vérification/réparation a réussi).
+opt-fail_on_crc          Echoue lors d'erreurs crc yEnc
+explain-fail_on_crc      Utilise les serveurs de soutient si il y a des erreurs crc yEnc.
+opt-top_only             Ne télécharge uniquement que les articles en tête de queue
+explain-top_only         Activer pour dimininuer l'utilisation de la RAM.\n\
+                         Désactiver pour éviter les téléchargement lents bloquant la queue.
+opt-safe_postproc        Post-traiter uniquement les téléchargements vérifiés
+explain-safe_postproc    Limite le post-traitement aux téléchargements qui ont passés avec succès les vérifications par2.
+opt-no_dupes             Eviter les duplications de téléchargement
+explain-no_dupes         Si un .nzb sauvegargé du même nom existe, le téléchargement ne sera pas effectué.
+opt-dirscan_opts         Post-traitement par défaut
+explain-dirscan_opts     Utilisé quand la catégorie de précise pas de choix.
+opt-dirscan_script       Script utilisateur par défaut
+explain-dirscan_script   Utilisé quand la catégorie de précise pas de choix.
+opt-dirscan_priority     Priorité par défaut
+explain-dirscan_priority Utilisé quand la catégorie de précise pas de choix.
+opt-par_option           Paramètres PAR2 supplémentaires :
+explain-par_option       Consultez le Wiki pour plus d'info à ce sujet (en anglais) !
+opt-nice                 Paramètres Nice
+explain-nice             Consultez le Wiki pour plus d'info à ce sujet (en anglais) !
+opt-ionice               Paramètres IONice
+explain-ionice           Consultez le Wiki pour plus d'info à ce sujet (en anglais) !
+otherSwitches            Autres options
+opt-auto_disconnect      Déconnexion lorsque la queue est vide
+explain-auto_disconnect  Déconnexion du serveur(s) Usenet lorsque la queue est vide ou en pause.
+opt-send_group           Envoyer Group
+explain-send_group       Envoyer la commande group avant la demande des articles.
+opt-auto_sort            Trier par âge
+explain-auto_sort        Trie automatiquement les fichiers par âge (moyen).
+opt-check_new_rel        Vérifier la présence d'une nouvelle version
+explain-check_new_rel    Vérfie hebdomadairement la sortie d'une nouvelle version de SABnzbd.
+opt-replace_spaces       Remplacer les espaces dans les noms de dossier
+explain-replace_spaces   Remplace les espaces par des underscores dans les noms de dossiers.
+opt-replace_illegal      Remplacer les caractères illégaux dans les noms de dossier
+explain-replace_illegal  Remplacer les caractères illégaux dans les noms de dossier par des équivalents (ou les supprime).
+opt-auto_browser         Lancer le navigateur web au démarrage
+explain-auto_browser     Lance le navigateur web au démarrage de SABnzbd.
+opt-pause_on_post_processing Mettre en pause les téléchargement lors du post-traitement
+explain-pause_on_post_processing Met en pause les téléchargements lors des post-traitement et les reprend ensuite.
+opt-ignore_samples       Ignorer les Samples
+explain-ignore_samples   Filtre les fichiers sample de la queue.
+igsam-off                Non
+igsam-del                Supprimer après téléchargement
+igsam-not                Ne pas télécharger
+
+# Config->Server
+configServer             Configuration Serveur
+addServer                Ajouter un serveur
+srv-host                 Hôte
+srv-port                 Port
+srv-username             Identifiant
+srv-password             Mot de passe
+srv-timeout              Timeout
+srv-connections          Connexions
+srv-ssl                  SSL
+srv-fillserver           Serveur de soutient
+srv-optional             Optionnel
+srv-enable               Actif
+button-addServer         Ajouter Serveur
+button-delServer         Supprimer Serveur
+
+# Config->Scheduling
+configSchedule           Configuration de la plannification
+addSchedule              Ajouter plannification
+sch-frequency            Fréquence
+sch-action               Action
+sch-arguments            Arguments
+button-addSchedule       Ajouter plannification
+button-delSchedule       Supprimer
+currentSchedules         Plannifications actuelles
+sch-task                 Tâches
+sch-disable_server       désactiver serveur
+sch-enable_server        activer serveur
+sch-resume               Reprendre
+sch-pause                Pause
+sch-shutdown             Eteindre
+sch-restart              Rédemarrer
+sch-speedlimit           Limite de vitesse
+
+# Config->RSS
+configRSS                Configuration RSS 
+newFeedURI               URI nouveau flux
+explain-RSS              La case à cocher à coté du nom du flux devrait être cochée pour que le flux soit activé et qu'il soit pris en compte dans la vérification pour de nouveaux téléchargements.\n\
+                         La fréquence de vérification est réglable dans la page de configuration générale.\n\
+                         Quant un flux est ajouté, seuls les nouveaux téléchargements seront pris en compte à moins de cliquer sur "Forcer téléchargements".
+feedDefinition           Définition du flux
+feed                     Flux
+button-delFeed           Supprimer le flux
+button-preFeed           Prévisualiser
+button-forceFeed         Forcer téléchargements
+rss-order                Trier
+rss-type                 Type
+rss-filter               Filtre
+rss-accept               Accepter
+rss-reject               Rejeter
+rss-delFilter            X
+rss-matched              Corresponds
+rss-notMatched           Ne corresponds pas
+rss-done                 Téléchargés
+rss-downloaded           Téléchargés jusqu'ici
+link-download            Télécharger
+
+# Config->Email
+configEmail              Notification par Email 
+emailOptions             Options Email 
+opt-email_endjob         Notification par Email lors de téléchargements terminés
+email-never              Jamais
+email-always             Toujours
+email-errorOnly          Erreurs-uniquement
+opt-email_full           Notifications de disque dur plein
+explain-email_full       Envoie un email lorsque le disque dur est plein et que SABnzbd a été mis en pause.
+opt-email_dir            Dossier contenant les modèles d'email
+explain-email_dir        Dossier contenant les modèles d'email définis par l'utilisateur.\n\
+                         Relatif  à
+emailAccount             Paramètres du compte Email
+opt-email_server         Serveur SMTP 
+explain-email_server     Entrez le serveur de courrier sortant de votre FAI.
+opt-email_to             Adresse Email de réception
+explain-email_to         Adresse Email à laquelle seront envoyés les notifications.
+opt-email_from           Adresse Email d'envoi
+explain-email_from       Adresse Email de provenance des notifications.
+opt-email_account        OPTIONNEL: Identifiant
+explain-email_account    Si une autentification pour l'envoi est requise, l'identifiant.
+opt-email_pwd            OPTIONAL: Mot de passe
+explain-email_pwd        Si une autentification pour l'envoi est requise, le mot de passe.
+
+# Config->Newzbin
+explain-newzbin          Si vous avez un compte sur <strong>www.newzbin.com</strong>,\
+                         vous pouvez entrer vos informations de compte ici.\n\
+                         Vous accéderez à d'avantage de possibilités.
+accountInfo              Paramètres de compte
+opt-username_newzbin     Identifiant
+explain-username_newzbin Entrez votre identifiant ici.
+opt-password_newzbin     Mot de passe
+explain-password_newzbin Entrez votre mot de passe ici.
+newzbinBookmarks         Traitement des marque-pages
+opt-newzbin_bookmarks    Téléchargement automatique des marque-pages
+explain-newzbin_bookmarks Voulez-vous qu'ils soient téléchargés automatiquement ?
+link-getBookmarks        Télécharger les marque-pages maintenant
+link-HideBM              Masquer les marque-pages traités
+link-ShowBM              Afficher les marque-pages traités
+opt-newzbin_unbookmark   Retirer le marque-page si il a été téléchargé
+explain-newzbin_unbookmark Retire de la liste des marque-pages lorque le téléchargement est terminé.
+opt-bookmark_rate        Fréquence de vérification
+explain-bookmark_rate    En minutes (au moins 15 min).
+processedBM              Marque-pages traités
+explain-nzbmatrix        Si vous avez un compte sur <strong>www.nzbmatrix.com</strong>,\
+                         vous pouvez entrer vos informations de compte ici.\n\
+                         Obligatoire si vous désirez utilisez les flux RSS de ce site.
+opt-username_matrix      Identifiant
+explain-username_matrix  Entrez votre identifiant ici.
+opt-password_matrix      Mot de passe
+explain-password_matrix  Entrez votre mot de passe ici.
+
+# Config->Cat
+configCat                Catégories utilisateur
+explain-configCat        Définit le post-traitement et le stockage.
+explain-catNewzbin       La colonne Newzbin associera la catégorie Newzbin à la votre.
+link-initCat             Cliquer ici pour mettre en place les catégories newzbin.
+explain-relFolder        Dossiers relatifs à
+catFolderPath            Dossier/Chemin
+catNewzbin               NewzBin
+catGroups                Groupes
+button-delCat            X
+
+# Config->Sorting
+sort-show                Séries
+sort-name                Nom
+
+# NZO
+nzoDetails               Editer les détails du NZB
+nzoName                  Nom
+nzo-delete               Supprimer
+nzo-top                  Premier
+nzo-up                   Monter
+nzo-down                 Descendre
+nzo-bottom               Dernier
+nzo-all                  tous
+nzo-none                 auncun
+nzo-invert               inverser
+nzo-filename             Nom de fichier
+nzo-subject              Sujets
+nzo-age                  Age
+nzo-selection            Sélection
+
+# Internal texts
+msg-warning-ambiLocalhost Avertissement: LOCALHOST est ambigü, utilisez une adresse IP numérique.
+msg-invalidServer@2      Adresse Serveur "%s:%s" non valide.
+
+warn-missingKey          Clé de session manquante
+error-missingKey         Erreur : Clé de session requise
+warn-badSession          Clé de session incorrecte
+error-badKey             Erreur : Clé de session incorrecte
+warn-authMissing         Autentification manquante, entrez votre idenifiant/mot de passe de la configuration générale\
+                         dans votre application tierce :
+error-authMissing        Erreur : Autentification manquante
+warn-apikeyNone          Clé API manquante, entrez la clé API de la configuration générale\
+                         dans votre application tierce :
+error-apikeyNone         Clé API Requise
+warn-apikeyBad           Clé API incorrecte, utilisez la clé API de la configuration générale\
+                         dans votre application tierce :
+error-apikeyBad          Erreur : Clé API incorrecte
+error-noSecUI            Erreur : Pas d'interface secondaire définie.
+
+his-badArchive           Echec, Fichier d'archive inutilisable
+his-cannotGetReport      Echec de récupération du rapport newzbin
+his-failedURL            Echec de l'ajout de l'URL
+his-retryURL1            Echec de récupération de l'URL
+his-retryURL2            Essayer de nouveau
+
+# Errors and Warnings
+error-noPar2             binaire par2... NON trouvé !
+error-noStartup@2        Initialisation de %s-%s echouée, annulation
+error-noWebUi            Echec du lancement de l'interface web
+error-noYEnc             module _yenc... NON trouvé!
+error-sameHTTP-HTTPS     Les ports HTTP et HTTPS ne peuvent être identiques
+warn-0000                Attention le nom d'hôte 0.0.0.0 nécessite une addresse IPv6 pour les accès externes
+warn-noCertKey           HTTPS désactivé car le certificat et la clé n'ont pas été trouvés
+warn-noSkin@1            Ne peut trouver le modèle pour l'interface web : %s, essai avec le modèle standard
+warn-noUnrar             binaire unrar... NON trouvé !
+warn-noUnzip             binaire unzip... NON trouvé !
+error-failMkstemp        Echec dans tempfile.mkstemp
+error-fetchReport@1      Erreur de récupération du msgid %s depuis www.newzbin.com -
+error-hibernate          Echec de la mise en hibernatation
+error-loading@1          Chargement %s echoué
+error-saveX@1            Enregistrement %s echoué
+error-saveXtoY@2         Enregistrement de %s vers %s echoué
+error-standby            Echec de la mise en veille
+error-tempFile@1         Ne peut créer le fichier temporaire pour %s
+warn-noServer@1          Essai de mise à jour de statut du serveur inexistant %s 
+warn-noSpace             Espace disque faible PAUSE forcée
+warn-signal@1            Signal %s intercepté, enregistrement et fermeture en cours...
+warn-flushFailed@1       Ecriture %s echouée -> pas d'art_id
+error-diskError@1        Erreur disque lors de la création du fichier %s
+error-diskFull           Disque plein ! Pause Forcée
+warn-artMissing@1        %s manquant
+error-badIni@1           Fichier de configuration invalide %s
+error-createIni@1        Ne peut créer le fichier de configuration %s
+error-encPw@1            Cryptage du mot de passe incorrect %s
+error-version@2          Le numéro de version est incorrect %s dans %s"
+error-badHisNewline@1    Etape de log incorrect dans l'historique pour %s (\\r\\n)
+error-badHisSemic@1      Etape de log incorrect dans l'historique pour %s (;)
+error-sqlClose           Echec de fermeture de base de données, voir log
+error-sqlCmd             Echec de la commande SQL, voir log
+error-sqlCommit          Echec de du commit SQL, voir log
+error-decode@1           Echec du décodage de %s
+error-decodeUnknown@1    Erreur inconnue lors du décodage de %s
+warn-artAllMissing@1     %s => non présent de tous les serveurs, rejeté
+warn-badYEnc@1           Article yEnc malformé dans %s
+warn-crcError@3          Erreur CRC dans %s (%s -> %s)
+error-readWatched@1      Ne peut lire le Dossier à scanner %s
+error-remove@1           Erreur lors de la suppression de %s
+warn-noRead@1            Ne peut lire %s
+error-except             Exception ?
+error-noInit@3           Echec de l'initialisation %s@%s:%s
+error-serverFailed@4     Echec de la connexion à %s@%s:%s, message=%s
+error-serverLogin@2      Echec de la connexion au serveur %s:%s
+error-serverNoConn@3     Ne peut se connecter au serveur %s:%s [%s]
+error-serverTooMany@2    Trop de connexions au serveur %s:%s
+warn-ignoreServer@2      Le serveur %s sera ignoré pendant %s minutes
+warn-noActiveServers     Aucun serveur primaire défini, pas de téléchargement possible !
+warn-noConnectServer@3   Impossible de se connecter au serveur %s:%s [%s]
+warn-thread@3            Thread %s@%s:%s:
+error-mailAuth           Echec de l'autentification au serveur de mail
+error-mailNoConn         Echec de la connexion au serveur de mail
+error-mailSend           Echec de l'envoi du mail
+error-mailTempl@1        Impossible de trouver les modèles de mail dans %s
+error-mailTLS            Echec de l'initiation de la connexion TLS
+warn-noEmailClose        Echec de la fermeture de la connexion mail
+error-regex@1            Echec de la compilation de regex pour la recherche du terme : %s
+error-accessDir@2        %s dossier : %s Erreur d'accès
+error-createDir@1        Impossible de créer le dossier %s
+error-makeFile@1         Echec lors de la création de (%s)
+error-moveFile@2         Echec lors du déplacement de %s vers %s
+error-portNoAccess@1     Le port %s n'est pas accessible
+error-regConnect         Impossible de se connecter au registre HKEY_CURRENT_USER.
+error-regOpen@1          Impossible d'ouvrir la clé de registre "%s".
+error-regSpecial         Echec de la lecture des clés de registre pour les dossiers spéciaux
+error-sslFiles           Erreur lors de la création de la clé et du certificat SSL
+error-urlGet@1           Erreur lors de la récupération de l'url %s
+warn-noBrowser           Impossible de lancer le navigateur web, potentiellement non trouvé
+warn-pyopenssl           module pyopenssl manquant, nécessaire pour l'accès HTTPS
+error-fileJoin@2         Erreur "%s" lors de l'exécution de file_join sur %s
+error-filePar2@2         Erreur %s lors de l'exécutiion de par2_repair sur %s
+error-fileRead@1         notrar(): echec de lecture de %s
+error-fileUnrar@2        Erreur "%s" lors de l'exécution de rar_unpack sur %s
+error-fileUnzip@2        Erreur "%s" lors de l'exécution de unzip sur %s
+warn-cannotFind@1        ERREUR : impossoble de trouver "%s"
+warn-crcFailed@1         ERREUR : echec CRC pour "%s"
+warn-delFailed@1         Echec de la suppression de %s !
+warn-encrypted           ERREUR : Fichier encryptés :
+warn-error@1             ERREUR : %s
+warn-MissExpectedFile@1  Le fichier attendu est manquant : %s => erreur unrar ?
+warn-writeError@1        ERREUR : erreur d'écriture (%s)
+error-connect@1          Impossible de se connecter : %s
+error-newsSSL            Ce serveur d'accèpte pas de SSL sur ce port
+error-noSSL              Erreur lors de l'importation du module OpenSSL. Connection sans SSL
+error-nbInfo@1           Impossible d'obtenir les informations pour %s du serveur Newzbin
+error-nbProtocol         Le serveur Newzbin a changé son protocole
+error-nbReport@1         Rapport Newzbin %s non trouvé
+error-nbUnkownError@1    Erreur Newzbin non documentée (%s)
+error-nbUnkownError@2    Erreur Newzbin non documentée (%s, %s)
+error-nbUpdate@1         Echec de la mise à jour du rapport newzbin %s
+warn-nbCredit            Pas de crédits sur votre compte Newzbin
+warn-nbNoAuth            Non autorisé, vérifiez vos identifiant / mot de passe newzbin
+warn-nbNoDelBM@1         Impossible de retirer le marque-page newzbin %s
+error-qAdd@1             Erreur lors de l'ajout de %s, supprimé
+error-qBad               Fichier de queue incompatible, impossible à traiter
+error-qCorruptFile@1     Erreur lors du chargement de loading %s, fichier corrompu détécté
+warn-unknownEncoding@1   %s -> Encodage inconnu
+error-qDupPart@3         Partie dupliquée %s, mais ID-s différents (%s // %s)
+error-qImport@1          Erreur lors de l'importation de %s
+warn-badImport@2         Echec lors de l'importation des fichiers %s depuis %s
+warn-badNZB@3            Fichier NZB invalide %s, rejeté (raison=%s, ligne=%s)
+warn-emptyFile@1         Fichier %s vide, rejeté
+warn-skipDup@1           Rejet du NZB dupliqué "%s"
+error-ppCleanup@1        Echec du nettoyage de %s.
+error-ppDelFailed@1      Echec de la suppression de %s
+error-ppDelNzo           Echec de la suppression du nzo de la qeueu de post-traitement (id)
+error-ppDelWorkdir@1     Erreur lors de la suppression du dossier de travail (%s)
+error-ppFailed@1         Echec du post-traitement pour %s
+error-ppLogFile@1        Impossible de créer le fichier de log %s
+error-ppPermissions@1    Impossible de changer les permissions pour %s
+error-ppRename@2         Erreur lors du renommage de "%s" en "%s"
+warn-badPPQueue@2        Echec lors du chargement de la queue de post-traitement : Mauvaise version (nécessaire:%s, trouvée:%s)
+error-rssBadFeed@1       Description du flux RSS incorrecte "%s"
+error-rssRegex@1         Impossible de compiler la regex : %s
+warn-emptyRSS@2          [%s]: Entrée vide de flux RSS trouvée (%s)
+warn-failRSS@1           Echec de la récupération RSS pour %s
+warn-failRSS@2           Echec de la récupération RSS pour %s: %s
+warn-badSched@3          Mauvaise plannification le %s à %s:%s
+warn-badSchedAction@1    Action inconnue : %s
+warn-schedNoServer@1     Plannification pour un serveur non existant %s
+error-tvInfo@1           Erreur lors de l'obtention des information TV (%s)
+error-tvRename@2         Echec du renommage : %s en %s
+error-tvSimRename@2      Echec du renommange des fichiers similaires : %s en %s
+error-tvTemp@1           Impossible de créer le fichier temporaire %s
+warn-matrixBadRep@1      Numéro de rapport nzbmatrix invalide %s
+warn-matrixFail          Problème d'accès au serveur nzbmatrix.
