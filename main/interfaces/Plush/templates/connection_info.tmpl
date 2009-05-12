@@ -3,7 +3,7 @@
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
 <div class="center" nowrap><small>
-	Version: $version &sdot; Uptime: $uptime &sdot;
+	$T('version'): $version &sdot; $T('uptime'): $uptime &sdot;
 	<a href="showlog?session=$session">$T('link-showLog')</a> &sdot;
 	<a href="showweb?session=$session">$T('link-showWeblog')</a> &sdot;
 	$T('logging'): <select class="xsmall" id="logging_level">

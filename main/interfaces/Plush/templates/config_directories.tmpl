@@ -5,7 +5,7 @@
 <form action="saveDirectories" method="post" name="fullform">
 <input type="hidden" name="session" value="$session">
 
-    <div class="center"><small>$T('explain-folderConfig') You may use absolute paths to save outside of the default folders (in blue).</small></div>
+    <div class="center"><small>$T('explain-folderConfig')</small></div>
     
     <div class="EntryBlock">
     <fieldset class="EntryFieldSet">
@@ -16,17 +16,17 @@
         <br/><br/>
         <strong>$T('opt-download_dir'):</strong><br/>
         <small>$T('explain-download_dir')</small><br/>
-        <input type="text" size="40" name="download_dir" value="$download_dir">
+        <input type="text" size="50" name="download_dir" value="$download_dir">
         
         <br/><br/>
         <strong>$T('opt-download_free'):</strong><br/>
         <small>$T('explain-download_free')</small><br/>
-        <input type="text" size="8" name="download_free" value="$download_free">&nbsp;<small>(bytes; optionally follow with K,M,G,T,P e.g. 500M 2G)</small>
-        
+        <input type="text" size="8" name="download_free" value="$download_free">
+
         <br/><br/>
         <strong>$T('opt-complete_dir'):</strong><br/>
         <small>$T('explain-complete_dir')</small><br/>
-        <input type="text" size="40" id="complete_dir" name="complete_dir" value="$complete_dir">
+        <input type="text" size="50" id="complete_dir" name="complete_dir" value="$complete_dir">
         
         <!--#if not $nt#-->
         <br/><br/>
@@ -38,7 +38,7 @@
         <br/><br/>
         <strong>$T('opt-dirscan_dir'):</strong><br/>
         <small>$T('explain-dirscan_dir')</small><br/>
-        <input type="text" size="40" name="dirscan_dir" value="$dirscan_dir">
+        <input type="text" size="50" name="dirscan_dir" value="$dirscan_dir">
         
         <br/><br/>
         <strong>$T('opt-dirscan_speed'):</strong><br/>
@@ -48,12 +48,12 @@
         <br/><br/>
         <strong>$T('opt-script_dir'):</strong><br/>
         <small>$T('explain-script_dir')</small><br/>
-        <input type="text" size="40" name="script_dir" value="$script_dir">
+        <input type="text" size="50" name="script_dir" value="$script_dir">
 
         <br/><br/>
         <strong>$T('opt-email_dir'):</strong><br/>
         <small>$T('explain-email_dir')</small><br/>
-        <input type="text" size="40" name="email_dir" value="$email_dir">
+        <input type="text" size="50" name="email_dir" value="$email_dir">
     </fieldset>
     
     <fieldset class="EntryFieldSet">
@@ -63,17 +63,17 @@
         
         <strong>$T('opt-cache_dir'):</strong><br/>
         <small>$T('explain-cache_dir')</small><br/>
-        <input type="text" size="40" name="cache_dir" value="$cache_dir">
+        <input type="text" size="50" name="cache_dir" value="$cache_dir">
         
         <br/><br/>
         <strong>$T('opt-log_dir'):</strong><br/>
         <small>$T('explain-log_dir')</small><br/>
-        <input type="text" size="40" name="log_dir" value="$log_dir">
+        <input type="text" size="50" name="log_dir" value="$log_dir">
         
         <br/><br/>
         <strong>$T('opt-nzb_backup_dir'):</strong><br/>
         <small>$T('explain-nzb_backup_dir')</small><br/>
-        <input type="text" size="40" name="nzb_backup_dir" value="$nzb_backup_dir">
+        <input type="text" size="50" name="nzb_backup_dir" value="$nzb_backup_dir">
     </fieldset>
     
     </div>

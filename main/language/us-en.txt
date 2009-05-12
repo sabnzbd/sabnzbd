@@ -75,7 +75,7 @@ add               Add
 reportId          Report-id
 addFile           Add File
 category          Category
-pp                PP
+pp                Processing
 script            Script
 priority          Priority
 pp-none           Download
@@ -104,7 +104,7 @@ hibernatePc       Hibernate PC
 shutdownSab       Shutdown SABnzbd
 speedLimit        Speed Limit
 pauseFor          Pause for
-mode              Mode
+mode              Processing
 name              Name
 remainTotal       Remain/Total
 eta               ETA
@@ -125,7 +125,7 @@ status            Status
 # Connections page
 link-forceDisc    Force Disconnect
 askTestEmail      This will send a test email to your account.
-link-showLog      Show logging
+link-showLog      Show Logging
 link-showWeblog   Show Weblogging
 link-testEmail    Test Email
 logging           Logging
@@ -134,35 +134,38 @@ log-info          + Info
 log-debug         + Debug
 connections       Connections
 thread            Thread
-emailResult       Email test result
-lastWarnings      Last warnings
+emailResult       Email Test Result
+lastWarnings      Lastest Warnings
 clearWarnings     clear
 
 # Configuration
 configuration     Configuration
-confgFile         Configfile
+confgFile         Config File
 explain-Restart   The button below will restart SABnzbd.\n\
                   Use it when you think the program has a stability problem.\n\
                   Downloading will be paused before the restart and resume afterwards.
 button-restart    Restart
+version           Version
+uptime            Uptime
 
 # Config->General
 generalConfig         General configuration
-webServer             Web server (<i>restart required</i>)
-opt-host              Host
+restartRequired       Changes will require a SABnzbd restart!
+webServer             SABnzbd Web Server
+opt-host              SABnzbd Host
 explain-host          Host SABnzbd should listen on.
-opt-port              Port
+opt-port              SABnzbd Port
 explain-port          Port SABnzbd should listen on.
-opt-web_dir           User interface
-explain-web_dir       Choose a skin (restart required!).
-opt-web_dir2          Secondary User Interface
-explain-web_dir2      Activate a secondary skin (restart required!).
+opt-web_dir           Web Interface
+explain-web_dir       Choose a skin.
+opt-web_dir2          Secondary Web Interface
+explain-web_dir2      Activate an alternative skin.
 webAuth               Web server authentication
-opt-web_username      Username
-explain-web_username  Authentication username.
-opt-web_password      Password
-explain-web_password  Authentication password.
-httpsSupport          HTTPS Support (restart required).
+opt-web_username      SABnzbd Username
+explain-web_username  Optional authentication username.
+opt-web_password      SABnzbd Password
+explain-web_password  Optional authentication password.
+httpsSupport          HTTPS Support
 opt-enable_https      Enable HTTPS
 opt-notInstalled      not installed
 explain-enable_https  Enable accessing the interface from a HTTPS address.
@@ -175,55 +178,63 @@ explain-https_key     File name or path to HTTPS Key.
 tuning                Tuning
 opt-refresh_rate      Queue auto refresh interval:
 explain-refresh_rate  Refresh interval of the queue web-interface page(sec, 0= none).
-opt-rss_rate          RSS checking interval
-explain-rss_rate      Checking interval (minutes, at least 15).
-opt-bandwith_limit    Download speed limit
-explain-bandwith_limit Download speed limit in kilobytes per second(kB/s)
+opt-rss_rate          RSS Checking Interval
+explain-rss_rate      Checking interval (in minutes, at least 15).
+opt-bandwith_limit    Download Speed Limit
+explain-bandwith_limit Download rate limit (in KB/s - kilobytes per second).
 opt-cache_limitstr    Article Cache Limit
-explain-cache_limitstr Cache articles in memory (reduce disk access).
+explain-cache_limitstr Cache articles in memory to reduce disk access.\n\
+                      <i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>
 opt-cleanup_list      Cleanup List
-explain-cleanup_list  List of file (extensions) that should be deleted after download\n\
-                      For example: ".nfo," or ".nfo, .sfv"
+explain-cleanup_list  List of file extensions that should be deleted after download.\n\
+                      <i>For example: ".nfo," or ".nfo, .sfv"</i>
 button-saveChanges    Save Changes
 opt-language          Language
-explain-language      Select interface language
+explain-language      Select a web interface language.
+opt-apikey            API Key
+explain-apikey        This key is used to give 3rd party programs access to SABnzbd.
+button-apikey         Generate New Key
 
 # Config->Folders
 folderConfig            Folder configuration
-explain-folderConfig    <em>NOTE:</em> Folders will be created automatically when Saving.
+explain-folderConfig    <em>NOTE:</em> Folders will be created automatically when Saving. You may use absolute paths to save outside of the default folders.
 userFolders             User Folders
 in                      In
 opt-download_dir        Temporary Download Folder
 explain-download_dir    Location to store unprocessed downloads.\n\
                         <i>Can only be changed when queue is empty.</i>
-opt-download_free       Minimum free space for Temporary Download Folder
-explain-download_free   Auto-pause when free space is beneath this value.
+opt-download_free       Minimum Free Space for Temporary Download Folder
+explain-download_free   Auto-pause when free space is beneath this value.\n\
+                        <i>In bytes, optionally follow with K,M,G,T. For example: "800M" or "8G"</i>
 opt-complete_dir        Completed Download Folder
-explain-complete_dir    (can be overruled by user-defined categories).
+explain-complete_dir    Location to store finished, fully processed downloads.\n\
+                        <i>Can be overruled by user-defined categories.</i>
 opt-permissions         Permissions for completed downloads
-explain-permissions     Set permissions pattern for completed files/folders, octal notation only!
+explain-permissions     Set permissions pattern for completed files/folders.\n\
+                        <i>In octal notation. For example: "755" or "777"</i>
 opt-dirscan_dir         Watched Folder
-explain-dirscan_dir     Folder to monitor for .nzb and .zip files.
-opt-dirscan_speed       Watched Folder scan speed
+explain-dirscan_dir     Folder to monitor for .nzb files.\n\
+                        <i>Also scans .zip .rar and .tar.gz archives for .nzb files.</i>
+opt-dirscan_speed       Watched Folder Scan Speed
 explain-dirscan_speed   Number of seconds between scans for .nzb files.
-opt-script_dir          Folder containing the user scripts
+opt-script_dir          Post-Processing Scripts Folder
 explain-script_dir      Folder containing user scripts for post-processing.
-opt-email_dir           Folder containing email templates
-explain-email_dir       Folder containing user defined email templates.
-systemFolders           System folders
-opt-cache_dir           Cache folder
+opt-email_dir           Email Templates Folder
+explain-email_dir       Folder containing user-defined email templates.
+systemFolders           System Folders
+opt-cache_dir           Cache Folder
 explain-cache_dir       Location for temporary storage.\n\
                         <i>Can only be changed when queue is empty.</i>\n\
-                        <i>Requires restart.</i>
-opt-log_dir             Log folder
+                        <i>Requires SABnzbd restart!</i>
+opt-log_dir             Log Folder
 explain-log_dir         Location of log files for SABnzbd.\n\
-                        <i>Requires restart.</i>
-opt-nzb_backup_dir      Backup folder for .nzb
-explain-nzb_backup_dir  Location where .nzb will be backed up.
+                        <i>Requires SABnzbd restart!</i>
+opt-nzb_backup_dir      .nzb Backup Folder
+explain-nzb_backup_dir  Location where .nzb files will be stored.
 
 # Config->Switches
 switchesConfig           Switches configuration
-processingSwitches       Processing switches
+processingSwitches       Processing Switches
 opt-quick_check          Enable Quick Check
 explain-quick_check      Skip par2 checking when files are 100% valid.
 opt-enable_unrar         Enable Unrar
@@ -236,46 +247,45 @@ opt-enable_tsjoin        Enable TS Joining
 explain-ts_join          Join files ending in .001.ts, .002.ts etc. into one file.
 opt-enable_par_cleanup   Enable Par Cleanup
 explain-enable_par_cleanup Cleanup par files (if verifiying/repairing succeded).
-opt-fail_on_crc          Fail on yEnc crc Errors
+opt-fail_on_crc          Fail on yEnc CRC Errors
 explain-fail_on_crc      Use backup servers on yEnc crc errors.
-opt-top_only             Only get articles for top of the queue
-explain-top_only         Enable for less memory usage.\n\
-                         Disable to prevent slow jobs from blocking the queue.
-opt-safe_postproc        Post-process only verified jobs
+opt-top_only             Only Get Articles for Top of Queue
+explain-top_only         Enable for less memory usage. Disable to prevent slow jobs from blocking the queue.
+opt-safe_postproc        Post-Process Only Verified Jobs
 explain-safe_postproc    Only perform post-processing on jobs that passed all PAR2 checks.
-opt-no_dupes             Do not download same job twice
-explain-no_dupes         Skip job if a backed-up NZB with the same name exists.
-opt-dirscan_opts         Default post-processing
+opt-no_dupes             Prevent Duplicate Downloads
+explain-no_dupes         Skip a job if a backed-up .nzb with the same name exists.
+opt-dirscan_opts         Default Post-Processing
 explain-dirscan_opts     Used when no post-processing is defined by the category.
-opt-dirscan_script       Default user script
+opt-dirscan_script       Default User Script
 explain-dirscan_script   Used when no user script is defined by the category.
 opt-dirscan_priority     Default Priority
 explain-dirscan_priority Used when no priority is defined by the category.
-opt-par_option           Extra PAR2 parameters:
+opt-par_option           Extra PAR2 Parameters
 explain-par_option       Read the Wiki Help on this!
-opt-nice                 Nice parameters
+opt-nice                 Nice Parameters
 explain-nice             Read the Wiki Help on this!
-opt-ionice               IONice parameters
+opt-ionice               IONice Parameters
 explain-ionice           Read the Wiki Help on this!
-otherSwitches            Other switches
-opt-auto_disconnect      Disconnect on empty queue
+otherSwitches            Other Switches
+opt-auto_disconnect      Disconnect on Empty Queue
 explain-auto_disconnect  Disconnect from Usenet server(s) when queue is empty or paused.
 opt-send_group           Send Group
 explain-send_group       Send group command before requesting articles.
-opt-auto_sort            Sort by age
+opt-auto_sort            Sort by Age
 explain-auto_sort        Automatically sort items by (average) age.
-opt-check_new_rel        Check for new release
+opt-check_new_rel        Check for New Release
 explain-check_new_rel    Weekly check for new SABnzbd release.
-opt-replace_spaces       Replace spaces in foldername
-explain-replace_spaces   Replace spaces with underscores in foldernames.
-opt-replace_illegal      Replace illegal characters in foldernames
-explain-replace_illegal  Replace illegal characters in foldernames by equivalents (otherwise remove).
-opt-auto_browser         Launch browser on startup
-explain-auto_browser     Launch the browser when starting SABnzbd.
-opt-pause_on_post_processing Pause downloading during post processing
+opt-replace_spaces       Replace Spaces in Foldername
+explain-replace_spaces   Replace spaces with underscores in folder names.
+opt-replace_illegal      Replace Illegal Characters in Folder Names
+explain-replace_illegal  Replace illegal characters in folder names by equivalents (otherwise remove).
+opt-auto_browser         Launch Browser on Startup
+explain-auto_browser     Launch the default web browser when starting SABnzbd.
+opt-pause_on_post_processing Pause Downloading During Post-Processing
 explain-pause_on_post_processing Pauses downloading at the start of post processing and resumes when finished.
 opt-ignore_samples       Ignore Samples
-explain-ignore_samples   Filter out sample files from the queue.
+explain-ignore_samples   Filter out sample files (e.g. video samples).
 igsam-off                Off
 igsam-del                Delete after download
 igsam-not                Do not download
@@ -298,7 +308,7 @@ button-delServer         Remove Server
 
 # Config->Scheduling
 configSchedule           Scheduling configuration
-addSchedule              Add schedule
+addSchedule              Add Schedule
 sch-frequency            Frequency
 sch-action               Action
 sch-arguments            Arguments
@@ -316,7 +326,7 @@ sch-speedlimit           Speedlimit
 
 # Config->RSS
 configRSS                RSS Configuration
-newFeedURI               New feed URI
+newFeedURI               New Feed URL
 explain-RSS              The checkbox next to the feed name should be ticked for the feed to be enabled and be automatically checked for new items.\n\
                          The checking frequency is in the General page of the configuration.\n\
                          When a feed is added, it will only pick up new items and not anything already in the RSS feed unless you press "Force Download".
@@ -344,21 +354,21 @@ opt-email_endjob         Email notification on job completion
 email-never              Never
 email-always             Always
 email-errorOnly          Error-only
-opt-email_full           Disk full notifications
+opt-email_full           Disk Full Notifications
 explain-email_full       Send email when disk is full and SABnzbd is paused.
 opt-email_dir            Folder containing email templates
 explain-email_dir        Folder containing user defined email templates.\n\
                          Relative to
 emailAccount             Email Account Settings
-opt-email_server         SMTP server
+opt-email_server         SMTP Server
 explain-email_server     Set your ISP's server for outgoing email.
-opt-email_to             Email recipient
+opt-email_to             Email Recipient
 explain-email_to         Email address to send the email to.
-opt-email_from           Email sender
+opt-email_from           Email Sender
 explain-email_from       Who should we say sent the email?
-opt-email_account        OPTIONAL: Account name
+opt-email_account        OPTIONAL Account Username
 explain-email_account    For authenticated email, account name.
-opt-email_pwd            OPTIONAL: Account password
+opt-email_pwd            OPTIONAL Account Password
 explain-email_pwd        For authenticated email, password.
 
 # Config->Newzbin
@@ -366,28 +376,28 @@ explain-newzbin          If you have an account at <strong>www.newzbin.com</stro
                          you can enter your account info here.\n\
                          This will unlock extra functionality.
 accountInfo              Account info
-opt-username_newzbin     Username
-explain-username_newzbin Set your username here.
-opt-password_newzbin     Password
-explain-password_newzbin Set your password here.
-newzbinBookmarks         Bookmark processing
-opt-newzbin_bookmarks    Auto fetch bookmarks
-explain-newzbin_bookmarks Automatically get jobs from your bookmarks?
-link-getBookmarks        Get bookmarks now
-link-HideBM              Hide processed bookmarks
-link-ShowBM              Show processed bookmarks
-opt-newzbin_unbookmark   Un-bookmark if download complete
-explain-newzbin_unbookmark Remove from bookmark list, when download is complete.
-opt-bookmark_rate        Checking interval
+opt-username_newzbin     Newzbin Username
+explain-username_newzbin Set your account username here.
+opt-password_newzbin     Newzbin Password
+explain-password_newzbin Set your account password here.
+newzbinBookmarks         Bookmark Processing
+opt-newzbin_bookmarks    Auto-Fetch Bookmarks
+explain-newzbin_bookmarks Automatically retrieve jobs from your bookmarks.
+link-getBookmarks        Get Bookmarks Now
+link-HideBM              Hide Processed Bookmarks
+link-ShowBM              Show Processed Bookmarks
+opt-newzbin_unbookmark   Un-Bookmark If Download Complete
+explain-newzbin_unbookmark Remove from bookmark list when download is complete.
+opt-bookmark_rate        Checking Interval
 explain-bookmark_rate    In minutes (at least 15 min).
-processedBM              Processed bookmarks
+processedBM              Processed Bookmarks
 explain-nzbmatrix        If you have an account at <strong>www.nzbmatrix.com</strong>,\
                          you can enter your account info here.\n\
                          This is required if you want to use the RSS feeds of this site.
-opt-username_matrix      Username
-explain-username_matrix  Set your username here.
-opt-password_matrix      Password
-explain-password_matrix  Set your password here.
+opt-username_matrix      NzbMatrix Username
+explain-username_matrix  Set your account username here.
+opt-password_matrix      NzbMatrix Password
+explain-password_matrix  Set your account password here.
 
 # Config->Cat
 configCat                User-defined categories

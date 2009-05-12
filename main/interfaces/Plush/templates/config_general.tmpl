@@ -12,6 +12,8 @@
     
     <legend id="configbox_web_server">$T('webServer')</legend>
     
+    <strong class="manual_restart">&nbsp;$T('restartRequired')&nbsp;</strong><br/><br/>
+    
     <table cellpadding=2>
     <tr><td>
     <strong>$T('opt-host'):</strong><br/>
@@ -20,7 +22,7 @@
     
     </td><td>
     <strong>$T('opt-port'):</strong><br/>
-    <small>$T('explain-port').</small><br/>
+    <small>$T('explain-port')</small><br/>
     <input type="text" name="port" size=8 value="$port"/>
     
     </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
@@ -30,7 +32,7 @@
     
     </td><td>
     <strong>$T('opt-web_password'):</strong><br/>
-    <small>$T('explain-web_password').</small><br/>
+    <small>$T('explain-web_password')</small><br/>
     <input type="password" name="web_password" value="$password"/>
     </td></tr>
     </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
@@ -76,9 +78,10 @@
     </select>
 
 	<br/><br/>
-	<strong>API Key:</strong><br />
+	<strong>$T('opt-apikey'):</strong><br />
+    <small>$T('explain-apikey')</small><br/>
 	<input type="text" style="width:250px;border:none;" id="apikey" value="$session">
-	<input type="button" style="float:none;display:inline;" size="40" value="Generate New Key" id="generate_new_apikey">
+	<input type="button" style="float:none;display:inline;" size="40" value="$T('button-apikey')" id="generate_new_apikey">
                                     
 </fieldset>
 </div>
@@ -87,26 +90,28 @@
 <fieldset class="EntryFieldSet">
     <legend id="configbox_web_server">$T('httpsSupport')</legend>
     
-        <input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-        <strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('not-installed') else ""#--></strong><br/>
-        <small>$T('explain-enable_https')</small>
+    <strong class="manual_restart">&nbsp;$T('restartRequired')&nbsp;</strong><br/><br/>
 
-		<br/><br/>
-        <strong>$T('opt-https_port'):</strong><br/>
-        <small>$T('explain-https_port')</small><br/>
-        <input type="text" name="https_port" size="8" value="$https_port"/>
-        
-		<br/><br/>
-        <strong>$T('opt-https_cert'):</strong><br/>
-        <small>$T('explain-https_cert')</small><br/>
-        <input type="text" name="https_cert" value="$https_cert"/>
+    <input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+    <strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('not-installed') else ""#--></strong><br/>
+    <small>$T('explain-enable_https')</small>
 
-		<br/><br/>
-        <strong>$T('opt-https_key'):</strong><br/>
-        <small>$T('explain-https_key')</small><br/>
-        <input type="text" name="https_key" value="$https_key"/>
-        
-        <br/>&nbsp;
+	<br/><br/>
+    <strong>$T('opt-https_port'):</strong><br/>
+    <small>$T('explain-https_port')</small><br/>
+    <input type="text" name="https_port" size="8" value="$https_port"/>
+    
+	<br/><br/>
+    <strong>$T('opt-https_cert'):</strong><br/>
+    <small>$T('explain-https_cert')</small><br/>
+    <input type="text" name="https_cert" value="$https_cert"/>
+
+	<br/><br/>
+    <strong>$T('opt-https_key'):</strong><br/>
+    <small>$T('explain-https_key')</small><br/>
+    <input type="text" name="https_key" value="$https_key"/>
+    
+    <br/>&nbsp;
 </fieldset>
 </div>
 

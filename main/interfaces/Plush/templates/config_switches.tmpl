@@ -19,7 +19,7 @@
         <tr>
             <td align=right><div class="tucker">$T('opt-enable_unrar'):</div></td>
             <td><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-enable_unrar').</small></td>
+            <td><small>$T('explain-enable_unrar')</small></td>
         </tr>
         <tr>
             <td align=right><div class="tucker">$T('opt-enable_unzip'):</div></td>
@@ -34,7 +34,7 @@
         <tr>
             <td align=right><div class="tucker">$T('opt-enable_tsjoin'):</div></td>
             <td><input type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-enable_tsjoin')</small></td>
+            <td><small>$T('explain-ts_join')</small></td>
         </tr>
         <tr>
             <td align=right><div class="tucker">$T('opt-enable_par_cleanup'):</div></td>
@@ -91,7 +91,7 @@
         </td><td>
 
             <strong>$T('opt-dirscan_script'):</strong><br/>
-            <small>$T('explain-dirscan_script').</small><br/>
+            <small>$T('explain-dirscan_script')</small><br/>
             <select name="dirscan_script">
             <!--#for $sc in $script_list#-->
             <!--#if $sc.lower() == $dirscan_script.lower()#-->

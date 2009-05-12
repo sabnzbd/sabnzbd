@@ -181,9 +181,9 @@ jQuery(document).ready(function($){
 		    break;
         	
         case 'NZB Sites':
-        	$('#getBookmarks').click(function(){ window.location='getBookmarks&session='+apikey; });
-        	$('#hideBookmarks').click(function(){ window.location='hideBookmarks&session='+apikey; });
-        	$('#showBookmarks').click(function(){ window.location='showBookmarks&session='+apikey; });
+        	$('#getBookmarks').click(function(){ window.location='getBookmarks?session='+apikey; });
+        	$('#hideBookmarks').click(function(){ window.location='hideBookmarks?session='+apikey; });
+        	$('#showBookmarks').click(function(){ window.location='showBookmarks?session='+apikey; });
         	break;
 
         case 'Sorting':
