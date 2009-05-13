@@ -355,7 +355,7 @@ jQuery(function($) { // safely invoke $ selector
 					$('#manual_refresh').removeClass('refreshing');
 	
 					// Tooltips
-					$('#time-left').attr('title','ETA: '+$.plush.eta);
+					$('#time-left').attr('title',$.plush.eta);
 					$('#time-left, .download-title a').tooltip({
 						extraClass:	"tooltip",
 						showURL: false,
@@ -382,18 +382,14 @@ jQuery(function($) { // safely invoke $ selector
 					else
 						$('#pause_int').html($.plush.pause_int);
 					
-					// Page title + eta/kbpersec stats at top of queue
+					// ETA/kbpersec stats at top of queue
 					if ($.plush.queuenoofslots < 1) {
-						if ($.plush.paused) document.title = 'PAUSED | SABnzbd+ Plush';
-						else				document.title = 'IDLE | SABnzbd+ Plush';
 						$('#stats_kbpersec').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
 					} else if ($.plush.kbpersec < 1 && $.plush.paused) {
-						document.title = 'PAUSED | '+$.plush.mbleft+' MB left | '+$.plush.queuenoofslots+' NZBs';
 						$('#stats_kbpersec').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
 					} else {
-						document.title = $.plush.kbpersec+' KB/s | '+$.plush.mbleft+' MB | '+$.plush.timeleft+' left';
 						$('#stats_kbpersec').html($.plush.kbpersec);
 						$('#stats_eta').html($.plush.timeleft);
 					}
@@ -601,7 +597,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Sabnzbd shutdown
 			$('#shutdown_sabnzbd').click( function(){
-				if(confirm('Sure you want to shut down the SABnzbd application?'))
+				if(confirm($('#shutdown_sabnzbd').attr('rel')))
 					window.location='shutdown?session='+$.plush.apikey;
 			});
 			
@@ -616,7 +612,7 @@ jQuery(function($) { // safely invoke $ selector
 					
 			// Queue purge
 			$('#queue_purge').click(function(event) {
-				if(confirm('Sure you want to empty out your Queue?')){
+				if(confirm($('#queue_purge').attr('rel'))){
 					$.ajax({
 						type: "POST",
 						url: "tapi",
@@ -640,7 +636,7 @@ jQuery(function($) { // safely invoke $ selector
 			$('.set_pause').click(function(event) {
 				var minutes = $(event.target).attr('rel');
 				if (minutes == "custom")
-					minutes = prompt("Pause for how many minutes?");
+					minutes = prompt($(event.target).attr('title'));
 				$.ajax({
 					type: "POST",
 					url: "tapi",
@@ -919,7 +915,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Purge
 			$('.h_menu_purge').click(function(event) {
-				if (confirm("Are you sure you want to purge the history?")) {
+				if (confirm($('.h_menu_purge').attr('rel'))) {
 					$.ajax({
 						type: "POST",
 						url: "tapi",

@@ -11,6 +11,7 @@ default           Default
 none              None
 KBs               KB/s
 MB                MB
+GB                GB
 hour              hour
 minute            min
 second            sec
@@ -114,7 +115,7 @@ button-resume     Resume
 button-pause      Pause
 
 # History page
-purgeHist         Purge history
+purgeHist         Purge History
 hideDetails       Hide details
 showDetails       Show details
 sizeHist          History Size
@@ -292,7 +293,7 @@ igsam-not                Do not download
 
 # Config->Server
 configServer             Server configuration
-addServer                Add server
+addServer                Add Server
 srv-host                 Host
 srv-port                 Port
 srv-username             Username
@@ -422,9 +423,9 @@ nzo-top                  Top
 nzo-up                   Up
 nzo-down                 Down
 nzo-bottom               Bottom
-nzo-all                  all
-nzo-none                 none
-nzo-invert               invert
+nzo-all                  All
+nzo-none                 None
+nzo-invert               Invert
 nzo-filename             Filename
 nzo-subject              Subject
 nzo-age                  Age

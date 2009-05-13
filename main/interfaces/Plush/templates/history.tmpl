@@ -7,7 +7,7 @@
     // set vars within the plush object
     jQuery(function($) {
         $.plush.histnoofslots      = $noofslots;
-        $.plush.histstats = "<!--#if $loadavg#--><strong>$loadavg</strong>&nbsp;Load&nbsp;Avg.<!--#end if#--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;This&nbsp;Week<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;This&nbsp;Month<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;Total<!--#end if #-->";
+        $.plush.histstats = "<!--#if $loadavg#--><strong>$loadavg</strong>&nbsp;$T('ft-sysload')<!--#end if#--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('Plush-thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('Plush-thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('Plush-total')<!--#end if #-->";
 	});
 	
 </script>
@@ -29,23 +29,23 @@
     <td class="verbose">
         <!--#if $line.report #-->
             <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">
-                <div class="hv_report pointer" title='Open Source URL<br/><br/>https://www.newzbin.com/browse/post/$line.report'>&nbsp;</div>
+                <div class="hv_report pointer" title='$T('Plush-openSourceURL')<br/><br/>https://www.newzbin.com/browse/post/$line.report'>&nbsp;</div>
             </a>
         <!--#else#-->
             <div class="hv_report hvFaded">&nbsp;</div>
         <!--#end if#-->
         <!--#if $line.url_info #-->
             <a href="$line.url_info" target="_blank">
-                <div class="hv_url pointer" title="Open Informational URL<br/><br/>$line.url_info">&nbsp;</div>
+                <div class="hv_url pointer" title="$T('Plush-openInfoURL')<br/><br/>$line.url_info">&nbsp;</div>
             </a>
         <!--#else#-->
             <div class="hv_url hvFaded">&nbsp;</div>
         <!--#end if#-->
-        <div class="hv_stats" title='<!--#if $line.size#-->Size: $line.size<br/><br/><!--#end if#--><!--#if $line.path#-->Path:<br/><!--#echo $line.path.replace("'","&rsquo;") #--><br/><br/><!--#end if#--><!--#if $line.storage#-->Storage:<br/><!--#echo $line.storage.replace("'","&rsquo;") #--><!--#end if#-->'>&nbsp;</div>
+        <div class="hv_stats" title='<!--#if $line.size#-->$T('size'): $line.size<br/><br/><!--#end if#--><!--#if $line.path#-->$T('Plush-path'):<br/><!--#echo $line.path.replace("'","&rsquo;") #--><br/><br/><!--#end if#--><!--#if $line.storage#-->$T('Plush-storage'):<br/><!--#echo $line.storage.replace("'","&rsquo;") #--><!--#end if#-->'>&nbsp;</div>
 	    <!--#for $stage in $line.stage_log#-->
             <!--#if $stage.name == "script"#-->
                 <a href="scriptlog?name=$line.nzo_id">
-                    <div class="hv_$stage.name pointer" title='View Script Log<br/><br/><!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br/><!--#end for#-->'>&nbsp;</div>
+                    <div class="hv_$stage.name pointer" title='$T('Plush-viewScriptLog')<br/><br/><!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br/><!--#end for#-->'>&nbsp;</div>
                 </a>
             <!--#else#-->
                 <div class="hv_$stage.name" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br/><!--#end for#-->'>&nbsp;</div>
@@ -63,7 +63,7 @@
         <!--#if not $line.loaded#-->
         <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
         <small class="history_added">$d</small>
-        <div class="queue_delete" title="Hide&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
+        <div class="queue_delete" title="$T('nzo-delete')&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
         <!--#end if#-->
     </td>
     
