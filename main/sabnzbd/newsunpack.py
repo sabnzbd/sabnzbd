@@ -158,7 +158,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, creationflags=creationflags)
-    except WindowsError:
+    except:
         return "Cannot run script %s\r\n" % extern_proc, -1
 
     output = p.stdout.read()
