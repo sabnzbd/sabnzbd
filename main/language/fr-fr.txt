@@ -11,7 +11,8 @@ default           Défaut
 none              Aucun
 KBs               KB/s
 MB                MB
-hour              heure
+GB                GB
+hour              hour
 minute            min
 second            sec
 month             Mois
@@ -145,24 +146,27 @@ explain-Restart   Le bouton ci-dessous redémarrera SABnzbd.\n\
                   Utilisez le si vous pensez avoir un problème de stabilité.\n\
                   Les téléchargements en cours seront mis en pause puis repris.
 button-restart    Redémarrer
+version           Version
+uptime            Uptime
 
 # Config->General
 generalConfig         Configuration Générale
-webServer             Serveur Web (<i>redémarrage requis</i>)
-opt-host              Hôte
+restartRequired       Les modifications nécessiteront un redémarrage de SABnzbd !
+webServer             Serveur Web
+opt-host              Hôte SABnzbd
 explain-host          Hôte sur lequel SABnzbd doit attendre les connexions.
-opt-port              Port
+opt-port              Port SABnzbd
 explain-port          Port sur lequel SABnzbd doit attendre les connexions.
-opt-web_dir           Interface Utilisateur
-explain-web_dir       Choisissez un thème (redémarrage requis !).
-opt-web_dir2          Seconde Interface Utilisateur
-explain-web_dir2      Choisissez un thème pour la 2nde interface web (redémarrage requis !).
+opt-web_dir           Interface Web
+explain-web_dir       Choisissez un thème.
+opt-web_dir2          Seconde Interface Web
+explain-web_dir2      Choisissez un thème pour la 2nde interface web.
 webAuth               Autentification serveur Web
-opt-web_username      Identifiant
-explain-web_username  Nom d'utilisateur pour l'autentification.
-opt-web_password      Mot de passe
-explain-web_password  Mot de passe pour l'autentification.
-httpsSupport          Support HTTPS (redémarrage requis !).
+opt-web_username      Identifiant SABnzbd
+explain-web_username  Nom d'utilisateur pour l'autentification (optionnel).
+opt-web_password      Mot de passe SABnzbd
+explain-web_password  Mot de passe pour l'autentification (optionnel).
+httpsSupport          Support HTTPS
 opt-enable_https      Active HTTPS
 opt-notInstalled      non installé
 explain-enable_https  Active l'accès à l'interface via une adresse HTTPS.
@@ -173,41 +177,46 @@ explain-https_cert    Fichier or chemin du certificat HTTPS.
 opt-https_key         Clé HTTPS
 explain-https_key     Fichier or chemin de la clé HTTPS.
 tuning                Tuning
-opt-refresh_rate      Intervalle de rafraichissement de la queue :
+opt-refresh_rate      Intervalle de rafraîchissement de la queue :
 explain-refresh_rate  Intervalle de rafraichissement dans l'interface web (en sec, 0=aucun).
 opt-rss_rate          Invervalle de vérification RSS
-explain-rss_rate      Intervalle de vérification (enminutes, au moins 15).
+explain-rss_rate      Intervalle de vérification (en minutes, minimum 15).
 opt-bandwith_limit    Limite de vitesse de téléchargement
 explain-bandwith_limit Limite de vitesse de téléchargement en kilobytes par second(kB/s)
 opt-cache_limitstr    Limite d'Article en cache
-explain-cache_limitstr Permet de mettre en cache en RAM les articles (réduit les accès disques).
+explain-cache_limitstr Permet de mettre en cache en RAM les articles pour réduire les accès disques.\n\
+                      <i>En bytes, put être suivi de K,M,G. Par exemple : "64M" ou "128M"</i>
 opt-cleanup_list      Liste de nettoyage
-explain-cleanup_list  Liste de fichiers (extensions) qui doivent être supprimés après téléchargement\n\
-                      Par exemple: ".nfo," or ".nfo, .sfv"
+explain-cleanup_list  Liste des extensions de fichiers qui doivent être supprimés après téléchargement\n\
+                      <i>Par exemple: ".nfo," or ".nfo, .sfv"</i>
 button-saveChanges    Enregistrer les modifications
 opt-language          Langage
-explain-language      Séléctionner la langue de l'interface
+explain-language      Séléction la langue de l'interface web.
 
 # Config->Folders
 folderConfig            Configuration des dossiers
-explain-folderConfig    <em>NOTE:</em> Les dossiers seront créés automatiquement lors de l'Enregistrement.
+explain-folderConfig    <em>NOTE:</em> Les dossiers seront créés automatiquement lors de l'Enregistrement. Il est possible d'utiliser des chemins absolus.
 userFolders             Dossiers Utilisateur
 in                      Dans
 opt-download_dir        Dossier de téléchargement temporaire
-explain-download_dir    Endroit où sont stockés les téléchargements non post-traités.\n\
+explain-download_dir    Pour le sotckage des téléchargements non post-traités.\n\
                         <i>Ne peut être modifié que lorsque la queue est vide.</i>
 opt-download_free       Espace disque minimum pour le Dossier de téléchargement temporaire
-explain-download_free   Met en pause les téléchargements si l'espace passe en dessous de ce montant.
+explain-download_free   Met en pause automatiquement les téléchargements si l'espace passe en dessous de ce montant.\n\
+                        <i>En bytes, peut être suivi de K,M,G,T. PAr exemple : "800M" ou "8G"</i>
 opt-complete_dir        Dossier des téléchargements terminés
-explain-complete_dir    (peut être remplacé par les catégories utilisateur).
+explain-complete_dir    Pour le stockage es téléchargements terminés et post-traités.\n\
+                        <i>peut être remplacé par les catégories utilisateur.</i>
 opt-permissions         Permissions pour le dossier de téléchargement terminés
-explain-permissions     Affecter le modèle de permissions pour les dossiers/fichiers des téléchargements terminés, notation octale uniquement !
+explain-permissions     Affecter les permissions pour les dossiers/fichiers des téléchargements terminés.\n\
+                        <i>En notation octale. Par exemple : "755" ou "777"</i>
 opt-dirscan_dir         Dossier à scanner
-explain-dirscan_dir     Dossier à scanner pour les fichiers .nzb et .zip.
+explain-dirscan_dir     Dossier à surveiller pour les fichiers .nzb.\n\
+                        <i>Prends en compte également les nzb contenus dans les fichiers .zip, .rar et .tar.gz.</i>
 opt-dirscan_speed       Intervalle de scan
 explain-dirscan_speed   Nombre de secondes entre les scans de fichiers .nzb.
-opt-script_dir          Dossier contenant les scripts utilisateurs
-explain-script_dir      Dossier contenant les scripts utilisateurs utilisés lors du post-traitement.
+opt-script_dir          Dossier contenant les scripts de Post-traitement
+explain-script_dir      Dossier contenant les scripts utilisés lors du post-traitement.
 opt-email_dir           Dossier contenant les modèles d'email
 explain-email_dir       Dossier contenant les modèles d'email définis par l'utilisateur.
 systemFolders           Dossier Système
@@ -239,8 +248,7 @@ explain-enable_par_cleanup Supprimier les fichiers par (uniquement si la vérific
 opt-fail_on_crc          Echoue lors d'erreurs crc yEnc
 explain-fail_on_crc      Utilise les serveurs de soutient si il y a des erreurs crc yEnc.
 opt-top_only             Ne télécharge uniquement que les articles en tête de queue
-explain-top_only         Activer pour dimininuer l'utilisation de la RAM.\n\
-                         Désactiver pour éviter les téléchargement lents bloquant la queue.
+explain-top_only         Activer pour dimininuer l'utilisation de la RAM. Désactiver pour éviter les téléchargement lents bloquant la queue.
 opt-safe_postproc        Post-traiter uniquement les téléchargements vérifiés
 explain-safe_postproc    Limite le post-traitement aux téléchargements qui ont passés avec succès les vérifications par2.
 opt-no_dupes             Eviter les duplications de téléchargement
@@ -316,7 +324,7 @@ sch-speedlimit           Limite de vitesse
 
 # Config->RSS
 configRSS                Configuration RSS 
-newFeedURI               URI nouveau flux
+newFeedURI               URI Nouveau Flux
 explain-RSS              La case à cocher à coté du nom du flux devrait être cochée pour que le flux soit activé et qu'il soit pris en compte dans la vérification pour de nouveaux téléchargements.\n\
                          La fréquence de vérification est réglable dans la page de configuration générale.\n\
                          Quant un flux est ajouté, seuls les nouveaux téléchargements seront pris en compte à moins de cliquer sur "Forcer téléchargements".
@@ -366,27 +374,27 @@ explain-newzbin          Si vous avez un compte sur <strong>www.newzbin.com</str
                          vous pouvez entrer vos informations de compte ici.\n\
                          Vous accéderez à d'avantage de possibilités.
 accountInfo              Paramètres de compte
-opt-username_newzbin     Identifiant
+opt-username_newzbin     Identifiant Newzbin
 explain-username_newzbin Entrez votre identifiant ici.
-opt-password_newzbin     Mot de passe
+opt-password_newzbin     Mot de passe Newzbin
 explain-password_newzbin Entrez votre mot de passe ici.
 newzbinBookmarks         Traitement des marque-pages
 opt-newzbin_bookmarks    Téléchargement automatique des marque-pages
-explain-newzbin_bookmarks Voulez-vous qu'ils soient téléchargés automatiquement ?
+explain-newzbin_bookmarks Télécharge automatiquement les éléments en marque-pages
 link-getBookmarks        Télécharger les marque-pages maintenant
 link-HideBM              Masquer les marque-pages traités
 link-ShowBM              Afficher les marque-pages traités
 opt-newzbin_unbookmark   Retirer le marque-page si il a été téléchargé
 explain-newzbin_unbookmark Retire de la liste des marque-pages lorque le téléchargement est terminé.
 opt-bookmark_rate        Fréquence de vérification
-explain-bookmark_rate    En minutes (au moins 15 min).
+explain-bookmark_rate    En minutes (minimum 15 min).
 processedBM              Marque-pages traités
 explain-nzbmatrix        Si vous avez un compte sur <strong>www.nzbmatrix.com</strong>,\
                          vous pouvez entrer vos informations de compte ici.\n\
                          Obligatoire si vous désirez utilisez les flux RSS de ce site.
-opt-username_matrix      Identifiant
+opt-username_matrix      Identifiant NzbMatrix
 explain-username_matrix  Entrez votre identifiant ici.
-opt-password_matrix      Mot de passe
+opt-password_matrix      Mot de passe NzbMatrix
 explain-password_matrix  Entrez votre mot de passe ici.
 
 # Config->Cat
@@ -412,8 +420,8 @@ nzo-top                  Premier
 nzo-up                   Monter
 nzo-down                 Descendre
 nzo-bottom               Dernier
-nzo-all                  tous
-nzo-none                 auncun
+nzo-all                  Tous
+nzo-none                 Auncun
 nzo-invert               inverser
 nzo-filename             Nom de fichier
 nzo-subject              Sujets
