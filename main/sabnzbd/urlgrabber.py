@@ -138,9 +138,8 @@ class URLGrabber(Thread):
                 continue
 
             if not filename:
-                filename = os.path.basename(url)
-            else:
-                filename = misc.sanitize_foldername(filename)
+                filename = os.path.basename(url) + '.nzb'
+            filename = misc.sanitize_foldername(filename)
             _r, _u, _d = future_nzo.get_repair_opts()
             pp = sabnzbd.opts_to_pp(_r, _u, _d)
             script = future_nzo.get_script()
