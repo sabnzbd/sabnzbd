@@ -1,18 +1,13 @@
 
-==============================================
-== Plush 3.0 for SABnzbd+ 0.5 | Mar 16 2009 ==
-
-============
-ASSEMBLED BY
-
-pairofdimes (See LICENSE-CC.txt)
+Plush 3.0 for SABnzbd+ 0.5 | May 18 2009
+assembled by: pairofdimes (See LICENSE-CC.txt)
 
 ==============
 SPECIAL THANKS
 
-switch for the API and so many new features
-shypike for making this all happen
-inpheaux for the Config concept/assembly, main menu styling, SABnzbd+ logo, & favicon
+switch for the API and the many new UI features
+shypike for making SABnzbd+ happen
+inpheaux for the Config/NZO concept, main menu styling, SABnzbd+ logo & favicon
 injectx for the initial layout concept, design and imagery
 real_scud for building out the initial HTML/CSS layout
 sbultez for creating numerous history verbosity icons
@@ -109,7 +104,7 @@ See LICENSE-LGPL
 The following images are from the Nuvola icon set:
 templates/static/images/plush-default/nzo/*.png
 templates/static/images/plush-default/config/*.png
-...with the exception of config/rss.png which comes from http://feedicons.com/
+...with the exception of config/nav_rss.png which comes from http://feedicons.com/
 
 All other imagery provided by injectx and real_scud; thank you both for the skin.
 ...with the exceptions of shadow.png and arrows-ffffff.png which are part of the jQuery Superfish plugin -- See LICENSE-MIT & LICENSE-GPL

@@ -853,7 +853,7 @@ fieldset.EntryFieldSet {
 #config_nav li a {
     background-color: #ddd;
     display: block;
-    padding: 8px 0px 8px 30px;
+    padding: 10px 0px 8px 26px;
     color: #666;
     text-decoration: none;
     width: 100%;
@@ -878,17 +878,17 @@ fieldset.EntryFieldSet {
     padding-right: 5px;
     border-width: 0px;
 }
-#config_nav_connections    { background-image: url(../images/plush-default/config/connections.png); }
-#config_nav_general        { background-image: url(../images/plush-default/config/general.png); }
-#config_nav_directories    { background-image: url(../images/plush-default/config/user_folders.png); }
-#config_nav_switches    { background-image: url(../images/plush-default/config/switches.png); }
-#config_nav_server        { background-image: url(../images/plush-default/config/servers.png); }
-#config_nav_categories    { background-image: url(../images/plush-default/config/categories.png); }
-#config_nav_scheduling    { background-image: url(../images/plush-default/config/scheduling.png); }
-#config_nav_rss         { background-image: url(../images/plush-default/config/rss.png); }
-#config_nav_email        { background-image: url(../images/plush-default/config/email_options.png); }
-#config_nav_index_sites    { background-image: url(../images/plush-default/config/index_sites.png); }
-#config_nav_sorting        { background-image: url(../images/plush-default/config/sorting_generic.png); }
+#config_nav_connections    { background-image: url(../images/plush-default/config/nav_connections.png); }
+#config_nav_general        { background-image: url(../images/plush-default/config/nav_general.png); }
+#config_nav_directories    { background-image: url(../images/plush-default/config/nav_folders.png); }
+#config_nav_switches    { background-image: url(../images/plush-default/config/nav_switches.png); }
+#config_nav_server        { background-image: url(../images/plush-default/config/nav_servers.png); }
+#config_nav_categories    { background-image: url(../images/plush-default/config/nav_categories.png); }
+#config_nav_scheduling    { background-image: url(../images/plush-default/config/nav_scheduling.png); }
+#config_nav_rss         { background-image: url(../images/plush-default/config/nav_rss.png); }
+#config_nav_email        { background-image: url(../images/plush-default/config/nav_email.png); }
+#config_nav_index_sites    { background-image: url(../images/plush-default/config/nav_indexsites.png); }
+#config_nav_sorting        { background-image: url(../images/plush-default/config/nav_sorting.png); }
 
 
 #config_content legend {
@@ -952,7 +952,7 @@ fieldset.EntryFieldSet {
     padding-left:36px;
 }
 #test_email {
-    background-image: url(../images/plush-default/config/test_email.png);
+    background-image: url(../images/plush-default/config/email_options.png);
     padding: 6px;
     padding-left:36px;
 }
