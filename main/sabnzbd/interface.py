@@ -62,7 +62,11 @@ from sabnzbd.lang import T, Tspec, list_languages, reset_language
 #------------------------------------------------------------------------------
 # Global constants
 
-DIRECTIVES = {'directiveStartToken': '<!--#', 'directiveEndToken': '#-->'}
+DIRECTIVES = {
+           'directiveStartToken': '<!--#',
+           'directiveEndToken': '#-->',
+           'prioritizeSearchListOverSelf' : True
+           }
 RESTART_MSG1 = '''
 Initiating restart...
 '''
@@ -815,13 +819,13 @@ class Wizard:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        
+
         info = self.info.copy()
         info['num'] = ''
         info['number'] = 0
         info['lang'] = cfg.LANGUAGE.get()
         info['languages'] = list_languages(sabnzbd.DIR_LANGUAGE)
-        
+
         if not os.path.exists(self.__web_dir):
             # If the wizard folder does not exist, simply load the normal page
             raise cherrypy.HTTPRedirect('')
@@ -829,7 +833,7 @@ class Wizard:
             template = Template(file=os.path.join(self.__web_dir, 'index.html'),
                                 searchList=[info], compilerSettings=DIRECTIVES)
             return template.respond()
-        
+
     @cherrypy.expose
     def one(self, **kwargs):
         # Handle special options
@@ -837,7 +841,7 @@ class Wizard:
         if language and language != cfg.LANGUAGE.get():
             cfg.LANGUAGE.set(language)
             reset_language(language)
-                
+
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('wizard-step-one')
         info['number'] = 1
