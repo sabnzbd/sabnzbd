@@ -68,7 +68,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader as downloader
-import sabnzbd.lang
+from sabnzbd.lang import T
 
 from threading import Thread
 
