@@ -44,7 +44,7 @@
         <div class="hv_stats" title='<!--#if $line.size#-->$T('size'): $line.size<br/><br/><!--#end if#--><!--#if $line.path#-->$T('Plush-path'):<br/><!--#echo $line.path.replace("'","&rsquo;") #--><br/><br/><!--#end if#--><!--#if $line.storage#-->$T('Plush-storage'):<br/><!--#echo $line.storage.replace("'","&rsquo;") #--><!--#end if#-->'>&nbsp;</div>
 	    <!--#for $stage in $line.stage_log#-->
             <!--#if $stage.name == "script"#-->
-                <a href="scriptlog?name=$line.nzo_id">
+                <a href="scriptlog?name=$line.nzo_id" class="modal" rel="scriptlog">
                     <div class="hv_$stage.name pointer" title='$T('Plush-viewScriptLog')<br/><br/><!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br/><!--#end for#-->'>&nbsp;</div>
                 </a>
             <!--#else#-->

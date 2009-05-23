@@ -1,5 +1,5 @@
 
-Plush 3.0 for SABnzbd+ 0.5 | May 18 2009
+Plush 3.0 for SABnzbd+ 0.5 | May 22 2009
 assembled by: pairofdimes (See LICENSE-CC.txt)
 
 ==============
@@ -30,6 +30,11 @@ Sizzle CSS Selector Engine
 http://sizzlejs.com/
 Copyright (c) 2009 The Dojo Foundation
 See LICENSE-MIT, LICENSE-BSD, & LICENSE-GPL
+
+jQuery ColorBox
+http://colorpowered.com/colorbox/
+Copyright (c) 2009 Jack Moore
+See LICENSE-MIT
 
 jQuery Cookie
 http://www.stilbuero.de
@@ -108,6 +113,7 @@ templates/static/images/plush-default/config/*.png
 
 All other imagery provided by injectx and real_scud; thank you both for the skin.
 ...with the exceptions of shadow.png and arrows-ffffff.png which are part of the jQuery Superfish plugin -- See LICENSE-MIT & LICENSE-GPL
+...with the exception of colorbox-controls.png which is part of the jQuery ColorBox plugin -- See LICENSE-MIT
 
 =======
 CONTACT
