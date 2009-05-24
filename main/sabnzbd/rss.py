@@ -423,5 +423,5 @@ def _get_link(uri, entry):
     if link and link.lower().find('http') >= 0:
         return link
     else:
-        logging.warning(T('warn-emptyRSS@2'), link)
+        logging.warning(T('warn-emptyRSS@1'), link)
         return None

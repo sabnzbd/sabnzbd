@@ -63,7 +63,7 @@ ft-paused         EN PAUSE
 ft-buffer@2       %s articles dans %s bytes
 ft-sysload        Sysload
 ft-warning        AVERTISSEMENTS
-ft-newRelease@1   Une nouvelle version %s est disponible 
+ft-newRelease@1   Une nouvelle version %s est disponible
 
 # Main page
 addNewJobs        Ajouter de nouveaux téléchargements
@@ -135,7 +135,7 @@ log-info          + Info
 log-debug         + Debug
 connections       Connexions
 thread            Thread
-emailResult       Résultat du test Email 
+emailResult       Résultat du test Email
 lastWarnings      Derniers avertissements
 clearWarnings     effacer
 
@@ -323,7 +323,7 @@ sch-restart              Rédemarrer
 sch-speedlimit           Limite de vitesse
 
 # Config->RSS
-configRSS                Configuration RSS 
+configRSS                Configuration RSS
 newFeedURI               URI Nouveau Flux
 explain-RSS              La case à cocher à coté du nom du flux devrait être cochée pour que le flux soit activé et qu'il soit pris en compte dans la vérification pour de nouveaux téléchargements.\n\
                          La fréquence de vérification est réglable dans la page de configuration générale.\n\
@@ -346,8 +346,8 @@ rss-downloaded           Téléchargés jusqu'ici
 link-download            Télécharger
 
 # Config->Email
-configEmail              Notification par Email 
-emailOptions             Options Email 
+configEmail              Notification par Email
+emailOptions             Options Email
 opt-email_endjob         Notification par Email lors de téléchargements terminés
 email-never              Jamais
 email-always             Toujours
@@ -358,7 +358,7 @@ opt-email_dir            Dossier contenant les modèles d'email
 explain-email_dir        Dossier contenant les modèles d'email définis par l'utilisateur.\n\
                          Relatif  à
 emailAccount             Paramètres du compte Email
-opt-email_server         Serveur SMTP 
+opt-email_server         Serveur SMTP
 explain-email_server     Entrez le serveur de courrier sortant de votre FAI.
 opt-email_to             Adresse Email de réception
 explain-email_to         Adresse Email à laquelle seront envoyés les notifications.
@@ -472,7 +472,7 @@ error-saveX@1            Enregistrement %s echoué
 error-saveXtoY@2         Enregistrement de %s vers %s echoué
 error-standby            Echec de la mise en veille
 error-tempFile@1         Ne peut créer le fichier temporaire pour %s
-warn-noServer@1          Essai de mise à jour de statut du serveur inexistant %s 
+warn-noServer@1          Essai de mise à jour de statut du serveur inexistant %s
 warn-noSpace             Espace disque faible PAUSE forcée
 warn-signal@1            Signal %s intercepté, enregistrement et fermeture en cours...
 warn-flushFailed@1       Ecriture %s echouée -> pas d'art_id
@@ -570,7 +570,7 @@ error-ppRename@2         Erreur lors du renommage de "%s" en "%s"
 warn-badPPQueue@2        Echec lors du chargement de la queue de post-traitement : Mauvaise version (nécessaire:%s, trouvée:%s)
 error-rssBadFeed@1       Description du flux RSS incorrecte "%s"
 error-rssRegex@1         Impossible de compiler la regex : %s
-warn-emptyRSS@2          [%s]: Entrée vide de flux RSS trouvée (%s)
+warn-emptyRSS@1          Entrée vide de flux RSS trouvée (%s)
 warn-failRSS@1           Echec de la récupération RSS pour %s
 warn-failRSS@2           Echec de la récupération RSS pour %s: %s
 warn-badSched@3          Mauvaise plannification le %s à %s:%s

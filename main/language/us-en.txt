@@ -573,7 +573,7 @@ error-ppRename@2         Error renaming "%s" to "%s"
 warn-badPPQueue@2        Failed to load postprocessing queue: Wrong version (need:%s, found:%s)
 error-rssBadFeed@1       Incorrect RSS feed description "%s"
 error-rssRegex@1         Could not compile regex: %s
-warn-emptyRSS@2          [%s]: Empty RSS entry found (%s)
+warn-emptyRSS@1          Empty RSS entry found (%s)
 warn-failRSS@1           Failed to retrieve RSS from %s
 warn-failRSS@2           Failed to retrieve RSS from %s: %s
 warn-badSched@3          Bad schedule %s at %s:%s

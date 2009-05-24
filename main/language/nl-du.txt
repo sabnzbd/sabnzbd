@@ -563,7 +563,7 @@ error-ppRename@2         Fout bij hernoemen van "%s" tot "%s"
 warn-badPPQueue@2        Fout bij laden van nabewerkingswachtrij: verkeerde versie (nodig:%s, gevonden:%s)
 error-rssBadFeed@1       Foutieve RSS stroom definitie "%s"
 error-rssRegex@1         Kan reguliere expressie "%s" niet verwerken
-warn-emptyRSS@2          [%s]: Lege RSS stroom gevonden (%s)
+warn-emptyRSS@1          Lege RSS stroom gevonden (%s)
 warn-failRSS@1           Kan RSS stroom "%s" niet lezen
 warn-failRSS@2           Kan RSS stroom "%s" niet lezen van "%s"
 warn-badSched@3          Foutieve taak %s om %s:%s
