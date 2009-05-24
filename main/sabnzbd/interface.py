@@ -3151,6 +3151,7 @@ def xml_qstatus():
               <mbleft>%(mbleft)s</mbleft> \n\
               <mb>%(mb)s</mb> \n\
               <noofslots>%(noofslots)s</noofslots> \n\
+              <have_warnings>%(have_warnings)s</have_warnings> \n\
               <diskspace1>%(diskspace1)s</diskspace1> \n\
               <diskspace2>%(diskspace2)s</diskspace2> \n\
               <timeleft>%(timeleft)s</timeleft> \n' % status
