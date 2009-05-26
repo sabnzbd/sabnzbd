@@ -6,22 +6,19 @@
 #
 #You may freely use this code in any way you can think of.
 #"""
+NOTIFICATION_NAME = 'SABnzbd Messages'
 
 try:
     import Growl
-except:
-    pass
-    
-NOTIFICATION_NAME = 'SABnzbd Messages'
 
-def sendGrowlMsg(nTitle , nMsg):
-    try:
+    def sendGrowlMsg(nTitle , nMsg):
         gnotifier = SABGrowlNotifier()
         gnotifier.register()
         gnotifier.notify(NOTIFICATION_NAME, nTitle, nMsg)
-    except:
+
+    class SABGrowlNotifier(Growl.GrowlNotifier):
+    	applicationName = "SABnzbd"
+    	notifications = [NOTIFICATION_NAME]    
+except:
+    def sendGrowlMsg(nTitle , nMsg):
         pass
-    
-class SABGrowlNotifier(Growl.GrowlNotifier):
-	applicationName = "SABnzbd"
-	notifications = [NOTIFICATION_NAME]
