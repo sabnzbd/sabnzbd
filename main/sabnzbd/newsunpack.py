@@ -64,18 +64,9 @@ def find_programs(curdir):
     """Find external programs
     """
     if sabnzbd.DARWIN:
-        if sabnzbd.DARWIN_INTEL:
-            p = os.path.abspath(curdir + '/osx/par2/par2')
-            if os.access(p, os.X_OK):
-                sabnzbd.newsunpack.PAR2_COMMAND = p
-            p = os.path.abspath(curdir + '/osx/par2/par2-classic')
-            if os.access(p, os.X_OK):
-                sabnzbd.newsunpack.PAR2C_COMMAND = p
-        else:
-            p = os.path.abspath(curdir + '/osx/par2/par2-classic')
-            if os.access(p, os.X_OK):
-                sabnzbd.newsunpack.PAR2_COMMAND = p
-
+        p = os.path.abspath(curdir + '/osx/par2/par2-classic')
+        if os.access(p, os.X_OK):
+            sabnzbd.newsunpack.PAR2C_COMMAND = p
         p = os.path.abspath(curdir + '/osx/unrar/unrar')
         if os.access(p, os.X_OK):
             sabnzbd.newsunpack.RAR_COMMAND = p
