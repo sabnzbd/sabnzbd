@@ -1179,7 +1179,48 @@ else:
 
             NibClassBuilder.extractClasses("MainMenu")
 
+            status_icons = {'idle':'../Resources/sab_idle.png','pause':'../Resources/sab_pause.png'}
+            start_time = NSDate.date()
+
             class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
+
+                icons = {}
+                status_bar = None
+                
+                def awakeFromNib(self):
+
+                    #Status Bar iniatilize
+                    status_bar = NSStatusBar.systemStatusBar()
+                    self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
+                    for i in status_icons.keys():
+                        self.icons[i] = NSImage.alloc().initByReferencingFile_(status_icons[i])
+                    self.status_item.setImage_(self.icons['idle'])
+                    self.status_item.setHighlightMode_(1)
+                    self.status_item.setToolTip_('SABnzbd')
+                    
+                    self.menu = NSMenu.alloc().init()
+                    menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Open SABnzbd', 'open:', '')
+                    self.menu.addItem_(menu_item)
+                    menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
+                    self.menu.addItem_(menu_item)
+ 
+                    self.status_item.setMenu_(self.menu)
+
+                    #Timer for updating menu                    
+                    self.timer = NSTimer.alloc().initWithFireDate_interval_target_selector_userInfo_repeats_(start_time, 2.0, self, 'update:', None, True)
+                    NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer, NSDefaultRunLoopMode)
+                    self.timer.fire()
+
+                def update_(self, notification):
+                    if downloader.paused():
+                        self.status_item.setImage_(self.icons['pause'])
+                    else:
+                        self.status_item.setImage_(self.icons['idle'])
+
+                def open_(self, notification):
+                    #logging.info("[osx] opening http://%s:%s/sabnzbd" % (sabnzbd.cfg.CHERRYHOST.get(), sabnzbd.cfg.CHERRYPORT.get()))
+                    launch_a_browser("http://%s:%s/sabnzbd" % (sabnzbd.cfg.CHERRYHOST.get(), sabnzbd.cfg.CHERRYPORT.get()),True)
+
                 def applicationShouldTerminate_(self, sender):
                     logging.info('[osx] application terminating')
                     sabApp.stop()
@@ -1205,3 +1246,4 @@ else:
             AppHelper.runEventLoop()
         except:
             main()
+
