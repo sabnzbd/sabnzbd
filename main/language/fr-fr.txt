@@ -192,6 +192,12 @@ explain-cleanup_list  Liste des extensions de fichiers qui doivent être supprimé
 button-saveChanges    Enregistrer les modifications
 opt-language          Langage
 explain-language      Séléction la langue de l'interface web.
+opt-apikey            API Key
+explain-apikey        This key is used to give 3rd party programs access to SABnzbd.
+button-apikey         Generate New Key
+opt-disableApikey     Disable API-key
+explain-disableApikey Do not require the API key.
+explain-disableApikeyWarn USE AT YOUR OWN RISK!
 
 # Config->Folders
 folderConfig            Configuration des dossiers

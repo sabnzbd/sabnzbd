@@ -195,6 +195,9 @@ explain-language      Select a web interface language.
 opt-apikey            API Key
 explain-apikey        This key is used to give 3rd party programs access to SABnzbd.
 button-apikey         Generate New Key
+opt-disableApikey     Disable API-key
+explain-disableApikey Do not require the API key.
+explain-disableApikeyWarn USE AT YOUR OWN RISK!
 
 # Config->Folders
 folderConfig            Folder configuration

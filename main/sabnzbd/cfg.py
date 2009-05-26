@@ -173,6 +173,7 @@ LANGUAGE = OptionStr('misc', 'language', 'us-en')
 DEBUG_DELAY = OptionNumber('misc', 'debug_delay', 0, add=False)
 
 API_KEY = OptionStr('misc','api_key', create_api_key())
+DISABLE_KEY = OptionBool('misc', 'disable_key', False)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items

@@ -131,7 +131,7 @@ log-errWarn       Fouten/Waarschuwingen
 log-info          + Info
 log-debug         + Debug
 connections       Verbindingen
-thread            Draad
+thread            Verbinding
 emailResult       Test resultaat email
 lastWarnings      Recentste meldingen
 clearWarnings     Wissen
@@ -163,7 +163,7 @@ explain-web_password   Wachtwoord voor web login.
 httpsSupport           HTTPS ondersteuning (<i>herstart nodig</i>)
 opt-enable_https       Maak HTTPS mogelijk
 opt-notInstalled       niet geinstalleerd
-explain-enable_https   Maak gebruik van HTTPS adressen mogelijk.
+explain-enable_https   Sta gebruik van HTTPS toe.
 opt-https_port         HTTPS Poort
 explain-https_port     Poort die SABnzbd gebruikt voor HTTPS communicatie
 opt-https_cert         HTTPS Certificaat
@@ -185,6 +185,12 @@ explain-cleanup_list   Lijst van bestand extensies die verwijderd worden\n\
 button-saveChanges     Opslaan
 opt-language           Taal
 explain-language       Kies andere taal
+opt-apikey             API Sleutel
+explain-apikey         Deze sleutel is nodig om hulp programma's toegang tot SABnzbd te geven.
+button-apikey          Maak een nieuwe sleutel
+opt-disableApikey      API-sleutel niet gebruiken
+explain-disableApikey  Gebruik van de API sleutel niet afdwingen.
+explain-disableApikeyWarn GEBRUIK OP EIGEN RISICO!
 
 warning-ambiLocahost Waarschuwing: LOCALHOST is niet eenduidig, gebruik een numeriek IP-adres.
 
@@ -498,7 +504,7 @@ error-serverTooMany@2    Te veel verbindingen met server %s:%s
 warn-ignoreServer@2      Server %s wordt gedurende %s minuten genegeerd
 warn-noActiveServers     Geen aktieve primaire servers, download niet mogelijk!
 warn-noConnectServer@3   Kan geen verbinding maken met server %s:%s [%s]
-warn-thread@3            Draad %s@%s:%s:
+warn-thread@3            Verbinding %s@%s:%s:
 error-mailAuth           Kan niet aanmelden bij email server
 error-mailNoConn         Kan geen verbinding maken met email server
 error-mailSend           Verzenden van email is mislukt

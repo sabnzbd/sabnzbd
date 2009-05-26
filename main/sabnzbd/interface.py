@@ -205,14 +205,16 @@ def set_auth(conf):
 def check_session(kwargs):
     """ Check session key """
     key = kwargs.get('session')
+    if not key:
+        key = kwargs.get('apikey')
     msg = None
     if not key:
-        #logging.warning(T('warn-missingKey'))
-        #msg = T('error-missingKey')
+        logging.warning(T('warn-missingKey'))
+        msg = T('error-missingKey')
         pass
     elif key != cfg.API_KEY.get():
-        #logging.warning(T('warn-badKey'))
-        #msg = T('error-badKey')
+        logging.warning(T('warn-badKey'))
+        msg = T('error-badKey')
         pass
     return msg
 
@@ -227,9 +229,7 @@ def check_apikey(kwargs):
             return T('error-authMissing')
 
     key = kwargs.get('apikey')
-    ####TEMPORARY
-    return None
-    ####
+
     if not key:
         logging.warning(T('warn-apikeyNone'))
         return T('error-apikeyNone')
@@ -730,7 +730,7 @@ class MainPage:
                 return 'ok\n'
 
             elif name == 'set_apikey':
-                cfg.API_KEY.set(create_api_key())
+                cfg.API_KEY.set(config.create_api_key())
                 config.save_config()
                 return str(cfg.API_KEY.get())
 
@@ -1723,7 +1723,7 @@ class ConfigSwitches:
 
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
-    'host', 'port', 'username', 'password',
+    'host', 'port', 'username', 'password', 'disable_key',
     'refresh_rate', 'rss_rate',
     'cache_limit',
     'enable_https', 'https_port', 'https_cert', 'https_key'
@@ -1806,6 +1806,7 @@ class ConfigGeneral:
             list = []
         conf['lang_list'] = list
 
+        conf['disable_key'] = cfg.DISABLE_KEY.get()
         conf['host'] = cfg.CHERRYHOST.get()
         conf['port'] = cfg.CHERRYPORT.get()
         conf['https_port'] = cfg.HTTPS_PORT.get()
@@ -1881,7 +1882,7 @@ class ConfigGeneral:
         if msg: return msg
 
         logging.debug('API Key Changed')
-        cfg.API_KEY.set(create_api_key())
+        cfg.API_KEY.set(config.create_api_key())
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 

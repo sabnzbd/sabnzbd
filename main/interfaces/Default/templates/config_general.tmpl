@@ -45,9 +45,16 @@ $T('explain-web_dir2')<br>
         <!--#end if#-->
     <!--#end for#-->
 </select>
+<br /><br /><strong>$T('opt-apikey'):</strong><br />
+$T('explain-apikey')<br />
+<input type="text" style="width:250px;border:none;" onclick="this.select()" id="apikey" value="$session">
+<a href="generateAPIKey?session=$session">$T('button-apikey')</a>
+<br /><br />
+<label><input type="checkbox" name="disable_key" value="1" <!--#if $disable_key > 0 then "checked=1" else ""#--> /> <strong>$T('opt-disableApikey')</strong></label><br>
+$T('explain-disableApikey') <a href="${helpuri}cross-site-vulnerability/" target="_blank">$T('explain-disableApikeyWarn')</a>
 <!--#if $lang_list#-->
 <br/><br/>
-<strong>$T('opt-language')</strong><br/>
+<strong>$T('opt-language'):</strong><br/>
 $T('explain-language')<br/>
 <select name="language">
     <!--#for $webline in $lang_list#-->

@@ -14,7 +14,7 @@
 			<input type="text" name="port" value="$port">
 			<span class="tips">$T('explain-port')</span>
 		<br class="clear" />
-        
+
         <label for "userinterface" class="label">$T('opt-web_dir'):</label>
 
         <select name="web_dir" id="webdir" class="select">
@@ -28,7 +28,7 @@
         </select>
         <span class="tips">$T('explain-web_dir')</span>
         <br class="clear" />
-        
+
         <label for "userinterface" class="label">$T('opt-web_dir2'):</label>
         <select name="web_dir2" id="webdir2" class="select">
             <!--#for $webline in $web_list2#-->
@@ -41,7 +41,7 @@
         </select>
         <span class="tips">$T('explain-web_dir2')</span>
 		<br class="clear" />
-        
+
         <label for "language" class="label">$T('opt-language'):</label>
         <select name="language" id="language" class="select">
         <!--#for $webline in $lang_list#-->
@@ -54,9 +54,19 @@
         </select>
         <span class="tips">$T('explain-language')</span>
 		<br class="clear" />
-        
-        <label class="label">API Key:</label> <input type="text" style="width:250px;border:none;" onclick="this.select()" id="apikey" value="$session"> <input type="button" style="float:none;display:inline;" size="40" value="Generate new key" onclick="javascript:generateAPIKey()">
+
+        <label class="label">$T('opt-apikey'):</label> <input type="text" style="width:250px;border:none;" onclick="this.select()" id="apikey" value="$session">
+        <span class="tips">$T('explain-apikey')</span>
         <br class="clear" />
+        <label class="label">&nbsp;</label>
+        <input type="button" style="float:none;display:inline;" size="40" value="$T('button-apikey')" onclick="javascript:generateAPIKey()">
+        <br class="clear" />
+
+	    <label class="label">$T('opt-disableApikey'):</label>
+	    <input class="radio" type="checkbox" name="disable_key" value="1" <!--#if $disable_key > 0 then "checked=1" else ""#--> />
+	    <span class="tips">$T('explain-disableApikey') <a href="${helpuri}cross-site-vulnerability/" target="_blank">$T('explain-disableApikeyWarn')</a></span></label>
+        <br class="clear" />
+
 </fieldset>
 <fieldset class="EntryFieldSet">
 <legend>$T('webAuth')</legend>
