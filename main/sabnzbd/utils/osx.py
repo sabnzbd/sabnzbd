@@ -10,9 +10,15 @@ NOTIFICATION_NAME = 'SABnzbd Messages'
 
 try:
     import Growl
-
+    import os.path
+    
+    try:
+        nIcon = Growl.Image.imageFromPath('sabnzbdplus.icns')
+    except:
+        nIcon = Growl.Image.imageFromPath('osx/resources/sabnzbdplus.icns')
+    
     def sendGrowlMsg(nTitle , nMsg):
-        gnotifier = SABGrowlNotifier()
+        gnotifier = SABGrowlNotifier(applicationIcon=nIcon)
         gnotifier.register()
         gnotifier.notify(NOTIFICATION_NAME, nTitle, nMsg)
 
