@@ -29,7 +29,7 @@ import sabnzbd
 from sabnzbd.decorators import synchronized_CV, CV
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper
-from sabnzbd.misc import notify
+from sabnzbd.utils import osx
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -292,15 +292,18 @@ class Downloader(Thread):
 
     def stop(self):
         self.shutdown = True
+        osx.sendGrowlMsg("SABnzbd","Shutting down")
 
     def resume(self):
         logging.info("Resuming")
-        notify("SAB_Resume", None)
+        #notify("SAB_Resume", None)
         self.paused = False
+        #osx.sendGrowlMsg("SABnzbd","Resuming")
 
     def pause(self):
         logging.info("Pausing")
-        notify("SAB_Paused", None)
+        #notify("SAB_Paused", None)
+        osx.sendGrowlMsg("SABnzbd","Paused")
         self.paused = True
         if self.is_paused():
             bpsmeter.method.reset()

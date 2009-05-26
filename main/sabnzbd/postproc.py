@@ -48,6 +48,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
+from sabnzbd.utils import osx
 from sabnzbd.lang import T
 
 #------------------------------------------------------------------------------
@@ -231,7 +232,7 @@ class PostProcessor(Thread):
                 logging.info('Starting PostProcessing on %s' + \
                              ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s',
                              filename, flagRepair, flagUnpack, flagDelete, script)
-
+                osx.sendGrowlMsg("Post-processing",filename)
                 ## Run Stage 1: Repair
                 if flagRepair:
                     logging.info('Par2 check starting on %s', filename)
@@ -415,8 +416,10 @@ class PostProcessor(Thread):
 
                 ## Show final status in history
                 if parResult and not unpackError:
+                    osx.sendGrowlMsg("Download Completed",filename)
                     nzo.set_status("Completed")
                 else:
+                    osx.sendGrowlMsg("Download Failed",filename)
                     nzo.set_status("Failed")
 
             except:

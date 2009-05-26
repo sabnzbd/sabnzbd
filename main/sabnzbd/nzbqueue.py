@@ -39,6 +39,7 @@ import sabnzbd.articlecache
 import sabnzbd.downloader
 import sabnzbd.assembler
 from sabnzbd.lang import T
+from sabnzbd.utils import osx
 
 
 def DeleteLog(name):
@@ -224,6 +225,8 @@ class NzbQueue(TryList):
                     self.__nzo_list.append(nzo)
             if save:
                 self.save()
+            
+            osx.sendGrowlMsg("NZB added to queue",nzo.get_filename())
 
         if self.__auto_sort:
             self.sort_by_avg_age()
