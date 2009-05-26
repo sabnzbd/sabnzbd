@@ -326,6 +326,10 @@ if target == 'app':
     #mount sparseimage
     os.system("hdiutil mount %s" % (fileImg))
 
+    #remove prototype and iphone interfaces
+    os.system("rm -rf interfaces/prototype>/dev/null")    
+    os.system("rm -rf interfaces/iphone>/dev/null")    
+
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
     options['data_files'] = ['interfaces','language','osx/osx',('',glob.glob("osx/resources/*"))]
@@ -367,9 +371,8 @@ if target == 'app':
     #Remove sparseimage
     os.system("rm %s>/dev/null" % (fileImg))
 
-    os.system(SvnRevert)
+    #os.system(SvnRevert)
     os.system(SvnRevertApp + "NSIS_Installer.nsi")
-    os.system(SvnRevertApp + "cherrypy*.zip")
     os.system(SvnRevertApp + VERSION_FILEAPP)
     os.system(SvnUpdateApp)
 
