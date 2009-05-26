@@ -912,6 +912,18 @@ def main():
     if testRelease:
         logging.info('Test release, setting maximum logging levels')
 
+    # OSX 10.5 I/O priority setting
+    if sabnzbd.DARWIN:
+        logging.info('[osx] IO priority setting')
+        try:
+            from ctypes import cdll
+            libc=cdll.LoadLibrary('/usr/lib/libc.dylib')
+            boolSetResult=libc.setiopolicy_np(0,1,3)
+            logging.info('[osx] IO priority set to throttle for process scope')
+        except:
+            logging.info('[osx] IO priority setting not supported')
+            pass
+
     if AUTOBROWSER != None:
         sabnzbd.cfg.AUTOBROWSER.set(AUTOBROWSER)
     else:
