@@ -328,7 +328,7 @@ if target == 'app':
 
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
-    options['data_files'] = ['interfaces','osx/osx',('',glob.glob("osx/resources/*"))]
+    options['data_files'] = ['interfaces','language','osx/osx',('',glob.glob("osx/resources/*"))]
     options['options'] = {'py2app': {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns'}}
     options['app'] = ['SABnzbd.py']
     options['setup_requires'] = ['py2app']
@@ -347,10 +347,13 @@ if target == 'app':
     os.system("rm -rf cherrypy*.zip")
 
     #Create src tar.gz
-    os.system("tar -czf %s ./ --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"sab*.tar.gz\" --exclude \"*.sparseimage\">/dev/null" % (fileOSr) )
+    os.system("tar -czf %s ./ --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\">/dev/null" % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
     os.system("cp %s /Volumes/SABnzbd/>/dev/null" % (fileOSr))
+
+    #Hide dock icon for the app
+    os.system("defaults write /Volumes/SABnzbd/SABnzbd.app/Contents/Info LSUIElement 1")
 
     #Wait for enter from user
     #For manually arrange icon position in mounted Volume...
