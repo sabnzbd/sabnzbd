@@ -10,7 +10,6 @@ NOTIFICATION_NAME = 'SABnzbd Messages'
 
 try:
     import Growl
-    import os.path
     
     try:
         nIcon = Growl.Image.imageFromPath('sabnzbdplus.icns')

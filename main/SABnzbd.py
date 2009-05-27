@@ -1134,13 +1134,16 @@ def main():
                 args = sys.argv[:]
                 args.insert(0, sys.executable)
                 #TO FIX : when executing from sources on osx, after a restart, process is detached from console
-                pid = os.fork()
-                if pid == 0:
-                    #If OSX frozen restart of app instead of embedded python
-                    if getattr(sys, 'frozen', None) == 'macosx_app':
-                    	sys.executable = "/usr/bin/open"
-                    	args = ["/usr/bin/open",sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd","")]
-                    os.execv(sys.executable, args)
+                #If OSX frozen restart of app instead of embedded python
+                if getattr(sys, 'frozen', None) == 'macosx_app':
+                    #[[NSProcessInfo processInfo] processIdentifier]]
+                    #logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
+                    logging.info(os.getpid())
+                    os.system('kill -9 %s && open "%s"' % (os.getpid(),sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd","")) )                    
+                else:
+                    pid = os.fork()
+                    if pid == 0:
+                        os.execv(sys.executable, args)
             else:
                 cherrypy.engine._do_execv()
 
@@ -1151,7 +1154,10 @@ def main():
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()
-    os._exit(0)
+    if getattr(sys, 'frozen', None) == 'macosx_app':
+        AppHelper.stopEventLoop()
+    else:
+        os._exit(0)
 
 
 #####################################################################
@@ -1242,6 +1248,12 @@ else:
                     cherrypy.engine.exit()
                     sabnzbd.SABSTOP = True
                     logging.info('[osx] sabApp Quit - main thread stopped')
+                def restart(self):
+                    logging.info('[osx] sabApp Restarting ')
+                    sabnzbd.SABSTOP = False
+                    sabnzbd.halt()
+                    cherrypy.engine.exit()
+                    main()
 
             sabApp = startApp()
             sabApp.start()
