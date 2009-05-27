@@ -1,22 +1,6 @@
 <!--#set global $pane="General"#-->
 <!--#set global $help_uri="Configure+General"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
-
-	<script type="text/javascript">
-	    function generateAPIKey()
-	    {
-			jQuery.ajax({
-				type: "POST",
-				url: "../../api",
-				data: "mode=config&name=set_apikey&apikey="+jQuery('#apikey').val(),
-				success: function(msg){
-					jQuery('#apikey').val(msg);
-					jQuery('#hiddenSession').val(msg);
-				}
-			});
-	    }
-	</script>
-
 <form action="saveGeneral" method="post" name="fullform">
 <input type="hidden" id="hiddenSession" name="session" value="$session">
 
@@ -43,12 +27,12 @@
     </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
     <strong>$T('opt-web_username'):</strong><br/>
     <small>$T('explain-web_username')</small><br/>
-    <input type="text" name="web_username" value="$username"/>
+    <input type="text" name="username" value="$username"/>
 
     </td><td>
     <strong>$T('opt-web_password'):</strong><br/>
     <small>$T('explain-web_password')</small><br/>
-    <input type="password" name="web_password" value="$password"/>
+    <input type="password" name="password" value="$password"/>
     </td></tr>
     </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
 

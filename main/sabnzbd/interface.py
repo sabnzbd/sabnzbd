@@ -222,23 +222,27 @@ def check_session(kwargs):
 def check_apikey(kwargs):
     """ Check api key """
     if cfg.USERNAME.get() and cfg.PASSWORD.get():
-        if kwargs.get('ma_username') == cfg.PASSWORD.get() and kwargs.get('ma_password') == cfg.USERNAME.get():
-            return None
+        if kwargs.get('ma_username') == cfg.USERNAME.get() and kwargs.get('ma_password') == cfg.PASSWORD.get():
+            pass
         else:
             logging.warning(T('warn-authMissing'))
             return T('error-authMissing')
 
-    key = kwargs.get('apikey')
+    if cfg.DISABLE_KEY.get() == False:
 
-    if not key:
-        logging.warning(T('warn-apikeyNone'))
-        return T('error-apikeyNone')
-    elif key != cfg.API_KEY.get():
-        logging.warning(T('warn-apikeyBad'))
-        return T('error-apikeyBad')
+        key = kwargs.get('apikey')
+    
+        if not key:
+            logging.warning(T('warn-apikeyNone'))
+            return T('error-apikeyNone')
+        elif key != cfg.API_KEY.get():
+            logging.warning(T('warn-apikeyBad'))
+            return T('error-apikeyBad')
+        else:
+            return None
     else:
         return None
-
+    
 #------------------------------------------------------------------------------
 class NoPage:
     def __init__(self):

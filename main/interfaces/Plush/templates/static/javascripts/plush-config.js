@@ -121,7 +121,7 @@ jQuery(document).ready(function($){
 			$('#generate_new_apikey').click(function(){
 				$.ajax({
 					type: "POST",
-					url: "../../api",
+					url: "../../tapi",
 					data: "mode=config&name=set_apikey&apikey="+$('#apikey').val(),
 					success: function(msg){
 						$('#apikey').val(msg);
