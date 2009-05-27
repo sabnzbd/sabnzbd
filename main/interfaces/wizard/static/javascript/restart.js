@@ -9,7 +9,7 @@ $(document).ready(function() {
     $.ajax({
         type: "POST",
         url: "../tapi",
-        data: "mode=restart",
+        data: "mode=restart&apikey="+$('#apikey').val() ,
         complete: function(result){
             setTimeout(complete,7000);
         }

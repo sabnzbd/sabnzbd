@@ -903,6 +903,7 @@ class Wizard:
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('wizard-step-three')
         info['number'] = 3
+        info['session'] = cfg.API_KEY.get()
 
         servers = config.get_servers()
         if not servers:
@@ -965,6 +966,7 @@ class Wizard:
         info['num'] = '&raquo; %s' % T('wizard-step-five')
         info['number'] = 5
         info['helpuri'] = 'http://sabnzbd.wikidot.com/'
+        info['session'] = cfg.API_KEY.get()
 
         info['access_url'], info['urls'] = self.get_access_info()
 

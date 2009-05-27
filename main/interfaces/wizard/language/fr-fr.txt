@@ -1,0 +1,53 @@
+# -*- coding: latin-1 -*-
+# France # Français
+
+quickstart           SABnzbd Assistant Configuration
+version              SABnzbd Version
+
+previous             Précédent
+next                 Suivant
+zoom                 Zoom
+
+skin                 Thème
+explain-skin         Quel thème voulez-vous utiliser pour SABnzbd?
+
+access               Accès
+access-anypc         Je veux que SABnzbd soit accessible de tous les ordinateurs de mon réseau.
+access-mypc          Je veux que SABnzbd ne soit accessible que depuis mon ordinateur.
+access-pass          Protection de l'interface de SABnzbd par un mot de passe (recommendé)
+access-https         Activer l'accès via HTTPS à SABnzbd.
+
+misc                 Autres
+misc-browser         Lancer mon navigateur internet avec l'adresse de SABnzbd au démarrage de l'application.
+
+server               Serveurs 
+explain-server       Entrez les informations sur votre principal fournisseur usenet.
+server-help          Aide
+server-help1         Pour pouvoir télécharger sur les newsgroups, il est nécessaire d'avoir un fournisseur usenet. Votre FAI peut vous en fournir un, un fournisseur usenet premium est tout de même recommandé.
+server-help2@2       Vous n'avez pas de fournisseur usenet ? Nous vous recommendons d'essayer %s ou %s.
+server-con-explain   Le nombre de connexions autorisées par votre fournisseur usenet
+server-ssl-explain   Cochez uniquement si votre fournisseur usenet permet les connexions SSL.
+server-text          Cliquez pour tester les informations entrées.
+server-required      Ce champs est obligatoire.
+server-number        Entrez un numéro.
+
+index-explain        Si vous être membres de newzbin ou nzbmatrix, vous pouvez entrer vos identifiants et mot de passe pour pouvoir utiliser ces services. Si vous n'utilisez pas ces services, vous pouvez passer à l'étape suivante.
+index-bookmark       Télécharger automatiquement les marque-pages.
+optional             Optionnel
+example              Par ex. :
+button-testServer    Tester le serveur
+
+restarting           Redémarrage de SABnzbd en cours...
+complete             La configuration est terminée !
+tip1                 SABnzbd s'exécute en arrière plan.
+tip2                 Fermer la fenêtre/onglet de votre navigateur NE QUITTERA PAS SABnzbd.
+tip3@1               Une fois le rédemarrage de SABnzbd effectué, vous pourrez y accéder via l'adresse%s
+tip4                 Il est recommandé de mettre un marque-page sur cette adresse pour la retrouver facilement ultérieurement.
+tip-wiki             De l'aide peut être trouvée sur le
+goto                 Aller à SABnzbd
+
+step-one             Etape 1
+step-two             Etape 2
+step-three           Etape 3
+step-four            Etape 4
+step-five            Etape 5
