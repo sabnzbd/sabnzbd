@@ -192,40 +192,40 @@ explain-cleanup_list  Liste des extensions de fichiers qui doivent être supprimé
 button-saveChanges    Enregistrer les modifications
 opt-language          Langage
 explain-language      Séléction la langue de l'interface web.
-opt-apikey            API Key
-explain-apikey        This key is used to give 3rd party programs access to SABnzbd.
-button-apikey         Generate New Key
-opt-disableApikey     Disable API-key
-explain-disableApikey Do not require the API key.
-explain-disableApikeyWarn USE AT YOUR OWN RISK!
+opt-apikey            Clé API
+explain-apikey        Cette clé doit être spécifiée par les programmes tiers pour l'interaction avec SABnzbd.
+button-apikey         Générer nouvelle clé
+opt-disableApikey     Désactiver la clé API
+explain-disableApikey La clé API n'est plus nécessaire pour l'interaction avec SABnzbd.
+explain-disableApikeyAttention AUX RISQUES !
 
 # Config->Folders
 folderConfig            Configuration des dossiers
 explain-folderConfig    <em>NOTE:</em> Les dossiers seront créés automatiquement lors de l'Enregistrement. Il est possible d'utiliser des chemins absolus.
 userFolders             Dossiers Utilisateur
 in                      Dans
-opt-download_dir        Dossier de téléchargement temporaire
+opt-download_dir        Dossier Téléchargement Temporaire
 explain-download_dir    Pour le sotckage des téléchargements non post-traités.\n\
                         <i>Ne peut être modifié que lorsque la queue est vide.</i>
-opt-download_free       Espace disque minimum pour le Dossier de téléchargement temporaire
+opt-download_free       Espace disque minimum pour le Dossier Téléchargement Temporaire
 explain-download_free   Met en pause automatiquement les téléchargements si l'espace passe en dessous de ce montant.\n\
-                        <i>En bytes, peut être suivi de K,M,G,T. PAr exemple : "800M" ou "8G"</i>
-opt-complete_dir        Dossier des téléchargements terminés
-explain-complete_dir    Pour le stockage es téléchargements terminés et post-traités.\n\
-                        <i>peut être remplacé par les catégories utilisateur.</i>
+                        <i>En bytes, peut être suivi de K,M,G,T. Par exemple : "800M" ou "8G"</i>
+opt-complete_dir        Dossier Téléchargements Terminés
+explain-complete_dir    Pour le stockage des téléchargements terminés et post-traités.\n\
+                        <i>peut être adapté par les catégories utilisateur.</i>
 opt-permissions         Permissions pour le dossier de téléchargement terminés
 explain-permissions     Affecter les permissions pour les dossiers/fichiers des téléchargements terminés.\n\
                         <i>En notation octale. Par exemple : "755" ou "777"</i>
-opt-dirscan_dir         Dossier à scanner
+opt-dirscan_dir         Dossier NZB
 explain-dirscan_dir     Dossier à surveiller pour les fichiers .nzb.\n\
                         <i>Prends en compte également les nzb contenus dans les fichiers .zip, .rar et .tar.gz.</i>
 opt-dirscan_speed       Intervalle de scan
 explain-dirscan_speed   Nombre de secondes entre les scans de fichiers .nzb.
-opt-script_dir          Dossier contenant les scripts de Post-traitement
+opt-script_dir          Dossier Scripts de Post-traitement
 explain-script_dir      Dossier contenant les scripts utilisés lors du post-traitement.
-opt-email_dir           Dossier contenant les modèles d'email
+opt-email_dir           Dossier Modèles d'email
 explain-email_dir       Dossier contenant les modèles d'email définis par l'utilisateur.
-systemFolders           Dossier Système
+systemFolders           Dossiers Systèmes
 opt-cache_dir           Dossier du Cache
 explain-cache_dir       pour le stockage temporaire.\n\
                         <i>Ne peut être modifié que lorsque la queue est vide.</i>\n\
@@ -233,13 +233,13 @@ explain-cache_dir       pour le stockage temporaire.\n\
 opt-log_dir             Dossier de Log
 explain-log_dir         pour le stockage des fichiers de log de SABnzbd.\n\
                         <i>Redémarrage requis !</i>
-opt-nzb_backup_dir      Dossier de sauvegarde des fichiers .nzb
+opt-nzb_backup_dir      Dossier Sauvegarde NZB
 explain-nzb_backup_dir  pour la sauvegarde des fichier .nzb.
 
 # Config->Switches
 switchesConfig           Configuration des options
 processingSwitches       Options de traitement
-opt-quick_check          Activer le Quick Check
+opt-quick_check          Activer Quick Check
 explain-quick_check      Ne pas vérifier avec par2 si tous les fichiers sont 100% valides.
 opt-enable_unrar         Activer Unrar
 explain-enable_unrar     Activer la fonctionnalité unrar intégrée.
@@ -249,9 +249,9 @@ opt-enable_filejoin      Activer Concaténation
 explain-enable_filejoin  Concatène les fichiers en .001, .002, etc. en un fichier.
 opt-enable_tsjoin        Activer Concaténation TS
 explain-ts_join          Concatène les fichiers en .001.ts, .002.ts, etc. en un fichier.
-opt-enable_par_cleanup   Activer Nettoyage Par
-explain-enable_par_cleanup Supprimier les fichiers par (uniquement si la vérification/réparation a réussi).
-opt-fail_on_crc          Echoue lors d'erreurs crc yEnc
+opt-enable_par_cleanup   Activer Nettoyage Par2
+explain-enable_par_cleanup Supprimer les fichiers Par2 (uniquement si la vérification/réparation a réussi).
+opt-fail_on_crc          Echec lors d'erreurs crc yEnc
 explain-fail_on_crc      Utilise les serveurs de soutient si il y a des erreurs crc yEnc.
 opt-top_only             Ne télécharge uniquement que les articles en tête de queue
 explain-top_only         Activer pour dimininuer l'utilisation de la RAM. Désactiver pour éviter les téléchargement lents bloquant la queue.
