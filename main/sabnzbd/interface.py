@@ -228,10 +228,11 @@ def check_apikey(kwargs):
             logging.warning(T('warn-authMissing'))
             return T('error-authMissing')
 
-    if cfg.DISABLE_KEY.get() == False:
-
+    if cfg.DISABLE_KEY.get():
+        return None
+    else:
         key = kwargs.get('apikey')
-    
+
         if not key:
             logging.warning(T('warn-apikeyNone'))
             return T('error-apikeyNone')
@@ -240,9 +241,7 @@ def check_apikey(kwargs):
             return T('error-apikeyBad')
         else:
             return None
-    else:
-        return None
-    
+
 #------------------------------------------------------------------------------
 class NoPage:
     def __init__(self):
