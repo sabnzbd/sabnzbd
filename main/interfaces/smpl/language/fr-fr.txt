@@ -1,0 +1,51 @@
+# -*- coding: latin-1 -*-
+# France # Français
+
+thisWeek        Semaine
+thisMonth       Mois
+size            Taille
+links           Liens
+first           Premier
+previous        Préc.
+next            Suiv.
+last            Dernier
+edit            Editer
+editDetails     Editer Détails
+showEdit        Afficher Options Edition
+hideEdit        Cacher Options Edition
+timeleft        Temps Restant
+purgeQueue      Supprimer Tout
+purgeQueueConf  Supprimer tous les éléments de la queue ?
+progress        Progression
+delete          Supprimer
+downloading     Téléchargement en cours
+idle            En attente
+paused          En pause
+emailsent       Email Envoyé !
+saving          Enregistrement..
+saved           Enregistré
+failed          Echoué
+speed           Vitesse
+toggleadd       Afficher / Cacher Ajout NZB
+refresr         Délai Rafraîchissement
+restartOK?      Etes-vous sûr de vouloir redémarrer SABnzbd?
+warnings        Avertissements
+getbookmarks    Récupérer les marque-pages
+purgehistOK?    Supprimer tous les éléments de l'historique ?
+purgefailhistOK? Supprimer tous les éléments échoués de l'historique ?
+purgehist       Supprimer Tous
+purgefailhist   Supprimer Echoués
+path            Chemin
+age             Age
+speed           Vitesse
+numresults@3    Affiche %s de %s sur %s résultats
+oneresult       Affiche 1 résultat
+noresult        Pas de résultats
+custom          Personnalisé
+minutes         minutes
+seconds         secondes
+mins            mins
+hour            heure
+dualView1       VueDuoV
+dualView2       VueDuoH
+eta             TRE

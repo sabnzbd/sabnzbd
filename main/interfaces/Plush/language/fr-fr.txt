@@ -1,0 +1,60 @@
+# -*- coding: latin-1 -*-
+# France # Français
+# Plush
+
+# Menu
+maxSpeed          Vitesse Maxi
+refreshRate       Délai Rafraichissement
+disabled          Desactivé
+addnzb            Ajouter NZB
+fetch             Récupérer
+uploadTip         Charger: .nzb .rar .zip .gz
+sort              Trier
+sortAgeAsc        Trier par Age <small>(Moins récent&rarr;Plus récent)
+sortAgeDesc       Trier par Age <small>(Plus récent&rarr;Moins récent)</small>
+sortNameAsc       Trier par Name <small>(A&rarr;Z)</small>
+sortNameDesc      Trier par Name <small>(Z&rarr;A)</small>
+sortSizeAsc       Trier par Size <small>(Plus petit&rarr;Plus gros)</small>
+sortSizeDesc      Trier par Size <small>(Plus gros&rarr;Plus petit)</small>
+pause5m           Pause pour 5 minutes
+pause15m          Pause pour 15 minutes
+pause30m          Pause pour 30 minutes
+pause1h           Pause pour 1 heure
+pause3h           Pause pour 3 heures
+pause6h           Pause pour 6 heures
+pauseFor          Pause pour...
+pauseForPrompt    Pause pour combien de minutes?
+purge             Vider
+onQueueFinish     En Fin de queue
+opt-priorities    Priorités
+explain-priorities Affiche / Cache les priorités
+warnings          Avertissements
+
+
+# General
+button-refresh    Rafraîchir
+left              restant
+page              page
+everything        Tout
+prev              Préc.
+next              Suiv.
+
+# Queue
+idle              EN ATTENTE
+remaining         Restant
+notEnoughSpace    Espace disque insuffisant pour terminer les téléchargements !
+freeSpace         Epace Libre
+freeSpaceTemp     Libre (Temp)
+confirmPurgeQ     Vider la Queue?
+
+# History
+total             Total
+thisWeek          Semaine
+thisMonth         Mois
+openSourceURL     Ouvrir URL Source
+openInfoURL       Ouvrir URL Info.
+path              Chemin
+storage           Destination
+viewScriptLog     Afficher Log Script
+confirmPurgeH     Vider l'historique ?
+
