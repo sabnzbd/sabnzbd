@@ -775,6 +775,10 @@ class MainPage:
             cherrypy.engine.restart()
             return 'ok\n'
 
+        if mode == 'disconnect':
+            downloader.disconnect()
+            return 'ok\n'
+
         return 'not implemented\n'
 
     @cherrypy.expose
@@ -3090,15 +3094,30 @@ def json_qstatus():
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     jobs = []
+    bytesleftprogess = 0
+    bpsnow = bpsmeter.method.get_bps()
     for pnfo in pnfo_list:
         filename = pnfo[PNFO_FILENAME_FIELD]
         msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
+        bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-        jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":filename, "msgid":msgid } )
+        jobs.append( { "id" : nzo_id, 
+                        "mb":bytes, 
+                        "mbleft":bytesleft, 
+                        "filename":filename, 
+                        "msgid":msgid, 
+                        "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
+
+    state = "IDLE"
+    if downloader.paused():
+        state = "PAUSED"
+    elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
+        state = "DOWNLOADING"
 
     status = {
+        "state" : state,
         "paused" : downloader.paused(),
         "pause_int" : scheduler.pause_int(),
         "kbpersec" : bpsmeter.method.get_bps() / KIBI,
@@ -3108,7 +3127,7 @@ def json_qstatus():
         "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
         "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
         "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
-        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()),
+        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
         "loadavg" : loadavg(),
         "jobs" : jobs
     }
@@ -3126,16 +3145,32 @@ def xml_qstatus():
     pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
     jobs = []
+    bytesleftprogess = 0
+    bpsnow = bpsmeter.method.get_bps()
     for pnfo in pnfo_list:
         filename = pnfo[PNFO_FILENAME_FIELD]
         msgid = pnfo[PNFO_MSGID_FIELD]
         bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
+        bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         name = xml_name(filename)
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-        jobs.append( { "id" : nzo_id, "mb":bytes, "mbleft":bytesleft, "filename":name, "msgid":msgid } )
+        jobs.append( { "id" : nzo_id, 
+                        "mb":bytes, 
+                        "mbleft":bytesleft, 
+                        "filename":name, 
+                        "msgid":msgid, 
+                        "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
+
+
+    state = 'IDLE'
+    if downloader.paused():
+        state = 'PAUSED'
+    elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
+        state = 'DOWNLOADING'
 
     status = {
+        "state" : state,
         "paused" : downloader.paused(),
         "pause_int" : scheduler.pause_int(),
         "kbpersec" : bpsmeter.method.get_bps() / KIBI,
@@ -3145,33 +3180,36 @@ def xml_qstatus():
         "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
         "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
         "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
-        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()),
-        "loadavg" : loadavg(),
-        "jobs" : jobs
+        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
+        "loadavg" : loadavg()
     }
 
-    status_str= '<?xml version="1.0" encoding="UTF-8" ?> \n\
-              <queue> \n\
-              <paused>%(paused)s</paused> \n\
-              <kbpersec>%(kbpersec)s</kbpersec> \n\
-              <mbleft>%(mbleft)s</mbleft> \n\
-              <mb>%(mb)s</mb> \n\
-              <noofslots>%(noofslots)s</noofslots> \n\
-              <have_warnings>%(have_warnings)s</have_warnings> \n\
-              <diskspace1>%(diskspace1)s</diskspace1> \n\
-              <diskspace2>%(diskspace2)s</diskspace2> \n\
-              <timeleft>%(timeleft)s</timeleft> \n' % status
+    status_str = '<?xml version="1.0" encoding="UTF-8" ?> \n\
+                    <queue> \n\
+                    <state>%(state)s</state> \n\
+                    <paused>%(paused)s</paused> \n\
+                    <pause_int>%(pause_int)s</pause_int> \n\
+                    <kbpersec>%(kbpersec)s</kbpersec> \n\
+                    <mbleft>%(mbleft)s</mbleft> \n\
+                    <mb>%(mb)s</mb> \n\
+                    <noofslots>%(noofslots)s</noofslots> \n\
+                    <have_warnings>%(have_warnings)s</have_warnings> \n\
+                    <diskspace1>%(diskspace1)s</diskspace1> \n\
+                    <diskspace2>%(diskspace2)s</diskspace2> \n\
+                    <loadavg>%(loadavg)s</loadavg> \n\
+                    <timeleft>%(timeleft)s</timeleft> \n\
+                ' % status
 
     status_str += '<jobs>\n'
     for job in jobs:
         status_str += '<job> \n\
-                   <id>%(id)s</id> \n\
-                   <msgid>%(msgid)s</msgid> \n\
-                   <filename>%(filename)s</filename> \n\
-                   <mbleft>%(mbleft)s</mbleft> \n\
-                   <mb>%(mb)s</mb> \n\
-                   </job>\n' % job
-
+                    <id>%(id)s</id> \n\
+                    <msgid>%(msgid)s</msgid> \n\
+                    <filename>%(filename)s</filename> \n\
+                    <mbleft>%(mbleft)s</mbleft> \n\
+                    <mb>%(mb)s</mb> \n\
+                    <timeleft>%(timeleft)s</timeleft> \n\
+                    </job>\n' % job
     status_str += '</jobs>\n'
 
 
