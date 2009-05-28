@@ -1,0 +1,59 @@
+# -*- coding: UTF-8 -*-
+# Netherlandss # Nederlands
+# Plush
+
+# Menu
+maxSpeed          Max Snelheid
+refreshRate       Verversingstempo
+disabled          Uit
+addnzb            NZB toevoegen
+fetch             Ophalen
+uploadTip         Upload: .nzb .rar .zip .gz
+sort              Sorteren
+sortAgeAsc        Sorteer op Leeftijd <small>(Oud&rarr;Nieuw)
+sortAgeDesc       Sorteer op Leeftijd <small>(Nieuw&rarr;Oud)</small>
+sortNameAsc       Sorteer op Naam <small>(A&rarr;Z)</small>
+sortNameDesc      Sorteer op Naam <small>(Z&rarr;A)</small>
+sortSizeAsc       Sorteer op Omvang <small>(Klein&rarr;Groot)</small>
+sortSizeDesc      Sorteer op Omvang <small>(Groot&rarr;Klein)</small>
+pause5m           Pauzeer 5 minuten
+pause15m          Pauzeer 15 minuten
+pause30m          Pauzeer 30 minuten
+pause1h           Pauzeer 1 uur
+pause3h           Pauzeer 3 uur
+pause6h           Pauzeer 6 uur
+pauseFor          Pauzeer...
+pauseForPrompt    Hoeveel minuten pauzeren?
+purge             Opschonen
+onQueueFinish     Bij lege wachtrij
+opt-priorities    Prioriteiten
+explain-priorities Wissel tonen van wachtrij prioriteit
+warnings          Meldingen
+
+
+# General
+button-refresh    Ververs
+left              links
+page              Pagina
+everything        Alles
+prev              Vorige
+next              Volgende
+
+# Queue
+idle              RUST
+remaining         Overblijvend
+notEnoughSpace    Onvoldoende schijfruimte over!
+freeSpace         Vrije ruimte
+freeSpaceTemp     Vrij (tijdelijk)
+confirmPurgeQ     Verwijder uit de Wachtrij?
+
+# History
+total             Totasl
+thisWeek          Deze Week
+thisMonth         Deze Maand
+openSourceURL     Open Source URL
+openInfoURL       Open Informational URL
+path              Pad
+storage           Opslag
+viewScriptLog     Toon Script resultaat
+confirmPurgeH     Wis de volledige geschiedenis?
