@@ -31,9 +31,9 @@
             $T('feed') $feed</legend>
 
             <input type="text" size="105" name="uri" value="$rss[$feed]['uri']"/>
-            <input type="submit" onclick="this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;" value="$T('button-delFeed')"/>
-            <input type="submit" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-preFeed')"/>
-            <input type="submit" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-forceFeed')"/>
+            <input type="button" onclick="this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;" value="$T('button-delFeed')"/>
+            <input type="button" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-preFeed')"/>
+            <input type="button" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-forceFeed')"/>
             <br/><br/>
 
             <!--#if $rss[$feed]['pick_cat']#-->
