@@ -566,8 +566,9 @@ def from_units(val):
     else:
         return 0.0
 
-def to_units(val):
+def to_units(val, spaces=0):
     """ Convert number to K/M/G/T/P notation
+        Add "spaces" if not ending in letter
     """
     val = str(val).strip()
     if val == "-1":
@@ -582,9 +583,9 @@ def to_units(val):
         n= n+1
     unit = TAB_UNITS[n]
     if unit:
-        return "%.1f %s" % (val, unit)
+        return "%.2f %s" % (val, unit)
     else:
-        return "%.0f" % val
+        return "%.0f%s" % (val, ' '*spaces)
 
 #------------------------------------------------------------------------------
 def same_file(a, b):

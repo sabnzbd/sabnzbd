@@ -1,5 +1,5 @@
 <div class="footer">
-<b>$T('ft-download'):</b> $diskspace1 GB - <b>$T('ft-complete'):</b> $diskspace2 GB - <b>$T('ft-speed'):</b> $kbpersec KB/s - <b>$T('ft-queued'):</b> $mbleft/$mb MB
+<b>$T('ft-download'):</b> $diskspace1 GB - <b>$T('ft-complete'):</b> $diskspace2 GB - <b>$T('ft-speed'):</b> ${speed}B/s - <b>$T('ft-queued'):</b> $mbleft/$mb MB
 <!--#if $loadavg#-->
     - <b>$T('ft-sysload')</b> $loadavg
 <!--#end if#-->
@@ -19,11 +19,10 @@ $msg<br>
     <strong><a href="$statpath/connections/">$T('ft-warning')($have_warnings)!</a></strong>
 <!--#end if#-->
 </div>
-<!--#set $kbpersecrnd = str(int(float($kbpersec)))#-->
 <!--#set $mbleftrnd = str(int(float($mbleft)))#-->
 <!--#set $mbrnd = str(int(float($mb)))#-->
 <div id='SABData' style='visibility: hidden'>
-    <b>&nbsp;SAB:</b> <!--#if $paused then "<blink><b>$T('ft-paused')</b></blink>" else $kbpersecrnd + " KB/s"#--> <b>Q:</b> $mbleftrnd/$mbrnd MB<b>&nbsp; Comp:</b> $diskspace2 GB
+    <b>&nbsp;SAB:</b> <!--#if $paused then "<blink><b>$T('ft-paused')</b></blink>" else "${speed}B/s"#--> <b>Q:</b> $mbleftrnd/$mbrnd MB<b>&nbsp; Comp:</b> $diskspace2 GB
 </div>
 <!--#if self.varExists('warning') and $warning#-->
         <h2>$T('ft-warning')</h2>

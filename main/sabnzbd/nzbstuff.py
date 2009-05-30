@@ -33,6 +33,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T
+from sabnzbd.misc import to_units
 
 HAVE_CELEMENTTREE = True
 
@@ -740,7 +741,8 @@ class NzbObject(TryList):
             #format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
 
-            self.set_unpack_info('download', 'Downloaded in %s at an average of %0.fkB/s' % (complete_time, avg_bps), unique=True)
+            self.set_unpack_info('download', 'Downloaded in %s at an average of %sB/s' %
+                                 (complete_time, to_units(avg_bps*1024)), unique=True)
 
 
 

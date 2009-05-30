@@ -2875,6 +2875,7 @@ def build_header(prim):
     bytes = qnfo[QNFO_BYTES_FIELD]
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
+    header['speed'] = to_units(bytespersec, spaces=1)
     header['mbleft']   = "%.2f" % (bytesleft / MEBI)
     header['mb']       = "%.2f" % (bytes / MEBI)
 
@@ -3103,11 +3104,11 @@ def json_qstatus():
         bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-        jobs.append( { "id" : nzo_id, 
-                        "mb":bytes, 
-                        "mbleft":bytesleft, 
-                        "filename":filename, 
-                        "msgid":msgid, 
+        jobs.append( { "id" : nzo_id,
+                        "mb":bytes,
+                        "mbleft":bytesleft,
+                        "filename":filename,
+                        "msgid":msgid,
                         "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
 
     state = "IDLE"
@@ -3121,6 +3122,7 @@ def json_qstatus():
         "paused" : downloader.paused(),
         "pause_int" : scheduler.pause_int(),
         "kbpersec" : bpsmeter.method.get_bps() / KIBI,
+        "speed" : to_units(bpsmeter.method.get_bps()),
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
@@ -3155,11 +3157,11 @@ def xml_qstatus():
         bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
         name = xml_name(filename)
         nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-        jobs.append( { "id" : nzo_id, 
-                        "mb":bytes, 
-                        "mbleft":bytesleft, 
-                        "filename":name, 
-                        "msgid":msgid, 
+        jobs.append( { "id" : nzo_id,
+                        "mb":bytes,
+                        "mbleft":bytesleft,
+                        "filename":name,
+                        "msgid":msgid,
                         "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
 
 
@@ -3174,6 +3176,7 @@ def xml_qstatus():
         "paused" : downloader.paused(),
         "pause_int" : scheduler.pause_int(),
         "kbpersec" : bpsmeter.method.get_bps() / KIBI,
+        "speed" : to_units(bpsmeter.method.get_bps()),
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
@@ -3190,6 +3193,7 @@ def xml_qstatus():
                     <paused>%(paused)s</paused> \n\
                     <pause_int>%(pause_int)s</pause_int> \n\
                     <kbpersec>%(kbpersec)s</kbpersec> \n\
+                    <speed>%(speed)s</speed> \n\
                     <mbleft>%(mbleft)s</mbleft> \n\
                     <mb>%(mb)s</mb> \n\
                     <noofslots>%(noofslots)s</noofslots> \n\
