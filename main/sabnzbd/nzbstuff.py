@@ -458,7 +458,7 @@ class NzbObject(TryList):
         try:
             self.__priority = int(priority)
         except:
-            self.__priority = -100
+            self.__priority = DEFAULT_PRIORITY
 
         self.__dupe_table = {}
 

@@ -2431,7 +2431,7 @@ class ConfigCats:
         conf['defdir'] = cfg.COMPLETE_DIR.get_path()
 
 
-        empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'', 'priority':-100 }
+        empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'', 'priority':DEFAULT_PRIORITY }
         slotinfo = []
         slotinfo.append(empty)
         for cat in sorted(categories):

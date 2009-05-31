@@ -23,6 +23,7 @@ import os
 import logging
 import threading
 import sabnzbd.misc
+import sabnzbd.constants as constants
 from sabnzbd.utils import listquote
 from sabnzbd.utils import configobj
 from sabnzbd.decorators import synchronized
@@ -387,7 +388,7 @@ class ConfigCat:
         self.script = OptionStr(name, 'script', 'Default', add=False)
         self.dir = OptionDir(name, 'dir', add=False, create=False)
         self.newzbin = OptionList(name, 'newzbin', add=False)
-        self.priority = OptionNumber(name, 'priority', -100, add=False)
+        self.priority = OptionNumber(name, 'priority', constants.DEFAULT_PRIORITY, add=False)
 
         self.set_dict(values)
         add_to_database('categories', self.__name, self)
@@ -492,7 +493,7 @@ class ConfigRSS:
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', add=False)
         self.enable = OptionBool(name, 'enable', add=False)
-        self.priority = OptionNumber(name, 'priority', -100, -100, 2, add=False)
+        self.priority = OptionNumber(name, 'priority', constants.DEFAULT_PRIORITY, constants.DEFAULT_PRIORITY, 2, add=False)
         self.filters = OptionFilters(name, 'filters', add=False)
         self.filters.set([['', '', '', 'A', '*']])
 
@@ -858,7 +859,7 @@ def validate_dir_exists(root, value):
         return None, value
     else:
         return 'Folder "%s" does not exist' % p, None
-    
+
 def create_api_key():
     import time
     try:
@@ -873,6 +874,6 @@ def create_api_key():
     m = md5(t)
     # Update the md5 instance with the random variable
     m.update(r)
-    
+
     # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
     return m.hexdigest()

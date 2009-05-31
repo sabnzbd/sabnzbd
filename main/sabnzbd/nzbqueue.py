@@ -225,7 +225,7 @@ class NzbQueue(TryList):
                     self.__nzo_list.append(nzo)
             if save:
                 self.save()
-            
+
             osx.sendGrowlMsg("NZB added to queue",nzo.get_filename())
 
         if self.__auto_sort:
@@ -679,6 +679,11 @@ def sort_queue_function(nzo_list, method, reverse):
     new_list.extend(high_priority)
     new_list.extend(normal_priority)
     new_list.extend(low_priority)
+
+    # Make sure any left-over jobs enter the new list
+    for item in nzo_list:
+        if item not in new_list:
+            new_list.append(item)
 
     return new_list
 

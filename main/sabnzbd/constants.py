@@ -99,7 +99,7 @@ TOP_PRIORITY = 2
 HIGH_PRIORITY = 1
 NORMAL_PRIORITY = 0
 LOW_PRIORITY = -1
-
+DEFAULT_PRIORITY = -100
 
 series_match = [ ('([sS]|[\d]+)x(\d+)', # 1x01
                      ['^[-\.]+([sS]|[\d])+x(\d+)', '^[-\.](\d+)'] ),  #(MATCHER, [EXTRA,MATCHERS])
