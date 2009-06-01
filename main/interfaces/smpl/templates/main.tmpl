@@ -417,7 +417,7 @@ function loadtitle() {
 <!--#set $status = "<span class='paused'>"+$T('smpl-paused')+"</span>"#-->
 <!--#set $statusstr2 = $T('link-resume')#-->
 <!--#else if float($kbpersecrnd)>0 #-->
-<!--#set $status = "<span class='downloading'>$T('smpl-downloading')</span>"#-->
+<!--#set $status = "<span class='downloading'>"+$T('smpl-downloading')+"</span>"#-->
 <!--#else if float($kbpersecrnd) == 0 #-->
 <!--#set $status = "<span class='idle'>"+$T('smpl-idle')+"</span>"#-->
 <!--#end if#-->
@@ -896,10 +896,11 @@ function loadingJSON(){
 	{
 		//alert(info["kbpersec"]);
 
-		speed = info["kbpersec"].toFixed(0);
+		speed = info["speed"];
+        kbpersec = info["kbpersec"].toFixed(0);
 		var paused = info["paused"];
         var pause_int = info["pause_int"];
-		//if (paused==true) speed = 0;
+		//if (paused==true) speed = '';
 
 		if (paused == true)
 		{
@@ -915,11 +916,11 @@ function loadingJSON(){
             document.getElementById("status2").innerHTML = "$T('link-resume')";
             status2 = 1
 						//alert("paused");
-		} else if 	(speed>0)
+		} else if 	(kbpersec>0)
 		{
 			document.getElementById("status").innerHTML = "<span class='downloading'>$T('smpl-downloading')</span>";
     		totalTimeRemain = info["timeleft"];
-            dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"kB/s";
+            dltitle = "SABnzbd+ | "+totalTimeRemain+" | "+speed+"B/s";
             document.title = dltitle;
             document.getElementById("status2").innerHTML = "$T('link-pause')";
             status2 = 0
@@ -1011,7 +1012,7 @@ function loadingJSON(){
 		<div id="Header">
 			<p class="status">
 				$T('status'): <span id="status">$status</span><br />
-				$T('smpl-speed'): <span id="speed">$kbpersecrnd</span> kB/s<br />
+				$T('smpl-speed'): <span id="speed">$speed</span>B/s<br />
 				$T('menu-queue'): <span id="mbleft">$mbleft</span>/<span id="mbtotal">$mb</span>
 			</p>
 		<div id="logo">
