@@ -279,6 +279,16 @@ def CheckColor(color, web_dir):
         return ''
 
 #------------------------------------------------------------------------------
+def fix_webname(name):
+    xname = name.title()
+    if xname in ('Default', 'Plush'):
+        return xname
+    elif xname in ('Smpl', 'Wizard'):
+        return name.lower()
+    else:
+        return name
+
+#------------------------------------------------------------------------------
 def GetProfileInfo(vista):
     """ Get the default data locations
     """
@@ -692,9 +702,9 @@ def main():
             re_argv.append(opt)
             re_argv.append(arg)
         elif opt in ('-t', '--templates'):
-            web_dir = arg
+            web_dir = fix_webname(arg)
         elif opt in ('-2', '--template2'):
-            web_dir2 = arg
+            web_dir2 = fix_webname(arg)
         elif opt in ('-s', '--server'):
             (cherryhost, cherryport) = split_host(arg)
         elif opt in ('-n', '--nobrowser'):
@@ -1139,7 +1149,7 @@ def main():
                     #[[NSProcessInfo processInfo] processIdentifier]]
                     #logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
                     logging.info(os.getpid())
-                    os.system('kill -9 %s && open "%s"' % (os.getpid(),sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd","")) )                    
+                    os.system('kill -9 %s && open "%s"' % (os.getpid(),sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd","")) )
                 else:
                     pid = os.fork()
                     if pid == 0:
@@ -1194,7 +1204,7 @@ else:
 
                 icons = {}
                 status_bar = None
-                
+
                 def awakeFromNib(self):
 
                     #Status Bar iniatilize
@@ -1205,16 +1215,16 @@ else:
                     self.status_item.setImage_(self.icons['idle'])
                     self.status_item.setHighlightMode_(1)
                     self.status_item.setToolTip_('SABnzbd')
-                    
+
                     self.menu = NSMenu.alloc().init()
                     menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Open SABnzbd', 'open:', '')
                     self.menu.addItem_(menu_item)
                     menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
                     self.menu.addItem_(menu_item)
- 
+
                     self.status_item.setMenu_(self.menu)
 
-                    #Timer for updating menu                    
+                    #Timer for updating menu
                     self.timer = NSTimer.alloc().initWithFireDate_interval_target_selector_userInfo_repeats_(start_time, 2.0, self, 'update:', None, True)
                     NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer, NSDefaultRunLoopMode)
                     self.timer.fire()
