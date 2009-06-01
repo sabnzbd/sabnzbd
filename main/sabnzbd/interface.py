@@ -386,11 +386,10 @@ class MainPage:
 
     @cherrypy.expose
     def rss(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-
         if kwargs.get('mode') == 'history':
             return rss_history(cherrypy.url(), limit=kwargs.get('limit',50), search=kwargs.get('search'))
+        elif kwargs.get('mode') == 'queue':
+            return rss_qstatus()
         elif kwargs.get('mode') == 'warnings':
             return rss_warnings()
 
