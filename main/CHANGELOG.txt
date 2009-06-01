@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+0.5.0Alpha3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+* Session/API key system ported from 0.4.11
+* Multi-language, including Ducth and French translations
+* Less bugs
+-------------------------------------------------------------------------------
 0.5.0Alpha2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 * Fixed failing delete-bookmark-on-newzbin feature.
