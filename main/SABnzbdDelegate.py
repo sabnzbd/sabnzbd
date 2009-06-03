@@ -1,6 +1,20 @@
 #!/usr/bin/python -OO
-#from email import header
-#import Cheetah.DummyTransaction
+# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
 import objc
 from Foundation import *
 from AppKit import *
@@ -9,7 +23,7 @@ from objc import YES, NO, nil
 from threading import Thread
 
 import os
-import cherrypy 
+import cherrypy
 
 import logging
 import logging.handlers
@@ -47,29 +61,29 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.status_item.setAlternateImage_(self.icons['clicked'])
         self.status_item.setHighlightMode_(1)
         self.status_item.setToolTip_('SABnzbd')
-        
+
         #Menu construction
         self.menu = NSMenu.alloc().init()
-        
+
         menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Open Web Interface', 'open:', '')
         self.menu.addItem_(menu_item)
 
         self.queue_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Queue', 'open:', '')
         self.menu.addItem_(self.queue_menu_item)
-                            
+
         self.pause_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Pause', 'pause:', '')
         self.pause_menu_item.setToolTip_('0')
-        
+
         self.menu_pause = NSMenu.alloc().init()
 
         for i in range(6):
             menu_pause_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('%s min.' % ((i+1)*10), 'pause:', '')
             menu_pause_item.setToolTip_("%s" % ((i+1)*10))
             self.menu_pause.addItem_(menu_pause_item)
-        
+
         self.pause_menu_item.setSubmenu_(self.menu_pause)
         self.menu.addItem_(self.pause_menu_item)
-        
+
         self.resume_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Resume', 'resume:', '')
         self.resume_menu_item.setHidden_(YES)
 
@@ -77,10 +91,10 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
         if sabnzbd.cfg.USERNAME_NEWZBIN.get() and sabnzbd.cfg.PASSWORD_NEWZBIN.get() and sabnzbd.cfg.NEWZBIN_BOOKMARKS.get():
             menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Get Newzbin Bookmarks', 'getNewzbinBookmarks:', '')
-            self.menu.addItem_(menu_item)                   
-        
+            self.menu.addItem_(menu_item)
+
         self.menu.addItem_(NSMenuItem.separatorItem())
-        
+
         menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Complete Folder', 'openCompleteFolder:', '')
         self.menu.addItem_(menu_item)
 
@@ -91,26 +105,26 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
         #menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('About', 'infoPanel:', '')
         #self.menu.addItem_(menu_item)
-        
+
         menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
         self.menu.addItem_(menu_item)
 
         self.status_item.setMenu_(self.menu)
 
-        #Timer for updating menu                    
+        #Timer for updating menu
         self.timer = NSTimer.alloc().initWithFireDate_interval_target_selector_userInfo_repeats_(start_time, 3.0, self, 'update:', None, True)
         NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer, NSDefaultRunLoopMode)
         self.timer.fire()
 
     def setMenuTitle(self,text):
-    
+
         style = NSMutableParagraphStyle.new()
         style.setParagraphStyle_(NSParagraphStyle.defaultParagraphStyle())
         style.setAlignment_(NSCenterTextAlignment)
         style.setLineSpacing_(0.0)
         style.setMaximumLineHeight_(9.0)
         style.setParagraphSpacing_(-3.0)
-        
+
         titleAttributes = {
             NSBaselineOffsetAttributeName :  5.0,
             NSFontAttributeName:             NSFont.menuFontOfSize_(9.0),
@@ -122,8 +136,8 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.status_item.setAttributedTitle_(title)
 
     def update_(self, notification):
-    
-    
+
+
         try:
             qnfo = sabnzbd.nzbqueue.queue_info()
             bpsnow = sabnzbd.bpsmeter.method.get_bps()
@@ -135,19 +149,19 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                 else:
                     self.setMenuTitle("")
             elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
-                
+
                 state = "DOWNLOADING"
                 statusbarText = "\n\n%s\n%d KB/s\n" % (self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow), (bpsnow/KIBI))
-                
+
                 if sabnzbd.SABSTOP:
                     statusbarText = "..."
-                
+
                 self.setMenuTitle(statusbarText)
             else:
                 self.setMenuTitle("")
         except:
-            pass                      
-    
+            pass
+
         if downloader.paused():
             self.status_item.setImage_(self.icons['pause'])
             self.resume_menu_item.setHidden_(NO)
@@ -156,19 +170,19 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
             self.status_item.setImage_(self.icons['idle'])
             self.resume_menu_item.setHidden_(YES)
             self.pause_menu_item.setHidden_(NO)
-        
-        self.queueupdate()                   
-        
+
+        self.queueupdate()
+
 
     def queueupdate(self):
 
         try:
             qnfo = sabnzbd.nzbqueue.queue_info()
             pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
-                
+
             bytesleftprogess = 0
             bpsnow = sabnzbd.bpsmeter.method.get_bps()
-                
+
             self.menu_queue = NSMenu.alloc().init()
 
             job_nb = 1
@@ -180,12 +194,12 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                 bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
                 nzo_id = pnfo[PNFO_NZO_ID_FIELD]
                 timeleft = self.calc_timeleft(bytesleftprogess, bpsnow)
-                
+
                 job = "%d. %s (%d / %d MB) %s" % (job_nb, filename, bytesleft, bytes, timeleft)
                 job_nb += 1
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                 self.menu_queue.addItem_(menu_queue_item)
-            
+
             self.queue_menu_item.setSubmenu_(self.menu_queue)
         except:
             pass
