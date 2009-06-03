@@ -225,8 +225,9 @@ class NzbQueue(TryList):
                     self.__nzo_list.append(nzo)
             if save:
                 self.save()
-
-            osx.sendGrowlMsg("NZB added to queue",nzo.get_filename())
+                
+            if nzo.get_filename()[0:8] != "fetching":
+                osx.sendGrowlMsg("NZB added to queue",nzo.get_filename())
 
         if self.__auto_sort:
             self.sort_by_avg_age()

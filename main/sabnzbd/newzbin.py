@@ -44,7 +44,7 @@ import sabnzbd.newswrapper
 import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T
-
+from sabnzbd.utils import osx
 
 ################################################################################
 # BOOKMARK Wrappers
@@ -202,6 +202,8 @@ class MSGIDGrabber(Thread):
                     # Fatal error, give up on this one
                     bad_fetch(nzo, msgid, retry=False)
                     msgid = None
+
+            osx.sendGrowlMsg("NZB added to queue",filename)
 
             # Keep some distance between the grabs
             sleeper(5)
