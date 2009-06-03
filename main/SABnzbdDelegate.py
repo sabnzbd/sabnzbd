@@ -75,7 +75,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
         self.menu.addItem_(self.resume_menu_item)
 
-        if sabnzbd.cfg.USERNAME_NEWZBIN.get() and sabnzbd.cfg.PASSWORD_NEWZBIN.get() and sabnzbd.cfg.NEWZBIN_BOOKMARKS.get()::
+        if sabnzbd.cfg.USERNAME_NEWZBIN.get() and sabnzbd.cfg.PASSWORD_NEWZBIN.get() and sabnzbd.cfg.NEWZBIN_BOOKMARKS.get():
             menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Get Newzbin Bookmarks', 'getNewzbinBookmarks:', '')
             self.menu.addItem_(menu_item)                   
         
