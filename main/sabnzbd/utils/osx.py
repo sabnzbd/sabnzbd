@@ -12,7 +12,7 @@ try:
     import Growl
     import os.path
     import logging
-    import logging.handlers    
+    import logging.handlers
 
 
     #logging.info('%s/osx/resources/sabnzbdplus.icns' % (sabnzbd.DIR_PROG))
@@ -23,7 +23,7 @@ try:
         nIcon = Growl.Image.imageFromPath('osx/resources/sabnzbdplus.icns')
     else:
         nIcon = Growl.Image.imageWithIconForApplication('Terminal')
-    
+
     def sendGrowlMsg(nTitle , nMsg):
         gnotifier = SABGrowlNotifier(applicationIcon=nIcon)
         gnotifier.register()
@@ -31,7 +31,7 @@ try:
 
     class SABGrowlNotifier(Growl.GrowlNotifier):
     	applicationName = "SABnzbd"
-    	notifications = [NOTIFICATION_NAME]    
-except:
+    	notifications = [NOTIFICATION_NAME]
+except ImportError:
     def sendGrowlMsg(nTitle , nMsg):
         pass
