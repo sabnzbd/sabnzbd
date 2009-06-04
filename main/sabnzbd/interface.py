@@ -1826,7 +1826,7 @@ class ConfigGeneral:
         conf['bandwith_limit'] = cfg.BANDWIDTH_LIMIT.get()
         conf['refresh_rate'] = cfg.REFRESH_RATE.get()
         conf['rss_rate'] = cfg.RSS_RATE.get()
-        conf['cache_limitstr'] = cfg.CACHE_LIMIT.get()
+        conf['cache_limit'] = cfg.CACHE_LIMIT.get()
         conf['cleanup_list'] = List2String(cfg.CLEANUP_LIST.get())
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
@@ -3431,6 +3431,9 @@ def json_history(start=None, limit=None, search=None):
     history, pnfo_list, bytespersec = build_header(True)
     history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search)
     #Compile the history data
+    
+    # Filter out any functions, such as the translate functions.
+    #history = [item for item in history if type(item) in (list, dict, tuple, str)]
 
     status_str = JsonWriter().write(history)
 
@@ -3576,6 +3579,8 @@ def queueStatusJson(start, limit):
     #gather the queue details
     info, pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
 
+    # Filter out any functions, such as the translate functions.
+    info = [item for item in info if type(item) in (list, dict, tuple, str)]
     status_str = JsonWriter().write(info)
 
     cherrypy.response.headers['Content-Type'] = "application/json"
