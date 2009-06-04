@@ -330,7 +330,7 @@ class ConfigServer:
         self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
         self.enable = OptionBool(name, 'enable', True, add=False)
-        self.optional = OptionBool(name, 'optional', True, add=False)
+        self.optional = OptionBool(name, 'optional', False, add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
