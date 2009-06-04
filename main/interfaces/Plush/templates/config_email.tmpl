@@ -10,7 +10,7 @@
     
     <legend id="configbox_email_options">$T('emailOptions')</legend>
     
-    <strong>$T('opt-email_endjob')</strong><br/>
+    <strong>$T('opt-email_endjob'):</strong><br/>
         <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> $T('email-never')
         <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> $T('email-always')
         <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> $T('email-errorOnly')
@@ -22,7 +22,7 @@
     
     <br/><br/>
 	<strong>$T('opt-email_dir'):</strong><br/>
-	$T('explain-email_dir')<br/>
+	<small>$T('explain-email_dir')</small><br/>
 	<input type="text" size="40" name="email_dir" value="$email_dir">
     
 </fieldset>

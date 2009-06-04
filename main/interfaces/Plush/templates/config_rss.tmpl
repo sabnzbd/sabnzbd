@@ -15,6 +15,7 @@
 </form>
 </div>
 
+<br class="clear"/>
 <small><p>$T('explain-RSS')</p></small>
 
 <!--#for $feed in $rss#-->
@@ -61,6 +62,7 @@
         </optgroup></select>
         <!--#end if#-->
 
+		&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="hidden" name="feed" value="$feed"/>
         <input type="submit" value="$T('button-save')"/>
 		<input type="button" value="$T('button-delFeed')" class="delete_feed"/>

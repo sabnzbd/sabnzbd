@@ -354,7 +354,7 @@ link-download            Download
 # Config->Email
 configEmail              Email Notification
 emailOptions             Email Options
-opt-email_endjob         Email notification on job completion
+opt-email_endjob         Email Notification On Job Completion
 email-never              Never
 email-always             Always
 email-errorOnly          Error-only
