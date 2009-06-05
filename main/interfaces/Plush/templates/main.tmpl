@@ -62,7 +62,7 @@
 					<input type="file" id="uploadNZBFile" name="name" size="10" />
 				</a></li>
                 <li id="processingContainer">
-                    <a>$T('pp')</a>
+                    <a class="sf-with-ul">$T('pp')</a>
                     <ul>
                     <!--#if $cat_list#-->
                     <li><a>$T('category'):
@@ -98,8 +98,8 @@
                             <option value="$sc">$sc</option>
                         <!--#end for#-->
                         </select>
-                    <!--#end if#-->
                     </a></li>
+                    <!--#end if#-->
 					<!--#if $varExists('newzbinDetails')#-->
 	                <li><a><input title="Newzbin - $T('link-getBookmarks')" id="fetch_newzbin_bookmarks" class="tip pointer" type="button" value="$T('link-getBookmarks')" /></a></li>
 					<!--#end if#-->
