@@ -227,6 +227,9 @@ class Downloader(Thread):
         self.postproc = False
 
         self.shutdown = False
+
+        # A user might change server parsm again before server restart is ready.
+        # Keep a counter to prevent multiple restarts
         self.__restart = 0
 
         self.force_disconnect = False
@@ -266,7 +269,7 @@ class Downloader(Thread):
             timeout = srv.timeout.get()
             threads = srv.connections.get()
             fillserver = srv.fillserver.get()
-            primary = primary or (enabled and (not fillserver) and (threads > 0))
+            primary = enabled and (not fillserver) and (threads > 0)
             ssl = srv.ssl.get() and sabnzbd.newswrapper.HAVE_SSL
             username = srv.username.get()
             password = srv.password.get()
@@ -358,6 +361,8 @@ class Downloader(Thread):
                             self.__reset_nw(nw, "timed out")
                         server.bad_cons += 1
                         if server.optional and server.active and (server.bad_cons/server.threads) > 3:
+                            # Optional and active server had too many problems,
+                            # disable it now and send a re-enable plan to the scheduler
                             server.bad_cons = 0
                             server.active = False
                             self.init_server(server.id, None)
