@@ -53,8 +53,8 @@ cmenu-cat         Categorieën
 cmenu-sorting     Sorteren
 
 # Footer
-ft-download       Download map
-ft-complete       Complete map
+ft-download       Map download
+ft-complete       Map voltooid
 ft-speed          Snelheid
 ft-queued         Wachtend
 ft-paused         PAUZE
@@ -120,7 +120,7 @@ fetchNZB@1        Probeer NZB op te halen van %s
 purgeHist         Alles wissen
 hideDetails       Verberg details
 showDetails       Toon details
-sizeHist          Geschiedenis omvang
+sizeHist          Totaal
 completed         Voltooid
 size              Grootte
 status            Status
