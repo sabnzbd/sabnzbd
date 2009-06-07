@@ -1969,7 +1969,7 @@ def handle_server(kwargs, root=None):
 
     host = kwargs.get('host', '').strip()
     if not host:
-        return badParameterResponse('Error: Need host name.')
+        return badParameterResponse(T('error-needServer'))
 
     port = kwargs.get('port', '').strip()
     if not port:
@@ -2661,16 +2661,16 @@ def badParameterResponse(msg):
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
 <head>
-           <title>SABnzbd+ %s - Error</title>
+           <title>SABnzbd+ %s - %s/title>
 </head>
 <body>
-           <h3>Incorrect parameter</h3>
+           <h3>%s</h3>
            %s
            <br><br>
-           <FORM><INPUT TYPE="BUTTON" VALUE="Go Back" ONCLICK="history.go(-1)"></FORM>
+           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
 </body>
 </html>
-''' % (sabnzbd.__version__, msg)
+''' % (sabnzbd.__version__, T('error'), T('badParm'), msg, T('button-back'))
 
 def ShowFile(name, path):
     """Return a html page listing a file and a 'back' button
@@ -3003,7 +3003,7 @@ class ConfigEmail:
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(kwargs.get(kw))
             if msg:
-                return badParameterResponse('Incorrect value for %s: %s' % (kw, msg))
+                return badParameterResponse(T('error-badValue@2') % (kw, msg))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)

@@ -151,6 +151,13 @@ explain-Restart   De knop hier onder zal SABnzbd herstarten.\n\
 button-restart    Herstarten
 version           Versie
 uptime            Aktief
+error             Fout
+badParm           Foute instelling
+error-badValue@2  Foute waarde voor %s: %s
+error-noFolder@1  Map "%s" bestaat niet.
+error-QnotEmpty   Fout: Wachtrij is niet leeg, kan geen andere map kiezen.
+error-noUNC@1     Het UNC pad "%s" mag hier niet.
+error-notOctal@1  %s is geen correct octaal getal
 
 # Config->General
 generalConfig          Algemene instellingen
@@ -314,6 +321,7 @@ srv-optional             Optioneel
 srv-enable               Aktief
 button-addServer         Voeg toe
 button-delServer         Verwijder
+error-needServer         Server adres verplicht
 
 # Config->Scheduling
 configSchedule           Agenda instellen
@@ -378,6 +386,7 @@ opt-email_account        OPTIE: Account gebruikersnaan
 explain-email_account    Wanneer authenticatie nodig is, gebruikersnaam.
 opt-email_pwd            OPTIE: Account wachtwoord
 explain-email_pwd        Wanneer authenticatie nodig is, wachtwoord.
+error-badEmailAd@1       %s is geen geldig email adres
 
 # Config->Newzbin
 explain-newzbin          Wanneer je een account bij <strong>www.newzbin.com</strong> hebt,\

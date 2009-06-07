@@ -26,6 +26,7 @@ from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir, validate_dir_exists, \
                            create_api_key
+from sabnzbd.lang import T
 
 #------------------------------------------------------------------------------
 # Email validation support
@@ -38,7 +39,7 @@ def validate_email(value):
         if value and RE_VAL.match(value):
             return None, value
         else:
-            return "%s is not a valid email address" % value, None
+            return T('error-badEmailAd@1') % value, None
     else:
         return None, value
 
@@ -47,7 +48,7 @@ def validate_server(value):
     """ Check if server non-empty"""
     global EMAIL_ENDJOB, EMAIL_FULL
     if value == '' and (EMAIL_ENDJOB.get() or EMAIL_FULL.get()):
-        return "Server address required", None
+        return T('error-needServer'), None
     else:
         return None, value
 

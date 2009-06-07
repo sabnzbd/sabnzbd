@@ -154,6 +154,13 @@ explain-Restart   Le bouton ci-dessous redémarrera SABnzbd.\n\
 button-restart    Redémarrer
 version           Version
 uptime            Uptime
+error             Erreur
+badParm           Parameter incorrect
+error-badValue@2  Incorrect value for %s: %s
+error-noFolder@1  Folder "%s" does not exist
+error-QnotEmpty   Error: Queue not empty, cannot change folder.
+error-noUNC@1     UNC path "%s" not allowed here
+error-notOctal@1  %s is not a correct octal value
 
 # Config->General
 generalConfig         Configuration Générale
@@ -320,6 +327,7 @@ srv-optional             Optionnel
 srv-enable               Actif
 button-addServer         Ajouter Serveur
 button-delServer         Supprimer Serveur
+error-needServer         Server address required
 
 # Config->Scheduling
 configSchedule           Configuration de la plannification
@@ -385,6 +393,7 @@ opt-email_account        OPTIONNEL: Identifiant
 explain-email_account    Si une autentification pour l'envoi est requise, l'identifiant.
 opt-email_pwd            OPTIONAL: Mot de passe
 explain-email_pwd        Si une autentification pour l'envoi est requise, le mot de passe.
+error-badEmailAd@1       %s is not a valid email address
 
 # Config->Newzbin
 explain-newzbin          Si vous avez un compte sur <strong>www.newzbin.com</strong>,\
