@@ -204,6 +204,11 @@ button-apikey         Générer nouvelle clé
 opt-disableApikey     Désactiver la clé API
 explain-disableApikey La clé API n'est plus nécessaire pour l'interaction avec SABnzbd.
 explain-disableApikeyAttention AUX RISQUES !
+restart1              Initiating restart...\n
+restart2              &nbsp\n\
+                      SABnzbd shutdown finished.\n\
+                      Wait for about 5 second and then click the button below.\n\n\
+                      <strong><a href="..">Refresh</a></strong>\n
 
 # Config->Folders
 folderConfig            Configuration des dossiers

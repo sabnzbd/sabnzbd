@@ -204,6 +204,11 @@ button-apikey         Generate New Key
 opt-disableApikey     Disable API-key
 explain-disableApikey Do not require the API key.
 explain-disableApikeyWarn USE AT YOUR OWN RISK!
+restart1              Initiating restart...\n
+restart2              &nbsp\n\
+                      SABnzbd shutdown finished.\n\
+                      Wait for about 5 second and then click the button below.\n\n\
+                      <strong><a href="..">Refresh</a></strong>\n
 
 # Config->Folders
 folderConfig            Folder configuration

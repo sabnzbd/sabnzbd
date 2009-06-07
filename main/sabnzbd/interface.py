@@ -67,14 +67,6 @@ DIRECTIVES = {
            'directiveEndToken': '#-->',
            'prioritizeSearchListOverSelf' : True
            }
-RESTART_MSG1 = '''
-Initiating restart...
-'''
-RESTART_MSG2 = '''
-<br/>SABnzbd shutdown finished.
-<br/>Wait for about 5 second and then click the button below.
-<br/><br/><strong><a href="..">Refresh</a></strong>
-'''
 
 #------------------------------------------------------------------------------
 #
@@ -1623,9 +1615,9 @@ class ConfigPage:
         if msg:
             yield msg
         else:
-            yield RESTART_MSG1
+            yield T('restart1')
             sabnzbd.halt()
-            yield RESTART_MSG2
+            yield T('restart2')
             cherrypy.engine.restart()
 
 

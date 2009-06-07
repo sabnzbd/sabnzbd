@@ -89,7 +89,6 @@ pr-normal         Normaal
 pr-high           Hoog
 pr-low            Laag
 
-
 # Queue page
 link-sortByName   Op naam
 link-sortByAge    Op leeftijd
@@ -200,6 +199,11 @@ button-apikey          Maak een nieuwe sleutel
 opt-disableApikey      API-sleutel niet gebruiken
 explain-disableApikey  Gebruik van de API sleutel niet afdwingen.
 explain-disableApikeyWarn GEBRUIK OP EIGEN RISICO!
+restart1               Begin met herstart...\n
+restart2               &nbsp\n\
+                       SABnzbd is nu afgesloten.\n\
+                       Wacht ongeveer 5 seconden en klik dan op onderstaande knop.\n\n\
+                       <strong><a href="..">Verversen</a></strong>\n
 
 warning-ambiLocahost Waarschuwing: LOCALHOST is niet eenduidig, gebruik een numeriek IP-adres.
 
