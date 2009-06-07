@@ -63,6 +63,9 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	color: #000;
 	cursor: pointer;
 }
+.pagination a:hover {
+	border: solid 1px #000;
+}
 .pagination a, .pagination span {
     display: block;
     float: left;
