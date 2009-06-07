@@ -1839,6 +1839,9 @@ class ConfigGeneral:
         msg = check_session(kwargs)
         if msg: return msg
 
+        # Special handling for cache_limitstr
+        #kwargs['cache_limit'] = kwargs.get('cache_limitstr')
+
         # Handle general options
         for kw in GENERAL_LIST:
             item = config.get_config('misc', kw)
@@ -2892,7 +2895,7 @@ def build_header(prim):
 
     header['cache_art'] = str(anfo[ANFO_ARTICLE_SUM_FIELD])
     header['cache_size'] = str(anfo[ANFO_CACHE_SIZE_FIELD])
-    header['cache_limit'] = str(anfo[ANFO_CACHE_LIMIT_FIELD])
+    header['cache_max'] = str(anfo[ANFO_CACHE_LIMIT_FIELD])
 
     header['nzb_quota'] = ''
 
