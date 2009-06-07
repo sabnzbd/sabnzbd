@@ -386,7 +386,7 @@ opt-password_newzbin     Wachtwoord
 explain-password_newzbin Vul hier je wachtwoord in.
 newzbinBookmarks         Automatische bookmark verwerking
 opt-newzbin_bookmarks    Bookmarks verwerken
-explain-newzbin_bookmarks Download alle rapported die bookmarked zijn?
+explain-newzbin_bookmarks Download alle rapporten die gebookmarked zijn?
 link-getBookmarks        Download nu alle bookmarks
 link-HideBM              Verberg verwerkte bookmarks
 link-ShowBM              Toon verwerkte bookmarks
