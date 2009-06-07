@@ -12,7 +12,7 @@
 			<option value="2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
 			<option value="3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
 		</select>
-		
+
 		<!--#if $slot.priority != '2'#-->
 			<br class="clear" />
 			<label class="label">$T('priority'):</label>
@@ -31,7 +31,7 @@
 			<label class="label">$T('script'):</label>
 			<select name="script">
 				<!--#for $sc in $script_list#-->
-				<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>Tspec($sc)</option>
+				<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
 				<!--#end for#-->
 			</select>
 		<!--#end if#-->
@@ -40,7 +40,7 @@
 			<label class="label">$T('category'):</label>
 			<select name="cat">
 				<!--#for $ct in $cat_list#-->
-				<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>Tspec($ct)</option>
+				<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
 				<!--#end for#-->
 			</select>
 		<!--#end if#-->
@@ -57,12 +57,12 @@
 	<a onclick="javascript:submit_marked('$nzo_id', 'Down')">$T('nzo-down')</a>
 	<a onclick="javascript:submit_marked('$nzo_id', 'Bottom')">$T('nzo-bottom')</a>
 	<br />
-  
-  selection:<a href='#' onclick='mark_all();' target='_self'>$T('nzo-all')</a>
+
+  $T('nzo-selection'):<a href='#' onclick='mark_all();' target='_self'>$T('nzo-all')</a>
             <a href='#' onclick='unmark_all();' target='_self'>$T('nzo-none')</a>
             <a href='#' onclick='invert();' target='_self'>$T('nzo-invert')</a>
-			
-			
+
+
   <table id="historyTable">
       <tr><th></th><th>$T('nzo-filename')/$T('nzo-subject')</th><th>$T('size')</th><th>$T('nzo-age')</th></tr>
       <!--#set $oddLine = False#-->

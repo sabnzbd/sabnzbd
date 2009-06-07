@@ -113,6 +113,11 @@ age               AGE
 button-del        Supprimer
 button-resume     Reprendre
 button-pause      Pause
+unknown           inconnu
+fetchingNewzbin@1 fetching msgid %s from www.newzbin.com
+error-fetchNewzbin@1 Error Fetching msgid %s from www.newzbin.com -\
+                  Please make sure your Username and Password are set
+fetchNZB@1        Trying to fetch NZB from %s
 
 # History page
 purgeHist         Effacer l'historique

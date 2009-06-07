@@ -60,7 +60,7 @@ ft-complete       Complete Dir
 ft-speed          Download speed
 ft-queued         Queued
 ft-paused         PAUSED
-ft-buffer@2       %s articles in %s bytes
+ft-buffer@2       Cached %s articles (%s bytes)
 ft-sysload        Sysload
 ft-warning        WARNINGS
 ft-newRelease@1   New release %s available at
@@ -113,6 +113,11 @@ age               AGE
 button-del        Del
 button-resume     Resume
 button-pause      Pause
+unknown           unknown
+fetchingNewzbin@1 fetching msgid %s from www.newzbin.com
+error-fetchNewzbin@1 Error Fetching msgid %s from www.newzbin.com -\
+                  Please make sure your Username and Password are set
+fetchNZB@1        Trying to fetch NZB from %s
 
 # History page
 purgeHist         Purge History

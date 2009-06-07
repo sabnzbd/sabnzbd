@@ -33,7 +33,7 @@ warnings          Meldingen
 
 # General
 button-refresh    Ververs
-left              links
+left              over
 page              Pagina
 everything        Alles
 prev              Vorige

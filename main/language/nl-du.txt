@@ -58,7 +58,7 @@ ft-complete       Complete map
 ft-speed          Snelheid
 ft-queued         Wachtend
 ft-paused         PAUZE
-ft-buffer@2       %s artikelen in %s bytes
+ft-buffer@2       %s artikelen (%s bytes) gebuffered
 ft-sysload        Sysload
 ft-warning        MELDINGEN
 ft-newRelease@1   Nieuwe versie %s beschikbaar op
@@ -76,7 +76,7 @@ addFile           Bestand
 category          Categorie
 pp                Nabewerking
 priority          Prioriteit
-pp-none           Download
+pp-none           Geen
 pp-repair         +Repareren
 pp-unpack         +Uitpakken
 pp-delete         +Opschonen
@@ -111,6 +111,11 @@ age               Leeftijd
 button-del        Wis
 button-resume     Doorgaan
 button-pause      Pauzeer
+unknown           onbekend
+fetchingNewzbin@1 Ophalen rapport %s van www.newzbin.com
+error-fetchNewzbin@1 Fout bij ophalen van rapport %s van www.newzbin.com -\
+                  Zorg dat je gebruikersnaam en wachtwoord goed ingevuld zijn
+fetchNZB@1        Probeer NZB op te halen van %s
 
 # History page
 purgeHist         Alles wissen

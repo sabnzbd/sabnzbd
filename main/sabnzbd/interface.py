@@ -2913,7 +2913,7 @@ def build_header(prim):
         header['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
     except:
         datestart = datetime.datetime.now()
-        header['eta'] = 'unknown'
+        header['eta'] = T('unknown')
 
     return (header, qnfo[QNFO_PNFO_LIST_FIELD], bytespersec)
 

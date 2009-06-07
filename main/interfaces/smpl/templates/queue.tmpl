@@ -78,10 +78,10 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('smpl-eta'): <strong>$eta</st
 					<td>
 						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);"onchange="javascript:changequeuedetails('queue/change_opts?nzo_id='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
 							<optgroup label="$T('pp')">
-								<option value="$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
-								<option value="$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>R</option>
-								<option value="$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>U</option>
-								<option value="$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>D</option>
+								<option value="$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->>$T('pp-none')</option>
+								<option value="$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>$T('pp-r')</option>
+								<option value="$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>$T('pp-u')</option>
+								<option value="$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>$T('pp-d')</option>
 							</optgroup>
 						</select>
 
@@ -89,10 +89,10 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('smpl-eta'): <strong>$eta</st
 						<!--#if $slot.priority#-->
 						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/set_priority?nzo_id=$slot.nzo_id&priority='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
 							<optgroup label="$T('priority')">
-								<option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>Force</option>
-								<option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>High</option>
-								<option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>Normal</option>
-								<option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>Low</option>
+								<option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>$T('pr-force')</option>
+								<option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>$T('pr-high')</option>
+								<option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>$T('pr-normal')</option>
+								<option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
 							</optgroup>
 						</select>
 						<!--#end if#-->
@@ -100,7 +100,7 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('smpl-eta'): <strong>$eta</st
 							<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_script?nzo_id=$slot.nzo_id&script='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
 							<optgroup label="$T('script')">
 							<!--#for $sc in $script_list#-->
-								<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+								<option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
 							<!--#end for#-->
 							</optgroup>
 							</select>
@@ -155,7 +155,8 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('smpl-eta'): <strong>$eta</st
 	<!--#end if#-->
     </table>
 <!--#if int($cache_max)#-->
-<center><b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br></center>
+<!--#set $bufmsg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->
+<center>$bufmsg<br></center>
 <!--#end if#-->
 <br />
 <!--#set $start = int($start)#-->

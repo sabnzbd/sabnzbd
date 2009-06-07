@@ -330,14 +330,13 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
 
     if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
         logging.info('Fetching msgid %s from www.newzbin.com', msgid)
-        msg = "fetching msgid %s from www.newzbin.com" % msgid
+        msg = T('fetchingNewzbin@1') % msgid
 
         future_nzo = nzbqueue.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority)
 
         newzbin.grab(msgid, future_nzo)
     else:
-        logging.error('Error Fetching msgid %s from www.newzbin.com - '
-                      'Please make sure your Username and Password are set', msgid)
+        logging.error(T('error-fetchNewzbin@1'), msgid)
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
@@ -346,7 +345,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
     if cat and cat.lower()=='default': cat = None
 
     logging.info('Fetching %s', url)
-    msg = "Trying to fetch NZB from %s" % url
+    msg = T('fetchNZB@1') % url
     future_nzo = nzbqueue.generate_future(msg, pp, script, cat, url=url, priority=priority)
     urlgrabber.add(url, future_nzo)
 
