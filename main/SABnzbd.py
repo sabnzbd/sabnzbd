@@ -516,10 +516,6 @@ def is_sabnzbd_running(url):
     import urllib2
     try:
         url = '%sapi?mode=version' % (url)
-        username = sabnzbd.cfg.USERNAME.get()
-        password = sabnzbd.cfg.PASSWORD.get()
-        if username and password:
-            url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
         s = urllib2.urlopen(url)
         ver = s.read()
         if ver and ver.strip() == sabnzbd.__version__:
