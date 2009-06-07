@@ -38,11 +38,9 @@ from sabnzbd.lang import T
 
 WIN32 = DARWIN = DARWIN_INTEL = POSIX = FOUNDATION = False
 KERNEL32 = None
-SEPARATOR = '/'
 
 if os.name == 'nt':
     WIN32 = True
-    SEPARATOR = '\\'
     try:
         import ctypes
         KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")

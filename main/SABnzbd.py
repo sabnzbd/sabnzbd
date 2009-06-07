@@ -590,7 +590,7 @@ def evaluate_inipath(path):
     # A foldername is enough, the standard name will be appended.
 
     path = os.path.normpath(os.path.abspath(path))
-    inipath = path + sabnzbd.SEPARATOR + DEF_INI_FILE
+    inipath = os.path.join(path, DEF_INI_FILE)
     if os.path.isdir(path):
         return inipath
     elif os.path.isfile(path):
