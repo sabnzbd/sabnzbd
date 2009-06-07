@@ -40,7 +40,7 @@
                 <select name="cat">
                     <optgroup label="$T('category')">
                         <!--#for $ct in $cat_list#-->
-                            <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
+                            <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$Tspec($ct)</option>
                         <!--#end for#-->
                     </optgroup>
                 </select>
@@ -58,7 +58,7 @@
                 <select name="script">
                     <optgroup label="$T('script')">
                         <!--#for $sc in $script_list#-->
-                            <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
+                            <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$Tspec($sc)</option>
                         <!--#end for#-->
                     </optgroup>
                 </select>
@@ -109,7 +109,7 @@
           <td>
             <select name="cat">
             <!--#for $ct in $cat_list#-->
-                <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$ct</option>
+                <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$Tspec($ct)</option>
             <!--#end for#-->
             </select>
           </td>
@@ -127,7 +127,7 @@
           <td>
             <select name="script">
             <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$sc</option>
+                <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$Tspec($sc)</option>
             <!--#end for#-->
             </select>
           </td>
@@ -171,7 +171,7 @@
           <td>
             <select name="cat">
             <!--#for $ct in $cat_list#-->
-                <option value="$ct" <!--#if $ct == $filter[0] then "selected" else ""#-->>$ct</option>
+                <option value="$ct" <!--#if $ct == $filter[0] then "selected" else ""#-->>$Tspec($ct)</option>
             <!--#end for#-->
             </select>
           </td>
@@ -189,7 +189,7 @@
           <td>
             <select name="script">
             <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $sc == $filter[2] then "selected" else ""#-->>$sc</option>
+                <option value="$sc" <!--#if $sc == $filter[2] then "selected" else ""#-->>$Tspec($sc)</option>
             <!--#end for#-->
             </select>
           </td>

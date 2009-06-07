@@ -18,7 +18,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 <!--#for $feed in $rss#-->
 
 <fieldset class="EntryFieldSet">
-    <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/> 
+    <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
     $T('feed') $feed</legend>
     <hr />
     <div class="EntryBlock" id="update_$feed">
@@ -51,7 +51,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
                 <select name="script">
                         <optgroup label="$T('script')">
                         <!--#for $sc in $script_list#-->
-                            <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>Tspec($sc)</option>
+                            <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$Tspec($sc)</option>
                         <!--#end for#-->
                     </optgroup>
                 </select>
@@ -81,9 +81,9 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             <th>$T('rss-order')</th>
             <th>$T('rss-type')</th>
             <th>$T('rss-filter')</th>
-            <!--#if $rss[$feed]['pick_cat'] then "<th>$T('category')</th>" else ""#-->
+            <!--#if $rss[$feed]['pick_cat']#--> <th>$T('category')</th> <!--#end if#-->
             <th>Mode</th>
-            <!--#if $rss[$feed]['pick_script'] then "<th>$T('script')</th>" else ""#-->
+            <!--#if $rss[$feed]['pick_script']#--> <th>$T('script')</th> <!--#end if#-->
             <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
     </thead>
@@ -102,7 +102,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
           <td>
             <select name="cat">
             <!--#for $ct in $cat_list#-->
-                <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>Tspec($ct)</option>
+                <option value="$ct" <!--#if $ct == $rss[$feed]['cat'] then "selected" else ""#-->>$Tspec($ct)</option>
             <!--#end for#-->
             </select>
           </td>
@@ -120,7 +120,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
           <td>
             <select name="script">
             <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>Tspec($sc)</option>
+                <option value="$sc" <!--#if $sc == $rss[$feed]['script'] then "selected" else ""#-->>$Tspec($sc)</option>
             <!--#end for#-->
             </select>
           </td>
@@ -162,7 +162,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 		<td>
 			<select name="cat">
 			<!--#for $ct in $cat_list#-->
-				<option value="$ct" <!--#if $ct == $filter[0] then "selected" else ""#-->>Tspec($ct)</option>
+				<option value="$ct" <!--#if $ct == $filter[0] then "selected" else ""#-->>$Tspec($ct)</option>
 			<!--#end for#-->
 			</select>
 		</td>
@@ -181,7 +181,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             <td>
             <select name="script">
             <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $sc == $filter[2] then "selected" else ""#-->>Tspec($sc)</option>
+                <option value="$sc" <!--#if $sc == $filter[2] then "selected" else ""#-->>$Tspec($sc)</option>
             <!--#end for#-->
             </select>
           </td>
