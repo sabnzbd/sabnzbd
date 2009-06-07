@@ -405,8 +405,9 @@ class MainPage:
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        msg = check_apikey(kwargs)
-        if msg: return msg
+        if kwargs.get('mode', '') != 'version':
+            msg = check_apikey(kwargs)
+            if msg: return msg
         return self.api_handler(kwargs)
 
 
@@ -3431,7 +3432,7 @@ def json_history(start=None, limit=None, search=None):
     history, pnfo_list, bytespersec = build_header(True)
     history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search)
     #Compile the history data
-    
+
     # Filter out any functions, such as the translate functions.
     #history = [item for item in history if type(item) in (list, dict, tuple, str)]
 
