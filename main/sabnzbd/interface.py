@@ -2748,6 +2748,26 @@ def ShowOK(url):
 ''' % (escape(url), escape(url))
 
 
+def _make_link(qfeed, job):
+    # Return downlink for a job
+    name = urllib.quote_plus(job[2])
+    if job[3]:
+        cat = '&cat=' + escape(job[3])
+    else:
+        cat = ''
+    if job[4]:
+        pp = '&pp=' + escape(str(job[4]))
+    else:
+        pp = ''
+
+    title = xml_name(job[1])
+    if job[2].isdigit():
+        title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (job[2], title)
+
+    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
+           (cfg.API_KEY.get() ,qfeed, name, cat, pp, T('link-download'), title)
+
+
 def ShowRssLog(feed, all):
     """Return a html page listing an RSS log and a 'back' button
     """
@@ -2763,26 +2783,18 @@ def ShowRssLog(feed, all):
         job = jobs[x]
         if job[0] == 'D':
             doneStr += '%s<br/>' % xml_name(job[1])
+
     goodStr = ""
     for x in names:
         job = jobs[x]
         if job[0] == 'G':
-            goodStr += '%s<br/>' % xml_name(job[1])
+            goodStr += _make_link(qfeed, job)
+
     badStr = ""
     for x in names:
         job = jobs[x]
         if job[0] == 'B':
-            name = urllib.quote_plus(job[2])
-            if job[3]:
-                cat = '&cat=' + escape(job[3])
-            else:
-                cat = ''
-            if job[4]:
-                pp = '&pp=' + escape(str(job[4]))
-            else:
-                pp = ''
-            badStr += '<a href="rss_download?session=%s&feed=%s&id=%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
-                   (cfg.API_KEY.get() ,qfeed, name, cat, pp, T('link-download'), xml_name(job[1]))
+            badStr += _make_link(qfeed, job)
 
     if all:
         return '''
