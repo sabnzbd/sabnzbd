@@ -11,7 +11,7 @@
 		<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
 		<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
 	</select>
-	<!--#if int($cache_limit)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#-->
+	<!--#if int($cache_max)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#-->
 </small></div>
 
 <!--#if $servers#-->
