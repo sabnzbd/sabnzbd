@@ -7,7 +7,7 @@
     - <b>$T('ft-paused')</b><!--#if $pause_int != "0"#-->($pause_int)<!--#end if#-->
 <!--#end if#-->
 <br>
-<!--#if int($cache_limit)#-->
+<!--#if int($cache_max)#-->
 <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->
 $msg<br>
 <!--#end if#-->

@@ -154,7 +154,7 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('smpl-eta'): <strong>$eta</st
 		<!--#end for#-->
 	<!--#end if#-->
     </table>
-<!--#if int($cache_limit)#-->
+<!--#if int($cache_max)#-->
 <center><b>$cache_art</b> articles buffered in <b>$cache_size</b> bytes<br></center>
 <!--#end if#-->
 <br />
@@ -197,11 +197,11 @@ $T('smpl-oneresult')
         <!--#set $currentpage = int($newfinish / $limit)#-->
         <!--#set $offset = 0#-->
         <!--#if $currentpage == 1#-->
-            <span class="unselected">&laquo;$T('smpl-first')</span> 
-            <span class="unselected">&lsaquo;$T('smpl-previous')</span> 
+            <span class="unselected">&laquo;$T('smpl-first')</span>
+            <span class="unselected">&lsaquo;$T('smpl-previous')</span>
         <!--#else#-->
-            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=0', 1,-1,this.parentNode.parentNode.id);">&laquo;$T('smpl-first')</a> 
-            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,-1,this.parentNode.parentNode.id);">&lsaquo;$T('smpl-previous')</a> 
+            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=0', 1,-1,this.parentNode.parentNode.id);">&laquo;$T('smpl-first')</a>
+            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start-$limit#-->', 1,-1,this.parentNode.parentNode.id);">&lsaquo;$T('smpl-previous')</a>
         <!--#end if#-->
         <!--#for $i in $range($pages)#-->
             <!--#set $i = $i+1#-->
@@ -213,10 +213,10 @@ $T('smpl-oneresult')
             <!--#set $offset = $offset + $limit#-->
         <!--#end for#-->
         <!--#if $currentpage == $pages#-->
-            <span class="unselected">$T('smpl-next')&rsaquo;</span> 
+            <span class="unselected">$T('smpl-next')&rsaquo;</span>
             <span class="unselected">$T('smpl-last')&raquo;</span>
         <!--#else#-->
-            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start+$limit#-->',1,-1,this.parentNode.parentNode.id);">$T('smpl-next')&rsaquo;</a> 
+            <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo $start+$limit#-->',1,-1,this.parentNode.parentNode.id);">$T('smpl-next')&rsaquo;</a>
             <a class="unselected" onclick="javascript:lr('queue', 'limit=$limit&start=<!--#echo (($pages-1)*$limit)#-->', 1,-1,this.parentNode.parentNode.id);">$T('smpl-last')<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
         <!--#end if#-->
     <!--#end if#-->
