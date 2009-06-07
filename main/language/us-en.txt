@@ -143,6 +143,7 @@ thread            Thread
 emailResult       Email Test Result
 lastWarnings      Lastest Warnings
 clearWarnings     clear
+server-blocked    blocked
 
 # Configuration
 configuration     Configuration

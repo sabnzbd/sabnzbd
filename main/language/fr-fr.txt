@@ -143,6 +143,7 @@ thread            Thread
 emailResult       Résultat du test Email
 lastWarnings      Derniers avertissements
 clearWarnings     effacer
+server-blocked    blocked
 
 # Configuration
 configuration     Configuration

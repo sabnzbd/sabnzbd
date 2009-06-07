@@ -17,7 +17,7 @@
 <!--#if $servers#-->
 	<!--#for $server in $servers#-->
 	<fieldset class="EntryFieldSet">
-		<legend id="<!--#if int($server[4])#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server[0]:$server[1]:$server[2]<!--#if $server[5] then "" else " (blocked)"#-->
+		<legend id="<!--#if int($server[4])#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server[0]:$server[1]:$server[2]<!--#if $server[5] then "" else " ($T('server-blocked'))"#-->
 		</legend>
 		<small><!--#if $server[3]#--><ol class="numbered_list">
 		<!--#for $thrd in $server[3]#-->

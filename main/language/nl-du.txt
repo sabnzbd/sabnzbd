@@ -141,6 +141,7 @@ thread            Verbinding
 emailResult       Test resultaat email
 lastWarnings      Recentste meldingen
 clearWarnings     Wissen
+server-blocked    geblokkeerd
 
 # Configuration
 configuration     Instellingen
