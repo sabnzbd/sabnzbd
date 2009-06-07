@@ -587,6 +587,26 @@ def copy_old_files(newpath):
                 pass
 
 
+def evaluate_inipath(path):
+    # Derive INI file path from a partial path.
+    # Full file path: if file does not exist the name must contain a dot
+    # but not a leading dot.
+    # A foldername is enough, the standard name will be appended.
+
+    path = os.path.normpath(os.path.abspath(path))
+    inipath = path + sabnzbd.SEPARATOR + DEF_INI_FILE
+    if os.path.isdir(path):
+        return inipath
+    elif os.path.isfile(path):
+        return path
+    else:
+        dir, name = os.path.split(path)
+        if name.find('.') < 1:
+            return inipath
+        else:
+            return path
+
+
 def cherrypy_logging(log_path):
     log = cherrypy.log
     log.access_file = ''
@@ -762,7 +782,7 @@ def main():
 
     if inifile:
         # INI file given, simplest case
-        inifile = os.path.normpath(os.path.abspath(inifile))
+        inifile = evaluate_inipath(inifile)
     else:
         # No ini file given, need profile data
         GetProfileInfo(vista)
@@ -1190,7 +1210,7 @@ else:
         try:
             from PyObjCTools import AppHelper
             from SABnzbdDelegate import SABnzbdDelegate
-            
+
             class startApp(Thread):
                 def __init__(self):
                     logging.info('[osx] sabApp Starting - starting main thread')
@@ -1205,11 +1225,11 @@ else:
                     cherrypy.engine.exit()
                     sabnzbd.SABSTOP = True
                     logging.info('[osx] sabApp Quit - main thread stopped')
-    
+
             sabApp = startApp()
             sabApp.start()
             AppHelper.runEventLoop()
-            
+
         except:
             main()
 
