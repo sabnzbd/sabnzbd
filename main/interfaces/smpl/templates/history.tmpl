@@ -1,4 +1,4 @@
-<h3>History <a id="feed" href="rss?mode=history"><img id="rss" src="static/feed-icon-14x14.png" alt="rss"/></a></h3>
+<h3>$T('menu-history') <a id="feed" href="rss?mode=history"><img id="rss" src="static/feed-icon-14x14.png" alt="rss"/></a></h3>
 <div class="searchBox">
     <input id="historySearch" type="text" size="17" name="search" value="$search" onchange="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1, this.parentNode.parentNode.id, 1);" onfocus="pauseHistoryDeferer(this.parentNode.parentNode.id)" onblur="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0',1, this.parentNode.parentNode.id, 1);">
     <a onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0',1, this.parentNode.parentNode.id);"><img class="delicon" src="static/images/key_enter.png" /></a>
@@ -6,8 +6,8 @@
 </div>
 
 <div class="centerLinks"><br />
-    <a onClick="if(confirm('$T('smpl-purgehistOK?')')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('smpl-purgehist')</a> | 
-	<a onClick="if(confirm('$T('smpl-purgefailhistOK?')')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('smpl-purgefailhist')</a> | 
+    <a onClick="if(confirm('$T('smpl-purgehistOK?')')){javascript:loadSearch('history/purge', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('smpl-purgehist')</a> |
+	<a onClick="if(confirm('$T('smpl-purgefailhistOK?')')){javascript:loadSearch('history/purge_failed', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);}">$T('smpl-purgefailhist')</a> |
 	<a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then $T('hideDetails') else $T('showDetails')#--></a></span>
 </div>
 
@@ -46,7 +46,7 @@
     <tr id="row_$line.nzo_id">
         <td></td>
         <td colspan="5">
-        <% 
+        <%
 d = datetime.datetime.fromtimestamp(float(line['completed']))
 t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
         %>
@@ -117,12 +117,12 @@ $T('smpl-oneresult')
         <!--#set $currentpage = int($newfinish / $limit)#-->
         <!--#set $offset = 0#-->
         <!--#if $currentpage == 1#-->
-            <span class="unselected">&laquo;$T('smpl-first')</span> 
-            <span class="unselected">&lsaquo;$T('smpl-previous')</span> 
+            <span class="unselected">&laquo;$T('smpl-first')</span>
+            <span class="unselected">&lsaquo;$T('smpl-previous')</span>
         <!--#else#-->
             <!--#set $new_start = $start-$limit#-->
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;$T('smpl-first')</a> 
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$new_start', 1,this.parentNode.parentNode.id);">&lsaquo;$T('smpl-previous')</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=0', 1,this.parentNode.parentNode.id);">&laquo;$T('smpl-first')</a>
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$new_start', 1,this.parentNode.parentNode.id);">&lsaquo;$T('smpl-previous')</a>
         <!--#end if#-->
         <!--#for $i in $range($pages)#-->
             <!--#set $i = $i+1#-->
@@ -138,7 +138,7 @@ $T('smpl-oneresult')
         <!--#else#-->
             <!--#set $first_start = $start+$limit#-->
             <!--#set $second_start = (($pages-1)*$limit)#-->
-            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$first_start', 1,this.parentNode.parentNode.id);">$T('smpl-next')&rsaquo;</a> 
+            <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$first_start', 1,this.parentNode.parentNode.id);">$T('smpl-next')&rsaquo;</a>
             <a class="unselected" onclick="javascript:loadSearch('history', 'historySearch', 'limit=$limit&start=$second_start', 1,this.parentNode.parentNode.id);">$T('smpl-last')<!--#if $pages > 1#-->($pages)<!--#end if#-->&raquo;</a>
         <!--#end if#-->
     <!--#end if#-->

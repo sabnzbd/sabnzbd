@@ -74,6 +74,7 @@ add
 reportId          Newzbin rapport
 addFile           Bestand
 category          Categorie
+pp                Nabewerking
 priority          Prioriteit
 pp-none           Download
 pp-repair         +Repareren
@@ -143,6 +144,8 @@ explain-Restart   De knop hier onder zal SABnzbd herstarten.\n\
                   Dit kan nuttig zijn wanneer je vermoedt dat het programma niet stabiel is.\n\
                   Het downloaden zal vóór de herstart gestopt worden en daarna weer doorgaan.
 button-restart    Herstarten
+version           Versie
+uptime            Aktief
 
 # Config->General
 generalConfig          Algemene instellingen
@@ -375,17 +378,17 @@ opt-username_newzbin     Gebruikersnaam
 explain-username_newzbin Vul hier je gebruikersnaam in.
 opt-password_newzbin     Wachtwoord
 explain-password_newzbin Vul hier je wachtwoord in.
-newzbinBookmarks         Automatische <i>bookmark</i> verwerking
-opt-newzbin_bookmarks    <i>Bookmarks</i> verwerken
-explain-newzbin_bookmarks Download alle rapported die <i>bookmarked</i> zijn?
-link-getBookmarks        Download nu alle <i>bookmarks</i>
-link-HideBM              Verberg verwerkte <i>bookmarks</i>
-link-ShowBM              Toon verwerkte <i>bookmarks</i>
-opt-newzbin_unbookmark   Automatisch <i>bookmark</i> verwijderen
-explain-newzbin_unbookmark Verwijder <i>bookmark</i> status na voltooide download.
+newzbinBookmarks         Automatische bookmark verwerking
+opt-newzbin_bookmarks    Bookmarks verwerken
+explain-newzbin_bookmarks Download alle rapported die bookmarked zijn?
+link-getBookmarks        Download nu alle bookmarks
+link-HideBM              Verberg verwerkte bookmarks
+link-ShowBM              Toon verwerkte bookmarks
+opt-newzbin_unbookmark   Automatisch bookmark verwijderen
+explain-newzbin_unbookmark Verwijder bookmark status na voltooide download.
 opt-bookmark_rate        Lees interval
 explain-bookmark_rate    In minuten (minimaal 15).
-processedBM              Verwerkte <i>bookmarks</i>
+processedBM              Verwerkte bookmarks
 explain-nzbmatrix        Wanneer je een account bij <strong>www.nzbmatrix.com</strong> hebt,\
                          kun je hier je gegevens invullen.\n\
                          Dit is nodig om RSS stromen van deze site te kunnen verwerken.

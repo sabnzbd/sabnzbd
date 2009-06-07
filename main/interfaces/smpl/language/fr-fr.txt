@@ -49,3 +49,4 @@ hour            heure
 dualView1       VueDuoV
 dualView2       VueDuoH
 eta             TRE
+refreshr        rafraîchissement

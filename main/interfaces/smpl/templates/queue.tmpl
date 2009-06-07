@@ -1,5 +1,5 @@
 
-<h3>Queue</h3>
+<h3>$T('menu-queue')</h3>
 <div class="centerLinks">
 <a onClick="if(confirm('$T('smpl-purgeQueueConf')')){lr('queue/purge','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);}">$T('smpl-purgeQueue')</a> |
 <a onClick="setCookie('queue_details','<!--#if $queue_details =='1' then "0" else "1"#-->',30);lr('queue','limit=$limit&start=$start', -1,-1, this.parentNode.parentNode.id);"><!--#if $queue_details == '1' then $T('smpl-hideEdit') else $T('smpl-showEdit')#--></a> |

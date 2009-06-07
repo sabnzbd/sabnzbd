@@ -49,3 +49,4 @@ hour            hour
 dualView1       DualView1
 dualView2       DualView2
 eta             ETA
+refreshr        Refresh rate
