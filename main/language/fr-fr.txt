@@ -88,7 +88,7 @@ pp-r              R
 pp-u              D
 pp-d              S
 pr-force          Forcer
-pr-normal         Normal
+pr-normal         Normale
 pr-high           Haute
 pr-low            Basse
 
@@ -114,10 +114,10 @@ button-del        Supprimer
 button-resume     Reprendre
 button-pause      Pause
 unknown           inconnu
-fetchingNewzbin@1 fetching msgid %s from www.newzbin.com
-error-fetchNewzbin@1 Error Fetching msgid %s from www.newzbin.com -\
-                  Please make sure your Username and Password are set
-fetchNZB@1        Trying to fetch NZB from %s
+fetchingNewzbin@1 récupération msgid %s depuis www.newzbin.com
+error-fetchNewzbin@1 Erreur Récupération msgid %s depuis www.newzbin.com -\
+                  Vérifiez que vos identifiant / mot de passe soient bien renseignés
+fetchNZB@1        Essai de récupération du NZB depuis %s
 
 # History page
 purgeHist         Effacer l'historique
@@ -143,7 +143,7 @@ thread            Thread
 emailResult       Résultat du test Email
 lastWarnings      Derniers avertissements
 clearWarnings     effacer
-server-blocked    blocked
+server-blocked    bloqué
 
 # Configuration
 configuration     Configuration
@@ -156,11 +156,11 @@ version           Version
 uptime            Uptime
 error             Erreur
 badParm           Parameter incorrect
-error-badValue@2  Incorrect value for %s: %s
-error-noFolder@1  Folder "%s" does not exist
-error-QnotEmpty   Error: Queue not empty, cannot change folder.
-error-noUNC@1     UNC path "%s" not allowed here
-error-notOctal@1  %s is not a correct octal value
+error-badValue@2  Valeur incorrecte pour %s: %s
+error-noFolder@1  Le dossier "%s" n'existe pas
+error-QnotEmpty   Erreur : La queue n'est pas vide, impossible de changer le dossier.
+error-noUNC@1     Les chemins UNC "%s" ne sont pas permis ici
+error-notOctal@1  %s n'est pas une valeur octale correcte
 
 # Config->General
 generalConfig         Configuration Générale
@@ -211,11 +211,11 @@ button-apikey         Générer nouvelle clé
 opt-disableApikey     Désactiver la clé API
 explain-disableApikey La clé API n'est plus nécessaire pour l'interaction avec SABnzbd.
 explain-disableApikeyAttention AUX RISQUES !
-restart1              Initiating restart...\n
+restart1              Initialisation du redémarrage...\n
 restart2              &nbsp\n\
-                      SABnzbd shutdown finished.\n\
-                      Wait for about 5 second and then click the button below.\n\n\
-                      <strong><a href="..">Refresh</a></strong>\n
+                      Extinction de SABnzbd terminée.\n\
+                      Veuillez attendre plus de 5 secondes et cliquer cliquer sur le bouton suivant.\n\n\
+                      <strong><a href="..">Rafraîchir</a></strong>\n
 
 # Config->Folders
 folderConfig            Configuration des dossiers
@@ -327,7 +327,7 @@ srv-optional             Optionnel
 srv-enable               Actif
 button-addServer         Ajouter Serveur
 button-delServer         Supprimer Serveur
-error-needServer         Server address required
+error-needServer         Le nom d'hôte du serveur est obligatoire
 
 # Config->Scheduling
 configSchedule           Configuration de la plannification
@@ -393,7 +393,7 @@ opt-email_account        OPTIONNEL: Identifiant
 explain-email_account    Si une autentification pour l'envoi est requise, l'identifiant.
 opt-email_pwd            OPTIONAL: Mot de passe
 explain-email_pwd        Si une autentification pour l'envoi est requise, le mot de passe.
-error-badEmailAd@1       %s is not a valid email address
+error-badEmailAd@1       %s n'est pas une adresse email valide
 
 # Config->Newzbin
 explain-newzbin          Si vous avez un compte sur <strong>www.newzbin.com</strong>,\
@@ -404,17 +404,17 @@ opt-username_newzbin     Identifiant Newzbin
 explain-username_newzbin Entrez votre identifiant ici.
 opt-password_newzbin     Mot de passe Newzbin
 explain-password_newzbin Entrez votre mot de passe ici.
-newzbinBookmarks         Traitement des marque-pages
-opt-newzbin_bookmarks    Téléchargement automatique des marque-pages
-explain-newzbin_bookmarks Télécharge automatiquement les éléments en marque-pages
-link-getBookmarks        Télécharger les marque-pages maintenant
-link-HideBM              Masquer les marque-pages traités
-link-ShowBM              Afficher les marque-pages traités
-opt-newzbin_unbookmark   Retirer le marque-page si il a été téléchargé
-explain-newzbin_unbookmark Retire de la liste des marque-pages lorque le téléchargement est terminé.
+newzbinBookmarks         Traitement des favoris
+opt-newzbin_bookmarks    Téléchargement automatique des favoris
+explain-newzbin_bookmarks Télécharge automatiquement les favoris
+link-getBookmarks        Récupérer Favoris Maintenant
+link-HideBM              Masquer les favoris traités
+link-ShowBM              Afficher les favoris traités
+opt-newzbin_unbookmark   Retirer le favori si il a été téléchargé
+explain-newzbin_unbookmark Retire de la liste des favoris lorque le téléchargement est terminé.
 opt-bookmark_rate        Fréquence de vérification
 explain-bookmark_rate    En minutes (minimum 15 min).
-processedBM              Marque-pages traités
+processedBM              Favoris traités
 explain-nzbmatrix        Si vous avez un compte sur <strong>www.nzbmatrix.com</strong>,\
                          vous pouvez entrer vos informations de compte ici.\n\
                          Obligatoire si vous désirez utilisez les flux RSS de ce site.
@@ -435,7 +435,7 @@ catGroups                Groupes
 button-delCat            X
 
 # Config->Sorting
-sort-show                Séries
+sort-show                Série
 sort-name                Nom
 
 # NZO
