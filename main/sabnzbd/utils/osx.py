@@ -7,7 +7,7 @@
 #You may freely use this code in any way you can think of.
 #"""
 from sabnzbd.lang import T
-NOTIFICATION = {'startup':T('grwl-notif-startup'),'download':T('grwl-notif-dl'),'pp':T('grwl-notif-pp'),'other':T('grwl-notif-other')}
+NOTIFICATION = {'startup':'grwl-notif-startup','download':'grwl-notif-dl','pp':'grwl-notif-pp','other':'grwl-notif-other'}
 
 try:
     import Growl
@@ -25,14 +25,14 @@ try:
     else:
         nIcon = Growl.Image.imageWithIconForApplication('Terminal')
 
-    def sendGrowlMsg(nTitle , nMsg, nType=NOTIFICATION['other']):
+    def sendGrowlMsg(nTitle , nMsg, nType=T(NOTIFICATION['other'])):
         gnotifier = SABGrowlNotifier(applicationIcon=nIcon)
         gnotifier.register()
         gnotifier.notify(nType, nTitle, nMsg)
 
     class SABGrowlNotifier(Growl.GrowlNotifier):
     	applicationName = "SABnzbd"
-    	notifications = NOTIFICATION.values()
+    	notifications = T(NOTIFICATION.values())
 except ImportError:
     def sendGrowlMsg(nTitle , nMsg):
         pass
