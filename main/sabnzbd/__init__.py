@@ -117,6 +117,7 @@ WEB_COLOR = None
 WEB_COLOR2 = None
 SABSTOP = False
 RESTART_REQ = False
+OSX_ICON = 1
 
 __INITIALIZED__ = False
 
@@ -156,7 +157,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
            DEBUG_DELAY, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           DARWIN, RESTART_REQ
+           DARWIN, RESTART_REQ, OSX_ICON
 
     if __INITIALIZED__:
         return False

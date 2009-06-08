@@ -6,7 +6,7 @@
 #
 #You may freely use this code in any way you can think of.
 #"""
-NOTIFICATION_NAME = 'SABnzbd Messages'
+NOTIFICATION = {'startup':'Startup/Shutdown','download':'NZB Added','pp':'Post-Processing','other':'Other messages'}
 
 try:
     import Growl
@@ -24,14 +24,14 @@ try:
     else:
         nIcon = Growl.Image.imageWithIconForApplication('Terminal')
 
-    def sendGrowlMsg(nTitle , nMsg):
+    def sendGrowlMsg(nTitle , nMsg, nType=NOTIFICATION['other']):
         gnotifier = SABGrowlNotifier(applicationIcon=nIcon)
         gnotifier.register()
-        gnotifier.notify(NOTIFICATION_NAME, nTitle, nMsg)
+        gnotifier.notify(nType, nTitle, nMsg)
 
     class SABGrowlNotifier(Growl.GrowlNotifier):
     	applicationName = "SABnzbd"
-    	notifications = [NOTIFICATION_NAME]
+    	notifications = NOTIFICATION.values()
 except ImportError:
     def sendGrowlMsg(nTitle , nMsg):
         pass

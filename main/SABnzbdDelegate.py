@@ -56,6 +56,17 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
     def awakeFromNib(self):
         #Status Bar iniatilize
+        self.buildMenu()
+        #Timer for updating menu
+        self.timer = NSTimer.alloc().initWithFireDate_interval_target_selector_userInfo_repeats_(start_time, 3.0, self, 'updateAction:', None, True)
+        NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer, NSDefaultRunLoopMode)
+        NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer, NSEventTrackingRunLoopMode)
+#        NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer, NSModalPanelRunLoopMode)
+
+        self.timer.fire()
+
+    def buildMenu(self):
+        logging.info("building menu")
         status_bar = NSStatusBar.systemStatusBar()
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
         for i in status_icons.keys():
@@ -64,11 +75,13 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.status_item.setAlternateImage_(self.icons['clicked'])
         self.status_item.setHighlightMode_(1)
         self.status_item.setToolTip_('SABnzbd')
+        self.status_item.setEnabled_(YES)
         
         #Variables
         self.state = "Idle"
         self.speed = downloader.get_limit()
         self.version_notify = 1
+        self.status_removed = 0
         
         #Menu construction
         self.menu = NSMenu.alloc().init()
@@ -192,24 +205,30 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         #Add menu to Status Item
         self.status_item.setMenu_(self.menu)
 
-        #Timer for updating menu
-        self.timer = NSTimer.alloc().initWithFireDate_interval_target_selector_userInfo_repeats_(start_time, 3.0, self, 'updateAction:', None, True)
-        NSRunLoop.currentRunLoop().addTimer_forMode_(self.timer, NSDefaultRunLoopMode)
-        self.timer.fire()
-
     def updateAction_(self, notification):
         try:
-            if self.serverUpdate():
-                self.warningsUpdate()
-                self.queueUpdate()
-                self.historyUpdate()
-                self.stateUpdate()
-                self.iconUpdate()
-                self.pauseUpdate()
-                self.speedlimitUpdate() 
-                self.versionUpdate()
-                self.newzbinUpdate()
-                self.diskspaceUpdate()
+            if sabnzbd.OSX_ICON:
+                if self.status_removed == 1:
+                    self.buildMenu()
+                    
+                if self.serverUpdate():
+                    self.warningsUpdate()
+                    self.queueUpdate()
+                    self.historyUpdate()
+                    self.stateUpdate()
+                    self.iconUpdate()
+                    self.pauseUpdate()
+                    self.speedlimitUpdate() 
+                    self.versionUpdate()
+                    self.newzbinUpdate()
+                    self.diskspaceUpdate()
+            else:
+                if self.status_removed == 0:
+                    status_bar = NSStatusBar.systemStatusBar()
+                    status_bar.removeStatusItem_(self.status_item)
+                    self.status_removed = 1
+                    status_bar = None
+                    self.status_item = None
         except :
             logging.info("[osx] Exception %s" % (sys.exc_info()[0]))
             
@@ -244,7 +263,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                 self.info = "%d nzb(s) (%d/%d MB)" % (len(pnfo_list),(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
             
             else:
-                menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('empty', '', '')
+                menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Empty', '', '')
                 self.menu_queue.addItem_(menu_queue_item)
             
             self.queue_menu_item.setSubmenu_(self.menu_queue)
@@ -259,24 +278,33 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
             items, fetched_items, total_items = history_db.fetch_history(0,10,None)
     
             self.menu_history = NSMenu.alloc().init()
-            failedAttributes = { NSForegroundColorAttributeName:  NSColor.redColor(),
-                                 NSFontAttributeName:             NSFont.menuFontOfSize_(14.0), }
-    
+            self.failedAttributes = { NSForegroundColorAttributeName:NSColor.redColor(), NSFontAttributeName:NSFont.menuFontOfSize_(14.0) }
+
+            menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("History Last 10 entries", '', '')
+            self.menu_history.addItem_(menu_history_item)
+            self.menu_history.addItem_(NSMenuItem.separatorItem())
+
             if fetched_items:
                 for history in items:
                     #logging.info("[osx] history : %s" % (history))
-                    job = "%s" % (history['name'])
-                    if os.path.isdir(history['storage']):
+                    job = "%s" % (history['name'])                    
+                    path = ""
+                    if os.path.isdir(history['storage']) or os.path.isfile(history['storage']):
+                        if os.path.isfile(history['storage']):
+                            path = os.path.dirname(history['storage'])
+                        else:
+                            path = history['storage']
+                    if path:
                         menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, 'openFolderAction:', '')
                     else:
                         menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     if history['status'] != "Completed":
-                        jobfailed = NSAttributedString.alloc().initWithString_attributes_(job, failedAttributes)
+                        jobfailed = NSAttributedString.alloc().initWithString_attributes_(job, self.failedAttributes)
                         menu_history_item.setAttributedTitle_(jobfailed)
-                    menu_history_item.setRepresentedObject_("%s" % (history['storage']))
+                    menu_history_item.setRepresentedObject_("%s" % (path))
                     self.menu_history.addItem_(menu_history_item)
             else:
-                menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("empty", '', '')
+                menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Empty", '', '')
                 self.menu_history.addItem_(menu_history_item)
                 
             self.history_menu_item.setSubmenu_(self.menu_history)
@@ -374,7 +402,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
             if sabnzbd.NEW_VERSION and self.version_notify:
                 logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))              
                 new_release, new_rel_url = sabnzbd.NEW_VERSION.split(';')
-                osx.sendGrowlMsg("SABnzbd","New release %s available" % (new_release) )
+                osx.sendGrowlMsg("SABnzbd","New release %s available" % (new_release),osx.NOTIFICATION['other'])
                 self.version_notify = 0
         except :
             logging.info("[osx] versionUpdate Exception %s" % (sys.exc_info()[0]))
@@ -436,11 +464,19 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
             style.setMaximumLineHeight_(9.0)
             style.setParagraphSpacing_(-3.0)
     
+            #Trying to change color of title to white when menu is open TO FIX
+            if self.menu.highlightedItem():
+                #logging.info("Menu Clicked")
+                titleColor = NSColor.highlightColor()
+            else:
+                #logging.info("Menu Not Clicked")
+                titleColor = NSColor.blackColor()
+    
             titleAttributes = {
                 NSBaselineOffsetAttributeName :  5.0,
                 NSFontAttributeName:             NSFont.menuFontOfSize_(9.0),
-                NSParagraphStyleAttributeName:   style#,
-                #NSForegroundColorAttributeName: NSColor.colorWithDeviceWhite_alpha_(0.34, 1)
+                NSParagraphStyleAttributeName:   style
+                #,NSForegroundColorAttributeName:  titleColor
                 }
     
             title = NSAttributedString.alloc().initWithString_attributes_(text, titleAttributes)
@@ -544,7 +580,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
-        osx.sendGrowlMsg('SABnzbd',"SABnzbd shutdown finished")
+        osx.sendGrowlMsg('SABnzbd',"SABnzbd shutdown finished",osx.NOTIFICATION['other'])
         logging.info('Leaving SABnzbd')
         sys.stderr.flush()
         sys.stdout.flush()

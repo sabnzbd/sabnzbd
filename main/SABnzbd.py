@@ -1117,7 +1117,7 @@ def main():
         launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
 
     notify("SAB_Launched", None)
-    osx.sendGrowlMsg('SABnzbd %s' % (sabnzbd.__version__),"http://%s:%s/sabnzbd" % (browserhost, cherryport))
+    osx.sendGrowlMsg('SABnzbd %s' % (sabnzbd.__version__),"http://%s:%s/sabnzbd" % (browserhost, cherryport),osx.NOTIFICATION['startup'])
     # Now's the time to check for a new version
     check_latest_version()
 
@@ -1176,7 +1176,7 @@ def main():
     config.save_config()
 
     notify("SAB_Shutdown", None)
-    osx.sendGrowlMsg('SABnzbd',"SABnzbd shutdown finished")
+    osx.sendGrowlMsg('SABnzbd',"SABnzbd shutdown finished",osx.NOTIFICATION['startup'])
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()

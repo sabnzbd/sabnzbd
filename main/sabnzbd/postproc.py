@@ -232,7 +232,7 @@ class PostProcessor(Thread):
                 logging.info('Starting PostProcessing on %s' + \
                              ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s',
                              filename, flagRepair, flagUnpack, flagDelete, script)
-                osx.sendGrowlMsg("Post-processing",filename)
+                osx.sendGrowlMsg("Post-processing",filename,osx.NOTIFICATION['pp'])
                 ## Run Stage 1: Repair
                 if flagRepair:
                     logging.info('Par2 check starting on %s', filename)
@@ -416,10 +416,10 @@ class PostProcessor(Thread):
 
                 ## Show final status in history
                 if parResult and not unpackError:
-                    osx.sendGrowlMsg("Download Completed",filename)
+                    osx.sendGrowlMsg("Download Completed",filename,osx.NOTIFICATION['pp'])
                     nzo.set_status("Completed")
                 else:
-                    osx.sendGrowlMsg("Download Failed",filename)
+                    osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['pp'])
                     nzo.set_status("Failed")
 
             except:

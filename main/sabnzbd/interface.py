@@ -771,6 +771,13 @@ class MainPage:
             downloader.disconnect()
             return 'ok\n'
 
+        if mode == 'osx_icon':
+            if value == '0':
+                sabnzbd.OSX_ICON = 0
+            else:
+                sabnzbd.OSX_ICON = 1
+            return 'ok\n'
+
         return 'not implemented\n'
 
     @cherrypy.expose
