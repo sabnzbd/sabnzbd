@@ -55,7 +55,7 @@ cmenu-cat         Catégories
 cmenu-sorting     Classement
 
 # Footer
-ft-download       Dossier de téléchargement
+ft-download       Dossier incomplets
 ft-complete       Dossier complets
 ft-speed          Débit de téléchargement
 ft-queued         En attente
@@ -222,13 +222,13 @@ folderConfig            Configuration des dossiers
 explain-folderConfig    <em>NOTE:</em> Les dossiers seront créés automatiquement lors de l'Enregistrement. Il est possible d'utiliser des chemins absolus.
 userFolders             Dossiers Utilisateur
 in                      Dans
-opt-download_dir        Dossier Téléchargement Temporaire
-explain-download_dir    Pour le sotckage des téléchargements non post-traités.\n\
+opt-download_dir        Dossier Incomplets
+explain-download_dir    Pour le sotckage des téléchargements en cours, non post-traités.\n\
                         <i>Ne peut être modifié que lorsque la queue est vide.</i>
 opt-download_free       Espace disque minimum pour le Dossier Téléchargement Temporaire
 explain-download_free   Met en pause automatiquement les téléchargements si l'espace passe en dessous de ce montant.\n\
                         <i>En bytes, peut être suivi de K,M,G,T. Par exemple : "800M" ou "8G"</i>
-opt-complete_dir        Dossier Téléchargements Terminés
+opt-complete_dir        Dossier Complets
 explain-complete_dir    Pour le stockage des téléchargements terminés et post-traités.\n\
                         <i>peut être adapté par les catégories utilisateur.</i>
 opt-permissions         Permissions pour le dossier de téléchargement terminés
@@ -608,3 +608,38 @@ error-tvSimRename@2      Echec du renommange des fichiers similaires : %s en %s
 error-tvTemp@1           Impossible de créer le fichier temporaire %s
 warn-matrixBadRep@1      Numéro de rapport nzbmatrix invalide %s
 warn-matrixFail          Problème d'accès au serveur nzbmatrix.
+
+#Growl Messages
+grwl-notif-startup       Démarrage/Arrêt
+grwl-notif-dl            Ajout NZB
+grwl-notif-pp            Post-traitement
+grwl-notif-other         Autres Messages
+grwl-shutdown-begin-msg  Arrêt en cours...
+grwl-shutdown-end-msg    SABnzbd arrêt terminé
+grwl-paused-msg          En Pause
+grwl-nzbadd-title        NZB ajouté à la queue
+grwl-newversion-msg      Nouvelle version disponible
+
+#OSX Menu
+osx-menu-warnings        Avertissements
+osx-menu-status-idle     En Attente
+osx-menu-status-pause    En Pause
+osx-menu-pause           Pause
+osx-menu-min             min.
+osx-menu-resume          Reprendre
+osx-menu-queue           Queue
+osx-menu-history         Historique
+osx-menu-historylimit    Historique - 10 Derniers éléments
+osx-menu-speedlimit      Limite Vitesse
+osx-menu-none            Aucune
+osx-menu-getnewzbinbm    Récupérer Favoris Newzbin
+osx-menu-complete        Dossier Complets
+osx-menu-incomplete      Dossier Incomplets
+osx-menu-restart         Redémarrer SABnzbd
+osx-menu-quit            Quitter SABnzbd
+osx-menu-config          Configuration
+osx-menu-purgequeue      Vider Queue
+osx-menu-purgehistory    Vider Historique
+osx-menu-wizard          Ouvrir l'assistant
+osx-menu-empty           Vide
+osx-menu-shutdowning     Arrêt en cours...

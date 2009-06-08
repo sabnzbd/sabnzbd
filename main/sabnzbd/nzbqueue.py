@@ -227,7 +227,7 @@ class NzbQueue(TryList):
                 self.save()
                 
             if nzo.get_filename()[0:8] != "fetching":
-                osx.sendGrowlMsg("NZB added to queue",nzo.get_filename(),NOTIFICATION['download'])
+                osx.sendGrowlMsg(T('grwl-nzbadd-title'),nzo.get_filename(),osx.NOTIFICATION['download'])
 
         if self.__auto_sort:
             self.sort_by_avg_age()

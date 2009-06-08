@@ -66,10 +66,10 @@ from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
      panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
-from sabnzbd.utils import osx
 import sabnzbd.cfg
 import sabnzbd.downloader as downloader
 from sabnzbd.lang import T
+from sabnzbd.utils import osx
 
 from threading import Thread
 
@@ -1176,7 +1176,7 @@ def main():
     config.save_config()
 
     notify("SAB_Shutdown", None)
-    osx.sendGrowlMsg('SABnzbd',"SABnzbd shutdown finished",osx.NOTIFICATION['startup'])
+    osx.sendGrowlMsg('SABnzbd',T('grwl-shutdown-end-msg'),osx.NOTIFICATION['startup'])
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()

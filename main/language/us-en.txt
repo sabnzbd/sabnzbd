@@ -608,3 +608,39 @@ error-tvSimRename@2      Failed to rename similar file: %s to %s
 error-tvTemp@1           Cannot create temp file for %s
 warn-matrixBadRep@1      Invalid nzbmatrix report number %s
 warn-matrixFail          Problem accessing nzbmatrix server.
+
+#Growl Messages
+grwl-notif-startup       Startup/Shutdown
+grwl-notif-dl            NZB Added
+grwl-notif-pp            Post-processing
+grwl-notif-other         Other Messages
+grwl-shutdown-begin-msg  Shutting down
+grwl-shutdown-end-msg    SABnzbd shutdown finished
+grwl-paused-msg          Paused
+grwl-nzbadd-title        NZB added to queue
+grwl-newversion-msg      New release available
+
+#OSX Menu
+osx-menu-warnings        Warnings
+osx-menu-status-idle     Idle
+osx-menu-status-pause    Paused
+osx-menu-pause           Pause
+osx-menu-min             min.
+osx-menu-resume          Resume
+osx-menu-queue           Queue
+osx-menu-history         History
+osx-menu-historylimit    History Last 10 Items
+osx-menu-speedlimit      Limit Speed
+osx-menu-none            None
+osx-menu-getnewzbinbm    Get Newzbin Bookmarks
+osx-menu-complete        Complete Folder
+osx-menu-incomplete      Incomplete Folder
+osx-menu-restart         Restart
+osx-menu-quit            Quit
+osx-menu-config          Configuration
+osx-menu-purgequeue      Purge Queue
+osx-menu-purgehistory    Purge History
+osx-menu-wizard          Go to wizard
+osx-menu-empty           Empty
+osx-menu-shutdowning     Stopping...
+

@@ -203,7 +203,7 @@ class MSGIDGrabber(Thread):
                     bad_fetch(nzo, msgid, retry=False)
                     msgid = None
 
-            osx.sendGrowlMsg("NZB added to queue",filename,NOTIFICATION['download'])
+            osx.sendGrowlMsg(T('grwl-nzbadd-title'),filename,osx.NOTIFICATION['download'])
 
             # Keep some distance between the grabs
             sleeper(5)

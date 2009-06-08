@@ -295,18 +295,15 @@ class Downloader(Thread):
 
     def stop(self):
         self.shutdown = True
-        osx.sendGrowlMsg("SABnzbd","Shutting down",NOTIFICATION['startup'])
+        osx.sendGrowlMsg("SABnzbd",T('grwl-shutdown-begin-msg'),osx.NOTIFICATION['startup'])
 
     def resume(self):
         logging.info("Resuming")
-        #notify("SAB_Resume", None)
         self.paused = False
-        #osx.sendGrowlMsg("SABnzbd","Resuming",,NOTIFICATION['download'])
 
     def pause(self):
         logging.info("Pausing")
-        #notify("SAB_Paused", None)
-        osx.sendGrowlMsg("SABnzbd","Paused",NOTIFICATION['download'])
+        osx.sendGrowlMsg("SABnzbd",T('grwl-paused-msg'),osx.NOTIFICATION['download'])
         self.paused = True
         if self.is_paused():
             bpsmeter.method.reset()

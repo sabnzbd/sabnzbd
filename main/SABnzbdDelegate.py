@@ -34,8 +34,8 @@ import sabnzbd.cfg
 
 from sabnzbd.constants import *
 from sabnzbd.misc import launch_a_browser,get_filename,get_ext,diskfree
-from sabnzbd.utils import osx
 from sabnzbd.lang import T
+from sabnzbd.utils import osx
 
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.config as config
@@ -66,7 +66,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.timer.fire()
 
     def buildMenu(self):
-        logging.info("building menu")
+        #logging.info("building menu")
         status_bar = NSStatusBar.systemStatusBar()
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
         for i in status_icons.keys():
@@ -87,42 +87,42 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.menu = NSMenu.alloc().init()
         
         #Warnings Item
-        self.warnings_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Warnings', 'openBrowserAction:', '')
+        self.warnings_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-warnings'), 'openBrowserAction:', '')
         self.warnings_menu_item.setHidden_(YES)
         self.warnings_menu_item.setRepresentedObject_("connections/")
         self.menu.addItem_(self.warnings_menu_item)
 
         #State Item
-        self.state_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Idle', 'openBrowserAction:', '')
+        self.state_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-status-idle'), 'openBrowserAction:', '')
         self.state_menu_item.setRepresentedObject_("")
         self.menu.addItem_(self.state_menu_item)
 
         #Config Item
-        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Configuration', 'openBrowserAction:', '')
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-config'), 'openBrowserAction:', '')
         menu_item.setRepresentedObject_("config/general/")
         menu_item.setAlternate_(YES)
         menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
         self.menu.addItem_(menu_item)
 
         #Queue Item
-        self.queue_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Queue', 'openBrowserAction:', '')
+        self.queue_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-queue'), 'openBrowserAction:', '')
         self.queue_menu_item.setRepresentedObject_("")
         self.menu.addItem_(self.queue_menu_item)
 
         #Purge Queue Item
-        self.purgequeue_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Purge Queue', 'purgeAction:', '')
+        self.purgequeue_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-purgequeue'), 'purgeAction:', '')
         self.purgequeue_menu_item.setRepresentedObject_("queue")
         self.purgequeue_menu_item.setAlternate_(YES)
         self.purgequeue_menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
         self.menu.addItem_(self.purgequeue_menu_item)
 
         #History Item
-        self.history_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('History', 'openBrowserAction:', '')
+        self.history_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-history'), 'openBrowserAction:', '')
         self.history_menu_item.setRepresentedObject_("")
         self.menu.addItem_(self.history_menu_item)
         
         #Purge History Item
-        self.purgehistory_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Purge History', 'purgeAction:', '')
+        self.purgehistory_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-purgehistory'), 'purgeAction:', '')
         self.purgehistory_menu_item.setRepresentedObject_("history")
         self.purgehistory_menu_item.setAlternate_(YES)
         self.purgehistory_menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
@@ -132,11 +132,11 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.menu.addItem_(self.separator_menu_item)
 
         #Limit Speed Item & Submenu
-        self.speed_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Limit Speed', '', '')
+        self.speed_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-speedlimit'), '', '')
 
         self.menu_speed = NSMenu.alloc().init()
 
-        speeds ={  0 : 'None', 50 :'50 KB/s' , 100 : '100 KB/s', 200 : '200 KB/s' , 300 : '300 KB/s' ,
+        speeds ={  0 : T('osx-menu-none'), 50 :'50 KB/s' , 100 : '100 KB/s', 200 : '200 KB/s' , 300 : '300 KB/s' ,
                    400 : '400 KB/s', 500 :'500 KB/s' , 600 : '600 KB/s', 700 : '700 KB/s' , 800 : '800 KB/s' , 
                    900 : '900 KB/s', 1000 :'1000 KB/s' , 1500 : '1500 KB/s', 2000 : '2000 KB/s' , 3000 : '3000 KB/s' 
                 }
@@ -150,13 +150,13 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.menu.addItem_(self.speed_menu_item)
 
         #Pause Item & Submenu
-        self.pause_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Pause', 'pauseAction:', '')
+        self.pause_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-pause'), 'pauseAction:', '')
         self.pause_menu_item.setRepresentedObject_('0')
         
         self.menu_pause = NSMenu.alloc().init()
 
         for i in range(6):
-            menu_pause_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('%s min.' % ((i+1)*10), 'pauseAction:', '')
+            menu_pause_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("%s %s" % ((i+1)*10,T('osx-menu-min')), 'pauseAction:', '')
             menu_pause_item.setRepresentedObject_("%s" % ((i+1)*10))
             self.menu_pause.addItem_(menu_pause_item)
         
@@ -164,12 +164,12 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.menu.addItem_(self.pause_menu_item)
         
         #Resume Item
-        self.resume_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Resume', 'resumeAction:', '')
+        self.resume_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-resume'), 'resumeAction:', '')
         self.resume_menu_item.setHidden_(YES)
         self.menu.addItem_(self.resume_menu_item)
 
         #Newzbin Item
-        self.newzbin_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Get Newzbin Bookmarks', 'getNewzbinBookmarksAction:', '')
+        self.newzbin_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-getnewzbinbm'), 'getNewzbinBookmarksAction:', '')
         self.newzbin_menu_item.setHidden_(YES)
         self.menu.addItem_(self.newzbin_menu_item)
         
@@ -177,12 +177,12 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.menu.addItem_(self.separator2_menu_item)
         
         #Complete Folder Item
-        self.completefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Complete Folder', 'openFolderAction:', '')
+        self.completefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-complete'), 'openFolderAction:', '')
         self.completefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.COMPLETE_DIR.get_path())
         self.menu.addItem_(self.completefolder_menu_item)
 
         #Incomplete Folder Item
-        self.incompletefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Incomplete Folder', 'openFolderAction:', '')
+        self.incompletefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-incomplete'), 'openFolderAction:', '')
         self.incompletefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.DOWNLOAD_DIR.get_path())
         self.menu.addItem_(self.incompletefolder_menu_item)
 
@@ -193,11 +193,11 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         #self.menu.addItem_(menu_item)
         
         #Quit Item
-        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Quit', 'terminate:', '')
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-quit'), 'terminate:', '')
         self.menu.addItem_(menu_item)
 
         #Restart Item
-        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Restart', 'restartAction:', '')
+        menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-restart'), 'restartAction:', '')
         menu_item.setAlternate_(YES)
         menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
         self.menu.addItem_(menu_item)
@@ -263,7 +263,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                 self.info = "%d nzb(s) (%d/%d MB)" % (len(pnfo_list),(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
             
             else:
-                menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('Empty', '', '')
+                menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-empty'), '', '')
                 self.menu_queue.addItem_(menu_queue_item)
             
             self.queue_menu_item.setSubmenu_(self.menu_queue)
@@ -280,7 +280,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
             self.menu_history = NSMenu.alloc().init()
             self.failedAttributes = { NSForegroundColorAttributeName:NSColor.redColor(), NSFontAttributeName:NSFont.menuFontOfSize_(14.0) }
 
-            menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("History Last 10 entries", '', '')
+            menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-historylimit'), '', '')
             self.menu_history.addItem_(menu_history_item)
             self.menu_history.addItem_(NSMenuItem.separatorItem())
 
@@ -304,7 +304,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                     menu_history_item.setRepresentedObject_("%s" % (path))
                     self.menu_history.addItem_(menu_history_item)
             else:
-                menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Empty", '', '')
+                menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-empty'), '', '')
                 self.menu_history.addItem_(menu_history_item)
                 
             self.history_menu_item.setSubmenu_(self.menu_history)
@@ -320,12 +320,12 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                                         NSFontAttributeName:             NSFont.menuFontOfSize_(14.0)
                                      }
                 
-                warningsTitle = NSAttributedString.alloc().initWithString_attributes_("Warnings : %s" % (warnings), warningsAttributes)
+                warningsTitle = NSAttributedString.alloc().initWithString_attributes_( "%s : %s" % (T('osx-menu-warnings'),warnings), warningsAttributes)
 
                 self.warnings_menu_item.setAttributedTitle_(warningsTitle)
                 self.warnings_menu_item.setHidden_(NO)
             else:
-                self.warnings_menu_item.setTitle_("No Warnings")
+                self.warnings_menu_item.setTitle_("")
                 self.warnings_menu_item.setHidden_(YES)            
         except :
             logging.info("[osx] warningsUpdate Exception %s" % (sys.exc_info()[0]))
@@ -335,7 +335,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
             qnfo = sabnzbd.nzbqueue.queue_info()
             bpsnow = sabnzbd.bpsmeter.method.get_bps()
             if downloader.paused():
-                self.state = "Paused"
+                self.state = T('osx-menu-status-paused')
                 if sabnzbd.scheduler.pause_int() != "0":
                     self.setMenuTitle("\n\n%s\n" % (sabnzbd.scheduler.pause_int()))
                 else:
@@ -350,7 +350,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                 
                 self.setMenuTitle(statusbarText)
             else:
-                self.state = "Idle"
+                self.state = T('osx-menu-status-idle')
                 self.setMenuTitle("")
             
             if self.state != "" and self.info != "":
@@ -400,9 +400,9 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
     def versionUpdate(self):
         try:
             if sabnzbd.NEW_VERSION and self.version_notify:
-                logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))              
+                #logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))              
                 new_release, new_rel_url = sabnzbd.NEW_VERSION.split(';')
-                osx.sendGrowlMsg("SABnzbd","New release %s available" % (new_release),osx.NOTIFICATION['other'])
+                osx.sendGrowlMsg("SABnzbd","%s : %s" % (T('grwl-newversion-msg'),new_release),osx.NOTIFICATION['other'])
                 self.version_notify = 0
         except :
             logging.info("[osx] versionUpdate Exception %s" % (sys.exc_info()[0]))
@@ -420,7 +420,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
     def serverUpdate(self):
         try:
             if not config.get_servers():
-                self.state_menu_item.setTitle_("Go to wizard")
+                self.state_menu_item.setTitle_(T('osx-menu-wizard'))
                 hide=YES
                 alternate=NO
                 value=0
@@ -450,8 +450,8 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
     def diskspaceUpdate(self):
         try:
-            self.completefolder_menu_item.setTitle_("Complete Folder\t\t%.2f GB" % (diskfree(sabnzbd.cfg.COMPLETE_DIR.get_path())))
-            self.incompletefolder_menu_item.setTitle_("Incomplete Folder\t%.2f GB" % (diskfree(sabnzbd.cfg.DOWNLOAD_DIR.get_path())))
+            self.completefolder_menu_item.setTitle_("%s\t\t%.2f GB" % (T('osx-menu-complete'),diskfree(sabnzbd.cfg.COMPLETE_DIR.get_path())))
+            self.incompletefolder_menu_item.setTitle_("%s\t\t%.2f GB" % (T('osx-menu-incomplete'),diskfree(sabnzbd.cfg.DOWNLOAD_DIR.get_path())))
         except :
             logging.info("[osx] diskspaceUpdate Exception %s" % (sys.exc_info()[0]))
 
@@ -546,10 +546,10 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 #        app.orderFrontStandardAboutPanel_(nil)
 
     def restartAction_(self, sender):
-        self.setMenuTitle("\n\nStopping...\n")
+        self.setMenuTitle("\n\n%s\n"% (T('osx-menu-shutdowning')))
         sabnzbd.halt()
         cherrypy.engine.restart()
-        self.setMenuTitle("\n\nStopping...\n")
+        self.setMenuTitle("\n\n%s\n"% (T('osx-menu-shutdowning')))
         
     def application_openFiles_(self, nsapp, filenames):
         #logging.info('[osx] file open')
@@ -574,13 +574,13 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
     def applicationShouldTerminate_(self, sender):
         logging.info('[osx] application terminating')
-        self.setMenuTitle("\n\nStopping...\n")
+        self.setMenuTitle("\n\n%s\n"% (T('osx-menu-shutdowning')))
         self.status_item.setHighlightMode_(NO)
         logging.info('[osx] application stopping daemon')
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
-        osx.sendGrowlMsg('SABnzbd',"SABnzbd shutdown finished",osx.NOTIFICATION['other'])
+        osx.sendGrowlMsg('SABnzbd',T('grwl-shutdown-end-msg'),osx.NOTIFICATION['other'])
         logging.info('Leaving SABnzbd')
         sys.stderr.flush()
         sys.stdout.flush()

@@ -6,7 +6,8 @@
 #
 #You may freely use this code in any way you can think of.
 #"""
-NOTIFICATION = {'startup':'Startup/Shutdown','download':'NZB Added','pp':'Post-Processing','other':'Other messages'}
+from sabnzbd.lang import T
+NOTIFICATION = {'startup':T('grwl-notif-startup'),'download':T('grwl-notif-dl'),'pp':T('grwl-notif-pp'),'other':T('grwl-notif-other')}
 
 try:
     import Growl
