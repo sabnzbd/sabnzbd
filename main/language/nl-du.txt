@@ -618,7 +618,7 @@ grwl-newversion-msg      New release available
 #OSX Menu
 osx-menu-warnings        Warnings
 osx-menu-status-idle     Idle
-osx-menu-status-pause    Paused
+osx-menu-status-paused   Paused
 osx-menu-pause           Pause
 osx-menu-min             min.
 osx-menu-resume          Resume
