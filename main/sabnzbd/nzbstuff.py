@@ -1072,67 +1072,46 @@ class NzbObject(TryList):
 
 #-------------------------------------------------------------------------------
 
+def _nzf_get_filename(nzf):
+    # Return filename, if the filename not set, try the
+    # the full subject line instead. Can produce non-ideal results
+    name = nzf.get_filename()
+    if name:
+        return name.lower()
+    else:
+        return nzf.get_subject().lower()
+
+
 def _nzf_cmp_date(nzf1, nzf2):
-    subject1 = nzf1.get_subject().lower()
-    subject2 = nzf2.get_subject().lower()
+    # Compare files based on date, but give vol-par files preference
+    return _nzf_cmp_name(nzf1, nzf2, name=False)
 
-    par2_found = 0
-    ret = 0
-    if 'vol' in subject1 and '.par2' in subject1:
-        par2_found += 1
-        ret -= 1
 
-    if 'vol' in subject2 and '.par2' in subject2:
-        par2_found += 1
-        ret += 1
+def _nzf_cmp_name(nzf1, nzf2, name=True):
+    # The comparison will sort .par2 files to the top of the queue followed by .rar files,
+    # they will then be sorted by name.
+    name1 = _nzf_get_filename(nzf1)
+    name2 = _nzf_get_filename(nzf2)
 
-    if '.rar' in subject1 and not '.par' in subject2 and not '.rar' in subject2: #some nzbs dont get filename field populated, using subject instead
-        return -1 #nzf1 contained '.rar' nzf2 didnt. Move nzf1 up in the queue
+    is_par1 = 'vol' in name1 and '.par2' in name1
+    is_par2 = 'vol' in name2 and '.par2' in name2
+    if is_par1 and not is_par2:
+        return -1
+    if is_par2 and not is_par1:
+        return 1
 
-    if par2_found == 1:
-        return ret
+    if name:
+        # Prioritise .rar files above any other type of file (other than vol-par)
+        # Useful for nzb streaming
+        if  '.rar' in name1 and not is_par2 and '.rar' not in name2:
+            return -1
+        elif '.rar' in name2 and not is_par1 and '.rar' not in name1:
+            return 1
+
+        return cmp(name1, name2)
     else:
+        # Do date comparision
         return cmp(nzf1.get_date(), nzf2.get_date())
-
-def _nzf_cmp_name(nzf1, nzf2):
-    '''
-    The comparison will sort .par2 files to the top of the queue followed by .rar files,
-    they will then be sorted by name.
-    '''
-    #Try to use the filename if it can be extracted from the subject
-    subject1 = nzf1.get_filename()
-    subject2 = nzf2.get_filename()
-
-    #if the filename cannot be extracted, use the full subject line for comparison. Can produce non-ideal results
-    if subject1:
-        subject1 = subject1.lower()
-    else:
-        subject1 = nzf1.get_subject().lower()
-
-    if subject2:
-        subject2 = subject2.lower()
-    else:
-        subject2 = nzf2.get_subject().lower()
-
-    par2_found = 0
-    ret = 0
-    if 'vol' in subject1 and '.par2' in subject1:
-        par2_found += 1
-        ret -= 1
-
-    if 'vol' in subject2 and '.par2' in subject2:
-        par2_found += 1
-        ret += 1
-
-    #Prioritise .rar files above any other type of file (other than .par)
-    #Useful for nzb streaming
-    if '.rar' in subject1 and not '.par' in subject2 and not '.rar' in subject2: #some nzbs dont get filename field populated, using subject instead
-        return -1 #nzf1 contained '.rar' nzf2 didnt. Move nzf1 up in the queue
-
-    if par2_found == 1:
-        return ret
-    else:
-        return cmp(subject1, subject2)
 
 #-------------------------------------------------------------------------------
 
