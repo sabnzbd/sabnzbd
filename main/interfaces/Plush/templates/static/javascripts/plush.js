@@ -766,8 +766,8 @@ jQuery(function($) { // safely invoke $ selector
 						items_per_page: $.plush.queueperpage,
 						num_display_entries: 8,
 						num_edge_entries: 1,
-						prev_text: "&laquo; Prev",
-						next_text: "Next &raquo;",
+						prev_text: "&laquo; "+$.plush.Tprev, // translation
+						next_text: $.plush.Tnext+" &raquo;", // translation
 						callback: $.plush.refreshQueue
 					});
 				} else if ($.plush.queuenoofslots <= $.plush.queueperpage) {
@@ -911,8 +911,8 @@ jQuery(function($) { // safely invoke $ selector
 						items_per_page: $.plush.histperpage,
 						num_display_entries: 8,
 						num_edge_entries: 1,
-						prev_text: "&laquo; Prev",
-						next_text: "Next &raquo;",
+						prev_text: "&laquo; "+$.plush.Tprev, // translation
+						next_text: $.plush.Tnext+" &raquo;", // translation
 						callback: $.plush.refreshHistory
 					});
 				} else if ($.plush.histnoofslots <= $.plush.histperpage) {

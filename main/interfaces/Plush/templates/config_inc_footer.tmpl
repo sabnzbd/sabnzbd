@@ -12,12 +12,12 @@
     #end if#
     #if $pane=="General"#
         <div class="left_links">
-            <a class="rounded" id="sabnzbd_restart">$T('button-restart') SABnzbd</a>
+            <a class="rounded" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#" rel2="$T('restart1')">$T('button-restart') SABnzbd</a>
         </div>
     #end if#
     #if $pane=="Email"#
         <div class="left_links">
-            <a class="rounded" id="test_email" href="../../connections/testmail?session=$session">$T('link-testEmail')</a>
+            <a class="rounded" id="test_email" href="../../connections/testmail?session=$session" rel="$T('askTestEmail')">$T('link-testEmail')</a>
         </div>
     #end if#
 

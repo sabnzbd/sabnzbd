@@ -138,8 +138,8 @@ jQuery(document).ready(function($){
 				});
 			});
         	$('#sabnzbd_restart').click(function(){
-        		if (confirm("Are you sure you want to restart SABnzbd?\n\nSave your config first if you have made changes.\n\nWait 5-10 seconds then refresh the page.")) {
-        			$('#sabnzbd_restart').html('Restarting...');
+        		if (confirm($('#sabnzbd_restart').attr('rel'))) {
+        			$('#sabnzbd_restart').html($('#sabnzbd_restart').attr('rel2'));
         			$.post('../../tapi', {mode: 'restart', session: apikey} );
         		}
         	});
@@ -147,7 +147,7 @@ jQuery(document).ready(function($){
 
 		case 'Servers':
         	$('form :button').click(function(event){ // delete server
-				if(confirm('Are you sure you want to remove this server?'))
+				if(confirm(''))
 					$(event.target).parents('form:first').attr('action','delServer').submit();
 				return false;
 			});
@@ -176,7 +176,7 @@ jQuery(document).ready(function($){
 				return false;
 			});
         	$('.delete_feed').click(function(event){
-				if(confirm('Are you sure you want to remove this feed?'))
+				if(confirm(''))
 					$(event.target).parents('form:first').attr('action','del_rss_feed').submit();
 				return false;
 			});
@@ -187,7 +187,7 @@ jQuery(document).ready(function($){
 
         case 'Email':
             $('#test_email').click(function(){
-				return confirm('This will send a test email to your account.');
+				return confirm($('#test_email').attr('rel'));
 		    });
 		    break;
         	
