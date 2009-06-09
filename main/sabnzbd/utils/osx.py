@@ -39,5 +39,5 @@ try:
         notifications = NOTIFICATION.values()
 
 except ImportError:
-    def sendGrowlMsg(nTitle , nMsg):
+    def sendGrowlMsg(nTitle , nMsg, nType):
         pass
