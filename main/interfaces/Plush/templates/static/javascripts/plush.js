@@ -388,15 +388,15 @@ jQuery(function($) { // safely invoke $ selector
 					else
 						$('#pause_int').html($.plush.pause_int);
 					
-					// ETA/kbpersec stats at top of queue
+					// ETA/speed stats at top of queue
 					if ($.plush.queuenoofslots < 1) {
-						$('#stats_kbpersec').html('&mdash;');
+						$('#stats_speed').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
 					} else if ($.plush.kbpersec < 1 && $.plush.paused) {
-						$('#stats_kbpersec').html('&mdash;');
+						$('#stats_speed').html('&mdash;');
 						$('#stats_eta').html('&mdash;');
 					} else {
-						$('#stats_kbpersec').html($.plush.kbpersec);
+						$('#stats_speed').html($.plush.speed+"B/s");
 						$('#stats_eta').html($.plush.timeleft);
 					}
 

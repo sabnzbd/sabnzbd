@@ -11,7 +11,8 @@
         $.plush.pause_int		= '$pause_int';
         $.plush.queuenoofslots  = $noofslots;
         $.plush.mbleft          = <!--#echo "%.0f" % float($mbleft)#-->;
-        $.plush.kbpersec      	= <!--#echo "%.0f" % float($kbpersec)#-->;
+        $.plush.speed	      	= "<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->";
+        $.plush.kbpersec		= <!--#echo "%.0f" % float($kbpersec)#-->;
         $.plush.timeleft      	= '$timeleft';
         $.plush.eta             = '$T('eta'): $eta';
         $.plush.have_warnings	= $have_warnings;
@@ -29,7 +30,7 @@
 	<!--#else if $paused#-->
 		document.title = '$T('ft-paused') | <!--#echo "%.0f" % float($mbleft)#--> $T('MB') $T('Plush-left') | $noofslots NZBs';
 	<!--#else#-->
-		document.title = '<!--#echo "%.0f" % float($kbpersec)#--> $T('KBs') | <!--#echo "%.0f" % float($mbleft)#--> $T('MB') | $timeleft $T('Plush-left')';
+		document.title = '<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->B/s | <!--#echo "%.0f" % float($mbleft)#--> $T('MB') | $timeleft $T('Plush-left')';
 	<!--#end if#-->
 
 </script>
