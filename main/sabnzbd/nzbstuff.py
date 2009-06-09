@@ -421,15 +421,20 @@ class NzbObject(TryList):
                  priority=NORMAL_PRIORITY, status="Queued", nzo_info=None):
         TryList.__init__(self)
 
+        if pp is None:
+            r = u = d = None
+        else:
+            r, u, d = sabnzbd.pp_to_opts(pp)
+
         self.__filename = filename    # Original filename
         self.__dirname = filename     # Keeps track of the working folder
         self.__original_dirname = filename # Used for folder name for final unpack
         self.__created = False        # dirprefixes + dirname created
         self.__bytes = 0              # Original bytesize
         self.__bytes_downloaded = 0   # Downloaded byte
-        self.__repair = None          # True if we want to repair this set
-        self.__unpack = None          # True if we want to unpack this set
-        self.__delete = None          # True if we want to delete this set
+        self.__repair = r             # True if we want to repair this set
+        self.__unpack = u             # True if we want to unpack this set
+        self.__delete = d             # True if we want to delete this set
         self.__script = script        # External script for this set
         self.__msgid = '0'            # Newzbin msgid
         self.__cat = cat              # Newzbin category
