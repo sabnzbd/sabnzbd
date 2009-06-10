@@ -130,7 +130,7 @@ class RSSQueue:
         # jobs is a NAME-indexed dictionary
         #    Each element is link-indexed dictionary
         #        Each element is an array:
-        #           0 = 'D', 'G', 'B' (downloaded, good-match, bad-match)
+        #           0 = 'D', 'G', 'B', 'X' (downloaded, good-match, bad-match, obsolete)
         #           1 = Title
         #           2 = URL or MsgId
         #           3 = cat
@@ -279,20 +279,23 @@ class RSSQueue:
 
 
         # If links are in table for more than 4 weeks, remove
+        # Flag old D/B links as obsolete, so that they don't show up in Preview
         now = time.time()
         limit =  now - 4*7*24*3600
         olds  = jobs.keys()
         for old in olds:
-            try:
-                tm = float(jobs[old][6])
-            except:
-                # Fix missing timestamp in older RSS_DATA.SAB file
-                jobs[old].append(now)
-                tm = now
-
-            if tm < limit and (old not in newlinks):
-                logging.debug("Purging link %s", old)
-                del jobs[old]
+            if old not in newlinks:
+                if jobs[old][0] in ('G', 'B'):
+                    jobs[old][0] = 'X'
+                try:
+                    tm = float(jobs[old][6])
+                except:
+                    # Fix missing timestamp in older RSS_DATA.SAB file
+                    jobs[old].append(now)
+                    tm = now
+                if tm < limit:
+                    logging.debug("Purging link %s", old)
+                    del jobs[old]
 
 
     def run(self):
