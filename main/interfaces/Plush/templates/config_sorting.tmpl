@@ -2,6 +2,173 @@
 <!--#set global $help_uri="Configure+Sorting"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
+
+<script type="text/javascript">
+	
+	// *********************************************************
+	// the following is for the Sorting Config -- author: switch
+	
+	function tvAdd(val){
+	    var tv = document.getElementById('tvfoldername'); 
+	    tv.value = tv.value + val;
+	    previewtv();
+	}
+	function tvSet(val){
+	    var tv = document.getElementById('tvfoldername'); 
+	    tv.value = val;
+	    previewtv();
+	}
+	function tvClear(){
+	    var tv = document.getElementById('tvfoldername'); 
+	    tv.value = '';
+	    previewtv();
+	}
+	function previewtv(){
+	    var input = document.getElementById('tvfoldername').value;
+	    var slash = "\\";
+	    input.toLowerCase()
+	    input = input.replace(/%ext/g,'avi');
+	    input = input.replace(/%sn/g,'$T("show-sp-name")');
+	    input = input.replace(/%s.n/g,'$T("show-dot-name")');
+	    input = input.replace(/%s_n/g,'$T("show-us-name")');
+	    input = input.replace(/%0s/g,'01');
+	    input = input.replace(/%s/g,'1');
+	    input = input.replace(/%en/g,'$T("ep-sp-name")');
+	    input = input.replace(/%e\.n/g,'$T("ep-dot-name")');
+	    input = input.replace(/%e\_n/g,'$T("ep-us-name")');
+	    input = input.replace(/%0e/g,'05');
+	    input = input.replace(/%e/g,'5');
+		input = input.replace(/%fn/g,'$T("sort-File")');
+	
+	    document.getElementById('previewtv').innerHTML = getOutput(input);
+	}
+	
+	function getOutput(input){
+	    var slash = "\\";
+	    var com = document.getElementById('complete_dir').value;
+	    
+	    // For some reason a simply replace() doesn't replace multiple / characters
+	    // Work out whether we are using / or \
+	    for (i=0; i<com.length; i++){
+	        if (com[i] == "/") slash = "/";
+	    }
+	    
+	    // Replace / or \ with whatever complete_dir uses
+	    for (i=0; i<input.length; i++){
+	        if (input[i] == "/") {
+	            input = input.replace("/",slash, "gi");
+	        } else if (input[i] == "\\") {
+	            input = input.replace("\\",slash, "gi");
+	        }
+	    }
+	    
+	    // If the complete_dir ends in / or \, then strip that character
+	    len = com.length
+	    if (com.substring(len-1, len) == slash)
+	    {
+	        com = com.substring(0, len-1)
+	    }
+	    
+	    output = com+slash+input;
+	    return output
+	}
+	
+	function movieAdd(val){
+	    var tv = document.getElementById('moviefoldername'); 
+	    tv.value = tv.value + val;
+	    previewmovie();
+	}
+	function movieSet(val, val2){
+	    var tv = document.getElementById('moviefoldername'); 
+	    tv.value = val;
+	    var tv2 = document.getElementById('movieextra'); 
+	    tv2.value = val2;
+	    previewmovie();
+	}
+	function movieClear(){
+	    var tv = document.getElementById('moviefoldername'); 
+	    tv.value = '';
+	    previewmovie();
+	}
+	function movieClearExtra(){
+	    var tv = document.getElementById('movieextra'); 
+	    tv.value = '';
+	    previewmovie();
+	}
+	function movieExtraFolder(value)
+	{
+	   document.getElementById('movie_extra_folder').checked = value;
+	}
+	function previewmovie()
+	{
+	    var input = document.getElementById('moviefoldername').value;
+	    var input2 = document.getElementById('movieextra').value;
+	    extra = input2.replace(/%1/g,'1');
+	    var slash = "\\";
+	    ext = extra + '.avi'
+	    input = input.replace(/.%ext/g,ext);
+	    input = input.replace(/%ext/g,'avi');
+	    input = input.replace(/%title/g,'$T("movie-sp-name")');
+	    input = input.replace(/%.title/g,'$T("movie-dot-name")');
+	    input = input.replace(/%_title/g,'$T("move-us-name")');
+	    input = input.replace(/%y/g,'2000');
+	    input = input.replace(/%decade/g,'00');
+		input = input.replace(/%0decade/g,'2000');
+		input = input.replace(/%fn/g,'$T("sort-File")');
+	    
+	    var regex = /\{([^\{]*)\}/g;
+	    var str = input;
+	    var result;
+	    while ((result = regex.exec(str)) != null)
+	    {
+	      var lower = result[0].toLowerCase();
+	      input = input.replace(result[0],lower);
+	    }
+	    input = input.replace(/{/g,'');
+	    input = input.replace(/}/g,'');
+	
+	    document.getElementById('previewmovie').innerHTML = getOutput(input);
+	}
+	function dateSet(val){
+	    var tv = document.getElementById('datefoldername'); 
+	    tv.value = val;
+	    previewdate();
+	}
+	function dateClear(){
+	    var tv = document.getElementById('datefoldername'); 
+	    tv.value = '';
+	    previewdate();
+	}
+	function previewdate(){
+	    var input = document.getElementById('datefoldername').value;
+	    var slash = "\\";
+	    input.toLowerCase()
+	    input = input.replace(/%ext/g,'avi');
+	    input = input.replace(/%t/g,'$T("show-sp-name")');
+	    input = input.replace(/%.t/g,'$T("show-dot-name")');
+	    input = input.replace(/%_t/g,'$T("show-us-name")');
+	    input = input.replace(/%decade/g,'00');
+		input = input.replace(/%0decade/g,'2000');
+		input = input.replace(/%fn/g,'$T("sort-File")');
+	    input = input.replace(/%desc/g,'$T("ep-sp-name")');
+	    input = input.replace(/%\.desc/g,'$T("ep-dot-name")');
+	    input = input.replace(/%\_desc/g,'$T("ep-us-name")');
+	    input = input.replace(/%0d/g,'02');
+	    input = input.replace(/%d/g,'2');
+	    input = input.replace(/%0m/g,'01');
+	    input = input.replace(/%m/g,'1');
+	    input = input.replace(/%y/g,'2009');
+	
+	    document.getElementById('previewdate').innerHTML = getOutput(input);
+	}
+	function showDiv(id)
+	{
+	    disp = (document.getElementById(id).style.display == "block") ? "none" : "block";
+	    document.getElementById(id).style.display = disp;
+	}
+</script>
+
+
 <form action="saveSorting" method="post" name="fullform">
 <input type="hidden" name="session" value="$session">
 
@@ -11,15 +178,15 @@
 <legend id="configbox_sorting_series">$T('seriesSorting')</legend>
 
     <input id="complete_dir" type="hidden" value="$complete_dir" />
-    <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('explain-tvsort')</strong>
+    <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('opt-tvsort')</strong>
     <br class="clear" /><br/>
     <strong onclick="jQuery('#Keytable1').slideToggle()" class="key_toggle"><i>&nbsp;&plusmn; $T('sort-legenda')&nbsp;</i></strong>
      <div id="Keytable1" style="display:none">
 		<small><table>
 		<thead><tr>
             <th align="right"><u>$T('sort-meaning')</u></th>
-            <th><u>Pattern</u></th>
-            <th><u>Result</u></th>
+            <th><u>$T('sort-pattern')</u></th>
+            <th><u>$T('sort-result')</u></th>
         </tr></thead>
         <tr>
             <td align="right"><strong>$T('show-name'):</strong></td>
@@ -62,22 +229,21 @@
             <td>%e_n</td>
             <td>$T('ep-us-name')</td>
         </tr><tr>
+            <td align="right"><strong>$T('fileExt'):</strong></td>
+            <td>%ext</td>
+            <td>avi</td>
+        </tr><tr>
             <td align="right"><strong>$T('orgFilename'):</strong></td>
             <td>%fn</td>
-            <td>$T('sort-File')</td>
+            <td>$T("sort-File")</td>
         </tr><tr>
             <td align="right"><strong>$T('lowercase'):</strong></td>
             <td>{$T('TEXT')}</td>
             <td>$T('text')</td>
         </tr>
         </table></small>
-        <!--
-        <span class="">Original Filename</span>
-        <span class="">%fn</span>
-        <span class="">Episode Name</span>
-        <br />-->
     </div><br class="clear" /><br class="clear" />
-
+    
     <table>
     <tr>
     	<td align="right"><strong>$T('sortString'):</strong></td>
@@ -98,21 +264,21 @@
     	<td><span id="previewtv"></span></td>
     </tr>
     </table>
-
+    
 </fieldset>
 
 <fieldset class="EntryFieldSet">
 <legend id="configbox_sorting_generic">$T('genericSort')</legend>
 
-    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('explain-movieSort')</strong>
+    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('opt-movieSort')</strong>
     <br class="clear" />
-    <input class="radio" type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>$T('explain-movieExtra')</strong>
+    <input class="radio" type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>$T('opt-movieExtra')</strong>
     <br class="clear" />
     <strong>$T('affectedCat'):</strong>
     <select name="movie_cat" multiple="multiple" size=4 class="multiple_cats">
         <!--#for $ct in $cat_list#-->
             <!--#if $ct != 'Default'#-->
-                <option value="$ct" <!--#if $ct in $movie_categories then 'selected' else ''#--> >$Tspec($ct)</option>
+                <option value="$ct" <!--#if $ct in $movie_categories then 'selected' else ''#--> >$ct</option>
             <!--#end if#-->
         <!--#end for#-->
     </select>
@@ -158,9 +324,9 @@
             <td>%0decade</td>
             <td>2000</td>
         </tr><tr>
-            <td align="right"><strong>$T('filename'):</strong></td>
+            <td align="right"><strong>$T('orgFilename'):</strong></td>
             <td>%fn</td>
-            <td>file</td>
+            <td>$T('sort-File')</td>
         </tr><tr>
             <td align="right"><strong>$T('lowercase'):</strong></td>
             <td>{$T('TEXT')}</td>
@@ -168,7 +334,7 @@
         </tr>
         </table></small>
     </div><br class="clear" /><br class="clear" />
-
+    
     <table>
     <tr>
     	<td align="right"><strong>$T('sortString'):</strong></td>
@@ -198,13 +364,13 @@
 <fieldset class="EntryFieldSet">
 <legend id="configbox_sorting_date">$T('dateSorting')</legend>
 
-    <input class="radio" type="checkbox" name="enable_date_sorting" value="1" <!--#if $enable_date_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('explain-dateSort')</strong>
+    <input class="radio" type="checkbox" name="enable_date_sorting" value="1" <!--#if $enable_date_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('opt-dateSort')</strong>
     <br class="clear" />
     <strong>$T('affectedCat'):</strong>
     <select name="date_cat" multiple="multiple" size=4 class="multiple_cats">
         <!--#for $ct in $cat_list#-->
             <!--#if $ct != 'Default'#-->
-                <option value="$ct" <!--#if $ct in $date_categories then 'selected' else ''#--> >$Tspec($ct)</option>
+                <option value="$ct" <!--#if $ct in $date_categories then 'selected' else ''#--> >$ct</option>
             <!--#end if#-->
         <!--#end for#-->
     </select>
@@ -258,9 +424,9 @@
             <td>%0decade</td>
             <td>2000</td>
         </tr><tr>
-            <td align="right"><strong>$T('filename'):</strong></td>
+            <td align="right"><strong>$T('orgFilename'):</strong></td>
             <td>%fn</td>
-            <td>file</td>
+            <td>$T('sort-File')</td>
 		</tr><tr>
             <td align="right"><strong>$T('lowercase'):</strong></td>
             <td>{$T('TEXT')}</td>
@@ -287,7 +453,7 @@
     	<td><span id="previewdate"></span></td>
     </tr>
     </table>
-
+    
 </fieldset>
 
 </div>
