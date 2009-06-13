@@ -15,6 +15,7 @@ hour              uur
 minute            min
 second            sec
 month             maand
+year              jaar
 day               dag
 daily             dagelijks
 monday            maandag
@@ -24,6 +25,7 @@ thursday          donderdag
 friday            vrijdag
 saturday          zaterdag
 sunday            zondag
+day-of-month      dagnummer
 
 # General template elements
 signOn            Het automatisch download wonder
@@ -428,8 +430,56 @@ catGroups                Groepen
 button-delCat            X
 
 # Config->Sorting
-sort-show                Show
+configSort               Sorteer instellingen
+seriesSorting            Serie sorteren
+sort-show                Serie
 sort-name                Naam
+opt-tvsort               TV sorteren aan
+explain-tvsort           Uitleg
+button-clear             Wissen
+presetSort               Voorkeuzes
+example                  Voorbeeld
+genericSort              Algemeen sorteren
+opt-movieSort            Film sorteren aan
+opt-movieExtra           Zet downloads in aparte mappen
+affectedCat              Beïnvloede categorieën
+explain-movieSort        Uitleg
+sort-meaning             Betekenis
+sort-pattern             Patroon
+sort-result              Resultaat
+button-Season1x05        1x05 Seizoensmappen
+button-SeasonS01E05      S01E05 Seizoensmap
+button-Ep1x05            1x05 Episodemap
+button-EpS01E05          S01E05 Episodemap
+show-name                Serie Naam
+show-sp-name             Serie Naam
+show-dot-name            Serie.Naam
+show-us-name             Serie_Naam
+show-seasonNum           Seizoen Nummer
+show-epNum               Episode Nummer
+ep-name                  Episode Naam
+ep-sp-name               Episode Naam
+ep-dot-name              Episode.Naam
+ep-us-name               Episode_Naam
+fileExt                  Bestandsextensie
+extension                Extensie
+partNumber               Volgnummer
+decade                   Decade
+orgFilename              Originele Bestandsnaam
+lowercase                kleine letters
+TEXT                     TEKST
+text                     tekst
+sort-File                bestand
+sortString               Sorteer formule
+multiPartLabel           Meervoudig label
+button-inFolders         In mappen
+button-noFolders         Geen mappen
+dateSorting              Datum sorteren
+opt-dateSort             Datum sorteren aanzetten
+explain-dateSort         Uitleg
+buttonShowNameF          Toon Naam map
+button-YMF               Jaar-Maand Mappen
+button-DailyF            Dagelijkse Mappen
 
 # NZO
 nzoDetails               Bewerk NZB Details

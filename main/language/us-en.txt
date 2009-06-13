@@ -16,6 +16,7 @@ hour              hour
 minute            min
 second            sec
 month             Month
+year              Year
 day               Day
 daily             Daily
 monday            Monday
@@ -25,7 +26,7 @@ thursday          Thursday
 friday            Friday
 saturday          Saturday
 sunday            Sunday
-
+day-of-month      Day of month
 
 # General template elements
 signOn            The automatic usenet download tool
@@ -435,8 +436,57 @@ catGroups                Groups
 button-delCat            X
 
 # Config->Sorting
+configSort               Sorting configuration
+seriesSorting            Series Sorting
 sort-show                Show
 sort-name                Name
+opt-tvsort               Enable TV Sorting
+explain-tvsort           Toggle key
+button-clear             Clear
+presetSort               Presets
+example                  Example
+genericSort              Generic Sorting
+opt-movieSort            Enable Movie Sorting
+opt-movieExtra           Keep loose downloads in extra folders
+affectedCat              Affected Categories
+explain-movieSort        Toggle key
+sort-meaning             Meaning
+sort-pattern             Pattern
+sort-result              Result
+button-Season1x05        1x05 Season Folder
+button-SeasonS01E05      S01E05 Season Folder
+button-Ep1x05            1x05 Episode Folder
+button-EpS01E05          S01E05 Episode Folder
+sort-title               Title
+show-name                Show Name
+show-sp-name             Show Name
+show-dot-name            Show.Name
+show-us-name             Show_Name
+show-seasonNum           Season Number
+show-epNum               Episode Number
+ep-name                  Episode Name
+ep-sp-name               Episode Name
+ep-dot-name              Episode.Name
+ep-us-name               Episode_Name
+fileExt                  File Extension
+extension                Extension
+partNumber               Part Number
+decade                   Decade
+orgFilename              Original Filename
+lowercase                Lower Case
+TEXT                     TEXT
+text                     text
+sort-File                file
+sortString               Sort String
+multiPartLabel           Multi-part label
+button-inFolders         In folders
+button-noFolders         No folders
+dateSorting              Date Sorting
+opt-dateSort             Enable Date Sorting
+explain-dateSort         Toggle key
+buttonShowNameF          Show Name folder
+button-YMF               Year-Month Folders
+button-DailyF            Daily Folders
 
 # NZO
 nzoDetails               Edit NZB Details
@@ -467,10 +517,8 @@ warn-authMissing         Authentication missing, please enter username/password 
 error-authMissing        Error: Missing authentication
 warn-apikeyNone          API Key missing, please enter the api key from Config->General\
                          into your 3rd party program:
-error-apikeyNone         API Key Required
 warn-apikeyBad           API Key incorrect, Use the api key from Config->General\
                          in your 3rd party program:
-error-apikeyBad          Error: API Key Incorrect
 error-noSecUI            Error: No secondary interface defined.
 
 his-badArchive           Failed, Unusable archive file
