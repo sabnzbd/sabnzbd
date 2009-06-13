@@ -441,15 +441,17 @@ seriesSorting            Series Sorting
 sort-show                Show
 sort-name                Name
 opt-tvsort               Enable TV Sorting
-explain-tvsort           Toggle key
+explain-tvsort           Enable sorting and renaming of episodes.
+sort-legenda             Toggle key
 button-clear             Clear
 presetSort               Presets
 example                  Example
 genericSort              Generic Sorting
 opt-movieSort            Enable Movie Sorting
+explain-movieSort        Enable generic sorting and renaming of files.
 opt-movieExtra           Keep loose downloads in extra folders
+explain-movieExtra       Enable if downloads are not put in their own folders.
 affectedCat              Affected Categories
-explain-movieSort        Toggle key
 sort-meaning             Meaning
 sort-pattern             Pattern
 sort-result              Result
@@ -458,6 +460,9 @@ button-SeasonS01E05      S01E05 Season Folder
 button-Ep1x05            1x05 Episode Folder
 button-EpS01E05          S01E05 Episode Folder
 sort-title               Title
+movie-sp-name            Movie Name
+movie-dot-name           Movie.Name
+movie-us-name            Movie_Name
 show-name                Show Name
 show-sp-name             Show Name
 show-dot-name            Show.Name
@@ -483,7 +488,7 @@ button-inFolders         In folders
 button-noFolders         No folders
 dateSorting              Date Sorting
 opt-dateSort             Enable Date Sorting
-explain-dateSort         Toggle key
+explain-dateSort         Enable sorting and renaming of date named files.
 buttonShowNameF          Show Name folder
 button-YMF               Year-Month Folders
 button-DailyF            Daily Folders

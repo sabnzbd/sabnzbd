@@ -435,7 +435,8 @@ seriesSorting            Serie sorteren
 sort-show                Serie
 sort-name                Naam
 opt-tvsort               TV sorteren aan
-explain-tvsort           Uitleg
+explain-tvsort           Sta sorteren en hernoemen van afleveringen toe.
+sort-legenda             Uitleg
 button-clear             Wissen
 presetSort               Voorkeuzes
 example                  Voorbeeld
@@ -443,7 +444,7 @@ genericSort              Algemeen sorteren
 opt-movieSort            Film sorteren aan
 opt-movieExtra           Zet downloads in aparte mappen
 affectedCat              Beïnvloede categorieën
-explain-movieSort        Uitleg
+explain-movieSort        Sta algemeen sorteren en hernoemen van bestanden toe.
 sort-meaning             Betekenis
 sort-pattern             Patroon
 sort-result              Resultaat
@@ -451,6 +452,11 @@ button-Season1x05        1x05 Seizoensmappen
 button-SeasonS01E05      S01E05 Seizoensmap
 button-Ep1x05            1x05 Episodemap
 button-EpS01E05          S01E05 Episodemap
+sort-Title               Itel
+movie-sp-name            Film Naam
+movie-dot-name           Film.Naam
+movie-us-name            Film_Naam
+
 show-name                Serie Naam
 show-sp-name             Serie Naam
 show-dot-name            Serie.Naam
@@ -476,7 +482,7 @@ button-inFolders         In mappen
 button-noFolders         Geen mappen
 dateSorting              Datum sorteren
 opt-dateSort             Datum sorteren aanzetten
-explain-dateSort         Uitleg
+explain-dateSort         Sta sorteren en hernoemen van datum-gebaseerde bestandsnamen toe.
 buttonShowNameF          Toon Naam map
 button-YMF               Jaar-Maand Mappen
 button-DailyF            Dagelijkse Mappen
