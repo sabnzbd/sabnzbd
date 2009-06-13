@@ -880,6 +880,14 @@ def s_returner(value):
     else:
         return ''
 
+def IntConv(value):
+    """Safe conversion to int"""
+    try:
+        value = int(value)
+    except:
+        value = 0
+    return value
+
 
 #------------------------------------------------------------------------------
 # Diskfree
