@@ -27,6 +27,7 @@ friday            Vendredi
 saturday          Samedi
 sunday            Dimanche
 day-of-month      Day of month
+filename          Nom de fichier
 
 
 # General template elements
@@ -490,7 +491,7 @@ button-noFolders         No folders
 dateSorting              Date Sorting
 opt-dateSort             Enable Date Sorting
 explain-dateSort         Enable sorting and renaming of date named files.
-buttonShowNameF          Show Name folder
+button-ShowNameF          Show Name folder
 button-YMF               Year-Month Folders
 button-DailyF            Daily Folders
 

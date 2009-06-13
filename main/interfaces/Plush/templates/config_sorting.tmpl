@@ -8,33 +8,33 @@
 <div class="EntryBlock">
 
 <fieldset class="EntryFieldSet">
-<legend id="configbox_sorting_series">Series Sorting</legend>
+<legend id="configbox_sorting_series">$T('seriesSorting')</legend>
 
     <input id="complete_dir" type="hidden" value="$complete_dir" />
-    <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable sorting and renaming of episodes</strong>
+    <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('explain-tvsort')</strong>
     <br class="clear" /><br/>
-    <strong onclick="jQuery('#Keytable1').slideToggle()" class="key_toggle"><i>&nbsp;&plusmn; Pattern Key&nbsp;</i></strong>
+    <strong onclick="jQuery('#Keytable1').slideToggle()" class="key_toggle"><i>&nbsp;&plusmn; $T('sort-legenda')&nbsp;</i></strong>
      <div id="Keytable1" style="display:none">
 		<small><table>
 		<thead><tr>
-            <th align="right"><u>Meaning</u></th>
+            <th align="right"><u>$T('sort-meaning')</u></th>
             <th><u>Pattern</u></th>
             <th><u>Result</u></th>
         </tr></thead>
         <tr>
-            <td align="right"><strong>Show Name:</strong></td>
+            <td align="right"><strong>$T('show-name'):</strong></td>
             <td>%sn</td>
-            <td>Show Name</td>
+            <td>$T('show-sp-name')</td>
         </tr><tr>
 			<td></td>
             <td>%s.n</td>
-            <td>Show.Name</td>
+            <td>$T('show-dot-name')</td>
         </tr><tr>
 			<td></td>
             <td>%s_n</td>
-            <td>Show_Name</td>
+            <td>$T('show-us-name')</td>
         </tr><tr>
-            <td align="right"><strong>Season Number:</strong></td>
+            <td align="right"><strong>$T('show-seasonNum'):</strong></td>
             <td>%s</td>
             <td>1</td>
         </tr><tr>
@@ -42,7 +42,7 @@
             <td>%0s</td>
             <td>01</td>
         </tr><tr>
-            <td align="right"><strong>Episode Number:</strong></td>
+            <td align="right"><strong>$T('show-epNum'):</strong></td>
             <td>%e</td>
             <td>5</td>
         </tr><tr>
@@ -50,25 +50,25 @@
             <td>%0e</td>
             <td>05</td>
         </tr><tr>
-            <td align="right"><strong>Episode Name:</strong></td>
+            <td align="right"><strong>$T('ep-name'):</strong></td>
             <td>%en</td>
-            <td>Episode Name</td>
+            <td>$T('ep-sp-name')</td>
         </tr><tr>
 			<td></td>
             <td>%e.n</td>
-            <td>Episode.Name</td>
+            <td>$T('ep-dot-name')</td>
         </tr><tr>
 			<td></td>
             <td>%e_n</td>
-            <td>Episode_Name</td>
+            <td>$T('ep-us-name')</td>
         </tr><tr>
-            <td align="right"><strong>Original filename:</strong></td>
+            <td align="right"><strong>$T('orgFilename'):</strong></td>
             <td>%fn</td>
-            <td>file</td>
+            <td>$T('sort-File')</td>
         </tr><tr>
-            <td align="right"><strong>Lower Case:</strong></td>
-            <td>{TEXT}</td>
-            <td>text</td>
+            <td align="right"><strong>$T('lowercase'):</strong></td>
+            <td>{$T('TEXT')}</td>
+            <td>$T('text')</td>
         </tr>
         </table></small>
         <!--
@@ -77,80 +77,80 @@
         <span class="">Episode Name</span>
         <br />-->
     </div><br class="clear" /><br class="clear" />
-    
+
     <table>
     <tr>
-    	<td align="right"><strong>Sort String:</strong></td>
+    	<td align="right"><strong>$T('sortString'):</strong></td>
     	<td>
     		<input type="text" size="80" id="tvfoldername" name="tv_sort_string" value="$tv_sort_string" onkeyup="javascript:previewtv()">
-    		<input type="button" onclick="tvClear()" value="Clear"/>
+    		<input type="button" onclick="tvClear()" value="$T('button-clear')"/>
     	</td>
     </tr><tr>
-    	<td align="right"><strong>Presets:</strong></td>
+    	<td align="right"><strong>$T('presetSort'):</strong></td>
     	<td>
-		    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="1x05 Season Folder"/>
-		    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Season Folder"/>
-		    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="1x05 Episode Folder"/>
-		    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="S01E05 Episode Folder"/>
+		    <input type="button" onclick="tvSet('%sn/Season %s/%sn - %sx%0e - %en.%ext')" value="$T('button-Season1x05')"/>
+		    <input type="button" onclick="tvSet('%sn/Season %s/%sn - S%0sE%0e - %en.%ext')" value="$T('button-SeasonS01E05')"/>
+		    <input type="button" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="$T('button-Ep1x05')"/>
+		    <input type="button" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="$T('button-EpS01E05')"/>
     	</td>
     </tr><tr>
-    	<td align="right"><strong>Example:</strong></td>
+    	<td align="right"><strong>$T('example'):</strong></td>
     	<td><span id="previewtv"></span></td>
     </tr>
     </table>
-    
+
 </fieldset>
 
 <fieldset class="EntryFieldSet">
-<legend id="configbox_sorting_generic">Generic Sorting</legend>
+<legend id="configbox_sorting_generic">$T('genericSort')</legend>
 
-    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable generic sorting and renaming of files</strong>
+    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('explain-movieSort')</strong>
     <br class="clear" />
-    <input class="radio" type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>Enable if downloads are not put in their own folders</strong>
+    <input class="radio" type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>$T('explain-movieExtra')</strong>
     <br class="clear" />
-    <strong>Affected Categories:</strong>
+    <strong>$T('affectedCat'):</strong>
     <select name="movie_cat" multiple="multiple" size=4 class="multiple_cats">
         <!--#for $ct in $cat_list#-->
             <!--#if $ct != 'Default'#-->
-                <option value="$ct" <!--#if $ct in $movie_categories then 'selected' else ''#--> >$ct</option>
+                <option value="$ct" <!--#if $ct in $movie_categories then 'selected' else ''#--> >$Tspec($ct)</option>
             <!--#end if#-->
         <!--#end for#-->
     </select>
     <br class="clear" /><br/>
-    <strong onclick="jQuery('#Keytable2').slideToggle()" class="key_toggle"><i>&nbsp;&plusmn; Pattern Key&nbsp;</i></strong>
+    <strong onclick="jQuery('#Keytable2').slideToggle()" class="key_toggle"><i>&nbsp;&plusmn; $T('sort-legenda')&nbsp;</i></strong>
      <div id="Keytable2" style="display:none">
         <small><table>
         <thead><tr>
-           <th align="right"><u>Meaning</u></th>
-           <th><u>Pattern</u></th>
-           <th><u>Result</u></th>
+           <th align="right"><u>$T('sort-meaning')</u></th>
+           <th><u>$T('sort-pattern')</u></th>
+           <th><u>$T('sort-result')</u></th>
         </tr></thead>
         <tr>
-            <td align="right"><strong>Title:</strong></td>
+            <td align="right"><strong>$T('sort-title'):</strong></td>
             <td>%title</td>
-            <td>Movie Name</td>
+            <td>$T('movie-sp-name')</td>
         </tr><tr>
 			<td></td>
             <td>%.title</td>
-            <td>Movie.Name</td>
+            <td>$T('movie-dot-name')</td>
         </tr><tr>
 			<td></td>
             <td>%_title</td>
-            <td>Movie_Name</td>
+            <td>$T('movie-us-name')</td>
         </tr><tr>
-            <td align="right"><strong>Year:</strong></td>
+            <td align="right"><strong>$T('year'):</strong></td>
             <td>%y</td>
             <td>2000</td>
         </tr><tr>
-            <td align="right"><strong>Extension:</strong></td>
+            <td align="right"><strong>$T('extension'):</strong></td>
             <td>%ext</td>
             <td>avi</td>
         </tr><tr>
-            <td align="right"><strong>Part Number:</strong></td>
+            <td align="right"><strong>$T('partNumber'):</strong></td>
             <td>%1</td>
             <td>1</td>
         </tr><tr>
-            <td align="right"><strong>Decade:</strong></td>
+            <td align="right"><strong>$T('decade'):</strong></td>
             <td>%decade</td>
             <td>00</td>
         </tr><tr>
@@ -158,83 +158,83 @@
             <td>%0decade</td>
             <td>2000</td>
         </tr><tr>
-            <td align="right"><strong>Filename:</strong></td>
+            <td align="right"><strong>$T('filename'):</strong></td>
             <td>%fn</td>
             <td>file</td>
         </tr><tr>
-            <td align="right"><strong>Lower Case:</strong></td>
-            <td>{TEXT}</td>
-            <td>text</td>
+            <td align="right"><strong>$T('lowercase'):</strong></td>
+            <td>{$T('TEXT')}</td>
+            <td>$T('text')</td>
         </tr>
         </table></small>
     </div><br class="clear" /><br class="clear" />
-    
+
     <table>
     <tr>
-    	<td align="right"><strong>Sort String:</strong></td>
+    	<td align="right"><strong>$T('sortString'):</strong></td>
     	<td>
     		<input type="text" size="80" id="moviefoldername" name="movie_sort_string" value="$movie_sort_string" onkeyup="javascript:previewmovie()">
-    		<input type="button" onclick="movieClear()" value="Clear"/>
+    		<input type="button" onclick="movieClear()" value="$T('button-clear')"/>
     	</td>
     </tr><tr>
-    	<td align="right"><strong>Multi-part Label:</strong></td>
+    	<td align="right"><strong>$T('multiPartLabel'):</strong></td>
     	<td>
     		<input type="text" size="80" id="movieextra" name="movie_sort_extra" value="$movie_sort_extra" onkeyup="javascript:previewmovie()">
-    		<input type="button" onclick="movieClearExtra()" value="Clear"/>
+    		<input type="button" onclick="movieClearExtra()" value="$T('button-clear')"/>
     	</td>
     </tr><tr>
-    	<td align="right"><strong>Presets:</strong></td>
+    	<td align="right"><strong>$T('presetSort'):</strong></td>
     	<td>
-		    <input type="button" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="In Folders"/>
-		    <input type="button" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="No Folders"/>
+		    <input type="button" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="$T('button-inFolders')"/>
+		    <input type="button" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('button-noFolders')"/>
     	</td>
     </tr><tr>
-    	<td align="right"><strong>Example:</strong></td>
+    	<td align="right"><strong>$T('example'):</strong></td>
     	<td><span id="previewmovie"></span></td>
     </tr>
 	</table>
 </fieldset>
 
 <fieldset class="EntryFieldSet">
-<legend id="configbox_sorting_date">Date Sorting</legend>
+<legend id="configbox_sorting_date">$T('dateSorting')</legend>
 
-    <input class="radio" type="checkbox" name="enable_date_sorting" value="1" <!--#if $enable_date_sorting > 0 then "checked=1" else ""#--> /> <strong>Enable sorting and renaming of date named files</strong>
+    <input class="radio" type="checkbox" name="enable_date_sorting" value="1" <!--#if $enable_date_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('explain-dateSort')</strong>
     <br class="clear" />
-    <strong>Affected Categories:</strong>
+    <strong>$T('affectedCat'):</strong>
     <select name="date_cat" multiple="multiple" size=4 class="multiple_cats">
         <!--#for $ct in $cat_list#-->
             <!--#if $ct != 'Default'#-->
-                <option value="$ct" <!--#if $ct in $date_categories then 'selected' else ''#--> >$ct</option>
+                <option value="$ct" <!--#if $ct in $date_categories then 'selected' else ''#--> >$Tspec($ct)</option>
             <!--#end if#-->
         <!--#end for#-->
     </select>
     <br class="clear" /><br/>
-    <strong onclick="jQuery('#Keytable3').slideToggle()" class="key_toggle"><i>&nbsp;&plusmn; Pattern Key&nbsp;</i></strong>
+    <strong onclick="jQuery('#Keytable3').slideToggle()" class="key_toggle"><i>&nbsp;&plusmn; $T('sort-legenda')&nbsp;</i></strong>
      <div id="Keytable3" style="display:none">
      	<small><table>
         <thead><tr>
-            <th align="right"><u>Meaning</u></td>
-            <th><u>Pattern</u></td>
-            <th><u>Result</u></td>
+            <th align="right"><u>$T('sort-meaning')</u></td>
+            <th><u>$T('sort-pattern')</u></td>
+            <th><u>$T('sort-result')</u></td>
         </tr></thead>
         <tr>
-            <td align="right"><strong>Show Name:</strong></td>
+            <td align="right"><strong>$T('show-name'):</strong></td>
             <td>%t</td>
-            <td>Show Name</td>
+            <td>$T('show-sp-name')</td>
 		</tr><tr>
 			<td></td>
             <td>%.t</td>
-            <td>Show.Name</td>
+            <td>$T('show-dot-name')</td>
 		</tr><tr>
 			<td></td>
             <td>%_t</td>
-            <td>Show_Name</td>
+            <td>$T('show-us-name')</td>
 		</tr><tr>
-            <td align="right"><strong>Year:</strong></td>
+            <td align="right"><strong>$T('year'):</strong></td>
             <td>%y</td>
             <td>2009</td>
 		</tr><tr>
-            <td align="right"><strong>Month:</strong></td>
+            <td align="right"><strong>$T('month'):</strong></td>
             <td>%m</td>
             <td>1</td>
 		</tr><tr>
@@ -242,7 +242,7 @@
             <td>%0m</td>
             <td>01</td>
 		</tr><tr>
-            <td align="right"><strong>Day of month:</strong></td>
+            <td align="right"><strong>$T('day-of-month'):</strong></td>
             <td>%d</td>
             <td>2</td>
 		</tr><tr>
@@ -250,7 +250,7 @@
             <td>%0d</td>
             <td>02</td>
         </tr><tr>
-            <td align="right"><strong>Decade:</strong></td>
+            <td align="right"><strong>$T('decade'):</strong></td>
             <td>%decade</td>
             <td>00</td>
         </tr><tr>
@@ -258,36 +258,36 @@
             <td>%0decade</td>
             <td>2000</td>
         </tr><tr>
-            <td align="right"><strong>Filename:</strong></td>
+            <td align="right"><strong>$T('filename'):</strong></td>
             <td>%fn</td>
             <td>file</td>
 		</tr><tr>
-            <td align="right"><strong>Lower Case:</strong></td>
-            <td>{TEXT}</td>
-            <td>text</td>
+            <td align="right"><strong>$T('lowercase'):</strong></td>
+            <td>{$T('TEXT')}</td>
+            <td>$T('text')</td>
 		</tr>
         </table></small>
     </div><br class="clear" /><br class="clear" />
 
     <table>
     <tr>
-    	<td align="right"><strong>Sort String:</strong></td>
+    	<td align="right"><strong>$T('sortString'):</strong></td>
     	<td>
     		<input type="text" size="80" id="datefoldername" name="date_sort_string" value="$date_sort_string" onkeyup="javascript:previewdate()">
-    		<input type="button" onclick="dateClear()" value="Clear"/></td>
+    		<input type="button" onclick="dateClear()" value="$T('button-clear')"/></td>
     </tr><tr>
-    	<td align="right"><strong>Presets:</strong></td>
+    	<td align="right"><strong>$T('presetSort'):</strong></td>
     	<td>
-    		<input type="button" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="Show Name Folder"/>
-    		<input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="Year-Month Folders"/>
-    		<input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="Daily Folders"/>
+    		<input type="button" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-ShowNameF')"/>
+    		<input type="button" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-YMF')"/>
+    		<input type="button" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-DailyF')"/>
     	</td>
     </tr><tr>
-    	<td align="right"><strong>Example:</strong></td>
+    	<td align="right"><strong>$T('example'):</strong></td>
     	<td><span id="previewdate"></span></td>
     </tr>
     </table>
-    
+
 </fieldset>
 
 </div>

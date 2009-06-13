@@ -27,6 +27,7 @@ friday            Friday
 saturday          Saturday
 sunday            Sunday
 day-of-month      Day of month
+filename          Filename
 
 # General template elements
 signOn            The automatic usenet download tool
@@ -442,7 +443,7 @@ sort-show                Show
 sort-name                Name
 opt-tvsort               Enable TV Sorting
 explain-tvsort           Enable sorting and renaming of episodes.
-sort-legenda             Toggle key
+sort-legenda             Pattern Key
 button-clear             Clear
 presetSort               Presets
 example                  Example
@@ -489,7 +490,7 @@ button-noFolders         No folders
 dateSorting              Date Sorting
 opt-dateSort             Enable Date Sorting
 explain-dateSort         Enable sorting and renaming of date named files.
-buttonShowNameF          Show Name folder
+button-ShowNameF          Show Name folder
 button-YMF               Year-Month Folders
 button-DailyF            Daily Folders
 

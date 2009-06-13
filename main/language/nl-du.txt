@@ -26,6 +26,7 @@ friday            vrijdag
 saturday          zaterdag
 sunday            zondag
 day-of-month      dagnummer
+filename          Bestandsnaam
 
 # General template elements
 signOn            Het automatisch download wonder
@@ -443,6 +444,7 @@ example                  Voorbeeld
 genericSort              Algemeen sorteren
 opt-movieSort            Film sorteren aan
 opt-movieExtra           Zet downloads in aparte mappen
+explain-movieExtra       Sta opslaan van downloads in een eigen map toe.
 affectedCat              Beïnvloede categorieën
 explain-movieSort        Sta algemeen sorteren en hernoemen van bestanden toe.
 sort-meaning             Betekenis
@@ -483,7 +485,7 @@ button-noFolders         Geen mappen
 dateSorting              Datum sorteren
 opt-dateSort             Datum sorteren aanzetten
 explain-dateSort         Sta sorteren en hernoemen van datum-gebaseerde bestandsnamen toe.
-buttonShowNameF          Toon Naam map
+button-ShowNameF          Toon Naam map
 button-YMF               Jaar-Maand Mappen
 button-DailyF            Dagelijkse Mappen
 
