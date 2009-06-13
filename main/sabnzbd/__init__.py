@@ -670,19 +670,10 @@ def remove_data(_id):
 
 def pp_to_opts(pp):
     """ Convert numeric processinf options to (repair, unpack, delete) """
-    repair = unpack = delete = False
-    try:
-        pp = int(pp)
-    except:
-        pp = 0
-    if pp > 0:
-        repair = True
-        if pp > 1:
-            unpack = True
-            if pp > 2:
-                delete = True
-
-    return (repair, unpack, delete)
+    if pp == 0 : return (False, False, False)
+    if pp == 1 : return (True, False, False)
+    if pp == 2 : return (True, True, False)
+    return (True, True, True)
 
 
 def opts_to_pp(repair, unpack, delete):

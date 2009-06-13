@@ -218,7 +218,7 @@ def check_apikey(kwargs):
             pass
         else:
             logging.warning(T('warn-authMissing'))
-            return T('error-authMissing')
+            return 'Error: Missing authentication'
 
     if cfg.DISABLE_KEY.get():
         return None
@@ -230,7 +230,7 @@ def check_apikey(kwargs):
             return T('error-apikeyNone')
         elif key != cfg.API_KEY.get():
             logging.warning(T('warn-apikeyBad'))
-            return T('error-apikeyBad')
+            return 'Error: API Key Incorrect'
         else:
             return None
 
@@ -245,6 +245,60 @@ class NoPage:
 
 
 #------------------------------------------------------------------------------
+_MSG_NO_VALUE         = 'expect one parameter'
+_MSG_NO_VALUE2        = 'expect two parameters'
+_MSG_NOT_IMPLEMENTED  = 'not implemented'
+_MSG_NO_FILE          = 'no file given'
+_MSG_NO_PATH          = 'file does not exist'
+_MSG_OUTPUT_FORMAT    = 'Format not supported'
+
+def report(output, error=None, value=None):
+    # Report message in json, xml or plain text
+    status = error is None
+    if output == 'json':
+        info = {'status' : status}
+        if not status:
+            info['error'] = error
+        if value != None:
+            info['value'] = value
+        response = JsonWriter().write(info)
+        cherrypy.response.headers['Content-Type'] = "application/json"
+
+    elif output == 'xml':
+        status_str = str(status)
+        response = '<?xml version="1.0" encoding="UTF-8" ?>\n<result>\n<status>%s</status>' % status_str
+        if not status:
+            response += '<error>%s</error>\n' % error
+        if value != None:
+            if type(value) == type([]):
+                response += '<values>'
+                for val in value:
+                    response += '<value>%s</value>' % str(val)
+                response += '</values>'
+            else:
+               response += '<value>%s</value>\n' % str(value)
+        response += '\n</result>\n'
+        cherrypy.response.headers['Content-Type'] = "text/xml"
+
+    else:
+        cherrypy.response.headers['Content-Type'] = "text/plain"
+        if status:
+            if value is None:
+                response = 'ok\n'
+            else:
+                response = ''
+                if type(value) == type([]):
+                    for val in value:
+                        response += '%s ' % str(val)
+                else:
+                    response = str(value)
+                response = response.strip() + '\n'
+        else:
+            response = "error: %s\n" % error
+
+    cherrypy.response.headers['Pragma'] = 'no-cache'
+    return response
+
 class MainPage:
     def __init__(self, web_dir, root, web_dir2=None, root2=None, prim=True, first=0):
         self.__root = root
@@ -409,10 +463,6 @@ class MainPage:
         mode = kwargs.get('mode')
         output = kwargs.get('output')
 
-        #Need to put version checking here so it requires no auth
-
-        #Need to put api/tapi auth here so version checking requires no auth
-
         if mode == 'set_config':
             res = config.set_config(kwargs)
             if output == 'json':
@@ -420,7 +470,7 @@ class MainPage:
             elif output == 'xml':
                 return xml_result(res)
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_OUTPUT_FORMAT)
 
         if mode == 'get_config':
             res, data = config.get_dconfig(kwargs)
@@ -429,7 +479,7 @@ class MainPage:
             elif output == 'xml':
                 return xml_result(res, kwargs.get('section'), kwargs.get('keyword'), data)
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_OUTPUT_FORMAT)
 
         if mode == 'qstatus':
             if output == 'json':
@@ -437,7 +487,7 @@ class MainPage:
             elif output == 'xml':
                 return xml_qstatus()
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_OUTPUT_FORMAT)
 
         if mode == 'queue':
             name = kwargs.get('name')
@@ -448,7 +498,72 @@ class MainPage:
             start = kwargs.get('start')
             limit = kwargs.get('limit')
 
-            if output == 'xml':
+            if name == 'delete':
+                if value.lower()=='all':
+                    nzbqueue.remove_all_nzo()
+                    return report(output)
+                elif value:
+                    items = value.split(',')
+                    nzbqueue.remove_multiple_nzos(items, False)
+                    return report(output)
+                else:
+                    return report(output, _MSG_NO_VALUE)
+            elif name == 'delete_nzf':
+                # Value = nzo_id Value2 = nzf_id
+                if value and value2:
+                    nzbqueue.remove_nzf(value, value2)
+                    return report(output)
+                else:
+                    return report(output, _MSG_NO_VALUE2)
+            elif name == 'rename':
+                if value and value2:
+                    nzbqueue.rename_nzo(value, value2)
+                    return report(output)
+                else:
+                    return report(output, _MSG_NO_VALUE2)
+            elif name == 'change_complete_action':
+                # http://localhost:8080/sabnzbd/api?mode=queue&name=change_complete_action&value=hibernate_pc
+                sabnzbd.change_queue_complete_action(value)
+                return report(output)
+            elif name == 'purge':
+                nzbqueue.remove_all_nzo()
+                return report(output)
+            elif name == 'pause':
+                if value:
+                    items = value.split(',')
+                    nzbqueue.pause_multiple_nzo(items)
+                return report(output)
+            elif name == 'resume':
+                if value:
+                    items = value.split(',')
+                    nzbqueue.resume_multiple_nzo(items)
+                return report(output)
+            elif name == 'priority':
+                if value and value2:
+                    try:
+                        try:
+                            priority = int(value2)
+                        except:
+                            return report(output, _MSG_INT_VALUE)
+                        items = value.split(',')
+                        if len(items) > 1:
+                            pos = nzbqueue.set_priority_multiple(items, priority)
+                        else:
+                            pos = nzbqueue.set_priority(value, priority)
+                        # Returns the position in the queue, -1 is incorrect job-id
+                        return report(output, value=pos)
+                    except:
+                        return report(output, _MSG_NO_VALUE2)
+                else:
+                    return report(output, _MSG_NO_VALUE2)
+            elif name == 'sort':
+                if sort:
+                    nzbqueue.sort_queue(sort,dir)
+                    return report(output)
+                else:
+                    return report(output, _MSG_NO_VALUE2)
+
+            elif output == 'xml':
                 if sort and sort != 'index':
                     reverse=False
                     if dir.lower() == 'desc':
@@ -464,72 +579,11 @@ class MainPage:
                 return queueStatusJson(start,limit)
             elif output == 'rss':
                 return rss_qstatus()
-            elif name == 'delete':
-                if value.lower()=='all':
-                    nzbqueue.remove_all_nzo()
-                    return 'ok\n'
-                elif value:
-                    items = value.split(',')
-                    nzbqueue.remove_multiple_nzos(items, False)
-                    return 'ok\n'
-                else:
-                    return 'error\n'
-            elif name == 'delete_nzf':
-                # Value = nzo_id Value2 = nzf_id
-                if value and value2:
-                    nzbqueue.remove_nzf(value, value2)
-                    return 'ok\n'
-                else:
-                    return 'error: specify the nzo id\'s in the value param and nzf_id in value2 param\n'
-            elif name == 'rename':
-                if value and value2:
-                    nzbqueue.rename_nzo(value, value2)
-                else:
-                    return 'error\n'
-            elif name == 'change_complete_action':
-                # http://localhost:8080/sabnzbd/api?mode=queue&name=change_complete_action&value=hibernate_pc
-                sabnzbd.change_queue_complete_action(value)
-                return 'ok\n'
-            elif name == 'purge':
-                nzbqueue.remove_all_nzo()
-                return 'ok\n'
-            elif name == 'pause':
-                if value:
-                    items = value.split(',')
-                    nzbqueue.pause_multiple_nzo(items)
-            elif name == 'resume':
-                if value:
-                    items = value.split(',')
-                    nzbqueue.resume_multiple_nzo(items)
-            elif name == 'priority':
-                if value and value2:
-                    try:
-                        try:
-                            priority = int(value2)
-                        except:
-                            return 'error: please enter an integer for the priority'
-                        items = value.split(',')
-                        if len(items) > 1:
-                            pos = nzbqueue.set_priority_multiple(items, priority)
-                        else:
-                            pos = nzbqueue.set_priority(value, priority)
-                        # Returns the position in the queue
-                        return str(pos)
-                    except:
-                        return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
-                else:
-                    return 'error: correct usage: &value=NZO_ID&value2=PRIORITY_VALUE'
-            elif name == 'sort':
-                if sort:
-                    nzbqueue.sort_queue(sort,dir)
-                    return 'ok\n'
-                else:
-                    return 'error: correct usage: &sort=name&dir=asc'
 
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_NOT_IMPLEMENTED)
 
-        name = kwargs.get('name')
+        name = kwargs.get('name', '')
         pp = kwargs.get('pp')
         script = kwargs.get('script')
         cat = kwargs.get('cat')
@@ -551,9 +605,9 @@ class MainPage:
 
             if name.filename and name.value:
                 sabnzbd.add_nzbfile(name, pp, script, cat, priority)
-                return 'ok\n'
+                return report(output)
             else:
-                return 'error\n'
+                return report(output, _MSG_NO_VALUE)
 
         if mode == 'addlocalfile':
             if name:
@@ -567,20 +621,20 @@ class MainPage:
                             sabnzbd.dirscanner.ProcessSingleFile(\
                                 fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
                     else:
-                        return 'error: no filename found'
+                        return report(output, _MSG_NO_FILE)
                 else:
-                    return 'error: path does not exist'
-                return 'ok\n'
+                    return report(output, _MSG_NO_PATH)
+                return report(output)
             else:
-                return 'error\n'
+                return report(output, _MSG_NO_VALUE)
 
         if mode == 'switch':
             if value and value2:
                 pos, prio = nzbqueue.switch(value, value2)
                 # Returns the new position and new priority (if different)
-                return '%s %s' % (pos, prio)
+                return report(output, value=[pos, prio])
             else:
-                return 'error\n'
+                return report(output, _MSG_NO_VALUE2)
 
 
         if mode == 'change_cat':
@@ -595,50 +649,48 @@ class MainPage:
                 nzbqueue.change_script(nzo_id, script)
                 nzbqueue.change_priority(nzo_id, cat_priority)
                 nzbqueue.change_opts(nzo_id, pp)
-                return 'ok\n'
+                return report(output)
             else:
-                return 'error\n'
+                return report(output, _MSG_NO_VALUE)
 
         if mode == 'change_script':
             if value and value2:
                 nzo_id = value
                 script = value2
-                if script == 'None':
+                if script.lower() == 'none':
                     script = None
                 nzbqueue.change_script(nzo_id, script)
-                return 'ok\n'
+                return report(output)
             else:
-                return 'error\n'
+                return report(output, _MSG_NO_VALUE)
 
         if mode == 'change_opts':
             if value and value2 and value2.isdigit():
                 nzbqueue.change_opts(value, int(value2))
+            return report(output)
 
         if mode == 'fullstatus':
-            if output == 'xml':
-                return 'not implemented YET\n' #xml_full()
-            else:
-                return 'not implemented\n'
+            return report(output, _MSG_NOT_IMPLEMENTED + ' YET') #xml_full()
 
         if mode == 'history':
-            if output == 'xml':
-                return xml_history(start, limit)
-            elif output == 'json':
-                return json_history(start, limit)
-            elif name == 'delete':
+            if name == 'delete':
                 if value.lower()=='all':
                     history_db = cherrypy.thread_data.history_db
                     history_db.remove_history()
-                    return 'ok\n'
+                    return report(output)
                 elif value:
                     jobs = value.split(',')
                     history_db = cherrypy.thread_data.history_db
                     history_db.remove_history(jobs)
-                    return 'ok\n'
+                    return report(output)
                 else:
-                    return 'error\n'
+                    return report(output, _MSG_NO_VALUE)
+            elif output == 'xml' :
+                return xml_history(start, limit)
+            elif output == 'json':
+                return json_history(start, limit)
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode == 'get_files':
             if value:
@@ -647,14 +699,16 @@ class MainPage:
                 elif output == 'json':
                     return json_files(value)
                 else:
-                    return 'not implemented\n'
+                    return report(output, _MSG_OUTPUT_FORMAT)
+            else:
+                return report(output, _MSG_NO_VALUE)
 
         if mode == 'addurl':
             if name:
                 sabnzbd.add_url(name, pp, script, cat, priority)
-                return 'ok\n'
+                return report(output)
             else:
-                return 'error\n'
+                return report(output, _MSG_NO_VALUE)
 
         if mode == 'addid':
             RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
@@ -663,31 +717,31 @@ class MainPage:
             if name: name = name.strip()
             if name and (name.isdigit() or len(name)==5):
                 sabnzbd.add_msgid(name, pp, script, cat, priority)
-                return 'ok\n'
+                return report(output)
             elif newzbin_url:
                 sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat, priority)
-                return 'ok\n'
+                return report(output)
             elif name:
                 sabnzbd.add_url(name, pp, script, cat, priority)
-                return 'ok\n'
+                return report(output)
             else:
-                return 'error\n'
+                return report(output, _MSG_NO_VALUE)
 
         if mode == 'pause':
             scheduler.plan_resume(0)
             downloader.pause_downloader()
-            return 'ok\n'
+            return report(output)
 
         if mode == 'resume':
             scheduler.plan_resume(0)
             downloader.resume_downloader()
-            return 'ok\n'
+            return report(output)
 
         if mode == 'shutdown':
             sabnzbd.halt()
             cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
-            return 'ok\n'
+            return report(output)
 
         if mode == 'warnings':
             if output == 'json':
@@ -695,7 +749,7 @@ class MainPage:
             elif output == 'xml':
                 return xml_list("warnings", "warning", sabnzbd.GUIHANDLER.content())
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode == 'config':
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
@@ -704,33 +758,33 @@ class MainPage:
                     try:
                         value = int(value)
                     except:
-                        return 'error: Please submit a value\n'
+                        return report(output, _MSG_NO_VALUE)
                     downloader.limit_speed(value)
-                    return 'ok\n'
+                    return report(output)
                 else:
-                    return 'error: Please submit a value\n'
+                    return report(output, _MSG_NO_VALUE)
             elif name == 'get_speedlimit':
-                return str(int(downloader.get_limit()))
+                return report(output, value=int(downloader.get_limit()))
             elif name == 'set_colorscheme':
                 if value:
                     if self.__prim:
                         cfg.WEB_COLOR.set(value)
                     else:
                         cfg.WEB_COLOR2.set(value)
-                    return 'ok\n'
+                    return report(output)
                 else:
-                    return 'error: Please submit a value\n'
+                    return report(output, _MSG_NO_VALUE)
             elif name == 'set_pause':
                 scheduler.plan_resume(IntConv(value))
-                return 'ok\n'
+                return report(output)
 
             elif name == 'set_apikey':
                 cfg.API_KEY.set(config.create_api_key())
                 config.save_config()
-                return str(cfg.API_KEY.get())
+                return report(output, value=cfg.API_KEY.get())
 
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode == 'get_cats':
             if output == 'json':
@@ -738,7 +792,7 @@ class MainPage:
             elif output == 'xml':
                 return xml_list("categories", "category", ListCats())
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode == 'get_scripts':
             if output == 'json':
@@ -746,39 +800,34 @@ class MainPage:
             elif output == 'xml':
                 return xml_list("scripts", "script", ListScripts())
             else:
-                return 'not implemented\n'
+                return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode == 'version':
-            if output == 'json':
-                return json_list('version', sabnzbd.__version__)
-            elif output == 'xml':
-                return xml_list('versions', 'version', (sabnzbd.__version__, ))
-            else:
-                return str(sabnzbd.__version__)
+            return report(output, value=sabnzbd.__version__)
 
         if mode == 'newzbin':
             if name == 'get_bookmarks':
                 newzbin.getBookmarksNow()
-                return 'ok\n'
-            return 'not implemented\n'
+                return report(output)
+            return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode == 'restart':
             sabnzbd.halt()
             cherrypy.engine.restart()
-            return 'ok\n'
+            return report(output)
 
         if mode == 'disconnect':
             downloader.disconnect()
-            return 'ok\n'
+            return report(output)
 
         if mode == 'osx_icon':
             if value == '0':
                 sabnzbd.OSX_ICON = 0
             else:
                 sabnzbd.OSX_ICON = 1
-            return 'ok\n'
+            return report(output)
 
-        return 'not implemented\n'
+        return report(output, _MSG_NOT_IMPLEMENTED)
 
     @cherrypy.expose
     def scriptlog(self, **kwargs):
@@ -3448,7 +3497,9 @@ def json_history(start=None, limit=None, search=None):
     #Compile the history data
 
     # Filter out any functions, such as the translate functions.
-    #history = [item for item in history if type(item) in (list, dict, tuple, str)]
+    for key, value in history.items():
+        if type(value) not in (list, dict, tuple, str):
+            del history[key]
 
     status_str = JsonWriter().write(history)
 
@@ -3595,7 +3646,10 @@ def queueStatusJson(start, limit):
     info, pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
 
     # Filter out any functions, such as the translate functions.
-    info = [item for item in info if type(item) in (list, dict, tuple, str)]
+    for key, value in info.items():
+        if type(value) not in (list, dict, tuple, str):
+            del info[key]
+
     status_str = JsonWriter().write(info)
 
     cherrypy.response.headers['Content-Type'] = "application/json"
