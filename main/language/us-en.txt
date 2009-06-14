@@ -34,6 +34,7 @@ signOn            The automatic usenet download tool
 button-save       Save
 queued            Queued
 button-back       Back
+button-x          X
 
 # Header
 menu-home         Home
