@@ -36,7 +36,7 @@
 			<!--#if $cat_list#-->
 			<select name="cat"><optgroup label="$T('category')">
 				<!--#for $ct in $cat_list#-->
-				<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+				<option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
 				<!--#end for#-->
 			</optgroup></select>
 			<!--#end if#-->
