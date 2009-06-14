@@ -96,7 +96,7 @@
         <!--#if $script_list#-->
         <select class="change_script"><optgroup label="$T('script')">
             <!--#for $sc in $script_list#-->
-            <option value="$sc"  <!--#if $slot.script == $sc then "selected" else ""#-->>$sc</option>
+            <option value="$sc"  <!--#if $slot.script == $sc then "selected" else ""#-->>$Tspec($sc)</option>
             <!--#end for#-->
         </optgroup></select>
         <!--#end if#-->
