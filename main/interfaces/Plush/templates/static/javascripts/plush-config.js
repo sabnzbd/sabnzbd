@@ -64,10 +64,12 @@ jQuery(document).ready(function($){
 	$.preloadCssImages();
     
     // rounding
-    $('.config_menu').corner("round tl bl");
-    $('#config_container').corner("round");
-    $('.rounded').corner("round");
-
+	setTimeout (function(){
+    	$('.config_menu').corner("round tl bl");
+    	$('#config_container').corner("round");
+    	$('.rounded').corner("round");
+	}, 1); // slow down rounding just a hair for Safari
+	
     switch(config_pane) {
 
 		// not a config page, rather queued nzb file listing page

@@ -56,6 +56,7 @@
 </fieldset>
 </div>
 <!--#if $bookmarks_list#-->
+<div class="EntryBlock">
 <fieldset class="EntryFieldSet">
     
     <legend id="configbox_processed_bookmarks">$T('processedBM')</legend>
@@ -65,11 +66,14 @@
     <!--#end for#-->
     
 </fieldset>
+</div>
 <!--#end if#-->
+
+<br class="clear" />
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
     
-    <legend id="configbox_newzbin_account_info">NzbMatrix $T('accountInfo')</legend>
+    <legend id="configbox_nzbmatrix_account_info">NzbMatrix $T('accountInfo')</legend>
 	<small>$T('explain-nzbmatrix')</small>
 
 	<br/><br/>
@@ -84,6 +88,7 @@
     
 </fieldset>
 </div>
+
 </form>
             
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->
