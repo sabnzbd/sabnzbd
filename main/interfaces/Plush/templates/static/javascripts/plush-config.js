@@ -149,7 +149,7 @@ jQuery(document).ready(function($){
 
 		case 'Servers':
         	$('form :button').click(function(event){ // delete server
-				if(confirm(''))
+				if(confirm($(event.target).attr('rel')))
 					$(event.target).parents('form:first').attr('action','delServer').submit();
 				return false;
 			});
@@ -178,7 +178,7 @@ jQuery(document).ready(function($){
 				return false;
 			});
         	$('.delete_feed').click(function(event){
-				if(confirm(''))
+				if(confirm($(event.target).attr('rel')))
 					$(event.target).parents('form:first').attr('action','del_rss_feed').submit();
 				return false;
 			});

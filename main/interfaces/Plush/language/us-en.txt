@@ -38,6 +38,7 @@ page              page
 everything        Everything
 prev              Prev
 next              Next
+confirm           Are you sure?
 
 # Queue
 idle              IDLE
