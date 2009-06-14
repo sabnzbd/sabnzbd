@@ -921,13 +921,17 @@ jQuery(function($) { // safely invoke $ selector
 				$.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 				
 				// modal for viewing script logs
-				$('.modal').colorbox({width:"80%", height:"80%", speed:0, opacity:0.7, iframe:true});
+				$('.modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
 			}); // end livequery
 
 			// colorbox event bindings - so history doesn't refresh when viewing modal (thereby breaking rel prev/next)
 			$().bind('cbox_open', function(){ $.plush.modalOpen=true; });
 			$().bind('cbox_closed', function(){ $.plush.modalOpen=false; });
+			$().bind('cbox_complete', function(){
+				$('#cboxLoadedContent input').hide(); // hide back button
+				$('#cboxLoadedContent h3').append('<br/><br/>'); // add spacing to header
+			});
 			
 			// Purge
 			$('.h_menu_purge').click(function(event) {

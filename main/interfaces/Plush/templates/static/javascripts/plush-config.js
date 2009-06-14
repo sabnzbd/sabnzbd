@@ -169,15 +169,26 @@ jQuery(document).ready(function($){
         	$('.preview_feed').click(function(event){
 				$.fn.colorbox({
 					href:'test_rss_feed?'+$(event.target).parents('form:first').serialize(),
-					open:true, width:"80%", height:"80%", speed:0, opacity:0.7, iframe:true
+					open:true, width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7
 				});
 				return false;
+			});
+			$().bind('cbox_complete', function(){
+				$('#cboxLoadedContent input').hide(); // hide back button
+				$('#cboxLoadedContent h3').append('<br/><br/>'); // add spacing to header
+				$('#cboxLoadedContent a').click(function(event){
+					if( $(event.target).attr('target') != '_blank' ) {
+						$.ajax({ url: $(event.target).attr('href') }); // ajax downloads
+						$(event.target).replaceWith('Download');
+						return false;
+					}
+				});
 			});
         	$('.download_feed').click(function(event){
 				if(confirm($(event.target).attr('rel'))) {
 					$.fn.colorbox({
 						href:'download_rss_feed?'+$(event.target).parents('form:first').serialize(),
-						open:true, width:"80%", height:"80%", speed:0, opacity:0.7, iframe:true
+						open:true, width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7
 					});
 				}
 				return false;

@@ -764,9 +764,9 @@ ul.sf-navbar .current ul ul {
 
 #colorbox{}
 	#cboxContent{margin-top:32px;}
-		#cboxLoadedContent{background:#FFF; padding:1px;}
+		#cboxLoadedContent{background:#DDD; padding:10px;}
                 /*#cboxLoadingGraphic{background:url(images/loading.gif) center center no-repeat;}*/
-                #cboxLoadingOverlay{background:#000;}
+                #cboxLoadingOverlay{background:#DDD;}
                 #cboxTitle{position:absolute; top:-22px; left:0; color:#000;}
                 #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
                 
