@@ -747,7 +747,7 @@ jQuery(function($) { // safely invoke $ selector
 			if ($.cookie('queue_perpage'))
 				$.plush.queueperpage = $.cookie('queue_perpage');
 			$("#queue-pagination-perpage").val($.plush.queueperpage);
-			$.plush.queuecurpage = "0"; // default 1st page
+			$.plush.queuecurpage = 0; // default 1st page
 			
 			// Sustained binding of events for elements added to DOM
 			// Same idea as jQuery live(), but use jQuery livequery() plugin for functions/events not supported by live()
@@ -893,7 +893,7 @@ jQuery(function($) { // safely invoke $ selector
 			if ($.cookie('history_perpage'))
 				$.plush.histperpage = $.cookie('history_perpage');
 			$("#history-pagination-perpage").val($.plush.histperpage);
-			$.plush.histcurpage = "0"; // default 1st page
+			$.plush.histcurpage = 0; // default 1st page
 
 			// Sustained binding of events for elements added to DOM
 			$('#historyTable').livequery(function() {
