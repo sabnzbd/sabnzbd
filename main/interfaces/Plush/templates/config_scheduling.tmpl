@@ -4,7 +4,7 @@
 
             <form action="addSchedule" method="post">
 			<input type="hidden" name="session" value="$session">
-            
+
             <div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 
@@ -83,39 +83,17 @@ else:
             <table>
             <!--#set $schednum = 0#-->
             <!--#for $line in $schedlines#-->
-                <!--#set $schednum = $schednum+1#-->
-<%
-m, h, day, action = line.split(' ', 3)
-if len(m) == 1:
-    m = '0%s' % m
-if day == "*":
-    day="Daily"
-elif day == "1":
-    day='Monday'
-elif day == "2":
-    day='Tuesday'
-elif day == "3":
-    day='Wednesday'
-elif day == "4":
-    day='Thursday'
-elif day == "5":
-    day='Friday'
-elif day == "6":
-    day='Saturday'
-elif day == "7":
-    day='Sunday'
-%>
 	            <form action="delSchedule" method="post">
 				<input type="hidden" name="session" value="$session">
 	            <input type="hidden" name="line" value="$line"/>
                 <tr>
                 	<td><input type="submit" value="$T('button-delSchedule')"/></td>
-                	<td align="right"><strong>$h:$m</strong></td>
-                	<td>$day</td>
-                	<td>$action</td>
+                	<td align="right"><strong>$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</strong></td>
+                	<td>$taskinfo[$schednum][3]</td>
+                	<td>$taskinfo[$schednum][4]</td>
                 </tr>
 				</form>
-
+                <!--#set $schednum = $schednum+1#-->
             <!--#end for#-->
             </table>
             </fieldset>

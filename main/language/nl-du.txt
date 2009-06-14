@@ -164,6 +164,7 @@ error-notOctal@1  %s is geen correct octaal getal
 
 # Config->General
 generalConfig          Algemene instellingen
+restartRequired        Wijzigingen worden pas aktief na herstart!
 webServer              Web server (<i>herstart nodig</i>)
 opt-host               Host
 explain-host           Host adres waar op SABnzbd luistert.
