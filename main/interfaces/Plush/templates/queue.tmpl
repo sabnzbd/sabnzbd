@@ -48,21 +48,21 @@
     <!--#set $cur = $cur + 1#-->
     <!--#set $odd = not $odd#-->
     <tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
-    
+
     <td class="download-grippie <!--#if $slot.status == "Paused"#-->download-paused<!--#else if $slot.status == "Downloading"#-->download-active<!--#else#-->download-queued<!--#end if#-->">
     </td>
 
     <td class="download-title">
         <a href="nzb/$slot.nzo_id/" title="$T('nzo-age'): $slot.avg_age">$slot.filename</a>
     </td>
-    
+
     <td class="queueProgressBarContainer">
         <div class="queueProgressBar" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -1px">
             <div class="totalDownload"><!--#echo int(float($slot.mbleft))#-->&nbsp;<small>$T('Plush-left')</small></div>
             <div class="currentDownload"><!--#echo int(float($slot.mb))#-->&nbsp;<small>$T('MB')</small></div>
         </div>
     </td>
-    
+
     <td class="eta" nowrap>
         <!--#if not $paused#-->
         $slot.timeleft&nbsp;$T('Plush-left')<br/>$slot.eta
@@ -70,12 +70,12 @@
         &nbsp;<br/>&nbsp;
         <!--#end if#-->
     </td>
-    
+
     <td class="options" nowrap>
         <!--#if $cat_list#-->
         <select class="change_cat"><optgroup label="$T('category')">
             <!--#for $ct in $cat_list#-->
-            <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$ct</option>
+            <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
             <!--#end for#-->
         </optgroup></select>
         <!--#end if#-->
@@ -102,7 +102,7 @@
         <!--#end if#-->
         <div class="queue_delete" title="$T('nzo-delete')&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
     </td>
-    
+
     </tr>
     <!--#end if#-->
 <!--#end for#-->
