@@ -174,7 +174,12 @@ jQuery(document).ready(function($){
 				return false;
 			});
         	$('.download_feed').click(function(event){
-				$(event.target).parents('form:first').attr('action','download_rss_feed').submit();
+				if(confirm($(event.target).attr('rel'))) {
+					$.fn.colorbox({
+						href:'download_rss_feed?'+$(event.target).parents('form:first').serialize(),
+						open:true, width:"80%", height:"80%", speed:0, opacity:0.7, iframe:true
+					});
+				}
 				return false;
 			});
         	$('.delete_feed').click(function(event){
