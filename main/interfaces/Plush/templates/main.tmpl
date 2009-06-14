@@ -172,7 +172,18 @@
                 <li><a href="connections" id="last_warning_link"><span id="last_warning"><!--#if $have_warnings == "0" #-->$T('none')<!--#end if#-->$last_warning</span></a></li>
             </ul>
         </li>
-        <li><a href="connections">$T('menu-config')</a></li>
+        <li>
+			<a class="sf-with-ul" href="connections">$T('menu-config')</a>
+			<ul>
+	            <li><a href="connections">$T('menu-cons')</a></li>
+	            <li><a href="config/general">$T('cmenu-general')</a></li>
+	            <li><a href="config/directories">$T('cmenu-folders')</a></li>
+	            <li><a href="config/scheduling">$T('cmenu-scheduling')</a></li>
+	            <li><a href="config/rss">$T('cmenu-rss')</a></li>
+	            <li><a href="config/categories">$T('cmenu-cat')</a></li>
+	            <li><a href="config/sorting">$T('cmenu-sorting')</a></li>
+			</ul>
+		</li>
         <li><a class="pointer" id="manual_refresh_wrapper"><span id="manual_refresh">$T('Plush-button-refresh')</span></a></li>
 	    <!--#if $new_release#-->
         <li><a href="$new_rel_url" id="new_release" target="_blank">New&nbsp;release&nbsp;$new_release&nbsp;available!</a></li>
