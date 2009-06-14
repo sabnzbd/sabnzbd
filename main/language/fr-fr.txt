@@ -35,6 +35,7 @@ signOn            Le téléchargement usenet tout inclus
 button-save       Enregistrer
 queued            En attente
 button-back       Retour
+button-x          X
 
 # Header
 menu-home         Accueil

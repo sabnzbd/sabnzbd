@@ -59,7 +59,7 @@ else:
 <!--#set $schednum = 0#-->
 <!--#for $line in $schedlines#-->
 <form id="$line">
-<input class="schedulesubmit" type="button" size="5" value="$T('button-delFeed')" onclick="javascript:submitconfig('config/scheduling/delSchedule', '', '$line', 'config/scheduling','0')">
+<input class="schedulesubmit" type="button" size="5" value="$T('button-x')" onclick="javascript:submitconfig('config/scheduling/delSchedule', '', '$line', 'config/scheduling','0')">
 $T('sch-task') $taskinfo[$schednum][0]: <strong>$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</strong> - $taskinfo[$schednum][3] - $taskinfo[$schednum][4]
 <input type="hidden" name="line" value="$line">
 <!--#set $schednum = $schednum+1#-->

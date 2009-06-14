@@ -33,6 +33,7 @@ signOn            Het automatisch download wonder
 button-save       Opslaan
 queued            Rij
 button-back       Terug
+button-x          X
 
 # Header
 menu-home         Opdrachten
