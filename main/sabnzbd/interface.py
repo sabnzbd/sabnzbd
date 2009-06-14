@@ -205,12 +205,13 @@ def check_session(kwargs):
 
 def check_apikey(kwargs):
     """ Check api key """
+    output = kwargs.get('output', '')
     if cfg.USERNAME.get() and cfg.PASSWORD.get():
         if kwargs.get('ma_username') == cfg.USERNAME.get() and kwargs.get('ma_password') == cfg.PASSWORD.get():
             pass
         else:
             logging.warning(T('warn-authMissing'))
-            return 'Error: Missing authentication'
+            return report(output, 'Missing authentication')
 
     if cfg.DISABLE_KEY.get():
         return None
@@ -219,10 +220,10 @@ def check_apikey(kwargs):
 
         if not key:
             logging.warning(T('warn-apikeyNone'))
-            return T('error-apikeyNone')
+            return report(output, 'API Key Required')
         elif key != cfg.API_KEY.get():
             logging.warning(T('warn-apikeyBad'))
-            return 'Error: API Key Incorrect'
+            return report(output, 'API Key Incorrect')
         else:
             return None
 
@@ -3232,7 +3233,7 @@ def json_history(start=None, limit=None, search=None):
 
     # Filter out any functions, such as the translate functions.
     for key, value in history.items():
-        if type(value) not in (list, dict, tuple, str):
+        if callable(value):
             del history[key]
 
     status_str = JsonWriter().write(history)
@@ -3381,7 +3382,7 @@ def queueStatusJson(start, limit):
 
     # Filter out any functions, such as the translate functions.
     for key, value in info.items():
-        if type(value) not in (list, dict, tuple, str):
+        if callable(value):
             del info[key]
 
     status_str = JsonWriter().write(info)
