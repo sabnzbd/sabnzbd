@@ -572,8 +572,10 @@ class MainPage:
                         reverse=True
                     nzbqueue.sort_queue(sort,reverse)
                 info, pnfo_list, bytespersec, verboseList, dictn = \
-                    build_queue(history=True, start=start, limit=limit, json_output=output=='json')
-                return report(output, keyword='history', data=remove_callable(info))
+                    build_queue(history=True, start=start, limit=limit)
+                info['categories'] = info.pop('cat_list')
+                info['scripts'] = info.pop('script_list')
+                return report(output, keyword='queue', data=remove_callable(info))
             elif output == 'rss':
                 return rss_qstatus()
 
@@ -3155,7 +3157,7 @@ class xml_factory:
 
 
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=None,
-                dictionary=None, history=False, start=None, limit=None, dummy2=None, json_output=False):
+                dictionary=None, history=False, start=None, limit=None, dummy2=None):
     if not verboseList:
         verboseList = []
     if dictionary:
@@ -3181,12 +3183,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
 
     datestart = datetime.datetime.now()
 
-    if json_output:
-        info['script_list'] = json_list("scripts", ListScripts())
-        info['cat_list'] = json_list("categories", ListCats())
-    else:
-        info['script_list'] = ListScripts()
-        info['cat_list'] = ListCats()
+    info['script_list'] = ListScripts()
+    info['cat_list'] = ListCats()
 
 
     n = 0
