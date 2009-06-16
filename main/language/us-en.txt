@@ -204,7 +204,7 @@ explain-cache_limitstr Cache articles in memory to reduce disk access.\n\
                       <i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>
 opt-cleanup_list      Cleanup List
 explain-cleanup_list  List of file extensions that should be deleted after download.\n\
-                      <i>For example: ".nfo," or ".nfo, .sfv"</i>
+                      For example: <b>.nfo</b> or <b>.nfo, .sfv</b>
 button-saveChanges    Save Changes
 opt-language          Language
 explain-language      Select a web interface language.

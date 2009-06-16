@@ -201,7 +201,7 @@ opt-cache_limitstr     Artikel buffer beperking
 explain-cache_limitstr Bewaar de artikelen in het werkgeheugen (verminderd schijf gebruik).
 opt-cleanup_list       Opschoon lijst
 explain-cleanup_list   Lijst van bestand extensies die verwijderd worden\n\
-                       Voorbeeld: ".nfo," of ".nfo, .sfv"
+                       Voorbeeld:  <b>.nfo</b> or <b>.nfo, .sfv</b>
 button-saveChanges     Opslaan
 opt-language           Taal
 explain-language       Kies andere taal

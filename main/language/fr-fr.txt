@@ -205,7 +205,7 @@ explain-cache_limitstr Permet de mettre en cache en RAM les articles pour réduir
                       <i>En bytes, put être suivi de K,M,G. Par exemple : "64M" ou "128M"</i>
 opt-cleanup_list      Liste de nettoyage
 explain-cleanup_list  Liste des extensions de fichiers qui doivent être supprimés après téléchargement\n\
-                      <i>Par exemple: ".nfo," or ".nfo, .sfv"</i>
+                      Par exemple:  <b>.nfo</b> or <b>.nfo, .sfv</b>
 button-saveChanges    Enregistrer les modifications
 opt-language          Langage
 explain-language      Séléction la langue de l'interface web.
