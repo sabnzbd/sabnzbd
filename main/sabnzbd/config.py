@@ -78,7 +78,7 @@ class Option:
         else:
             return self.__default_val
 
-    def get_dict(self):
+    def get_dict(self, safe=False):
         """ Return value a dictionary """
         return { self.__keyword : self.get() }
 
@@ -349,6 +349,7 @@ class ConfigServer:
     def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
         dict = {}
+        dict['name'] = self.__name
         dict['host'] = self.host.get()
         dict['port'] = self.port.get()
         dict['timeout'] = self.timeout.get()
@@ -406,9 +407,10 @@ class ConfigCat:
                 exec 'self.%s.set(value)' % kw
         return True
 
-    def get_dict(self):
+    def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
         dict = {}
+        dict['name'] = self.__name
         dict['pp'] = self.pp.get()
         dict['script'] = self.script.get()
         dict['dir'] = self.dir.get()
@@ -457,7 +459,7 @@ class OptionFilters(Option):
             return
         self.set(lst)
 
-    def get_dict(self):
+    def get_dict(self, safe=False):
         """ Return filter list as a dictionary with keys 'filter[0-9]+' """
         dict = {}
         n = 0
@@ -512,9 +514,10 @@ class ConfigRSS:
         self.filters.set_dict(values)
         return True
 
-    def get_dict(self):
+    def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
         dict = {}
+        dict['name'] = self.__name
         dict['uri'] = self.uri.get()
         dict['cat'] = self.cat.get()
         dict['pp'] = self.pp.get()
@@ -535,55 +538,63 @@ class ConfigRSS:
 
 
 
-def find_item(args):
-    """ Find config item based on 'section', 'keyword'
-    """
-    try:
-        section = args['section']
-        keyword = args['keyword']
-    except:
-        return None
-
-    try:
-        return database[section][keyword]
-    except KeyError:
-        return None
-
-
-def get_dconfig(kwargs):
+def get_dconfig(section, keyword, nested=False):
     """ Return a config values dictonary,
-        based on dictionary with 'section', 'keyword'
+        Single item or slices based on 'section', 'keyword'
     """
-    item = find_item(kwargs)
-    if item:
+    data = {}
+    if not section:
+        for section in database.keys():
+            res, conf = get_dconfig(section, None, True)
+            data.update(conf)
+
+    elif not keyword:
         try:
-            d = item.get_dict(safe=True)
-        except:
-            d = item.get_dict()
-        return True, d
+            sect = database[section]
+        except KeyError:
+            return False, {}
+        if section in ('servers', 'categories', 'rss'):
+            data[section] = []
+            for keyword in sect.keys():
+                res, conf = get_dconfig(section, keyword, True)
+                data[section].append(conf)
+        else:
+            data[section] = {}
+            for keyword in sect.keys():
+                res, conf = get_dconfig(section, keyword, True)
+                data[section].update(conf)
+
     else:
-        return False, {}
+        try:
+            item = database[section][keyword]
+        except KeyError:
+            return False, {}
+        data = item.get_dict(safe=True)
+        if not nested:
+            if section in ('servers', 'categories', 'rss'):
+                data = {section : [ data ]}
+            else:
+                data = {section : data}
+
+    return True, data
 
 
 def get_config(section, keyword):
     """ Return a config object, based on 'section', 'keyword'
     """
     try:
-        item = database[section][keyword]
+        return database[section][keyword]
     except KeyError:
-        item = None
         logging.info('Missing configuration item %s,%s', section, keyword)
-
-    return item
+        return None
 
 
 def set_config(kwargs):
     """ Set a config item, using values in dictionary
     """
-    item = find_item(kwargs)
-    if item:
-        return item.set_dict(kwargs)
-    else:
+    try:
+        database[section][keyword].set_dict(kwargs)
+    except KeyError:
         return False
 
 
@@ -591,8 +602,7 @@ def delete(section, keyword):
     """ Delete specific config item
     """
     try:
-        item = database[section][keyword]
-        item.delete()
+        database[section][keyword].delete()
     except KeyError:
         return
 

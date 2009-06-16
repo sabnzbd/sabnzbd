@@ -225,7 +225,7 @@ class NzbQueue(TryList):
                     self.__nzo_list.append(nzo)
             if save:
                 self.save()
-                
+
             if nzo.get_filename()[0:8] != "fetching":
                 osx.sendGrowlMsg(T('grwl-nzbadd-title'),nzo.get_filename(),osx.NOTIFICATION['download'])
 
@@ -319,10 +319,15 @@ class NzbQueue(TryList):
             item_id_2 = self.__nzo_list[i].nzo_id
         except:
             pass
+        try:
+            nzo1 = self.__nzo_table[item_id_1]
+            nzo2 = self.__nzo_table[item_id_2]
+        except KeyError:
+            # One or both jobs missing
+            return (-1, 0)
+
         #get the priorities of the two items
-        nzo1 = self.__nzo_table[item_id_1]
         nzo1_priority = nzo1.get_priority()
-        nzo2 = self.__nzo_table[item_id_2]
         nzo2_priority = nzo2.get_priority()
         try:
             #get the item id of the item below to use in priority changing

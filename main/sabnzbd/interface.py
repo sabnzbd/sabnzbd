@@ -205,7 +205,7 @@ def check_session(kwargs):
 
 def check_apikey(kwargs):
     """ Check api key """
-    output = kwargs.get('output', '')
+    output = kwargs.get('output')
     if cfg.USERNAME.get() and cfg.PASSWORD.get():
         if kwargs.get('ma_username') == cfg.USERNAME.get() and kwargs.get('ma_password') == cfg.PASSWORD.get():
             pass
@@ -245,52 +245,77 @@ _MSG_NO_FILE          = 'no file given'
 _MSG_NO_PATH          = 'file does not exist'
 _MSG_OUTPUT_FORMAT    = 'Format not supported'
 
-def report(output, error=None, value=None):
-    # Report message in json, xml or plain text
-    status = error is None
+def remove_callable(dic):
+    """ Remove all callable items from dictionary """
+    for key, value in dic.items():
+        if callable(value):
+            del dic[key]
+    return dic
+
+_PLURAL_TO_SINGLE = {
+    'categories' : 'category',
+    'servers' : 'server',
+    'rss' : 'feed',
+    'scripts' : 'script',
+    'warnings' : 'warning',
+    'files' : 'file',
+    'jobs' : 'job'
+    }
+def plural_to_single(kw, def_kw=''):
+    try:
+        return _PLURAL_TO_SINGLE[kw]
+    except KeyError:
+        return def_kw
+
+
+def report(output, error=None, keyword='value', data=None):
+    """ Report message in json, xml or plain text
+        If error is set, only an status/error report is made.
+        If no error and no data, only a status report is made.
+        Else, a data report is made (optional 'keyword' for outer XML section).
+    """
     if output == 'json':
-        info = {'status' : status}
-        if not status:
-            info['error'] = error
-        if value != None:
-            info['value'] = value
+        content = "application/json"
+        if error:
+            info = {'status':False, 'error':error}
+        elif data is None:
+            info = {'status':True}
+        else:
+            if hasattr(data,'__iter__') and not keyword:
+                info = data
+            else:
+                info = {keyword:data}
         response = JsonWriter().write(info)
-        cherrypy.response.headers['Content-Type'] = "application/json"
 
     elif output == 'xml':
-        status_str = str(status)
-        response = '<?xml version="1.0" encoding="UTF-8" ?>\n<result>\n<status>%s</status>' % status_str
-        if not status:
-            response += '<error>%s</error>\n' % error
-        if value != None:
-            if type(value) == type([]):
-                response += '<values>'
-                for val in value:
-                    response += '<value>%s</value>' % str(val)
-                response += '</values>'
-            else:
-               response += '<value>%s</value>\n' % str(value)
-        response += '\n</result>\n'
-        cherrypy.response.headers['Content-Type'] = "text/xml"
+        content = "text/xml"
+        xmlmaker = xml_factory()
+        if error:
+            status_str = xmlmaker.run('result', {'status':False, 'error':error})
+        elif data is None:
+            status_str = xmlmaker.run('result', {'status':True})
+        else:
+            status_str = xmlmaker.run(keyword, data)
+        response = '<?xml version="1.0" encoding="UTF-8" ?>\n%s\n' % status_str
 
     else:
-        cherrypy.response.headers['Content-Type'] = "text/plain"
-        if status:
-            if value is None:
-                response = 'ok\n'
-            else:
-                response = ''
-                if type(value) == type([]):
-                    for val in value:
-                        response += '%s ' % str(val)
-                else:
-                    response = str(value)
-                response = response.strip() + '\n'
-        else:
+        content = "text/plain"
+        if error:
             response = "error: %s\n" % error
+        elif data is None:
+            response = 'ok\n'
+        else:
+            if type(data) in (list, tuple):
+                # Special handling for list/tuple (backward compatibility)
+                data = [str(val) for val in data]
+                response = '%s\n' % ' '.join(data)
+            else:
+                response = '%s\n' % str(data)
 
+    cherrypy.response.headers['Content-Type'] = content
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return response
+
 
 class MainPage:
     def __init__(self, web_dir, root, web_dir2=None, root2=None, prim=True, first=0):
@@ -458,29 +483,13 @@ class MainPage:
 
         if mode == 'set_config':
             res = config.set_config(kwargs)
-            if output == 'json':
-                return json_result(res)
-            elif output == 'xml':
-                return xml_result(res)
-            else:
-                return report(output, _MSG_OUTPUT_FORMAT)
 
-        if mode == 'get_config':
-            res, data = config.get_dconfig(kwargs)
-            if output == 'json':
-                return json_result(res, kwargs.get('section'), kwargs.get('keyword'), data)
-            elif output == 'xml':
-                return xml_result(res, kwargs.get('section'), kwargs.get('keyword'), data)
-            else:
-                return report(output, _MSG_OUTPUT_FORMAT)
+        if mode in ('get_config', 'set_config'):
+            res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
+            return report(output, keyword='config', data=data)
 
         if mode == 'qstatus':
-            if output == 'json':
-                return json_qstatus()
-            elif output == 'xml':
-                return xml_qstatus()
-            else:
-                return report(output, _MSG_OUTPUT_FORMAT)
+            return report(output, keyword='queue', data=qstatus_data())
 
         if mode == 'queue':
             name = kwargs.get('name')
@@ -544,7 +553,7 @@ class MainPage:
                         else:
                             pos = nzbqueue.set_priority(value, priority)
                         # Returns the position in the queue, -1 is incorrect job-id
-                        return report(output, value=pos)
+                        return report(output, keyword='position', data=pos)
                     except:
                         return report(output, _MSG_NO_VALUE2)
                 else:
@@ -556,20 +565,15 @@ class MainPage:
                 else:
                     return report(output, _MSG_NO_VALUE2)
 
-            elif output == 'xml':
+            elif output in ('xml', 'json'):
                 if sort and sort != 'index':
                     reverse=False
                     if dir.lower() == 'desc':
                         reverse=True
                     nzbqueue.sort_queue(sort,reverse)
-                return queueStatus(start,limit)
-            elif output == 'json':
-                if sort and sort != 'index':
-                    reverse=False
-                    if dir.lower() == 'desc':
-                        reverse=True
-                    nzbqueue.sort_queue(sort,reverse)
-                return queueStatusJson(start,limit)
+                info, pnfo_list, bytespersec, verboseList, dictn = \
+                    build_queue(history=True, start=start, limit=limit, json_output=output=='json')
+                return report(output, keyword='history', data=remove_callable(info))
             elif output == 'rss':
                 return rss_qstatus()
 
@@ -625,7 +629,10 @@ class MainPage:
             if value and value2:
                 pos, prio = nzbqueue.switch(value, value2)
                 # Returns the new position and new priority (if different)
-                return report(output, value=[pos, prio])
+                if output not in ('xml', 'json'):
+                    return report(output, data=(pos, prio))
+                else:
+                    return report(output, keyword='result', data={'position':pos, 'priority':prio})
             else:
                 return report(output, _MSG_NO_VALUE2)
 
@@ -678,21 +685,16 @@ class MainPage:
                     return report(output)
                 else:
                     return report(output, _MSG_NO_VALUE)
-            elif output == 'xml' :
-                return xml_history(start, limit)
-            elif output == 'json':
-                return json_history(start, limit)
+            elif not name:
+                history, pnfo_list, bytespersec = build_header(True)
+                history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True)
+                return report(output, keyword='history', data=remove_callable(history))
             else:
                 return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode == 'get_files':
             if value:
-                if output == 'xml':
-                    return xml_files(value)
-                elif output == 'json':
-                    return json_files(value)
-                else:
-                    return report(output, _MSG_OUTPUT_FORMAT)
+                return report(output, keyword='files', data=build_file_list(value))
             else:
                 return report(output, _MSG_NO_VALUE)
 
@@ -737,12 +739,7 @@ class MainPage:
             return report(output)
 
         if mode == 'warnings':
-            if output == 'json':
-                return json_list("warnings", sabnzbd.GUIHANDLER.content())
-            elif output == 'xml':
-                return xml_list("warnings", "warning", sabnzbd.GUIHANDLER.content())
-            else:
-                return report(output, _MSG_NOT_IMPLEMENTED)
+            return report(output, keyword="warnings", data=sabnzbd.GUIHANDLER.content())
 
         if mode == 'config':
             if name == 'speedlimit' or name == 'set_speedlimit': # http://localhost:8080/sabnzbd/api?mode=config&name=speedlimit&value=400
@@ -757,7 +754,7 @@ class MainPage:
                 else:
                     return report(output, _MSG_NO_VALUE)
             elif name == 'get_speedlimit':
-                return report(output, value=int(downloader.get_limit()))
+                return report(output, keyword='speedlimit', data=int(downloader.get_limit()))
             elif name == 'set_colorscheme':
                 if value:
                     if self.__prim:
@@ -774,29 +771,19 @@ class MainPage:
             elif name == 'set_apikey':
                 cfg.API_KEY.set(config.create_api_key())
                 config.save_config()
-                return report(output, value=cfg.API_KEY.get())
+                return report(output)
 
             else:
                 return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode == 'get_cats':
-            if output == 'json':
-                return json_list("categories", ListCats())
-            elif output == 'xml':
-                return xml_list("categories", "category", ListCats())
-            else:
-                return report(output, _MSG_NOT_IMPLEMENTED)
+            return report(output, keyword="categories", data=ListCats())
 
         if mode == 'get_scripts':
-            if output == 'json':
-                return json_list("scripts", ListScripts())
-            elif output == 'xml':
-                return xml_list("scripts", "script", ListScripts())
-            else:
-                return report(output, _MSG_NOT_IMPLEMENTED)
+            return report(output, keyword="scripts", data=ListScripts())
 
         if mode == 'version':
-            return report(output, value=sabnzbd.__version__)
+            return report(output, keyword='version', data=sabnzbd.__version__)
 
         if mode == 'newzbin':
             if name == 'get_bookmarks':
@@ -814,10 +801,7 @@ class MainPage:
             return report(output)
 
         if mode == 'osx_icon':
-            if value == '0':
-                sabnzbd.OSX_ICON = 0
-            else:
-                sabnzbd.OSX_ICON = 1
+            sabnzbd.OSX_ICON = int(value != '0')
             return report(output)
 
         return report(output, _MSG_NOT_IMPLEMENTED)
@@ -2885,7 +2869,7 @@ def rss_warnings():
     return rss.write()
 
 
-def json_qstatus():
+def qstatus_data():
     """Build up the queue status as a nested object and output as a JSON object
     """
 
@@ -2931,95 +2915,7 @@ def json_qstatus():
         "loadavg" : loadavg(),
         "jobs" : jobs
     }
-    status_str= JsonWriter().write(status)
-
-    cherrypy.response.headers['Content-Type'] = "application/json"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str
-
-def xml_qstatus():
-    """Build up the queue status as a nested object and output as a XML string
-    """
-
-    qnfo = nzbqueue.queue_info()
-    pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
-
-    jobs = []
-    bytesleftprogess = 0
-    bpsnow = bpsmeter.method.get_bps()
-    for pnfo in pnfo_list:
-        filename = pnfo[PNFO_FILENAME_FIELD]
-        msgid = pnfo[PNFO_MSGID_FIELD]
-        bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
-        bytesleftprogess += pnfo[PNFO_BYTES_LEFT_FIELD]
-        bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
-        name = xml_name(filename)
-        nzo_id = pnfo[PNFO_NZO_ID_FIELD]
-        jobs.append( { "id" : nzo_id,
-                        "mb":bytes,
-                        "mbleft":bytesleft,
-                        "filename":name,
-                        "msgid":msgid,
-                        "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
-
-
-    state = 'IDLE'
-    if downloader.paused():
-        state = 'PAUSED'
-    elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
-        state = 'DOWNLOADING'
-
-    status = {
-        "state" : state,
-        "paused" : downloader.paused(),
-        "pause_int" : scheduler.pause_int(),
-        "kbpersec" : bpsmeter.method.get_bps() / KIBI,
-        "speed" : to_units(bpsmeter.method.get_bps()),
-        "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
-        "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
-        "noofslots" : len(pnfo_list),
-        "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
-        "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
-        "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
-        "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
-        "loadavg" : loadavg()
-    }
-
-    status_str = '<?xml version="1.0" encoding="UTF-8" ?> \n\
-                    <queue> \n\
-                    <state>%(state)s</state> \n\
-                    <paused>%(paused)s</paused> \n\
-                    <pause_int>%(pause_int)s</pause_int> \n\
-                    <kbpersec>%(kbpersec)s</kbpersec> \n\
-                    <speed>%(speed)s</speed> \n\
-                    <mbleft>%(mbleft)s</mbleft> \n\
-                    <mb>%(mb)s</mb> \n\
-                    <noofslots>%(noofslots)s</noofslots> \n\
-                    <have_warnings>%(have_warnings)s</have_warnings> \n\
-                    <diskspace1>%(diskspace1)s</diskspace1> \n\
-                    <diskspace2>%(diskspace2)s</diskspace2> \n\
-                    <loadavg>%(loadavg)s</loadavg> \n\
-                    <timeleft>%(timeleft)s</timeleft> \n\
-                ' % status
-
-    status_str += '<jobs>\n'
-    for job in jobs:
-        status_str += '<job> \n\
-                    <id>%(id)s</id> \n\
-                    <msgid>%(msgid)s</msgid> \n\
-                    <filename>%(filename)s</filename> \n\
-                    <mbleft>%(mbleft)s</mbleft> \n\
-                    <mb>%(mb)s</mb> \n\
-                    <timeleft>%(timeleft)s</timeleft> \n\
-                    </job>\n' % job
-    status_str += '</jobs>\n'
-
-
-    status_str += '</queue>'
-    cherrypy.response.headers['Content-Type'] = "text/xml"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-
-    return status_str
+    return status
 
 
 def build_file_list(id):
@@ -3082,32 +2978,6 @@ def build_file_list(id):
 
     return jobs
 
-def xml_files(id):
-
-    #Collect all Queue data
-    status_str = '<?xml version="1.0" encoding="UTF-8" ?> \n'
-
-    jobs = build_file_list(id)
-
-
-    xmlmaker = xml_factory()
-    status_str += xmlmaker.run("files",jobs)
-
-    #status_str += '</files>\n'
-    cherrypy.response.headers['Content-Type'] = "text/xml"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str
-
-def json_files(id):
-
-    #Collect all Queue data
-    jobs = build_file_list(id)
-
-    status_str = JsonWriter().write(jobs)
-
-    cherrypy.response.headers['Content-Type'] = "application/json"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str
 
 def get_history_size():
     history_db = cherrypy.thread_data.history_db
@@ -3210,43 +3080,10 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
 
     return (items, fetched_items, total_items)
 
-def xml_history(start=None, limit=None, search=None):
-    history, pnfo_list, bytespersec = build_header(True)
-    history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search)
-    status_lst = []
-    status_lst.append('<?xml version="1.0" encoding="UTF-8" ?> \n')
-    #Compile the history data
 
-    xmlmaker = xml_factory()
-    t = time.time()
-    status_lst.append(xmlmaker.run("history",history))
-    total = time.time() - t
-
-    cherrypy.response.headers['Content-Type'] = "text/xml"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return ''.join(status_lst)
-
-def json_history(start=None, limit=None, search=None):
-    history, pnfo_list, bytespersec = build_header(True)
-    history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search)
-    #Compile the history data
-
-    # Filter out any functions, such as the translate functions.
-    for key, value in history.items():
-        if callable(value):
-            del history[key]
-
-    status_str = JsonWriter().write(history)
-
-    cherrypy.response.headers['Content-Type'] = "application/json"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str.encode("ISO-8859-1", 'replace')
-
-
-def json_list(section, lst, headers=True):
+def json_list(section, lst):
     """Output a simple list as a JSON object
     """
-
     i = 0
     d = []
     for item in lst:
@@ -3256,34 +3093,7 @@ def json_list(section, lst, headers=True):
         i += 1
         d.append(c)
 
-    obj = { section : d }
-
-    if headers:
-        text = JsonWriter().write(obj)
-        cherrypy.response.headers['Content-Type'] = "application/json"
-        cherrypy.response.headers['Pragma'] = 'no-cache'
-        return text
-    else:
-        return obj
-
-
-def xml_list(section, keyw, lst):
-    """Output a simple list as an XML object
-    """
-    text= '<?xml version="1.0" encoding="UTF-8" ?> \n<%s>\n' % section
-    n = 0
-    for cat in lst:
-        text += '<%s>\n' % (keyw)
-        text += '<id>%s</id>\n' % (n)
-        text += '<name>%s</name>\n' % xml_name(cat)
-        text += '</%s>\n' % (keyw)
-        n+=1
-
-    text += '</%s>' % section
-
-    cherrypy.response.headers['Content-Type'] = "text/xml"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return text
+    return { section : d }
 
 
 class xml_factory:
@@ -3296,100 +3106,53 @@ class xml_factory:
     def __init__(self):
         self.__text = ''
 
-
-    def _tuple(self, keyw, lst, text=None):
-        if text is None:
-            text = []
-
+    def _tuple(self, keyw, lst):
+        text = []
         for item in lst:
             text.append(self.run(keyw, item))
         return ''.join(text)
 
-    def _dict(self, keyw, lst, text=None):
-        if text is None:
-            text = []
-
+    def _dict(self, keyw, lst):
+        text = []
         for key in lst.keys():
-            found = self.run(key,lst[key])
-            if found:
-                text.append(found)
-            else:
-                value = lst[key]
-                if not isinstance(value, basestring):
-                    value = str(value)
-                text.append('<%s>%s</%s>\n' % (str(key), xml_name(value, encoding='utf-8'), str(key)))
-
-        if keyw and text:
-            return '<%s>%s</%s>\n' % (keyw,''.join(text),keyw)
+            text.append(self.run(key, lst[key]))
+        if keyw:
+            return '<%s>%s</%s>\n' % (keyw, ''.join(text), keyw)
         else:
             return ''
 
-    def _list(self, keyw, lst, text=None):
-        if text is None:
-            text = []
-
-        #deal with lists
-        #found = False
+    def _list(self, keyw, lst):
+        text = []
         for cat in lst:
             if isinstance(cat, dict):
-                #debug = 'dict%s' % n
-                text.append(self._dict('slot', cat))
+                text.append(self._dict(plural_to_single(keyw, 'slot'), cat))
             elif isinstance(cat, list):
-                debug = 'list'
-                text.append(self._list(debug, cat))
+                text.append(self._list(plural_to_single(keyw, 'list'), cat))
             elif isinstance(cat, tuple):
-                debug = 'tuple'
-                text.append(self._tuple(debug, cat))
+                text.append(self._tuple(plural_to_single(keyw, 'tuple'), cat))
             else:
                 if not isinstance(cat, basestring):
                     cat = str(cat)
-                text.append('<item>%s</item>\n' % xml_name(cat, encoding='utf-8'))
-
-        if keyw and text:
-            return '<%s>%s</%s>\n' % (keyw,''.join(text),keyw)
+                name = plural_to_single(keyw, 'item')
+                text.append('<%s>%s</%s>\n' % (name, xml_name(cat, encoding='utf-8'), name))
+        if keyw:
+            return '<%s>%s</%s>\n' % (keyw, ''.join(text), keyw)
         else:
             return ''
 
     def run(self, keyw, lst):
         if isinstance(lst, dict):
-            text = self._dict(keyw,lst)
+            text = self._dict(keyw, lst)
         elif isinstance(lst, list):
-            text = self._list(keyw,lst)
+            text = self._list(keyw, lst)
         elif isinstance(lst, tuple):
-            text = self._tuple(keyw,lst)
+            text = self._tuple(keyw, lst)
+        elif keyw:
+            text = '<%s>%s</%s>\n' % (keyw, xml_name(str(lst), encoding='utf-8'), keyw)
         else:
             text = ''
         return text
 
-
-def queueStatus(start, limit):
-    #gather the queue details
-    info, pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit)
-    text = ['<?xml version="1.0" encoding="UTF-8" ?>']
-
-    #Use xmlmaker to make an xml string out of info which is a tuple that contains lists/strings/dictionaries
-    xmlmaker = xml_factory()
-    text.append(xmlmaker.run("queue",info))
-
-    #output in xml with no caching
-    cherrypy.response.headers['Content-Type'] = "text/xml"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return ''.join(text)
-
-def queueStatusJson(start, limit):
-    #gather the queue details
-    info, pnfo_list, bytespersec, verboseList, dictn = build_queue(history=True, start=start, limit=limit, json_output=True)
-
-    # Filter out any functions, such as the translate functions.
-    for key, value in info.items():
-        if callable(value):
-            del info[key]
-
-    status_str = JsonWriter().write(info)
-
-    cherrypy.response.headers['Content-Type'] = "application/json"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str
 
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=None,
                 dictionary=None, history=False, start=None, limit=None, dummy2=None, json_output=False):
@@ -3419,8 +3182,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
     datestart = datetime.datetime.now()
 
     if json_output:
-        info['script_list'] = json_list("scripts", ListScripts(), headers=False)
-        info['cat_list'] = json_list("categories", ListCats(), headers=False)
+        info['script_list'] = json_list("scripts", ListScripts())
+        info['cat_list'] = json_list("categories", ListCats())
     else:
         info['script_list'] = ListScripts()
         info['cat_list'] = ListCats()
@@ -3605,17 +3368,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
     return info, pnfo_list, bytespersec, verboseList, dictn
 
 
-#depreciated
-def xmlSimpleDict(keyw,lst):
-    """
-    Output a simple dictionary as an XML string
-    """
-
-    text = '<%s>' % (keyw)
-    for key in lst.keys():
-        text += '<%s>%s</%s>\n' % (escape(key),escape(lst[key]),escape(key))
-    text += '</%s>' % keyw
-    return text
 
 def rss_qstatus():
     """ Return a RSS feed with the queue status
@@ -3679,42 +3431,6 @@ def rss_qstatus():
     return rss.write()
 
 
-def json_result(result, section=None, keyword=None, data=None):
-    """ Return data in a json structure
-    """
-    dd = { 'status' : result }
-    if section and (data or data == ''):
-        if section in ('servers', 'categories', 'rss'):
-            dd[section] = {keyword : data}
-        else:
-            dd[section] = data
-
-    status_str = JsonWriter().write(dd)
-
-    cherrypy.response.headers['Content-Type'] = "application/json"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str
-
-
-def xml_result(result, section=None, keyword=None, data=None):
-    """ Return data as XML
-    """
-    status_str = '<?xml version="1.0" encoding="UTF-8" ?> \n'
-    xmlmaker = xml_factory()
-    dd = {'status' : int(result) }
-    if data or data == '':
-        if section in ('servers', 'categories', 'rss'):
-            keyword = keyword.replace(':', '_')
-            dd[section] = {keyword : data}
-        else:
-            dd[section] = data
-    status_str += xmlmaker.run('result', dd)
-
-    cherrypy.response.headers['Content-Type'] = "text/xml"
-    cherrypy.response.headers['Pragma'] = 'no-cache'
-    return status_str
-
-
 def format_history_for_queue():
     ''' Retrieves the information on currently active history items, and formats them for displaying in the queue '''
     slotinfo = []
@@ -3728,6 +3444,7 @@ def format_history_for_queue():
         slotinfo.append(slot)
 
     return slotinfo
+
 
 def get_active_history(queue=None, items=None):
     # Get the currently in progress and active history queue.
