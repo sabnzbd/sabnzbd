@@ -773,7 +773,7 @@ class MainPage:
             elif name == 'set_apikey':
                 cfg.API_KEY.set(config.create_api_key())
                 config.save_config()
-                return report(output)
+                return report(output, keyword='apikey', data=cfg.API_KEY.get())
 
             else:
                 return report(output, _MSG_NOT_IMPLEMENTED)
