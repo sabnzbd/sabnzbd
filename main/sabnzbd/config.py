@@ -482,7 +482,7 @@ class OptionFilters(Option):
                 n = n + 1
         if n > 0:
             self.set(filters)
-
+        return True
 
 class ConfigRSS:
     """ Class defining a single Feed definition """
@@ -593,9 +593,11 @@ def set_config(kwargs):
     """ Set a config item, using values in dictionary
     """
     try:
-        database[kwargs.get('section')][kwargs.get('keyword')].set_dict(kwargs)
+        item = database[kwargs.get('section')][kwargs.get('keyword')]
     except KeyError:
         return False
+    item.set_dict(kwargs)
+    return True
 
 
 def delete(section, keyword):
