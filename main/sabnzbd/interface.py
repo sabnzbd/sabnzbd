@@ -244,6 +244,7 @@ _MSG_NOT_IMPLEMENTED  = 'not implemented'
 _MSG_NO_FILE          = 'no file given'
 _MSG_NO_PATH          = 'file does not exist'
 _MSG_OUTPUT_FORMAT    = 'Format not supported'
+_MSG_NO_SUCH_CONFIG   = 'Config item does not exist'
 
 def remove_callable(dic):
     """ Remove all callable items from dictionary """
@@ -483,6 +484,8 @@ class MainPage:
 
         if mode == 'set_config':
             res = config.set_config(kwargs)
+            if not res:
+                return report(output, _MSG_NO_SUCH_CONFIG)
 
         if mode in ('get_config', 'set_config'):
             res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))

@@ -593,7 +593,7 @@ def set_config(kwargs):
     """ Set a config item, using values in dictionary
     """
     try:
-        database[section][keyword].set_dict(kwargs)
+        database[kwargs.get('section')][kwargs.get('keyword')].set_dict(kwargs)
     except KeyError:
         return False
 
