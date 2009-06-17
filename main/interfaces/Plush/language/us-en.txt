@@ -4,7 +4,12 @@
 
 # Menu
 maxSpeed          Max Speed
+options           Plush Options
 refreshRate       Refresh Rate
+confirmDeleteQueue Confirm Queue Deletions
+confirmDeleteHistory Confirm History Deletions
+blockRefresh      Block Refreshes on Hover
+explain-blockRefresh This will prevent refreshing content when your mouse cursor is hovering over the queue.
 disabled          Disabled
 addnzb            Add NZB
 fetch             Fetch

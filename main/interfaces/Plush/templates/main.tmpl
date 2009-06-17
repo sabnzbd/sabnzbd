@@ -18,6 +18,7 @@
         	$.plush.apikey = "$session";
         	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
         	$.plush.Tnext = "$T('Plush-next')";
+        	$.plush.Tconfirmation = "$T('Plush-confirm')";
 		});
     </script>
 
@@ -29,19 +30,25 @@
             <a class="sf-with-ul">SABnzbd</a>
             <ul>
                 <li><a>$T('Plush-maxSpeed'):&nbsp;&nbsp;<input type="text" id="maxSpeed-option" size="6" />&nbsp;&nbsp;$T('KBs')</a></li>
-                <li><a>$T('Plush-refreshRate'):&nbsp;<select id="refreshRate-option">
-                        <option value="1">1 $T('second')</option>
-                        <option value="2">2 $T('second')</option>
-                        <option value="4">4 $T('second')</option>
-                        <option value="8">8 $T('second')</option>
-                        <option value="16">16 $T('second')</option>
-                        <option value="30">30 $T('second')</option>
-                        <option value="60">1 $T('minute')</option>
-                        <option value="120">2 $T('minute')</option>
-                        <option value="900">15 $T('minute')</option>
-                        <option value="1800">30 $T('minute')</option>
-                        <option value="0">$T('Plush-disabled')</option>
-                    </select></a>
+                <li><a>$T('Plush-options')</a>
+                	<ul>
+                		<li><a>$T('Plush-refreshRate'):&nbsp;<select id="refreshRate-option">
+	                        <option value="1">1 $T('second')</option>
+	                        <option value="2">2 $T('second')</option>
+	                        <option value="4">4 $T('second')</option>
+	                        <option value="8">8 $T('second')</option>
+	                        <option value="16">16 $T('second')</option>
+	                        <option value="30">30 $T('second')</option>
+	                        <option value="60">1 $T('minute')</option>
+	                        <option value="120">2 $T('minute')</option>
+	                        <option value="900">15 $T('minute')</option>
+	                        <option value="1800">30 $T('minute')</option>
+	                        <option value="0">$T('Plush-disabled')</option>
+                    	</select></a></li>
+                    	<li><a><input type="checkbox" id="confirmDeleteQueue" checked /> $T("Plush-confirmDeleteQueue")</a></li>
+                    	<li><a><input type="checkbox" id="confirmDeleteHistory" checked /> $T("Plush-confirmDeleteHistory")</a></li>
+                    	<li class="tip" title="$T("Plush-explain-blockRefresh")"><a><input type="checkbox" id="blockRefresh" checked /> $T("Plush-blockRefresh")</a></li>
+                    </ul>
                 </li>
                 <li><a class="sf-with-ul">$T('menu-help')</a>
                     <ul>

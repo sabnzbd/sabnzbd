@@ -313,14 +313,18 @@ jQuery(function($) { // safely invoke $ selector
 		/********************************************
 		*********************************************
 		
-			Plush defaults
+			Plush defaults (all will be overridden by cookies)
 		
 		*********************************************
 		********************************************/
 		
-		refreshRate:   			30,   	// (seconds) refresh rate, overridden by cookie
+		refreshRate:   			30,   	// refresh rate in seconds
 		queueperpage:   		10,		// pagination - nzbs per page
 		histperpage:   			10,		// pagination - nzbs per page
+		confirmDeleteQueue:		true,	// confirm queue nzb removal
+		confirmDeleteHistory:	true,	// confirm history nzb removal
+		blockRefresh:			true,	// prevent refreshing when hovering queue
+		
 		
 		/********************************************
 		*********************************************
@@ -333,7 +337,7 @@ jQuery(function($) { // safely invoke $ selector
 		refreshQueue : function(page) {
 			
 			// Skip refresh if cursor hovers queue, to prevent annoyance
-			if ($.plush.skipRefresh) {
+			if ($.plush.blockRefresh && $.plush.skipRefresh) {
 				$('#manual_refresh').addClass('refresh_skipped');
 				return false;
 			}
@@ -604,6 +608,39 @@ jQuery(function($) { // safely invoke $ selector
 				$.plush.refresh();
 			});
 			
+			// Confirm Queue Deletions toggle
+			if ($.cookie('disableQueueDeleteConfirmations')) // restore from cookie
+				$.plush.confirmDeleteQueue = false;
+			$("#confirmDeleteQueue").attr('checked', $.plush.confirmDeleteQueue ).change( function() {
+				$.plush.confirmDeleteQueue = $("#confirmDeleteQueue").attr('checked');
+				if ($.plush.confirmDeleteQueue)
+					$.cookie('disableQueueDeleteConfirmations', null, { expires: 365 }); // can't set to false?
+				else
+					$.cookie('disableQueueDeleteConfirmations', true, { expires: 365 });
+			});
+			
+			// Confirm History Deletions toggle
+			if ($.cookie('disableHistoryDeleteConfirmations')) // restore from cookie
+				$.plush.confirmDeleteHistory = false;
+			$("#confirmDeleteHistory").attr('checked', $.plush.confirmDeleteHistory ).change( function() {
+				$.plush.confirmDeleteHistory = $("#confirmDeleteHistory").attr('checked');
+				if ($.plush.confirmDeleteHistory)
+					$.cookie('disableHistoryDeleteConfirmations', null, { expires: 365 }); // can't set to false?
+				else
+					$.cookie('disableHistoryDeleteConfirmations', true, { expires: 365 });
+			});
+			
+			// Block Refreshes on Hover toggle
+			if ($.cookie('disableRefreshBlock')) // restore from cookie
+				$.plush.blockRefresh = false;
+			$("#blockRefresh").attr('checked', $.plush.blockRefresh ).change( function() {
+				$.plush.blockRefresh = $("#blockRefresh").attr('checked');
+				if ($.plush.blockRefresh)
+					$.cookie('disableRefreshBlock', null, { expires: 365 }); // can't set to false?
+				else
+					$.cookie('disableRefreshBlock', true, { expires: 365 });
+			});
+			
 			// Sabnzbd shutdown
 			$('#shutdown_sabnzbd').click( function(){
 				if(confirm($('#shutdown_sabnzbd').attr('rel')))
@@ -718,20 +755,22 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// NZB individual deletion
 			$('#queue .queue_delete').live('click', function(event) {
-				delid = $(event.target).parent().parent().attr('id');
-				$('#'+delid).fadeOut('fast');
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: "mode=queue&name=delete&value="+delid+'&apikey='+$.plush.apikey,
-					success: function(){
-						if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
-							$.plush.skipRefresh = false;
-							$.plush.queueforcerepagination = true;
-							$.plush.refreshQueue($.plush.queuecurpage-1);
+				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
+					delid = $(event.target).parent().parent().attr('id');
+					$('#'+delid).fadeOut('fast');
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: "mode=queue&name=delete&value="+delid+'&apikey='+$.plush.apikey,
+						success: function(){
+							if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+								$.plush.skipRefresh = false;
+								$.plush.queueforcerepagination = true;
+								$.plush.refreshQueue($.plush.queuecurpage-1);
+							}
 						}
-					}
-				});
+					});
+				}
 			});
 			
 			// Pagination per-page selection
@@ -865,19 +904,21 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// NZB individual removal
 			$('#history .queue_delete').live('click', function(event) {
-				delid = $(event.target).parent().parent().attr('id');
-				$('#'+delid).fadeOut('fast');
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: "mode=history&name=delete&value="+delid+'&apikey='+$.plush.apikey,
-					success: function(){
-						if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
-							$.plush.histforcerepagination = true;
-							$.plush.refreshHistory($.plush.histcurpage-1);
+				if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
+					delid = $(event.target).parent().parent().attr('id');
+					$('#'+delid).fadeOut('fast');
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: "mode=history&name=delete&value="+delid+'&apikey='+$.plush.apikey,
+						success: function(){
+							if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
+								$.plush.histforcerepagination = true;
+								$.plush.refreshHistory($.plush.histcurpage-1);
+							}
 						}
-					}
-				});
+					});
+				}
 			});
 			
 			// Pagination per-page selection
