@@ -777,7 +777,7 @@ jQuery(function($) { // safely invoke $ selector
 			$("#queue-pagination-perpage").change(function(event){
 				$.plush.queuecurpage = Math.floor($.plush.queuecurpage * $.plush.queueperpage / $(event.target).val() );
 				$.plush.queueperpage = $(event.target).val();
-				$.cookie('queue_perpage', $.plush.queueperpage);
+				$.cookie('queue_perpage', $.plush.queueperpage, { expires: 365 });
 				$.plush.queueforcerepagination = true;
 				$.plush.refreshQueue();
 			});
@@ -925,7 +925,7 @@ jQuery(function($) { // safely invoke $ selector
 			$("#history-pagination-perpage").change(function(event){
 				$.plush.histcurpage = Math.floor($.plush.histcurpage * $.plush.histperpage / $(event.target).val() );
 				$.plush.histperpage = $(event.target).val();
-				$.cookie('history_perpage', $.plush.histperpage);
+				$.cookie('history_perpage', $.plush.histperpage, { expires: 365 });
 				$.plush.histforcerepagination = true;
 				$.plush.refreshHistory();
 			});
