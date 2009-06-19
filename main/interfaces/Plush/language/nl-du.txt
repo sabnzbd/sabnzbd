@@ -4,7 +4,12 @@
 
 # Menu
 maxSpeed          Max Snelheid
+options           Plush instellingen
 refreshRate       Verversingstempo
+confirmDeleteQueue Bevestig verwijderen uit wachtrij
+confirmDeleteHistory Bevestig verwijderen uit geschiedenis
+blockRefresh      Geen verversing bij popups
+explain-blockRefresh Dit voorkomt pagina verversing wanneer de muis aanwijzer in de wachtrij is.
 disabled          Uit
 addnzb            NZB toevoegen
 fetch             Ophalen
