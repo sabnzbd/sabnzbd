@@ -1504,7 +1504,7 @@ class ConfigSwitches:
 
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
-    'host', 'port', 'username', 'password', 'disable_key',
+    'host', 'port', 'username', 'password', 'disable_api_key',
     'refresh_rate', 'rss_rate',
     'cache_limit',
     'enable_https', 'https_port', 'https_cert', 'https_key'
@@ -1587,7 +1587,7 @@ class ConfigGeneral:
             list = []
         conf['lang_list'] = list
 
-        conf['disable_key'] = cfg.DISABLE_KEY.get()
+        conf['disable_api_key'] = cfg.DISABLE_KEY.get()
         conf['host'] = cfg.CHERRYHOST.get()
         conf['port'] = cfg.CHERRYPORT.get()
         conf['https_port'] = cfg.HTTPS_PORT.get()
