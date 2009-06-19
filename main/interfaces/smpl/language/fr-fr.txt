@@ -42,10 +42,6 @@ numresults@3    Affiche %s de %s sur %s résultats
 oneresult       Affiche 1 résultat
 noresult        Pas de résultats
 custom          Personnalisé
-minutes         minutes
-seconds         secondes
-mins            mins
-hour            heure
 dualView1       VueDuoV
 dualView2       VueDuoH
 eta             TRE

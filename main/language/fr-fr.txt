@@ -14,6 +14,7 @@ MB                MB
 GB                GB
 hour              hour
 minute            min
+minutes           mins
 second            sec
 month             Mois
 year              Year

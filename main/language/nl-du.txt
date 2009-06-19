@@ -13,6 +13,7 @@ KBs               KB/s
 MB                MB
 hour              uur
 minute            min
+minutes           mins
 second            sec
 month             maand
 year              jaar

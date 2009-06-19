@@ -41,10 +41,6 @@ numresults@3    Toon %s t/m %s van %s resultaten
 oneresult       Toon 1 resultaat
 noresult        Geen resultaten
 custom          Aangepast
-minutes         minuten
-seconds         seconden
-mins            min
-hour            uur
 dualView1       Dubbel1
 dualView2       Dubbel2
 eta             ETA
