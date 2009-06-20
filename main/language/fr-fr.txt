@@ -12,10 +12,11 @@ none              Aucun
 KBs               KB/s
 MB                MB
 GB                GB
-hour              hour
+hour              heure
 minute            min
 minutes           mins
 second            sec
+second            secondes
 month             Mois
 year              Year
 day               Jour

@@ -16,6 +16,7 @@ hour              hour
 minute            min
 minutes           mins
 second            sec
+seconds           seconds
 month             Month
 year              Year
 day               Day

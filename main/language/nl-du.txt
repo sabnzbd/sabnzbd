@@ -15,6 +15,7 @@ hour              uur
 minute            min
 minutes           mins
 second            sec
+seconds           seconden
 month             maand
 year              jaar
 day               dag
