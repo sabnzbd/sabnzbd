@@ -859,7 +859,6 @@ def main():
     ver, testRelease = convert_version(sabnzbd.__version__)
     if testRelease and not testlog:
         logging_level = 2
-        cherrypylogging = 1
 
     logdir = sabnzbd.cfg.LOG_DIR.get_path()
     if fork and not logdir:
