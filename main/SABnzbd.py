@@ -265,7 +265,7 @@ def Web_Template(key, defweb, wdir):
             panic_tmpl(full_dir)
             exit_sab(1)
 
-    sabnzbd.lang.install_language(real_path(full_dir, DEF_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), wdir)
+    sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), wdir)
 
     return real_path(full_dir, "templates")
 
@@ -974,7 +974,7 @@ def main():
     web_dir2 = Web_Template(sabnzbd.cfg.WEB_DIR2, '', web_dir2)
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-    sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), 'wizard')
+    sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), 'wizard')
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
