@@ -23,7 +23,11 @@ $T('logging'):
     <ul>
     <!--#for $server in $servers#-->
         <li>
-            $server[0]:$server[1]: $server[2]<!--#if not $server[5]#--> ($T('server-blocked'))<!--#end if#-->
+            $server[0]:$server[1]: $server[2]
+                <!--#if not $server[5]#-->
+                    <a href="./unblock_server?server=$server[0]:$server[1]&session=$session">($T('server-blocked'))</a>
+                    &nbsp;&nbsp;$server[6]
+                <!--#end if#-->
             <ul>
             <!--#for $thrd in $server[3]#-->
                 <li>$T('thread') #$thrd[0] -&gt; $thrd[1] -&gt; $thrd[2] -&gt; $thrd[3]</li>

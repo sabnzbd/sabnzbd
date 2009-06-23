@@ -245,6 +245,7 @@ _MSG_NO_FILE          = 'no file given'
 _MSG_NO_PATH          = 'file does not exist'
 _MSG_OUTPUT_FORMAT    = 'Format not supported'
 _MSG_NO_SUCH_CONFIG   = 'Config item does not exist'
+_MSG_BAD_SERVER_PARMS = 'Incorrect server settings'
 
 def remove_callable(dic):
     """ Remove all callable items from dictionary """
@@ -483,9 +484,13 @@ class MainPage:
         output = kwargs.get('output')
 
         if mode == 'set_config':
-            res = config.set_config(kwargs)
-            if not res:
-                return report(output, _MSG_NO_SUCH_CONFIG)
+            if kwargs.get('section') == 'servers':
+                handle_server_api(output, kwargs)
+            else:
+                res = config.set_config(kwargs)
+                if not res:
+                    return report(output, _MSG_NO_SUCH_CONFIG)
+            config.save_config()
 
         if mode in ('get_config', 'set_config'):
             res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
@@ -1766,9 +1771,7 @@ def handle_server(kwargs, root=None):
     if msg:
         return msg
 
-    # Replace square by curly brackets to avoid clash
-    # between INI format and IPV6 notation
-    server = '%s:%s' % (host.replace('[','{').replace(']','}'), port)
+    server = '%s:%s' % (host, port)
 
     svr = None
     old_server = kwargs.get('server')
@@ -1791,6 +1794,31 @@ def handle_server(kwargs, root=None):
     downloader.update_server(old_server, server)
     if root:
         raise dcRaiser(root, kwargs)
+
+
+def handle_server_api(output, kwargs):
+    """ Special handler for API-call 'set_config'
+    """
+    name = kwargs.get('keyword')
+    if not name:
+        name = kwargs.get('name')
+    if not name:
+        host = kwargs.get('host')
+        port = kwargs.get('port', '119')
+        if host:
+            name = '%s:%s' % (host, port)
+        else:
+            return False
+
+    server = config.get_config('servers', name)
+    if server:
+        server.set_dict(kwargs)
+        old_name = name
+    else:
+        config.ConfigServer(name, kwargs)
+        old_name = None
+    downloader.update_server(old_name, name)
+
 
 
 #------------------------------------------------------------------------------
@@ -2363,7 +2391,7 @@ class ConnectionInfo:
                     connected += 1
 
             busy.sort()
-            header['servers'].append((server.host, server.port, connected, busy, server.ssl, server.active))
+            header['servers'].append((server.host, server.port, connected, busy, server.ssl, server.active, server.errormsg))
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
@@ -2428,6 +2456,15 @@ class ConnectionInfo:
         cfg.LOG_LEVEL.set(kwargs.get('loglevel'))
         config.save_config()
 
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def unblock_server(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        downloader.unblock(kwargs.get('server'))
+        # Short sleep so that UI shows new server status
+        time.sleep(1.0)
         raise dcRaiser(self.__root, kwargs)
 
 

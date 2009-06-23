@@ -146,7 +146,7 @@ thread            Verbinding
 emailResult       Test resultaat email
 lastWarnings      Recentste meldingen
 clearWarnings     Wissen
-server-blocked    geblokkeerd
+server-blocked    Deblokkeren
 
 # Configuration
 configuration     Instellingen
@@ -582,12 +582,14 @@ warn-noRead@1            Kan %s niet lezen
 error-except             Exception?
 error-noInit@3           Kan geen verbinding maken %s@%s:%s
 error-serverFailed@4     Verbinding %s@%s:%s mislukt, bericht=%s
-error-serverLogin@2      Kan niet aanmelden bij server %s:%s
-error-serverNoConn@3     Kan geen verbinding maken met server %s:%s [%s]
+error-serverLogin@1      Kan niet aanmelden bij server %s
+error-serverNoConn@2     Kan geen verbinding maken met server %s [%s]
 error-serverTooMany@2    Te veel verbindingen met server %s:%s
 warn-ignoreServer@2      Server %s wordt gedurende %s minuten genegeerd
 warn-noActiveServers     Geen aktieve primaire servers, download niet mogelijk!
-warn-noConnectServer@3   Kan geen verbinding maken met server %s:%s [%s]
+warn-noConnectServer@2   Kan geen verbinding maken met server %s [%s]
+error-accountSharing     Mogelijk delen van account
+error-serverCred@1       Server %s heeft gebruikersnaam/wachtwoord nodig
 warn-thread@3            Verbinding %s@%s:%s:
 error-mailAuth           Kan niet aanmelden bij email server
 error-mailNoConn         Kan geen verbinding maken met email server

@@ -22,6 +22,7 @@ sabnzbd.downloader - download engine
 import time
 import select
 import logging
+import datetime
 from threading import Thread
 from nntplib import NNTPPermanentError
 
@@ -162,6 +163,10 @@ def delayed():
     global __DOWNLOADER
     if __DOWNLOADER: return __DOWNLOADER.delayed
 
+def unblock(server):
+    global __DOWNLOADER
+    if __DOWNLOADER: return __DOWNLOADER.unblock(server)
+
 
 #------------------------------------------------------------------------------
 class Server:
@@ -185,6 +190,7 @@ class Server:
         self.idle_threads = []
         self.active = True
         self.bad_cons = 0
+        self.errormsg = ''
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
@@ -238,6 +244,7 @@ class Downloader(Thread):
         self.write_fds = {}
 
         self.servers = []
+        self._timers = {}
 
         primary = False
         for server in config.get_servers():
@@ -291,7 +298,6 @@ class Downloader(Thread):
                                             username, password, optional))
 
         return primary
-
 
     def stop(self):
         self.shutdown = True
@@ -362,9 +368,9 @@ class Downloader(Thread):
                             # disable it now and send a re-enable plan to the scheduler
                             server.bad_cons = 0
                             server.active = False
-                            self.init_server(server.id, None)
+                            server.errormsg = T('warn-ignoreServer@2') % ('', _PENALTY_TIMEOUT)
                             logging.warning(T('warn-ignoreServer@2'), server.id, _PENALTY_TIMEOUT)
-                            sabnzbd.scheduler.plan_server(self.init_server, [None, server.id], _PENALTY_TIMEOUT)
+                            self.plan_server(server.id, _PENALTY_TIMEOUT)
 
                 if server.restart:
                     if not server.busy_threads:
@@ -545,36 +551,46 @@ class Downloader(Thread):
                             penalty = 0
                             msg = error.response
                             ecode = msg[:3]
-                            if ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
+                            logging.debug('Server login problem: %s, %s', ecode, msg)
+                            if ((ecode in ('502', '400')) and clues_too_many(msg)) or \
+                                (ecode == '481' and clues_too_many(msg)):
+                                # Too many connections: remove this thread and reduce thread-setting for server
+                                if server.active:
+                                    server.errormsg = T('error-serverTooMany@2') % ('', '')
+                                    logging.error(T('error-serverTooMany@2'), server.host, server.port)
+                                    self.__reset_nw(nw, None, warn=False, destroy=True)
+                                    server.threads -= 1
+                            elif ecode in ('502', '481') and clues_too_many_ip(msg):
+                                # Account sharing?
+                                if server.active:
+                                    server.errormsg = T('error-accountSharing')
+                                    name = ' (%s:%s)' % (server.host, server.port)
+                                    logging.error(T('error-accountSharing') + name)
+                                    penalty = _PENALTY_SHARE
+                            elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
-                                    logging.error(T('error-serverLogin@2'),  server.host, server.port)
+                                    server.errormsg = T('error-serverLogin@1') % ''
+                                    logging.error(T('error-serverLogin@1'), '%s:%s' % (server.host, server.port))
                                 block = True
-                            elif (ecode in ('502', '400')) and clues_too_many(msg):
-                                # Too many connections: remove this thread and reduce thread-setting for server
-                                logging.error(T('error-serverTooMany@2'),  server.host, server.port)
-                                self.__reset_nw(nw, None, warn=False, destroy=True)
-                                server.threads -= 1
-                            elif (ecode == '502') and clues_too_many_ip(msg):
-                                # Account sharing?
-                                logging.info("Probable account sharing")
-                                penalty = _PENALTY_SHARE
                             elif ecode == '502':
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    logging.warning(T('warn-noConnectServer@3'),  server.host, server.port, msg)
+                                    server.errormsg = T('warn-noConnectServer@2') % ('', msg)
+                                    logging.warning(T('warn-noConnectServer@2'), '%s:%s' % (server.host, server.port), msg)
                                 penalty = _PENALTY_502
                             else:
                                 # Unknown error, just keep trying
-                                logging.error(T('error-serverNoConn@3'),  server.host, server.port, msg)
-                                penalty = _PENALTY_UNKNOWN
+                                if server.active:
+                                    server.errormsg = T('error-serverNoConn@2') % ('', msg)
+                                    logging.error(T('error-serverNoConn@2'),  '%s:%s' % (server.host, server.port, msg))
+                                    penalty = _PENALTY_UNKNOWN
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
-                                    self.init_server(server, None)
                                     if penalty and server.optional:
                                        logging.info('Server %s ignored for %s minutes', server.id, penalty)
-                                       sabnzbd.scheduler.plan_server(self.init_server, [None, server.id], penalty)
+                                       self.plan_server(server.id, penalty)
                                 self.__reset_nw(nw, None, warn=False)
                             continue
                         except:
@@ -610,7 +626,11 @@ class Downloader(Thread):
                                         nw.server.port, article.article)
 
                     elif code == '480':
-                        msg = 'Server %s:%s requires user/password' % (nw.server.host, nw.server.port)
+                        if server.active:
+                            server.active = False
+                            server.errormsg = T('error-serverCred@1') % ''
+                            self.plan_server(server.id, 0)
+                        msg = T('error-serverCred@1') % ('%s:%s' % (nw.server.host, nw.server.port))
                         self.__reset_nw(nw, msg)
 
                 if done:
@@ -698,6 +718,38 @@ class Downloader(Thread):
         except:
             logging.error(T('error-except'))
             self.__reset_nw(nw, "server broke off connection")
+
+    #------------------------------------------------------------------------------
+    # Timed restart of servers admin.
+    # For each server all planned events are kept in a list.
+    # When the first timer of a server fires, all other existing timers
+    # are neutralized.
+    # Each server has a dictionary entry, consisting of a list of timestamps.
+
+    def plan_server(self, server_id, interval):
+        """ Plan the restart of a server in 'interval' minutes """
+        logging.debug('Set planned server resume %s in %s mins', server_id, interval)
+        if server_id not in self._timers:
+            self._timers[server_id] = []
+        stamp = datetime.datetime.now()
+        self._timers[server_id].append(stamp)
+        if interval:
+            sabnzbd.scheduler.plan_server(self.trigger_server, [server_id, stamp], interval)
+
+    def trigger_server(self, server_id, timestamp):
+        """ Called by scheduler, start server if timer still valid """
+        logging.debug('Trigger planned server resume %s', server_id)
+        if server_id in self._timers:
+            if timestamp in self._timers[server_id]:
+                del self._timers[server_id]
+                self.init_server(server_id, server_id)
+
+    def unblock(self, server_id):
+        if server_id in self._timers:
+            logging.debug('Unblock server %s', server_id)
+            del self._timers[server_id]
+            self.init_server(server_id, server_id)
+
 
 
 #------------------------------------------------------------------------------

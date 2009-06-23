@@ -320,7 +320,7 @@ def pause_int():
 
 
 #------------------------------------------------------------------------------
-def plan_server(action, parms, penalty):
-    """ Plan to re-activate server after "penalty" minutes
+def plan_server(action, parms, interval):
+    """ Plan to re-activate server after "interval" minutes
     """
-    __SCHED.add_single_task(action, '', penalty*60, kronos.method.sequential, parms, None)
+    __SCHED.add_single_task(action, '', interval*60, kronos.method.sequential, parms, None)

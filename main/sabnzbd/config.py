@@ -681,12 +681,13 @@ def save_config(force=False):
             except:
                 CFG[section] = {}
             for subsec in database[section]:
+                subsec_mod = subsec.replace('[', '{').replace(']','}')
                 try:
-                    CFG[section][subsec]
+                    CFG[section][subsec_mod]
                 except:
-                    CFG[section][subsec] = {}
+                    CFG[section][subsec_mod] = {}
                 items = database[section][subsec].get_dict()
-                CFG[section][subsec] = items
+                CFG[section][subsec_mod] = items
         else:
             for option in database[section]:
                 sec, kw = database[section][option].ident()
@@ -727,7 +728,7 @@ def define_servers():
     try:
         for server in CFG['servers']:
             svr = CFG['servers'][server]
-            ConfigServer(server, svr)
+            ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
     except KeyError:
         pass
 

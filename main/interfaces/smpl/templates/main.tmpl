@@ -711,6 +711,11 @@ function loadtitle() {
 		d.addErrback(handleServerError);
 	}
 
+	function unblock_server(host, port)
+	{
+		d = doSimpleXMLHttpRequest('connections/unblock_server?server='+host+':'+port+'&session='+session);
+	}
+
 	function getBookmarks()
 	{
 		d = doSimpleXMLHttpRequest('tapi?mode=newzbin&name=get_bookmarks&session='+session);

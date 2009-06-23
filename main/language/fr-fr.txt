@@ -586,12 +586,14 @@ warn-noRead@1            Ne peut lire %s
 error-except             Exception ?
 error-noInit@3           Echec de l'initialisation %s@%s:%s
 error-serverFailed@4     Echec de la connexion à %s@%s:%s, message=%s
-error-serverLogin@2      Echec de la connexion au serveur %s:%s
-error-serverNoConn@3     Ne peut se connecter au serveur %s:%s [%s]
+error-serverLogin@1      Echec de la connexion au serveur %s
+error-serverNoConn@2     Ne peut se connecter au serveur %s [%s]
 error-serverTooMany@2    Trop de connexions au serveur %s:%s
 warn-ignoreServer@2      Le serveur %s sera ignoré pendant %s minutes
 warn-noActiveServers     Aucun serveur primaire défini, pas de téléchargement possible !
-warn-noConnectServer@3   Impossible de se connecter au serveur %s:%s [%s]
+warn-noConnectServer@2   Impossible de se connecter au serveur %s [%s]
+error-accountSharing     Probable account sharing
+error-serverCred@1       Server %s requires user/password
 warn-thread@3            Thread %s@%s:%s:
 error-mailAuth           Echec de l'autentification au serveur de mail
 error-mailNoConn         Echec de la connexion au serveur de mail
