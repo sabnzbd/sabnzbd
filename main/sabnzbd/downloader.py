@@ -725,7 +725,7 @@ def clues_too_many_ip(text):
     """ Check for any "account sharing" clues in the response code
     """
     text = text.lower()
-    for clue in ('simultaneous ip'):
+    for clue in ('simultaneous ip', ):
         if text.find(clue) >= 0:
             return True
     return False
