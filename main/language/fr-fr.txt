@@ -200,8 +200,8 @@ opt-refresh_rate      Intervalle de rafraîchissement de la queue :
 explain-refresh_rate  Intervalle de rafraichissement dans l'interface web (en sec, 0=aucun).
 opt-rss_rate          Invervalle de vérification RSS
 explain-rss_rate      Intervalle de vérification (en minutes, minimum 15).
-opt-bandwith_limit    Limite de vitesse de téléchargement
-explain-bandwith_limit Limite de vitesse de téléchargement en kilobytes par second(kB/s)
+opt-bandwidth_limit   Limite de vitesse de téléchargement
+explain-bandwidth_limit Limite de vitesse de téléchargement en kilobytes par second(kB/s)
 opt-cache_limitstr    Limite d'Article en cache
 explain-cache_limitstr Permet de mettre en cache en RAM les articles pour réduire les accès disques.\n\
                       <i>En bytes, put être suivi de K,M,G. Par exemple : "64M" ou "128M"</i>

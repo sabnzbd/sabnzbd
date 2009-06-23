@@ -1601,7 +1601,7 @@ class ConfigGeneral:
         conf['enable_https'] = cfg.ENABLE_HTTPS.get()
         conf['username'] = cfg.USERNAME.get()
         conf['password'] = cfg.PASSWORD.get_stars()
-        conf['bandwith_limit'] = cfg.BANDWIDTH_LIMIT.get()
+        conf['bandwidth_limit'] = cfg.BANDWIDTH_LIMIT.get()
         conf['refresh_rate'] = cfg.REFRESH_RATE.get()
         conf['rss_rate'] = cfg.RSS_RATE.get()
         conf['cache_limit'] = cfg.CACHE_LIMIT.get()
@@ -1653,7 +1653,7 @@ class ConfigGeneral:
             cfg.WEB_DIR2.set(web_dir2)
         cfg.WEB_COLOR2.set(web_color2)
 
-        bandwidth_limit = kwargs.get('bandwith_limit')
+        bandwidth_limit = kwargs.get('bandwidth_limit')
         if bandwidth_limit != None:
             bandwidth_limit = IntConv(bandwidth_limit)
             cfg.BANDWIDTH_LIMIT.set(bandwidth_limit)

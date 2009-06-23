@@ -197,8 +197,8 @@ opt-refresh_rate       Verversingsinterval van de Wachtrij
 explain-refresh_rate   Verversingsinterval van het de Wachtrij pagina (sec, 0= geen).
 opt-rss_rate           RSS uitlees interval
 explain-rss_rate       Aantal minuten tussen de RSS uitlezingen (minimaal 15).
-opt-bandwith_limit     Download snelheidsbeperking
-explain-bandwith_limit Download snelheidsbeperking kilobytes per seconde (kB/s).
+opt-bandwidth_limit    Download snelheidsbeperking
+explain-bandwidth_limit Download snelheidsbeperking kilobytes per seconde (kB/s).
 opt-cache_limitstr     Artikel buffer beperking
 explain-cache_limitstr Bewaar de artikelen in het werkgeheugen (verminderd schijf gebruik).
 opt-cleanup_list       Opschoon lijst

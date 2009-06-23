@@ -321,7 +321,7 @@ def guard_restart():
     sabnzbd.RESTART_REQ = True
 
 def guard_speedlimit():
-    """ Callback for change of bandwith_limit, sets actual speed """
+    """ Callback for change of bandwidth_limit, sets actual speed """
     downloader.limit_speed(cfg.BANDWIDTH_LIMIT.get_int())
 
 

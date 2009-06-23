@@ -199,8 +199,8 @@ opt-refresh_rate      Queue auto refresh interval:
 explain-refresh_rate  Refresh interval of the queue web-interface page(sec, 0= none).
 opt-rss_rate          RSS Checking Interval
 explain-rss_rate      Checking interval (in minutes, at least 15).
-opt-bandwith_limit    Download Speed Limit
-explain-bandwith_limit Download rate limit (in KB/s - kilobytes per second).
+opt-bandwidth_limit   Download Speed Limit
+explain-bandwidth_limit Download rate limit (in KB/s - kilobytes per second).
 opt-cache_limitstr    Article Cache Limit
 explain-cache_limitstr Cache articles in memory to reduce disk access.\n\
                       <i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>

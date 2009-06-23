@@ -647,6 +647,8 @@ def read_config(path):
         logging.error(T('error-badIni@1'), path)
         return False
 
+    compatibility_fix(CFG['misc'])
+
     # Use CFG data to set values for all static options
     for section in database:
         if section not in ('servers', 'categories', 'rss'):
@@ -890,3 +892,23 @@ def create_api_key():
 
     # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
     return m.hexdigest()
+
+
+#------------------------------------------------------------------------------
+_FIXES = \
+(
+    ('bandwith_limit', 'bandwidth_limit'),
+)
+
+def compatibility_fix(cf):
+    # Convert obsolete entries
+    for item in _FIXES:
+        old, new = item
+        try:
+            cf[new]
+        except KeyError:
+            try:
+                cf[new] = cf[old]
+                del cf[old]
+            except KeyError:
+                pass
