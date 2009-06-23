@@ -1657,7 +1657,6 @@ class ConfigGeneral:
         if bandwidth_limit != None:
             bandwidth_limit = IntConv(bandwidth_limit)
             cfg.BANDWIDTH_LIMIT.set(bandwidth_limit)
-            downloader.limit_speed(bandwidth_limit)
 
         config.save_config()
 

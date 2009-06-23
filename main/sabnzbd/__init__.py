@@ -191,6 +191,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cfg.HTTPS_CERT.callback(guard_restart)
     cfg.HTTPS_KEY.callback(guard_restart)
     cfg.ENABLE_HTTPS.callback(guard_restart)
+    cfg.BANDWIDTH_LIMIT.callback(guard_speedlimit)
 
     ### Set cache limit
     articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY.get())
@@ -318,6 +319,10 @@ def guard_restart():
     """ Callback for config options requiring a restart """
     global RESTART_REQ
     sabnzbd.RESTART_REQ = True
+
+def guard_speedlimit():
+    """ Callback for change of bandwith_limit, sets actual speed """
+    downloader.limit_speed(cfg.BANDWIDTH_LIMIT.get_int())
 
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
