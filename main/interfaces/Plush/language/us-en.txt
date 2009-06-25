@@ -31,8 +31,6 @@ pauseFor          Pause for...
 pauseForPrompt    Pause for how many minutes?
 purge             Purge
 onQueueFinish     On Finish
-opt-priorities    Priorities
-explain-priorities Toggle Queue Priority Visibility
 warnings          Warnings
 
 

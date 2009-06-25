@@ -26,8 +26,6 @@ pauseFor          Pause pour...
 pauseForPrompt    Pause pour combien de minutes?
 purge             Vider
 onQueueFinish     En Fin de queue
-opt-priorities    Priorités
-explain-priorities Affiche / Cache les priorités
 warnings          Avertissements
 
 

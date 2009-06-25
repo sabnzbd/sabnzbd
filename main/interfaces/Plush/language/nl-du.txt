@@ -31,8 +31,6 @@ pauseFor          Pauzeer...
 pauseForPrompt    Hoeveel minuten pauzeren?
 purge             Opschonen
 onQueueFinish     Bij lege wachtrij
-opt-priorities    Prioriteiten
-explain-priorities Wissel tonen van wachtrij prioriteit
 warnings          Meldingen
 
 

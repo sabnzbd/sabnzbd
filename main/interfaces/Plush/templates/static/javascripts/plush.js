@@ -690,19 +690,6 @@ jQuery(function($) { // safely invoke $ selector
 					success: $.plush.refreshQueue
 				});
 			});
-
-			// Queue priority toggle
-			if ( !$.cookie('queue_details') || ($.cookie('queue_details') != 0 && $.cookie('queue_details') != 1) )
-				$.cookie('queue_details', 1, { expires: 365 }); // default priorities to enabled
-			if ($.cookie('queue_details') == 1)
-				$("#priority-toggle").attr('checked','true'); // set toggled state of checkbox
-			$("#priority-toggle").change( function() {
-				if ($("#priority-toggle").attr('checked'))
-					$.cookie('queue_details', 1, { expires: 365 });
-				else
-					$.cookie('queue_details', 0, { expires: 365 });
-				$.plush.refreshQueue();
-			});
 			
 			// Manual refresh
 			$('#manual_refresh_wrapper').click(function(){

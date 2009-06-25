@@ -79,14 +79,12 @@
             <!--#end for#-->
         </optgroup></select>
         <!--#end if#-->
-    	<!--#if $queue_details == "1"#-->
         <select class="proc_priority"><optgroup label="$T('priority')">
             <option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>$T('pr-force')</option>
             <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>$T('pr-high')</option>
             <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>$T('pr-normal')</option>
             <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
         </optgroup></select>
-        <!--#end if#-->
         <select class="change_opts"><optgroup label="$T('pp')">
             <option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->>$T('pp-none')</option>
             <option value="1" <!--#if $slot.unpackopts == "1" then "selected " else ""#-->>$T('pp-repair')</option>
