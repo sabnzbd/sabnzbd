@@ -350,10 +350,10 @@ class MainPage:
             info['cat'] = 'Default'
             info['cat_list'] = ListCats(True)
 
-            info['warning'] = ""
-
-            if not sabnzbd.newsunpack.PAR2_COMMAND:
-                info['warning'] += "No PAR2 program found, repairs not possible<br/>"
+            if sabnzbd.newsunpack.PAR2_COMMAND:
+                info['warning'] = ""
+            else:
+                info['warning'] = "No PAR2 program found, repairs not possible<br/>"
 
             template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
                                 searchList=[info], compilerSettings=DIRECTIVES)
@@ -2586,23 +2586,23 @@ def ShowRssLog(feed, all):
 
     qfeed = escape(feed.replace('/','%2F').replace('?', '%3F'))
 
-    doneStr = ""
+    doneStr = []
     for x in names:
         job = jobs[x]
         if job[0] == 'D':
-            doneStr += '%s<br/>' % xml_name(job[1])
+            doneStr.append('%s<br/>' % xml_name(job[1]))
 
-    goodStr = ""
+    goodStr = []
     for x in names:
         job = jobs[x]
         if job[0] == 'G':
-            goodStr += _make_link(qfeed, job)
+            goodStr.append(_make_link(qfeed, job))
 
-    badStr = ""
+    badStr = []
     for x in names:
         job = jobs[x]
         if job[0] == 'B':
-            badStr += _make_link(qfeed, job)
+            badStr.append(_make_link(qfeed, job))
 
     if all:
         return '''
@@ -2627,7 +2627,8 @@ def ShowRssLog(feed, all):
                <br/>
 </body>
 </html>
-''' % (escape(feed), T('button-back'), escape(feed), T('rss-matched'), goodStr, T('rss-notMatched'), badStr, T('rss-done'), doneStr)
+''' % (escape(feed), T('button-back'), escape(feed), T('rss-matched'), \
+       ''.join(goodStr), T('rss-notMatched'), ''.join(badStr), T('rss-done'), ''.join(doneStr))
     else:
         return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -2862,19 +2863,18 @@ def rss_history(url, limit=50, search=None):
         else:
             item.link = url
 
-        stageLine = ""
+        stageLine = []
         for stage in history['stage_log']:
-            stageLine += "<tr><dt>Stage %s</dt>" % stage['name']
+            stageLine.append("<tr><dt>Stage %s</dt>" % stage['name'])
             actions = []
             for action in stage['actions']:
-                actionLine = "<dd>%s</dd>" % (action)
-                actions.append(actionLine)
+                actions.append("<dd>%s</dd>" % (action))
             actions.sort()
             actions.reverse()
             for act in actions:
-                stageLine += act
-            stageLine += "</tr>"
-        item.description = stageLine
+                stageLine.append(act)
+            stageLine.append("</tr>")
+        item.description = ''.join(stageLine)
         rss.addItem(item)
 
     rss.channel.lastBuildDate = std_time(youngest)
@@ -3420,9 +3420,12 @@ def rss_qstatus():
     rss.channel.language = "en"
 
     item = Item()
-    item.title  = "Total ETA: " + calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()) + " - "
-    item.title += "Queued: %.2f MB - " % (qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI)
-    item.title += "Speed: %.2f kB/s" % (bpsmeter.method.get_bps() / KIBI)
+    item.title = 'Total ETA: %s - Queued: %.2f MB - Speed: %.2f kB/s' % \
+                 (
+                  calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()),
+                  qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
+                  bpsmeter.method.get_bps() / KIBI
+                 )
     rss.addItem(item)
 
     sum_bytesleft = 0
@@ -3450,16 +3453,16 @@ def rss_qstatus():
         else:
             item.link    = "http://%s:%s/sabnzbd/history" % ( \
             cfg.CHERRYHOST.get(), cfg.CHERRYPORT.get() )
-        statusLine  = ""
-        statusLine += '<tr>'
+        statusLine  = []
+        statusLine.append('<tr>')
         #Total MB/MB left
-        statusLine +=  '<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes)
+        statusLine.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
         #ETA
         sum_bytesleft += pnfo[PNFO_BYTES_LEFT_FIELD]
-        statusLine += "<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, bpsmeter.method.get_bps())
-        statusLine += "<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD])
-        statusLine += "</tr>"
-        item.description = statusLine
+        statusLine.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, bpsmeter.method.get_bps()))
+        statusLine.append("<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD]))
+        statusLine.append("</tr>")
+        item.description = ''.join(statusLine)
         rss.addItem(item)
 
     rss.channel.lastBuildDate = std_time(time.time())
