@@ -12,6 +12,7 @@ none              Geen
 KBs               KB/s
 MB                MB
 hour              uur
+hour              uren
 minute            min
 minutes           mins
 second            sec
@@ -19,6 +20,7 @@ seconds           seconden
 month             maand
 year              jaar
 day               dag
+days              dagen
 daily             dagelijks
 monday            maandag
 tuesday           dinsdag

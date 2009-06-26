@@ -851,34 +851,30 @@ def loadavg():
 
 
 def format_time_string(seconds, days=0):
-
-    try:
-        seconds = int(seconds)
-    except:
-        seconds = 0
-
-    completestr = ''
+    """ Return a formatted and translated time string """
+    seconds = IntConv(seconds)
+    completestr = []
     if days:
-        completestr += '%s day%s ' % (days, s_returner(days))
+        completestr.append('%s %s' % (days, s_returner('day', days)))
     if (seconds/3600) >= 1:
-        completestr += '%s hour%s ' % (seconds/3600, s_returner((seconds/3600)))
+        completestr.append('%s %s' % (seconds/3600, s_returner('hour', (seconds/3600))))
         seconds -= (seconds/3600)*3600
     if (seconds/60) >= 1:
-        completestr += '%s minute%s ' % (seconds/60, s_returner((seconds/60)))
+        completestr.append('%s %s' % (seconds/60, s_returner('minute',(seconds/60))))
         seconds -= (seconds/60)*60
     if seconds > 0:
-        completestr += '%s second%s ' % (seconds, s_returner(seconds))
+        completestr.append('%s %s' % (seconds, s_returner('second', seconds)))
     elif not completestr:
-        completestr += '0 seconds'
+        completestr.append('0 %s' % s_returner('second', 0))
 
-    return completestr.strip()
+    return ' '.join(completestr)
 
 
-def s_returner(value):
-    if value > 1:
-        return 's'
+def s_returner(item, value):
+    if value == 1:
+        return T(item)
     else:
-        return ''
+        return T(item + 's')
 
 def IntConv(value):
     """Safe conversion to int"""

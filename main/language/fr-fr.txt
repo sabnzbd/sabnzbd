@@ -13,13 +13,15 @@ KBs               KB/s
 MB                MB
 GB                GB
 hour              heure
+hours             heures
 minute            min
 minutes           mins
 second            sec
-second            secondes
+seconds           secondes
 month             Mois
 year              Year
 day               Jour
+days              Jours
 daily             Quotidien
 monday            Lundi
 tuesday           Mardi

@@ -13,6 +13,7 @@ KBs               KB/s
 MB                MB
 GB                GB
 hour              hour
+hours             hours
 minute            min
 minutes           mins
 second            sec
@@ -20,6 +21,7 @@ seconds           seconds
 month             Month
 year              Year
 day               Day
+days              Days
 daily             Daily
 monday            Monday
 tuesday           Tuesday
