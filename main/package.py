@@ -164,7 +164,7 @@ def CreateTar(folder, fname, release):
                 tarinfo = tar.gettarinfo(path, fpath)
                 tarinfo.uid = 0
                 tarinfo.gid = 0
-                if _file in ('SABnzbd.py', 'Sample-PostProc.sh'):
+                if _file in ('SABnzbd.py', 'Sample-PostProc.sh', 'setup.py'):
                     tarinfo.mode = 0755
                 else:
                     tarinfo.mode = 0644
@@ -304,10 +304,10 @@ options = dict(
       author = 'The SABnzbd-Team',
       author_email = 'team@sabnzbd.org',
       description = 'SABnzbd ' + str(sabnzbd.__version__),
-      scripts = ['SABnzbd.py'],
+      scripts = ['SABnzbd.py', 'setup.py'],
       packages = ['sabnzbd', 'sabnzbd.utils'],
       platforms = ['posix'],
-      license = 'GNU General Public License 2 (GPL2)',
+      license = 'GNU General Public License 2 (GPL2) or later',
       data_files = PairList(data)
 
 )
