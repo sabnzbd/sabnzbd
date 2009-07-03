@@ -151,7 +151,7 @@ class SMTP_SSL (smtplib.SMTP):
 		This certificate will be used to make the SSL connection."""
 		self.certfile = certfile
 
-	def starttls():
+	def starttls(self, keyfile = None, certfile = None):
 		"""Raises an exception. 
 		You cannot do StartTLS inside of an ssl session. Calling starttls() will
 		return an SMTPSSLException"""

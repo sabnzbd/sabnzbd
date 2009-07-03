@@ -590,6 +590,9 @@ class MainPage:
             else:
                 return report(output, _MSG_NOT_IMPLEMENTED)
 
+        if mode == 'options':
+            return options_list(output)
+
         name = kwargs.get('name', '')
         pp = kwargs.get('pp')
         script = kwargs.get('script')
@@ -3517,3 +3520,16 @@ def get_active_history(queue=None, items=None):
         items.append(item)
 
     return items
+
+
+def options_list(output):
+    return report(output, keyword='options', data=
+        {
+        'yenc' : sabnzbd.decoder.HAVE_YENC,
+        'par2' : sabnzbd.newsunpack.PAR2_COMMAND,
+        'rar' : sabnzbd.newsunpack.RAR_COMMAND,
+        'zip' : sabnzbd.newsunpack.ZIP_COMMAND,
+        'nice' : sabnzbd.newsunpack.NICE_COMMAND,
+        'ionice' : sabnzbd.newsunpack.IONICE_COMMAND,
+        'ssl' : sabnzbd.newswrapper.HAVE_SSL
+        })
