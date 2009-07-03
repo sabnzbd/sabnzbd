@@ -114,6 +114,7 @@ shutdownSab       Quitter SABnzbd
 speedLimit        Limite de vitesse
 pauseFor          Pause pour
 mode              Mode
+order
 name              Nom
 remainTotal       Restant/Total
 eta               TRE

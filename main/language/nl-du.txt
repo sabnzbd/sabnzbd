@@ -112,6 +112,7 @@ speedLimit        Max. snelheid
 pauseFor          Pauzeer
 name              Naam
 mode              Modus
+order
 remainTotal       Te doen/Totaal
 eta               Klaar om
 age               Leeftijd

@@ -113,6 +113,7 @@ shutdownSab       Shutdown SABnzbd
 speedLimit        Speed Limit
 pauseFor          Pause for
 mode              Processing
+order             Order
 name              Name
 remainTotal       Remain/Total
 eta               ETA
