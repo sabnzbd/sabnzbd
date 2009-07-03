@@ -64,11 +64,19 @@ jQuery(document).ready(function($){
 	$.preloadCssImages();
     
     // rounding
-	setTimeout (function(){
-    	$('.config_menu').corner("round tl bl");
-    	$('#config_container').corner("round");
-    	$('.rounded').corner("round");
-	}, 1); // slow down rounding just a hair for Safari
+	if ($.browser.safari) { // slow down rounding just a hair for Safari or it spazzes out
+		setTimeout (function(){
+	    	$('#config_nav li .config_menu').corner("round tl bl");
+	    	$('#config_container').corner("round");
+	    	$('#config_content legend').corner("round");
+	    	$('#force_disconnect, #save, #sabnzbd_restart, #test_email, #help').corner("round");
+		}, 1);
+	} else { // the slight delay lags on Firefox, so don't run otherwise
+	    	$('#config_nav li .config_menu').corner("round tl bl");
+	    	$('#config_container').corner("round");
+	    	$('#config_content legend').corner("round");
+	    	$('#force_disconnect, #save, #sabnzbd_restart, #test_email, #help').corner("round");
+	}
 	
     switch(config_pane) {
 
@@ -112,7 +120,7 @@ jQuery(document).ready(function($){
 	        });
 
 	        // click filenames to select
-	        $('.nzf_row').click(function(event) {
+	        $('#config_content .nzoTable .nzf_row').click(function(event) {
 	            $('#box-'+$(event.target).parent().attr('id')).attr('checked', !$('#box-'+$(event.target).parent().attr('id')).attr('checked'));
 	        });
 
@@ -166,7 +174,7 @@ jQuery(document).ready(function($){
 				$(event.target).parents('form:first').attr('action','toggle_rss_feed').submit();
 				return false;
 			});
-        	$('.preview_feed').click(function(event){
+        	$('#config_content .EntryFieldSet .preview_feed').click(function(event){
 				$.fn.colorbox({
 					href:'test_rss_feed?'+$(event.target).parents('form:first').serialize(),
 					open:true, width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7
@@ -184,7 +192,7 @@ jQuery(document).ready(function($){
 					}
 				});
 			});
-        	$('.download_feed').click(function(event){
+        	$('#config_content .EntryFieldSet .download_feed').click(function(event){
 				if(confirm($(event.target).attr('rel'))) {
 					$.fn.colorbox({
 						href:'download_rss_feed?'+$(event.target).parents('form:first').serialize(),
@@ -193,12 +201,12 @@ jQuery(document).ready(function($){
 				}
 				return false;
 			});
-        	$('.delete_feed').click(function(event){
+        	$('#config_content .EntryFieldSet .delete_feed').click(function(event){
 				if(confirm($(event.target).attr('rel')))
 					$(event.target).parents('form:first').attr('action','del_rss_feed').submit();
 				return false;
 			});
-        	$('.filter_order').change(function(event){ // update filter order
+        	$('#config_content .EntryFieldSet .filter_order').change(function(event){ // update filter order
 				window.location = $(event.target).val()+'&session='+apikey;
 			});
 			break;

@@ -25,6 +25,7 @@
 </head>
 <body>
 
+	<div id="main_menu">
     <ul class="sf-menu sf-navbar">
         <li>
             <a class="sf-with-ul">SABnzbd</a>
@@ -47,7 +48,7 @@
                     	</select></a></li>
                     	<li><a><input type="checkbox" id="confirmDeleteQueue" checked /> $T("Plush-confirmDeleteQueue")</a></li>
                     	<li><a><input type="checkbox" id="confirmDeleteHistory" checked /> $T("Plush-confirmDeleteHistory")</a></li>
-                    	<li class="tip" title="$T("Plush-explain-blockRefresh")"><a><input type="checkbox" id="blockRefresh" checked /> $T("Plush-blockRefresh")</a></li>
+                    	<li id="blockRefresh" title="$T("Plush-explain-blockRefresh")"><a><input type="checkbox" id="blockRefresh" checked /> $T("Plush-blockRefresh")</a></li>
                     </ul>
                 </li>
                 <li><a class="sf-with-ul">$T('menu-help')</a>
@@ -66,7 +67,7 @@
                 <li><a><form><input type="text" id="addID_input" size="18" /><input type="submit" id="addID" value="$T('Plush-fetch')" /></form></a></li>
                 <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 				<input type="hidden" name="apikey" value="$session" />
-                <li><a class="tip" title="$T('Plush-uploadTip')">
+                <li><a id="uploadTip" title="$T('Plush-uploadTip')">
 					<input type="hidden" name="mode" value="addfile" />
 					<input type="file" id="uploadNZBFile" name="name" size="10" />
 				</a></li>
@@ -110,7 +111,7 @@
                     </a></li>
                     <!--#end if#-->
 					<!--#if $varExists('newzbinDetails')#-->
-	                <li><a><input title="Newzbin - $T('link-getBookmarks')" id="fetch_newzbin_bookmarks" class="tip pointer" type="button" value="$T('link-getBookmarks')" /></a></li>
+	                <li><a><input title="Newzbin - $T('link-getBookmarks')" id="fetch_newzbin_bookmarks" class="pointer" type="button" value="$T('link-getBookmarks')" /></a></li>
 					<!--#end if#-->
                     </ul>
                 </li>
@@ -148,7 +149,7 @@
                 </li>
                 <li>
                     <a class="sf-with-ul">$T('Plush-sort')</a>
-                    <ul>
+                    <ul id="queue_sort_list">
                         <li><a class="queue_sort pointer" rel="avg_age&dir=asc">$T('Plush-sortAgeAsc')</small></a></li>
                         <li><a class="queue_sort pointer" rel="avg_age&dir=desc">$T('Plush-sortAgeDesc')</a></li>
                         <li><a class="queue_sort pointer" rel="name&dir=asc">$T('Plush-sortNameAsc')</a></li>
@@ -159,7 +160,7 @@
                 </li>
                 <li>
                     <a class="sf-with-ul">$T('button-pause')</a>
-                    <ul>
+                    <ul id="set_pause_list">
                         <li><a class="set_pause pointer" rel="5">$T('Plush-pause5m')</a></li>
                         <li><a class="set_pause pointer" rel="15">$T('Plush-pause15m')</a></li>
                         <li><a class="set_pause pointer" rel="30">$T('Plush-pause30m')</a></li>
@@ -198,6 +199,7 @@
         <li><a id="warning_message">$warning</a></li>
 	    <!--#end if#-->
     </ul>
+	</div>
 
 
     <div id="page-wrap">
@@ -211,7 +213,7 @@
             <div id="queue-buttons">
                 <ul>
                 	<li><span id="pause_int"></span></li>
-                    <li class="tip q_menu_pause <!--#if $paused then 'q_menu_paused' else 'q_menu_unpaused'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
+                    <li class="q_menu_pause <!--#if $paused then 'q_menu_paused' else 'q_menu_unpaused'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
                 </ul>
             </div>
 
@@ -237,7 +239,7 @@
                 <p class="loading">&nbsp;</p>
                 <input type="hidden" id="queue_view_preference" value="" />
             </div>
-			<div class="box_fatbottom">
+			<div class="box_fatbottom" id="box_fatbottom_queue">
 			    <div class="right_stats" id="queue_stats" nowrap></div>
 			    <div class="left_stats">
 			    	<select id="queue-pagination-perpage" class="pagination-perpage">
@@ -258,7 +260,7 @@
             <div class="box_banner_history">
                 <div class="box_banner_r">
                     <ul class="box_banner_menu">
-                        <li class="h_menu_purge show tip" title="$T('purgeHist')" rel="$T('Plush-confirmPurgeH')"></li>
+                        <li class="h_menu_purge show" id="hist_purge" title="$T('purgeHist')" rel="$T('Plush-confirmPurgeH')"></li>
                     </ul>
                 </div>
             </div>

@@ -457,7 +457,7 @@ jQuery(function($) { // safely invoke $ selector
 					$('#history_stats').html($.plush.histstats);
 	
 					// Tooltips for verbose notices
-					$('#history .verbose div, #history .tip').tooltip({
+					$('#history .verbose div').tooltip({
 						extraClass:	"tooltip",
 						track:		true
 					});
@@ -511,12 +511,6 @@ jQuery(function($) { // safely invoke $ selector
 		********************************************/
 		
 		initEvents : function() {
-
-			// Static tooltips
-			$('.tip').tooltip({
-				extraClass:	"tooltip",
-				track:		true
-			});
 
 
 			/********************************************
@@ -577,15 +571,15 @@ jQuery(function($) { // safely invoke $ selector
 			********************************************/
 			
 			// Main menu
-			$("ul.sf-menu").superfish(); // uses jQuery hoverIntent
+			$("#main_menu ul.sf-menu").superfish(); // uses jQuery hoverIntent
 
 			// Main menu positioning
-			$('.sf-menu, .sf-navbar').attr('style','margin-left:'+ ($(window).width()/2-250) +'px;');
+			$('#main_menu .sf-menu, #main_menu .sf-navbar').attr('style','margin-left:'+ ($(window).width()/2-250) +'px;');
 			$(window).bind('resize', function() {
-				$('.sf-menu, .sf-navbar').attr('style','margin-left:'+ ($(window).width()/2-250) +'px;');
+				$('#main_menu .sf-menu, #main_menu .sf-navbar').attr('style','margin-left:'+ ($(window).width()/2-250) +'px;');
 			});
-			if ($.browser.mozilla) $('.sf-navbar input').attr('style','margin: -4px 0px;');
-			else if ($.browser.safari) $('.sf-navbar input').attr('style','margin: -1px 0px 0px -1px;');
+			if ($.browser.mozilla) $('#main_menu .sf-navbar input').attr('style','margin: -4px 0px;');
+			else if ($.browser.safari) $('#main_menu .sf-navbar input').attr('style','margin: -1px 0px 0px -1px;');
 
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
@@ -669,7 +663,7 @@ jQuery(function($) { // safely invoke $ selector
 			});
 			
 			// Queue sort (6-in-1)
-			$('.queue_sort').click(function(event) {
+			$('#queue_sort_list .queue_sort').click(function(event) {
 				$.ajax({
 					type: "POST",
 					url: "tapi",
@@ -679,7 +673,7 @@ jQuery(function($) { // safely invoke $ selector
 			});
 			
 			// Queue pause intervals
-			$('.set_pause').click(function(event) {
+			$('#set_pause_list .set_pause').click(function(event) {
 				var minutes = $(event.target).attr('rel');
 				if (minutes == "custom")
 					minutes = prompt($(event.target).attr('title'));
@@ -712,7 +706,7 @@ jQuery(function($) { // safely invoke $ selector
 			// Skip queue refresh on mouseover
 			$('#queueTable').live("mouseover", function(){ $.plush.skipRefresh=true; });
 			$('#queueTable').live("mouseout", function(){ $.plush.skipRefresh=false; });
-			$('.box_fatbottom').live("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
+			$('#box_fatbottom_queue').live("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
 			
 			// NZB pause/resume individual toggle
 			$('#queueTable .download-grippie').live('click',function(event){
@@ -827,7 +821,7 @@ jQuery(function($) { // safely invoke $ selector
 				});
 				
 				// NZB change priority
-				$('#queueTable .proc_priority').change(function(){
+				$('#queueTable .options .proc_priority').change(function(){
 					var nzbid = $(this).parent().parent().attr('id');
 					var oldPos = $('#'+nzbid)[0].rowIndex + $.plush.queuecurpage * $.plush.queueperpage;
 					$.ajax({
@@ -849,7 +843,7 @@ jQuery(function($) { // safely invoke $ selector
 				});
 				
 				// 3-in-1 change nzb [category + processing + script]
-				$('.change_cat, .change_opts, .change_script').change(function(){
+				$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').change(function(){
 					$.ajax({
 						type: "POST",
 						url: "tapi",
@@ -949,7 +943,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 				
 				// modal for viewing script logs
-				$('.modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+				$('#historyTable .verbose .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
 			}); // end livequery
 
@@ -962,8 +956,8 @@ jQuery(function($) { // safely invoke $ selector
 			});
 			
 			// Purge
-			$('.h_menu_purge').click(function(event) {
-				if (confirm($('.h_menu_purge').attr('rel'))) {
+			$('#hist_purge').click(function(event) {
+				if (confirm($('#hist_purge').attr('rel'))) {
 					$.ajax({
 						type: "POST",
 						url: "tapi",
@@ -972,6 +966,22 @@ jQuery(function($) { // safely invoke $ selector
 					});
 				}
 			});
+			
+
+			/********************************************
+			*********************************************
+			
+				Misc Methods
+			
+			*********************************************
+			********************************************/
+			
+			// Static tooltips
+			$('#blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pause_resume, #hist_purge').tooltip({
+				extraClass:	"tooltip",
+				track:		true
+			});
+
 			
 		} // end $.plush.initEvents()
 

@@ -942,7 +942,6 @@ fieldset.EntryFieldSet {
 #config_content legend {
     background-position: 2% 50%;
     background-repeat: no-repeat;
-    border: 1px solid white;
     padding:0px;
     padding-left:32px;
     padding-right:4px;

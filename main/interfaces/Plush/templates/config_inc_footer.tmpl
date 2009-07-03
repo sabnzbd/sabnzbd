@@ -3,26 +3,26 @@
 
     #if $pane=="Connections"#
         <div class="left_links config_margin">
-            <a class="rounded" id="force_disconnect" href="disconnect?session=$session">$T('link-forceDisc')</a>
+            <a id="force_disconnect" href="disconnect?session=$session">$T('link-forceDisc')</a>
         </div>
     #else if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="Index Sites" or $pane=="Sorting"#
         <div class="left_links config_margin">
-            <a class="rounded" id="save">$T('button-saveChanges')</a>
+            <a id="save">$T('button-saveChanges')</a>
         </div>
     #end if#
     #if $pane=="General"#
         <div class="left_links">
-            <a class="rounded" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#" rel2="$T('restart1')">$T('button-restart') SABnzbd</a>
+            <a id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#" rel2="$T('restart1')">$T('button-restart') SABnzbd</a>
         </div>
     #end if#
     #if $pane=="Email"#
         <div class="left_links">
-            <a class="rounded" id="test_email" href="../../connections/testmail?session=$session" rel="$T('askTestEmail')">$T('link-testEmail')</a>
+            <a id="test_email" href="../../connections/testmail?session=$session" rel="$T('askTestEmail')">$T('link-testEmail')</a>
         </div>
     #end if#
 
     <div class="right_links">
-        <a class="rounded" id="help" target="_blank" href="$helpuri$help_uri">$T('menu-help')</a>
+        <a id="help" target="_blank" href="$helpuri$help_uri">$T('menu-help')</a>
     </div>
 
 </body>
