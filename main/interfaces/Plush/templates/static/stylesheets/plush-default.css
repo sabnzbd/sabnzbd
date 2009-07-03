@@ -229,11 +229,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 .show { display: inline; }
 
-.queue_pill_l {display:inline; background: url(../images/plush-default/q_pill_l.png) 0 0 no-repeat;padding-left:9px;}
-.queue_pill_m {display:inline; background: url(../images/plush-default/q_pill_m.png) 0 0 repeat-x; width:100px; }
-.queue_pill_r {display:inline; background: url(../images/plush-default/q_pill_r.png) 100% 0 no-repeat; height:51px;}
-
-
 
 /*  queueTable shared by queue and history */
 .queueTable {
