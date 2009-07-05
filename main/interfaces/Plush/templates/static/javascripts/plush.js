@@ -138,7 +138,7 @@ jQuery.fn.pagination = function(maxentries, opts){
 				page_id = page_id<0?0:(page_id<np?page_id:np-1); // Normalize page id to sane value
 				appendopts = jQuery.extend({text:page_id+1, classes:""}, appendopts||{});
 				if(page_id == current_page){
-					var lnk = jQuery("<span class='current'>"+(appendopts.text)+"</span>");
+					var lnk = jQuery("<span class='current loading'>"+(appendopts.text)+"</span>"); // modification by pairofdimes
 				}
 				else
 				{
@@ -405,7 +405,10 @@ jQuery(function($) { // safely invoke $ selector
 					// Update warnings count/latest warning text in main menu
 					$('#have_warnings').html('('+$.plush.have_warnings+')');
 					($.plush.have_warnings > 0) ? $('#last_warning').html($.plush.last_warning) : $('#last_warning').html('');
-	
+					
+					// Remove spinner graphic from pagination
+					$('#queue-pagination span').removeClass('loading');
+					
 					// *** don't forget the live() & livequery() methods defined in $.plush.initEvents() ***
 				},
 				error: function() {
@@ -453,6 +456,9 @@ jQuery(function($) { // safely invoke $ selector
 						extraClass:	"tooltip",
 						track:		true
 					});
+					
+					// Remove spinner graphic from pagination
+					$('#history-pagination span').removeClass('loading');
 					
 					// *** don't forget the live() & livequery() methods defined in $.plush.initEvents() ***
 				}
