@@ -618,21 +618,6 @@ li.sfHover > a > .sf-sub-indicator {
     background-position: -10px 0; /* arrow hovers for modern browsers*/
 }
 
-/*** shadows for all but IE6 ***/
-/*
-.sf-shadow ul {
-    background:    url('../images/plush-default/shadow.png') no-repeat bottom right;
-    padding: 0 8px 9px 0;
-    -moz-border-radius-bottomleft: 17px;
-    -moz-border-radius-topright: 17px;
-    -webkit-border-top-right-radius: 17px;
-    -webkit-border-bottom-left-radius: 17px;
-}
-.sf-shadow ul.sf-shadow-off {
-    background: transparent;
-}
-*/
-
 /* for jquery superfish plugin (main menu) */
 /*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
 .sf-navbar {
@@ -970,7 +955,6 @@ fieldset.EntryFieldSet {
 #configbox_add_schedule            	{ background-image: url(../images/plush-default/config/add_schedule.png); }
 #configbox_current_schedules    	{ background-image: url(../images/plush-default/config/current_schedules.png); }
 #configbox_new_feed_url            	{ background-image: url(../images/plush-default/config/new_feed_url.png); }
-/*#configbox_feed_definition        { background-image: url(../images/plush-default/config/feed_definition.png); }*/
 #configbox_email_options        	{ background-image: url(../images/plush-default/config/email_options.png); }
 #configbox_email_account_settings	{ background-image: url(../images/plush-default/config/email_account_settings.png); }
 #configbox_newzbin_account_info    	{ background-image: url(../images/plush-default/config/newzbin_account_info.png); }
@@ -1031,8 +1015,6 @@ fieldset.EntryFieldSet {
 
 #config_container {
     background: #bbb;
-/*    width: 655px; 
-    height: 435px; */
     min-height: 435px;
     text-align: left;
     font-size: 10pt;
