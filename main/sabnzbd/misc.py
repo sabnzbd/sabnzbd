@@ -28,6 +28,8 @@ import webbrowser
 import tempfile
 import shutil
 import threading
+import subprocess
+import socket
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -955,3 +957,58 @@ def create_https_certificates(ssl_cert, ssl_key):
         return False
 
     return True
+
+
+def find_on_path(targets):
+    """ Search the PATH for a program and return full path """
+    if sabnzbd.WIN32:
+        paths = os.getenv('PATH').split(';')
+    else:
+        paths = os.getenv('PATH').split(':')
+
+    if isinstance(targets, basestring):
+        targets = ( targets, )
+
+    for path in paths:
+        for target in targets:
+            target_path = os.path.abspath(os.path.join(path, target))
+            if os.access(target_path, os.X_OK):
+                return target_path
+    return None
+
+
+#------------------------------------------------------------------------------
+_RE_IP4 = re.compile(r'inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)')
+_RE_IP6 = re.compile(r'inet6\s+(addr:\s*){0,1}([0-9a-f:]+)', re.I)
+
+def ip_extract():
+    """ Return list of IP addresses of this system """
+    ips = []
+    program = find_on_path('ip')
+    if program:
+        program = [program, 'a']
+    else:
+        program = find_on_path('ifconfig')
+        if program: program = [program]
+
+    if sabnzbd.WIN32 or not program:
+        try:
+            info = socket.getaddrinfo(socket.gethostname(), None)
+        except:
+            # Hostname does not resolve, use localhost
+            info = socket.getaddrinfo('localhost', None)
+        for item in info:
+            ips.append(item[4][0])
+    else:
+        p = subprocess.Popen(program, shell=False, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             startupinfo=None, creationflags=0)
+        output = p.stdout.read()
+        ret = p.wait()
+        for line in output.split('\n'):
+            m = _RE_IP4.search(line)
+            if not (m and m.group(2)):
+                m = _RE_IP6.search(line)
+            if m and m.group(2):
+                ips.append(m.group(2))
+    return ips

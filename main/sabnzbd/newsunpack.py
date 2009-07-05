@@ -29,7 +29,7 @@ from time import time
 import sabnzbd
 from sabnzbd.codecs import TRANS, unicode2local, reliable_unpack_names
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
-from sabnzbd.misc import format_time_string
+from sabnzbd.misc import format_time_string, find_on_path
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T
 
@@ -63,75 +63,30 @@ IONICE_COMMAND = None
 def find_programs(curdir):
     """Find external programs
     """
+    def check(path, program):
+        p = os.path.abspath(os.path.join(path, program))
+        if os.access(p, os.X_OK):
+            return p
+        else:
+            return None
+
     if sabnzbd.DARWIN:
-        p = os.path.abspath(curdir + '/osx/par2/par2-classic')
-        if os.access(p, os.X_OK):
-            sabnzbd.newsunpack.PAR2_COMMAND = p
-        p = os.path.abspath(curdir + '/osx/unrar/unrar')
-        if os.access(p, os.X_OK):
-            sabnzbd.newsunpack.RAR_COMMAND = p
+        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
+        sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
 
     if sabnzbd.WIN32:
-        p = os.path.abspath(curdir + '/win/par2/par2.exe')
-        if os.access(p, os.X_OK):
-            sabnzbd.newsunpack.PAR2_COMMAND = p
-        p = os.path.abspath(curdir + '/win/par2/par2-classic.exe')
-        if os.access(p, os.X_OK):
-            sabnzbd.newsunpack.PAR2C_COMMAND = p
-        p = os.path.abspath(curdir + '/win/unrar/UnRAR.exe')
-        if os.access(p, os.X_OK):
-            sabnzbd.newsunpack.RAR_COMMAND = p
-        p = os.path.abspath(curdir + '/win/unzip/unzip.exe')
-        if os.access(p, os.X_OK):
-            sabnzbd.newsunpack.ZIP_COMMAND = p
+        sabnzbd.newsunpack.PAR2_COMMAND =  check(curdir, 'win/par2/par2.exe')
+        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2-classic.exe')
+        sabnzbd.newsunpack.RAR_COMMAND =   check(curdir, 'win/unrar/UnRAR.exe')
+        sabnzbd.newsunpack.ZIP_COMMAND =   check(curdir, 'win/unzip/unzip.exe')
     else:
-        lookhere = os.getenv('PATH').split(':')
-        findpar2 = ('par2',)
-        findrar = ('rar', 'unrar', 'rar3', 'unrar3')
-        findnice = ('nice',)
-        findionice = ('ionice',)
-        findzip = ('unzip',)
-
-        for path in lookhere:
-            if not sabnzbd.newsunpack.PAR2_COMMAND:
-                for par2 in findpar2:
-                    par2_path = os.path.join(path, par2)
-                    par2_path = os.path.abspath(par2_path)
-                    if os.access(par2_path, os.X_OK):
-                        sabnzbd.newsunpack.PAR2_COMMAND = par2_path
-                        break
-
-            if not sabnzbd.newsunpack.RAR_COMMAND:
-                for _rar in findrar:
-                    rar_path = os.path.join(path, _rar)
-                    rar_path = os.path.abspath(rar_path)
-                    if os.access(rar_path, os.X_OK):
-                        sabnzbd.newsunpack.RAR_COMMAND = rar_path
-                        break
-
-            if not sabnzbd.newsunpack.NICE_COMMAND:
-                for _nice in findnice:
-                    nice_path = os.path.join(path, _nice)
-                    nice_path = os.path.abspath(nice_path)
-                    if os.access(nice_path, os.X_OK):
-                        sabnzbd.newsunpack.NICE_COMMAND = nice_path
-                        break
-
-            if not sabnzbd.newsunpack.IONICE_COMMAND:
-                for _ionice in findionice:
-                    ionice_path = os.path.join(path, _ionice)
-                    ionice_path = os.path.abspath(ionice_path)
-                    if os.access(ionice_path, os.X_OK):
-                        sabnzbd.newsunpack.IONICE_COMMAND = ionice_path
-                        break
-
-            if not sabnzbd.newsunpack.ZIP_COMMAND:
-                for _zip in findzip:
-                    zip_path = os.path.join(path, _zip)
-                    zip_path = os.path.abspath(zip_path)
-                    if os.access(zip_path, os.X_OK):
-                        sabnzbd.newsunpack.ZIP_COMMAND = zip_path
-                        break
+        if not sabnzbd.newsunpack.PAR2_COMMAND:
+            sabnzbd.newsunpack.PAR2_COMMAND = find_on_path('par2')
+        if not sabnzbd.newsunpack.RAR_COMMAND:
+            sabnzbd.newsunpack.RAR_COMMAND = find_on_path(('rar', 'unrar', 'rar3', 'unrar3',))
+        sabnzbd.newsunpack.NICE_COMMAND = find_on_path('nice')
+        sabnzbd.newsunpack.IONICE_COMMAND = find_on_path('ionice')
+        sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
 
 
 #------------------------------------------------------------------------------
@@ -171,7 +126,6 @@ def SimpleRarExtract(rarfile, name):
     output = p.stdout.read()
     ret = p.wait()
     return ret, output
-
 
 #------------------------------------------------------------------------------
 
