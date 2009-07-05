@@ -11,21 +11,20 @@ function checkRequired()
 $(document).ready(function() {
     checkRequired()
     $("#serverTest").click(function(){
-        $('#serverResponse').html('Checking...');
-        $.ajax({
-            type: "POST",
-            url: "servertest",
-            data: $("form").serialize(),
-            success: function(result){
-                if (result == "Connected Successfully!"){
+        $('#serverResponse').html(txtChecking);
+        $.getJSON(
+            "/tapi?mode=config&name=test_server&output=json",
+            $("form").serialize(),
+            function(result) {
+                if (result.value.result){
                     cls = "success"
                 } else {
                     cls = "failed"
                 }
-                r = '<span class="' + cls + '">' + result + '</span>';
+                r = '<span class="' + cls + '">' + result.value.message + '</span>';
                 $('#serverResponse').html(r);
             }
-        });
+        );
     });
     $(".validate-text").blur(function(){
         if (this.value || this.checked){
