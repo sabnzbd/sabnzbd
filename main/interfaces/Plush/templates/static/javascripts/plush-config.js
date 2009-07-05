@@ -163,7 +163,19 @@ jQuery(document).ready(function($){
         	break;
 
 		case 'Servers':
-        	$('form :button').click(function(event){ // delete server
+			$('form .testServer').click(function(event){ // test server
+				$(event.target).next('span').addClass('loading');
+				$.ajax({
+					type: "POST",
+					url: "../../tapi",
+					data: "mode=config&name=test_server&"+ $(event.target).parents('form:first').serialize() +"&apikey="+$('#apikey').val(),
+					success: function(msg){
+						alert(msg);
+						$(event.target).next('span').removeClass('loading');
+					}
+				});
+			});
+        	$('form .delServer').click(function(event){ // delete server
 				if(confirm($(event.target).attr('rel')))
 					$(event.target).parents('form:first').attr('action','delServer').submit();
 				return false;

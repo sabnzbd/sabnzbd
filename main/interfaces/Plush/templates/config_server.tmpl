@@ -44,7 +44,11 @@
     	<td><label for="optional"><strong>$T('srv-optional')</strong></label></td>
     </tr>
 
-    <tr><td></td><td><br/><input type="submit" value="$T('button-addServer')"/></td></tr>
+    <tr><td></td><td><br/>
+		<input type="submit" value="$T('button-addServer')" />
+		<input type="button" value="$T('button-testServer')" class="testServer" />
+		<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+	</td></tr>
 
     </table>
 
@@ -100,15 +104,16 @@
         <td align="right"><input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> /></td>
         <td><label for="optional$cur"><strong>$T('srv-optional')</strong></label></td>
     </tr>
-
-    <tr><td colspan="2">
-        <br/><input type="hidden" name="server" value="$server"/>
-        <input type="button" value="$T('button-delServer')" rel="$T('Plush-confirm') "/>
-        <input type="submit" value="$T('button-saveChanges')"/>
-    </td></tr>
-
     </table>
 
+	<table><tr><td colspan="2">
+		<br/><input type="hidden" name="server" value="$server"/>
+		<input type="button" value="$T('button-delServer')" class="delServer" rel="$T('Plush-confirm') "/>
+		<input type="submit" value="$T('button-saveChanges')"/>
+		<input type="button" value="$T('button-testServer')" class="testServer" />
+		<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+	</td></tr></table>
+	
 </fieldset>
 </form>
 <!--#end for#-->
