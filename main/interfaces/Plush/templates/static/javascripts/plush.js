@@ -519,7 +519,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=addid&name="+$("#addID_input").val()+"&pp="+$("#addID_pp").val()+"&script="+$("#addID_script").val()+"&cat="+$("#addID_cat").val()+"&priority="+$("#addID_priority").val()+'&apikey='+$.plush.apikey,
+						data: {mode:'addid',name:$("#addID_input").val(),pp:$("#addID_pp").val(),script:$("#addID_script").val(),cat:$("#addID_cat").val(),priority:$("#addID_priority").val(),apikey:$.plush.apikey},
 						success: $.plush.refreshQueue
 					});
 					$("#addID_input").val('');
@@ -953,7 +953,6 @@ jQuery(function($) { // safely invoke $ selector
 				track:		true
 			});
 
-			
 		} // end $.plush.initEvents()
 
 	}; // end $.plush object
@@ -967,5 +966,5 @@ jQuery(document).ready(function($){
 	$.preloadCssImages();	// jQuery plugin that preloads all images from all stylesheets
 	$.plush.initEvents();	// Initialize Plush UI
 	$.plush.refresh();		// Initiate Plush refresh cycle
-	
+			
 });
