@@ -57,7 +57,6 @@ eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a
 // *****************************************************************
 // Plush config code as follows, by pairofdimes (see LICENSE-CC.txt)
 
-
 jQuery(document).ready(function($){
 
 	// this is a jquery plugin
@@ -77,6 +76,14 @@ jQuery(document).ready(function($){
 	    	$('#config_content legend').corner("round");
 	    	$('#force_disconnect, #save, #sabnzbd_restart, #test_email, #help').corner("round");
 	}
+
+	// Confirm user exits without saving changes first
+    $(':input','form').change(function(){
+		window.onbeforeunload = function(){return confirmWithoutSavingPrompt;}
+	});
+	$('form').submit(function(){
+		window.onbeforeunload = null;
+	});
 	
     switch(config_pane) {
 
@@ -231,6 +238,7 @@ jQuery(document).ready(function($){
     
     // page's save button for those pages that use it
     $('#save').click(function(){
+		window.onbeforeunload = null;
     	$('form').submit();
     });
 

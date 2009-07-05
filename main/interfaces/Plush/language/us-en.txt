@@ -42,6 +42,7 @@ everything        Everything
 prev              Prev
 next              Next
 confirm           Are you sure?
+confirmWithoutSavingPrompt Changes have not been saved, and will be lost.
 
 # Queue
 idle              IDLE
