@@ -27,7 +27,7 @@ from Cheetah.Template import Template
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.lang import T, list_languages, reset_language
-from sabnzbd.utils.servertests import test_nntp_server
+from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.misc import IntConv
 import sabnzbd.interface
 import sabnzbd.config as config
@@ -270,23 +270,5 @@ class Wizard:
 
     @cherrypy.expose
     def servertest(self, **kwargs):
-        # Grab the host/port/user/pass/connections/ssl
-        host = kwargs.get('host','')
-        if not host:
-            return 'Hostname not set'
-        username = kwargs.get('username',None)
-        password = kwargs.get('password',None)
-        connections = IntConv(kwargs.get('connections',0))
-        if not connections:
-            return 'Connections not set'
-        ssl = IntConv(kwargs.get('ssl',0))
-        port = IntConv(kwargs.get('port',0))
-        if not port:
-            if ssl:
-                port = 563
-            else:
-                port = 119
-
-
-        return test_nntp_server(host, port, username=username, \
-                                password=password, ssl=ssl)
+        result, msg = test_nntp_server_dict(kwargs)
+        return msg

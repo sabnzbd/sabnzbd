@@ -38,9 +38,11 @@
             <label><span class="label">$T('srv-enable'):</span>
 			<input class="radio" type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></label>
    		<br class="clear" />
+        
+        <div id="$servers[$server]['host']$servers[$server]['port']-result" class="server-test">$T('srv-testHint')</div>
 		<input type="hidden" name="server" value="$server">
 
-
+<input type="button" class="submitindent" size="40" value="$T('button-testServer')" onclick="javascript:testServer('$servers[$server]['host']$servers[$server]['port']')">
 	<p><input type="button" class="submitindent" size="40" value="$T('button-saveChanges')" onclick="javascript:submitconfig('config/server/saveServer',this,'$servers[$server]['host']$servers[$server]['port']')">
 		<br class="clear" />
 		<input type="button" class="submitindent" size="40" value="$T('button-delServer')" onclick="javascript:submitconfig('config/server/delServer', this,'$servers[$server]['host']$servers[$server]['port']','config/server','0')">

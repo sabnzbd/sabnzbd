@@ -336,6 +336,20 @@ srv-enable               Enable
 button-addServer         Add Server
 button-delServer         Remove Server
 error-needServer         Server address required
+button-testServer        Test Server
+srv-testing              Testing server details...
+srv-testHint             Click below to test.
+srv-success              Connection Successful!
+srv-noHost               The hostname is not set.
+srv-noConnections        There are no connections set. Please set at least one connection.
+srv-starredPass          Password masked in ******, please re-enter
+srv-invalidDetails       Invalid server details
+srv-timedoutSSL          Timed out: Try enabling SSL or connecting on a different port.
+srv-timedout             Timed out
+srv-failedAuth           Authentication failed, check username/password.
+srv-noAuth               Server requires username and password.
+srv-tooManyConnections   Too many connections, please pause downloading or try again later
+srv-generalFail@1        Cound not determine connection result (%s)
 
 # Config->Scheduling
 configSchedule           Scheduling configuration

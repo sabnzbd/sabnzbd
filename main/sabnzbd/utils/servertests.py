@@ -27,6 +27,30 @@ from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.downloader import Server, clues_login, clues_too_many
 from sabnzbd.config import get_servers
 from sabnzbd.codecs import xml_name
+from sabnzbd.interface import IntConv
+from sabnzbd.lang import T
+
+def test_nntp_server_dict(kwargs):
+    # Grab the host/port/user/pass/connections/ssl
+    host = kwargs.get('host','')
+    if not host:
+        return False, T('srv-noHost')
+    username = kwargs.get('username',None)
+    password = kwargs.get('password',None)
+    connections = IntConv(kwargs.get('connections',0))
+    if not connections:
+        return False, T('srv-noConnections')
+    ssl = IntConv(kwargs.get('ssl',0))
+    port = IntConv(kwargs.get('port',0))
+    if not port:
+        if ssl:
+            port = 563
+        else:
+            port = 119
+
+
+    return test_nntp_server(host, port, username=username, \
+                        password=password, ssl=ssl)
 
 def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout=120):
     ''' Will connect (blocking) to the nttp server and report back any errors '''
@@ -40,11 +64,11 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout
                 password = srv.password.get()
                 got_pass = True
         if not got_pass:
-            return 'Password masked in ******, please re-enter'
+            return False, T('srv-starredPass')
     try:
         s = Server(-1, host, port, timeout, 1, 0, ssl, username, password)
     except:
-        return 'Invalid server details'
+        return False, T('srv-invalidDetails')
 
     try:
         nw = NewsWrapper(s, -1, block=True)
@@ -56,14 +80,14 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout
 
     except socket.timeout, e:
         if port != 119 and not ssl:
-            return 'Timed out: Try enabling SSL or connecting on a different port.'
+            return False, T('srv-timedoutSSL')
         else:
-            return 'Timed out'
+            return False, T('srv-timedout')
     except socket.error, e:
-        return xml_name(str(e))
+        return False, xml_name(str(e))
 
     except:
-        return xml_name(str(sys.exc_info()[1]))
+        return False, xml_name(str(sys.exc_info()[1]))
 
 
     if not username or not password:
@@ -72,28 +96,25 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout
             nw.lines = []
             nw.recv_chunk(block=True)
         except:
-            return xml_name(str(sys.exc_info()[1]))
+            return False, xml_name(str(sys.exc_info()[1]))
 
     # Could do with making a function for return codes to be used by downloader
     code = nw.lines[0][:3]
 
-    if code == '502':
-        return 'Authentication failed, check username/password'
-
-    elif code == '480':
-        return 'Server requires username and password'
+    if code == '480':
+        return False, T('srv-noAuth')
 
     elif code == '100' or code.startswith('2') or code.startswith('4'):
-        return 'Connected Successfully!'
+        return True, T('srv-success')
 
-    elif clues_login(nw.lines[0]):
-        return 'Authentication failed, check username/password'
+    elif code == '502' or clues_login(nw.lines[0]):
+        return False, T('srv-failedAuth')
 
     elif clues_too_many(nw.lines[0]):
-        return 'Too many connections, please pause downloading or try again later'
+        return False, T('srv-tooManyConnections')
 
     else:
-        return 'Cound not determine connection result (%s)' % xml_name(nw.lines[0])
+        return False, T('srv-generalFail@1') % xml_name(nw.lines[0])
 
     # Close the connection
     nw.terminate()

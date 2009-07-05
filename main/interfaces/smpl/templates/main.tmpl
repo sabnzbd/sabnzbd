@@ -250,7 +250,6 @@ if (cook!=null && cook!="")
 	for(i=1; i<20; i++) {
 	   speedlog[i-1] = speedlog[i];
 	}
-
 	speedlog[19] = speed;
 
 	var speedstr = speedlog.join(',');
@@ -752,6 +751,35 @@ function loadtitle() {
         })
     }
 
+    function testServer(formName)
+    {
+        document.getElementById(formName+'-result').innerHTML = $T('srv-testing');
+        element = document.getElementById(formName);
+        values = getFormValues(element);
+        
+        
+        url = "tapi?mode=config&name=test_server&output=json&session="+session;
+		var d = doXHR(url,
+	    {
+		    method:'POST',
+		    sendContent:values,
+		    headers: {"Content-Type":"application/x-www-form-urlencoded"}
+
+	    });
+        d.addCallback(function(d)
+        {
+            var result = evalJSON(d.responseText);
+            if (result.value.result) {
+                cls = 'success';
+                
+            } else {
+                cls = 'failure';
+            }
+            
+            message = '<span class="'+ cls +'">'+ result.value.message +'</span>';
+            document.getElementById(formName+'-result').innerHTML = message;
+        })  
+    }
 
 	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post
 	function submitconfig(extra, saveelement, element, url2, refresh)
@@ -878,7 +906,7 @@ function restart()
 function generateAPIKey()
 {
     session = document.getElementById('apikey').value;
-    url = "tapi?mode=config&name=set_apikey&apikey="+session;
+    url = "tapi?mode=config&name=set_apikey&session="+session;
     var res = doSimpleXMLHttpRequest(url);
     res.addCallback(function (res)
     {
@@ -1054,13 +1082,13 @@ function loadingJSON(){
 					<br />
 					<li><a class="bold" id="status2" onClick="toggle_paused()">$statusstr2</a> <a onClick="toggle('hiddenTimedPause','blind',{duration:0.2})"><img src="static/images/bullet_arrow_down.png" border=0 /></a></li>
 					<ul id="hiddenTimedPause" class="secondul">
-						<li><a class="config" onClick="javascript:timedPause(5)">5 $T("mins")</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(15)">15 $T("mins")</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(30)">30 $T("mins")</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(60)">1 $T("hour")</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(120)">2 $T("hour")</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(180)">3 $T("hour")</a></li>
-                        <li><a class="config" onClick="javascript:timedPause(300)">5 $T("hour")</a></li>
+						<li><a class="config" onClick="javascript:timedPause(5)">5 $T("minutes")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(15)">15 $T("minutes")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(30)">30 $T("minutes")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(60)">1 $T("hours")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(120)">2 $T("hours")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(180)">3 $T("hours")</a></li>
+                        <li><a class="config" onClick="javascript:timedPause(300)">5 $T("hours")</a></li>
                         <li><a class="config" onClick="javascript:timedPause()">$T("smpl-custom")</a></li>
 
 					</ul>

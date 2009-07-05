@@ -352,3 +352,16 @@ span.unselected {
 
 .underline{text-decoration:underline;}
 #hiddenTimedPause{display:none;}
+
+.server-test {
+    border: 1px dotted #ccc;
+    padding:5px;
+}
+
+.success {
+    color: green;
+}
+
+.failure {
+    color: red;
+}

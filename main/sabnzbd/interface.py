@@ -55,6 +55,7 @@ import sabnzbd.bpsmeter as bpsmeter
 import sabnzbd.nzbqueue as nzbqueue
 from sabnzbd.database import get_history_handle, build_history_info, unpack_history_info
 import sabnzbd.wizard
+from sabnzbd.utils.servertests import test_nntp_server_dict
 
 from sabnzbd.constants import *
 from sabnzbd.lang import T, Tspec, list_languages, reset_language
@@ -786,6 +787,16 @@ class MainPage:
                 config.save_config()
                 return report(output, keyword='apikey', data=cfg.API_KEY.get())
 
+            elif name == 'test_server':
+               
+                result, msg = test_nntp_server_dict(kwargs)
+                response = {'result': result, 'message': msg}
+                
+                if output:
+                    return report(output, data=response)
+                else:
+                    return msg
+            
             else:
                 return report(output, _MSG_NOT_IMPLEMENTED)
 
@@ -1731,6 +1742,10 @@ class ConfigServer:
     @cherrypy.expose
     def saveServer(self, **kwargs):
         return handle_server(kwargs, self.__root)
+    
+    @cherrypy.expose
+    def testServer(self, **kwargs):
+        return handle_server_test(kwargs, self.__root)
 
 
     @cherrypy.expose
@@ -1796,6 +1811,10 @@ def handle_server(kwargs, root=None):
     downloader.update_server(old_server, server)
     if root:
         raise dcRaiser(root, kwargs)
+    
+def handle_server_test(kwargs, root):
+    result, msg = test_nntp_server_dict(kwargs)
+    return msg
 
 
 def handle_server_api(output, kwargs):
