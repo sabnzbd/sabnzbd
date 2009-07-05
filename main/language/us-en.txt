@@ -538,7 +538,7 @@ warn-missingKey          Missing Session key
 error-missingKey         Error: Session Key Required
 warn-badSession          Incorrect Session key
 error-badKey             Error: Session Key Incorrect
-warn-authMissing         Authentication missing, please enter username/password from Config-&gt;General\
+warn-authMissing         Authentication missing, please enter username/password from Config->General\
                          into your 3rd party program:
 error-authMissing        Error: Missing authentication
 warn-apikeyNone          API Key missing, please enter the api key from Config->General\
