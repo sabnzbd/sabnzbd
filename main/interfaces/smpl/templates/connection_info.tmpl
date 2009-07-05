@@ -16,8 +16,7 @@ $T('logging'):
         <li>
             $server[0]:$server[1]: $server[2] <!--#if int($server[4])#--><img src="static/images/nuvola/kgpg.png" /><!--#end if#-->
             <!--#if not $server[5]#-->
-                <!--#set $srv_id= "unblock_server('" + $server[0] + "','" + str($server[1]) + "');"#-->
-                <a class="config" onClick="$srv_id">
+                <a class="config" onClick="unblock_server($server[0], $server[1])">
                 ($T('server-blocked'))</a>
                 &nbsp;&nbsp;$server[6]
             <!--#end if#-->
