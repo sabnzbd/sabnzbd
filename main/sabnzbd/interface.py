@@ -788,15 +788,15 @@ class MainPage:
                 return report(output, keyword='apikey', data=cfg.API_KEY.get())
 
             elif name == 'test_server':
-               
+
                 result, msg = test_nntp_server_dict(kwargs)
                 response = {'result': result, 'message': msg}
-                
+
                 if output:
                     return report(output, data=response)
                 else:
                     return msg
-            
+
             else:
                 return report(output, _MSG_NOT_IMPLEMENTED)
 
@@ -1742,7 +1742,7 @@ class ConfigServer:
     @cherrypy.expose
     def saveServer(self, **kwargs):
         return handle_server(kwargs, self.__root)
-    
+
     @cherrypy.expose
     def testServer(self, **kwargs):
         return handle_server_test(kwargs, self.__root)
@@ -1811,7 +1811,7 @@ def handle_server(kwargs, root=None):
     downloader.update_server(old_server, server)
     if root:
         raise dcRaiser(root, kwargs)
-    
+
 def handle_server_test(kwargs, root):
     result, msg = test_nntp_server_dict(kwargs)
     return msg
@@ -3546,6 +3546,7 @@ def options_list(output):
         {
         'yenc' : sabnzbd.decoder.HAVE_YENC,
         'par2' : sabnzbd.newsunpack.PAR2_COMMAND,
+        'par2c' : sabnzbd.newsunpack.PAR2C_COMMAND,
         'rar' : sabnzbd.newsunpack.RAR_COMMAND,
         'zip' : sabnzbd.newsunpack.ZIP_COMMAND,
         'nice' : sabnzbd.newsunpack.NICE_COMMAND,
