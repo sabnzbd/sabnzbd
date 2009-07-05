@@ -51,6 +51,12 @@ import os
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
 def GetServerParms(host, port):
+    # Make sure port is numeric (unicode input not supported)
+    try:
+        int(port)
+    except:
+        # Could do with a warning here
+        port = 119
     try:
         # Standard IPV4
         return socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
