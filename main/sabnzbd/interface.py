@@ -77,7 +77,7 @@ def check_server(host, port):
     if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
         return badParameterResponse(T('msg-warning-ambiLocalhost'))
 
-    if GetServerParms(host, port):
+    if GetServerParms(host, IntConv(port)):
         return ""
     else:
         return badParameterResponse(T('msg-invalidServer@2') % (host, port))
