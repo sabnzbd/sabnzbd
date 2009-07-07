@@ -723,7 +723,7 @@ class NzbObject(TryList):
         self.__status = status
 
     def get_status(self):
-        #returns a string of the current history status
+        #returns a string of the current queued status
         return self.__status
 
     def get_nzo_id(self):

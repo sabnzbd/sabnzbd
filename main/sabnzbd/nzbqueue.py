@@ -512,7 +512,7 @@ class NzbQueue(TryList):
         ''' Check if the queue contains any Forced
         Priority items to download while paused '''
         for nzo in self.__nzo_list:
-            if nzo.get_priority() == TOP_PRIORITY:
+            if nzo.get_priority() == TOP_PRIORITY and nzo.get_status() != 'Paused':
                 return True
         return False
 
