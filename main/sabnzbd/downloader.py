@@ -414,12 +414,7 @@ class Downloader(Thread):
                         nw.article = article
 
                         if nw.connected:
-                            if cfg.SEND_GROUP.get() and nw.article.nzf.nzo.get_group() != nw.group:
-                                logging.info("Sending group")
-                                self.__send_group(nw)
-                            else:
-                                self.__request_article(nw)
-
+                            self.__request_article(nw)
                         else:
                             try:
                                 logging.info("%s@%s:%s: Initiating connection",
@@ -687,32 +682,19 @@ class Downloader(Thread):
 
     def __request_article(self, nw):
         try:
-            logging.info('Thread %s@%s:%s: fetching %s',
-                         nw.thrdnum, nw.server.host,
-                         nw.server.port, nw.article.article)
+            if cfg.SEND_GROUP.get() and nw.article.nzf.nzo.get_group() != nw.group:
+                group = nw.article.nzf.nzo.get_group()
+                logging.info('Thread %s@%s:%s: GROUP <%s>',
+                             nw.thrdnum, nw.server.host,
+                             nw.server.port, group)
+                nw.send_group(group)
+            else:
+                logging.info('Thread %s@%s:%s: BODY %s',
+                             nw.thrdnum, nw.server.host,
+                             nw.server.port, nw.article.article)
+                nw.body()
 
             fileno = nw.nntp.sock.fileno()
-
-            nw.body()
-
-            if fileno not in self.read_fds:
-                self.read_fds[fileno] = nw
-        except:
-            logging.error(T('error-except'))
-            self.__reset_nw(nw, "server broke off connection")
-
-    def __send_group(self, nw):
-        try:
-            nzo = nw.article.nzf.nzo
-            _group = nzo.get_group()
-            logging.info('Thread %s@%s:%s: group <%s>',
-                         nw.thrdnum, nw.server.host,
-                         nw.server.port, _group)
-
-            fileno = nw.nntp.sock.fileno()
-
-            nw.send_group(_group)
-
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except:
