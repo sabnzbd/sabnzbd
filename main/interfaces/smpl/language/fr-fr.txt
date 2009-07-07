@@ -30,7 +30,7 @@ toggleadd       Afficher / Cacher Ajout NZB
 refresr         Délai Rafraîchissement
 restartOK?      Etes-vous sûr de vouloir redémarrer SABnzbd?
 warnings        Avertissements
-getbookmarks    Récupérer les marque-pages
+getbookmarks    Récupérer Favoris
 purgehistOK?    Supprimer tous les éléments de l'historique ?
 purgefailhistOK? Supprimer tous les éléments échoués de l'historique ?
 purgehist       Supprimer Tous
@@ -45,4 +45,4 @@ custom          Personnalisé
 dualView1       VueDuoV
 dualView2       VueDuoH
 eta             TRE
-refreshr        rafraîchissement
+refreshr        Rafraîchissement

@@ -4,8 +4,13 @@
 
 # Menu
 maxSpeed          Vitesse Maxi
+options           Options Plush
 refreshRate       Délai Rafraichissement
-disabled          Desactivé
+confirmDeleteQueue Confirmer Suppressions Queue
+confirmDeleteHistory Confirmer Suppressions Historique
+blockRefresh      Bloquer Rafraîchissements Au Survol
+explain-blockRefresh Permet d'éviter le rafraîchisssment du contenu quand la souris survole la queue.
+disabled          Désactivé
 addnzb            Ajouter NZB
 fetch             Récupérer
 uploadTip         Charger: .nzb .rar .zip .gz
