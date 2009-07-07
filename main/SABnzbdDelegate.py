@@ -24,7 +24,9 @@ from threading import Thread
 
 import os
 import cherrypy
+import Cheetah.DummyTransaction
 import sys
+import time
 
 import logging
 import logging.handlers
@@ -67,6 +69,11 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
     def buildMenu(self):
         #logging.info("building menu")
+        logging.info("[osx] yes=%s" % (T('yes')))
+        while T('yes')[0:1]=="#":
+            time.sleep(0.1)
+            logging.info("[osx] language file not loaded, waiting")
+
         status_bar = NSStatusBar.systemStatusBar()
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
         for i in status_icons.keys():
@@ -85,10 +92,20 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         
         #Menu construction
         self.menu = NSMenu.alloc().init()
+
+        try:
+            menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("Dummy", '', '')
+            menu_item.setHidden_(YES)
+            self.isLeopard = 1
+        except:
+            self.isLeopard = 0
         
         #Warnings Item
         self.warnings_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-warnings'), 'openBrowserAction:', '')
-        self.warnings_menu_item.setHidden_(YES)
+        if self.isLeopard:
+            self.warnings_menu_item.setHidden_(YES)
+        else:
+            self.warnings_menu_item.setEnabled_(NO) 
         self.warnings_menu_item.setRepresentedObject_("connections/")
         self.menu.addItem_(self.warnings_menu_item)
 
@@ -165,12 +182,18 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         
         #Resume Item
         self.resume_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-resume'), 'resumeAction:', '')
-        self.resume_menu_item.setHidden_(YES)
+        if self.isLeopard:
+            self.resume_menu_item.setHidden_(YES)
+        else:
+            self.resume_menu_item.setEnabled_(NO) 
         self.menu.addItem_(self.resume_menu_item)
 
         #Newzbin Item
         self.newzbin_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-getnewzbinbm'), 'getNewzbinBookmarksAction:', '')
-        self.newzbin_menu_item.setHidden_(YES)
+        if self.isLeopard:
+            self.newzbin_menu_item.setHidden_(YES)
+        else:
+            self.newzbin_menu_item.setEnabled_(NO) 
         self.menu.addItem_(self.newzbin_menu_item)
         
         self.separator2_menu_item = NSMenuItem.separatorItem()
@@ -323,10 +346,16 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                 warningsTitle = NSAttributedString.alloc().initWithString_attributes_( "%s : %s" % (T('osx-menu-warnings'),warnings), warningsAttributes)
 
                 self.warnings_menu_item.setAttributedTitle_(warningsTitle)
-                self.warnings_menu_item.setHidden_(NO)
+                if self.isLeopard:
+                    self.warnings_menu_item.setHidden_(NO)
+                else:
+                    self.warnings_menu_item.setEnabled_(YES) 
             else:
-                self.warnings_menu_item.setTitle_("")
-                self.warnings_menu_item.setHidden_(YES)            
+                self.warnings_menu_item.setTitle_("%s : 0" % (T('osx-menu-warnings')))
+                if self.isLeopard:
+                    self.warnings_menu_item.setHidden_(YES)
+                else:
+                    self.warnings_menu_item.setEnabled_(NO) 
         except :
             logging.info("[osx] warningsUpdate Exception %s" % (sys.exc_info()[0]))
            
@@ -374,11 +403,19 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
     def pauseUpdate(self):
         try:
             if downloader.paused():
-                self.resume_menu_item.setHidden_(NO)
-                self.pause_menu_item.setHidden_(YES)
+                if self.isLeopard:
+                    self.resume_menu_item.setHidden_(NO)
+                    self.pause_menu_item.setHidden_(YES)
+                else:
+                    self.resume_menu_item.setEnabled_(YES) 
+                    self.pause_menu_item.setEnabled_(NO)
             else:
-                self.resume_menu_item.setHidden_(YES)
-                self.pause_menu_item.setHidden_(NO)
+                if self.isLeopard:
+                    self.resume_menu_item.setHidden_(YES)
+                    self.pause_menu_item.setHidden_(NO)
+                else:
+                    self.resume_menu_item.setEnabled_(NO) 
+                    self.pause_menu_item.setEnabled_(YES)
         except :
             logging.info("[osx] pauseUpdate Exception %s" % (sys.exc_info()[0]))
 
@@ -411,9 +448,15 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
     def newzbinUpdate(self):
         try:
             if sabnzbd.cfg.USERNAME_NEWZBIN.get() and sabnzbd.cfg.PASSWORD_NEWZBIN.get() and sabnzbd.cfg.NEWZBIN_BOOKMARKS.get():
-                self.newzbin_menu_item.setHidden_(NO)
+                if self.isLeopard:
+                    self.newzbin_menu_item.setHidden_(NO)
+                else:
+                    self.newzbin_menu_item.setEnabled_(YES) 
             else:
-                self.newzbin_menu_item.setHidden_(YES)
+                if self.isLeopard:
+                    self.newzbin_menu_item.setHidden_(YES)
+                else:
+                    self.newzbin_menu_item.setEnabled_(NO) 
         except :
             logging.info("[osx] newzbinUpdate Exception %s" % (sys.exc_info()[0]))
 
@@ -428,20 +471,36 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                 hide=NO
                 alternate=YES
                 value=1
-            self.speed_menu_item.setHidden_(hide)
-            self.resume_menu_item.setHidden_(hide)
-            self.pause_menu_item.setHidden_(hide)
-            self.newzbin_menu_item.setHidden_(hide)
-            self.purgequeue_menu_item.setAlternate_(alternate)
-            self.purgequeue_menu_item.setHidden_(hide)
-            self.queue_menu_item.setHidden_(hide)
-            self.purgehistory_menu_item.setAlternate_(alternate)
-            self.purgehistory_menu_item.setHidden_(hide)
-            self.history_menu_item.setHidden_(hide)
-            self.separator_menu_item.setHidden_(hide)
-            self.separator2_menu_item.setHidden_(hide)
-            self.completefolder_menu_item.setHidden_(hide)
-            self.incompletefolder_menu_item.setHidden_(hide)
+            if self.isLeopard:
+                self.speed_menu_item.setHidden_(hide)
+                self.resume_menu_item.setHidden_(hide)
+                self.pause_menu_item.setHidden_(hide)
+                self.newzbin_menu_item.setHidden_(hide)
+                self.purgequeue_menu_item.setAlternate_(alternate)
+                self.purgequeue_menu_item.setHidden_(hide)
+                self.queue_menu_item.setHidden_(hide)
+                self.purgehistory_menu_item.setAlternate_(alternate)
+                self.purgehistory_menu_item.setHidden_(hide)
+                self.history_menu_item.setHidden_(hide)
+                self.separator_menu_item.setHidden_(hide)
+                self.separator2_menu_item.setHidden_(hide)
+                self.completefolder_menu_item.setHidden_(hide)
+                self.incompletefolder_menu_item.setHidden_(hide)
+            else:
+                self.speed_menu_item.setEnabled_(alternate)
+                self.resume_menu_item.setEnabled_(alternate)
+                self.pause_menu_item.setEnabled_(alternate)
+                self.newzbin_menu_item.setEnabled_(alternate)
+                self.purgequeue_menu_item.setAlternate_(alternate)
+                self.purgequeue_menu_item.setEnabled_(alternate)
+                self.queue_menu_item.setEnabled_(alternate)
+                self.purgehistory_menu_item.setAlternate_(alternate)
+                self.purgehistory_menu_item.setEnabled_(alternate)
+                self.history_menu_item.setEnabled_(alternate)
+                self.separator_menu_item.setEnabled_(alternate)
+                self.separator2_menu_item.setEnabled_(alternate)
+                self.completefolder_menu_item.setEnabled_(alternate)
+                self.incompletefolder_menu_item.setEnabled_(alternate)            
             return value
 
         except :
