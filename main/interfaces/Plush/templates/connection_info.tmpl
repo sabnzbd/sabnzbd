@@ -17,7 +17,9 @@
 <!--#if $servers#-->
 	<!--#for $server in $servers#-->
 	<fieldset class="EntryFieldSet">
-		<legend id="<!--#if int($server[4])#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server[0]:$server[1]:$server[2]
+		<legend>
+			<span class="sprite_container <!--#if int($server[4])#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span>
+			$server[0]:$server[1]:$server[2]
         <!--#if not $server[5]#-->
             <a href="./unblock_server?server=$server[0]:$server[1]&session=$session">($T('server-blocked'))</a>
             &nbsp;&nbsp;$server[6]
@@ -34,15 +36,16 @@
 
 <!--#if $lastmail#-->
 	<fieldset class="EntryFieldSet">
-		<legend id="configbox_email_options" style="background-color:darkblue;">$T('emailResult')</legend>
+		<legend style="background-color:darkblue;"><span class="sprite_container sprite_config_email_account_settings">&nbsp;</span> $T('emailResult')</legend>
 		<small>$lastmail</small>
 	</fieldset>
 <!--#end if#-->
 
 <!--#if $warnings#-->
 	<fieldset class="EntryFieldSet">
-		<legend id="configbox_latest_warnings" style="background-color:darkred;">$T('lastWarnings')
-			<small>(<a href="clearwarnings?session=$session">$T('clearWarnings')</a>)&nbsp;</small>
+		<legend style="background-color:darkred;" id="configbox_latest_warnings">
+			<span class="sprite_container sprite_config_connections_warnings">&nbsp;</span>
+			$T('lastWarnings') <small>(<a href="clearwarnings?session=$session">$T('clearWarnings')</a>)</small>
 		</legend>
 		<small><ol class="numbered_list">
 		<!--#for $warn in $warnings#-->

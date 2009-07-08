@@ -8,7 +8,7 @@
             <div class="EntryBlock">
 			<fieldset class="EntryFieldSet">
 
-                <legend id="configbox_add_schedule">$T('addSchedule')</legend>
+                <legend><span class="sprite_container sprite_config_scheduling_add">&nbsp;</span> $T('addSchedule')</legend>
 <%import time
 t = time.localtime()
 hour = t[3]
@@ -79,7 +79,7 @@ else:
             <!--#if $schedlines#-->
             <div class="EntryBlock">
             <fieldset class="EntryFieldSet">
-            <legend id="configbox_current_schedules">$T('currentSchedules')</legend>
+            <legend><span class="sprite_container sprite_config_scheduling_current">&nbsp;</span> $T('currentSchedules')</legend>
             <table>
             <!--#set $schednum = 0#-->
             <!--#for $line in $schedlines#-->

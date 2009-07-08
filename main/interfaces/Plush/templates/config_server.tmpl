@@ -9,7 +9,7 @@
 
 <fieldset class="EntryFieldSet">
 
-    <legend id="configbox_add_server">$T('addServer')</legend>
+    <legend><span class="sprite_container sprite_config_servers_add">&nbsp;</span> $T('addServer')</legend>
 
     <table cellpadding=2>
         <tr><td align="right"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host"/></td></tr>
@@ -66,7 +66,7 @@
 
 <fieldset class="EntryFieldSet">
 
-    <legend id="<!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->configbox_server_encrypted<!--#else#-->configbox_server_decrypted<!--#end if#-->">$server</legend>
+    <legend><span class="sprite_container <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span> $server</legend>
 
     <table cellpadding=2>
         <tr><td align="right"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>

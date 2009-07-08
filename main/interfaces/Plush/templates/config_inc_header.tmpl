@@ -30,19 +30,30 @@
     
     <div id="config_go_back"><div><a href="$path/">$T('button-back')</a></div></div>
     
-    <div id="config_nav">
+    <div class="config_nav">
         <ul>
-            <li><a class="config_menu #if $pane=="Connections"#nav_active#end if#" id="config_nav_connections" href="$path/connections">$T('menu-cons')</a></li>
-            <li><a class="config_menu #if $pane=="General"#nav_active#end if#" id="config_nav_general" href="$path/config/general">$T('cmenu-general')</a></li>
-            <li><a class="config_menu #if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="$path/config/directories">$T('cmenu-folders')</a></li>
-            <li><a class="config_menu #if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="$path/config/switches">$T('cmenu-switches')</a></li>
-            <li><a class="config_menu #if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="$path/config/server">$T('cmenu-servers')</a></li>
-            <li><a class="config_menu #if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="$path/config/scheduling">$T('cmenu-scheduling')</a></li>
-            <li><a class="config_menu #if $pane=="RSS"#nav_active#end if#" id="config_nav_rss" href="$path/config/rss">$T('cmenu-rss')</a></li>
-            <li><a class="config_menu #if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="$path/config/email">$T('cmenu-email')</a></li>
-            <li><a class="config_menu #if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="$path/config/newzbin">$T('cmenu-newzbin')</a></li>
-            <li><a class="config_menu #if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="$path/config/categories">$T('cmenu-cat')</a></li>
-            <li><a class="config_menu #if $pane=="Sorting"#nav_active#end if#" id="config_nav_sorting" href="$path/config/sorting">$T('cmenu-sorting')</a></li>
+            <li><a class="#if $pane=="Connections"#nav_active#end if#" href="$path/connections">
+            	<div class="sprite_container sprite_config_nav_connections">$T('menu-cons')</div></a></li>
+            <li><a class="#if $pane=="General"#nav_active#end if#" id="config_nav_general" href="$path/config/general">
+            	<div class="sprite_container sprite_config_nav_general">$T('cmenu-general')</div></a></li>
+            <li><a class="#if $pane=="Folders"#nav_active#end if#" id="config_nav_directories" href="$path/config/directories">
+            	<div class="sprite_container sprite_config_nav_folders">$T('cmenu-folders')</div></a></li>
+            <li><a class="#if $pane=="Switches"#nav_active#end if#" id="config_nav_switches" href="$path/config/switches">
+            	<div class="sprite_container sprite_config_nav_switches">$T('cmenu-switches')</div></a></li>
+            <li><a class="#if $pane=="Servers"#nav_active#end if#" id="config_nav_server" href="$path/config/server">
+            	<div class="sprite_container sprite_config_nav_servers">$T('cmenu-servers')</div></a></li>
+            <li><a class="#if $pane=="Scheduling"#nav_active#end if#" id="config_nav_scheduling" href="$path/config/scheduling">
+            	<div class="sprite_container sprite_config_nav_scheduling">$T('cmenu-scheduling')</div></a></li>
+            <li><a class="#if $pane=="RSS"#nav_active#end if#" id="config_nav_rss" href="$path/config/rss">
+            	<div class="sprite_container sprite_config_nav_rss">$T('cmenu-rss')</div></a></li>
+            <li><a class="#if $pane=="Email"#nav_active#end if#" id="config_nav_email" href="$path/config/email">
+            	<div class="sprite_container sprite_config_nav_email">$T('cmenu-email')</div></a></li>
+            <li><a class="#if $pane=="Index Sites"#nav_active#end if#" id="config_nav_index_sites" href="$path/config/newzbin">
+            	<div class="sprite_container sprite_config_nav_indexsites">$T('cmenu-newzbin')</div></a></li>
+            <li><a class="#if $pane=="Categories"#nav_active#end if#" id="config_nav_categories" href="$path/config/categories">
+            	<div class="sprite_container sprite_config_nav_categories">$T('cmenu-cat')</div></a></li>
+            <li><a class="#if $pane=="Sorting"#nav_active#end if#" id="config_nav_sorting" href="$path/config/sorting">
+            	<div class="sprite_container sprite_config_nav_sorting">$T('cmenu-sorting')</div></a></li>
         </ul>
     </div>
     

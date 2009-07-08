@@ -29,12 +29,12 @@
 /*!
  * jQuery corner plugin: simple corner rounding
  * Examples and documentation at: http://jquery.malsup.com/corner/
- * version 1.95 (02/26/2009)
+ * version 1.98 (02-JUN-2009)
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
  */
-eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}(';(n($){8 S=(n(){8 F=12.18(\'F\');1W{F.l.U(\'4\',\'0+0\')}21(e){7 1B}7 1X})();n X(1K,p){7 x($.r(1K,p))||0};n M(s){8 s=x(s).1Y(16);7(s.1c<2)?\'0\'+s:s};n 1d(y){Y(;y&&y.2c.1s()!=\'29\';y=y.N){8 v=$.r(y,\'1x\');b(v.2a(\'C\')>=0){b($.1Q.22&&v==\'28(0, 0, 0, 0)\')27;8 C=v.A(/\\d+/g);7\'#\'+M(C[0])+M(C[1])+M(C[2])}b(v&&v!=\'1e\')7 v}7\'#23\'};n 1A(P,i,4){25(P){a\'h\':7 5.h(4*(1-5.G(5.W(i/4))));a\'1w\':7 5.h(4*(1+5.G(5.W(i/4))));a\'1v\':7 5.h(4*(1-5.G(5.26(i/4))));a\'1u\':7 5.h(4*(5.G(5.W((4-i-1)/4))));a\'1p\':7 5.h(4*(5.1P(i,4/i)));a\'1o\':7 5.h(4*(5.1P(4,(4-i-1))));a\'1i\':7 5.h(4*(5.1U(i)));a\'1h\':7 5.h(4*(5.G(i)));a\'1f\':7 5.h(4*(5.1Z(i)));a\'1l\':7 5.h(4*(5.20(i)));a\'1N\':7 5.h(4*(5.1V((4-i-1),4)));a\'1k\':7(i&1)?(i+1):4;a\'1n\':7(i&2)?(i+1):4;a\'1m\':7(i&3)?(i+1):4;a\'1g\':7(i%2)*4;a\'1t\':7 4;a\'1q\':7 i+1}};$.1I.I=n(o){b(6.1c==0){b(!$.24&&6.1y){8 s=6.1y,c=6.2b;$(n(){$(s,c).I(o)})}7 6}o=(o||"").1s();8 V=/V/.E(o);8 19=((o.A(/19:(#[0-1r-f]+)/)||[])[1]);8 17=((o.A(/17:(#[0-1r-f]+)/)||[])[1]);8 4=x((o.A(/(\\d+)m/)||[])[1])||10;8 1j=/h|1q|1t|1u|1w|1v|1p|1o|1i|1h|1g|1f|1N|1l|1m|1n|1k/;8 P=((o.A(1j)||[\'h\'])[0]);8 15={T:0,B:1};8 k={J:/Z|2h/.E(o),H:/Z|2E/.E(o),K:/11|2F/.E(o),O:/11|2C/.E(o)};b(!k.J&&!k.H&&!k.K&&!k.O)k={J:1,H:1,K:1,O:1};8 t=12.18(\'F\');t.l.2A=\'2z\';t.l.1b=\'2y\';t.l.1x=17||\'1e\';t.l.1C=\'14\';7 6.2w(n(2x){8 q={T:x($.r(6,\'2D\'))||0,R:x($.r(6,\'2H\'))||0,B:x($.r(6,\'2G\'))||0,L:x($.r(6,\'2B\'))||0};b(2u 6.l.1a!=2j)6.l.1a=1;b(!V)6.l.2d=\'D\';t.l.2i=19||1d(6.N);8 1S=$.2v(6,\'1b\');Y(8 j 2e 15){8 u=15[j];b((u&&(k.K||k.O))||(!u&&(k.J||k.H))){t.l.1C=\'D \'+(k[j+\'R\']?\'14\':\'D\')+\' D \'+(k[j+\'L\']?\'14\':\'D\');8 d=12.18(\'F\');$(d).2f(\'1H-I\');8 9=d.l;u?6.1F(d):6.1G(d,6.1J);b(u&&1S!=\'2g\'){b($.r(6,\'z\')==\'1O\')6.l.z=\'1z\';9.z=\'1R\';9.11=9.1T=9.1L=9.13=\'0\';b(S)9.U(\'4\',\'6.N.1E\');Q 9.4=\'1M%\'}Q b(!u&&$.1Q.2l){b($.r(6,\'z\')==\'1O\')6.l.z=\'1z\';9.z=\'1R\';9.Z=9.1T=9.2m=9.1L=9.13=\'0\';b(S){8 1D=X(6,\'2s\')+X(6,\'2t\');9.U(\'4\',\'6.N.1E - \'+1D+\'+ "m"\')}Q 9.4=\'1M%\'}Q{9.13=!u?\'-\'+q.T+\'m -\'+q.R+\'m \'+(q.T-4)+\'m -\'+q.L+\'m\':(q.B-4)+\'m -\'+q.R+\'m -\'+q.B+\'m -\'+q.L+\'m\'}Y(8 i=0;i<4;i++){8 w=5.2r(0,1A(P,i,4));8 e=t.2q(1B);e.l.2n=\'0 \'+(k[j+\'R\']?w:0)+\'m 0 \'+(k[j+\'L\']?w:0)+\'m\';u?d.1F(e):d.1G(e,d.1J)}}}})};$.1I.2o=n(){7 $(\'.1H-I\',6).2p()}})(2k);',62,168,'||||width|Math|this|return|var|ds|case|if||||||round|||opts|style|px|function|||pad|css||strip|bot|||parseInt|node|position|match||rgb|none|test|div|cos|TR|corner|TL|BL||hex2|parentNode|BR|fx|else||expr||setExpression|keep|asin|sz|for|top||bottom|document|margin|solid|edges||sc|createElement|cc|zoom|height|length|gpc|transparent|wicked|fray|tear|curl|re|dog|long|dog3|dog2|jut|slide|bevel|9a|toLowerCase|notch|bite|sharp|cool|backgroundColor|selector|relative|getWidth|false|borderStyle|bw|offsetWidth|appendChild|insertBefore|jquery|fn|firstChild|el|padding|100|sculpt|static|atan2|browser|absolute|cssHeight|left|atan|log|try|true|toString|tan|sqrt|catch|safari|ffffff|isReady|switch|acos|continue|rgba|html|indexOf|context|nodeName|border|in|addClass|auto|tl|borderColor|undefined|jQuery|msie|right|borderWidth|uncorner|remove|cloneNode|max|borderLeftWidth|borderRightWidth|typeof|curCSS|each|index|1px|hidden|overflow|paddingLeft|br|paddingTop|tr|bl|paddingBottom|paddingRight'.split('|'),0,{}))
+eval(function(p,a,c,k,e,d){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--){d[e(c)]=k[c]||e(c)}k=[function(e){return d[e]}];e=function(){return'\\w+'};c=1};while(c--){if(k[c]){p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c])}}return p}(';(n($){8 X=(n(){b(!$.1F.1G)5 18;8 A=13.15(\'A\');1W{A.k.1a(\'4\',\'0+0\')}1Z(e){5 18}5 29})();n Z(1U,p){5 x($.r(1U,p))||0};n N(s){8 s=x(s).28(16);5(s.1h<2)?\'0\'+s:s};n 1A(y){19(;y&&y.1X.1g()!=\'26\';y=y.J){8 v=$.r(y,\'1k\');b(v==\'22(0, 0, 0, 0)\')27;b(v.21(\'E\')>=0){8 E=v.F(/\\d+/g);5\'#\'+N(E[0])+N(E[1])+N(E[2])}b(v&&v!=\'1d\')5 v}5\'#2c\'};n 1R(K,i,4){25(K){a\'h\':5 7.h(4*(1-7.C(7.U(i/4))));a\'1m\':5 7.h(4*(1+7.C(7.U(i/4))));a\'1v\':5 7.h(4*(1-7.C(7.20(i/4))));a\'1f\':5 7.h(4*(7.C(7.U((4-i-1)/4))));a\'1u\':5 7.h(4*(7.1M(i,4/i)));a\'1w\':5 7.h(4*(7.1M(4,(4-i-1))));a\'1x\':5 7.h(4*(7.23(i)));a\'1y\':5 7.h(4*(7.C(i)));a\'1s\':5 7.h(4*(7.24(i)));a\'1r\':5 7.h(4*(7.1Y(i)));a\'1C\':5 7.h(4*(7.1V((4-i-1),4)));a\'1n\':5(i&1)?(i+1):4;a\'1p\':5(i&2)?(i+1):4;a\'1q\':5(i&3)?(i+1):4;a\'1t\':5(i%2)*4;a\'1c\':5 4;a\'1b\':5 i+1}};$.1E.Q=n(o){b(6.1h==0){b(!$.2a&&6.1j){8 s=6.1j,c=6.2b;$(n(){$(s,c).Q(o)})}5 6}o=(o||"").1g();8 W=/W/.G(o);8 Y=((o.F(/Y:(#[0-1e-f]+)/)||[])[1]);8 V=((o.F(/V:(#[0-1e-f]+)/)||[])[1]);8 4=x((o.F(/(\\d+)m/)||[])[1])||10;8 1o=/h|1b|1c|1f|1m|1v|1u|1w|1x|1y|1t|1s|1C|1r|1q|1p|1n/;8 K=((o.F(1o)||[\'h\'])[0]);8 12={T:0,B:1};8 l={M:/S|2e/.G(o),H:/S|2D/.G(o),O:/14|2F/.G(o),P:/14|2B/.G(o)};b(!l.M&&!l.H&&!l.O&&!l.P)l={M:1,H:1,O:1,P:1};8 u=13.15(\'A\');u.k.2A=\'2z\';u.k.1z=\'2y\';u.k.1k=V||\'1d\';u.k.1Q=\'11\';5 6.2w(n(2x){8 q={T:x($.r(6,\'2C\'))||0,R:x($.r(6,\'2G\'))||0,B:x($.r(6,\'2E\'))||0,L:x($.r(6,\'2u\'))||0};b(2j 6.k.1i!=2k)6.k.1i=1;b(!W)6.k.2d=\'D\';u.k.2h=Y||1A(6.J);8 1P=$.2v(6,\'1z\');19(8 j 2f 12){8 t=12[j];b((t&&(l.O||l.P))||(!t&&(l.M||l.H))){u.k.1Q=\'D \'+(l[j+\'R\']?\'11\':\'D\')+\' D \'+(l[j+\'L\']?\'11\':\'D\');8 d=13.15(\'A\');$(d).2g(\'1l-Q\');8 9=d.k;t?6.1T(d):6.1S(d,6.1O);b(t&&1P!=\'2l\'){b($.r(6,\'z\')==\'1D\')6.k.z=\'1B\';9.z=\'1H\';9.14=9.1N=9.1L=9.17=\'0\';b(X)9.1a(\'4\',\'6.J.1K\');I 9.4=\'1I%\'}I b(!t&&$.1F.1G){b($.r(6,\'z\')==\'1D\')6.k.z=\'1B\';9.z=\'1H\';9.S=9.1N=9.2m=9.1L=9.17=\'0\';b(X){8 1J=Z(6,\'2s\')+Z(6,\'2t\');9.1a(\'4\',\'6.J.1K - \'+1J+\'+ "m"\')}I 9.4=\'1I%\'}I{9.17=!t?\'-\'+q.T+\'m -\'+q.R+\'m \'+(q.T-4)+\'m -\'+q.L+\'m\':(q.B-4)+\'m -\'+q.R+\'m -\'+q.B+\'m -\'+q.L+\'m\'}19(8 i=0;i<4;i++){8 w=7.2r(0,1R(K,i,4));8 e=u.2q(18);e.k.2n=\'0 \'+(l[j+\'R\']?w:0)+\'m 0 \'+(l[j+\'L\']?w:0)+\'m\';t?d.1T(e):d.1S(e,d.1O)}}}})};$.1E.2o=n(){$(\'A.1l-Q\',6).2p();5 6}})(2i);',62,167,'||||width|return|this|Math|var|ds|case|if||||||round|||style|opts|px|function|||pad|css||bot|strip|||parseInt|node|position|div||cos|none|rgb|match|test|TR|else|parentNode|fx||TL|hex2|BL|BR|corner||top||asin|sc|keep|expr|cc|sz||solid|edges|document|bottom|createElement||margin|false|for|setExpression|bevel|notch|transparent|9a|bite|toLowerCase|length|zoom|selector|backgroundColor|jquery|cool|dog|re|dog2|dog3|long|wicked|fray|slide|sharp|jut|curl|tear|height|gpc|relative|sculpt|static|fn|browser|msie|absolute|100|bw|offsetWidth|padding|atan2|left|firstChild|cssHeight|borderStyle|getWidth|insertBefore|appendChild|el|log|try|nodeName|sqrt|catch|acos|indexOf|rgba|atan|tan|switch|html|continue|toString|true|isReady|context|ffffff|border|tl|in|addClass|borderColor|jQuery|typeof|undefined|auto|right|borderWidth|uncorner|remove|cloneNode|max|borderLeftWidth|borderRightWidth|paddingLeft|curCSS|each|index|1px|hidden|overflow|br|paddingTop|tr|paddingBottom|bl|paddingRight'.split('|'),0,{}))
 
 
 /**
@@ -65,13 +65,13 @@ jQuery(document).ready(function($){
     // rounding
 	if ($.browser.safari) { // slow down rounding just a hair for Safari or it spazzes out
 		setTimeout (function(){
-	    	$('#config_nav li .config_menu').corner("round tl bl");
+	    	$('.config_nav li a').corner("round tl bl");
 	    	$('#config_container').corner("round");
 	    	$('#config_content legend').corner("round");
 	    	$('#force_disconnect, #save, #sabnzbd_restart, #test_email, #help').corner("round");
 		}, 1);
 	} else { // the slight delay lags on Firefox, so don't run otherwise
-	    	$('#config_nav li .config_menu').corner("round tl bl");
+	    	$('.config_nav li a').corner("round tl bl");
 	    	$('#config_container').corner("round");
 	    	$('#config_content legend').corner("round");
 	    	$('#force_disconnect, #save, #sabnzbd_restart, #test_email, #help').corner("round");
@@ -89,38 +89,38 @@ jQuery(document).ready(function($){
 
 		// not a config page, rather queued nzb file listing page
 		case 'NZO':
-	        $('#config_nzo_reload').click(function(){ document.location.reload(); });
+	        $('#nzo_reload').click(function(){ document.location.reload(); });
 
 	        // operations
-	        $('#config_nzo_delete').click(function(){
+	        $('#nzo_delete').click(function(){
 	        	$('#action_key').val('Delete');
 	        	$('#bulk_operation').submit();
 	        });
-	        $('#config_nzo_top').click(function(){
+	        $('#nzo_top').click(function(){
 	        	$('#action_key').val('Top');
 	        	$('#bulk_operation').submit();
 	        });
-	        $('#config_nzo_up').click(function(){
+	        $('#nzo_up').click(function(){
 	        	$('#action_key').val('Up');
 	        	$('#bulk_operation').submit();
 	        });
-	        $('#config_nzo_down').click(function(){
+	        $('#nzo_down').click(function(){
 	        	$('#action_key').val('Down');
 	        	$('#bulk_operation').submit();
 	        });
-	        $('#config_nzo_bottom').click(function(){
+	        $('#nzo_bottom').click(function(){
 	        	$('#action_key').val('Bottom');
 	        	$('#bulk_operation').submit();
 	        });
 
 	        // selections
-	        $("#config_nzo_select_all").click(function(){
+	        $("#nzo_select_all").click(function(){
 	            $("INPUT[type='checkbox']").attr('checked', true);
 	        });
-	        $("#config_nzo_select_none").click(function(){
+	        $("#nzo_select_none").click(function(){
 	            $("INPUT[type='checkbox']").attr('checked', false);
 	        });
-	        $("#config_nzo_select_invert").click(function(){
+	        $("#nzo_select_invert").click(function(){
 	            $("INPUT[type='checkbox']").each( function() {
 	                $(this).attr('checked', !$(this).attr('checked'));
 	            });
