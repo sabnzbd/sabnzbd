@@ -704,13 +704,14 @@ osx-menu-pause           Pause
 osx-menu-min             min.
 osx-menu-resume          Resume
 osx-menu-queue           Queue
+osx-menu-queuelimit    	 Queue First 10 Items
 osx-menu-history         History
 osx-menu-historylimit    History Last 10 Items
 osx-menu-speedlimit      Limit Speed
 osx-menu-none            None
 osx-menu-getnewzbinbm    Get Newzbin Bookmarks
-osx-menu-complete        Complete Folder
-osx-menu-incomplete      Incomplete Folder
+osx-menu-complete        Complete Folder\t\t\t
+osx-menu-incomplete      Incomplete Folder\t\t
 osx-menu-restart         Restart
 osx-menu-quit            Quit
 osx-menu-config          Configuration

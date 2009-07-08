@@ -708,13 +708,14 @@ osx-menu-pause           Pause
 osx-menu-min             min.
 osx-menu-resume          Reprendre
 osx-menu-queue           Queue
+osx-menu-queuelimit    	 Queue - 10 premiers éléments
 osx-menu-history         Historique
-osx-menu-historylimit    Historique - 10 Derniers éléments
+osx-menu-historylimit    Historique - 10 derniers éléments
 osx-menu-speedlimit      Limite Vitesse
 osx-menu-none            Aucune
 osx-menu-getnewzbinbm    Récupérer Favoris Newzbin
-osx-menu-complete        Dossier Complets
-osx-menu-incomplete      Dossier Incomplets
+osx-menu-complete        Dossier Complets\t\t
+osx-menu-incomplete      Dossier Incomplets\t\t
 osx-menu-restart         Redémarrer SABnzbd
 osx-menu-quit            Quitter SABnzbd
 osx-menu-config          Configuration

@@ -268,8 +268,14 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
             if len(pnfo_list):
 
+                menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-queuelimit'), '', '')
+                self.menu_queue.addItem_(menu_queue_item)
+                self.menu_queue.addItem_(NSMenuItem.separatorItem())
+
                 job_nb = 1
                 for pnfo in pnfo_list:
+                    if job_nb >= 10:
+                        break
                     filename = pnfo[PNFO_FILENAME_FIELD]
                     msgid = pnfo[PNFO_MSGID_FIELD]
                     bytesleft = pnfo[PNFO_BYTES_LEFT_FIELD] / MEBI
@@ -278,12 +284,12 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
                     nzo_id = pnfo[PNFO_NZO_ID_FIELD]
                     timeleft = self.calc_timeleft(bytesleftprogess, bpsnow)
                     
-                    job = "%d. %s (%d/%d MB) %s" % (job_nb, filename, bytesleft, bytes, timeleft)
+                    job = "%s\t(%d/%d MB) %s" % (filename, bytesleft, bytes, timeleft)
                     job_nb += 1
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     self.menu_queue.addItem_(menu_queue_item)
             
-                self.info = "%d nzb(s) (%d/%d MB)" % (len(pnfo_list),(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
+                self.info = "%d nzb(s)\t( %d / %d MB )" % (len(pnfo_list),(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
             
             else:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-empty'), '', '')
@@ -372,7 +378,10 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
             elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
                 
                 self.state = ""
-                statusbarText = "\n\n%s\n%d KB/s\n" % (self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow), (bpsnow/KIBI))
+                speed = bpsnow/KIBI
+                timeleft = (speed>1 and self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD],bpsnow)) or "--"
+                
+                statusbarText = "\n\n%s\n%d KB/s\n" % (timeleft, speed)
                 
                 if sabnzbd.SABSTOP:
                     statusbarText = "..."
@@ -509,8 +518,8 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
     def diskspaceUpdate(self):
         try:
-            self.completefolder_menu_item.setTitle_("%s\t\t%.2f GB" % (T('osx-menu-complete'),diskfree(sabnzbd.cfg.COMPLETE_DIR.get_path())))
-            self.incompletefolder_menu_item.setTitle_("%s\t\t%.2f GB" % (T('osx-menu-incomplete'),diskfree(sabnzbd.cfg.DOWNLOAD_DIR.get_path())))
+            self.completefolder_menu_item.setTitle_("%s%.2f GB" % (T('osx-menu-complete'),diskfree(sabnzbd.cfg.COMPLETE_DIR.get_path())))
+            self.incompletefolder_menu_item.setTitle_("%s%.2f GB" % (T('osx-menu-incomplete'),diskfree(sabnzbd.cfg.DOWNLOAD_DIR.get_path())))
         except :
             logging.info("[osx] diskspaceUpdate Exception %s" % (sys.exc_info()[0]))
 
