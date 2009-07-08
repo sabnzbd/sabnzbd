@@ -740,7 +740,7 @@ def clues_login(text):
     """
     text = text.lower()
     for clue in ('username', 'password', 'invalid', 'authen'):
-        if text.find(clue) >= 0:
+        if clue in text:
             return True
     return False
 
@@ -750,7 +750,7 @@ def clues_too_many(text):
     """
     text = text.lower()
     for clue in ('exceed', 'connections', 'too many', 'threads', 'limit'):
-        if text.find(clue) >= 0:
+        if clue in text:
             return True
     return False
 
@@ -759,7 +759,7 @@ def clues_too_many_ip(text):
     """ Check for any "account sharing" clues in the response code
     """
     text = text.lower()
-    for clue in ('simultaneous ip', ):
-        if text.find(clue) >= 0:
+    for clue in ('simultaneous ip', 'multiple ip'):
+        if clue in text:
             return True
     return False
