@@ -170,16 +170,14 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     height:4px;
 }
 .box_banner_history {background-image: url(../images/plush-default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
+.box_banner_history h1 { color:#c7c7c7; font-size:100%; float:left; margin: 17px 0px 0px 16px;  }
 .box_banner_r {
-    background-image: url(../images/plush-default/history_title_bg.png);
-    background-position: left center;
-    background-repeat:no-repeat;
     height:52px;
     margin-left:1px;
 }
 #hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
 #hdr-queue .logo { background-image: url(../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
-#hdr-queue .logo h1 { text-indent: -9999px; margin: 0; padding: 0;}
+#hdr-queue .logo h1 { color:#c7c7c7; font-size:100%; margin: 22px 0px 0px 20px; }
 #queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
 #queue-buttons li { float:left; }
 #queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
