@@ -769,6 +769,7 @@ jQuery(function($) { // safely invoke $ selector
 						next_text: $.plush.Tnext+" &raquo;", // translation
 						callback: $.plush.refreshQueue
 					});
+					$('#queue-pagination span').removeClass('loading'); // hide spinner graphic
 				} else if ($.plush.queuenoofslots <= $.plush.queuePerPage) {
 					$("#queue-pagination").html(''); // remove pages if history empty
 				}
@@ -914,6 +915,7 @@ jQuery(function($) { // safely invoke $ selector
 						next_text: $.plush.Tnext+" &raquo;", // translation
 						callback: $.plush.refreshHistory
 					});
+					$('#history-pagination span').removeClass('loading'); // hide spinner graphic
 				} else if ($.plush.histnoofslots <= $.plush.histPerPage) {
 					$("#history-pagination").html(''); // remove pages if history empty
 				}
