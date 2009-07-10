@@ -651,7 +651,13 @@ jQuery(function($) { // safely invoke $ selector
 			});
 			
 			// Manual refresh
-			$('#manual_refresh_wrapper').click(function(){
+			$('#manual_refresh_wrapper').click(function(e){
+				// prevent button text highlighting
+			    e.target.onselectstart = function() { return false; };
+			    e.target.unselectable = "on";
+			    e.target.style.MozUserSelect = "none";
+			    e.target.style.cursor = "default";
+
 				$.plush.refresh(true);
 			});
 			
