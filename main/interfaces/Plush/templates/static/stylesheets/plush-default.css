@@ -445,29 +445,6 @@ tr:hover .history_added  {
     color:black;
 }
 
-.verbose div {
-    cursor: help;
-    display:inline;
-    float:left;
-    width: 16px;
-    margin-right: 2px;
-}
-.verbose .pointer {
-    cursor: pointer;
-}
-
-/* history verbosity icons */
-.hv_report { background: url(../images/plush-default/hv_report.png) 0 50% no-repeat; }
-.hv_url { background: url(../images/plush-default/hv_ok.png) 0 50% no-repeat; }
-.hv_stats { background: url(../images/plush-default/hv_avgspeed.png) 0 50% no-repeat; }
-.hv_download { background: url(../images/plush-default/hv_timetaken.png) 0 50% no-repeat; }
-.hv_repair { background: url(../images/plush-default/hv_par.png) 0 50% no-repeat; }
-.hv_filejoin { background: url(../images/plush-default/hv_join.png) 0 50% no-repeat; }
-.hv_unpack { background: url(../images/plush-default/hv_unrar.png) 0 50% no-repeat; }
-.hv_script { display:inline; background: url(../images/plush-default/hv_userscript.png) 0 50% no-repeat; }
-
-.hvFaded {filter:alpha(opacity=25);-moz-opacity:.25;opacity:.25;}
-
 .hvMessage {
     font-weight: bold;
     color: red;
@@ -475,6 +452,54 @@ tr:hover .history_added  {
 	clear:both;
 	width: 100%;
 }
+
+
+
+.icon_history_verbose {
+	background: url(../images/plush-default/main-sprite.png) no-repeat top left;
+    cursor: help;
+    display:inline;
+    float:left;
+    width: 16px;
+    margin-right: 2px;
+}
+.hvFaded {filter:alpha(opacity=25);-moz-opacity:.25;opacity:.25;}
+.pointer { cursor: pointer; }
+
+
+/* main-sprite.png */
+.sprite_btm_corner_left { background-position: 0 -30px; } 
+.sprite_btm_corner_right { background-position: 0 -69px; } 
+.sprite_h_purge { background-position: 0 -108px; } 
+.sprite_hdr_queue { background-position: 0 -159px; } 
+.sprite_hv_download { background-position: 0 -244px; } 
+.sprite_hv_error { background-position: 0 -290px; } 
+.sprite_hv_filejoin { background-position: 0 -336px; } 
+.sprite_hv_repair { background-position: 0 -382px; } 
+.sprite_hv_report { background-position: 0 -428px; } 
+.sprite_hv_script { background-position: 0 -474px; } 
+.sprite_hv_star { background-position: 0 -520px; } 
+.sprite_hv_stats { background-position: 0 -566px; } 
+.sprite_hv_unpack { background-position: 0 -612px; } 
+.sprite_q_pause { background-position: 0 -658px; } 
+.sprite_q_pause_on { background-position: 0 -709px; } 
+.sprite_q_stats_complete { background-position: 0 -760px; } 
+.sprite_q_stats_incomplete { background-position: 0 -806px; } 
+.sprite_q_stats_needspace { background-position: 0 -852px; } 
+.sprite_ql_cross { background-position: 0 -898px; } 
+.sprite_ql_cross_on { background-position: 0 -944px; } 
+.sprite_ql_grip_active { background-position: 0 -990px; } 
+.sprite_ql_grip_active_on { background-position: 0 -1034px; } 
+.sprite_ql_grip_paused { background-position: 0 -1078px; } 
+.sprite_ql_grip_paused_on { background-position: 0 -1122px; } 
+.sprite_ql_grip_queued { background-position: 0 -1166px; } 
+.sprite_ql_grip_queued_on { background-position: 0 -1210px; } 
+.sprite_ql_pbar_empty { background-position: 0 -1254px; } 
+.sprite_ql_pbar_full { background-position: 0 -1299px; } 
+.sprite_queue_bg { background-position: 0 -1344px; } 
+.sprite_rounded_area_bg { background-position: 0 -1429px; } 
+.sprite_sabnzbdplus_logo { background-position: 0 -1481px; } 
+.sprite_sabnzbdplus_plush { background-position: 0 -1551px; } 
 
 
 
@@ -957,6 +982,7 @@ legend .sprite_container {
 }
 
 
+/* config-sprite.png */
 .sprite_config_connections_disconnect { background-position: 0 -30px; } 
 .sprite_config_connections_encrypted { background-position: 0 -82px; } 
 .sprite_config_connections_unencrypted { background-position: 0 -134px; } 

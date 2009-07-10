@@ -436,7 +436,7 @@ jQuery(function($) { // safely invoke $ selector
 					$('#history_stats').html($.plush.histstats);
 	
 					// Tooltips for verbose notices
-					$('#history .verbose div').tooltip({
+					$('#history .icon_history_verbose').tooltip({
 						extraClass:	"tooltip",
 						track:		true
 					});
@@ -912,7 +912,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 				
 				// modal for viewing script logs
-				$('#historyTable .verbose .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+				$('#historyTable .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
 			}); // end livequery
 
