@@ -61,11 +61,6 @@ http://plugins.jquery.com/project/pagination
 Author: Gabriel Birke, Describe Europe Ltd.
 See LICENSE-MIT & LICENSE-GPL
 
-jQuery preloadCssImages
-http://www.filamentgroup.com/lab/update_automatically_preload_images_from_css_with_jquery/
-Copyright (c) 2008 Filament Group, Inc
-See LICENSE-MIT & LICENSE-GPL
-
 jQuery Superfish
 http://users.tpg.com.au/j_birch/plugins/superfish
 Copyright (c) 2008 Joel Birch

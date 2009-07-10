@@ -957,52 +957,50 @@ legend .sprite_container {
 }
 
 
-.sprite_nzo_bottom { background-position: 0 -1856px; } 
-.sprite_nzo_delete { background-position: 0 -1904px; } 
-.sprite_nzo_down { background-position: 0 -1952px; } 
-.sprite_nzo_reload { background-position: -54px -32px; } 
-.sprite_nzo_select_all { background-position: -54px -80px; } 
-.sprite_nzo_select_invert { background-position: -54px -128px; } 
-.sprite_nzo_select_none { background-position: -54px -176px; } 
-.sprite_nzo_top { background-position: -54px -224px; } 
-.sprite_nzo_up { background-position: -54px -272px; } 
-
-.sprite_config_nav_categories { background-position: 0 -788px; } 
-.sprite_config_nav_connections { background-position: 0 -836px; } 
-.sprite_config_nav_email { background-position: 0 -884px; } 
-.sprite_config_nav_folders { background-position: 0 -932px; } 
-.sprite_config_nav_general { background-position: 0 -980px; } 
-.sprite_config_nav_indexsites { background-position: 0 -1028px; } 
-.sprite_config_nav_rss { background-position: 0 -1076px; } 
-.sprite_config_nav_scheduling { background-position: 0 -1124px; } 
-.sprite_config_nav_servers { background-position: 0 -1172px; } 
-.sprite_config_nav_sorting { background-position: 0 -1220px; } 
-.sprite_config_nav_switches { background-position: 0 -1268px; } 
-
-.sprite_config_connections_disconnect { background-position: 0 -32px; } 
-.sprite_config_connections_encrypted { background-position: 0 -86px; } 
-.sprite_config_connections_unencrypted { background-position: 0 -140px; } 
-.sprite_config_connections_warnings { background-position: 0 -194px; } 
-.sprite_config_email_account_settings { background-position: 0 -248px; } 
-.sprite_config_email_options { background-position: 0 -302px; } 
-.sprite_config_folders_system { background-position: 0 -356px; } 
-.sprite_config_folders_user { background-position: 0 -410px; } 
-.sprite_config_general_tuning { background-position: 0 -464px; } 
-.sprite_config_general_web_server { background-position: 0 -518px; } 
-.sprite_config_help { background-position: 0 -572px; } 
-.sprite_config_indexsites_account_info { background-position: 0 -626px; } 
-.sprite_config_indexsites_bookmarks { background-position: 0 -680px; } 
-.sprite_config_indexsites_processed { background-position: 0 -734px; } 
-.sprite_config_rss_add { background-position: 0 -1316px; } 
-.sprite_config_save { background-position: 0 -1370px; } 
-.sprite_config_scheduling_add { background-position: 0 -1424px; } 
-.sprite_config_scheduling_current { background-position: 0 -1478px; } 
-.sprite_config_servers_add { background-position: 0 -1532px; } 
-.sprite_config_sorting_date { background-position: 0 -1586px; } 
-.sprite_config_sorting_generic { background-position: 0 -1640px; } 
-.sprite_config_sorting_series { background-position: 0 -1694px; } 
-.sprite_config_switches_other { background-position: 0 -1748px; } 
-.sprite_config_switches_processing { background-position: 0 -1802px; } 
+.sprite_config_connections_disconnect { background-position: 0 -30px; } 
+.sprite_config_connections_encrypted { background-position: 0 -82px; } 
+.sprite_config_connections_unencrypted { background-position: 0 -134px; } 
+.sprite_config_connections_warnings { background-position: 0 -186px; } 
+.sprite_config_email_account_settings { background-position: 0 -238px; } 
+.sprite_config_email_options { background-position: 0 -290px; } 
+.sprite_config_folders_system { background-position: 0 -342px; } 
+.sprite_config_folders_user { background-position: 0 -394px; } 
+.sprite_config_general_tuning { background-position: 0 -446px; } 
+.sprite_config_general_web_server { background-position: 0 -498px; } 
+.sprite_config_help { background-position: 0 -550px; } 
+.sprite_config_indexsites_account_info { background-position: 0 -602px; } 
+.sprite_config_indexsites_bookmarks { background-position: 0 -654px; } 
+.sprite_config_indexsites_processed { background-position: 0 -706px; } 
+.sprite_config_nav_categories { background-position: 0 -758px; } 
+.sprite_config_nav_connections { background-position: 0 -804px; } 
+.sprite_config_nav_email { background-position: 0 -850px; } 
+.sprite_config_nav_folders { background-position: 0 -896px; } 
+.sprite_config_nav_general { background-position: 0 -942px; } 
+.sprite_config_nav_indexsites { background-position: 0 -988px; } 
+.sprite_config_nav_rss { background-position: 0 -1034px; } 
+.sprite_config_nav_scheduling { background-position: 0 -1080px; } 
+.sprite_config_nav_servers { background-position: 0 -1126px; } 
+.sprite_config_nav_sorting { background-position: 0 -1172px; } 
+.sprite_config_nav_switches { background-position: 0 -1218px; } 
+.sprite_config_rss_add { background-position: 0 -1264px; } 
+.sprite_config_save { background-position: 0 -1316px; } 
+.sprite_config_scheduling_add { background-position: 0 -1368px; } 
+.sprite_config_scheduling_current { background-position: 0 -1420px; } 
+.sprite_config_servers_add { background-position: 0 -1472px; } 
+.sprite_config_sorting_date { background-position: 0 -1524px; } 
+.sprite_config_sorting_generic { background-position: 0 -1576px; } 
+.sprite_config_sorting_series { background-position: 0 -1628px; } 
+.sprite_config_switches_other { background-position: 0 -1680px; } 
+.sprite_config_switches_processing { background-position: 0 -1732px; } 
+.sprite_nzo_bottom { background-position: 0 -1784px; } 
+.sprite_nzo_delete { background-position: 0 -1830px; } 
+.sprite_nzo_down { background-position: 0 -1876px; } 
+.sprite_nzo_reload { background-position: 0 -1922px; } 
+.sprite_nzo_select_all { background-position: 0 -1968px; } 
+.sprite_nzo_select_invert { background-position: -172px -30px; } 
+.sprite_nzo_select_none { background-position: -172px -76px; } 
+.sprite_nzo_top { background-position: -172px -122px; } 
+.sprite_nzo_up { background-position: -172px -168px; } 
 
 
 
