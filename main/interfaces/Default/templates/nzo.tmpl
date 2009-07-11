@@ -122,7 +122,7 @@
 			  <tr class="<!--#if $oddLine then "oddLine" else "evenLine"#--> active">
 				  <td><input type="checkbox" name="$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
 				  <td>$file.filename</td>
-				  <td>$file.mb $T('MB')</td>
+				  <td>$file.size</td>
 				  <td>$file.age</td>
 			  </tr>
 		  <!--#end for#-->

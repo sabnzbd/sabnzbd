@@ -964,6 +964,8 @@ class NzoPage:
                     line = {'filename':xml_name(fn),
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
+                            'size': format_bytes(bytes),
+                            'sizeleft':format_bytes(bytes_left),
                             'nzf_id':nzf_id,
                             'age':calc_age(date),
                             'checked':checked}
@@ -2724,6 +2726,8 @@ def build_header(prim):
     header['speed'] = to_units(bytespersec, spaces=1)
     header['mbleft']   = "%.2f" % (bytesleft / MEBI)
     header['mb']       = "%.2f" % (bytes / MEBI)
+    header['sizeleft']   = format_bytes(bytesleft)
+    header['size']       = format_bytes(bytes)
 
     status = ''
     if downloader.paused():
@@ -3330,7 +3334,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
-        slot['size'] = "%s" % format_bytes(bytes)
+        slot['size'] = format_bytes(bytes)
+        slot['sizeleft'] = format_bytes(bytesleft)
         if not downloader.paused() and status != 'Paused' and status != 'Fetching' and not found_active:
             slot['status'] = "Downloading"
             found_active = True
@@ -3380,7 +3385,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
                     line = {'filename':str(fn),
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
-                            'size':'%s' % (format_bytes(bytes)),
+                            'size': format_bytes(bytes),
+                            'sizeleft': format_bytes(bytes_left),
                             'age':age}
                     finished.append(line)
 
@@ -3393,7 +3399,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
                     line = {'filename':str(fn),
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
-                            'size':'%s' % (format_bytes(bytes)),
+                            'size': format_bytes(bytes),
+                            'sizeleft': format_bytes(bytes_left),
                             'nzf_id':nzf_id,
                             'age':age}
                     active.append(line)
@@ -3407,7 +3414,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
                     line = {'filename':str(fn), 'set':_set,
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
-                            'size':'%s' % (format_bytes(bytes)),
+                            'size': format_bytes(bytes),
+                            'sizeleft': format_bytes(bytes_left),
                             'age':age}
                     queued.append(line)
 
