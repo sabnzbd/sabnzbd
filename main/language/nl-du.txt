@@ -66,7 +66,7 @@ ft-complete       Map voltooid
 ft-speed          Snelheid
 ft-queued         Wachtend
 ft-paused         PAUZE
-ft-buffer@2       %s artikelen (%s bytes) gebuffered
+ft-buffer@2       %s artikelen (%s) gebuffered
 ft-sysload        Sysload
 ft-warning        MELDINGEN
 ft-newRelease@1   Nieuwe versie %s beschikbaar op

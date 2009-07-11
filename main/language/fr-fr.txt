@@ -68,7 +68,7 @@ ft-complete       Dossier complets
 ft-speed          Débit de téléchargement
 ft-queued         En attente
 ft-paused         EN PAUSE
-ft-buffer@2       %s articles dans %s bytes
+ft-buffer@2       %s articles dans %s
 ft-sysload        Sysload
 ft-warning        AVERTISSEMENTS
 ft-newRelease@1   Une nouvelle version %s est disponible

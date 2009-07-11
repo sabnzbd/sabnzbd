@@ -2737,7 +2737,7 @@ def build_header(prim):
     anfo  = articlecache.method.cache_info()
 
     header['cache_art'] = str(anfo[ANFO_ARTICLE_SUM_FIELD])
-    header['cache_size'] = str(anfo[ANFO_CACHE_SIZE_FIELD])
+    header['cache_size'] = format_bytes(anfo[ANFO_CACHE_SIZE_FIELD])
     header['cache_max'] = str(anfo[ANFO_CACHE_LIMIT_FIELD])
 
     header['nzb_quota'] = ''

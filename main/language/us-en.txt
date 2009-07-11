@@ -67,7 +67,7 @@ ft-complete       Complete Dir
 ft-speed          Download speed
 ft-queued         Queued
 ft-paused         PAUSED
-ft-buffer@2       Cached %s articles (%s bytes)
+ft-buffer@2       Cached %s articles (%s)
 ft-sysload        Sysload
 ft-warning        WARNINGS
 ft-newRelease@1   New release %s available at
