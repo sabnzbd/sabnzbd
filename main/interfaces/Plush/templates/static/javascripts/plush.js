@@ -680,33 +680,33 @@ jQuery(function($) { // safely invoke $ selector
 			$('#box_fatbottom_queue').live("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
 			
 			// NZB pause/resume individual toggle
-			$('#queueTable .download-grippie').live('click',function(event){
-				if ($(this).attr('class') == "download-grippie download-queued") {
-					$(this).toggleClass('download-queued').toggleClass('download-paused');
+			$('#queueTable .nzb_status').live('click',function(event){
+				if ($(this).attr('class') == "nzb_status sprite_ql_grip_queued_on") {
+					$(this).toggleClass('sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_paused_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=pause&value="+$(this).parent().attr('id')+'&apikey='+$.plush.apikey
+						data: "mode=queue&name=pause&value="+$(this).parent().parent().attr('id')+'&apikey='+$.plush.apikey
 					});
-				} else if ($(this).attr('class') == "download-grippie download-active") {
-					$(this).toggleClass('download-active').toggleClass('download-paused');
+				} else if ($(this).attr('class') == "nzb_status sprite_ql_grip_active") {
+					$(this).toggleClass('sprite_ql_grip_active').toggleClass('sprite_ql_grip_paused_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=pause&value="+$(this).parent().attr('id')+'&apikey='+$.plush.apikey
+						data: "mode=queue&name=pause&value="+$(this).parent().parent().attr('id')+'&apikey='+$.plush.apikey
 					});
 				} else {
-					$(this).toggleClass('download-queued').toggleClass('download-paused');
+					$(this).toggleClass('sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_paused_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=resume&value="+$(this).parent().attr('id')+'&apikey='+$.plush.apikey
+						data: "mode=queue&name=resume&value="+$(this).parent().parent().attr('id')+'&apikey='+$.plush.apikey
 					});
 				}
 			});
 			
 			// NZB individual deletion
-			$('#queue .queue_delete').live('click', function(event) {
+			$('#queue .sprite_ql_cross').live('click', function(event) {
 				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
 					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeOut('fast');
@@ -821,6 +821,24 @@ jQuery(function($) { // safely invoke $ selector
 					});
 				});
 				
+				// NZB icon hover states -- done here rather than in CSS:hover due to sprites
+				$('#queueTable tr').hover(
+					function(){
+						$(this).find('td .icon_nzb_remove').addClass('sprite_ql_cross');
+						$(this).find('td .sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued_on');
+						$(this).find('td .sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused_on');
+					},
+					function(){
+						$(this).find('td .icon_nzb_remove').removeClass('sprite_ql_cross');
+						$(this).find('td .sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued_on');
+						$(this).find('td .sprite_ql_grip_paused_on').toggleClass('sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused_on');
+					}
+				);
+				$('#queueTable tr td .icon_nzb_remove').hover(
+					function(){ $(this).addClass('sprite_ql_cross_on'); },
+					function(){ $(this).removeClass('sprite_ql_cross_on'); }
+				);
+				
 			}); // end livequery
 			
 			// Pause/resume toggle (queue)
@@ -854,7 +872,7 @@ jQuery(function($) { // safely invoke $ selector
 			********************************************/
 			
 			// NZB individual removal
-			$('#history .queue_delete').live('click', function(event) {
+			$('#history .sprite_ql_cross').live('click', function(event) {
 				if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
 					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeOut('fast');
@@ -914,6 +932,16 @@ jQuery(function($) { // safely invoke $ selector
 				// modal for viewing script logs
 				$('#historyTable .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
+				// Remove NZB hover states -- done here rather than in CSS:hover due to sprites
+				$('#historyTable tr').hover(
+					function(){ $(this).find('.icon_nzb_remove').addClass('sprite_ql_cross'); },
+					function(){ $(this).find('.icon_nzb_remove').removeClass('sprite_ql_cross'); }
+				);
+				$('#historyTable tr td .icon_nzb_remove').hover(
+					function(){ $(this).addClass('sprite_ql_cross_on'); },
+					function(){ $(this).removeClass('sprite_ql_cross_on'); }
+				);
+
 			}); // end livequery
 
 			// colorbox event bindings - so history doesn't refresh when viewing modal (thereby breaking rel prev/next)
@@ -944,6 +972,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			*********************************************
 			********************************************/
+			
 			
 			// Static tooltips
 			$('#explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pause_resume, #hist_purge').tooltip({

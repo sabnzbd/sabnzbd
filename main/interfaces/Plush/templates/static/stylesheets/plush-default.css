@@ -170,14 +170,14 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     height:4px;
 }
 .box_banner_history {background-image: url(../images/plush-default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
-.box_banner_history h1 { color:#c7c7c7; font-size:90%; font-weight:normal; float:left; margin: 17px 0px 0px 16px;  }
+.box_banner_history h1 { color:#c7c7c7; font-size:90%; font-weight:normal; float:left; margin: 17px 0px 0px 16px; cursor:default; }
 .box_banner_r {
     height:52px;
     margin-left:1px;
 }
 #hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
 #hdr-queue .logo { background-image: url(../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
-#hdr-queue .logo h1 { color:#c7c7c7; font-size:90%; font-weight:normal; margin: 22px 0px 0px 20px; }
+#hdr-queue .logo h1 { color:#c7c7c7; font-size:90%; font-weight:normal; margin: 22px 0px 0px 20px; cursor:default; }
 #queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
 #queue-buttons li { float:left; }
 #queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
@@ -242,6 +242,10 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 }
 .queueTable tr {
     background-color: #e0e0e0;
+    cursor: default;
+}
+#queueTable tr:hover {
+	cursor: move;
 }
 .queueTable tr select {
     color: #606060;
@@ -259,50 +263,35 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     border-top: 1px solid #FFF;
     border-bottom: 1px solid #B1B1B1;
 }
-.queueTable td.download-grippie {
-    padding-left:29px;
-    cursor: pointer;
-}
-.queueTable tr:hover td.download-grippie { /* IE7 */
-    background-color: #f9f9f9;
+tr:hover .nzb_status_grippie {
+    background-color: #f9f9f9; /* IE7 */
 }
 .queueTable td.download-title {
     width: 50%;
 }
-.queueTable tr .download-queued {
-    background: url(../images/plush-default/ql_grip_queued.png) 4px 50% no-repeat;
+.nzb_status_col {
+	width:28px;
 }
-.queueTable tr:hover .download-queued {
-    background: url(../images/plush-default/ql_grip_queued_on.png) 4px 50% no-repeat;
+.nzb_status {
+	display:inline;
+    padding-left:16px;
+    margin-right:4px;
+    background: url(../images/plush-default/main-sprite.png);
 }
-.queueTable tr .download-paused {
-    background: url(../images/plush-default/ql_grip_paused.png) 4px 50% no-repeat;
+#queueTable .nzb_status {
+    cursor: pointer;
 }
-.queueTable tr:hover .download-paused {
-    background: url(../images/plush-default/ql_grip_paused_on.png) 4px 50% no-repeat;
-}
-.queueTable tr .download-active {
-    background: url(../images/plush-default/ql_grip_active.png) 4px 50% no-repeat;
-}
-.queueTable tr:hover .download-active {
-    background: url(../images/plush-default/ql_grip_active_on.png) 4px 50% no-repeat;
+.queueTable .historyTitle.Loaded, .loading {
+	display:inline;
+    padding-left:16px;
+    background: url(../images/plush-default/hl_loaded.gif) 4px 50% no-repeat;
 }
 .queueTable td.historyTitle {
-    padding-left:29px;
-    cursor: default;
+    width:50%;
 }
 .queueTable tr:hover td.historyTitle { /* IE7 */
     background-color: #f9f9f9;
     color: #000;
-}
-.queueTable .historyTitle.Loaded, .loading {
-    background: url(../images/plush-default/hl_loaded.gif) 4px 50% no-repeat;
-}
-.queueTable .historyTitle.Check {
-    background: url(../images/plush-default/hv_ok.png) 4px 50% no-repeat;
-}
-.queueTable .historyTitle.Cross {
-    background: url(../images/plush-default/hv_error.png) 4px 50% no-repeat;
 }
 .queueTable a {
     text-decoration: none;
@@ -315,19 +304,20 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     border-bottom: 1px dotted #606060;
     cursor: pointer;
 }
-.queueTable tr:hover .queue_delete {
-    background: url(../images/plush-default/ql_cross.png) 50% 50% no-repeat;
-}
-.queueTable td:hover .queue_delete {
-    background: url(../images/plush-default/ql_cross_on.png) 50% 50% no-repeat;
-    cursor:pointer;
-}
 .queueTable .eta {
     padding-left:6px;
     text-align: center;
     font-size: 70%;
 }
-
+.icon_nzb_remove {
+	display:inline;
+    padding-left:16px;
+    background: url(../images/plush-default/main-sprite.png);
+	background-position: 0 0px;
+}
+.sprite_ql_cross_on {
+	cursor: pointer;
+}
 
 
 /* refresh button below queue */
@@ -375,11 +365,6 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 .options {
     text-align:right;
     padding-right:8px;
-}
-.queue_delete {
-    display:inline;
-    margin-right: 5px;
-    padding-left:16px;
 }
 
 
@@ -486,8 +471,8 @@ tr:hover .history_added  {
 .sprite_q_stats_complete { background-position: 0 -760px; } 
 .sprite_q_stats_incomplete { background-position: 0 -806px; } 
 .sprite_q_stats_needspace { background-position: 0 -852px; } 
-.sprite_ql_cross { background-position: 0 -898px; } 
-.sprite_ql_cross_on { background-position: 0 -944px; } 
+.sprite_ql_cross { background-position: 0 -898px; }
+.sprite_ql_cross_on { background-position: 0 -944px; }
 .sprite_ql_grip_active { background-position: 0 -990px; } 
 .sprite_ql_grip_active_on { background-position: 0 -1034px; } 
 .sprite_ql_grip_paused { background-position: 0 -1078px; } 

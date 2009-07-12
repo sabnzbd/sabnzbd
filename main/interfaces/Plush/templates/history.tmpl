@@ -20,8 +20,11 @@
     <!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.action_line) ) or ($limit == -2 and ($cur < 5 or $line.status=="Failed" or $line.action_line) ) or $cur < $limit#-->
     <!--#set $odd = not $odd#-->
     <tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
-    
-    <td class="historyTitle <!--#if $line.action_line or $line.status=="Queued"#-->Loaded<!--#else if $line.status=="Failed"#-->Cross<!--#else#-->Check<!--#end if#-->">
+
+	<td class="nzb_status_col">
+		&nbsp;<div class="nzb_status <!--#if $line.action_line or $line.status=="Queued"#-->Loaded<!--#else if $line.status=="Failed"#-->sprite_hv_error<!--#else#-->sprite_hv_star<!--#end if#-->">&nbsp;</div>
+	</td>
+    <td class="historyTitle">
         $line.name
     </td>
     
@@ -62,7 +65,7 @@
         <!--#if not $line.loaded#-->
         <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
         <small class="history_added">$d</small>
-        <div class="queue_delete" title="$T('nzo-delete')&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
+        <div class="icon_nzb_remove" title="$T('nzo-delete')&nbsp;NZB">&nbsp;</div>
         <!--#end if#-->
     </td>
     

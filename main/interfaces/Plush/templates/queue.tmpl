@@ -49,8 +49,9 @@
     <!--#set $odd = not $odd#-->
     <tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
 
-    <td class="download-grippie <!--#if $slot.status == "Paused"#-->download-paused<!--#else if $slot.status == "Downloading"#-->download-active<!--#else#-->download-queued<!--#end if#-->">
-    </td>
+	<td class="nzb_status_col">
+		&nbsp;<div class="nzb_status <!--#if $slot.status == "Paused"#-->sprite_ql_grip_paused<!--#else if $slot.status == "Downloading"#-->sprite_ql_grip_active<!--#else#-->sprite_ql_grip_queued<!--#end if#-->">&nbsp;</div>
+	</td>
 
     <td class="download-title">
         <a href="nzb/$slot.nzo_id/" title="$T('nzo-age'): $slot.avg_age">$slot.filename</a>
@@ -98,7 +99,7 @@
             <!--#end for#-->
         </optgroup></select>
         <!--#end if#-->
-        <div class="queue_delete" title="$T('nzo-delete')&nbsp;NZB">&nbsp;&nbsp;&nbsp;</div>
+        <div class="icon_nzb_remove" title="$T('nzo-delete')&nbsp;NZB">&nbsp;</div>
     </td>
 
     </tr>
