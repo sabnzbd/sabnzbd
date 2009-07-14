@@ -18,8 +18,8 @@ function loadFiles(value, row, value3, value4){
     //row.style.backgroundColor = 'yellow';
     //row.setAttribute("class", 'yellow-row'); //For Most Browsers
     ids = store.collect('nzo_id');
-    currentFile = ids[row]
-    url = 'tapi?mode=get_files&output=json&value='+currentFile
+    currentFile = ids[row];
+    url = 'tapi?mode=get_files&output=json&value='+currentFile+'&session='+session;
     storeFiles.proxy.conn.url = url;
     storeFiles.reload();
     //storeFiles.load(url)
@@ -33,7 +33,7 @@ function updateGrid(grid){
     var url;
     //script
     if (grid.field == "script"){
-        url = "tapi?mode=change_script&value="+currentFile+"&value2="+value;
+        url = "tapi?mode=change_script&value="+currentFile+"&value2="+value+'&session='+session;
     }
     //unpack options
     else if (grid.field == "unpackopts"){
@@ -42,17 +42,17 @@ function updateGrid(grid){
         else if (grid.value == "Repair") {unp = 1}
         else if (grid.value == "Unpack") {unp = 2}
         else if (grid.value == "Delete") {unp = 3}
-        url = "queue/change_opts?nzo_id="+currentFile+"&pp="+unp
+        url = "queue/change_opts?nzo_id="+currentFile+"&pp="+unp+'&session='+session';
     }
     else if (grid.field == "index")
     {
         var nzoid1 = ids[grid.originalValue];
         var nzoid2 = ids[value];
-        url = "tapi?mode=switch&value="+nzoid1+"&value2="+nzoid2;
+        url = "tapi?mode=switch&value="+nzoid1+"&value2="+nzoid2+'&session='+session;
     }
     else if (grid.field == "cat")
     {
-        url = "tapi?mode=change_cat&value="+currentFile+"&value2="+value
+        url = "tapi?mode=change_cat&value="+currentFile+"&value2="+value+'&session='+session;
     }
     if (url){
         Ext.Ajax.request(
@@ -67,7 +67,7 @@ function updateGrid(grid){
 
 function deleteAll(){
 
-    url = "tapi?mode=queue&name=delete&value=all"
+    url = "tapi?mode=queue&name=delete&value=all&session="+session;
     if (url){
         Ext.Ajax.request(
         {
@@ -82,7 +82,7 @@ function deleteAll(){
    
 function deleteAllHistory(){
 
-    url = "tapi?mode=history&name=delete&value=all"
+    url = "tapi?mode=history&name=delete&value=all&session="+session;
     if (url){
         Ext.Ajax.request(
         {
@@ -117,7 +117,7 @@ function s_returner(value)
 function removeSelected()
 {
     ids = getGridSelected(queueGrid,true); 
-    url = "tapi?mode=queue&name=delete&value="+ids
+    url = "tapi?mode=queue&name=delete&value="+ids+"&session="+session;
     Ext.Ajax.request({url: url});
     var msg = String.format('{0} item{1} deleted.', selectedNo, s_returner(selectedNo));
     Ext.example.msg('Deleted', msg);
@@ -128,7 +128,7 @@ function removeSelected()
 function pauseSelected()
 {
     ids = getGridSelected(queueGrid,false);
-    url = "tapi?mode=queue&name=pause&value="+ids
+    url = "tapi?mode=queue&name=pause&value="+ids+"&session="+session;
     var msg = String.format('{0} item{1} paused.', selectedNo, s_returner(selectedNo));
     Ext.example.msg('Paused', msg);
     Ext.Ajax.request({url: url});
@@ -140,7 +140,7 @@ function pauseSelected()
 function resumeSelected()
 {
     ids = getGridSelected(queueGrid,false);  
-    url = "tapi?mode=queue&name=resume&value="+ids
+    url = "tapi?mode=queue&name=resume&value="+ids+"&session="+session;
     Ext.Ajax.request({url: url});
     var msg = String.format('{0} item{1} resumed.', selectedNo, s_returner(selectedNo));
     Ext.example.msg('Resumed', msg);
@@ -152,7 +152,7 @@ function resumeSelected()
 function prioritySelected(val, name)
 {
     ids = getGridSelected(queueGrid,false);  
-    url = "tapi?mode=queue&name=priority&value="+ids+"&value2="+val;
+    url = "tapi?mode=queue&name=priority&value="+ids+"&value2="+val+"&session="+session;
     Ext.Ajax.request({url: url});
     var msg = String.format('{0} item{1} set to {2} priority.', selectedNo, s_returner(selectedNo), name);
     Ext.example.msg('Priority', msg);
@@ -183,7 +183,7 @@ function removeSelectedHistory()
 {
     ids = getGridSelected(historyGrid,true);
     if (ids){
-        url = "tapi?mode=history&name=delete&value="+ids
+        url = "tapi?mode=history&name=delete&value="+ids+"&session="+session;
         Ext.Ajax.request({url: url});
         var msg = String.format('{0} history job{1} deleted.', selectedNo, s_returner(selectedNo));
         Ext.example.msg('Deleted', msg);
@@ -230,7 +230,7 @@ function shutdownFailed()
 
 function changeColorScheme(color)
 {
-    url = 'tapi?mode=config&name=set_colorscheme&value='+color;
+    url = 'tapi?mode=config&name=set_colorscheme&value='+color+"&session="+session;;
     Ext.Ajax.request(
     {
        url: url,
@@ -241,7 +241,7 @@ function changeColorScheme(color)
 }
 
 function queueFinishAction(o , value){
-    url = 'tapi?mode=queue&name=change_complete_action&value='+value;
+    url = 'tapi?mode=queue&name=change_complete_action&value='+value+"&session="+session;;
     Ext.Ajax.request(
     {
        url: url,
@@ -252,7 +252,7 @@ function queueFinishAction(o , value){
 };
 
 function limitSpeed(o , value){
-    url = 'tapi?mode=config&name=set_speedlimit&value='+value;
+    url = 'tapi?mode=config&name=set_speedlimit&value='+value+"&session="+session;;
     Ext.Ajax.request(
     {
        url: url,

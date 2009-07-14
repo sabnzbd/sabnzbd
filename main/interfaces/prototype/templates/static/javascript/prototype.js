@@ -481,7 +481,7 @@ var myNewRecord = new TopicRecord({
     {
         ids = storeHistory.collect('id');
         currentFile = ids[record];
-        url = 'history/delete?job='+currentFile;
+        url = 'history/delete?job='+currentFile+'&session='+session;
         Ext.Ajax.request(
         {
            url: url,
