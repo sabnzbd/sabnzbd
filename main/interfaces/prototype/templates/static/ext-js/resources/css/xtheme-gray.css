@@ -5,6 +5,10 @@
  * 
  * http://extjs.com/license
  */
+ 
+ body {
+    color: white;
+ }
 
 .x-panel {
     border-style: solid;

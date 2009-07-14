@@ -12,382 +12,25 @@ created by switch
  * http://extjs.com/license
  */
 
-
-var store;
-var storeFiles;
-var autoreload = 10;
-var currentFile;
-var queueGrid;
-var filesGrid;
-var paused = false;
-var statusTemplate;
-var state2;
-var southHeight;
-var storeHistory;
-var selectedNo; //used for keeping track of how many items were selected when an action was done
-var pauseIgnore = false; //prevent the toggling of the pause button on page load from entering a pause/unpause loop
-    
-Ext.onReady(function(){
-
-//-------------------------------------------------------------------------------------------------------------
-//                                                       GRIDACTION
-//-------------------------------------------------------------------------------------------------------------
-        // vim: ts=4:sw=4:nu:fdc=2:nospell
-        /**
-        * RowAction plugin for Ext grid
-        *
-        * Contains renderer for an icon and fires events when icon is clicked
-        *
-        * @author    Ing. Jozef Sakalos <jsakalos at aariadne dot com>
-        * @date      December 29, 2007
-        * @version    Ext.ux.grid.RowAction.js 126 2008-01-31 03:33:50Z jozo 
-        *
-        * @license Ext.ux.grid.RowAction is licensed under the terms of
-        * the Open Source LGPL 3.0 license.  Commercial use is permitted to the extent
-        * that the code/component(s) do NOT become part of another Open Source or Commercially
-        * licensed development library or toolkit without explicit permission.
-        * 
-        * License details: http://www.gnu.org/licenses/lgpl.html
-        */
-
-        Ext.ns('Ext.ux.grid');
-
-        /**
-        * @class Ext.ux.grid.RowAction
-        * @extends Ext.util.Observable
-        *
-        * Creates new RowAction plugin
-        * @constructor
-        * @param {Object} config The config object
-        *
-        * @cfg {String} iconCls css class that defines background image
-        */
-        Ext.ux.grid.RowAction = function(config) {
-        Ext.apply(this, config);
-
-        this.addEvents({
-            /**
-             * @event beforeaction
-             * Fires before action event. Return false to cancel the subsequent action event.
-             * @param {Ext.grid.GridPanel} grid
-             * @param {Ext.data.Record} record Record corresponding to row clicked
-             * @param {Integer} rowIndex 
-             */
-             beforeaction:true
-            /**
-             * @event action
-             * Fires when icon is clicked
-             * @param {Ext.grid.GridPanel} grid
-             * @param {Ext.data.Record} record Record corresponding to row clicked
-             * @param {Integer} rowIndex 
-             */
-            ,action:true
-        });
-
-        Ext.ux.grid.RowAction.superclass.constructor.call(this);
-        };
-
-        Ext.extend(Ext.ux.grid.RowAction, Ext.util.Observable, {
-         header:''
-        ,sortable:false
-        ,dataIndex:''
-        ,width:20
-        ,fixed:true
-        ,lazyRender:true
-        ,iconCls:''
-
-        // private - plugin initialization
-        ,init:function(grid) {
-            this.grid = grid;
-            var view = grid.getView();
-            grid.on({
-                render:{scope:this, fn:function() {
-                    view.mainBody.on({
-                        click:{scope:this, fn:this.onClick}
-                    });
-                }}
-            });
-            if(!this.renderer) {
-                this.renderer = function(value, cell, record, row, col, store) {
-                    cell.css += (cell.css ? ' ' : '') + 'ux-grid3-row-action-cell';
-                    //very very bad work-around for changing resume/pause icon
-                    var customClass = this.getIconCls(record, row, col);
-                    if (customClass == "icon-pause" && record.data.status == "Paused") customClass = 'icon-play';
-                    else if (customClass == "icon-play" && record.data.status != "Paused") customClass = 'icon-pause';
-                    var retval = '<div class="' + customClass + '"';
-                    retval += this.style ? ' style="' + this.style + '"' : '';
-                    retval += this.qtip ? ' ext:qtip="' + this.qtip +'"' : '';
-                    retval += '> </div>';
-                    return retval;
-                }.createDelegate(this);
-            }
-        } // eo function init
-
-        // override for custom processing
-        ,getIconCls:function(record, row, col) {
-            return this.boundIndex ? record.get(this.boundIndex) : this.iconCls;
-        } // eo function getIconCls
-        
-        // override for custom processing
-        ,setIconCls:function(cls) {
-            this.iconCls = cls;
-        } // eo function getIconCls
-
-        // private - icon click handler
-        ,onClick:function(e, target) {
-            var record, iconCls;
-            var row = e.getTarget('.x-grid3-row');
-            var col = this.grid.getView().getCellIndex(e.getTarget('.ux-grid3-row-action-cell'));
-
-            if(false !== row && false !== col) {
-                record = this.grid.store.getAt(row.rowIndex);
-                iconCls = this.getIconCls(record, row.rowIndex, col);
-                //very very bad work-around for changing resume/pause icon
-                if (iconCls == 'icon-pause' && record.data.status == "Paused") iconCls = 'icon-play';              
-                if(Ext.fly(target).hasClass(iconCls)) {
-                    if(false !== this.fireEvent('beforeaction', this.grid, record, row.rowIndex)) {
-                        this.fireEvent('action', this.grid, record, row.rowIndex, e);
-                    }
-                }
-            }
-        } // eo function onClick
-        });
-
-        // eof  
-        
   
-// Custom drag+drop by clarkke8  
-	 
-Ext.namespace('Ext.ux.dd');
-
-Ext.ux.dd.GridReorderDropTarget = function(grid, config) {
-    this.target = new Ext.dd.DropTarget(grid.getEl(), {
-        ddGroup: grid.ddGroup || 'GridDD'
-        ,grid: grid
-        ,gridDropTarget: this
-        ,notifyDrop: function(dd, e, data){
-            // determine the row
-            var t = Ext.lib.Event.getTarget(e);
-            var rindex = this.grid.getView().findRowIndex(t);
-            if (rindex === false) return false;
-            if (rindex == data.rowIndex) return false;
-
-            // fire the before move/copy event
-            if (this.gridDropTarget.fireEvent(this.copy?'beforerowcopy':'beforerowmove', this.gridDropTarget, data.rowIndex, rindex, data.selections) === false) return false;
-
-            // update the store
-            var ds = this.grid.getStore();
-            if (!this.copy) {
-                for(i = 0; i < data.selections.length; i++) {
-                    ds.remove(ds.getById(data.selections[i].id));
-                }
-            }
-            ds.insert(rindex,data.selections);
-
-            // re-select the row(s)
-            var sm = this.grid.getSelectionModel();
-            if (sm) sm.selectRecords(data.selections);
-
-            // fire the after move/copy event
-            this.gridDropTarget.fireEvent(this.copy?'afterrowcopy':'afterrowmove', this.gridDropTarget, data.rowIndex, rindex, data.selections);
-
-            return true;
-        }
-        ,notifyOver: function(dd, e, data) {
-            var t = Ext.lib.Event.getTarget(e);
-            var rindex = this.grid.getView().findRowIndex(t);
-            if (rindex == data.rowIndex) rindex = false;
-
-            return (rindex === false)? this.dropNotAllowed : this.dropAllowed;
-        }
-    });
-    if (config) {
-        Ext.apply(this.target, config);
-        if (config.listeners) Ext.apply(this,{listeners: config.listeners});
-    }
-
-    this.addEvents({
-        "beforerowmove": true
-        ,"afterrowmove": true
-        ,"beforerowcopy": true
-        ,"afterrowcopy": true
-    });
-
-    Ext.ux.dd.GridReorderDropTarget.superclass.constructor.call(this);
-};
-
-Ext.extend(Ext.ux.dd.GridReorderDropTarget, Ext.util.Observable, {
-    getTarget: function() {
-        return this.target;
-    }
-    ,getGrid: function() {
-        return this.target.grid;
-    }
-    ,getCopy: function() {
-        return this.target.copy?true:false;
-    }
-    ,setCopy: function(b) {
-        this.target.copy = b?true:false;
-    }
-});
-
-
-//row expander
-Ext.grid.RowExpander = function(config){
-    Ext.apply(this, config);
-
-    this.addEvents({
-        beforeexpand : true,
-        expand: true,
-        beforecollapse: true,
-        collapse: true
-    });
-
-    Ext.grid.RowExpander.superclass.constructor.call(this);
-
-    if(this.tpl){
-        if(typeof this.tpl == 'string'){
-            this.tpl = new Ext.Template(this.tpl);
-        }
-        this.tpl.compile();
-    }
-
-    this.state = {};
-    this.bodyContent = {};
-};
-
-Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
-    header: "",
-    width: 20,
-    sortable: false,
-    fixed:true,
-    menuDisabled:true,
-    dataIndex: '',
-    id: 'expander',
-    lazyRender : true,
-    enableCaching: true,
-
-    getRowClass : function(record, rowIndex, p, ds){
-        p.cols = p.cols-1;
-        var content = this.bodyContent[record.id];
-        if(!content){
-            content = this.getBodyContent(record, rowIndex);
-        }
-        if(content){
-            p.body = content;
-        }
-        return this.state[record.id] ? 'x-grid3-row-expanded' : 'x-grid3-row-collapsed';
-    },
-
-    init : function(grid){
-        this.grid = grid;
-
-        var view = grid.getView();
-        view.getRowClass = this.getRowClass.createDelegate(this);
-
-        view.enableRowBody = true;
-
-        grid.on('render', function(){
-            view.mainBody.on('mousedown', this.onMouseDown, this);
-        }, this);
-    },
-
-    getBodyContent : function(record, index){
-
-        var content = this.bodyContent[record.id];
-        if(!content){
-            var str = '<p class="historyDetails">';
-            
-            for (i=0;i<record.data.stage_log.length;i++)
-            {
-                stageName = record.data.stage_log[i].name[0].toUpperCase() + record.data.stage_log[i].name.slice(1, record.data.stage_log[i].name.length)
-                str = str + '<span class="historyDetail">' + stageName + '</span><br />';
-                for (j=0;j<record.data.stage_log[i].actions.length;j++)
-                {
-                    str += record.data.stage_log[i].actions[j] + '<br />'
-                }
-                str = str + '<br />';
-            }
-            str = str + '</span>';
-            content = str;
-        }
-        return content;
-    },
-
-    onMouseDown : function(e, t){
-        if(t.className == 'x-grid3-row-expander'){
-            e.stopEvent();
-            var row = e.getTarget('.x-grid3-row');
-            this.toggleRow(row);
-        }
-    },
-
-    renderer : function(v, p, record){
-        p.cellAttr = 'rowspan="2"';
-        return '<div class="x-grid3-row-expander">&#160;</div>';
-    },
-
-    beforeExpand : function(record, body, rowIndex){
-        if(this.fireEvent('beforeexpand', this, record, body, rowIndex) !== false){
-            if(this.tpl && this.lazyRender){
-                body.innerHTML = this.getBodyContent(record, rowIndex);
-            }
-            return true;
-        }else{
-            return false;
-        }
-    },
-
-    toggleRow : function(row){
-        if(typeof row == 'number'){
-            row = this.grid.view.getRow(row);
-        }
-        this[Ext.fly(row).hasClass('x-grid3-row-collapsed') ? 'expandRow' : 'collapseRow'](row);
-    },
-
-    expandRow : function(row){
-        if(typeof row == 'number'){
-            row = this.grid.view.getRow(row);
-        }
-        var record = this.grid.store.getAt(row.rowIndex);
-        var body = Ext.DomQuery.selectNode('tr:nth(2) div.x-grid3-row-body', row);
-        if(this.beforeExpand(record, body, row.rowIndex)){
-            this.state[record.id] = true;
-            Ext.fly(row).replaceClass('x-grid3-row-collapsed', 'x-grid3-row-expanded');
-            this.fireEvent('expand', this, record, body, row.rowIndex);
-        }
-    },
-
-    collapseRow : function(row){
-        if(typeof row == 'number'){
-            row = this.grid.view.getRow(row);
-        }
-        var record = this.grid.store.getAt(row.rowIndex);
-        var body = Ext.fly(row).child('tr:nth(1) div.x-grid3-row-body', true);
-        if(this.fireEvent('beforcollapse', this, record, body, row.rowIndex) !== false){
-            this.state[record.id] = false;
-            Ext.fly(row).replaceClass('x-grid3-row-expanded', 'x-grid3-row-collapsed');
-            this.fireEvent('collapse', this, record, body, row.rowIndex);
-        }
-    }
-});  
+Ext.onReady(function(){
         
-        
-//-------------------------------------------------------------------------------------------------------------
-//                                                          INIT
-//-------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//                              INIT
+//---------------------------------------------------------------------------
 
     Ext.QuickTips.init();
     Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
     
     
-//-------------------------------------------------------------------------------------------------------------
-//                                                              STORES
-//-------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+//                             STORES
+//---------------------------------------------------------------------------
 
     var queueItemXMLReader = new Ext.data.JsonReader({
+            record: '',
             totalProperty: 'noofslots',
-            root: 'slots',
+            root: 'queue.slots',
             id: 'nzo_id'
         }, [
             {name: 'name', mapping: 'filename'},
@@ -403,29 +46,33 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
         
     var statusXMLReader = new Ext.data.XmlReader({
             record: '',
+            root:'',
             id: 'version'
         }, [
             {name: 'cache_limit', mapping: 'cache_limit'},
-            'mbleft', 'mb', 'timeleft', 'kbpersec', 'eta', 'finishaction', 'status', 'paused', 'speedlimit'
+            'mbleft', 'mb', 'timeleft', 'kbpersec', 'eta', 'finishaction', 'paused', 'speedlimit',
+            {name: 'status', mapping: 'status'},
         ]);
         
     var newQueueStatus = new Ext.data.HttpProxy({
-                    url: 'tapi?mode=queue&output=json'
+                    url: 'tapi?mode=queue&output=json&session='+session,
+                    params: { mode: 'qstatus',
+                        output: 'json',
+                        session: session
+                    }
                 })
                 
     var newQueueStatus2 = new Ext.data.HttpProxy({
-                    url: 'tapi?mode=queue&output=xml'
+                    url: 'tapi?mode=queue&output=xml&session='+session
                 })
 
-//QueueStore
-    //store = new Ext.data.GroupingStore({
+    //QueueStore
     store = new Ext.data.GroupingStore({
-        proxy: newQueueStatus,
-        reader: queueItemXMLReader
-        //,groupField:'priority'
+        proxy: newQueueStatus
+        ,reader: queueItemXMLReader
         ,remoteSort:true
     });     
-    //store.load({params:{start:0, limit:50}});
+
     store.on('load', function(rd, r, success) 
     {
         if (queueItemXMLReader.jsonData)
@@ -437,7 +84,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     });
 
     
-//StatusStore
+    //StatusStore
     storeStatus = new Ext.data.Store({
         proxy: newQueueStatus2,
         reader: statusXMLReader
@@ -509,17 +156,17 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
         });
 
         storeChart.add(graphlogRecord);
-        drawChart();
+        if (southTabs.getActiveTab().id == "chartContainer") drawChart();
     });
     storeStatus.load();
 
     
 //HistoryStore
     storeHistory = new Ext.data.Store({
-        url: 'tapi?mode=history&output=json',
+        url: 'tapi?mode=history&output=json&session='+session,
         reader: new Ext.data.JsonReader({
             totalProperty: 'noofslots',
-            root: 'slots',
+            root: 'history.slots',
             id: 'nzo_id'
         }, [
             {name: 'filename', mapping: 'name'},
@@ -546,7 +193,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     });
 //WarningsStore
     var storeWarnings = new Ext.data.Store({
-        url: 'tapi?mode=warnings&output=json',
+        url: 'tapi?mode=warnings&output=json&session='+session,
         reader: new Ext.data.JsonReader({
             root: 'warnings',
             id: 'id',
@@ -559,7 +206,7 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     
 //FilesStore
     storeFiles = new Ext.data.Store({
-        url: 'tapi?mode=get_files&output=json&value=',
+        url: 'tapi?mode=get_files&output=json&value=&session='+session,
         reader: new Ext.data.JsonReader({
             record: 'slot',
             id: 'id',
@@ -586,9 +233,9 @@ Ext.extend(Ext.grid.RowExpander, Ext.util.Observable, {
     
 //ScriptsStore
     var storeScripts = new Ext.data.Store({
-        url: 'tapi?mode=queue&output=json',
+        url: 'tapi?mode=queue&output=json&session='+session,
         reader: new Ext.data.JsonReader({
-            root: 'mainqueue.script_list.scripts',
+            root: 'script_list.scripts',
             //id: 'id',
             totalRecords: '@total'
         }, [
@@ -614,9 +261,9 @@ var myNewRecord = new TopicRecord({
 
     
     var storeQueueActions = new Ext.data.Store({
-        url: 'tapi?mode=queue&output=json',
+        url: 'tapi?mode=queue&output=json&session='+session,
         reader: new Ext.data.JsonReader({
-            root: 'mainqueue.script_list.scripts',
+            root: 'script_list.scripts',
             //id: 'id',
             totalRecords: '@total'
         }, [
@@ -629,9 +276,9 @@ var myNewRecord = new TopicRecord({
     
     
     var storeCats = new Ext.data.Store({
-        url: 'tapi?mode=queue&output=json',
+        url: 'tapi?mode=queue&output=json&session='+session,
         reader: new Ext.data.JsonReader({
-            root: 'mainqueue.cat_list.categories',
+            root: 'cat_list.categories',
             //id: 'id',
             totalRecords: '@total'
         }, [
@@ -641,20 +288,20 @@ var myNewRecord = new TopicRecord({
     //storeCats.load();
     
     
-var unpackStrings = [
-    ['None'],
-    ['Repair'],
-    ['Unpack'],
-    ['Delete']
-]
-    
-//UnpackStore
-var storeUnpack = new Ext.data.SimpleStore({
-    fields: [
-       {name: 'unpackopts'}
+    var unpackStrings = [
+        ['None'],
+        ['Repair'],
+        ['Unpack'],
+        ['Delete']
     ]
-});
-storeUnpack.loadData(unpackStrings);
+        
+    //UnpackStore
+    var storeUnpack = new Ext.data.SimpleStore({
+        fields: [
+           {name: 'unpackopts'}
+        ]
+    });
+    storeUnpack.loadData(unpackStrings);
 
 
 //-------------------------------------------------------------------------------------------------------------
@@ -670,6 +317,12 @@ storeUnpack.loadData(unpackStrings);
         }
             else { return
         }
+    }
+    
+    //percentage bar formatter
+    var warningsformatter = function(val){
+        val = val.replace('\\n',' ').replace('\n',' ').replace('<','&lt;').replace('<','&gt;')
+        return val
     }
 
     //status formatter
@@ -747,7 +400,7 @@ storeUnpack.loadData(unpackStrings);
         //color the background cells of the priority
         function priorityRenderer(val, meta)
         {
-            if(val == "High")
+            if(val == "High" || val == "Force")
             {
                 //alert('hey')
                 //meta.attr='style="background-color:#dafad9;"'; //green
@@ -784,7 +437,7 @@ storeUnpack.loadData(unpackStrings);
     {
         ids = store.collect('nzo_id');
         currentFile = ids[record];
-        url = 'tapi?mode=queue&name=delete';
+        url = 'tapi?mode=queue&name=delete&session='+session;
         Ext.Ajax.request(
         {
            url: url,
@@ -806,8 +459,8 @@ storeUnpack.loadData(unpackStrings);
         //var pauicon = pauqueue.getIconCls()
         //if (pauicon == "icon-pause") pauqueue.setIconCls('icon-play')
         currentFile = grid.data.nzo_id;
-        url = 'tapi?mode=queue&name=pause';
-        if (status == 'Paused') url = 'tapi?mode=queue&name=resume';
+        url = 'tapi?mode=queue&name=pause&session='+session;
+        if (status == 'Paused') url = 'tapi?mode=queue&name=resume&session='+session;
         
         Ext.Ajax.request(
         {
@@ -849,11 +502,11 @@ storeUnpack.loadData(unpackStrings);
     {
         if (paused)
         {
-            url = 'tapi?mode=resume';
+            url = 'tapi?mode=resume&session='+session;
             paused = false;
         } else 
         {
-            url = 'tapi?mode=pause';
+            url = 'tapi?mode=pause&session='+session;
             paused = true;
         }
         if (!pauseIgnore)
@@ -919,266 +572,7 @@ storeUnpack.loadData(unpackStrings);
     }();
 
    
-//Grid functions
-    //load the files for the selected queue item
-    function loadFiles(value, row, value3, value4){
-        //row = gridView.getRow(row)
-        //row.style.backgroundColor = 'yellow';
-        //row.setAttribute("class", 'yellow-row'); //For Most Browsers
-        ids = store.collect('nzo_id');
-        currentFile = ids[row]
-        url = 'tapi?mode=get_files&output=json&value='+currentFile
-        storeFiles.proxy.conn.url = url;
-        storeFiles.reload();
-        //storeFiles.load(url)
-    }
 
-    //pushes changed values to sab and updates the grid
-    function updateGrid(grid){
-        ids = store.collect('nzo_id');
-        currentFile = ids[grid.row];
-        var value = grid.value;
-        var url;
-        //script
-        if (grid.field == "script"){
-            url = "tapi?mode=change_script&value="+currentFile+"&value2="+value;
-        }
-        //unpack options
-        else if (grid.field == "unpackopts"){
-            var unp;
-            if (grid.value == "" || !grid.value || grid.value == "None") { unp = 0}
-            else if (grid.value == "Repair") {unp = 1}
-            else if (grid.value == "Unpack") {unp = 2}
-            else if (grid.value == "Delete") {unp = 3}
-            url = "queue/change_opts?nzo_id="+currentFile+"&pp="+unp
-        }
-        else if (grid.field == "index")
-        {
-            var nzoid1 = ids[grid.originalValue];
-            var nzoid2 = ids[value];
-            url = "tapi?mode=switch&value="+nzoid1+"&value2="+nzoid2;
-        }
-        else if (grid.field == "cat")
-        {
-            url = "tapi?mode=change_cat&value="+currentFile+"&value2="+value
-        }
-        if (url){
-            Ext.Ajax.request(
-            {
-               url: url,
-               success: dummy,
-               failure: dummy
-            });
-            store.reload();
-        }
-    }
-        
-
-    
-    
-
-
-    
-    
-    function deleteAll(){
-    
-        url = "tapi?mode=queue&name=delete&value=all"
-        if (url){
-            Ext.Ajax.request(
-            {
-               url: url,
-               success: dummy,
-               failure: dummy
-            });
-            store.reload();
-            storeStatus.reload();
-        }
-    };
-       
-    function deleteAllHistory(){
-    
-        url = "tapi?mode=history&name=delete&value=all"
-        if (url){
-            Ext.Ajax.request(
-            {
-               url: url,
-               success: dummy,
-               failure: dummy
-            });
-            storeHistory.reload();
-        }
-    };
-       
-    function getGridSelected(Grid, remove)
-    {
-        var ar = Grid.getSelectionModel().getSelections()
-        var delids;
-        for(i = 0; i < ar.length; i++){
-            if (i==ar.length-1) comma = ''
-            else comma = ','
-            if (delids) delids = delids+ar[i].id+comma
-            else delids = ar[i].id+comma
-        }
-        selectedNo = ar.length
-        return delids
-    }
-    
-    function s_returner(value)
-    {
-        if (value == 1) return ''
-        else return 's'
-    }
-
-    function removeSelected()
-    {
-        ids = getGridSelected(queueGrid,true); 
-        url = "tapi?mode=queue&name=delete&value="+ids
-        Ext.Ajax.request({url: url});
-        var msg = String.format('{0} item{1} deleted.', selectedNo, s_returner(selectedNo));
-        Ext.example.msg('Deleted', msg);
-        store.reload();
-        storeStatus.reload();
-    }
-    
-    function pauseSelected()
-    {
-        ids = getGridSelected(queueGrid,false);
-        url = "tapi?mode=queue&name=pause&value="+ids
-        var msg = String.format('{0} item{1} paused.', selectedNo, s_returner(selectedNo));
-        Ext.example.msg('Paused', msg);
-        Ext.Ajax.request({url: url});
-        store.reload();
-        storeStatus.reload();
-
-    }
-    
-    function resumeSelected()
-    {
-        ids = getGridSelected(queueGrid,false);  
-        url = "tapi?mode=queue&name=resume&value="+ids
-        Ext.Ajax.request({url: url});
-        var msg = String.format('{0} item{1} resumed.', selectedNo, s_returner(selectedNo));
-        Ext.example.msg('Resumed', msg);
-        store.reload();
-        storeStatus.reload();
-
-    }
-    
-    function highPrioritySelected()
-    {
-        ids = getGridSelected(queueGrid,false);
-        url = "tapi?mode=queue&name=priority&value="+ids+"&value2=1";
-        Ext.Ajax.request({url: url});
-        var msg = String.format('{0} item{1} set to high priority.', selectedNo, s_returner(selectedNo));
-        Ext.example.msg('Priority', msg);
-        store.reload();
-
-    }
-    
-    function normalPrioritySelected()
-    {
-        ids = getGridSelected(queueGrid,false);  
-        url = "tapi?mode=queue&name=priority&value="+ids+"&value2=0";
-        Ext.Ajax.request({url: url});
-        var msg = String.format('{0} item{1} set to normal priority.', selectedNo, s_returner(selectedNo));
-        Ext.example.msg('Priority', msg);
-        store.reload();
-
-    }
-    
-    function lowPrioritySelected()
-    {
-        ids = getGridSelected(queueGrid,false);  
-        url = "tapi?mode=queue&name=priority&value="+ids+"&value2=-1";
-        Ext.Ajax.request({url: url});
-        var msg = String.format('{0} item{1} set to low priority.', selectedNo, s_returner(selectedNo));
-        Ext.example.msg('Priority', msg);
-        store.reload();
-
-    }
-    
-    function removeSelectedHistory()
-    {
-        ids = getGridSelected(historyGrid,true);
-        if (ids){
-            url = "tapi?mode=history&name=delete&value="+ids
-            Ext.Ajax.request({url: url});
-            var msg = String.format('{0} history job{1} deleted.', selectedNo, s_returner(selectedNo));
-            Ext.example.msg('Deleted', msg);
-            storeHistory.reload();
-        }
-    }
-    
-    //shutdown sabnzbd
-    function shutdownProgram(button)
-	{
-		if (button == "yes")
-		{
-			Ext.MessageBox.show({
-			   msg: 'Closing SABnzbd, please wait...',
-			   progressText: 'Shutting down...',
-			   width:300,
-			   wait:true,
-			   waitConfig: {interval:200}
-			   //icon:'ext-mb-download', 
-			});
-
-    		url = 'shutdown';
-    		Ext.Ajax.request(
-    		{
-    		   url: url,
-    		   success: shutdownComplete,
-    		   failure: shutdownFailed
-    		});
-        }
-    }
-    
-    
-	function shutdownComplete()
-	{
-		Ext.MessageBox.hide();
-		Ext.example.msg('Done', 'SABnzbd has been shut down!');
-	}
-	
-	function shutdownFailed()
-	{
-		Ext.MessageBox.hide();
-		Ext.example.msg('Failed', 'Could not contact SABnzbd server, already shutdown?');
-	}
-
-    function changeColorScheme(color)
-    {
-        url = 'tapi?mode=config&name=set_colorscheme&value='+color;
-        Ext.Ajax.request(
-        {
-           url: url,
-           success: dummy,
-           failure: dummy
-           
-        });
-    }
-    
-    function queueFinishAction(o , value){
-        url = 'tapi?mode=queue&name=change_complete_action&value='+value;
-        Ext.Ajax.request(
-        {
-           url: url,
-           success: dummy,
-           failure: dummy
-           
-        });
-    };
-    
-    function limitSpeed(o , value){
-        url = 'tapi?mode=config&name=set_speedlimit&value='+value;
-        Ext.Ajax.request(
-        {
-           url: url,
-           success: dummy,
-           failure: dummy
-           
-        });
-    }
 
 //-------------------------------------------------------------------------------------------------------------
 //                                                              TABS
@@ -1429,6 +823,7 @@ storeUnpack.loadData(unpackStrings);
                     dataIndex: 'id'
                 },{
                     header: "Error",
+                    renderer: warningsformatter,
                     width: 370,
                     sortable: true,
                     dataIndex: 'name'
@@ -1445,7 +840,21 @@ storeUnpack.loadData(unpackStrings);
         })]
     });
                     
-                    
+    southTabs.on('beforetabchange', function(er, newTab, currentTab)
+    {
+        switch (newTab.id)
+        {
+            case "warningsContainer":
+                storeWarnings.reload();
+                break;
+            case "filesgrid":
+                storeFiles.reload();
+                break;
+            case "chartContainer":
+                //alert("chartContainer");
+                break;
+        };
+    });
                     
     //FORM - Adding nzb                
     var nzbtabs = new Ext.TabPanel(
@@ -1772,30 +1181,7 @@ storeUnpack.loadData(unpackStrings);
         }]
     });        
     */
-	
-	
-    // what is this for???
-    var tabs = new Ext.TabPanel(
-    {
-        region: 'center',
-        margins:'3 3 3 0', 
-        activeTab: 0,
-        defaults:{autoScroll:true},
-        items:[{
-            title: 'Bogus Tab',
-            html: Ext.example.bogusMarkup
-        },{
-            title: 'Another Tab',
-            html: Ext.example.bogusMarkup
-        },{
-            title: 'Closable Tab',
-            html: Ext.example.bogusMarkup,
-            closable:true
-        }]
-    });
 
-    
-    
     function getData(store, nameColumn, dataColumn) {
         var dataResults = new Array();
         var tickResults = new Array();
@@ -1817,12 +1203,6 @@ storeUnpack.loadData(unpackStrings);
         };
     }
 
-
-        
-    
-    
-    
-    
 //-------------------------------------------------------------------------------------------------------------
 //                                                     WINDOWS/PANELS
 //-------------------------------------------------------------------------------------------------------------
@@ -2064,8 +1444,6 @@ storeUnpack.loadData(unpackStrings);
 			]
 	        
 	    };
-		
-	
 
 	
     //WINDOW - Settings
@@ -2098,7 +1476,7 @@ storeUnpack.loadData(unpackStrings);
 //-------------------------------------------------------------------------------------------------------------
 //                                                              TOOLBARS
 //-------------------------------------------------------------------------------------------------------------
-    
+    // Menu labled "SABnzbd" (aka file menu)
     sabMenu = new Ext.menu.Menu({
         items:[
             {
@@ -2163,12 +1541,6 @@ storeUnpack.loadData(unpackStrings);
         }); 
   
 
-    statusTemplate = new Ext.Toolbar.TextItem({
-                    text:'Loading',
-                    tooltip:'Loading.',
-                    id:'statusReplace'
-                });
-  
   
     var queuePause = new Ext.Toolbar.Button({
                     text:'Pause Queue',
@@ -2208,10 +1580,10 @@ storeUnpack.loadData(unpackStrings);
         });
   
   
-// create the top toolbar
+    // Create the top toolbar
+    var tb = new Ext.Toolbar();
+    tb.render('toolbar');
 
-    var tb = new Ext.Toolbar('toolbar');
-    
     tb.add({
             id:'sabnzbd',
             text:'SABnzbd',
@@ -2235,7 +1607,7 @@ storeUnpack.loadData(unpackStrings);
             minWidth:26,
             handler: resumeSelected
         },
-        new Ext.Toolbar.MenuButton(
+        new Ext.Toolbar.SplitButton(
         {
             text:'',
             tooltip:'Remove Selected items (del)',
@@ -2249,11 +1621,12 @@ storeUnpack.loadData(unpackStrings);
         }),
         {
             text:'',
-            tooltip:'Change the priority on selected item: high(h)/normal(n)/low(l)',
+            tooltip:'Change the priority on selected item: force(f)/high(h)/normal(n)/low(l)',
             iconCls:'normal_priority',
             minWidth:38,
             // Menus can be built/referenced by using nested menu config objects
             menu : {items: [
+                {text: 'Force Priority',iconCls:'high_priority', handler: forcePrioritySelected},
                 {text: 'High Priority',iconCls:'high_priority', handler: highPrioritySelected},
                 {text: 'Normal Priority',iconCls:'normal_priority', handler: normalPrioritySelected},
                 {text: 'Low Priority',iconCls:'low_priority', handler: lowPrioritySelected}
@@ -2265,9 +1638,10 @@ storeUnpack.loadData(unpackStrings);
         queueActionCombo,
         '->', statusTemplate
     );
+    tb.doLayout();
 
-// hist toolbar
-    var historyToolbar = new Ext.Toolbar.MenuButton(
+    // Bottom toolbar for the history.
+    var historyToolbar = new Ext.Toolbar.SplitButton(
                 {
                     text:'',
                     tooltip:'Remove Selected items',
@@ -2317,7 +1691,8 @@ storeUnpack.loadData(unpackStrings);
     function addHistoryButton() {
     historyPaging.add(historyToolbar);}
 
-    //history grid
+    
+    //Grid settings for the History (right viewport)
     var historyGrid = new Ext.grid.GridPanel(
     {
         store: storeHistory,
@@ -2357,8 +1732,11 @@ storeUnpack.loadData(unpackStrings);
     });
     
     
+    
+    //GridView settings for the Queue (center viewport)
     var gridView = new Ext.grid.GridView({ 
-        //color the ROWS based on priority
+        //color the ROWS based on priority 
+        //(alternate is colour the priority cell background)
         /*getRowClass : function (row, index) { 
           var cls = ''; 
           var data = row.data; 
@@ -2406,7 +1784,7 @@ storeUnpack.loadData(unpackStrings);
     });  //end gridView 
 
     
-    //queue grid
+    //Grid settings for the Queue (center viewport)
     queueGrid = new Ext.grid.EditorGridPanel(
     {
         store: store,
@@ -2550,56 +1928,47 @@ storeUnpack.loadData(unpackStrings);
                     fn : updateGrid,
                     value : 'frog'
                 },
-                render: function(g) {
+                render: function(g) 
+                {
+                    // Drag and drop function
+                    var ddrow = new Ext.ux.dd.GridReorderDropTarget(g, {
+                        copy: false
+                        ,listeners: {
+                            beforerowmove: function(objThis, oldIndex, newIndex, records) {
+                                // code goes here
+                                // return false to cancel the move
+                            }
+                            ,afterrowmove: function(objThis, oldIndex, newIndex, records) {
 
-                
-                            // Best to create the drop target after render, so we don't need to worry about whether grid.el is null
-
-                            // constructor parameters:
-                            //    grid (required): GridPanel or EditorGridPanel (with enableDragDrop set to true and optionally a value specified for ddGroup, which defaults to 'GridDD')
-                            //    config (optional): config object
-                            // valid config params:
-                            //    anything accepted by DropTarget
-                            //    listeners: listeners object. There are 4 valid listeners, all listed in the example below
-                            //    copy: boolean. Determines whether to move (false) or copy (true) the row(s) (defaults to false for move)
-                            var ddrow = new Ext.ux.dd.GridReorderDropTarget(g, {
-                                copy: false
-                                ,listeners: {
-                                    beforerowmove: function(objThis, oldIndex, newIndex, records) {
-                                        // code goes here
-                                        // return false to cancel the move
-                                    }
-                                    ,afterrowmove: function(objThis, oldIndex, newIndex, records) {
-
-                                        for(i = 0; i < records.length; i++){
-                                            //idx1 = records[newIndex].data.index;
-                                            idx2 = newIndex;
-                                            url = 'tapi?mode=switch&value='+records[i].data.nzo_id+'&value2='+idx2;
-                                            Ext.Ajax.request(
-                                            {
-                                               url: url,
-                                               success: dummy,
-                                               failure: dummy
-                                            });
-                                        }
-                                    }
-                                    ,beforerowcopy: function(objThis, oldIndex, newIndex, records) {
-                                        // code goes here
-                                        // return false to cancel the copy
-                                    }
-                                    ,afterrowcopy: function(objThis, oldIndex, newIndex, records) {
-                                        // code goes here
-                                    }
+                                for(i = 0; i < records.length; i++){
+                                    //idx1 = records[newIndex].data.index;
+                                    idx2 = newIndex;
+                                    url = 'tapi?mode=switch&value='+records[i].data.nzo_id+'&value2='+idx2+'&session='+session;
+                                    Ext.Ajax.request(
+                                    {
+                                       url: url,
+                                       success: dummy,
+                                       failure: dummy
+                                    });
                                 }
-                            });
+                            }
+                            ,beforerowcopy: function(objThis, oldIndex, newIndex, records) {
+                                // code goes here
+                                // return false to cancel the copy
+                            }
+                            ,afterrowcopy: function(objThis, oldIndex, newIndex, records) {
+                                // code goes here
+                            }
+                        }
+                    });
 
-                            // if you need scrolling, register the grid view's scroller with the scroll manager
-                            Ext.dd.ScrollManager.register(g.getView().getEditorParent());
-                        }
-                        ,beforedestroy: function(g) {
-                            // if you previously registered with the scroll manager, unregister it (if you don't it will lead to problems in IE)
-                            Ext.dd.ScrollManager.unregister(g.getView().getEditorParent());
-                        }
+                    // if you need scrolling, register the grid view's scroller with the scroll manager
+                    Ext.dd.ScrollManager.register(g.getView().getEditorParent());
+                }
+                ,beforedestroy: function(g) {
+                    // if you previously registered with the scroll manager, unregister it (if you don't it will lead to problems in IE)
+                    Ext.dd.ScrollManager.unregister(g.getView().getEditorParent());
+                }
             },
 	        bbar: new Ext.PagingToolbar({
 	            pageSize: 50,
@@ -2611,14 +1980,12 @@ storeUnpack.loadData(unpackStrings);
 
 
     });
-    
 
-
-   
 //-------------------------------------------------------------------------------------------------------------
 //                                                      VIEWPORT
 //-------------------------------------------------------------------------------------------------------------
     
+   // Main configiration for the center right and bottom viewports
    var viewport = new Ext.Viewport({
         layout:'border',
         id:'viewport',
@@ -2679,10 +2046,10 @@ storeUnpack.loadData(unpackStrings);
 //-------------------------------------------------------------------------------------------------------------
 
 
-// Key Mapping
-
+    // Key Mapping
     var queueMap = new Ext.KeyMap("center", [
         {key: 46,fn: function(){ removeSelected(); }},
+        {key: 'f',fn: function(){ forcePrioritySelected(); }},
         {key: 'h',fn: function(){ highPrioritySelected(); }},
         {key: 'n',fn: function(){ normalPrioritySelected(); }},
         {key: 'l',fn: function(){ lowPrioritySelected(); }},
@@ -2690,14 +2057,12 @@ storeUnpack.loadData(unpackStrings);
         {key: 'r',fn: function(){ resumeSelected(); }}
 
     ]);
-
     var historyMap = new Ext.KeyMap("east", [
         {
             key: 46,
             fn: function(){ removeSelectedHistory(); }
         }
     ]);
-    
     /*var globalMap = new Ext.KeyMap("sab", [
         {
             key: 'a',
@@ -2707,12 +2072,24 @@ storeUnpack.loadData(unpackStrings);
 
 
 var globalRefresh = {
+    // Refresh function, run every 5 seconds to refresh the stores
     run: function(){
         store.reload();
-        storeFiles.reload();
+        var currentTab = southTabs.getActiveTab().id;
+        switch (currentTab)
+        {
+            case "warningsContainer":
+                storeWarnings.reload();
+                break;
+            case "filesgrid":
+                storeFiles.reload();
+                break;
+            case "chartContainer":
+                drawChart();
+                break;
+        };
         storeHistory.reload();
         storeStatus.reload();
-        storeWarnings.reload();
     },
     interval: 5000 //5 seconds
 }
