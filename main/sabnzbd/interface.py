@@ -919,6 +919,7 @@ class NzoPage:
 
     def nzo_details(self, info, pnfo_list, nzo_id):
         slot = {}
+        n = 0
         for pnfo in pnfo_list:
             if pnfo[PNFO_NZO_ID_FIELD] == nzo_id:
                 repair = pnfo[PNFO_REPAIR_FIELD]
@@ -938,11 +939,14 @@ class NzoPage:
                 slot['script'] = script
                 slot['priority'] = str(priority)
                 slot['unpackopts'] = str(unpackopts)
+                info['index'] = n
                 break
+            n += 1
 
         info['slot'] = slot
         info['script_list'] = ListScripts()
         info['cat_list'] = ListCats()
+        info['noofslots'] = len(pnfo_list)
 
         return info
 
