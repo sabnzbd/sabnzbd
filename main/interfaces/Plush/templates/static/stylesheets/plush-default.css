@@ -101,7 +101,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     font-size: 66%;
     color: #606060;
     text-align:center;
-    background: url(../images/plush-default/qh_bottom.png) 0 0 repeat-x;
+    background: url(../images/plush-default/tile_qh_bottom.png) 0 0 repeat-x;
 }
 .left_stats, .right_stats {
     padding:12px 16px 0 20px;
@@ -162,24 +162,25 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 
 #page-wrap { width: 95%; margin: 0px auto; }
 .box_banner_hr {
-    background: #cfcfcf url(../images/plush-default/qh_seperator.png) 0 0 repeat-x;
+    background: #cfcfcf url(../images/plush-default/tile_qh_seperator.png) 0 0 repeat-x;
     height:4px;
 }
-.box_banner_history {background-image: url(../images/plush-default/history_tile.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
+.box_banner_history {background-image: url(../images/plush-default/tile_history.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
 .box_banner_history h1 { color:#c7c7c7; font-size:90%; font-weight:normal; float:left; margin: 17px 0px 0px 16px; cursor:default; }
 .box_banner_r {
     height:52px;
     margin-left:1px;
 }
-#hdr-queue { background-image: url(../images/plush-default/queue_bg_tile.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
-#hdr-queue .logo { background-image: url(../images/plush-default/hdr_queue.png); background-position: left top; background-repeat: no-repeat; height: 55px; width: 178px; float: left;}
+#hdr-queue { background-image: url(../images/plush-default/tile_queue.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
+#hdr-queue .logo { height: 55px; width: 178px; float: left;}
+.sprite_hdr_queue { background: url(../images/plush-default/sprite-main.png) no-repeat top left; }
 #hdr-queue .logo h1 { color:#c7c7c7; font-size:90%; font-weight:normal; margin: 22px 0px 0px 20px; cursor:default; }
 #queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
 #queue-buttons li { float:left; }
 #queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
 #btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
-#btm-wrapper .corner-right { float:right; background-image: url(../images/plush-default/btm_corner_right.png); background-repeat:no-repeat; height: 9px; width: 12px;}
-#btm-wrapper .corner-left { float:left; background-image: url(../images/plush-default/btm_corner_left.png); background-repeat: no-repeat; height: 9px; width: 12px; }
+#btm-wrapper .sprite_btm_corner_right { float:right; background-image: url(../images/plush-default/sprite-main.png); background-repeat:no-repeat; height: 9px; width: 12px;}
+#btm-wrapper .sprite_btm_corner_left { float:left; background-image: url(../images/plush-default/sprite-main.png); background-repeat: no-repeat; height: 9px; width: 12px; }
 
 
 
@@ -196,8 +197,11 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     margin-left:auto;
     margin-right:auto;
 }
+.sprite_sabnzbdplus_logo {
+	margin: 10px 0px -12px 0px;
+    background: url(../images/plush-default/sprite-main.png) no-repeat;
+}
 #queue_logo {
-    background: url(../images/plush-default/sabnzbdplus_logo.png) 50% 50% no-repeat;
     padding-left:50px;
     padding-right:50px;
     padding-bottom:19px;
@@ -205,7 +209,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     float:left;
 }
 #speed, #time-left {
-    background-image: url(../images/plush-default/rounded_area_bg.png);
+    background-image: url(../images/plush-default/sprite-main.png);
     width: 68px;
     height: 12px;
     padding: 5px 0px;
@@ -338,15 +342,12 @@ tr:hover .nzb_status_grippie {
 --------------------------------------------------------------------------------------------------------------- */
 
 /* progress bar & MB/left stats */
-.queueProgressBarContainer {
+.sprite_ql_pbar_empty {
     width:121px;
-    background-image: url(../images/plush-default/ql_pbar_empty.png);
-    background-repeat: no-repeat;
-    background-position: left center;
+    background: url(../images/plush-default/sprite-main.png) no-repeat;
 }
-.queueProgressBar {
-    background-image: url(../images/plush-default/ql_pbar_full.png);
-    background-repeat: no-repeat;
+.sprite_ql_pbar_full {
+    background: url(../images/plush-default/sprite-main.png) no-repeat;
     height: 15px;
     width: 121px;
     margin: 2px 0 0 1px;

@@ -66,10 +66,12 @@
         <a href="nzb/$slot.nzo_id/" title="$T('nzo-age'): $slot.avg_age">$slot.filename</a>
     </td>
 
-    <td class="queueProgressBarContainer">
-        <div class="queueProgressBar" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -1px">
-            <div class="totalDownload"><!--#echo int(float($slot.mbleft))#-->&nbsp;<small>$T('Plush-left')</small></div>
-            <div class="currentDownload"><!--#echo int(float($slot.mb))#-->&nbsp;<small>$T('MB')</small></div>
+    <td>
+    	<div class="sprite_ql_pbar_empty">
+	        <div class="sprite_ql_pbar_full" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -1299px">
+	            <div class="totalDownload"><!--#echo int(float($slot.mbleft))#-->&nbsp;<small>$T('Plush-left')</small></div>
+	            <div class="currentDownload"><!--#echo int(float($slot.mb))#-->&nbsp;<small>$T('MB')</small></div>
+	        </div>
         </div>
     </td>
 

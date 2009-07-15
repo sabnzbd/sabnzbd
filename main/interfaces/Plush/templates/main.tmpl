@@ -205,17 +205,17 @@
     <div id="page-wrap">
 
         <div id="hdr-queue">
-            <div class="logo"><h1>$T('menu-queue').upper()</h1></div>
-            <div id="queue-buttons">
+            <div class="logo sprite_hdr_queue"><h1>$T('menu-queue').upper()</h1></div>
+            <div class="sprite_queue_bg" id="queue-buttons">
                 <ul>
                 	<li><span id="pause_int"></span></li>
                     <li class="q_menu_pause <!--#if $paused then 'sprite_q_pause' else 'sprite_q_pause_on'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
                 </ul>
             </div>
             <div class="centerpiece">
-                <div id="speed"><p><span id="stats_speed">&hellip;</span></p></div>
-                <div id="queue_logo"></div>
-                <div id="time-left"><p><span id="stats_eta">&hellip;</span>&nbsp;$T('Plush-left')</p></div>
+                <div class="sprite_rounded_area_bg" id="speed"><p><span id="stats_speed">&hellip;</span></p></div>
+                <div id="queue_logo" class="sprite_sabnzbdplus_logo"></div>
+                <div class="sprite_rounded_area_bg" id="time-left"><p><span id="stats_eta">&hellip;</span>&nbsp;$T('Plush-left')</p></div>
             </div>
         </div>
 
@@ -223,7 +223,7 @@
 
             <!-- Queue ( queue.tmpl )-->
             <div id="queue">
-                <p class="loading">&nbsp;</p>
+                <br/><p class="loading">&nbsp;</p>
                 <input type="hidden" id="queue_view_preference" value="" />
             </div>
 			<div class="box_fatbottom" id="box_fatbottom_queue">
@@ -255,7 +255,7 @@
 
             <!-- History ( history.tmpl ) -->
             <div id="history">
-                <p class="loading">&nbsp;</p>
+                <br/><p class="loading">&nbsp;</p>
                 <input type="hidden" id="history_view_preference" value="" />
             </div>
 			<div class="box_fatbottom history_stats">
@@ -278,8 +278,8 @@
         </div>
 
         <div id="btm-wrapper">
-            <div class="corner-right"></div>
-            <div class="corner-left"></div>
+            <div class="sprite_btm_corner_right"></div>
+            <div class="sprite_btm_corner_left"></div>
         </div>
 
     </div>
