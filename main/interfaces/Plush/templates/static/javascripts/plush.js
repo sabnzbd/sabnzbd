@@ -365,10 +365,10 @@ jQuery(function($) { // safely invoke $ selector
 						$("#onQueueFinish-option").val($.plush.finishaction);
 					
 					// Pause/resume button state
-					if ( $.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_paused')
-						$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
-					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause q_menu_unpaused')
-						$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
+					if ( $.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause sprite_q_pause')
+						$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause');
+					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause sprite_q_pause_on')
+						$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause_on');
 						
 					// Pause interval
 					($.plush.pause_int == "0") ? $('#pause_int').html("") : $('#pause_int').html($.plush.pause_int);
@@ -843,7 +843,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Pause/resume toggle (queue)
 			$('#pause_resume').click(function(event) {
-				if ($(event.target).attr('class') == 'tip q_menu_pause q_menu_paused')
+				if ($(event.target).attr('class') == 'tip q_menu_pause sprite_q_pause')
 					$.ajax({
 						type: "POST",
 						url: "tapi",
@@ -855,11 +855,11 @@ jQuery(function($) { // safely invoke $ selector
 						url: "tapi",
 						data: "mode=pause&apikey="+$.plush.apikey
 					});
-				if ($('#pause_resume').attr('class') == 'tip q_menu_pause q_menu_paused') {
-					$('#pause_resume').attr('class','tip q_menu_pause q_menu_unpaused');
+				if ($('#pause_resume').attr('class') == 'tip q_menu_pause sprite_q_pause') {
+					$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause_on');
 					$('#pause_int').html("");
 				} else
-					$('#pause_resume').attr('class','tip q_menu_pause q_menu_paused');
+					$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause');
 			});
 			
 			

@@ -84,7 +84,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
 	background:#E0E0E0;
 }
 .pagination .loading{
-    background: #FFF url(../images/plush-default/hl_loaded.gif) 50% 50% no-repeat;
+    background: #FFF url(../images/plush-default/spinner.gif) 50% 50% no-repeat;
 }
 
 
@@ -103,7 +103,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     text-align:center;
     background: url(../images/plush-default/qh_bottom.png) 0 0 repeat-x;
 }
-.box_fatbottom div {
+.left_stats, .right_stats {
     padding:12px 16px 0 20px;
     cursor:default;
 }
@@ -146,16 +146,12 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     padding-right:32px;
     padding-bottom:24px;
     cursor:pointer;
+    background: url(../images/plush-default/sprite-main.png) no-repeat top left;
 }
-.q_menu_unpaused {
-    background: url(../images/plush-default/q_pause.png) 0 0 no-repeat;
-}
-.q_menu_paused {
-    background: url(../images/plush-default/q_pause_on.png) 0 0 no-repeat;
-}
+
 /* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
-.h_menu_purge {
-    background: url(../images/plush-default/h_purge.png) 0 0 no-repeat;
+.sprite_h_purge {
+    background: url(../images/plush-default/sprite-main.png) no-repeat top left;
     margin:6px;
     padding-right:28px;
     padding-bottom:24px;
@@ -276,7 +272,7 @@ tr:hover .nzb_status_grippie {
 	display:inline;
     padding-left:16px;
     margin-right:4px;
-    background: url(../images/plush-default/main-sprite.png);
+    background: url(../images/plush-default/sprite-main.png);
 }
 #queueTable .nzb_status {
     cursor: pointer;
@@ -284,7 +280,7 @@ tr:hover .nzb_status_grippie {
 .queueTable .historyTitle.Loaded, .loading {
 	display:inline;
     padding-left:16px;
-    background: url(../images/plush-default/hl_loaded.gif) 4px 50% no-repeat;
+    background: url(../images/plush-default/spinner.gif) 4px 50% no-repeat;
 }
 .queueTable td.historyTitle {
     width:50%;
@@ -312,7 +308,7 @@ tr:hover .nzb_status_grippie {
 .icon_nzb_remove {
 	display:inline;
     padding-left:16px;
-    background: url(../images/plush-default/main-sprite.png);
+    background: url(../images/plush-default/sprite-main.png);
 	background-position: 0 0px;
 }
 .sprite_ql_cross_on {
@@ -380,6 +376,13 @@ tr:hover .nzb_status_grippie {
 }
 
 /* below queue, right side, disk space */
+.queue_footer_icon {
+	display:inline;
+	margin: 16px 4px 0px 20px;
+	padding: 4px;
+    background: url(../images/plush-default/sprite-main.png) no-repeat top left;
+}
+/*
 .stats_incomplete_freespace {
     padding-top:8px;
     padding-bottom:8px;
@@ -408,7 +411,7 @@ tr:hover .nzb_status_grippie {
     background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
     color:red;
 }
-
+*/
 
 
 
@@ -441,7 +444,7 @@ tr:hover .history_added  {
 
 
 .icon_history_verbose {
-	background: url(../images/plush-default/main-sprite.png) no-repeat top left;
+	background: url(../images/plush-default/sprite-main.png) no-repeat top left;
     cursor: help;
     display:inline;
     float:left;
@@ -452,7 +455,7 @@ tr:hover .history_added  {
 .pointer { cursor: pointer; }
 
 
-/* main-sprite.png */
+/* sprite-main.png */
 .sprite_btm_corner_left { background-position: 0 -30px; } 
 .sprite_btm_corner_right { background-position: 0 -69px; } 
 .sprite_h_purge { background-position: 0 -108px; } 
@@ -599,7 +602,7 @@ ul.sf-menu li li li.sfHover ul {
     height:            10px;
     text-indent:     -999em;
     overflow:        hidden;
-    background:        url('../images/plush-default/arrows-ffffff.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
+    background:        url('../images/plush-default/sprite-jq-superfish.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
 }
 a > .sf-sub-indicator {  /* give all except IE6 the correct values */
     top:            .8em;
@@ -761,7 +764,7 @@ ul.sf-navbar .current ul ul {
                 #cboxTitle{position:absolute; top:-22px; left:0; color:#000;}
                 #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
                 
-                #cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../images/plush-default/colorbox-controls.png) 0 0 no-repeat;}
+                #cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../images/plush-default/sprite-jq-colorbox.png) 0 0 no-repeat;}
 
                 #cboxPrevious{background-position:0px 0px; right:44px;}
                 #cboxPrevious.hover{background-position:0px -25px;}
@@ -948,11 +951,11 @@ fieldset.EntryFieldSet {
 }
 
 li a div {
-	background: url(../images/plush-default/config-sprite.png) no-repeat top left;
+	background: url(../images/plush-default/sprite-config.png) no-repeat top left;
 }
 
 legend span {
-	background: url(../images/plush-default/config-sprite.png) no-repeat top left;
+	background: url(../images/plush-default/sprite-config.png) no-repeat top left;
 }
 legend .sprite_container {
     padding: 0px 0px 0px 16px;
@@ -967,7 +970,7 @@ legend .sprite_container {
 }
 
 
-/* config-sprite.png */
+/* sprite-config.png */
 .sprite_config_connections_disconnect { background-position: 0 -30px; } 
 .sprite_config_connections_encrypted { background-position: 0 -82px; } 
 .sprite_config_connections_unencrypted { background-position: 0 -134px; } 
@@ -1024,7 +1027,7 @@ legend .sprite_container {
 .tucker {width:300px;font-weight:bold;}
 
 a span {
-	background: url(../images/plush-default/config-sprite.png) no-repeat top left;
+	background: url(../images/plush-default/sprite-config.png) no-repeat top left;
 }
 .left_links .sprite_container, .right_links .sprite_container {
     padding: 4px 0px 4px 22px;

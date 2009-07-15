@@ -16,8 +16,17 @@
         $.plush.timeleft      	= '$timeleft';
         $.plush.eta             = '$T('eta'): $eta';
         $.plush.have_warnings	= $have_warnings;
-        $.plush.queuestats		= '<!--#if $noofslots > 0#--><strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb $T('MB')</strong> $T('Plush-remaining')&nbsp;&nbsp;&nbsp;&nbsp;<!--#end if#--><!--#if $diskspace1 == $diskspace2#--><strong class="<!--#if float($diskspace1) < float($mbleft)/1024 #-->stats_incomplete_freespace_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1&nbsp;GB</strong> $T('Plush-freeSpace')</small></span><!--#else#--><strong class="<!--#if float($diskspace1) < float($mbleft)/1024 #-->stats_incomplete_freespace_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->stats_incomplete_freespace<!--#end if#-->">$diskspace1 $T('GB')</strong> $T('Plush-freeSpaceTemp')<strong class="<!--#if float($diskspace2) < float($mbleft)/1024 #-->stats_complete_freespace_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->stats_complete_freespace<!--#end if#-->">$diskspace2 $T('GB')</strong> $T('Plush-freeSpace')<!--#end if#-->';
         $.plush.last_warning 	= "<!--#echo $last_warning.replace("\n"," ").replace('"',"&quot;") #-->";
+
+        <!--#if $noofslots > 0#-->
+        $.plush.queuestats		= '<strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb&nbsp;$T('MB')</strong>&nbsp;$T('Plush-remaining')';
+        <!--#end if#-->
+        <!--#if $diskspace1 == $diskspace2#-->
+        $.plush.queuestats		+= '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;GB</strong>&nbsp;$T('Plush-freeSpace')';
+        <!--#else#-->
+        $.plush.queuestats		+= '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpaceTemp')'
+        						+  '<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpace')';
+		<!--#end if#-->
     });
 
 	// set the page title here (due to localizations)
