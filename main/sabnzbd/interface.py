@@ -981,12 +981,15 @@ class NzoPage:
 
 
     def save_details(self, nzo_id, args, kwargs):
+        index = kwargs.get('index', None)
         name = kwargs.get('name',None)
         pp = kwargs.get('pp',None)
         script = kwargs.get('script',None)
         cat = kwargs.get('cat',None)
         priority = kwargs.get('priority',None)
 
+        if index != None:
+            nzbqueue.switch(nzo_id, index)
         if name != None:
             sabnzbd.nzbqueue.change_name(nzo_id, name)
         if cat != None:
