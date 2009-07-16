@@ -103,7 +103,7 @@ ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
     text-align:center;
     background: url(../images/plush-default/tile_qh_bottom.png) 0 0 repeat-x;
 }
-.left_stats, .right_stats {
+.left_stats, .right_stats, .pagination {
     padding:12px 16px 0 20px;
     cursor:default;
 }
@@ -383,36 +383,7 @@ tr:hover .nzb_status_grippie {
 	padding: 4px;
     background: url(../images/plush-default/sprite-main.png) no-repeat top left;
 }
-/*
-.stats_incomplete_freespace {
-    padding-top:8px;
-    padding-bottom:8px;
-    padding-left:20px;
-    background: url(../images/plush-default/q_stats_incomplete.png) 0 50% no-repeat;
-}
-.stats_incomplete_freespace_needspace {
-    padding-top:8px;
-    padding-bottom:8px;
-    padding-left:20px;
-    background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
-    color:red;
-}
-.stats_complete_freespace {
-    margin-left:10px;
-    padding-top:8px;
-    padding-bottom:8px;
-    padding-left:20px;
-    background: url(../images/plush-default/q_stats_complete.png) 0 50% no-repeat;
-}
-.stats_complete_freespace_needspace {
-    margin-left:10px;
-    padding-top:8px;
-    padding-bottom:8px;
-    padding-left:20px;
-    background: url(../images/plush-default/q_stats_needspace.png) 0 50% no-repeat;
-    color:red;
-}
-*/
+
 
 
 
@@ -874,9 +845,6 @@ table.nzoTable tr:hover {
 
 #config_go_back {
     text-align:center;
-    background-position: 50% 50%;
-    background-repeat:no-repeat;
-    background-image: url(../images/plush-default/sabnzbdplus_logo.png);
     padding:1px;
 }
 #config_go_back div {

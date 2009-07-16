@@ -365,10 +365,10 @@ jQuery(function($) { // safely invoke $ selector
 						$("#onQueueFinish-option").val($.plush.finishaction);
 					
 					// Pause/resume button state
-					if ( $.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause sprite_q_pause')
-						$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause');
-					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause sprite_q_pause_on')
+					if ( $.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause sprite_q_pause_on')
 						$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause_on');
+					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause sprite_q_pause')
+						$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause');
 						
 					// Pause interval
 					($.plush.pause_int == "0") ? $('#pause_int').html("") : $('#pause_int').html($.plush.pause_int);
@@ -843,7 +843,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Pause/resume toggle (queue)
 			$('#pause_resume').click(function(event) {
-				if ($(event.target).attr('class') == 'tip q_menu_pause sprite_q_pause')
+				if ($(event.target).attr('class') == 'tip q_menu_pause sprite_q_pause_on')
 					$.ajax({
 						type: "POST",
 						url: "tapi",

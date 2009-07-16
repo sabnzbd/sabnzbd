@@ -19,7 +19,7 @@
 </head>
 <body class="nzo">
 
-    <div id="config_go_back"><div><a href="../../">$T('button-back')</a></div></div>
+    <div id="config_go_back"><div class="sprite_sabnzbdplus_logo"><a href="../../">$T('button-back')</a></div></div>
 
 	<!--#if $varExists('slot')#-->
 		<form action="save" method="post" class="nzo_save_form">
@@ -28,6 +28,11 @@
 			<input type="text" name="name" size="70" value="$slot.filename" />
 
 			<div>
+			<select name="order"><optgroup label="$T('order')">
+            <!--#for $i in xrange($noofslots)#-->
+                <option value=$i <!--#if $i == $index then "selected" else ""#-->>$i</option>
+            <!--#end for#-->
+            </select>
 			<!--#if $cat_list#-->
 			<select name="cat"><optgroup label="$T('category')">
 				<!--#for $ct in $cat_list#-->
