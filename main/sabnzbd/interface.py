@@ -3292,6 +3292,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
                     end = start+limit
                     if start+limit > len(pnfo_list):
                         end = len(pnfo_list)
+                    for pnfo in pnfo_list[:start-1]:
+                        running_bytes += pnfo[PNFO_BYTES_LEFT_FIELD] 
                     pnfo_list = pnfo_list[start:end]
             else:
                 if not limit > len(pnfo_list):
