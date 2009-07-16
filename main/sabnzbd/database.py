@@ -59,7 +59,10 @@ class HistoryDB:
             create_table = True
         else:
             create_table = False
-        self.con = sqlite3.connect(db_path)
+        if sabnzbd.WIN32:
+            self.con = sqlite3.connect(db_path.decode('latin-1').encode('utf-8'))
+        else:
+            self.con = sqlite3.connect(db_path)
         self.con.row_factory = dict_factory
         self.c = self.con.cursor()
         if create_table:
