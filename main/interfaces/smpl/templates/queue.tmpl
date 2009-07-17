@@ -66,8 +66,8 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('smpl-eta'): <strong>$eta</st
 					<td>
 						<select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/'+this.options[this.selectedIndex].value, 'limit=$limit&start=$start')">
 						<!--#for $i in xrange($noofslots)#-->
-                            <!--#set $index = $i + $start#-->
-							<option value="switch?uid1=$slot.nzo_id&uid2=$index" <!--#if $i == $slot.index then "selected" else ""#-->>$index</option>
+                            <!--#set $index = $slot.index + $start#-->
+							<option value="switch?uid1=$slot.nzo_id&uid2=$i" <!--#if $i == $index then "selected" else ""#-->>$i</option>
 						<!--#end for#-->
 						</select>
 					</td>
