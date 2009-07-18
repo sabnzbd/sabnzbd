@@ -50,7 +50,7 @@ jQuery(document).ready(function($){
 	    	$('#config_container').corner("round");
 	    	$('#config_content legend').corner("round");
 	    	$('#force_disconnect, #save, #sabnzbd_restart, #test_email, #help').corner("round");
-		}, 1);
+		}, 50);
 	} else { // the slight delay lags on Firefox, so don't run otherwise
 	    	$('.config_nav li a').corner("round tl bl");
 	    	$('#config_container').corner("round");

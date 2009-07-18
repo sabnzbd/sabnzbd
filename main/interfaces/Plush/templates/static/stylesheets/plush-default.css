@@ -824,15 +824,6 @@ table.nzoTable tr:hover {
     padding-left: 20px;
 }
 
-#connections_container {
-    background: #bbb;
-    height: 395px;
-    text-align: left;
-    font-size: 10pt;
-    margin: 10px 10px 0px 10px;
-    padding: 10px;
-}
-
 #config_content {
     height: 100%;
     width: 100%;
@@ -849,15 +840,13 @@ table.nzoTable tr:hover {
 }
 #config_go_back div {
     margin:auto;
-    padding-top:22px;
-    padding-left:20px;
+    padding: 22px 0px 6px 20px;
+    margin-bottom:-4px;
     width:80px;
 }
 #config_go_back a {
     margin-left:-20px;
-    padding-left:40px;
-    padding-right:10px;
-    padding-top:30px;
+    padding: 30px 10px 0px 40px;
     text-decoration:none;
     color:black;
     font-size:66%;
