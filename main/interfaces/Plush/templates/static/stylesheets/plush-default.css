@@ -278,10 +278,13 @@ tr:hover .nzb_status_grippie {
     margin-right:4px;
     background: url(../images/plush-default/sprite-main.png);
 }
+.nzb_status.Loaded {
+    background: url(../images/plush-default/spinner.gif) no-repeat;
+}
 #queueTable .nzb_status {
     cursor: pointer;
 }
-.queueTable .historyTitle.Loaded, .loading {
+.loading {
 	display:inline;
     padding-left:16px;
     background: url(../images/plush-default/spinner.gif) 4px 50% no-repeat;
