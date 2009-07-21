@@ -3285,26 +3285,6 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
     if info['finish'] > info['noofslots']:
         info['finish'] = info['noofslots']
 
-    #Paging of the queue using limit and/or start values
-    if limit > 0:
-        try:
-            if start > 0:
-                if start > len(pnfo_list):
-                    pnfo_list = []
-                else:
-                    end = start+limit
-                    if start+limit > len(pnfo_list):
-                        end = len(pnfo_list)
-                    for pnfo in pnfo_list[:start-1]:
-                        running_bytes += pnfo[PNFO_BYTES_LEFT_FIELD] 
-                    pnfo_list = pnfo_list[start:end]
-            else:
-                if not limit > len(pnfo_list):
-                    pnfo_list = pnfo_list[:limit]
-        except:
-            pass
-
-
     for pnfo in pnfo_list:
         repair = pnfo[PNFO_REPAIR_FIELD]
         unpack = pnfo[PNFO_UNPACK_FIELD]
@@ -3432,7 +3412,9 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
             slot['active'] = active
             slot['queued'] = queued
 
-        slotinfo.append(slot)
+
+        if start <= n  and n < start + limit:
+            slotinfo.append(slot)
         n += 1
 
     if slotinfo:
@@ -3440,6 +3422,23 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
     else:
         info['slots'] = ''
         verboseList = []
+
+    #Paging of the queue using limit and/or start values
+    if limit > 0:
+        try:
+            if start > 0:
+                if start > len(pnfo_list):
+                    pnfo_list = []
+                else:
+                    end = start+limit
+                    if start+limit > len(pnfo_list):
+                        end = len(pnfo_list)
+                    pnfo_list = pnfo_list[start:end]
+            else:
+                if not limit > len(pnfo_list):
+                    pnfo_list = pnfo_list[:limit]
+        except:
+            pass
 
     return info, pnfo_list, bytespersec, verboseList, dictn
 
