@@ -119,8 +119,8 @@ ENABLE_DATE_SORTING = OptionBool('misc', 'enable_date_sorting', False)
 DATE_SORT_STRING = OptionStr('misc', 'date_sort_string')
 DATE_CATEGORIES = OptionStr('misc', 'date_categories', ['tv'])
 
-USERNAME_MATRIX = OptionStr('nzbmatrix', 'username')
-PASSWORD_MATRIX = OptionPassword('nzbmatrix', 'password')
+MATRIX_USERNAME = OptionStr('nzbmatrix', 'username')
+MATRIX_APIKEY = OptionStr('nzbmatrix', 'apikey')
 
 CONFIGLOCK = OptionBool('misc', 'config_lock', 0)
 

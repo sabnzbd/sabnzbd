@@ -165,8 +165,8 @@ class Wizard:
         info['newzbin_user'] = cfg.USERNAME_NEWZBIN.get()
         info['newzbin_pass'] = cfg.PASSWORD_NEWZBIN.get_stars()
         info['newzbin_bookmarks'] = cfg.NEWZBIN_BOOKMARKS.get()
-        info['matrix_user'] = cfg.USERNAME_MATRIX.get()
-        info['matrix_pass'] = cfg.PASSWORD_MATRIX.get_stars()
+        info['matrix_user'] = cfg.MATRIX_USERNAME.get()
+        info['matrix_apikey'] = cfg.MATRIX_APIKEY.get()
         template = Template(file=os.path.join(self.__web_dir, 'four.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
@@ -180,8 +180,8 @@ class Wizard:
                 cfg.PASSWORD_NEWZBIN.set(kwargs.get('newzbin_pass',''))
             cfg.NEWZBIN_BOOKMARKS.set(kwargs.get('newzbin_bookmarks', '0'))
             if 'matrix_user' in kwargs and 'matrix_pass' in kwargs:
-                cfg.USERNAME_MATRIX.set(kwargs.get('matrix_user',''))
-                cfg.PASSWORD_MATRIX.set(kwargs.get('matrix_pass',''))
+                cfg.MATRIX_USERNAME.set(kwargs.get('matrix_user',''))
+                cfg.MATRIX_APIKEY.set(kwargs.get('matrix_apikey',''))
 
         config.save_config()
 

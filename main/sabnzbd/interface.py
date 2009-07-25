@@ -2182,8 +2182,8 @@ class ConfigNewzbin:
 
         conf['bookmarks_list'] = self.__bookmarks
 
-        conf['username_matrix'] = cfg.USERNAME_MATRIX.get()
-        conf['password_matrix'] = cfg.PASSWORD_MATRIX.get_stars()
+        conf['matrix_username'] = cfg.MATRIX_USERNAME.get()
+        conf['matrix_apikey'] = cfg.MATRIX_APIKEY.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2200,8 +2200,8 @@ class ConfigNewzbin:
         cfg.NEWZBIN_UNBOOKMARK.set(kwargs.get('newzbin_unbookmark'))
         cfg.BOOKMARK_RATE.set(kwargs.get('bookmark_rate'))
 
-        cfg.USERNAME_MATRIX.set(kwargs.get('username_matrix'))
-        cfg.PASSWORD_MATRIX.set(kwargs.get('password_matrix'))
+        cfg.MATRIX_USERNAME.set(kwargs.get('matrix_username'))
+        cfg.MATRIX_APIKEY.set(kwargs.get('matrix_apikey'))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -2211,8 +2211,8 @@ class ConfigNewzbin:
         msg = check_session(kwargs)
         if msg: return msg
 
-        cfg.USERNAME_MATRIX.set(kwargs.get('username_matrix'))
-        cfg.PASSWORD_MATRIX.set(kwargs.get('password_matrix'))
+        cfg.MATRIX_USERNAME.set(kwargs.get('matrix_username'))
+        cfg.MATRIX_APIKEY.set(kwargs.get('matrix_apikey'))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)

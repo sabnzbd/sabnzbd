@@ -110,8 +110,10 @@ class URLGrabber(Thread):
                 logging.debug('Dropping URL %s, job entry missing', url)
                 continue
 
+            # NZBmatrix support
             if url.lower().find('nzbmatrix.com') > 0:
                 fn, filename = _grab_nzbmatrix(url)
+            # Normal http fetching support
             else:
                 # _grab_url cannot reside in a function, because the tempfile
                 # would not survive the end of the function
@@ -133,6 +135,7 @@ class URLGrabber(Thread):
                                 filename = item[item.index("filename=") + 9:].strip(';').strip('"')
                                 break
 
+            # Check if the filepath is specified, if not use the filename as whether it should be retried (bool)
             if not fn:
                 misc.bad_fetch(future_nzo, url, retry=filename)
                 continue
@@ -147,6 +150,7 @@ class URLGrabber(Thread):
             priority = future_nzo.get_priority()
             cat, pp, script, priority = misc.cat_to_opts(cat, pp, script, priority)
 
+            # Check if nzb file
             if os.path.splitext(filename)[1].lower() == '.nzb':
                 res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority)
                 if res == 0:
@@ -155,10 +159,12 @@ class URLGrabber(Thread):
                     self.add(url, future_nzo)
                 else:
                     misc.bad_fetch(future_nzo, url, retry=False)
+            # Check if a supported archive
             else:
                 if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
                     nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                 else:
+                    # Not a supported filetype, not an nzb (text/html ect)
                     try:
                         os.remove(fn)
                     except:
@@ -170,14 +176,15 @@ class URLGrabber(Thread):
 
 
 
-#------------------------------------------------------------------------------
-# Function "_grab_nzbmatrix" was contibuted by
-# SABnzbd.org forum-user "ultimatejones"
-
 RE_NZBMATRIX = re.compile(r'(nzbmatrix).com/nzb-details.php\?id=(\d+)', re.I)
 
 def _grab_nzbmatrix(url):
-    """ Grab one msgid from nzbmatrix """
+    """ 
+    Grab one msgid from nzbmatrix
+    Returns:
+        path
+        filename
+    """
 
     m = RE_NZBMATRIX.search(url)
     if m and m.group(1).lower() == 'nzbmatrix' and m.group(2):
@@ -187,45 +194,37 @@ def _grab_nzbmatrix(url):
 
     logging.info('Fetching NZB for nzbmatrix report #%s', msgid)
 
-    if _HAVE_SSL:
-        login_url = 'https://nzbmatrix.com/account-login.php'
-        download_url = 'https://nzbmatrix.com/nzb-download.php?id=' + msgid
-    else:
-        login_url = 'http://nzbmatrix.com/account-login.php'
-        download_url = 'http://nzbmatrix.com/nzb-download.php?id=' + msgid
+    headers = {'User-agent' : 'SABnzbd-' + sabnzbd.version.__version__}
+    
+    # Current api syntax: http://nzbmatrix.com/api-nzb-download.php?id={NZBID}&username={USERNAME}&apikey={APIKEY}
+    request_url = 'http://nzbmatrix.com/api-nzb-download.php?'
+    arguments = {'id': msgid, 'username': cfg.MATRIX_USERNAME.get(), 'apikey': cfg.MATRIX_APIKEY.get()}
+    # NZBMatrix API does not currently support sending details over POST, so use GET instead
+    request_url += urllib.urlencode(arguments)
 
-    # TODO don't hardcode these
-    cmn_headers = {'User-agent' : 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)'}
-
-    logging.debug('Using login url: %s', login_url)
-    logging.debug('Using download url: %s', download_url)
-
-    # username and password
-    login_info = {'username': cfg.USERNAME_MATRIX.get(), 'password': cfg.PASSWORD_MATRIX.get()}
-    login_info_encode = urllib.urlencode(login_info)
-
-    # create and install the cookie jar and handler so we can save the login cookie
-    cj = cookielib.CookieJar()
-    opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
-    urllib2.install_opener(opener)
-
-    #create the request to login
-    request = urllib2.Request(login_url, login_info_encode, cmn_headers)
-    response = urllib2.urlopen(request)
-
-    # assuming the login is successful( should through an exception if it is not)
-    # create the download link
-    logging.info('Downloading NZB: %s', download_url)
-
-    #create the download request
-    request = urllib2.Request(download_url, None, cmn_headers)
 
     try:
-        #request the file
+        # Send off the download request
+        logging.info('Downloading NZB: %s', request_url)
+        request = urllib2.Request(request_url, headers=headers)
         response = urllib2.urlopen(request)
 
-        # save the data from the response
+        # read the response into memory (could do with only reading first 80 bytes or so)
         data = response.read()
+        
+        # Check for an error response
+        if data.startswith('error'):
+            # Check if we are required to wait - if so sleep the urlgrabber
+            if 'please_wait' in data[6:]:
+                # must wait x amount of seconds
+                wait = data[18:]
+                if wait.isdigit():
+                    time.sleep(int(wait))
+                    # Return, but tell the urlgrabber to retry
+                    return (None, True)
+            else:
+                matrix_report_error(data[6:])
+                return (None, False)
 
         # save the filename from the headers
         filename = response.info()["Content-Disposition"].split("\"")[1]
@@ -252,3 +251,34 @@ def _grab_nzbmatrix(url):
         path = None
 
     return (path, filename)
+
+def matrix_report_error(error_msg):
+    """
+    Looks for the error supplied in the response form nzbmatrix and gives an appropriate error message
+    # error:invalid_login = There is a problem with the username you have provided.
+    # error:invalid_api = There is a problem with the API Key you have provided.
+    # error:invalid_nzbid = There is a problem with the NZBid supplied.
+    # error:please_wait_x = Please wait x seconds before retry.
+    # error:vip_only = You need to be VIP or higher to access.
+    # error:disabled_account = User Account Disabled.
+    # error:x_daily_limit = You have reached the daily download limit of x.
+    # error:no_nzb_found = No NZB found.
+    """
+    
+    if error_msg == 'invalid_login':
+        logging.warning(T('warn-matrixFail'))
+    elif error_msg == 'invalid_api':
+        logging.warning(T('warn-matrixFail'))
+    elif error_msg == 'invalid_nzbid':
+        logging.warning(T('warn-matrixFail'))
+    elif error_msg == 'vip_only':
+        logging.warning(T('warn-matrixFail'))
+    elif error_msg == 'disabled_account':
+        logging.warning(T('warn-matrixFail'))
+    elif error_msg == 'daily_limit':
+        logging.warning(T('warn-matrixFail'))
+    elif error_msg == 'no_nzb_found':
+        logging.warning(T('warn-matrixFail'))
+    else:
+        # Unrecognised error message
+        logging.warning(T('warn-matrixFail'))
