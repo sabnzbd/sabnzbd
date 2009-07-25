@@ -197,7 +197,11 @@ def _grab_nzbmatrix(url):
     headers = {'User-agent' : 'SABnzbd-' + sabnzbd.version.__version__}
     
     # Current api syntax: http://nzbmatrix.com/api-nzb-download.php?id={NZBID}&username={USERNAME}&apikey={APIKEY}
-    request_url = 'http://nzbmatrix.com/api-nzb-download.php?'
+    if _HAVE_SSL:
+        request_url = 'https://nzbmatrix.com/api-nzb-download.php?'
+    else:
+        request_url = 'http://nzbmatrix.com/api-nzb-download.php?'
+        
     arguments = {'id': msgid, 'username': cfg.MATRIX_USERNAME.get(), 'apikey': cfg.MATRIX_APIKEY.get()}
     # NZBMatrix API does not currently support sending details over POST, so use GET instead
     request_url += urllib.urlencode(arguments)
