@@ -3413,7 +3413,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
             slot['queued'] = queued
 
 
-        if start <= n  and n < start + limit:
+        if (start <= n  and n < start + limit) or not limit:
             slotinfo.append(slot)
         n += 1
 
