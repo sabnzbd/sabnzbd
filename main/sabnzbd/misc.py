@@ -869,8 +869,11 @@ def format_time_string(seconds, days=0):
     elif not completestr:
         completestr.append('0 %s' % s_returner('second', 0))
 
-    return ' '.join(completestr)
-
+    p = ' '.join(completestr)
+    if isinstance(p, unicode):
+        return p.encode('latin-1')
+    else:
+        return p
 
 def s_returner(item, value):
     if value == 1:
