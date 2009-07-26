@@ -40,11 +40,11 @@ from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, loadavg, \
-     to_units, from_units, diskfree, disktotal, get_ext,\
+     to_units, from_units, diskfree, disktotal, get_ext, \
      get_filename, cat_to_opts, IntConv
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
-from sabnzbd.codecs import TRANS, xml_name
+from sabnzbd.codecs import TRANS, xml_name, LatinFilter
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.articlecache as articlecache
@@ -68,6 +68,7 @@ DIRECTIVES = {
            'directiveEndToken': '#-->',
            'prioritizeSearchListOverSelf' : True
            }
+FILTER = LatinFilter
 
 #------------------------------------------------------------------------------
 #
@@ -357,7 +358,7 @@ class MainPage:
                 info['warning'] = "No PAR2 program found, repairs not possible<br/>"
 
             template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
-                                searchList=[info], compilerSettings=DIRECTIVES)
+                                filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
             return template.respond()
         else:
             # Redirect to the setup wizard
@@ -913,7 +914,7 @@ class NzoPage:
                 info =  self.nzo_files(info, pnfo_list, nzo_id)
 
         template = Template(file=os.path.join(self.__web_dir, 'nzo.tmpl'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
 
 
@@ -1053,7 +1054,7 @@ class QueuePage:
         info, pnfo_list, bytespersec, self.__verboseList, self.__dict__ = build_queue(self.__web_dir, self.__root, self.__verbose, self.__prim, self.__verboseList, self.__dict__, start=start, limit=limit, dummy2=dummy2)
 
         template = Template(file=os.path.join(self.__web_dir, 'queue.tmpl'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
         return template.respond()
 
 
@@ -1298,7 +1299,7 @@ class HistoryPage:
 
 
         template = Template(file=os.path.join(self.__web_dir, 'history.tmpl'),
-                            searchList=[history], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[history], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1414,7 +1415,7 @@ class ConfigPage:
         conf['servers'] = new
 
         template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1459,7 +1460,7 @@ class ConfigDirectories:
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
         template = Template(file=os.path.join(self.__web_dir, 'config_directories.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1511,7 +1512,7 @@ class ConfigSwitches:
         conf['script_list'] = ListScripts()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1631,7 +1632,7 @@ class ConfigGeneral:
         conf['cleanup_list'] = List2String(cfg.CLEANUP_LIST.get())
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -1739,7 +1740,7 @@ class ConfigServer:
             conf['have_ssl'] = 0
 
         template = Template(file=os.path.join(self.__web_dir, 'config_server.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
 
@@ -1892,7 +1893,7 @@ class ConfigRss:
         conf['feed'] = 'Feed' + str(unum)
 
         template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -2100,7 +2101,7 @@ class ConfigScheduling:
         conf['actions_lng'] = actions_lng
 
         template = Template(file=os.path.join(self.__web_dir, 'config_scheduling.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -2186,7 +2187,7 @@ class ConfigNewzbin:
         conf['matrix_apikey'] = cfg.MATRIX_APIKEY.get()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -2274,7 +2275,7 @@ class ConfigCats:
         conf['slotinfo'] = slotinfo
 
         template = Template(file=os.path.join(self.__web_dir, 'config_cat.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -2340,7 +2341,7 @@ class ConfigSorting:
         #tvSortList = []
 
         template = Template(file=os.path.join(self.__web_dir, 'config_sorting.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -2429,7 +2430,7 @@ class ConnectionInfo:
         header['warnings'] = wlist
 
         template = Template(file=os.path.join(self.__web_dir, 'connection_info.tmpl'),
-                            searchList=[header], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[header], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
@@ -2842,7 +2843,7 @@ class ConfigEmail:
                 conf[kw] = config.get_config('misc', kw).get()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose

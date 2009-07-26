@@ -31,6 +31,7 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host
+from sabnzbd.codecs import LatinFilter
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T
 
@@ -99,6 +100,8 @@ def send(message):
                 return failure
 
         try:
+            if isinstance(message, unicode):
+                message = message.encode('utf8')
             mailconn.sendmail(cfg.EMAIL_FROM.get(), cfg.EMAIL_TO.get(), message)
         except:
             logging.error(T('error-mailSend'))
@@ -154,6 +157,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
         if os.access(temp, os.R_OK):
             message = Template(file=temp,
                                 searchList=[parm],
+                                filter=LatinFilter,
                                 compilerSettings={'directiveStartToken': '<!--#',
                                                   'directiveEndToken': '#-->'})
             ret = send(message.respond())

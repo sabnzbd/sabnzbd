@@ -23,6 +23,7 @@ import os
 import sys
 import locale
 from xml.sax.saxutils import escape
+from Cheetah.Filters import Filter
 
 import sabnzbd
 
@@ -82,6 +83,19 @@ def encode_for_xml(ustr, encoding='ascii'):
         ustr = ustr.decode('Latin-1', 'replace')
 
     return ustr.encode(encoding, 'xmlcharrefreplace')
+
+
+class LatinFilter(Filter):
+    """ Make sure Cheetah gets only Unicode strings """
+    def filter(self, val,
+               str=str,
+               **kw):
+        if isinstance(val, unicode):
+            return val
+        elif isinstance(val, basestring):
+            return val.decode('latin-1')
+        else:
+            return str(val)
 
 
 ################################################################################
