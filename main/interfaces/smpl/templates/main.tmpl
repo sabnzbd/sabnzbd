@@ -383,17 +383,19 @@ function loadtitle() {
         switch(url)
         {
             case 'dv1':
-                lr('queue/','limit=50', 1, 1);
-                lrb('history/','limit=50',1);
+                lr('queue/','limit=15', 1, 1);
+                lrb('history/','limit=15',1);
                 break;
             case 'dv2':
-                lr('queue/','limit=50', 1, 2);
-                lrb('history/','limit=50',1);
+                lr('queue/','limit=15', 1, 2);
+                lrb('history/','limit=15',1);
                 break;
             case 'history':
-                lr('history/','limit=50',1);
+                lr('history/','limit=15',1);
                 break;
             case 'queue':
+                lr('history/','limit=15',1);
+                break;
             case 'connections':
                 lr(url,'',1)
             default:
