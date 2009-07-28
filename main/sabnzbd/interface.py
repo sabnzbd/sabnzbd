@@ -499,7 +499,13 @@ class MainPage:
             return report(output, keyword='config', data=data)
 
         if mode == 'qstatus':
-            return report(output, keyword='queue', data=qstatus_data())
+            if output == 'json':
+                # Compatibility Fix:
+                # Old qstatus did not have a keyword, so do not use one now.
+                keyword = ''
+            else:
+                keyword = 'queue'
+            return report(output, keyword=keyword, data=qstatus_data())
 
         if mode == 'queue':
             name = kwargs.get('name')
