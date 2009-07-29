@@ -349,7 +349,7 @@ srv-timedout             Timed out
 srv-failedAuth           Authentication failed, check username/password.
 srv-noAuth               Server requires username and password.
 srv-tooManyConnections   Too many connections, please pause downloading or try again later
-srv-generalFail@1        Cound not determine connection result (%s)
+srv-generalFail@1        Could not determine connection result (%s)
 
 # Config->Scheduling
 configSchedule           Scheduling configuration
@@ -444,6 +444,8 @@ opt-username_matrix      NzbMatrix Username
 explain-username_matrix  Set your account username here.
 opt-password_matrix      NzbMatrix Password
 explain-password_matrix  Set your account password here.
+opt-apikey_matrix        NzbMatrix API key
+explain-apikey_matrix    Set the NzbMatrix API key here.
 
 # Config->Cat
 configCat                User-defined categories

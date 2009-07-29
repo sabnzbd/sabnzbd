@@ -425,6 +425,8 @@ opt-username_matrix      Gebruikersnaam
 explain-username_matrix  Vul hier je gebruikersnaam in.
 opt-password_matrix      Wachtwoord
 explain-password_matrix  Vul hier je wachtwoord in.
+opt-apikey_matrix        NzbMatrix API sleutel
+explain-apikey_matrix    Vul hier de NzbMatrix API sleutel in.
 
 # Config->Cat
 configCat                Categorieën voor nabewerking

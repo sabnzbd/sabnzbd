@@ -445,6 +445,8 @@ opt-username_matrix      Identifiant NzbMatrix
 explain-username_matrix  Entrez votre identifiant ici.
 opt-password_matrix      Mot de passe NzbMatrix
 explain-password_matrix  Entrez votre mot de passe ici.
+opt-apikey_matrix        NzbMatrix clé API
+explain-apikey_matrix    Entrez votre NzbMatrix clé API ici.
 
 # Config->Cat
 configCat                Catégories utilisateur
