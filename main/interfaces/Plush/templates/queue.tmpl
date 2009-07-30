@@ -18,6 +18,7 @@
         $.plush.have_warnings	= $have_warnings;
         $.plush.last_warning 	= "<!--#echo $last_warning.replace("\n"," ").replace('"',"&quot;") #-->";
 
+		$.plush.queuestats = '';
         <!--#if $noofslots > 0#-->
         $.plush.queuestats		= '<strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb&nbsp;$T('MB')</strong>&nbsp;$T('Plush-remaining')';
         <!--#end if#-->
