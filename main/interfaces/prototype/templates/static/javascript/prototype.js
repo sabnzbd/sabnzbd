@@ -481,14 +481,11 @@ var myNewRecord = new TopicRecord({
     {
         ids = storeHistory.collect('id');
         currentFile = ids[record];
-        url = 'history/delete?job='+currentFile+'&session='+session;
-        Ext.Ajax.request(
-        {
-           url: url,
-           success: dummy,
-           failure: dummy
-        });
-        storeHistory.reload()
+        url = "tapi?mode=history&name=delete&value="+currentFile+"&session="+session;
+        Ext.Ajax.request({url: url});
+        var msg = String.format('{0} history job{1} deleted.', selectedNo, s_returner(selectedNo));
+        Ext.example.msg('Deleted', msg);
+        storeHistory.reload();
     });  
 
     //expand a combo box

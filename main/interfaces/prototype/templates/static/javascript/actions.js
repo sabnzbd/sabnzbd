@@ -33,7 +33,7 @@ function updateGrid(grid){
     var url;
     //script
     if (grid.field == "script"){
-        url = "tapi?mode=change_script&value="+currentFile+"&value2="+value+'&session='+session;
+        url = "tapi?mode=change_script&value="+currentFile+"&value2="+value+"&session="+session;
     }
     //unpack options
     else if (grid.field == "unpackopts"){
@@ -42,17 +42,17 @@ function updateGrid(grid){
         else if (grid.value == "Repair") {unp = 1}
         else if (grid.value == "Unpack") {unp = 2}
         else if (grid.value == "Delete") {unp = 3}
-        url = "queue/change_opts?nzo_id="+currentFile+"&pp="+unp+'&session='+session';
+        url = "queue/change_opts?nzo_id="+currentFile+"&pp="+unp+"&session="+session;
     }
     else if (grid.field == "index")
     {
         var nzoid1 = ids[grid.originalValue];
         var nzoid2 = ids[value];
-        url = "tapi?mode=switch&value="+nzoid1+"&value2="+nzoid2+'&session='+session;
+        url = "tapi?mode=switch&value="+nzoid1+"&value2="+nzoid2+"&session="+session;
     }
     else if (grid.field == "cat")
     {
-        url = "tapi?mode=change_cat&value="+currentFile+"&value2="+value+'&session='+session;
+        url = "tapi?mode=change_cat&value="+currentFile+"&value2="+value+"&session="+session;
     }
     if (url){
         Ext.Ajax.request(
