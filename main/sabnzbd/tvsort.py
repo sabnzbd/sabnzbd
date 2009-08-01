@@ -818,12 +818,21 @@ def getTitles(match, name):
     # Replace .US. with (US)
     if cfg.TV_SORT_COUNTRIES.get() == 1:
         for rep in COUNTRY_REP:
-            name = replace_word(name, rep.strip('()'), rep)
+            # (us) > (US)
+            name = replace_word(name, rep.lower(), rep)
+            # (Us) > (US)
+            name = replace_word(name, rep.title(), rep)
+            # .US. > (US)
+            dotted_country = '.%s.' % (rep.strip('()'))
+            name = replace_word(name, dotted_country, rep)
     # Remove .US. and (US)
     elif cfg.TV_SORT_COUNTRIES.get() == 2:
         for rep in COUNTRY_REP:
+            # Remove (US)
             name = replace_word(name, rep, '')
-            name = replace_word(name, rep.strip('()'), '')         
+            dotted_country = '.%s.' % (rep.strip('()'))
+            # Remove .US.
+            name = replace_word(name, dotted_country, '.')         
         
     title = name.replace('.', ' ').replace('_', ' ')
     title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
