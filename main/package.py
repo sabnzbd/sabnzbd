@@ -26,6 +26,7 @@ import platform
 import tarfile
 import re
 import subprocess
+import shutil
 try:
     import py2exe
 except ImportError:
@@ -327,8 +328,8 @@ if target == 'app':
     os.system("hdiutil mount %s" % (fileImg))
 
     #remove prototype and iphone interfaces
-    os.system("rm -rf interfaces/prototype>/dev/null")    
-    os.system("rm -rf interfaces/iphone>/dev/null")    
+    os.system("rm -rf interfaces/prototype>/dev/null")
+    os.system("rm -rf interfaces/iphone>/dev/null")
 
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
@@ -420,6 +421,11 @@ elif target == 'binary':
     setup(**options)
 
     DeleteFiles('*.ini')
+
+    # Copy the proper OpenSSL files into the dist folder
+    shutil.copy2('win/openssl/libeay32.dll', 'dist/lib')
+    shutil.copy2('win/openssl/ssleay32.dll', 'dist/lib')
+
     os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
               (release, fileIns))
 
