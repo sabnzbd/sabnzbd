@@ -78,6 +78,10 @@ def run_method():
 def save():
     global __RSS
     if __RSS: __RSS.save()
+    
+def clear_feed(feed):
+    global __RSS
+    if __RSS: __RSS.clear_feed(feed)
 
 ################################################################################
 
@@ -310,8 +314,8 @@ class RSSQueue:
             for feed in feeds:
                 if feeds[feed].enable.get():
                     self.run_feed(feed, download=True, ignoreFirst=True)
-                    # Wait two minutes, else sites may get irritated
-                    for x in xrange(120):
+                    # Wait 30 seconds, else sites may get irritated
+                    for x in xrange(30):
                         if self.shutdown:
                             self.__running = False
                             return
@@ -347,6 +351,12 @@ class RSSQueue:
             for link in lst:
                 if lst[link][2] == id:
                     lst[link][0] = 'D'
+        
+    @synchronized(LOCK)
+    def clear_feed(self, feed):
+        # Remove any previous references to this feed name, and start fresh
+        if feed in self.jobs:
+            del self.jobs[feed]
 
 
 RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)

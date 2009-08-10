@@ -1941,6 +1941,9 @@ class ConfigRss:
             cfg = None
         if (not cfg) and uri:
             config.ConfigRSS(feed, kwargs)
+            # Clear out any existing reference to this feed name
+            # Otherwise first-run detection can fail
+            sabnzbd.rss.clear_feed(feed)
             config.save_config()
 
         raise dcRaiser(self.__root, kwargs)
