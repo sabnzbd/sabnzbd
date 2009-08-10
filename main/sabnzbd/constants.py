@@ -113,6 +113,6 @@ series_match = [ ('([sS]|[\d]+)x(\d+)', # 1x01
 date_match = ['(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
               '(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
 
-year_match = '[\(|\.](\d{4})' # Something (Year or .Year
+year_match = '[\W](\d{4})[\W]??' # Something '(YYYY)' or '.YYYY.' or ' YYYY '
 
 sample_match = '((^|[\W_])sample\d*[\W_])|(-s\.)|(^s-)' # something-sample.avi s-something.avi something-s.avi
