@@ -381,17 +381,18 @@ class MainPage:
         cat = kwargs.get('cat')
         priority =  kwargs.get('priority')
         redirect = kwargs.get('redirect')
+        nzbname = kwargs.get('nzbname')
 
         RE_NEWZBIN_URL = re.compile(r'/browse/post/(\d+)')
         newzbin_url = RE_NEWZBIN_URL.search(id.lower())
 
         id = Strip(id)
         if id and (id.isdigit() or len(id)==5):
-            sabnzbd.add_msgid(id, pp, script, cat, priority)
+            sabnzbd.add_msgid(id, pp, script, cat, priority, nzbname)
         elif newzbin_url:
-            sabnzbd.add_msgid(Strip(newzbin_url.group(1)), pp, script, cat, priority)
+            sabnzbd.add_msgid(Strip(newzbin_url.group(1)), pp, script, cat, priority, nzbname)
         elif id:
-            sabnzbd.add_url(id, pp, script, cat, priority)
+            sabnzbd.add_url(id, pp, script, cat, priority, nzbname)
         if not redirect:
             redirect = self.__root
         raise cherrypy.HTTPRedirect(redirect)
@@ -610,6 +611,7 @@ class MainPage:
         value2 = kwargs.get('value2')
         start = kwargs.get('start')
         limit = kwargs.get('limit')
+        nzbname = kwargs.get('nzbname')
 
         if mode == 'addfile':
             # When uploading via flash it will send the nzb in a kw arg called Filedata
@@ -622,7 +624,7 @@ class MainPage:
                 name = normal_upload
 
             if name.filename and name.value:
-                sabnzbd.add_nzbfile(name, pp, script, cat, priority)
+                sabnzbd.add_nzbfile(name, pp, script, cat, priority, nzbname)
                 return report(output)
             else:
                 return report(output, _MSG_NO_VALUE)
@@ -637,7 +639,7 @@ class MainPage:
                                 fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
                         elif get_ext(name) in ('.nzb'):
                             sabnzbd.dirscanner.ProcessSingleFile(\
-                                fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True)
+                                fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
                     else:
                         return report(output, _MSG_NO_FILE)
                 else:
@@ -721,7 +723,7 @@ class MainPage:
 
         if mode == 'addurl':
             if name:
-                sabnzbd.add_url(name, pp, script, cat, priority)
+                sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
                 return report(output)
             else:
                 return report(output, _MSG_NO_VALUE)
@@ -732,13 +734,13 @@ class MainPage:
 
             if name: name = name.strip()
             if name and (name.isdigit() or len(name)==5):
-                sabnzbd.add_msgid(name, pp, script, cat, priority)
+                sabnzbd.add_msgid(name, pp, script, cat, priority, nzbname)
                 return report(output)
             elif newzbin_url:
-                sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat, priority)
+                sabnzbd.add_msgid(newzbin_url.group(1), pp, script, cat, priority, nzbname)
                 return report(output)
             elif name:
-                sabnzbd.add_url(name, pp, script, cat, priority)
+                sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
                 return report(output)
             else:
                 return report(output, _MSG_NO_VALUE)
@@ -2044,10 +2046,11 @@ class ConfigRss:
         pp = kwargs.get('pp')
         script = kwargs.get('script')
         priority = kwargs.get('priority', NORMAL_PRIORITY)
+        nzbname = kwargs.get('nzbname')
         if id and id.isdigit():
-            sabnzbd.add_msgid(id, pp, script, cat, priority)
+            sabnzbd.add_msgid(id, pp, script, cat, priority, nzbname)
         elif id:
-            sabnzbd.add_url(id, pp, script, cat, priority)
+            sabnzbd.add_url(id, pp, script, cat, priority, nzbname)
         # Need to pass the title instead
         sabnzbd.rss.flag_downloaded(feed, id)
         raise dcRaiser(self.__root, kwargs)

@@ -104,14 +104,14 @@ class NzbQueue(TryList):
                            self.__downloaded_items), QUEUE_FILE_NAME)
 
     @synchronized(NZBQUEUE_LOCK)
-    def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY):
+    def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY, nzbname=None):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, status="Fetching")
+        future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status="Fetching")
         self.add(future_nzo)
         return future_nzo
 
     @synchronized(NZBQUEUE_LOCK)
-    def insert_future(self, future, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
+    def insert_future(self, future, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info={}):
         """ Refresh a placeholder nzo with an actual nzo """
         nzo_id = future.nzo_id
         if nzo_id in self.__nzo_table:
@@ -128,7 +128,7 @@ class NzbQueue(TryList):
                     categ = cat
 
                 try:
-                    future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzo_info=nzo_info)
+                    future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
                     future.nzo_id = nzo_id
                     self.save()
                 except ValueError:
@@ -862,9 +862,9 @@ def save():
     global __NZBQ
     if __NZBQ: __NZBQ.save()
 
-def generate_future(msg, pp, script, cat, url, priority):
+def generate_future(msg, pp, script, cat, url, priority, nzbname):
     global __NZBQ
-    if __NZBQ: return __NZBQ.generate_future(msg, pp, script, cat, url, priority)
+    if __NZBQ: return __NZBQ.generate_future(msg, pp, script, cat, url, priority, nzbname)
 
 
 #-------------------------------------------------------------------------------
@@ -876,9 +876,9 @@ def add_nzo(nzo):
     if __NZBQ: __NZBQ.add(nzo)
 
 @synchronized_CV
-def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzo_info={}):
+def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info={}):
     global __NZBQ
-    if __NZBQ: __NZBQ.insert_future(future_nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
+    if __NZBQ: __NZBQ.insert_future(future_nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
 
 @synchronized_CV
 def set_priority(nzo_id, priority):

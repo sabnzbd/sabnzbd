@@ -325,7 +325,7 @@ def guard_speedlimit():
     downloader.limit_speed(cfg.BANDWIDTH_LIMIT.get_int())
 
 
-def add_msgid(msgid, pp=None, script=None, cat=None, priority=None):
+def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
 
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
@@ -336,21 +336,21 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None):
         logging.info('Fetching msgid %s from www.newzbin.com', msgid)
         msg = T('fetchingNewzbin@1') % msgid
 
-        future_nzo = nzbqueue.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority)
+        future_nzo = nzbqueue.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority, nzbname=nzbname)
 
         newzbin.grab(msgid, future_nzo)
     else:
         logging.error(T('error-fetchNewzbin@1'), msgid)
 
 
-def add_url(url, pp=None, script=None, cat=None, priority=None):
+def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
     logging.info('Fetching %s', url)
     msg = T('fetchNZB@1') % url
-    future_nzo = nzbqueue.generate_future(msg, pp, script, cat, url=url, priority=priority)
+    future_nzo = nzbqueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
     urlgrabber.add(url, future_nzo)
 
 
@@ -406,7 +406,7 @@ def backup_nzb(filename, data):
 ## CV synchronized (notifies downloader)                                      ##
 ################################################################################
 @synchronized_CV
-def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
+def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -434,7 +434,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if ext.lower() in ('.zip', '.rar'):
         dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
     else:
-        dirscanner.ProcessSingleFile(filename, path, pp, script, cat, priority=priority)
+        dirscanner.ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname)
 
 
 ################################################################################

@@ -186,11 +186,12 @@ class MSGIDGrabber(Thread):
                     cat = CatConvert(newzbin_cat)
 
                 priority = nzo.get_priority()
+                nzbname = nzo.get_dirname_rename()
 
                 cat, pp, script, priority = cat_to_opts(cat, pp, script, priority)
 
                 try:
-                    sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzo_info=nzo_info)
+                    sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
                 except:
                     logging.error(T('error-nbUpdate@1'), msgid)
                     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, False)
