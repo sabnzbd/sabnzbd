@@ -325,7 +325,7 @@ def guard_speedlimit():
     downloader.limit_speed(cfg.BANDWIDTH_LIMIT.get_int())
 
 
-def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
+def add_msgid(msgid, pp=None, script=None, cat=None, priority=None):
 
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
@@ -343,7 +343,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
         logging.error(T('error-fetchNewzbin@1'), msgid)
 
 
-def add_url(url, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY):
+def add_url(url, pp=None, script=None, cat=None, priority=None):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -675,6 +675,8 @@ def remove_data(_id):
 
 def pp_to_opts(pp):
     """ Convert numeric processinf options to (repair, unpack, delete) """
+    # Convert the pp to an int
+    pp = sabnzbd.interface.IntConv(pp)
     if pp == 0 : return (False, False, False)
     if pp == 1 : return (True, False, False)
     if pp == 2 : return (True, True, False)
