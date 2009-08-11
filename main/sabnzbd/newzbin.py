@@ -163,7 +163,7 @@ class MSGIDGrabber(Thread):
         def sleeper(delay):
             for n in range(delay):
                 if not self.shutdown:
-                    time.sleep(1.0)
+                    time.sleep(1.05)
 
         self.shutdown = False
         msgid = None
@@ -216,12 +216,12 @@ def _grabnzb(msgid):
     """ Grab one msgid from newzbin """
 
     nothing  = (None, None, None, None)
-    retry = (300, None, None, None)
+    retry = (60, None, None, None)
     nzo_info = {'msgid': msgid}
 
     logging.info('Fetching NZB for Newzbin report #%s', msgid)
 
-    headers = { 'User-Agent': 'SABnzbd', }
+    headers = {'User-agent' : 'SABnzbd+/%s' % sabnzbd.version.__version__}
 
     # Connect to Newzbin
     try:
@@ -238,12 +238,13 @@ def _grabnzb(msgid):
         fetchurl = '/api/dnzb/'
         conn.request('POST', fetchurl, postdata, headers)
         response = conn.getresponse()
+        
+        # Save debug info if we have to
+        data = response.read()
+        
     except:
-        _warn_user('Problem accessing Newzbin server, wait 5 min.')
+        _warn_user('Problem accessing Newzbin server, wait 1 min.')
         return retry
-
-    # Save debug info if we have to
-    data = response.read()
 
     # Get the filename
     rcode = response.getheader('X-DNZB-RCode')
