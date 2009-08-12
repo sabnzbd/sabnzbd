@@ -69,11 +69,6 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
 
     def buildMenu(self):
         #logging.info("building menu")
-        logging.info("[osx] yes=%s" % (T('yes')))
-        while T('yes')[0:1]=="#":
-            time.sleep(0.1)
-            logging.info("[osx] language file not loaded, waiting")
-
         status_bar = NSStatusBar.systemStatusBar()
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
         for i in status_icons.keys():
@@ -83,6 +78,15 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         self.status_item.setHighlightMode_(1)
         self.status_item.setToolTip_('SABnzbd')
         self.status_item.setEnabled_(YES)
+
+        #Wait for SABnzbd Initialisation
+        cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
+
+        logging.info("[osx] yes=%s" % (T('yes')))
+
+        while T('yes')[0:1]=="#":
+            time.sleep(0.5)
+            logging.info("[osx] language file not loaded, waiting")
         
         #Variables
         self.state = "Idle"
@@ -644,6 +648,7 @@ class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
         logging.info('[osx] application terminating')
         self.setMenuTitle("\n\n%s\n"% (T('osx-menu-shutdowning')))
         self.status_item.setHighlightMode_(NO)
+        sabnzbd.OSX_ICON = 0
         logging.info('[osx] application stopping daemon')
         sabnzbd.halt()
         cherrypy.engine.exit()
