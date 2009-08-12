@@ -36,7 +36,7 @@ warnings          Avertissements
 
 # General
 button-refresh    Rafraîchir
-left              restant
+left              rest.
 page              page
 everything        Tout
 prev              Préc.
