@@ -111,7 +111,15 @@ class NNTP:
         af, socktype, proto, canonname, sa = res[0]
 
         if sslenabled and _ssl:
-            ctx = _ssl.Context(_ssl.SSLv23_METHOD)
+            # Some users benefit from SSLv2 not being capped.
+            ssl_type = sabnzbd.cfg.SSL_TYPE.get()
+            if ssl_type == 'v2':
+                ctx = _ssl.Context(_ssl.SSLv2_METHOD)
+            else if ssl_type == 'v3':
+                ctx = _ssl.Context(_ssl.SSLv3_METHOD)
+            else:
+                ctx = _ssl.Context(_ssl.SSLv23_METHOD)
+                
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
             logging.error(T('error-noSSL'))
