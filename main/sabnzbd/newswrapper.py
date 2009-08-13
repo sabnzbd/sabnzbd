@@ -115,7 +115,7 @@ class NNTP:
             ssl_type = sabnzbd.cfg.SSL_TYPE.get()
             if ssl_type == 'v2':
                 ctx = _ssl.Context(_ssl.SSLv2_METHOD)
-            else if ssl_type == 'v3':
+            elif ssl_type == 'v3':
                 ctx = _ssl.Context(_ssl.SSLv3_METHOD)
             else:
                 ctx = _ssl.Context(_ssl.SSLv23_METHOD)
