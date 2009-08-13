@@ -83,9 +83,11 @@ def con(sock, host, port, sslenabled, nntp):
                     select.select([sock], [], [], 1.0)
     except socket.error, e:
         try:
+            # socket.error can either return a string or a tuple
             if isinstance(e, tuple):
                 (_errno, strerror) = e
             else:
+                # Are we safe to hardcode the ETIMEDOUT error?
                 (_errno, strerror) = (errno.ETIMEDOUT, str(e))
                 e = (_errno, strerror)
             #expected, do nothing
@@ -146,7 +148,13 @@ class NNTP:
 
         except socket.error, e:
             try:
-                (_errno, strerror) = e
+                # socket.error can either return a string or a tuple
+                if isinstance(e, tuple):
+                    (_errno, strerror) = e
+                else:
+                    # Are we safe to hardcode the ETIMEDOUT error?
+                    (_errno, strerror) = (errno.ETIMEDOUT, str(e))
+                    e = (_errno, strerror)
                 #expected, do nothing
                 if _errno == errno.EINPROGRESS:
                     pass
