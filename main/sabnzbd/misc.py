@@ -253,12 +253,18 @@ def get_user_shellfolders():
             name, value, val_type = _winreg.EnumValue(key, i)
             try:
                 values[name] = value.encode('latin-1')
-            except:
+            except UnicodeDecodeError:
                 try:
+                    # If the path name cannot be converted to latin-1 (contains high ASCII value strings)
+                    # then try and use the short name
                     import win32api
-                    values[name] = win32api.GetShortPathName(value)
+                    # Need to make sure the path actually exists, otherwise ignore
+                    if os.path.exists(value):
+                        values[name] = win32api.GetShortPathName(value)
                 except:
-                    del values[name]
+                    # probably a pywintypes.error error such as folder does not exist
+                    logging.error("Traceback: ", exc_info = True)
+                    pass
             i += 1
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
