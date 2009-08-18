@@ -2031,7 +2031,7 @@ class ConfigRss:
         if msg: return msg
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            sabnzbd.rss.run_feed(feed, download=False)
+            sabnzbd.rss.run_feed(feed, download=False, ignoreFirst=True)
             return ShowRssLog(feed, True)
         raise dcRaiser(self.__root, kwargs)
 
@@ -2612,12 +2612,14 @@ def _make_link(qfeed, job):
     else:
         pp = ''
 
+    star = '&nbsp;*' * int(job[0].endswith('*'))
+
     title = xml_name(job[1])
     if job[2].isdigit():
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (job[2], title)
 
-    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s<br/>' % \
-           (cfg.API_KEY.get() ,qfeed, name, cat, pp, T('link-download'), title)
+    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
+           (cfg.API_KEY.get() ,qfeed, name, cat, pp, T('link-download'), title, star)
 
 
 def ShowRssLog(feed, all):
@@ -2633,19 +2635,19 @@ def ShowRssLog(feed, all):
     doneStr = []
     for x in names:
         job = jobs[x]
-        if job[0] == 'D':
+        if job[0][0] == 'D':
             doneStr.append('%s<br/>' % xml_name(job[1]))
 
     goodStr = []
     for x in names:
         job = jobs[x]
-        if job[0] == 'G':
+        if job[0][0] == 'G':
             goodStr.append(_make_link(qfeed, job))
 
     badStr = []
     for x in names:
         job = jobs[x]
-        if job[0] == 'B':
+        if job[0][0] == 'B':
             badStr.append(_make_link(qfeed, job))
 
     if all:
@@ -2660,6 +2662,7 @@ def ShowRssLog(feed, all):
                <input type="submit" onclick="this.form.action='.'; this.form.submit(); return false;" value="%s"/>
                </form>
                <h3>%s</h3>
+               %s<br/><br/>
                <b>%s</b><br/>
                %s
                <br/>
@@ -2671,7 +2674,7 @@ def ShowRssLog(feed, all):
                <br/>
 </body>
 </html>
-''' % (escape(feed), T('button-back'), escape(feed), T('rss-matched'), \
+''' % (escape(feed), T('button-back'), escape(feed), T('explain-rssStar'), T('rss-matched'), \
        ''.join(goodStr), T('rss-notMatched'), ''.join(badStr), T('rss-done'), ''.join(doneStr))
     else:
         return '''
@@ -2690,7 +2693,7 @@ def ShowRssLog(feed, all):
                <br/>
 </body>
 </html>
-''' % (escape(feed), T('button-back'), escape(feed), T('rss-downloaded'), doneStr)
+''' % (escape(feed), T('button-back'), escape(feed), T('rss-downloaded'), ''.join(doneStr))
 
 
 def build_header(prim):

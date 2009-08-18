@@ -391,6 +391,7 @@ rss-notMatched           Not matched
 rss-done                 Downloaded
 rss-downloaded           Downloaded so far
 link-download            Download
+explain-rssStar          Jobs marked with a '*' will not be automatically downloaded.
 
 # Config->Email
 configEmail              Email Notification

@@ -375,6 +375,7 @@ rss-notMatched           Niet geselecteerd
 rss-done                 Gedaan
 rss-downloaded           Tot nu toe gedaan
 link-download            Download
+explain-rssStar          Items met een ster '*' worden niet automatisch gedownload.
 
 # Config->Email
 configEmail              Email berichten

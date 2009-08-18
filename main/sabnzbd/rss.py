@@ -56,9 +56,9 @@ def del_feed(feed):
     global __RSS
     if __RSS: __RSS.delete(feed)
 
-def run_feed(feed, download):
+def run_feed(feed, download, ignoreFirst=False):
     global __RSS
-    if __RSS: return __RSS.run_feed(feed, download)
+    if __RSS: return __RSS.run_feed(feed, download, ignoreFirst)
 
 def show_result(feed):
     global __RSS
@@ -135,6 +135,7 @@ class RSSQueue:
         #    Each element is link-indexed dictionary
         #        Each element is an array:
         #           0 = 'D', 'G', 'B', 'X' (downloaded, good-match, bad-match, obsolete)
+        #               '*' added means: from the initial batch
         #           1 = Title
         #           2 = URL or MsgId
         #           3 = cat
@@ -160,7 +161,7 @@ class RSSQueue:
                 if f == fd:
                     for lk in self.jobs[fd]:
                         item = self.jobs[fd][lk]
-                        if item[0]=='D' and item[1]==title:
+                        if item[0][0]=='D' and item[1]==title:
                             return True
                     return False
             return False
@@ -247,7 +248,7 @@ class RSSQueue:
                 myScript = ''
                 #myPriority = 0
 
-                if (link not in jobs) or (jobs[link][0]!='D'):
+                if (link not in jobs) or (jobs[link][0] in ('G', 'B', 'G*', 'B*')):
                     # Match this title against all filters
                     logging.debug('Trying link %s', link)
                     result = False
@@ -277,7 +278,10 @@ class RSSQueue:
                             break
 
                     if result:
-                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, download and not first, priority=defPriority)
+                        act = download and not first
+                        if link in jobs:
+                            act = act and not jobs[link][0].endswith('*')
+                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, act, priority=defPriority)
                     else:
                         _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False, priority=defPriority)
 
@@ -289,7 +293,7 @@ class RSSQueue:
         olds  = jobs.keys()
         for old in olds:
             if old not in newlinks:
-                if jobs[old][0] in ('G', 'B'):
+                if jobs[old][0][0] in ('G', 'B'):
                     jobs[old][0] = 'X'
                 try:
                     tm = float(jobs[old][6])
@@ -379,7 +383,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             logging.info("Adding %s (%s) to queue", m.group(3), title)
             sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat, priority=priority)
         else:
-            jobs[link].append(flag)
+            jobs[link].append(flag + '*')
             jobs[link].append(title)
             jobs[link].append(m.group(3))
             jobs[link].append(cat)
@@ -397,7 +401,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             logging.info("Adding %s (%s) to queue", link, title)
             sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority)
         else:
-            jobs[link].append(flag)
+            jobs[link].append(flag + '*')
             jobs[link].append(title)
             jobs[link].append(link)
             jobs[link].append(cat)
