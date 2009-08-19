@@ -18,7 +18,7 @@
       $T('srv-timeout'):<br><input type="text" size="25" name="timeout" value="120"><br>
       $T('srv-connections'):<br><input type="text" size="25" name="connections"><br>
       <!--#if int($have_ssl) == 0#-->
-         $T('srv-ssl') $T('notInstalled')
+         $T('srv-ssl') $T('opt-notInstalled')
       <!--#else#-->
         <input type="checkbox" name="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->>&nbsp;$T('srv-ssl')<br/>
       <!--#end if#-->
@@ -42,7 +42,7 @@
       $T('srv-timeout'):<br><input type="text" size="25" name="timeout" value="$servers[$server]['timeout']"><br>
       $T('srv-connections'):<br><input type="text" size="25" name="connections" value="$servers[$server]['connections']"><br>
       <!--#if int($have_ssl) == 0#-->
-         $T('srv-ssl') $T('notInstalled')
+         $T('srv-ssl') $T('opt-notInstalled')
       <!--#else#-->
          <input type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 then "checked=1" else ""#-->/>&nbsp;$T('srv-ssl')<br/>
       <!--#end if#-->

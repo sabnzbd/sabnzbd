@@ -97,7 +97,7 @@
     <strong class="manual_restart">&nbsp;$T('restartRequired')&nbsp;</strong><br/><br/>
 
     <input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-    <strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('not-installed') else ""#--></strong><br/>
+    <strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('opt-notInstalled') else ""#--></strong><br/>
     <small>$T('explain-enable_https')</small>
 
 	<br/><br/>
