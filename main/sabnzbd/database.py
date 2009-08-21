@@ -376,17 +376,16 @@ def decode_factory(text):
         return text.decode('Latin-1', 'replace').encode('utf-8', 'replace')
 
     elif isinstance(text, list):
-        i = 0
-        list_copy = [t for t in text]
-        for t in list_copy:
-            text[i] = decode_factory(t)
-            i += 1
-        return text
+        new_text = []
+        for t in text:
+            new_text.append(decode_factory(t))
+        return new_text
 
     elif isinstance(text, dict):
-        for key, item in text.copy().iteritems():
-            text[key] = decode_factory(item)
-        return text
+        new_text = {}
+        for key in text:
+            new_text[key] = decode_factory(text[key])
+        return new_text
     else:
         return text
 
