@@ -73,6 +73,7 @@
 				<option value="1" <!--#if $slot.priority == "1" then "selected" else ""#-->>$T('pr-high')</option>
 				<option value="0" <!--#if $slot.priority == "0" then "selected" else ""#-->>$T('pr-normal')</option>
 				<option value="-1" <!--#if $slot.priority == "-1" then "selected" else ""#-->>$T('pr-low')</option>
+                <option value="-100" <!--#if $slot.priority == "-100" then "selected" else ""#-->>$T('default')</option>
 			</select>
 		<!--#end if#-->
 
