@@ -127,6 +127,9 @@ fetchingNewzbin@1 récupération msgid %s depuis www.newzbin.com
 error-fetchNewzbin@1 Erreur Récupération msgid %s depuis www.newzbin.com -\
                   Vérifiez que vos identifiant / mot de passe soient bien renseignés
 fetchNZB@1        Essai de récupération du NZB depuis %s
+eoq-actions       Actions
+eoq-scripts       Scripts
+
 
 # History page
 purgeHist         Effacer l'historique

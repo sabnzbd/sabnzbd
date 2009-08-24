@@ -21,7 +21,7 @@
 $T('onQueueFinish'):
 <select onChange="location = './change_queue_complete_action?action='+this.options[this.selectedIndex].value+'&session=$session'">
 <option value=""></option>
-    <optgroup label="Actions">
+    <optgroup label="$T('eoq-actions')">
         <!--#if $nt or $darwin#-->
         <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>$T('shutdownPc')</option>
         <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>$T('standbyPc')</option>
@@ -32,7 +32,7 @@ $T('onQueueFinish'):
         <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>$T('shutdownSab')</option>
     </optgroup>
 <!--#if $script_list#-->
-    <optgroup label="$T('scripts')">
+    <optgroup label="$T('eoq-scripts')">
     <!--#for $sc in $script_list#-->
         <!--#if $sc != 'None'#-->
         <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>

@@ -124,6 +124,8 @@ fetchingNewzbin@1 Ophalen rapport %s van www.newzbin.com
 error-fetchNewzbin@1 Fout bij ophalen van rapport %s van www.newzbin.com -\
                   Zorg dat je gebruikersnaam en wachtwoord goed ingevuld zijn
 fetchNZB@1        Probeer NZB op te halen van %s
+eoq-actions       Akties
+eoq-scripts       Scripts
 
 # History page
 purgeHist         Alles wissen
