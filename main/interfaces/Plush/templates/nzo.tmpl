@@ -41,10 +41,10 @@
 			</optgroup></select>
 			<!--#end if#-->
 			<select name="priority"><optgroup label="$T('priority')">
+				<option value="-100" <!--#if $slot.priority == "-100" then "selected" else ""#-->>$T('default')</option>
 				<option value="1" <!--#if $slot.priority == "1" then "selected" else ""#-->>$T('pr-high')</option>
 				<option value="0" <!--#if $slot.priority == "0" then "selected" else ""#-->>$T('pr-normal')</option>
 				<option value="-1" <!--#if $slot.priority == "-1" then "selected" else ""#-->>$T('pr-low')</option>
-				<option value="-100" <!--#if $slot.priority == "-100" then "selected" else ""#-->>$T('default')</option>
 			</optgroup></select>
 			<select name="pp"><optgroup label="$T('pp')">
 				<option value="0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->>$T('pp-none')</option>
