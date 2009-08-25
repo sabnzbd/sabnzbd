@@ -34,7 +34,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread, RLock
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         cleanup_empty_directories, get_unique_filename, \
+                         get_unique_filename, \
                          on_cleanup_list
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME, POSTPROC_QUEUE_FILE_NAME, \
@@ -355,9 +355,6 @@ class PostProcessor(Thread):
 
                     if unpackError: jobResult = jobResult + 2
 
-                    ## Clean up download dir
-                    cleanup_empty_directories(cfg.DOWNLOAD_DIR.get_path())
-
                     if cfg.IGNORE_SAMPLES.get() > 0:
                         remove_samples(workdir_complete)
 
@@ -427,10 +424,6 @@ class PostProcessor(Thread):
                 logging.debug("Traceback: ", exc_info = True)
                 nzo.set_fail_msg('PostProcessing Crashed, see logfile')
                 nzo.set_status("Failed")
-
-
-            ## Clean up download dir
-            cleanup_empty_directories(cfg.DOWNLOAD_DIR.get_path())
 
             # If the folder only contains one file OR folder, have that as the path
             # Be aware that series/generic/date sorting may move a single file into a folder containing other files
