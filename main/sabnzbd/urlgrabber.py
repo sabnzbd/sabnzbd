@@ -149,7 +149,6 @@ class URLGrabber(Thread):
             cat = future_nzo.get_cat()
             priority = future_nzo.get_priority()
             nzbname = future_nzo.get_dirname_rename()
-            cat, pp, script, priority = misc.cat_to_opts(cat, pp, script, priority)
 
             # Check if nzb file
             if os.path.splitext(filename)[1].lower() == '.nzb':
@@ -180,7 +179,7 @@ class URLGrabber(Thread):
 RE_NZBMATRIX = re.compile(r'(nzbmatrix).com/nzb-details.php\?id=(\d+)', re.I)
 
 def _grab_nzbmatrix(url):
-    """ 
+    """
     Grab one msgid from nzbmatrix
     Returns:
         path
@@ -196,13 +195,13 @@ def _grab_nzbmatrix(url):
     logging.info('Fetching NZB for nzbmatrix report #%s', msgid)
 
     headers = {'User-agent' : 'SABnzbd-' + sabnzbd.version.__version__}
-    
+
     # Current api syntax: http://nzbmatrix.com/api-nzb-download.php?id={NZBID}&username={USERNAME}&apikey={APIKEY}
     if _HAVE_SSL:
         request_url = 'https://nzbmatrix.com/api-nzb-download.php?'
     else:
         request_url = 'http://nzbmatrix.com/api-nzb-download.php?'
-        
+
     arguments = {'id': msgid, 'username': cfg.MATRIX_USERNAME.get(), 'apikey': cfg.MATRIX_APIKEY.get()}
     # NZBMatrix API does not currently support sending details over POST, so use GET instead
     request_url += urllib.urlencode(arguments)
@@ -216,7 +215,7 @@ def _grab_nzbmatrix(url):
 
         # read the response into memory (could do with only reading first 80 bytes or so)
         data = response.read()
-        
+
         # Check for an error response
         if data.startswith('error'):
             # Check if we are required to wait - if so sleep the urlgrabber
@@ -269,7 +268,7 @@ def matrix_report_error(error_msg):
     # error:x_daily_limit = You have reached the daily download limit of x.
     # error:no_nzb_found = No NZB found.
     """
-    
+
     if error_msg == 'invalid_login':
         logging.warning(T('warn-matrixFail'))
     elif error_msg == 'invalid_api':

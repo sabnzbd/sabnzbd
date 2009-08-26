@@ -33,7 +33,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T
-from sabnzbd.misc import to_units
+from sabnzbd.misc import to_units, cat_to_opts
 
 HAVE_CELEMENTTREE = True
 
@@ -425,7 +425,7 @@ class NzbObject(TryList):
             r = u = d = None
         else:
             r, u, d = sabnzbd.pp_to_opts(pp)
-            
+
         self.__filename = filename    # Original filename
         self.__dirname = filename     # Keeps track of the working folder
         self.__original_dirname = filename # Used for folder name for final unpack
@@ -486,16 +486,16 @@ class NzbObject(TryList):
             self.nzo_info = nzo_info
         else:
             self.nzo_info = {}
-        
+
         # Temporary store for custom foldername - needs to be stored because of url/newzbin fetching
         self.extra1 = nzbname
-        
+
         self.extra2 = None
         self.extra3 = None
         self.extra4 = None
         self.extra5 = None
         self.extra6 = None
-        
+
         self.create_group_folder = cfg.CREATE_GROUP_FOLDERS.get()
 
         # Remove leading msgid_XXXX and trailing .nzb
@@ -513,7 +513,7 @@ class NzbObject(TryList):
         if not nzb:
             # This is a slot for a future NZB, ready now
             return
-        
+
         if sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
             logging.warning(T('warn-skipDup@1'), filename)
@@ -537,24 +537,8 @@ class NzbObject(TryList):
                     break
 
         # Determine category and find pp/script values
-        if cat and pp is None:
-            try:
-                pp = config.get_categories()[cat.lower()].pp.get()
-            except KeyError:
-                pass
-        if cat and script is None:
-            try:
-                script = config.get_categories()[cat.lower()].script.get()
-            except KeyError:
-                pass
-        self.__cat = cat
-
-        if pp is None:
-            pp = cfg.DIRSCAN_PP.get()
+        self.__cat, pp, self.__script, self.__priority = cat_to_opts(cat, pp, script, priority)
         self.__repair, self.__unpack, self.__delete = sabnzbd.pp_to_opts(pp)
-
-        if script is None:
-            self.__script = cfg.DIRSCAN_SCRIPT.get()
 
         if cfg.CREATE_GROUP_FOLDERS.get():
             self.__dirprefix.append(self.get_group())
@@ -563,7 +547,7 @@ class NzbObject(TryList):
             self.__files.sort(cmp=_nzf_cmp_date)
         else:
             self.__files.sort(cmp=_nzf_cmp_name)
-            
+
         # User can specify their directory name through the api - has to be after the future nzb check
         if nzbname:
             nzbname = sabnzbd.misc.sanitize_foldername(nzbname)
@@ -874,10 +858,10 @@ class NzbObject(TryList):
 
     def get_dirname(self):
         return self.__dirname
-    
+
     def get_dirname_rename(self):
         return self.extra1
-    
+
     def get_dirname_created(self):
         return self.__created
 

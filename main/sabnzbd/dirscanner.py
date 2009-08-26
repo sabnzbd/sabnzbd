@@ -112,7 +112,6 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         catdir = cat
 
     filename, cat = name_to_cat(filename, catdir)
-    cat, pp, script, priority = misc.cat_to_opts(cat, pp, script, priority)
 
     if path.lower().endswith('.zip'):
         try:
@@ -200,7 +199,6 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
 
     if name:
         name, cat = name_to_cat(name, catdir)
-        cat, pp, script, priority = misc.cat_to_opts(cat, pp, script, priority)
         # The name is used as the name of the folder, so sanitize it using folder specific santization
         name = misc.sanitize_foldername(name)
 
