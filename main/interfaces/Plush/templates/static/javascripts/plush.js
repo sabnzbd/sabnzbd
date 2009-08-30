@@ -362,11 +362,11 @@ jQuery(function($) { // safely invoke $ selector
 						$("#onQueueFinish-option").val($.plush.finishaction);
 					
 					// Pause/resume button state
-					if ( $.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause sprite_q_pause_on')
-						$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause_on');
-					else if ( !$.plush.paused && $('#pause_resume').attr('class') != 'tip q_menu_pause sprite_q_pause')
-						$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause');
-						
+					if ( $.plush.paused && !$('#pause_resume').hasClass('sprite_q_pause_on') )
+						$('#pause_resume').removeClass('sprite_q_pause').addClass('sprite_q_pause_on');
+					else if ( !$.plush.paused && !$('#pause_resume').hasClass('sprite_q_pause') )
+						$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
+					
 					// Pause interval
 					($.plush.pause_int == "0") ? $('#pause_int').html("") : $('#pause_int').html($.plush.pause_int);
 					
@@ -678,14 +678,14 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// NZB pause/resume individual toggle
 			$('#queueTable .nzb_status').live('click',function(event){
-				if ($(this).attr('class') == "nzb_status sprite_ql_grip_queued_on") {
+				if ($(this).hasClass('sprite_ql_grip_queued_on')) {
 					$(this).toggleClass('sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_paused_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
 						data: "mode=queue&name=pause&value="+$(this).parent().parent().attr('id')+'&apikey='+$.plush.apikey
 					});
-				} else if ($(this).attr('class') == "nzb_status sprite_ql_grip_active") {
+				} else if ($(this).hasClass('sprite_ql_grip_active')) {
 					$(this).toggleClass('sprite_ql_grip_active').toggleClass('sprite_ql_grip_paused_on');
 					$.ajax({
 						type: "POST",
@@ -840,23 +840,22 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Pause/resume toggle (queue)
 			$('#pause_resume').click(function(event) {
-				if ($(event.target).attr('class') == 'tip q_menu_pause sprite_q_pause_on')
+				if ( $(event.target).hasClass('sprite_q_pause_on') ) {
+					$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
 						data: "mode=resume&apikey="+$.plush.apikey
 					});
-				else
+				} else {
+					$('#pause_resume').removeClass('sprite_q_pause').addClass('sprite_q_pause_on');
+					$('#pause_int').html("");
 					$.ajax({
 						type: "POST",
 						url: "tapi",
 						data: "mode=pause&apikey="+$.plush.apikey
 					});
-				if ($('#pause_resume').attr('class') == 'tip q_menu_pause sprite_q_pause') {
-					$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause_on');
-					$('#pause_int').html("");
-				} else
-					$('#pause_resume').attr('class','tip q_menu_pause sprite_q_pause');
+				}
 			});
 			
 			
