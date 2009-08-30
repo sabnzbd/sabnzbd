@@ -18,7 +18,7 @@
         </div>
         <br class="clear" />
     
-        <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="checked"' else ''#--><!--#if $have_ssl then '' else 'disabled'#-->> <label for="enable_https"><!--#if $have_ssl then $T('wizard-access-https') else '<span class="disabled-text">'+$T('wizard-access-https')+'</span> (pyopenssl (python-ssl) '+$T('opt-notinstalled')+')'#--></label><br />
+        <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="checked"' else ''#--><!--#if $have_ssl then '' else 'disabled'#-->> <label for="enable_https"><!--#if $have_ssl then $T('wizard-access-https') else '<span class="disabled-text">'+$T('wizard-access-https')+'</span> (pyopenssl (python-ssl) '+$T('opt-notInstalled')+')'#--></label><br />
 <br />
 <h3>$T('wizard-misc')</h3>
     <input type="checkbox" name="autobrowser" id="autobrowser" value="1" <!--#if $autobrowser == 1 then 'checked="checked"' else ''#-->> <label for="autobrowser">$T('wizard-misc-browser')</label><br />
