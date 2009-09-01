@@ -1,0 +1,25 @@
+
+<input type="hidden" id="queue_noofslots" value="$noofslots" />
+
+<!--#if $varExists('slots')#-->
+<!--#for $slot in $slots#-->
+	
+	<!-- <li class="arrow">
+	<a href="#history_nzb"> -->
+
+	<li>
+	<a href="#">
+		
+		<!--#if $slot.status == "Paused"#-->
+			<small>$T('ft-paused')</small>
+		<!--#else if not $paused #-->
+			<small>$slot.percentage% $slot.timeleft</small>
+		<!--#end if#-->
+		
+		$slot.filename
+		
+	</a>
+	</li>
+
+<!--#end for#-->
+<!--#end if#-->

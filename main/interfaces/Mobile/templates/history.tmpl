@@ -1,0 +1,23 @@
+
+<input type="hidden" id="history_noofslots" value="$noofslots" />
+
+<!--#if $lines#-->
+<!--#for $line in $lines #-->
+
+	<!-- <li class="arrow">
+	<a href="#history_nzb"> -->
+
+	<li>
+	<a href="#">
+	
+		<!--#if $line.fail_message #-->
+			<small>$T('error')</small>
+		<!--#end if#-->
+	
+		$line.name
+		
+	</a>
+	</li>
+
+<!--#end for#-->
+<!--#end if#-->

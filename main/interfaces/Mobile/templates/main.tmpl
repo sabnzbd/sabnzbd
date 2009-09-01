@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head>
+
+    <meta charset="UTF-8" />
+    <title>SAB+</title>
+
+    <style type="text/css" media="screen">@import "static/stylesheets/jqtouch.min.css?$version";</style>
+    <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme?$version"/>
+
+    <script src="static/javascripts/mobile.js?$version" type="application/x-javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var apikey = "$session";
+	</script>
+
+</head>
+<body>
+
+
+    <div id="home">
+        <div class="toolbar">
+            <h1>SAB+ Mobile</h1>
+        </div>
+		<!--
+        <h2>Downloading</h2>
+        <ul>
+            <li class="arrow"><a href="#queue_nzb"><small>10%</small> Ubuntu Hardly Her10n</a>12:34:56 &sdot; 789 MB</li>
+            <li class="arrow"><a href="#queue_options">12:34:56 &sdot; 789 MB &sdot; 100 KB/s</a></li>
+        </ul>
+		-->
+        <ul>
+            <li class="arrow"><a href="#queue">$T('menu-queue')</a> <small class="counter" id="queueCount">&nbsp;</small></li>
+            <li class="arrow"><a href="#history">$T('menu-history')</a> <small class="counter" id="historyCount">&nbsp;</small></li>
+        </ul>
+        <ul>
+            <li class="forward"><a href="#addnzb">$T('add') NZB</a></li>
+        </ul>
+    </div>
+
+
+   	<!--
+    <div id="queue_options">
+        <div class="toolbar">
+    		<h1>$T('cmenu-switches')</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+        <form>
+            <ul class="edit">
+            	<li><input type="checkbox" name="some_name" value="Hello" id="some_name" title="$T('link-pause')" /></li>
+            	<li><a href=#>Pause Interval</a><select id="lol"><optgroup label="Pause Interval">
+            	<option value ="volvo">1 hour</option>
+            	<option value ="saab">2 hours</option>
+            	</optgroup></select></li>
+            	<li><a href=#>Speed Limit: (KB/s)</a><input type="text" name="name" placeholder="-" id="some_name" /></li>
+            </ul>
+        </form>
+    </div>    
+   	-->
+    
+    
+    <div id="queue" class="plastic">
+        <div class="toolbar">
+    		<h1>$T('menu-queue')</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+    	<ul id="queueList"></ul>
+        <ul class="individual">
+        	<li><a href="#" id="queue_more">$T('Mobile-button-viewmore')</a></li>
+        </ul>
+    </div>
+
+
+    <div id="queue_nzb">
+        <div class="toolbar">
+    		<h1>$T('menu-queue') NZB</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+        <div>
+        	<h2>nzb name</h2>
+        	<br/>size
+        	<br/>age
+        	<br/>eta
+        	<br/>percentage
+        	<br/>(eventually cat/priority/etc)
+        </div>
+    </div>
+
+    
+    <div id="history" class="plastic">
+        <div class="toolbar">
+    		<h1>$T('menu-history')</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+    	<ul id="historyList"></ul>
+		<ul class="individual">
+        	<li><a href="#" id="history_more">$T('Mobile-button-viewmore')</a></li>
+        </ul>
+    </div>
+
+    
+    <div id="history_nzb">
+        <div class="toolbar">
+    		<h1>$T('menu-history') NZB</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+        <div>
+        	<h2>nzb name</h2>
+        	<br/>((history verbosity))
+        	<br/>((history verbosity))
+        	<br/>((history verbosity))
+        	<br/>((history verbosity))
+        </div>
+    </div>
+
+
+    <div id="addnzb">
+        <div class="toolbar">
+    		<h1>$T('add') NZB</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+        <form>
+            <ul class="edit">
+            	<li><input type="text" name="addnzb_url" placeholder="Enter NZB URL" id="addnzb_url" /></li>
+            </ul>
+	        <ul class="individual">
+	        	<li><a href="#" id="addnzb_enqueue">$T('button-add')</a></li>
+	        	<li><a href="#" id="addnzb_clear">$T('button-clear')</a></li>
+	        </ul>
+	        <p style="display:none;">$T('sort-result'): <span id="addnzb_response"></span></p>
+        </form>
+
+    </div>
+    
+    
+</body>
+</html>

@@ -1,0 +1,6 @@
+# -*- coding: latin-1 -*-
+# United States # English
+# Mobile
+
+# misc
+button-viewmore   View More

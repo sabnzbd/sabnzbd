@@ -1,0 +1,6 @@
+# -*- coding: latin-1 -*-
+# France # Français
+# Mobile
+
+# misc
+button-viewmore   Voir Plus
