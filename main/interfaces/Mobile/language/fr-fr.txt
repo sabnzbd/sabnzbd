@@ -3,4 +3,8 @@
 # Mobile
 
 # misc
-button-viewmore   Voir Plus
+button-prev       Préc.
+button-next       Suiv.
+button-refresh    Rafra”chir
+button-close      Fermer
+button-options    Options

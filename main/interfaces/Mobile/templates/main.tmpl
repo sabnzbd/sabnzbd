@@ -10,7 +10,9 @@
 
     <script src="static/javascripts/mobile.js?$version" type="application/x-javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		var apikey = "$session";
+	    jQuery(function($) {
+			$.mobile.apikey = "$session";
+		});
 	</script>
 
 </head>
@@ -20,11 +22,12 @@
     <div id="home">
         <div class="toolbar">
             <h1>SAB+ Mobile</h1>
+            <a class="button" id="refresh" href="#">$T('Mobile-button-refresh')</a>
         </div>
 		<!--
         <h2>Downloading</h2>
         <ul>
-            <li class="arrow"><a href="#queue_nzb"><small>10%</small> Ubuntu Hardly Her10n</a>12:34:56 &sdot; 789 MB</li>
+            <li class="arrow"><a href="#queue_nzb"><small>10%</small> the active nzb</a>12:34:56 &sdot; 789 MB</li>
             <li class="arrow"><a href="#queue_options">12:34:56 &sdot; 789 MB &sdot; 100 KB/s</a></li>
         </ul>
 		-->
@@ -32,43 +35,38 @@
             <li class="arrow"><a href="#queue">$T('menu-queue')</a> <small class="counter" id="queueCount">&nbsp;</small></li>
             <li class="arrow"><a href="#history">$T('menu-history')</a> <small class="counter" id="historyCount">&nbsp;</small></li>
         </ul>
-        <ul>
-            <li class="forward"><a href="#addnzb">$T('add') NZB</a></li>
-        </ul>
-    </div>
-
-
-   	<!--
-    <div id="queue_options">
-        <div class="toolbar">
-    		<h1>$T('cmenu-switches')</h1>
-    		<a href="#" class="back">$T('button-back')</a>
-    	</div>
         <form>
             <ul class="edit">
-            	<li><input type="checkbox" name="some_name" value="Hello" id="some_name" title="$T('link-pause')" /></li>
-            	<li><a href=#>Pause Interval</a><select id="lol"><optgroup label="Pause Interval">
-            	<option value ="volvo">1 hour</option>
-            	<option value ="saab">2 hours</option>
-            	</optgroup></select></li>
-            	<li><a href=#>Speed Limit: (KB/s)</a><input type="text" name="name" placeholder="-" id="some_name" /></li>
+            	<li><span class="toggle"><input type="checkbox" id="pause" /></span><a href="#">$T('link-pause')</a></li>
+	            <li class="forward"><a href="#addnzb">$T('add') NZB</a></li>
             </ul>
         </form>
-    </div>    
-   	-->
-    
+    </div>
+
     
     <div id="queue" class="plastic">
         <div class="toolbar">
     		<h1>$T('menu-queue')</h1>
     		<a href="#" class="back">$T('button-back')</a>
+            <a class="button slideup" id="queue_options_button" href="#queue_options">$T('Mobile-button-options')</a>
     	</div>
     	<ul id="queueList"></ul>
         <ul class="individual">
-        	<li><a href="#" id="queue_more">$T('Mobile-button-viewmore')</a></li>
+        	<li><a href="#" class="grayButton" id="queue_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
+        	<li><a href="#" class="grayButton" id="queue_page_next">$T('Mobile-button-next') &raquo;</a></li>
         </ul>
     </div>
 
+
+    <div id="queue_options">
+        <form>
+            <ul class="edit">
+            	<li><a href=#>$T('speedLimit'): ($T('KBs'))</a><input type="text" placeholder="$T('none')" id="speed_limit" /></li>
+            </ul>
+        </form>
+        <p><br /><br /><a href="#" class="grayButton goback">$T('Mobile-button-close')</a></p>
+    </div>
+    
 
     <div id="queue_nzb">
         <div class="toolbar">
@@ -93,7 +91,8 @@
     	</div>
     	<ul id="historyList"></ul>
 		<ul class="individual">
-        	<li><a href="#" id="history_more">$T('Mobile-button-viewmore')</a></li>
+        	<li><a href="#" class="grayButton" id="history_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
+        	<li><a href="#" class="grayButton" id="history_page_next">$T('Mobile-button-next') &raquo;</a></li>
         </ul>
     </div>
 
@@ -123,9 +122,14 @@
             	<li><input type="text" name="addnzb_url" placeholder="Enter NZB URL" id="addnzb_url" /></li>
             </ul>
 	        <ul class="individual">
-	        	<li><a href="#" id="addnzb_enqueue">$T('button-add')</a></li>
-	        	<li><a href="#" id="addnzb_clear">$T('button-clear')</a></li>
+	        	<li><a href="#" class="grayButton" id="addnzb_enqueue">$T('button-add')</a></li>
+	        	<li><a href="#" class="grayButton" id="addnzb_clear">$T('button-clear')</a></li>
 	        </ul>
+			<!--#if $varExists('newzbinDetails')#-->
+			<ul>
+	        	<li><a href="#" class="grayButton" id="fetch_newzbin_bookmarks">$T('link-getBookmarks')</a></li>
+	        </ul>
+        	<!--#end if#-->
 	        <p style="display:none;">$T('sort-result'): <span id="addnzb_response"></span></p>
         </form>
 

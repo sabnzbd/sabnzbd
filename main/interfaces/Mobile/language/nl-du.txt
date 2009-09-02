@@ -3,4 +3,8 @@
 # Mobile
 
 # misc
-button-viewmore   Meer Bekijken
+button-prev       Vorige
+button-next       Volgende
+button-refresh    Ververs
+button-close      Sluiten
+button-options    Opties

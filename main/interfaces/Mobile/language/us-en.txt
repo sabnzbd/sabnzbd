@@ -3,4 +3,8 @@
 # Mobile
 
 # misc
-button-viewmore   View More
+button-prev       Prev
+button-next       Next
+button-refresh    Refresh
+button-close      Close
+button-options    Options

@@ -34,8 +34,8 @@
 $.jQTouch({
     addGlossToIcon: false,
     statusBar: 'black' /*,
-    //icon: 'jqtouch.png',
-    //startupScreen: 'jqt_startup.png',
+    icon: 'jqtouch.png',
+    startupScreen: 'jqt_startup.png',
     preloadImages: [
         'static/stylesheets/themes/jqt/img/chevron_white.png',
         'static/stylesheets/themes/jqt/img/bg_row_select.gif',
@@ -58,81 +58,144 @@ $.jQTouch({
 
 $(function(){
     
-    var qhLimit = 20;
-    var qOffset = 0;
-    var hOffset = 0;
-
-	// auto-load queue/history
-	// bug with this implementation: notice if the Q/H content changes this won't be correct
-
-	function LoadQueue(){
-		$.ajax({
-			type: "POST",
-			url: "queue/",
-			data: 'start='+qOffset+'&limit='+qhLimit,
-			success: function(result){
-				$('#queueList').append(result);
-				$('#queueCount').html( $('#queue_noofslots').val() ); // use data() ..?
-				qOffset += qhLimit;
-				if ( qOffset >= $('#queue_noofslots').val() )
-					$('#queue_more').parent().parent().hide();
-			}
-		});
-	}
-
-	function LoadHistory(){
-		$.ajax({
-			type: "POST",
-			url: "history/",
-			data: 'start='+hOffset+'&limit='+qhLimit,
-			success: function(result){
-				$('#historyList').append(result);
-				$('#historyCount').html( $('#history_noofslots').val() ); // use data() ..?
-				hOffset += qhLimit;
-				if ( hOffset >= $('#history_noofslots').val() )
-					$('#history_more').parent().parent().hide();
-			}
-		});
-	}			
+    
+    $.mobile = { 
+    
+    	qhLimit	: 10,	// nzbs per page
+    	qPage	: 0,
+    	hPage	: 0,
 
 
-	// load on page load
-	LoadQueue();
-	LoadHistory();
-
-
-
-	// events
-	
-	
-	$('#queue_more').click( LoadQueue );
-	$('#history_more').click( LoadHistory );
-
-
-
-
-	$('#addnzb_enqueue').click( function(){
-		if ( $('#addnzb_url').val() ) {
+		LoadQueue : function(){
 			$.ajax({
 				type: "POST",
-				url: "tapi",
-				data: {
-					mode:	'addid',
-					name:	$("#addnzb_url").val(),
-					apikey:	apikey
-				},
-				success: function(resp){
-					// clean this up...
-					$('#addnzb_response').html(resp).append('<p>'+$('#addnzb_url').val()+'</p>')
-						.parent().fadeIn('slow').fadeOut('slow');
+				url: "queue/",
+				data: { start: ($.mobile.qPage*$.mobile.qhLimit), limit: $.mobile.qhLimit },
+				success: function(result){
+					$('#queueList').html(result);
+					$('#queueCount').html( $.mobile.queue_noofslots );
+					
+					// potentially update Pause toggle state
+					if( $.mobile.paused && !$('#pause').attr('checked') )
+						$('#pause').attr('checked',true);
+					else if( !$.mobile.paused && $('#pause').attr('checked') )
+						$('#pause').attr('checked',false);
+					
+					// potentially update Speed Limit value
+					if( $.mobile.speed_limit != $('#speed_limit').val() )
+						$('#speed_limit').val( $.mobile.speed_limit );
 				}
 			});
-		}
-	});
-	
-	$('#addnzb_clear').click( function(){
-		$('#addnzb_url').val('');
-	});
+		},
 
+
+		LoadHistory : function(){
+			$.ajax({
+				type: "POST",
+				url: "history/",
+				data: { start: ($.mobile.hPage*$.mobile.qhLimit), limit: $.mobile.qhLimit },
+				success: function(result){
+					$('#historyList').html(result);
+					$('#historyCount').html( $.mobile.history_noofslots );
+				}
+			});
+		},
+		
+		
+		Init : function(){
+
+			// auto-load
+			$.mobile.LoadQueue();
+			$.mobile.LoadHistory();
+		
+		
+			// events ************************
+		
+			$('#refresh').click( function() {
+				$.mobile.LoadQueue();
+				$.mobile.LoadHistory();
+			});
+			
+			$('#pause').change( function() {
+				var mode = $('#pause').attr('checked') ? 'pause' : 'resume';
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode: mode, apikey: $.mobile.apikey }
+				});
+			});
+
+			$('#speed_limit').change( function() {
+				var val = $("#speed_limit").val() ? $("#speed_limit").val() : 0;
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode:'config', name:'set_speedlimit', value: val, apikey:$.mobile.apikey }
+				});
+			});
+			
+			// pagination
+			$('#queue_page_prev').click( function(){
+				if ($.mobile.qPage > 0) {
+					$.mobile.qPage--;
+					$.mobile.LoadQueue();
+				}
+			});
+			$('#queue_page_next').click( function(){
+				if ( ($.mobile.qPage+1)*$.mobile.qhLimit < $('#queue_noofslots').val()) {
+					$.mobile.qPage++;
+					$.mobile.LoadQueue();
+				}
+			});
+			$('#history_page_prev').click( function(){
+				if ($.mobile.hPage > 0) {
+					$.mobile.hPage--;
+					$.mobile.LoadHistory();
+				}
+			});
+			$('#history_page_next').click( function(){
+				if ( ($.mobile.hPage+1)*$.mobile.qhLimit < $('#history_noofslots').val()) {
+					$.mobile.hPage++;
+					$.mobile.LoadHistory();
+				}
+			});
+		
+		
+			// add nzb
+			$('#addnzb_enqueue').click( function(){
+				if ( $('#addnzb_url').val() ) {
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: { mode: 'addid', name: $("#addnzb_url").val(), apikey: $.mobile.apikey },
+						success: function(resp){
+							// clean this up...
+							$('#addnzb_response').html(resp).append('<p>'+$('#addnzb_url').val()+'</p>')
+								.parent().fadeIn('slow').fadeOut('slow');
+						}
+					});
+				}
+			});
+			$('#addnzb_clear').click( function(){
+				$('#addnzb_url').val('');
+			});
+			$('#fetch_newzbin_bookmarks').click(function(){
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode:'newzbin', name:'get_bookmarks', apikey: $.mobile.apikey },
+					success: function(result){
+						$.mobile.LoadQueue();
+					}
+				});
+			});
+
+		
+		} // end Init()
+		
+	}; // end $.mobile
+	
+	
+	$.mobile.Init();
 
 });

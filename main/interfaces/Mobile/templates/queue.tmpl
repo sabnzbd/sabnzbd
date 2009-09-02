@@ -1,5 +1,11 @@
+<script type="text/javascript">
+    jQuery(function($) {
+		$.mobile.queue_noofslots	= $noofslots;
+		$.mobile.paused 			= <!--#if $paused#-->true<!--#else#-->false<!--#end if#-->;
+        $.mobile.speed_limit		= '$speedlimit';
+    });
+</script>
 
-<input type="hidden" id="queue_noofslots" value="$noofslots" />
 
 <!--#if $varExists('slots')#-->
 <!--#for $slot in $slots#-->
@@ -13,7 +19,7 @@
 		<!--#if $slot.status == "Paused"#-->
 			<small>$T('ft-paused')</small>
 		<!--#else if not $paused #-->
-			<small>$slot.percentage% $slot.timeleft</small>
+			<small>$slot.percentage% $slot.timeleft[:-3]</small>
 		<!--#end if#-->
 		
 		$slot.filename

@@ -1,5 +1,8 @@
-
-<input type="hidden" id="history_noofslots" value="$noofslots" />
+<script type="text/javascript">
+    jQuery(function($) {
+		$.mobile.history_noofslots = $noofslots;
+    });
+</script>
 
 <!--#if $lines#-->
 <!--#for $line in $lines #-->
@@ -11,10 +14,10 @@
 	<a href="#">
 	
 		<!--#if $line.fail_message #-->
-			<small>$T('error')</small>
+			<strike>$line.name</strike>
+		<!--#else#-->
+			$line.name
 		<!--#end if#-->
-	
-		$line.name
 		
 	</a>
 	</li>
