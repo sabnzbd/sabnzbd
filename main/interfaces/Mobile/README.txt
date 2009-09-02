@@ -1,5 +1,5 @@
 
-Mobile 0.1 for SABnzbd+ 0.5 | Aug 31 2009
+Mobile 0.1 for SABnzbd+ 0.5 | Sept 01 2009
 assembled by pairofdimes - see LICENSE-CC.txt
 
 ==============
@@ -20,4 +20,6 @@ http://www.jqtouch.com/
 Copyright (c) 2009 jQTouch project members
 See LICENSE-MIT
 
-All images and stylesheets provided by jQuery jQTouch Plugin package (see notes above).
+The image templates/static/images/sab.png was provided by inpheaux.
+
+All other images and stylesheets provided by jQuery jQTouch Plugin package (see notes above).

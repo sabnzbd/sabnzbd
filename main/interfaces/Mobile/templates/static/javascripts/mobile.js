@@ -32,9 +32,9 @@
 
 
 $.jQTouch({
-    addGlossToIcon: false,
-    statusBar: 'black' /*,
-    icon: 'jqtouch.png',
+    statusBar: 'black',
+    addGlossToIcon: true,
+    icon: 'static/images/sab.png' /*,
     startupScreen: 'jqt_startup.png',
     preloadImages: [
         'static/stylesheets/themes/jqt/img/chevron_white.png',
