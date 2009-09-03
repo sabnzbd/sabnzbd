@@ -9,3 +9,15 @@ button-refresh    Ververs
 button-close      Sluiten
 button-options    Opties
 page              Pagina
+
+# pause interval
+button-pauseInterval Set Pauze Interval
+pauseInterval     Pauze Interval
+pause5m           Pauzeer 5 minuten
+pause15m          Pauzeer 15 minuten
+pause30m          Pauzeer 30 minuten
+pause1h           Pauzeer 1 uur
+pause3h           Pauzeer 3 uur
+pause6h           Pauzeer 6 uur
+pause12h          Pauzeer 12 uur
+pause24h          Pauzeer 24 uur

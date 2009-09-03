@@ -36,7 +36,7 @@
             <li class="arrow"><a href="#history">$T('menu-history')</a> <small class="counter" id="historyCount">&nbsp;</small></li>
         </ul>
         <ul class="edit">
-        	<li><span class="toggle"><input type="checkbox" id="pause" /></span><a href="#">$T('link-pause')</a></li>
+        	<li><span class="toggle"><input type="checkbox" id="pause" /></span><a href="#">$T('link-pause') <span id="pause_timeleft"></span></a></li>
             <li class="forward"><a href="#addnzb">$T('add') NZB</a></li>
         </ul>
     </div>
@@ -58,10 +58,32 @@
 
 
     <div id="queue_options">
+        <div class="toolbar">
+    		<h1>$T('Mobile-button-options')</h1>
+            <a class="button goback" id="queue_options_button" href="#">$T('Mobile-button-close')</a>
+    	</div>
         <ul class="edit">
-        	<li><a href=#>$T('speedLimit'): ($T('KBs'))</a><input type="text" placeholder="$T('none')" id="speed_limit" /></li>
+        	<li><a href="#">$T('speedLimit'): ($T('KBs'))</a><input type="text" placeholder="$T('none')" id="speed_limit" /></li>
+        	<li class="arrow"><a href="#queue_options_pauseinterval">$T('Mobile-button-pauseInterval')</a></li>
         </ul>
-        <p><br /><br /><a href="#" class="grayButton goback">$T('Mobile-button-close')</a></p>
+    </div>
+
+
+    <div id="queue_options_pauseinterval">
+        <div class="toolbar">
+    		<h1>$T('Mobile-pauseInterval')</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+        <ul class="edit">
+        	<li><a href="#" class="pause_interval" rel="5">$T('Mobile-pause5m')</a></li>
+        	<li><a href="#" class="pause_interval" rel="15">$T('Mobile-pause15m')</a></li>
+        	<li><a href="#" class="pause_interval" rel="30">$T('Mobile-pause30m')</a></li>
+        	<li><a href="#" class="pause_interval" rel="60">$T('Mobile-pause1h')</a></li>
+        	<li><a href="#" class="pause_interval" rel="180">$T('Mobile-pause3h')</a></li>
+        	<li><a href="#" class="pause_interval" rel="360">$T('Mobile-pause6h')</a></li>
+        	<li><a href="#" class="pause_interval" rel="720">$T('Mobile-pause12h')</a></li>
+        	<li><a href="#" class="pause_interval" rel="1440">$T('Mobile-pause24h')</a></li>
+        </ul>
     </div>
     
 

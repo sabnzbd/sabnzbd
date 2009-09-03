@@ -9,3 +9,15 @@ button-refresh    Refresh
 button-close      Close
 button-options    Options
 page              Page
+
+# pause interval
+button-pauseInterval Set Pause Interval
+pauseInterval     Pause Interval
+pause5m           Pause for 5 minutes
+pause15m          Pause for 15 minutes
+pause30m          Pause for 30 minutes
+pause1h           Pause for 1 hour
+pause3h           Pause for 3 hours
+pause6h           Pause for 6 hours
+pause12h          Pause for 12 hours
+pause24h          Pause for 24 hours

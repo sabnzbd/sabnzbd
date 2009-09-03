@@ -88,6 +88,7 @@ $(function(){
 						$('#pause').attr('checked',true);
 					else if( !$.mobile.paused && $('#pause').attr('checked') )
 						$('#pause').attr('checked',false);
+					($.mobile.pause_int == '0') ? $('#pause_timeleft').html('') : $('#pause_timeleft').html('&sdot; '+$.mobile.pause_int);
 					
 					// potentially update Speed Limit value
 					if( $.mobile.speed_limit != $('#speed_limit').val() )
@@ -137,7 +138,24 @@ $(function(){
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: { mode: mode, apikey: $.mobile.apikey }
+					data: { mode: mode, apikey: $.mobile.apikey },
+					success: function(){
+						if (mode == 'resume')
+							$('#pause_timeleft').html('');
+					}
+				});
+			});
+
+			$('.pause_interval').click( function(e) {
+				var minutes = $(e.target).attr('rel');
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode:'config', name:'set_pause', value:minutes, apikey:$.mobile.apikey },
+					success: function(resp){
+						window.location = "#home";
+						$.mobile.LoadQueue();
+					}
 				});
 			});
 

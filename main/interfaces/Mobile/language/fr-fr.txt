@@ -9,3 +9,15 @@ button-refresh    Rafra”chir
 button-close      Fermer
 button-options    Options
 page              Page
+
+# pause interval
+button-pauseInterval Entrez Pause Interval
+pauseInterval     Pause Interval
+pause5m           Pause pour 5 minutes
+pause15m          Pause pour 15 minutes
+pause30m          Pause pour 30 minutes
+pause1h           Pause pour 1 heure
+pause3h           Pause pour 3 heures
+pause6h           Pause pour 6 heures
+pause12h          Pause pour 12 heures
+pause24h          Pause pour 24 heures
