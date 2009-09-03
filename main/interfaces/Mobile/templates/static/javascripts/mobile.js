@@ -61,7 +61,7 @@ $(function(){
     
     $.mobile = { 
     
-    	qhPerPage	: 1,	// nzbs per page
+    	qhPerPage	: 20,	// nzbs per page
     	qPage		: 0,
     	hPage		: 0,
 
@@ -77,11 +77,11 @@ $(function(){
 					
 					var totalPages = Math.ceil( $.mobile.queue_noofslots / $.mobile.qhPerPage );
 					// set "Page X of Y" -- put this in .tmpl instead?
-					$('#queue_page_current').html( ($.mobile.qPage+1) );
+					$('#queue_page_current').html( (totalPages == 0) ? 0 : ($.mobile.qPage+1) );
 					$('#queue_page_total').html( totalPages );
 					// set pagination prev/next button states -- use an event binding instead?
 					($.mobile.qPage == 0) ? $('#queue_page_prev').removeClass('grayButton') :  $('#queue_page_prev').addClass('grayButton');
-					($.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
+					(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
 					
 					// potentially update Pause toggle state
 					if( $.mobile.paused && !$('#pause').attr('checked') )
@@ -108,11 +108,11 @@ $(function(){
 					
 					var totalPages = Math.ceil( $.mobile.history_noofslots / $.mobile.qhPerPage );
 					// set "Page X of Y" -- put this in .tmpl instead?
-					$('#history_page_current').html( ($.mobile.hPage+1) );
+					$('#history_page_current').html( (totalPages == 0) ? 0 : ($.mobile.hPage+1) );
 					$('#history_page_total').html( totalPages );
 					// set pagination prev/next button states -- use an event binding instead?
 					($.mobile.hPage == 0) ? $('#history_page_prev').removeClass('grayButton') :  $('#history_page_prev').addClass('grayButton');
-					($.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
+					(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
 				}
 			});
 		},
