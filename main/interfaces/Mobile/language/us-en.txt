@@ -8,3 +8,4 @@ button-next       Next
 button-refresh    Refresh
 button-close      Close
 button-options    Options
+page              Page

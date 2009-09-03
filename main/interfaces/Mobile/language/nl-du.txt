@@ -8,3 +8,4 @@ button-next       Volgende
 button-refresh    Ververs
 button-close      Sluiten
 button-options    Opties
+page              Pagina

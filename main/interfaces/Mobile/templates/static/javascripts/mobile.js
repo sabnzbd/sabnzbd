@@ -32,7 +32,7 @@
 
 
 $.jQTouch({
-    statusBar: 'black',
+    statusBar: 'black-translucent',
     addGlossToIcon: true,
     icon: 'static/images/sab.png' /*,
     startupScreen: 'jqt_startup.png',
@@ -61,19 +61,27 @@ $(function(){
     
     $.mobile = { 
     
-    	qhLimit	: 10,	// nzbs per page
-    	qPage	: 0,
-    	hPage	: 0,
+    	qhPerPage	: 1,	// nzbs per page
+    	qPage		: 0,
+    	hPage		: 0,
 
 
 		LoadQueue : function(){
 			$.ajax({
 				type: "POST",
 				url: "queue/",
-				data: { start: ($.mobile.qPage*$.mobile.qhLimit), limit: $.mobile.qhLimit },
+				data: { start: ($.mobile.qPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage },
 				success: function(result){
 					$('#queueList').html(result);
 					$('#queueCount').html( $.mobile.queue_noofslots );
+					
+					var totalPages = Math.ceil( $.mobile.queue_noofslots / $.mobile.qhPerPage );
+					// set "Page X of Y" -- put this in .tmpl instead?
+					$('#queue_page_current').html( ($.mobile.qPage+1) );
+					$('#queue_page_total').html( totalPages );
+					// set pagination prev/next button states -- use an event binding instead?
+					($.mobile.qPage == 0) ? $('#queue_page_prev').removeClass('grayButton') :  $('#queue_page_prev').addClass('grayButton');
+					($.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
 					
 					// potentially update Pause toggle state
 					if( $.mobile.paused && !$('#pause').attr('checked') )
@@ -93,10 +101,18 @@ $(function(){
 			$.ajax({
 				type: "POST",
 				url: "history/",
-				data: { start: ($.mobile.hPage*$.mobile.qhLimit), limit: $.mobile.qhLimit },
+				data: { start: ($.mobile.hPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage },
 				success: function(result){
 					$('#historyList').html(result);
 					$('#historyCount').html( $.mobile.history_noofslots );
+					
+					var totalPages = Math.ceil( $.mobile.history_noofslots / $.mobile.qhPerPage );
+					// set "Page X of Y" -- put this in .tmpl instead?
+					$('#history_page_current').html( ($.mobile.hPage+1) );
+					$('#history_page_total').html( totalPages );
+					// set pagination prev/next button states -- use an event binding instead?
+					($.mobile.hPage == 0) ? $('#history_page_prev').removeClass('grayButton') :  $('#history_page_prev').addClass('grayButton');
+					($.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
 				}
 			});
 		},
@@ -142,7 +158,7 @@ $(function(){
 				}
 			});
 			$('#queue_page_next').click( function(){
-				if ( ($.mobile.qPage+1)*$.mobile.qhLimit < $('#queue_noofslots').val()) {
+				if ( ($.mobile.qPage+1)*$.mobile.qhPerPage < $.mobile.queue_noofslots ) {
 					$.mobile.qPage++;
 					$.mobile.LoadQueue();
 				}
@@ -154,7 +170,7 @@ $(function(){
 				}
 			});
 			$('#history_page_next').click( function(){
-				if ( ($.mobile.hPage+1)*$.mobile.qhLimit < $('#history_noofslots').val()) {
+				if ( ($.mobile.hPage+1)*$.mobile.qhPerPage < $.mobile.history_noofslots ) {
 					$.mobile.hPage++;
 					$.mobile.LoadHistory();
 				}

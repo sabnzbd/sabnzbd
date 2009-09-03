@@ -8,3 +8,4 @@ button-next       Suiv.
 button-refresh    Rafra”chir
 button-close      Fermer
 button-options    Options
+page              Page

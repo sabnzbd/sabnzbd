@@ -35,12 +35,10 @@
             <li class="arrow"><a href="#queue">$T('menu-queue')</a> <small class="counter" id="queueCount">&nbsp;</small></li>
             <li class="arrow"><a href="#history">$T('menu-history')</a> <small class="counter" id="historyCount">&nbsp;</small></li>
         </ul>
-        <form>
-            <ul class="edit">
-            	<li><span class="toggle"><input type="checkbox" id="pause" /></span><a href="#">$T('link-pause')</a></li>
-	            <li class="forward"><a href="#addnzb">$T('add') NZB</a></li>
-            </ul>
-        </form>
+        <ul class="edit">
+        	<li><span class="toggle"><input type="checkbox" id="pause" /></span><a href="#">$T('link-pause')</a></li>
+            <li class="forward"><a href="#addnzb">$T('add') NZB</a></li>
+        </ul>
     </div>
 
     
@@ -51,6 +49,7 @@
             <a class="button slideup" id="queue_options_button" href="#queue_options">$T('Mobile-button-options')</a>
     	</div>
     	<ul id="queueList"></ul>
+        <h4 align="center">$T('Mobile-page')&nbsp;&nbsp;&nbsp;<span id="queue_page_current"></span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;<span id="queue_page_total"></span></h4>
         <ul class="individual">
         	<li><a href="#" class="grayButton" id="queue_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
         	<li><a href="#" class="grayButton" id="queue_page_next">$T('Mobile-button-next') &raquo;</a></li>
@@ -59,11 +58,9 @@
 
 
     <div id="queue_options">
-        <form>
-            <ul class="edit">
-            	<li><a href=#>$T('speedLimit'): ($T('KBs'))</a><input type="text" placeholder="$T('none')" id="speed_limit" /></li>
-            </ul>
-        </form>
+        <ul class="edit">
+        	<li><a href=#>$T('speedLimit'): ($T('KBs'))</a><input type="text" placeholder="$T('none')" id="speed_limit" /></li>
+        </ul>
         <p><br /><br /><a href="#" class="grayButton goback">$T('Mobile-button-close')</a></p>
     </div>
     
@@ -90,6 +87,7 @@
     		<a href="#" class="back">$T('button-back')</a>
     	</div>
     	<ul id="historyList"></ul>
+        <h4 align="center">$T('Mobile-page')&nbsp;&nbsp;&nbsp;<span id="history_page_current"></span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;<span id="history_page_total"></span></h4>
 		<ul class="individual">
         	<li><a href="#" class="grayButton" id="history_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
         	<li><a href="#" class="grayButton" id="history_page_next">$T('Mobile-button-next') &raquo;</a></li>
@@ -117,22 +115,19 @@
     		<h1>$T('add') NZB</h1>
     		<a href="#" class="back">$T('button-back')</a>
     	</div>
-        <form>
-            <ul class="edit">
-            	<li><input type="text" name="addnzb_url" placeholder="Enter NZB URL" id="addnzb_url" /></li>
-            </ul>
-	        <ul class="individual">
-	        	<li><a href="#" class="grayButton" id="addnzb_enqueue">$T('button-add')</a></li>
-	        	<li><a href="#" class="grayButton" id="addnzb_clear">$T('button-clear')</a></li>
-	        </ul>
-			<!--#if $varExists('newzbinDetails')#-->
-			<ul>
-	        	<li><a href="#" class="grayButton" id="fetch_newzbin_bookmarks">$T('link-getBookmarks')</a></li>
-	        </ul>
-        	<!--#end if#-->
-	        <p style="display:none;">$T('sort-result'): <span id="addnzb_response"></span></p>
-        </form>
-
+        <ul class="edit">
+        	<li><input type="text" name="addnzb_url" placeholder="Enter NZB URL" id="addnzb_url" /></li>
+        </ul>
+        <ul class="individual">
+        	<li><a href="#" class="grayButton" id="addnzb_enqueue">$T('button-add')</a></li>
+        	<li><a href="#" class="grayButton" id="addnzb_clear">$T('button-clear')</a></li>
+        </ul>
+		<!--#if $varExists('newzbinDetails')#-->
+		<ul>
+        	<li><a href="#" class="grayButton" id="fetch_newzbin_bookmarks">$T('link-getBookmarks')</a></li>
+        </ul>
+    	<!--#end if#-->
+        <p style="display:none;">$T('sort-result'): <span id="addnzb_response"></span></p>
     </div>
     
     
