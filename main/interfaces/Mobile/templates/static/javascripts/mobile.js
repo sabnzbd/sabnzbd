@@ -185,22 +185,26 @@ $(function(){
 						url: "tapi",
 						data: { mode: 'addid', name: $("#addnzb_url").val(), apikey: $.mobile.apikey },
 						success: function(resp){
-							// clean this up...
-							$('#addnzb_response').html(resp).append('<p>'+$('#addnzb_url').val()+'</p>')
-								.parent().fadeIn('slow').fadeOut('slow');
+							$('#addnzb_response').clone().addClass('addnzb_response_clone')
+								.children('.addnzb_response_text').html(resp).append('<br/>'+$('#addnzb_url').val())
+								.parent().insertAfter('#addnzb_response').fadeIn('slow');
 						}
 					});
 				}
 			});
 			$('#addnzb_clear').click( function(){
 				$('#addnzb_url').val('');
+				$('.addnzb_response_clone').remove();
 			});
 			$('#fetch_newzbin_bookmarks').click(function(){
 				$.ajax({
 					type: "POST",
 					url: "tapi",
 					data: { mode:'newzbin', name:'get_bookmarks', apikey: $.mobile.apikey },
-					success: function(result){
+					success: function(resp){
+						$('#addnzb_response').clone().addClass('addnzb_response_clone')
+							.children('.addnzb_response_text').html(resp)
+							.parent().insertAfter('#addnzb_response').fadeIn('slow');
 						$.mobile.LoadQueue();
 					}
 				});
