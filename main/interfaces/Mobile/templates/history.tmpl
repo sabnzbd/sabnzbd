@@ -10,13 +10,13 @@
 	<!-- <li class="arrow">
 	<a href="#history_nzb"> -->
 
-	<li>
+	<li id="$line.nzo_id">
 	<a href="#">
 	
 		<!--#if $line.fail_message #-->
-			<strike>$line.name</strike>
+			<strike class="nzb_filename">$line.name</strike>
 		<!--#else#-->
-			$line.name
+			<span class="nzb_filename">$line.name</span>
 		<!--#end if#-->
 		
 	</a>

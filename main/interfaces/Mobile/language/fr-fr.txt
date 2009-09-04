@@ -9,6 +9,7 @@ button-refresh    Rafra”chir
 button-close      Fermer
 button-options    Options
 page              Page
+confirm-delete    Etes-vous sžr de vouloir supprimer
 
 # pause interval
 button-pauseInterval Entrez Pause Interval

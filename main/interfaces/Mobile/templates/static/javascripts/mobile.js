@@ -85,13 +85,17 @@ $(function(){
 					// set pagination prev/next button states -- use an event binding instead?
 					($.mobile.qPage == 0) ? $('#queue_page_prev').removeClass('grayButton') :  $('#queue_page_prev').addClass('grayButton');
 					(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
+
+					// swipe to delete binding -- maybe move this out of here with livequery() plugin
+		            $('#queue li').addTouchHandlers().bind('swipe', function(evt, data){                
+		                $.mobile.NZBDelete( $(evt.currentTarget).attr('id'), 'queue' );
+		            });
 					
 					// potentially update Pause toggle state
-					if( $.mobile.paused && !$('#pause').attr('checked') ) {
+					if( $.mobile.paused && !$('#pause').attr('checked') )
 						$('#pause').attr('checked',true);
-					} else if( !$.mobile.paused && $('#pause').attr('checked') ) {
+					else if( !$.mobile.paused && $('#pause').attr('checked') )
 						$('#pause').attr('checked',false);
-					}
 					($.mobile.pause_int == '0') ? $('#pause_timeleft').hide().html('') : $('#pause_timeleft').show().html( $.mobile.pause_int );
 					
 					// potentially update Speed Limit value
@@ -100,7 +104,7 @@ $(function(){
 				}
 			});
 		},
-
+		
 
 		LoadHistory : function(){
 			$.ajax({
@@ -110,6 +114,11 @@ $(function(){
 				success: function(result){
 					$('#historyList').html(result);
 					$('#historyCount').html( $.mobile.history_noofslots );
+
+					// swipe to delete binding -- maybe move this out of here with livequery() plugin
+		            $('#history li').addTouchHandlers().bind('swipe', function(evt, data){                
+		                $.mobile.NZBDelete( $(evt.currentTarget).attr('id'), 'history' );
+		            });
 					
 					var totalPages = Math.ceil( $.mobile.history_noofslots / $.mobile.qhPerPage );
 					// set "Page X of Y" -- put this in .tmpl instead?
@@ -120,6 +129,21 @@ $(function(){
 					(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
 				}
 			});
+		},
+
+
+		NZBDelete : function( nzo_id, mode ) { // mode == 'queue' || 'history'
+		
+			if (confirm( $.mobile.TconfirmDelete+":\n"+ $('#'+nzo_id+' .nzb_filename').html() )){
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode: mode, name:'delete', value: nzo_id, apikey: $.mobile.apikey },
+					success: function(){
+						(mode == 'queue') ? $.mobile.LoadQueue() : $.mobile.LoadHistory();
+					}
+				});
+			}
 		},
 		
 		
@@ -198,13 +222,20 @@ $(function(){
 				}
 			});
 			
-			// queue listing -- show more stats in landscape
+			// orientation change event
 			$('body').bind('turn', function(event, info){
+
 				if (info.orientation == "landscape") {
+
+					// queue listing -- show more stats in landscape
 					$.mobile.landscape = true;
 					$('#queue li a .nzb_stats').show();
-				} else
+
+				} else {
+
+					// queue listing -- show less stats in profile
 				 	$('#queue li a .nzb_stats').hide();
+				 }
 			});
 		
 			// add nzb

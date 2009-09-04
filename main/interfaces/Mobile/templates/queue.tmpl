@@ -14,15 +14,15 @@
 	<!-- <li class="arrow">
 	<a href="#history_nzb"> -->
 
-	<li>
+	<li id="$slot.nzo_id">
 	<a href="#">
 		
 		<!--#if $slot.status == "Paused"#-->
 			<small class="nzb_stats" style="display:none;">&nbsp;$T('ft-paused')</small>&zwj;<small>$slot.percentage%</small>
-			<strike>$slot.filename</strike>
+			<strike class="nzb_filename">$slot.filename</strike>
 		<!--#else if not $paused #-->
 			<small class="nzb_stats" style="display:none;">&nbsp;$slot.timeleft[:-3]</small>&zwj;<small>$slot.percentage%</small>
-			$slot.filename
+			<span class="nzb_filename">$slot.filename</span>
 		<!--#end if#-->
 		
 	</a>

@@ -9,6 +9,7 @@ button-refresh    Refresh
 button-close      Close
 button-options    Options
 page              Page
+confirm-delete    Are you sure you want to delete
 
 # pause interval
 button-pauseInterval Set Pause Interval
