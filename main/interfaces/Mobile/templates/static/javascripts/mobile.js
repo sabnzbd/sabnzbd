@@ -165,8 +165,6 @@ $(function(){
 		
 		Init : function(){
 		
-			// events ************************
-		
 			$('#refresh').click( function() {
 				$.mobile.LoadQueue();
 				$.mobile.LoadHistory();
@@ -186,6 +184,16 @@ $(function(){
 				});
 			});
 
+			// queue options ********************
+			$('#speed_limit').change( function() {
+				var val = $("#speed_limit").val() ? $("#speed_limit").val() : 0;
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode:'config', name:'set_speedlimit', value: val, apikey:$.mobile.apikey }
+				});
+			});
+
 			$('.pause_interval').click( function(e) {
 				var minutes = $(e.target).attr('rel');
 				$.ajax({
@@ -198,17 +206,37 @@ $(function(){
 					}
 				});
 			});
-
-			$('#speed_limit').change( function() {
-				var val = $("#speed_limit").val() ? $("#speed_limit").val() : 0;
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode:'config', name:'set_speedlimit', value: val, apikey:$.mobile.apikey }
-				});
+			
+			$('#queue_purge').click(function(event) {
+				if(confirm($('#queue_purge').attr('rel'))){
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: { mode:'queue', name:'delete', value:'all', apikey: $.mobile.apikey },
+						success: function() {
+							//window.location = "#home"; // leads to blank screen
+							$.mobile.LoadQueue();
+						}
+					});
+				}
 			});
 			
-			// pagination
+			// history options ********************
+			$('#history_purge').click(function(event) {
+				if (confirm($('#history_purge').attr('rel'))) {
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: { mode:'history', name:'delete', value:'all', apikey: $.mobile.apikey },
+						success: function() {
+							//window.location = "#home"; // leads to blank screen
+							$.mobile.LoadHistory();
+						}
+					});
+				}
+			});
+				
+			// pagination **************
 			$('#queue_page_prev').click( function(){
 				if ($.mobile.qPage > 0) {
 					$.mobile.qPage--;
@@ -250,7 +278,7 @@ $(function(){
 				 }
 			});
 		
-			// add nzb
+			// add nzb ***************
 			$('#addnzb_enqueue').click( function(){
 				if ( $('#addnzb_url').val() ) {
 					$.ajax({
@@ -267,10 +295,12 @@ $(function(){
 					});
 				}
 			});
+			
 			$('#addnzb_clear').click( function(){
 				$('#addnzb_url').val('');
 				$('.addnzb_response_clone').remove();
 			});
+			
 			$('#fetch_newzbin_bookmarks').click(function(){
 				$.ajax({
 					type: "POST",

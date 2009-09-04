@@ -50,25 +50,28 @@
         <div class="toolbar">
     		<h1>$T('menu-queue')</h1>
     		<a href="#" class="back">$T('button-back')</a>
-            <a class="button slideup" id="queue_options_button" href="#queue_options">$T('Mobile-button-options')</a>
+            <a class="button slideup" href="#queue_options">$T('Mobile-button-options')</a>
     	</div>
     	<ul id="queueList"></ul>
-        <h4 align="center">$T('Mobile-page')&nbsp;&nbsp;&nbsp;<span id="queue_page_current"></span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;<span id="queue_page_total"></span></h4>
         <ul class="individual">
         	<li><a href="#" class="grayButton" id="queue_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
         	<li><a href="#" class="grayButton" id="queue_page_next">$T('Mobile-button-next') &raquo;</a></li>
         </ul>
+        <h4 align="center">$T('Mobile-page')&nbsp;&nbsp;&nbsp;<span id="queue_page_current"></span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;<span id="queue_page_total"></span></h4>
     </div>
 
 
     <div id="queue_options">
         <div class="toolbar">
     		<h1>$T('Mobile-button-options')</h1>
-            <a class="button goback" id="queue_options_button" href="#">$T('Mobile-button-close')</a>
+            <a class="button goback" href="#">$T('Mobile-button-close')</a>
     	</div>
         <ul class="edit">
         	<li><a href="#">$T('speedLimit'): ($T('KBs'))</a><input type="text" placeholder="$T('none')" id="speed_limit" /></li>
         	<li class="arrow"><a href="#queue_options_pauseinterval">$T('Mobile-button-pauseInterval')</a></li>
+        </ul>
+        <ul>
+        	<li><a href="#" class="grayButton" id="queue_purge" rel="$T('Mobile-confirm-purgeQ')">$T('Mobile-button-purgeQ')</a></li>
         </ul>
     </div>
 
@@ -111,12 +114,24 @@
         <div class="toolbar">
     		<h1>$T('menu-history')</h1>
     		<a href="#" class="back">$T('button-back')</a>
+            <a class="button slideup" href="#history_options">$T('Mobile-button-options')</a>
     	</div>
     	<ul id="historyList"></ul>
-        <h4 align="center">$T('Mobile-page')&nbsp;&nbsp;&nbsp;<span id="history_page_current"></span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;<span id="history_page_total"></span></h4>
 		<ul class="individual">
         	<li><a href="#" class="grayButton" id="history_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
         	<li><a href="#" class="grayButton" id="history_page_next">$T('Mobile-button-next') &raquo;</a></li>
+        </ul>
+        <h4 align="center">$T('Mobile-page')&nbsp;&nbsp;&nbsp;<span id="history_page_current"></span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;<span id="history_page_total"></span></h4>
+    </div>
+    
+    
+    <div id="history_options">
+        <div class="toolbar">
+    		<h1>$T('Mobile-button-options')</h1>
+            <a class="button goback" href="#">$T('Mobile-button-close')</a>
+    	</div>
+        <ul>
+        	<li><a href="#" class="grayButton" id="history_purge" rel="$T('Mobile-confirm-purgeH')">$T('Mobile-button-purgeH')</a></li>
         </ul>
     </div>
 

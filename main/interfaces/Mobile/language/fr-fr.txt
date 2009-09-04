@@ -11,6 +11,11 @@ button-options    Options
 page              Page
 confirm-delete    Etes-vous sžr de vouloir supprimer
 warnings          Avertissements
+button-purgeQ     Vider la Queue
+confirm-purgeQ    Vider la Queue?
+button-purgeH     Vider l'Historique
+confirm-purgeH    Vider l'Historique?
+
 
 # pause interval
 button-pauseInterval Entrez Pause Interval

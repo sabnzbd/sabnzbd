@@ -11,6 +11,10 @@ button-options    Options
 page              Page
 confirm-delete    Are you sure you want to delete
 warnings          Warnings
+button-purgeQ     Purge Queue
+confirm-purgeQ    Purge the Queue?
+button-purgeH     Purge History
+confirm-purgeH    Purge the History?
 
 # pause interval
 button-pauseInterval Set Pause Interval
