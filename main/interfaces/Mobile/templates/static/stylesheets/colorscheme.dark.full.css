@@ -400,7 +400,7 @@ ul li small {
 	white-space: nowrap;
 	overflow: hidden;
 	display: block;
-	width: 23%;
+	width:auto;
 	float: right;
 	padding: 0;
 }

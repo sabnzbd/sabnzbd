@@ -74,6 +74,9 @@ $(function(){
 				success: function(result){
 					$('#queueList').html(result);
 					$('#queueCount').html( $.mobile.queue_noofslots );
+
+					// show extra stats in landscape mode, when there is screen space -- profile : landscape
+					(window.innerWidth < window.innerHeight) ? $('#queue li a .nzb_stats').hide() : $('#queue li a .nzb_stats').show();
 					
 					var totalPages = Math.ceil( $.mobile.queue_noofslots / $.mobile.qhPerPage );
 					// set "Page X of Y" -- put this in .tmpl instead?
@@ -84,11 +87,12 @@ $(function(){
 					(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
 					
 					// potentially update Pause toggle state
-					if( $.mobile.paused && !$('#pause').attr('checked') )
+					if( $.mobile.paused && !$('#pause').attr('checked') ) {
 						$('#pause').attr('checked',true);
-					else if( !$.mobile.paused && $('#pause').attr('checked') )
+					} else if( !$.mobile.paused && $('#pause').attr('checked') ) {
 						$('#pause').attr('checked',false);
-					($.mobile.pause_int == '0') ? $('#pause_timeleft').html('') : $('#pause_timeleft').html('&sdot; '+$.mobile.pause_int);
+					}
+					($.mobile.pause_int == '0') ? $('#pause_timeleft').hide().html('') : $('#pause_timeleft').show().html( $.mobile.pause_int );
 					
 					// potentially update Speed Limit value
 					if( $.mobile.speed_limit != $('#speed_limit').val() )
@@ -141,7 +145,7 @@ $(function(){
 					data: { mode: mode, apikey: $.mobile.apikey },
 					success: function(){
 						if (mode == 'resume')
-							$('#pause_timeleft').html('');
+							$('#pause_timeleft').hide().html('');
 					}
 				});
 			});
@@ -193,7 +197,15 @@ $(function(){
 					$.mobile.LoadHistory();
 				}
 			});
-		
+			
+			// queue listing -- show more stats in landscape
+			$('body').bind('turn', function(event, info){
+				if (info.orientation == "landscape") {
+					$.mobile.landscape = true;
+					$('#queue li a .nzb_stats').show();
+				} else
+				 	$('#queue li a .nzb_stats').hide();
+			});
 		
 			// add nzb
 			$('#addnzb_enqueue').click( function(){
@@ -203,6 +215,7 @@ $(function(){
 						url: "tapi",
 						data: { mode: 'addid', name: $("#addnzb_url").val(), apikey: $.mobile.apikey },
 						success: function(resp){
+							$('#addnzb_url').val('');
 							$('#addnzb_response').clone().addClass('addnzb_response_clone')
 								.children('.addnzb_response_text').html(resp).append('<br/>'+$('#addnzb_url').val())
 								.parent().insertAfter('#addnzb_response').fadeIn('slow');
