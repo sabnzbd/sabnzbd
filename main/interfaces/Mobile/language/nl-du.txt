@@ -10,6 +10,7 @@ button-close      Sluiten
 button-options    Opties
 page              Pagina
 confirm-delete    Weet u zeker dat u wilt verwijderen
+warnings          Meldingen
 
 # pause interval
 button-pauseInterval Set Pauze Interval

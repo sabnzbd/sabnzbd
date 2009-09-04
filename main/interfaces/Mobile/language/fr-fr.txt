@@ -10,6 +10,7 @@ button-close      Fermer
 button-options    Options
 page              Page
 confirm-delete    Etes-vous sžr de vouloir supprimer
+warnings          Avertissements
 
 # pause interval
 button-pauseInterval Entrez Pause Interval

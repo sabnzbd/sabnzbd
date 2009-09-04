@@ -10,6 +10,7 @@
 
     <script src="static/javascripts/mobile.js?$version" type="application/x-javascript" charset="utf-8"></script>
 	<script type="text/javascript">
+		var apikey = "$session";
 	    jQuery(function($) {
 			$.mobile.apikey = "$session";
 			$.mobile.TconfirmDelete = "$T('Mobile-confirm-delete')";
@@ -40,6 +41,7 @@
         	<li><span class="toggle"><input type="checkbox" id="pause" /></span><a href="#">$T('link-pause')</a>
         			<small class="counter" id="pause_timeleft" style="display:none;margin-right:6px;"></small></li>
             <li class="forward"><a href="#addnzb">$T('add') NZB</a></li>
+            <li class="arrow" id="button-warnings" style="display:none"><a href="#warnings">$T('Mobile-warnings')</a> <small class="counter" id="warningsCount"></small></li>
         </ul>
     </div>
 
@@ -154,6 +156,15 @@
         <div id="addnzb_response" class="info" style="display:none; font-weight: normal;">
 			$T('sort-result'): <span class="addnzb_response_text"></span>
         </div>
+    </div>
+
+
+    <div id="warnings">
+        <div class="toolbar">
+    		<h1>$T('Mobile-warnings')</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+		<ul><li><a href=#>$T('none')</a></li></ul>
     </div>
     
     

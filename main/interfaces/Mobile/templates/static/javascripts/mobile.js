@@ -130,6 +130,22 @@ $(function(){
 				}
 			});
 		},
+		
+		LoadWarnings : function(){
+			$.getJSON("tapi?mode=warnings&output=json&apikey="+apikey,
+        		function(data){
+        			if (!data.warnings.length)
+        				return $('#button-warnings').hide();
+        			$('#warnings ul').html('');
+        			data.warnings.reverse();
+        			$.each(data.warnings, function(i,warning){
+						$('<li></li>').html('<a href="#">'+warning.substr(24)+'</a>'+warning.substr(0,19)).appendTo('#warnings ul');
+					});
+					$('#warningsCount').html( data.warnings.length );
+					$('#button-warnings').show();
+				}
+			);
+		},
 
 
 		NZBDelete : function( nzo_id, mode ) { // mode == 'queue' || 'history'
@@ -148,18 +164,14 @@ $(function(){
 		
 		
 		Init : function(){
-
-			// auto-load
-			$.mobile.LoadQueue();
-			$.mobile.LoadHistory();
-		
 		
 			// events ************************
 		
 			$('#refresh').click( function() {
 				$.mobile.LoadQueue();
 				$.mobile.LoadHistory();
-			});
+				$.mobile.LoadWarnings();
+			}).trigger('click'); // auto-load
 			
 			$('#pause').change( function() {
 				var mode = $('#pause').attr('checked') ? 'pause' : 'resume';
@@ -246,10 +258,11 @@ $(function(){
 						url: "tapi",
 						data: { mode: 'addid', name: $("#addnzb_url").val(), apikey: $.mobile.apikey },
 						success: function(resp){
-							$('#addnzb_url').val('');
 							$('#addnzb_response').clone().addClass('addnzb_response_clone')
 								.children('.addnzb_response_text').html(resp).append('<br/>'+$('#addnzb_url').val())
 								.parent().insertAfter('#addnzb_response').fadeIn('slow');
+							$('#addnzb_url').val('');
+							$.mobile.LoadQueue();
 						}
 					});
 				}

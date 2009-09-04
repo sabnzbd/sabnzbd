@@ -10,6 +10,7 @@ button-close      Close
 button-options    Options
 page              Page
 confirm-delete    Are you sure you want to delete
+warnings          Warnings
 
 # pause interval
 button-pauseInterval Set Pause Interval
