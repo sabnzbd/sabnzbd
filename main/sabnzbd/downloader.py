@@ -578,14 +578,14 @@ class Downloader(Thread):
                                 # Unknown error, just keep trying
                                 if server.active:
                                     server.errormsg = T('error-serverNoConn@2') % ('', msg)
-                                    logging.error(T('error-serverNoConn@2'),  '%s:%s' % (server.host, server.port, msg))
+                                    logging.error(T('error-serverNoConn@2'),  '%s:%s' % (server.host, server.port), msg)
                                     penalty = _PENALTY_UNKNOWN
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
                                     if penalty and server.optional:
-                                       logging.info('Server %s ignored for %s minutes', server.id, penalty)
-                                       self.plan_server(server.id, penalty)
+                                        logging.info('Server %s ignored for %s minutes', server.id, penalty)
+                                        self.plan_server(server.id, penalty)
                                 self.__reset_nw(nw, None, warn=False)
                             continue
                         except:
