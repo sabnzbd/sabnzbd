@@ -15,7 +15,7 @@ addnzb            Ajouter NZB
 fetch             Récupérer
 uploadTip         Charger: .nzb .rar .zip .gz
 sort              Trier
-sortAgeAsc        Trier par Age <small>(Moins récent&rarr;Plus récent)
+sortAgeAsc        Trier par Age <small>(Moins récent&rarr;Plus récent)</small>
 sortAgeDesc       Trier par Age <small>(Plus récent&rarr;Moins récent)</small>
 sortNameAsc       Trier par Name <small>(A&rarr;Z)</small>
 sortNameDesc      Trier par Name <small>(Z&rarr;A)</small>

@@ -15,7 +15,7 @@ addnzb            Add NZB
 fetch             Fetch
 uploadTip         Upload: .nzb .rar .zip .gz
 sort              Sort
-sortAgeAsc        Sort by Age <small>(Oldest&rarr;Newest)
+sortAgeAsc        Sort by Age <small>(Oldest&rarr;Newest)</small>
 sortAgeDesc       Sort by Age <small>(Newest&rarr;Oldest)</small>
 sortNameAsc       Sort by Name <small>(A&rarr;Z)</small>
 sortNameDesc      Sort by Name <small>(Z&rarr;A)</small>

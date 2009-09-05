@@ -27,3 +27,12 @@ pause3h           Pause for 3 hours
 pause6h           Pause for 6 hours
 pause12h          Pause for 12 hours
 pause24h          Pause for 24 hours
+
+# queue sort
+sort              Sort
+sortAgeAsc        Sort by Age <small>Oldest&rarr;Newest</small>
+sortAgeDesc       Sort by Age <small>Newest&rarr;Oldest</small>
+sortNameAsc       Sort by Name <small>A&rarr;Z</small>
+sortNameDesc      Sort by Name <small>Z&rarr;A</small>
+sortSizeAsc       Sort by Size <small>Smallest&rarr;Largest</small>
+sortSizeDesc      Sort by Size <small>Largest&rarr;Smallest</small>

@@ -15,7 +15,7 @@ addnzb            NZB toevoegen
 fetch             Ophalen
 uploadTip         Upload: .nzb .rar .zip .gz
 sort              Sorteren
-sortAgeAsc        Sorteer op Leeftijd <small>(Oud&rarr;Nieuw)
+sortAgeAsc        Sorteer op Leeftijd <small>(Oud&rarr;Nieuw)</small>
 sortAgeDesc       Sorteer op Leeftijd <small>(Nieuw&rarr;Oud)</small>
 sortNameAsc       Sorteer op Naam <small>(A&rarr;Z)</small>
 sortNameDesc      Sorteer op Naam <small>(Z&rarr;A)</small>

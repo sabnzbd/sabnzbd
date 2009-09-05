@@ -53,7 +53,7 @@
             <a class="button slideup" href="#queue_options">$T('Mobile-button-options')</a>
     	</div>
     	<ul id="queueList"></ul>
-        <ul class="individual">
+        <ul class="individual" id="queue_page_buttons">
         	<li><a href="#" class="grayButton" id="queue_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
         	<li><a href="#" class="grayButton" id="queue_page_next">$T('Mobile-button-next') &raquo;</a></li>
         </ul>
@@ -69,7 +69,35 @@
         <ul class="edit">
         	<li><a href="#">$T('speedLimit'): ($T('KBs'))</a><input type="text" placeholder="$T('none')" id="speed_limit" /></li>
         	<li class="arrow"><a href="#queue_options_pauseinterval">$T('Mobile-button-pauseInterval')</a></li>
+        	<li class="arrow"><a href="#queue_options_sort">$T('Mobile-sort')</a></li>
         </ul>
+        <h2>$T('onQueueFinish'):</h2>
+		<ul>
+			<li>
+				<select id="queue_onFinishScript">
+                    <option value="">$T('none')</option>
+                    <optgroup label="$T('eoq-actions')">
+                        <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>$T('shutdownSab')</option>
+                        <!--#if $nt or $darwin#-->
+                        <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>$T('shutdownPc')</option>
+                        <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>$T('standbyPc')</option>
+                        <!--#end if#-->
+                        <!--#if $nt#-->
+                        <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>$T('hibernatePc')</option>
+                        <!--#end if#-->
+                    </optgroup>
+                    <!--#if $script_list#-->
+                    <optgroup label="$T('eoq-scripts')">
+                        <!--#for $sc in $script_list#-->
+                        <!--#if $sc != 'None'#-->
+                        <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
+                        <!--#end if#-->
+                        <!--#end for#-->
+                    </optgroup>
+                    <!--#end if#-->
+                </select>
+			</li>
+		</ul>
         <ul>
         	<li><a href="#" class="grayButton" id="queue_purge" rel="$T('Mobile-confirm-purgeQ')">$T('Mobile-button-purgeQ')</a></li>
         </ul>
@@ -90,6 +118,22 @@
         	<li><a href="#" class="pause_interval" rel="360">$T('Mobile-pause6h')</a></li>
         	<li><a href="#" class="pause_interval" rel="720">$T('Mobile-pause12h')</a></li>
         	<li><a href="#" class="pause_interval" rel="1440">$T('Mobile-pause24h')</a></li>
+        </ul>
+    </div>
+    
+
+    <div id="queue_options_sort">
+        <div class="toolbar">
+    		<h1>$T('Mobile-sort')</h1>
+    		<a href="#" class="back">$T('button-back')</a>
+    	</div>
+        <ul class="edit">
+            <li><a href="#" class="queue_sort_option" rel="avg_age&dir=asc">$T('Mobile-sortAgeAsc')</small></a></li>
+            <li><a href="#" class="queue_sort_option" rel="avg_age&dir=desc">$T('Mobile-sortAgeDesc')</a></li>
+            <li><a href="#" class="queue_sort_option" rel="name&dir=asc">$T('Mobile-sortNameAsc')</a></li>
+            <li><a href="#" class="queue_sort_option" rel="name&dir=desc">$T('Mobile-sortNameDesc')</a></li>
+            <li><a href="#" class="queue_sort_option" rel="size&dir=asc">$T('Mobile-sortSizeAsc')</a></li>
+            <li><a href="#" class="queue_sort_option" rel="size&dir=desc">$T('Mobile-sortSizeDesc')</a></li>
         </ul>
     </div>
     
@@ -117,7 +161,7 @@
             <a class="button slideup" href="#history_options">$T('Mobile-button-options')</a>
     	</div>
     	<ul id="historyList"></ul>
-		<ul class="individual">
+		<ul class="individual" id="history_page_buttons">
         	<li><a href="#" class="grayButton" id="history_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
         	<li><a href="#" class="grayButton" id="history_page_next">$T('Mobile-button-next') &raquo;</a></li>
         </ul>
@@ -179,7 +223,8 @@
     		<h1>$T('Mobile-warnings')</h1>
     		<a href="#" class="back">$T('button-back')</a>
     	</div>
-		<ul><li><a href=#>$T('none')</a></li></ul>
+    	<div id="warnings_list"></div>
+        <div id="warnings_shell" class="info" style="display:none; font-weight: normal; text-align:left;"></div>
     </div>
     
     

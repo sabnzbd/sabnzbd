@@ -32,7 +32,7 @@
 
 
 $.jQTouch({
-    statusBar: 'black-translucent',
+    statusBar: 'black',
     addGlossToIcon: true,
     icon: 'static/images/sab.png' /*,
     startupScreen: 'jqt_startup.png',
@@ -85,6 +85,12 @@ $(function(){
 					// set pagination prev/next button states -- use an event binding instead?
 					($.mobile.qPage == 0) ? $('#queue_page_prev').removeClass('grayButton') :  $('#queue_page_prev').addClass('grayButton');
 					(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
+					
+					// hide pagination buttons if unused
+					if ( totalPages <= 1 && $('#queue_page_buttons :visible'))
+						$('#queue_page_buttons').hide();
+					else if ( totalPages > 1 && !$('#queue_page_buttons :visible'))
+						$('#queue_page_buttons').show();
 
 					// swipe to delete binding -- maybe move this out of here with livequery() plugin
 		            $('#queue li').addTouchHandlers().bind('swipe', function(evt, data){                
@@ -101,6 +107,10 @@ $(function(){
 					// potentially update Speed Limit value
 					if( $.mobile.speed_limit != $('#speed_limit').val() )
 						$('#speed_limit').val( $.mobile.speed_limit );
+					
+					// potentially update "on finish" user-script selection
+					if ($("#queue_onFinishScript").val() != $.mobile.finishaction)
+						$("#queue_onFinishScript").val($.mobile.finishaction);
 				}
 			});
 		},
@@ -127,6 +137,12 @@ $(function(){
 					// set pagination prev/next button states -- use an event binding instead?
 					($.mobile.hPage == 0) ? $('#history_page_prev').removeClass('grayButton') :  $('#history_page_prev').addClass('grayButton');
 					(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
+					
+					// hide pagination buttons if unused
+					if ( totalPages <= 1 && $('#history_page_buttons :visible'))
+						$('#history_page_buttons').hide();
+					else if ( totalPages > 1 && !$('#history_page_buttons :visible'))
+						$('#history_page_buttons').show();
 				}
 			});
 		},
@@ -139,7 +155,7 @@ $(function(){
         			$('#warnings ul').html('');
         			data.warnings.reverse();
         			$.each(data.warnings, function(i,warning){
-						$('<li></li>').html('<a href="#">'+warning.substr(24)+'</a>'+warning.substr(0,19)).appendTo('#warnings ul');
+						$('#warnings_shell').clone().html('<strong>'+warning.substr(24)+'</strong><br/>'+warning.substr(0,19)).show().appendTo('#warnings_list');
 					});
 					$('#warningsCount').html( data.warnings.length );
 					$('#button-warnings').show();
@@ -204,6 +220,31 @@ $(function(){
 						window.location = "#home";
 						$.mobile.LoadQueue();
 					}
+				});
+			});
+			
+			// queue sort (6-in-1)
+			$('#queue_options_sort .queue_sort_option').click(function(event) {
+				var rel = $(event.target).attr('rel');
+				if (!rel)
+					rel = $(event.target).parent().attr('rel');
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: "mode=queue&name=sort&sort="+rel+'&apikey='+$.mobile.apikey,
+					success: function(resp){
+						window.location = "#queue";
+						$.mobile.LoadQueue();
+					}
+				});
+			});
+			
+			// "On finish" user-script
+			$("#queue_onFinishScript").change( function() {
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode:'queue', name:'change_complete_action', value: $("#queue_onFinishScript").val(), apikey: $.mobile.apikey }
 				});
 			});
 			

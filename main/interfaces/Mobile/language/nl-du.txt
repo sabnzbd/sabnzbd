@@ -27,3 +27,12 @@ pause3h           Pauzeer 3 uur
 pause6h           Pauzeer 6 uur
 pause12h          Pauzeer 12 uur
 pause24h          Pauzeer 24 uur
+
+# queue sort
+sort              Sorteren
+sortAgeAsc        Sorteer op Leeftijd <small>Oud&rarr;Nieuw</small>
+sortAgeDesc       Sorteer op Leeftijd <small>Nieuw&rarr;Oud</small>
+sortNameAsc       Sorteer op Naam <small>A&rarr;Z</small>
+sortNameDesc      Sorteer op Naam <small>Z&rarr;A</small>
+sortSizeAsc       Sorteer op Omvang <small>Klein&rarr;Groot</small>
+sortSizeDesc      Sorteer op Omvang <small>Groot&rarr;Klein</small>
