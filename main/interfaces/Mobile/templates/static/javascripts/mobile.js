@@ -143,6 +143,12 @@ $(function(){
 						$('#history_page_buttons').hide();
 					else if ( totalPages > 1 && !$('#history_page_buttons :visible'))
 						$('#history_page_buttons').show();
+
+					// history nzb details -- live() doesn't work? replace with livequery?
+					$('#history .nzb_li').click(function(e){
+						var nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
+						$('#history_nzb_content').html( $('#'+nzo_id+' .history_nzb_details').html() );
+					});
 				}
 			});
 		},
@@ -276,7 +282,7 @@ $(function(){
 					});
 				}
 			});
-				
+			
 			// pagination **************
 			$('#queue_page_prev').click( function(){
 				if ($.mobile.qPage > 0) {
