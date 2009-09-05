@@ -610,7 +610,7 @@ error-except             Exception ?
 error-noInit@3           Echec de l'initialisation %s@%s:%s
 error-serverFailed@4     Echec de la connexion à %s@%s:%s, message=%s
 error-serverLogin@1      Echec de la connexion au serveur %s
-error-serverNoConn@2     Ne peut se connecter au serveur %s [%s]
+error-serverNoConn@2     Ne peut se connecter au serveur %s:%s [%s]
 error-serverTooMany@2    Trop de connexions au serveur %s:%s
 warn-ignoreServer@2      Le serveur %s sera ignoré pendant %s minutes
 warn-noActiveServers     Aucun serveur primaire défini, pas de téléchargement possible !

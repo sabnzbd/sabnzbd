@@ -591,7 +591,7 @@ error-except             Exception?
 error-noInit@3           Kan geen verbinding maken %s@%s:%s
 error-serverFailed@4     Verbinding %s@%s:%s mislukt, bericht=%s
 error-serverLogin@1      Kan niet aanmelden bij server %s
-error-serverNoConn@2     Kan geen verbinding maken met server %s [%s]
+error-serverNoConn@2     Kan geen verbinding maken met server %s:%s [%s]
 error-serverTooMany@2    Te veel verbindingen met server %s:%s
 warn-ignoreServer@2      Server %s wordt gedurende %s minuten genegeerd
 warn-noActiveServers     Geen aktieve primaire servers, download niet mogelijk!

@@ -605,7 +605,7 @@ error-except             Exception?
 error-noInit@3           Failed to initialize %s@%s:%s
 error-serverFailed@4     Connecting %s@%s:%s failed, message=%s
 error-serverLogin@1      Failed login for server %s
-error-serverNoConn@2     Cannot connect to server %s [%s]
+error-serverNoConn@2     Cannot connect to server %s:%s [%s]
 error-serverTooMany@2    Too many connections to server %s:%s
 warn-ignoreServer@2      Server %s will be ignored for %s minutes
 warn-noActiveServers     No active primary servers defined, will not download!
