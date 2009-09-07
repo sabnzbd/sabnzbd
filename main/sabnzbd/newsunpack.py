@@ -711,12 +711,13 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                 except:
                     logging.warning(T('warn-delFailed@1'), path2)
 
-            try:
-                logging.info("Deleting %s", parfile)
-                os.remove(parfile)
-                i += 1
-            except OSError:
-                logging.warning("Deleting %s failed", parfile)
+            if os.path.exists(parfile):
+                try:
+                    logging.info("Deleting %s", parfile)
+                    os.remove(parfile)
+                    i += 1
+                except OSError:
+                    logging.warning("Deleting %s failed", parfile)
 
             for filename in pars:
                 filepath = os.path.join(workdir, filename)
