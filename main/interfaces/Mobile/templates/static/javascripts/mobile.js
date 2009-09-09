@@ -74,6 +74,9 @@ $(function(){
 				success: function(result){
 					$('#queueList').html(result);
 					$('#queueCount').html( $.mobile.queue_noofslots );
+					
+					// update text on main titlebar (speed/eta)
+					$('#main_titlebar').html( $.mobile.speed +'&nbsp;&nbsp;&nbsp;&nbsp;'+ $.mobile.timeleft );
 
 					// show extra stats in landscape mode, when there is screen space -- profile : landscape
 					(window.innerWidth < window.innerHeight) ? $('#queue li a .nzb_stats').hide() : $('#queue li a .nzb_stats').show();
