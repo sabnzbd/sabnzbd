@@ -15,6 +15,7 @@ button-purgeQ     Vider la Queue
 confirm-purgeQ    Vider la Queue?
 button-purgeH     Vider l'Historique
 confirm-purgeH    Vider l'Historique?
+left              Rest.
 
 # pause interval
 button-pauseInterval Entrez Pause Interval

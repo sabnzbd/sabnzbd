@@ -5,6 +5,8 @@
         $.mobile.pause_int			= '$pause_int';
         $.mobile.speed_limit		= '$speedlimit';
         $.mobile.finishaction		= '$finishaction';
+        $.mobile.timeleft      		= '$timeleft';
+        $.mobile.speed	      		= "<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->";
     });
 </script>
 
@@ -12,23 +14,85 @@
 <!--#if $varExists('slots')#-->
 <!--#for $slot in $slots#-->
 	
-	<!-- <li class="arrow">
-	<a href="#history_nzb"> -->
+	<li class="arrow nzb_li" id="$slot.nzo_id">
 
-	<li id="$slot.nzo_id">
-	<a href="#">
-
-		<!--#if $slot.status == "Paused"#-->
-			<small class="nzb_stats" style="display:none;">&nbsp;$T('ft-paused')</small>&zwj;<small>$slot.percentage%</small>
-			<strike class="nzb_filename">$slot.filename</strike>
-		<!--#else#-->
-			<!--#if not $paused #-->
-			<small class="nzb_stats" style="display:none;">&nbsp;$slot.timeleft[:-3]</small>&zwj;<small>$slot.percentage%</small>
+		<a href="#queue_nzb" class="nzb_a">
+			<!--#if $slot.status == "Paused"#-->
+				<small class="nzb_stats" style="display:none;">&nbsp;$T('ft-paused')</small>&zwj;<small>$slot.percentage%</small>
+				<strike class="nzb_filename">$slot.filename</strike>
+			<!--#else#-->
+				<!--#if not $paused #-->
+				<small class="nzb_stats" style="display:none;">&nbsp;$slot.timeleft[:-3]</small>&zwj;<small>$slot.percentage%</small>
+				<!--#end if#-->
+				<span class="nzb_filename">$slot.filename</span>
 			<!--#end if#-->
-			<span class="nzb_filename">$slot.filename</span>
-		<!--#end if#-->
-		
-	</a>
+		</a>
+
+		<div class="queue_nzb_details" style="display:none">
+			
+	        <div class="info">
+	        	$slot.filename<br/>
+	        	<!--#echo int(float($slot.mbleft))#-->&nbsp;&nbsp;&frasl;&nbsp;&nbsp;<!--#echo int(float($slot.mb))#--> $T('MB')
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	$slot.percentage%
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	$T('nzo-age'): $slot.avg_age
+	        </div>
+			<!--#if not $paused#-->
+				<div class="info">
+					$slot.timeleft&nbsp;$T('Mobile-left')
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					$T('eta'): $slot.eta</div>
+			<!--#end if#-->
+
+
+		    <div class="edgetoedge">
+
+		        <ul><li><span class="toggle"><input type="checkbox" id="pause" <!--#if $slot.status == "Paused"#-->checked<!--#end if#-->/></span><a href="#">$T('link-pause')</a></li></ul>
+
+		        <!--#if $cat_list#-->
+		        <h4>$T('category'):</h4>
+		        <ul><li>
+			        <select class="change_cat" rel="$slot.nzo_id"><optgroup label="$T('category')">
+			            <!--#for $ct in $cat_list#-->
+			            <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
+			            <!--#end for#-->
+			        </optgroup></select>
+			    </li></ul>
+		        <!--#end if#-->
+		        <h4>$T('priority'):</h4>
+		        <ul><li>
+			        <select class="change_priority" rel="$slot.nzo_id"><optgroup label="$T('priority')">
+			            <option value="2" <!--#if $slot.priority == "Force" then "selected" else ""#-->>$T('pr-force')</option>
+			            <option value="1" <!--#if $slot.priority == "High" then "selected" else ""#-->>$T('pr-high')</option>
+			            <option value="0" <!--#if $slot.priority == "Normal" then "selected" else ""#-->>$T('pr-normal')</option>
+			            <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
+			        </optgroup></select>
+			    </li></ul>
+		        <h4>$T('pp'):</h4>
+		        <ul><li>
+			        <select class="change_opts" rel="$slot.nzo_id"><optgroup label="$T('pp')">
+			            <option value="0" <!--#if $slot.unpackopts == "0" then "selected " else ""#-->>$T('pp-none')</option>
+			            <option value="1" <!--#if $slot.unpackopts == "1" then "selected " else ""#-->>$T('pp-repair')</option>
+			            <option value="2" <!--#if $slot.unpackopts == "2" then "selected " else ""#-->>$T('pp-unpack')</option>
+			            <option value="3" <!--#if $slot.unpackopts == "3" then "selected " else ""#-->>$T('pp-delete')</option>
+			        </optgroup></select>
+			    </li></ul>
+		        <!--#if $script_list#-->
+		        <h4>$T('script'):</h4>
+		        <ul><li>
+			        <select class="change_script" rel="$slot.nzo_id"><optgroup label="$T('script')">
+			            <!--#for $sc in $script_list#-->
+			            <option value="$sc"  <!--#if $slot.script == $sc then "selected" else ""#-->>$Tspec($sc)</option>
+			            <!--#end for#-->
+			        </optgroup></select>
+			    </li></ul>
+		        <!--#end if#-->
+		        
+		    </div>
+
+		</div>
+
 	</li>
 
 <!--#end for#-->

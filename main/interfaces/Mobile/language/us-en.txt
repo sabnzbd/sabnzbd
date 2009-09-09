@@ -15,6 +15,7 @@ button-purgeQ     Purge Queue
 confirm-purgeQ    Purge the Queue?
 button-purgeH     Purge History
 confirm-purgeH    Purge the History?
+left              Left
 
 # pause interval
 button-pauseInterval Set Pause Interval

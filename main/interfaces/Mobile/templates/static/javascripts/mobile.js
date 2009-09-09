@@ -111,6 +111,31 @@ $(function(){
 					// potentially update "on finish" user-script selection
 					if ($("#queue_onFinishScript").val() != $.mobile.finishaction)
 						$("#queue_onFinishScript").val($.mobile.finishaction);
+
+					// queue nzb details pages -- live() doesn't work? replace with livequery?
+					$('#queue .nzb_li').click(function(e){
+						var nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
+						$('#queue_nzb_content').html( $('#'+nzo_id+' .queue_nzb_details').html() );
+
+						// 3-in-1 change nzb [category + processing + script] -- replace with livequery?
+						$('#queue_nzb_content .change_cat, #queue_nzb_content .change_opts, #queue_nzb_content .change_script').change(function(){
+							$.ajax({
+								type: "POST",
+								url: "tapi",
+								data: { mode: $(this).attr('class'), value: $(this).attr('rel'), value2: $(this).val(), apikey: $.mobile.apikey }
+							});
+						});
+						
+						// priority change nzb -- replace with livequery?
+						$('#queue_nzb_content .change_priority').change(function(){
+							$.ajax({
+								type: "POST",
+								url: "tapi",
+								data: { mode:'queue', name:'priority', value: $(this).attr('rel'), value2: $(this).val(), apikey: $.mobile.apikey }
+							});
+						});
+					});
+
 				}
 			});
 		},
@@ -144,7 +169,7 @@ $(function(){
 					else if ( totalPages > 1 && !$('#history_page_buttons :visible'))
 						$('#history_page_buttons').show();
 
-					// history nzb details -- live() doesn't work? replace with livequery?
+					// history nzb details pages -- live() doesn't work? replace with livequery?
 					$('#history .nzb_li').click(function(e){
 						var nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
 						$('#history_nzb_content').html( $('#'+nzo_id+' .history_nzb_details').html() );
