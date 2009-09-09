@@ -114,8 +114,19 @@ $(function(){
 
 					// queue nzb details pages -- live() doesn't work? replace with livequery?
 					$('#queue .nzb_li').click(function(e){
+
 						var nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
 						$('#queue_nzb_content').html( $('#'+nzo_id+' .queue_nzb_details').html() );
+
+						// pause toggle for individual nzb
+						$('#queue_nzb_content .pause').change( function() {
+							var state = $(this).attr('checked') ? 'pause' : 'resume';
+							$.ajax({
+								type: "POST",
+								url: "tapi",
+								data: { mode:'queue', name: state, value: $(this).attr('rel'), apikey: $.mobile.apikey }
+							});
+						});
 
 						// 3-in-1 change nzb [category + processing + script] -- replace with livequery?
 						$('#queue_nzb_content .change_cat, #queue_nzb_content .change_opts, #queue_nzb_content .change_script').change(function(){
