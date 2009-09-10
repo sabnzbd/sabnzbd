@@ -61,7 +61,7 @@ $(function(){
     
     $.mobile = { 
     
-    	qhPerPage	: 20,	// nzbs per page
+    	qhPerPage	: 10,	// nzbs per page
     	qPage		: 0,
     	hPage		: 0,
 
