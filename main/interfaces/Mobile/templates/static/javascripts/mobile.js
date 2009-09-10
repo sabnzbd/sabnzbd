@@ -148,6 +148,13 @@ $(function(){
 								data: { mode:'queue', name:'priority', value: $(this).attr('rel'), value2: $(this).val(), apikey: $.mobile.apikey }
 							});
 						});
+						
+						// delete button
+						$('#queue_nzb_content .delete').click(function(){
+			                if ($.mobile.NZBDelete( $(this).attr('rel'), 'queue' ))
+								window.location = "#queue";
+						});
+						
 					});
 
 				}
@@ -188,6 +195,17 @@ $(function(){
 						var nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
 						$('#history_nzb_content').html( $('#'+nzo_id+' .history_nzb_details').html() );
 					});
+						
+					// queue nzb details pages -- live() doesn't work? replace with livequery?
+					$('#history .nzb_li').click(function(e){
+
+						// delete button
+						$('#history_nzb_content .delete').click(function(){
+			                if ($.mobile.NZBDelete( $(this).attr('rel'), 'history' ))
+								window.location = "#history";
+						});
+
+					});
 				}
 			});
 		},
@@ -220,7 +238,9 @@ $(function(){
 						(mode == 'queue') ? $.mobile.LoadQueue() : $.mobile.LoadHistory();
 					}
 				});
+				return true;
 			}
+			return false;
 		},
 		
 		
