@@ -50,6 +50,15 @@
 
 		        <ul><li><span class="toggle"><input type="checkbox" class="pause" rel="$slot.nzo_id" <!--#if $slot.status == "Paused"#-->checked<!--#end if#-->/></span><a href="#">$T('link-pause')</a></li></ul>
 
+				<h4>$T('order')</h4>
+				<ul><li>
+					<select class="switch" rel="$slot.nzo_id"><optgroup label="$T('order')">
+		            <!--#for $i in xrange($noofslots)#-->
+		                <option value="$i" <!--#if $i == $slot.index then "selected" else ""#-->>$i</option>
+		            <!--#end for#-->
+		            </select>
+			    </li></ul>
+			    
 		        <!--#if $cat_list#-->
 		        <h4>$T('category'):</h4>
 		        <ul><li>
@@ -60,6 +69,7 @@
 			        </optgroup></select>
 			    </li></ul>
 		        <!--#end if#-->
+		        
 		        <h4>$T('priority'):</h4>
 		        <ul><li>
 			        <select class="change_priority" rel="$slot.nzo_id"><optgroup label="$T('priority')">
@@ -69,6 +79,7 @@
 			            <option value="-1" <!--#if $slot.priority == "Low" then "selected" else ""#-->>$T('pr-low')</option>
 			        </optgroup></select>
 			    </li></ul>
+			    
 		        <h4>$T('pp'):</h4>
 		        <ul><li>
 			        <select class="change_opts" rel="$slot.nzo_id"><optgroup label="$T('pp')">
@@ -78,6 +89,7 @@
 			            <option value="3" <!--#if $slot.unpackopts == "3" then "selected " else ""#-->>$T('pp-delete')</option>
 			        </optgroup></select>
 			    </li></ul>
+			    
 		        <!--#if $script_list#-->
 		        <h4>$T('script'):</h4>
 		        <ul><li>

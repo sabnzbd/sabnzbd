@@ -131,8 +131,8 @@ $(function(){
 							});
 						});
 
-						// 3-in-1 change nzb [category + processing + script] -- replace with livequery?
-						$('#queue_nzb_content .change_cat, #queue_nzb_content .change_opts, #queue_nzb_content .change_script').change(function(){
+						// 4-in-1 change nzb [order + category + processing + script] -- replace with livequery?
+						$('#queue_nzb_content .switch, #queue_nzb_content .change_cat, #queue_nzb_content .change_opts, #queue_nzb_content .change_script').change(function(){
 							$.ajax({
 								type: "POST",
 								url: "tapi",
