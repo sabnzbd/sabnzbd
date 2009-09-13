@@ -36,7 +36,7 @@ from sabnzbd.lang import T
 #------------------------------------------------------------------------
 # Determine platform flags
 
-WIN32 = DARWIN = DARWIN_INTEL = POSIX = FOUNDATION = False
+WIN32 = DARWIN = DARWIN_INTEL = POSIX = FOUNDATION = WIN64 = False
 KERNEL32 = None
 
 if os.name == 'nt':

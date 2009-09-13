@@ -774,7 +774,10 @@ def main():
     if sabnzbd.WIN32:
         if platform.platform().find('Windows-32bit') >= 0:
             vista = True
-            vista64 = 'ProgramFiles(x86)' in os.environ
+            try:
+                vista64 = os.path.isdir(os.path.join(os.environ['SystemRoot'], 'SysWow64'))
+            except KeyError:
+                vista64 = False
 
     if inifile:
         # INI file given, simplest case
@@ -928,8 +931,11 @@ def main():
     logging.info('%s-%s (rev=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
     if sabnzbd.WIN32:
         suffix = ''
-        if vista: suffix = ' (=Vista)'
-        if vista64: suffix = ' (=Vista64)'
+        if vista:
+            suffix = ' (=Vista)'
+        if vista64:
+            suffix = ' (=Vista64)'
+            sabnzbd.WIN64 = True
         logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
     else:
         logging.info('Platform = %s', os.name)
