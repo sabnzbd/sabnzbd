@@ -129,6 +129,8 @@ def init():
         logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
         __SCHED.add_interval_task(newzbin.getBookmarksNow, 'Bookmarks', delay*60, interval*60,
                                   kronos.method.sequential, None, None)
+        __SCHED.add_single_task(newzbin.getBookmarksNow, 'Bookmarks', 20, kronos.method.sequential, None, None)
+
 
     # Subscribe to special schedule changes
     cfg.NEWZBIN_BOOKMARKS.callback(schedule_guard)
