@@ -14,7 +14,7 @@
 <h3><a href="http://nzbmatrix.com" target="_blank">NZBMatrix.com</a> ($T('wizard-optional'))</h3>
     <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$matrix_user" name="matrix_user">
     <br class="clear" />
-    <label class="label">$T('srv-apikey'):</label><input type="text" size="20" value="$matrix_apikey" name="matrix_apikey">
+    <label class="label">$T('opt-apikey'):</label><input type="text" size="20" value="$matrix_apikey" name="matrix_apikey">
 </div></div>
 
 <hr /><br/>
@@ -26,7 +26,7 @@
             <div class="align-center">
                 <!--#for $step in xrange($steps)#-->
                    <!--#set $step = $step + 1#-->
-                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span> 
+                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
                 <!--#end for#-->
             </div>
         </td>
@@ -35,5 +35,5 @@
 </table>
 </div>
 </form>
-			
+
 <!--#include $webdir + "/inc_bottom.tmpl"#-->
