@@ -122,7 +122,7 @@ class Assembler(Thread):
                             logging.error(T('error-diskError@1'), filepath)
 
                     setname = nzf.get_setname()
-                    if cfg.QUICK_CHECK.get() and nzf.is_par2() and (nzo.get_md5pack(setname) is None):
+                    if nzf.is_par2() and (nzo.get_md5pack(setname) is None):
                         nzo.set_md5pack(setname, GetMD5Hashes(filepath))
                         logging.debug('Got md5pack for set %s', setname)
 

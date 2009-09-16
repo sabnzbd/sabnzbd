@@ -747,14 +747,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
     nzo.set_status("Verifying...")
     start = time()
 
-    odd = OddFiles(parfile)
-
-    if cfg.par_option.get() and not (odd and PAR2C_COMMAND):
-        command = [str(PAR2_COMMAND), 'r', str(cfg.par_option.get().strip()), parfile]
-    elif odd and PAR2C_COMMAND:
-        command = [str(PAR2C_COMMAND), 'r', parfile]
+    if is_new_partype(nzo, setname) or not PAR2C_COMMAND:
+        if cfg.par_option.get():
+            command = [str(PAR2_COMMAND), 'r', str(cfg.par_option.get().strip()), parfile]
+        else:
+            command = [str(PAR2_COMMAND), 'r', parfile]
     else:
-        command = [str(PAR2_COMMAND), 'r', parfile]
+        command = [str(PAR2C_COMMAND), 'r', parfile]
 
     for joinable in joinables:
         command.append(joinable)
@@ -1099,16 +1098,19 @@ def ParsOfSet(wdir, setname):
     return list
 
 
-def OddFiles(parfile):
-    """ Return True if any name in the job contains high ASCII """
-
-    path, name = os.path.split(parfile)
-    for name in os.listdir(path):
+def is_new_partype(nzo, setname):
+    """ Determine the PAR2 program type, based on the filename encoding """
+    pack = nzo.get_md5pack(setname)
+    if not pack:
+        return True
+    for name in pack.keys():
         try:
-            name.encode('Latin-1')
-        except:
-            return True
-    return False
+            name.decode('utf-8')
+        except UnicodeDecodeError:
+            # Now we know it's not pure ASCII or UTF-8
+            return False
+    return True
+
 
 def add_s(i):
     if i > 1:
