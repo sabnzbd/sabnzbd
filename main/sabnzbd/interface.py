@@ -588,8 +588,15 @@ class MainPage:
                     if dir.lower() == 'desc':
                         reverse=True
                     nzbqueue.sort_queue(sort,reverse)
+                
+                # &history=1 will show unprocessed items in the history
+                if kwargs.get('history'):
+                    history = True
+                else:
+                    history = False
+                    
                 info, pnfo_list, bytespersec, verboseList, dictn = \
-                    build_queue(history=True, start=start, limit=limit)
+                    build_queue(history=history, start=start, limit=limit)
                 info['categories'] = info.pop('cat_list')
                 info['scripts'] = info.pop('script_list')
                 return report(output, keyword='queue', data=remove_callable(info))
