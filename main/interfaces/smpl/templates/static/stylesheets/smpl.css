@@ -225,7 +225,11 @@ form.cmxform input.radio{
 }
 
 .select{width:154px}
-.tips{padding-left: 30px;}
+.tips {
+    display:block;
+    float:left;
+    margin-left:30px;
+}
 
 hr
 {
