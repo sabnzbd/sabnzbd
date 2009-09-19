@@ -9,30 +9,19 @@
     <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme?$version"/>
 
     <script src="static/javascripts/mobile.js?$version" type="application/x-javascript" charset="utf-8"></script>
-	<script type="text/javascript">
-		var apikey = "$session";
-	    jQuery(function($) {
-			$.mobile.apikey = "$session";
-			$.mobile.TconfirmDelete = "$T('Mobile-confirm-delete')";
-		});
-	</script>
 
 </head>
 <body>
 
-
     <div id="home">
         <div class="toolbar">
-            <h3 id="main_titlebar">SAB+ Mobile</h3>
+            <h3 id="main_titlebar">
+            	<span id="main_titlebar_speed">SAB+ Mobile</span>B/s
+            	&nbsp;&nbsp;&nbsp;&nbsp;
+            	<span id="main_titlebar_timeleft"></span>
+           	 </h3>
             <a class="button" id="refresh" href="#">$T('Mobile-button-refresh')</a>
         </div>
-		<!--
-        <h2>Downloading</h2>
-        <ul>
-            <li class="arrow"><a href="#queue_nzb"><small>10%</small> the active nzb</a>12:34:56 &sdot; 789 MB</li>
-            <li class="arrow"><a href="#queue_options">12:34:56 &sdot; 789 MB &sdot; 100 KB/s</a></li>
-        </ul>
-		-->
         <ul>
             <li class="arrow"><a href="#queue">$T('menu-queue')</a> <small class="counter" id="queueCount">&nbsp;</small></li>
             <li class="arrow"><a href="#history">$T('menu-history')</a> <small class="counter" id="historyCount">&nbsp;</small></li>
@@ -44,7 +33,9 @@
             <li class="arrow" id="button-warnings" style="display:none"><a href="#warnings">$T('Mobile-warnings')</a> <small class="counter" id="warningsCount"></small></li>
         </ul>
     </div>
-
+	
+    <input type="hidden" id="apikey" value="$session" />
+    <input type="hidden" id="TconfirmDelete" value="$T('Mobile-confirm-delete')" />
     
     <div id="queue" class="plastic">
         <div class="toolbar">
@@ -141,9 +132,68 @@
     <div id="queue_nzb">
         <div class="toolbar">
     		<h1>$T('menu-queue') NZB</h1>
-    		<a href="#" class="back">$T('button-back')</a>
+    		<a href="#" class="back" id="nzb_detail_cancel">$T('button-back')</a>
     	</div>
-        <div id="queue_nzb_content"></div>
+        <div id="queue_nzb_content">
+			
+	        <div class="info">
+	        	<span id="slot_filename"></span><br/>
+	        	<span id="slot_mbleft"></span>&nbsp;&nbsp;&frasl;&nbsp;&nbsp;<span id="slot_mb"></span> $T('MB')
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	<span id="slot_percentage"></span>%
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	$T('nzo-age'): <span id="slot_avg_age"></span>
+	        </div>
+			<div class="info" id="nzb_timeleft">
+				<span id="slot_timeleft"></span>&nbsp;$T('Mobile-left')
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				$T('eta'): <span id="slot_eta"></span>
+			</div>
+
+		    <div class="edgetoedge">
+
+		        <ul><li><span class="toggle"><input type="checkbox" id="pause_nzb" /></span><a href="#">$T('link-pause') NZB</a></li></ul>
+
+				<h4>$T('order')</h4>
+				<ul><li>
+					<select id="switch"><optgroup label="$T('order')"></optgroup></select>
+			    </li></ul>
+			    
+		        <h4>$T('category'):</h4>
+		        <ul><li>
+			        <select id="change_cat"><optgroup label="$T('category')"></optgroup></select>
+			    </li></ul>
+		        
+		        <h4>$T('priority'):</h4>
+		        <ul><li>
+			        <select id="change_priority"><optgroup label="$T('priority')">
+			            <option value="2">$T('pr-force')</option>
+			            <option value="1">$T('pr-high')</option>
+			            <option value="0">$T('pr-normal')</option>
+			            <option value="-1">$T('pr-low')</option>
+			        </optgroup></select>
+			    </li></ul>
+			    
+		        <h4>$T('pp'):</h4>
+		        <ul><li>
+			        <select id="change_opts"><optgroup label="$T('pp')">
+			            <option value="0">$T('pp-none')</option>
+			            <option value="1">$T('pp-repair')</option>
+			            <option value="2">$T('pp-unpack')</option>
+			            <option value="3">$T('pp-delete')</option>
+			        </optgroup></select>
+			    </li></ul>
+			    
+		        <h4>$T('script'):</h4>
+		        <ul><li>
+			        <select id="change_script"><optgroup label="$T('script')"></optgroup></select>
+			    </li></ul>
+		        
+		        <ul><li><a href="#" id="delete_nzb" class="grayButton">$T('nzo-delete') NZB</a></li></ul>
+		        
+		    </div>
+
+        </div>
     </div>
 
     

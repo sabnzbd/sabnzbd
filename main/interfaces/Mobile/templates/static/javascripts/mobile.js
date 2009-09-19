@@ -67,100 +67,137 @@ $(function(){
 
 
 		LoadQueue : function(){
-			$.ajax({
-				type: "POST",
-				url: "queue/",
-				data: { start: ($.mobile.qPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage },
-				success: function(result){
-					$('#queueList').html(result);
-					$('#queueCount').html( $.mobile.queue_noofslots );
-					
-					// update text on main titlebar (speed/eta)
-					$('#main_titlebar').html( $.mobile.speed +'&nbsp;&nbsp;&nbsp;&nbsp;'+ $.mobile.timeleft );
 
-					// show extra stats in landscape mode, when there is screen space -- profile : landscape
-					(window.innerWidth < window.innerHeight) ? $('#queue li a .nzb_stats').hide() : $('#queue li a .nzb_stats').show();
+			$.getJSON( 
+				'tapi', { mode:'queue', output:'json', start: ($.mobile.qPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage, apikey: $.mobile.apikey },
+				function(json,status){
+
+					if (status != "success") return alert(status);
+					$.mobile.queue = json.queue; json=''; // store for nzb detail pages
 					
-					var totalPages = Math.ceil( $.mobile.queue_noofslots / $.mobile.qhPerPage );
-					// set "Page X of Y" -- put this in .tmpl instead?
+					// #home titlebar (speed/eta)
+					$('#main_titlebar_speed').html( $.mobile.queue.kbpersec < 1024 ? parseInt($.mobile.queue.kbpersec)+' K' : $.mobile.queue.speed );
+					$('#main_titlebar_timeleft').html( $.mobile.queue.timeleft );
+					// #home queue # slots
+					$('#queueCount').html( $.mobile.queue.noofslots );
+					// #home pause toggle
+					($.mobile.queue.paused) ? $('#pause').attr('checked',true) : $('#pause').attr('checked',false);
+					// #home pause interval
+					($.mobile.queue.pause_int == '0') ? $('#pause_timeleft').hide().html('') : $('#pause_timeleft').show().html( $.mobile.queue.pause_int );
+
+					// #queue_options speed limit value
+					$('#speed_limit').val( $.mobile.queue.speedlimit );
+					// #queue_options "on finish" user-script selection
+					$("#queue_onFinishScript").val($.mobile.queue.finishaction);
+					
+					// #queueList nzb listing
+					$.mobile.LoadQueueList();
+
+					// #queueList pagination
+					var totalPages = Math.ceil( $.mobile.queue.noofslots / $.mobile.qhPerPage );
+					// set "Page X of Y"
 					$('#queue_page_current').html( (totalPages == 0) ? 0 : ($.mobile.qPage+1) );
 					$('#queue_page_total').html( totalPages );
-					// set pagination prev/next button states -- use an event binding instead?
+					// set pagination prev/next button states (active/inactive)
 					($.mobile.qPage == 0) ? $('#queue_page_prev').removeClass('grayButton') :  $('#queue_page_prev').addClass('grayButton');
 					(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
+					// show/hide pagination buttons as needed
+					(totalPages <= 1) ? $('#queue_page_buttons').hide() : $('#queue_page_buttons').show();
 					
-					// hide pagination buttons if unused
-					if ( totalPages <= 1 && $('#queue_page_buttons :visible'))
-						$('#queue_page_buttons').hide();
-					else if ( totalPages > 1 && !$('#queue_page_buttons :visible'))
-						$('#queue_page_buttons').show();
+				}); // end of $.getJSON
+		}, // end of $.mobile.LoadQueue
+		
 
-					// swipe to delete binding -- maybe move this out of here with livequery() plugin
-		            $('#queue li').addTouchHandlers().bind('swipe', function(evt, data){                
-		                $.mobile.NZBDelete( $(evt.currentTarget).attr('id'), 'queue' );
-		            });
-					
-					// potentially update Pause toggle state
-					if( $.mobile.paused && !$('#pause').attr('checked') )
-						$('#pause').attr('checked',true);
-					else if( !$.mobile.paused && $('#pause').attr('checked') )
-						$('#pause').attr('checked',false);
-					($.mobile.pause_int == '0') ? $('#pause_timeleft').hide().html('') : $('#pause_timeleft').show().html( $.mobile.pause_int );
-					
-					// potentially update Speed Limit value
-					if( $.mobile.speed_limit != $('#speed_limit').val() )
-						$('#speed_limit').val( $.mobile.speed_limit );
-					
-					// potentially update "on finish" user-script selection
-					if ($("#queue_onFinishScript").val() != $.mobile.finishaction)
-						$("#queue_onFinishScript").val($.mobile.finishaction);
+		// called by $.mobile.LoadQueue and certain event bindings
+		LoadQueueList : function(){
+		
+			// #queueList nzb listing
+			$('#queueList').html('');
+			$.each($.mobile.queue.slots, function(i,nzb){
+				$("<li></li>").attr('class','arrow').attr('id',nzb.nzo_id)
+					.html('<a href="#queue_nzb">'
+						+ '<small>'+ nzb.percentage +'%</small>'
+						+ (nzb.status != "Paused" && !$.mobile.queue.paused ? '<small class="landscape_stats" style="display:none">'+ nzb.timeleft.substr(0,nzb.timeleft.length-3) +'</small>&zwj;' : '')
+						+ (nzb.status=="Paused" ? '<span style="text-decoration:line-through">' : '<span>') + nzb.filename +'</span></a>')
+					.appendTo("#queueList");
+			});
+			// #queueList show extra stats in landscape orientation
+			if (window.innerWidth >= window.innerHeight) $('#queue li a .landscape_stats').show();
 
-					// queue nzb details pages -- live() doesn't work? replace with livequery?
-					$('#queue .nzb_li').click(function(e){
+			// #queueList "swipe delete" event binding -- use live() or livequery() and move out of here?
+            $('#queueList li').addTouchHandlers().bind('swipe', function(evt, data){                
+                $.mobile.NZBDelete( $(evt.currentTarget).attr('id'), 'queue' );
+            });
 
-						var nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
-						$('#queue_nzb_content').html( $('#'+nzo_id+' .queue_nzb_details').html() );
-
-						// pause toggle for individual nzb
-						$('#queue_nzb_content .pause').change( function() {
-							var state = $(this).attr('checked') ? 'pause' : 'resume';
-							$.ajax({
-								type: "POST",
-								url: "tapi",
-								data: { mode:'queue', name: state, value: $(this).attr('rel'), apikey: $.mobile.apikey }
-							});
-						});
-
-						// 4-in-1 change nzb [order + category + processing + script] -- replace with livequery?
-						$('#queue_nzb_content .switch, #queue_nzb_content .change_cat, #queue_nzb_content .change_opts, #queue_nzb_content .change_script').change(function(){
-							$.ajax({
-								type: "POST",
-								url: "tapi",
-								data: { mode: $(this).attr('class'), value: $(this).attr('rel'), value2: $(this).val(), apikey: $.mobile.apikey }
-							});
-						});
-						
-						// priority change nzb -- replace with livequery?
-						$('#queue_nzb_content .change_priority').change(function(){
-							$.ajax({
-								type: "POST",
-								url: "tapi",
-								data: { mode:'queue', name:'priority', value: $(this).attr('rel'), value2: $(this).val(), apikey: $.mobile.apikey }
-							});
-						});
-						
-						// delete button
-						$('#queue_nzb_content .delete').click(function(){
-			                if ($.mobile.NZBDelete( $(this).attr('rel'), 'queue' ))
-								window.location = "#queue";
-						});
-						
-					});
-
-				}
+			// #queue_nzb detail page -- update stats when viewing page
+			if ($.mobile.queue_nzo_id) // reload settings if already looking at detail page
+				$.mobile.LoadQueueDetail();
+			$('#queueList li').click(function(e){	// when changing pages -- $.live() does not work?! consider $.livequery() plugin (this event should not be bound here)
+				$.mobile.queue_nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
+				$.mobile.LoadQueueDetail();
 			});
 		},
 		
+		
+		// nzb detail page -- called by $.mobile.LoadQueue and certain event bindings
+		LoadQueueDetail : function(){
+
+			// rebuild switch (order) menu if # nodes is not current
+			if ($.mobile.queue.noofslots != $('#switch optgroup','#queue_nzb_content').size()) {
+				$('#switch optgroup','#queue_nzb_content').html('');
+				for (var i=0; i < $.mobile.queue.noofslots; i++)
+					$('<option></option>').val(i).html(i).appendTo('#queue_nzb_content #switch optgroup');
+			}
+
+			// load category options if # nodes is not current (does not account for all changes)
+			if ($.mobile.queue.categories.length != $('#change_cat optgroup','#queue_nzb_content').size()-1) {
+				$('#change_cat optgroup','#queue_nzb_content').html('');
+				$.each($.mobile.queue.categories, function(i,category){
+					$('<option></option>').val(category).html(category).appendTo('#queue_nzb_content #change_cat optgroup');
+				});
+			}
+			// hide category option if unused
+			($.mobile.queue.categories.length == 0) ? $('#change_cat').parent().parent().hide().prev().hide() : $('#change_cat').parent().parent().show().prev().show();
+
+			// load category options if # nodes is not current (does not account for all changes)
+			if ($.mobile.queue.scripts.length != $('#change_script optgroup','#queue_nzb_content').size()-1) {
+				$('#change_script optgroup','#queue_nzb_content').html('');
+				$.each($.mobile.queue.scripts, function(i,script){
+					$('<option></option>').val(script).html(script).appendTo('#queue_nzb_content #change_script optgroup');
+				});
+			}
+			// hide script option if unused
+			($.mobile.queue.scripts.length < 2) ? $('#change_script').parent().parent().hide().prev().hide() : $('#change_script').parent().parent().show().prev().show();
+	
+			// find which slot this is, then set this nzb's values
+			$.each($.mobile.queue.slots, function(i,nzb){
+				if (nzb.nzo_id == $.mobile.queue_nzo_id) {
+				
+					$('#slot_filename',	 '#queue_nzb_content').html(nzb.filename);
+					$('#slot_mbleft',	 '#queue_nzb_content').html(nzb.mbleft);
+					$('#slot_mb',		 '#queue_nzb_content').html(nzb.mb);
+					$('#slot_percentage','#queue_nzb_content').html(nzb.percentage);
+					$('#slot_avg_age',	 '#queue_nzb_content').html(nzb.avg_age);
+					$('#slot_timeleft',	 '#queue_nzb_content').html(nzb.timeleft);
+					$('#slot_eta',		 '#queue_nzb_content').html(nzb.eta);
+					($.mobile.queue.paused || nzb.status == "Paused") ? $('#nzb_timeleft','#queue_nzb_content').hide() : $('#nzb_timeleft','#queue_nzb_content').show();
+					$('#pause_nzb','#queue_nzb_content').attr('checked',(nzb.status == "Paused"));
+					$('#switch',		 '#queue_nzb_content').val(nzb.index);
+					$('#change_cat',	 '#queue_nzb_content').val(nzb.cat);
+					$('#change_opts',	 '#queue_nzb_content').val(nzb.unpackopts);
+					$('#change_script',  '#queue_nzb_content').val(nzb.script);
+					switch (nzb.priority) {
+						case 'Force':	$('#change_priority','#queue_nzb_content').val(2); break;
+						case 'High':	$('#change_priority','#queue_nzb_content').val(1); break;
+						case 'Normal':	$('#change_priority','#queue_nzb_content').val(0); break;
+						case 'Low':		$('#change_priority','#queue_nzb_content').val(-1); break;
+					};
+
+				}
+			});
+						
+		},
+
 
 		LoadHistory : function(){
 			$.ajax({
@@ -209,9 +246,28 @@ $(function(){
 				}
 			});
 		},
+
+
+		NZBDelete : function( nzo_id, mode ) { // mode == 'queue' || 'history'
+		
+			if (confirm( $.mobile.TconfirmDelete+":\n"+ $('#'+nzo_id+' span').html() )){
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode: mode, name:'delete', value: nzo_id, apikey: $.mobile.apikey },
+					success: function(){
+						(mode == 'queue') ? $.mobile.LoadQueue() : $.mobile.LoadHistory();
+					}
+				});
+				return true;
+			} else
+				return false;
+		},
+		
 		
 		LoadWarnings : function(){
-			$.getJSON("tapi?mode=warnings&output=json&apikey="+apikey,
+			$.getJSON(
+				'tapi', { mode:'warnings', output:'json', apikey: $.mobile.apikey },
         		function(data){
         			if (!data.warnings.length)
         				return $('#button-warnings').hide();
@@ -225,27 +281,14 @@ $(function(){
 				}
 			);
 		},
-
-
-		NZBDelete : function( nzo_id, mode ) { // mode == 'queue' || 'history'
-		
-			if (confirm( $.mobile.TconfirmDelete+":\n"+ $('#'+nzo_id+' .nzb_filename').html() )){
-				$.ajax({
-					type: "POST",
-					url: "tapi",
-					data: { mode: mode, name:'delete', value: nzo_id, apikey: $.mobile.apikey },
-					success: function(){
-						(mode == 'queue') ? $.mobile.LoadQueue() : $.mobile.LoadHistory();
-					}
-				});
-				return true;
-			}
-			return false;
-		},
 		
 		
 		Init : function(){
 		
+			// fetch vars from template
+			$.mobile.apikey = $('#apikey').val();
+			$.mobile.TconfirmDelete = $('#TconfirmDelete').val();
+
 			$('#refresh').click( function() {
 				$.mobile.LoadQueue();
 				$.mobile.LoadHistory();
@@ -271,7 +314,7 @@ $(function(){
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: { mode:'config', name:'set_speedlimit', value: val, apikey:$.mobile.apikey }
+					data: { mode:'config', name:'set_speedlimit', value: val, apikey: $.mobile.apikey }
 				});
 			});
 
@@ -280,7 +323,7 @@ $(function(){
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: { mode:'config', name:'set_pause', value:minutes, apikey:$.mobile.apikey },
+					data: { mode:'config', name:'set_pause', value:minutes, apikey: $.mobile.apikey },
 					success: function(resp){
 						window.location = "#home";
 						$.mobile.LoadQueue();
@@ -296,7 +339,7 @@ $(function(){
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=queue&name=sort&sort="+rel+'&apikey='+$.mobile.apikey,
+					data: { mode:'queue', name:'sort', sort: rel, apikey: $.mobile.apikey },
 					success: function(resp){
 						window.location = "#queue";
 						$.mobile.LoadQueue();
@@ -326,6 +369,77 @@ $(function(){
 					});
 				}
 			});
+
+
+			// queue nzb detail page options ********************
+
+			// pause toggle for individual nzb
+			$('#pause_nzb','#queue_nzb_content').change( function() {
+				var state = $(this).attr('checked') ? 'pause' : 'resume';
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode:'queue', name: state, value: $.mobile.queue_nzo_id, apikey: $.mobile.apikey },
+					success: function() {
+						$.each($.mobile.queue.slots, function(i,nzb){
+							if (nzb.nzo_id == $.mobile.queue_nzo_id)
+								$.mobile.queue.slots[i].status = (state=='pause' ? 'Paused' : 'Queued'); // 'Downloading'?
+						});
+						$.mobile.LoadQueueList(); // account for strikeout/stats
+					}
+				});
+			});
+
+			// 4-in-1 change nzb [order + category + processing + script]
+			$('#switch, #change_cat, #change_opts, #change_script','#queue_nzb_content').change(function(){
+				var option_id = $(this).attr('id');
+				var option_val = $(this).val();
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode: option_id, value: $.mobile.queue_nzo_id, value2: option_val, apikey: $.mobile.apikey },
+					success: function(resp) {
+						switch (option_id) {
+							case 'switch':
+							case 'change_cat':
+								$.mobile.LoadQueue(); // account for changes to other nzbs' ordering, as well as this nzb's other settings
+								break;
+							case 'change_opts':
+								// account for revisiting this nzb detail page through the navigation
+								$.each($.mobile.queue.slots, function(i,nzb){
+									if (nzb.nzo_id == $.mobile.queue_nzo_id)
+										$.mobile.queue.slots[i].unpackopts = option_val;
+								});
+								break;
+							case 'change_script':
+								$.each($.mobile.queue.slots, function(i,nzb){
+									if (nzb.nzo_id == $.mobile.queue_nzo_id)
+										$.mobile.queue.slots[i].script = option_val;
+								});
+								break;
+						};
+					}
+				});
+			});
+			
+			// priority change nzb
+			$('#change_priority','#queue_nzb_content').change(function(){
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: { mode:'queue', name:'priority', value: $.mobile.queue_nzo_id, value2: $(this).val(), apikey: $.mobile.apikey },
+					success: function(resp) {
+						$.mobile.LoadQueue(); // account for changes to other nzbs' ordering, as well as this nzb's order
+					}
+				});
+			});
+			
+			// delete button
+			$('#delete_nzb','#queue_nzb_content').click(function(){
+                if ($.mobile.NZBDelete( $.mobile.queue_nzo_id, 'queue' ))
+					window.location = "#queue";
+			});
+			
 			
 			// history options ********************
 			$('#history_purge').click(function(event) {
@@ -350,7 +464,7 @@ $(function(){
 				}
 			});
 			$('#queue_page_next').click( function(){
-				if ( ($.mobile.qPage+1)*$.mobile.qhPerPage < $.mobile.queue_noofslots ) {
+				if ( ($.mobile.qPage+1)*$.mobile.qhPerPage < $.mobile.queue.noofslots ) {
 					$.mobile.qPage++;
 					$.mobile.LoadQueue();
 				}
@@ -375,12 +489,12 @@ $(function(){
 
 					// queue listing -- show more stats in landscape
 					$.mobile.landscape = true;
-					$('#queue li a .nzb_stats').show();
+					$('#queue li a .landscape_stats').show();
 
 				} else {
 
 					// queue listing -- show less stats in profile
-				 	$('#queue li a .nzb_stats').hide();
+				 	$('#queue li a .landscape_stats').hide();
 				 }
 			});
 		
