@@ -291,7 +291,11 @@ $(function(){
 						$('<h4>'+stage.name.charAt(0).toUpperCase()+stage.name.substr(1)+'</h4>').appendTo('#slot_info','#history_nzb_content');
 						var ul = $('<ul></ul>');
 						$.each(stage.actions, function(i,action){
-							$('<li>'+action+'</li>').appendTo(ul);
+							if (stage.name == "script")
+								$('<li>'+nzb.script_line+'</li>'
+								 +'<li><a class="slideup view_script_log" href="#history_nzb_script">View Script Log</a></li>').appendTo(ul);
+							else
+								$('<li>'+action+'</li>').appendTo(ul);
 						});
 						$(ul).appendTo('#slot_info','#history_nzb_content');
 					});
@@ -304,6 +308,17 @@ $(function(){
 					if (nzb.storage)
 						$('<h4>'+ $.mobile.TcatFolderPath +'</h4><ul><li>'+ nzb.storage +'</li></ul>').appendTo('#slot_info','#history_nzb_content');
 
+					// view script log
+					$('.view_script_log','#history_nzb_content').click(function(){
+						$.ajax({
+							type: "POST",
+							url: "scriptlog",
+							data: { name: $.mobile.history_nzo_id, apikey: $.mobile.apikey },
+							success: function(resp){
+								$('#history_script_log').html( $(resp).filter('h3,code') );
+							}
+						});
+					});
 				}
 			});
 		},
