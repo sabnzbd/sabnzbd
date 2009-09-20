@@ -104,8 +104,9 @@ $(function(){
 					// show/hide pagination buttons as needed
 					(totalPages <= 1) ? $('#queue_page_buttons').hide() : $('#queue_page_buttons').show();
 					
-				}); // end of $.getJSON
-		}, // end of $.mobile.LoadQueue
+				}
+			);
+		},
 		
 
 		// called by $.mobile.LoadQueue and certain event bindings
@@ -200,54 +201,114 @@ $(function(){
 
 
 		LoadHistory : function(){
-			$.ajax({
-				type: "POST",
-				url: "history/",
-				data: { start: ($.mobile.hPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage },
-				success: function(result){
-					$('#historyList').html(result);
-					$('#historyCount').html( $.mobile.history_noofslots );
 
-					// swipe to delete binding -- maybe move this out of here with livequery() plugin
-		            $('#history li').addTouchHandlers().bind('swipe', function(evt, data){                
-		                $.mobile.NZBDelete( $(evt.currentTarget).attr('id'), 'history' );
-		            });
+			$.getJSON( 
+				'tapi', { mode:'history', output:'json', start: ($.mobile.hPage*$.mobile.qhPerPage), limit: $.mobile.qhPerPage, apikey: $.mobile.apikey },
+				function(json,status){
+
+					if (status != "success") return alert(status);
+					$.mobile.history = json.history; json=''; // store for nzb detail pages
+
+					// #home history # slots
+					$('#historyCount').html( $.mobile.history.noofslots );
 					
-					var totalPages = Math.ceil( $.mobile.history_noofslots / $.mobile.qhPerPage );
-					// set "Page X of Y" -- put this in .tmpl instead?
+					// #historyList nzb listing
+					$.mobile.LoadHistoryList();
+
+					// #historyList pagination
+					var totalPages = Math.ceil( $.mobile.history.noofslots / $.mobile.qhPerPage );
+					// set "Page X of Y"
 					$('#history_page_current').html( (totalPages == 0) ? 0 : ($.mobile.hPage+1) );
 					$('#history_page_total').html( totalPages );
-					// set pagination prev/next button states -- use an event binding instead?
+					// set pagination prev/next button states (active/inactive)
 					($.mobile.hPage == 0) ? $('#history_page_prev').removeClass('grayButton') :  $('#history_page_prev').addClass('grayButton');
 					(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
+					// show/hide pagination buttons as needed
+					(totalPages <= 1) ? $('#history_page_buttons').hide() : $('#history_page_buttons').show();
 					
-					// hide pagination buttons if unused
-					if ( totalPages <= 1 && $('#history_page_buttons :visible'))
-						$('#history_page_buttons').hide();
-					else if ( totalPages > 1 && !$('#history_page_buttons :visible'))
-						$('#history_page_buttons').show();
-
-					// history nzb details pages -- live() doesn't work? replace with livequery?
-					$('#history .nzb_li').click(function(e){
-						var nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
-						$('#history_nzb_content').html( $('#'+nzo_id+' .history_nzb_details').html() );
-					});
-						
-					// queue nzb details pages -- live() doesn't work? replace with livequery?
-					$('#history .nzb_li').click(function(e){
-
-						// delete button
-						$('#history_nzb_content .delete').click(function(){
-			                if ($.mobile.NZBDelete( $(this).attr('rel'), 'history' ))
-								window.location = "#history";
-						});
-
-					});
 				}
+			);
+		},
+
+
+		// called by $.mobile.LoadHistory
+		LoadHistoryList : function(){
+		
+			// #historyList nzb listing
+			$('#historyList').html('');
+			$.each($.mobile.history.slots, function(i,nzb){
+				$("<li></li>").attr('class','arrow').attr('id',nzb.nzo_id)
+					.html('<a href="#history_nzb">'
+						+ (nzb.fail_message ? '<span style="text-decoration:line-through">' : '<span>') + nzb.name +'</span></a>')
+					.appendTo("#historyList");
+			});
+
+			// #historyList "swipe delete" event binding -- use live() or livequery() and move out of here?
+            $('#historyList li').addTouchHandlers().bind('swipe', function(evt, data){                
+                $.mobile.NZBDelete( $(evt.currentTarget).attr('id'), 'history' );
+            });
+
+			// #history_nzb detail page -- update stats when viewing page
+			if ($.mobile.history_nzo_id) // reload settings if already looking at detail page
+				$.mobile.LoadHistoryDetail();
+			$('#historyList li').click(function(e){	// when changing pages -- $.live() does not work?! consider $.livequery() plugin (this event should not be bound here)
+				$.mobile.history_nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
+				$.mobile.LoadHistoryDetail();
 			});
 		},
 
 
+		// nzb detail page -- called by $.mobile.LoadHistory
+		LoadHistoryDetail : function(){
+
+			// find which slot this is, then set this nzb's values
+			$.each($.mobile.history.slots, function(i,nzb){
+				if (nzb.nzo_id == $.mobile.history_nzo_id) {
+
+					$('#line_name',  '#history_nzb_content').html(nzb.name);
+					$('#line_status','#history_nzb_content').html(nzb.status);
+					$('#line_size',  '#history_nzb_content').html(nzb.size);
+					(nzb.action_line) ? $('#line_action_line','#history_nzb_content').html(nzb.action_line).show() : $('#line_action_line','#history_nzb_content').hide();
+					(nzb.fail_message) ? $('#line_fail_message','#history_nzb_content').html(nzb.fail_message).show() : $('#line_fail_message','#history_nzb_content').hide();
+					$('#slot_info','#history_nzb_content').html('');
+
+					// completion datetime
+					$('<ul><li>'+ Date(nzb.completed).toLocaleString() +'</li></ul>').appendTo('#slot_info','#history_nzb_content');
+					
+					// connections
+					if (nzb.url || nzb.url_info) {
+						$('<h4>'+ $.mobile.Tconnections +'</h4>').appendTo('#slot_info','#history_nzb_content');
+						var ul = $('<ul></ul>');
+						if (nzb.url)
+							$('<li class="forward"><a href="'+nzb.url+'" target="_blank">'+nzb.url+'</a></li>').appendTo(ul);
+						if (nzb.url_info)
+							$('<li class="forward"><a href="'+nzb.url_info+'" target="_blank">'+nzb.url_info+'</a></li>').appendTo(ul);
+						$(ul).appendTo('#slot_info','#history_nzb_content');
+					}
+
+					// verbosity
+					$.each(nzb.stage_log, function(i,stage){
+						$('<h4>'+stage.name.charAt(0).toUpperCase()+stage.name.substr(1)+'</h4>').appendTo('#slot_info','#history_nzb_content');
+						var ul = $('<ul></ul>');
+						$.each(stage.actions, function(i,action){
+							$('<li>'+action+'</li>').appendTo(ul);
+						});
+						$(ul).appendTo('#slot_info','#history_nzb_content');
+					});
+					
+					// category
+					if (nzb.category)
+						$('<h4>'+ $.mobile.Tcategory +'</h4><ul><li>'+ nzb.category +'</li></ul>').appendTo('#slot_info','#history_nzb_content');
+					
+					// storage
+					if (nzb.storage)
+						$('<h4>'+ $.mobile.TcatFolderPath +'</h4><ul><li>'+ nzb.storage +'</li></ul>').appendTo('#slot_info','#history_nzb_content');
+
+				}
+			});
+		},
+
+		
 		NZBDelete : function( nzo_id, mode ) { // mode == 'queue' || 'history'
 		
 			if (confirm( $.mobile.TconfirmDelete+":\n"+ $('#'+nzo_id+' span').html() )){
@@ -274,7 +335,7 @@ $(function(){
         			$('#warnings ul').html('');
         			data.warnings.reverse();
         			$.each(data.warnings, function(i,warning){
-						$('#warnings_shell').clone().html('<strong>'+warning.substr(24)+'</strong><br/>'+warning.substr(0,19)).show().appendTo('#warnings_list');
+						$('#warnings_shell').clone().html(warning.substr(0,19)+'<br/><strong>'+warning.substr(24)+'</strong>').show().appendTo('#warnings_list');
 					});
 					$('#warningsCount').html( data.warnings.length );
 					$('#button-warnings').show();
@@ -288,6 +349,9 @@ $(function(){
 			// fetch vars from template
 			$.mobile.apikey = $('#apikey').val();
 			$.mobile.TconfirmDelete = $('#TconfirmDelete').val();
+			$.mobile.Tconnections 	= $('#Tconnections').val();
+			$.mobile.Tcategory 		= $('#Tcategory').val();
+			$.mobile.TcatFolderPath = $('#TcatFolderPath').val();
 
 			$('#refresh').click( function() {
 				$.mobile.LoadQueue();
@@ -442,6 +506,12 @@ $(function(){
 			
 			
 			// history options ********************
+			
+			$('#delete_nzb','#history_nzb_content').click(function(){
+                if ($.mobile.NZBDelete( $.mobile.history_nzo_id, 'history' ))
+					window.location = "#history";
+			});
+
 			$('#history_purge').click(function(event) {
 				if (confirm($('#history_purge').attr('rel'))) {
 					$.ajax({
@@ -476,7 +546,7 @@ $(function(){
 				}
 			});
 			$('#history_page_next').click( function(){
-				if ( ($.mobile.hPage+1)*$.mobile.qhPerPage < $.mobile.history_noofslots ) {
+				if ( ($.mobile.hPage+1)*$.mobile.qhPerPage < $.mobile.history.noofslots ) {
 					$.mobile.hPage++;
 					$.mobile.LoadHistory();
 				}

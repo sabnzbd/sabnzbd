@@ -34,8 +34,13 @@
         </ul>
     </div>
 	
+	
     <input type="hidden" id="apikey" value="$session" />
     <input type="hidden" id="TconfirmDelete" value="$T('Mobile-confirm-delete')" />
+    <input type="hidden" id="Tconnections" value="$T('connections')" />
+    <input type="hidden" id="Tcategory" value="$T('category')" />
+    <input type="hidden" id="TcatFolderPath" value="$T('catFolderPath')" />
+    
     
     <div id="queue" class="plastic">
         <div class="toolbar">
@@ -119,7 +124,7 @@
     		<a href="#" class="back">$T('button-back')</a>
     	</div>
         <ul class="edit">
-            <li><a href="#" class="queue_sort_option" rel="avg_age&dir=asc">$T('Mobile-sortAgeAsc')</small></a></li>
+            <li><a href="#" class="queue_sort_option" rel="avg_age&dir=asc">$T('Mobile-sortAgeAsc')</a></li>
             <li><a href="#" class="queue_sort_option" rel="avg_age&dir=desc">$T('Mobile-sortAgeDesc')</a></li>
             <li><a href="#" class="queue_sort_option" rel="name&dir=asc">$T('Mobile-sortNameAsc')</a></li>
             <li><a href="#" class="queue_sort_option" rel="name&dir=desc">$T('Mobile-sortNameDesc')</a></li>
@@ -228,7 +233,24 @@
     		<h1>$T('menu-history') NZB</h1>
     		<a href="#" class="back">$T('button-back')</a>
     	</div>
-        <div id="history_nzb_content"></div>
+		<div id="history_nzb_content">
+
+	        <div class="info">
+	        	<span id="line_name"></span><br/>
+	        	<span id="line_status"></span>
+	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	        	<span id="line_size"></span>
+	        </div>
+        	<div class="info" id="line_action_line"></div>
+        	<div class="info" id="line_fail_message"></div>
+
+		    <div class="edgetoedge" id="slot_info"></div>
+        	
+		    <div class="edgetoedge">
+		        <ul><li><a href="#" id="delete_nzb" class="grayButton">$T('nzo-delete') NZB</a></li></ul>
+		    </div>
+
+        </div>
     </div>
 
 
