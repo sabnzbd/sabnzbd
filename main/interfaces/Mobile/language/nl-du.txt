@@ -16,6 +16,7 @@ confirm-purgeQ    Verwijder uit de Wachtrij?
 button-purgeH     Wis de volledige geschiedenis
 confirm-purgeH    Wis de volledige geschiedenis?
 left              Over
+rename            Naam
 
 # pause interval
 button-pauseInterval Set Pauze Interval

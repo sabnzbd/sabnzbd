@@ -16,6 +16,7 @@ confirm-purgeQ    Purge the Queue?
 button-purgeH     Purge History
 confirm-purgeH    Purge the History?
 left              Left
+rename            Rename
 
 # pause interval
 button-pauseInterval Set Pause Interval
