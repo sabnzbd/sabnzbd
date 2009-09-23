@@ -37,9 +37,6 @@
 	
     <input type="hidden" id="apikey" value="$session" />
     <input type="hidden" id="TconfirmDelete" value="$T('Mobile-confirm-delete')" />
-    <input type="hidden" id="Tconnections" value="$T('connections')" />
-    <input type="hidden" id="Tcategory" value="$T('category')" />
-    <input type="hidden" id="TcatFolderPath" value="$T('catFolderPath')" />
     
     
     <div id="queue" class="plastic">
@@ -141,19 +138,14 @@
     	</div>
         <div id="queue_nzb_content">
 			
-	        <div class="info">
-	        	<span id="slot_filename"></span><br/>
-	        	<span id="slot_mbleft"></span>&nbsp;&nbsp;&frasl;&nbsp;&nbsp;<span id="slot_mb"></span> $T('MB')
-	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        	<span id="slot_percentage"></span>%
-	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        	$T('nzo-age'): <span id="slot_avg_age"></span>
-	        </div>
-			<div class="info" id="nzb_timeleft">
-				<span id="slot_timeleft"></span>&nbsp;$T('Mobile-left')
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				$T('eta'): <span id="slot_eta"></span>
-			</div>
+	        <div class="info"><span id="slot_filename"></span></div>
+			
+		    <div class="edgetoedge">
+		        <ul><li>$T('remainTotal')<small><span id="slot_mbleft"></span>&nbsp;&frasl;&nbsp;<span id="slot_mb"></span>&nbsp;$T('MB')&nbsp;<span id="slot_percentage"></span>%</small></li></ul>
+		        <ul><li>$T('eta')<small id="slot_eta"></small></li></ul>
+		        <ul><li>$T('Mobile-left')<small id="slot_timeleft"></small></li></ul>
+		        <ul><li>$T('nzo-age')<small id="slot_avg_age"></small></li></ul>
+		    </div>
 
 		    <div class="edgetoedge">
 
@@ -235,16 +227,27 @@
     	</div>
 		<div id="history_nzb_content">
 
-	        <div class="info">
-	        	<span id="line_name"></span><br/>
-	        	<span id="line_status"></span>
-	        	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	        	<span id="line_size"></span>
-	        </div>
+	        <div class="info"><span id="line_name"></span></div>
         	<div class="info" id="line_action_line"></div>
         	<div class="info" id="line_fail_message"></div>
 
+		    <div class="edgetoedge">
+		        <ul><li>$T('status')<small id="line_status"></small></li></ul>
+		        <ul><li>$T('size')<small id="line_size"></small></li></ul>
+		        <ul><li>$T('completed')<small id="line_completed"></small></li></ul>
+		        <ul><li>$T('category')<small id="line_category"></small></li></ul>
+		    </div>
+
+		    <div class="edgetoedge" id="connections_wrapper">
+		    	<h4>$T('connections')</h4>
+		    </div>
+
 		    <div class="edgetoedge" id="slot_info"></div>
+
+		    <div class="edgetoedge">
+		    	<h4>$T('catFolderPath')</h4>
+		        <ul><li id="line_nzb_storage"></li></ul>
+		    </div>
         	
 		    <div class="edgetoedge">
 		        <ul><li><a href="#" id="delete_nzb" class="grayButton">$T('nzo-delete') NZB</a></li></ul>

@@ -175,13 +175,12 @@ $(function(){
 				if (nzb.nzo_id == $.mobile.queue_nzo_id) {
 				
 					$('#slot_filename',	 '#queue_nzb_content').html(nzb.filename);
-					$('#slot_mbleft',	 '#queue_nzb_content').html(nzb.mbleft);
-					$('#slot_mb',		 '#queue_nzb_content').html(nzb.mb);
+					$('#slot_mbleft',	 '#queue_nzb_content').html(parseInt(nzb.mbleft));
+					$('#slot_mb',		 '#queue_nzb_content').html(parseInt(nzb.mb));
 					$('#slot_percentage','#queue_nzb_content').html(nzb.percentage);
 					$('#slot_avg_age',	 '#queue_nzb_content').html(nzb.avg_age);
 					$('#slot_timeleft',	 '#queue_nzb_content').html(nzb.timeleft);
 					$('#slot_eta',		 '#queue_nzb_content').html(nzb.eta);
-					($.mobile.queue.paused || nzb.status == "Paused") ? $('#nzb_timeleft','#queue_nzb_content').hide() : $('#nzb_timeleft','#queue_nzb_content').show();
 					$('#pause_nzb','#queue_nzb_content').attr('checked',(nzb.status == "Paused"));
 					$('#switch',		 '#queue_nzb_content').val(nzb.index);
 					$('#change_cat',	 '#queue_nzb_content').val(nzb.cat);
@@ -262,31 +261,38 @@ $(function(){
 		LoadHistoryDetail : function(){
 
 			// find which slot this is, then set this nzb's values
+			var d = new Date();
 			$.each($.mobile.history.slots, function(i,nzb){
 				if (nzb.nzo_id == $.mobile.history_nzo_id) {
 
+					// nzb name + statuses
 					$('#line_name',  '#history_nzb_content').html(nzb.name);
-					$('#line_status','#history_nzb_content').html(nzb.status);
-					$('#line_size',  '#history_nzb_content').html(nzb.size);
 					(nzb.action_line) ? $('#line_action_line','#history_nzb_content').html(nzb.action_line).show() : $('#line_action_line','#history_nzb_content').hide();
 					(nzb.fail_message) ? $('#line_fail_message','#history_nzb_content').html(nzb.fail_message).show() : $('#line_fail_message','#history_nzb_content').hide();
-					$('#slot_info','#history_nzb_content').html('');
 
-					// completion datetime
-					$('<ul><li>'+ Date(nzb.completed).toLocaleString() +'</li></ul>').appendTo('#slot_info','#history_nzb_content');
+					// nzb status/stats/info
+					$('#line_status','#history_nzb_content').html(nzb.status);
+					$('#line_size',  '#history_nzb_content').html(nzb.size);
+					d.setTime(nzb.completed*1000);
+					$('#line_completed',  '#history_nzb_content').html(d.toDateString());
+					(nzb.category) ? $('#line_category','#history_nzb_content').html(nzb.category).parent().parent().show() : $('#line_category','#history_nzb_content').parent().parent().hide();
 					
-					// connections
+					// connections (links)
 					if (nzb.url || nzb.url_info) {
-						$('<h4>'+ $.mobile.Tconnections +'</h4>').appendTo('#slot_info','#history_nzb_content');
+						$('#connections_wrapper ul','#history_nzb_content').remove();
+						$('#connections_wrapper','#history_nzb_content').show();
 						var ul = $('<ul></ul>');
 						if (nzb.url)
 							$('<li class="forward"><a href="'+nzb.url+'" target="_blank">'+nzb.url+'</a></li>').appendTo(ul);
 						if (nzb.url_info)
 							$('<li class="forward"><a href="'+nzb.url_info+'" target="_blank">'+nzb.url_info+'</a></li>').appendTo(ul);
-						$(ul).appendTo('#slot_info','#history_nzb_content');
-					}
+						$(ul).appendTo('#connections_wrapper','#history_nzb_content');
+					} else
+						$('#connections_wrapper','#history_nzb_content').show();
 
-					// verbosity
+
+					// verbosity (par/unrar)
+					$('#slot_info','#history_nzb_content').html('');
 					$.each(nzb.stage_log, function(i,stage){
 						$('<h4>'+stage.name.charAt(0).toUpperCase()+stage.name.substr(1)+'</h4>').appendTo('#slot_info','#history_nzb_content');
 						var ul = $('<ul></ul>');
@@ -300,15 +306,10 @@ $(function(){
 						$(ul).appendTo('#slot_info','#history_nzb_content');
 					});
 					
-					// category
-					if (nzb.category)
-						$('<h4>'+ $.mobile.Tcategory +'</h4><ul><li>'+ nzb.category +'</li></ul>').appendTo('#slot_info','#history_nzb_content');
-					
-					// storage
-					if (nzb.storage)
-						$('<h4>'+ $.mobile.TcatFolderPath +'</h4><ul><li>'+ nzb.storage +'</li></ul>').appendTo('#slot_info','#history_nzb_content');
+					// storage path
+					(nzb.storage) ? $('#line_nzb_storage','#history_nzb_content').html(nzb.storage).parent().parent().show() : $('#line_nzb_storage','#history_nzb_content').parent().parent().hide();
 
-					// view script log
+					// view script log event
 					$('.view_script_log','#history_nzb_content').click(function(){
 						$.ajax({
 							type: "POST",
