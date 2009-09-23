@@ -453,8 +453,27 @@ $(function(){
 
 			// queue nzb detail page options ********************
 
+			// nzb rename
+			$('#nzb_rename','#queue_nzb').click(function(){
+				var name = prompt("", $('#slot_filename', '#queue_nzb_content').html());
+				if (name !== null) {
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: { mode:'queue', name:'rename', value: $.mobile.queue_nzo_id, value2: name, apikey: $.mobile.apikey },
+						success: function() {
+							$.each($.mobile.queue.slots, function(i,nzb){
+								if (nzb.nzo_id == $.mobile.queue_nzo_id)
+									$.mobile.queue.slots[i].filename = name;
+							});
+							$.mobile.LoadQueueList(); // account for the rename
+						}
+					});
+				}
+			});
+			
 			// pause toggle for individual nzb
-			$('#pause_nzb','#queue_nzb_content').change( function() {
+			$('#pause_nzb','#queue_nzb_content').change(function(){
 				var state = $(this).attr('checked') ? 'pause' : 'resume';
 				$.ajax({
 					type: "POST",
