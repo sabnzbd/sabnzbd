@@ -28,6 +28,7 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 
 import sabnzbd.utils.feedparser as feedparser
 from sabnzbd.lang import T
@@ -78,7 +79,7 @@ def run_method():
 def save():
     global __RSS
     if __RSS: __RSS.save()
-    
+
 def clear_feed(feed):
     global __RSS
     if __RSS: __RSS.clear_feed(feed)
@@ -173,19 +174,19 @@ class RSSQueue:
 
         # Preparations, get options
         try:
-            cfg = config.get_rss()[feed]
+            feeds = config.get_rss()[feed]
         except KeyError:
             logging.error(T('error-rssBadFeed@1'), feed)
             logging.debug("Traceback: ", exc_info = True)
             return
 
-        uri = cfg.uri.get()
-        defCat = cfg.cat.get()
+        uri = feeds.uri.get()
+        defCat = feeds.cat.get()
         if defCat == "":
             defCat = None
-        defPP = cfg.pp.get()
-        defScript = cfg.script.get()
-        defPriority = cfg.priority.get()
+        defPP = feeds.pp.get()
+        defScript = feeds.script.get()
+        defPriority = feeds.priority.get()
 
         # Preparations, convert filters to regex's
         regexes = []
@@ -193,7 +194,7 @@ class RSSQueue:
         reCats = []
         rePPs = []
         reScripts = []
-        for filter in cfg.filters.get():
+        for filter in feeds.filters.get():
             reCat = filter[0]
             if not reCat:
                 reCat = None
@@ -239,7 +240,7 @@ class RSSQueue:
                 title = entry.title
                 newlinks.append(link)
 
-                if DupTitle(feed, title):
+                if cfg.NO_DUPES.get() and DupTitle(feed, title):
                     logging.info("Ignoring duplicate job %s", title)
                     continue
 
@@ -355,7 +356,7 @@ class RSSQueue:
             for link in lst:
                 if lst[link][2] == id:
                     lst[link][0] = 'D'
-        
+
     @synchronized(LOCK)
     def clear_feed(self, feed):
         # Remove any previous references to this feed name, and start fresh
