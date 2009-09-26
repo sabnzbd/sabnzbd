@@ -93,7 +93,9 @@ class LatinFilter(Filter):
         if isinstance(val, unicode):
             return val
         elif isinstance(val, basestring):
-            return val.decode('latin-1')
+            return val.decode('latin-1', 'replace')
+        elif val is None:
+            return ''
         else:
             return str(val)
 
