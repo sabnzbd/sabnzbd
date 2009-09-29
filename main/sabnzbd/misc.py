@@ -801,8 +801,9 @@ def bad_fetch(nzo, url, retry=False, archive=False):
         nzo.set_original_dirname(url)
 
     if retry:
-        nzo.set_fail_msg(T('his-retryURL1')+'URL Fetching failed, <a href="./retry?session=%s&url=%s%s%s%s">' + T('his-retryURL2') + '</a>' % \
-                         (cfg.API_KEY.get(), urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script)))
+        text = T('his-retryURL1')+', <a href="./retry?session=%s&url=%s%s%s%s">' + T('his-retryURL2') + '</a>'
+        parms = (cfg.API_KEY.get(), urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script))
+        nzo.set_fail_msg(text % parms)
     else:
         if archive:
             msg = T('his-badArchive')
