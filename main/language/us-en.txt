@@ -154,6 +154,8 @@ emailResult       Email Test Result
 lastWarnings      Lastest Warnings
 clearWarnings     clear
 server-blocked    Unblock
+warning           WARNING:
+error             ERROR:
 
 # Configuration
 configuration     Configuration
@@ -560,7 +562,6 @@ his-retryURL2            Try again
 
 # Errors and Warnings
 error-noPar2             par2 binary... NOT found!
-error-noStartup@2        Initializing %s-%s failed, aborting
 error-noWebUi            Failed to start web-interface
 error-noYEnc             _yenc module... NOT found!
 error-sameHTTP-HTTPS     HTTP and HTTPS ports cannot be the same
@@ -689,6 +690,7 @@ error-tvSimRename@2      Failed to rename similar file: %s to %s
 error-tvTemp@1           Cannot create temp file for %s
 warn-matrixBadRep@1      Invalid nzbmatrix report number %s
 warn-matrixFail          Problem accessing nzbmatrix server.
+warn-noRepair            No PAR2 program found, repairs not possible\n
 
 #Growl Messages
 grwl-notif-startup       Startup/Shutdown

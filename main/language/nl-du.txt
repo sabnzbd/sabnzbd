@@ -152,6 +152,8 @@ emailResult       Test resultaat email
 lastWarnings      Recentste meldingen
 clearWarnings     Wissen
 server-blocked    Deblokkeren
+warning           WAARSCHUWING:
+error             FOUT:
 
 # Configuration
 configuration     Instellingen
@@ -545,7 +547,6 @@ his-retryURL2            Opnieuw
 
 # Errors and Warnings
 error-noPar2             par2 propgramma niet gevonden!
-error-noStartup@2        Kan %s-%s niet opstarten, ik stop er mee.
 error-noWebUi            Kan web interface niet starten
 error-noYEnc             _yenc module niet gevonden!
 error-sameHTTP-HTTPS     HTTP en HTTPS poorten kunnen niet gelijk zijn
@@ -675,6 +676,7 @@ error-tvSimRename@2      Hernoemen van gelijkaardig bestand %s tot %s mislukt
 error-tvTemp@1           Aanmaken tijdelijk bestand %s mislukt
 warn-matrixBadRep@1      Ongeldig nzbmatrix rapport nummer %s
 warn-matrixFail          Kan nzbmatrix niet bereiken
+warn-noRepair            Geen PAR2 programma, kan geen reparaties uitvoeren\n
 
 #Growl Messages
 grwl-notif-startup       Startup/Shutdown

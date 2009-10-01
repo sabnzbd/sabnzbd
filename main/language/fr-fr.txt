@@ -156,6 +156,9 @@ emailResult       Résultat du test Email
 lastWarnings      Derniers avertissements
 clearWarnings     effacer
 server-blocked    bloqué
+warning           AVERTISSEMENT:
+error             ERREUR:
+
 
 # Configuration
 configuration     Configuration
@@ -565,7 +568,6 @@ his-retryURL2            Essayer de nouveau
 
 # Errors and Warnings
 error-noPar2             binaire par2... NON trouvé !
-error-noStartup@2        Initialisation de %s-%s echouée, annulation
 error-noWebUi            Echec du lancement de l'interface web
 error-noYEnc             module _yenc... NON trouvé!
 error-sameHTTP-HTTPS     Les ports HTTP et HTTPS ne peuvent être identiques
@@ -694,6 +696,7 @@ error-tvSimRename@2      Echec du renommange des fichiers similaires : %s en %s
 error-tvTemp@1           Impossible de créer le fichier temporaire %s
 warn-matrixBadRep@1      Numéro de rapport nzbmatrix invalide %s
 warn-matrixFail          Problème d'accès au serveur nzbmatrix.
+warn-noRepair            No PAR2 program found, repairs not possible\n
 
 #Growl Messages
 grwl-notif-startup       Démarrage/Arrêt

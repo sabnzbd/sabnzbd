@@ -965,12 +965,11 @@ def main():
 
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
-    print_modules()
 
     init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True)
 
     if not init_ok:
-        logging.error(T('error-noStartup@2'),
+        logging.error('Initializing %s-%s failed, aborting',
                       sabnzbd.MY_NAME, sabnzbd.__version__)
         exit_sab(2)
 
@@ -1003,6 +1002,8 @@ def main():
     except:
         logging.exception("Failed to start %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
         sabnzbd.halt()
+
+    print_modules()
 
     # Upload any nzb/zip/rar/nzb.gz files from file association
     if upload_nzbs:

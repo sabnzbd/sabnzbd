@@ -355,7 +355,7 @@ class MainPage:
             if sabnzbd.newsunpack.PAR2_COMMAND:
                 info['warning'] = ""
             else:
-                info['warning'] = "No PAR2 program found, repairs not possible<br/>"
+                info['warning'] = T('warn-noRepair')
 
             template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -588,13 +588,13 @@ class MainPage:
                     if dir.lower() == 'desc':
                         reverse=True
                     nzbqueue.sort_queue(sort,reverse)
-                
+
                 # &history=1 will show unprocessed items in the history
                 if kwargs.get('history'):
                     history = True
                 else:
                     history = False
-                    
+
                 info, pnfo_list, bytespersec, verboseList, dictn = \
                     build_queue(history=history, start=start, limit=limit)
                 info['categories'] = info.pop('cat_list')
@@ -2445,6 +2445,7 @@ class ConnectionInfo:
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
+            w = w.replace('WARNING', T('warning')).replace('ERROR', T('error'))
             wlist.append(xml_name(w))
         header['warnings'] = wlist
 
