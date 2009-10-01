@@ -946,7 +946,7 @@ class NzoPage:
                 cat = pnfo[PNFO_EXTRA_FIELD1]
                 if not cat:
                     cat = 'None'
-                filename = pnfo[PNFO_FILENAME_FIELD]
+                filename = xml_name(pnfo[PNFO_FILENAME_FIELD])
                 priority = pnfo[PNFO_PRIORITY_FIELD]
 
                 slot['nzo_id'] =  str(nzo_id)
@@ -3036,7 +3036,7 @@ def build_file_list(id):
 
                 age = calc_age(date)
 
-                line = {'filename':str(fn),
+                line = {'filename':fn,
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
                         'bytes':"%.2f" % bytes,
@@ -3050,7 +3050,7 @@ def build_file_list(id):
 
                 age = calc_age(date)
 
-                line = {'filename':str(fn),
+                line = {'filename':fn,
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
                         'bytes':"%.2f" % bytes,
@@ -3066,7 +3066,7 @@ def build_file_list(id):
 
                 age = calc_age(date)
 
-                line = {'filename':str(fn), 'set':_set,
+                line = {'filename':fn, 'set':_set,
                         'mbleft':"%.2f" % (bytes_left / MEBI),
                         'mb':"%.2f" % (bytes / MEBI),
                         'bytes':"%.2f" % bytes,
@@ -3395,7 +3395,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
 
                     age = calc_age(date)
 
-                    line = {'filename':str(fn),
+                    line = {'filename':fn,
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
                             'size': format_bytes(bytes),
@@ -3409,7 +3409,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
 
                     age = calc_age(date)
 
-                    line = {'filename':str(fn),
+                    line = {'filename':fn,
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
                             'size': format_bytes(bytes),
@@ -3421,10 +3421,11 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
                 for tup in queued_files:
                     _set, bytes_left, bytes, fn, date = tup
                     fn = xml_name(fn)
+                    _set = xml_name(_set)
 
                     age = calc_age(date)
 
-                    line = {'filename':str(fn), 'set':_set,
+                    line = {'filename':fn, 'set':_set,
                             'mbleft':"%.2f" % (bytes_left / MEBI),
                             'mb':"%.2f" % (bytes / MEBI),
                             'size': format_bytes(bytes),

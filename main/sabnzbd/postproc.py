@@ -420,7 +420,11 @@ class PostProcessor(Thread):
                     nzo.set_status("Failed")
 
             except:
+                #Cause a crash when reparing par2 sets with accents
+                #try:
                 logging.error(T('error-ppFailed@1'), filename)
+                #except:
+                #    pass
                 logging.debug("Traceback: ", exc_info = True)
                 nzo.set_fail_msg('PostProcessing Crashed, see logfile')
                 nzo.set_status("Failed")

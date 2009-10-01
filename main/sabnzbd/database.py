@@ -373,7 +373,11 @@ def decode_factory(text):
         and converts and text to utf-8
     '''
     if isinstance(text, str):
-        return text.decode('Latin-1', 'replace').encode('utf-8', 'replace')
+        if sabnzbd.WIN32:
+            return text.decode('Latin-1', 'replace').encode('utf-8', 'replace')
+        else:
+            return text.decode('utf-8', 'replace')
+        
 
     elif isinstance(text, list):
         new_text = []

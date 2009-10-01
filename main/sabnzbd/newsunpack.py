@@ -27,7 +27,7 @@ import logging
 from time import time
 
 import sabnzbd
-from sabnzbd.codecs import TRANS, unicode2local, reliable_unpack_names
+from sabnzbd.codecs import TRANS, unicode2local,name_fixer, reliable_unpack_names
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.misc import format_time_string, find_on_path
 import sabnzbd.cfg as cfg
@@ -677,7 +677,11 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         except:
             msg = sys.exc_info()[1]
             nzo.set_fail_msg('Reparing failed, %s' % msg)
+            #Cause a crash when reparing par2 sets with accents
+#            try:
             logging.error(T('error-filePar2@2'), msg, setname)
+#            except:
+#                pass
             return readd, result
 
     try:
@@ -1066,12 +1070,13 @@ def QuickCheck(set, nzo):
     result = False
     nzf_list = nzo.get_files()
     for file in md5pack:
+        file = name_fixer(file)
         if sabnzbd.misc.on_cleanup_list(file, False):
             result = True
             continue
         found = False
         for nzf in nzf_list:
-            if file == nzf.get_filename():
+            if file == name_fixer(nzf.get_filename()):
                 found = True
                 if nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
