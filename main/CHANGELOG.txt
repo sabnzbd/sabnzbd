@@ -6,6 +6,7 @@
 * Removed a number category-related problems
 * Scan enabled RSS feeds 15 sec after startup
 * Get newzbin bookmarks 20 sec after startup
+* Add scheduled pause-all command thats stops all disk activity
 * Solved lots of small bugs
 -------------------------------------------------------------------------------
 0.5.0Alpha5 by The SABnzbd-Team

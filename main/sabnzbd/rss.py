@@ -313,7 +313,7 @@ class RSSQueue:
         # run is completed. Cannot use LOCK, because run_feed
         # already uses the LOCK.
 
-        if not self.__running:
+        if not (self.__running or sabnzbd.PAUSED_ALL):
             self.__running = True
             feeds = config.get_rss()
             for feed in feeds:

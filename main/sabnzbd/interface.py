@@ -450,7 +450,7 @@ class MainPage:
         if msg: return msg
 
         scheduler.plan_resume(0)
-        downloader.resume_downloader()
+        sabnzbd.unpause_all()
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -759,7 +759,7 @@ class MainPage:
 
         if mode == 'resume':
             scheduler.plan_resume(0)
-            downloader.resume_downloader()
+            sabnzbd.unpause_all()
             return report(output)
 
         if mode == 'shutdown':
@@ -1210,7 +1210,7 @@ class QueuePage:
         msg = check_session(kwargs)
         if msg: return msg
         scheduler.plan_resume(0)
-        downloader.resume_downloader()
+        sabnzbd.unpause_all()
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2090,7 +2090,7 @@ class ConfigScheduling:
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        actions = ['resume', 'pause', 'shutdown', 'restart', 'speedlimit']
+        actions = ['resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit']
         days = get_days()
         conf['schedlines'] = []
         snum = 1
@@ -2143,7 +2143,7 @@ class ConfigScheduling:
         if minute and hour  and dayofweek and action:
             if (action == 'speedlimit') and arguments.isdigit():
                 pass
-            elif action in ('resume', 'pause', 'shutdown', 'restart'):
+            elif action in ('resume', 'pause', 'pause_all', 'shutdown', 'restart'):
                 arguments = ''
             elif action.find(':') > 0:
                 if arguments == '1':
@@ -2720,7 +2720,7 @@ def build_header(prim):
         color = ''
 
     header = { 'T': T, 'Tspec': Tspec, 'version':sabnzbd.__version__, 'paused':downloader.paused(),
-               'pause_int': scheduler.pause_int(),
+               'pause_int': scheduler.pause_int(), 'paused_all': sabnzbd.PAUSED_ALL,
                'uptime':uptime, 'color_scheme':color }
     speed_limit = downloader.get_limit()
     if speed_limit <= 0:

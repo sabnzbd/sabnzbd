@@ -4,7 +4,7 @@
     - <b>$T('ft-sysload')</b> $loadavg
 <!--#end if#-->
 <!--#if $paused#-->
-    - <b>$T('ft-paused')</b><!--#if $pause_int != "0"#-->($pause_int)<!--#end if#-->
+    - <b>$T('ft-paused')</b><!--#if $pause_int != "0"#-->($pause_int)<!--#end if#--><!--#if $paused_all#--><b>!</b><!--#end if#-->
 <!--#end if#-->
 <br>
 <!--#if int($cache_max)#-->

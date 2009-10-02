@@ -373,7 +373,7 @@ class DirScanner(threading.Thread):
                 time.sleep(1.0)
                 x = x - 1
 
-            if dirscan_dir and not self.shutdown:
+            if dirscan_dir and not self.shutdown and not sabnzbd.PAUSED_ALL:
                 run_dir(dirscan_dir, None)
 
                 try:

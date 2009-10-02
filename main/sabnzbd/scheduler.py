@@ -83,6 +83,9 @@ def init():
         elif action_name == 'pause':
             action = sabnzbd.downloader.pause_downloader
             arguments = []
+        elif action_name == 'pause_all':
+            action = sabnzbd.pause_all
+            arguments = []
         elif action_name == 'shutdown':
             action = sabnzbd.shutdown_program
             arguments = []
@@ -227,10 +230,9 @@ def sort_schedules(forward):
 
 def analyse(was_paused=False):
     """ Determine what pause/resume state we would have now.
-        Return True if paused mode would be active.
-        Return speedlimit
     """
     paused = None
+    paused_all = False
     speedlimit = None
     servers = {}
 
@@ -243,8 +245,11 @@ def analyse(was_paused=False):
             value = None
         if action == 'pause':
             paused = True
+        elif action == 'pause_all':
+            paused_all = True
         elif action == 'resume':
             paused = False
+            paused_all = False
         elif action == 'speedlimit' and value!=None:
             speedlimit = int(ev[2])
         elif action == 'enable_server':
@@ -259,7 +264,12 @@ def analyse(was_paused=False):
                 logging.warning(T('warn-schedNoServer@1'), value)
 
     if not was_paused:
-        sabnzbd.downloader.set_paused(paused)
+        if paused_all:
+            sabnzbd.pause_all()
+        else:
+            sabnzbd.unpause_all()
+        sabnzbd.downloader.set_paused(paused or paused_all)
+
     if speedlimit:
         sabnzbd.downloader.limit_speed(speedlimit)
     for serv in servers:
@@ -280,7 +290,7 @@ def scheduled_resume():
     """
     global __PAUSE_END
     if __PAUSE_END is None:
-       sabnzbd.downloader.resume_downloader()
+       sabnzbd.unpause_all()
 
 
 def __oneshot_resume(when):
@@ -291,7 +301,7 @@ def __oneshot_resume(when):
     if __PAUSE_END != None and (when > __PAUSE_END-5) and (when < __PAUSE_END+55):
         __PAUSE_END = None
         logging.debug('Resume after pause-interval')
-        sabnzbd.downloader.resume_downloader()
+        sabnzbd.unpause_all()
     else:
         logging.debug('Ignoring cancelled resume')
 
@@ -307,7 +317,7 @@ def plan_resume(interval):
         sabnzbd.downloader.pause_downloader()
     else:
         __PAUSE_END = None
-        sabnzbd.downloader.resume_downloader()
+        sabnzbd.unpause_all()
 
 
 def pause_int():

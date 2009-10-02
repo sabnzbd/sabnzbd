@@ -375,6 +375,7 @@ sch-pause                Pause
 sch-shutdown             Eteindre
 sch-restart              Rédemarrer
 sch-speedlimit           Limite de vitesse
+sch-pause_all            Pause tout
 
 # Config->RSS
 configRSS                Configuration RSS

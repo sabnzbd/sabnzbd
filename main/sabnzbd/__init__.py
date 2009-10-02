@@ -118,6 +118,7 @@ WEB_COLOR2 = None
 SABSTOP = False
 RESTART_REQ = False
 OSX_ICON = 1
+PAUSED_ALL = False
 
 __INITIALIZED__ = False
 
@@ -362,6 +363,17 @@ def save_state():
     newzbin.bookmarks_save()
     dirscanner.save()
     postproc.save()
+
+def pause_all():
+    global PAUSED_ALL
+    PAUSED_ALL = True
+    logging.debug('PAUSED_ALL active')
+
+def unpause_all():
+    global PAUSED_ALL
+    PAUSED_ALL = False
+    sabnzbd.downloader.resume_downloader()
+    logging.debug('PAUSED_ALL inactive')
 
 
 ################################################################################

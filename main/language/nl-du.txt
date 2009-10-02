@@ -354,6 +354,7 @@ sch-pause                Pauze
 sch-shutdown             Afsluiten
 sch-restart              Herstarten
 sch-speedlimit           Maximum snelheid
+sch-pause_all            Alles pauzeren
 
 
 # Config->RSS
