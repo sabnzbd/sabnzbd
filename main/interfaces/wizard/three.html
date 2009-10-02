@@ -15,9 +15,9 @@ $T('wizard-explain-server')
     <p class="align-center"><a href="http://www.giganews.com/?a=SABnzbd" target="_blank"><img src="http://www.giganews.com/banners/gn_sig.jpg" border="0"></a></p>
 </div>
 <br /><br class="clear" />
-<form action="./four" method="post">
+<form action="./four" method="post" autocomplete="off">
 <div id="serverDetails">
-    <label class="label">$T('srv-host')<span class="required-star">*</span></label><input id="host" class="clearinput text-input-wide" type="text" size="26" name="host" value="$host"> 
+    <label class="label">$T('srv-host')<span class="required-star">*</span></label><input id="host" class="clearinput text-input-wide" type="text" size="26" name="host" value="$host">
     <div id="host-tip" class="tips">$T('wizard-example') news.giganews.com</div>
     <div id="host-error" class="error-text hidden">$T('wizard-server-required')</div>
     <br class="clear" />
@@ -51,7 +51,7 @@ $T('wizard-explain-server')
             <div class="align-center">
                 <!--#for $step in xrange($steps)#-->
                    <!--#set $step = $step + 1#-->
-                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span> 
+                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
                 <!--#end for#-->
             </div>
         </td>

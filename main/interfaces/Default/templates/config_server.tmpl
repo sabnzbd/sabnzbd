@@ -8,7 +8,7 @@
 
 <h2>$T('configServer')</h2>
 <div class="EntryBlock">
-  <form action="addServer" method="post">
+  <form action="addServer" method="post" autocomplete="off">
     <fieldset class="EntryFieldSet">
       <legend>$T('addServer')</legend>
       $T('srv-host'):<br><input type="text" size="25" name="host"><br>
@@ -32,7 +32,7 @@
 <!--#set $slist = $servers.keys()#-->
 <!--#$slist.sort()#-->
 <!--#for $server in $slist#-->
-  <form action="saveServer" method="post">
+  <form action="saveServer" method="post" autocomplete="off">
     <fieldset class="EntryFieldSet">
       <legend>$server</legend>
       $T('srv-host'):<br><input type="text" size="25" name="host" value="$servers[$server]['host']"><br>

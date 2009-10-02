@@ -6,7 +6,7 @@
  <!--#$slist.sort()#-->
  <!--#for $server in $slist#-->
 <div class="server">
-  <form class="cmxform" id="$servers[$server]['host']$servers[$server]['port']">
+  <form class="cmxform" id="$servers[$server]['host']$servers[$server]['port']" autocomplete="off">
     <fieldset class="EntryFieldSet">
     <legend>$server</legend>
         <hr />
@@ -38,7 +38,7 @@
             <label><span class="label">$T('srv-enable'):</span>
 			<input class="radio" type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></label>
    		<br class="clear" />
-        
+
         <div id="$servers[$server]['host']$servers[$server]['port']-result" class="server-test">$T('srv-testHint')</div>
 		<input type="hidden" name="server" value="$server">
 
@@ -52,7 +52,7 @@
   </div>
 <!--#end for#-->
 <br class="clear"/>
- <form id="addserver" class="cmxform">
+ <form id="addserver" class="cmxform" autocomplete="off">
     <fieldset class="EntryFieldSet">
       <legend>$T('addServer')</legend>
  <hr />

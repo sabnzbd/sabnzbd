@@ -2,14 +2,14 @@
 <!--#set global $help_uri="Configure+Email"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-<form action="saveEmail" method="post" name="fullform">
+<form action="saveEmail" method="post" name="fullform" autocomplete="off">
 <input type="hidden" name="session" value="$session">
 
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-    
+
     <legend><span class="sprite_container sprite_config_email_options">&nbsp;</span> $T('emailOptions')</legend>
-    
+
     <strong>$T('opt-email_endjob'):</strong><br/>
         <input type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> $T('email-never')
         <input type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> $T('email-always')
@@ -19,43 +19,43 @@
     <input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
     <strong>$T('opt-email_full')</strong><br/>
     <small>$T('explain-email_full')</small>
-    
+
     <br/><br/>
 	<strong>$T('opt-email_dir'):</strong><br/>
 	<small>$T('explain-email_dir')</small><br/>
 	<input type="text" size="40" name="email_dir" value="$email_dir">
-    
+
 </fieldset>
 </div>
 
 <fieldset class="EntryFieldSet">
-    
+
     <legend><span class="sprite_container sprite_config_email_account_settings">&nbsp;</span> $T('emailAccount')</legend>
-    
+
     <strong>$T('opt-email_server'):</strong><br/>
     <small>$T('explain-email_server')</small><br/>
     <input type="text" size="35" name="email_server" value="$email_server"/>
-    
+
     <br/><br/>
     <strong>$T('opt-email_to'):</strong><br/>
     <small>$T('explain-email_to')</small><br/>
     <input type="text" size="35" name="email_to" value="$email_to"/>
-    
+
     <br/><br/>
     <strong>$T('opt-email_from'):</strong><br/>
     <small>$T('explain-email_from')</small><br/>
     <input type="text" size="35" name="email_from" value="$email_from"/>
-    
+
     <br/><br/>
     <strong>$T('opt-email_account'):</strong><br/>
     <small>$T('explain-email_account')</small><br/>
     <input type="text" size="35" name="email_account" value="$email_account"/>
-    
+
     <br/><br/>
     <strong>$T('opt-email_pwd'):</strong><br/>
     <small>$T('explain-email_pwd')</small><br/>
     <input type="password" size="35" name="email_pwd" value="$email_pwd"/>
-    
+
 </fieldset>
 </div>
 

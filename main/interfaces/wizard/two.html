@@ -1,7 +1,7 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 <script type="text/javascript" src="static/javascript/jquery.js"></script>
 <script type="text/javascript" src="static/javascript/pagetwo.js"></script>
-<form action="./three" method="post">
+<form action="./three" method="post" autocomplete="off">
 <div class="indented bigger">
 <h3>$T('wizard-access')</h3>
 <!--#if $host in ('localhost','0.0.0.0')#-->
@@ -17,7 +17,7 @@
             <label class="label">$T('srv-password'):</label><input type="password" size="20" value="$web_pass" name="web_pass" id="web_pass">
         </div>
         <br class="clear" />
-    
+
         <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if $enable_https == 1 then 'checked="checked"' else ''#--><!--#if $have_ssl then '' else 'disabled'#-->> <label for="enable_https"><!--#if $have_ssl then $T('wizard-access-https') else '<span class="disabled-text">'+$T('wizard-access-https')+'</span> (pyopenssl (python-ssl) '+$T('opt-notInstalled')+')'#--></label><br />
 <br />
 <h3>$T('wizard-misc')</h3>
@@ -37,7 +37,7 @@
             <div class="align-center">
                 <!--#for $step in xrange($steps)#-->
                    <!--#set $step = $step + 1#-->
-                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span> 
+                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
                 <!--#end for#-->
             </div>
         </td>
@@ -46,5 +46,5 @@
 </table>
 </div>
 </form>
-			
+
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

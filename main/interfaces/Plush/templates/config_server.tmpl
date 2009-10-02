@@ -4,7 +4,7 @@
 
 <div class="EntryBlock">
 
-<form action="addServer" method="post">
+<form action="addServer" method="post" autocomplete="off">
 <input type="hidden" name="session" value="$session">
 
 <fieldset class="EntryFieldSet">
@@ -61,7 +61,7 @@
 <!--#for $server in $slist#-->
 <!--#set $cur = $cur + 1#-->
 
-<form action="saveServer" method="post">
+<form action="saveServer" method="post" autocomplete="off">
 <input type="hidden" name="session" value="$session">
 
 <fieldset class="EntryFieldSet">
@@ -113,7 +113,7 @@
 		<input type="button" value="$T('button-testServer')" class="testServer" />
 		<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
 	</td></tr></table>
-	
+
 </fieldset>
 </form>
 <!--#end for#-->

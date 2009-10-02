@@ -1,33 +1,33 @@
 <!--#set global $pane="Index Sites"#-->
 <!--#set global $help_uri="Configure+Newzbin"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
-    
-<form action="saveNewzbin" method="post" name="fullform">
+
+<form action="saveNewzbin" method="post" name="fullform" autocomplete="off">
 <input type="hidden" name="session" value="$session">
 
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-    
+
     <legend><span class="sprite_container sprite_config_indexsites_account_info">&nbsp;</span> Newzbin $T('accountInfo')</legend>
 
 	<small>$T('explain-newzbin')</small>
-    
+
     <br/><br/>
     <strong>$T('opt-username_newzbin'):</strong><br/>
     <small>$T('explain-username_newzbin')</small><br/>
     <input type="text" name="username_newzbin" value="$username_newzbin"/>
-    
+
     <br/><br/>
     <strong>$T('opt-password_newzbin'):</strong><br/>
     <small>$T('explain-password_newzbin')</small><br/>
     <input type="password" name="password_newzbin" value="$password_newzbin"/>
-    
+
 </fieldset>
 </div>
 
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-    
+
     <legend><span class="sprite_container sprite_config_indexsites_bookmarks">&nbsp;</span> Newzbin $T('newzbinBookmarks')</legend>
 
 	<br/>
@@ -37,34 +37,34 @@
     <!--#else#-->
     <input type="button" id="showBookmarks" value="$T('link-ShowBM')" />
     <!--#end if#-->
-    
+
     <br/><br/>
     <input type="checkbox" name="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks > 0 then "checked=1" else ""#--> />
     <strong>$T('opt-newzbin_bookmarks')</strong><br/>
     <small>$T('explain-newzbin_bookmarks')</small><br/>
-    
+
     <br/>
     <input type="checkbox" name="newzbin_unbookmark" value="1" <!--#if $newzbin_unbookmark > 0 then "checked=1" else ""#--> />
     <strong>$T('opt-newzbin_unbookmark')</strong><br/>
     <small>$T('explain-newzbin_unbookmark')</small><br/>
-    
+
     <br/>
     <strong>$T('opt-bookmark_rate'):</strong><br/>
     <small>$T('explain-bookmark_rate')</small><br/>
     <input type="text" name="bookmark_rate" size="6" value="$bookmark_rate"/>
-    
+
 </fieldset>
 </div>
 <!--#if $bookmarks_list#-->
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-    
+
     <legend><span class="sprite_container sprite_config_indexsites_processed">&nbsp;</span> $T('processedBM')</legend>
-    
+
     <!--#for $msgid in $bookmarks_list#-->
     <a href="https://www.newzbin.com/browse/post/$msgid/" target="_blank">$msgid</a><br/>
     <!--#end for#-->
-    
+
 </fieldset>
 </div>
 <!--#end if#-->
@@ -72,7 +72,7 @@
 <br class="clear" />
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
-    
+
     <legend><span class="sprite_container sprite_config_indexsites_account_info">&nbsp;</span> NzbMatrix $T('accountInfo')</legend>
 	<small>$T('explain-nzbmatrix')</small>
 
@@ -80,15 +80,15 @@
     <strong>$T('opt-username_matrix'):</strong><br/>
     <small>$T('explain-username_matrix')</small><br/>
     <input type="text" name="matrix_username" value="$matrix_username"/>
-    
+
     <br/><br/>
     <strong>$T('opt-apikey_matrix'):</strong><br/>
     <small>$T('explain-apikey_matrix')</small><br/>
     <input type="text" name="matrix_apikey" value="$matrix_apikey"/>
-    
+
 </fieldset>
 </div>
 
 </form>
-            
+
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->
