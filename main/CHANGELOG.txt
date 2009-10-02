@@ -12,6 +12,7 @@
 * Initial runs of RSS will no longer be downloaded by "download" button
   instead thay are marked and can be downloaded individually
 * TV Sort: Fixed double brackets () naming on items with the country in the name.
+* Disable password completion by browsers on Config pages.
 * Solved lots of small bugs
 * Skin improvements
 -------------------------------------------------------------------------------
