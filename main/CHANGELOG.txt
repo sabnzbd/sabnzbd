@@ -1,13 +1,19 @@
 -------------------------------------------------------------------------------
 0.5.0Alpha6 by The SABnzbd-Team
 -------------------------------------------------------------------------------
-* 64bit unrar/rar for Windows
+* Add 64bit unrar/rar 3.90 for Windows
 * "Mobile" skin (limited functionality)
 * Removed a number category-related problems
 * Scan enabled RSS feeds 15 sec after startup
 * Get newzbin bookmarks 20 sec after startup
 * Add scheduled pause-all command thats stops all disk activity
+* Improved handling of accented characters (also in par2)
+* Unrelated empty folders are no longer removed from "incomplete" folder
+* Initial runs of RSS will no longer be downloaded by "download" button
+  instead thay are marked and can be downloaded individually
+* TV Sort: Fixed double brackets () naming on items with the country in the name.
 * Solved lots of small bugs
+* Skin improvements
 -------------------------------------------------------------------------------
 0.5.0Alpha5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
