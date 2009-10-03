@@ -66,7 +66,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         Derive options from category, if option not already defined.
         Specified options have priority over category-options
     """
-    if not pp:
+    if pp is None:
         try:
             pp = config.get_categories()[safe_lower(cat)].pp.get()
             # Get the default pp
