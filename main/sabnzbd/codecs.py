@@ -43,7 +43,7 @@ def reliable_unpack_names():
 def name_fixer(p):
     """ Return UTF-8 encoded string, if appropriate for the platform """
 
-    if not sabnzbd.WIN32:
+    if sabnzbd.DARWIN:
         return p.decode('Latin-1', 'replace').encode('utf-8', 'replace').replace('?', '_')
     else:
         return p
@@ -62,7 +62,7 @@ def xml_name(p, keep_escape=False, encoding=None):
     """ Prepare name for use in HTML/XML contect """
 
     if type(p) != type(u''):
-        if not sabnzbd.WIN32 or encoding == 'utf-8':
+        if sabnzbd.DARWIN or encoding == 'utf-8':
             p = p.decode('utf-8', 'replace')
         else:
             p = p.decode('Latin-1', 'replace')
