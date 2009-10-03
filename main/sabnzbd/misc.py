@@ -779,17 +779,17 @@ def bad_fetch(nzo, url, retry=False, archive=False):
 
     pp = nzo.get_pp()
     if pp:
-        pp = '&pp=%s' % pp
+        pp = '&pp=%s' % urllib.quote(pp)
     else:
         pp = ''
     cat = nzo.get_cat()
     if cat:
-        cat = '&cat=%s' % cat
+        cat = '&cat=%s' % urllib.quote(cat)
     else:
         cat = ''
     script = nzo.get_script()
     if script:
-        script = '&script=%s' % script
+        script = '&script=%s' % urllib.quote(script)
     else:
         script = ''
 
@@ -802,7 +802,7 @@ def bad_fetch(nzo, url, retry=False, archive=False):
 
     if retry:
         text = T('his-retryURL1')+', <a href="./retry?session=%s&url=%s%s%s%s">' + T('his-retryURL2') + '</a>'
-        parms = (cfg.API_KEY.get(), urllib.quote(url), pp, urllib.quote(cat), urllib.quote(script))
+        parms = (cfg.API_KEY.get(), urllib.quote(url), pp, cat, script)
         nzo.set_fail_msg(text % parms)
     else:
         if archive:
