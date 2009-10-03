@@ -2615,10 +2615,14 @@ def _make_link(qfeed, job):
         cat = '&cat=' + escape(job[3])
     else:
         cat = ''
-    if job[4]:
-        pp = '&pp=' + escape(str(job[4]))
-    else:
+    if job[4] is None:
         pp = ''
+    else:
+        pp = '&pp=' + escape(str(job[4]))
+    if job[5]:
+        script = '&script=' + escape(job[5])
+    else:
+        script = ''
 
     star = '&nbsp;*' * int(job[0].endswith('*'))
 
@@ -2626,8 +2630,8 @@ def _make_link(qfeed, job):
     if job[2].isdigit():
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (job[2], title)
 
-    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
-           (cfg.API_KEY.get() ,qfeed, name, cat, pp, T('link-download'), title, star)
+    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
+           (cfg.API_KEY.get() ,qfeed, name, cat, pp, script, T('link-download'), title, star)
 
 
 def ShowRssLog(feed, all):
