@@ -393,7 +393,7 @@ class PostProcessor(Thread):
                     ## Email the results
                     if (not nzb_list) and cfg.EMAIL_ENDJOB.get():
                         if (cfg.EMAIL_ENDJOB.get() == 1) or (cfg.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
-                            email.endjob(filename, msgid, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
+                            email.endjob(dirname, msgid, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
                                          nzo.get_unpack_info(), script, TRANS(script_log), script_ret)
 
                     if fname:

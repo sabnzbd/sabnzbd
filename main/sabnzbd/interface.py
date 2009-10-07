@@ -2611,7 +2611,7 @@ def ShowOK(url):
 def _make_link(qfeed, job):
     # Return downlink for a job
     name = urllib.quote_plus(job[2])
-    nzbname = '&nzbname=%s.nzb' % urllib.quote(sanitize_foldername(job[1]))
+    nzbname = '&nzbname=%s' % urllib.quote(sanitize_foldername(job[1]))
     if job[3]:
         cat = '&cat=' + escape(job[3])
     else:

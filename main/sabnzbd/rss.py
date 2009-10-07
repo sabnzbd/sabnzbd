@@ -372,7 +372,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
     if script=='': script = None
     if pp=='': pp = None
 
-    nzbname = misc.sanitize_foldername(title) + ".nzb"
+    nzbname = misc.sanitize_foldername(title)
     m = RE_NEWZBIN.search(link)
     if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
         jobs[link] = []

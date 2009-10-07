@@ -19,6 +19,7 @@
 sabnzbd.nzbstuff - misc
 """
 
+import os
 import time
 import re
 import logging
@@ -427,8 +428,14 @@ class NzbObject(TryList):
             r, u, d = sabnzbd.pp_to_opts(pp)
 
         self.__filename = filename    # Original filename
-        self.__dirname = filename     # Keeps track of the working folder
-        self.__original_dirname = filename # Used for folder name for final unpack
+        if filename:
+            dirname, ext = os.path.splitext(filename) # Used for folder name for final unpack
+            if ext.lower() != '.nzb':
+                dirname = filename
+        else:
+            dirname = ''
+        self.__dirname = dirname      # Keeps track of the working folder
+        self.__original_dirname = dirname # Used for folder name for final unpack
         self.__created = False        # dirprefixes + dirname created
         self.__bytes = 0              # Original bytesize
         self.__bytes_downloaded = 0   # Downloaded byte
