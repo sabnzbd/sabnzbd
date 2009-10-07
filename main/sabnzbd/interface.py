@@ -40,7 +40,7 @@ from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
 from sabnzbd.misc import real_path, create_real_path, loadavg, \
-     to_units, from_units, diskfree, disktotal, get_ext, \
+     to_units, from_units, diskfree, disktotal, get_ext, sanitize_foldername, \
      get_filename, cat_to_opts, IntConv
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
@@ -2611,6 +2611,7 @@ def ShowOK(url):
 def _make_link(qfeed, job):
     # Return downlink for a job
     name = urllib.quote_plus(job[2])
+    nzbname = '&nzbname=%s.nzb' % urllib.quote(sanitize_foldername(job[1]))
     if job[3]:
         cat = '&cat=' + escape(job[3])
     else:
@@ -2630,8 +2631,8 @@ def _make_link(qfeed, job):
     if job[2].isdigit():
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (job[2], title)
 
-    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
-           (cfg.API_KEY.get() ,qfeed, name, cat, pp, script, T('link-download'), title, star)
+    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
+           (cfg.API_KEY.get() ,qfeed, name, cat, pp, script, nzbname, T('link-download'), title, star)
 
 
 def ShowRssLog(feed, all):

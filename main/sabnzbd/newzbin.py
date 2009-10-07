@@ -238,10 +238,10 @@ def _grabnzb(msgid):
         fetchurl = '/api/dnzb/'
         conn.request('POST', fetchurl, postdata, headers)
         response = conn.getresponse()
-        
+
         # Save debug info if we have to
         data = response.read()
-        
+
     except:
         _warn_user('Problem accessing Newzbin server, wait 1 min.')
         return retry
@@ -338,7 +338,7 @@ class Bookmarks:
     @synchronized(BOOK_LOCK)
     def run(self, delete=None):
 
-        headers = { 'User-Agent': 'SABnzbd', }
+        headers = { 'User-Agent': 'SABnzbd+/%s' % sabnzbd.__version__, }
 
         # Connect to Newzbin
         try:

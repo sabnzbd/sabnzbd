@@ -120,6 +120,8 @@ class URLGrabber(Thread):
                 logging.info('Grabbing URL %s', url)
                 opener = urllib.FancyURLopener({})
                 opener.prompt_user_passwd = None
+                opener.addheaders = []
+                opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
                 opener.addheader('Accept-encoding','gzip')
                 filename = None
                 try:
@@ -194,7 +196,7 @@ def _grab_nzbmatrix(url):
 
     logging.info('Fetching NZB for nzbmatrix report #%s', msgid)
 
-    headers = {'User-agent' : 'SABnzbd-' + sabnzbd.version.__version__}
+    headers = {'User-agent' : 'SABnzbd+/' + sabnzbd.version.__version__}
 
     # Current api syntax: http://nzbmatrix.com/api-nzb-download.php?id={NZBID}&username={USERNAME}&apikey={APIKEY}
     if _HAVE_SSL:

@@ -29,6 +29,7 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+import sabnzbd.misc as misc
 
 import sabnzbd.utils.feedparser as feedparser
 from sabnzbd.lang import T
@@ -371,6 +372,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
     if script=='': script = None
     if pp=='': pp = None
 
+    nzbname = misc.sanitize_foldername(title) + ".nzb"
     m = RE_NEWZBIN.search(link)
     if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
         jobs[link] = []
@@ -400,7 +402,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             jobs[link].append('')
             jobs[link].append('')
             logging.info("Adding %s (%s) to queue", link, title)
-            sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority)
+            sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
         else:
             jobs[link].append(flag + '*')
             jobs[link].append(title)
