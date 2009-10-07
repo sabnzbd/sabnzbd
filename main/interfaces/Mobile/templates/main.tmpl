@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <title>SAB+ Mobile</title>
 
-    <style type="text/css" media="screen">@import "static/stylesheets/jqtouch.min.css?$version";</style>
+    <style type="text/css" media="screen">@import "static/stylesheets/jqtouch.css?$version";</style>
     <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme?$version"/>
 
     <script src="static/javascripts/mobile.js?$version" type="application/x-javascript" charset="utf-8"></script>
@@ -22,11 +22,11 @@
            	 </h3>
             <a class="button" id="refresh" href="#">$T('Mobile-button-refresh')</a>
         </div>
-        <ul>
+        <ul class="edit rounded">
             <li class="arrow"><a href="#queue">$T('menu-queue')</a> <small class="counter" id="queueCount">&nbsp;</small></li>
             <li class="arrow"><a href="#history">$T('menu-history')</a> <small class="counter" id="historyCount">&nbsp;</small></li>
         </ul>
-        <ul class="edit">
+        <ul class="edit rounded">
         	<li><span class="toggle"><input type="checkbox" id="pause" /></span><a href="#">$T('link-pause')</a>
         			<small class="counter" id="pause_timeleft" style="display:none;margin-right:6px;"></small></li>
             <li class="forward"><a href="#addnzb">$T('add') NZB</a></li>
@@ -39,13 +39,13 @@
     <input type="hidden" id="TconfirmDelete" value="$T('Mobile-confirm-delete')" />
     
     
-    <div id="queue" class="plastic">
+    <div id="queue">
         <div class="toolbar">
     		<h1>$T('menu-queue')</h1>
     		<a href="#" class="back">$T('button-back')</a>
             <a class="button slideup" href="#queue_options">$T('Mobile-button-options')</a>
     	</div>
-    	<ul id="queueList"></ul>
+    	<ul id="queueList" class="plastic"></ul>
         <ul class="individual" id="queue_page_buttons">
         	<li><a href="#" class="grayButton" id="queue_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
         	<li><a href="#" class="grayButton" id="queue_page_next">$T('Mobile-button-next') &raquo;</a></li>
@@ -59,7 +59,7 @@
     		<h1>$T('Mobile-button-options')</h1>
             <a class="button goback" href="#">$T('Mobile-button-close')</a>
     	</div>
-        <ul class="edit">
+        <ul class="edit rounded">
         	<li><a href="#">$T('speedLimit'): ($T('KBs'))</a><input type="text" placeholder="$T('none')" id="speed_limit" /></li>
         	<li class="arrow"><a href="#queue_options_pauseinterval">$T('Mobile-button-pauseInterval')</a></li>
         	<li class="arrow"><a href="#queue_options_sort">$T('Mobile-sort')</a></li>
@@ -102,7 +102,7 @@
     		<h1>$T('Mobile-pauseInterval')</h1>
     		<a href="#" class="back">$T('button-back')</a>
     	</div>
-        <ul class="edit">
+        <ul class="edit rounded">
         	<li><a href="#" class="pause_interval" rel="5">$T('Mobile-pause5m')</a></li>
         	<li><a href="#" class="pause_interval" rel="15">$T('Mobile-pause15m')</a></li>
         	<li><a href="#" class="pause_interval" rel="30">$T('Mobile-pause30m')</a></li>
@@ -120,7 +120,7 @@
     		<h1>$T('Mobile-sort')</h1>
     		<a href="#" class="back">$T('button-back')</a>
     	</div>
-        <ul class="edit">
+        <ul class="edit rounded">
             <li><a href="#" class="queue_sort_option" rel="avg_age&dir=asc">$T('Mobile-sortAgeAsc')</a></li>
             <li><a href="#" class="queue_sort_option" rel="avg_age&dir=desc">$T('Mobile-sortAgeDesc')</a></li>
             <li><a href="#" class="queue_sort_option" rel="name&dir=asc">$T('Mobile-sortNameAsc')</a></li>
@@ -141,67 +141,55 @@
 			
 	        <div class="info"><span id="slot_filename"></span></div>
 			
-		    <div class="edgetoedge">
-		        <ul><li>$T('remainTotal')<small><span id="slot_mbleft"></span>&nbsp;&frasl;&nbsp;<span id="slot_mb"></span>&nbsp;$T('MB')&nbsp;<span id="slot_percentage"></span>%</small></li></ul>
-		        <ul><li>$T('eta')<small id="slot_eta"></small></li></ul>
-		        <ul><li>$T('Mobile-left')<small id="slot_timeleft"></small></li></ul>
-		        <ul><li>$T('nzo-age')<small id="slot_avg_age"></small></li></ul>
-		    </div>
+	        <ul class="edgetoedge">
 
-		    <div class="edgetoedge">
+	        	<li>$T('remainTotal')<small><span id="slot_mbleft"></span>&nbsp;&frasl;&nbsp;<span id="slot_mb"></span>&nbsp;$T('MB')&nbsp;<span id="slot_percentage"></span>%</small></li>
+	        	<li>$T('eta')<small id="slot_eta"></small></li>
+	        	<li>$T('Mobile-left')<small id="slot_timeleft"></small></li>
+	        	<li>$T('nzo-age')<small id="slot_avg_age"></small></li>
 
-		        <ul><li><span class="toggle"><input type="checkbox" id="pause_nzb" /></span><a href="#">$T('link-pause') NZB</a></li></ul>
+		        <li><span class="toggle"><input type="checkbox" id="pause_nzb" /></span><a href="#">$T('link-pause') NZB</a></li>
+				
+				<li class="sep">$T('order')</li>
+				<li><select id="switch"><optgroup label="$T('order')"></optgroup></select></li>
 
-				<h4>$T('order')</h4>
-				<ul><li>
-					<select id="switch"><optgroup label="$T('order')"></optgroup></select>
-			    </li></ul>
-			    
-		        <h4>$T('category'):</h4>
-		        <ul><li>
-			        <select id="change_cat"><optgroup label="$T('category')"></optgroup></select>
-			    </li></ul>
-		        
-		        <h4>$T('priority'):</h4>
-		        <ul><li>
-			        <select id="change_priority"><optgroup label="$T('priority')">
+				<li class="sep">$T('category')</li>
+				<li><select id="change_cat"><optgroup label="$T('category')"></optgroup></select></li>
+
+				<li class="sep">$T('priority')</li>
+				<li><select id="change_priority"><optgroup label="$T('priority')">
 			            <option value="2">$T('pr-force')</option>
 			            <option value="1">$T('pr-high')</option>
 			            <option value="0">$T('pr-normal')</option>
 			            <option value="-1">$T('pr-low')</option>
-			        </optgroup></select>
-			    </li></ul>
-			    
-		        <h4>$T('pp'):</h4>
-		        <ul><li>
-			        <select id="change_opts"><optgroup label="$T('pp')">
+				    </optgroup></select></li>
+
+				<li class="sep">$T('pp')</li>
+	        	<li><select id="change_opts"><optgroup label="$T('pp')">
 			            <option value="0">$T('pp-none')</option>
 			            <option value="1">$T('pp-repair')</option>
 			            <option value="2">$T('pp-unpack')</option>
 			            <option value="3">$T('pp-delete')</option>
-			        </optgroup></select>
-			    </li></ul>
-			    
-		        <h4>$T('script'):</h4>
-		        <ul><li>
-			        <select id="change_script"><optgroup label="$T('script')"></optgroup></select>
-			    </li></ul>
-		        
-		        <ul><li><a href="#" id="delete_nzb" class="grayButton">$T('nzo-delete') NZB</a></li></ul>
-		        
-		    </div>
+			        </optgroup></select></li>
+
+				<li class="sep">$T('script')</li>
+				<li><select id="change_script"><optgroup label="$T('script')"></optgroup></select></li>
+
+				<li><a href="#" id="delete_nzb" class="grayButton">$T('nzo-delete') NZB</a></li>
+
+	        </ul>
 
         </div>
     </div>
 
     
-    <div id="history" class="plastic">
+    <div id="history">
         <div class="toolbar">
     		<h1>$T('menu-history')</h1>
     		<a href="#" class="back">$T('button-back')</a>
             <a class="button slideup" href="#history_options">$T('Mobile-button-options')</a>
     	</div>
-    	<ul id="historyList"></ul>
+    	<ul id="historyList" class="plastic"></ul>
 		<ul class="individual" id="history_page_buttons">
         	<li><a href="#" class="grayButton" id="history_page_prev">&laquo; $T('Mobile-button-prev')</a></li>
         	<li><a href="#" class="grayButton" id="history_page_next">$T('Mobile-button-next') &raquo;</a></li>
@@ -232,27 +220,25 @@
         	<div class="info" id="line_action_line"></div>
         	<div class="info" id="line_fail_message"></div>
 
-		    <div class="edgetoedge">
-		        <ul><li>$T('status')<small id="line_status"></small></li></ul>
-		        <ul><li>$T('size')<small id="line_size"></small></li></ul>
-		        <ul><li>$T('completed')<small id="line_completed"></small></li></ul>
-		        <ul><li>$T('category')<small id="line_category"></small></li></ul>
-		    </div>
+			<ul class="edgetoedge">
+		        <li>$T('status')<small id="line_status"></small></li>
+		        <li>$T('size')<small id="line_size"></small></li>
+		        <li>$T('completed')<small id="line_completed"></small></li>
+		        <li>$T('category')<small id="line_category"></small></li>
+		    </ul>
 
-		    <div class="edgetoedge" id="connections_wrapper">
-		    	<h4>$T('connections')</h4>
-		    </div>
+		    <ul id="connections_wrapper" class="edgetoedge">
+				<li class="sep">$T('connections')</li>
+		    </ul>
 
-		    <div class="edgetoedge" id="slot_info"></div>
+		    <ul class="edgetoedge" id="slot_info"></ul>
 
-		    <div class="edgetoedge">
-		    	<h4>$T('catFolderPath')</h4>
-		        <ul><li id="line_nzb_storage"></li></ul>
-		    </div>
+		    <ul class="edgetoedge">
+				<li class="sep">$T('catFolderPath')</li>
+		        <li id="line_nzb_storage"></li>
+		    </ul>
         	
-		    <div class="edgetoedge">
-		        <ul><li><a href="#" id="delete_nzb" class="grayButton">$T('nzo-delete') NZB</a></li></ul>
-		    </div>
+		    <ul class="edgetoedge"><li><a href="#" id="delete_nzb" class="grayButton">$T('nzo-delete') NZB</a></li></ul>
 
         </div>
     </div>
@@ -272,7 +258,7 @@
     		<h1>$T('add') NZB</h1>
     		<a href="#" class="back">$T('button-back')</a>
     	</div>
-        <ul class="edit">
+        <ul class="edit rounded">
         	<li><input type="text" name="addnzb_url" placeholder="Enter NZB URL" id="addnzb_url" /></li>
         </ul>
         <ul class="individual">

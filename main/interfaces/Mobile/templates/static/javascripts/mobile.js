@@ -21,17 +21,16 @@
 
 
 /*
-	jqtouch plugin
+	jQTouch jQuery plugin -- beta 2 r109
     (c) 2009 by jQTouch project members.
-    beta 1 see LICENSE-MIT.txt
+    see LICENSE-MIT.txt
 */
-
-(function($){$.jQTouch=function(_2){var _3,$head=$("head"),hist=[],newPageCount=0,jQTSettings={},dumbLoop,currentPage;init(_2);function init(_4){var _5={addGlossToIcon:true,backSelector:".back, .cancel, .goback",fixedViewport:true,flipSelector:".flip",formSelector:"form",fullScreen:true,fullScreenClass:"fullscreen",icon:null,initializeTouch:"a, .touch",slideInSelector:"ul li a",slideUpSelector:".slideup",startupScreen:null,statusBar:"default",submitSelector:".submit"};jQTSettings=$.extend({},_5,_4);var _6;if(jQTSettings.preloadImages){for(var i=jQTSettings.preloadImages.length-1;i>=0;i--){(new Image()).src=jQTSettings.preloadImages[i];}}if(jQTSettings.icon){var _8=(jQTSettings.addGlossToIcon)?"":"-precomposed";_6+="<link rel=\"apple-touch-icon"+_8+"\" href=\""+jQTSettings.icon+"\" />";}if(jQTSettings.startupScreen){_6+="<link rel=\"apple-touch-startup-image\" href=\""+jQTSettings.startupScreen+"\" />";}if(jQTSettings.fixedViewport){_6+="<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;\"/>";}if(jQTSettings.fullScreen){_6+="<meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />";if(jQTSettings.statusBar){_6+="<meta name=\"apple-mobile-web-app-status-bar-style\" content=\""+jQTSettings.statusBar+"\" />";}}if(_6){$head.append(_6);}var _9=[];if(jQTSettings.backSelector){_9.push(jQTSettings.backSelector);}if(jQTSettings.flipSelector){_9.push(jQTSettings.flipSelector);}if(jQTSettings.slideInSelector){_9.push(jQTSettings.slideInSelector);}if(jQTSettings.slideUpSelector){_9.push(jQTSettings.slideUpSelector);}if(_9.length>0){$(_9.join(", ")).live("click",function liveClick(){var _a=$(this);_a.addClass("active");if(_a.attr("target")=="_blank"){return true;}if(_a.is(jQTSettings.backSelector)){$.fn.unselect(_a);goBack();return false;}var _b="slideInOut";if(_a.is(jQTSettings.flipSelector)){_b="flip";}if(_a.is(jQTSettings.slideUpSelector)){_b="slideUp";}var _c=_a.attr("hash");if(_c&&_c!="#"){showPage($(_c),_b);}else{if(_a.attr("target")!="_blank"){_a.addClass("loading");showPageByHref(_a.attr("href"),null,null,null,_b,function(){_a.removeClass("loading");setTimeout($.fn.unselect,250,_a);});}else{_a.unselect();}}return false;});}$(document).ready(function(){_3=$("body");_3.bind("orientationchange",updateOrientation).trigger("orientationchange");if(jQTSettings.fullScreenClass&&window.navigator.standalone==true){_3.addClass(jQTSettings.fullScreenClass+" "+jQTSettings.statusBar);}if(jQTSettings.initializeTouch){$(jQTSettings.initializeTouch).addTouchHandlers();}$(jQTSettings.formSelector).submit(submitForm);if(jQTSettings.submitSelector){$(jQTSettings.submitSelector).click(submitParentForm);}if($("body > .current").length==0){currentPage=$("body > *:first");}else{currentPage=$("body > .current:first");$("body > .current").removeClass("current");}$(currentPage).addClass("current");location.hash=$(currentPage).attr("id");addPageToHistory(currentPage);window.scrollTo(0,0);dumbLoopStart();});}function addPageToHistory(_d,_e){var _f=_d.attr("id");hist.unshift({page:_d,transition:_e,id:_f});}function animatePages(_10,_11,_12,_13){if(_11.length==0){$.fn.unselect();console.log("Target element is missing.");return false;}window.scrollTo(0,0);var _14=function(_15){currentPage=_11;_10.removeClass("current");_11.trigger("pageTransitionEnd",{direction:"in"});_10.trigger("pageTransitionEnd",{direction:"out"});location.hash=$(currentPage).attr("id");$.fn.unselect();dumbLoopStart();};_10.trigger("pageTransitionStart",{direction:"out"});_11.trigger("pageTransitionStart",{direction:"in"});if(_12=="flip"){_11.flip({backwards:_13});_10.flip({backwards:_13,callback:_14});}else{if(_12=="slideUp"){if(_13){_11.addClass("current");_10.slideUpDown({backwards:_13,callback:_14});}else{_11.css("z-index",Number(_10.css("z-index"))+1);_11.slideUpDown({backwards:_13,callback:_14});}}else{_11.slideInOut({backwards:_13,callback:_14});_10.slideInOut({backwards:_13});}}return true;}function dumbLoopStart(){dumbLoop=setInterval(function(){if(location.hash==""){location.hash=$(currentPage).attr("id");}if(location.hash!="#"+$(currentPage).attr("id")){try{for(var i=1;i<hist.length;i++){if(location.hash=="#"+hist[i].id){foundBack=true;dumbLoopStop();goBack(i);}}}catch(e){}}},250);}function dumbLoopStop(){clearInterval(dumbLoop);}function goBack(_17){var _17=_17||1;var _18=hist[0].transition;var _19=hist[0].page;hist.splice(0,_17);var _1a=hist[0].page;animatePages(_19,_1a,_18,true);}function insertPages(_1b,_1c){var _1d;_1b.each(function(_1e,_1f){if(!$(this).attr("id")){$(this).attr("id",(++newPageCount));}$(this).appendTo(_3);if($(this).hasClass("current")||!_1d){_1d=$(this);}});if(_1d){showPage(_1d,_1c);}}function showPage(_20,_21){var _22=hist[0].page;if(animatePages(_22,_20,_21)){addPageToHistory(_20,_21);}}function showPageByHref(_23,_24,_25,_26,_27,cb){if(_23!="#"){$.ajax({url:_23,data:_24,type:_25||"GET",success:function(_29,_2a){insertPages($(_29),_27);if(cb){cb(true);}},error:function(_2b){$.fn.unselect();console.log("AJAX error");if(cb){cb(false);}}});}else{$.fn.unselect();}}function submitParentForm(){$(this).parent("form").submit();}function submitForm(){showPageByHref($(this).attr("action")||"POST",$(this).serialize(),$(this).attr("method"));return false;}function updateOrientation(){var _2c=window.innerWidth<window.innerHeight?"profile":"landscape";_3.removeClass("profile landscape").addClass(_2c).trigger("turn",{orientation:_2c});scrollTo(0,0);}};$.fn.flip=function(_2d){return this.each(function(){var _2e={direction:"toggle",backwards:false,callback:null};var _2f=$.extend({},_2e,_2d);var dir=((_2f.direction=="toggle"&&$(this).hasClass("current"))||_2f.direction=="out")?1:-1;if(dir==-1){$(this).addClass("current");}$(this).css({"-webkit-transform":"scale("+((dir==1)?"1":".8")+") rotateY("+((dir==1)?"0":(!_2f.backwards?"-":"")+"180")+"deg)"}).transition({"-webkit-transform":"scale("+((dir==1)?".8":"1")+") rotateY("+((dir==1)?(_2f.backwards?"-":"")+"180":"0")+"deg)"},{callback:_2f.callback,speed:"800ms"});});};$.fn.slideInOut=function(_31){var _32={direction:"toggle",backwards:false,callback:null};var _33=$.extend({},_32,_31);return this.each(function(){var dir=((_33.direction=="toggle"&&$(this).hasClass("current"))||_33.direction=="out")?1:-1;if(dir==-1){$(this).addClass("current").find("h1, .button").css("opacity",0).transition({"opacity":1}).end().css({"-webkit-transform":"translate3d("+(_33.backwards?-1:1)*window.innerWidth+"px, 0, 0)"}).transition({"-webkit-transform":"translate3d(0, 0, 0)"},{callback:_33.callback});}else{$(this).find("h1, .button").transition({"opacity":0}).end().transition({"-webkit-transform":"translate3d("+((_33.backwards?1:-1)*dir*window.innerWidth)+"px, 0, 0)"},{callback:_33.callback});}});};$.fn.slideUpDown=function(_35){var _36={direction:"toggle",backwards:false,callback:null};var _37=$.extend({},_36,_35);return this.each(function(){var dir=((_37.direction=="toggle"&&$(this).hasClass("current"))||_37.direction=="out")?1:-1;if(dir==-1){$(this).addClass("current").css({"-webkit-transform":"translate3d(0, "+(_37.backwards?-1:1)*window.innerHeight+"px, 0)"}).transition({"-webkit-transform":"translate3d(0, 0, 0)"},{callback:_37.callback}).find("h1, .button").css("opacity",0).transition({"opacity":1});}else{$(this).transition({"-webkit-transform":"translate3d(0, "+window.innerHeight+"px, 0)"},{callback:_37.callback}).find("h1, .button").transition({"opacity":0});}});};$.fn.transition=function(css,_3a){var $el=$(this);var _3c={speed:"300ms",callback:null,ease:"ease-in-out",};var _3d=$.extend({},_3c,_3a);if(_3d.speed===0){$el.css(css);window.setTimeout(callback,0);}else{if($.browser.safari){var s=[];for(var i in css){s.push(i);}$el.css({webkitTransitionProperty:s.join(", "),webkitTransitionDuration:_3d.speed,webkitTransitionTimingFunction:_3d.ease});if(_3d.callback){$el.one("webkitTransitionEnd",_3d.callback);}setTimeout(function(el){el.css(css);},0,$el);}else{$el.animate(css,_3d.speed,_3d.callback);}return this;}};$.fn.unselect=function(obj){if(obj){obj.removeClass("active");}else{$(".active").removeClass("active");}};})(jQuery);(function($){var _43={currentTouch:{},handleStart:function(e){_43.currentTouch={startX:event.changedTouches[0].clientX,startY:event.changedTouches[0].clientY,startTime:(new Date).getTime(),deltaX:0,deltaY:0,deltaT:0};$(this).addClass("active").bind("touchmove touchend",_43.handle);return true;},handle:function(e){var _46=event.changedTouches,first=_46[0]||null,type="";switch(event.type){case "touchmove":_43.currentTouch.deltaX=first.pageX-_43.currentTouch.startX;_43.currentTouch.deltaY=first.pageY-_43.currentTouch.startY;_43.currentTouch.deltaT=(new Date).getTime()-_43.currentTouch.startTime;if(Math.abs(_43.currentTouch.deltaX)>Math.abs(_43.currentTouch.deltaY)&&(_43.currentTouch.deltaX>35||_43.currentTouch.deltaX<-35)&&_43.currentTouch.deltaT<1000){$(this).trigger("swipe",{direction:(_43.currentTouch.deltaX<0)?"left":"right"}).unbind("touchmove touchend");}type="mousemove";break;case "touchend":if(!_43.currentTouch.deltaY&&!_43.currentTouch.deltaX){type="mouseup";$(this).trigger("tap");}else{$(this).removeClass("active");}$(this).unbind("touchmove touchend");delete currentTouch;break;}if(type!=""&&first){$(this).trigger(type);}}};$.fn.addTouchHandlers=function(){return this.each(function(i,el){$(el).bind("touchstart",_43.handleStart);});};})(jQuery);
-
+(function($){$.jQTouch=function(_2){$.support.WebKitCSSMatrix=(typeof WebKitCSSMatrix=="object");$.support.touch=(typeof Touch=="object");$.support.WebKitAnimationEvent=(typeof WebKitTransitionEvent=="object");var _3,$head=$("head"),hist=[],newPageCount=0,jQTSettings={},hashCheck,currentPage,orientation,isMobileWebKit=RegExp(" Mobile/").test(navigator.userAgent),tapReady=true,lastAnimationTime=0,touchSelectors=[],publicObj={},extensions=$.jQTouch.prototype.extensions,defaultAnimations=["slide","flip","slideup","swap","cube","pop","dissolve","fade","back"],animations=[],hairextensions="";init(_2);function init(_4){var _5={addGlossToIcon:true,backSelector:".back, .cancel, .goback",cacheGetRequests:true,cubeSelector:".cube",dissolveSelector:".dissolve",fadeSelector:".fade",fixedViewport:true,flipSelector:".flip",formSelector:"form",fullScreen:true,fullScreenClass:"fullscreen",icon:null,touchSelector:"a, .touch",popSelector:".pop",preloadImages:false,slideSelector:"body > * > ul li a",slideupSelector:".slideup",startupScreen:null,statusBar:"default",submitSelector:".submit",swapSelector:".swap",useAnimations:true,useFastTouch:true};jQTSettings=$.extend({},_5,_4);if(jQTSettings.preloadImages){for(var i=jQTSettings.preloadImages.length-1;i>=0;i--){(new Image()).src=jQTSettings.preloadImages[i];}}if(jQTSettings.icon){var _7=(jQTSettings.addGlossToIcon)?"":"-precomposed";hairextensions+="<link rel=\"apple-touch-icon"+_7+"\" href=\""+jQTSettings.icon+"\" />";}if(jQTSettings.startupScreen){hairextensions+="<link rel=\"apple-touch-startup-image\" href=\""+jQTSettings.startupScreen+"\" />";}if(jQTSettings.fixedViewport){hairextensions+="<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;\"/>";}if(jQTSettings.fullScreen){hairextensions+="<meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />";if(jQTSettings.statusBar){hairextensions+="<meta name=\"apple-mobile-web-app-status-bar-style\" content=\""+jQTSettings.statusBar+"\" />";}}if(hairextensions){$head.append(hairextensions);}$(document).ready(function(){for(var i in extensions){var fn=extensions[i];if($.isFunction(fn)){$.extend(publicObj,fn(publicObj));}}for(var i in defaultAnimations){var _a=defaultAnimations[i];var _b=jQTSettings[_a+"Selector"];if(typeof (_b)=="string"){addAnimation({name:_a,selector:_b});}}touchSelectors.push("input");touchSelectors.push(jQTSettings.touchSelector);touchSelectors.push(jQTSettings.backSelector);touchSelectors.push(jQTSettings.submitSelector);$(touchSelectors.join(", ")).css("-webkit-touch-callout","none");$(jQTSettings.backSelector).tap(liveTap);$(jQTSettings.submitSelector).tap(submitParentForm);_3=$("body");if(jQTSettings.fullScreenClass&&window.navigator.standalone==true){_3.addClass(jQTSettings.fullScreenClass+" "+jQTSettings.statusBar);}_3.bind("touchstart",handleTouch).bind("orientationchange",updateOrientation).trigger("orientationchange").submit(submitForm);if(jQTSettings.useFastTouch&&$.support.touch){_3.click(function(e){var _d=$(e.target);if(_d.attr("target")=="_blank"||_d.attr("rel")=="external"||_d.is("input[type=\"checkbox\"]")){return true;}else{return false;}});_3.mousedown(function(e){var _f=(new Date()).getTime()-lastAnimationTime;if(_f<200){return false;}});}if($("body > .current").length==0){currentPage=$("body > *:first");}else{currentPage=$("body > .current:first");$("body > .current").removeClass("current");}$(currentPage).addClass("current");location.hash=$(currentPage).attr("id");addPageToHistory(currentPage);scrollTo(0,0);dumbLoopStart();});}function goBack(to){if(hist.length>1){var _11=Math.min(parseInt(to||1,10),hist.length-1);if(isNaN(_11)&&typeof (to)==="string"&&to!="#"){for(var i=1,length=hist.length;i<length;i++){if("#"+hist[i].id===to){_11=i;break;}}}if(isNaN(_11)||_11<1){_11=1;}var _13=hist[0].animation;var _14=hist[0].page;hist.splice(0,_11);var _15=hist[0].page;animatePages(_14,_15,_13,true);return publicObj;}else{console.error("No pages in history.");return false;}}function goTo(_16,_17){var _18=hist[0].page;if(typeof (_16)==="string"){_16=$(_16);}if(typeof (_17)==="string"){for(var i=animations.length-1;i>=0;i--){if(animations[i].name===_17){_17=animations[i];break;}}}if(animatePages(_18,_16,_17)){addPageToHistory(_16,_17);return publicObj;}else{console.error("Could not animate pages.");return false;}}function getOrientation(){return orientation;}function liveTap(e){var $el=$(e.target);if($el.attr("nodeName")!=="A"){$el=$el.parent("a");}var _1c=$el.attr("target"),hash=$el.attr("hash"),animation=null;if(tapReady==false||!$el.length){console.warn("Not able to tap element.");return false;}if($el.attr("target")=="_blank"||$el.attr("rel")=="external"){return true;}for(var i=animations.length-1;i>=0;i--){if($el.is(animations[i].selector)){animation=animations[i];break;}}if(_1c=="_webapp"){window.location=$el.attr("href");}else{if($el.is(jQTSettings.backSelector)){goBack(hash);}else{if(hash&&hash!="#"){$el.addClass("active");goTo($(hash).data("referrer",$el),animation);}else{$el.addClass("loading active");showPageByHref($el.attr("href"),{animation:animation,callback:function(){$el.removeClass("loading");setTimeout($.fn.unselect,250,$el);},$referrer:$el});}}}return false;}function addPageToHistory(_1e,_1f){var _20=_1e.attr("id");hist.unshift({page:_1e,animation:_1f,id:_20});}function animatePages(_21,_22,_23,_24){if(_22.length===0){$.fn.unselect();console.error("Target element is missing.");return false;}$(":focus").blur();scrollTo(0,0);var _25=function(_26){if(_23){_22.removeClass("in reverse "+_23.name);_21.removeClass("current out reverse "+_23.name);}else{_21.removeClass("current");}_22.trigger("pageAnimationEnd",{direction:"in"});_21.trigger("pageAnimationEnd",{direction:"out"});clearInterval(dumbLoop);currentPage=_22;location.hash=currentPage.attr("id");dumbLoopStart();var _27=_22.data("referrer");if(_27){_27.unselect();}lastAnimationTime=(new Date()).getTime();tapReady=true;};_21.trigger("pageAnimationStart",{direction:"out"});_22.trigger("pageAnimationStart",{direction:"in"});if($.support.WebKitAnimationEvent&&_23&&jQTSettings.useAnimations){_22.one("webkitAnimationEnd",_25);tapReady=false;_22.addClass(_23.name+" in current "+(_24?" reverse":""));_21.addClass(_23.name+" out"+(_24?" reverse":""));}else{_22.addClass("current");_25();}return true;}function dumbLoopStart(){dumbLoop=setInterval(function(){var _28=currentPage.attr("id");if(location.hash==""){location.hash="#"+_28;}else{if(location.hash!="#"+_28){try{goBack(location.hash);}catch(e){console.error("Unknown hash change.");}}}},100);}function insertPages(_29,_2a){var _2b=null;$(_29).each(function(_2c,_2d){var _2e=$(this);if(!_2e.attr("id")){_2e.attr("id","page-"+(++newPageCount));}_2e.appendTo(_3);if(_2e.hasClass("current")||!_2b){_2b=_2e;}});if(_2b!==null){goTo(_2b,_2a);return _2b;}else{return false;}}function showPageByHref(_2f,_30){var _31={data:null,method:"GET",animation:null,callback:null,$referrer:null};var _32=$.extend({},_31,_30);if(_2f!="#"){$.ajax({url:_2f,data:_32.data,type:_32.method,success:function(_33,_34){var _35=insertPages(_33,_32.animation);if(_35){if(_32.method=="GET"&&jQTSettings.cacheGetRequests&&_32.$referrer){_32.$referrer.attr("href","#"+_35.attr("id"));}if(_32.callback){_32.callback(true);}}},error:function(_36){if(_32.$referrer){_32.$referrer.unselect();}if(_32.callback){_32.callback(false);}}});}else{if($referrer){$referrer.unselect();}}}function submitForm(e,_38){var _39=(typeof (e)==="string")?$(e):$(e.target);if(_39.length&&_39.is(jQTSettings.formSelector)&&_39.attr("action")){showPageByHref(_39.attr("action"),{data:_39.serialize(),method:_39.attr("method")||"POST",animation:animations[0]||null,callback:_38});return false;}return true;}function submitParentForm(e){var _3b=$(this).closest("form");if(_3b.length){evt=jQuery.Event("submit");evt.preventDefault();_3b.trigger(evt);return false;}return true;}function addAnimation(_3c){if(typeof (_3c.selector)=="string"&&typeof (_3c.name)=="string"){animations.push(_3c);$(_3c.selector).tap(liveTap);touchSelectors.push(_3c.selector);}}function updateOrientation(){orientation=window.innerWidth<window.innerHeight?"profile":"landscape";_3.removeClass("profile landscape").addClass(orientation).trigger("turn",{orientation:orientation});}function handleTouch(e){var $el=$(e.target);if(!$(e.target).is(touchSelectors.join(", "))){var _3f=$(e.target).closest("a");if(_3f.length){$el=_3f;}else{return;}}if(event){var _40=null,startX=event.changedTouches[0].clientX,startY=event.changedTouches[0].clientY,startTime=(new Date).getTime(),deltaX=0,deltaY=0,deltaT=0;$el.bind("touchmove",touchmove).bind("touchend",touchend);_40=setTimeout(function(){$el.makeActive();},100);}function touchmove(e){updateChanges();var _42=Math.abs(deltaX);var _43=Math.abs(deltaY);if(_42>_43&&(_42>35)&&deltaT<1000){$el.trigger("swipe",{direction:(deltaX<0)?"left":"right"}).unbind("touchmove touchend");}else{if(_43>1){$el.removeClass("active");}}clearTimeout(_40);}function touchend(){updateChanges();if(deltaY===0&&deltaX===0){$el.makeActive();$el.trigger("tap");}else{$el.removeClass("active");}$el.unbind("touchmove touchend");clearTimeout(_40);}function updateChanges(){var _44=event.changedTouches[0]||null;deltaX=_44.pageX-startX;deltaY=_44.pageY-startY;deltaT=(new Date).getTime()-startTime;}}$.fn.unselect=function(obj){if(obj){obj.removeClass("active");}else{$(".active").removeClass("active");}};$.fn.makeActive=function(){return $(this).addClass("active");};$.fn.swipe=function(fn){if($.isFunction(fn)){return this.each(function(i,el){$(el).bind("swipe",fn);});}};$.fn.tap=function(fn){if($.isFunction(fn)){var _4a=(jQTSettings.useFastTouch&&$.support.touch)?"tap":"click";return $(this).live(_4a,fn);}else{$(this).trigger("tap");}};publicObj={getOrientation:getOrientation,goBack:goBack,goTo:goTo,addAnimation:addAnimation,submitForm:submitForm};return publicObj;};$.jQTouch.prototype.extensions=[];$.jQTouch.addExtension=function(_4b){$.jQTouch.prototype.extensions.push(_4b);};})(jQuery);
 
 
 
-$.jQTouch({
+
+var jQT = new $.jQTouch({
     statusBar: 'black',
     addGlossToIcon: true,
     icon: 'static/images/sab.png' /*,
@@ -115,8 +114,8 @@ $(function(){
 			// #queueList nzb listing
 			$('#queueList').html('');
 			$.each($.mobile.queue.slots, function(i,nzb){
-				$("<li></li>").attr('class','arrow').attr('id',nzb.nzo_id)
-					.html('<a href="#queue_nzb">'
+				$("<li></li>").attr('class','arrow')
+					.html('<a href="#queue_nzb" id="'+nzb.nzo_id+'">'
 						+ '<small>'+ nzb.percentage +'%</small>'
 						+ (nzb.status != "Paused" && !$.mobile.queue.paused ? '<small class="landscape_stats" style="display:none">'+ nzb.timeleft.substr(0,nzb.timeleft.length-3) +'</small>&zwj;' : '')
 						+ (nzb.status=="Paused" ? '<span style="text-decoration:line-through">' : '<span>') + nzb.filename +'</span></a>')
@@ -125,18 +124,10 @@ $(function(){
 			// #queueList show extra stats in landscape orientation
 			if (window.innerWidth >= window.innerHeight) $('#queue li a .landscape_stats').show();
 
-			// #queueList "swipe delete" event binding -- use live() or livequery() and move out of here?
-            $('#queueList li').addTouchHandlers().bind('swipe', function(evt, data){                
-                $.mobile.NZBDelete( $(evt.currentTarget).attr('id'), 'queue' );
-            });
-
 			// #queue_nzb detail page -- update stats when viewing page
 			if ($.mobile.queue_nzo_id) // reload settings if already looking at detail page
 				$.mobile.LoadQueueDetail();
-			$('#queueList li').click(function(e){	// when changing pages -- $.live() does not work?! consider $.livequery() plugin (this event should not be bound here)
-				$.mobile.queue_nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
-				$.mobile.LoadQueueDetail();
-			});
+
 		},
 		
 		
@@ -158,7 +149,7 @@ $(function(){
 				});
 			}
 			// hide category option if unused
-			($.mobile.queue.categories.length == 0) ? $('#change_cat').parent().parent().hide().prev().hide() : $('#change_cat').parent().parent().show().prev().show();
+			($.mobile.queue.categories.length == 0) ? $('#change_cat').parent().hide().prev().hide() : $('#change_cat').parent().show().prev().show();
 
 			// load category options if # nodes is not current (does not account for all changes)
 			if ($.mobile.queue.scripts.length != $('#change_script optgroup','#queue_nzb_content').size()-1) {
@@ -168,7 +159,7 @@ $(function(){
 				});
 			}
 			// hide script option if unused
-			($.mobile.queue.scripts.length < 2) ? $('#change_script').parent().parent().hide().prev().hide() : $('#change_script').parent().parent().show().prev().show();
+			($.mobile.queue.scripts.length < 2) ? $('#change_script').parent().hide().prev().hide() : $('#change_script').parent().show().prev().show();
 	
 			// find which slot this is, then set this nzb's values
 			$.each($.mobile.queue.slots, function(i,nzb){
@@ -236,24 +227,16 @@ $(function(){
 			// #historyList nzb listing
 			$('#historyList').html('');
 			$.each($.mobile.history.slots, function(i,nzb){
-				$("<li></li>").attr('class','arrow').attr('id',nzb.nzo_id)
-					.html('<a href="#history_nzb">'
+				$("<li></li>").attr('class','arrow')
+					.html('<a href="#history_nzb" id="'+nzb.nzo_id+'">'
 						+ (nzb.fail_message ? '<span style="text-decoration:line-through">' : '<span>') + nzb.name +'</span></a>')
 					.appendTo("#historyList");
 			});
 
-			// #historyList "swipe delete" event binding -- use live() or livequery() and move out of here?
-            $('#historyList li').addTouchHandlers().bind('swipe', function(evt, data){                
-                $.mobile.NZBDelete( $(evt.currentTarget).attr('id'), 'history' );
-            });
-
 			// #history_nzb detail page -- update stats when viewing page
 			if ($.mobile.history_nzo_id) // reload settings if already looking at detail page
 				$.mobile.LoadHistoryDetail();
-			$('#historyList li').click(function(e){	// when changing pages -- $.live() does not work?! consider $.livequery() plugin (this event should not be bound here)
-				$.mobile.history_nzo_id = $(e.target).parent('li').attr('id') ? $(e.target).parent('li').attr('id') : $(e.target).parent().parent('li').attr('id');
-				$.mobile.LoadHistoryDetail();
-			});
+
 		},
 
 
@@ -272,54 +255,39 @@ $(function(){
 
 					// nzb status/stats/info
 					$('#line_status','#history_nzb_content').html(nzb.status);
-					$('#line_size',  '#history_nzb_content').html(nzb.size);
+					(nzb.size) ? $('#line_size','#history_nzb_content').html(nzb.size).parent().show() : $('#line_size','#history_nzb_content').parent().hide();
 					d.setTime(nzb.completed*1000);
 					$('#line_completed',  '#history_nzb_content').html(d.toDateString());
-					(nzb.category) ? $('#line_category','#history_nzb_content').html(nzb.category).parent().parent().show() : $('#line_category','#history_nzb_content').parent().parent().hide();
+					(nzb.category) ? $('#line_category','#history_nzb_content').html(nzb.category).parent().show() : $('#line_category','#history_nzb_content').parent().hide();
 					
 					// connections (links)
 					if (nzb.url || nzb.url_info) {
-						$('#connections_wrapper ul','#history_nzb_content').remove();
+						$('#connections_wrapper .forward','#history_nzb_content').remove();
 						$('#connections_wrapper','#history_nzb_content').show();
-						var ul = $('<ul></ul>');
 						if (nzb.url)
-							$('<li class="forward"><a href="'+nzb.url+'" target="_blank">'+nzb.url+'</a></li>').appendTo(ul);
+							$('<li class="forward"><a href="'+nzb.url+'" target="_blank">'+nzb.url+'</a></li>').appendTo('#connections_wrapper','#history_nzb_content');
 						if (nzb.url_info)
-							$('<li class="forward"><a href="'+nzb.url_info+'" target="_blank">'+nzb.url_info+'</a></li>').appendTo(ul);
-						$(ul).appendTo('#connections_wrapper','#history_nzb_content');
+							$('<li class="forward"><a href="'+nzb.url_info+'" target="_blank">'+nzb.url_info+'</a></li>').appendTo('#connections_wrapper','#history_nzb_content');
 					} else
-						$('#connections_wrapper','#history_nzb_content').show();
-
+						$('#connections_wrapper','#history_nzb_content').hide();
 
 					// verbosity (par/unrar)
 					$('#slot_info','#history_nzb_content').html('');
 					$.each(nzb.stage_log, function(i,stage){
-						$('<h4>'+stage.name.charAt(0).toUpperCase()+stage.name.substr(1)+'</h4>').appendTo('#slot_info','#history_nzb_content');
-						var ul = $('<ul></ul>');
+						$('<li class="sep">'+stage.name.charAt(0).toUpperCase()+stage.name.substr(1)+'</li>').appendTo('#slot_info','#history_nzb_content');
+
 						$.each(stage.actions, function(i,action){
 							if (stage.name == "script")
 								$('<li>'+nzb.script_line+'</li>'
-								 +'<li><a class="slideup view_script_log" href="#history_nzb_script">View Script Log</a></li>').appendTo(ul);
+								 +'<li><a class="slideup view_script_log" href="#history_nzb_script">View Script Log</a></li>').appendTo('#slot_info','#history_nzb_content');
 							else
-								$('<li>'+action+'</li>').appendTo(ul);
+								$('<li>'+action+'</li>').appendTo('#slot_info','#history_nzb_content');
 						});
-						$(ul).appendTo('#slot_info','#history_nzb_content');
 					});
 					
 					// storage path
-					(nzb.storage) ? $('#line_nzb_storage','#history_nzb_content').html(nzb.storage).parent().parent().show() : $('#line_nzb_storage','#history_nzb_content').parent().parent().hide();
+					(nzb.storage) ? $('#line_nzb_storage','#history_nzb_content').html(nzb.storage).parent().show() : $('#line_nzb_storage','#history_nzb_content').parent().hide();
 
-					// view script log event
-					$('.view_script_log','#history_nzb_content').click(function(){
-						$.ajax({
-							type: "POST",
-							url: "scriptlog",
-							data: { name: $.mobile.history_nzo_id, apikey: $.mobile.apikey },
-							success: function(resp){
-								$('#history_script_log').html( $(resp).filter('h3,code') );
-							}
-						});
-					});
 				}
 			});
 		},
@@ -405,7 +373,7 @@ $(function(){
 					url: "tapi",
 					data: { mode:'config', name:'set_pause', value:minutes, apikey: $.mobile.apikey },
 					success: function(resp){
-						window.location = "#home";
+						jQT.goTo('#home', 'dissolve');
 						$.mobile.LoadQueue();
 					}
 				});
@@ -421,7 +389,7 @@ $(function(){
 					url: "tapi",
 					data: { mode:'queue', name:'sort', sort: rel, apikey: $.mobile.apikey },
 					success: function(resp){
-						window.location = "#queue";
+						jQT.goTo('#queue', 'dissolve');
 						$.mobile.LoadQueue();
 					}
 				});
@@ -443,13 +411,27 @@ $(function(){
 						url: "tapi",
 						data: { mode:'queue', name:'delete', value:'all', apikey: $.mobile.apikey },
 						success: function() {
-							//window.location = "#home"; // leads to blank screen
+							jQT.goTo('#home', 'dissolve');
 							$.mobile.LoadQueue();
 						}
 					});
 				}
 			});
 
+			// queue list event bindings ********************
+			
+			// #queue_nzb detail page -- update stats when viewing page
+            $('#queue_nzb').bind('pageAnimationStart', function(e, info){
+            	if (info.direction == 'in') {
+					$.mobile.queue_nzo_id = $(e.target).data('referrer').attr('id');
+					$.mobile.LoadQueueDetail();
+				}
+			});
+
+			// #queueList "swipe delete" event binding
+            $('#queueList li a').live('swipe',function(e, data){
+                $.mobile.NZBDelete( $(this).attr('id'), 'queue' );
+            });
 
 			// queue nzb detail page options ********************
 
@@ -536,15 +518,44 @@ $(function(){
 			// delete button
 			$('#delete_nzb','#queue_nzb_content').click(function(){
                 if ($.mobile.NZBDelete( $.mobile.queue_nzo_id, 'queue' ))
-					window.location = "#queue";
+					jQT.goTo('#queue', 'dissolve');
+			});
+
+			// history list event bindings ********************
+			
+			// #history_nzb detail page -- update stats when viewing page
+            $('#history_nzb').bind('pageAnimationStart', function(e, info){
+            	if (info.direction == 'in') {
+					$.mobile.history_nzo_id = $(e.target).data('referrer').attr('id');
+					$.mobile.LoadHistoryDetail();
+				}
 			});
 			
+			// #queueList "swipe delete" event binding
+            $('#historyList li a').live('swipe',function(e, data){
+                $.mobile.NZBDelete( $(this).attr('id'), 'history' );
+            });
 			
+			// #history_nzb view script log
+            $('#history_nzb_script').bind('pageAnimationStart', function(e, info){
+            	if (info.direction == 'in') {
+
+					$.ajax({
+						type: "POST",
+						url: "scriptlog",
+						data: { name: $.mobile.history_nzo_id, apikey: $.mobile.apikey },
+						success: function(resp){
+							$('#history_script_log').html( $(resp).filter('h3,code') );
+						}
+					});
+				}
+			});
+
 			// history options ********************
-			
+
 			$('#delete_nzb','#history_nzb_content').click(function(){
                 if ($.mobile.NZBDelete( $.mobile.history_nzo_id, 'history' ))
-					window.location = "#history";
+					jQT.goTo('#history', 'dissolve');
 			});
 
 			$('#history_purge').click(function(event) {
@@ -554,7 +565,7 @@ $(function(){
 						url: "tapi",
 						data: { mode:'history', name:'delete', value:'all', apikey: $.mobile.apikey },
 						success: function() {
-							//window.location = "#home"; // leads to blank screen
+							jQT.goTo('#home', 'dissolve');
 							$.mobile.LoadHistory();
 						}
 					});
@@ -650,7 +661,7 @@ $(function(){
 						success: function(){
 							$('#warnings_list').html('');
 							$('#button-warnings').hide();
-							window.location = "#home";
+							jQT.goTo('#home','dissolve');
 						}
 					});
 				}
