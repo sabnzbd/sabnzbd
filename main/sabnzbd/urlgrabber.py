@@ -85,19 +85,19 @@ class URLGrabber(Thread):
 
     def add(self, url, future_nzo):
         """ Add an URL to the URLGrabber queue """
-        self.queue.put((url, future_nzo))
+        self.queue.put((url, future_nzo, 5))
 
     def stop(self):
         logging.info('URLGrabber shutting down')
         self.shutdown = True
-        self.queue.put((None, None))
+        self.queue.put((None, None, 0))
 
     def run(self):
         logging.info('URLGrabber starting up')
         self.shutdown = False
 
         while not self.shutdown:
-            (url, future_nzo) = self.queue.get()
+            (url, future_nzo, retry_count) = self.queue.get()
             if not url:
                 continue
 
@@ -139,7 +139,12 @@ class URLGrabber(Thread):
 
             # Check if the filepath is specified, if not use the filename as whether it should be retried (bool)
             if not fn:
-                misc.bad_fetch(future_nzo, url, retry=filename)
+                retry_count -= 1
+                if retry_count > 0:
+                    logging.info('Retry URL %s', url)
+                    self.queue.put((url, future_nzo, retry_count))
+                else:
+                    misc.bad_fetch(future_nzo, url, retry=filename)
                 continue
 
             if not filename:
@@ -174,7 +179,7 @@ class URLGrabber(Thread):
                     misc.bad_fetch(future_nzo, url, retry=False, archive=True)
 
             # Don't pound the website!
-            time.sleep(2.0)
+            time.sleep(5.0)
 
 
 
