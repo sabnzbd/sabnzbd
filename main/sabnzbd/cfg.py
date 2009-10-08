@@ -95,6 +95,7 @@ TOP_ONLY = OptionBool('misc', 'top_only', True)
 AUTODISCONNECT = OptionBool('misc', 'auto_disconnect', True)
 
 REPLACE_SPACES = OptionBool('misc', 'replace_spaces', False)
+REPLACE_DOTS = OptionBool('misc', 'replace_dots', False)
 NO_DUPES = OptionBool('misc', 'no_dupes', False)
 IGNORE_SAMPLES = OptionNumber('misc', 'ignore_samples', 0, 0, 2)
 CREATE_GROUP_FOLDERS = OptionBool('misc', 'create_group_folders', False)

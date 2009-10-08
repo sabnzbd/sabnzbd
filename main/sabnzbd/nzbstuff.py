@@ -516,6 +516,9 @@ class NzbObject(TryList):
 
         # Apply conversion option to final folder, called __original_dirname
         # Yeah, I know :(
+        if cfg.REPLACE_DOTS.get() and self.__original_dirname.find(' ') < 0:
+            logging.info('Replacing dots with spaces in %s', self.__original_dirname)
+            self.__original_dirname = self.__original_dirname.replace('.',' ')
         if cfg.REPLACE_SPACES.get():
             logging.info('Replacing spaces with underscores in %s', self.__dirname)
             self.__original_dirname = self.__original_dirname.replace(' ','_')
