@@ -428,14 +428,18 @@ class NzbObject(TryList):
             r, u, d = sabnzbd.pp_to_opts(pp)
 
         self.__filename = filename    # Original filename
-        if filename:
-            dirname, ext = os.path.splitext(filename) # Used for folder name for final unpack
-            if ext.lower() != '.nzb':
-                dirname = filename
+        if nzbname:
+            dirname = nzbname
         else:
-            dirname = ''
+            dirname = filename
+        if dirname:
+            dirname, ext = os.path.splitext(dirname) # Used for folder name for final unpack
+            if ext.lower() != '.nzb':
+                dirname = dirname
         self.__dirname = dirname      # Keeps track of the working folder
-        self.__original_dirname = dirname # Used for folder name for final unpack
+        self.__original_dirname = dirname # TAKE NOTE: Used for folder name for final unpack
+                                          # The name is wrong, required for backward compatibility!
+
         self.__created = False        # dirprefixes + dirname created
         self.__bytes = 0              # Original bytesize
         self.__bytes_downloaded = 0   # Downloaded byte
@@ -510,12 +514,11 @@ class NzbObject(TryList):
         if msgid:
             self.__msgid = msgid
 
-        # Make a copy of the dirname so we can change it visually without affecting the incomplete dir
-        self.__original_dirname = self.__dirname
+        # Apply conversion option to final folder, called __original_dirname
+        # Yeah, I know :(
         if cfg.REPLACE_SPACES.get():
-            self.__dirname = self.__dirname.replace(' ','_')
-            self.__original_dirname = self.__dirname
             logging.info('Replacing spaces with underscores in %s', self.__dirname)
+            self.__original_dirname = self.__original_dirname.replace(' ','_')
 
         if not nzb:
             # This is a slot for a future NZB, ready now
