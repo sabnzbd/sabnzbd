@@ -1394,7 +1394,7 @@ class HistoryPage:
         if url and (url.isdigit() or len(url)==5):
             sabnzbd.add_msgid(url, pp, script, cat)
         elif url:
-            sabnzbd.add_url(url, pp, script, cat)
+            sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
         if url:
             return ShowOK(url)
         else:

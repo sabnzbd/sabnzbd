@@ -428,8 +428,8 @@ class NzbObject(TryList):
             r, u, d = sabnzbd.pp_to_opts(pp)
 
         self.__filename = filename    # Original filename
-        if nzbname:
-            dirname = nzbname
+        if nzbname and nzb:
+            dirname = nzbname         # Use nzbname if set and only for non-future slot
         else:
             dirname = filename
         if dirname:
@@ -514,6 +514,10 @@ class NzbObject(TryList):
         if msgid:
             self.__msgid = msgid
 
+        if not nzb:
+            # This is a slot for a future NZB, ready now
+            return
+
         # Apply conversion option to final folder, called __original_dirname
         # Yeah, I know :(
         if cfg.REPLACE_DOTS.get() and self.__original_dirname.find(' ') < 0:
@@ -522,10 +526,6 @@ class NzbObject(TryList):
         if cfg.REPLACE_SPACES.get():
             logging.info('Replacing spaces with underscores in %s', self.__dirname)
             self.__original_dirname = self.__original_dirname.replace(' ','_')
-
-        if not nzb:
-            # This is a slot for a future NZB, ready now
-            return
 
         if sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
