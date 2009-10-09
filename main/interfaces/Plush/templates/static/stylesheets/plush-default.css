@@ -1,1059 +1,1464 @@
+/*------------------------------------------------------------------
+[Plush default]
+-------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------
+[reset]
+------------------------------------------------------------------*/
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+/* remember to define focus styles! */
+:focus {
+	outline: 0;
+}
 body {
-    background-color: #B1B1B1;
-    font-family: arial, "lucida console", sans-serif;
-    margin: 0px;
-    padding: 0px;
-	padding-bottom: 10px;
+	line-height: 1;
+	color: #000;
+	background: #fff;
 }
+ol, ul {
+	list-style: none;
+}
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+}
+caption, th, td {
+	text-align: left;
+	font-weight: normal;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: "";
+}
+blockquote, q {
+	quotes: "" "";
+}
+
+/*------------------------------------------------------------------
+[Plush typography]
+-------------------------------------------------------------------*/
+
+body,
+input,
+textarea{
+	font:75% 'Helvetica Neue', Arial, Helvetica, sans-serif;
+	color:#555550;
+}
+html>body{
+	font-size:12px;
+}
+h1,
+h2,
+h3,
+h4{
+	font-family:'Century Gothic', 'Apple Gothic', sans-serif;
+}
+h1{
+	font-size:1.5em;
+}
+h2{
+	font-size:1.25em;
+}
+h3{
+	font-size:1em;
+}
+p,
+ul,
+ul li,
+td{
+	font-size:1em;
+}
+p,li,dt,dd,td,th{
+	line-height:1.5;
+}
+p,dt,dd,td,th,ul,ol,dl{
+	margin-bottom:10px;
+}
+strong {
+  font-weight:bold;
+}
+small {
+  font-size:0.8333em;
+}
+input,
+textarea{
+	font-size:1em;
+}
+
+a:link,a:visited{
+	color:#fff;
+	text-decoration:none;
+}
+a:hover,a:active{
+  text-decoration:underline;
+}
+
+#main_menu ul{
+	color:#fff;
+}
+.box_fatbottom,
+.queueTable .eta,
+.currentDownload, 
+.totalDownload {
+	font-size:0.8333em;
+}
+
+/*------------------------------------------------------------------
+[Plush default]
+-------------------------------------------------------------------*/
+
+body {
+	background: #B1B1B1 url('../images/plush-default/tile_navbar.jpg') top left repeat-x;
+	padding-bottom: 10px; 
+}
+ 
 select {
-    color: #000;
-    background-color:#E0E0E0;
-    border:0px;
-    padding:0px;
+	background-color: #E0E0E0;
+	border: 0px;
+	color: #000;
 }
-
-ul, li, p, h1, h2, h3 { margin: 0; padding: 0; list-style: none; }
-
-.new_release_link {
-    color: darkgreen;
+ 
+.new_release_link { 
+	color: darkgreen; 
 }
-.pointer {
-    cursor:pointer;
+ 
+.pointer { 
+	cursor: pointer;
 }
+ 
 .clear {
 	clear: both;
 }
+ 
 #warning_message {
-    color: darkred;
+	color: darkred;
 	font-weight: bold;
 }
+ 
 #new_release {
 	color: green;
 	font-weight: bold;
 }
-
+ 
 /* for jQuery Tooltip Plugin */
 #tooltip {
-    position: absolute;
-    z-index: 3000;
-    border: 1px solid #111;
-    background-color: lightyellow;
-    color:#000;
-    font-size: 11px !important;
-    padding: 5px;
-    opacity: 0.85;
+	background-color: lightyellow;
+	border: 1px solid #111;
+	color: #000;
+	font-size: 11px;
+	opacity: 0.85;
+	padding: 5px;
+	position: absolute;
+	z-index: 3000;
 }
-#tooltip h3, #tooltip div { margin: 0; }
-
+ 
+	#tooltip h3, #tooltip div { margin: 0; }
+ 
 
 /* for jQuery Pagination Plugin */
-.pagination-perpage {
-	float:left;
-}
+
+.pagination-perpage { float: left; }
+ 
 .pagination {
+	float: left;
 	font-size: 100%;
 	margin-left: -15px;
-	margin-top: -15px;
-	float:left;
+	margin-top: -15px; 
 }
-.pagination a {
-    text-decoration: none;
-	border: solid 1px #B1B1B1;
-	background:#E0E0E0;
-	color: #000;
-	cursor: pointer;
-}
-.pagination a:hover {
-	border: solid 1px #000;
-}
-.pagination a, .pagination span {
-    display: block;
-    float: left;
-    padding: 0.3em 0.5em;
-    margin-right: 5px;
-	margin-bottom: 5px;
-}
-.pagination .current {
-    background: #FFF;
-    color: #000;
-	border: solid 1px #000;
-}
-.pagination .current.prev, .pagination .current.next{
-	color:#B1B1B1;
-	border-color:#B1B1B1;
-	background:#E0E0E0;
-}
-.pagination .loading{
-    background: #FFF url(../images/plush-default/spinner.gif) 50% 50% no-repeat;
-}
-
-
+ 
+	.pagination a {
+		background: #E0E0E0;
+		border: solid 1px #B1B1B1;
+		color: #000;
+		cursor: pointer;
+		text-decoration: none;
+	}
+ 
+		.pagination a:hover { border: solid 1px #000; }
+ 
+	.pagination a, .pagination span {
+		display: block;
+		float: left;
+		margin-bottom: 5px;
+		margin-right: 5px;
+		padding: 0.3em 0.5em; 
+	}
+ 
+	.pagination .current {
+		background: #FFF;
+		border: solid 1px #000;
+		color: #000;
+	}
+ 
+		.pagination .current.prev, .pagination .current.next {
+			background: #E0E0E0;
+			border-color: #B1B1B1;
+			color: #B1B1B1;
+		}
+ 
+	.pagination .loading { background: #FFF url('../images/plush-default/spinner.gif') 50% 50% no-repeat; }
+ 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
-
+ 
     queue + history overall container
-
+ 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
-
 .box_fatbottom {
-    height:37px;
-    font-size: 66%;
-    color: #606060;
-    text-align:center;
-    background: url(../images/plush-default/tile_qh_bottom.png) 0 0 repeat-x;
+	background: url('../images/plush-default/tile_qh_bottom.png') 0 0 repeat-x;
+	color: #606060;
+	height: 37px;
+	text-align: center; 
 }
+ 
 .left_stats, .right_stats, .pagination {
-    padding:12px 16px 0 20px;
-    cursor:default;
-}
-.history_stats div {
-    padding:13px 16px 0 20px;
-	margin-bottom: -4px;
-}
-#history_stats {
-	padding-top:16px;
-}
-.box_fatbottom .left_stats {
-    float:left;
-}
-.box_fatbottom .right_stats {
-    float:right;
-}
-.box_fatbottom strong {
-    color: #000;
+	cursor: default;
+	padding: 12px 16px 0 20px; 
 }
 
+#box_fatbottom_queue .left_stats {
+  padding-top:9px;
+}
+ 
+.history_logo {
+	background: url('../images/plush-default/sprite-main.png') 0 -1538px no-repeat;
+	display:block;
+	height:15px;
+	margin:0 auto;
+	padding:13px 0 0;
+	text-indent:-5000px;
+	width:58px; 
+}
+	
+#history_stats { padding-top: 16px; }
+ 
+.box_fatbottom .left_stats { float: left; }
+ 
+.box_fatbottom .right_stats { float: right; }
+ 
+.box_fatbottom strong { color: #000; }
+ 
 .box_banner_menu {
-    float:right;
-    list-style:none;
-    display:inline;
-    margin: 10px 0;
-    padding: 0;
+	display: inline;
+	float: right;
+	list-style: none;
+	margin: 10px 0;
+	padding: 0;
 }
-.box_banner_menu li {
-    float:right;
-}
-
+ 
+	.box_banner_menu li { float: right; }
+ 
 /* overall pause/resume */
 #pause_int {
 	color: white;
-	padding-right:10px;
-	font-size:small;
+	font-size: small;
+	padding-right: 10px;
 }
+ 
 .q_menu_pause {
-    margin-right:6px;
-    padding-right:32px;
-    padding-bottom:24px;
-    cursor:pointer;
-    background: url(../images/plush-default/sprite-main.png) no-repeat top left;
+	background: url('../images/plush-default/sprite-main.png') no-repeat top left;
+	cursor:pointer;
+	display:block;
+	height:22px;
+	margin-right:6px;
+	width:22px;
 }
-
+ 
 /* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
 .sprite_h_purge {
-    background: url(../images/plush-default/sprite-main.png) no-repeat top left;
-    margin:6px;
-    padding-right:28px;
-    padding-bottom:24px;
-    cursor:pointer;
-    display:none;
+	background: url('../images/plush-default/sprite-main.png') no-repeat top left;
+	cursor: pointer;
+	display: none;
+	margin: 6px;
+	padding-bottom: 24px;
+	padding-right: 28px;
 }
-
-
-#page-wrap { width: 95%; margin: 0px auto; }
+ 
+#page-wrap {
+	background: url('../images/plush-default/tile_page_wrap.png') repeat-y top left;
+	clear:both;
+	margin: 0px auto;
+	width: 95%; 
+}
+ 
 .box_banner_hr {
-    background: #cfcfcf url(../images/plush-default/tile_qh_seperator.png) 0 0 repeat-x;
-    height:4px;
+	background: #cfcfcf url('../images/plush-default/tile_qh_seperator.png') 0 0 repeat-x;
+	height: 4px;
 }
-.box_banner_history {background-image: url(../images/plush-default/tile_history.png); background-repeat: repeat-x; height: 51px; width: 100%; background-position: -2px 0;}
-.box_banner_history h1 { color:#c7c7c7; font-size:90%; font-weight:normal; float:left; margin: 17px 0px 0px 16px; cursor:default; }
+ 
+.box_banner_history {
+  background: url('../images/plush-default/tile_qh.png') 0 -16px repeat-x;
+	height: 51px;
+	width: 100%; 
+}
+ 
+	.box_banner_history h1 {
+		color: #c7c7c7;
+		cursor: default;
+		float: left;
+		font-weight: normal;
+		padding:17px 8em 11px 21px;
+	}
+ 
 .box_banner_r {
-    height:52px;
-    margin-left:1px;
+	float:right;
+	height: 52px;
+	margin-left: 1px; 
 }
-#hdr-queue { background-image: url(../images/plush-default/tile_queue.png); background-position: 4px 0px; background-repeat: repeat-x; height: 55px; }
-#hdr-queue .logo { height: 55px; width: 178px; float: left;}
-.sprite_hdr_queue { background: url(../images/plush-default/sprite-main.png) no-repeat top left; }
-#hdr-queue .logo h1 { color:#c7c7c7; font-size:90%; font-weight:normal; margin: 22px 0px 0px 20px; cursor:default; }
-#queue-buttons { float: right; background-image: url(../images/plush-default/queue_bg.png); background-position: top right; background-repeat: no-repeat; height: 35px; padding-top: 20px;}
-#queue-buttons li { float:left; }
-#queue-wrap { background-color: #cfcfcf; padding: 0 4px; }
-#btm-wrapper { height: 9px; background-color: #cfcfcf; clear:both;}
-#btm-wrapper .sprite_btm_corner_right { float:right; background-image: url(../images/plush-default/sprite-main.png); background-repeat:no-repeat; height: 9px; width: 12px;}
-#btm-wrapper .sprite_btm_corner_left { float:left; background-image: url(../images/plush-default/sprite-main.png); background-repeat: no-repeat; height: 9px; width: 12px; }
+ 
+#hdr-queue {
+	background: url('../images/plush-default/tile_qh.png') repeat-x 0 0;
+	height: 67px;
+}
+ 
+	#hdr-queue .logo {
+		float: left;
+		height: 67px;
+	}
+ 
+.sprite_topleft_queue,
+.sprite_topright_queue { background: url('../images/plush-default/sprite-main.png') no-repeat top left; }
+ 
+#hdr-queue .logo h1 {
+	color: #c7c7c7;
+	cursor: default;
+	font-weight: normal;
+	margin: 32px 0 0 38px;
+}
 
+#queue-buttons {
+	float: right;
+	height:37px;
+	padding-top:34px;
+}
+	
+	#queue-buttons ul {
+		margin-right:24px;
+		overflow:hidden;
+	} 	
+ 
+	#queue-buttons li { float: left; }
+ 
+#queue-wrap {
+	background: url('../images/plush-default/tile_queue_wrap.png') repeat-y top right;
+	padding:0 16px;
+}
+ 
+#btm-wrapper {
+	background: url('../images/plush-default/tile_bottom_wrap.png') repeat-x left bottom;
+	clear: both;
+	height: 26px;
+}
+	#btm-wrapper div {
+		background-image: url('../images/plush-default/sprite-main.png');
+		background-repeat: no-repeat;
+		float: left;
+		height:26px;
+		width:26px;
+	}
+ 
+	#btm-wrapper .sprite_btm_corner_right {
+		float: right;
+	}
 
-
-
+ 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
-
+ 
     box header, above queue (sabnzbd logo & stats)
-
+ 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 .centerpiece {
-    width:320px;
-    margin-left:auto;
-    margin-right:auto;
+  margin:0 auto;
+  overflow:hidden;
+  padding-top:12px;
+  width:308px;
 }
+ 
 .sprite_sabnzbdplus_logo {
-	margin: 10px 0px -12px 0px;
-    background: url(../images/plush-default/sprite-main.png) no-repeat;
+	background: url('../images/plush-default/sprite-main.png') no-repeat;
+	margin: 10px 0 0;
 }
+ 
 #queue_logo {
-    padding-left:50px;
-    padding-right:50px;
-    padding-bottom:19px;
-    height: 40px;
-    float:left;
+	float: left;
+	height: 40px;
+	padding-left: 50px;
+	padding-right: 50px;
 }
+ 
 #speed, #time-left {
-    background-image: url(../images/plush-default/sprite-main.png);
-    width: 68px;
-    height: 12px;
-    padding: 5px 0px;
-    margin-top: 20px;
-    text-align: center;
-    cursor:default;
+	background-image: url('../images/plush-default/sprite-main.png');
+	cursor: default;
+	height: 12px;
+	margin-top: 20px;
+	padding: 3px 0px 7px;
+	text-align: center;
+	width: 68px; 
 }
+ 
 /* stats next to logo */
-#speed { float:left; margin-right:36px;}
-#time-left { float:left; margin-left:36px; }
-#speed p, #time-left p { font-size: 9px; color: #7c7c7c; }
-#speed span, #time-left span { font-size: 11px; color: #dadada; font-weight: bold; }
-
-/* plush logo, below history */
-.history_logo {
-    background: url(../images/plush-default/sabnzbdplus_plush.png) 50% 100% no-repeat;
+#speed {
+	float: left;
+	margin-right: 36px;
+}
+ 
+#time-left {
+	float: left;
+	margin-left: 36px;
+}
+ 
+#speed p, #time-left p {
+	color: #7c7c7c;
+	font-size: 9px;
+}
+ 
+#speed span, #time-left span {
+	color: #dadada;
+	font-size: 11px;
+	font-weight: bold;
 }
 
 .show { display: inline; }
-
-
+ 
 /*  queueTable shared by queue and history */
 .queueTable {
-    border-collapse: seperate;
-    width: 100%;
-    background-color: #e0e0e0;
-    color: #606060;
-    border-bottom: 1px solid #fff;
-    border-spacing: 0px;
+	background-color: #e0e0e0;
+	border-bottom: 1px solid #fff;
+	border-collapse: seperate;
+	border-spacing: 0px;
+	color: #606060;
+	width: 100%; 
 }
-.queueTable tr {
-    background-color: #e0e0e0;
-    cursor: default;
-}
-#queueTable tr:hover {
-	cursor: move;
-}
-.queueTable tr select {
-    color: #606060;
-}
-.queueTable tr:hover {
-    background-color: #f9f9f9;
-    color: #000;
-}
-.queueTable tr:hover select {
-    color: #000;
-}
+ 
+	.queueTable tr {
+		background-color: #e0e0e0;
+		cursor: default;
+	}
+	.queueTable tr:hover,
+	.queueTable tr.alt:hover {
+  	background-color: #f9f9f9;
+  	color: #000; 
+  }
+	.queueTable tr select { 
+  	background: #e5e5e5;
+  	border:1px solid #e0e0e0;
+  	color:#606060;
+  	padding:2px;
+  }
+
+  .queueTable tr:hover select {
+    background:#fff;
+    border: 1px solid #c0c0c0;
+    color: #000; 
+  }
+
+	.queueTable tr.alt {
+	  background-color:#d0d0d0;
+	}
+	.queueTable tr.alt select {
+	  border:1px solid #d0d0d0;
+	  background: #d5d5d5;
+  }
+	.queueTable tr.alt:hover select {
+	  border:1px solid #b0b0b0;
+	  background: #fff;
+  }
+ 
+#queueTable tr:hover { cursor: move; }
+ 
+
+ 
 .queueTable td {
-    vertical-align: middle;
-    padding:2px 0;
-    border-top: 1px solid #FFF;
-    border-bottom: 1px solid #B1B1B1;
+	border-bottom: 1px solid #B1B1B1;
+	border-top: 1px solid #FFF;
+	padding: 3px 0;
+	vertical-align: middle; 
 }
+ 
 tr:hover .nzb_status_grippie {
-    background-color: #f9f9f9; /* IE7 */
+  background-color: #f9f9f9; /* IE7 */ 
 }
-.queueTable td.download-title {
-    width: 50%;
+ 
+.queueTable td.download-title { 
+  width: 38%;
 }
+ 
 .nzb_status_col {
-	width:28px;
+  width: 28px;
 }
+ 
 .nzb_status {
-	display:inline;
-    padding-left:16px;
-    margin-right:4px;
-    background: url(../images/plush-default/sprite-main.png);
+	background: url('../images/plush-default/sprite-main.png');
+	display: inline;
+	margin-right: 4px;
+	padding-bottom: 2px;
+	padding-left: 16px;
 }
-.nzb_status.Loaded {
-    background: url(../images/plush-default/spinner.gif) no-repeat;
-}
+ 
+	.nzb_status.Loaded { background: url('../images/plush-default/spinner.gif') no-repeat; }
+ 
 #queueTable .nzb_status {
-    cursor: pointer;
+  cursor: pointer;
 }
+ 
 .loading {
-	display:inline;
-    padding-left:16px;
-    background: url(../images/plush-default/spinner.gif) 4px 50% no-repeat;
+	background: url('../images/plush-default/spinner.gif') 4px 50% no-repeat;
+	display: inline;
+	padding-left: 16px;
 }
-.queueTable td.historyTitle {
-    width:50%;
+ 
+.queueTable td.historyTitle { 
+  padding:11px 0;
+  width: 50%;
 }
-.queueTable tr:hover td.historyTitle { /* IE7 */
-    background-color: #f9f9f9;
-    color: #000;
-}
+ 
+.queueTable tr:hover td.historyTitle {
+	background-color: #f9f9f9; /* IE7 */
+	color: #000; }
+ 
 .queueTable a {
-    text-decoration: none;
-    color: #606060;
+	color: #404040;;
+	font-weight:bold;
+	text-decoration: none;
 }
-.queueTable tr:hover a {
-    color: #000;
-}
+ 
+.queueTable tr:hover a { color: #000; }
+ 
 .queueTable a:hover {
-    border-bottom: 1px dotted #606060;
-    cursor: pointer;
-}
-.queueTable .eta {
-    padding-left:6px;
-    text-align: center;
-    font-size: 70%;
-}
-.icon_nzb_remove {
-	display:inline;
-    padding-left:16px;
-    background: url(../images/plush-default/sprite-main.png);
-	background-position: 0 0px;
-}
-.sprite_ql_cross_on {
+	border-bottom: 1px dotted #606060;
 	cursor: pointer;
 }
-
-
+ 
+.queueTable .eta {
+	padding-left: 6px;
+	text-align: center;
+}
+ 
+.icon_nzb_remove {
+	background: url('../images/plush-default/sprite-main.png') no-repeat;
+	display: inline;
+	padding-bottom: 2px;
+	padding-left: 16px;
+}
+.icon_nzb_remove:hover {
+  outline:none;
+}
+ 
+.sprite_ql_cross_on { cursor: pointer; }
+ 
 /* refresh button below queue */
-#manual_refresh {
-    cursor:pointer;
-}
-.refreshing {
-    border-bottom:1px dotted;
-}
-.refresh_skipped {
-    border-bottom:1px solid red;
-}
-
-
-
+#manual_refresh { cursor: pointer; }
+ 
+.refreshing { border-bottom: 1px dotted; }
+ 
+.refresh_skipped { border-bottom: 1px solid red; }
+ 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
-
+ 
     Queue
-
+ 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
-
 /* progress bar & MB/left stats */
-.sprite_ql_pbar_empty {
-    width:121px;
-    background: url(../images/plush-default/sprite-main.png) no-repeat;
+.sprite_progressbar_bg {
+	background: url('../images/plush-default/sprite-main.png') no-repeat;
+	width: 121px;
 }
-.sprite_ql_pbar_full {
-    background: url(../images/plush-default/sprite-main.png) no-repeat;
-    height: 15px;
-    width: 121px;
-    margin: 2px 0 0 1px;
+ 
+.sprite_progress_done {
+	background: url('../images/plush-default/sprite-main.png') no-repeat;
+	height: 19px;
+	width: 121px;
 }
-.currentDownload, .totalDownload { font-size: 9px; color: #000; z-index: 1; margin-top:2px; font-weight:bold;}
-.currentDownload small, .totalDownload small {
-    font-weight:normal;
+ 
+.currentDownload, .totalDownload {
+	color: #000;
+	font-weight: bold;
+	margin-top: 3px;
+	z-index: 1;
 }
-.currentDownload { float: left; margin-left: 3px;}
-.totalDownload { float:right; margin-right: 3px;}
-
+ 
+.currentDownload small, .totalDownload small { font-weight: normal; }
+ 
+.currentDownload {
+	float: left;
+	margin-left: 5px; 
+}
+ 
+.totalDownload {
+	float: right;
+	margin-right: 5px;
+}
+ 
 .options {
-    text-align:right;
-    padding-right:8px;
+	padding-right: 8px;
+	text-align: right;
 }
-
-
+ 
 /* below queue, left side, limit */
-#queue_view_preference, #history_view_preference {
-    width:120px;
-}
-#queue_view_preference {
-    margin-top:-5px;
-}
-#stats_noofslots {
-    display:none;
-}
-
+#queue_view_preference, #history_view_preference { width: 120px; }
+ 
+#queue_view_preference { margin-top: -5px; }
+ 
+#stats_noofslots { display: none; }
+ 
 /* below queue, right side, disk space */
 .queue_footer_icon {
-	display:inline;
+	background: url('../images/plush-default/sprite-main.png') no-repeat top left;
+	display: inline;
 	margin: 16px 4px 0px 20px;
 	padding: 4px;
-    background: url(../images/plush-default/sprite-main.png) no-repeat top left;
 }
-
-
-
-
-
+ 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
-
+ 
     History
-
+ 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
-
-
 .history_added {
-    font-size:75%;
-    cursor:default;
+	cursor: default;
+	font-size: 75%; 
 }
-tr:hover .history_added  {
-    color:black;
-}
-
+ 
+tr:hover .history_added { color: black; }
+ 
 .hvMessage {
-    font-weight: bold;
-    color: red;
-    font-size: 60%;
-	clear:both;
+	clear: both;
+	color: red;
+	font-size: 60%;
+	font-weight: bold;
 	width: 100%;
 }
-
-
-
+ 
 .icon_history_verbose {
-	background: url(../images/plush-default/sprite-main.png) no-repeat top left;
-    cursor: help;
-    display:inline;
-    float:left;
-    width: 16px;
-    margin-right: 2px;
+	background: url('../images/plush-default/sprite-main.png') no-repeat top left;
+	cursor: help;
+	display: inline;
+	float: left;
+	margin-right: 2px;
+	width: 16px;
 }
-.hvFaded {filter:alpha(opacity=25);-moz-opacity:.25;opacity:.25;}
+ 
+.hvFaded {
+	-moz-opacity: .25;
+	filter: alpha(opacity=25);
+	opacity: .25;
+}
+ 
 .pointer { cursor: pointer; }
-
-
+ 
 /* sprite-main.png */
-.sprite_btm_corner_left { background-position: 0 -30px; } 
-.sprite_btm_corner_right { background-position: 0 -69px; } 
-.sprite_h_purge { background-position: 0 -108px; } 
-.sprite_hdr_queue { background-position: 0 -159px; } 
-.sprite_hv_download { background-position: 0 -244px; } 
-.sprite_hv_error { background-position: 0 -290px; } 
-.sprite_hv_filejoin { background-position: 0 -336px; } 
-.sprite_hv_repair { background-position: 0 -382px; } 
-.sprite_hv_report { background-position: 0 -428px; } 
-.sprite_hv_script { background-position: 0 -474px; } 
-.sprite_hv_star { background-position: 0 -520px; } 
-.sprite_hv_stats { background-position: 0 -566px; } 
-.sprite_hv_unpack { background-position: 0 -612px; } 
-.sprite_q_pause { background-position: 0 -658px; } 
-.sprite_q_pause_on { background-position: 0 -709px; } 
-.sprite_q_stats_complete { background-position: 0 -760px; } 
-.sprite_q_stats_incomplete { background-position: 0 -806px; } 
-.sprite_q_stats_needspace { background-position: 0 -852px; } 
+.sprite_btm_corner_left { background-position:0 -18px; }
+ 
+.sprite_btm_corner_right { background-position:0 -56px;}
+ 
+.sprite_h_purge { background-position: 0 -108px; }
+ 
+.sprite_topleft_queue { background-position: 0 -160px; }
+ 
+.sprite_hv_download { background-position: 0 -244px; }
+ 
+.sprite_hv_error { background-position: 0 -290px; }
+ 
+.sprite_hv_filejoin { background-position: 0 -336px; }
+ 
+.sprite_hv_repair { background-position: 0 -382px; }
+ 
+.sprite_hv_report { background-position: 0 -428px; }
+ 
+.sprite_hv_script { background-position: 0 -474px; }
+ 
+.sprite_hv_star { background-position: 0 -520px; }
+ 
+.sprite_hv_stats { background-position: 0 -566px; }
+ 
+.sprite_hv_unpack { background-position: 0 -612px; }
+ 
+.sprite_q_pause { background-position: 0 -658px; }
+ 
+.sprite_q_pause_on { background-position: 0 -709px; }
+ 
+.sprite_q_stats_complete { background-position: 0 -760px; }
+ 
+.sprite_q_stats_incomplete { background-position: 0 -806px; }
+ 
+.sprite_q_stats_needspace { background-position: 0 -852px; }
+ 
 .sprite_ql_cross { background-position: 0 -898px; }
+ 
 .sprite_ql_cross_on { background-position: 0 -944px; }
-.sprite_ql_grip_active { background-position: 0 -990px; } 
-.sprite_ql_grip_active_on { background-position: 0 -1034px; } 
-.sprite_ql_grip_paused { background-position: 0 -1078px; } 
-.sprite_ql_grip_paused_on { background-position: 0 -1122px; } 
-.sprite_ql_grip_queued { background-position: 0 -1166px; } 
-.sprite_ql_grip_queued_on { background-position: 0 -1210px; } 
-.sprite_ql_pbar_empty { background-position: 0 -1254px; } 
-.sprite_ql_pbar_full { background-position: 0 -1299px; } 
-.sprite_queue_bg { background-position: 0 -1344px; } 
-.sprite_rounded_area_bg { background-position: 0 -1429px; } 
-.sprite_sabnzbdplus_logo { background-position: 0 -1481px; } 
-.sprite_sabnzbdplus_plush { background-position: 0 -1551px; } 
+ 
+.sprite_ql_grip_active { background-position: 0 -990px; }
+ 
+.sprite_ql_grip_active_on { background-position: 0 -1034px; }
+ 
+.sprite_ql_grip_paused { background-position: 0 -1078px; }
+ 
+.sprite_ql_grip_paused_on { background-position: 0 -1122px; }
+ 
+.sprite_ql_grip_queued { background-position: 0 -1166px; }
+ 
+.sprite_ql_grip_queued_on { background-position: 0 -1210px; }
+ 
+.sprite_progressbar_bg { background-position: 0 -1254px; }
+ 
+.sprite_progress_done { background-position: 0 -1299px; }
+ 
+.sprite_topright_queue { background-position: right -1332px; }
+ 
+.sprite_rounded_area_bg { background-position: 0 -1429px; }
+ 
+.sprite_sabnzbdplus_logo { background-position: 0 -1481px; }
+ 
+.sprite_sabnzbdplus_plush { background-position: 0 -1551px; }
 
-
-
-
-
-
+ 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
-
+ 
     MAIN MENU -- courtesy of jquery superfish plugin
     See LICENSE-MIT & LICENSE-GPL
-    with modifications by pairofdimes & inpheaux
-
+    with modifications by jbw
+ 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 
-/*** ESSENTIAL STYLES ***/
-.sf-menu, .sf-menu * {
-    margin:            0;
-    padding:        0;
-    list-style:        none;
+#main_menu{
+	display:block;
+	float:left;
+	margin:18px 0;
+	width:100%;
 }
-.sf-menu {
-    line-height:    1.1em;
-}
-.sf-menu ul {
-    position:        absolute;
-    top:            -999em;
-    width:            10em; /* left offset of submenus need to match (see below) */
-}
-.sf-menu ul li {
-    width:            100%;
-}
-.sf-menu li:hover {
-    visibility:        inherit; /* fixes IE7 'sticky bug' */
-}
-.sf-menu li {
-    float:            left;
-    position:        relative;
-}
-.sf-menu a {
-    display:        block;
-    position:        relative;
-}
-.sf-menu li:hover ul,
-.sf-menu li.sfHover ul {
-    left:            0;
-    top:            2em; /* match top ul list item height */
-    z-index:        99;
-}
-ul.sf-menu li:hover li ul,
-ul.sf-menu li.sfHover li ul {
-    top:            -999em;
-}
-ul.sf-menu li li:hover ul,
-ul.sf-menu li li.sfHover ul {
-    left:            10em; /* match ul width */
-    top:            0;
-}
-ul.sf-menu li li:hover li ul,
-ul.sf-menu li li.sfHover li ul {
-    top:            -999em;
-}
-ul.sf-menu li li li:hover ul,
-ul.sf-menu li li li.sfHover ul {
-    left:            10em; /* match ul width */
-    top:            0;
+#main_menu ul{
+	display:block;
+	height:2em;
+	list-style: none;
+	margin:0 auto;
+	width:630px;
 }
 
-/*** DEMO SKIN ***/
-.sf-menu {
-    margin:            auto;
-    margin-bottom:    0.25em;
-    cursor: default;
+#main_menu ul li,
+#main_menu ul li a {
+	display:block;
+	float:left;
+	width:85px;
 }
-.sf-menu a {
-    border-left:    1px solid #fff;
-    border-top:        1px solid #CFDEFF;
-    padding:         .75em 1em;
+
+#main_menu ul li { /* First Level */
+	list-style:none;
+	margin:0 10px;
+	position:relative;
+}
+
+#main_menu ul li a {
+	cursor:pointer;
+  display:block;
+  text-align:center;
+}
+
+#main_menu ul li input,
+#main_menu ul li select{
+  background:#fff;
+  border:1px solid #ccc;
+  color:#606060;
+  padding:2px;
+}
+
+#main_menu ul li input#fetch_newzbin_bookmarks{
+  background:#111;
+  color:#fff;
+}
+
+
+#main_menu ul li ul{  /* Second Level */
+	display:none;
+}
+
+#main_menu ul li ul{
+  float:left;
+  height:auto;
+  left:0;
+  margin:0;
+  position:absolute;
+  top:21px;
+  width:200px;
+  z-index:100;
+}
+
+#main_menu ul li ul li{
+  background:#a2a2a2;
+  border-bottom:1px solid #878787;
+  clear:left;
+  float:left;
+  margin:0;
+  width:100%;
+}
+
+#main_menu ul li ul li a{
+  clear:left;
+  float:left;
+  margin:0;
+  padding:10px;
+  text-align:left;
+  width:180px;
+}
+
+#main_menu ul li ul li a:hover{
+    background:#ccc;
+    color:#333;
     text-decoration:none;
 }
-.sf-menu a, .sf-menu a:visited  { /* visited pseudo selector so IE6 applies text colour*/
-    color:            #000;
-    font-size:        75%;
-}
-.sf-menu li {
-    background:        #BDD2FF;
-}
-.sf-menu li li {
-    background:        #AABDE6;
-}
-.sf-menu li li li {
-    background:        #9AAEDB;
-}
-.sf-menu li:hover, .sf-menu li.sfHover,
-.sf-menu a:focus, .sf-menu a:hover, .sf-menu a:active {
-    background:        #CFDEFF;
-    outline:        0;
-}
 
-/*** arrows **/
-.sf-menu a.sf-with-ul {
-    padding-right:     2.25em;
-    min-width:        1px; /* trigger IE7 hasLayout so spans position accurately */
-}
-.sf-sub-indicator {
-    position:        absolute;
-    display:        block;
-    right:            .75em;
-    top:            1.05em; /* IE6 only */
-    width:            10px;
-    height:            10px;
-    text-indent:     -999em;
-    overflow:        hidden;
-    background:        url('../images/plush-default/sprite-jq-superfish.png') no-repeat -10px -100px; /* 8-bit indexed alpha png. IE6 gets solid image only */
-}
-a > .sf-sub-indicator {  /* give all except IE6 the correct values */
-    top:            .8em;
-    background-position: 0 -100px; /* use translucent arrow for modern browsers*/
-}
-/* apply hovers to modern browsers */
-a:focus > .sf-sub-indicator,
-a:hover > .sf-sub-indicator,
-a:active > .sf-sub-indicator,
-li:hover > a > .sf-sub-indicator,
-li.sfHover > a > .sf-sub-indicator {
-    background-position: -10px -100px; /* arrow hovers for modern browsers*/
-}
-
-/* point right for anchors in subs */
-.sf-menu ul .sf-sub-indicator { background-position:  -10px 0; }
-.sf-menu ul a > .sf-sub-indicator { background-position:  0 0; }
-/* apply hovers to modern browsers */
-.sf-menu ul a:focus > .sf-sub-indicator,
-.sf-menu ul a:hover > .sf-sub-indicator,
-.sf-menu ul a:active > .sf-sub-indicator,
-.sf-menu ul li:hover > a > .sf-sub-indicator,
-.sf-menu ul li.sfHover > a > .sf-sub-indicator {
-    background-position: -10px 0; /* arrow hovers for modern browsers*/
-}
-
-/* for jquery superfish plugin (main menu) */
-/*** adding the class sf-navbar in addition to sf-menu creates an all-horizontal nav-bar menu ***/
-.sf-navbar {
-    background:        #B1B1B1;
-    height:            2.5em;
-    position:        relative;
-}
-.sf-navbar li {
-    background:        #B1B1B1;
-    position:        static;
-}
-.sf-navbar a {
-    border-top:        none;
-}
-.sf-navbar li ul {
-    width:            44em; /*IE6 soils itself without this*/
-    background:        #CFCFCF;
-}
-.sf-navbar li li {
-    background:        #CFCFCF;
-    position:        relative;
-}
-.sf-navbar li li ul {
-    width:            13em;
-}
-.sf-navbar li li li {
-    width:            100%;
-}
-.sf-navbar ul li {
-    width:            auto;
-    float:            left;
-}
-.sf-navbar a, .sf-navbar a:visited {
-    border:            none;
-}
-.sf-navbar li.current {
-    background:        #BDD2FF;
-}
-.sf-navbar li:hover,
-.sf-navbar li.sfHover,
-.sf-navbar li li.current,
-.sf-navbar a:focus, .sf-navbar a:hover, .sf-navbar a:active {
-    background:        #CFCFCF;
-}
-.sf-navbar ul li:hover,
-.sf-navbar ul li.sfHover,
-ul.sf-navbar ul li:hover li,
-ul.sf-navbar ul li.sfHover li,
-.sf-navbar ul a:focus, .sf-navbar ul a:hover, .sf-navbar ul a:active {
-    background:        #F9F9F9;
-}
-ul.sf-navbar li li li:hover,
-ul.sf-navbar li li li.sfHover,
-.sf-navbar li li.current li.current,
-.sf-navbar ul li li a:focus, .sf-navbar ul li li a:active {
-    background:        #F9F9F9;
-}
-.sf-navbar ul li li a:hover {
-    background:        #FFF;
-}
-ul.sf-navbar .current ul,
-ul.sf-navbar ul li:hover ul,
-ul.sf-navbar ul li.sfHover ul {
-    left:            0;
-    top:            2em; /* match top ul list item height */
-}
-ul.sf-navbar .current ul ul {
-    top:             -999em;
-}
-
-.sf-navbar li li.current > a {
-    font-weight:    bold;
-}
-
-/*** point all arrows down ***/
-/* point right for anchors in subs */
-.sf-navbar ul .sf-sub-indicator { background-position: -10px -100px; }
-.sf-navbar ul a > .sf-sub-indicator { background-position: 0 -100px; }
-/* apply hovers to modern browsers */
-.sf-navbar ul a:focus > .sf-sub-indicator,
-.sf-navbar ul a:hover > .sf-sub-indicator,
-.sf-navbar ul a:active > .sf-sub-indicator,
-.sf-navbar ul li:hover > a > .sf-sub-indicator,
-.sf-navbar ul li.sfHover > a > .sf-sub-indicator {
-    background-position: -10px -100px; /* arrow hovers for modern browsers*/
-}
-
-/*** remove shadow on first submenu ***/
-.sf-navbar > li > ul {
-    background: transparent;
-    padding: 0;
-    -moz-border-radius-bottomleft: 0;
-    -moz-border-radius-topright: 0;
-    -webkit-border-top-right-radius: 0;
-    -webkit-border-bottom-left-radius: 0;
-}
-
-.sf-navbar select {
-	background-color: white;
-}
-#last_warning_link {
-	min-width:460px;
+#main_menu ul li ul li ul{   /* Third Level */
+  left:200px;
+  position:absolute;
+  top:0;
 }
 
 
+#main_menu ul li ul li#navrefreshrate,
+#main_menu ul li ul li#navoptions ul li,
+#main_menu ul li ul li#processingContainer ul li { /* No a tags on these elements so set padding/width on the li */
+  padding:10px;
+  width:180px;
+}
+
+#main_menu ul li ul#navaddnzb{
+  width:275px;
+}
+#main_menu ul li ul#navaddnzb li#navupload,
+#main_menu ul li ul li#navfetch{
+  padding:10px;
+  width:255px;
+}
+#main_menu ul li ul#navaddnzb li#processingContainer a{
+  width:255px;
+}
+#main_menu ul li ul#navaddnzb li#processingContainer ul{
+  left:275px;
+}
+
+#main_menu ul li ul li#processingContainer ul li label{
+  float:left;
+  width:40%;
+}
+#main_menu ul li ul li#processingContainer ul li select{
+  width:60%;
+}
+
+#main_menu ul li ul#navqueue{
+  width:230px;
+}
+#main_menu ul li ul#navqueue li#navqueueoption {
+  padding:10px;
+  width:210px;
+}
+#main_menu ul li ul#navqueue li a{
+  width:210px;
+}
+#main_menu ul li ul#navqueue li ul{
+  left:230px;
+  width:200px;
+}
+
+#main_menu ul li ul#navqueue li ul li a{
+  width:180px;
+}
+#main_menu ul li ul#navqueue li #onQueueFinish-option{
+  width:150px;
+}
+#main_menu ul li ul#last_warning_link li{
+  min-width: 460px;
+}
+#main_menu ul li ul#last_warning_link li a{
+  min-width: 440px;
+}
+
+
+.sf-shadow ul { /* if superfish shadows are enabled lets make it happen! 
+	background:	url('../images/plush-default/shadow.png') no-repeat bottom right;*/
+	padding: 0 8px 9px 0;
+	-moz-border-radius-bottomleft: 17px;
+	-moz-border-radius-topright: 17px;
+	-webkit-border-top-right-radius: 17px;
+	-webkit-border-bottom-left-radius: 17px;
+}
 
 /*
     ColorBox Core Style
     The following rules are the styles that are consistant between all ColorBox themes
 */
-#colorbox, #cboxOverlay, #cboxWrapper{position:absolute; top:0; left:0; z-index:9999; overflow:hidden;}
-#cboxOverlay{position:fixed; width:100%; height:100%;}
-#cboxMiddleLeft, #cboxBottomLeft{clear:left;}
-#cboxContent{position:relative; overflow:visible;}
-#cboxLoadedContent{overflow:auto;}
-#cboxLoadedContent iframe{display:block; width:100%; height:100%; border:0;}
-#cboxTitle{margin:0;}
-#cboxLoadingOverlay, #cboxLoadingGraphic{position:absolute; top:0; left:0; width:100%;}
-#cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow{cursor:pointer;}
-
+#colorbox, #cboxOverlay, #cboxWrapper {
+	left: 0;
+	overflow: hidden;
+	position: absolute;
+	top: 0;
+	z-index: 9999; 
+}
+ 
+#cboxOverlay {
+	height: 100%;
+	position: fixed;
+	width: 100%;
+}
+ 
+#cboxMiddleLeft, #cboxBottomLeft { clear: left; }
+ 
+#cboxContent {
+	overflow: visible;
+	position: relative;
+}
+ 
+#cboxLoadedContent { overflow: auto; }
+ 
+	#cboxLoadedContent iframe {
+		border: 0;
+		display: block;
+		height: 100%;
+		width: 100%;
+	}
+ 
+#cboxTitle { margin: 0; }
+ 
+#cboxLoadingOverlay, #cboxLoadingGraphic {
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+ 
+#cboxPrevious, #cboxNext, #cboxClose, #cboxSlideshow { cursor: pointer; }
+ 
 /* 
 	ColorBox example user style
 	These rules are ordered and tabbed in a way that represents the order/nesting of the generated HTML, 
 	in hope that this will make the relationship easier to understand. Thanks, jack@colorpowered.com
 */
-#cboxOverlay{background:#000;}
-
-#colorbox{}
-	#cboxContent{margin-top:32px;}
-		#cboxLoadedContent{background:#DDD; padding:10px;}
-                /*#cboxLoadingGraphic{background:url(images/loading.gif) center center no-repeat;}*/
-                #cboxLoadingOverlay{background:#DDD;}
-                #cboxTitle{position:absolute; top:-22px; left:0; color:#000;}
-                #cboxCurrent{position:absolute; top:-22px; right:205px; text-indent:-9999px;}
-                
-                #cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose{text-indent:-9999px; width:20px; height:20px; position:absolute; top:-20px; background:url(../images/plush-default/sprite-jq-colorbox.png) 0 0 no-repeat;}
-
-                #cboxPrevious{background-position:0px 0px; right:44px;}
-                #cboxPrevious.hover{background-position:0px -25px;}
-                #cboxNext{background-position:-25px 0px; right:22px;}
-                #cboxNext.hover{background-position:-25px -25px;}
-		#cboxClose{background-position:-50px 0px; right:0;}
-		#cboxClose.hover{background-position:-50px -25px;}
-
-                .cboxSlideshow_on #cboxPrevious, .cboxSlideshow_off #cboxPrevious{right:66px;}
-
-                .cboxSlideshow_on #cboxSlideshow{background-position:-75px -25px; right:44px;}
-                .cboxSlideshow_on #cboxSlideshow.hover{background-position:-100px -25px;}
-                .cboxSlideshow_off #cboxSlideshow{background-position:-100px 0px; right:44px;}
-                .cboxSlideshow_off #cboxSlideshow.hover{background-position:-75px -25px;}
-
-
+#cboxOverlay { background: #000; }
+ 
+#colorbox {  }
+ 
+#cboxContent { margin-top: 32px; }
+ 
+#cboxLoadedContent {
+	background: #DDD;
+	padding: 10px;
+}
+ 
+/*#cboxLoadingGraphic{background:url(images/loading.gif) center center no-repeat;}*/
+#cboxLoadingOverlay { background: #DDD; }
+ 
+#cboxTitle {
+	color: #000;
+	left: 0;
+	position: absolute;
+	top: -22px;
+}
+ 
+#cboxCurrent {
+	position: absolute;
+	right: 205px;
+	text-indent: -9999px;
+	top: -22px;
+}
+ 
+#cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose {
+	background: url('../images/plush-default/sprite-jq-colorbox.png') 0 0 no-repeat;
+	height: 20px;
+	position: absolute;
+	text-indent: -9999px;
+	top: -20px;
+	width: 20px;
+}
+ 
+#cboxPrevious {
+	background-position: 0px 0px;
+	right: 44px;
+}
+ 
+	#cboxPrevious.hover { background-position: 0px -25px; }
+ 
+#cboxNext {
+	background-position: -25px 0px;
+	right: 22px;
+}
+ 
+	#cboxNext.hover { background-position: -25px -25px; }
+ 
+#cboxClose {
+	background-position: -50px 0px;
+	right: 0;
+}
+ 
+	#cboxClose.hover { background-position: -50px -25px; }
+ 
+.cboxSlideshow_on #cboxPrevious, .cboxSlideshow_off #cboxPrevious { right: 66px; }
+ 
+.cboxSlideshow_on #cboxSlideshow {
+	background-position: -75px -25px;
+	right: 44px;
+}
+ 
+	.cboxSlideshow_on #cboxSlideshow.hover { background-position: -100px -25px; }
+ 
+.cboxSlideshow_off #cboxSlideshow {
+	background-position: -100px 0px;
+	right: 44px;
+}
+ 
+	.cboxSlideshow_off #cboxSlideshow.hover { background-position: -75px -25px; }
+ 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
-
+ 
     N Z O (nzb files page, linked from queue)
-
+ 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
-body.nzo {background: #ddd;}
-body.nzo .config_nav {
-	cursor:default;
+body.nzo {
+  background: #ddd;
 }
-body.nzo #config_content input, body.nzo .config_nav a {
-    cursor:pointer;
-}
+	body.nzo .config_nav {
+	  cursor: default;
+	}
+	body.nzo #config_content input,
+	body.nzo .config_nav a {
+	  cursor: pointer;
+	}
+ 
 table.nzoTable {
-    font-size: 9pt;
-    color: black;
-    margin: 0px;
+  border-collapse:collapse;
+	color: #131313;
+	margin:1px;
+	width:90%;
 }
-table.nzoTable tr {
-    cursor:pointer;
-}
-table.nzoTable th {
-    background: #b5b5b5;
-    color: white;
-    font-weight: bold;
-    cursor:default;
-}
-table.nzoTable tr.even{
-    background-color: #cdf;
-}
-table.nzoTable tr.evenLine {
-    background-color: #eee;
-}
-table.nzoTable tr.odd {
-    background-color: #99bbff;
-}
-table.nzoTable tr.oddLine {
-    background-color: #f8f8f8;
-}
-table.nzoTable tr:hover {
-    background-color: #333333;
-    color: #FFF;
-}
-.nzo_save_form {
-	margin-left:120px;
-}
-.nzo_save_form div {
-	display: inline;
-	white-space:nowrap;
-}
-
-
-
+ 
+	table.nzoTable tr { 
+	  cursor: pointer;
+	}
+	table.nzoTable tr.even {
+	  background-color: #cdf;
+	}
+	table.nzoTable tr.evenLine {
+	  background-color: #eee;
+	}
+	table.nzoTable tr.odd {
+	  background-color: #99bbff;
+	}
+	table.nzoTable tr.oddLine {
+	  background-color: #f8f8f8;
+	}
+	table.nzoTable tr:hover {
+		background-color: #333333;
+		color: #FFF;
+	}
+	
+	table.nzoTable th {
+		background: #b5b5b5;
+		color: white;
+		cursor: default;
+		font-weight: bold;
+	}
+	
+	table.nzoTable th,
+	table.nzoTable td {
+	  border:1px solid #999;
+	  padding:3px 5px;
+	}
+	table.nzoTable th.check,
+	table.nzoTable td.check {
+	  width:22px;
+	}	
+	
+.nzo_save_form { margin-left: 120px; }
+ 
+	.nzo_save_form div {
+		display: inline;
+		white-space: nowrap;
+	}
+ 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
-
+ 
     C O N F I G
-
+ 
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
-
 #config_container {
-    background: #bbb;
-    min-height: 435px;
-    text-align: left;
-    font-size: 10pt;
-    padding: 10px;
-    padding-left: 20px;
-}
-
-#config_content {
-    height: 100%;
-    width: 100%;
-    overflow: auto;
+	background: #bbb;
+	font-size: 10pt;
+	min-height: 435px;
+	padding-left: 20px;
+	padding: 10px;
+	text-align: left;
 }
 #config_content a {
-	color: blue;
+  color:#000;
+  text-decoration:underline;
+} 
+#config_content {
+	overflow: hidden;
+	width: 100%;
 }
-
-
+  #config_content .center {
+    background:#eee;
+    border:1px solid #aaa;
+    padding:5px 7px;
+  }
+  #config_content .catheaderinfo { font-weight:bold;}
+ 
 #config_go_back {
-    text-align:center;
-    padding:1px;
+	padding: 1px;
+	text-align: center;
 }
-#config_go_back div {
-    margin:auto;
-    padding: 22px 0px 6px 20px;
-    margin-bottom:-4px;
-    width:80px;
-}
-#config_go_back a {
-    margin-left:-20px;
-    padding: 30px 10px 0px 40px;
-    text-decoration:none;
-    color:black;
-    font-size:66%;
-}
-#config_go_back a:hover {
-    border-bottom: 1px dotted black;
-}
-div.EntryBlock form {
-  display: inline;
-}
+ 
+	#config_go_back div {
+		margin-bottom: -4px;
+		margin: auto;
+		padding: 25px 0 4px 20px;
+		width: 80px;
+	}
+ 
+	#config_go_back a {
+		color: black;
+		font-size: 66%;
+		margin-left: -20px;
+		padding: 30px 10px 0px 40px;
+		text-decoration: none;
+	}
+ 
+		#config_go_back a:hover { border-bottom: 1px dotted black; }
+ 
+div.EntryBlock form { display: inline; }
+div.EntryBlock {
+
+} 
 fieldset.EntryFieldSet {
-  vertical-align: top;
-  display: inline;
-  float:left;
-  padding: 7px;
-  margin: 5px;
+  border:1px solid #333;
+	display: inline;
+	float: left;
+	margin: 5px;
+	padding: 7px 7px 10px;
+	vertical-align: top;
+} 
+.add-rss fieldset.EntryFieldSet {
+	width:97%;
 }
-.config_nav {
-    margin-top: 20px;
-    width: 84px;
-    text-align: left;
-    float: left;
-}
-
-.config_nav ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-
-.config_nav li {
-    margin: 0;
-    padding: 3px 0px 3px 5px;
-}
-
-.config_nav li a {
-    display: block;
-    padding: 4px 22px 4px 4px;
-    background-color: #ddd;
-    color: #666;
-    text-decoration: none;
-    width: 100%;
-    font-size: 9pt;
-    font-weight: bold;
-}
-.config_nav li a .sprite_container {
-    padding: 1px 0px 1px 22px;
-    margin: 3px 0px 3px 0px;
-    width: 100%;
-}
-.config_nav li a:hover {
-    background-color: #ccc;
-    color: #000;
-}
-
-.config_nav .nav_active {
-    background-color: #bbb;
-    color: #000;
-}
-
-li a div {
-	background: url(../images/plush-default/sprite-config.png) no-repeat top left;
-}
-
-legend span {
-	background: url(../images/plush-default/sprite-config.png) no-repeat top left;
-}
-legend .sprite_container {
-    padding: 0px 0px 0px 16px;
-    display:inline;
-}
-#config_content legend {
-    padding: 2px 8px 0px 4px;
-    font-size:150%;
+  .add-rss fieldset.EntryFieldSet .feedname{
     font-weight:bold;
-    color:white;
-    background-color:#333;
+  	width:20%;
+  }
+  .add-rss fieldset.EntryFieldSet .feeduri{
+  	width:70%;
+  }
+  .add-rss fieldset.EntryFieldSet .inputsubmit{
+  	width:6%;
+  }
+  .update-rss fieldset.EntryFieldSet .feeduri{
+  	width:99%;
+  }
+#catTable {
+  width:100%;
 }
+  #catTable th,
+  #catTable td {
+    padding:3px 3px 5px;
+  }
+  #catTable th {
+    font-weight:bold;
+  }
+  #catTable td select {
+    background:#fff;
+    padding:3px;
+    width:100%;
+  }
+  #catTable td input {
+    width:98%;
+  }
+  #catTable td input.Add,
+  #catTable td input.Save{
+    font-size:0.8333em;
+    width:50px;
+  
+  }
+  #catTable td input.delete {
+    font-size:0.8333em;
+    width:26px;  
+  }
 
 
+
+.config_nav {
+	float: left;
+	margin-top: 20px;
+	text-align: left;
+	width: 84px; 
+}
+ 
+	.config_nav ul {
+		border: none;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+ 
+	.config_nav li {
+		margin: 0;
+		padding: 3px 0px 3px 5px;
+	}
+ 
+		.config_nav li a {
+			background-color: #ddd;
+			color: #666;
+			display: block;
+			font-size: 9pt;
+			font-weight: bold;
+			padding: 4px 22px 4px 4px;
+			text-decoration: none;
+			width: 100%;
+		}
+ 
+			.config_nav li a .sprite_container {
+				margin: 3px 0px 3px 0px;
+				padding: 1px 0px 1px 22px;
+				width: 100%;
+			}
+ 
+			.config_nav li a:hover {
+				background-color: #ccc;
+				color: #000;
+			}
+ 
+	.config_nav .nav_active {
+		background-color: #bbb;
+		color: #000;
+	}
+ 
+li a div { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
+ 
+legend span { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
+ 
+legend .sprite_container {
+	display: inline;
+	padding: 0px 0px 0px 16px;
+}
+ 
+#config_content legend {
+	background-color: #333;
+	color: white;
+	font-size: 150%;
+	font-weight: bold;
+	padding: 2px 8px 0px 4px;
+}
+ 
 /* sprite-config.png */
-.sprite_config_connections_disconnect { background-position: 0 -30px; } 
-.sprite_config_connections_encrypted { background-position: 0 -82px; } 
-.sprite_config_connections_unencrypted { background-position: 0 -134px; } 
-.sprite_config_connections_warnings { background-position: 0 -186px; } 
-.sprite_config_email_account_settings { background-position: 0 -238px; } 
-.sprite_config_email_options { background-position: 0 -290px; } 
-.sprite_config_folders_system { background-position: 0 -342px; } 
-.sprite_config_folders_user { background-position: 0 -394px; } 
-.sprite_config_general_tuning { background-position: 0 -446px; } 
-.sprite_config_general_web_server { background-position: 0 -498px; } 
-.sprite_config_help { background-position: 0 -550px; } 
-.sprite_config_indexsites_account_info { background-position: 0 -602px; } 
-.sprite_config_indexsites_bookmarks { background-position: 0 -654px; } 
-.sprite_config_indexsites_processed { background-position: 0 -706px; } 
-.sprite_config_nav_categories { background-position: 0 -758px; } 
-.sprite_config_nav_connections { background-position: 0 -804px; } 
-.sprite_config_nav_email { background-position: 0 -850px; } 
-.sprite_config_nav_folders { background-position: 0 -896px; } 
-.sprite_config_nav_general { background-position: 0 -942px; } 
-.sprite_config_nav_indexsites { background-position: 0 -988px; } 
-.sprite_config_nav_rss { background-position: 0 -1034px; } 
-.sprite_config_nav_scheduling { background-position: 0 -1080px; } 
-.sprite_config_nav_servers { background-position: 0 -1126px; } 
-.sprite_config_nav_sorting { background-position: 0 -1172px; } 
-.sprite_config_nav_switches { background-position: 0 -1218px; } 
-.sprite_config_rss_add { background-position: 0 -1264px; } 
-.sprite_config_save { background-position: 0 -1316px; } 
-.sprite_config_scheduling_add { background-position: 0 -1368px; } 
-.sprite_config_scheduling_current { background-position: 0 -1420px; } 
-.sprite_config_servers_add { background-position: 0 -1472px; } 
-.sprite_config_sorting_date { background-position: 0 -1524px; } 
-.sprite_config_sorting_generic { background-position: 0 -1576px; } 
-.sprite_config_sorting_series { background-position: 0 -1628px; } 
-.sprite_config_switches_other { background-position: 0 -1680px; } 
-.sprite_config_switches_processing { background-position: 0 -1732px; } 
-.sprite_nzo_bottom { background-position: 0 -1784px; } 
-.sprite_nzo_delete { background-position: 0 -1830px; } 
-.sprite_nzo_down { background-position: 0 -1876px; } 
-.sprite_nzo_reload { background-position: 0 -1922px; } 
-.sprite_nzo_select_all { background-position: 0 -1968px; } 
-.sprite_nzo_select_invert { background-position: -172px -30px; } 
-.sprite_nzo_select_none { background-position: -172px -76px; } 
-.sprite_nzo_top { background-position: -172px -122px; } 
-.sprite_nzo_up { background-position: -172px -168px; } 
-
-
-
-.numbered_list li {
-    list-style-type:decimal;
-}
-
+.sprite_config_connections_disconnect { background-position: 0 -30px; }
+ 
+.sprite_config_connections_encrypted { background-position: 0 -82px; }
+ 
+.sprite_config_connections_unencrypted { background-position: 0 -134px; }
+ 
+.sprite_config_connections_warnings { background-position: 0 -186px; }
+ 
+.sprite_config_email_account_settings { background-position: 0 -238px; }
+ 
+.sprite_config_email_options { background-position: 0 -290px; }
+ 
+.sprite_config_folders_system { background-position: 0 -342px; }
+ 
+.sprite_config_folders_user { background-position: 0 -394px; }
+ 
+.sprite_config_general_tuning { background-position: 0 -446px; }
+ 
+.sprite_config_general_web_server { background-position: 0 -498px; }
+ 
+.sprite_config_help { background-position: 0 -550px; }
+ 
+.sprite_config_indexsites_account_info { background-position: 0 -602px; }
+ 
+.sprite_config_indexsites_bookmarks { background-position: 0 -654px; }
+ 
+.sprite_config_indexsites_processed { background-position: 0 -706px; }
+ 
+.sprite_config_nav_categories { background-position: 0 -758px; }
+ 
+.sprite_config_nav_connections { background-position: 0 -804px; }
+ 
+.sprite_config_nav_email { background-position: 0 -850px; }
+ 
+.sprite_config_nav_folders { background-position: 0 -896px; }
+ 
+.sprite_config_nav_general { background-position: 0 -942px; }
+ 
+.sprite_config_nav_indexsites { background-position: 0 -988px; }
+ 
+.sprite_config_nav_rss { background-position: 0 -1034px; }
+ 
+.sprite_config_nav_scheduling { background-position: 0 -1080px; }
+ 
+.sprite_config_nav_servers { background-position: 0 -1126px; }
+ 
+.sprite_config_nav_sorting { background-position: 0 -1172px; }
+ 
+.sprite_config_nav_switches { background-position: 0 -1218px; }
+ 
+.sprite_config_rss_add { background-position: 0 -1264px; }
+ 
+.sprite_config_save { background-position: 0 -1316px; }
+ 
+.sprite_config_scheduling_add { background-position: 0 -1368px; }
+ 
+.sprite_config_scheduling_current { background-position: 0 -1420px; }
+ 
+.sprite_config_servers_add { background-position: 0 -1472px; }
+ 
+.sprite_config_sorting_date { background-position: 0 -1524px; }
+ 
+.sprite_config_sorting_generic { background-position: 0 -1576px; }
+ 
+.sprite_config_sorting_series { background-position: 0 -1628px; }
+ 
+.sprite_config_switches_other { background-position: 0 -1680px; }
+ 
+.sprite_config_switches_processing { background-position: 0 -1732px; }
+ 
+.sprite_nzo_bottom { background-position: 0 -1784px; }
+ 
+.sprite_nzo_delete { background-position: 0 -1830px; }
+ 
+.sprite_nzo_down { background-position: 0 -1876px; }
+ 
+.sprite_nzo_reload { background-position: 0 -1922px; }
+ 
+.sprite_nzo_select_all { background-position: 0 -1968px; }
+ 
+.sprite_nzo_select_invert { background-position: -172px -30px; }
+ 
+.sprite_nzo_select_none { background-position: -172px -76px; }
+ 
+.sprite_nzo_top { background-position: -172px -122px; }
+ 
+.sprite_nzo_up { background-position: -172px -168px; }
+ 
+.numbered_list li { list-style-type: decimal; margin-left:3em; }
+ 
 /* FF2 to rescue */
-.sucker {width:120px;font-weight:bold;}
-.tucker {width:300px;font-weight:bold;}
-
-a span {
-	background: url(../images/plush-default/sprite-config.png) no-repeat top left;
+.sucker {
+	font-weight: bold;
+	width: 120px;
 }
+ 
+.tucker {
+	font-weight: bold;
+	width: 300px;
+}
+ 
+a span { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
+ 
 .left_links .sprite_container, .right_links .sprite_container {
-    padding: 4px 0px 4px 22px;
-    margin: 3px 0px 3px 0px;
-    display:inline;
+	display: inline;
+	margin: 3px 0px 3px 0px;
+	padding: 4px 0px 4px 22px;
 }
+ 
 .left_links a, .right_links a {
-    cursor:pointer;
-    padding:36px;
-    margin:10px;
-    margin-bottom:40px;
+	cursor: pointer;
+	margin-bottom: 40px;
+	margin: 10px;
+	padding: 36px;
 }
-
+ 
 .left_links {
-    float: left;
-    margin: 5px 0 0 10px;
-    padding-left: 20px;
+	float: left;
+	margin: 5px 0 0 10px;
+	padding-left: 20px;
 }
-
-.left_links a {
-    display: block;
-    background-color: #ddd;
-    color: #666;
-    text-decoration: none;
-    font-size: 9pt;
-    font-weight: bold;
-    padding: 2px 5px;
-}
-
-.left_links a:hover {
-    background-color: #bbb;
-    color: #000;
-}
-
-.config_margin {
-    margin: 5px 10px 0 110px;
-}
-
+ 
+	.left_links a {
+		background-color: #ddd;
+		color: #666;
+		display: block;
+		font-size: 9pt;
+		font-weight: bold;
+		padding: 2px 5px;
+		text-decoration: none;
+	}
+ 
+		.left_links a:hover {
+			background-color: #bbb;
+			color: #000; 
+		}
+ 
+.config_margin { margin: 5px 10px 0 110px; }
+ 
 .right_links {
-    float: right;
-    margin: 5px 40px 0 0;
+	float: right;
+	margin: 5px 40px 0 0;
 }
-
-.right_links a {
-    display: block;
-    background-color: #ddd;
-    color: #666;
-    text-decoration: none;
-    font-size: 9pt;
-    font-weight: bold;
-    padding: 2px 5px;
-}
-
-.right_links a:hover {
-    background-color: #bbb;
-    color: #000;
-}
-
-
-
+ 
+	.right_links a {
+		background-color: #ddd;
+		color: #666;
+		display: block;
+		font-size: 9pt;
+		font-weight: bold;
+		padding: 2px 5px;
+		text-decoration: none;
+	}
+ 
+		.right_links a:hover {
+			background-color: #bbb;
+			color: #000;
+		}
+ 
 .center { text-align: center; }
+ 
 .xsmall { font-size: x-small; }
+ 
 .config_body { background: #ddd; }
+ 
 #configbox_latest_warnings a { color: white; }
-.dir_helper { color:white; background-color:blue; }
-.manual_restart { color:white; background-color:red; }
-.optional { color:white; background-color:green; }
-.key_toggle { cursor:pointer; color:white; background-color:#333; }
+ 
+.dir_helper {
+	background-color: blue;
+	color: white;
+	padding:2px;
+}
+ 
+.manual_restart {
+	background-color: red;
+	color: white;
+	padding:2px;
+}
+ 
+.optional {
+	background-color: green;
+	color: white;
+}
+ 
+.key_toggle {
+	background-color: #333;
+	color: white;
+	cursor: pointer;
+}
+
+*+html {
+  overflow-x:visible;
+}

@@ -30,7 +30,6 @@
         <li>
             <a class="sf-with-ul">SABnzbd</a>
             <ul>
-                <li><a>$T('Plush-maxSpeed'):&nbsp;&nbsp;<input type="text" id="maxSpeed-option" size="6" />&nbsp;&nbsp;$T('KBs')</a></li>
                 <li><a>$T('Plush-options')</a>
                 	<ul>
                 		<li><a>$T('Plush-refreshRate'):&nbsp;<select id="refreshRate-option">
@@ -121,6 +120,7 @@
         <li>
             <a class="sf-with-ul">$T('menu-queue')</a>
             <ul>
+                <li><a>$T('Plush-maxSpeed'):&nbsp;&nbsp;<input type="text" id="maxSpeed-option" size="6" />&nbsp;&nbsp;$T('KBs')</a></li>
                 <li>
                     <a class="sf-with-ul">$T('Plush-onQueueFinish'):
                         <select id="onQueueFinish-option">
@@ -205,8 +205,8 @@
     <div id="page-wrap">
 
         <div id="hdr-queue">
-            <div class="logo sprite_hdr_queue"><h1>$T('menu-queue').upper()</h1></div>
-            <div class="sprite_queue_bg" id="queue-buttons">
+            <div class="logo sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
+            <div class="sprite_topright_queue" id="queue-buttons">
                 <ul>
                 	<li><span id="pause_int"></span></li>
                     <li class="q_menu_pause <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>

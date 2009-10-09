@@ -550,16 +550,10 @@ jQuery(function($) { // safely invoke $ selector
 			********************************************/
 			
 			// Main menu
-			$("#main_menu ul.sf-menu").superfish(); // uses jQuery hoverIntent
-
-			// Main menu positioning
-			$('#main_menu .sf-menu, #main_menu .sf-navbar').attr('style','margin-left:'+ ($(window).width()/2-250) +'px;');
-			$(window).bind('resize', function() {
-				$('#main_menu .sf-menu, #main_menu .sf-navbar').attr('style','margin-left:'+ ($(window).width()/2-250) +'px;');
-			});
-			if ($.browser.mozilla) $('#main_menu .sf-navbar input').attr('style','margin: -4px 0px;');
-			else if ($.browser.safari) $('#main_menu .sf-navbar input').attr('style','margin: -1px 0px 0px -1px;');
-
+			$("#main_menu ul.sf-menu").superfish({ // uses jQuery hoverIntent
+				autoArrows:	false,
+      			dropShadows: false
+      		});
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
