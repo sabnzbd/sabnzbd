@@ -94,15 +94,19 @@ $(function(){
 
 					// #queueList pagination
 					var totalPages = Math.ceil( $.mobile.queue.noofslots / $.mobile.qhPerPage );
-					// set "Page X of Y"
-					$('#queue_page_current').html( (totalPages == 0) ? 0 : ($.mobile.qPage+1) );
-					$('#queue_page_total').html( totalPages );
-					// set pagination prev/next button states (active/inactive)
-					($.mobile.qPage == 0) ? $('#queue_page_prev').removeClass('grayButton') :  $('#queue_page_prev').addClass('grayButton');
-					(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
-					// show/hide pagination buttons as needed
-					(totalPages <= 1) ? $('#queue_page_buttons').hide() : $('#queue_page_buttons').show();
-					
+					// jump to previous page if nothing's left on this page (deletion/completion)
+					if ($.mobile.queue.noofslots > 0 && $.mobile.qPage+1 > totalPages)
+						$('#queue_page_prev').trigger('click');
+					else {
+						// set "Page X of Y"
+						$('#queue_page_current').html( (totalPages == 0) ? 0 : ($.mobile.qPage+1) );
+						$('#queue_page_total').html( totalPages );
+						// set pagination prev/next button states (active/inactive)
+						($.mobile.qPage == 0) ? $('#queue_page_prev').removeClass('grayButton') :  $('#queue_page_prev').addClass('grayButton');
+						(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
+						// show/hide pagination buttons as needed
+						(totalPages <= 1) ? $('#queue_page_buttons').hide() : $('#queue_page_buttons').show();
+					}
 				}
 			);
 		},
@@ -148,8 +152,12 @@ $(function(){
 					$('<option></option>').val(category).html(category).appendTo('#queue_nzb_content #change_cat optgroup');
 				});
 			}
+			// hide order option if unused
+			($.mobile.queue.noofslots < 2) ? $('#switch').parent().hide().prev().hide() : $('#switch').parent().show().prev().show();
 			// hide category option if unused
 			($.mobile.queue.categories.length == 0) ? $('#change_cat').parent().hide().prev().hide() : $('#change_cat').parent().show().prev().show();
+			// hide script option if unused
+			($.mobile.queue.scripts.length < 2) ? $('#change_script').parent().hide().prev().hide() : $('#change_script').parent().show().prev().show();
 
 			// load category options if # nodes is not current (does not account for all changes)
 			if ($.mobile.queue.scripts.length != $('#change_script optgroup','#queue_nzb_content').size()-1) {
@@ -158,8 +166,6 @@ $(function(){
 					$('<option></option>').val(script).html(script).appendTo('#queue_nzb_content #change_script optgroup');
 				});
 			}
-			// hide script option if unused
-			($.mobile.queue.scripts.length < 2) ? $('#change_script').parent().hide().prev().hide() : $('#change_script').parent().show().prev().show();
 	
 			// find which slot this is, then set this nzb's values
 			$.each($.mobile.queue.slots, function(i,nzb){
@@ -207,15 +213,19 @@ $(function(){
 
 					// #historyList pagination
 					var totalPages = Math.ceil( $.mobile.history.noofslots / $.mobile.qhPerPage );
-					// set "Page X of Y"
-					$('#history_page_current').html( (totalPages == 0) ? 0 : ($.mobile.hPage+1) );
-					$('#history_page_total').html( totalPages );
-					// set pagination prev/next button states (active/inactive)
-					($.mobile.hPage == 0) ? $('#history_page_prev').removeClass('grayButton') :  $('#history_page_prev').addClass('grayButton');
-					(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
-					// show/hide pagination buttons as needed
-					(totalPages <= 1) ? $('#history_page_buttons').hide() : $('#history_page_buttons').show();
-					
+					// jump to previous page if nothing's left on this page (deletion/completion)
+					if ($.mobile.history.noofslots > 0 && $.mobile.hPage+1 > totalPages)
+						$('#history_page_prev').trigger('click');
+					else {
+						// set "Page X of Y"
+						$('#history_page_current').html( (totalPages == 0) ? 0 : ($.mobile.hPage+1) );
+						$('#history_page_total').html( totalPages );
+						// set pagination prev/next button states (active/inactive)
+						($.mobile.hPage == 0) ? $('#history_page_prev').removeClass('grayButton') :  $('#history_page_prev').addClass('grayButton');
+						(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
+						// show/hide pagination buttons as needed
+						(totalPages <= 1) ? $('#history_page_buttons').hide() : $('#history_page_buttons').show();
+					}
 				}
 			);
 		},
