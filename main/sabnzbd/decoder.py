@@ -185,10 +185,16 @@ def decode(article, data):
 
         #Deal with non-yencoded posts
         if not ybegin:
-            if data[0].startswith('begin '):
-                nzf.set_filename(name_fixer(data[0].split(None, 2)[2]))
-                nzf.set_type('uu')
-                data.pop(0)
+            found = False
+            for i in xrange(10):
+                if data[i].startswith('begin '):
+                    nzf.set_filename(name_fixer(data[i].split(None, 2)[2]))
+                    nzf.set_type('uu')
+                    found = True
+                    break
+            if found:
+                for n in xrange(i):
+                    data.pop(0)
             if data[-1] == 'end':
                 data.pop()
                 if data[-1] == '`':
