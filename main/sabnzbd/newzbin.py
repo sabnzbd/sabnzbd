@@ -118,6 +118,14 @@ def grab(msgid, future_nzo):
     if __MSGIDGRABBER:
         __MSGIDGRABBER.grab(msgid, future_nzo)
 
+def alive():
+    global __MSGIDGRABBER
+    if __MSGIDGRABBER:
+        return __MSGIDGRABBER.isAlive()
+    else:
+        return False
+
+
 
 ################################################################################
 # DirectNZB support

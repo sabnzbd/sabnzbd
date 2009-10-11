@@ -1149,6 +1149,8 @@ def main():
             scheduler.restart()
             # Save config (if needed)
             config.save_config()
+            # Check the threads
+            sabnzbd.check_all_tasks()
         else:
             timer += 1
 

@@ -74,6 +74,12 @@ def stop():
         except:
             pass
 
+def alive():
+    global __ASM
+    if __ASM:
+        return __ASM.isAlive()
+    else:
+        return False
 
 #------------------------------------------------------------------------------
 class Assembler(Thread):

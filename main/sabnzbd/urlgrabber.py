@@ -73,6 +73,14 @@ def stop():
         except:
             pass
 
+def alive():
+    global __GRABBER
+    if __GRABBER:
+        return __GRABBER.isAlive()
+    else:
+        return False
+
+
 
 #------------------------------------------------------------------------------
 class URLGrabber(Thread):

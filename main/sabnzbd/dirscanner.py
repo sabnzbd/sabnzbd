@@ -73,6 +73,13 @@ def save():
     global __SCANNER
     if __SCANNER: __SCANNER.save()
 
+def alive():
+    global __SCANNER
+    if __SCANNER:
+        return __SCANNER.isAlive()
+    else:
+        return False
+
 
 ################################################################################
 # Body

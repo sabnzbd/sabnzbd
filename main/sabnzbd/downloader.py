@@ -85,6 +85,12 @@ def stop():
     except:
         pass
 
+def alive():
+    global __DOWNLOADER
+    if __DOWNLOADER:
+        return __DOWNLOADER.isAlive()
+    else:
+        return False
 
 #------------------------------------------------------------------------------
 

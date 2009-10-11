@@ -52,6 +52,7 @@ def init():
     """
     global __SCHED
 
+    reset_guardian()
     __SCHED = kronos.ThreadedScheduler()
 
     for schedule in cfg.SCHEDULES.get():
@@ -106,6 +107,10 @@ def init():
 
         __SCHED.add_daytime_task(action, action_name, d, None, (h, m),
                              kronos.method.sequential, arguments, None)
+
+    # Set Guardian interval to 30 seconds
+    __SCHED.add_interval_task(sched_guardian, "Guardian", 15, 30,
+                                  kronos.method.sequential, None, None)
 
     # Set RSS check interval
     interval = cfg.RSS_RATE.get()
@@ -337,3 +342,30 @@ def plan_server(action, parms, interval):
     """ Plan to re-activate server after "interval" minutes
     """
     __SCHED.add_single_task(action, '', interval*60, kronos.method.sequential, parms, None)
+
+
+#------------------------------------------------------------------------------
+# Scheduler Guarding system
+# Each check sets the guardian flag False
+# Each succesful scheduled check sets the flag
+# If 4 consequetive checks fail, the sheduler is assumed to have crashed
+
+__SCHED_GUARDIAN = False
+__SCHED_GUARDIAN_CNT = 0
+
+def reset_guardian():
+    global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT
+    __SCHED_GUARDIAN = False
+    __SCHED_GUARDIAN_CNT = 0
+
+def sched_guardian():
+    global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT
+    __SCHED_GUARDIAN = True
+
+def sched_check():
+    global __SCHED_GUARDIAN, __SCHED_GUARDIAN_CNT
+    if not __SCHED_GUARDIAN:
+        __SCHED_GUARDIAN_CNT += 1
+        return __SCHED_GUARDIAN_CNT < 4
+    reset_guardian()
+    return True

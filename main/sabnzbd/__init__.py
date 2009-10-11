@@ -710,3 +710,28 @@ def SimpleRarExtract(rarfile, fn):
     """ Wrapper for call to newsunpack, required to avoid circular imports
     """
     return sabnzbd.newsunpack.SimpleRarExtract(rarfile, fn)
+
+
+def check_all_tasks():
+    """ Check every task and restart any crashed one """
+    if not sabnzbd.dirscanner.alive():
+        logging.info('Restarting crashed dirscanner')
+        sabnzbd.dirscanner.init()
+    if not sabnzbd.urlgrabber.alive():
+        logging.info('Restarting crashed urlgrabber')
+        sabnzbd.urlgrabber.init()
+    if not sabnzbd.newzbin.alive():
+        logging.info('Restarting crashed newzbin')
+        sabnzbd.newzbin.init_grabber()
+    if not sabnzbd.postproc.alive():
+        logging.info('Restarting crashed postprocessor')
+        sabnzbd.postproc.init()
+    if not sabnzbd.downloader.alive():
+        logging.info('Restarting crashed downloader')
+        sabnzbd.downloader.init()
+    if not sabnzbd.assembler.alive():
+        logging.info('Restarting crashed assembler')
+        sabnzbd.assembler.init()
+    if not sabnzbd.scheduler.sched_check():
+        logging.info('Restarting crashed scheduler')
+        sabnzbd.scheduler.init()

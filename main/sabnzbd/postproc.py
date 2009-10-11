@@ -92,6 +92,13 @@ def stop():
         except:
             pass
 
+def alive():
+    global __POSTPROC
+    if __POSTPROC:
+        return __POSTPROC.isAlive()
+    else:
+        return False
+
 def save():
     global __POSTPROC
     if __POSTPROC: __POSTPROC.save()
