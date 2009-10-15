@@ -151,7 +151,7 @@ log-debug         + Debug
 connections       Connections
 thread            Thread
 emailResult       Email Test Result
-lastWarnings      Lastest Warnings
+lastWarnings      Latest Warnings
 clearWarnings     clear
 server-blocked    Unblock
 warning           WARNING:
