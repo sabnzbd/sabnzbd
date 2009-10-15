@@ -639,6 +639,7 @@ def main():
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_INTERFACES = real_path(sabnzbd.DIR_PROG, DEF_INTERFACES)
     sabnzbd.DIR_LANGUAGE = real_path(sabnzbd.DIR_PROG, DEF_LANGUAGE)
+    org_dir = os.getcwd()
 
     if getattr(sys, 'frozen', None) == 'macosx_app':
         # Correct path if frozen with py2app (OSX)
@@ -1164,6 +1165,7 @@ def main():
             if downloader.paused():
                 re_argv.append('-p')
             sys.argv = re_argv
+            os.chdir(org_dir)
             if sabnzbd.DARWIN:
                 args = sys.argv[:]
                 args.insert(0, sys.executable)
