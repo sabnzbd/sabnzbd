@@ -214,7 +214,10 @@ class RSSQueue:
         jobs = self.jobs[feed]
 
         first = first and ignoreFirst
-
+        
+        # Add sabnzbd's custom User Agent
+        feedparser.USER_AGENT = 'SABnzbd+/%s' % sabnzbd.version.__version__
+        
         # Read the RSS feed
         logging.debug("Running feedparser on %s", uri)
         d = feedparser.parse(uri)
