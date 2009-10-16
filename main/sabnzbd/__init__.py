@@ -83,6 +83,7 @@ import sabnzbd.lang as lang
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 
+LINUX_POWER = misc.HAVE_DBUS
 
 START = datetime.datetime.now()
 
@@ -481,52 +482,31 @@ def system_shutdown():
         time.sleep(1.0)
 
     if sabnzbd.WIN32:
-        try:
-            import win32security
-            import win32api
-            import ntsecuritycon
-
-            flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
-            htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
-            id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
-            newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
-            win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
-            win32api.InitiateSystemShutdown("", "", 30, 1, 0)
-        finally:
-            os._exit(0)
-
+        misc.win_shutdown()
     elif DARWIN:
-        Thread(target=halt).start()
-        while __INITIALIZED__:
-            time.sleep(1.0)
-        try:
-            subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
-        finally:
-            os._exit(0)
+        misc.osx_shutdown()
+    else:
+        misc.linux_shutdown()
 
 
 def system_hibernate():
     logging.info("Performing system hybernation")
-    try:
-        if sabnzbd.WIN32:
-            subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
-            time.sleep(10)
-    except:
-        logging.error(T('error-hibernate'))
-        logging.debug("Traceback: ", exc_info = True)
+    if sabnzbd.WIN32:
+        misc.win_hibernate()
+    elif DARWIN:
+        misc.osx_shutdown()
+    else:
+        misc.linux_hibernate()
 
 
 def system_standby():
     logging.info("Performing system standby")
-    try:
-        if sabnzbd.WIN32:
-            subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
-        elif DARWIN:
-            subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
-        time.sleep(10)
-    except:
-        logging.error(T('error-standby'))
-        logging.debug("Traceback: ", exc_info = True)
+    if sabnzbd.WIN32:
+        misc.win_standby()
+    elif DARWIN:
+        misc.osx_standby()
+    else:
+        linux_standby()
 
 
 def shutdown_program():

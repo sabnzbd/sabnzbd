@@ -2749,6 +2749,7 @@ def build_header(prim):
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
     header['nt'] = sabnzbd.WIN32
     header['darwin'] = sabnzbd.DARWIN
+    header['power_options'] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
 
     header['session'] = cfg.API_KEY.get()
 

@@ -30,6 +30,7 @@ import shutil
 import threading
 import subprocess
 import socket
+import time
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -1025,3 +1026,147 @@ def ip_extract():
             if m and m.group(2):
                 ips.append(m.group(2))
     return ips
+
+
+#------------------------------------------------------------------------------
+# Power management for Windows
+
+def win_hibernate():
+    try:
+        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
+        time.sleep(10)
+    except:
+        logging.error(T('error-hibernate'))
+        logging.debug("Traceback: ", exc_info = True)
+
+
+def win_standby():
+    try:
+        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
+        time.sleep(10)
+    except:
+        logging.error(T('error-standby'))
+        logging.debug("Traceback: ", exc_info = True)
+
+
+def win_shutdown():
+    try:
+        import win32security
+        import win32api
+        import ntsecuritycon
+
+        flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
+        htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
+        id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
+        newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+        win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
+        win32api.InitiateSystemShutdown("", "", 30, 1, 0)
+    finally:
+        os._exit(0)
+
+
+#------------------------------------------------------------------------------
+# Power management for OSX
+
+def osx_shutdown():
+    try:
+        subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
+    except:
+        logging.error(T('error-shutdown'))
+        logging.debug("Traceback: ", exc_info = True)
+    finally:
+        os._exit(0)
+
+
+def osx_standby():
+    try:
+        subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
+        time.sleep(10)
+    except:
+        logging.error(T('error-standby'))
+        logging.debug("Traceback: ", exc_info = True)
+
+
+def osx_hibernate():
+    osx_standby()
+
+
+#------------------------------------------------------------------------------
+# Power management for linux.
+#
+#    Requires DBus plus either HAL [1] or the more modern ConsoleKit [2].
+#    HAL will eventually be deprecated but older systems might still use it.
+#    [1] http://people.freedesktop.org/~hughsient/temp/dbus-interface.html
+#    [2] http://www.freedesktop.org/software/ConsoleKit/doc/ConsoleKit.html
+#
+#    Original code was contributed by Forum user "carresmd".
+
+try:
+    import dbus
+    HAVE_DBUS = True
+except ImportError:
+    HAVE_DBUS = False
+
+
+def _get_sessionproxy():
+        name = 'org.freedesktop.PowerManagement'
+        path = '/org/freedesktop/PowerManagement'
+        interface = 'org.freedesktop.PowerManagement'
+        try:
+            bus = dbus.SessionBus()
+            return bus.get_object(name, path), interface
+        except dbus.exceptions.DBusException:
+            return None, None
+
+def _get_systemproxy():
+       name = 'org.freedesktop.ConsoleKit'
+       path = '/org/freedesktop/ConsoleKit/Manager'
+       interface = 'org.freedesktop.ConsoleKit.Manager'
+       pinterface = 'org.freedesktop.DBus.Properties'
+       try:
+           bus = dbus.SystemBus()
+           return bus.get_object(name, path), interface, pinterface
+       except dbus.exceptions.DBusException:
+           return None, None, None
+
+
+def linux_shutdown():
+    if not HAVE_DBUS: os._exit(0)
+
+    proxy, interface = _get_sessionproxy()
+    if proxy:
+        if proxy.CanShutdown():
+            proxy.Shutdown(dbus_interface=interface)
+    else:
+        proxy, interface, pinterface = _get_systemproxy()
+        if proxy and proxy.CanStop(dbus_interface=interface):
+            proxy.Stop(dbus_interface=interface)
+    os._exit(0)
+
+
+def linux_hibernate():
+    if not HAVE_DBUS: return
+
+    proxy, interface = _get_sessionproxy()
+    if proxy:
+        if proxy.CanHibernate():
+            proxy.Hibernate(dbus_interface=interface)
+    else:
+        proxy, interface, pinterface = _get_systemproxy()
+        if proxy and proxy.Get(interface, 'can-hibernate', dbus_interface=pinterface):
+            proxy.Hibernate(dbus_interface=interface)
+    time.sleep(10)
+
+
+def linux_standby():
+    if not HAVE_DBUS: return
+
+    proxy, interface = _get_sessionproxy()
+    if proxy:
+        if proxy.CanSuspend():
+            proxy.Suspend(dbus_interface=interface)
+    else:
+        proxy, interface, pinterface = _get_systemproxy()
+        if proxy.Get(interface, 'can-suspend', dbus_interface=pinterface):
+            proxy.Suspend(dbus_interface=interface)
+    time.sleep(10)

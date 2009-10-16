@@ -33,12 +33,12 @@
             <li class="arrow" id="button-warnings" style="display:none"><a href="#warnings">$T('Mobile-warnings')</a> <small class="counter" id="warningsCount"></small></li>
         </ul>
     </div>
-	
-	
+
+
     <input type="hidden" id="apikey" value="$session" />
     <input type="hidden" id="TconfirmDelete" value="$T('Mobile-confirm-delete')" />
-    
-    
+
+
     <div id="queue">
         <div class="toolbar">
     		<h1>$T('menu-queue')</h1>
@@ -71,11 +71,9 @@
                     <option value="">$T('none')</option>
                     <optgroup label="$T('eoq-actions')">
                         <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>$T('shutdownSab')</option>
-                        <!--#if $nt or $darwin#-->
+                        <!--#if $power_options#-->
                         <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>$T('shutdownPc')</option>
                         <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>$T('standbyPc')</option>
-                        <!--#end if#-->
-                        <!--#if $nt#-->
                         <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>$T('hibernatePc')</option>
                         <!--#end if#-->
                     </optgroup>
@@ -113,7 +111,7 @@
         	<li><a href="#" class="pause_interval" rel="1440">$T('Mobile-pause24h')</a></li>
         </ul>
     </div>
-    
+
 
     <div id="queue_options_sort">
         <div class="toolbar">
@@ -129,7 +127,7 @@
             <li><a href="#" class="queue_sort_option" rel="size&dir=desc">$T('Mobile-sortSizeDesc')</a></li>
         </ul>
     </div>
-    
+
 
     <div id="queue_nzb">
         <div class="toolbar">
@@ -138,9 +136,9 @@
             <a class="button" href="#" id="nzb_rename">$T('Mobile-rename')</a>
     	</div>
         <div id="queue_nzb_content">
-			
+
 	        <div class="info"><span id="slot_filename"></span></div>
-			
+
 	        <ul class="edgetoedge">
 
 	        	<li>$T('remainTotal')<small><span id="slot_mbleft"></span>&nbsp;&frasl;&nbsp;<span id="slot_mb"></span>&nbsp;$T('MB')&nbsp;<span id="slot_percentage"></span>%</small></li>
@@ -149,7 +147,7 @@
 	        	<li>$T('nzo-age')<small id="slot_avg_age"></small></li>
 
 		        <li><span class="toggle"><input type="checkbox" id="pause_nzb" /></span><a href="#">$T('link-pause') NZB</a></li>
-				
+
 				<li class="sep">$T('order')</li>
 				<li><select id="switch"><optgroup label="$T('order')"></optgroup></select></li>
 
@@ -182,7 +180,7 @@
         </div>
     </div>
 
-    
+
     <div id="history">
         <div class="toolbar">
     		<h1>$T('menu-history')</h1>
@@ -196,8 +194,8 @@
         </ul>
         <h4 align="center">$T('Mobile-page')&nbsp;&nbsp;&nbsp;<span id="history_page_current"></span>&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;<span id="history_page_total"></span></h4>
     </div>
-    
-    
+
+
     <div id="history_options">
         <div class="toolbar">
     		<h1>$T('Mobile-button-options')</h1>
@@ -208,7 +206,7 @@
         </ul>
     </div>
 
-    
+
     <div id="history_nzb">
         <div class="toolbar">
     		<h1>$T('menu-history') NZB</h1>
@@ -237,13 +235,13 @@
 				<li class="sep">$T('catFolderPath')</li>
 		        <li id="line_nzb_storage"></li>
 		    </ul>
-        	
+
 		    <ul class="edgetoedge"><li><a href="#" id="delete_nzb" class="grayButton">$T('nzo-delete') NZB</a></li></ul>
 
         </div>
     </div>
 
-    
+
     <div id="history_nzb_script">
         <div class="toolbar">
     		<h1>$T('script')</h1>
@@ -285,7 +283,7 @@
     	<div id="warnings_list"></div>
         <div id="warnings_shell" class="info" style="display:none; font-weight: normal; text-align:left;"></div>
     </div>
-    
-    
+
+
 </body>
 </html>
