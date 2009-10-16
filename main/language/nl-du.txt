@@ -52,8 +52,8 @@ menu-irc          IRC
 cmenu-general     Algemeen
 cmenu-folders     Mappen
 cmenu-switches    Opties
-cmenu-servers     Usenet
-cmenu-scheduling  Agenderen
+cmenu-servers     Servers
+cmenu-scheduling  Planner
 cmenu-rss         RSS
 cmenu-email       Email
 cmenu-newzbin     Index sites
