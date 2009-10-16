@@ -122,6 +122,7 @@ OSX_ICON = 1
 PAUSED_ALL = False
 
 __INITIALIZED__ = False
+__SHUTTING_DOWN__ = False
 
 
 ################################################################################
@@ -163,6 +164,8 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
 
     if __INITIALIZED__:
         return False
+
+    __SHUTTING_DOWN__ = False
 
     ### Set global database connection for Web-UI threads
     cherrypy.engine.subscribe('start_thread', connect_db)
@@ -270,6 +273,7 @@ def halt():
 
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
+        __SHUTTING_DOWN__ = True
 
         rss.stop()
 
@@ -694,6 +698,8 @@ def SimpleRarExtract(rarfile, fn):
 
 def check_all_tasks():
     """ Check every task and restart any crashed one """
+    if __SHUTTING_DOWN__ or not __INITIALIZED__:
+        return
     if not sabnzbd.dirscanner.alive():
         logging.info('Restarting crashed dirscanner')
         sabnzbd.dirscanner.init()
