@@ -836,8 +836,8 @@ tr:hover .history_added { color: black; }
 #main_menu ul li ul li#navrefreshrate,
 #main_menu ul li ul li#navoptions ul li,
 #main_menu ul li ul li#processingContainer ul li { /* No a tags on these elements so set padding/width on the li */
-  padding:10px;
-  width:180px;
+/*  padding:10px;
+  width:180px;*/
 }
 
 #main_menu ul li ul#navaddnzb{
@@ -899,6 +899,10 @@ tr:hover .history_added { color: black; }
 	-moz-border-radius-topright: 17px;
 	-webkit-border-top-right-radius: 17px;
 	-webkit-border-bottom-left-radius: 17px;
+}
+
+#uploadTip {
+	overflow: hidden;
 }
 
 /*
