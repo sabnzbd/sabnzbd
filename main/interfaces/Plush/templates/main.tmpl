@@ -109,11 +109,11 @@
                         </select>
                     </a></li>
                     <!--#end if#-->
-					<!--#if $varExists('newzbinDetails')#-->
-	                <li><a><input title="Newzbin - $T('link-getBookmarks')" id="fetch_newzbin_bookmarks" class="pointer" type="button" value="$T('link-getBookmarks')" /></a></li>
-					<!--#end if#-->
                     </ul>
                 </li>
+				<!--#if $varExists('newzbinDetails')#-->
+                <li><a><input title="Newzbin - $T('link-getBookmarks')" id="fetch_newzbin_bookmarks" class="pointer" type="button" value="$T('link-getBookmarks')" /></a></li>
+				<!--#end if#-->
 				</form>
             </ul>
         </li>
