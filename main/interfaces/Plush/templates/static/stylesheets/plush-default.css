@@ -820,6 +820,10 @@ tr:hover .history_added { color: black; }
   width:180px;
 }
 
+#main_menu ul li ul.config_links li a{
+  padding:1px 10px 1px 10px;
+}
+
 #main_menu ul li ul li a:hover{
     background:#ccc;
     color:#333;
