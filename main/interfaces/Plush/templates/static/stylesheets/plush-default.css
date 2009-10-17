@@ -1118,7 +1118,7 @@ table.nzoTable {
   text-decoration:underline;
 } 
 #config_content {
-	overflow: hidden;
+	overflow: auto;
 	width: 100%;
 }
   #config_content .center {
@@ -1179,7 +1179,7 @@ fieldset.EntryFieldSet {
   	width:99%;
   }
 #catTable {
-  width:100%;
+  width:99%;
 }
   #catTable th,
   #catTable td {
@@ -1202,16 +1202,22 @@ fieldset.EntryFieldSet {
     width:50px;
   
   }
-  #catTable td input.delete {
+  #catTable td input.Delete {
     font-size:0.8333em;
     width:26px;  
   }
 
-
+#schedulingTable td, #switchesTable td {
+    padding:3px 3px 5px;
+}
+.alignRight {
+	text-align: right;
+	padding-right: 4px;
+}
 
 .config_nav {
 	float: left;
-	margin-top: 20px;
+	margin-top: 12px;
 	text-align: left;
 	width: 84px; 
 }

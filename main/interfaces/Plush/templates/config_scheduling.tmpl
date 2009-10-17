@@ -19,7 +19,7 @@ else:
 
                 <table>
                     <tr><td align=right>
-                        <div class="sucker">$T('hour'):</div>
+                        <div class="sucker">$T('hour').capitalize()/$T('minute').capitalize():</div>
                     </td><td>
                         <select name="hour">
                         <!--#for $i in range(24)#-->
@@ -80,7 +80,7 @@ else:
             <div class="EntryBlock">
             <fieldset class="EntryFieldSet">
             <legend><span class="sprite_container sprite_config_scheduling_current">&nbsp;</span> $T('currentSchedules')</legend>
-            <table>
+            <table id="schedulingTable">
             <!--#set $schednum = 0#-->
             <!--#for $line in $schedlines#-->
 	            <form action="delSchedule" method="post">

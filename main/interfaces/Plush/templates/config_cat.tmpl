@@ -77,10 +77,10 @@
         
         <td nowrap>
             
-            <input type="submit" value="<!--#if $cur == 1 then $T('button-add') else $T('button-save')#-->"/>
+            <input type="submit" class="Save" value="<!--#if $cur == 1 then $T('button-add') else $T('button-save')#-->"/>
 
             <!--#if $slot.name#-->
-            <input type="button" value="$T('button-delCat')" name="$slot.name" />
+            <input type="button" class="Delete" value="$T('button-delCat')" name="$slot.name" />
             <!--#end if#-->
         
         </td>

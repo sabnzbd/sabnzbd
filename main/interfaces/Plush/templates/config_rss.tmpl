@@ -9,7 +9,7 @@
 <fieldset class="EntryFieldSet" style="white-space: nowrap">
 <legend><span class="sprite_container sprite_config_rss_add">&nbsp;</span> $T('newFeedURI')</legend>
     <input type="text" size="10" name="feed" value="$feed"/>
-    <input type="text" size="104" name="uri"/>
+    <input type="text" size="60" name="uri"/>
     <input type="submit" value="$T('button-add')"/>
 </fieldset>
 </form>
@@ -27,7 +27,7 @@
 
         <legend style="padding-left:4px; color:white; background-color:<!--#if $rss[$feed]['enable'] then 'darkgreen' else 'darkred'#-->"><input type="checkbox" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>&nbsp;$feed</legend>
 
-        <input type="text" size="120" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
+        <input type="text" size="105" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 
         <input type="button" class="preview_feed" value="$T('button-preFeed')" rel="preview"/>
         <input type="button" class="download_feed" value="$T('button-forceFeed')" rel="$T('Plush-confirm') "/>

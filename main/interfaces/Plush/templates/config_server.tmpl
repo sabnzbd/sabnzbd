@@ -12,35 +12,35 @@
     <legend><span class="sprite_container sprite_config_servers_add">&nbsp;</span> $T('addServer')</legend>
 
     <table cellpadding=2>
-        <tr><td align="right"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host"/></td></tr>
-        <tr><td align="right"><div class="sucker">$T('srv-port'):</div></td><td><input type="text" size="10" name="port"/></td></tr>
+        <tr><td class="alignRight"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host"/></td></tr>
+        <tr><td class="alignRight"><div class="sucker">$T('srv-port'):</div></td><td><input type="text" size="10" name="port"/></td></tr>
         <tr><td colspan=2>&nbsp;</td></tr>
-        <tr><td align="right"><div class="sucker">$T('srv-username'):</div></td><td><input type="text" size="25" name="username"/></td></tr>
-        <tr><td align="right"><div class="sucker">$T('srv-password'):</div></td><td><input type="password" size="25" name="password"/></td></tr>
+        <tr><td class="alignRight"><div class="sucker">$T('srv-username'):</div></td><td><input type="text" size="25" name="username"/></td></tr>
+        <tr><td class="alignRight"><div class="sucker">$T('srv-password'):</div></td><td><input type="password" size="25" name="password"/></td></tr>
     </table>
 
     <br/>
 
     <table>
-    <tr><td align="right"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td><td><input type="text" size="5" name="connections"/></td></tr>
-    <tr><td align="right"><div class="sucker">$T('srv-timeout'):</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>$T('second')</small></td></tr>
+    <tr><td class="alignRight"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td><td><input type="text" size="5" name="connections"/></td></tr>
+    <tr><td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>$T('second')</small></td></tr>
 
     <td><td colspan="2">&nbsp;</td></tr>
 
     <tr>
-    	<td align="right"><input type="checkbox" name="enable" id="enable" value="1" checked="1"/></td>
+    	<td class="alignRight"><input type="checkbox" name="enable" id="enable" value="1" checked="1"/></td>
     	<td><label for="enable"><strong>$T('srv-enable')</strong></label></td>
     </tr>
     <tr>
-    	<td align="right"><input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/></td>
+    	<td class="alignRight"><input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/></td>
     	<td><label for="ssl"><strong>$T('srv-ssl')</strong> <!--#if int($have_ssl) == 0 then " $T('opt-notInstalled')" else ""#--></label></td>
     </tr>
     <tr>
-    	<td align="right"><input type="checkbox" name="fillserver" id="fillserver" value="1"/></td>
+    	<td class="alignRight"><input type="checkbox" name="fillserver" id="fillserver" value="1"/></td>
     	<td><label for="fillserver"><strong>$T('srv-fillserver')</strong></label></td>
     </tr>
     <tr>
-    	<td align="right"><input type="checkbox" name="optional" id="optional" value="1"/></td>
+    	<td class="alignRight"><input type="checkbox" name="optional" id="optional" value="1"/></td>
     	<td><label for="optional"><strong>$T('srv-optional')</strong></label></td>
     </tr>
 
@@ -69,39 +69,39 @@
     <legend><span class="sprite_container <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span> $server</legend>
 
     <table cellpadding=2>
-        <tr><td align="right"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>
-        <tr><td align="right"><div class="sucker">$T('srv-port'):</div></td><td><input type="text" size="10" name="port" value="$servers[$server]['port']"/></td></tr>
+        <tr><td class="alignRight"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>
+        <tr><td class="alignRight"><div class="sucker">$T('srv-port'):</div></td><td><input type="text" size="10" name="port" value="$servers[$server]['port']"/></td></tr>
         <tr><td colspan=2>&nbsp;</td></tr>
-        <tr><td align="right"><div class="sucker">$T('srv-username'):</div></td><td><input type="text" size="25" name="username" value="$servers[$server]['username']"/></td></tr>
-        <tr><td align="right"><div class="sucker">$T('srv-password'):</div></td><td><input type="password" size="25" name="password" value="$servers[$server]['password']"/></td></tr>
+        <tr><td class="alignRight"><div class="sucker">$T('srv-username'):</div></td><td><input type="text" size="25" name="username" value="$servers[$server]['username']"/></td></tr>
+        <tr><td class="alignRight"><div class="sucker">$T('srv-password'):</div></td><td><input type="password" size="25" name="password" value="$servers[$server]['password']"/></td></tr>
     </table>
 
     <br/>
 
     <table>
     <tr>
-        <td align="right"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td>
+        <td class="alignRight"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td>
         <td><input type="text" size="5" name="connections" value="$servers[$server]['connections']"/></td>
     </tr>
     <tr>
-        <td align="right"><div class="sucker">$T('srv-timeout'):</div></td>
+        <td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td>
         <td><input type="text" size="5" name="timeout" value="$servers[$server]['timeout']"/>&nbsp;<small>seconds</small></td>
     </tr>
     <td><td colspan="2">&nbsp;</td></tr>
     <tr>
-        <td align="right"><input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></td>
+        <td class="alignRight"><input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></td>
         <td><label for="enable$cur"><strong>$T('srv-enable')</strong></label></td>
     </tr>
     <tr>
-        <td align="right"><input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /></td>
+        <td class="alignRight"><input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /></td>
         <td><label for="ssl$cur"><strong>$T('srv-ssl')</strong> <!--#if int($have_ssl) == 0 then " $T('opt-notInstalled')" else ""#--></label></td>
     </tr>
     <tr>
-        <td align="right"><input type="checkbox" name="fillserver" id="fillserver$cur" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /></td>
+        <td class="alignRight"><input type="checkbox" name="fillserver" id="fillserver$cur" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /></td>
         <td><label for="fillserver$cur"><strong>$T('srv-fillserver')</strong></label></td>
     </tr>
     <tr>
-        <td align="right"><input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> /></td>
+        <td class="alignRight"><input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($servers[$server]['optional']) != 0 then "checked=1" else ""#--> /></td>
         <td><label for="optional$cur"><strong>$T('srv-optional')</strong></label></td>
     </tr>
     </table>
