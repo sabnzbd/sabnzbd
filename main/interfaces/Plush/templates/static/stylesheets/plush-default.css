@@ -641,8 +641,8 @@ tr:hover .history_added { color: black; }
  
 .hvMessage {
 	clear: both;
-	color: red;
-	font-size: 60%;
+	color: #DE2424;
+	font-size: 80%;
 	font-weight: bold;
 	width: 100%;
 }
