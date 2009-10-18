@@ -149,7 +149,7 @@ jQuery(document).ready(function($){
 				$.ajax({
 					type: "POST",
 					url: "../../tapi",
-					data: "mode=config&name=set_apikey&apikey="+$('#apikey').val(),
+					data: {mode:'config', name:'set_apikey', apikey: $('#apikey').val()},
 					success: function(msg){
 						$('#apikey').val(msg);
 						$('#hiddenSession').val(msg);

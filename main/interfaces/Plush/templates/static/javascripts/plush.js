@@ -336,7 +336,7 @@ jQuery(function($) { // safely invoke $ selector
 			$.ajax({
 				type: "POST",
 				url: "queue/",
-				data: 'start='+( page * $.plush.queuePerPage )+'&limit='+$.plush.queuePerPage,
+				data: {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage},
 				success: function(result){
 					
 					// Replace queue contents with queue.tmpl -- this file also sets several stat vars via javascript
@@ -423,7 +423,7 @@ jQuery(function($) { // safely invoke $ selector
 			$.ajax({
 				type: "POST",
 				url: "history/",
-				data: 'start='+( page * $.plush.histPerPage )+'&limit='+$.plush.histPerPage,
+				data: {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage},
 				success: function(result){
 					
 					// Replace history contents with history.tmpl -- this file sets a couple stat vars via javascript
@@ -506,7 +506,15 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: {mode:'addid',name:$("#addID_input").val(),pp:$("#addID_pp").val(),script:$("#addID_script").val(),cat:$("#addID_cat").val(),priority:$("#addID_priority").val(),apikey:$.plush.apikey},
+						data: {
+							mode:	  'addid',
+							name:	  $("#addID_input").val(),
+							pp:		  $("#addID_pp").val(),
+							script:   $("#addID_script").val(),
+							cat:	  $("#addID_cat").val(),
+							priority: $("#addID_priority").val(),
+							apikey:	  $.plush.apikey
+						},
 						success: $.plush.refreshQueue
 					});
 					$("#addID_input").val('');
@@ -533,7 +541,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=newzbin&name=get_bookmarks&apikey="+$.plush.apikey,
+					data: {mode:'newzbin', name:'get_bookmarks', apikey: $.plush.apikey},
 					success: function(result){
 						$.plush.refreshQueue();
 					}
@@ -562,7 +570,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=config&name=set_speedlimit&value="+$("#maxSpeed-option").val()+'&apikey='+$.plush.apikey
+					data: {mode:'config', name:'set_speedlimit', value: $(this).val(), apikey: $.plush.apikey}
 				});
 			});
 			
@@ -602,7 +610,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=queue&name=change_complete_action&value="+$("#onQueueFinish-option").val()+'&apikey='+$.plush.apikey
+					data: {mode:'queue', name:'change_complete_action', value: $(this).val(), apikey: $.plush.apikey}
 				});
 			});
 					
@@ -612,7 +620,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=delete&value=all&apikey="+$.plush.apikey,
+						data: {mode:'queue', name:'delete', value:'all', apikey: $.plush.apikey},
 						success: $.plush.refreshQueue
 					});
 				}
@@ -626,7 +634,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=queue&name=sort&sort="+rel+'&apikey='+$.plush.apikey,
+					data: {mode:'queue', name: sort, sort: rel, apikey: $.plush.apikey},
 					success: $.plush.refreshQueue
 				});
 			});
@@ -639,7 +647,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: "mode=config&name=set_pause&value="+minutes+'&apikey='+$.plush.apikey,
+					data: {mode:'config', name:'set_pause', value: minutes, apikey: $.plush.apikey},
 					success: $.plush.refreshQueue
 				});
 			});
@@ -675,26 +683,27 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// NZB pause/resume individual toggle
 			$('#queueTable .nzb_status').live('click',function(event){
+				var pid = $(this).parent().parent().attr('id');
 				if ($(this).hasClass('sprite_ql_grip_queued_on')) {
 					$(this).toggleClass('sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_paused_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=pause&value="+$(this).parent().parent().attr('id')+'&apikey='+$.plush.apikey
+						data: {mode:'queue', name:'pause', value: pid, apikey: $.plush.apikey}
 					});
 				} else if ($(this).hasClass('sprite_ql_grip_active')) {
 					$(this).toggleClass('sprite_ql_grip_active').toggleClass('sprite_ql_grip_paused_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=pause&value="+$(this).parent().parent().attr('id')+'&apikey='+$.plush.apikey
+						data: {mode:'queue', name:'pause', value: pid, apikey: $.plush.apikey}
 					});
 				} else {
 					$(this).toggleClass('sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_paused_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=resume&value="+$(this).parent().parent().attr('id')+'&apikey='+$.plush.apikey
+						data: {mode:'queue', name:'resume', value: pid, apikey: $.plush.apikey}
 					});
 				}
 			});
@@ -707,7 +716,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=queue&name=delete&value="+delid+'&apikey='+$.plush.apikey,
+						data: {mode:'queue', name:'delete', value: delid, apikey: $.plush.apikey},
 						success: function(){
 							if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
 								$.plush.skipRefresh = false;
@@ -765,12 +774,14 @@ jQuery(function($) { // safely invoke $ selector
 						if (table.tBodies[0].rows.length < 2)
 							return false;
 						// determine which position the repositioned row is at now
+						var val2;
 						for ( var i=0; i < table.tBodies[0].rows.length; i++ ) {
 							if (table.tBodies[0].rows[i].id == row.id) {
+								val2 = (i + $.plush.queuecurpage * $.plush.queuePerPage);
 								$.ajax({
 									type: "POST",
 									url: "tapi",
-									data: "mode=switch&value="+row.id+"&value2="+(i + $.plush.queuecurpage * $.plush.queuePerPage)+'&apikey='+$.plush.apikey,
+									data: {mode:'switch', value: row.id, value2: val2, apikey: $.plush.apikey},
 									success: function(result){
 										// change priority of the nzb if necessary (priority is returned by API)
 										var newPriority = $.trim(result.substring(result.length-2));
@@ -791,7 +802,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: 'mode=queue&name=priority&value='+nzbid+'&value2='+$(this).val()+'&apikey='+$.plush.apikey,
+						data: {mode:'queue', name:'priority', value: nzbid, value2: $(this).val(), apikey: $.plush.apikey},
 						success: function(newPos){
 							// reposition the nzb if necessary (new position is returned by the API)
 							if (parseInt(newPos) < $.plush.queuecurpage * $.plush.queuePerPage
@@ -808,13 +819,15 @@ jQuery(function($) { // safely invoke $ selector
 				
 				// 3-in-1 change nzb [category + processing + script]
 				$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').change(function(e){
+					var val = $(this).parent().parent().attr('id');
+					var class = $(this).attr('class');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode="+$(this).attr('class')+"&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&apikey='+$.plush.apikey,
+						data: {mode: class, value: val, value2: $(this).val(), apikey: $.plush.apikey},
 						success: function(resp){
 							// each category can define different priority/processing/script -- must be accounted for
-							if ($(e.target).attr('class')=="change_cat") {
+							if (class=="change_cat") {
 								$.plush.skipRefresh = false;
 								$.plush.refreshQueue(); // this is not ideal, but the API does not yet offer a nice way of refreshing just one nzb
 							}
@@ -849,7 +862,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=resume&apikey="+$.plush.apikey
+						data: {mode:'resume', apikey: $.plush.apikey}
 					});
 				} else {
 					$('#pause_resume').removeClass('sprite_q_pause').addClass('sprite_q_pause_on');
@@ -857,7 +870,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=pause&apikey="+$.plush.apikey
+						data: {mode:'pause', apikey: $.plush.apikey}
 					});
 				}
 			});
@@ -879,7 +892,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode=history&name=delete&value="+delid+'&apikey='+$.plush.apikey,
+						data: {mode:'history', name:'delete', value: delid, apikey: $.plush.apikey},
 						success: function(){
 							if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
 								$.plush.histforcerepagination = true;
@@ -958,7 +971,7 @@ jQuery(function($) { // safely invoke $ selector
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: 'mode=history&name=delete&value=all&apikey='+$.plush.apikey,
+						data: {mode:'history', name:'delete', value:'all', apikey: $.plush.apikey},
 						success: $.plush.refreshHistory
 					});
 				}
