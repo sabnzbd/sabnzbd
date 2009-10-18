@@ -119,7 +119,7 @@ a:hover,a:active{
 -------------------------------------------------------------------*/
 
 body {
-	background: #B1B1B1 url('../images/plush-default/tile_navbar.jpg') top left repeat-x;
+	background: #B1B1B1 url('../images/plush-default/tile_navbar.png') top left repeat-x;
 	padding-bottom: 10px; 
 }
  
@@ -743,7 +743,7 @@ tr:hover .history_added { color: black; }
 #main_menu{
 	display:block;
 	float:left;
-	margin:18px 0;
+	margin:10px 0 -6px;
 	width:100%;
 }
 #main_menu ul{
