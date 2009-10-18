@@ -807,11 +807,18 @@ jQuery(function($) { // safely invoke $ selector
 				});
 				
 				// 3-in-1 change nzb [category + processing + script]
-				$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').change(function(){
+				$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').change(function(e){
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: "mode="+$(this).attr('class')+"&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&apikey='+$.plush.apikey
+						data: "mode="+$(this).attr('class')+"&value="+$(this).parent().parent().attr('id')+'&value2='+$(this).val()+'&apikey='+$.plush.apikey,
+						success: function(resp){
+							// each category can define different priority/processing/script -- must be accounted for
+							if ($(e.target).attr('class')=="change_cat") {
+								$.plush.skipRefresh = false;
+								$.plush.refreshQueue(); // this is not ideal, but the API does not yet offer a nice way of refreshing just one nzb
+							}
+						}
 					});
 				});
 				
