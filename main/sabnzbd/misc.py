@@ -1099,7 +1099,8 @@ def osx_hibernate():
 #    [1] http://people.freedesktop.org/~hughsient/temp/dbus-interface.html
 #    [2] http://www.freedesktop.org/software/ConsoleKit/doc/ConsoleKit.html
 #
-#    Original code was contributed by Forum user "carresmd".
+#    Original code was contributed by Marcel de Vries <marceldevries@phannet.cc>
+#    
 
 try:
     import dbus
