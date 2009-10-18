@@ -977,6 +977,10 @@ tr:hover .history_added { color: black; }
 	background: #DDD;
 	padding: 10px;
 }
+
+#cboxLoadedContent a {
+	color: darkblue;
+}
  
 /*#cboxLoadingGraphic{background:url(images/loading.gif) center center no-repeat;}*/
 #cboxLoadingOverlay { background: #DDD; }
