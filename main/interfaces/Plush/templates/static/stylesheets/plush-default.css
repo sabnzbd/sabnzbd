@@ -824,12 +824,19 @@ tr:hover .history_added { color: black; }
   padding:1px 10px 1px 10px;
 }
 
-#main_menu ul li ul li a:hover{
+#main_menu ul li ul li:hover,
+#main_menu ul li ul li ul li:hover {
     background:#ccc;
     color:#333;
-    text-decoration:none;
 }
-
+#main_menu ul li ul li:hover ul li a {
+	color:#fff;
+}
+#main_menu ul li ul li:hover a,
+#main_menu ul li ul li ul li:hover a {
+    text-decoration:none;
+    color:#333;
+}
 #main_menu ul li ul li ul{   /* Third Level */
   left:200px;
   position:absolute;
