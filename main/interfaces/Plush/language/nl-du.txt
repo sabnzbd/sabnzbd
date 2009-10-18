@@ -41,6 +41,7 @@ page              Pagina
 everything        Alles
 prev              Vorige
 next              Volgende
+nzo-range         Waaier
 
 # Queue
 idle              RUST

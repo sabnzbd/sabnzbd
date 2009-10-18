@@ -41,6 +41,7 @@ page              page
 everything        Tout
 prev              Préc.
 next              Suiv.
+nzo-range         Gamme
 
 # Queue
 idle              EN ATTENTE

@@ -4,29 +4,29 @@
     #if $pane=="Connections"#
         <div class="left_links config_margin">
             <a id="force_disconnect" href="disconnect?session=$session">
-            	<span class="sprite_container sprite_config_connections_disconnect">&nbsp;</span> $T('link-forceDisc')</a>
+            	<span class="config_sprite_container sprite_config_connections_disconnect">&nbsp;</span> $T('link-forceDisc')</a>
         </div>
     #else if $pane=="General" or $pane=="Folders" or $pane=="Switches" or $pane=="Email" or $pane=="Index Sites" or $pane=="Sorting"#
         <div class="left_links config_margin">
-            <a id="save"><span class="sprite_container sprite_config_save">&nbsp;</span> $T('button-saveChanges')</a>
+            <a id="save"><span class="config_sprite_container sprite_config_save">&nbsp;</span> $T('button-saveChanges')</a>
         </div>
     #end if#
     #if $pane=="General"#
         <div class="left_links">
             <a id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#" rel2="$T('restart1')">
-            	<span class="sprite_container sprite_nzo_reload">&nbsp;</span> $T('button-restart') SABnzbd</a>
+            	<span class="config_sprite_container sprite_nzo_reload">&nbsp;</span> $T('button-restart') SABnzbd</a>
         </div>
     #end if#
     #if $pane=="Email"#
         <div class="left_links">
             <a id="test_email" href="../../connections/testmail?session=$session" rel="$T('askTestEmail')">
-            	<span class="sprite_container sprite_config_email_options">&nbsp;</span> $T('link-testEmail')</a>
+            	<span class="config_sprite_container sprite_config_email_options">&nbsp;</span> $T('link-testEmail')</a>
         </div>
     #end if#
 
     <div class="right_links">
         <a id="help" target="_blank" href="$helpuri$help_uri">
-        	<span class="sprite_container sprite_config_help">&nbsp;</span> $T('menu-help')</a>
+        	<span class="config_sprite_container sprite_config_help">&nbsp;</span> $T('menu-help')</a>
     </div>
 
 </body>

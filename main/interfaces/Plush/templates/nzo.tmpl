@@ -71,17 +71,18 @@
 
     <div class="config_nav">
         <ul>
-            <li><a class="config_menu" id="nzo_reload"><div class="sprite_container sprite_nzo_reload">$T('Plush-button-refresh')</div></a></li>
+            <li><a class="config_menu" id="nzo_reload"><span class="config_sprite_container sprite_nzo_reload">$T('Plush-button-refresh')</span></a></li>
             <br/>&nbsp;$T('sch-action'):
-            <li><a id="nzo_delete"><div class="sprite_container sprite_nzo_delete">$T('nzo-delete')</div></a></li>
-            <li><a id="nzo_top"><div class="sprite_container sprite_nzo_top">$T('nzo-top')</div></a></li>
-            <li><a id="nzo_up"><div class="sprite_container sprite_nzo_up">$T('nzo-up')</div></a></li>
-            <li><a id="nzo_down"><div class="sprite_container sprite_nzo_down">$T('nzo-down')</div></a></li>
-            <li><a id="nzo_bottom"><div class="sprite_container sprite_nzo_bottom">$T('nzo-bottom')</div></a></li>
+            <li><a id="nzo_delete"><span class="config_sprite_container sprite_nzo_delete">$T('nzo-delete')</span></a></li>
+            <li><a id="nzo_top"><span class="config_sprite_container sprite_nzo_top">$T('nzo-top')</span></a></li>
+            <li><a id="nzo_up"><span class="config_sprite_container sprite_nzo_up">$T('nzo-up')</span></a></li>
+            <li><a id="nzo_down"><span class="config_sprite_container sprite_nzo_down">$T('nzo-down')</span></a></li>
+            <li><a id="nzo_bottom"><span class="config_sprite_container sprite_nzo_bottom">$T('nzo-bottom')</span></a></li>
             <br/>&nbsp;$T('nzo-selection'):
-            <li><a id="nzo_select_all"><div class="sprite_container sprite_nzo_select_all">$T('nzo-all')</div></a></li>
-            <li><a id="nzo_select_none"><div class="sprite_container sprite_nzo_select_none">$T('nzo-none')</div></a></li>
-            <li><a id="nzo_select_invert"><div class="sprite_container sprite_nzo_select_invert">$T('nzo-invert')</div></a></li>
+            <li><a id="nzo_select_all"><span class="config_sprite_container sprite_nzo_select_all">$T('nzo-all')</span></a></li>
+            <li><a id="nzo_select_range"><span class="config_sprite_container sprite_nzo_select_range">$T('Plush-nzo-range')</span></a></li>
+            <li><a id="nzo_select_invert"><span class="config_sprite_container sprite_nzo_select_invert">$T('nzo-invert')</span></a></li>
+            <li><a id="nzo_select_none"><span class="config_sprite_container sprite_nzo_select_none">$T('nzo-none')</span></a></li>
         </ul>
     </div>
 
@@ -93,23 +94,18 @@
         ************************************ -->
 
             <table class="nzoTable">
-                <tr><th></th><th>$T('nzo-filename')/$T('nzo-subject')</th><th>$T('size') ($T('MB'))</th><th>$T('nzo-age')</th></tr>
+                <tr><th></th><th>$T('size')&nbsp;($T('MB'))</th><th>$T('nzo-age')</th><th>$T('nzo-filename')/$T('nzo-subject')</th></tr>
                 <!--#set $oddLine = False#-->
                 <!--#for $file in $active_files#-->
                     <!--#set $oddLine = not $oddLine#-->
                     <tr id="$file.nzf_id" class="nzf_row <!--#if $oddLine then "oddLine" else "evenLine"#--> active">
                         <td><input type="checkbox" name="$file.nzf_id" id="box-$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
-                        <td>$file.filename</td>
-                        <td>$file.mb</td>
-                        <td>$file.age</td>
+                        <td class="alignRight">$file.mb</td>
+                        <td class="alignRight">$file.age</td>
+                        <td class="filename">$file.filename</td>
                     </tr>
                 <!--#end for#-->
             </table>
-
-            <div class="footer">
-                <!--#if int($cache_max)#--><!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#-->
-                <!--#if $nzb_quota then "<b>NzbQuota:</b> %s<b>" %($nzb_quota) else ""#-->
-            </div>
 
     <!-- ************************************
                 PAGE CONTENT IS ABOVE

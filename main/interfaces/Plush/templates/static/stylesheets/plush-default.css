@@ -1063,7 +1063,7 @@ table.nzoTable {
   border-collapse:collapse;
 	color: #131313;
 	margin:1px;
-	width:90%;
+	width:99%;
 }
  
 	table.nzoTable tr { 
@@ -1081,8 +1081,11 @@ table.nzoTable {
 	table.nzoTable tr.oddLine {
 	  background-color: #f8f8f8;
 	}
+	table.nzoTable tr.nzo_highlight {
+	  background-color:lightyellow;
+	}
 	table.nzoTable tr:hover {
-		background-color: #333333;
+		background-color: #666;
 		color: #FFF;
 	}
 	
@@ -1097,6 +1100,12 @@ table.nzoTable {
 	table.nzoTable td {
 	  border:1px solid #999;
 	  padding:3px 5px;
+	}
+	table.nzoTable td.alignRight {
+	  text-align:right;
+	}
+	table.nzoTable td.filename {
+	  width:95%;
 	}
 	table.nzoTable th.check,
 	table.nzoTable td.check {
@@ -1229,7 +1238,7 @@ fieldset.EntryFieldSet {
 
 .config_nav {
 	float: left;
-	margin-top: 12px;
+	margin-top: 20px;
 	text-align: left;
 	width: 84px; 
 }
@@ -1257,13 +1266,13 @@ fieldset.EntryFieldSet {
 			width: 100%;
 		}
  
-			.config_nav li a .sprite_container {
+			.config_nav li a .config_sprite_container {
 				margin: 3px 0px 3px 0px;
-				padding: 1px 0px 1px 22px;
+				padding: 0px 0px 1px 22px;
 				width: 100%;
 			}
  
-			.config_nav li a:hover {
+			.config_nav li:hover a, .config_nav li a:hover {
 				background-color: #ccc;
 				color: #000;
 			}
@@ -1273,11 +1282,8 @@ fieldset.EntryFieldSet {
 		color: #000;
 	}
  
-li a div { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
- 
-legend span { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
- 
-legend .sprite_container {
+
+legend .config_sprite_container {
 	display: inline;
 	padding: 0px 0px 0px 16px;
 }
@@ -1289,96 +1295,57 @@ legend .sprite_container {
 	font-weight: bold;
 	padding: 2px 8px 0px 4px;
 }
+
+.config_sprite_container { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
  
 /* sprite-config.png */
-.sprite_config_connections_disconnect { background-position: 0 -30px; }
- 
-.sprite_config_connections_encrypted { background-position: 0 -82px; }
- 
-.sprite_config_connections_unencrypted { background-position: 0 -134px; }
- 
-.sprite_config_connections_warnings { background-position: 0 -186px; }
- 
-.sprite_config_email_account_settings { background-position: 0 -238px; }
- 
-.sprite_config_email_options { background-position: 0 -290px; }
- 
-.sprite_config_folders_system { background-position: 0 -342px; }
- 
-.sprite_config_folders_user { background-position: 0 -394px; }
- 
-.sprite_config_general_tuning { background-position: 0 -446px; }
- 
-.sprite_config_general_web_server { background-position: 0 -498px; }
- 
-.sprite_config_help { background-position: 0 -550px; }
- 
-.sprite_config_indexsites_account_info { background-position: 0 -602px; }
- 
-.sprite_config_indexsites_bookmarks { background-position: 0 -654px; }
- 
-.sprite_config_indexsites_processed { background-position: 0 -706px; }
- 
-.sprite_config_nav_categories { background-position: 0 -758px; }
- 
-.sprite_config_nav_connections { background-position: 0 -804px; }
- 
-.sprite_config_nav_email { background-position: 0 -850px; }
- 
-.sprite_config_nav_folders { background-position: 0 -896px; }
- 
-.sprite_config_nav_general { background-position: 0 -942px; }
- 
-.sprite_config_nav_indexsites { background-position: 0 -988px; }
- 
-.sprite_config_nav_rss { background-position: 0 -1034px; }
- 
-.sprite_config_nav_scheduling { background-position: 0 -1080px; }
- 
-.sprite_config_nav_servers { background-position: 0 -1126px; }
- 
-.sprite_config_nav_sorting { background-position: 0 -1172px; }
- 
-.sprite_config_nav_switches { background-position: 0 -1218px; }
- 
-.sprite_config_rss_add { background-position: 0 -1264px; }
- 
-.sprite_config_save { background-position: 0 -1316px; }
- 
-.sprite_config_scheduling_add { background-position: 0 -1368px; }
- 
-.sprite_config_scheduling_current { background-position: 0 -1420px; }
- 
-.sprite_config_servers_add { background-position: 0 -1472px; }
- 
-.sprite_config_sorting_date { background-position: 0 -1524px; }
- 
-.sprite_config_sorting_generic { background-position: 0 -1576px; }
- 
-.sprite_config_sorting_series { background-position: 0 -1628px; }
- 
-.sprite_config_switches_other { background-position: 0 -1680px; }
- 
-.sprite_config_switches_processing { background-position: 0 -1732px; }
- 
-.sprite_nzo_bottom { background-position: 0 -1784px; }
- 
-.sprite_nzo_delete { background-position: 0 -1830px; }
- 
-.sprite_nzo_down { background-position: 0 -1876px; }
- 
-.sprite_nzo_reload { background-position: 0 -1922px; }
- 
-.sprite_nzo_select_all { background-position: 0 -1968px; }
- 
-.sprite_nzo_select_invert { background-position: -172px -30px; }
- 
-.sprite_nzo_select_none { background-position: -172px -76px; }
- 
-.sprite_nzo_top { background-position: -172px -122px; }
- 
-.sprite_nzo_up { background-position: -172px -168px; }
- 
+.sprite_config_connections_disconnect { background-position: 0 0; } 
+.sprite_config_connections_encrypted { background-position: 0 -122px; } 
+.sprite_config_connections_unencrypted { background-position: 0 -244px; } 
+.sprite_config_connections_warnings { background-position: 0 -366px; } 
+.sprite_config_email_account_settings { background-position: 0 -488px; } 
+.sprite_config_email_options { background-position: 0 -610px; } 
+.sprite_config_folders_system { background-position: 0 -732px; } 
+.sprite_config_folders_user { background-position: 0 -854px; } 
+.sprite_config_general_tuning { background-position: 0 -976px; } 
+.sprite_config_general_web_server { background-position: 0 -1098px; } 
+.sprite_config_help { background-position: 0 -1220px; } 
+.sprite_config_indexsites_account_info { background-position: 0 -1342px; } 
+.sprite_config_indexsites_bookmarks { background-position: 0 -1464px; } 
+.sprite_config_indexsites_processed { background-position: 0 -1586px; } 
+.sprite_config_nav_categories { background-position: 0 -1708px; } 
+.sprite_config_nav_connections { background-position: 0 -1824px; } 
+.sprite_config_nav_email { background-position: -122px 0; } 
+.sprite_config_nav_folders { background-position: -122px -116px; } 
+.sprite_config_nav_general { background-position: -122px -232px; } 
+.sprite_config_nav_indexsites { background-position: -122px -348px; } 
+.sprite_config_nav_rss { background-position: -122px -464px; } 
+.sprite_config_nav_scheduling { background-position: -122px -580px; } 
+.sprite_config_nav_servers { background-position: -122px -696px; } 
+.sprite_config_nav_sorting { background-position: -122px -812px; } 
+.sprite_config_nav_switches { background-position: -122px -928px; } 
+.sprite_config_rss_add { background-position: -122px -1044px; } 
+.sprite_config_save { background-position: -122px -1166px; } 
+.sprite_config_scheduling_add { background-position: -122px -1288px; } 
+.sprite_config_scheduling_current { background-position: -122px -1410px; } 
+.sprite_config_servers_add { background-position: -122px -1532px; } 
+.sprite_config_sorting_date { background-position: -122px -1654px; } 
+.sprite_config_sorting_generic { background-position: -122px -1776px; } 
+.sprite_config_sorting_series { background-position: -122px -1898px; } 
+.sprite_config_switches_other { background-position: -244px 0; } 
+.sprite_config_switches_processing { background-position: -244px -122px; } 
+.sprite_nzo_bottom { background-position: -244px -244px; } 
+.sprite_nzo_delete { background-position: -244px -360px; } 
+.sprite_nzo_down { background-position: -244px -476px; } 
+.sprite_nzo_reload { background-position: -244px -592px; } 
+.sprite_nzo_select_all { background-position: -244px -708px; } 
+.sprite_nzo_select_invert { background-position: -244px -824px; } 
+.sprite_nzo_select_none { background-position: -244px -940px; } 
+.sprite_nzo_select_range { background-position: -244px -1056px; } 
+.sprite_nzo_top { background-position: -244px -1172px; } 
+.sprite_nzo_up { background-position: -244px -1288px; } 
+
+
 .numbered_list li { list-style-type: decimal; margin-left:3em; }
  
 /* FF2 to rescue */
@@ -1392,9 +1359,7 @@ legend .sprite_container {
 	width: 300px;
 }
  
-a span { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
- 
-.left_links .sprite_container, .right_links .sprite_container {
+.left_links .config_sprite_container, .right_links .config_sprite_container {
 	display: inline;
 	margin: 3px 0px 3px 0px;
 	padding: 4px 0px 4px 22px;
