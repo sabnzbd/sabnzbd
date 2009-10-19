@@ -1046,7 +1046,10 @@ class NzoPage:
             elif kwargs['action_key'] == 'Bottom':
                 nzbqueue.move_bottom_bulk(nzo_id, nzf_ids)
 
-        url = cherrypy._urljoin(self.__root,nzo_id)
+        if nzbqueue.get_nzo(nzo_id):
+            url = cherrypy._urljoin(self.__root, nzo_id)
+        else:
+            url = cherrypy._urljoin(self.__root, '../queue')
         if url and not url.endswith('/'):
             url += '/'
         raise dcRaiser(url, kwargs)

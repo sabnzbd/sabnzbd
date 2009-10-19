@@ -174,7 +174,7 @@ class NzbQueue(TryList):
             self.__nzo_table[nzo_id].set_name(name)
 
     @synchronized(NZBQUEUE_LOCK)
-    def get_nzo(NZBQUEUE_LOCK):
+    def get_nzo(self, nzo_id):
         if nzo_id in self.__nzo_table:
             return self.__nzo_table[nzo_id]
         else:
