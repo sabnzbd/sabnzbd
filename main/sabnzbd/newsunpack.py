@@ -657,8 +657,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
             joinables, zips, rars, ts = build_filelists(workdir, None)
 
-            finished, readd, pars, datafiles = PAR_Verify(parfile, parfile_nzf, nzo,
-                                                          setname, joinables)
+            finished, readd, pars, datafiles, used_joinables = PAR_Verify(parfile, parfile_nzf, nzo,
+                                                                          setname, joinables)
 
             if finished:
                 result = True
@@ -728,8 +728,11 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                 except OSError:
                     logging.warning("Deleting %s failed", parfile)
 
-            for filename in pars:
-                filepath = os.path.join(workdir, filename)
+            deletables = [ os.path.join(workdir, f) for f in pars ]
+            deletables.extend(used_joinables)
+            for filepath in deletables:
+                if filepath in joinables:
+                    joinables.remove(filepath)
                 if os.path.exists(filepath):
                     logging.info("Deleting %s", filepath)
                     try:
@@ -747,6 +750,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 
+    used_joinables = []
     #set the current nzo status to "Verifying...". Used in History
     nzo.set_status("Verifying...")
     start = time()
@@ -924,6 +928,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
             logging.info('Repaired in %s', format_time_string(time() - start))
             finished = 1
 
+        elif line.startswith('File:') and line.find('data blocks from') > 0:
+            # Find out if a joinable file has been used for joining
+            for jn in joinables:
+                if line.find(os.path.split(jn)[1]) > 0:
+                    used_joinables.append(jn)
+                    break
+
         # This has to go here, zorg
         elif not verified:
             if line.startswith('Verifying source files'):
@@ -957,7 +968,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 
     p.wait()
 
-    return (finished, readd, pars, datafiles)
+    return (finished, readd, pars, datafiles, used_joinables)
 
 #-------------------------------------------------------------------------------
 
