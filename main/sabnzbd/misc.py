@@ -1074,8 +1074,7 @@ def osx_shutdown():
     except:
         logging.error(T('error-shutdown'))
         logging.debug("Traceback: ", exc_info = True)
-    finally:
-        os._exit(0)
+    os._exit(0)
 
 
 def osx_standby():
@@ -1100,7 +1099,7 @@ def osx_hibernate():
 #    [2] http://www.freedesktop.org/software/ConsoleKit/doc/ConsoleKit.html
 #
 #    Original code was contributed by Marcel de Vries <marceldevries@phannet.cc>
-#    
+#
 
 try:
     import dbus
