@@ -634,6 +634,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     parfile = os.path.join(workdir, parfile_nzf.get_filename())
 
     old_dir_content = os.listdir(workdir)
+    used_joinables = []
 
     nzo.set_status("Quick check...")
     nzo.set_action_line('Repair', 'Quick Checking')
