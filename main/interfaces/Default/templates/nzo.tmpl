@@ -4,6 +4,23 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
 	<script type='text/javascript'>
+    function submit_marked(nzo_id, action_key)
+    {
+    	extra = 'action_key='+action_key
+        var s;
+        var i=0;
+        while(s = document.getElementsByTagName("input")[i++])
+        {
+            if(s.type=='checkbox' && s.checked == true)
+            {
+                extra = extra + '&' + s.name + '=on'
+            }
+        }
+    	//submitconfig(extra, '', '', 1)
+    	url = 'nzb/'+nzo_id+'/bulk_operation'
+    	lr(url, extra)
+    }
+
 	function mark_all()
 	{
 		var s;
@@ -106,11 +123,11 @@
 <!--#if $varExists('active_files')#-->
 	<form action="bulk_operation">
       <input type="hidden" name="session" value="$session">
-	  <input type="submit" name="action_key" value="$T('nzo-delete')">
-	  <input type="submit" name="action_key" value="$T('nzo-top')">
-	  <input type="submit" name="action_key" value="$T('nzo-up')">
-	  <input type="submit" name="action_key" value="$T('nzo-down')">
-	  <input type="submit" name="action_key" value="$T('nzo-bottom')">
+	  <input type="submit" name="action_key" value="Delete">
+	  <input type="submit" name="action_key" value="Top">
+	  <input type="submit" name="action_key" value="Up">
+	  <input type="submit" name="action_key" value="Down">
+	  <input type="submit" name="action_key" value="Bottom">
 	  <br>
 	  $T('nzo-selection'):<a href='#' onclick='mark_all();' target='_self'>$T('nzo-all')</a>
 				<a href='#' onclick='unmark_all();' target='_self'>$T('nzo-none')</a>
