@@ -229,9 +229,9 @@ class PostProcessor(Thread):
 
                 # if the directory has not been made, no files were assembled
                 if not os.path.exists(workdir):
-                    emsg = 'Download failed - Out of your server\'s retention?'
+                    emsg = T('warn-OutRetention')
                     nzo.set_fail_msg(emsg)
-                    nzo.set_status('Failed')
+                    nzo.set_status(T('post-Failed'))
                     # do not run unpacking or parity verification
                     flagRepair = flagUnpack = parResult = False
                     unpackError = True
@@ -246,7 +246,7 @@ class PostProcessor(Thread):
                     reAdd = False
                     if not repairSets:
                         logging.info("No par2 sets for %s", filename)
-                        nzo.set_unpack_info('repair','[%s] No par2 sets' % filename)
+                        nzo.set_unpack_info(T('stage-repair'),T('msg-noParSets@1') % filename)
 
                     for _set in repairSets:
                         logging.info("Running repair on set %s", _set)
@@ -306,16 +306,16 @@ class PostProcessor(Thread):
                 if flagUnpack:
                     if parResult:
                         #set the current nzo status to "Extracting...". Used in History
-                        nzo.set_status("Extracting...")
+                        nzo.set_status(T('post-Extracting'))
                         logging.info("Running unpack_magic on %s", filename)
                         unpackError, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), (), ())
                         logging.info("unpack_magic finished on %s", filename)
                     else:
-                        nzo.set_unpack_info('unpack','No post-processing because of failed verification')
+                        nzo.set_unpack_info(T('stage-unpack'),T('msg-noPostProc'))
 
                 ## Move any (left-over) files to destination
-                nzo.set_status("Moving...")
-                nzo.set_action_line('Moving', '...')
+                nzo.set_status(T('post-Moving'))
+                nzo.set_action_line(T('msg-moving'), '...')
                 for root, dirs, files in os.walk(workdir):
                     for _file in files:
                         path = os.path.join(root, _file)
@@ -339,7 +339,7 @@ class PostProcessor(Thread):
                     ## Check if this is an NZB-only download, if so redirect to queue
                     nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat, priority=priority)
                     if nzb_list:
-                        nzo.set_unpack_info('download', 'Sent %s to queue' % nzb_list)
+                        nzo.set_unpack_info(T('stage-download'), T('msg-sentToQ@1') % nzb_list)
                         try:
                             os.rmdir(tmp_workdir_complete)
                         except:
@@ -381,17 +381,17 @@ class PostProcessor(Thread):
                         #set the current nzo status to "Ext Script...". Used in History
                         script_path = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
                         if os.path.exists(script_path):
-                            nzo.set_status("Running Script...")
-                            nzo.set_action_line('Running Script', script)
-                            nzo.set_unpack_info('script','Running user script %s' % script, unique=True)
+                            nzo.set_status(T('post-Running'))
+                            nzo.set_action_line(T('msg-running'), script)
+                            nzo.set_unpack_info(T('stage-script'), T('msg-runScript@1') % script, unique=True)
                             script_log, script_ret = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
                             script_line = get_last_line(script_log)
                             if script_log:
                                 fname = nzo.get_nzo_id()
                             if script_line:
-                                nzo.set_unpack_info('script', script_line, unique=True)
+                                nzo.set_unpack_info(T('stage-script'), script_line, unique=True)
                             else:
-                                nzo.set_unpack_info('script', 'Ran %s' % script, unique=True)
+                                nzo.set_unpack_info(T('stage-script'), T('msg-ranScript@1') % script, unique=True)
                     else:
                         script = ""
                         script_line = ""
@@ -410,9 +410,9 @@ class PostProcessor(Thread):
                         else:
                             script_ret = ''
                         if script_line:
-                            nzo.set_unpack_info('script','%s%s <a href="./scriptlog?name=%s">(More)</a>' % (script_ret, script_line, urllib.quote(fname)), unique=True)
+                            nzo.set_unpack_info(T('stage-script'),'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, urllib.quote(fname), T('link-more')), unique=True)
                         else:
-                            nzo.set_unpack_info('script','%s<a href="./scriptlog?name=%s">View script output</a>' % (script_ret, urllib.quote(fname)), unique=True)
+                            nzo.set_unpack_info(T('stage-script'),'%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(fname), T('link-viewSc')), unique=True)
 
                 ## Remove newzbin bookmark, if any
                 if msgid:
@@ -421,10 +421,10 @@ class PostProcessor(Thread):
                 ## Show final status in history
                 if parResult and not unpackError:
                     osx.sendGrowlMsg("Download Completed",filename,osx.NOTIFICATION['pp'])
-                    nzo.set_status("Completed")
+                    nzo.set_status(T('post-Completed'))
                 else:
                     osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['pp'])
-                    nzo.set_status("Failed")
+                    nzo.set_status(T('post-Failed'))
 
             except:
                 #Cause a crash when reparing par2 sets with accents
@@ -433,8 +433,8 @@ class PostProcessor(Thread):
                 #except:
                 #    pass
                 logging.debug("Traceback: ", exc_info = True)
-                nzo.set_fail_msg('PostProcessing Crashed, see logfile')
-                nzo.set_status("Failed")
+                nzo.set_fail_msg(T('warn-PostCrash'))
+                nzo.set_status(T('post-Failed'))
 
             # If the folder only contains one file OR folder, have that as the path
             # Be aware that series/generic/date sorting may move a single file into a folder containing other files

@@ -51,8 +51,6 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-STAGENAMES = {0:"Download", 1:"Par2", 2:"Unrar", 3:"Unzip", 4:"Filejoin", 5:"UserScript", 6:"ReQueue"}
-
 BYTES_FILE_NAME  = 'bytes%s.sab' % QUEUE_VERSION
 QUEUE_FILE_NAME  = 'queue%s.sab' % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION

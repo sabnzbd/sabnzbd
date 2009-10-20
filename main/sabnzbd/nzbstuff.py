@@ -657,7 +657,7 @@ class NzbObject(TryList):
         if not self.__files:
             post_done = True
             #set the nzo status to return "Queued"
-            self.set_status("Queued")
+            self.set_status(T('post-Queued'))
             self.set_download_report()
 
         return (file_done, post_done, reset)
@@ -751,7 +751,7 @@ class NzbObject(TryList):
             #format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
 
-            self.set_unpack_info('download', 'Downloaded in %s at an average of %sB/s' %
+            self.set_unpack_info(T('stage-download'), T('msg-DownloadedIn@2') %
                                  (complete_time, to_units(avg_bps*1024)), unique=True)
 
 

@@ -2560,14 +2560,14 @@ def ShowFile(name, path):
            <title>%s</title>
 </head>
 <body>
-           <FORM><INPUT TYPE="BUTTON" VALUE="Go Back" ONCLICK="history.go(-1)"></FORM>
+           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
            <h3>%s</h3>
            <code><pre>
            %s
            </pre></code><br/><br/>
 </body>
 </html>
-''' % (name, name, escape(msg))
+''' % (name, T('button-back'), name, escape(msg))
 
 def ShowString(name, string):
     """Return a html page listing a file and a 'back' button
@@ -2584,14 +2584,14 @@ def ShowString(name, string):
            <title>%s</title>
 </head>
 <body>
-           <FORM><INPUT TYPE="BUTTON" VALUE="Go Back" ONCLICK="history.go(-1)"></FORM>
+           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
            <h3>%s</h3>
            <code><pre>
            %s
            </pre></code><br/><br/>
 </body>
 </html>
-''' % (xml_name(name), xml_name(name), escape(msg))
+''' % (xml_name(name), T('button-back'), xml_name(name), escape(msg))
 
 
 def ShowOK(url):
@@ -2602,13 +2602,13 @@ def ShowOK(url):
            <title>%s</title>
 </head>
 <body>
-           <FORM><INPUT TYPE="BUTTON" VALUE="Go Back" ONCLICK="history.go(-1)"></FORM>
+           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
            <br/><br/>
-           Job %s was re-added to the queue.
+           %s
            <br/><br/>
 </body>
 </html>
-''' % (escape(url), escape(url))
+''' % (escape(url), T('button-back'), T('msg-reAdded@1') % escape(url))
 
 
 def _make_link(qfeed, job):

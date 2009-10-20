@@ -139,6 +139,7 @@ sizeHist          Taille Historique
 completed         Terminés
 size              Taille
 status            Statut
+msg-reAdded@1     Job %s was re-added to the queue
 
 # Connections page
 link-forceDisc    Forcer Déconnexion
@@ -698,6 +699,69 @@ error-tvTemp@1           Impossible de créer le fichier temporaire %s
 warn-matrixBadRep@1      Numéro de rapport nzbmatrix invalide %s
 warn-matrixFail          Problème d'accès au serveur nzbmatrix.
 warn-noRepair            No PAR2 program found, repairs not possible\n
+warn-missingFiles        \nWarning: not all files were unpacked, see log
+error-joinMismatch       Expected size did not equal actual size
+error-joinFail@1         File join of %s failed
+error-joinFail@2         [%s] Error "%s" while joining files
+msg-joinOK@3             [%s] Joined %s file%s
+error-unpackFail@1       Unpacking failed, %s
+error-unpackFail@2       [%s] Error "%s" while unpacking RAR files
+error-badArchive         Failed opening main archive (encrypted or damaged)
+error-unpackFailed@1     Unpacking failed, unable to find %s
+error-unpackCRC          Unpacking failed, CRC error
+error-unpackFull         Unpacking failed, write error or disk is full?
+error-unpackFailLog      Unpacking failed, see log
+error-unpackPassword     Unpacking failed, archive requires a password
+error-unpackMissing      Unpacking failed, an expected file was not unpacked
+msg-unpackDone@4         Unpacked %s file%s/folder%s in %s
+msg-unzipDone@3          %s file%s in %s
+msg-QuickCheck           Quick check...
+msg-QuickChecking        Quick Checking
+msg-QuickOK@1            [%s] Quick Check OK
+msg-startRepair          Starting Repair
+error-repairFailed@1     Repairing failed, %s
+error-repairBad@2        Error "%s" while running par2_repair on set %s
+msg-verify               Verifying...
+msg-verifyOK@2           [%s] Verified in %s, all files correct
+msg-repairNeeded         Repair is required
+msg-repairNeeded@2       [%s] Verified in %s, repair is required
+error-noMainPacket       Main packet not found...
+error-repairBlocks@1     Repair failed, not enough repair blocks (%s short)
+msg-fetchBlocks@1        Fetching %s blocks...
+msg-repairing            Repairing
+msg-repairDone@2         [%s] Repaired in %s
+msg-verifying            Verifying
+msg-DownloadedIn@2       Downloaded in %s at an average of %sB/s
+msg-noParSets@1          [%s] No par2 sets
+msg-noPostProc           No post-processing because of failed verification
+msg-sentToQ@1            Sent %s to queue
+msg-runScript@1          Running user script %s
+msg-ranScript@1          Ran %s
+link-more                More
+link-viewSc              View script output
+warn-OutRetention        Download failed - Out of your server's retention?
+warn-PostCrash           PostProcessing Crashed, see logfile
+msg-moving               Moving
+msg-running              Running script
+msg-joining              Joining
+msg-unpacking            Unpacking
+msg-repair               Repair
+msg-fetching             Fetching
+msg-path                 Path
+
+stage-download           Download
+stage-repair             Repair
+stage-filejoin           Join files
+stage-unpack             Unpack
+stage-script             Script
+
+post-Completed           Completed
+post-Failed              Failed
+post-Queued              Queued
+post-Repairing           Repairing...
+post-Extracting          Extracting...
+post-Moving              Moving...
+post-Running             Running script...
 
 #Growl Messages
 grwl-notif-startup       Démarrage/Arrêt

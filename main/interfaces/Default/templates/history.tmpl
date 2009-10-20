@@ -47,19 +47,19 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
             <td colspan="3"><dl>
             <!--#for $stage in $line.stage_log#-->
                 <!--#set $oddLine = not $oddLine#-->
-                <dt>Stage $stage.name.title</dt>
+                <dt><b>$stage.name.title</b></dt>
                 <!--#for $action in $stage.actions#-->
                      <dd>$action</dd>
                             <!--#end for#-->
                      <br />
             <!--#end for#-->
             <!--#if $line.category#-->
-                <dt>$T('category')</dt>
+                <dt><b>$T('category')</b></dt>
                 <dd>$line.category</dd>
                 <br />
             <!--#end if#-->
             <!--#if $line.storage#-->
-                <dt>Path</dt>
+                <dt><b>$T('msg-path')</b></dt>
                 <dd>$line.storage</dd>
                 <br />
             <!--#end if#-->
