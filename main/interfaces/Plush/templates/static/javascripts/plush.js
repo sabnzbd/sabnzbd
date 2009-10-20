@@ -386,12 +386,10 @@ jQuery(function($) { // safely invoke $ selector
 					// Update warnings count/latest warning text in main menu
 					$('#have_warnings').html('('+$.plush.have_warnings+')');
 					$('#last_warning').attr('title',$.plush.last_warning).tooltip({
-				extraClass:	"tooltip",
-				track:		true,
-				showURL: false,
-			});
-;
-					//($.plush.have_warnings > 0) ? $('#last_warning').html($.plush.last_warning) : $('#last_warning').html('');
+						extraClass:	"tooltip",
+						track:		true,
+						showURL: false
+					});
 					
 					// Remove spinner graphic from pagination
 					$('#queue-pagination span').removeClass('loading');
@@ -997,7 +995,7 @@ jQuery(function($) { // safely invoke $ selector
 			$('#explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #last_warning, #pause_resume, #hist_purge').tooltip({
 				extraClass:	"tooltip",
 				track:		true,
-				showURL: false,
+				showURL: false
 			});
 
 		} // end $.plush.initEvents()

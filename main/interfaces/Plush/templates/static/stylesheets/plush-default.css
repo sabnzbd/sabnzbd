@@ -233,7 +233,6 @@ select {
 }
  
 .history_logo {
-	background: url('../images/plush-default/sprite-main.png') 0 -1538px no-repeat;
 	display:block;
 	height:15px;
 	margin:0 auto;
@@ -268,7 +267,6 @@ select {
 }
  
 .q_menu_pause {
-	background: url('../images/plush-default/sprite-main.png') no-repeat top left;
 	cursor:pointer;
 	display:block;
 	height:22px;
@@ -278,7 +276,6 @@ select {
  
 /* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
 .sprite_h_purge {
-	background: url('../images/plush-default/sprite-main.png') no-repeat top left;
 	cursor: pointer;
 	display: none;
 	margin: 6px;
@@ -328,9 +325,6 @@ select {
 		height: 67px;
 	}
  
-.sprite_topleft_queue,
-.sprite_topright_queue { background: url('../images/plush-default/sprite-main.png') no-repeat top left; }
- 
 #hdr-queue .logo h1 {
 	color: #c7c7c7;
 	cursor: default;
@@ -362,7 +356,6 @@ select {
 	height: 26px;
 }
 	#btm-wrapper div {
-		background-image: url('../images/plush-default/sprite-main.png');
 		background-repeat: no-repeat;
 		float: left;
 		height:26px;
@@ -390,7 +383,6 @@ select {
 }
  
 .sprite_sabnzbdplus_logo {
-	background: url('../images/plush-default/sprite-main.png') no-repeat;
 	margin: 10px 0 0;
 }
  
@@ -402,7 +394,6 @@ select {
 }
  
 #speed, #time-left {
-	background-image: url('../images/plush-default/sprite-main.png');
 	cursor: default;
 	height: 12px;
 	margin-top: 20px;
@@ -503,7 +494,6 @@ tr:hover .nzb_status_grippie {
 }
  
 .nzb_status {
-	background: url('../images/plush-default/sprite-main.png');
 	display: inline;
 	margin-right: 4px;
 	padding-bottom: 2px;
@@ -550,7 +540,6 @@ tr:hover .nzb_status_grippie {
 }
  
 .icon_nzb_remove {
-	background: url('../images/plush-default/sprite-main.png') no-repeat;
 	display: inline;
 	padding-bottom: 2px;
 	padding-left: 16px;
@@ -577,12 +566,10 @@ tr:hover .nzb_status_grippie {
 --------------------------------------------------------------------------------------------------------------- */
 /* progress bar & MB/left stats */
 .sprite_progressbar_bg {
-	background: url('../images/plush-default/sprite-main.png') no-repeat;
 	width: 121px;
 }
  
 .sprite_progress_done {
-	background: url('../images/plush-default/sprite-main.png') no-repeat;
 	height: 19px;
 	width: 121px;
 }
@@ -620,7 +607,6 @@ tr:hover .nzb_status_grippie {
  
 /* below queue, right side, disk space */
 .queue_footer_icon {
-	background: url('../images/plush-default/sprite-main.png') no-repeat top left;
 	display: inline;
 	margin: 16px 4px 0px 20px;
 	padding: 4px;
@@ -649,7 +635,6 @@ tr:hover .history_added { color: black; }
 }
  
 .icon_history_verbose {
-	background: url('../images/plush-default/sprite-main.png') no-repeat top left;
 	cursor: help;
 	display: inline;
 	float: left;
@@ -664,6 +649,8 @@ tr:hover .history_added { color: black; }
 }
  
 .pointer { cursor: pointer; }
+
+.main_sprite_container { background: url('../images/plush-default/sprite-main.png') no-repeat top left; }
  
 /* sprite-main.png */
 .sprite_btm_corner_left { background-position:0 -18px; }

@@ -201,17 +201,17 @@
     <div id="page-wrap">
 
         <div id="hdr-queue">
-            <div class="logo sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
-            <div class="sprite_topright_queue" id="queue-buttons">
+            <div class="logo main_sprite_container sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
+            <div class="main_sprite_container sprite_topright_queue" id="queue-buttons">
                 <ul>
                 	<li><span id="pause_int"></span></li>
-                    <li class="q_menu_pause <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
+                    <li class="q_menu_pause <!--#if $paused then 'main_sprite_container sprite_q_pause_on' else 'main_sprite_container sprite_q_pause'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
                 </ul>
             </div>
             <div class="centerpiece">
-                <div class="sprite_rounded_area_bg" id="speed"><p><span id="stats_speed">&hellip;</span></p></div>
-                <div id="queue_logo" class="sprite_sabnzbdplus_logo"></div>
-                <div class="sprite_rounded_area_bg" id="time-left"><p><span id="stats_eta">&hellip;</span>&nbsp;$T('Plush-left')</p></div>
+                <div class="main_sprite_container sprite_rounded_area_bg" id="speed"><p><span id="stats_speed">&hellip;</span></p></div>
+                <div id="queue_logo" class="main_sprite_container sprite_sabnzbdplus_logo"></div>
+                <div class="main_sprite_container sprite_rounded_area_bg" id="time-left"><p><span id="stats_eta">&hellip;</span>&nbsp;$T('Plush-left')</p></div>
             </div>
         </div>
 
@@ -243,7 +243,7 @@
 				<h1>$T('menu-history').upper()</h1>
                 <div class="box_banner_r">
                     <ul class="box_banner_menu">
-                        <li class="sprite_h_purge show" id="hist_purge" title="$T('purgeHist')" rel="$T('Plush-confirmPurgeH')"></li>
+                        <li class="main_sprite_container sprite_h_purge show" id="hist_purge" title="$T('purgeHist')" rel="$T('Plush-confirmPurgeH')"></li>
                     </ul>
                 </div>
             </div>
@@ -274,8 +274,8 @@
         </div>
 
         <div id="btm-wrapper">
-            <div class="sprite_btm_corner_right"></div>
-            <div class="sprite_btm_corner_left"></div>
+            <div class="main_sprite_container sprite_btm_corner_right"></div>
+            <div class="main_sprite_container sprite_btm_corner_left"></div>
         </div>
 
     </div>

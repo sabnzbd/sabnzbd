@@ -23,10 +23,10 @@
         $.plush.queuestats		= '<strong>$mbleft&nbsp;&nbsp;&frasl;&nbsp;&nbsp;$mb&nbsp;$T('MB')</strong>&nbsp;$T('Plush-remaining')';
         <!--#end if#-->
         <!--#if $diskspace1 == $diskspace2#-->
-        $.plush.queuestats		+= '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;GB</strong>&nbsp;$T('Plush-freeSpace')';
+        $.plush.queuestats		+= '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;GB</strong>&nbsp;$T('Plush-freeSpace')';
         <!--#else#-->
-        $.plush.queuestats		+= '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpaceTemp')'
-        						+  '<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpace')';
+        $.plush.queuestats		+= '<div class="queue_footer_icon <!--#if float($diskspace1) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_incomplete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace1&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpaceTemp')'
+        						+  '<div class="queue_footer_icon <!--#if float($diskspace2) < float($mbleft)/1024 #-->main_sprite_container sprite_q_stats_needspace" title="$T('Plush-notEnoughSpace')<!--#else#-->main_sprite_container sprite_q_stats_complete<!--#end if#-->">&nbsp;&nbsp;&nbsp;</div><strong>$diskspace2&nbsp;$T('GB')</strong>&nbsp;$T('Plush-freeSpace')';
 		<!--#end if#-->
     });
 
@@ -60,7 +60,7 @@
     <tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
 
 	<td class="nzb_status_col">
-		&nbsp;<div class="nzb_status <!--#if $slot.status == "Paused"#-->sprite_ql_grip_paused<!--#else if $slot.status == "Downloading"#-->sprite_ql_grip_active<!--#else#-->sprite_ql_grip_queued<!--#end if#-->">&nbsp;</div>
+		&nbsp;<div class="nzb_status <!--#if $slot.status == "Paused"#-->main_sprite_container sprite_ql_grip_paused<!--#else if $slot.status == "Downloading"#-->main_sprite_container sprite_ql_grip_active<!--#else#-->main_sprite_container sprite_ql_grip_queued<!--#end if#-->">&nbsp;</div>
 	</td>
 
     <td class="download-title">
@@ -68,8 +68,8 @@
     </td>
 
     <td>
-    	<div class="sprite_progressbar_bg">
-	        <div class="sprite_progress_done" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -1299px">
+    	<div class="main_sprite_container sprite_progressbar_bg">
+	        <div class="main_sprite_container sprite_progress_done" style="background-position: -<!--#if $slot.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($slot.mbleft) / float($slot.mb) * 100))#-->px -1299px">
 	            <div class="totalDownload"><!--#echo int(float($slot.mbleft))#-->&nbsp;<small>$T('Plush-left')</small></div>
 	            <div class="currentDownload"><!--#echo int(float($slot.mb))#-->&nbsp;<small>$T('MB')</small></div>
 	        </div>
