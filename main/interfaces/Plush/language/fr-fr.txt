@@ -32,6 +32,7 @@ pauseForPrompt    Pause pour combien de minutes?
 purge             Vider
 onQueueFinish     En Fin de queue
 warnings          Avertissements
+updateAvailable   Mise à Jour Disponible!
 
 
 # General

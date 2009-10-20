@@ -32,6 +32,7 @@ pauseForPrompt    Hoeveel minuten pauzeren?
 purge             Opschonen
 onQueueFinish     Bij lege wachtrij
 warnings          Meldingen
+updateAvailable   Beschikbare Update!
 
 
 # General

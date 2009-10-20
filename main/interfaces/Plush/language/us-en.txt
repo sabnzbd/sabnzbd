@@ -32,7 +32,7 @@ pauseForPrompt    Pause for how many minutes?
 purge             Purge
 onQueueFinish     On Finish
 warnings          Warnings
-
+updateAvailable   Update Available!
 
 # General
 button-refresh    Refresh
