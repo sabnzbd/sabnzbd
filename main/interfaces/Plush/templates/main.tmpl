@@ -172,7 +172,7 @@
             </ul>
         </li>
         <li>
-			<a class="sf-with-ul" href="connections">$T('menu-config')</a>
+			<a class="sf-with-ul" href="connections" id="last_warning">$T('menu-config')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
 			<ul class="config_links">
 	            <li><a href="connections">$T('menu-cons')</a></li>
 	            <li><a href="config/general">$T('cmenu-general')</a></li>
@@ -187,9 +187,6 @@
 	            <li><a href="config/sorting">$T('cmenu-sorting')</a></li>
 			</ul>
 		</li>
-        <li>
-            <a href="connections" id="last_warning">$T('Plush-warnings')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
-        </li>
         <li><a class="pointer" id="manual_refresh_wrapper"><span id="manual_refresh">$T('Plush-button-refresh')</span></a></li>
 	    <!--#if $new_release#-->
         <li><a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a></li>
