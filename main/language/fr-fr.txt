@@ -30,7 +30,7 @@ thursday          Jeudi
 friday            Vendredi
 saturday          Samedi
 sunday            Dimanche
-day-of-month      Day of month
+day-of-month      Jour du mois
 filename          Nom de fichier
 
 
@@ -75,7 +75,7 @@ ft-newRelease@1   Une nouvelle version %s est disponible
 
 # Main page
 addNewJobs        Ajouter de nouveaux téléchargements
-shutdownOK?       Etes-vous surs de vouloir quitter SABnzbd ?
+shutdownOK?       Etes-vous sûrs de vouloir quitter SABnzbd ?
 link-shutdown     Eteindre
 link-pause        Pause
 link-resume       Reprendre
@@ -114,7 +114,7 @@ shutdownSab       Quitter SABnzbd
 speedLimit        Limite de vitesse
 pauseFor          Pause pour
 mode              Mode
-order
+order             Ordre
 name              Nom
 remainTotal       Restant/Total
 eta               TRE
@@ -139,7 +139,7 @@ sizeHist          Taille Historique
 completed         Terminés
 size              Taille
 status            Statut
-msg-reAdded@1     Job %s was re-added to the queue
+msg-reAdded@1     %s a été remis en queue
 
 # Connections page
 link-forceDisc    Forcer Déconnexion
@@ -395,12 +395,12 @@ rss-filter               Filtre
 rss-accept               Accepter
 rss-reject               Rejeter
 rss-delFilter            X
-rss-matched              Corresponds
-rss-notMatched           Ne corresponds pas
+rss-matched              Correspond
+rss-notMatched           Ne correspond pas
 rss-done                 Téléchargés
 rss-downloaded           Téléchargés jusqu'ici
 link-download            Télécharger
-explain-rssStar          Jobs marked with a '*' will not be automatically downloaded.
+explain-rssStar          Les éléments marqués avec '*' ne seront pas automatiquement téléchargés.
 
 # Config->Email
 configEmail              Notification par Email
@@ -698,70 +698,70 @@ error-tvSimRename@2      Echec du renommange des fichiers similaires : %s en %s
 error-tvTemp@1           Impossible de créer le fichier temporaire %s
 warn-matrixBadRep@1      Numéro de rapport nzbmatrix invalide %s
 warn-matrixFail          Problème d'accès au serveur nzbmatrix.
-warn-noRepair            No PAR2 program found, repairs not possible\n
-warn-missingFiles        \nWarning: not all files were unpacked, see log
-error-joinMismatch       Expected size did not equal actual size
-error-joinFail@1         File join of %s failed
-error-joinFail@2         [%s] Error "%s" while joining files
-msg-joinOK@3             [%s] Joined %s file%s
-error-unpackFail@1       Unpacking failed, %s
-error-unpackFail@2       [%s] Error "%s" while unpacking RAR files
-error-badArchive         Failed opening main archive (encrypted or damaged)
-error-unpackFailed@1     Unpacking failed, unable to find %s
-error-unpackCRC          Unpacking failed, CRC error
-error-unpackFull         Unpacking failed, write error or disk is full?
-error-unpackFailLog      Unpacking failed, see log
-error-unpackPassword     Unpacking failed, archive requires a password
-error-unpackMissing      Unpacking failed, an expected file was not unpacked
-msg-unpackDone@4         Unpacked %s file%s/folder%s in %s
-msg-unzipDone@3          %s file%s in %s
+warn-noRepair            Le binaire PAR2 n'a pas été trouvé, les réparations ne sont pas possibles\n
+warn-missingFiles        \nAttention : tous les fichiers n'ont pas été décompressés, voir le log
+error-joinMismatch       La taille ne correspond pas à la taille attendue
+error-joinFail@1         La concaténation du fichier %s a echoué
+error-joinFail@2         [%s] Erreur "%s" lors de la concaténation des fichiers
+msg-joinOK@3             [%s] Concaténation %s fichier%s
+error-unpackFail@1       Echec de la décompression, %s
+error-unpackFail@2       [%s] Erreur "%s" lors de la décompression des fichiers RAR
+error-badArchive         Impossible d'ouvrir l'archive principale (encryptée ou corrompue)
+error-unpackFailed@1     Echec de la décompression, %s n'a pas été trouvé
+error-unpackCRC          Echec de la décompression, erreur CRC
+error-unpackFull         Echec de la décompression, erreur d'écriture ou espace disque insuffisant ?
+error-unpackFailLog      Echec de la décompression, voir log
+error-unpackPassword     Echec de la décompression, l'archive nécessite un mot de passe
+error-unpackMissing      Echec de la décompression, un fichier attendu n'a pas été décompressé
+msg-unpackDone@4         %s fichier%s/dossier%s décompressés en %s
+msg-unzipDone@3          %s fichier%s en %s
 msg-QuickCheck           Quick check...
-msg-QuickChecking        Quick Checking
+msg-QuickChecking        Quick Check en cours
 msg-QuickOK@1            [%s] Quick Check OK
-msg-startRepair          Starting Repair
-error-repairFailed@1     Repairing failed, %s
-error-repairBad@2        Error "%s" while running par2_repair on set %s
-msg-verify               Verifying...
-msg-verifyOK@2           [%s] Verified in %s, all files correct
-msg-repairNeeded         Repair is required
-msg-repairNeeded@2       [%s] Verified in %s, repair is required
-error-noMainPacket       Main packet not found...
-error-repairBlocks@1     Repair failed, not enough repair blocks (%s short)
-msg-fetchBlocks@1        Fetching %s blocks...
-msg-repairing            Repairing
-msg-repairDone@2         [%s] Repaired in %s
-msg-verifying            Verifying
-msg-DownloadedIn@2       Downloaded in %s at an average of %sB/s
-msg-noParSets@1          [%s] No par2 sets
-msg-noPostProc           No post-processing because of failed verification
-msg-sentToQ@1            Sent %s to queue
-msg-runScript@1          Running user script %s
-msg-ranScript@1          Ran %s
-link-more                More
-link-viewSc              View script output
-warn-OutRetention        Download failed - Out of your server's retention?
-warn-PostCrash           PostProcessing Crashed, see logfile
-msg-moving               Moving
-msg-running              Running script
-msg-joining              Joining
-msg-unpacking            Unpacking
-msg-repair               Repair
-msg-fetching             Fetching
-msg-path                 Path
+msg-startRepair          Réparation en cours
+error-repairFailed@1     Echec de la réparation, %s
+error-repairBad@2        Erreur "%s" lors la réparation de %s
+msg-verify               Vérification...
+msg-verifyOK@2           [%s] Vérifié en %s, tous les fichiers sont corrects
+msg-repairNeeded         Réparation requise
+msg-repairNeeded@2       [%s] Vérifié en %s, réparation requise
+error-noMainPacket       Le paquet principal n'a pas été trouvé...
+error-repairBlocks@1     Echec de la réparation, blocs de réparation insuffisants (manque %s)
+msg-fetchBlocks@1        Téléchargement de %s blocs...
+msg-repairing            Réparation en cours
+msg-repairDone@2         [%s] Réparé en %s
+msg-verifying            Vérification en cours
+msg-DownloadedIn@2       Téléchargé en %s à %sB/s en moyenne
+msg-noParSets@1          [%s] Pas de fichiers par2
+msg-noPostProc           Pas de post-traitement car la vérification a echoué
+msg-sentToQ@1            %s mis en queue
+msg-runScript@1          Exécution du script utilisateur %s en cours
+msg-ranScript@1          %s exécuté
+link-more                Plus
+link-viewSc              Voir le résultat du script
+warn-OutRetention        Echec de téléchargement - Rétention du serveur dépassée ?
+warn-PostCrash           Le post-traitement a planté, voir log
+msg-moving               Déplacement
+msg-running              Exécution de script
+msg-joining              Concaténation
+msg-unpacking            Décompression
+msg-repair               Réparation
+msg-fetching             Récupération
+msg-path                 Chemin
 
-stage-download           Download
-stage-repair             Repair
-stage-filejoin           Join files
-stage-unpack             Unpack
+stage-download           Téléchargement
+stage-repair             Réparation
+stage-filejoin           Concaténation
+stage-unpack             Décompression
 stage-script             Script
 
-post-Completed           Completed
-post-Failed              Failed
-post-Queued              Queued
-post-Repairing           Repairing...
-post-Extracting          Extracting...
-post-Moving              Moving...
-post-Running             Running script...
+post-Completed           Terminé
+post-Failed              Echoué
+post-Queued              En queue
+post-Repairing           Réparation en cours...
+post-Extracting          Décompression en cours...
+post-Moving              Déplacement en cours...
+post-Running             Exécution de script en cours...
 
 #Growl Messages
 grwl-notif-startup       Démarrage/Arrêt
