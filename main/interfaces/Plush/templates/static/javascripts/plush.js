@@ -385,7 +385,13 @@ jQuery(function($) { // safely invoke $ selector
 					
 					// Update warnings count/latest warning text in main menu
 					$('#have_warnings').html('('+$.plush.have_warnings+')');
-					($.plush.have_warnings > 0) ? $('#last_warning').html($.plush.last_warning) : $('#last_warning').html('');
+					$('#last_warning').attr('title',$.plush.last_warning).tooltip({
+				extraClass:	"tooltip",
+				track:		true,
+				showURL: false,
+			});
+;
+					//($.plush.have_warnings > 0) ? $('#last_warning').html($.plush.last_warning) : $('#last_warning').html('');
 					
 					// Remove spinner graphic from pagination
 					$('#queue-pagination span').removeClass('loading');
@@ -988,9 +994,10 @@ jQuery(function($) { // safely invoke $ selector
 			
 			
 			// Static tooltips
-			$('#explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pause_resume, #hist_purge').tooltip({
+			$('#explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #last_warning, #pause_resume, #hist_purge').tooltip({
 				extraClass:	"tooltip",
-				track:		true
+				track:		true,
+				showURL: false,
 			});
 
 		} // end $.plush.initEvents()
