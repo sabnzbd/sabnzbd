@@ -824,14 +824,14 @@ jQuery(function($) { // safely invoke $ selector
 				// 3-in-1 change nzb [category + processing + script]
 				$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').change(function(e){
 					var val = $(this).parent().parent().attr('id');
-					var class = $(this).attr('class');
+					var cval = $(this).attr('class');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: {mode: class, value: val, value2: $(this).val(), apikey: $.plush.apikey},
+						data: {mode: cval, value: val, value2: $(this).val(), apikey: $.plush.apikey},
 						success: function(resp){
 							// each category can define different priority/processing/script -- must be accounted for
-							if (class=="change_cat") {
+							if (cval=="change_cat") {
 								$.plush.skipRefresh = false;
 								$.plush.refreshQueue(); // this is not ideal, but the API does not yet offer a nice way of refreshing just one nzb
 							}
