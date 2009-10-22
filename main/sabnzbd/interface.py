@@ -584,16 +584,11 @@ class MainPage:
 
             elif output in ('xml', 'json'):
                 if sort and sort != 'index':
-                    reverse=False
-                    if dir.lower() == 'desc':
-                        reverse=True
+                    reverse = dir.lower() == 'desc'
                     nzbqueue.sort_queue(sort,reverse)
 
                 # &history=1 will show unprocessed items in the history
-                if kwargs.get('history'):
-                    history = True
-                else:
-                    history = False
+                history = bool(kwargs.get('history'))
 
                 info, pnfo_list, bytespersec, verboseList, dictn = \
                     build_queue(history=history, start=start, limit=limit)
