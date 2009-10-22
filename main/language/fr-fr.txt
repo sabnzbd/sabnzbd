@@ -628,6 +628,7 @@ error-mailSend           Echec de l'envoi du mail
 error-mailTempl@1        Impossible de trouver les modèles de mail dans %s
 error-mailTLS            Echec de l'initiation de la connexion TLS
 warn-noEmailClose        Echec de la fermeture de la connexion mail
+msg-emailOK              Succès de l'envoi du mail
 error-regex@1            Echec de la compilation de regex pour la recherche du terme : %s
 error-accessDir@2        %s dossier : %s Erreur d'accès
 error-createDir@1        Impossible de créer le dossier %s
@@ -798,3 +799,14 @@ osx-menu-purgehistory    Vider Historique
 osx-menu-wizard          Ouvrir l'assistant
 osx-menu-empty           Vide
 osx-menu-shutdowning     Arrêt en cours...
+
+email-full@2             \
+to: %s\n\
+from: %s\n\
+subject: SABnzbd reports Disk Full\n\
+\n\
+Hi,\n\
+\n\
+SABnzbd has stopped downloading, because the disk is almost full.\n\
+Please make room and resume SABnzbd manually.\n\
+\n

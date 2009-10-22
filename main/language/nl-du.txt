@@ -608,6 +608,7 @@ error-mailSend           Verzenden van email is mislukt
 error-mailTempl@1        Kan geen email sjablonen vinden in %s
 error-mailTLS            Kan geen TLS verbinding maken
 warn-noEmailClose        Afsluiten email verbinding lukt niet
+msg-emailOK              Email verzonden
 error-regex@1            Samenstellen van reguliere expressie lukt niet: %s
 error-accessDir@2        %s map: fout %s bij toegang
 error-createDir@1        Kan map %s niet aanmaken
@@ -778,3 +779,14 @@ osx-menu-purgehistory    Wis geschiedenis
 osx-menu-wizard          Ga naar Wizard
 osx-menu-empty           Leeg
 osx-menu-shutdowning     Afsluiten...
+
+email-full@2             \
+to: %s\n\
+from: %s\n\
+subject: SABnzbd: harde schijf vol\n\
+\n\
+Hallo,\n\
+\n\
+SABnzbd is gestopt met downloaden omdat de harde schijf bijna vol is.\n\
+Maak ruimte vrij en start SABnzbd handmatig door.\n\
+\n

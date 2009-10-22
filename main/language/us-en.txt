@@ -622,6 +622,7 @@ error-mailSend           Failed to send e-mail
 error-mailTempl@1        Cannot find email templates in %s
 error-mailTLS            Failed to initiate TLS connection
 warn-noEmailClose        Failed to close mail connection
+msg-emailOK              Email succeeded
 error-regex@1            Failed to compile regex for search term: %s
 error-accessDir@2        %s directory: %s error accessing
 error-createDir@1        Cannot create directory %s
@@ -793,3 +794,13 @@ osx-menu-wizard          Go to wizard
 osx-menu-empty           Empty
 osx-menu-shutdowning     Stopping...
 
+email-full@2             \
+to: %s\n\
+from: %s\n\
+subject: SABnzbd reports Disk Full\n\
+\n\
+Hi,\n\
+\n\
+SABnzbd has stopped downloading, because the disk is almost full.\n\
+Please make room and resume SABnzbd manually.\n\
+\n

@@ -48,7 +48,7 @@ def send(message):
 
     if cfg.EMAIL_SERVER.get() and cfg.EMAIL_TO.get() and cfg.EMAIL_FROM.get():
 
-        failure = "Email failed"
+        failure = T('error-mailSend')
         server, port = split_host(cfg.EMAIL_SERVER.get())
         if not port:
             port = 25
@@ -113,7 +113,7 @@ def send(message):
             logging.warning(T('warn-noEmailClose'))
 
         logging.info("Notification e-mail succesfully sent")
-        return "Email succeeded"
+        return T('msg-emailOK')
 
 
 
@@ -143,14 +143,18 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     parm['size'] = "%sB" % to_units(bytes)
     parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
 
+    lst = []
     path = cfg.EMAIL_DIR.get_path()
-    if not (path and os.path.exists(path)):
-        path = sabnzbd.DIR_PROG
-    try:
-        lst = glob.glob(os.path.join(path, '*.tmpl'))
-    except:
-        logging.error(T('error-mailTempl@1'), path)
-        lst = []
+    if path and os.path.exists(path):
+        try:
+            lst = glob.glob(os.path.join(path, '*.tmpl'))
+        except:
+            logging.error(T('error-mailTempl@1'), path)
+    else:
+        path = os.path.join(sabnzbd.DIR_PROG, DEF_LANGUAGE)
+        path = os.path.join(path, 'email-%s.tmpl' % cfg.LANGUAGE.get())
+        if os.path.exists(path):
+            lst = [path]
 
     ret = "No templates found"
     for temp in lst:
@@ -174,18 +178,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
 def diskfull():
     """ Send email about disk full, no templates """
 
-    if not cfg.EMAIL_FULL.get():
-        return
-
-    message = """to: %s
-from: %s
-subject: SABnzbd reports Disk Full
-
-Hi,
-
-SABnzbd has stopped downloading, because the disk is almost full.
-Please make room and resume SABnzbd manually.
-
-""" % (cfg.EMAIL_TO.get(), cfg.EMAIL_FROM.get())
-
-    return send(message)
+    if cfg.EMAIL_FULL.get():
+        return send(T('email-full@2') % (cfg.EMAIL_TO.get(), cfg.EMAIL_FROM.get()))
+    else:
+        return ""

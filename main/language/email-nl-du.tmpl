@@ -1,0 +1,41 @@
+##
+## Standaard Email sjabloon voor SABnzbd
+## Dit is een Cheetah sjabloon
+## Documentatie: http://sabnzbd.wikidot.com/email-templates
+##
+## Lege regels en witruimte zijn belangrijk!
+##
+## Dit zijn de email koppen
+to: $to
+from: $from
+date: $date
+subject: SABnzbd: opdracht $name is <!--#if $status then "klaar" else "mislukt" #-->
+X-priority: 5
+X-MS-priority: 5
+## Hier onder volgt de hoofdtekst, de lege regel is noodzakelijk!
+
+Hallo,
+<!--#if $status #-->
+SABnzbd heeft "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#--> gedownload
+<!--#else#-->
+SABnzbd is niet geslaagd in het downloaden van "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
+<!--#end if#-->
+Klaar om $end_time
+Hoeveelheid gedownload $size
+
+Resultaat van de opdracht:
+<!--#for $stage in $stages #-->
+Fase $stage <!--#slurp#-->
+<!--#for $result in $stages[$stage]#-->
+    $result <!--#slurp#-->
+<!--#end for#-->
+<!--#end for#-->
+<!--#if $script!="" #-->
+Bericht van het script "$script" (Exit code = $script_ret):
+$script_output
+<!--#end if#-->
+<!--#if $status #-->
+Veel plezier!
+<!--#else#-->
+Sorry!
+<!--#end if#-->
