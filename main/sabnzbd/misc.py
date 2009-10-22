@@ -794,7 +794,7 @@ def bad_fetch(nzo, url, retry=False, archive=False):
     else:
         script = ''
 
-    nzo.set_status(T('post-Failed'))
+    nzo.set_status('Failed')
 
 
     if url:

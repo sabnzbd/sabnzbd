@@ -231,7 +231,7 @@ class PostProcessor(Thread):
                 if not os.path.exists(workdir):
                     emsg = T('warn-OutRetention')
                     nzo.set_fail_msg(emsg)
-                    nzo.set_status(T('post-Failed'))
+                    nzo.set_status('Failed')
                     # do not run unpacking or parity verification
                     flagRepair = flagUnpack = parResult = False
                     unpackError = True
@@ -306,7 +306,7 @@ class PostProcessor(Thread):
                 if flagUnpack:
                     if parResult:
                         #set the current nzo status to "Extracting...". Used in History
-                        nzo.set_status(T('post-Extracting'))
+                        nzo.set_status('Extracting')
                         logging.info("Running unpack_magic on %s", filename)
                         unpackError, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), (), ())
                         logging.info("unpack_magic finished on %s", filename)
@@ -314,7 +314,7 @@ class PostProcessor(Thread):
                         nzo.set_unpack_info(T('stage-unpack'),T('msg-noPostProc'))
 
                 ## Move any (left-over) files to destination
-                nzo.set_status(T('post-Moving'))
+                nzo.set_status('Moving')
                 nzo.set_action_line(T('msg-moving'), '...')
                 for root, dirs, files in os.walk(workdir):
                     for _file in files:
@@ -381,7 +381,7 @@ class PostProcessor(Thread):
                         #set the current nzo status to "Ext Script...". Used in History
                         script_path = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
                         if os.path.exists(script_path):
-                            nzo.set_status(T('post-Running'))
+                            nzo.set_status('Running')
                             nzo.set_action_line(T('msg-running'), script)
                             nzo.set_unpack_info(T('stage-script'), T('msg-runScript@1') % script, unique=True)
                             script_log, script_ret = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
@@ -421,10 +421,10 @@ class PostProcessor(Thread):
                 ## Show final status in history
                 if parResult and not unpackError:
                     osx.sendGrowlMsg("Download Completed",filename,osx.NOTIFICATION['pp'])
-                    nzo.set_status(T('post-Completed'))
+                    nzo.set_status('Completed')
                 else:
                     osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['pp'])
-                    nzo.set_status(T('post-Failed'))
+                    nzo.set_status('Failed')
 
             except:
                 #Cause a crash when reparing par2 sets with accents
@@ -434,7 +434,7 @@ class PostProcessor(Thread):
                 #    pass
                 logging.debug("Traceback: ", exc_info = True)
                 nzo.set_fail_msg(T('warn-PostCrash'))
-                nzo.set_status(T('post-Failed'))
+                nzo.set_status('Failed')
 
             # If the folder only contains one file OR folder, have that as the path
             # Be aware that series/generic/date sorting may move a single file into a folder containing other files

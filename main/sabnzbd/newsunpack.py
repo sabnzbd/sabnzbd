@@ -644,7 +644,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
     else:
 
-        nzo.set_status(T('post-Repairing'))
+        nzo.set_status('Repairing')
         result = False
         readd = False
         try:
@@ -878,7 +878,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
                 msg = T('error-repairBlocks@1') % str(int(needed_blocks - avail_blocks))
                 nzo.set_fail_msg(msg)
                 nzo.set_unpack_info(T('stage-repair'), '[%s] %s' % (setname, msg), set=setname)
-                nzo.set_status(T('post-Failed'))
+                nzo.set_status('Failed')
                 needed_blocks = avail_blocks
                 force = True
 
@@ -909,7 +909,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
                 msg = T('error-repairBlocks@1') % str(needed_blocks)
                 nzo.set_fail_msg(msg)
                 nzo.set_unpack_info(T('stage-repair'), '[%s] %s'  % (setname, msg), set=setname)
-                nzo.set_status(T('post-Failed'))
+                nzo.set_status('Failed')
 
 
         elif line.startswith('Repair is possible'):

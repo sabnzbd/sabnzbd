@@ -657,7 +657,7 @@ class NzbObject(TryList):
         if not self.__files:
             post_done = True
             #set the nzo status to return "Queued"
-            self.set_status(T('post-Queued'))
+            self.set_status('Queued')
             self.set_download_report()
 
         return (file_done, post_done, reset)
