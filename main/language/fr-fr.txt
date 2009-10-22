@@ -803,10 +803,10 @@ osx-menu-shutdowning     Arrêt en cours...
 email-full@2             \
 to: %s\n\
 from: %s\n\
-subject: SABnzbd reports Disk Full\n\
+subject: SABnzbd : Espace disque insuffisant\n\
 \n\
 Hi,\n\
 \n\
-SABnzbd has stopped downloading, because the disk is almost full.\n\
-Please make room and resume SABnzbd manually.\n\
+SABnzbd a mis en pause les téléchargements car le disque est presque plein.\n\
+Veuillez libérer de l'espace et reprendre les téléchargements manuellement.\n\
 \n
