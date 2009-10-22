@@ -168,13 +168,14 @@ select {
 
 /* for jQuery Pagination Plugin */
 
-.pagination-perpage { float: left; }
+.pagination-perpage {
+  float: left;
+  margin-top: 2px;
+}
  
 .pagination {
 	float: left;
-	font-size: 100%;
-	margin-left: -15px;
-	margin-top: -15px; 
+	margin-left:10px;
 }
  
 	.pagination a {
@@ -190,9 +191,8 @@ select {
 	.pagination a, .pagination span {
 		display: block;
 		float: left;
-		margin-bottom: 5px;
 		margin-right: 5px;
-		padding: 0.3em 0.5em; 
+		padding:3px 5px;
 	}
  
 	.pagination .current {
@@ -223,16 +223,16 @@ select {
 	text-align: center; 
 }
  
-.left_stats, .right_stats, .pagination {
+.left_stats, .right_stats {
 	cursor: default;
 	padding: 12px 16px 0 20px; 
 }
 
 #box_fatbottom_queue .left_stats {
-  padding-top:9px;
+  padding-top:6px;
 }
  
-.history_logo {
+.plush_wrapper {
 	display:block;
 	height:15px;
 	margin:0 auto;
@@ -259,21 +259,6 @@ select {
  
 	.box_banner_menu li { float: right; }
  
-/* overall pause/resume */
-#pause_int {
-	color: white;
-	font-size: small;
-	padding-right: 10px;
-}
- 
-.q_menu_pause {
-	cursor:pointer;
-	display:block;
-	height:22px;
-	margin-right:6px;
-	width:22px;
-}
- 
 /* keep .h_menu_verbose and .h_menu_purge up with the above (buttons top-right of history) */
 .sprite_h_purge {
 	cursor: pointer;
@@ -297,8 +282,9 @@ select {
  
 .box_banner_history {
   background: url('../images/plush-default/tile_qh.png') 0 -16px repeat-x;
-	height: 51px;
-	width: 100%; 
+  clear:both;
+  height:51px;
+  overflow:hidden;
 }
  
 	.box_banner_history h1 {
@@ -313,6 +299,7 @@ select {
 	float:right;
 	height: 52px;
 	margin-left: 1px; 
+	width:50px;
 }
  
 #hdr-queue {
@@ -336,15 +323,62 @@ select {
 	float: right;
 	height:37px;
 	padding-top:34px;
+	white-space:nowrap;
 }
 	
 	#queue-buttons ul {
 		margin-right:24px;
-		overflow:hidden;
 	} 	
  
-	#queue-buttons li { float: left; }
- 
+	#queue-buttons #pause_int {
+		float: right;
+	    color: white;
+		font-size: small;
+		padding-right: 10px;
+		display:inline;
+	}
+	#queue-buttons ul li#pause_resume,
+	#queue-buttons ul li.sprite_q_menu_pausefor {
+	  float: right;
+	  cursor:pointer;
+  	display:block;
+	  height:21px;
+	  position:relative;
+	  text-indent:-5000px;
+	  width:21px;
+  }
+
+  #queue-buttons ul li ul {
+    border-bottom:2px solid #403f3f;
+    border-right:2px solid #403f3f;
+    float:right;
+    margin:0;
+    position:absolute;
+    right:1px;
+    top:21px;
+    width:152px;
+  }
+  #queue-buttons ul li ul li{
+    clear:left;
+    float:left;
+  }
+  #queue-buttons ul li ul li a{
+    background:#1d1c1c;
+    border-top:1px solid #474646;
+    color:#aaa;
+    clear:left;
+    display:block;
+    float:left;
+    padding:3px 6px;
+    text-indent:0;
+    width:140px;
+  }
+  #queue-buttons ul li ul li a:hover{
+    color:#eee;
+  }
+  #queue-buttons ul li ul li:first-child a{
+    border:0;
+  }
 #queue-wrap {
 	background: url('../images/plush-default/tile_queue_wrap.png') repeat-y top right;
 	padding:0 16px;
@@ -430,7 +464,7 @@ select {
 .queueTable {
 	background-color: #e0e0e0;
 	border-bottom: 1px solid #fff;
-	border-collapse: seperate;
+	border-collapse: separate;
 	border-spacing: 0px;
 	color: #606060;
 	width: 100%; 
@@ -650,72 +684,45 @@ tr:hover .history_added { color: black; }
  
 .pointer { cursor: pointer; }
 
-.main_sprite_container { background: url('../images/plush-default/sprite-main.png') no-repeat top left; }
+.main_sprite_container { background: url('../images/plush-default/sprite-main.png') no-repeat top right; }
  
 /* sprite-main.png */
-.sprite_btm_corner_left { background-position:0 -18px; }
- 
-.sprite_btm_corner_right { background-position:0 -56px;}
- 
-.sprite_h_purge { background-position: 0 -108px; }
- 
-.sprite_topleft_queue { background-position: 0 -160px; }
- 
-.sprite_hv_download { background-position: 0 -244px; }
- 
-.sprite_hv_error { background-position: 0 -290px; }
- 
-.sprite_hv_filejoin { background-position: 0 -336px; }
- 
-.sprite_hv_repair { background-position: 0 -382px; }
- 
-.sprite_hv_report { background-position: 0 -428px; }
- 
-.sprite_hv_script { background-position: 0 -474px; }
- 
-.sprite_hv_star { background-position: 0 -520px; }
- 
-.sprite_hv_stats { background-position: 0 -566px; }
- 
-.sprite_hv_unpack { background-position: 0 -612px; }
- 
-.sprite_q_pause { background-position: 0 -658px; }
- 
-.sprite_q_pause_on { background-position: 0 -709px; }
- 
-.sprite_q_stats_complete { background-position: 0 -760px; }
- 
-.sprite_q_stats_incomplete { background-position: 0 -806px; }
- 
-.sprite_q_stats_needspace { background-position: 0 -852px; }
- 
-.sprite_ql_cross { background-position: 0 -898px; }
- 
-.sprite_ql_cross_on { background-position: 0 -944px; }
- 
-.sprite_ql_grip_active { background-position: 0 -990px; }
- 
-.sprite_ql_grip_active_on { background-position: 0 -1034px; }
- 
-.sprite_ql_grip_paused { background-position: 0 -1078px; }
- 
-.sprite_ql_grip_paused_on { background-position: 0 -1122px; }
- 
-.sprite_ql_grip_queued { background-position: 0 -1166px; }
- 
-.sprite_ql_grip_queued_on { background-position: 0 -1210px; }
- 
-.sprite_progressbar_bg { background-position: 0 -1254px; }
- 
-.sprite_progress_done { background-position: 0 -1299px; }
- 
-.sprite_topright_queue { background-position: right -1332px; }
- 
-.sprite_rounded_area_bg { background-position: 0 -1429px; }
- 
-.sprite_sabnzbdplus_logo { background-position: 0 -1481px; }
- 
-.sprite_sabnzbdplus_plush { background-position: 0 -1551px; }
+
+.sprite_btm_corner_left { background-position: 0 0; } 
+.sprite_btm_corner_right { background-position: 0 -126px; } 
+.sprite_h_purge { background-position: 0 -252px; } 
+.sprite_hv_download { background-position: 0 -373px; } 
+.sprite_hv_error { background-position: 0 -489px; } 
+.sprite_hv_filejoin { background-position: 0 -605px; } 
+.sprite_hv_repair { background-position: 0 -721px; } 
+.sprite_hv_report { background-position: 0 -837px; } 
+.sprite_hv_script { background-position: 0 -953px; } 
+.sprite_hv_star { background-position: 0 -1069px; } 
+.sprite_hv_stats { background-position: 0 -1185px; } 
+.sprite_hv_unpack { background-position: 0 -1301px; } 
+.sprite_pause-right { background-position: 0 -1417px; } 
+.sprite_progress_done { background-position: 0 -1538px; } 
+.sprite_progressbar_bg { background-position: 0 -1657px; } 
+.sprite_q_menu_pausefor { background-position: 0 -1776px; } 
+.sprite_q_menu_pausefor.sfHover { background-position: 0 -1897px; } 
+.sprite_q_pause { background-position: 0 -2018px; } 
+.sprite_q_pause_on { background-position: 0 -2139px; } 
+.sprite_q_stats_complete { background-position: 0 -2260px; } 
+.sprite_q_stats_incomplete { background-position: 0 -2376px; } 
+.sprite_q_stats_needspace { background-position: 0 -2492px; } 
+.sprite_ql_cross { background-position: 0 -2608px; } 
+.sprite_ql_cross_on { background-position: 0 -2724px; } 
+.sprite_ql_grip_active { background-position: 0 -2840px; } 
+.sprite_ql_grip_active_on { background-position: 0 -2954px; } 
+.sprite_ql_grip_paused { background-position: 0 -3068px; } 
+.sprite_ql_grip_paused_on { background-position: 0 -3182px; } 
+.sprite_ql_grip_queued { background-position: 0 -3296px; } 
+.sprite_ql_grip_queued_on { background-position: 0 -3410px; } 
+.sprite_rounded_area_bg { background-position: 0 -3524px; } 
+.sprite_sabnzbdplus_logo { background-position: 0 -3646px; } 
+.sprite_sabnzbdplus_plush { background-position: 0 -3786px; } 
+.sprite_topleft_queue { background-position: 0 -3899px; } 
+.sprite_topright_queue { background-position: right -4066px; } 
 
  
 /* ---------------------------------------------------------------------------------------------------------------
@@ -731,12 +738,12 @@ tr:hover .history_added { color: black; }
 #main_menu{
 	display:block;
 	float:left;
-	margin:10px 0 -6px;
+	margin:10px 0 0;
 	width:100%;
 }
 #main_menu ul{
 	display:block;
-	height:2em;
+	height:1.6666em;
 	list-style: none;
 	margin:0 auto;
 	width:530px;
@@ -748,7 +755,6 @@ tr:hover .history_added { color: black; }
 	float:left;
 	width:85px;
 }
-
 #main_menu ul li { /* First Level */
 	list-style:none;
 	margin:0 10px;
@@ -758,9 +764,19 @@ tr:hover .history_added { color: black; }
 #main_menu ul li a {
 	cursor:pointer;
   display:block;
+  position:relative;
   text-align:center;
 }
-
+#main_menu ul li a span {
+  background: url('../images/plush-default/arrow-down.gif') no-repeat center left;
+  display:block;
+  height:1.5em;
+  right:5px;
+  position:absolute;
+  text-indent:-5000px;
+  top:0;
+  width:10px;
+}
 #main_menu ul li input,
 #main_menu ul li select{
   background:#fff;
@@ -769,9 +785,11 @@ tr:hover .history_added { color: black; }
   padding:2px;
 }
 
+#main_menu ul li input#addID,
 #main_menu ul li input#fetch_newzbin_bookmarks{
   background:#111;
   color:#fff;
+  cursor:pointer;
 }
 
 
@@ -803,13 +821,18 @@ tr:hover .history_added { color: black; }
   clear:left;
   float:left;
   margin:0;
-  padding:10px;
+  padding:6px;
   text-align:left;
-  width:180px;
+  width:188px;
+}
+#main_menu ul li ul li a span {
+  background: url('../images/plush-default/arrow-right.gif') no-repeat top left;
+  height:auto;
+  top:32%;
 }
 
 #main_menu ul li ul.config_links li a{
-  padding:1px 10px 1px 10px;
+  padding:3px 6px;
 }
 
 #main_menu ul li ul li:hover,
@@ -830,15 +853,10 @@ tr:hover .history_added { color: black; }
   position:absolute;
   top:0;
 }
-
-
-#main_menu ul li ul li#navrefreshrate,
-#main_menu ul li ul li#navoptions ul li,
-#main_menu ul li ul li#processingContainer ul li { /* No a tags on these elements so set padding/width on the li */
-/*  padding:10px;
-  width:180px;*/
+#main_menu ul li ul li#plushoptions ul li:first-child a,
+#main_menu ul li ul li#processingContainer ul li{
+  padding:4px 6px;
 }
-
 #main_menu ul li ul#navaddnzb{
   width:275px;
 }

@@ -561,11 +561,15 @@ jQuery(function($) { // safely invoke $ selector
 			*********************************************
 			********************************************/
 			
-			// Main menu
-			$("#main_menu ul.sf-menu").superfish({ // uses jQuery hoverIntent
-				autoArrows:	false,
-      			dropShadows: false
-      		});
+			// Main menu -- uses jQuery hoverIntent
+			$("#main_menu ul.sf-menu").superfish({
+				autoArrows:	true,
+	  			dropShadows: false
+	  		});
+	  		$("#queue-buttons ul").superfish({
+	  		  autoArrows: false,
+	  		  dropShadows: false
+	  		});
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
@@ -662,7 +666,7 @@ jQuery(function($) { // safely invoke $ selector
 			    e.target.onselectstart = function() { return false; };
 			    e.target.unselectable = "on";
 			    e.target.style.MozUserSelect = "none";
-			    e.target.style.cursor = "default";
+			    //e.target.style.cursor = "default";
 
 				$.plush.refresh(true);
 			});
@@ -863,6 +867,7 @@ jQuery(function($) { // safely invoke $ selector
 			$('#pause_resume').click(function(event) {
 				if ( $(event.target).hasClass('sprite_q_pause_on') ) {
 					$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
+					$('#pause_int').html("");
 					$.ajax({
 						type: "POST",
 						url: "tapi",
