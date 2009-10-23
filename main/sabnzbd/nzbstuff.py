@@ -432,10 +432,10 @@ class NzbObject(TryList):
             dirname = nzbname         # Use nzbname if set and only for non-future slot
         else:
             dirname = filename
-        if dirname:
-            dirname, ext = os.path.splitext(dirname) # Used for folder name for final unpack
-            if ext.lower() != '.nzb':
-                dirname = dirname
+        if dirname and dirname.lower().endswith('.nzb'):
+            dname, ext = os.path.splitext(dirname) # Used for folder name for final unpack
+            if ext.lower() == '.nzb':
+                dirname = dname
         self.__dirname = dirname      # Keeps track of the working folder
         self.__original_dirname = dirname # TAKE NOTE: Used for folder name for final unpack
                                           # The name is wrong, required for backward compatibility!
