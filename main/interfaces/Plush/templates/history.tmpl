@@ -51,7 +51,7 @@
 	    <!--#for $stage in $line.stage_log#-->
             <!--#if $stage.name == "script"#-->
                 <a href="scriptlog?name=$line.nzo_id" class="modal" rel="scriptlog">
-                    <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name pointer" title='$T('Plush-viewScriptLog')<br><br><!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
+                    <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower() pointer" title='$T('Plush-viewScriptLog')<br><br><!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
                 </a>
             <!--#else#-->
                 <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
