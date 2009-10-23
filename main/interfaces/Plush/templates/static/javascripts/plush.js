@@ -323,6 +323,9 @@ jQuery(function($) { // safely invoke $ selector
 				return false;
 			}
 
+			// no longer a need for a pending queue refresh (associated with nzb deletions)
+			$.plush.pendingQueueRefresh = false;
+
 			// Deal with pagination for start/limit
 			if (typeof( page ) == 'undefined' || page == "ok\n" || page < 0 )
 				page = $.plush.queuecurpage;
@@ -469,7 +472,11 @@ jQuery(function($) { // safely invoke $ selector
 			clearTimeout($.plush.timeout);
 			
 			if (force || $.plush.refreshRate > 0) {
-				
+			
+				// no longer a need for a pending history refresh (associated with nzb deletions)
+				// (queue var reset in $.plush.refreshQueue() due to possible blocking
+				$.plush.pendingHistoryRefresh = false;
+
 				$.plush.refreshQueue();
 				$.plush.refreshHistory();
 				
@@ -685,9 +692,14 @@ jQuery(function($) { // safely invoke $ selector
 			********************************************/
 			
 			// Skip queue refresh on mouseover
-			$('#queueTable').live("mouseover", function(){ $.plush.skipRefresh=true; });
-			$('#queueTable').live("mouseout", function(){ $.plush.skipRefresh=false; });
-			$('#box_fatbottom_queue').live("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
+			$('#queue').hover(
+				function(){ $.plush.skipRefresh=true; }, // over
+				function(){ $.plush.skipRefresh=false; } // out
+			);
+			
+			//$('#queueTable').live("mouseover", function(){ $.plush.skipRefresh=true; });
+			//$('#queueTable').live("mouseout", function(){ $.plush.skipRefresh=false; });
+			//$('#box_fatbottom_queue').live("mouseover mouseout", function(){ $.plush.skipRefresh=false; });
 			
 			// NZB pause/resume individual toggle
 			$('#queueTable .nzb_status').live('click',function(event){
@@ -720,7 +732,8 @@ jQuery(function($) { // safely invoke $ selector
 			$('#queue .sprite_ql_cross').live('click', function(event) {
 				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
 					delid = $(event.target).parent().parent().attr('id');
-					$('#'+delid).fadeOut('fast');
+					$('#'+delid).fadeTo('normal',0.25);
+					$.plush.pendingQueueRefresh = true;
 					$.ajax({
 						type: "POST",
 						url: "tapi",
@@ -735,6 +748,17 @@ jQuery(function($) { // safely invoke $ selector
 					});
 				}
 			});
+
+			// refresh on mouseout after deletion
+			$('#queue').hover(	// $.mouseout was triggering too often
+				function(){}, // over
+				function(){	  // out
+					if ($.plush.pendingQueueRefresh) {
+						$.plush.pendingQueueRefresh = false;
+						$.plush.refreshQueue();
+					}
+				}
+			);
 			
 			// Pagination per-page selection
 			$("#queue-pagination-perpage").change(function(event){
@@ -897,7 +921,8 @@ jQuery(function($) { // safely invoke $ selector
 			$('#history .sprite_ql_cross').live('click', function(event) {
 				if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
 					delid = $(event.target).parent().parent().attr('id');
-					$('#'+delid).fadeOut('fast');
+					$('#'+delid).fadeTo('normal',0.25);
+					$.plush.pendingHistoryRefresh = true;
 					$.ajax({
 						type: "POST",
 						url: "tapi",
@@ -911,6 +936,17 @@ jQuery(function($) { // safely invoke $ selector
 					});
 				}
 			});
+
+			// refresh on mouseout after deletion
+			$('#history').hover(	// $.mouseout was triggering too often
+				function(){}, // over
+				function(){	  // out
+					if ($.plush.pendingHistoryRefresh) {
+						$.plush.pendingHistoryRefresh = false;
+						$.plush.refreshHistory();
+					}
+				}
+			);
 			
 			// Pagination per-page selection
 			$("#history-pagination-perpage").change(function(event){
