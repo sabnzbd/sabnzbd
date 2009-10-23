@@ -1,5 +1,4 @@
 #!/usr/bin/python -OO
-#!/usr/bin/python -OO
 # Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -72,7 +71,8 @@ DEF_NZBBACK_DIR  = ''
 DEF_LANGUAGE     = 'language'
 DEF_INTERFACES   = 'interfaces'
 DEF_INT_LANGUAGE = 'language'
-DEF_STDINTF      = 'Default'
+DEF_STDINTF      = 'smpl'
+DEF_SKIN_COLORS  = {'smpl':'white', 'classic':'darkblue', 'mobile':'light'}
 DEF_MAIN_TMPL    = 'templates/main.tmpl'
 DEF_INI_FILE     = 'sabnzbd.ini'
 DEF_HOST         = 'localhost'

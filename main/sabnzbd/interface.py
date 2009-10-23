@@ -1573,10 +1573,15 @@ class ConfigGeneral:
             return lst
 
         def add_color(dir, color):
-            if color:
-                return dir + ' - ' + color
+            if dir:
+                if not color:
+                    try:
+                        color = DEF_SKIN_COLORS[dir.lower()]
+                    except KeyError:
+                        return dir
+                return '%s - %s' % (dir, color)
             else:
-                return dir
+                return ''
 
         if cfg.CONFIGLOCK.get():
             return Protected()
@@ -1615,10 +1620,11 @@ class ConfigGeneral:
         conf['web_list'] = wlist
         conf['web_list2'] = wlist2
 
-        conf['web_colors'] = ['None'] #ListColors(cfg.WEB_DIR.get())
-        conf['web_color'] = 'None' #cfg.WEB_COLOR.get()
-        conf['web_colors2'] = ['None'] #ListColors(cfg.WEB_DIR2.get())
-        conf['web_color2'] = 'None' #cfg.WEB_COLOR2.get()
+        # Obsolete template variables, must exist and have a value
+        conf['web_colors'] = ['None']
+        conf['web_color'] = 'None'
+        conf['web_colors2'] = ['None']
+        conf['web_color2'] = 'None'
 
         conf['web_dir']  = add_color(cfg.WEB_DIR.get(), cfg.WEB_COLOR.get())
         conf['web_dir2'] = add_color(cfg.WEB_DIR2.get(), cfg.WEB_COLOR2.get())
@@ -1715,7 +1721,10 @@ def change_web_dir(web_dir):
         try:
             web_dir, web_color = web_dir.split(' - ')
         except:
-            web_color = ''
+            try:
+                web_color = DEF_SKIN_COLORS[web_dir.lower()]
+            except:
+                web_color = ''
 
         web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 

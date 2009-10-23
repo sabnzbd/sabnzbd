@@ -242,7 +242,7 @@ def Web_Template(key, defweb, wdir):
     """
     if wdir is None:
         try:
-            wdir = key.get()
+            wdir = fix_webname(key.get())
         except:
             wdir = ''
     if not wdir:
@@ -280,8 +280,13 @@ def CheckColor(color, web_dir):
 
 #------------------------------------------------------------------------------
 def fix_webname(name):
-    xname = name.title()
-    if xname in ('Default', 'Plush'):
+    if name:
+        xname = name.title()
+    else:
+        xname = ''
+    if xname in ('Default',):
+        return 'Classic'
+    elif xname in ('Classic', 'Plush', 'Mobile'):
         return xname
     elif xname in ('Smpl', 'Wizard'):
         return name.lower()
@@ -719,9 +724,9 @@ def main():
             re_argv.append(opt)
             re_argv.append(arg)
         elif opt in ('-t', '--templates'):
-            web_dir = fix_webname(arg)
+            web_dir = arg
         elif opt in ('-2', '--template2'):
-            web_dir2 = fix_webname(arg)
+            web_dir2 = arg
         elif opt in ('-s', '--server'):
             (cherryhost, cherryport) = split_host(arg)
         elif opt in ('-n', '--nobrowser'):
@@ -976,8 +981,8 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    web_dir  = Web_Template(sabnzbd.cfg.WEB_DIR,  DEF_STDINTF,  web_dir)
-    web_dir2 = Web_Template(sabnzbd.cfg.WEB_DIR2, '', web_dir2)
+    web_dir  = Web_Template(sabnzbd.cfg.WEB_DIR,  DEF_STDINTF,  fix_webname(web_dir))
+    web_dir2 = Web_Template(sabnzbd.cfg.WEB_DIR2, '', fix_webname(web_dir2))
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
     sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), 'wizard')

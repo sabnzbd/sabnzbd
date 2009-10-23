@@ -16,13 +16,13 @@ $T('wizard-explain-skin')<br /><br />
         <tr>
             <td class="align-center">
                 <div class="skin-select">
-                    <label for="radio_default" onclick="javascript:selectSkin('radio_default')">
-                        <img src="static/images/default-th.png" border="0" />
+                    <label for="radio_smpl" onclick="javascript:selectSkin('radio_smpl')">
+                        <img src="static/images/smpl-th.png" border="0" />
                     </label>
                 </div>
                 <br />
-                <a href="static/images/default.png" target="_blank">+$T('wizard-zoom')</a>
-            </td>
+                <a href="static/images/smpl.png" target="_blank">+$T('wizard-zoom')</a>
+           </td>
             <td class="align-center">
                 <div class="skin-select skin-select-plush">
                     <label for="radio_plush" onclick="javascript:selectSkin('radio_plush')">
@@ -34,18 +34,18 @@ $T('wizard-explain-skin')<br /><br />
             </td>
             <td class="align-center">
                 <div class="skin-select">
-                    <label for="radio_smpl" onclick="javascript:selectSkin('radio_smpl')">
-                        <img src="static/images/smpl-th.png" border="0" />
+                    <label for="radio_classic" onclick="javascript:selectSkin('radio_classic')">
+                        <img src="static/images/classic-th.png" border="0" />
                     </label>
                 </div>
                 <br />
-                <a href="static/images/smpl.png" target="_blank">+$T('wizard-zoom')</a>
-           </td>
+                <a href="static/images/classic.png" target="_blank">+$T('wizard-zoom')</a>
+            </td>
         </tr>
         <tr>
-            <td class="align-center"><br/><input type="radio" name="skin" id="radio_default" value="Default" <!--#if $skin == 'default' then 'checked="checked"' else ''#-->><br /><label for="radio_default">Default</label></td>
+            <td class="align-center"><br/><input type="radio" name="skin" id="radio_smpl" value="smpl" <!--#if $skin == 'smpl' then 'checked="checked"' else ''#-->><br /><label for="radio_smpl">smpl</label></td>
             <td class="align-center"><br/><input type="radio" name="skin" id="radio_plush" value="Plush" <!--#if $skin == 'plush' then 'checked="checked"' else ''#-->><br /><label for="radio_plush">Plush</label></td>
-            <td class="align-center"><br/><input type="radio" name="skin" id="radio_smpl" value="smpl" <!--#if $skin == 'smpl' then 'checked="checked"' else ''#-->><br /><label for="radio_smpl">SMPL</label></td>
+            <td class="align-center"><br/><input type="radio" name="skin" id="radio_classic" value="Classic" <!--#if $skin == 'classic' then 'checked="checked"' else ''#-->><br /><label for="radio_classic">Classic</label></td>
         </tr>
     </table>
 </div>
@@ -63,7 +63,7 @@ $T('wizard-explain-skin')<br /><br />
                 <div class="align-center">
                     <!--#for $step in xrange($steps)#-->
                        <!--#set $step = $step + 1#-->
-                        <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span> 
+                        <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
                     <!--#end for#-->
                 </div>
             </td>
@@ -72,5 +72,5 @@ $T('wizard-explain-skin')<br /><br />
     </table>
 </div>
 </form>
-			
+
 <!--#include $webdir + "/inc_bottom.tmpl"#-->
