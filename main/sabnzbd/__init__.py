@@ -697,9 +697,24 @@ def SimpleRarExtract(rarfile, fn):
 
 
 def check_all_tasks():
-    """ Check every task and restart any crashed one """
+    """ Check every task and restart safe ones, else restart program
+        Return True when everything is under control
+    """
     if __SHUTTING_DOWN__ or not __INITIALIZED__:
-        return
+        return True
+
+    # Non-restartable threads, require program restart
+    if not sabnzbd.postproc.alive():
+        logging.info('Restarting because of crashed postprocessor')
+        return False
+    if not sabnzbd.downloader.alive():
+        logging.info('Restarting because of crashed downloader')
+        return False
+    if not sabnzbd.assembler.alive():
+        logging.info('Restarting because of crashed assembler')
+        return False
+
+    # Restartable threads
     if not sabnzbd.dirscanner.alive():
         logging.info('Restarting crashed dirscanner')
         sabnzbd.dirscanner.init()
@@ -709,15 +724,7 @@ def check_all_tasks():
     if not sabnzbd.newzbin.alive():
         logging.info('Restarting crashed newzbin')
         sabnzbd.newzbin.init_grabber()
-    if not sabnzbd.postproc.alive():
-        logging.info('Restarting crashed postprocessor')
-        sabnzbd.postproc.init()
-    if not sabnzbd.downloader.alive():
-        logging.info('Restarting crashed downloader')
-        sabnzbd.downloader.init()
-    if not sabnzbd.assembler.alive():
-        logging.info('Restarting crashed assembler')
-        sabnzbd.assembler.init()
     if not sabnzbd.scheduler.sched_check():
         logging.info('Restarting crashed scheduler')
         sabnzbd.scheduler.init()
+    return True

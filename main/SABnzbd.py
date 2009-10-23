@@ -637,6 +637,7 @@ def main():
     global LOG_FLAG
 
     AUTOBROWSER = None
+    autorestarted = False
     testlog = False # Allow log options for test-releases
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
@@ -686,7 +687,7 @@ def main():
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'delay=', 'force',
-                                    'version', 'https=', 'testlog'])
+                                    'version', 'https=', 'testlog', 'autorestarted'])
     except getopt.GetoptError:
         print_help()
         exit_sab(2)
@@ -736,6 +737,8 @@ def main():
                 AUTOBROWSER = bool(int(arg))
             except:
                 AUTOBROWSER = True
+        elif opt in ('--autorestarted'):
+            autorestarted = True
         elif opt in ('-c', '--clean'):
             clean_up= True
         elif opt in ('-w', '--weblogging'):
@@ -1123,15 +1126,17 @@ def main():
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
-    if enable_https and https_port:
-        launch_a_browser("https://%s:%s/sabnzbd" % (browserhost, https_port))
-    else:
-        launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
+    if not autorestarted:
+        if enable_https and https_port:
+            launch_a_browser("https://%s:%s/sabnzbd" % (browserhost, https_port))
+        else:
+            launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
 
-    notify("SAB_Launched", None)
-    osx.sendGrowlMsg('SABnzbd %s' % (sabnzbd.__version__),"http://%s:%s/sabnzbd" % (browserhost, cherryport),osx.NOTIFICATION['startup'])
-    # Now's the time to check for a new version
-    check_latest_version()
+        notify("SAB_Launched", None)
+        osx.sendGrowlMsg('SABnzbd %s' % (sabnzbd.__version__),"http://%s:%s/sabnzbd" % (browserhost, cherryport),osx.NOTIFICATION['startup'])
+        # Now's the time to check for a new version
+        check_latest_version()
+    autorestarted = False
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0
@@ -1156,7 +1161,9 @@ def main():
             # Save config (if needed)
             config.save_config()
             # Check the threads
-            sabnzbd.check_all_tasks()
+            if not sabnzbd.check_all_tasks():
+                autorestarted = True
+                cherrypy.engine.execv = True
         else:
             timer += 1
 
@@ -1169,6 +1176,8 @@ def main():
             sabnzbd.SABSTOP = True
             if downloader.paused():
                 re_argv.append('-p')
+            if autorestarted:
+                re_argv.append('--autorestarted')
             sys.argv = re_argv
             os.chdir(org_dir)
             if sabnzbd.DARWIN:
