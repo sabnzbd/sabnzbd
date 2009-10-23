@@ -129,8 +129,10 @@ class Assembler(Thread):
 
                     setname = nzf.get_setname()
                     if nzf.is_par2() and (nzo.get_md5pack(setname) is None):
-                        nzo.set_md5pack(setname, GetMD5Hashes(filepath))
-                        logging.debug('Got md5pack for set %s', setname)
+                        pack = GetMD5Hashes(filepath)
+                        if pack:
+                            nzo.set_md5pack(setname, pack)
+                            logging.debug('Got md5pack for set %s', setname)
 
 
             else:
@@ -206,22 +208,31 @@ def _assemble(nzo, nzf, path, dupe):
 # For a full description of the par2 specification, visit:
 # http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
 
-def GetMD5Hashes(name):
+def GetMD5Hashes(fname):
     """ Get the hash table from a PAR2 file
         Return as dictionary, indexed on names
     """
     table = {}
     try:
-        f = open(name, 'rb')
+        f = open(fname, 'rb')
     except:
         return table
 
-    header = f.read(8)
-    while header:
-        name, hash = ParseFilePacket(f, header)
-        if name:
-            table[name] = hash
+    try:
         header = f.read(8)
+        while header:
+            name, hash = ParseFilePacket(f, header)
+            if name:
+                table[name] = hash
+            header = f.read(8)
+
+    except struct.error, IndexError:
+        logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
+        table = {}
+    except:
+        logging.debug('QuickCheck parser crashed in file %s', fname)
+        logging.debug('Traceback: ', exc_info = True)
+        table = {}
 
     f.close()
     return table
@@ -230,16 +241,13 @@ def GetMD5Hashes(name):
 def ParseFilePacket(f, header):
     """ Look up and analyse a FileDesc package """
 
-    def ToInt(buf):
-        return struct.unpack('<Q', buf)[0]
-
     nothing = None, None
 
     if header != 'PAR2\0PKT':
         return nothing
 
     # Length must be multiple of 4 and at least 20
-    len = ToInt(f.read(8))
+    len = struct.unpack('<Q', f.read(8))[0]
     if int(len/4)*4 != len or len < 20:
         return nothing
 
