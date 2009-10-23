@@ -631,7 +631,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     old_dir_content = os.listdir(workdir)
     used_joinables = joinables = []
 
-    nzo.set_status(T('msg-QuickCheck'))
+    nzo.set_status('QuickCheck')
     nzo.set_action_line(T('msg-repair'), T('msg-QuickChecking'))
     if QuickCheck(setname, nzo):
         logging.info("Quick-check for %s is OK, skipping repair", setname)
@@ -748,7 +748,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 
     used_joinables = []
     #set the current nzo status to "Verifying...". Used in History
-    nzo.set_status(T('msg-verify'))
+    nzo.set_status('Verifying')
     start = time()
 
     if is_new_partype(nzo, setname) or not PAR2C_COMMAND:
@@ -902,7 +902,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 
                 if not force:
                     msg = T('msg-fetchBlocks@1') % str(added_blocks)
-                    nzo.set_status(msg)
+                    nzo.set_status('Fetching')
                     nzo.set_action_line(T('msg-fetching'), msg)
 
             else:
@@ -920,7 +920,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
             chunks = line.split()
             per = float(chunks[-1][:-1])
             nzo.set_action_line(T('msg-repairing'), '%2d%%' % (per))
-            nzo.set_status('%s...' % T('msg-repairing'))
+            nzo.set_status('Repairing')
 
         elif line.startswith('Repair complete'):
             nzo.set_unpack_info(T('stage-repair'), T('msg-repairDone@2') % (setname, format_time_string(time() - start)), set=setname)
@@ -938,7 +938,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
         elif not verified:
             if line.startswith('Verifying source files'):
                 nzo.set_action_line(T('msg-verifying'), '01/%02d' % verifytotal)
-                nzo.set_status('%s...' % T('msg-verifying'))
+                nzo.set_status('Verifying')
 
             elif line.startswith('Scanning:'):
                 pass
@@ -956,7 +956,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
                 if verifytotal == 0 or verifynum < verifytotal:
                     verifynum += 1
                     nzo.set_action_line(T('msg-verifying'), '%02d/%02d' % (verifynum, verifytotal))
-                    nzo.set_status('%s...' % T('msg-verifying'))
+                    nzo.set_status('Verifying')
                 datafiles.append(m.group(1))
                 continue
 
