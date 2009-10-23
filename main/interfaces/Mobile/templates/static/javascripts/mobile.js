@@ -666,8 +666,8 @@ $(function(){
 				if (confirm( $(this).attr('rel') )){
 					$.ajax({
 						type: "POST",
-						url: "connections/clearwarnings",
-						data: { session: $.mobile.apikey },
+						url: "tapi",
+						data: { mode:'warnings', name:'clear', session: $.mobile.apikey },
 						success: function(){
 							$('#warnings_list').html('');
 							$('#button-warnings').hide();

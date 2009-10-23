@@ -764,6 +764,12 @@ class MainPage:
             return report(output)
 
         if mode == 'warnings':
+            if name == 'clear':
+                return report(output, keyword="warnings", data=sabnzbd.GUIHANDLER.clear())
+            elif name == 'show':
+                return report(output, keyword="warnings", data=sabnzbd.GUIHANDLER.content())
+            elif name:
+                return report(output, _MSG_NOT_IMPLEMENTED)
             return report(output, keyword="warnings", data=sabnzbd.GUIHANDLER.content())
 
         if mode == 'config':
