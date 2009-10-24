@@ -604,6 +604,9 @@ class MainPage:
         if mode == 'options':
             return options_list(output)
 
+        if mode == 'translate':
+            return report(output, keyword='value', data=T(kwargs.get('value')))
+
         name = kwargs.get('name', '')
         pp = kwargs.get('pp')
         script = kwargs.get('script')
