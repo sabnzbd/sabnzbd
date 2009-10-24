@@ -518,6 +518,12 @@ class NzbObject(TryList):
             # This is a slot for a future NZB, ready now
             return
 
+        # User can specify their directory name through the api - has to be after the future nzb check
+        if self.extra1:
+            nzbname = sabnzbd.misc.sanitize_foldername(self.extra1)
+            if nzbname:
+                self.__original_dirname = nzbname
+
         # Apply conversion option to final folder, called __original_dirname
         # Yeah, I know :(
         if cfg.REPLACE_DOTS.get() and self.__original_dirname.find(' ') < 0:
@@ -561,11 +567,6 @@ class NzbObject(TryList):
         else:
             self.__files.sort(cmp=_nzf_cmp_name)
 
-        # User can specify their directory name through the api - has to be after the future nzb check
-        if nzbname:
-            nzbname = sabnzbd.misc.sanitize_foldername(nzbname)
-            if nzbname:
-                self.set_original_dirname(nzbname)
     ## begin nzo.Mutators #####################################################
     ## excluding nzo.__try_list ###############################################
     def check_for_dupe(self, nzf):

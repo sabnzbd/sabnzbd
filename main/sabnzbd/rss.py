@@ -414,7 +414,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             jobs[link]['status'] = 'D'
             jobs[link]['title'] = title
             logging.info("Adding %s (%s) to queue", m.group(3), title)
-            sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat, priority=priority)
+            sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
         else:
             jobs[link]['status'] = flag + '*'
             jobs[link]['title'] = title
