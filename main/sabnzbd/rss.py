@@ -218,6 +218,10 @@ class RSSQueue:
         # Add sabnzbd's custom User Agent
         feedparser.USER_AGENT = 'SABnzbd+/%s' % sabnzbd.version.__version__
 
+        # Check for nzbs.org
+        if 'nzbs.org/' in uri and not ('&dl=1' in uri):
+            uri += '&dl=1'
+
         # Read the RSS feed
         logging.debug("Running feedparser on %s", uri)
         d = feedparser.parse(uri)
@@ -422,9 +426,6 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
     jobs[link].append(time.time())
 
 
-# "http://nzbs.org/index.php?action=getnzb&nzbid=NNNNNN&i=NNNNN&h=blablabla"
-RE_NZBS_ORG = re.compile(r'"(http://nzbs\.org/index\.php\?action=getnzb[^"]+)"', re.I)
-
 def _get_link(uri, entry):
     """ Retrieve the post link from this entry """
 
@@ -437,11 +438,7 @@ def _get_link(uri, entry):
             link = entry.links[0].href
     elif 'nzbindex.nl'in uri or 'animeusenet.org' in uri:
         link = entry.enclosures[0]['href']
-    elif 'nzbs.org/' in uri:
-        m = RE_NZBS_ORG.search(entry.summary_detail.value)
-        if m:
-            link = m.group(1)
-    else:
+    elif not link:
         # Try standard link first
         link = entry.link
         if not link:
