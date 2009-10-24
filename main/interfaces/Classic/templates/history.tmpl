@@ -47,7 +47,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
             <td colspan="3"><dl>
             <!--#for $stage in $line.stage_log#-->
                 <!--#set $oddLine = not $oddLine#-->
-                <dt><b>$stage.name.title</b></dt>
+                <dt><b>$T('stage-'+$stage.name.title.lower())</b></dt>
                 <!--#for $action in $stage.actions#-->
                      <dd>$action</dd>
                             <!--#end for#-->

@@ -751,7 +751,7 @@ class NzbObject(TryList):
             #format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
 
-            self.set_unpack_info(T('stage-download'), T('msg-DownloadedIn@2') %
+            self.set_unpack_info('Download', T('msg-DownloadedIn@2') %
                                  (complete_time, to_units(avg_bps*1024)), unique=True)
 
 

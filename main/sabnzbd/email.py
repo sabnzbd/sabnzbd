@@ -127,6 +127,11 @@ from Cheetah.Template import Template
 def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_output, script_ret):
     """ Send email using templates """
 
+    # Translate the stage names
+    xstages = {}
+    for stage in stages:
+        xstages[T('stage-'+stage.lower())] = stages[stage]
+
     parm = {}
     parm['status'] = status
     parm['to'] = cfg.EMAIL_TO.get()
@@ -135,7 +140,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     parm['name'] = filename
     parm['path'] = path
     parm['msgid'] = str(msgid)
-    parm['stages'] = stages
+    parm['stages'] = xstages
     parm['script'] = script
     parm['script_output'] = script_output
     parm['script_ret'] = script_ret

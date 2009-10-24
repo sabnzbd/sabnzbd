@@ -54,7 +54,7 @@ t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
             Completed at $t
             <br />
             <!--#for $stage in $line.stage_log#-->
-                <span class="bold">$stage.name.title: </span><br />
+                <span class="bold">$T('stage-'+$stage.name.title.lower()): </span><br />
                 <!--#for $item in $stage.actions #-->
                     <span class="left-margin">$item</span><br />
                 <!--#end for#-->

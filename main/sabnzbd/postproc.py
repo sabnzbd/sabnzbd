@@ -246,7 +246,7 @@ class PostProcessor(Thread):
                     reAdd = False
                     if not repairSets:
                         logging.info("No par2 sets for %s", filename)
-                        nzo.set_unpack_info(T('stage-repair'),T('msg-noParSets@1') % filename)
+                        nzo.set_unpack_info('Repair',T('msg-noParSets@1') % filename)
 
                     for _set in repairSets:
                         logging.info("Running repair on set %s", _set)
@@ -311,7 +311,7 @@ class PostProcessor(Thread):
                         unpackError, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), (), ())
                         logging.info("unpack_magic finished on %s", filename)
                     else:
-                        nzo.set_unpack_info(T('stage-unpack'),T('msg-noPostProc'))
+                        nzo.set_unpack_info('Unpack',T('msg-noPostProc'))
 
                 ## Move any (left-over) files to destination
                 nzo.set_status('Moving')
@@ -339,7 +339,7 @@ class PostProcessor(Thread):
                     ## Check if this is an NZB-only download, if so redirect to queue
                     nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat, priority=priority)
                     if nzb_list:
-                        nzo.set_unpack_info(T('stage-download'), T('msg-sentToQ@1') % nzb_list)
+                        nzo.set_unpack_info('Download', T('msg-sentToQ@1') % nzb_list)
                         try:
                             os.rmdir(tmp_workdir_complete)
                         except:
@@ -383,15 +383,15 @@ class PostProcessor(Thread):
                         if os.path.exists(script_path):
                             nzo.set_status('Running')
                             nzo.set_action_line(T('msg-running'), script)
-                            nzo.set_unpack_info(T('stage-script'), T('msg-runScript@1') % script, unique=True)
+                            nzo.set_unpack_info('Script', T('msg-runScript@1') % script, unique=True)
                             script_log, script_ret = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
                             script_line = get_last_line(script_log)
                             if script_log:
                                 fname = nzo.get_nzo_id()
                             if script_line:
-                                nzo.set_unpack_info(T('stage-script'), script_line, unique=True)
+                                nzo.set_unpack_info('Script', script_line, unique=True)
                             else:
-                                nzo.set_unpack_info(T('stage-script'), T('msg-ranScript@1') % script, unique=True)
+                                nzo.set_unpack_info('Script', T('msg-ranScript@1') % script, unique=True)
                     else:
                         script = ""
                         script_line = ""
@@ -410,9 +410,9 @@ class PostProcessor(Thread):
                         else:
                             script_ret = ''
                         if script_line:
-                            nzo.set_unpack_info(T('stage-script'),'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, urllib.quote(fname), T('link-more')), unique=True)
+                            nzo.set_unpack_info('Script','%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, urllib.quote(fname), T('link-more')), unique=True)
                         else:
-                            nzo.set_unpack_info(T('stage-script'),'%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(fname), T('link-viewSc')), unique=True)
+                            nzo.set_unpack_info('Script','%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(fname), T('link-viewSc')), unique=True)
 
                 ## Remove newzbin bookmark, if any
                 if msgid:
