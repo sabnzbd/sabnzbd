@@ -2623,29 +2623,32 @@ def ShowOK(url):
 
 def _make_link(qfeed, job):
     # Return downlink for a job
-    name = urllib.quote_plus(job[2])
-    nzbname = '&nzbname=%s' % urllib.quote(sanitize_foldername(job[1]))
-    if job[3]:
-        cat = '&cat=' + escape(job[3])
+    name = urllib.quote_plus(job['url'])
+    title = job['title'].encode('latin-1')
+    nzbname = '&nzbname=%s' % urllib.quote(sanitize_foldername(title))
+    if job['cat']:
+        cat = '&cat=' + escape(job['cat'])
     else:
         cat = ''
-    if job[4] is None:
+    if job['pp'] is None:
         pp = ''
     else:
-        pp = '&pp=' + escape(str(job[4]))
-    if job[5]:
-        script = '&script=' + escape(job[5])
+        pp = '&pp=' + escape(str(job['pp']))
+    if job['script']:
+        script = '&script=' + escape(job['script'])
     else:
         script = ''
+    if job['prio']:
+        prio = '&priority=' + str(job['prio'])
 
-    star = '&nbsp;*' * int(job[0].endswith('*'))
+    star = '&nbsp;*' * int(job['status'].endswith('*'))
 
-    title = xml_name(job[1])
-    if job[2].isdigit():
+    title = xml_name(job['title'])
+    if job['url'].isdigit():
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (job[2], title)
 
-    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
-           (cfg.API_KEY.get() ,qfeed, name, cat, pp, script, nzbname, T('link-download'), title, star)
+    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
+           (cfg.API_KEY.get() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star)
 
 
 def ShowRssLog(feed, all):
@@ -2654,26 +2657,26 @@ def ShowRssLog(feed, all):
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
     # Sort in reverse chronological order (newest first)
-    names.sort(lambda x, y: int(jobs[y][6]*100.0 - jobs[x][6]*100.0))
+    names.sort(lambda x, y: int(jobs[y]['time']*100.0 - jobs[x]['time']*100.0))
 
     qfeed = escape(feed.replace('/','%2F').replace('?', '%3F'))
 
     doneStr = []
     for x in names:
         job = jobs[x]
-        if job[0][0] == 'D':
-            doneStr.append('%s<br/>' % xml_name(job[1]))
+        if job['status'][0] == 'D':
+            doneStr.append('%s<br/>' % xml_name(job['title']))
 
     goodStr = []
     for x in names:
         job = jobs[x]
-        if job[0][0] == 'G':
+        if job['status'][0] == 'G':
             goodStr.append(_make_link(qfeed, job))
 
     badStr = []
     for x in names:
         job = jobs[x]
-        if job[0][0] == 'B':
+        if job['title'][0] == 'B':
             badStr.append(_make_link(qfeed, job))
 
     if all:

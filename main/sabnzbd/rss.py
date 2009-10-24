@@ -130,22 +130,40 @@ class RSSQueue:
     def __init__(self):
         self.jobs = {}
         try:
-            self.jobs = sabnzbd.load_data(RSS_FILE_NAME, remove = False)
-        except:
+            feeds = sabnzbd.load_data(RSS_FILE_NAME, remove = False)
+            if type(feeds) == type({}):
+                for feed in feeds:
+                    self.jobs[feed] = {}
+                    for link in feeds[feed]:
+                        data = feeds[feed][link]
+                        if type(data) == type([]):
+                            # Convert previous list-based store to dictionary
+                            new = {}
+                            new['status'] = data[0]
+                            new['title'] = data[1]
+                            new['url'] = data[2]
+                            new['cat'] = data[3]
+                            new['pp'] = data[4]
+                            new['script'] = data[5]
+                            new['time'] = data[6]
+                            new['prio'] = str(NORMAL_PRIORITY)
+                            self.jobs[feed][link] = new
+                        else:
+                            self.jobs[feed][link] = feeds[feed][link]
+        except IOError:
             pass
         # jobs is a NAME-indexed dictionary
         #    Each element is link-indexed dictionary
-        #        Each element is an array:
-        #           0 = 'D', 'G', 'B', 'X' (downloaded, good-match, bad-match, obsolete)
+        #        Each element is another dictionary:
+        #           status : 'D', 'G', 'B', 'X' (downloaded, good-match, bad-match, obsolete)
         #               '*' added means: from the initial batch
-        #           1 = Title
-        #           2 = URL or MsgId
-        #           3 = cat
-        #           4 = pp
-        #           5 = script
-        #           6 = timestamp (used for time-based clean-up)
-        if type(self.jobs) != type({}):
-            self.jobs = {}
+        #           title : Title
+        #           url : URL or MsgId
+        #           cat : category
+        #           pp : pp
+        #           script : script
+        #           prio : priority
+        #           time : timestamp (used for time-based clean-up)
 
         self.shutdown = False
         self.__running = False
@@ -163,7 +181,7 @@ class RSSQueue:
                 if f == fd:
                     for lk in self.jobs[fd]:
                         item = self.jobs[fd][lk]
-                        if item[0][0]=='D' and item[1]==title:
+                        if item['status'][0]=='D' and item['title']==title:
                             return True
                     return False
             return False
@@ -262,7 +280,7 @@ class RSSQueue:
                 myScript = ''
                 #myPriority = 0
 
-                if (link not in jobs) or (jobs[link][0] in ('G', 'B', 'G*', 'B*')):
+                if (link not in jobs) or (jobs[link]['status'] in ('G', 'B', 'G*', 'B*')):
                     # Match this title against all filters
                     logging.debug('Trying link %s', link)
                     result = False
@@ -294,7 +312,7 @@ class RSSQueue:
                     if result:
                         act = download and not first
                         if link in jobs:
-                            act = act and not jobs[link][0].endswith('*')
+                            act = act and not jobs[link]['status'].endswith('*')
                         _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, act, priority=defPriority)
                     else:
                         _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False, priority=defPriority)
@@ -307,13 +325,13 @@ class RSSQueue:
         olds  = jobs.keys()
         for old in olds:
             if old not in newlinks:
-                if jobs[old][0][0] in ('G', 'B'):
-                    jobs[old][0] = 'X'
+                if jobs[old]['status'][0] in ('G', 'B'):
+                    jobs[old]['status'] = 'X'
                 try:
-                    tm = float(jobs[old][6])
+                    tm = float(jobs[old]['time'])
                 except:
                     # Fix missing timestamp in older RSS_DATA.SAB file
-                    jobs[old].append(now)
+                    jobs[old]['time'] = now
                     tm = now
                 if tm < limit:
                     logging.debug("Purging link %s", old)
@@ -367,8 +385,8 @@ class RSSQueue:
         if feed in self.jobs:
             lst = self.jobs[feed]
             for link in lst:
-                if lst[link][2] == id:
-                    lst[link][0] = 'D'
+                if lst[link]['url'] == id:
+                    lst[link]['time'] = 'D'
 
     @synchronized(LOCK)
     def clear_feed(self, feed):
@@ -384,46 +402,39 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
     if script=='': script = None
     if pp=='': pp = None
 
+    jobs[link] = {}
     nzbname = misc.sanitize_foldername(title)
     m = RE_NEWZBIN.search(link)
     if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
-        jobs[link] = []
         if download:
-            jobs[link].append('D')
-            jobs[link].append(title)
-            jobs[link].append('')
-            jobs[link].append('')
-            jobs[link].append('')
-            jobs[link].append('')
+            jobs[link]['status'] = 'D'
+            jobs[link]['title'] = title
             logging.info("Adding %s (%s) to queue", m.group(3), title)
             sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat, priority=priority)
         else:
-            jobs[link].append(flag + '*')
-            jobs[link].append(title)
-            jobs[link].append(m.group(3))
-            jobs[link].append(cat)
-            jobs[link].append(pp)
-            jobs[link].append(script)
+            jobs[link]['status'] = flag + '*'
+            jobs[link]['title'] = title
+            jobs[link]['url'] = m.group(3)
+            jobs[link]['cat'] = cat
+            jobs[link]['pp'] = pp
+            jobs[link]['script'] = script
+            jobs[link]['prio'] = str(priority)
     else:
-        jobs[link] = []
         if download:
-            jobs[link].append('D')
-            jobs[link].append(title)
-            jobs[link].append('')
-            jobs[link].append('')
-            jobs[link].append('')
-            jobs[link].append('')
+            jobs[link]['status'] = 'D'
+            jobs[link]['title'] = title
             logging.info("Adding %s (%s) to queue", link, title)
             sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
         else:
-            jobs[link].append(flag + '*')
-            jobs[link].append(title)
-            jobs[link].append(link)
-            jobs[link].append(cat)
-            jobs[link].append(pp)
-            jobs[link].append(script)
+            jobs[link]['status'] = flag + '*'
+            jobs[link]['title'] = title
+            jobs[link]['url'] = link
+            jobs[link]['cat'] = cat
+            jobs[link]['pp'] = pp
+            jobs[link]['script'] = script
+            jobs[link]['prio'] = str(priority)
 
-    jobs[link].append(time.time())
+    jobs[link]['time'] = time.time()
 
 
 def _get_link(uri, entry):
