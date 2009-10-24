@@ -282,10 +282,14 @@ class RSSQueue:
 
                 if (link not in jobs) or (jobs[link]['status'] in ('G', 'B', 'G*', 'B*')):
                     # Match this title against all filters
-                    logging.debug('Trying link %s', link)
+                    logging.debug('Trying title %s', title)
                     result = False
                     for n in xrange(regcount):
-                        found = re.search(regexes[n], title)
+                        found = re.search(regexes[n], title, re.I)
+                        if reTypes[n]=='M' and not found:
+                            logging.debug("Filter rejected on rule %d", n)
+                            result = False
+                            break
                         if found and reTypes[n]=='A':
                             logging.debug("Filter matched on rule %d", n)
                             result = True

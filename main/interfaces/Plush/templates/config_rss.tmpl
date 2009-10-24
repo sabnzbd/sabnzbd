@@ -92,6 +92,7 @@
             <td>
                 <select name="filter_type">
                     <option value="A" selected /> $T('rss-accept')</option>
+                    <option value="M" /> $T('rss-must')</option>
                     <option value="R" /> $T('rss-reject')</option>
                 </select>
             </td>
@@ -157,6 +158,7 @@
             <td>
                 <select name="filter_type">
                     <option value="A" <!--#if $filter[3] == "A" then "selected" else ""#--> /> $T('rss-accept')</option>
+                    <option value="M" <!--#if $filter[3] == "M" then "selected" else ""#--> /> $T('rss-must')</option>
                     <option value="R" <!--#if $filter[3] == "R" then "selected" else ""#--> /> $T('rss-reject')</option>
                 </select>
             </td>

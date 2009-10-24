@@ -394,6 +394,7 @@ rss-type                 Type
 rss-filter               Filtre
 rss-accept               Accepter
 rss-reject               Rejeter
+rss-must                 Obligatoire
 rss-delFilter            X
 rss-matched              Correspond
 rss-notMatched           Ne correspond pas

@@ -391,6 +391,7 @@ rss-type                 Type
 rss-filter               Filter
 rss-accept               Accept
 rss-reject               Reject
+rss-must                 Must
 rss-delFilter            X
 rss-matched              Matched
 rss-notMatched           Not matched
