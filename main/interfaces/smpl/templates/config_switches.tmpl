@@ -159,6 +159,15 @@
             <span class="tips">$T('explain-ignore_samples')</span>
  		<br class="clear" />
 
+		    <span class="label">$T('opt-ssl_type'):</span>
+            <select name="ssl_type" id="ssl_type" class="select">
+                <option value="v23" <!--#if $ssl_type == "v23" then 'selected' else ''#--> >V23</option>
+                <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected' else ''#--> >V2</option>
+                <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected' else ''#--> >V3</option>
+            </select>
+    		    <span class="tips">$T('explain-ssl_type')</span>
+		<br class="clear" />
+
  </fieldset>
 
 

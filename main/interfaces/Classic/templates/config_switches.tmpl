@@ -123,8 +123,17 @@
     <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> $T('igsam-off')
     <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> $T('igsam-del')
     <input class="radio" type="radio" name="ignore_samples" value="2" <!--#if $ignore_samples == 2 then 'checked="1"' else ""#--> /> $T('igsam-not')
-    <br>
+    <br/>
+    <br/>
     <input type="hidden" name="session" value="$session">
+    <strong>$T('opt-ssl_type'):</strong><br>
+    $T('explain-ssl_type')<br>
+    <select name="ssl_type">
+        <option value="v23" <!--#if $ssl_type == 'v23' then 'selected' else ''#--> >V23</option>
+        <option value="v2" <!--#if $ssl_type == 'v2' then 'selected' else ''#--> >V2</option>
+        <option value="v3" <!--#if $ssl_type == 'v3' then 'selected' else ''#--> >V3</option>
+    </select>
+    <br/>
   </fieldset>
 </div>
 <p><input type="submit" value="$T('button-saveChanges')"></p>

@@ -74,7 +74,7 @@
                 <option value="2" <!--#if $dirscan_priority == 2 then 'selected' else ''#--> >$T('pr-force')</option>
                 <option value="1" <!--#if $dirscan_priority == 1 then 'selected' else ''#--> >$T('pr-high')</option>
                 <option value="0" <!--#if $dirscan_priority == 0 then 'selected' else ''#--> >$T('pr-normal')</option>
-                <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >$T('pr-low')</option>                        
+                <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >$T('pr-low')</option>
 			</select>
 
         </td><td>
@@ -195,10 +195,19 @@
                 <option value="2" <!--#if $ignore_samples == 2 then "selected" else ""#--> >$T('igsam-not')</option>
             </select>
         </td>
-
+        <td>
+        &nbsp; &nbsp; &nbsp;
+        </td>
+        <td>
+            <strong>$T('opt-ssl_type'):</strong><br/>
+            <small>$T('explain-ssl_type')</small><br/>
+            <select name="ssl_type">
+                <option value="v23" <!--#if $ssl_type == "v23" then 'selected' else ''#--> >V23</option>
+                <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected' else ''#--> >V2</option>
+                <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected' else ''#--> >V3</option>
+			</select>
+        </td>
         </tr>
-
-
     </table>
 
 </fieldset>

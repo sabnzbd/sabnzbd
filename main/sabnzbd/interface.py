@@ -1507,7 +1507,7 @@ SWITCH_LIST = \
      'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
      'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
      'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'nice', 'ionice',
-     'dirscan_priority'
+     'dirscan_priority', 'ssl_type'
     )
 
 #------------------------------------------------------------------------------

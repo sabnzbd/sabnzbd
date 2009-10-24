@@ -320,6 +320,8 @@ explain-ignore_samples   Wat te doen met "sample" bestanden?
 igsam-off                Behouden
 igsam-del                Vewijderen na download
 igsam-not                Niet downloaden
+opt-ssl_type             SSL type
+explain-ssl_type         Gebruik V23, behalve wanneer persé nodig voor je Internet provider!
 
 # Config->Server
 configServer             Usenet servers

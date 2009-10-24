@@ -327,6 +327,8 @@ explain-ignore_samples   Filtre les fichiers sample de la queue.
 igsam-off                Non
 igsam-del                Supprimer après téléchargement
 igsam-not                Ne pas télécharger
+opt-ssl_type             SSL type
+explain-ssl_type         Use V23 unless your provider requires otherwise!
 
 # Config->Server
 configServer             Configuration Serveur

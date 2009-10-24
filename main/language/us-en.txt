@@ -324,6 +324,9 @@ explain-ignore_samples   Filter out sample files (e.g. video samples).
 igsam-off                Off
 igsam-del                Delete after download
 igsam-not                Do not download
+opt-ssl_type             SSL type
+explain-ssl_type         Use V23 unless your provider requires otherwise!
+
 
 # Config->Server
 configServer             Server configuration
