@@ -2676,7 +2676,7 @@ def ShowRssLog(feed, all):
     badStr = []
     for x in names:
         job = jobs[x]
-        if job['title'][0] == 'B':
+        if job['status'][0] == 'B':
             badStr.append(_make_link(qfeed, job))
 
     if all:
