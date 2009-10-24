@@ -214,10 +214,10 @@ class RSSQueue:
         jobs = self.jobs[feed]
 
         first = first and ignoreFirst
-        
+
         # Add sabnzbd's custom User Agent
         feedparser.USER_AGENT = 'SABnzbd+/%s' % sabnzbd.version.__version__
-        
+
         # Read the RSS feed
         logging.debug("Running feedparser on %s", uri)
         d = feedparser.parse(uri)
@@ -238,7 +238,12 @@ class RSSQueue:
         for entry in entries:
             if self.shutdown: return
 
-            link = _get_link(uri, entry)
+            try:
+                link = _get_link(uri, entry)
+            except AttributeError, IndexError:
+                link = None
+                logging.error('Incompatible feed %s', uri)
+                logging.debug("Traceback: ", exc_info = True)
 
             if link:
                 title = entry.title
@@ -417,26 +422,25 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
     jobs[link].append(time.time())
 
 
+# "http://nzbs.org/index.php?action=getnzb&nzbid=NNNNNN&i=NNNNN&h=blablabla"
+RE_NZBS_ORG = re.compile(r'"(http://nzbs\.org/index\.php\?action=getnzb[^"]+)"', re.I)
+
 def _get_link(uri, entry):
     """ Retrieve the post link from this entry """
 
+    link = None
     uri = uri.lower()
     if 'newzbin' in uri or 'newzxxx'in uri:
-        try:
-            link = entry.link
-        except:
-            link = None
+        link = entry.link
         if not (link and link.lower().find('/post/') > 0):
             # Use alternative link
-            try:
-                link = entry.links[0].href
-            except:
-                link = None
+            link = entry.links[0].href
     elif 'nzbindex.nl'in uri or 'animeusenet.org' in uri:
-        try:
-            link = entry.enclosures[0]['href']
-        except:
-            link = None
+        link = entry.enclosures[0]['href']
+    elif 'nzbs.org/' in uri:
+        m = RE_NZBS_ORG.search(entry.summary_detail.value)
+        if m:
+            link = m.group(1)
     else:
         # Try standard link first
         link = entry.link
