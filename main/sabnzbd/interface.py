@@ -617,11 +617,11 @@ class MainPage:
 
         if mode == 'addfile':
             # When uploading via flash it will send the nzb in a kw arg called Filedata
-            flash_upload = kwargs.get('Filedata', '')
+            flash_upload = kwargs.get('Filedata')
             if flash_upload:
                 name = flash_upload
             # Normal upload will send the nzb in a kw arg called nzbfile
-            normal_upload = kwargs.get('nzbfile', '')
+            normal_upload = kwargs.get('nzbfile')
             if normal_upload:
                 name = normal_upload
 
