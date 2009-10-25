@@ -171,6 +171,7 @@ ENABLE_HTTPS = OptionBool('misc', 'enable_https', False)
 
 LANGUAGE = OptionStr('misc', 'language', 'us-en')
 SSL_TYPE = OptionStr('misc', 'ssl_type', 'v23')
+UNPACK_CHECK = OptionBool('misc', 'unpack_check', True)
 
 # Internal options, not saved in INI file
 DEBUG_DELAY = OptionNumber('misc', 'debug_delay', 0, add=False)

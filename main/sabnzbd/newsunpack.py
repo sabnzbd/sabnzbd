@@ -524,23 +524,24 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
     p.wait()
 
 
-    if reliable_unpack_names():
-        all_found = True
-        for path in expected_files:
-            path = unicode2local(path)
-            fullpath = os.path.join(extraction_path, path)
-            if path.endswith('/') or os.path.exists(fullpath):
-                logging.debug("Checking existance of %s", fullpath)
-            else:
-                all_found = False
-                logging.warning(T('warn-MissExpectedFile@1'), path)
+    if cfg.UNPACK_CHECK.get():
+        if reliable_unpack_names():
+            all_found = True
+            for path in expected_files:
+                path = unicode2local(path)
+                fullpath = os.path.join(extraction_path, path)
+                if path.endswith('/') or os.path.exists(fullpath):
+                    logging.debug("Checking existance of %s", fullpath)
+                else:
+                    all_found = False
+                    logging.warning(T('warn-MissExpectedFile@1'), path)
 
-        if not all_found:
-            nzo.set_fail_msg(T('error-unpackMissing'))
-            nzo.set_unpack_info('Unpack', T('error-unpackMissing'), set=setname)
-            return ((), ())
-    else:
-        logging.info('Skipping unrar file check due to unreliable file names')
+            if not all_found:
+                nzo.set_fail_msg(T('error-unpackMissing'))
+                nzo.set_unpack_info('Unpack', T('error-unpackMissing'), set=setname)
+                return ((), ())
+        else:
+            logging.info('Skipping unrar file check due to unreliable file names')
 
     msg = T('msg-unpackDone@4') % (str(len(extracted)), add_s(len(extracted)), add_s(len(extracted)), format_time_string(time() - start))
     nzo.set_unpack_info('Unpack', '[%s] %s' % (setname, msg), set=setname)
