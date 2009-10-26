@@ -1,4 +1,30 @@
 -------------------------------------------------------------------------------
+0.5.0Alpha7 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+* Use RSS titles for job names instead of downloaded filename.
+  (This bypasses newzbin's filename mangling).
+* URL grabber will do 5 retries before giving up (and generate
+  correct retry links in History).
+* RSS support for nzbserien.org (and slight improvement for nzbs.org)
+* Plush overhaul
+* "smpl" is now the preferred skin, "Default" renamed to "Classic".
+* Detect internal problems and restart SABnzbd if found
+* Enable "hibernate" and "standby" as end-of-queue actions for Linux systems
+  (Will only work if supported by the kernel of your platform)
+* Update to unrar 3.90 (OSX and Windows)
+* Remove segment files after par2-based joining
+* Internationalisation of all texts in History
+* Internationalisation of email templates
+* Prevent crash when encountering a corrupt par2 file during QuickCheck
+* Added new api call: api?mode=warnings&name=clear
+* Added new api call: api?mode=translate&value=ACRONYM&output=json
+* Priorities in RSS feeds now work properly
+* Add "Require" filter type for RSS feeds
+* Add SSL type (V23, V2, V3), only needed for som odd ISP's
+* Add INI-file-only option to skip the check after unrar.
+  This is to support people with consistently failing checks.
+* Passwords for encrypted RARs can be set in the job title
+-------------------------------------------------------------------------------
 0.5.0Alpha6 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 * Add 64bit unrar/rar 3.90 for Windows
