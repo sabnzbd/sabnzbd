@@ -9,6 +9,17 @@
     <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme?$version"/>
 
     <script src="static/javascripts/mobile.js?$version" type="application/x-javascript" charset="utf-8"></script>
+	
+    <script type="text/javascript">
+    	var apikey = "$session";
+    	var TconfirmDelete = "$T('Mobile-confirm-delete')";
+    	var Tstages = [];
+    	Tstages['download']	= "$T('stage-download')";
+    	Tstages['repair']	= "$T('stage-repair')";
+    	Tstages['filejoin']	= "$T('stage-filejoin')";
+    	Tstages['unpack']	= "$T('stage-unpack')";
+    	Tstages['script']	= "$T('stage-script')";
+    </script>
 
 </head>
 <body>
@@ -33,10 +44,6 @@
             <li class="arrow" id="button-warnings" style="display:none"><a href="#warnings">$T('Mobile-warnings')</a> <small class="counter" id="warningsCount"></small></li>
         </ul>
     </div>
-
-
-    <input type="hidden" id="apikey" value="$session" />
-    <input type="hidden" id="TconfirmDelete" value="$T('Mobile-confirm-delete')" />
 
 
     <div id="queue">

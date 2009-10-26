@@ -281,10 +281,10 @@ $(function(){
 					} else
 						$('#connections_wrapper','#history_nzb_content').hide();
 
-					// verbosity (par/unrar)
+					// verbosity (par/unrar/etc)
 					$('#slot_info','#history_nzb_content').html('');
 					$.each(nzb.stage_log, function(i,stage){
-						$('<li class="sep">'+stage.name.charAt(0).toUpperCase()+stage.name.substr(1)+'</li>').appendTo('#slot_info','#history_nzb_content');
+						$('<li class="sep">'+Tstages[stage.name]+'</li>').appendTo('#slot_info','#history_nzb_content');
 
 						$.each(stage.actions, function(i,action){
 							if (stage.name == "script")
@@ -305,7 +305,7 @@ $(function(){
 		
 		NZBDelete : function( nzo_id, mode ) { // mode == 'queue' || 'history'
 		
-			if (confirm( $.mobile.TconfirmDelete+":\n"+ $('#'+nzo_id+' span').html() )){
+			if (confirm( TconfirmDelete +":\n"+ $('#'+nzo_id+' span').html() )){
 				$.ajax({
 					type: "POST",
 					url: "tapi",
@@ -340,12 +340,7 @@ $(function(){
 		
 		Init : function(){
 		
-			// fetch vars from template
-			$.mobile.apikey = $('#apikey').val();
-			$.mobile.TconfirmDelete = $('#TconfirmDelete').val();
-			$.mobile.Tconnections 	= $('#Tconnections').val();
-			$.mobile.Tcategory 		= $('#Tcategory').val();
-			$.mobile.TcatFolderPath = $('#TcatFolderPath').val();
+			$.mobile.apikey = apikey;
 
 			$('#refresh').click( function() {
 				$.mobile.LoadQueue();
