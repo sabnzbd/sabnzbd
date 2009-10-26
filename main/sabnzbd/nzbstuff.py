@@ -436,6 +436,8 @@ class NzbObject(TryList):
             dname, ext = os.path.splitext(dirname) # Used for folder name for final unpack
             if ext.lower() == '.nzb':
                 dirname = dname
+        dirname, password = scan_password(dirname)
+
         self.__dirname = dirname      # Keeps track of the working folder
         self.__original_dirname = dirname # TAKE NOTE: Used for folder name for final unpack
                                           # The name is wrong, required for backward compatibility!
@@ -501,7 +503,7 @@ class NzbObject(TryList):
         # Temporary store for custom foldername - needs to be stored because of url/newzbin fetching
         self.extra1 = nzbname
 
-        self.extra2 = None
+        self.extra2 = password
         self.extra3 = None
         self.extra4 = None
         self.extra5 = None
@@ -682,13 +684,22 @@ class NzbObject(TryList):
     def get_original_dirname(self):
         return self.__original_dirname
 
+    def show_dir_name(self):
+        if self.extra2:
+            return '%s / %s' % (self.__original_dirname, self.extra2)
+        else:
+            return self.__original_dirname
+
+    def get_password(self):
+        return self.extra2
+
     def set_original_dirname(self, name):
         self.__original_dirname = name
 
     def set_name(self, name):
         if isinstance(name, str):
-            name = sabnzbd.misc.sanitize_foldername(name)
-            self.__original_dirname = name
+            name, self.extra2 = scan_password(name)
+            self.__original_dirname = sabnzbd.misc.sanitize_foldername(name)
             return True
         return False
 
@@ -968,7 +979,7 @@ class NzbObject(TryList):
             avg_date = time.mktime(avg_date.timetuple())
 
         return (self.__repair, self.__unpack, self.__delete, self.__script,
-                self.nzo_id, self.__original_dirname, {},
+                self.nzo_id, self.show_dir_name(), {},
                 self.__msgid, self.__cat, self.__url,
                 bytes_left_all, self.__bytes, avg_date,
                 finished_files, active_files, queued_files, self.__status, self.__priority)
@@ -1216,4 +1227,18 @@ def s_returner(value):
         return 's'
     else:
         return ''
+
+
+RE_PASSWORD1 = re.compile(r'([^/\\]+)[/\\](.+)')
+RE_PASSWORD2 = re.compile(r'(.+){{([^{}]+)}}$')
+def scan_password(name):
+    """ Get password (if any) from the title
+    """
+    m = RE_PASSWORD1.search(name)
+    if not m:
+        m = RE_PASSWORD2.search(name)
+    if m:
+        return m.group(1).strip(), m.group(2).strip()
+    else:
+        return name, None
 

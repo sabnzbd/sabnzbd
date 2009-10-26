@@ -436,10 +436,14 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
         logging.info('Archive %s probably encrypted, skipping', rarfile)
         return ((), ())
 
+    if nzo.get_password():
+        password = '-p%s' % nzo.get_password()
+    else:
+        password = '-p-'
 
     ############################################################################
 
-    command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-p-',
+    command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', password,
                '%s' % rarfile, '%s/' % extraction_path]
 
     stup, need_shell, command, creationflags = build_command(command)
