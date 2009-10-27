@@ -228,6 +228,7 @@ jQuery(document).ready(function($){
 				return false;
 			});
         	$('#config_content .EntryFieldSet .filter_order').change(function(event){ // update filter order
+        		window.onbeforeunload = null;
 				window.location = $(event.target).val()+'&session='+apikey;
 			});
 			break;
