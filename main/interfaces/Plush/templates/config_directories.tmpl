@@ -1,23 +1,23 @@
 <!--#set global $pane="Folders"#-->
-<!--#set global $help_uri="Configure+Directories"#-->
+<!--#set global $help_uri="Configure+Directories+V2"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
 <form action="saveDirectories" method="post" name="fullform">
 <input type="hidden" name="session" value="$session">
 
     <div class="center"><small>$T('explain-folderConfig')</small></div>
-    
+
     <div class="EntryBlock">
     <fieldset class="EntryFieldSet">
-        
+
         <legend><span class="config_sprite_container sprite_config_folders_user">&nbsp;</span> $T('userFolders')</legend>
         <strong class="dir_helper">&nbsp;$T('in')&nbsp;"$my_home"&nbsp;</strong>
-        
+
         <br/><br/>
         <strong>$T('opt-download_dir'):</strong><br/>
         <small>$T('explain-download_dir')</small><br/>
         <input type="text" size="50" name="download_dir" value="$download_dir">
-        
+
         <br/><br/>
         <strong>$T('opt-download_free'):</strong><br/>
         <small>$T('explain-download_free')</small><br/>
@@ -27,24 +27,24 @@
         <strong>$T('opt-complete_dir'):</strong><br/>
         <small>$T('explain-complete_dir')</small><br/>
         <input type="text" size="50" id="complete_dir" name="complete_dir" value="$complete_dir">
-        
+
         <!--#if not $nt#-->
         <br/><br/>
         <strong>$T('opt-permissions'):</strong><br/>
         <small>$T('explain-permissions')</small><br/>
         <input type="text" size="10" name="permissions" value="$permissions">
         <!--#end if#-->
-        
+
         <br/><br/>
         <strong>$T('opt-dirscan_dir'):</strong><br/>
         <small>$T('explain-dirscan_dir')</small><br/>
         <input type="text" size="50" name="dirscan_dir" value="$dirscan_dir">
-        
+
         <br/><br/>
         <strong>$T('opt-dirscan_speed'):</strong><br/>
         <small>$T('explain-dirscan_speed')</small><br/>
         <input type="text" size="8" name="dirscan_speed" value="$dirscan_speed">
-        
+
         <br/><br/>
         <strong>$T('opt-script_dir'):</strong><br/>
         <small>$T('explain-script_dir')</small><br/>
@@ -55,29 +55,29 @@
         <small>$T('explain-email_dir')</small><br/>
         <input type="text" size="50" name="email_dir" value="$email_dir">
     </fieldset>
-    
+
     <fieldset class="EntryFieldSet">
-        
+
         <legend><span class="config_sprite_container sprite_config_folders_system">&nbsp;</span> $T('systemFolders')</legend>
         <strong class="dir_helper">&nbsp;$T('in')&nbsp;"$my_lcldata"&nbsp;</strong><br/><br/>
-        
+
         <strong>$T('opt-cache_dir'):</strong><br/>
         <small>$T('explain-cache_dir')</small><br/>
         <input type="text" size="50" name="cache_dir" value="$cache_dir">
-        
+
         <br/><br/>
         <strong>$T('opt-log_dir'):</strong><br/>
         <small>$T('explain-log_dir')</small><br/>
         <input type="text" size="50" name="log_dir" value="$log_dir">
-        
+
         <br/><br/>
         <strong>$T('opt-nzb_backup_dir'):</strong><br/>
         <small>$T('explain-nzb_backup_dir')</small><br/>
         <input type="text" size="50" name="nzb_backup_dir" value="$nzb_backup_dir">
     </fieldset>
-    
+
     </div>
-            
+
 </form>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->
