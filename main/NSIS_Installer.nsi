@@ -54,7 +54,7 @@ DirText "Select the directory to install SABnzbd+ in:"
 
   !define MUI_ABORTWARNING
 
-  !define MUI_ICON "interfaces/Default/templates/static/images/favicon.ico"
+  !define MUI_ICON "interfaces/Classic/templates/static/images/favicon.ico"
 
 
 ;--------------------------------
