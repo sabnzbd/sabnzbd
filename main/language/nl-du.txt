@@ -126,9 +126,12 @@ error-fetchNewzbin@1 Fout bij ophalen van rapport %s van www.newzbin.com -\
 fetchNZB@1        Probeer NZB op te halen van %s
 eoq-actions       Akties
 eoq-scripts       Scripts
+purgeQueue        Wis wachtrij
+purgeQueueConf    Verwijder alle opdrachten uit de wachtrij?
 
 # History page
 purgeHist         Alles wissen
+purgeHistConf     Verwijder alle items uit de Geschiedenis?
 hideDetails       Verberg details
 showDetails       Toon details
 sizeHist          Totaal

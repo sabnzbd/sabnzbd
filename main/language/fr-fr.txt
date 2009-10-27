@@ -129,10 +129,13 @@ error-fetchNewzbin@1 Erreur Récupération msgid %s depuis www.newzbin.com -\
 fetchNZB@1        Essai de récupération du NZB depuis %s
 eoq-actions       Actions
 eoq-scripts       Scripts
+purgeQueue        Vider Queue
+purgeQueueConf    Supprimer tous les éléments de la queue ?
 
 
 # History page
 purgeHist         Effacer l'historique
+purgeHistConf     Supprimer tous les éléments de l'historique ?
 hideDetails       Masquer détails
 showDetails       Afficher détails
 sizeHist          Taille Historique

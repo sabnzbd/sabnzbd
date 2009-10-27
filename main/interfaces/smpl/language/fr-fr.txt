@@ -15,7 +15,6 @@ showEdit        Afficher Options Edition
 hideEdit        Cacher Options Edition
 timeleft        Temps Restant
 purgeQueue      Supprimer Tout
-purgeQueueConf  Supprimer tous les éléments de la queue ?
 progress        Progression
 delete          Supprimer
 downloading     Téléchargement en cours
@@ -31,7 +30,6 @@ refresr         Délai Rafraîchissement
 restartOK?      Etes-vous sûr de vouloir redémarrer SABnzbd?
 warnings        Avertissements
 getbookmarks    Récupérer Favoris
-purgehistOK?    Supprimer tous les éléments de l'historique ?
 purgefailhistOK? Supprimer tous les éléments échoués de l'historique ?
 purgehist       Supprimer Tous
 purgefailhist   Supprimer Echoués

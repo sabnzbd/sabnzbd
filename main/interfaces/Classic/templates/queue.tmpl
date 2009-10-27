@@ -43,6 +43,8 @@ $T('onQueueFinish'):
 <input id="speedbox" type="text" value="$speedlimit" onChange="location = './set_speedlimit?session=$session&value='+this.value">$T('KBs')
 | $T('pauseFor'):
 <input id="speedbox" type="text" size=5 value="" onChange="location = './set_pause?session=$session&value='+this.value">$T('minute')
+|
+<a href="./purge?session=$session" onclick="return confirm('$T('purgeQueueConf').replace("'","`") ');">$T('purgeQueue')</a>
 </span>
 
 <br>

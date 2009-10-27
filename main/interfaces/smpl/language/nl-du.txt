@@ -15,7 +15,6 @@ showEdit        Toon Opties
 hideEdit        Verberg Opties
 timeleft        Te gaan
 purgeQueue      Alles wissen
-purgeQueueConf  Verwijder alle opdrachten uit de wachtrij?
 progress        Voortgang
 delete          Verwijder
 downloading     Downloaden
@@ -31,7 +30,6 @@ refresr         Verversingstempo
 restartOK?      Weet je zeker dat je SABnzbd wilt herstarten?
 warnings        Meldingen
 getbookmarks    Bookmarks ophalen
-purgehistOK?    Verwijder alle items uit de Geschiedenis?
 purgefailhistOK? Verwijder alle mislukte items uit de Geschiedenis?
 purgehist       Verwijder alles
 purgefailhist   Verwijder alle mislukte items

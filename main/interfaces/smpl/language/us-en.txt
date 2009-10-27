@@ -15,7 +15,6 @@ showEdit        Show Edit Options
 hideEdit        Hide Edit Options
 timeleft        Timeleft
 purgeQueue      Delete All
-purgeQueueConf  Delete the all items from the queue?
 progress        Progress
 delete          Delete
 downloading     Downloading
@@ -31,7 +30,6 @@ refresr         Refresh Rate
 restartOK?      Are you sure you want to restart SABnzbd?
 warnings        Warnings
 getbookmarks    Get Bookmarks
-purgehistOK?    Delete the all items from the history?
 purgefailhistOK? Delete the all failed items from the history?
 purgehist       Delete All
 purgefailhist   Delete Failed Items

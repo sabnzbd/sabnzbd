@@ -3,7 +3,8 @@
 <!--#set global $helpsubject="GUI+History"#-->
 <!--#include $webdir + "/inc_top.tmpl"#-->
 
-<span class="SubMenu"><a href="./purge?session=$session">$T('purgeHist')</a> |
+<span class="SubMenu">
+	<a href="./purge?session=$session" onclick="return confirm('$T('purgeHistConf').replace("'","`") ');">$T('purgeHist')</a> |
     <!--#if $isverbose#-->
         <a href="./tog_verbose?session=$session">$T('hideDetails')</a>
     <!--#else#-->
