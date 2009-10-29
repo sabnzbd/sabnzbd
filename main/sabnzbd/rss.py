@@ -285,7 +285,7 @@ class RSSQueue:
                     logging.debug('Trying title %s', title)
                     result = False
                     for n in xrange(regcount):
-                        found = re.search(regexes[n], title, re.I)
+                        found = re.search(regexes[n], title)
                         if reTypes[n]=='M' and not found:
                             logging.debug("Filter rejected on rule %d", n)
                             result = False
