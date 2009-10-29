@@ -165,7 +165,7 @@ def CreateTar(folder, fname, release):
                 tarinfo = tar.gettarinfo(path, fpath)
                 tarinfo.uid = 0
                 tarinfo.gid = 0
-                if _file in ('SABnzbd.py', 'Sample-PostProc.sh', 'setup.py'):
+                if _file in ('SABnzbd.py', 'Sample-PostProc.sh'): # One day add: 'setup.py'
                     tarinfo.mode = 0755
                 else:
                     tarinfo.mode = 0644
@@ -251,7 +251,7 @@ else:
     target = sys.argv[1]
 
 if target not in ('source', 'binary', 'app'):
-    print 'Usage: setup.py binary|source|app'
+    print 'Usage: package.py binary|source|app'
     exit(1)
 
 # Derive release name from path
@@ -305,7 +305,7 @@ options = dict(
       author = 'The SABnzbd-Team',
       author_email = 'team@sabnzbd.org',
       description = 'SABnzbd ' + str(sabnzbd.__version__),
-      scripts = ['SABnzbd.py', 'setup.py'],
+      scripts = ['SABnzbd.py'], # One day, add  'setup.py'
       packages = ['sabnzbd', 'sabnzbd.utils'],
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2) or later',
