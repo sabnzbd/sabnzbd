@@ -2044,7 +2044,7 @@ class ConfigRss:
         if msg: return msg
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            sabnzbd.rss.run_feed(feed, download=True)
+            sabnzbd.rss.run_feed(feed, download=True, force=True)
             return ShowRssLog(feed, False)
         raise dcRaiser(self.__root, kwargs)
 

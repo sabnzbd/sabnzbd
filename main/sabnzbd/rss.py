@@ -58,9 +58,9 @@ def del_feed(feed):
     global __RSS
     if __RSS: __RSS.delete(feed)
 
-def run_feed(feed, download, ignoreFirst=False):
+def run_feed(feed, download, ignoreFirst=False, force=False):
     global __RSS
-    if __RSS: return __RSS.run_feed(feed, download, ignoreFirst)
+    if __RSS: return __RSS.run_feed(feed, download, ignoreFirst, force=force)
 
 def show_result(feed):
     global __RSS
@@ -172,7 +172,7 @@ class RSSQueue:
         self.shutdown = True
 
     @synchronized(LOCK)
-    def run_feed(self, feed=None, download=False, ignoreFirst=False):
+    def run_feed(self, feed=None, download=False, ignoreFirst=False, force=False):
         """ Run the query for one URI and apply filters """
         self.shutdown = False
 
@@ -317,6 +317,7 @@ class RSSQueue:
                         act = download and not first
                         if link in jobs:
                             act = act and not jobs[link]['status'].endswith('*')
+                            act = act or force
                         _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, act, priority=defPriority)
                     else:
                         _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False, priority=defPriority)

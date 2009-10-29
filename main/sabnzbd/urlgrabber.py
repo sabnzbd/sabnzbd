@@ -118,32 +118,28 @@ class URLGrabber(Thread):
                 logging.debug('Dropping URL %s, job entry missing', url)
                 continue
 
-            # NZBmatrix support
-            if url.lower().find('nzbmatrix.com') > 0:
-                fn, filename = _grab_nzbmatrix(url)
             # Normal http fetching support
-            else:
-                # _grab_url cannot reside in a function, because the tempfile
-                # would not survive the end of the function
-                logging.info('Grabbing URL %s', url)
-                opener = urllib.FancyURLopener({})
-                opener.prompt_user_passwd = None
-                opener.addheaders = []
-                opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-                opener.addheader('Accept-encoding','gzip')
-                filename = None
-                try:
-                    fn, header = opener.retrieve(url)
-                except:
-                    fn = None
-                    filename = True
+            # _grab_url cannot reside in a function, because the tempfile
+            # would not survive the end of the function
+            logging.info('Grabbing URL %s', url)
+            opener = urllib.FancyURLopener({})
+            opener.prompt_user_passwd = None
+            opener.addheaders = []
+            opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
+            opener.addheader('Accept-encoding','gzip')
+            filename = None
+            try:
+                fn, header = opener.retrieve(url)
+            except:
+                fn = None
+                filename = True
 
-                if fn:
-                    for tup in header.items():
-                        for item in tup:
-                            if "filename=" in item:
-                                filename = item[item.index("filename=") + 9:].strip(';').strip('"')
-                                break
+            if fn:
+                for tup in header.items():
+                    for item in tup:
+                        if "filename=" in item:
+                            filename = item[item.index("filename=") + 9:].strip(';').strip('"')
+                            break
 
             # Check if the filepath is specified, if not use the filename as whether it should be retried (bool)
             if not fn:
