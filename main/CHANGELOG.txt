@@ -1,4 +1,10 @@
 -------------------------------------------------------------------------------
+0.5.0Alpha8 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+* Fixed failing RSS filters
+* Fixed nzbmatrix.com RSS support
+  Note: you URL must contain username and ApiKey
+-------------------------------------------------------------------------------
 0.5.0Alpha7 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 * Use RSS titles for job names instead of downloaded filename.
