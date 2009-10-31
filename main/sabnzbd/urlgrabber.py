@@ -81,19 +81,21 @@ def alive():
         return False
 
 
-
 #------------------------------------------------------------------------------
+_RETRIES = 5
+
 class URLGrabber(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue.Queue()
         for tup in sabnzbd.nzbqueue.get_urls():
-            self.queue.put(tup)
+            url, nzo = tup
+            self.queue.put((url, nzo, _RETRIES))
         self.shutdown = False
 
     def add(self, url, future_nzo):
         """ Add an URL to the URLGrabber queue """
-        self.queue.put((url, future_nzo, 5))
+        self.queue.put((url, future_nzo, _RETRIES))
 
     def stop(self):
         logging.info('URLGrabber shutting down')
