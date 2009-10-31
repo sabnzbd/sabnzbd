@@ -120,8 +120,8 @@ class URLGrabber(Thread):
                 logging.debug('Dropping URL %s, job entry missing', url)
                 continue
 
-            # NZBmatrix support
-            if url.lower().find('nzbmatrix.com') > 0:
+            # NZBmatrix api support - not used if authentication is already in the url
+            if 'nzbmatrix.com' in url and ('apikey' not in url and 'username' not in url):
                 fn, filename = _grab_nzbmatrix(url)
             # Normal http fetching support
             else:
@@ -193,7 +193,7 @@ class URLGrabber(Thread):
 
 
 
-RE_NZBMATRIX = re.compile(r'(nzbmatrix).com/nzb-details.php\?id=(\d+)', re.I)
+RE_NZBMATRIX = re.compile(r'nzbmatrix.com/(.*)[\?&]id=(\d+)', re.I)
 
 def _grab_nzbmatrix(url):
     """
@@ -204,7 +204,7 @@ def _grab_nzbmatrix(url):
     """
 
     m = RE_NZBMATRIX.search(url)
-    if m and m.group(1).lower() == 'nzbmatrix' and m.group(2):
+    if m:
         msgid = m.group(2)
     else:
         return (None, None)
@@ -228,6 +228,8 @@ def _grab_nzbmatrix(url):
         # Send off the download request
         logging.info('Downloading NZB: %s', request_url)
         request = urllib2.Request(request_url, headers=headers)
+        
+        # Open the url
         response = urllib2.urlopen(request)
 
         # read the response into memory (could do with only reading first 80 bytes or so)
