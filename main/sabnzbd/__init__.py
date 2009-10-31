@@ -511,7 +511,7 @@ def system_standby():
     elif DARWIN:
         misc.osx_standby()
     else:
-        linux_standby()
+        misc.linux_standby()
 
 
 def shutdown_program():

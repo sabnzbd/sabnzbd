@@ -1093,10 +1093,12 @@ def osx_hibernate():
 #------------------------------------------------------------------------------
 # Power management for linux.
 #
-#    Requires DBus plus either HAL [1] or the more modern ConsoleKit [2].
-#    HAL will eventually be deprecated but older systems might still use it.
+#    Requires DBus plus either HAL [1] or the more modern ConsoleKit [2] and 
+#    DeviceKit(-power) [3]. HAL will eventually be deprecated but older systems
+#    might still use it.
 #    [1] http://people.freedesktop.org/~hughsient/temp/dbus-interface.html
 #    [2] http://www.freedesktop.org/software/ConsoleKit/doc/ConsoleKit.html
+#    [3] http://hal.freedesktop.org/docs/DeviceKit-power/
 #
 #    Original code was contributed by Marcel de Vries <marceldevries@phannet.cc>
 #
@@ -1109,25 +1111,31 @@ except ImportError:
 
 
 def _get_sessionproxy():
-        name = 'org.freedesktop.PowerManagement'
-        path = '/org/freedesktop/PowerManagement'
-        interface = 'org.freedesktop.PowerManagement'
-        try:
-            bus = dbus.SessionBus()
-            return bus.get_object(name, path), interface
-        except dbus.exceptions.DBusException:
-            return None, None
+    name = 'org.freedesktop.PowerManagement'
+    path = '/org/freedesktop/PowerManagement'
+    interface = 'org.freedesktop.PowerManagement'
+    try:
+        bus = dbus.SessionBus()
+        return bus.get_object(name, path), interface
+    except dbus.exceptions.DBusException:
+        return None, None
 
-def _get_systemproxy():
-       name = 'org.freedesktop.ConsoleKit'
-       path = '/org/freedesktop/ConsoleKit/Manager'
-       interface = 'org.freedesktop.ConsoleKit.Manager'
-       pinterface = 'org.freedesktop.DBus.Properties'
-       try:
-           bus = dbus.SystemBus()
-           return bus.get_object(name, path), interface, pinterface
-       except dbus.exceptions.DBusException:
-           return None, None, None
+def _get_systemproxy(method):
+    if method == 'ConsoleKit':
+        name = 'org.freedesktop.ConsoleKit'
+        path = '/org/freedesktop/ConsoleKit/Manager'
+        interface = 'org.freedesktop.ConsoleKit.Manager'
+        pinterface = None
+    elif method == 'DeviceKit':
+        name = 'org.freedesktop.DeviceKit.Power'
+        path = '/org/freedesktop/DeviceKit/Power'
+        interface = 'org.freedesktop.DeviceKit.Power'
+        pinterface = 'org.freedesktop.DBus.Properties'
+    try:
+        bus = dbus.SystemBus()
+        return bus.get_object(name, path), interface, pinterface
+    except dbus.exceptions.DBusException:
+        return None, None, None
 
 
 def linux_shutdown():
@@ -1138,7 +1146,7 @@ def linux_shutdown():
         if proxy.CanShutdown():
             proxy.Shutdown(dbus_interface=interface)
     else:
-        proxy, interface, pinterface = _get_systemproxy()
+        proxy, interface, pinterface = _get_systemproxy('ConsoleKit')
         if proxy and proxy.CanStop(dbus_interface=interface):
             proxy.Stop(dbus_interface=interface)
     os._exit(0)
@@ -1152,7 +1160,7 @@ def linux_hibernate():
         if proxy.CanHibernate():
             proxy.Hibernate(dbus_interface=interface)
     else:
-        proxy, interface, pinterface = _get_systemproxy()
+        proxy, interface, pinterface = _get_systemproxy('DeviceKit')
         if proxy and proxy.Get(interface, 'can-hibernate', dbus_interface=pinterface):
             proxy.Hibernate(dbus_interface=interface)
     time.sleep(10)
@@ -1166,7 +1174,7 @@ def linux_standby():
         if proxy.CanSuspend():
             proxy.Suspend(dbus_interface=interface)
     else:
-        proxy, interface, pinterface = _get_systemproxy()
+        proxy, interface, pinterface = _get_systemproxy('DeviceKit')
         if proxy.Get(interface, 'can-suspend', dbus_interface=pinterface):
             proxy.Suspend(dbus_interface=interface)
     time.sleep(10)
