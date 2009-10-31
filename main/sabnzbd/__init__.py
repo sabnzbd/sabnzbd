@@ -336,6 +336,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
+    if priority == None: priority = NORMAL_PRIORITY
 
 
     if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():

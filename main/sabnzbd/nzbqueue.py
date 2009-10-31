@@ -30,7 +30,7 @@ from threading import Thread, RLock
 
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername
+from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts
 import sabnzbd.database as database
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -126,6 +126,7 @@ class NzbQueue(TryList):
                 categ = future.get_cat()
                 if categ is None:
                     categ = cat
+                categ, pp, script, priority = cat_to_opts(categ)
 
                 try:
                     future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
@@ -135,6 +136,9 @@ class NzbQueue(TryList):
                     self.remove(nzo_id, False)
                 except TypeError:
                     self.remove(nzo_id, False)
+                    
+                # Make sure the priority is changed now that we know the category
+                self.set_priority(future.nzo_id, priority)
 
                 if self.__auto_sort:
                     self.sort_by_avg_age()
@@ -355,6 +359,13 @@ class NzbQueue(TryList):
                 return (item_id_pos2, nzo1.get_priority())
         # If moving failed/no movement took place
         return (-1, nzo1.get_priority())
+    
+    @synchronized(NZBQUEUE_LOCK)
+    def get_position(self, nzb_id):
+        for i in xrange(len(self.__nzo_list)):
+            if nzb_id == self.__nzo_list[i].nzo_id:
+                return i
+        return -1
 
     @synchronized(NZBQUEUE_LOCK)
     def move_up_bulk(self, nzo_id, nzf_ids):
@@ -419,15 +430,12 @@ class NzbQueue(TryList):
             nzo = self.__nzo_table[nzo_id]
             nzo_id_pos1 = -1
             pos = -1
-
+            
+            # Get the current position in the queue
             for i in xrange(len(self.__nzo_list)):
                 if nzo_id == self.__nzo_list[i].nzo_id:
                     nzo_id_pos1 = i
                     break
-
-            # Check if nzo is already set to the priority
-            if priority == nzo.get_priority():
-                return nzo_id_pos1
 
             nzo.set_priority(priority)
 
@@ -813,7 +821,12 @@ def switch(nzo_id1, nzo_id2):
     global __NZBQ
     if __NZBQ:
         return __NZBQ.switch(nzo_id1, nzo_id2)
-
+    
+def get_position(nzo_id):
+    global __NZBQ
+    if __NZBQ:
+        return __NZBQ.get_position(nzo_id)
+    
 def rename_nzo(nzo_id, name):
     global __NZBQ
     if __NZBQ: __NZBQ.change_name(nzo_id, name)
