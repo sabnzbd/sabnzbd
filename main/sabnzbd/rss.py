@@ -240,6 +240,9 @@ class RSSQueue:
         if 'nzbs.org/' in uri and not ('&dl=1' in uri):
             uri += '&dl=1'
 
+        # Fix for nzbmatrix
+        uri = fix_matrix(uri)
+
         # Read the RSS feed
         logging.debug("Running feedparser on %s", uri)
         d = feedparser.parse(uri)
@@ -465,3 +468,18 @@ def _get_link(uri, entry):
     else:
         logging.warning(T('warn-emptyRSS@1'), link)
         return None
+
+
+def fix_matrix(uri):
+    """ Make sure auth info is present in nzbmatrix uri-s
+    """
+    luri = uri.lower()
+    if luri.find('nzbmatrix.com/') > 0:
+        username = cfg.MATRIX_USERNAME.get()
+        apikey = cfg.MATRIX_APIKEY.get()
+        if username and apikey:
+            if luri.find('&username=') < 0:
+                uri = '%s&username=%s' % (uri, username)
+            if luri.find('&apikey=') < 0:
+                uri = '%s&apikey=%s' % (uri, apikey)
+    return uri
