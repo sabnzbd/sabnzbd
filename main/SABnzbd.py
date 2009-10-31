@@ -34,8 +34,11 @@ try:
     import Cheetah
     if Cheetah.Version[0] != '2':
         raise ValueError
-except:
+except ValueError:
     print "Sorry, requires Python module Cheetah 2.0rc7 or higher."
+    sys.exit(1)
+except:
+    print "The following modules need to be installed: Cheetah, cherrypy(included, unpack the zip), sqlite(if python 2.4)"
     sys.exit(1)
 
 import cherrypy
