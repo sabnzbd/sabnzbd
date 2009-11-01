@@ -432,10 +432,13 @@ class NzbObject(TryList):
             dirname = nzbname         # Use nzbname if set and only for non-future slot
         else:
             dirname = filename
-        if dirname and dirname.lower().endswith('.nzb'):
+
+        # If non-future: create safe folder name stripped from ".nzb" and junk
+        if nzb and dirname and dirname.lower().endswith('.nzb'):
             dname, ext = os.path.splitext(dirname) # Used for folder name for final unpack
             if ext.lower() == '.nzb':
                 dirname = dname
+            dirname = sabnzbd.misc.sanitize_foldername(dirname)
         dirname, password = scan_password(dirname)
 
         self.__dirname = dirname      # Keeps track of the working folder
@@ -519,12 +522,6 @@ class NzbObject(TryList):
         if not nzb:
             # This is a slot for a future NZB, ready now
             return
-
-        # User can specify their directory name through the api - has to be after the future nzb check
-        if self.extra1:
-            nzbname = sabnzbd.misc.sanitize_foldername(self.extra1)
-            if nzbname:
-                self.__original_dirname = nzbname
 
         # Apply conversion option to final folder, called __original_dirname
         # Yeah, I know :(
@@ -694,7 +691,10 @@ class NzbObject(TryList):
         return self.extra2
 
     def set_original_dirname(self, name):
-        self.__original_dirname = name
+        if isinstance(name, str):
+            self.__original_dirname = name.strip()
+        else:
+            self.__original_dirname = name
 
     def set_name(self, name):
         if isinstance(name, str):
@@ -1238,7 +1238,6 @@ def scan_password(name):
     if not m:
         m = RE_PASSWORD2.search(name)
     if m:
-        return m.group(1).strip(), m.group(2).strip()
+        return m.group(1).strip('. '), m.group(2).strip()
     else:
-        return name, None
-
+        return name.strip('. '), None

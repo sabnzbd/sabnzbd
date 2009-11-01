@@ -135,7 +135,7 @@ def sanitize_filename(name):
 
 def sanitize_foldername(name):
     """ Return foldername with dodgy chars converted to safe ones
-        Remove any leading and trailing dot characters
+        Remove any leading and trailing dot and space characters
     """
     illegal = r'\/<>?*:|"'
     legal   = r'++{}!@-#`'
@@ -151,7 +151,7 @@ def sanitize_foldername(name):
             lst.append(ch)
     name = ''.join(lst)
 
-    name = name.strip('.')
+    name = name.strip('. ')
     if not name:
         name = 'unknown'
 
@@ -1093,7 +1093,7 @@ def osx_hibernate():
 #------------------------------------------------------------------------------
 # Power management for linux.
 #
-#    Requires DBus plus either HAL [1] or the more modern ConsoleKit [2] and 
+#    Requires DBus plus either HAL [1] or the more modern ConsoleKit [2] and
 #    DeviceKit(-power) [3]. HAL will eventually be deprecated but older systems
 #    might still use it.
 #    [1] http://people.freedesktop.org/~hughsient/temp/dbus-interface.html
