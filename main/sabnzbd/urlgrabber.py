@@ -82,7 +82,7 @@ def alive():
 
 
 #------------------------------------------------------------------------------
-_RETRIES = 5
+_RETRIES = 10
 
 class URLGrabber(Thread):
     def __init__(self):
@@ -228,7 +228,7 @@ def _grab_nzbmatrix(url):
         # Send off the download request
         logging.info('Downloading NZB: %s', request_url)
         request = urllib2.Request(request_url, headers=headers)
-        
+
         # Open the url
         response = urllib2.urlopen(request)
 
