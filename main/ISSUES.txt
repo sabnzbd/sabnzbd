@@ -7,6 +7,7 @@ List of known issues.
   You need to fix it yourself by running the convmv utility (availaible for most Linux platforms)
 
 - On OSX there is a problem with downloading and parring files with accented characters.
+  (but not when they come out of RAR files).
 
 - The "Watched Folder" sometimes fails to delete the NZB files it has
   processed. This happens when other software still accesses these files.
