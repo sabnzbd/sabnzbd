@@ -1080,6 +1080,9 @@ def main():
     appconfig = {'/sabnzbd/api' : {'tools.basic_auth.on' : False},
                  '/api' : {'tools.basic_auth.on' : False},
                  '/m/api' : {'tools.basic_auth.on' : False},
+                 '/rss' : {'tools.basic_auth.on' : False},
+                 '/sabnzbd/rss' : {'tools.basic_auth.on' : False},
+                 '/m/rss' : {'tools.basic_auth.on' : False},
                  '/sabnzbd/shutdown': {'streamResponse': True},
                  '/sabnzbd/static': static,
                  '/static': static,
@@ -1090,6 +1093,7 @@ def main():
     if web_dir2:
         static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static')}
         appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on' : False}
+        appconfig['/sabnzbd/m/rss'] = {'tools.basic_auth.on' : False}
         appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
         appconfig['/sabnzbd/m/static'] = static2
         appconfig['/m/static'] = static2

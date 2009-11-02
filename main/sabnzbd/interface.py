@@ -205,7 +205,7 @@ def check_session(kwargs):
     return msg
 
 
-def check_apikey(kwargs):
+def check_apikey(kwargs, nokey=False):
     """ Check api key """
     output = kwargs.get('output')
     if cfg.USERNAME.get() and cfg.PASSWORD.get():
@@ -215,7 +215,7 @@ def check_apikey(kwargs):
             logging.warning(T('warn-authMissing'))
             return report(output, 'Missing authentication')
 
-    if cfg.DISABLE_KEY.get():
+    if cfg.DISABLE_KEY.get() or nokey:
         return None
     else:
         key = kwargs.get('apikey')
@@ -455,6 +455,9 @@ class MainPage:
 
     @cherrypy.expose
     def rss(self, **kwargs):
+        msg = check_apikey(kwargs, nokey=True)
+        if msg: return msg
+
         if kwargs.get('mode') == 'history':
             return rss_history(cherrypy.url(), limit=kwargs.get('limit',50), search=kwargs.get('search'))
         elif kwargs.get('mode') == 'queue':
