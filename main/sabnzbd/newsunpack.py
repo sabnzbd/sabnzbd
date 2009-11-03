@@ -489,7 +489,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
             filename = TRANS(line[:-12].strip())
             nzo.set_fail_msg(T('error-unpackCRC'))
             nzo.set_unpack_info('Unpack', ('[%s] '+T('warn-crcFailed@2')) % (unicoder(setname), unicoder(filename)), set=setname)
-            logging.warning(T('warn-crcFailed@2'), filename)
+            logging.warning(T('warn-crcFailed@2'), setname, filename)
             fail = 1
 
         elif line.startswith('Write error'):
