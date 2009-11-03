@@ -297,7 +297,7 @@ def fix_webname(name):
         return name
 
 #------------------------------------------------------------------------------
-def GetProfileInfo(vista):
+def GetProfileInfo(vista_plus):
     """ Get the default data locations
     """
     ok = False
@@ -323,7 +323,7 @@ def GetProfileInfo(vista):
             ok = True
         except:
             try:
-                if vista:
+                if vista_plus:
                     root = os.environ['AppData']
                     user = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root.replace('\\Roaming', '\\Local'), DEF_WORKDIR)
@@ -367,6 +367,27 @@ def GetProfileInfo(vista):
         panic("Cannot access the user profile.",
               "Please start with sabnzbd.ini file in another location")
         exit_sab(2)
+
+
+#------------------------------------------------------------------------------
+def windows_variant():
+    """ Determine Windows variant
+        Return vista_plus, x64
+    """
+    from win32api import GetVersionEx
+    from win32con import VER_PLATFORM_WIN32_NT
+
+    vista_plus = x64 = False
+    maj, min, buildno, plat, csd = GetVersionEx()
+
+    if plat == VER_PLATFORM_WIN32_NT:
+        vista_plus = maj > 5
+        if vista_plus:
+            try:
+                x64 = os.path.isdir(os.path.join(os.environ['SystemRoot'], 'SysWow64'))
+            except KeyError:
+                pass
+    return vista_plus, x64
 
 
 #------------------------------------------------------------------------------
@@ -707,7 +728,7 @@ def main():
     web_dir = None
     web_dir2 = None
     delay = 0.0
-    vista = False
+    vista_plus = False
     vista64 = False
     force_web = False
     re_argv = [sys.argv[0]]
@@ -782,21 +803,16 @@ def main():
             testlog = True
             re_argv.append(opt)
 
-    # Detect Vista or higher
+    # Detect Windows variant
     if sabnzbd.WIN32:
-        if platform.platform().find('Windows-32bit') >= 0:
-            vista = True
-            try:
-                vista64 = os.path.isdir(os.path.join(os.environ['SystemRoot'], 'SysWow64'))
-            except KeyError:
-                vista64 = False
+        vista_plus, vista64 = windows_variant()
 
     if inifile:
         # INI file given, simplest case
         inifile = evaluate_inipath(inifile)
     else:
         # No ini file given, need profile data
-        GetProfileInfo(vista)
+        GetProfileInfo(vista_plus)
         # Find out where INI file is
         inifile = os.path.abspath(sabnzbd.DIR_PROG + '/' + DEF_INI_FILE)
         if not os.path.exists(inifile):
@@ -943,10 +959,10 @@ def main():
     logging.info('%s-%s (rev=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
     if sabnzbd.WIN32:
         suffix = ''
-        if vista:
-            suffix = ' (=Vista)'
+        if vista_plus:
+            suffix = ' (=Vista+)'
         if vista64:
-            suffix = ' (=Vista64)'
+            suffix = ' (=Vista+ x64)'
             sabnzbd.WIN64 = True
         logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
     else:
@@ -1117,7 +1133,7 @@ def main():
     except IOError, error:
         if str(error) == 'Port not bound.':
             if not force_web:
-                panic_fwall(vista)
+                panic_fwall(vista_plus)
                 sabnzbd.halt()
                 exit_sab(2)
         else:
