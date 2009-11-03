@@ -2117,13 +2117,20 @@ class ConfigScheduling:
         for ev in scheduler.sort_schedules(forward=True):
             line = ev[3]
             conf['schedlines'].append(line)
-            m, h, day, action = line.split(' ', 3)
+            try:
+                m, h, day, action = line.split(' ', 3)
+            except:
+                continue
             action = action.strip()
             if action in actions:
                 action = T("sch-" + action)
             else:
-                act, server = action.split()
-                action = T("sch-" + act) + ' ' + server
+                try:
+                    act, server = action.split()
+                except ValueError:
+                    act = ''
+                if act in ('enable_server', 'disable_server'):
+                    action = T("sch-" + act) + ' ' + server
             item = (snum, h, '%02d' % int(m), days[day], action)
             conf['taskinfo'].append(item)
             snum += 1
