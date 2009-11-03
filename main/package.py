@@ -365,7 +365,7 @@ if target == 'app':
     os.system("tar -czf %s --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
-    os.system("cp %s /Volumes/SABnzbd/>/dev/null" % (fileOSr))
+    os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
 
     #Hide dock icon for the app
     #os.system("defaults write /Volumes/SABnzbd/SABnzbd.app/Contents/Info LSUIElement 1")
