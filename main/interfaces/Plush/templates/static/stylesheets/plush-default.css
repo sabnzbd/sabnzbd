@@ -1309,6 +1309,14 @@ legend .config_sprite_container {
 }
 
 .config_sprite_container { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
+
+#config_content legend.latestWarnings,
+#config_content legend.serverDisabled { background-color:darkred; }
+#config_content legend.lastEmail,
+#config_content legend.serverBackup { background-color:darkblue; }
+#config_content legend.serverOptional { background-color:#009090; }
+#config_content legend.serverEnabled { background-color:darkgreen; }
+
  
 /* sprite-config.png */
 .sprite_config_connections_disconnect { background-position: 0 0; } 

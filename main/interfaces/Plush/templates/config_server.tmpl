@@ -66,7 +66,7 @@
 
 <fieldset class="EntryFieldSet">
 
-    <legend><span class="config_sprite_container <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span> $server</legend>
+    <legend class="server<!--#if int($servers[$server]['enable']) != 0#--><!--#if int($servers[$server]['fillserver']) != 0#-->Backup<!--#else if int($servers[$server]['optional']) != 0#-->Optional<!--#else#-->Enabled<!--#end if#--><!--#else#-->Disabled<!--#end if#-->"><span class="config_sprite_container <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span> $server</legend>
 
     <table cellpadding=2>
         <tr><td class="alignRight"><div class="sucker">$T('srv-host'):</div></td><td><input type="text" size="25" name="host" value="$servers[$server]['host']"/></td></tr>

@@ -36,14 +36,14 @@
 
 <!--#if $lastmail#-->
 	<fieldset class="EntryFieldSet">
-		<legend style="background-color:darkblue;"><span class="config_sprite_container sprite_config_email_account_settings">&nbsp;</span> $T('emailResult')</legend>
+		<legend class="lastEmail"><span class="config_sprite_container sprite_config_email_account_settings">&nbsp;</span> $T('emailResult')</legend>
 		<small>$lastmail</small>
 	</fieldset>
 <!--#end if#-->
 
 <!--#if $warnings#-->
 	<fieldset class="EntryFieldSet">
-		<legend style="background-color:darkred;" id="configbox_latest_warnings">
+		<legend class="latestWarnings" id="configbox_latest_warnings">
 			<span class="config_sprite_container sprite_config_connections_warnings">&nbsp;</span>
 			$T('lastWarnings') <small>(<a href="clearwarnings?session=$session">$T('clearWarnings')</a>)</small>
 		</legend>
