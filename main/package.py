@@ -372,7 +372,7 @@ if target == 'app':
 
     #Wait for enter from user
     #For manually arrange icon position in mounted Volume...
-    wait = raw_input ("Arrange Icons in DMG and then press Enter to Finalize")
+    #wait = raw_input ("Arrange Icons in DMG and then press Enter to Finalize")
 
     #Unmount sparseimage
     os.system("hdiutil eject /Volumes/SABnzbd/>/dev/null")
