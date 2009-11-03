@@ -1,0 +1,50 @@
+#!/bin/bash
+#SABnzbd OSX svn updater
+# Usage copy this script in SABnzbd.app/Contents/Resources folder 
+# and launch it to get last SABnzbd revision
+# THIS WILL ONLY WORK IF NO NEW MODULES HAVE BEEN ADDED TO SABnzbd
+# THIS WILL NOT WORK ON 0.4.X
+
+#Variables
+DIR_RESOURCES=`dirname $0`
+DIR_TMP=$DIR_RESOURCES/tmp
+
+echo "1/5 > Dir : $DIR_RESOURCES"
+
+if [ -d $DIR_TMP ]; then
+	`rm -rf $DIR_TMP`
+	echo "\ttmp directory deleted"
+fi
+
+echo "2/5 > Exporting last svn revision..."
+svn export http://svn2.assembla.com/svn/SABnzbd/trunk/main/ $DIR_TMP>/dev/null
+SVN_REV=`svn info http://svn2.assembla.com/svn/SABnzbd/trunk/main/ |  awk '$1 == "Revision:" {print $2}'`
+echo "\tdone."
+
+echo "3/5 > Cleaning up for OSX binary..."
+cd $DIR_TMP
+unzip cherrypy*.zip>/dev/null
+rm -rf *.txt *.ico *.nsi *.zip *.tmpl PKG-INFO setup.py package.py Sample-*>/dev/null
+rm -rd win>/dev/null
+mv osx osx_tmp>/dev/null
+mv osx_tmp/osx osx>/dev/null
+mv osx_tmp/resources/* ./>/dev/null
+rm -rf osx_tmp>/dev/null
+
+sed -e "s/trunk/0.5.0 (rev$SVN_REV)/g" -e "s/unknown/$SVN_REV/g" sabnzbd/version.py>sabnzbd/version_tmp.py
+mv -f sabnzbd/version_tmp.py sabnzbd/version.py>/dev/null
+defaults write $DIR_RESOURCES/../Info CFBundleShortVersionString -string "0.5.0Alpha(rev$SVN_REV)"
+defaults write $DIR_RESOURCES/../Info CFBundleVersion -string "0.5.0Alpha(rev$SVN_REV)"
+
+
+echo "\tdone."
+
+echo "4/5 > Installing update..."
+cd ..
+rm -rd sabnzbd interfaces language osx MainMenu.nib cherrypy licenses>/dev/null
+mv -f tmp/* ./>/dev/null
+rm -rf tmp>/dev/null
+echo "\tdone."
+
+echo "5/5 > Update to rev $SVN_REV finished - Don't forget to restart SABnzbd !"
+echo "if you have any problem http://forums.sabnzbd.org"
