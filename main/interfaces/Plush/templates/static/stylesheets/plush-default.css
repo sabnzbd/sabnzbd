@@ -520,7 +520,9 @@ tr:hover .nzb_status_grippie {
 }
  
 .queueTable td.download-title { 
-  width: 38%;
+  width: 50%;
+  font-weight:bold;
+  font-size:125%;
 }
  
 .nzb_status_col {
@@ -549,6 +551,8 @@ tr:hover .nzb_status_grippie {
 .queueTable td.historyTitle { 
   padding:11px 0;
   width: 50%;
+  font-weight:bold;
+  font-size:125%;
 }
  
 .queueTable tr:hover td.historyTitle {
@@ -557,7 +561,6 @@ tr:hover .nzb_status_grippie {
  
 .queueTable a {
 	color: #404040;;
-	font-weight:bold;
 	text-decoration: none;
 }
  
