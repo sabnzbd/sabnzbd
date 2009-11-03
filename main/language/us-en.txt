@@ -649,7 +649,7 @@ error-fileRead@1         notrar(): reading %s failed
 error-fileUnrar@2        Error "%s" while running rar_unpack on %s
 error-fileUnzip@2        Error "%s" while running unzip() on %s
 warn-cannotFind@1        ERROR: unable to find "%s"
-warn-crcFailed@2         ERROR: CRC failed in "%s" (file "%s")
+warn-crcFailed@1         ERROR: CRC failed in "%s"
 warn-delFailed@1         Deleting %s failed!
 warn-encrypted           ERROR: encrypted file:
 warn-error@1             ERROR: %s

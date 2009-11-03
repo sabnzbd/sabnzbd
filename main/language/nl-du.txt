@@ -634,7 +634,7 @@ error-fileRead@1         Kan RAR bestand %s niet lezen
 error-fileUnrar@2        Fout "%s" bij uitvoeren van rar_unpack op %s
 error-fileUnzip@2        Fout "%s" bij uitvoeren van unzip() op %s
 warn-cannotFind@1        FOUT" kan "%s" niet vinden
-warn-crcFailed@2         FOUT: Foutieve CRC  "%s" (file "%s")
+warn-crcFailed@1         FOUT: Foutieve CRC  "%s"
 warn-delFailed@1         Verwijderen van %s mislukt!
 warn-encrypted           FOUT: versleuteld bestand
 warn-error@1             FOUT: %s

@@ -654,7 +654,7 @@ error-fileRead@1         notrar(): echec de lecture de %s
 error-fileUnrar@2        Erreur "%s" lors de l'exécution de rar_unpack sur %s
 error-fileUnzip@2        Erreur "%s" lors de l'exécution de unzip sur %s
 warn-cannotFind@1        ERREUR : impossoble de trouver "%s"
-warn-crcFailed@2         ERREUR : echec CRC pour "%s" (fichier "%s")
+warn-crcFailed@1         ERREUR : echec CRC pour "%s"
 warn-delFailed@1         Echec de la suppression de %s !
 warn-encrypted           ERREUR : Fichier encryptés :
 warn-error@1             ERREUR : %s
