@@ -333,14 +333,24 @@ if target == 'app':
 
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
-    options['data_files'] = ['interfaces','language','osx/osx',('',glob.glob("osx/resources/*"))]
-    options['options'] = {'py2app': {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns'}}
-    options['app'] = ['SABnzbd.py']
-    options['setup_requires'] = ['py2app']
+    
+    APP = ['SABnzbd.py']
+    DATA_FILES = ['interfaces','language','osx/osx',('',glob.glob("osx/resources/*"))]
+    OPTIONS = {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns', 'plist':{'NSUIElement':1}}
 
-    setup(**options)
+    setup(
+        app=APP,
+        data_files=DATA_FILES,
+        options={'py2app': OPTIONS },
+        setup_requires=['py2app'],
+    )
 
     #copy builded app to mounted sparseimage
+    os.system("cp -pr osx/osx dist/SABnzbd.app/Contents/Resources/>/dev/null")
+    os.system("chmod +x dist/SABnzbd.app/Contents/Resources/update>/dev/null")
+    #os.system("chmod +x dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar>/dev/null")
+    #os.system("chmod +x dist/SABnzbd.app/Contents/Resources/osx/par2/par2-classic>/dev/null")
+
     os.system("cp -r dist/SABnzbd.app /Volumes/SABnzbd/>/dev/null")
 
     #cleanup src dir
@@ -352,17 +362,17 @@ if target == 'app':
     os.system("rm -rf cherrypy*.zip")
 
     #Create src tar.gz
-    os.system("tar -czf %s ./ --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\">/dev/null" % (fileOSr) )
+    os.system("tar -czf %s --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
     os.system("cp %s /Volumes/SABnzbd/>/dev/null" % (fileOSr))
 
     #Hide dock icon for the app
-    os.system("defaults write /Volumes/SABnzbd/SABnzbd.app/Contents/Info LSUIElement 1")
+    #os.system("defaults write /Volumes/SABnzbd/SABnzbd.app/Contents/Info LSUIElement 1")
 
     #Wait for enter from user
     #For manually arrange icon position in mounted Volume...
-    wait = raw_input ("Press Enter to Finalize")
+    wait = raw_input ("Arrange Icons in DMG and then press Enter to Finalize")
 
     #Unmount sparseimage
     os.system("hdiutil eject /Volumes/SABnzbd/>/dev/null")

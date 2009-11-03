@@ -18,7 +18,7 @@
 import objc
 from Foundation import *
 from AppKit import *
-from PyObjCTools import NibClassBuilder, AppHelper
+from PyObjCTools import AppHelper
 from objc import YES, NO, nil
 from threading import Thread
 
@@ -49,9 +49,7 @@ from sabnzbd.database import get_history_handle
 status_icons = {'idle':'../Resources/sab_idle.png','pause':'../Resources/sab_pause.png','clicked':'../Resources/sab_clicked.png'}
 start_time = NSDate.date()
 
-NibClassBuilder.extractClasses("MainMenu")
-
-class SABnzbdDelegate(NibClassBuilder.AutoBaseClass):
+class SABnzbdDelegate(NSObject):
 
     icons = {}
     status_bar = None
