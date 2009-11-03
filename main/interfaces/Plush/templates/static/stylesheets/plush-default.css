@@ -140,6 +140,10 @@ select {
 .clear {
 	clear: both;
 }
+
+.nowrap {
+	white-space: nowrap;
+}
  
 #warning_message {
 	color: darkred;

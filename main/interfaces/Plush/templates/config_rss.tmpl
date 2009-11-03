@@ -6,7 +6,7 @@
 <input type="hidden" name="session" value="$session">
 
 <div class="EntryBlock">
-<fieldset class="EntryFieldSet" style="white-space: nowrap">
+<fieldset class="EntryFieldSet nowrap">
 <legend><span class="config_sprite_container sprite_config_rss_add">&nbsp;</span> $T('newFeedURI')</legend>
     <input type="text" size="10" name="feed" value="$feed"/>
     <input type="text" size="60" name="uri"/>
@@ -24,8 +24,7 @@
 
     <div class="EntryBlock">
     <fieldset class="EntryFieldSet">
-
-        <legend style="padding-left:4px; color:white; background-color:<!--#if $rss[$feed]['enable'] then 'darkgreen' else 'darkred'#-->"><input type="checkbox" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>&nbsp;$feed</legend>
+        <legend class="server<!--#if $rss[$feed]['enable'] then 'Enabled' else 'Disabled'#-->"><input type="checkbox" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>&nbsp;$feed</legend>
 
         <input type="text" size="105" name="uri" value="$rss[$feed]['uri']"/><br/><br/>
 
@@ -71,7 +70,7 @@
 
     <hr/>
 
-    <table style="clear:both;">
+    <table class="clear">
         <tr>
             <th>$T('rss-order')</th>
             <th>$T('rss-type')</th>
