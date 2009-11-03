@@ -242,7 +242,7 @@ class RSSQueue:
 
         # Read the RSS feed
         logging.debug("Running feedparser on %s", uri)
-        d = feedparser.parse(uri)
+        d = feedparser.parse(uri.replace('feed://', 'http://'))
         logging.debug("Done parsing %s", uri)
         if not d:
             logging.warning(T('warn-failRSS@1'), uri)
