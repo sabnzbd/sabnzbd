@@ -39,7 +39,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match
-from sabnzbd.codecs import TRANS
+from sabnzbd.codecs import TRANS, unicoder
 import sabnzbd.newzbin
 import sabnzbd.email as email
 import sabnzbd.dirscanner as dirscanner
@@ -246,7 +246,7 @@ class PostProcessor(Thread):
                     reAdd = False
                     if not repairSets:
                         logging.info("No par2 sets for %s", filename)
-                        nzo.set_unpack_info('Repair',T('msg-noParSets@1') % filename)
+                        nzo.set_unpack_info('Repair',T('msg-noParSets@1') % unicoder(filename))
 
                     for _set in repairSets:
                         logging.info("Running repair on set %s", _set)
@@ -339,7 +339,7 @@ class PostProcessor(Thread):
                     ## Check if this is an NZB-only download, if so redirect to queue
                     nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat, priority=priority)
                     if nzb_list:
-                        nzo.set_unpack_info('Download', T('msg-sentToQ@1') % nzb_list)
+                        nzo.set_unpack_info('Download', T('msg-sentToQ@1') % unicoder(nzb_list))
                         try:
                             os.rmdir(tmp_workdir_complete)
                         except:
@@ -382,8 +382,8 @@ class PostProcessor(Thread):
                         script_path = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
                         if os.path.exists(script_path):
                             nzo.set_status('Running')
-                            nzo.set_action_line(T('msg-running'), script)
-                            nzo.set_unpack_info('Script', T('msg-runScript@1') % script, unique=True)
+                            nzo.set_action_line(T('msg-running'), unicoder(script))
+                            nzo.set_unpack_info('Script', T('msg-runScript@1') % unicoder(script), unique=True)
                             script_log, script_ret = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
                             script_line = get_last_line(script_log)
                             if script_log:
@@ -391,7 +391,7 @@ class PostProcessor(Thread):
                             if script_line:
                                 nzo.set_unpack_info('Script', script_line, unique=True)
                             else:
-                                nzo.set_unpack_info('Script', T('msg-ranScript@1') % script, unique=True)
+                                nzo.set_unpack_info('Script', T('msg-ranScript@1') % unicoder(script), unique=True)
                     else:
                         script = ""
                         script_line = ""

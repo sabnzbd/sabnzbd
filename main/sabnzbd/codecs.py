@@ -48,6 +48,12 @@ def name_fixer(p):
     else:
         return p
 
+def unicoder(p):
+    """ Make sure a Unicode string is returned """
+    if isinstance(p, unicode):
+        return p
+    else:
+        return p.decode('latin-1', 'replace')
 
 def unicode2local(p):
     """ Convert Unicode filename to appropriate local encoding

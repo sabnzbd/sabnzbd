@@ -27,7 +27,7 @@ import logging
 from time import time
 
 import sabnzbd
-from sabnzbd.codecs import TRANS, unicode2local,name_fixer, reliable_unpack_names
+from sabnzbd.codecs import TRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 from sabnzbd.misc import format_time_string, find_on_path
 import sabnzbd.cfg as cfg
@@ -274,8 +274,8 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 if real_size != expected_size:
                     msg = T('error-joinMismatch')
                     nzo.set_fail_msg(T('error-joinFail@1') % msg)
-                    nzo.set_unpack_info('Filejoin', T('error-joinFail@2') % (joinable_set, msg))
-                    logging.error(T('error-fileJoin@2'), msg, nzo.get_dirname())
+                    nzo.set_unpack_info('Filejoin', T('error-joinFail@2') % (unicoder(joinable_set), msg))
+                    logging.error(T('error-fileJoin@2'), msg, unicoder(nzo.get_dirname()))
                 else:
                     joinable_sets[joinable_set].sort()
                     filename = joinable_set
@@ -325,21 +325,21 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 
                     joined_file.flush()
                     joined_file.close()
-                    nzo.set_unpack_info('Filejoin', T('msg-joinOK@3') % (joinable_set, i, add_s(i)), set=joinable_set)
+                    nzo.set_unpack_info('Filejoin', T('msg-joinOK@3') % (unicoder(joinable_set), i, add_s(i)), set=joinable_set)
                     newfiles.append(joinable_set)
             except:
                 msg = sys.exc_info()[1]
                 nzo.set_fail_msg(T('error-joinFail@1') % msg)
-                nzo.set_unpack_info('Filejoin', T('error-joinFail@2') % (joinable_set, msg))
-                logging.error(T('error-fileJoin@2'), msg, nzo.get_dirname())
+                nzo.set_unpack_info('Filejoin', T('error-joinFail@2') % (unicoder(joinable_set), msg))
+                logging.error(T('error-fileJoin@2'), msg, unicoder(nzo.get_dirname()))
                 return True, []
 
         return False, newfiles
     except:
         msg = sys.exc_info()[1]
         nzo.set_fail_msg(T('error-joinFail@1') % msg)
-        nzo.set_unpack_info('Filejoin', T('error-joinFail@2') % (joinable_set, msg))
-        logging.error(T('error-fileJoin@2'), msg, nzo.get_dirname())
+        nzo.set_unpack_info('Filejoin', T('error-joinFail@2') % (unicoder(joinable_set), msg))
+        logging.error(T('error-fileJoin@2'), msg, unicoder(nzo.get_dirname()))
         return True, []
 
 
@@ -414,7 +414,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
         msg = sys.exc_info()[1]
         nzo.set_fail_msg(T('error-unpackFail@1') % msg)
         setname = nzo.get_dirname()
-        nzo.set_unpack_info('Unpack', T('error-unpackFail@2') % (setname, msg))
+        nzo.set_unpack_info('Unpack', T('error-unpackFail@2') % (unicoder(setname), msg))
 
         logging.error(T('error-fileUnrar@2'), msg, setname)
         return True, ''
@@ -480,34 +480,34 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
         elif line.startswith('Cannot find volume'):
             filename = os.path.basename(TRANS(line[19:]))
-            nzo.set_fail_msg(T('error-unpackFailed@1') % filename)
-            nzo.set_unpack_info('Unpack', ('[%s] '+T('error-unpackFailed@1')) % (setname, filename), set=setname)
+            nzo.set_fail_msg(T('error-unpackFailed@1') % unicoder(filename))
+            nzo.set_unpack_info('Unpack', ('[%s] '+T('error-unpackFailed@1')) % (unicoder(setname), unicoder(filename)), set=setname)
             logging.warning(T('warn-cannotFind@1'), filename)
             fail = 1
 
         elif line.endswith('- CRC failed'):
             filename = TRANS(line[:-12].strip())
             nzo.set_fail_msg(T('error-unpackCRC'))
-            nzo.set_unpack_info('Unpack', ('[%s] '+T('warn-crcFailed@1')) % (setname, filename), set=setname)
-            logging.warning(T('warn-crcFailed@1'), filename)
+            nzo.set_unpack_info('Unpack', ('[%s] '+T('warn-crcFailed@2')) % (unicoder(setname), unicoder(filename)), set=setname)
+            logging.warning(T('warn-crcFailed@2'), filename)
             fail = 1
 
         elif line.startswith('Write error'):
             nzo.set_fail_msg(T('error-unpackFull'))
-            nzo.set_unpack_info('Unpack', ('[%s] ' + T('error-unpackFull')) % (setname), set=setname)
+            nzo.set_unpack_info('Unpack', ('[%s] ' + T('error-unpackFull')) % unicoder(setname), set=setname)
             logging.warning(T('warn-writeError@1'), line[11:])
             fail = 1
 
         elif line.startswith('ERROR: '):
             nzo.set_fail_msg(T('error-unpackFailLog'))
             logging.warning(T('warn-error@1'), (line[7:]))
-            nzo.set_unpack_info('Unpack', ('[%s] '+T('warn-error@1')) % (setname, line[7:]), set=setname)
+            nzo.set_unpack_info('Unpack', ('[%s] '+T('warn-error@1')) % (unicoder(setname), unicoder(line[7:])), set=setname)
             fail = 1
 
         elif line.startswith('Encrypted file:  CRC failed'):
             filename = TRANS(line[31:-23].strip())
             nzo.set_fail_msg(T('error-unpackPassword'))
-            nzo.set_unpack_info('Unpack', ('[%s][%s] '+T('error-unpackPassword')) % (setname, filename), set=setname)
+            nzo.set_unpack_info('Unpack', ('[%s][%s] '+T('error-unpackPassword')) % (unicoder(setname), unicoder(filename)), set=setname)
             logging.error('%s (%s)', T('error-unpackPassword'), filename)
             fail = 1
 
@@ -548,7 +548,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
             logging.info('Skipping unrar file check due to unreliable file names')
 
     msg = T('msg-unpackDone@4') % (str(len(extracted)), add_s(len(extracted)), add_s(len(extracted)), format_time_string(time() - start))
-    nzo.set_unpack_info('Unpack', '[%s] %s' % (setname, msg), set=setname)
+    nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg), set=setname)
     logging.info('%s', msg)
 
     return (extracted, rarfiles)
@@ -565,7 +565,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
 
         for _zip in zips:
             logging.info("Starting extract on zipfile: %s ", _zip)
-            nzo.set_action_line(T('msg-unpacking'), '%s' % _zip)
+            nzo.set_action_line(T('msg-unpacking'), '%s' % unicoder(_zip))
 
             extraction_path = workdir
             if workdir_complete:
@@ -604,7 +604,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
     except:
         msg = sys.exc_info()[1]
         nzo.set_fail_msg(T('error-unpackFail@1') % msg)
-        logging.error(T('error-fileUnzip@2'), msg, nzo.get_dirname())
+        logging.error(T('error-fileUnzip@2'), msg, unicoder(nzo.get_dirname()))
         return True
 
 def ZIP_Extract(zipfile, extraction_path):
@@ -640,7 +640,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     nzo.set_action_line(T('msg-repair'), T('msg-QuickChecking'))
     if QuickCheck(setname, nzo):
         logging.info("Quick-check for %s is OK, skipping repair", setname)
-        nzo.set_unpack_info('Repair', T('msg-QuickOK@1') % setname, set=setname)
+        nzo.set_unpack_info('Repair', T('msg-QuickOK@1') % unicoder(setname), set=setname)
         readd = False
         result = True
         # Poor man's list of other pars, should not be needed
@@ -811,13 +811,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 
         # And off we go
         if line.startswith('All files are correct'):
-            nzo.set_unpack_info('Repair', T('msg-verifyOK@2') % (setname, format_time_string(time() - start)), set=setname)
+            nzo.set_unpack_info('Repair', T('msg-verifyOK@2') % (unicoder(setname), format_time_string(time() - start)), set=setname)
             logging.info('Verified in %s, all files correct',
                          format_time_string(time() - start))
             finished = 1
 
         elif line.startswith(T('msg-repairNeeded')):
-            nzo.set_unpack_info('Repair', T('msg-repairNeeded@2') % (setname, format_time_string(time() - start)), set=setname)
+            nzo.set_unpack_info('Repair', T('msg-repairNeeded@2') % (unicoder(setname), format_time_string(time() - start)), set=setname)
             logging.info('Verified in %s, repair is required',
                           format_time_string(time() - start))
             start = time()
@@ -928,7 +928,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
             nzo.set_status('Repairing')
 
         elif line.startswith('Repair complete'):
-            nzo.set_unpack_info('Repair', T('msg-repairDone@2') % (setname, format_time_string(time() - start)), set=setname)
+            nzo.set_unpack_info('Repair', T('msg-repairDone@2') % (unicoder(setname), format_time_string(time() - start)), set=setname)
             logging.info('Repaired in %s', format_time_string(time() - start))
             finished = 1
 
