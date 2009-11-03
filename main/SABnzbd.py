@@ -1238,9 +1238,8 @@ def main():
 # Platform specific startup code
 #
 
-if not sabnzbd.DARWIN:
-
-    # Windows & Unix/Linux
+if not getattr(sys, 'frozen', None) == 'macosx_app':
+    # Windows & Unix/Linux 
 
     if __name__ == '__main__':
         main()
