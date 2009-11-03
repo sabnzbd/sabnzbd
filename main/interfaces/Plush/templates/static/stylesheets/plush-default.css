@@ -1303,9 +1303,9 @@ legend .config_sprite_container {
 #config_content legend {
 	background-color: #333;
 	color: white;
-	font-size: 150%;
 	font-weight: bold;
-	padding: 2px 8px 0px 4px;
+	padding: 1px 6px 1px 6px;
+	margin-left:-7px;
 }
 
 .config_sprite_container { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
@@ -1320,50 +1320,46 @@ legend .config_sprite_container {
  
 /* sprite-config.png */
 .sprite_config_connections_disconnect { background-position: 0 0; } 
-.sprite_config_connections_encrypted { background-position: 0 -122px; } 
-.sprite_config_connections_unencrypted { background-position: 0 -244px; } 
-.sprite_config_connections_warnings { background-position: 0 -366px; } 
-.sprite_config_email_account_settings { background-position: 0 -488px; } 
-.sprite_config_email_options { background-position: 0 -610px; } 
-.sprite_config_folders_system { background-position: 0 -732px; } 
-.sprite_config_folders_user { background-position: 0 -854px; } 
-.sprite_config_general_tuning { background-position: 0 -976px; } 
-.sprite_config_general_web_server { background-position: 0 -1098px; } 
-.sprite_config_help { background-position: 0 -1220px; } 
-.sprite_config_indexsites_account_info { background-position: 0 -1342px; } 
-.sprite_config_indexsites_bookmarks { background-position: 0 -1464px; } 
-.sprite_config_indexsites_processed { background-position: 0 -1586px; } 
-.sprite_config_nav_categories { background-position: 0 -1708px; } 
-.sprite_config_nav_connections { background-position: 0 -1824px; } 
-.sprite_config_nav_email { background-position: -122px 0; } 
-.sprite_config_nav_folders { background-position: -122px -116px; } 
-.sprite_config_nav_general { background-position: -122px -232px; } 
-.sprite_config_nav_indexsites { background-position: -122px -348px; } 
-.sprite_config_nav_rss { background-position: -122px -464px; } 
-.sprite_config_nav_scheduling { background-position: -122px -580px; } 
-.sprite_config_nav_servers { background-position: -122px -696px; } 
-.sprite_config_nav_sorting { background-position: -122px -812px; } 
-.sprite_config_nav_switches { background-position: -122px -928px; } 
-.sprite_config_rss_add { background-position: -122px -1044px; } 
-.sprite_config_save { background-position: -122px -1166px; } 
-.sprite_config_scheduling_add { background-position: -122px -1288px; } 
-.sprite_config_scheduling_current { background-position: -122px -1410px; } 
-.sprite_config_servers_add { background-position: -122px -1532px; } 
-.sprite_config_sorting_date { background-position: -122px -1654px; } 
-.sprite_config_sorting_generic { background-position: -122px -1776px; } 
-.sprite_config_sorting_series { background-position: -122px -1898px; } 
-.sprite_config_switches_other { background-position: -244px 0; } 
-.sprite_config_switches_processing { background-position: -244px -122px; } 
-.sprite_nzo_bottom { background-position: -244px -244px; } 
-.sprite_nzo_delete { background-position: -244px -360px; } 
-.sprite_nzo_down { background-position: -244px -476px; } 
-.sprite_nzo_reload { background-position: -244px -592px; } 
-.sprite_nzo_select_all { background-position: -244px -708px; } 
-.sprite_nzo_select_invert { background-position: -244px -824px; } 
-.sprite_nzo_select_none { background-position: -244px -940px; } 
-.sprite_nzo_select_range { background-position: -244px -1056px; } 
-.sprite_nzo_top { background-position: -244px -1172px; } 
-.sprite_nzo_up { background-position: -244px -1288px; } 
+.sprite_config_connections_encrypted { background-position: 0 -172px; } 
+.sprite_config_connections_unencrypted { background-position: 0 -338px; } 
+.sprite_config_connections_warnings { background-position: 0 -504px; } 
+.sprite_config_email_account_settings { background-position: 0 -670px; } 
+.sprite_config_email_options, .sprite_config_nav_email { background-position: 0 -836px; } 
+.sprite_config_folders_system { background-position: 0 -1002px; } 
+.sprite_config_folders_user { background-position: 0 -1168px; } 
+.sprite_config_general_tuning { background-position: 0 -1334px; } 
+.sprite_config_general_web_server { background-position: 0 -1500px; } 
+.sprite_config_help { background-position: 0 -1666px; } 
+.sprite_config_indexsites_account_info { background-position: 0 -1838px; } 
+.sprite_config_indexsites_bookmarks { background-position: -172px 0; } 
+.sprite_config_indexsites_processed { background-position: -172px -166px; } 
+.sprite_config_nav_categories { background-position: -172px -332px; } 
+.sprite_config_nav_connections { background-position: -172px -498px; } 
+.sprite_config_nav_folders { background-position: -172px -664px; } 
+.sprite_config_nav_general { background-position: -172px -830px; } 
+.sprite_config_nav_indexsites { background-position: -172px -996px; } 
+.sprite_config_nav_rss { background-position: -172px -1162px; } 
+.sprite_config_nav_scheduling, .sprite_config_scheduling_current { background-position: -172px -1328px; } 
+.sprite_config_nav_servers, .sprite_config_servers_add { background-position: -172px -1494px; } 
+.sprite_config_nav_sorting, .sprite_config_sorting_series { background-position: -172px -1660px; } 
+.sprite_config_nav_switches { background-position: -172px -1826px; } 
+.sprite_config_rss_add { background-position: -344px 0; } 
+.sprite_config_save { background-position: -344px -166px; } 
+.sprite_config_scheduling_add { background-position: -344px -338px; } 
+.sprite_config_sorting_date { background-position: -344px -504px; } 
+.sprite_config_sorting_generic { background-position: -344px -670px; } 
+.sprite_config_switches_other { background-position: -344px -836px; } 
+.sprite_config_switches_processing { background-position: -344px -1002px; } 
+.sprite_nzo_bottom { background-position: -344px -1168px; } 
+.sprite_nzo_delete { background-position: -344px -1334px; } 
+.sprite_nzo_down { background-position: -344px -1500px; } 
+.sprite_nzo_reload { background-position: -344px -1666px; } 
+.sprite_nzo_select_all { background-position: -344px -1832px; } 
+.sprite_nzo_select_invert { background-position: -516px 0; } 
+.sprite_nzo_select_none { background-position: -516px -166px; } 
+.sprite_nzo_select_range { background-position: -516px -332px; } 
+.sprite_nzo_top { background-position: -516px -498px; } 
+.sprite_nzo_up { background-position: -516px -664px; } 
 
 
 .numbered_list li { list-style-type: decimal; margin-left:3em; }
