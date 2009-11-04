@@ -106,7 +106,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY, nzbname=None):
         """ Create and return a placeholder nzo object """
-        future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status="Fetching")
+        future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status="Grabbing")
         self.add(future_nzo)
         return future_nzo
 
@@ -136,7 +136,7 @@ class NzbQueue(TryList):
                     self.remove(nzo_id, False)
                 except TypeError:
                     self.remove(nzo_id, False)
-                    
+
                 # Make sure the priority is changed now that we know the category
                 self.set_priority(future.nzo_id, priority)
 
@@ -230,7 +230,7 @@ class NzbQueue(TryList):
             if save:
                 self.save()
 
-            if nzo.get_filename()[0:8] != "fetching":
+            if nzo.get_status() not in ('Fetching',):
                 osx.sendGrowlMsg(T('grwl-nzbadd-title'),nzo.get_filename(),osx.NOTIFICATION['download'])
 
         if self.__auto_sort:
@@ -359,7 +359,7 @@ class NzbQueue(TryList):
                 return (item_id_pos2, nzo1.get_priority())
         # If moving failed/no movement took place
         return (-1, nzo1.get_priority())
-    
+
     @synchronized(NZBQUEUE_LOCK)
     def get_position(self, nzb_id):
         for i in xrange(len(self.__nzo_list)):
@@ -430,7 +430,7 @@ class NzbQueue(TryList):
             nzo = self.__nzo_table[nzo_id]
             nzo_id_pos1 = -1
             pos = -1
-            
+
             # Get the current position in the queue
             for i in xrange(len(self.__nzo_list)):
                 if nzo_id == self.__nzo_list[i].nzo_id:
@@ -509,8 +509,8 @@ class NzbQueue(TryList):
             return False
         elif self.__top_only:
             for nzo in self.__nzo_list:
-                # Ignore any items that are in a paused or fetching state
-                if nzo.get_status() not in ('Paused', 'Fetching'):
+                # Ignore any items that are in a paused or grabbing state
+                if nzo.get_status() not in ('Paused', 'Grabbing'):
                     return not nzo.server_in_try_list(server)
         else:
             return not self.server_in_try_list(server)
@@ -537,13 +537,14 @@ class NzbQueue(TryList):
         else:
             for nzo in self.__nzo_list:
                 # Don't try to get an article if server is in try_list of nzo
-                if not nzo.server_in_try_list(server):
+                if not nzo.server_in_try_list(server) and nzo.get_status() != 'Paused':
                     article = nzo.get_article(server)
                     if article:
                         return article
 
+            # WHY WAS THIS NEEDED?
             # No articles for this server, block server (until reset issued)
-            self.add_to_try_list(server)
+            #self.add_to_try_list(server)
 
     @synchronized(NZBQUEUE_LOCK)
     def register_article(self, article):
@@ -821,12 +822,12 @@ def switch(nzo_id1, nzo_id2):
     global __NZBQ
     if __NZBQ:
         return __NZBQ.switch(nzo_id1, nzo_id2)
-    
+
 def get_position(nzo_id):
     global __NZBQ
     if __NZBQ:
         return __NZBQ.get_position(nzo_id)
-    
+
 def rename_nzo(nzo_id, name):
     global __NZBQ
     if __NZBQ: __NZBQ.change_name(nzo_id, name)
