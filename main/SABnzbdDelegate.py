@@ -388,6 +388,9 @@ class SABnzbdDelegate(NSObject):
                 if sabnzbd.SABSTOP:
                     statusbarText = "..."
                 
+                if os.path.exists("%s/notDisplaySpeed" % (sabnzbd.DIR_APPDATA)):
+                		statusbarText = ""
+                
                 self.setMenuTitle(statusbarText)
             else:
                 self.state = T('osx-menu-status-idle')
@@ -399,6 +402,7 @@ class SABnzbdDelegate(NSObject):
                 self.state_menu_item.setTitle_("%s" % (self.state))
             else:
                 self.state_menu_item.setTitle_("%s" % (self.info))
+                
         except :
             logging.info("[osx] stateUpdate Exception %s" % (sys.exc_info()[0]))
             
