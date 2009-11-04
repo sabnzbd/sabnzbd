@@ -52,8 +52,10 @@ def unicoder(p):
     """ Make sure a Unicode string is returned """
     if isinstance(p, unicode):
         return p
-    else:
+    elif isinstance(p, str):
         return p.decode('latin-1', 'replace')
+    else:
+        return unicode(str(p))
 
 def unicode2local(p):
     """ Convert Unicode filename to appropriate local encoding
@@ -67,11 +69,15 @@ def unicode2local(p):
 def xml_name(p, keep_escape=False, encoding=None):
     """ Prepare name for use in HTML/XML contect """
 
-    if type(p) != type(u''):
+    if isinstance(p, unicode):
+        pass
+    elif isinstance(p, str):
         if sabnzbd.DARWIN or encoding == 'utf-8':
             p = p.decode('utf-8', 'replace')
         else:
             p = p.decode('Latin-1', 'replace')
+    else:
+        p = str(p)
 
     if keep_escape:
         return p.encode('ascii', 'xmlcharrefreplace')
@@ -85,9 +91,12 @@ def encode_for_xml(ustr, encoding='ascii'):
     Encode unicode_data for use as XML or HTML, with characters outside
     of the encoding converted to XML numeric character references.
     """
-    if type(ustr) != type(u''):
+    if isinstance(ustr, unicode):
+        pass
+    elif isinstance(ustr, str):
         ustr = ustr.decode('Latin-1', 'replace')
-
+    else:
+        ustr = unicode(str(ustr))
     return ustr.encode(encoding, 'xmlcharrefreplace')
 
 

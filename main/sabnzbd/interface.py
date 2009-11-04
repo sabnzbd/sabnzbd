@@ -3281,7 +3281,7 @@ class xml_factory:
         elif isinstance(lst, tuple):
             text = self._tuple(keyw, lst)
         elif keyw:
-            text = '<%s>%s</%s>\n' % (keyw, xml_name(str(lst), encoding='utf-8'), keyw)
+                text = '<%s>%s</%s>\n' % (keyw, xml_name(lst, encoding='utf-8'), keyw)
         else:
             text = ''
         return text
