@@ -643,13 +643,10 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Queue sort (6-in-1)
 			$('#queue_sort_list .queue_sort').click(function(event) {
-				var rel = $(event.target).attr('rel');
-				if (!rel) // beware clicking on <small> tags
-					rel = $(event.target).parent().attr('rel');
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: {mode:'queue', name: sort, sort: rel, apikey: $.plush.apikey},
+					data: {mode:'queue', name:'sort', sort: $(this).attr('rel'), dir: $(this).attr('rel2'), apikey: $.plush.apikey},
 					success: $.plush.refreshQueue
 				});
 			});
