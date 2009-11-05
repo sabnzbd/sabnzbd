@@ -623,15 +623,13 @@ class MainPage:
 
         if mode == 'addfile':
             # When uploading via flash it will send the nzb in a kw arg called Filedata
-            flash_upload = kwargs.get('Filedata')
-            if flash_upload:
-                name = flash_upload
+            if name is None or isinstance(name, str) or isinstance(name, unicode):
+                name = kwargs.get('Filedata')
             # Normal upload will send the nzb in a kw arg called nzbfile
-            normal_upload = kwargs.get('nzbfile')
-            if normal_upload:
-                name = normal_upload
+            if name is None or isinstance(name, str) or isinstance(name, unicode):
+                name = kwargs.get('nzbfile')
 
-            if name.filename and name.value:
+            if name is not None and name.filename and name.value:
                 sabnzbd.add_nzbfile(name, pp, script, cat, priority, nzbname)
                 return report(output)
             else:
