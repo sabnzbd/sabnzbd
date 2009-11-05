@@ -1,5 +1,5 @@
 *************************************
-*** This is SABnzbd 0.5.0Beta1    ***
+*** This is SABnzbd 0.5.0Alpha9   ***
 *************************************
 SABnzbd is an open-source cross-platform binary newsreader.
 It simplifies the process of downloading from Usenet dramatically,
@@ -15,13 +15,13 @@ http://sabnzbd.wikidot.com/
 
 **WARNING**   **WARNING**   **WARNING**
 
-This is Beta software, we know it's not fully mature.
+This is ALpha software, we know it's not fully mature.
 Use at your own risk.
 Don't blame us if your downloads fail.
 
 You are invited to file problem reports on our forum:
 http://forums.sabnzbd.org
-Board = "Beta Releases"
+Board = "Release Testers"
 
 **WARNING**   **WARNING**   **WARNING**
 
@@ -38,7 +38,7 @@ We promise that this is the last time you lose your history.
 
 
 *******************************************
-*** Changes since 0.4.7                 ***
+*** Changes since 0.4.12                ***
 *******************************************
 Core Stuff:
 * File Quick-Check - We can now skip par2 verification altogether in some cases by performing
