@@ -102,27 +102,6 @@ def PatchVersion(name):
     except:
         print "WARNING: cannot patch " + VERSION_FILE
 
-
-    if py2app:
-        import codecs
-        try:
-            verapp = codecs.open(VERSION_FILEAPP,"rb","utf-16-le")
-            textapp = verapp.read()
-            verapp.close()
-        except:
-            print "WARNING: cannot patch " + VERSION_FILEAPP
-            return
-
-        textapp = textapp.replace(u'0.4.0' , name)
-
-        try:
-            verapp = codecs.open(VERSION_FILEAPP,"wb","utf-16-le")
-            verapp.write(textapp)
-            verapp.close()
-        except:
-            print "WARNING: cannot patch " + VERSION_FILEAPP
-
-
 def PairList(src):
     """ Given a list of files and dirnames,
         return a list of (destn-dir, sourcelist) tuples.
@@ -336,8 +315,13 @@ if target == 'app':
     
     APP = ['SABnzbd.py']
     DATA_FILES = ['interfaces','language','osx/osx',('',glob.glob("osx/resources/*"))]
-    OPTIONS = {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns', 'plist':{'NSUIElement':1}}
-
+    OPTIONS = {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
+       'NSUIElement':1,
+       #'CFBundleName':'SABnzbd+',
+       'CFBundleShortVersionString':release,
+       'NSHumanReadableCopyright':'The SABnzbd-Team',
+       'CFBundleIdentifier':'org.sabnzbd.team'}}
+    
     setup(
         app=APP,
         data_files=DATA_FILES,
@@ -345,12 +329,12 @@ if target == 'app':
         setup_requires=['py2app'],
     )
 
-    #copy builded app to mounted sparseimage
+    #copy unrar & par2 binary to avoid striping
     os.system("cp -pr osx/osx dist/SABnzbd.app/Contents/Resources/>/dev/null")
     os.system("chmod +x dist/SABnzbd.app/Contents/Resources/update>/dev/null")
-    #os.system("chmod +x dist/SABnzbd.app/Contents/Resources/osx/unrar/unrar>/dev/null")
-    #os.system("chmod +x dist/SABnzbd.app/Contents/Resources/osx/par2/par2-classic>/dev/null")
+    os.system("find dist/SABnzbd.app -name .svn | xargs rm -rf")
 
+    #copy builded app to mounted sparseimage
     os.system("cp -r dist/SABnzbd.app /Volumes/SABnzbd/>/dev/null")
 
     #cleanup src dir
