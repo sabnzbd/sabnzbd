@@ -208,9 +208,11 @@ Section Uninstall
 
     ; Delete installation files are carefully as possible
     ; Using just rmdir /r "$instdir" is considered unsafe!
-    RMDir /r "$INSTDIR\interfaces\Default"
+    RMDir /r "$INSTDIR\language"
+    RMDir /r "$INSTDIR\interfaces\Classic"
     RMDir /r "$INSTDIR\interfaces\Plush"
     RMDir /r "$INSTDIR\interfaces\smpl"
+    RMDir /r "$INSTDIR\interfaces\Mobile"
     RMDir /r "$INSTDIR\interfaces\wizard"
     RMDir "$INSTDIR\interfaces"
     RMDir /r "$INSTDIR\win\par2"
