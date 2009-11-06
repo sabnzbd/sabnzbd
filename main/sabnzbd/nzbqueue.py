@@ -104,6 +104,10 @@ class NzbQueue(TryList):
                            self.__downloaded_items), QUEUE_FILE_NAME)
 
     @synchronized(NZBQUEUE_LOCK)
+    def set_top_only(self, value):
+        self.__top_only = value
+
+    @synchronized(NZBQUEUE_LOCK)
     def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY, nzbname=None):
         """ Create and return a placeholder nzo object """
         future_nzo = NzbObject(msg, 0, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status="Grabbing")
@@ -880,6 +884,9 @@ def generate_future(msg, pp, script, cat, url, priority, nzbname):
     global __NZBQ
     if __NZBQ: return __NZBQ.generate_future(msg, pp, script, cat, url, priority, nzbname)
 
+def set_top_only(value):
+    global __NZBQ
+    if __NZBQ: __NZBQ.set_top_only(value)
 
 #-------------------------------------------------------------------------------
 # Synchronized wrappers

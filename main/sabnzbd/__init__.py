@@ -197,6 +197,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cfg.HTTPS_KEY.callback(guard_restart)
     cfg.ENABLE_HTTPS.callback(guard_restart)
     cfg.BANDWIDTH_LIMIT.callback(guard_speedlimit)
+    cfg.TOP_ONLY.callback(guard_top_only)
 
     ### Set cache limit
     articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY.get())
@@ -329,6 +330,10 @@ def guard_restart():
 def guard_speedlimit():
     """ Callback for change of bandwidth_limit, sets actual speed """
     downloader.limit_speed(cfg.BANDWIDTH_LIMIT.get_int())
+
+def guard_top_only():
+    """ Callback for change of top_only option """
+    nzbqueue.set_top_only(cfg.TOP_ONLY.get())
 
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
