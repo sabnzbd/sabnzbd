@@ -226,7 +226,7 @@ def GetMD5Hashes(fname):
                 table[name] = hash
             header = f.read(8)
 
-    except struct.error, IndexError:
+    except (struct.error, IndexError):
         logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
         table = {}
     except:

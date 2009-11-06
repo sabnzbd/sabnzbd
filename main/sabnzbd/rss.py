@@ -262,7 +262,7 @@ class RSSQueue:
 
             try:
                 link = _get_link(uri, entry)
-            except AttributeError, IndexError:
+            except (AttributeError, IndexError):
                 link = None
                 logging.error('Incompatible feed %s', uri)
                 logging.debug("Traceback: ", exc_info = True)
