@@ -678,11 +678,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         except:
             msg = sys.exc_info()[1]
             nzo.set_fail_msg(T('error-repairFailed@1') % msg)
-            #Cause a crash when reparing par2 sets with accents
-#            try:
-            logging.error(T('error-filePar2@2'), msg, setname)
-#            except:
-#                pass
+            logging.error(T('error-filePar2@2'), msg, unicoder(setname))
             return readd, result
 
     try:
@@ -816,7 +812,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
                          format_time_string(time() - start))
             finished = 1
 
-        elif line.startswith(T('msg-repairNeeded')):
+        elif line.startswith('Repair is required'):
             nzo.set_unpack_info('Repair', T('msg-repairNeeded@2') % (unicoder(setname), format_time_string(time() - start)), set=setname)
             logging.info('Verified in %s, repair is required',
                           format_time_string(time() - start))
