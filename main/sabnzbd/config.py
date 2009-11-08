@@ -27,7 +27,7 @@ import sabnzbd.constants as constants
 from sabnzbd.utils import listquote
 from sabnzbd.utils import configobj
 from sabnzbd.decorators import synchronized
-from sabnzbd.lang import T
+from sabnzbd.lang import Ta
 
 CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()
@@ -630,7 +630,7 @@ def read_config(path):
             fp.write("__version__=%s\n[misc]\n[logging]\n" % __CONFIG_VERSION)
             fp.close()
         except IOError:
-            logging.error(T('error-createIni@1'), path)
+            logging.error(Ta('error-createIni@1'), path)
             return False
 
     try:
@@ -644,7 +644,7 @@ def read_config(path):
         except ValueError:
             CFG['__version__'] = __CONFIG_VERSION
     except configobj.ConfigObjError, strerror:
-        logging.error(T('error-badIni@1'), path)
+        logging.error(Ta('error-badIni@1'), path)
         return False
 
     compatibility_fix(CFG['misc'])
@@ -823,7 +823,7 @@ def decode_password(pw, name):
             try:
                 ch = chr( int(pw[n] + pw[n+1],16) )
             except:
-                logging.error(T('error-encPw@1'), name)
+                logging.error(Ta('error-encPw@1'), name)
                 return ''
             decPW += ch
         return decPW

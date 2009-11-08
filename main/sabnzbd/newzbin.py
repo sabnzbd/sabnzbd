@@ -43,7 +43,7 @@ from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
 import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
 
 ################################################################################
@@ -201,7 +201,7 @@ class MSGIDGrabber(Thread):
                 try:
                     sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
                 except:
-                    logging.error(T('error-nbUpdate@1'), msgid)
+                    logging.error(Ta('error-nbUpdate@1'), msgid)
                     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, False)
                 msgid = None
             else:
@@ -297,26 +297,26 @@ def _grabnzb(msgid):
         return int(wait+1), None, None, None
 
     if rcode in ('402'):
-        logging.warning(T('warn-nbCredit'))
+        logging.warning(Ta('warn-nbCredit'))
         return nothing
 
     if rcode in ('401'):
-        logging.warning(T('warn-nbNoAuth'))
+        logging.warning(Ta('warn-nbNoAuth'))
         return nothing
 
     if rcode in ('400', '404'):
-        logging.error(T('error-nbReport@1'), msgid)
+        logging.error(Ta('error-nbReport@1'), msgid)
         return nothing
 
     if rcode != '200':
-        logging.error(T('error-nbUnkownError@2'), rcode, rtext)
+        logging.error(Ta('error-nbUnkownError@2'), rcode, rtext)
         return nothing
 
     # Process data
     report_name = response.getheader('X-DNZB-Name')
     report_cat  = response.getheader('X-DNZB-Category')
     if not (report_name and report_cat):
-        logging.error(T('error-nbInfo@1'), msgid)
+        logging.error(Ta('error-nbInfo@1'), msgid)
         return nothing
 
     # sanitize report_name
@@ -395,9 +395,9 @@ class Bookmarks:
         if rcode == '204':
             logging.debug("No bookmarks set")
         elif rcode in ('401', '403'):
-            logging.warning(T('warn-nbNoAuth'))
+            logging.warning(Ta('warn-nbNoAuth'))
         elif rcode in ('402'):
-            logging.warning(T('warn-nbCredit'))
+            logging.warning(Ta('warn-nbCredit'))
         elif rcode in ('500', '503'):
             _warn_user('Newzbin has a server problem (%s).' % rcode)
         elif rcode == '200':
@@ -406,7 +406,7 @@ class Bookmarks:
                     logging.info('Deleted newzbin bookmark %s', delete)
                     self.bookmarks.remove(delete)
                 else:
-                    logging.warning(T('warn-nbNoDelBM@1'), delete)
+                    logging.warning(Ta('warn-nbNoDelBM@1'), delete)
             else:
                 for line in data.split('\n'):
                     try:
@@ -418,7 +418,7 @@ class Bookmarks:
                         logging.info("Found new bookmarked msgid %s (%s)", msgid, text)
                         sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.DIRSCAN_PRIORITY.get())
         else:
-            logging.error(T('error-nbUnkownError@1'), rcode)
+            logging.error(Ta('error-nbUnkownError@1'), rcode)
 
         self.__busy = False
 

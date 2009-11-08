@@ -37,7 +37,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.bpsmeter as bpsmeter
 import sabnzbd.scheduler
 import sabnzbd.nzbqueue
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 #------------------------------------------------------------------------------
 # Timeout penalty in minutes for each cause
@@ -258,7 +258,7 @@ class Downloader(Thread):
                 primary = True
 
         if not primary:
-            logging.warning(T('warn-noActiveServers'))
+            logging.warning(Ta('warn-noActiveServers'))
 
         self.decoder = Decoder(self.servers)
 
@@ -375,7 +375,7 @@ class Downloader(Thread):
                             server.bad_cons = 0
                             server.active = False
                             server.errormsg = T('warn-ignoreServer@2') % ('', _PENALTY_TIMEOUT)
-                            logging.warning(T('warn-ignoreServer@2'), server.id, _PENALTY_TIMEOUT)
+                            logging.warning(Ta('warn-ignoreServer@2'), server.id, _PENALTY_TIMEOUT)
                             self.plan_server(server.id, _PENALTY_TIMEOUT)
 
                 if server.restart:
@@ -428,7 +428,7 @@ class Downloader(Thread):
                                 nw.init_connect()
                                 self.write_fds[nw.nntp.sock.fileno()] = nw
                             except:
-                                logging.error(T('error-noInit@3'),
+                                logging.error(Ta('error-noInit@3'),
                                                   nw.thrdnum, server.host,
                                                   server.port)
                                 logging.debug("Traceback: ", exc_info = True)
@@ -557,34 +557,34 @@ class Downloader(Thread):
                                 (ecode == '481' and clues_too_many(msg)):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 if server.active:
-                                    server.errormsg = T('error-serverTooMany@2') % ('', '')
-                                    logging.error(T('error-serverTooMany@2'), server.host, server.port)
+                                    server.errormsg = Ta('error-serverTooMany@2') % ('', '')
+                                    logging.error(Ta('error-serverTooMany@2'), server.host, server.port)
                                     self.__reset_nw(nw, None, warn=False, destroy=True)
                                     server.threads -= 1
                             elif ecode in ('502', '481') and clues_too_many_ip(msg):
                                 # Account sharing?
                                 if server.active:
-                                    server.errormsg = T('error-accountSharing')
+                                    server.errormsg = Ta('error-accountSharing')
                                     name = ' (%s:%s)' % (server.host, server.port)
-                                    logging.error(T('error-accountSharing') + name)
+                                    logging.error(Ta('error-accountSharing') + name)
                                     penalty = _PENALTY_SHARE
                             elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
-                                    server.errormsg = T('error-serverLogin@1') % ''
-                                    logging.error(T('error-serverLogin@1'), '%s:%s' % (server.host, server.port))
+                                    server.errormsg = Ta('error-serverLogin@1') % ''
+                                    logging.error(Ta('error-serverLogin@1'), '%s:%s' % (server.host, server.port))
                                 block = True
                             elif ecode == '502':
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    server.errormsg = T('warn-noConnectServer@2') % ('', msg)
-                                    logging.warning(T('warn-noConnectServer@2'), '%s:%s' % (server.host, server.port), msg)
+                                    server.errormsg = Ta('warn-noConnectServer@2') % ('', msg)
+                                    logging.warning(Ta('warn-noConnectServer@2'), '%s:%s' % (server.host, server.port), msg)
                                 penalty = _PENALTY_502
                             else:
                                 # Unknown error, just keep trying
                                 if server.active:
-                                    server.errormsg = T('error-serverNoConn@2') % ('', msg)
-                                    logging.error(T('error-serverNoConn@2'),  '%s:%s' % (server.host, server.port), msg)
+                                    server.errormsg = Ta('error-serverNoConn@2') % ('', msg)
+                                    logging.error(Ta('error-serverNoConn@2'),  '%s:%s' % (server.host, server.port), msg)
                                     penalty = _PENALTY_UNKNOWN
                             if block or (penalty and server.optional):
                                 if server.active:
@@ -595,7 +595,7 @@ class Downloader(Thread):
                                 self.__reset_nw(nw, None, warn=False)
                             continue
                         except:
-                            logging.error(T('error-serverFailed@4'),
+                            logging.error(Ta('error-serverFailed@4'),
                                               nw.thrdnum,
                                               nw.server.host, nw.server.port, nw.lines[0])
                             # No reset-warning needed, above logging is sufficient
@@ -704,7 +704,7 @@ class Downloader(Thread):
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except:
-            logging.error(T('error-except'))
+            logging.error(Ta('error-except'))
             self.__reset_nw(nw, "server broke off connection")
 
     #------------------------------------------------------------------------------

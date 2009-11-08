@@ -32,7 +32,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.misc as misc
 
 import sabnzbd.utils.feedparser as feedparser
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 __RSS = None  # Global pointer to RSS-scanner instance
 
@@ -121,7 +121,7 @@ def ConvertFilter(text):
     try:
         return re.compile(txt, re.I)
     except:
-        logging.error(T('error-rssRegex@1'), text)
+        logging.error(Ta('error-rssRegex@1'), text)
         return None
 
 
@@ -245,12 +245,12 @@ class RSSQueue:
         d = feedparser.parse(uri.replace('feed://', 'http://'))
         logging.debug("Done parsing %s", uri)
         if not d:
-            logging.warning(T('warn-failRSS@1'), uri)
+            logging.warning(Ta('warn-failRSS@1'), uri)
             return
 
         entries = d.get('entries')
         if 'bozo_exception' in d and not entries:
-            logging.warning(T('warn-failRSS@2'), uri, str(d['bozo_exception']))
+            logging.warning(Ta('warn-failRSS@2'), uri, str(d['bozo_exception']))
             return
         if not entries:
             logging.info("RSS Feed was empty: %s", uri)
@@ -463,5 +463,5 @@ def _get_link(uri, entry):
     if link and link.lower().find('http') >= 0:
         return link
     else:
-        logging.warning(T('warn-emptyRSS@1'), link)
+        logging.warning(Ta('warn-emptyRSS@1'), link)
         return None

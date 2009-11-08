@@ -31,7 +31,7 @@ import subprocess
 import time
 import cherrypy
 from threading import RLock, Lock, Condition, Thread
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 #------------------------------------------------------------------------
 # Determine platform flags
@@ -134,7 +134,7 @@ def sig_handler(signum = None, frame = None):
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if type(signum) != type(None):
-        logging.warning(T('warn-signal@1'), signum)
+        logging.warning(Ta('warn-signal@1'), signum)
     try:
         save_state()
     finally:
@@ -352,7 +352,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
 
         newzbin.grab(msgid, future_nzo)
     else:
-        logging.error(T('error-fetchNewzbin@1'), msgid)
+        logging.error(Ta('error-fetchNewzbin@1'), msgid)
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
@@ -452,7 +452,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         os.write(f, nzbfile.value)
         os.close(f)
     except:
-        logging.error(T('error-tempFile@1'), filename)
+        logging.error(Ta('error-tempFile@1'), filename)
         logging.debug("Traceback: ", exc_info = True)
 
     if ext.lower() in ('.zip', '.rar'):
@@ -468,7 +468,7 @@ def enable_server(server):
     try:
         config.get_config('servers', server).enable.set(1)
     except:
-        logging.warning(T('warn-noServer@1'), server)
+        logging.warning(Ta('warn-noServer@1'), server)
         return
     config.save_config()
     downloader.update_server(server, server)
@@ -479,7 +479,7 @@ def disable_server(server):
     try:
         config.get_config('servers', server).enable.set(0)
     except:
-        logging.warning(T('warn-noServer@1'), server)
+        logging.warning(Ta('warn-noServer@1'), server)
         return
     config.save_config()
     downloader.update_server(server, server)
@@ -594,7 +594,7 @@ def keep_awake():
 def CheckFreeSpace():
     if cfg.DOWNLOAD_FREE.get() and not downloader.paused():
         if misc.diskfree(cfg.DOWNLOAD_DIR.get_path()) < cfg.DOWNLOAD_FREE.get_float() / GIGI:
-            logging.warning(T('warn-noSpace'))
+            logging.warning(Ta('warn-noSpace'))
             # Pause downloader, but don't save, since the disk is almost full!
             downloader.pause_downloader(save=False)
             email.diskfull()
@@ -613,7 +613,7 @@ def get_new_id(prefix):
         head, tail = os.path.split(l)
         return tail
     except:
-        logging.error(T('error-failMkstemp'))
+        logging.error(Ta('error-failMkstemp'))
         logging.debug("Traceback: ", exc_info = True)
 
 
@@ -634,7 +634,7 @@ def save_data(data, _id, do_pickle = True, doze=0):
         _f.flush()
         _f.close()
     except:
-        logging.error(T('error-saveX@1'), path)
+        logging.error(Ta('error-saveX@1'), path)
         logging.debug("Traceback: ", exc_info = True)
 
 
@@ -660,7 +660,7 @@ def load_data(_id, remove = True, do_pickle = True):
         if remove:
             remove_data(_id)
     except:
-        logging.error(T('error-loading@1'), path)
+        logging.error(Ta('error-loading@1'), path)
         logging.debug("Traceback: ", exc_info = True)
 
     return data

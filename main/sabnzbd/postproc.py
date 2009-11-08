@@ -49,7 +49,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
 from sabnzbd.utils import osx
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -143,7 +143,7 @@ class PostProcessor(Thread):
         try:
             version, history_queue = data
             if POSTPROC_QUEUE_VERSION != version:
-                logging.warning(T('warn-badPPQueue@2'), POSTPROC_QUEUE_VERSION, version)
+                logging.warning(Ta('warn-badPPQueue@2'), POSTPROC_QUEUE_VERSION, version)
             if isinstance(history_queue, list):
                 self.history_queue = history_queue
                 return True
@@ -166,7 +166,7 @@ class PostProcessor(Thread):
             self.history_queue.remove(nzo)
         except:
             nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error(T('error-ppDelNzo'), nzo_id)
+            logging.error(Ta('error-ppDelNzo'), nzo_id)
         self.save()
 
     def stop(self):
@@ -328,7 +328,7 @@ class PostProcessor(Thread):
                     if os.path.exists(workdir):
                         os.rmdir(workdir)
                 except:
-                    logging.error(T('error-ppDelWorkdir@1'), workdir)
+                    logging.error(Ta('error-ppDelWorkdir@1'), workdir)
                     logging.debug("Traceback: ", exc_info = True)
 
 
@@ -357,7 +357,7 @@ class PostProcessor(Thread):
                         os.rename(tmp_workdir_complete, workdir_complete)
                         nzo.set_dirname(os.path.basename(workdir_complete))
                     except:
-                        logging.error(T('error-ppRename@2'), tmp_workdir_complete, workdir_complete)
+                        logging.error(Ta('error-ppRename@2'), tmp_workdir_complete, workdir_complete)
                         logging.debug("Traceback: ", exc_info = True)
 
                     if unpackError: jobResult = jobResult + 2
@@ -429,7 +429,7 @@ class PostProcessor(Thread):
             except:
                 #Cause a crash when reparing par2 sets with accents
                 #try:
-                logging.error(T('error-ppFailed@1'), filename)
+                logging.error(Ta('error-ppFailed@1'), filename)
                 #except:
                 #    pass
                 logging.debug("Traceback: ", exc_info = True)
@@ -460,7 +460,7 @@ class PostProcessor(Thread):
                 logging.info('Cleaning up %s', filename)
                 sabnzbd.nzbqueue.cleanup_nzo(nzo)
             except:
-                logging.error(T('error-ppCleanup@1'), nzo.get_dirname())
+                logging.error(Ta('error-ppCleanup@1'), nzo.get_dirname())
                 logging.debug("Traceback: ", exc_info = True)
 
             # Remove the nzo from the history_queue list
@@ -482,7 +482,7 @@ def MakeLogFile(name, content):
     try:
         f = open(path, "w")
     except:
-        logging.error(T('error-ppLogFile@1'), path)
+        logging.error(Ta('error-ppLogFile@1'), path)
         logging.debug("Traceback: ", exc_info = True)
         return "a"
     f.write(content)
@@ -508,13 +508,13 @@ def perm_script(wdir, umask):
         try:
             os.chmod(root, umask)
         except:
-            logging.error(T('error-ppPermissions@1'), root)
+            logging.error(Ta('error-ppPermissions@1'), root)
             logging.debug("Traceback: ", exc_info = True)
         for name in files:
             try:
                 os.chmod(join(root, name), umask_file)
             except:
-                logging.error(T('error-ppPermissions@1'), join(root, name))
+                logging.error(Ta('error-ppPermissions@1'), join(root, name))
                 logging.debug("Traceback: ", exc_info = True)
 
 
@@ -581,7 +581,7 @@ def CleanUpList(wdir, skip_nzb):
                     logging.info("Removing unwanted file %s", path)
                     os.remove(path)
                 except:
-                    logging.error(T('error-ppDelFailed@1'), path)
+                    logging.error(Ta('error-ppDelFailed@1'), path)
                     logging.debug("Traceback: ", exc_info = True)
 
 
@@ -649,5 +649,5 @@ def remove_samples(path):
                     logging.info("Removing unwanted sample file %s", path)
                     os.remove(path)
                 except:
-                    logging.error(T('error-ppDelFailed@1'), path)
+                    logging.error(Ta('error-ppDelFailed@1'), path)
                     logging.debug("Traceback: ", exc_info = True)

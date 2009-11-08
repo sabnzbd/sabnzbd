@@ -33,7 +33,7 @@ import sabnzbd
 from sabnzbd.misc import to_units, split_host
 from sabnzbd.codecs import LatinFilter
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 
 ################################################################################
@@ -72,10 +72,10 @@ def send(message):
                     mailconn = smtplib.SMTP(server, port)
                     mailconn.ehlo()
                 except:
-                    logging.error(T('error-mailNoConn'))
+                    logging.error(Ta('error-mailNoConn'))
                     return failure
             else:
-                logging.error(T('error-mailNoConn'))
+                logging.error(Ta('error-mailNoConn'))
                 return failure
 
         # TLS support
@@ -88,7 +88,7 @@ def send(message):
                     mailconn.starttls()
                     mailconn.ehlo()
                 except:
-                    logging.error(T('error-mailTLS'))
+                    logging.error(Ta('error-mailTLS'))
                     return failure
 
         # Authentication
@@ -96,7 +96,7 @@ def send(message):
             try:
                 mailconn.login(cfg.EMAIL_ACCOUNT.get(), cfg.EMAIL_PWD.get())
             except:
-                logging.error(T('error-mailAuth'))
+                logging.error(Ta('error-mailAuth'))
                 return failure
 
         try:
@@ -104,13 +104,13 @@ def send(message):
                 message = message.encode('utf8')
             mailconn.sendmail(cfg.EMAIL_FROM.get(), cfg.EMAIL_TO.get(), message)
         except:
-            logging.error(T('error-mailSend'))
+            logging.error(Ta('error-mailSend'))
             return failure
 
         try:
             mailconn.close()
         except:
-            logging.warning(T('warn-noEmailClose'))
+            logging.warning(Ta('warn-noEmailClose'))
 
         logging.info("Notification e-mail succesfully sent")
         return T('msg-emailOK')
@@ -154,7 +154,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
         try:
             lst = glob.glob(os.path.join(path, '*.tmpl'))
         except:
-            logging.error(T('error-mailTempl@1'), path)
+            logging.error(Ta('error-mailTempl@1'), path)
     else:
         path = os.path.join(sabnzbd.DIR_PROG, DEF_LANGUAGE)
         path = os.path.join(path, 'email-%s.tmpl' % cfg.LANGUAGE.get())

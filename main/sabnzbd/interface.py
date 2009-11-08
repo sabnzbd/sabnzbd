@@ -58,7 +58,7 @@ import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 
 from sabnzbd.constants import *
-from sabnzbd.lang import T, Tspec, list_languages, reset_language
+from sabnzbd.lang import T, Ta, Tspec, list_languages, reset_language
 
 #------------------------------------------------------------------------------
 # Global constants
@@ -195,11 +195,11 @@ def check_session(kwargs):
         key = kwargs.get('apikey')
     msg = None
     if not key:
-        logging.warning(T('warn-missingKey'))
+        logging.warning(Ta('warn-missingKey'))
         msg = T('error-missingKey')
         pass
     elif key != cfg.API_KEY.get():
-        logging.warning(T('warn-badKey'))
+        logging.warning(Ta('warn-badKey'))
         msg = T('error-badKey')
         pass
     return msg
@@ -212,7 +212,7 @@ def check_apikey(kwargs, nokey=False):
         if kwargs.get('ma_username') == cfg.USERNAME.get() and kwargs.get('ma_password') == cfg.PASSWORD.get():
             pass
         else:
-            logging.warning(T('warn-authMissing'))
+            logging.warning(Ta('warn-authMissing'))
             return report(output, 'Missing authentication')
 
     if cfg.DISABLE_KEY.get() or nokey:
@@ -221,10 +221,10 @@ def check_apikey(kwargs, nokey=False):
         key = kwargs.get('apikey')
 
         if not key:
-            logging.warning(T('warn-apikeyNone'))
+            logging.warning(Ta('warn-apikeyNone'))
             return report(output, 'API Key Required')
         elif key != cfg.API_KEY.get():
-            logging.warning(T('warn-apikeyBad'))
+            logging.warning(Ta('warn-apikeyBad'))
             return report(output, 'API Key Incorrect')
         else:
             return None
@@ -3135,7 +3135,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
         try:
             re_search = re.compile(search_text, re.I)
         except:
-            logging.error(T('error-regex@1'), search_text)
+            logging.error(Ta('error-regex@1'), search_text)
             return False
         return re_search.search(text)
 

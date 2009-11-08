@@ -30,7 +30,7 @@ import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename, get_ext
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
@@ -264,7 +264,7 @@ class SeriesSorter:
             return True
 
         except:
-            logging.error(T('error-tvInfo@1'), self.original_dirname)
+            logging.error(Ta('error-tvInfo@1'), self.original_dirname)
             logging.debug("Traceback: ", exc_info = True)
             return False
 
@@ -286,7 +286,7 @@ class SeriesSorter:
         path = path.replace('%sn', self.show_info['show_name'])
         path = path.replace('%s.n', self.show_info['show_name_two'])
         path = path.replace('%s_n', self.show_info['show_name_three'])
-        
+
         # Replace season number
         path = path.replace('%s', self.show_info['season_num'])
         path = path.replace('%0s', self.show_info['season_num_alt'])
@@ -296,7 +296,7 @@ class SeriesSorter:
             path = path.replace('%en', self.show_info['ep_name'])
             path = path.replace('%e.n', self.show_info['ep_name_two'])
             path = path.replace('%e_n', self.show_info['ep_name_three'])
-            
+
         # If no descriptions were found we need to replace %en and eat up surrounding characters
         path = removeDescription(path, '%e[\._]?n')
 
@@ -329,29 +329,29 @@ class SeriesSorter:
         logging.debug("Renaming Series")
         renamed = None
         largest = (None, None, 0)
-        
+
         def to_filepath(f, current_path):
             if is_full_path(f):
                 filepath = f.replace('_UNPACK_', '')
             else:
                 filepath = os.path.join(current_path, f)
             return filepath
-                
+
         # Create a generator of filepaths, ignore sample files and excluded files (vobs ect)
         filepaths = ((file, to_filepath(file, current_path)) for file in files if not RE_SAMPLE.search(file) \
                      and get_ext(file) not in EXCLUDED_FILE_EXTS)
-        
+
         # Find the largest existing file
         for file, fp in filepaths:
             # If for some reason the file no longer exists, skip
             if not os.path.exists(fp):
                 continue
-            
+
             size = os.stat(fp).st_size
             f_file, f_fp, f_size = largest
             if size > f_size:
                 largest = (file, fp, size)
-                
+
         file, filepath, size = largest
         # >20MB
         if filepath and size > 20971520:
@@ -586,10 +586,10 @@ class GenericSorter:
                     logging.debug("Rename: %s to %s", filepath,newpath)
                     os.rename(filepath,newpath)
                 except:
-                    logging.error(T('error-tvRename@2'), filepath,newpath)
+                    logging.error(Ta('error-tvRename@2'), filepath, newpath)
                     logging.debug("Traceback: ", exc_info = True)
                 rename_similar(current_path, file, self.filename_set)
-                
+
         ## Sequence File Handling
         # if there is more than one extracted file check for CD1/1/A in the title
         elif self.extra:
@@ -608,7 +608,7 @@ class GenericSorter:
                         logging.debug("Rename: %s to %s", filepath,newpath)
                         os.rename(filepath,newpath)
                     except:
-                        logging.error(T('error-tvRename@2'), filepath,newpath)
+                        logging.error(Ta('error-tvRename@2'), filepath, newpath)
                         logging.debug("Traceback: ", exc_info = True)
                     rename_similar(current_path, file, self.filename_set)
             else:
@@ -800,7 +800,7 @@ class DateSorter:
                                 logging.debug("Rename: %s to %s", filepath,newpath)
                                 os.rename(filepath,newpath)
                             except:
-                                logging.error(T('error-tvRename@2'), current_path, newpath)
+                                logging.error(Ta('error-tvRename@2'), current_path, newpath)
                                 logging.debug("Traceback: ", exc_info = True)
                             rename_similar(current_path, file, self.filename_set)
                             break
@@ -811,13 +811,13 @@ def getTitles(match, name):
     '''
     The title will be the part before the match
     Clean it up and title() it
-    
+
     ''.title() isn't very good under python so this contains
     a lot of little hacks to make it better and for more control
     '''
     if match:
         name = name[:match.start()]
-    
+
     # Replace .US. with (US)
     if cfg.TV_SORT_COUNTRIES.get() == 1:
         for rep in COUNTRY_REP:
@@ -835,16 +835,16 @@ def getTitles(match, name):
             name = replace_word(name, rep, '')
             dotted_country = '.%s.' % (rep.strip('()'))
             # Remove .US.
-            name = replace_word(name, dotted_country, '.')         
-        
+            name = replace_word(name, dotted_country, '.')
+
     title = name.replace('.', ' ').replace('_', ' ')
     title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
-    
+
     title = title.title() # title the show name so it is in a consistant letter case
-    
+
     #title applied uppercase to 's Python bug?
     title = title.replace("'S", "'s")
-    
+
     # Replace titled country names, (Us) with (US) and so on
     if cfg.TV_SORT_COUNTRIES.get() == 1:
         for rep in COUNTRY_REP:
@@ -853,21 +853,21 @@ def getTitles(match, name):
     elif cfg.TV_SORT_COUNTRIES.get() == 2:
         for rep in COUNTRY_REP:
             title = title.replace(rep.title(), '').strip()
-            
+
     # Make sure some words such as 'and' or 'of' stay lowercased.
     for x in LOWERCASE:
         xtitled = x.title()
         title = replace_word(title, xtitled, x)
-                
+
     # Make sure some words such as 'III' or 'IV' stay uppercased.
     for x in UPPERCASE:
         xtitled = x.title()
         title = replace_word(title, xtitled, x)
-        
+
     # The title with spaces replaced by dots
     dots = title.replace(" - ", "-").replace(' ','.').replace('_','.')
     dots = dots.replace('(', '.').replace(')','.').replace('..','.').rstrip('.')
-    
+
     # The title with spaces replaced by underscores
     underscores = title.replace(' ','_').replace('.','_').replace('__','_').rstrip('_')
 
@@ -972,7 +972,7 @@ def rename_similar(path, file, name):
                         logging.debug("Rename: %s to %s", fpath,newpath)
                         os.rename(fpath,newpath)
                     except:
-                        logging.error(T('error-tvSimRename@2'), path, newpath)
+                        logging.error(Ta('error-tvSimRename@2'), path, newpath)
                         logging.debug("Traceback: ", exc_info = True)
 
 

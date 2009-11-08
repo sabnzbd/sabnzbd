@@ -42,6 +42,11 @@ def T(txt):
         return '#' + txt + '#' + ' %s'*num
 
 
+def Ta(txt):
+    """ Translate acronym, return  latin-1 encoding """
+    return T(txt).encode('latin-1', 'replace')
+
+
 def Tspec(txt):
     """ Translate special terms """
     if txt == 'None':

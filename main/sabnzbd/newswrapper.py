@@ -28,7 +28,7 @@ import logging
 
 import sabnzbd
 from sabnzbd.constants import *
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 try:
     from OpenSSL import SSL
@@ -121,10 +121,10 @@ class NNTP:
                 ctx = _ssl.Context(_ssl.SSLv3_METHOD)
             else:
                 ctx = _ssl.Context(_ssl.SSLv23_METHOD)
-                
+
             self.sock = SSLConnection(ctx, socket.socket(af, socktype, proto))
         elif sslenabled and not _ssl:
-            logging.error(T('error-noSSL'))
+            logging.error(Ta('error-noSSL'))
             self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)

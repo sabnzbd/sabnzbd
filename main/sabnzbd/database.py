@@ -38,7 +38,8 @@ from threading import Thread
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_VERSION, DB_HISTORY_NAME
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
+from sabnzbd.codecs import unicoder
 
 __HISTORY_DB = None  # Will contain full path to history database
 
@@ -79,7 +80,7 @@ class HistoryDB:
                 self.save()
             return True
         except:
-            logging.error(T('error-sqlCmd'))
+            logging.error(Ta('error-sqlCmd'))
             logging.debug("SQL: %s" , command)
             logging.debug("Traceback: ", exc_info = True)
             try:
@@ -122,7 +123,7 @@ class HistoryDB:
         try:
             self.con.commit()
         except:
-            logging.error(T('error-sqlCommit'))
+            logging.error(Ta('error-sqlCommit'))
             logging.debug("Traceback: ", exc_info = True)
 
     def close(self):
@@ -130,7 +131,7 @@ class HistoryDB:
             self.c.close()
             self.con.close()
         except:
-            logging.error(T('error-sqlClose'))
+            logging.error(Ta('error-sqlClose'))
             logging.debug("Traceback: ", exc_info = True)
 
     def remove_all(self):
@@ -336,7 +337,7 @@ def unpack_history_info(item):
         try:
             lines = item['stage_log'].split('\r\n')
         except:
-            logging.error(T('error-badHisNewline@1'), item['name'])
+            logging.error(T('error-badHisNewline@1'), unicoder(item['name']))
             logging.debug('Lines: %s', item['stage_log'])
             lines = []
         item['stage_log'] = []
@@ -353,7 +354,7 @@ def unpack_history_info(item):
             try:
                 logs = logs.split(';')
             except:
-                logging.error(T('error-badHisSemic@1'), item['name'])
+                logging.error(T('error-badHisSemic@1'), unicoder(item['name']))
                 logging.debug('Logs: %s', logs)
                 logs = []
             for log in logs:
@@ -377,7 +378,7 @@ def decode_factory(text):
             return text.decode('Latin-1', 'replace').encode('utf-8', 'replace')
         else:
             return text.decode('utf-8', 'replace')
-        
+
 
     elif isinstance(text, list):
         new_text = []

@@ -33,8 +33,9 @@ import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 from sabnzbd.misc import to_units, cat_to_opts
+from sabnzbd.codecs import unicoder
 
 HAVE_CELEMENTTREE = True
 
@@ -359,7 +360,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             segm = str(''.join(self.article_id))
             if partnum in self.article_db:
                 if segm != self.article_db[partnum][0]:
-                    logging.error(T('error-qDupPart@3'),
+                    logging.error(Ta('error-qDupPart@3'),
                                          partnum, self.article_db[partnum][0], segm)
                 else:
                     logging.info("Skipping duplicate article (%s)", segm)
@@ -377,7 +378,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             # Create an NZF
             self.in_file = False
             if not self.article_db:
-                logging.warning(T('warn-emptyFile@1'), self.filename)
+                logging.warning(Ta('warn-emptyFile@1'), self.filename)
                 return
             tm = datetime.datetime.fromtimestamp(self.file_date)
             nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
@@ -403,7 +404,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.nzo._NzbObject__group = self.groups
         self.nzo._NzbObject__avg_date = datetime.datetime.fromtimestamp(self.avg_age / self.valids)
         if self.skipped_files:
-            logging.warning(T('warn-badImport@2'),
+            logging.warning(Ta('warn-badImport@2'),
                             self.skipped_files, self.nzo.get_filename())
 
     def remove_files(self):
@@ -534,7 +535,7 @@ class NzbObject(TryList):
 
         if sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
-            logging.warning(T('warn-skipDup@1'), filename)
+            logging.warning(Ta('warn-skipDup@1'), filename)
             raise TypeError
 
         handler = NzbParser(self)
@@ -542,7 +543,7 @@ class NzbObject(TryList):
             xml.sax.parseString(nzb, handler)
         except xml.sax.SAXParseException, err:
             handler.remove_files()
-            logging.warning(T('warn-badNZB@3'),
+            logging.warning(Ta('warn-badNZB@3'),
                           filename, err.getMessage(), err.getLineNumber())
             raise ValueError
 
@@ -779,7 +780,7 @@ class NzbObject(TryList):
                     nzf.finish_import()
                     # Still not finished? Something went wrong...
                     if not nzf.import_finished:
-                        logging.error(T('error-qImport@1'), nzf)
+                        logging.error(Ta('error-qImport@1'), nzf)
                         nzf_remove_list.append(nzf)
                         continue
 
@@ -1001,7 +1002,7 @@ class NzbObject(TryList):
                 self.unpack_info[key] = []
             # If set is present, look for previous message from that set and replace
             if set:
-                set = '[%s]' % set
+                set = unicoder('[%s]' % set)
                 for x in xrange(len(self.unpack_info[key])):
                     if set in self.unpack_info[key][x]:
                         self.unpack_info[key][x] = msg

@@ -42,7 +42,7 @@ import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -253,12 +253,12 @@ def _grab_nzbmatrix(url):
         filename = response.info()["Content-Disposition"].split("\"")[1]
     except:
         logging.debug("Traceback: ", exc_info = True)
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))
         return (None, True)
 
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably an invalid report number
-        logging.warning(T('warn-matrixBadRep@1'), msgid)
+        logging.warning(Ta('warn-matrixBadRep@1'), msgid)
         return (None, False)
 
     # save the file to disk
@@ -270,7 +270,7 @@ def _grab_nzbmatrix(url):
         os.write(fn, data)
         os.close(fn)
     except:
-        logging.error(T('error-tvTemp@1'), filename)
+        logging.error(Ta('error-tvTemp@1'), filename)
         logging.debug("Traceback: ", exc_info = True)
         path = None
 
@@ -290,19 +290,19 @@ def matrix_report_error(error_msg):
     """
 
     if error_msg == 'invalid_login':
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))
     elif error_msg == 'invalid_api':
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))
     elif error_msg == 'invalid_nzbid':
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))
     elif error_msg == 'vip_only':
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))
     elif error_msg == 'disabled_account':
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))
     elif error_msg == 'daily_limit':
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))
     elif error_msg == 'no_nzb_found':
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))
     else:
         # Unrecognised error message
-        logging.warning(T('warn-matrixFail'))
+        logging.warning(Ta('warn-matrixFail'))

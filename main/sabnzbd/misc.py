@@ -38,7 +38,7 @@ from sabnzbd.constants import *
 import nzbqueue
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T
+from sabnzbd.lang import T, Ta
 
 if sabnzbd.FOUNDATION:
     import Foundation
@@ -212,13 +212,13 @@ def create_real_path(name, loc, path, umask=False):
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error(T('error-createDir@1'), my_dir)
+                logging.error(Ta('error-createDir@1'), my_dir)
                 return (False, my_dir)
 
         if os.access(my_dir, os.R_OK + os.W_OK):
             return (True, my_dir)
         else:
-            logging.error(T('error-accessDir@2'), name, my_dir)
+            logging.error(Ta('error-accessDir@2'), name, my_dir)
             return (False, my_dir)
     else:
         return (False, "")
@@ -238,14 +238,14 @@ def get_user_shellfolders():
     try:
         hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
     except WindowsError:
-        logging.error(T('error-regConnect'))
+        logging.error(Ta('error-regConnect'))
         return values
 
     # Then open the registry key where Windows stores the Shell Folder locations
     try:
         key = _winreg.OpenKey(hive, "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
     except WindowsError:
-        logging.error(T('error-regOpen@1'), "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
+        logging.error(Ta('error-regOpen@1'), "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
         _winreg.CloseKey(hive)
         return values
 
@@ -272,7 +272,7 @@ def get_user_shellfolders():
         return values
     except WindowsError:
         # On error, return empty dict.
-        logging.error(T('error-regSpecial'))
+        logging.error(Ta('error-regSpecial'))
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
         return {}
@@ -412,7 +412,7 @@ def panic_port(host, port):
 
 def panic_xport(host, port):
     launch_a_browser(panic_message(PANIC_XPORT, host, port))
-    logging.error(T('error-portNoAccess@1'), port)
+    logging.error(Ta('error-portNoAccess@1'), port)
 
 def panic_queue(name):
     launch_a_browser(panic_message(PANIC_QUEUE, name, 0))
@@ -439,7 +439,7 @@ def launch_a_browser(url, force=False):
         try:
             webbrowser.open(url, 1, 1)
         except:
-            logging.warning(T('warn-noBrowser'))
+            logging.warning(Ta('warn-noBrowser'))
             logging.debug("Traceback: ", exc_info = True)
 
 
@@ -693,7 +693,7 @@ def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
-            logging.error(T('error-makeFile@1'), dirpath)
+            logging.error(Ta('error-makeFile@1'), dirpath)
             logging.debug("Traceback: ", exc_info = True)
             return None
     return dirpath
@@ -718,7 +718,7 @@ def move_to_path(path, new_path, unique=True):
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
-                logging.error(T('error-moveFile@2'), path, new_path)
+                logging.error(Ta('error-moveFile@2'), path, new_path)
                 logging.debug("Traceback: ", exc_info = True)
     return new_path
 
@@ -776,7 +776,7 @@ def get_filepath(path, nzo, filename):
 
 def bad_fetch(nzo, url, retry=False, archive=False):
     """ Create History entry for failed URL Fetch """
-    logging.error(T('error-urlGet@1'), url)
+    logging.error(Ta('error-urlGet@1'), url)
 
     pp = nzo.get_pp()
     if pp:
@@ -947,7 +947,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
              TYPE_RSA, TYPE_DSA, serial
     except:
-        logging.warning(T('warn-pyopenssl'))
+        logging.warning(Ta('warn-pyopenssl'))
         return False
 
     # Create the CA Certificate
@@ -966,7 +966,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except:
-        logging.error(T('error-sslFiles'))
+        logging.error(Ta('error-sslFiles'))
         logging.debug("Traceback: ", exc_info = True)
         return False
 
@@ -1036,7 +1036,7 @@ def win_hibernate():
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
         time.sleep(10)
     except:
-        logging.error(T('error-hibernate'))
+        logging.error(Ta('error-hibernate'))
         logging.debug("Traceback: ", exc_info = True)
 
 
@@ -1045,7 +1045,7 @@ def win_standby():
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
         time.sleep(10)
     except:
-        logging.error(T('error-standby'))
+        logging.error(Ta('error-standby'))
         logging.debug("Traceback: ", exc_info = True)
 
 
@@ -1072,7 +1072,7 @@ def osx_shutdown():
     try:
         subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
     except:
-        logging.error(T('error-shutdown'))
+        logging.error(Ta('error-shutdown'))
         logging.debug("Traceback: ", exc_info = True)
     os._exit(0)
 
@@ -1082,7 +1082,7 @@ def osx_standby():
         subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
         time.sleep(10)
     except:
-        logging.error(T('error-standby'))
+        logging.error(Ta('error-standby'))
         logging.debug("Traceback: ", exc_info = True)
 
 
