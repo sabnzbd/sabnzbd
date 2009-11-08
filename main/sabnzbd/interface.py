@@ -229,6 +229,25 @@ def check_apikey(kwargs, nokey=False):
         else:
             return None
 
+
+def del_from_section(kwargs):
+    """ Remove keyword in section """
+    section = kwargs.get('section', '')
+    if section in ('servers', 'rss', 'categories'):
+        keyword = kwargs.get('keyword')
+        if keyword:
+            item = config.get_config(section, keyword)
+            if item:
+                item.delete()
+                del item
+                config.save_config()
+                if section == 'servers':
+                    downloader.update_server(keyword, None)
+        return True
+    else:
+        return False
+
+
 #------------------------------------------------------------------------------
 class NoPage:
     def __init__(self):
@@ -497,6 +516,12 @@ class MainPage:
                 if not res:
                     return report(output, _MSG_NO_SUCH_CONFIG)
             config.save_config()
+
+        if mode == 'del_config':
+            if del_from_section(kwargs):
+                return report(output)
+            else:
+                return report(output, _MSG_NOT_IMPLEMENTED)
 
         if mode in ('get_config', 'set_config'):
             res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
@@ -1794,16 +1819,9 @@ class ConfigServer:
     def delServer(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-
-        if 'server' in kwargs:
-            server = kwargs['server']
-            svr = config.get_config('servers', server)
-            if svr:
-                svr.delete()
-                del svr
-                config.save_config()
-                downloader.update_server(server, None)
-
+        kwargs['section'] = 'servers'
+        kwargs['keyword'] = kwargs.get('server')
+        del_from_section(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
 def handle_server(kwargs, root=None):
@@ -2014,16 +2032,9 @@ class ConfigRss:
     def del_rss_feed(self, *args, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        try:
-            cfg = config.get_rss()[kwargs.get('feed')]
-        except KeyError:
-            cfg = None
-
-        if cfg:
-            cfg.delete()
-            del cfg
-            config.save_config()
-
+        kwargs['section'] = 'rss'
+        kwargs['keyword'] = kwargs.get('feed')
+        del_from_section(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2325,10 +2336,9 @@ class ConfigCats:
     def delete(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        name = kwargs.get('name')
-        if name:
-            config.delete('categories', name)
-            config.save_config()
+        kwargs['section'] = 'categories'
+        kwargs['keyword'] = kwargs.get('name')
+        del_from_section(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
