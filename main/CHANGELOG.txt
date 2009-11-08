@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+0.5.0Alpha10 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+* Fix foreign character problems in file/folder names (introduced with translations)
+* top_only option wasn't changable on-the-fly
+* Windows uninstaller left behind some files
+* Complete the API with the del_config function
+* Plush tweaks
+-------------------------------------------------------------------------------
 0.5.0Alpha9 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 * Fixed bug in handling fetching of additional par2 files
