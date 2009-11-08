@@ -120,48 +120,6 @@
             </ul>
         </li>
         <li>
-            <a class="sf-with-ul">$T('menu-queue')</a>
-            <ul>
-                <li><a>$T('Plush-maxSpeed'):&nbsp;&nbsp;<input type="text" id="maxSpeed-option" size="6" />&nbsp;&nbsp;$T('KBs')</a></li>
-                <li>
-                    <a class="sf-with-ul">$T('Plush-onQueueFinish'):
-                        <select id="onQueueFinish-option">
-                            <option value=""></option>
-                            <optgroup label="$T('eoq-actions')">
-                                <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>$T('shutdownSab')</option>
-                                <!--#if $power_options#-->
-                                <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>$T('shutdownPc')</option>
-                                <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>$T('standbyPc')</option>
-                                <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>$T('hibernatePc')</option>
-                                <!--#end if#-->
-                            </optgroup>
-                            <!--#if $script_list#-->
-                            <optgroup label="$T('eoq-scripts')">
-                                <!--#for $sc in $script_list#-->
-                                <!--#if $sc != 'None'#-->
-                                <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
-                                <!--#end if#-->
-                                <!--#end for#-->
-                            </optgroup>
-                            <!--#end if#-->
-                        </select>
-                    </a>
-                </li>
-                <li>
-                    <a class="sf-with-ul">$T('Plush-sort')</a>
-                    <ul id="queue_sort_list">
-                        <li class="queue_sort pointer" rel="avg_age" rel2="asc"><a>$T('Plush-sortAgeAsc')</a></li>
-                        <li class="queue_sort pointer" rel="avg_age" rel2="desc"><a>$T('Plush-sortAgeDesc')</a></li>
-                        <li class="queue_sort pointer" rel="name" rel2="asc"><a>$T('Plush-sortNameAsc')</a></li>
-                        <li class="queue_sort pointer" rel="name" rel2="desc"><a>$T('Plush-sortNameDesc')</a></li>
-                        <li class="queue_sort pointer" rel="size" rel2="asc"><a>$T('Plush-sortSizeAsc')</a></li>
-                        <li class="queue_sort pointer" rel="size" rel2="desc"><a>$T('Plush-sortSizeDesc')</a></li>
-                    </ul>
-                </li>
-                <li><a id="queue_purge" class="pointer" rel="$T('Plush-confirmPurgeQ')">$T('Plush-purge')</a></li>
-            </ul>
-        </li>
-        <li>
   			  <a class="sf-with-ul" href="connections" id="last_warning">$T('menu-config')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
       		<ul class="config_links">
             <li><a href="connections">$T('menu-cons')</a></li>
@@ -194,6 +152,7 @@
             <div class="logo main_sprite_container sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
             <div class="main_sprite_container sprite_topright_queue" id="queue-buttons">
                 <ul>
+                    <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
                     <li class="main_sprite_container sprite_q_menu_pausefor">
                       <a href="#"></a>
                       <ul id="set_pause_list">
@@ -206,8 +165,49 @@
                           <li><a href="javascript:void(0)" class="set_pause pointer" rel="custom" title="$T('Plush-pauseForPrompt')">$T('Plush-pauseFor')</a></li>
                       </ul>
                     </li>
-                    <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
 					<li id="pause_int"></li>
+          			<li class="main_sprite_container sprite_q_queue">
+                        <a class="sf-with-ul">$T('menu-queue')</a>
+                        <ul>
+                            <li><a>$T('Plush-maxSpeed'):&nbsp;&nbsp;<input type="text" id="maxSpeed-option" size="6" />&nbsp;&nbsp;$T('KBs')</a></li>
+                            <li>
+                                <a class="sf-with-ul">$T('Plush-onQueueFinish'):
+                                    <select id="onQueueFinish-option">
+                                        <option value=""></option>
+                                        <optgroup label="$T('eoq-actions')">
+                                            <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>$T('shutdownSab')</option>
+                                            <!--#if $power_options#-->
+                                            <option value="shutdown_pc" <!--#if $finishaction == 'shutdown_pc' then 'selected' else ''#-->>$T('shutdownPc')</option>
+                                            <option value="standby_pc" <!--#if $finishaction == 'standby_pc' then 'selected' else ''#-->>$T('standbyPc')</option>
+                                            <option value="hibernate_pc" <!--#if $finishaction == 'hibernate_pc' then 'selected' else ''#-->>$T('hibernatePc')</option>
+                                            <!--#end if#-->
+                                        </optgroup>
+                                        <!--#if $script_list#-->
+                                        <optgroup label="$T('eoq-scripts')">
+                                            <!--#for $sc in $script_list#-->
+                                            <!--#if $sc != 'None'#-->
+                                            <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
+                                            <!--#end if#-->
+                                            <!--#end for#-->
+                                        </optgroup>
+                                        <!--#end if#-->
+                                    </select>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="sf-with-ul">$T('Plush-sort')</a>
+                                <ul id="queue_sort_list">
+                                    <li class="queue_sort pointer" rel="avg_age" rel2="asc"><a>$T('Plush-sortAgeAsc')</a></li>
+                                    <li class="queue_sort pointer" rel="avg_age" rel2="desc"><a>$T('Plush-sortAgeDesc')</a></li>
+                                    <li class="queue_sort pointer" rel="name" rel2="asc"><a>$T('Plush-sortNameAsc')</a></li>
+                                    <li class="queue_sort pointer" rel="name" rel2="desc"><a>$T('Plush-sortNameDesc')</a></li>
+                                    <li class="queue_sort pointer" rel="size" rel2="asc"><a>$T('Plush-sortSizeAsc')</a></li>
+                                    <li class="queue_sort pointer" rel="size" rel2="desc"><a>$T('Plush-sortSizeDesc')</a></li>
+                                </ul>
+                            </li>
+                            <li><a id="queue_purge" class="pointer" rel="$T('Plush-confirmPurgeQ')">$T('Plush-purge')</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
             <div class="centerpiece">

@@ -324,26 +324,30 @@ select {
 }
 
 #queue-buttons {
-	float: right;
+	float:right;
 	height:37px;
 	padding-top:34px;
+	padding-right:5px;
+	position:relative;
 	white-space:nowrap;
 }
 	
 	#queue-buttons ul {
+	  float:left;
 		margin-right:24px;
 	} 	
  
 	#queue-buttons #pause_int {
-		float: right;
-	    color: white;
-		font-size: small;
-		padding-right: 10px;
-		display:inline;
+    color:#ccc;
+    font-size:small;
+    padding-right:16px;
+    position:absolute;
+    right:104px;
+    text-indent:0;
+    top:34px;
 	}
-	#queue-buttons ul li#pause_resume,
-	#queue-buttons ul li.sprite_q_menu_pausefor {
-	  float: right;
+	#queue-buttons ul li {
+	  float: left;
 	  cursor:pointer;
   	display:block;
 	  height:21px;
@@ -351,38 +355,65 @@ select {
 	  text-indent:-5000px;
 	  width:21px;
   }
+  #queue-buttons ul li.sprite_q_queue {
+    margin-left:10px;
+  }
 
-  #queue-buttons ul li ul {
+  #queue-buttons ul li ul{ /* Second Level */
     border-bottom:2px solid #403f3f;
     border-right:2px solid #403f3f;
-    float:right;
+  	display:none;
+    float:left;
+    height:auto;
+    right:1px;
     margin:0;
     position:absolute;
-    right:1px;
     top:21px;
-    width:152px;
+    width:200px;
+    z-index:100;
+  }
+  #queue-buttons ul li.sprite_q_queue ul{
+    right:0;
   }
   #queue-buttons ul li ul li{
-    clear:left;
-    float:left;
-  }
-  #queue-buttons ul li ul li a{
     background:#1d1c1c;
     border-top:1px solid #474646;
+    clear:left;
+    height:auto;
+    margin:0;
+    text-indent:0;
+    width:100%;
+  }
+  #queue-buttons ul li ul li:first-child{
+    border:0;
+  }
+  
+  #queue-buttons ul li ul li a{
     color:#aaa;
     clear:left;
-    display:block;
     float:left;
-    padding:3px 6px;
-    text-indent:0;
-    width:140px;
+    margin:0;
+    padding:4px 6px;
+    text-align:left;
+    width:188px;
   }
   #queue-buttons ul li ul li a:hover{
     color:#eee;
   }
-  #queue-buttons ul li ul li:first-child a{
-    border:0;
+  #queue-buttons ul li.sprite_q_queue ul li a:hover {
+    text-decoration:none;
   }
+  #queue-buttons ul li ul li #onQueueFinish-option{
+    width:130px;
+  }
+  #queue-buttons ul li ul li ul,
+    #queue-buttons ul li.sprite_q_queue ul li ul{   /* Third Level */
+    border:0;
+    position:absolute;
+    right:200px;
+    top:0;
+  }
+  
 #queue-wrap {
 	background: url('../images/plush-default/tile_queue_wrap.png') repeat-y top right;
 	padding:0 16px;
@@ -413,7 +444,6 @@ select {
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 .centerpiece {
-  padding-right:34px;
   margin:0 auto;
   overflow:hidden;
   padding-top:12px;
@@ -608,6 +638,7 @@ tr:hover .nzb_status_grippie {
 /* progress bar & MB/left stats */
 .sprite_progressbar_bg {
 	width: 121px;
+	padding-left:1px;
 }
  
 .sprite_progress_done {
@@ -695,41 +726,44 @@ tr:hover .history_added { color: black; }
  
 /* sprite-main.png */
 
-.sprite_btm_corner_left { background-position: 0 0; } 
-.sprite_btm_corner_right { background-position: 0 -126px; } 
-.sprite_h_purge { background-position: 0 -252px; } 
-.sprite_hv_download { background-position: 0 -373px; } 
-.sprite_hv_error { background-position: 0 -489px; } 
-.sprite_hv_filejoin { background-position: 0 -605px; } 
-.sprite_hv_repair { background-position: 0 -721px; } 
-.sprite_hv_report { background-position: 0 -837px; } 
-.sprite_hv_script { background-position: 0 -953px; } 
-.sprite_hv_star { background-position: 0 -1069px; } 
-.sprite_hv_stats { background-position: 0 -1185px; } 
-.sprite_hv_unpack { background-position: 0 -1301px; } 
-.sprite_pause-right { background-position: 0 -1417px; } 
-.sprite_progress_done { background-position: 0 -1538px; } 
-.sprite_progressbar_bg { background-position: 0 -1657px; } 
-.sprite_q_menu_pausefor { background-position: 0 -1776px; } 
-.sprite_q_menu_pausefor.sfHover { background-position: 0 -1897px; } 
-.sprite_q_pause { background-position: 0 -2018px; } 
-.sprite_q_pause_on { background-position: 0 -2139px; } 
-.sprite_q_stats_complete { background-position: 0 -2260px; } 
-.sprite_q_stats_incomplete { background-position: 0 -2376px; } 
-.sprite_q_stats_needspace { background-position: 0 -2492px; } 
-.sprite_ql_cross { background-position: 0 -2608px; } 
-.sprite_ql_cross_on { background-position: 0 -2724px; } 
-.sprite_ql_grip_active { background-position: 0 -2840px; } 
-.sprite_ql_grip_active_on { background-position: 0 -2954px; } 
-.sprite_ql_grip_paused { background-position: 0 -3068px; } 
-.sprite_ql_grip_paused_on { background-position: 0 -3182px; } 
-.sprite_ql_grip_queued { background-position: 0 -3296px; } 
-.sprite_ql_grip_queued_on { background-position: 0 -3410px; } 
-.sprite_rounded_area_bg { background-position: 0 -3524px; } 
-.sprite_sabnzbdplus_logo { background-position: 0 -3646px; } 
-.sprite_sabnzbdplus_plush { background-position: 0 -3786px; } 
-.sprite_topleft_queue { background-position: 0 -3899px; } 
-.sprite_topright_queue { background-position: right -4066px; } 
+#main_menu ul li a span.sf-sub-indicator { background-position: 0 5px; } 
+#main_menu ul li ul li a span.sf-sub-indicator { background-position: 0 -159px; } 
+.sprite_btm_corner_left { background-position: 0 -318px; } 
+.sprite_btm_corner_right { background-position: 0 -494px; } 
+.sprite_h_purge { background-position: 0 -670px; } 
+.sprite_hv_download { background-position: 0 -841px; } 
+.sprite_hv_error { background-position: 0 -1007px; } 
+.sprite_hv_filejoin { background-position: 0 -1173px; } 
+.sprite_hv_repair { background-position: 0 -1339px; } 
+.sprite_hv_report { background-position: 0 -1505px; } 
+.sprite_hv_script { background-position: 0 -1671px; } 
+.sprite_hv_star { background-position: 0 -1837px; } 
+.sprite_hv_stats { background-position: 0 -2003px; } 
+.sprite_hv_unpack { background-position: 0 -2169px; } 
+.sprite_progress_done { background-position: 0 -2335px; } 
+.sprite_progressbar_bg { background-position: 0 -2504px; } 
+.sprite_q_menu_pausefor { background-position: 0 -2673px; } 
+.sprite_q_menu_pausefor.sfHover { background-position: 0 -2844px; } 
+.sprite_q_pause { background-position: 0 -3015px; } 
+.sprite_q_pause_on { background-position: 0 -3186px; } 
+.sprite_q_queue { background-position: 0 -3357px; } 
+.sprite_q_queue.sfHover { background-position: 0 -3528px; } 
+.sprite_q_stats_complete { background-position: 0 -3699px; } 
+.sprite_q_stats_incomplete { background-position: 0 -3865px; } 
+.sprite_q_stats_needspace { background-position: 0 -4031px; } 
+.sprite_ql_cross { background-position: 0 -4197px; } 
+.sprite_ql_cross_on { background-position: 0 -4363px; } 
+.sprite_ql_grip_active { background-position: 0 -4529px; } 
+.sprite_ql_grip_active_on { background-position: 0 -4693px; } 
+.sprite_ql_grip_paused { background-position: 0 -4857px; } 
+.sprite_ql_grip_paused_on { background-position: 0 -5021px; } 
+.sprite_ql_grip_queued { background-position: 0 -5185px; } 
+.sprite_ql_grip_queued_on { background-position: 0 -5349px; } 
+.sprite_rounded_area_bg { background-position: 0 -5513px; } 
+.sprite_sabnzbdplus_logo { background-position: 0 -5685px; } 
+.sprite_sabnzbdplus_plush { background-position: 0 -5875px; } 
+.sprite_topleft_queue { background-position: 0 -6038px; } 
+.sprite_topright_queue { background-position: right -6255px; } 
 
  
 /* ---------------------------------------------------------------------------------------------------------------
@@ -742,40 +776,35 @@ tr:hover .history_added { color: black; }
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
 
-#main_menu{
-	display:block;
-	float:left;
-	margin:10px 0 0;
-	width:100%;
-}
-#main_menu ul{
-	display:block;
-	height:1.6666em;
-	list-style: none;
-	margin:0 auto;
-	width:530px;
-}
 
-#main_menu ul li,
-#main_menu ul li a {
-	display:block;
-	float:left;
-	width:85px;
-}
-#main_menu ul li { /* First Level */
-	list-style:none;
-	margin:0 10px;
-	position:relative;
-}
-
-#main_menu ul li a {
-	cursor:pointer;
-  display:block;
-  position:relative;
+#main_menu {
+  margin-top:10px;
   text-align:center;
 }
+
+#main_menu ul {
+  display:inline-block;
+  list-style:none;
+  margin:0 auto;
+  padding:0;
+  white-space:nowrap;
+}
+#main_menu ul li {
+  float:left;
+	position:relative;
+}
+#main_menu ul li a {
+  display:block;
+  float:left;
+  margin:0 10px;
+  padding:0 20px 0 5px;
+  cursor:pointer;
+  position:relative;
+  text-align:left;
+}
+
 #main_menu ul li a span {
-  background: url('../images/plush-default/arrow-down.gif') no-repeat center left;
+  background: url('../images/plush-default/sprite-main.png') no-repeat center left;
   display:block;
   height:1.5em;
   right:5px;
@@ -784,30 +813,13 @@ tr:hover .history_added { color: black; }
   top:0;
   width:10px;
 }
-#main_menu ul li input,
-#main_menu ul li select{
-  background:#fff;
-  border:1px solid #ccc;
-  color:#606060;
-  padding:2px;
-}
-
-#main_menu ul li input#addID,
-#main_menu ul li input#fetch_newzbin_bookmarks{
-  background:#111;
-  color:#fff;
-  cursor:pointer;
-}
 
 
-#main_menu ul li ul{  /* Second Level */
+#main_menu ul li ul{ /* Second Level */
 	display:none;
-}
-
-#main_menu ul li ul{
   float:left;
   height:auto;
-  left:0;
+  left:10px;
   margin:0;
   position:absolute;
   top:21px;
@@ -828,12 +840,12 @@ tr:hover .history_added { color: black; }
   clear:left;
   float:left;
   margin:0;
-  padding:6px;
+  padding:4px 6px;
   text-align:left;
   width:188px;
 }
 #main_menu ul li ul li a span {
-  background: url('../images/plush-default/arrow-right.gif') no-repeat top left;
+  background: url('../images/plush-default/sprite-main.png') no-repeat top left;
   height:auto;
   top:32%;
 }
@@ -881,6 +893,7 @@ tr:hover .history_added { color: black; }
 
 #main_menu ul li ul li#processingContainer ul li label{
   float:left;
+  text-align:left;
   width:40%;
 }
 #main_menu ul li ul li#processingContainer ul li select{
@@ -904,9 +917,6 @@ tr:hover .history_added { color: black; }
 
 #main_menu ul li ul#navqueue li ul li a{
   width:180px;
-}
-#main_menu ul li ul#navqueue li #onQueueFinish-option{
-  width:150px;
 }
 #main_menu ul li ul#last_warning_link li{
   min-width: 460px;
