@@ -390,7 +390,7 @@ class RSSQueue:
         if feed in self.jobs:
             lst = self.jobs[feed]
             for link in lst:
-                if lst[link]['url'] == id:
+                if lst[link].get('url', '') == id:
                     lst[link]['time'] = 'D'
 
     @synchronized(LOCK)
