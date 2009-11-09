@@ -44,7 +44,7 @@ from sabnzbd.misc import real_path, create_real_path, loadavg, \
      get_filename, cat_to_opts, IntConv
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
-from sabnzbd.codecs import TRANS, xml_name, LatinFilter
+from sabnzbd.codecs import TRANS, xml_name, LatinFilter, unicoder
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.articlecache as articlecache
@@ -619,7 +619,7 @@ class MainPage:
                 history = bool(kwargs.get('history'))
 
                 info, pnfo_list, bytespersec, verboseList, dictn = \
-                    build_queue(history=history, start=start, limit=limit)
+                    build_queue(history=history, start=start, limit=limit, json=output=='json')
                 info['categories'] = info.pop('cat_list')
                 info['scripts'] = info.pop('script_list')
                 return report(output, keyword='queue', data=remove_callable(info))
@@ -3296,7 +3296,12 @@ class xml_factory:
 
 
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=None,
-                dictionary=None, history=False, start=None, limit=None, dummy2=None):
+                dictionary=None, history=False, start=None, limit=None, dummy2=None, json=False):
+    if json:
+        converter = unicoder
+    else:
+        converter = xml_name
+
     if not verboseList:
         verboseList = []
     if dictionary:
@@ -3386,7 +3391,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
         else:
             slot['script'] = 'None'
         slot['msgid'] = msgid
-        slot['filename'] = xml_name(filename)
+        slot['filename'] = converter(filename)
         slot['cat'] = cat
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
@@ -3434,7 +3439,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
                 slot['verbosity'] = "True"
                 for tup in finished_files:
                     bytes_left, bytes, fn, date = tup
-                    fn = xml_name(fn)
+                    fn = converter(fn)
 
                     age = calc_age(date)
 
@@ -3448,7 +3453,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
 
                 for tup in active_files:
                     bytes_left, bytes, fn, date, nzf_id = tup
-                    fn = xml_name(fn)
+                    fn = converter(fn)
 
                     age = calc_age(date)
 
@@ -3463,8 +3468,8 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
 
                 for tup in queued_files:
                     _set, bytes_left, bytes, fn, date = tup
-                    fn = xml_name(fn)
-                    _set = xml_name(_set)
+                    fn = converter(fn)
+                    _set = converter(_set)
 
                     age = calc_age(date)
 
