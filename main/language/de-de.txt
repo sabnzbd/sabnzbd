@@ -1,0 +1,868 @@
+# -*- coding: utf-8 -*-
+# Deutschland # Deutsch
+
+special-decimal   .
+special-1000      ,
+
+# General texts
+yes               Ja
+no                Nein
+default           Standard
+none              Nichts
+KBs               KB/s
+MB                MB
+GB                GB
+hour              Stunde
+hours             Stunden
+minute            Minuten
+minutes           Minuten
+second            Sekunde
+seconds           Sekunden
+month             Monat
+year              Jahr
+day               Tag
+days              Tage
+daily             Täglich
+monday            Montag
+tuesday           Dienstag
+wednesday         Mittwoch
+thursday          Donnerstag
+friday            Freitag
+saturday          Samstag
+sunday            Sonntag
+day-of-month      Tag im Monat
+filename          Dateiname
+
+# General template elements
+signOn            Automatisiertes Programm für Usenet-Downloads
+button-save       Speichern
+queued            In der Warteschlange
+button-back       Zurück
+button-x          X
+
+# Header
+menu-home         Startseite
+menu-queue        Warteschlange
+menu-history      Verlauf
+menu-config       Einstellungen
+menu-cons         Verbindungen
+menu-help         Hilfe
+menu-wiki         Wiki
+menu-forums       Forum
+menu-irc          IRC
+cmenu-general     Allgemein
+cmenu-folders     Ordner
+cmenu-switches    Schalter
+cmenu-servers     Server
+cmenu-scheduling  Planung
+cmenu-rss         RSS
+cmenu-email       E-Mail
+cmenu-newzbin     Index-Seiten
+cmenu-cat         Kategorien
+cmenu-sorting     Sortierung
+
+# Footer
+ft-download       Downloads
+ft-complete       Fertige Downloads
+ft-speed          Geschwindigkeit
+ft-queued         Warteschlange
+ft-paused         ANGEHALTEN
+ft-buffer@2       %s Artikel im Cache (%s)
+ft-sysload        Systemlast
+ft-warning        WARNUNGEN
+ft-newRelease@1   Neue Version %s verfügbar unter
+
+# Main page
+addNewJobs        Neue Downloads hinzufügen
+shutdownOK?       Möchten Sie SABnzbd wirklich beenden?
+link-shutdown     Beenden
+link-pause        Anhalten
+link-resume       Fortsetzen
+button-add        Hinzufügen
+add               Hinzufügen einer
+reportId          ID
+addFile           Datei hinzufügen
+category          Kategorie
+pp                Verarbeiten
+script            Skript
+priority          Priorität
+pp-none           Download
+pp-repair         +Reparieren
+pp-unpack         +Entpacken
+pp-delete         +Löschen
+pp-n
+pp-r              R
+pp-u              E
+pp-d              L
+pr-force          Erzwingen
+pr-normal         Normal
+pr-high           Hoch
+pr-low            Tief
+
+# Queue page
+link-sortByName   Nach Name sortieren
+link-sortByAge    Nach Alter sortieren
+link-sortBySize   Nach Grösse sortieren
+link-hideFiles    Dateien verbergen
+link-showFiles    Dateien anzeigen
+onQueueFinish     Wenn fertig
+shutdownPc        Rechner ausschalten
+standbyPc         Rechner in Bereitschaft versetzen
+hibernatePc       Rechner in den Ruhezustand versetzen
+shutdownSab       SABnzbd beenden
+speedLimit        Geschwindigkeitsbegrenzung
+pauseFor          Anhalten für
+mode              Verarbeiten
+order             Reihenfolge
+name              Name
+remainTotal       Verbleibend/Insgesamt
+eta               ETA
+age               Alter
+button-del        Löschen
+button-resume     Fortsetzen
+button-pause      Anhalten
+unknown           unbekannt
+fetchingNewzbin@1 Abrufen der Download-ID %s von newzbin.com
+error-fetchNewzbin@1 Fehler beim Abrufen der Download-ID %s von newzbin.com -\
+                  Überprüfen Sie, ob der Benutzername und das Passwort korrekt\
+                  eingegeben wurden.
+fetchNZB@1        Versuche NZB-Datei von %s abzurufen
+eoq-actions       Aktionen
+eoq-scripts       Skripts
+purgeQueue        Warteschlange leeren
+purgeQueueConf    Alle Elemente in der Warteschlange löschen?
+
+# History page
+purgeHist         Verlauf leeren
+purgeHistConf     Alle Elemente im Verlauf löschen?
+hideDetails       Details verbergen
+showDetails       Details anzeigen
+sizeHist          Grösse des Verlaufs
+completed         Fertiggestellt
+size              Grösse
+status            Status
+msg-reAdded@1     Auftrag "%s" wurde wieder zur Warteschlange hinzugefügt
+
+# Connections page
+link-forceDisc    Verbindung trennen
+askTestEmail      Sendet eine Test-E-Mail an Ihr Konto.
+link-showLog      Protokoll anzeigen
+link-showWeblog   Web-Protokoll anzeigen
+link-testEmail    E-Mail testen
+logging           Protokoll
+log-errWarn       Fehler/Warnungen
+log-info          + Info
+log-debug         + Fehlersuche
+connections       Verbindungen
+thread            Thread
+emailResult       Resultat des E-Mail-Tests
+lastWarnings      Neuste Warnungen
+clearWarnings     Leeren
+server-blocked    Freigeben
+warning           WARNUNG:
+error             FEHLER:
+
+# Configuration
+configuration     Einstellungen
+confgFile         Konfigurationsdatei
+explain-Restart   Der Knopf unten startet SABnzbd neu.\n\
+                  Benutzen Sie ihn, falls ein Stabilitätsproblem vorliegt.\n\
+                  Die Downloads werden vor dem Neustart angehalten und danach\
+                  fortgesetzt.
+button-restart    Neu starten
+version           Version
+uptime            Zeit seit Start
+error             Fehler
+badParm           Fehlerhafter Parameter
+error-badValue@2  Fehlerhafter Wert für %s: %s
+error-noFolder@1  Ordner "%s" existiert nicht
+error-QnotEmpty   Fehler: Ordner kann nicht geändert werden, da die\
+                  Warteschlange nicht leer ist.
+error-noUNC@1     UNC-Pfad "%s" ist hier nicht erlaubt
+error-notOctal@1  %s ist kein gültiger Oktal-Wert
+
+# Config->General
+generalConfig         Allgemeine Einstellungen
+restartRequired       Änderungen benötigen einen Neustart von SABnzbd!
+webServer             SABnzbd-Webserver
+opt-host              SABnzbd-Host
+explain-host          Host, auf dem SABnzbd auf Anfragen warten soll.
+opt-port              SABnzbd-Port
+explain-port          Port, auf dem SABnzbd auf Anfragen warten soll.
+opt-web_dir           Web-Oberfläche
+explain-web_dir       Gestaltung der Web-Oberfläche verändern.
+opt-web_dir2          Sekundäre Weboberfläche
+explain-web_dir2      Gestaltung der sekundären Web-Oberfläche verändern.
+webAuth               Authentifizierung für Web-Server
+opt-web_username      SABnzbd-Benutzername
+explain-web_username  Optionaler Benutzername für Authentifizierung.
+opt-web_password      SABnzbd-Passwort
+explain-web_password  Optionales Passwort für Authentifizierung.
+httpsSupport          HTTPS-Unterstützung
+opt-enable_https      HTTPS aktivieren
+opt-notInstalled      nicht installiert
+explain-enable_https  Zugriff auf die Oberfläche über HTTPS-Adressen erlauben
+opt-https_port        HTTPS-Port
+explain-https_port    Port, auf dem SABnzbd auf HTTPS-Anfragen warten soll.
+opt-https_cert        HTTPS-Zertifikat
+explain-https_cert    Dateiname oder Pfad des HTTPS-Zertifikats.
+opt-https_key         HTTPS-Schlüssel
+explain-https_key     Dateiname oder Pfad des HTTPS-Schlüssels.
+tuning                Feinabstimmung
+opt-refresh_rate      Warteschlange automatisch neu laden
+explain-refresh_rate  Zeitintervall zwischen dem erneuten Laden der\
+                      Warteschlange (in Sekunden). 0 schaltet die Funktion ab.
+opt-rss_rate          RSS-Überprüfung
+explain-rss_rate      Zeitinterval zwischen dem Auffrischen der RSS-Feeds\
+                      (in Minuten, Minimalwert ist 15).
+opt-bandwidth_limit   Begrenzung der Downloadgeschwindigkeit
+explain-bandwidth_limit In KB/s, Kilobytes pro Sekunde.
+opt-cache_limitstr    Begrenzung des Artikel-Caches
+explain-cache_limitstr Artikel werden zwischengespeichert, um die Anzahl der\
+                      Zugriffe auf die Festplatte zu reduzieren.\n\
+                      <i>In Bytes, gefolgt von einem optionalen K, M oder G.\
+                      Zum Beispiel: "64M" oder "128M"</i>
+opt-cleanup_list      Unerwünschte Dateien
+explain-cleanup_list  Liste der Dateiendungen, die nach dem Herunterladen\
+                      gelöscht werden sollen.\n\
+                      Zum Beispiel: <b>.nfo</b> or <b>.nfo, .sfv</b>
+button-saveChanges    Änderungen speichern
+opt-language          Sprache
+explain-language      Wählen Sie die Sprache der Weboberfläche.
+opt-apikey            API-Schlüssel
+explain-apikey        Dieser Schlüssel wird verwendet, um anderen Anwendungen\
+                      Zugriff auf SABnzbd zu gewähren.
+button-apikey         Neuen Schlüssel generieren
+opt-disableApikey     API-Key deaktivieren
+explain-disableApikey Keinen API-Schlüssel verwenden.
+explain-disableApikeyWarn AUF EIGENE GEFAHR VERWENDEN!
+restart1              Neustart wird durchgeführt...\n
+restart2              &nbsp\n\
+                      SABnzbd wurde beendet.\n\
+                      Warten Sie 5 Sekunden und klicken Sie danach auf\
+                      folgenden Knopf.\n\n\
+                      <strong><a href="..">Aktualisieren</a></strong>\n
+
+# Config->Folders
+folderConfig            Ordner-Einstellungen
+explain-folderConfig    <em>HINWEIS:</em> Ordner werden beim Speichern\
+                        automatisch erstellt.\
+                        Sie können absolute Pfade angeben, um Ordner ausserhalb\
+                        der standardmässigen Ordner zu verwenden.
+userFolders             Benutzer-Ordner
+in                      In
+opt-download_dir        Temporärer Download-Ordner
+explain-download_dir    Hier werden noch nicht verarbeitete Downloads abgelegt.\n\
+                        <i>Kann nur geändert werden wenn die Warteschlange leer ist.</i>
+opt-download_free       Minimaler freier Speicherplatz im temporären Ordner
+explain-download_free   SABnzbd hält automatisch an, wenn der freie Speicherplatz\
+                        unter diesen Wert fällt.\n\
+                        <i>In Bytes, gefolgt von einem optionalen K, M oder G.\
+                        Zum Beispiel: "800M" or "8G"</i>
+opt-complete_dir        Ordner für fertige Downloads
+explain-complete_dir    Hier werden fertige, verarbeitete Downloads abgelegt.\n\
+                        <i>Kann von benutzerdefinierten Kategorien ausser Kraft\
+                        gesetzt werden.</i>
+opt-permissions         Rechte für fertige Downloads
+explain-permissions     Rechte für Dateien und Ordner festlegen.\n\
+                        <i>In oktaler Notation. Zum Beispiel: "755" oder "777"</i>
+opt-dirscan_dir         Überwachte Ordner
+explain-dirscan_dir     Ordner, die auf neue NZB-Dateien überwacht werden sollen.\n\
+                        <i>Erkennt auch ZIP-, RAR- und TAR.GZ-Archive mit NZB-Dateien.</i>
+opt-dirscan_speed       Geschwindigkeit der Ordner-Überwachung
+explain-dirscan_speed   Anzahl der Sekunden zwischen zwei Überprüfungen.
+opt-script_dir          Ordner mit Nachbearbeitungs-Skripts
+explain-script_dir      Ordner, der benutzerdefinierte Skripts für die\
+                        Nachbearbeitung von Downloads enthält.
+opt-email_dir           Ordner mit E-Mail-Vorlagen
+explain-email_dir       Ordner, der benutzerdefinierte E-Mail-Vorlagen enthält.
+systemFolders           System-Ordner
+opt-cache_dir           Cache-Ordner
+explain-cache_dir       Wird als temporärer Speicherplatz verwendet.\n\
+                        <i>Kann nur geändert werden, wenn die Warteschlange leer ist.</i>\n\
+                        <i>Benötigt einen Neustart von SABnzbd!</i>
+opt-log_dir             Protokoll-Ordner
+explain-log_dir         Hier werden Protokoll-Dateien von SABnzbd abgelegt.\n\
+                        <i>Benötigt einen Neustart von SABnzbd!</i>
+opt-nzb_backup_dir      NZB-Backup-Ordner
+explain-nzb_backup_dir  Hier werden NZB-Dateien abgelegt.
+
+# Config->Switches
+switchesConfig           Verschiedene Schalter
+processingSwitches       Verarbeitungs-Schalter
+opt-quick_check          Schnelle Überprüfung aktivieren
+explain-quick_check      PAR2-Überprüfung überspringen, wenn die Dateien 100%\
+                         korrekt sind.
+opt-enable_unrar         unrar aktivieren
+explain-enable_unrar     Eingebaute Entpack-Funktion für RAR-Archive aktivieren.
+opt-enable_unzip         unzip aktivieren
+explain-enable_unzip     Eingebaute Entpack-Funktion für ZIP-Archive aktivieren.
+opt-enable_filejoin      Zusammenfügen von Dateien aktivieren
+explain-enable_filejoin  Dateien, die mit .001, .002 usw. enden, zu einer Datei\
+                         zusammenfügen.
+opt-enable_tsjoin        Zusammenfügen von TS-Dateien aktivieren
+explain-ts_join          Dateien, die mit .001.ts, .002.ts usw. enden, zu einer\
+                         Datei zusammenfügen.
+opt-enable_par_cleanup   PAR-Dateien aufräumen
+explain-enable_par_cleanup PAR-Dateien entfernen, wenn die Überprüfung und\
+                         Reparatur erfolgreich war.
+opt-fail_on_crc          yEnc-CRC-Fehler nicht ignorieren
+explain-fail_on_crc      Bei yEnc-CRC-Fehlern Ersatz-Server verwenden.
+opt-top_only             Nur Artikel für obersten Warteschlangen-Eintrag herunterladen
+explain-top_only         Für geringere Speicher-Verwendung aktivieren.\n\
+                         Deaktivieren, um zu verhindern, dass langsame Aufträge\n\
+                         die anderen Einträge in der Warteschlange blockieren.
+opt-safe_postproc        Nur überprüfte Aufträge nachbearbeiten
+explain-safe_postproc    Die Nachbearbeitung nur für Aufträge durchführen,\n\
+                         die alle PAR2-Überprüfungen bestanden haben.
+opt-no_dupes             Herunterladen von Duplikaten verhindern
+explain-no_dupes         Überspringt einen Auftrag, wenn bereits eine NZB-Datei\n\
+                         mit dem gleichen Namen existiert.
+opt-dirscan_opts         Standardmässige Nachbearbeitung
+explain-dirscan_opts     Wird verwendet, wenn die Kategorie keine\
+                         Nachbearbeitung vorschreibt.
+opt-dirscan_script       Standardmässiges Benutzer-Skript
+explain-dirscan_script   Wird verwendet, wenn die Kategorie kein\
+                         Benutzer-Skript vorschreibt.
+opt-dirscan_priority     Standardmässige Priorität
+explain-dirscan_priority Wird verwendet, wenn die Kategorie keine Priorität\
+                         vorschreibt.
+opt-par_option           Zusätzliche PAR2-Parameter
+explain-par_option       Lesen Sie dazu die Hilfe im Wiki!
+opt-nice                 Nice-Parameter
+explain-nice             Lesen Sie dazu die Hilfe im Wiki!
+opt-ionice               IONice-Parameter
+explain-ionice           Lesen Sie dazu die Hilfe im Wiki!
+otherSwitches            Andere Schalter
+opt-auto_disconnect      Bei leerer Warteschlange Verbindung trennen
+explain-auto_disconnect  Verbindung zu Usenet-Servern trennen,\n\
+                         wenn die Warteschlange leer ist oder SABnzbd angehalten wurde.
+opt-send_group           Gruppe senden
+explain-send_group       Gruppen-Befehl senden, bevor Artikeln angefordert werden.
+opt-auto_sort            Nach Alter sortieren
+explain-auto_sort        Einträge automatisch nach ihrem (durchschnittlichen)\
+                         Alter sortieren.
+opt-check_new_rel        Auf neue Version prüfen
+explain-check_new_rel    Wöchentlich überprüfen, ob eine neue SABnzbd-Version\
+                         verfügbar ist.
+opt-replace_spaces       Leerzeichen in Ordnernamen ersetzen
+explain-replace_spaces   Leerzeichen in Ordnernamen durch Unterstriche ersetzen.
+opt-replace_illegal      Ungültige Zeichen in Ordnernamen ersetzen
+explain-replace_illegal  Ungültige Zeichen in Ordnernamen durch äquivalente\
+                         Zeichen ersetzen\n\
+                         (oder ansonsten entfernen).
+opt-auto_browser         Browser beim Start öffnen
+explain-auto_browser     Den Standard-Browser öffnen, wenn SABnzbd gestartet wird.
+opt-pause_on_post_processing Downloads während der Nachbearbeitung anhalten
+explain-pause_on_post_processing Hält die Downloads zu Beginn der\
+                         Nachbearbeitung an\n\
+                         und setzt sie danach fort.
+opt-ignore_samples       Beispieldateien ignorieren
+explain-ignore_samples   Beispieldateien herausfiltern (z. B. Videoausschnitte)
+igsam-off                Nein
+igsam-del                Nach dem Download löschen
+igsam-not                Nicht herunterladen
+opt-ssl_type             SSL-Typ
+explain-ssl_type         V23 verwenden, ausser wenn der Provider etwas anderes\
+                         benötigt.
+
+
+# Config->Server
+configServer             Server-Einstellungen
+addServer                Server hinzufügen
+srv-host                 Adresse
+srv-port                 Port
+srv-username             Benutzername
+srv-password             Passwort
+srv-timeout              Zeitüberschreitung
+srv-connections          Verbindungen
+srv-ssl                  SSL
+srv-fillserver           Ersatz-Server
+srv-optional             Optional
+srv-enable               Aktivieren
+button-addServer         Server hinzufügen
+button-delServer         Server entfernen
+error-needServer         Server-Adresse wird benötigt
+button-testServer        Server überprüfen
+srv-testing              Server-Angaben werden überprüft...
+srv-testHint             Unten Klicken zum Überprüfen.
+srv-success              Verbindung erfolgreich hergestellt!
+srv-noHost               Der Hostname wurde nicht angegeben
+srv-noConnections        Keine Verbindungen angegeben.\
+                         Bitte geben Sie mindestens eine Verbindung ein.
+srv-starredPass          Passwort ist als ****** maskiert. Bitte erneut eingeben.
+srv-invalidDetails       Ungültige Server-Angaben
+srv-timedoutSSL          Zeitüberschreitung: Versuchen Sie, SSL oder einen\
+                         anderen Port zu verwenden.
+srv-timedout             Zeitüberschreitung
+srv-failedAuth           Authentifizierung fehlgeschlagen. Überprüfen Sie\
+                         Benutzername und Passwort.
+srv-noAuth               Server benötigt ein Benutzername und ein Passwort.
+srv-tooManyConnections   Zu viele Verbindungen. Bitte halten Sie die Downloads an oder versuchen Sie es später erneut.
+srv-generalFail@1        Die Verbindung konnte nicht überprüft werden. (%s)
+
+# Config->Scheduling
+configSchedule           Planung
+
+addSchedule              Regel hinzufügen
+sch-frequency            Häufigkeit
+sch-action               Aktion
+sch-arguments            Argumente
+button-addSchedule       Regel hinzufügen
+button-delSchedule       Entfernen
+currentSchedules         Aktuelle Regeln
+sch-task                 Aufgabe
+sch-disable_server       Server deaktivieren
+sch-enable_server        Server aktivieren
+sch-resume               Fortsetzen
+sch-pause                Anhalten
+sch-shutdown             Beenden
+sch-restart              Neu starten
+sch-speedlimit           Geschwindigkeitsbegrenzung
+sch-pause_all            Alle anhalten
+
+# Config->RSS
+configRSS                RSS-Einstellungen
+newFeedURI               Neue Feed-URL
+explain-RSS              Aktivieren Sie das Feld neben dem Feed-Namen,\
+                         wenn automatisch auf neue Einträge geprüft werden soll.\n\
+                         Die Häufigkeit der Überprüfungen kann in den allgemeinen\
+                         Einstellungen gewählt werden.\n\
+                         Wenn ein Feed hinzugefügt wird, werden nur neue Einträge\
+                         verarbeitet und nicht diejenigen, die bereits im RSS-Feed\
+                         enthalten waren, ausser Sie klicken "Download erzwingen".
+feedDefinition           Feed Definition
+feed                     Feed
+button-delFeed           Feed löschen
+button-preFeed           Vorschau
+button-forceFeed         Download erzwingen
+rss-order                Reihenfolge
+rss-type                 Typ
+rss-filter               Filter
+rss-accept               Akzeptieren
+rss-reject               Verwerfen
+rss-must                 Benötigt
+rss-delFilter            X
+rss-matched              Entspricht
+rss-notMatched           Entspricht nicht
+rss-done                 Heruntergeladen
+rss-downloaded           Bis jetzt heruntergeladen
+link-download            Herunterladen
+explain-rssStar          Aufträge, die mit '*' markiert sind, werden nicht\
+                         automatisch heruntergeladen.
+
+# Config->Email
+configEmail              Email-Benachrichtigung
+emailOptions             Email-Optionen
+opt-email_endjob         Email-Benachrichtigung beim Fertigstellen von Aufträgen
+email-never              Nie
+email-always             Immer
+email-errorOnly          Nur bei Fehlern
+opt-email_full           Benachrichtigung bei voller Festplatte
+explain-email_full       E-Mail senden, wenn die Festplatte voll ist und SABnzbd\
+                         angehalten wird.
+opt-email_dir            Ordner mit E-Mail-Vorlagen
+explain-email_dir        Ordner, der die benutzerdefinierten E-Mail-Vorlagen enthält.\n\
+                         Relativ zu
+emailAccount             E-Mail-Kontoeinstellungen
+opt-email_server         SMTP-Server
+explain-email_server     ISP-Server für ausgehende E-Mails angeben.
+opt-email_to             E-Mail-Empfänger
+explain-email_to         E-Mail-Adresse, an die die E-Mails gesendet werden.
+opt-email_from           E-Mail-Absender
+explain-email_from       Wer soll die E-Mail versandt haben?
+opt-email_account        Optionaler Konto-Benutzername
+explain-email_account    Für authentifizierte E-Mails wird der Kontoname benötigt.
+opt-email_pwd            Optionales Konto-Passwort
+explain-email_pwd        Für authentifizierte E-Mails wird das Passwort benötigt.
+error-badEmailAd@1       %s ist keine gültige E-Mail-Adresse
+
+# Config->Newzbin
+explain-newzbin          Wenn Sie ein Konto bei <strong>www.newzbin.com</strong> haben,\
+                         können Sie die entsprechenden Informationen hier eintragen.\n\
+                         Dies gibt weitere Funktionen frei.
+accountInfo              Konto-Informationen
+opt-username_newzbin     Newzbin-Benutzername
+explain-username_newzbin Hier den Konto-Benutzernamen eingeben.
+opt-password_newzbin     Newzbin-Passwort
+explain-password_newzbin Hier das Konto-Passwort eingeben.
+newzbinBookmarks         Verarbeiten von Lesezeichen
+opt-newzbin_bookmarks    Lesezeichen automatisch abrufen
+explain-newzbin_bookmarks Automatisch Aufträge basierend Ihren Lesezeichen erzeugen.
+link-getBookmarks        Jetzt Lesezeichen abrufen
+link-HideBM              Verarbeitete Lesezeichen verbergen
+link-ShowBM              Verarbeitete Lesezeichen anzeigen
+opt-newzbin_unbookmark   Lesezeichen entfernen, wenn der Download fertig ist
+explain-newzbin_unbookmark Lesezeichen aus der Lesezeichenliste entfernen, wenn der Download fertig ist.
+opt-bookmark_rate        Überprüfungs-Interval
+explain-bookmark_rate    In Minuten (mindestens 15 Minuten).
+processedBM              Verarbeitete Lesezeichen
+explain-nzbmatrix        Wenn Sie ein Konto bei <strong>www.nzbmatrix.com</strong> haben,\
+                         können Sie die entsprechenden Informationen hier eintragen.\n\
+                         Dies wird benötigt, wenn Sie RSS-Feeds von dieser Seite verwenden möchten.
+opt-username_matrix      NzbMatrix-Benutzername
+explain-username_matrix  Hier den Konto-Benutzernamen eingeben.
+opt-password_matrix      NzbMatrix-Passwort
+explain-password_matrix  Hier das Konto-Passwort eingeben.
+opt-apikey_matrix        NzbMatrix-API-Schlüssel
+explain-apikey_matrix    Hier den API-Schlüssel eingeben.
+
+# Config->Cat
+configCat                Benutzerdefinierte Kategorien
+explain-configCat        Beeinflusst die Nachbearbeitung und Speicherung von Downloads.
+explain-catNewzbin       Die Newzbin-Spalte verknüpft Newzbin-Kategorien mit Ihren eigenen.
+link-initCat             Klicken Sie hier, um die Newzbin-Kategorien einzurichten.
+explain-relFolder        Relative Ordner basieren auf
+catFolderPath            Ordner/Pfad
+catNewzbin               NewzBin
+catGroups                Gruppen
+button-delCat            X
+
+# Config->Sorting
+configSort               Sortier-Einstellungen
+seriesSorting            Sortieren von TV-Serien
+sort-show                Sendung
+sort-name                Name
+opt-tvsort               TV-Sortierung aktivieren
+explain-tvsort           Sortieren und Umbenennen von Episoden aktivieren.
+sort-legenda             Muster-Schlüssel
+button-clear             Löschen
+presetSort               Voreinstellungen
+example                  Beispiel
+genericSort              Allgemeines Sortieren
+opt-movieSort            Film-Sortierung aktivieren
+explain-movieSort        Allgemeines Sortieren und Umbenennen von Dateien aktivieren.
+opt-movieExtra           Unbestimmte Downloads in einem zusätzlichen Ordner speichern.
+explain-movieExtra       Aktivieren, wenn Downloads nicht in ihre eigenen Ordner abgelegt werden.
+affectedCat              Betroffene Kategorien
+sort-meaning             Bedeutung
+sort-pattern             Muster
+sort-result              Resultat
+button-Season1x05        1x05 Staffel-Ordner
+button-SeasonS01E05      S01E05 Staffel-Ordner
+button-Ep1x05            1x05 Episoden-Ordner
+button-EpS01E05          S01E05 Episoden-Ordner
+sort-title               Titel
+movie-sp-name            Film Name
+movie-dot-name           Film.Name
+movie-us-name            Film_Name
+show-name                Sendungs-Name
+show-sp-name             Sendungs Name
+show-dot-name            Sendungs.Name
+show-us-name             Sendungs_Name
+show-seasonNum           Staffel-Nummer
+show-epNum               Episoden-Nummer
+ep-name                  Episoden-Name
+ep-sp-name               Episoden Name
+ep-dot-name              Episoden.Name
+ep-us-name               Episoden_Name
+fileExt                  Dateiendung
+extension                Endung
+partNumber               Teilnummer
+decade                   Jahrzehnt
+orgFilename              Ursprünglicher Dateiname
+lowercase                Kleinschreibung
+TEXT                     TEXT
+text                     text
+sort-File                datei
+sortString               Sortieranweisung
+multiPartLabel           Markierung für mehrere Teile
+button-inFolders         In Ordnern
+button-noFolders         Keine Ordner
+dateSorting              Sortieren nach Datum
+opt-dateSort             Sortieren nach Datum aktivieren
+explain-dateSort         Sortieren und Umbenennen von Dateien mit Daten im Dateinamen aktivieren.
+button-ShowNameF         Ordner mit Name der Sendung
+button-YMF               Jahr-Monat-Ordner
+button-DailyF            Tägliche Ordner
+
+# NZO
+nzoDetails               NZB-Details bearbeiten
+nzoName                  Name
+nzo-delete               Löschen
+nzo-top                  Ganz nach oben
+nzo-up                   Nach oben
+nzo-down                 Nach unten
+nzo-bottom               Ganz nach unten
+nzo-all                  Alle
+nzo-none                 Keine
+nzo-invert               Invertieren
+nzo-filename             Dateiname
+nzo-subject              Betreff
+nzo-age                  Alter
+nzo-selection            Auswahl
+
+# Internal texts
+msg-warning-ambiLocalhost Warnung: localhost ist mehrdeutig. Verwenden Sie eine numerische IP-Adresse.
+msg-invalidServer@2      Server-Adresse "%s:%s" ist ungültig.
+
+warn-missingKey          Sitzungs-Schlüssel fehlt
+error-missingKey         Fehler: Sitzungs-Schlüssel wird benötigt
+warn-badSession          Sitzungs-Schlüssel ungültig
+error-badKey             Fehler: Sitzungs-Schlüssel ungültig
+warn-authMissing         Authentifizierung fehlt. Bitte Benutzernamen und\
+                         Passwort aus Einstellungen->Allgemein in die extern\
+                         Anwendung eingeben:
+error-authMissing        Fehler: Authentifizierung fehlt
+warn-apikeyNone          API-Schlüssel fehlt. Bitte API-Schlüssel aus\
+                         Einstellungen->Allgemein in die externe Anwendung\
+                         eingeben:
+warn-apikeyBad           API-Schlüssel ungültig. Bitte API-Schlüssel aus\
+                         Einstellungen->Allgemein in die externe Anwendung\
+                         eingeben:
+error-noSecUI            Fehler: Keine sekundäre Oberfläche angegeben.
+
+his-badArchive           Fehlgeschlagen. Unültige Archiv-Datei.
+his-cannotGetReport      Abrufen des Newzbin-Berichts fehlgeschlagen
+his-failedURL            Hinzufügen der URL fehlgeschlagen
+his-retryURL1            Abrufen der URL fehlgeschlagen
+his-retryURL2            Erneut versuchen
+
+# Errors and Warnings
+error-noPar2             par2-Programmdatei nicht gefunden!
+error-noWebUi            Starten der Weboberfläche fehlgeschlagen
+error-noYEnc             _yenc-Modul nicht gefunden!
+error-sameHTTP-HTTPS     HTTP- und HTTPS-Ports dürfen nicht gleich sein.
+warn-0000                Bitte beachten Sie, dass der 0.0.0.0-Hostname eine\
+                         IPv6-Adresse benötigen wird für den externen Zugriff.
+warn-noCertKey           HTTPS wegen fehlenden Zertifikats- und\
+                         Schlüsseldateien deaktiviert.
+warn-noSkin@1            Konnte Web-Vorlage nicht finden: %s Versuche die\
+                         Standard-Vorlage zu verwenden.
+warn-noUnrar             unrar-Programmdatei nicht gefunden!
+warn-noUnzip             unzip-Programmdatei nicht gefunden!
+error-failMkstemp        Fehler in tempfile.mkstemp
+error-fetchReport@1      Fehler beim Abrufen von %s von newzbin.com -
+error-hibernate          Wechsel in den Ruhezustand fehlgeschlagen
+error-loading@1          Laden von %s fehlgeschlagen
+error-saveX@1            Speichern von %s fehlgeschlagen
+error-saveXtoY@2         Speichern von %s nach %s fehlgeschlagen
+error-standby            Wechsel in den Bereitschaftsmodus fehlgeschlagen
+error-tempFile@1         Temporäre Datei für %s konnte nicht angelegt werden
+warn-noServer@1          Versuche Status für nicht existierenden Server %s zu setzen
+warn-noSpace             Angehalten wegen zu wenig freiem Speicherplatz
+warn-signal@1            Signal %s erkannt. Speichern und beenden...
+warn-flushFailed@1       Flushing von %s fehlgeschlagen. Keine Artikel-ID.
+error-diskError@1        Festplatten-Fehler beim Anlegen der Datei %s
+error-diskFull           Festplatte voll! Downloads werden angehalten.
+warn-artMissing@1        %s fehlt
+error-badIni@1           Ungültige Konfigurationsdatei %s
+error-createIni@1        Konfigurationsdatei %s kann nicht angelegt werden
+error-encPw@1            Ungültig kodiertes Passwort %s
+error-version@2          Ungültige Version %s in %s
+error-badHisNewline@1    Invalid stage logging in history for %s (\\r\\n)
+error-badHisSemic@1      Invalid stage logging in history for %s (;)
+error-sqlClose           Failed to close database, see log
+error-sqlCmd             SQL-Befehl fehlgeschlagen. Beachten Sie das Protokoll.
+error-sqlCommit          SQL Commit Failed, see log
+error-decode@1           Dekodieren von %s fehlgeschlagen.
+error-decodeUnknown@1    Unbekannter Fehler %s beim dekodieren
+warn-artAllMissing@1     %s wurde auf keinem Server gefunden und daher übersprungen
+warn-badYEnc@1           Badly formed yEnc article in %s
+warn-crcError@3          CRC-Fehler in %s (%s -> %s)
+error-readWatched@1      Überwachter Ordner %s kann nicht gelesen werden
+error-remove@1           Fehler beim Entfernen von %s
+warn-noRead@1            %s kann nicht gelesen werden
+error-except             Ausnahme?
+error-noInit@3           Initialisierung fehlgeschlagen %s@%s:%s
+error-serverFailed@4     Verbindung zu %s@%s:%s konnte nicht hergestellt werden. %s
+error-serverLogin@1      Anmelden beim Server fehlgeschlagen. %s
+error-serverNoConn@2     Verbindung zum Server %s kann nicht hergestellt werden. %s
+error-serverTooMany@2    Zu viele Verbindungen zum server %s:%s
+warn-ignoreServer@2      Server %s wird für %s Minuten ignoriert
+warn-noActiveServers     Kein aktiver primärer Server definiert. Es wird nichts heruntergeladen.
+warn-noConnectServer@2   Verbindung zum Server %s kann nicht hergestellt werden. %s
+error-accountSharing     Möglicherweise wird das Konto geteilt
+error-serverCred@1       Server %s benötigt ein Benutzername und ein Passwort
+warn-thread@3            Thread %s@%s:%s:
+error-mailAuth           Authentifizierung beim Mail-Server fehlgeschlagen
+error-mailNoConn         Verbindung zum Mail-Server konnte nicht hergestellt werden
+error-mailSend           Senden des E-Mails fehlgeschlagen
+error-mailTempl@1        In %s konnten keine E-Mail-Vorlagen gefunden werden
+error-mailTLS            Aufbau der TLS-Verbindung fehlgeschlagen
+warn-noEmailClose        Schliessen der Mail-Verbindung fehlgeschlagen
+msg-emailOK              E-Mail erfolgreich versendet
+error-regex@1            Kompilieren des regulären Ausdrucks für den Suchbegriff %s fehlgeschlagen.
+error-accessDir@2        Zugriff auf das Verzeichnis %s fehlgeschlagen: %s
+error-createDir@1        Verzeichnis %s konnte nicht angelegt werden
+error-makeFile@1         Erstellen von %s fehlgeschlagen
+error-moveFile@2         Verschieben von %s nach %s fehlgeschlagen
+error-portNoAccess@1     Sie haben nicht die Berechtigung, Port %s zu verwenden
+error-regConnect         Verbindung zu Registry-Umgebung HKEY_CURRENT_USER konnte nicht hergestellt werden.
+error-regOpen@1          Registry-Schlüssel %s konnte nicht geöffnet werden.
+error-regSpecial         Lesen der Registry-Schlüssel für spezielle Ordner fehlgeschlagen.
+error-sslFiles           Fehler beim Anlegen des SSL-Schlüssels und -Zertifikats.
+error-urlGet@1           Fehler beim Abrufen der URL %s.
+warn-noBrowser           Der Standard-Browser konnte nicht gestartet werden, da er wahrscheinlich nicht gefunden wurde.
+warn-pyopenssl           pyopenssl-Modul fehlt. Bitte installieren für SSL-Unterstützung.
+error-fileJoin@2         Fehler "%s" beim Ausführen von file_join auf %s
+error-filePar2@2         Fehler "%s" beim Ausführen von par2_repair auf %s
+error-fileRead@1         notrar(): Lesen von %s fehlgeschlagen
+error-fileUnrar@2        Fehler "%s" beim Ausführen von rar_unpack auf %s
+error-fileUnzip@2        Fehler "%s" beim Ausführen von unzip auf %s
+warn-cannotFind@1        %s konnte nicht gefunden werden.
+warn-crcFailed@1         CRC-Fehler in %s.
+warn-delFailed@1         Löschen von %s fehlgeschlagen!
+warn-encrypted           Fehler: Verschlüsselte Datei: 
+warn-error@1             Fehler: %s
+warn-MissExpectedFile@1  Erwartete Datei %s nicht gefunden. Unrar-Fehler?
+warn-writeError@1        Fehler beim Schreiben: %s
+error-connect@1          Verbindung konnte nicht hergestellt werden: %s
+error-newsSSL            Dieser Server erlaubt auf diesem Port keine SSL-Verschlüsselung.
+error-noSSL              Fehler beim Importieren des OpenSSL-Moduls. Stelle Verbindung ohne SSL her.
+error-nbInfo@1           Newzbin-Server konnte keine Informationen zu %s bereitstellen
+error-nbProtocol         Das Protokoll des Newzbin-Servers wurde geändert
+error-nbReport@1         Newzbin-Bericht %s nicht gefunden
+error-nbUnkownError@1    Newzbin gibt einen undokumentierten Fehler-Code zurück: (%s)
+error-nbUnkownError@2    Newzbin gibt einen undokumentierten Fehler-Code zurück: (%s, %s)
+error-nbUpdate@1         Aktualisieren des Newzbin-Auftrages %s fehlgeschlagen.
+warn-nbCredit            Ihr Newzbin-Konto verfügt über keine Credits.
+warn-nbNoAuth            Zugriff verweigert. Überprüfen Sie den Newzbin-Benutzernamen und -Passwort
+warn-nbNoDelBM@1         Newzbin-Lesezeichen %s konnte nicht gelöscht werden.
+error-qAdd@1             Fehler beim Hinzufügen von %s. Entferne.
+error-qBad               Inkompatible Warteschlangen-Datei gefunden. Fortsetzen nicht möglich.
+error-qCorruptFile@1     Fehler beim Laden von %s. Beschädigte Datei gefunden.
+warn-unknownEncoding@1   %s -> Unbekannte Kodierung
+error-qDupPart@3         Doppelt vorhandener Teil %s mit unterschiedlichen IDs (%s // %s)
+error-qImport@1          Fehler beim Importieren von %s
+warn-badImport@2         Importieren von %s Dateien von %s fehlgeschlagen
+warn-badNZB@3            Ungültige NZB-Datei %s wird übersprungen: %s auf Zeile %s
+warn-emptyFile@1         Die Datei %s ist leer und wird daher übersprungen
+warn-skipDup@1           Überspringe doppelt vorhandene NZB-Datei %s.
+error-ppCleanup@1        Aufräumen von %s fehlgeschlagen
+error-ppDelFailed@1      Entfernen von %s fehlgeschlagen
+error-ppDelNzo           Failed to remove nzo from postproc queue (id)
+error-ppDelWorkdir@1     Fehler beim entfernen des Arbeitsverzeichnisses %s.
+error-ppFailed@1         Nachbearbeitung von %s fehlgeschlagen
+error-ppLogFile@1        Protokolldatei %s konnte nicht angelegt werden
+error-ppPermissions@1    Rechte von %s konnten nicht geändert werden
+error-ppRename@2         Fehler beim Umbenennen von "%s" nach "%s"
+warn-badPPQueue@2        Laden der Nachbearbeitungs-Warteschlange fehlgeschlagen: Falsche Version (benötige %s anstatt %s)
+error-rssBadFeed@1       Ungültige RSS-Feed-Beschreibung "%s"
+error-rssRegex@1         Regulärer Ausdruck konnte nicht kompiliert werden: %s
+warn-emptyRSS@1          Leerer RSS-Feed gefunden: %s
+warn-failRSS@1           Abrufen des RSS-Feeds von %s fehlgeschlagen.
+warn-failRSS@2           Abrufen des RSS-Feeds von %s fehlgeschlagen: %s
+warn-badSched@3          Ungültige Regel %s um %s:%s
+warn-badSchedAction@1    Unbekannte Aktion: %s
+warn-schedNoServer@1     Regel für nicht existierenden Server %s.
+error-tvInfo@1           Fehler beim Abrufen der TV-Informationen: %s
+error-tvRename@2         Umbenennen von %s nach %s fehlgeschlagen.
+error-tvSimRename@2      Umbenennen der gleichen Datei von %s nach %s fehlgeschlagen.
+error-tvTemp@1           Temporäre Datei für %s konnte nicht angelegt werden.
+warn-matrixBadRep@1      Ungültige nzbmatrix.com-Bericht-ID %s.
+warn-matrixFail          Problem beim Zugriff auf den nzbmatrix.com-Server.
+warn-noRepair            Kein PAR2-Programm gefunden. Eine Reparatur ist nicht möglich\n
+warn-missingFiles        \nWarnung: Nicht alle Dateien wurden entpackt. Beachten Sie das Protokoll.
+error-joinMismatch       Die tatsächliche Grösse entsprach nicht der erwarteten Grösse.
+error-joinFail@1         Fehler beim Zusammenfügen von %s
+error-joinFail@2         [%s] Fehler "%s" beim Zusammenfügen der Dateien
+msg-joinOK@3             [%s] %s Datei%s zusammengefügt
+error-unpackFail@1       Entpacken fehlgeschlagen. %s
+error-unpackFail@2       [%s] Fehler "%s" beim Entpacken der RAR-Dateien
+error-badArchive         Öffnen des Hauptarchivs fehlgeschlagen. Es ist verschlüsselt oder beschädigt.
+error-unpackFailed@1     Entpacken fehlgeschlagen. Konnte %s nicht finden.
+error-unpackCRC          Entpacken fehlgeschlagen. CRC-Fehler
+error-unpackFull         Entpacken fehlgeschlagen. Fehler beim Schreiben oder volle Festplatte?
+error-unpackFailLog      Entpacken fehlgeschlagen. Beachten Sie das Protokoll.
+error-unpackPassword     Entpacken fehlgeschlagen. Archiv benötigt ein Passwort.
+error-unpackMissing      Entpacken fehlgeschlagen. Eine erwartete Datei wurde nicht entpackt.
+msg-unpackDone@4         %s Datei%s/Ordner%s entpackt in %s
+msg-unzipDone@3          %s Datei %s in %s
+msg-QuickCheck           Ausführen der schnellen Überprüfung...
+msg-QuickChecking        Schnelle Überprüfung
+msg-QuickOK@1            [%s] Schnelle Überprüfung erfolgreich
+msg-startRepair          Beginn der Reparatur
+error-repairFailed@1     Reparatur fehlgeschlagen. %s
+error-repairBad@2        Fehler "%s" beim Ausführen von par2_repair auf dem Satz %s
+msg-verify               Überprüfen...
+msg-verifyOK@2           [%s] Überprüft in %s. Alle Dateien fehlerfrei.
+msg-repairNeeded         Reparatur wird benötigt
+msg-repairNeeded@2       [%s] Überprüft in %s. Reparatur wird benötigt.
+error-noMainPacket       Hauptpaket nicht gefunden...
+error-repairBlocks@1     Reparatur fehlgeschlagen. Nicht genug Reparatur-Blöcke vorhanden (%s zu wenig)
+msg-fetchBlocks@1        %s Blöcke werden abgerufen...
+msg-repairing            Reparieren
+msg-repairDone@2         [%s] Repariert in %s
+msg-verifying            Überprüfen
+msg-DownloadedIn@2       Heruntergeladen in %s mit einer Durchschnittsgeschwindigkeit von %sB/s
+msg-noParSets@1          [%s] Keine PAR2-Sätze
+msg-noPostProc           Keine Nachbearbeitung wegen fehlgeschlagener Überprüfung
+msg-sentToQ@1            %s wurde an die Warteschlange gesendet
+msg-runScript@1          Ausführen des Benutzer-Skripts %s
+msg-ranScript@1          %s ausgeführt
+link-more                Mehr
+link-viewSc              Skript-Ausgabe anzeigen
+warn-OutRetention        Download failed - Out of your server's retention?
+warn-PostCrash           PostProcessing Crashed, see logfile
+msg-moving               Verschieben
+msg-running              Ausführen des Skripts
+msg-joining              Zusammenfügen
+msg-unpacking            Entpacken
+msg-repair               Reparieren
+msg-fetching             Abrufen
+msg-path                 Pfad
+
+stage-download           Herunterladen
+stage-repair             Reparieren
+stage-filejoin           Dateien zusammenfügen
+stage-unpack             Entpacken
+stage-script             Skript
+
+post-Completed           Fertig
+post-Failed              Fehler
+post-Queued              In der Warteschlange
+post-Repairing           Reparieren...
+post-Extracting          Entpacken...
+post-Moving              Verschieben...
+post-Running             Ausführen des Skripts...
+post-Fetching            Abrufen von zusätzlichen Blöcken...
+post-QuickCheck          Schnelle Überprüfung...
+post-Verifying           Überprüfen...
+
+#Growl Messages
+grwl-notif-startup       Start/Beenden
+grwl-notif-dl            NZB hinzugefügt
+grwl-notif-pp            Nachbearbeitung
+grwl-notif-other         Andere Meldung
+grwl-shutdown-begin-msg  Beenden...
+grwl-shutdown-end-msg    SABnzbd wurde beendet
+grwl-paused-msg          Angehalten
+grwl-nzbadd-title        NZB zur Warteschlange hinzugefügt
+grwl-newversion-msg      Neue Version verfügbar
+
+#OSX Menu
+osx-menu-warnings        Warnungen
+osx-menu-status-idle     Leerlauf
+osx-menu-status-paused   Angehalten
+osx-menu-pause           Anhalten
+osx-menu-min             min.
+osx-menu-resume          Fortsetzen
+osx-menu-queue           Warteschlange
+osx-menu-queuelimit    	 Warteschlange mit den 10 obersten Einträgen
+osx-menu-history         Verlauf
+osx-menu-historylimit    Verlauf mit den letzten 10 Einträgen
+osx-menu-speedlimit      Geschwindigkeit begrenzen
+osx-menu-none            Nichts
+osx-menu-getnewzbinbm    Newzbin-Lesezeichen abrufen
+osx-menu-complete        Fertige Downloads\t\t\t
+osx-menu-incomplete      Unfertige Download\t\t
+osx-menu-restart         Neu starten
+osx-menu-quit            Beenden
+osx-menu-config          Einstellungen
+osx-menu-purgequeue      Warteschlange leeren
+osx-menu-purgehistory    Verlauf leeren
+osx-menu-wizard          Assistent öffnen
+osx-menu-empty           Leer
+osx-menu-shutdowning     Beenden...
+
+email-full@2             \
+to: %s\n\
+from: %s\n\
+subject: SABnzbd meldet eine volle Festplatte\n\
+\n\
+Hallo,\n\
+\n\
+SABnzbd hat mit dem Herunterladen aufgehört, da die Festplatte fast voll ist.\n\
+Bitte geben Sie manuell Speicherplatz frei und setzen Sie die Downloads danach fort.\n\
+\n
