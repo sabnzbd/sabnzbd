@@ -130,7 +130,7 @@ class NzbQueue(TryList):
                 categ = future.get_cat()
                 if categ is None:
                     categ = cat
-                categ, pp, script, priority = cat_to_opts(categ)
+                categ, pp, script, priority = cat_to_opts(categ, pp, script, priority)
 
                 try:
                     future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)

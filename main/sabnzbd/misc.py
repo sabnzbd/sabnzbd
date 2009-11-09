@@ -87,7 +87,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         except KeyError:
             script = cfg.DIRSCAN_SCRIPT.get()
 
-    if not priority or priority == DEFAULT_PRIORITY:
+    if priority is None or priority == DEFAULT_PRIORITY:
         try:
             priority = config.get_categories()[safe_lower(cat)].priority.get()
             # Get the default priority
