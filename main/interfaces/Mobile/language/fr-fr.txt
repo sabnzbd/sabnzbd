@@ -5,6 +5,8 @@
 # misc
 button-prev       Préc.
 button-next       Suiv.
+button-first      Premier
+button-last       Dernier
 button-refresh    Rafra”chir
 button-close      Fermer
 button-options    Options

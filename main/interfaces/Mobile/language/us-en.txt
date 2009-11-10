@@ -5,6 +5,8 @@
 # misc
 button-prev       Prev
 button-next       Next
+button-first      First
+button-last       Last
 button-refresh    Refresh
 button-close      Close
 button-options    Options
