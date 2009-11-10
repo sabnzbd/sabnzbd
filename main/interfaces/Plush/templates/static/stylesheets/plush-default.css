@@ -585,7 +585,6 @@ tr:hover .nzb_status_grippie {
 .queueTable td.historyTitle { 
   padding:11px 0;
   width: 50%;
-  font-weight:bold;
   font-size:125%;
 }
  
@@ -1318,8 +1317,7 @@ legend .config_sprite_container {
 	background-color: #333;
 	color: white;
 	font-weight: bold;
-	padding: 1px 6px 1px 6px;
-	margin-left:-7px;
+	padding: 2px 6px 2px 6px;
 }
 
 .config_sprite_container { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
