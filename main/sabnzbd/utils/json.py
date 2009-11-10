@@ -64,6 +64,8 @@ class JsonWriter(object):
 	    self._append('"')
 	    if ty is types.UnicodeType:
 	        obj = obj.encode('utf-8', 'replace')
+	    else:
+	        obj = obj.decode('latin-1').encode('utf-8', 'replace')
 	    obj = obj.replace('\\', r'\\')
 	    if self._escaped_forward_slash:
 		obj = obj.replace('/', r'\/')
