@@ -298,7 +298,7 @@ def report(output, error=None, keyword='value', data=None):
         Else, a data report is made (optional 'keyword' for outer XML section).
     """
     if output == 'json':
-        content = "application/json"
+        content = "application/json;charset=UTF-8"
         if error:
             info = {'status':False, 'error':error}
         elif data is None:

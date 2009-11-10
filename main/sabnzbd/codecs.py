@@ -52,7 +52,12 @@ def unicoder(p):
     """ Make sure a Unicode string is returned """
     if isinstance(p, unicode):
         return p
-    elif isinstance(p, str):
+    if isinstance(p, str):
+        if sabnzbd.DARWIN:
+            try:
+                return p.decode('utf-8')
+            except:
+                return p.decode('latin-1', 'replace')
         return p.decode('latin-1', 'replace')
     else:
         return unicode(str(p))
