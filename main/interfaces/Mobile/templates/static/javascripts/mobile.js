@@ -102,10 +102,8 @@ $(function(){
 						$('#queue_page_current').html( (totalPages == 0) ? 0 : ($.mobile.qPage+1) );
 						$('#queue_page_total').html( totalPages );
 						// set pagination prev/next/first/last button states (active/inactive)
-						($.mobile.qPage == 0) ? $('#queue_page_prev').removeClass('grayButton') :  $('#queue_page_prev').addClass('grayButton');
-						(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next').removeClass('grayButton') :  $('#queue_page_next').addClass('grayButton');
-						($.mobile.qPage == 0) ? $('#queue_page_first').removeClass('grayButton') :  $('#queue_page_first').addClass('grayButton');
-						(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_last').removeClass('grayButton') :  $('#queue_page_last').addClass('grayButton');
+						($.mobile.qPage == 0) ? $('#queue_page_prev, #queue_page_first').removeClass('grayButton') :  $('#queue_page_prev, #queue_page_first').addClass('grayButton');
+						(totalPages == 0 || $.mobile.qPage == totalPages-1) ? $('#queue_page_next, #queue_page_last').removeClass('grayButton') :  $('#queue_page_next, #queue_page_last').addClass('grayButton');
 						// show/hide pagination buttons as needed
 						(totalPages <= 1) ? $('.queue_page_buttons').hide() : $('.queue_page_buttons').show();
 					}
@@ -223,10 +221,8 @@ $(function(){
 						$('#history_page_current').html( (totalPages == 0) ? 0 : ($.mobile.hPage+1) );
 						$('#history_page_total').html( totalPages );
 						// set pagination prev/next/first/last button states (active/inactive)
-						($.mobile.hPage == 0) ? $('#history_page_prev').removeClass('grayButton') :  $('#history_page_prev').addClass('grayButton');
-						(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next').removeClass('grayButton') :  $('#history_page_next').addClass('grayButton');
-						($.mobile.hPage == 0) ? $('#history_page_first').removeClass('grayButton') :  $('#history_page_first').addClass('grayButton');
-						(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_last').removeClass('grayButton') :  $('#history_page_last').addClass('grayButton');
+						($.mobile.hPage == 0) ? $('#history_page_prev, #history_page_first').removeClass('grayButton') :  $('#history_page_prev, #history_page_first').addClass('grayButton');
+						(totalPages == 0 || $.mobile.hPage == totalPages-1) ? $('#history_page_next, #history_page_last').removeClass('grayButton') :  $('#history_page_next, #history_page_last').addClass('grayButton');
 						// show/hide pagination buttons as needed
 						(totalPages <= 1) ? $('.history_page_buttons').hide() : $('.history_page_buttons').show();
 					}
@@ -595,12 +591,17 @@ $(function(){
 				}
 			});
 			$('#queue_page_first').click( function(){
-				$.mobile.qPage = 0;
-				$.mobile.LoadQueue();
+				if ($.mobile.qPage != 0) {
+					$.mobile.qPage = 0;
+					$.mobile.LoadQueue();
+				}
 			});
 			$('#queue_page_last').click( function(){
-				$.mobile.qPage = parseInt( $.mobile.queue.noofslots / $.mobile.qhPerPage );
-				$.mobile.LoadQueue();
+				var lastPage = parseInt( $.mobile.queue.noofslots / $.mobile.qhPerPage );
+				if ($.mobile.qPage != lastPage) {
+					$.mobile.qPage = lastPage;
+					$.mobile.LoadQueue();
+				}
 			});
 			$('#history_page_prev').click( function(){
 				if ($.mobile.hPage > 0) {
@@ -615,12 +616,17 @@ $(function(){
 				}
 			});
 			$('#history_page_first').click( function(){
-				$.mobile.hPage = 0;
-				$.mobile.LoadHistory();
+				if ($.mobile.hPage != 0) {
+					$.mobile.hPage = 0;
+					$.mobile.LoadHistory();
+				}
 			});
 			$('#history_page_last').click( function(){
-				$.mobile.hPage = parseInt( $.mobile.history.noofslots / $.mobile.qhPerPage );
-				$.mobile.LoadHistory();
+				var lastPage = parseInt( $.mobile.history.noofslots / $.mobile.qhPerPage );
+				if ($.mobile.hPage != lastPage) {
+					$.mobile.hPage = lastPage;
+					$.mobile.LoadHistory();
+				}
 			});
 			
 			// orientation change event
