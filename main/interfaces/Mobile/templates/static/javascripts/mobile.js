@@ -284,7 +284,7 @@ $(function(){
 					// verbosity (par/unrar/etc)
 					$('#slot_info','#history_nzb_content').html('');
 					$.each(nzb.stage_log, function(i,stage){
-						$('<li class="sep">'+Tstages[stage.name]+'</li>').appendTo('#slot_info','#history_nzb_content');
+						$('<li class="sep">'+Tstages[stage.name.toLowerCase()]+'</li>').appendTo('#slot_info','#history_nzb_content');
 
 						$.each(stage.actions, function(i,action){
 							if (stage.name == "script")
