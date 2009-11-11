@@ -272,7 +272,7 @@ class SeriesSorter:
     def construct_path(self):
         ''' Replaces the sort string with real values such as Show Name and Episode Number '''
 
-        path = unicode(self.sort_string)
+        path = self.sort_string
 
         if path.endswith('.%ext'):
             extension = True
@@ -499,7 +499,7 @@ class GenericSorter:
 
     def construct_path(self):
 
-        path = unicode(self.sort_string)
+        path = self.sort_string
 
         if path.endswith('.%ext'):
             extension = True
@@ -708,7 +708,7 @@ class DateSorter:
 
     def construct_path(self):
 
-        path = unicode(self.sort_string)
+        path = self.sort_string
 
         if path.endswith('.%ext'):
             extension = True
