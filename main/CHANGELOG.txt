@@ -1,10 +1,11 @@
 -------------------------------------------------------------------------------
 0.5.0Alpha10 by The SABnzbd-Team
 -------------------------------------------------------------------------------
-* Fix foreign character problems in file/folder names (introduced with translations)
+* Fix foreign character problems in several places
 * top_only option wasn't changable on-the-fly
 * Windows uninstaller left behind some files
 * Complete the API with the del_config function
+* German translation
 * Plush tweaks
 -------------------------------------------------------------------------------
 0.5.0Alpha9 by The SABnzbd-Team
