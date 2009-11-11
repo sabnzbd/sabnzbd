@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+# Deutschland # Deutsch
+# Mobile
+
+# misc
+button-prev       Zurück
+button-next       Weiter
+button-refresh    Neu laden
+button-close      Schliessen
+button-options    Einstellungen
+page              Seite
+confirm-delete    Möchten Sie wirklich löschen
+warnings          Warnungen
+button-purgeQ     Warteschlange leeren
+confirm-purgeQ    Warteschlange wirklich leeren?
+button-purgeH     Verlauf leeren
+confirm-purgeH    Verlauf wirklich leeren?
+left              Verbleibend
+rename            Umbenennen
+
+# pause interval
+button-pauseInterval Eine bestimmte Zeit lang anhalten
+pauseInterval     Anhalten
+pause5m           5 Minuten anhalten
+pause15m          15 Minuten anhalten
+pause30m          30 Minuten anhalten
+pause1h           Eine Stunde anhalten
+pause3h           3 Stunden anhalten
+pause6h           6 Stunden anhalten
+pause12h          12 Stunden anhalten
+pause24h          24 Stunden anhalten
+
+# queue sort
+sort              Sortieren
+sortAgeAsc        Sortieren nach Alter <small>Älteste&rarr;Neuste</small>
+sortAgeDesc       Sortieren nach Alter <small>Neuste&rarr;Älteste</small>
+sortNameAsc       Sortieren nach Name <small>A&rarr;Z</small>
+sortNameDesc      Sortieren nach Name <small>Z&rarr;A</small>
+sortSizeAsc       Sortieren nach Grösse <small>Kleinste&rarr;Grösste</small>
+sortSizeDesc      Sortieren nach Grösse <small>Grösste&rarr;Kleiste</small>

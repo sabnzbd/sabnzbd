@@ -1,0 +1,67 @@
+# -*- coding: utf-8 -*-
+# Deutschland # Deutsch
+# Plush
+
+# Menu
+maxSpeed          Maximale Geschwindigkeit
+options           Plush-Einstellungen
+refreshRate       Aktualisierungsrate
+confirmDeleteQueue Löschen von Downloads bestätigen
+confirmDeleteHistory Löschen von Verlaufeinträgen bestätigen
+blockRefresh      Aktualisierung durch Mauszeiger verhindern
+explain-blockRefresh Verhindert, dass die Inhalte aktualisiert werden,\
+                     wenn sich der Mauszeiger über der Warteschlange befindet.
+disabled          Deaktiviert
+addnzb            NZB hinzufügen
+fetch             Abrufen
+uploadTip         Hochladen: .nzb .rar .zip .gz
+sort              Sortieren
+sortAgeAsc        Sortieren nach Alter <small>Älteste&rarr;Neuste</small>
+sortAgeDesc       Sortieren nach Alter <small>Neuste&rarr;Älteste</small>
+sortNameAsc       Sortieren nach Name <small>A&rarr;Z</small>
+sortNameDesc      Sortieren nach Name <small>Z&rarr;A</small>
+sortSizeAsc       Sortieren nach Grösse <small>Kleinste&rarr;Grösste</small>
+sortSizeDesc      Sortieren nach Grösse <small>Grösste&rarr;Kleiste</small>
+pause5m           5 Minuten anhalten
+pause15m          15 Minuten anhalten
+pause30m          30 Minuten anhalten
+pause1h           Eine Stunde anhalten
+pause3h           3 Stunden anhalten
+pause6h           6 Stunden anhalten
+pauseFor          Anhalten für...
+pauseForPrompt    Wie viele Minuten angehalten werden soll.
+purge             Leeren
+onQueueFinish     Wenn fertig
+warnings          Warnungen
+updateAvailable   Neue Version verfügbar!
+
+# General
+button-refresh    Neu laden
+left              Verbleibend
+page              Seite
+everything        Alles
+prev              Züruck
+next              Weiter
+confirm           Sind Sie sicher?
+confirmWithoutSavingPrompt Die Änderungen wurden nicht gespeichert und werden verloren gehen.
+nzo-range         Bereich
+
+# Queue
+idle              LEERLAUF
+remaining         Verbleibend
+notEnoughSpace    Nicht genug freier Speicherplatz für fertige Downloads!
+freeSpace         Freier Speicherplatz
+freeSpaceTemp     Freier Speicherplatz (Ordner mit temporären Dateien)
+confirmPurgeQ     Warteschlange leeren?
+
+# History
+total             Gesamt
+thisWeek          Diese Woche
+thisMonth         Dieser Monat
+openSourceURL     Open Source-URL
+openInfoURL       Open Informational-URL
+path              Pfad
+storage           Speicherort
+viewScriptLog     Skript-Protokoll anzeigen
+confirmPurgeH     Verlauf leeren?
+

@@ -1,0 +1,46 @@
+# -*- coding: utf-8 -*-
+# Deutschland # Deutsch
+
+thisWeek        In dieser Woche
+thisMonth       In diesem Monat
+size            Grösse
+links           Links
+first           Anfang
+previous        Zurück
+next            Weiter
+last            Ende
+edit            Bearbeiten
+editDetails     Details bearbeiten
+showEdit        Bearbeitungs-Einstellungen anzeigen
+hideEdit        Bearbeitungs-Einstellungen verbergen
+timeleft        Verbleibend
+purgeQueue      Alle löschen
+progress        Fortschritt
+delete          Löschen
+downloading     Am herunterladen
+idle            Leerlauf
+paused          Angehalten
+emailsent       E-Mail gesendet!
+saving          Speichern...
+saved           Gespeichert
+failed          Fehlgeschlagen
+speed           Geschwindigkeit
+toggleadd       NZB hinzufügen
+refresr         Aktualisierungsrate
+restartOK?      Möchten Sie SABnzbd wirklich neu starten?
+warnings        Warnungen
+getbookmarks    Lesezeichen abrufen
+purgefailhistOK? Möchten Sie alle fehlergeschlagenen Downloads aus dem Verlauf löschen?
+purgehist       Alle löschen
+purgefailhist   Fehlgeschlagene Downloads löschen
+path            Pfad
+age             Alter
+speed           Geschwindigkeit
+numresults@3    Einträge %s bis %s von insgesamt %s werden angezeigt
+oneresult       Ein Eintrag wird angezeigt
+noresult        Keine Einträge
+custom          Benutzerdefiniert
+dualView1       DualView 1
+dualView2       DualView 2
+eta             ETA
+refreshr        Aktualisierungsrate
