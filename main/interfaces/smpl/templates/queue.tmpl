@@ -130,7 +130,7 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('smpl-eta'): <strong>$eta</st
 						<!--#else#-->
 							<a title="$T('link-pause')" onClick="pausequeueitem('$slot.nzo_id', '$start', '$limit');"><img class="pauseicon" src="static/images/control_pause.png" /></a>
 						<!--#end if#-->
-						<a title="$T('delete')" onClick="deletequeueitem('$slot.nzo_id');"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
+						<a title="$T('button-del')" onClick="deletequeueitem('$slot.nzo_id');"><img class="delicon" src="static/images/messagebox_critical.png" /></a>
 					</td>
 				</tr>
 				<!--#set $oddLine = False#-->
