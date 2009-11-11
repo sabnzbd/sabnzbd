@@ -813,9 +813,10 @@ jQuery(function($) { // safely invoke $ selector
 									data: {mode:'switch', value: row.id, value2: val2, apikey: $.plush.apikey},
 									success: function(result){
 										// change priority of the nzb if necessary (priority is returned by API)
-										var newPriority = $.trim(result.substring(result.length-2));
+										var newPriority = result.split(' ');
+										newPriority = parseInt(newPriority[1]);
 										if (newPriority != $('#'+row.id+' .options .proc_priority').val())
-											$('#'+row.id+' .options .proc_priority').val(newPriority);
+											$('#'+row.id+' .options .proc_priority').val(newPriority); // must be int, not string
 									}
 								});
 								return false;
