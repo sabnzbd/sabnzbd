@@ -65,7 +65,13 @@ def titler(p):
     """ title() replacement
         Python's title() fails with Latin-1, so use Unicode detour.
     """
-    return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
+    if sabnzbd.DARWIN:
+        try:
+            return p.decode('utf-8').title().encode('utf-8')
+        except:
+            return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
+    else:
+        return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
 
 
 def move_to_parent_folder(workdir):
