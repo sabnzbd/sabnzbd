@@ -60,6 +60,14 @@ COUNTRY_REP = ('(US)', '(UK)', '(EU)', '(CA)', '(YU)', '(VE)', '(TR)', '(CH)', \
                '(CO)', '(CN)', '(CL)', '(BG)', '(BR)', '(BE)', '(AT)', '(AU)', \
                '(AW)', '(AR)', '(AL)', '(AF)')
 
+
+def titler(p):
+    """ title() replacement
+        Python's title() fails with Latin-1, so use Unicode detour.
+    """
+    return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
+
+
 def move_to_parent_folder(workdir):
     """ Move content of 'workdir' to 'workdir/..' possibly skipping some files
         If afterwards the directory is not empty, rename it to _JUNK_folder, else remove it.
@@ -824,7 +832,7 @@ def getTitles(match, name):
             # (us) > (US)
             name = replace_word(name, rep.lower(), rep)
             # (Us) > (US)
-            name = replace_word(name, rep.title(), rep)
+            name = replace_word(name, titler(rep), rep)
             # .US. > (US)
             dotted_country = '.%s.' % (rep.strip('()'))
             name = replace_word(name, dotted_country, rep)
@@ -840,7 +848,7 @@ def getTitles(match, name):
     title = name.replace('.', ' ').replace('_', ' ')
     title = title.strip().strip('(').strip('_').strip('-').strip().strip('_')
 
-    title = title.title() # title the show name so it is in a consistant letter case
+    title = titler(title) # title the show name so it is in a consistant letter case
 
     #title applied uppercase to 's Python bug?
     title = title.replace("'S", "'s")
@@ -848,20 +856,20 @@ def getTitles(match, name):
     # Replace titled country names, (Us) with (US) and so on
     if cfg.TV_SORT_COUNTRIES.get() == 1:
         for rep in COUNTRY_REP:
-            title = title.replace(rep.title(), rep)
+            title = title.replace(titler(rep), rep)
     # Remove country names, ie (Us)
     elif cfg.TV_SORT_COUNTRIES.get() == 2:
         for rep in COUNTRY_REP:
-            title = title.replace(rep.title(), '').strip()
+            title = title.replace(titler(rep), '').strip()
 
     # Make sure some words such as 'and' or 'of' stay lowercased.
     for x in LOWERCASE:
-        xtitled = x.title()
+        xtitled = titler(x)
         title = replace_word(title, xtitled, x)
 
     # Make sure some words such as 'III' or 'IV' stay uppercased.
     for x in UPPERCASE:
-        xtitled = x.title()
+        xtitled = titler(x)
         title = replace_word(title, xtitled, x)
 
     # The title with spaces replaced by dots
