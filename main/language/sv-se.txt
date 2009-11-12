@@ -1,0 +1,728 @@
+# -*- coding: latin-1 -*-
+# Sweden # Swedish
+
+special-decimal   .
+special-1000      ,
+
+# General texts
+yes               Ja
+no                Nej
+default           Standard
+none              Ingen
+KBs               KB/s
+MB                MB
+GB                GB
+hour              timme
+hours             timmar
+minute            minut
+minutes           minuter
+second            sekund
+seconds           sekunder
+month             Månad
+year              År
+day               Dag
+days              Dagar
+daily             Dagligen
+monday            Måndag
+tuesday           Tisdag
+wednesday         Onsdag
+thursday          Torsdag
+friday            Fredag
+saturday          Lördag
+sunday            Söndag
+day-of-month      Månadsdag
+filename          Filnamn
+
+# General template elements
+signOn            Det automatiska usenet nedladdningsverktyget
+button-save       Spara
+queued            Köad
+button-back       Bakåt
+button-x          X
+
+# Header
+menu-home         Hem
+menu-queue        Kö
+menu-history      Historik
+menu-config       Konfiguration
+menu-cons         Anslutningar
+menu-help         Hjälp
+menu-wiki         Wiki
+menu-forums       Forum
+menu-irc          IRC
+cmenu-general     Allmänt
+cmenu-folders     Mappar
+cmenu-switches    Switchar
+cmenu-servers     Servrar
+cmenu-scheduling  Schemaläggare
+cmenu-rss         RSS
+cmenu-email       E-mail
+cmenu-newzbin     Index-sidor
+cmenu-cat         Kategorier
+cmenu-sorting     Sortering
+
+# Footer
+ft-download       Temporär nedladdningmapp
+ft-complete       Färdig nedladdningsmapp
+ft-speed          Nedladdningshastighet
+ft-queued         Köad
+ft-paused         PAUSAD
+ft-buffer@2       Sparat %s artiklar (%s)
+ft-sysload        Sysload
+ft-warning        VARNINGAR
+ft-newRelease@1   Ny utgåva %s tillgänglig
+
+# Main page
+addNewJobs        Lägg till ny nedladdning
+shutdownOK?       Är du säker på att du vill stänga av SABnzbd?
+link-shutdown     Stäng Av
+link-pause        Pausa
+link-resume       Återuppta
+button-add        Lägg till
+add               Lägg till
+reportId          Rapport-id
+addFile           Lägg till fil
+category          Kategori
+pp                Bearbetar
+script            Skript
+priority          Prioritet
+pp-none           Nedladdning
+pp-repair         +Reparera
+pp-unpack         +Packar upp
+pp-delete         +Ta bort
+pp-n
+pp-r              R
+pp-u              P
+pp-d              T
+pr-force          Tvinga
+pr-normal         Normal
+pr-high           Hög
+pr-low            Låg
+
+# Queue page
+link-sortByName   Sortera efter namn
+link-sortByAge    Sortera efter ålder
+link-sortBySize   Sortera efter storlek
+link-hideFiles    Göm filer
+link-showFiles    Visa filer
+onQueueFinish     När kön är färdig
+shutdownPc        Stäng av PC
+standbyPc         Sparläge PC
+hibernatePc       Viloläge PC
+shutdownSab       Stäng av SABnzbd
+speedLimit        Hastighetsgräns
+pauseFor          Pausa för
+mode              Bearbetar
+order             Ordning
+name              Namn
+remainTotal       Återstår/Totalt
+eta               ETA
+age               År
+button-del        Ta bort
+button-resume     Återuppta
+button-pause      Pausa
+unknown           okänd
+fetchingNewzbin@1 hämtar msgid %s från www.newzbin.com
+error-fetchNewzbin@1 Fel vid hämtning av msgid %s från www.newzbin.com -\
+                  Kolla så att användarnamn och lösenord är inställt
+fetchNZB@1        Försöker att hämta NZB från %s
+eoq-actions       Actions
+eoq-scripts       Scripts
+
+# History page
+purgeHist         Ta bort Historik
+hideDetails       Göm detaljer
+showDetails       Visa detaljer
+sizeHist          Historikstorlek
+completed         Färdig
+size              Storlek
+status            Status
+
+# Connections page
+link-forceDisc    Tvinga frånkoppling
+askTestEmail      Detta kommer att skicka ett test e-mail till ditt konto.
+link-showLog      Visa logg
+link-showWeblog   Visa webblogg
+link-testEmail    Testa E-mail
+logging           Loggning
+log-errWarn       Fel/Varning
+log-info          + Info
+log-debug         + Debug
+connections       Anslutningar
+thread            Tråd
+emailResult       E-mail testresultat
+lastWarnings      Senaste Varningar
+clearWarnings     rensa
+server-blocked    Ta bort blockering
+
+# Configuration
+configuration     Konfiguration
+confgFile         Konfig fil
+explain-Restart   Knappen nedanför kommer att starta om SABnzbd..\n\
+                  Använd den när du tror att programmet har något stabilitetsproblem.\n\
+                  Nedladdningar kommer att pausas före omstarten och återupptas efteråt.
+button-restart    Starta om
+version           Version
+uptime            Upptid
+error             Fel
+badParm           Fel parameter
+error-badValue@2  Fel värde för %s: %s
+error-noFolder@1  Mappen "%s" finns inte
+error-QnotEmpty   Fel: Kön är inte tom, kan inte byta mapp.
+error-noUNC@1     UNC sökväg "%s" är inte tillåten här
+error-notOctal@1  %s är inte rätt siffervärde
+
+# Config->General
+generalConfig         Allmän konfiguration
+restartRequired       Ändringar kräver omstart av SABnzbd!
+webServer             SABnzbd Webbserver
+opt-host              SABnzbd Adress
+explain-host          Adress som SABnzbd ska lyssna på.
+opt-port              SABnzbd Port
+explain-port          Port som SABnzbd ska lyssna på.
+opt-web_dir           Webbkontrollsutseende
+explain-web_dir       Välj ett skin.
+opt-web_dir2          Andra Webbkontrollsutseende
+explain-web_dir2      Aktivera ett alternativt skin.
+webAuth               Webbserver autentiserng
+opt-web_username      SABnzbd Användarnamn
+explain-web_username  Väljbart autentiserings användarnamn.
+opt-web_password      SABnzbd Lösenord
+explain-web_password  Väljbart autentiserings lösenord.
+httpsSupport          HTTPS Stöd
+opt-enable_https      HTTPS Aktivera
+opt-notInstalled      (ej installerat)
+explain-enable_https  Aktivera åtkomst till webbkontrollen med HTTPS adress.
+opt-https_port        HTTPS Port
+explain-https_port    Port som SABnzbd ska lyssna på för HTTPS kommunikation.
+opt-https_cert        HTTPS Certifikat
+explain-https_cert    Filnamn eller sökväg till HTTPS Certifikat.
+opt-https_key         HTTPS Nyckel
+explain-https_key     Filnamn eller sökväg till HTTPS Nyckel.
+tuning                Justeringar
+opt-refresh_rate      Automatisk uppdateringsintervall av kö:
+explain-refresh_rate  Uppdateringsintervall av kö-sidan (sek, 0= ingen).
+opt-rss_rate          RSS Uppdateringsintervall
+explain-rss_rate      Uppdateringsintervall (i minuter, minst 15).
+opt-bandwidth_limit   Hastighetsbegränsning för Nedladdning
+explain-bandwidth_limit Medelhastighetsbegränsning för Nedladdning (i KB/s - kilobyte per sekund).
+opt-cache_limitstr    Cachestorlek för artiklar
+explain-cache_limitstr Sparar artiklar i minnet för att reducera diskåtkomst.\n\
+                      <i>I bytes, följt av K,M,G. Till exempel: "64M" eller "128M"</i>
+opt-cleanup_list      Rensa lista
+explain-cleanup_list  Lista med filändelser som ska tas bort efter nedladdning.\n\
+                      Till exempel: <b>.nfo</b> or <b>.nfo, .sfv</b>
+button-saveChanges    Spara ändringar
+opt-language          Språk
+explain-language      Välj språk till webbkontrollen.
+opt-apikey            API-nyckel
+explain-apikey        Denna nyckel ger tredjepartsprogram tillgång till SABnzbd.
+button-apikey         Generera Ny Nyckel
+opt-disableApikey     Stäng av API-nyckel
+explain-disableApikey Kräv ingen API-nyckel.
+explain-disableApikeyWarn ANVÄND PÅ EGEN RISK! 
+restart1              Förbereder omstart...\n
+restart2              &nbsp\n\
+                      SABnzbd nedstängning färdig.\n\
+                      Vänta ungefär 5 sekunder och klicka sedan på knappen under..\n\n\
+                      <strong><a href="..">Ladda om</a></strong>\n
+
+# Config->Folders
+folderConfig            Mappkonfiguration
+explain-folderConfig    <em>OBS:</em> Mappar kommer att skapas automatiskt när du Sparar. Du måste ange exakta sökvägar till dina mappar för att spara utanför standardmapparna.
+userFolders             Användarmappar
+in                      I
+opt-download_dir        Temporär nedladdningsmapp
+explain-download_dir    Plats för att lagra ej bearbetade nedladdningar.\n\
+                        <i>Kan endast ändras när kön är tom.</i>
+opt-download_free       Minimal fri plats för temporär nedladdningsmapp
+explain-download_free   Auto-pausa när fri plats är nära sin gräns.\n\
+                        <i>I bytes, följt av K,M,G,T. Till exempel: "800M" or "8G"</i>
+opt-complete_dir        Färdig nedladdningsmapp
+explain-complete_dir    Plats för att lagra bearbetade och färdiga nedladdningar.\n\
+                        <i>Kan åsidosättas av användar-definierade kategorier.</i>
+opt-permissions         Rättigheter för färdiga nedladdningar
+explain-permissions     Sätt rättigheter för färdiga filer och mappar.\n\
+                        <i>Använd siffror. Till exempel: "755" or "777"</i>
+opt-dirscan_dir         Övervakad Mapp
+explain-dirscan_dir     Mapp som igenomsöks automatiskt efter .nzb filer.\n\
+                        <i>Skannar även igenom .zip .rar och .tar.gz arkiv efter .nzb filer.</i>
+opt-dirscan_speed       Skanningsintervall för Övervakade mappar
+explain-dirscan_speed   Sekunder mellan skanningar för .nzb filer.
+opt-script_dir          Efterbehandlings skriptmapp
+explain-script_dir      Mapp innehållande skript för efterbehandling.
+opt-email_dir           Mapp för E-mail mallar
+explain-email_dir       Mapp som innehåller användar-definierade e-mail mallar.
+systemFolders           Systemmappar
+opt-cache_dir           Temporär-mapp
+explain-cache_dir       Plats för temporär lagring.\n\
+                        <i>Kan endas ändras när kön är tom.</i>\n\
+                        <i>Kräver omstart av SABnzbd!</i>
+opt-log_dir             Loggmapp
+explain-log_dir         Plats för sparade loggfiler från SABnzbd.\n\
+                        <i>Kräver omstart av SABnzbd!</i>
+opt-nzb_backup_dir      .nzb Reservmapp
+explain-nzb_backup_dir  Plats där .nzb filer sparas.
+
+# Config->Switches
+switchesConfig           Parameterkonfiguration
+processingSwitches       Bearbetar parametrar
+opt-quick_check          Aktivera Snabbkoll
+explain-quick_check      Strunta i par2 kontroll när filerna är 100% giltiga.
+opt-enable_unrar         Aktivera Unrar
+explain-enable_unrar     Aktiverar inbyggda Unrar funktionen.
+opt-enable_unzip         Aktivera Unzip
+explain-enable_unzip     Aktiverar inbyggda Unzip funktionen.
+opt-enable_filejoin      Aktivera Filsammanslagning (Filejoin)
+explain-enable_filejoin  Slår ihop filer med filändelserna .001, .002 etc. till en fil.
+opt-enable_tsjoin        Aktivera TS Sammanslagning (TS Joining)
+explain-ts_join          Slår ihop filer med filändelserna .001.ts, .002.ts etc. till en fil.
+opt-enable_par_cleanup   Aktivera Par rensning (Par Cleanup)
+explain-enable_par_cleanup Rensar bort par filer (om verifiering/reparation lyckades).
+opt-fail_on_crc          Vid fel på på yEnc CRC
+explain-fail_on_crc      Använd backup-server vid yEnc crc fel.
+opt-top_only             Bara artiklarna för början av kön
+explain-top_only         Aktivera för lägre minnesanvändning. Avaktivera för att förhindra långsamma jobb att blockera kön.
+opt-safe_postproc        Efterbehandla endast verifierade jobb
+explain-safe_postproc    Efterbehandla enbart jobb som passerat PAR2 kontrollen.
+opt-no_dupes             Förhindra nedladdningsdubletter
+explain-no_dupes         Strunta i jobb om en sparad .nzb med samma namn redan finns.
+opt-dirscan_opts         Standard efterbehandling
+explain-dirscan_opts     Används när efterbehandlingen är bestämd efter kategori.
+opt-dirscan_script       Standard användarskript
+explain-dirscan_script   Används när användarskript är bestämd efter kategori.
+opt-dirscan_priority     Standard prioritet
+explain-dirscan_priority Använd när ingen prioritet är bestämd av kategori.
+opt-par_option           Extra PAR2 parametrar
+explain-par_option       Läs Wiki Help för detta!
+opt-nice                 Bra parametrar
+explain-nice             Läs Wiki Help för detta!
+opt-ionice               IONice parametrar
+explain-ionice           Läs Wiki Help för detta!
+otherSwitches            Andra parametrar
+opt-auto_disconnect      Koppla ifrån när kön är tom
+explain-auto_disconnect  Koppla ifrån usenet servrarna när kön är tom eller pausad.
+opt-send_group           Skicka grupp
+explain-send_group       Skicka gruppkommando innan du begär artiklar.
+opt-auto_sort            Sortera efter ålder
+explain-auto_sort        Sortera automatiskt efter (medel) ålder.
+opt-check_new_rel        Kolla efter ny utgåva
+explain-check_new_rel    Kolla efter ny utgåva av SABnzbd varje vecka.
+opt-replace_spaces       Ersätt mellanslag i mappnamn
+explain-replace_spaces   Ersätt mellanslag med understreck i mappnamn.
+opt-replace_illegal      Ersätt otillåtna tecken i mappnamn.
+explain-replace_illegal  Ersätt otillåtna tecken i mappnamn med motsvarande tecken (annars ta bort).
+opt-auto_browser         Starta webbläsare vid uppstart
+explain-auto_browser     Startar standard webbläsaren när SABnzbd startar.
+opt-pause_on_post_processing Pausa nedladdning under efterbehandling
+explain-pause_on_post_processing Pausas nedladdning när efterbehandling börjar och återupptar nedladdning när efterbehandling är klar.
+opt-ignore_samples       Ignorera Sample-filer
+explain-ignore_samples   Filtrera ut sample-filer (ex. video samplingar).
+igsam-off                Av
+igsam-del                Ta bort efter nedladdning
+igsam-not                Ladda inte ned.
+
+# Config->Server
+configServer             Serverkonfiguration
+addServer                Lägg till server
+srv-host                 Adress
+srv-port                 Port
+srv-username             Användarnamn
+srv-password             Lösenord
+srv-timeout              Timeout
+srv-connections          Anslutningar
+srv-ssl                  SSL
+srv-fillserver           Reserv server
+srv-optional             Valfri
+srv-enable               Aktivera
+button-addServer         Lägg till server
+button-delServer         Ta bort server
+error-needServer         Kräver serveradress
+button-testServer        Testserver
+srv-testing              Testar serverdetaljer...
+srv-testHint             Klicka nedan för att testa.
+srv-success              Anslutning lyckades!
+srv-noHost               Adressen är inte inställd.
+srv-noConnections        Det är inga anslutningar aktiverade. Var vänlig aktivera minst en anslutning.
+srv-starredPass          Lösenordet är dolt med ******, försök igen
+srv-invalidDetails       Ogiltiga serverdetaljer
+srv-timedoutSSL          Timeout: Försök aktivera SSL eller anslut via en annan port.
+srv-timedout             Timeout
+srv-failedAuth           Autentisering misslyckades, kontrollera användarnamn och lösenord.
+srv-noAuth               Servern kräven användarnamn och lösenord.
+srv-tooManyConnections   För många anslutningar, pausa en nedladdning eller försök igen senare
+srv-generalFail@1        Det gick inte att ansluta (%s)
+
+# Config->Scheduling
+configSchedule           Schemakonfiguration
+addSchedule              Lägg till schema
+sch-frequency            Förekomst
+sch-action               Åtgärd
+sch-arguments            Argument
+button-addSchedule       Lägg till schema
+button-delSchedule       Ta bort
+currentSchedules         Aktuella scheman
+sch-task                 Uppgift
+sch-disable_server       avaktivera server
+sch-enable_server        aktivera server
+sch-resume               Återuppta
+sch-pause                Pausa
+sch-shutdown             Stäng av
+sch-restart              Starta om
+sch-speedlimit           Hastighetsgräns
+
+# Config->RSS
+configRSS                RSS-konfiguration
+newFeedURI               Ny flödesadress
+explain-RSS              Kryssrutan bredvid flödesnamnet ska aktiveras för att flödet automatiskt ska kontrolleras för nya objekt.\n\
+                         Kontrollfrekvens finns på den allmänna konfigurations sidan.\n\
+                         När ett flöde läggs till kommer det bara att välja nya objekt och inte allt som redan finns i RSS-flöded så länge du inte klickar på "Tvinga nedladdning".
+feedDefinition           Flödesdestination
+feed                     Flöde
+button-delFeed           Ta bort flöde
+button-preFeed           Förhandsgranska
+button-forceFeed         Tvinga nedladdning
+rss-order                Ordning
+rss-type                 Typ
+rss-filter               Filter
+rss-accept               Acceptera
+rss-reject               Avvisa
+rss-delFilter            X
+rss-matched              Matchade
+rss-notMatched           Matchade inte
+rss-done                 Nedladdae
+rss-downloaded           Nedladdade än så länge
+link-download            Ladda ned
+explain-rssStar          Jobb markerade med '*' kommer ej att laddas ned automatiskt.
+
+# Config->Email
+configEmail              E-mail notifiering
+emailOptions             E-mail alternativ
+opt-email_endjob         E-mail notifiering när jobb är slutfört
+email-never              Aldrig
+email-always             Alltid
+email-errorOnly          Bara vid fel
+opt-email_full           Full hårddisk notifiering
+explain-email_full       Skicka e-mail när hårddisken är full och SABnzbd har pausat.
+opt-email_dir            Mapp med e-mail mallar
+explain-email_dir        Mapp som innehåller användardefinierade mallar..\n\
+                         I förhållande till 
+emailAccount             E-mail kontoinställningar
+opt-email_server         SMTP Server
+explain-email_server     Ställ in din ISP's server för utgående e-mail.
+opt-email_to             E-mail mottagare
+explain-email_to         E-mail adress att skicka e-mailen till.
+opt-email_from           E-mail sändare
+explain-email_from       Vem ska vi skicka e-mailet från?
+opt-email_account        VALFRITT Kontoanvändarnamn
+explain-email_account    Användarnamn för e-mail som kräver autentisering.
+opt-email_pwd            VALFRITT Användarlösenord
+explain-email_pwd        Lösenord för e-mail som kräver autentisering.
+error-badEmailAd@1       %s är inte en godkänd e-mail adress
+
+# Config->Newzbin
+explain-newzbin          Om du har ett konto på <strong>www.newzbin.com</strong>,\
+                         så kan du skriva in din användarinformation här.\n\
+                         Detta kommer att tillgängliggöra extra funktioner.
+accountInfo              Användarinfo
+opt-username_newzbin     Newzbin Användarnamn
+explain-username_newzbin Ställ in ditt användarnamn här.
+opt-password_newzbin     Newzbin Lösenord
+explain-password_newzbin Ställ in ditt användarlösenord här.
+newzbinBookmarks         Bearbetar bokmärken
+opt-newzbin_bookmarks    Hämta bokmärken automatiskt
+explain-newzbin_bookmarks Hämtar jobb från bokmärken automatiskt.
+link-getBookmarks        Hämta bokmärken nu
+link-HideBM              Göm bearbetade bokmärken
+link-ShowBM              Visa bearbetade bokmärken
+opt-newzbin_unbookmark   Ta bort bokmärke efter nedladdning
+explain-newzbin_unbookmark Ta bort från bokmärkeslistan när nedladdning är genomförd.
+opt-bookmark_rate        Uppdateringsintervall
+explain-bookmark_rate    I minuter (minst 15 min).
+processedBM              Bearbetar bokmärken
+explain-nzbmatrix        Om du har ett konto på <strong>www.nzbmatrix.com</strong>,\
+                         så kan du skriva in din användarinformation här.\n\
+                         Det krävs för att du ska kunna använda RSS-flödet från nzbmatrix.
+opt-username_matrix      NzbMatrix Användarnamn
+explain-username_matrix  Ställ in ditt användarnamn här.
+opt-password_matrix      NzbMatrix Lösenord
+explain-password_matrix  Ställ in ditt användarlösenord här.
+opt-apikey_matrix        NzbMatrix API-nyckel
+explain-apikey_matrix    Ställ in API-nyckel för NzbMatrix här.
+
+# Config->Cat
+configCat                Användardefinierade kategorier
+explain-configCat        Definierar efterbehandling och lagring.
+explain-catNewzbin       The Newzbin column will map listed Newzbin categories to your own.
+link-initCat             Klicka här för att ställa in newzbin kategorier.
+explain-relFolder        Relativa mappar är baserade på
+catFolderPath            Mapp/Sökväg
+catNewzbin               NewzBin
+catGroups                Grupper
+button-delCat            X
+
+# Config->Sorting
+configSort               Sorteringskonfiguration
+seriesSorting            Seriesortering
+sort-show                Show
+sort-name                Namn
+opt-tvsort               Aktivera TV sortering
+explain-tvsort           Aktiverar sortering och omdöpning av episoder.
+sort-legenda             Hjälp till Sorteringssträng
+button-clear             Rensa
+presetSort               Förinställningar
+example                  Exempel
+genericSort              Allmän sortering
+opt-movieSort            Aktivera filmsortering
+explain-movieSort        Aktiverar sortering och omdöpning av filer.
+opt-movieExtra           Låt nedladdning i extramapp vara
+explain-movieExtra       Aktivera om nedladdning inte är flyttad till egen mapp.
+affectedCat              Påverkade kategorier
+sort-meaning             Betyder
+sort-pattern             Mönster
+sort-result              Resultat
+button-Season1x05        1x05 Säsongsmapp
+button-SeasonS01E05      S01E05 Säsongsmapp
+button-Ep1x05            1x05 Episodmapp
+button-EpS01E05          S01E05 Episodmapp
+sort-title               Titel
+movie-sp-name            Film Namn
+movie-dot-name           Film.Namn
+movie-us-name            Film_Namn
+show-name                Show Namn
+show-sp-name             Show Namn
+show-dot-name            Show.Namn
+show-us-name             Show_Namn
+show-seasonNum           Säsongsnummer
+show-epNum               Episodnummer
+ep-name                  Episodnamn
+ep-sp-name               Episodnamn
+ep-dot-name              Episod.Namn
+ep-us-name               Episod_Namn
+fileExt                  Filändelse
+extension                ändelse
+partNumber               Delnummer
+decade                   Tiotal
+orgFilename              Originalfilnamn
+lowercase                Små bokstäver
+TEXT                     TEXT
+text                     text
+sort-File                fil
+sortString               Sorteringssträng
+multiPartLabel           Multi-del etikett
+button-inFolders         In mapp
+button-noFolders         Ingen mapp
+dateSorting              Datum sortering
+opt-dateSort             Aktivera datumssortering
+explain-dateSort         Aktiverar sortering och omdöpning av datummärkta filer.
+button-ShowNameF          Visa Namn på mapp
+button-YMF               År-Månads mappar
+button-DailyF            Dagliga mappar
+
+# NZO
+nzoDetails               Ändra NZB detaljer
+nzoName                  Namn
+nzo-delete               Ta bort
+nzo-top                  Topp
+nzo-up                   Upp
+nzo-down                 Ner
+nzo-bottom               Botten
+nzo-all                  Alla
+nzo-none                 Ingen
+nzo-invert               Invertera
+nzo-filename             Filnamn
+nzo-subject              Ämne
+nzo-age                  År
+nzo-selection            Urval
+
+# Internal texts
+msg-warning-ambiLocalhost Varning: LOCALHOST är tvetydigt, använda numerisk IP-adress .
+msg-invalidServer@2      Serveradressen "%s:%s" är ej giltig.
+
+warn-missingKey          Saknar sessionsnyckel
+error-missingKey         Fel: Kräver sessionsnyckel
+warn-badSession          Fel sessionsnyckel
+error-badKey             Fel: Fel sessionsnyckel
+warn-authMissing         Autentisering saknas, ange användarnamn / lösenord från Konfiguration-> Allmänt\
+                         i ditt tredjepartsprogram:
+error-authMissing        Fel: Saknar autentisering
+warn-apikeyNone          API-nyckel saknas, skriv in api-nyckeln från Konfiguration-> Allmänt\
+                         i ditt tredjepartsprogram:
+warn-apikeyBad           API-nyckel felaktig, använd api-nyckeln från Konfiguration-> Allmänt\
+                         i ditt tredjepartsprogram:
+error-noSecUI            Fel: Inget andrainterface definierat.
+
+his-badArchive           Fel, Oanvändbar akrivfil
+his-cannotGetReport      Det gick inte att hämta newzbin rapport
+his-failedURL            Det gick inte att lägga till url
+his-retryURL1            URL hämtning misslyckades
+his-retryURL2            Försök igen
+
+# Errors and Warnings
+error-noPar2             par2 binär... EJ funnen!
+error-noStartup@2        Initialisering av %s-%s misslyckades, avbryter
+error-noWebUi            Det gick inte att starta webbkontrollen
+error-noYEnc             _yenc modul... EJ funnen!
+error-sameHTTP-HTTPS     Kan ej öppna HTTP och HTTPS portarna på samma gång
+warn-0000                Tänk på att 0.0.0.0 värdnamnet behöver en IPv6-adress för extern åtkomst
+warn-noCertKey           Avaktiverade HTTPS på grund av felande CERT och KEY filer
+warn-noSkin@1            Kan inte hitta webb mall: %s, försök med standard mall
+warn-noUnrar             unrar binär... EJ funnen!
+warn-noUnzip             unzip binär... EJ funnen!
+error-failMkstemp        Fel i tempfile.mkstemp
+error-fetchReport@1      Fel vid hämtning av msgid %s från www.newzbin.com -
+error-hibernate          Failed to hibernate system
+error-loading@1          Laddning av %s misslyckades
+error-saveX@1            Sparar %s misslyckades
+error-saveXtoY@2         Sparar %s till %s misslyckades
+error-standby            Det gick inte att sätta systemet i viloläge
+error-tempFile@1         Kan inte skapa temp fil för %s
+warn-noServer@1          Försöker att sätta status på icke existerande server %s
+warn-noSpace             För lite diskutrymme pausar systemet
+warn-signal@1            Signal %s mottagen, sparar och stänger...
+warn-flushFailed@1       Flushing %s misslyckades -> ingen art_id
+error-diskError@1        Diskfel vid skapande av fil %s
+error-diskFull           Disken är full! Pausar...
+warn-artMissing@1        %s saknas
+error-badIni@1           Felaktig konfigurationsfil %s
+error-createIni@1        Kan ej skapa konfigurationsfil %s
+error-encPw@1            Felaktigt kodat lösenord %s
+error-version@2          Felaktigt versionsnummer %s i %s"
+error-badHisNewline@1    Felaktig loggning i historiken av %s (\\r\\n)
+error-badHisSemic@1      Felaktig loggning i historiken av %s (;)
+error-sqlClose           Det gick inte att stänga databasen, se logg
+error-sqlCmd             SQL Kommando misslyckades, se logg
+error-sqlCommit          SQL Commit misslyckades, se logg
+error-decode@1           Avkodning av %s misslyckades
+error-decodeUnknown@1    Okänt fel under avkodning av %s
+warn-artAllMissing@1     %s => saknas från alla servrar, kastar
+warn-badYEnc@1           Felaktigt utformad yEnc artikel i %s
+warn-crcError@3          CRC Fel i %s (%s -> %s)
+error-readWatched@1      Kan ej läsa övervakad mapp %s
+error-remove@1           Fel vid borttagning av %s
+warn-noRead@1            Kan ej läsa %s
+error-except             Undantag?
+error-noInit@3           Det gick inte att initialisera %s@%s:%s
+error-serverFailed@4     Anslutning av %s@%s:%s misslyckades, meddelande=%s
+error-serverLogin@1      Det gick inte att logga in på server %s
+error-serverNoConn@2     Kan ej ansluta till server %s [%s]
+error-serverTooMany@2    För många anslutningar till server %s:%s
+warn-ignoreServer@2      Server %s kommer att ignoreras i %s minuter
+warn-noActiveServers     Inga aktiva primära servrar definierade, kommer inte att ladda ned!
+warn-noConnectServer@2   Kan ej ansluta till server %s [%s]
+error-accountSharing     Misstänkt kontodelning
+error-serverCred@1       Server %s kräver användarnamn/lösenord
+warn-thread@3            Tråd %s@%s:%s:
+error-mailAuth           Autentisering till mailserver misslyckades
+error-mailNoConn         Det gick inte att ansluta till mailserver
+error-mailSend           Det gick inte att skicka e-mail
+error-mailTempl@1        Kan ej finna e-mail mallar i %s
+error-mailTLS            Det gick inte att initialisera TLS anslutning
+warn-noEmailClose        Det gick inte att stänga e-mail anslutning
+error-regex@1            Det gick inte att kompilera regex för sök-sträng: %s
+error-accessDir@2        %s mapp: %s åtkomst misslyckad
+error-createDir@1        Kan ej skapa mapp %s
+error-makeFile@1         Skapande av (%s) misslyckades
+error-moveFile@2         Det gick inte att flyta %s till %s
+error-portNoAccess@1     Du har ingen behörighet för att använda port %s
+error-regConnect         Kan ej ansluta till registret HKEY_CURRENT_USER.
+error-regOpen@1          Kan ej öppna registernyckel "%s".
+error-regSpecial         Det gick inte att läsa registernyckel för specialmappar
+error-sslFiles           Det gick inte att skapa SSL-nyckel eller certifikat.
+error-urlGet@1           Det gick inte att hämta url %s
+warn-noBrowser           Kan inte starta webbläsaren, hittades troligtvis inte
+warn-pyopenssl           pyopenssl modul saknas, var vändlig installera för https åtkomst
+error-fileJoin@2         Fel "%s" när du kör file_join på %s
+error-filePar2@2         Fel %s när du kör par2_repair på %s
+error-fileRead@1         notrar(): läsning %s misslyckades
+error-fileUnrar@2        Fel "%s" när du kör rar_unpack på %s
+error-fileUnzip@2        Fel "%s" när du kör unzip() på %s
+warn-cannotFind@1        FEL: gick inte att hitta "%s"
+warn-crcFailed@1         FEL: CRC misslyckades i "%s"
+warn-delFailed@1         Borttagning av %s misslyckades!
+warn-encrypted           FEL: krypterad fil:
+warn-error@1             FEL: %s
+warn-MissExpectedFile@1  Saknade förväntad fil: %s => unrar fel?
+warn-writeError@1        FEL: skrivningsfel (%s)
+error-connect@1          Det gick inte att ansluta: %s
+error-newsSSL            Denna server tillåter ej SSL på denna port
+error-noSSL              Misslyckades med importering av OpenSSL modul. Ansluter utan SSL
+error-nbInfo@1           Newzbin servern misslyckades ge info för %s
+error-nbProtocol         Newzbin server ändrade sitt protokoll
+error-nbReport@1         Newzbin rapporterade %s ej funnen
+error-nbUnkownError@1    Newzbin ger odokumenterad felkod (%s)
+error-nbUnkownError@2    Newzbin ger odokumenterad felkod (%s, %s)
+error-nbUpdate@1         Det gick inte att uppdatera newzbin jobb %s
+warn-nbCredit            Du har ingen kredit på ditt Newzbin konto
+warn-nbNoAuth            Obehörig, kontrollera ditt newzbin användarnamn/lösenord
+warn-nbNoDelBM@1         Det gick inte att ta bort newzbin bokmärke %s
+error-qAdd@1             Det gick inte att lägga till  %s, tar bort
+error-qBad               Felaktig köfil funnen, kan ej fortsätta
+error-qCorruptFile@1     Laddningsfel %s, felaktig fil detekterad
+warn-unknownEncoding@1   %s -> Okänd kodning
+error-qDupPart@3         Dublett del %s, men olika ID-s (%s // %s)
+error-qImport@1          Det gick inte att importera %s
+warn-badImport@2         Det gick inte att importera %s filer från %s
+warn-badNZB@3            Felaktig NZB fil %s, hoppar över (orsak=%s, linje=%s)
+warn-emptyFile@1         Fil %s är tom, hoppar över
+warn-skipDup@1           Hoppar över dubletter av NZB "%s"
+error-ppCleanup@1        Rensning av %s misslyckades.
+error-ppDelFailed@1      Borttagning av %s misslyckades
+error-ppDelNzo           Det gick inte att ta bort nzo från efterbehandlings kön (id)
+error-ppDelWorkdir@1     Det gick inte att ta bort arbetsmapp (%s)
+error-ppFailed@1         Efterbehandling misslyckades för %s
+error-ppLogFile@1        Det gick inte att skapa loggfil %s
+error-ppPermissions@1    Det gick inte att ändra rättigheter på %s
+error-ppRename@2         Det gick inte att döpa om "%s" till "%s"
+warn-badPPQueue@2        Det gick inte att ladda efterbehandlings kön: Fel version (kräver:%s, hittade:%s)
+error-rssBadFeed@1       Felaktigt RSS-flödesbeskrivning "%s"
+error-rssRegex@1         Gick ej att kompilera regex: %s
+warn-emptyRSS@1          Tom RSS post hittades (%s)
+warn-failRSS@1           Det gick inte att hämta RSS flödet från %s
+warn-failRSS@2           Det gick inte att hämta RSS flödet från %s: %s
+warn-badSched@3          Fel schema %s vid %s:%s
+warn-badSchedAction@1    Okänd åtgärd: %s
+warn-schedNoServer@1     Schema för icke existerande server %s
+error-tvInfo@1           Det gick inte att hämta TV info (%s)
+error-tvRename@2         Det gick inte att döpa om: %s till %s
+error-tvSimRename@2      Det gick inte att döpa om liknande fil: %s till %s
+error-tvTemp@1           Kan inte skapa temporär fil för %s
+warn-matrixBadRep@1      Ogiltigt nzbmatrix rapporteringsnummer %s
+warn-matrixFail          Anslutningsproblem till nzbmatrix server.
+
+#Growl Messages
+grwl-notif-startup       Uppstart/Nedstängning
+grwl-notif-dl            NZB Tillagd
+grwl-notif-pp            Efterbehandling
+grwl-notif-other         Andra meddelanden
+grwl-shutdown-begin-msg  Påbörjar nedstängning av SABnzbd..
+grwl-shutdown-end-msg    SABnzbd nedstängning utförd.
+grwl-paused-msg          Pausad
+grwl-nzbadd-title        NZB tillagd i kön
+grwl-newversion-msg      Ny utgåva tillgänglig
+
+#OSX Menu
+osx-menu-warnings        Varningar
+osx-menu-status-idle     Sysslolös
+osx-menu-status-paused   Pausad
+osx-menu-pause           Pausa
+osx-menu-min             min.
+osx-menu-resume          Återuppta
+osx-menu-queue           Kö
+osx-menu-queuelimit    	 Kö (10 första sakerna)
+osx-menu-history         Historik
+osx-menu-historylimit    Historik (10 senaste sakerna)
+osx-menu-speedlimit      Hastighetsbegränsning
+osx-menu-none            Ingen
+osx-menu-getnewzbinbm    Hämta Newzbin bokmärken
+osx-menu-complete        Färdig mapp\t\t\t
+osx-menu-incomplete      Ofullständig mapp\t\t
+osx-menu-restart         Starta om
+osx-menu-quit            Avsluta
+osx-menu-config          Konfiguration
+osx-menu-purgequeue      Rensa kö
+osx-menu-purgehistory    Rensa historik
+osx-menu-wizard          Gå till guiden
+osx-menu-empty           Tom
+osx-menu-shutdowning     Stänger...
+

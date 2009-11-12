@@ -1,0 +1,53 @@
+# -*- coding: latin-1 -*-
+# Sweden # Swedish
+
+quickstart           SABnzbd Snabbstart Guide
+version              SABnzbd Version
+
+previous             Föregående
+next                 Nästa
+zoom                 Zooma
+
+skin                 Skin
+explain-skin         Vilket skin vill du använda till SABnzbd?
+
+access               Åtkomst
+access-anypc         Jag vill att SABnzbd ska bli nåbart från vilken dator som helst i mitt nätverk.
+access-mypc          Jag vill att SABnzbd ska bli nåbart enbart från min dator.
+access-pass          Lösenordsskydda åtkomst till SABnzbd (rekommenderas)
+access-https         Aktivera HTTPS åtkomst till SABnzbd.
+
+misc                 Diverse
+misc-browser         Starta webbläsaren med SABnzbd's sida när programet startas.
+
+server               Serveruppgifter
+explain-server       Fyll i uppgifter om din primära usenet leverantör.
+server-help          Hjälp
+server-help1         För att ladda ner från usenet du behöver tillgång till en leverantör. Din internetleverantör kan ge dig tillgång, men en premie leverantör rekommenderas.
+server-help2@2       Har du inte någon usenet leverantör? Vi rekommenderar att prova %s eller %s.
+server-con-explain   Antalet anslutningar som tillåts av din leverantör
+server-ssl-explain   Välj bara om din leverantör tillåter SSL-anslutningar.
+server-text          Klicka här för att testa dina angivna serveruppgifter.
+server-required      Detta fält krävs.
+server-number        Ange ett heltal.
+
+index-explain        Om du är medlem på newzbin eller nzbmatrix kan du ange ditt användarnamn och lösenord här så kan vi hämta deras nzb filer. Detta stadium kan hoppas över om du inte använder deras tjänster.
+index-bookmark       Ladda automatiskt ned bokmärkta poster.
+optional             Valfritt
+example              Ex.
+button-testServer    Test Server
+
+restarting           Startar om SABnzbd...
+complete             Installationen är nu utförd!
+tip1                 SABnzbd kommer nu att köras i bakgrunden.
+tip2                 SABnzbd kommer inte att stängas av om du stänger ett fönster eller en tab i webbläsaren.
+tip3@1               Efter att SABnzbd har startat om kommer du att ha kunna komma åt SABnzbd på denna plats: %s
+tip4                 Det är rekommenderat att du sparar denna plats som ett bokmärke för att komma åt SABnzbd när det körs i bakgrunden.
+tip-wiki             Övrig hjälp kan du hitta på våran 
+goto                 Gå till SABnzbd
+
+step-one             Steg ett
+step-two             Steg två
+step-three           Steg tre
+step-four            Steg fyra
+step-five            Steg fem

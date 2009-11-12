@@ -1,0 +1,65 @@
+# -*- coding: latin-1 -*-
+# Sweden # Swedish
+# Plush
+
+# Menu
+maxSpeed          Max hastighet
+options           Plush Inställningar
+refreshRate       Uppdateringsintervall
+confirmDeleteQueue Bekräfta Kö-borttagningar
+confirmDeleteHistory Bekräfta Historik-borttagningar
+blockRefresh      Block Refreshes on Hover
+explain-blockRefresh This will prevent refreshing content when your mouse cursor is hovering over the queue.
+disabled          Avaktiverad
+addnzb            Lägg till NZB
+fetch             Hämta
+uploadTip         Ladda upp: .nzb .rar .zip .gz
+sort              Sortera
+sortAgeAsc        Sortera efter Ålder <small>(Äldst&rarr;Nyast)
+sortAgeDesc       Sortera efter Ålder <small>(Nyast&rarr;Äldst)</small>
+sortNameAsc       Sortera efter Namn <small>(A&rarr;Z)</small>
+sortNameDesc      Sortera efter Namn <small>(Z&rarr;A)</small>
+sortSizeAsc       Sortera efter Storlek <small>(Minst&rarr;Störst)</small>
+sortSizeDesc      Sortera efter Storlek <small>(Störst&rarr;Minst)</small>
+pause5m           Pausa 5 minuter
+pause15m          Pausa 15 minuter
+pause30m          Pausa 30 minuter
+pause1h           Pausa 1 timme
+pause3h           Pausa 3 timmar
+pause6h           Pausa 6 timmar
+pauseFor          Pausa i...
+pauseForPrompt    Pausa hur många minuter?
+purge             Rensa
+onQueueFinish     Vid slut
+warnings          Varningar
+
+
+# General
+button-refresh    Uppdatera
+left              vänster
+page              sida
+everything        Allt
+prev              Föregående
+next              Nästa
+confirm           Är du säker?
+confirmWithoutSavingPrompt Ändringarna har inte sparats och kommer att försvinna.
+
+# Queue
+idle              Väntar
+remaining         Återstår
+notEnoughSpace    Inte tillräckligt med diskutrymme för att kunna fortsätta ladda ned.
+freeSpace         Ledigt diskutrymme
+freeSpaceTemp     Ledigt temputrymme
+confirmPurgeQ     Töm kön?
+
+# History
+total             Totalt
+thisWeek          Denna vecka
+thisMonth         Denna månad
+openSourceURL     Öppen källdkod URL
+openInfoURL       Öppen informations URL
+path              Genväg
+storage           Lagring
+viewScriptLog     Visa skriptlogg
+confirmPurgeH     Töm historiken?
+
