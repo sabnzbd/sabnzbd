@@ -847,7 +847,7 @@ def validate_octal(value):
         int(value, 8)
         return None, value
     except:
-        return T('error-notOctal@1') % value, None
+        return Ta('error-notOctal@1') % value, None
 
 
 def validate_no_unc(root, value):
@@ -856,7 +856,7 @@ def validate_no_unc(root, value):
     if value and not value.startswith(r'\\'):
         return None, value
     else:
-        return T('error-noUNC@1') % value, None
+        return Ta('error-noUNC@1') % value, None
 
 
 def validate_safedir(root, value):
@@ -864,7 +864,7 @@ def validate_safedir(root, value):
     if sabnzbd.empty_queues():
         return validate_no_unc(root, value)
     else:
-        return T('error-QnotEmpty'), None
+        return Ta('error-QnotEmpty'), None
 
 
 def validate_dir_exists(root, value):
@@ -873,7 +873,7 @@ def validate_dir_exists(root, value):
     if os.path.exists(p):
         return None, value
     else:
-        return T('error-noFolder@1') % p, None
+        return Ta('error-noFolder@1') % p, None
 
 def create_api_key():
     import time
