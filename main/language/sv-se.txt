@@ -1,5 +1,5 @@
 # -*- coding: latin-1 -*-
-# Sweden # Swedish
+# Sverige # Svenska
 
 special-decimal   .
 special-1000      ,
@@ -154,6 +154,8 @@ emailResult       E-mail testresultat
 lastWarnings      Senaste Varningar
 clearWarnings     rensa
 server-blocked    Ta bort blockering
+warning           VARNING:
+error             FEL:
 
 # Configuration
 configuration     Konfiguration
