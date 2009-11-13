@@ -2480,7 +2480,7 @@ class ConnectionInfo:
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
-            w = w.replace('WARNING', T('warning')).replace('ERROR', T('error'))
+            w = w.replace('WARNING', Ta('warning')).replace('ERROR', Ta('error'))
             wlist.append(xml_name(w))
         header['warnings'] = wlist
 
