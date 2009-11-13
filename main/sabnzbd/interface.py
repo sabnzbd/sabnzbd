@@ -2623,7 +2623,7 @@ def ShowString(name, string):
            </pre></code><br/><br/>
 </body>
 </html>
-''' % (xml_name(name), T('button-back'), xml_name(name), escape(msg))
+''' % (xml_name(name), T('button-back'), xml_name(name), escape(unicoder(msg)))
 
 
 def ShowOK(url):
