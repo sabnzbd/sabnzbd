@@ -25,7 +25,7 @@
 </head>
 <body>
 
-	<div id="main_menu">
+	<div id="main_menu" class="tilex_sprite_container sprite_tile_znavbar">
     <ul class="sf-menu sf-navbar">
         <li>
             <a class="sf-with-ul">SABnzbd</a>
@@ -146,9 +146,9 @@
 	</div>
 
 
-    <div id="page-wrap">
+    <div id="page-wrap" class="tiley_sprite_container sprite_tile_queue_wrap">
 
-        <div id="hdr-queue">
+        <div id="hdr-queue" class="tilex_sprite_container sprite_tile_qh">
             <div class="logo main_sprite_container sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
             <div class="main_sprite_container sprite_topright_queue" id="queue-buttons">
                 <ul>
@@ -217,14 +217,14 @@
             </div>
         </div>
 
-        <div id="queue-wrap">
+        <div id="queue-wrap" class="tiley_sprite_container sprite_tile_page_wrap">
 
             <!-- Queue ( queue.tmpl )-->
             <div id="queue">
                 <br/><p class="loading">&nbsp;</p>
                 <input type="hidden" id="queue_view_preference" value="" />
             </div>
-			<div class="box_fatbottom" id="box_fatbottom_queue">
+			<div class="box_fatbottom tilex_sprite_container sprite_tile_qh_bottom" id="box_fatbottom_queue">
 			    <div class="right_stats" id="queue_stats" nowrap></div>
 			    <div class="left_stats">
 			    	<select id="queue-pagination-perpage" class="pagination-perpage">
@@ -241,7 +241,7 @@
 			</div>
 
             <!-- History Menu/Banner -->
-            <div class="box_banner_history">
+            <div class="box_banner_history tilex_sprite_container sprite_tile_qhistory">
 				<h1>$T('menu-history').upper()</h1>
                 <div class="box_banner_r">
                     <ul class="box_banner_menu">
@@ -249,14 +249,14 @@
                     </ul>
                 </div>
             </div>
-            <div class="box_banner_hr"></div>
+            <div class="box_banner_hr main_sprite_container sprite_tile_qh_seperator"></div>
 
             <!-- History ( history.tmpl ) -->
             <div id="history">
                 <br/><p class="loading">&nbsp;</p>
                 <input type="hidden" id="history_view_preference" value="" />
             </div>
-			<div class="box_fatbottom history_stats">
+			<div class="box_fatbottom history_stats tilex_sprite_container sprite_tile_qh_bottom">
 			    <div class="right_stats" id="history_stats" nowrap></div>
 			    <div class="left_stats">
 			    	<select id="history-pagination-perpage" class="pagination-perpage">
@@ -275,7 +275,7 @@
 
         </div>
 
-        <div id="btm-wrapper">
+        <div id="btm-wrapper" class="tilex_sprite_container sprite_tile_bottom_wrap">
             <div class="main_sprite_container sprite_btm_corner_right"></div>
             <div class="main_sprite_container sprite_btm_corner_left"></div>
         </div>

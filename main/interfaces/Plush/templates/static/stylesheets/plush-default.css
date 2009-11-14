@@ -119,7 +119,7 @@ a:hover,a:active{
 -------------------------------------------------------------------*/
 
 body {
-	background: #B1B1B1 url('../images/plush-default/tile_navbar.png') top left repeat-x;
+	background: #B1B1B1;
 	padding-bottom: 10px; 
 }
  
@@ -220,8 +220,66 @@ select {
  
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
+
+
+ 
+/* sprite-main.png */
+.main_sprite_container { background: url('../images/plush-default/sprite-main.png') no-repeat top right; }
+
+#main_menu ul li a span.sf-sub-indicator { background-position: 0 5px; } 
+#main_menu ul li ul li a span.sf-sub-indicator { background-position: 0 -16px; } 
+.sprite_btm_corner_left { background-position: 0 -34px; } 
+.sprite_btm_corner_right { background-position: 0 -68px; } 
+.sprite_h_purge { background-position: 0 -102px; } 
+.sprite_hv_download { background-position: 0 -131px; } 
+.sprite_hv_error { background-position: 0 -155px; } 
+.sprite_hv_filejoin { background-position: 0 -179px; } 
+.sprite_hv_repair { background-position: 0 -203px; } 
+.sprite_hv_report { background-position: 0 -227px; } 
+.sprite_hv_script { background-position: 0 -251px; } 
+.sprite_hv_star { background-position: 0 -275px; } 
+.sprite_hv_stats { background-position: 0 -299px; } 
+.sprite_hv_unpack { background-position: 0 -323px; } 
+.sprite_progress_done { background-position: 0 -347px; } /* queue.tmpl */
+.sprite_progressbar_bg { background-position: 0 -374px; } 
+.sprite_q_menu_pausefor { background-position: 0 -401px; } 
+.sprite_q_menu_pauseforsfHover { background-position: 0 -430px; } 
+.sprite_q_pause { background-position: 0 -459px; } 
+.sprite_q_pause_on { background-position: 0 -488px; } 
+.sprite_q_queue { background-position: 0 -517px; } 
+.sprite_q_queuesfHover { background-position: 0 -546px; } 
+.sprite_q_stats_complete { background-position: 0 -575px; } 
+.sprite_q_stats_incomplete { background-position: 0 -599px; } 
+.sprite_q_stats_needspace { background-position: 0 -623px; } 
+.sprite_ql_cross { background-position: 0 -647px; } 
+.sprite_ql_cross_on { background-position: 0 -671px; } 
+.sprite_ql_grip_active, .sprite_ql_grip_active_on { background-position: 0 -695px; } 
+.sprite_ql_grip_paused { background-position: 0 -717px; } 
+.sprite_ql_grip_paused_on { background-position: 0 -739px; } 
+.sprite_ql_grip_queued { background-position: 0 -761px; } 
+.sprite_ql_grip_queued_on { background-position: 0 -783px; } 
+.sprite_rounded_area_bg { background-position: 0 -805px; } 
+.sprite_sabnzbdplus_logo { background-position: 0 -835px; } 
+.sprite_sabnzbdplus_plush { background-position: 0 -883px; } 
+.sprite_tile_qh_seperator { background-position: 0 -904px; } 
+.sprite_topleft_queue { background-position: 0 -916px; } 
+.sprite_topright_queue { background-position: right -991px; } /* right */
+
+/* tile-x sprite */
+.tilex_sprite_container { background: url('../images/plush-default/sprite-tilex.png') repeat-x top right; }
+.sprite_tile_bottom_wrap { background-position: 0 0; } 
+.sprite_tile_qh { background-position: 1px -31px; } /* 1px match pinstriping next to "QUEUE" (or offset image properly) */
+.sprite_tile_qhistory { background-position: 1px -47px; } /* subtract 16 from above */
+.sprite_tile_qh_bottom { background-position: 0 -99px; } 
+.sprite_tile_znavbar { background-position: 0 -138px; } 
+
+/* tile-y sprite */
+.tiley_sprite_container { background: url('../images/plush-default/sprite-tiley.png') repeat-y top right; }
+.sprite_tile_page_wrap { background-position: 0 0; } 
+.sprite_tile_queue_wrap { background-position: -17px right; } 
+
+
 .box_fatbottom {
-	background: url('../images/plush-default/tile_qh_bottom.png') 0 0 repeat-x;
 	color: #606060;
 	height: 37px;
 	text-align: center; 
@@ -273,19 +331,17 @@ select {
 }
  
 #page-wrap {
-	background: url('../images/plush-default/tile_page_wrap.png') repeat-y top left;
 	clear:both;
 	margin: 0px auto;
 	width: 95%; 
 }
  
 .box_banner_hr {
-	background: #cfcfcf url('../images/plush-default/tile_qh_seperator.png') 0 0 repeat-x;
+	background-repeat: repeat-x;
 	height: 4px;
 }
  
 .box_banner_history {
-  background: url('../images/plush-default/tile_qh.png') 0 -16px repeat-x;
   clear:both;
   height:51px;
   overflow:hidden;
@@ -307,7 +363,6 @@ select {
 }
  
 #hdr-queue {
-	background: url('../images/plush-default/tile_qh.png') repeat-x 0 0;
 	height: 67px;
 }
  
@@ -415,12 +470,11 @@ select {
   }
   
 #queue-wrap {
-	background: url('../images/plush-default/tile_queue_wrap.png') repeat-y top right;
 	padding:0 16px;
 }
  
 #btm-wrapper {
-	background: url('../images/plush-default/tile_bottom_wrap.png') repeat-x left bottom;
+	background-position: left bottom;
 	clear: both;
 	height: 26px;
 }
@@ -711,50 +765,8 @@ tr:hover .history_added { color: black; }
  
 .pointer { cursor: pointer; }
 
-.main_sprite_container { background: url('../images/plush-default/sprite-main.png') no-repeat top right; }
- 
-/* sprite-main.png */
 
-#main_menu ul li a span.sf-sub-indicator { background-position: 0 5px; } 
-#main_menu ul li ul li a span.sf-sub-indicator { background-position: 0 -159px; } 
-.sprite_btm_corner_left { background-position: 0 -318px; } 
-.sprite_btm_corner_right { background-position: 0 -494px; } 
-.sprite_h_purge { background-position: 0 -670px; } 
-.sprite_hv_download { background-position: 0 -841px; } 
-.sprite_hv_error { background-position: 0 -1007px; } 
-.sprite_hv_filejoin { background-position: 0 -1173px; } 
-.sprite_hv_repair { background-position: 0 -1339px; } 
-.sprite_hv_report { background-position: 0 -1505px; } 
-.sprite_hv_script { background-position: 0 -1671px; } 
-.sprite_hv_star { background-position: 0 -1837px; } 
-.sprite_hv_stats { background-position: 0 -2003px; } 
-.sprite_hv_unpack { background-position: 0 -2169px; } 
-.sprite_progress_done { background-position: 0 -2335px; } 
-.sprite_progressbar_bg { background-position: 0 -2504px; } 
-.sprite_q_menu_pausefor { background-position: 0 -2673px; } 
-.sprite_q_menu_pausefor.sfHover { background-position: 0 -2844px; } 
-.sprite_q_pause { background-position: 0 -3015px; } 
-.sprite_q_pause_on { background-position: 0 -3186px; } 
-.sprite_q_queue { background-position: 0 -3357px; } 
-.sprite_q_queue.sfHover { background-position: 0 -3528px; } 
-.sprite_q_stats_complete { background-position: 0 -3699px; } 
-.sprite_q_stats_incomplete { background-position: 0 -3865px; } 
-.sprite_q_stats_needspace { background-position: 0 -4031px; } 
-.sprite_ql_cross { background-position: 0 -4197px; } 
-.sprite_ql_cross_on { background-position: 0 -4363px; } 
-.sprite_ql_grip_active { background-position: 0 -4529px; } 
-.sprite_ql_grip_active_on { background-position: 0 -4693px; } 
-.sprite_ql_grip_paused { background-position: 0 -4857px; } 
-.sprite_ql_grip_paused_on { background-position: 0 -5021px; } 
-.sprite_ql_grip_queued { background-position: 0 -5185px; } 
-.sprite_ql_grip_queued_on { background-position: 0 -5349px; } 
-.sprite_rounded_area_bg { background-position: 0 -5513px; } 
-.sprite_sabnzbdplus_logo { background-position: 0 -5685px; } 
-.sprite_sabnzbdplus_plush { background-position: 0 -5875px; } 
-.sprite_topleft_queue { background-position: 0 -6038px; } 
-.sprite_topright_queue { background-position: right -6255px; } 
 
- 
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
  
@@ -767,7 +779,7 @@ tr:hover .history_added { color: black; }
 
 
 #main_menu {
-  margin-top:10px;
+  padding-top:10px;
   text-align:center;
 }
 
@@ -1289,7 +1301,8 @@ fieldset.EntryFieldSet {
  
 			.config_nav li a .config_sprite_container {
 				margin: 3px 0px 3px 0px;
-				padding: 0px 0px 1px 22px;
+				padding-left: 22px;
+				padding-bottom: 1px;
 				width: 100%;
 			}
  
@@ -1316,8 +1329,6 @@ legend .config_sprite_container {
 	padding: 2px 6px 2px 6px;
 }
 
-.config_sprite_container { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
-
 #config_content legend.latestWarnings,
 #config_content legend.serverDisabled { background-color:darkred; }
 #config_content legend.lastEmail,
@@ -1327,47 +1338,49 @@ legend .config_sprite_container {
 
  
 /* sprite-config.png */
+.config_sprite_container { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
+
 .sprite_config_connections_disconnect { background-position: 0 0; } 
-.sprite_config_connections_encrypted { background-position: 0 -172px; } 
-.sprite_config_connections_unencrypted { background-position: 0 -338px; } 
-.sprite_config_connections_warnings { background-position: 0 -504px; } 
-.sprite_config_email_account_settings { background-position: 0 -670px; } 
-.sprite_config_email_options, .sprite_config_nav_email { background-position: 0 -836px; } 
-.sprite_config_folders_system { background-position: 0 -1002px; } 
-.sprite_config_folders_user { background-position: 0 -1168px; } 
-.sprite_config_general_tuning { background-position: 0 -1334px; } 
-.sprite_config_general_web_server { background-position: 0 -1500px; } 
-.sprite_config_help { background-position: 0 -1666px; } 
-.sprite_config_indexsites_account_info { background-position: 0 -1838px; } 
-.sprite_config_indexsites_bookmarks { background-position: -172px 0; } 
-.sprite_config_indexsites_processed { background-position: -172px -166px; } 
-.sprite_config_nav_categories { background-position: -172px -332px; } 
-.sprite_config_nav_connections { background-position: -172px -498px; } 
-.sprite_config_nav_folders { background-position: -172px -664px; } 
-.sprite_config_nav_general { background-position: -172px -830px; } 
-.sprite_config_nav_indexsites { background-position: -172px -996px; } 
-.sprite_config_nav_rss { background-position: -172px -1162px; } 
-.sprite_config_nav_scheduling, .sprite_config_scheduling_current { background-position: -172px -1328px; } 
-.sprite_config_nav_servers, .sprite_config_servers_add { background-position: -172px -1494px; } 
-.sprite_config_nav_sorting, .sprite_config_sorting_series { background-position: -172px -1660px; } 
-.sprite_config_nav_switches { background-position: -172px -1826px; } 
-.sprite_config_rss_add { background-position: -344px 0; } 
-.sprite_config_save { background-position: -344px -166px; } 
-.sprite_config_scheduling_add { background-position: -344px -338px; } 
-.sprite_config_sorting_date { background-position: -344px -504px; } 
-.sprite_config_sorting_generic { background-position: -344px -670px; } 
-.sprite_config_switches_other { background-position: -344px -836px; } 
-.sprite_config_switches_processing { background-position: -344px -1002px; } 
-.sprite_nzo_bottom { background-position: -344px -1168px; } 
-.sprite_nzo_delete { background-position: -344px -1334px; } 
-.sprite_nzo_down { background-position: -344px -1500px; } 
-.sprite_nzo_reload { background-position: -344px -1666px; } 
-.sprite_nzo_select_all { background-position: -344px -1832px; } 
-.sprite_nzo_select_invert { background-position: -516px 0; } 
-.sprite_nzo_select_none { background-position: -516px -166px; } 
-.sprite_nzo_select_range { background-position: -516px -332px; } 
-.sprite_nzo_top { background-position: -516px -498px; } 
-.sprite_nzo_up { background-position: -516px -664px; } 
+.sprite_config_connections_encrypted { background-position: 0 -25px; } 
+.sprite_config_connections_unencrypted { background-position: 0 -44px; } 
+.sprite_config_connections_warnings { background-position: 0 -63px; } 
+.sprite_config_email_account_settings { background-position: 0 -82px; } 
+.sprite_config_email_options, .sprite_config_nav_email { background-position: 0 -101px; } 
+.sprite_config_folders_system { background-position: 0 -120px; } 
+.sprite_config_folders_user { background-position: 0 -139px; } 
+.sprite_config_general_tuning { background-position: 0 -158px; } 
+.sprite_config_general_web_server { background-position: 0 -177px; } 
+.sprite_config_help { background-position: 0 -196px; } 
+.sprite_config_indexsites_account_info { background-position: 0 -221px; } 
+.sprite_config_indexsites_bookmarks { background-position: 0 -240px; } 
+.sprite_config_indexsites_processed { background-position: 0 -259px; } 
+.sprite_config_nav_categories { background-position: 0 -278px; } 
+.sprite_config_nav_connections { background-position: 0 -297px; } 
+.sprite_config_nav_folders { background-position: 0 -316px; } 
+.sprite_config_nav_general { background-position: 0 -335px; } 
+.sprite_config_nav_indexsites { background-position: 0 -354px; } 
+.sprite_config_nav_rss { background-position: 0 -373px; } 
+.sprite_config_nav_scheduling, .sprite_config_scheduling_current { background-position: 0 -392px; } 
+.sprite_config_nav_servers, .sprite_config_servers_add { background-position: 0 -411px; } 
+.sprite_config_nav_sorting, .sprite_config_sorting_series { background-position: 0 -430px; } 
+.sprite_config_nav_switches { background-position: 0 -449px; } 
+.sprite_config_rss_add { background-position: 0 -468px; } 
+.sprite_config_save { background-position: 0 -487px; } 
+.sprite_config_scheduling_add { background-position: 0 -512px; } 
+.sprite_config_sorting_date { background-position: 0 -531px; } 
+.sprite_config_sorting_generic { background-position: 0 -550px; } 
+.sprite_config_switches_other { background-position: 0 -569px; } 
+.sprite_config_switches_processing { background-position: 0 -588px; } 
+.sprite_nzo_bottom { background-position: 0 -607px; } 
+.sprite_nzo_delete { background-position: 0 -626px; } 
+.sprite_nzo_down { background-position: 0 -645px; } 
+.sprite_nzo_reload { background-position: 0 -664px; } 
+.sprite_nzo_select_all { background-position: 0 -683px; } 
+.sprite_nzo_select_invert { background-position: 0 -702px; } 
+.sprite_nzo_select_none { background-position: 0 -721px; } 
+.sprite_nzo_select_range { background-position: 0 -740px; } 
+.sprite_nzo_top { background-position: 0 -759px; } 
+.sprite_nzo_up { background-position: 0 -778px; } 
 
 
 .numbered_list li { list-style-type: decimal; margin-left:3em; }
