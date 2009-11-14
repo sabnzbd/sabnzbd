@@ -17,7 +17,7 @@
 <!--#if $servers#-->
 	<!--#for $server in $servers#-->
 	<fieldset class="EntryFieldSet">
-		<legend>
+		<legend class="server<!--#if int($server[7]) != 0#-->Backup<!--#else if int($server[8]) != 0#-->Optional<!--#else#-->Enabled<!--#end if#-->">
 			<span class="config_sprite_container <!--#if int($server[4])#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span>
 			$server[0]:$server[1]:$server[2]
         <!--#if not $server[5]#-->
