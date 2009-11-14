@@ -319,7 +319,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Skip refresh if cursor hovers queue, to prevent annoyance
 			if ($.plush.blockRefresh && $.plush.skipRefresh) {
-				$('#manual_refresh').addClass('refresh_skipped');
+				$('#manual_refresh_wrapper').addClass('refresh_skipped');
 				return false;
 			}
 
@@ -333,7 +333,7 @@ jQuery(function($) { // safely invoke $ selector
 				$.plush.queuecurpage = page;
 
 			// Refresh state notification
-			$('#manual_refresh').removeClass('refresh_skipped').addClass('refreshing');
+			$('#manual_refresh_wrapper').removeClass('refresh_skipped').addClass('refreshing');
 			
 			// Fetch updated content from queue.tmpl
 			$.ajax({
@@ -346,7 +346,7 @@ jQuery(function($) { // safely invoke $ selector
 					$('#queue').html(result);
 					
 					// Refresh state notification
-					$('#manual_refresh').removeClass('refreshing');
+					$('#manual_refresh_wrapper').removeClass('refreshing');
 	
 					// Tooltips
 					$('#time-left').attr('title',$.plush.eta);
@@ -401,7 +401,7 @@ jQuery(function($) { // safely invoke $ selector
 				},
 				error: function() {
 					// Failed refresh notification
-					$('#manual_refresh').addClass('refresh_skipped');
+					$('#manual_refresh_wrapper').addClass('refresh_skipped');
 				}
 			});
 			

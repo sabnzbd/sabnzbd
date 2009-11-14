@@ -65,13 +65,13 @@
             <ul>
                 <li><a><form><input type="text" id="addID_input" size="18" /><input type="submit" id="addID" value="$T('Plush-fetch')" /></form></a></li>
                 <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
-				          <input type="hidden" name="apikey" value="$session" />
+				    <input type="hidden" name="apikey" value="$session" />
                     <li>
-                      <a id="uploadTip" title="$T('Plush-uploadTip')">
-            					<input type="hidden" name="mode" value="addfile" />
-            					<input type="file" id="uploadNZBFile" name="name" size="10" />
-              				</a>
-            				</li>
+                    	<a id="uploadTip" title="$T('Plush-uploadTip')">
+            				<input type="hidden" name="mode" value="addfile" />
+            				<input type="file" id="uploadNZBFile" name="name" size="10" />
+              			</a>
+            		</li>
                     <li id="processingContainer">
                       <a class="sf-with-ul">$T('pp')</a>
                       <ul>
@@ -115,27 +115,27 @@
                     </li>
 				<!--#if $varExists('newzbinDetails')#-->
                 <li><a title="Newzbin - $T('link-getBookmarks')" id="fetch_newzbin_bookmarks" class="pointer">$T('link-getBookmarks')</a></li>
-          				<!--#end if#-->
-          				</form>
+          		<!--#end if#-->
+          		</form>
             </ul>
         </li>
         <li>
-  			  <a class="sf-with-ul" href="connections" id="last_warning">$T('menu-config')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
+  			<a class="sf-with-ul" href="connections" id="last_warning">$T('menu-config')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
       		<ul class="config_links">
-            <li><a href="connections">$T('menu-cons')</a></li>
-            <li><a href="config/general">$T('cmenu-general')</a></li>
-            <li><a href="config/directories">$T('cmenu-folders')</a></li>
-            <li><a href="config/switches">$T('cmenu-switches')</a></li>
-            <li><a href="config/server">$T('cmenu-servers')</a></li>
-            <li><a href="config/scheduling">$T('cmenu-scheduling')</a></li>
-            <li><a href="config/rss">$T('cmenu-rss')</a></li>
-            <li><a href="config/email">$T('cmenu-email')</a></li>
-            <li><a href="config/newzbin">$T('cmenu-newzbin')</a></li>
-            <li><a href="config/categories">$T('cmenu-cat')</a></li>
-            <li><a href="config/sorting">$T('cmenu-sorting')</a></li>
+	            <li><a href="connections">$T('menu-cons')</a></li>
+	            <li><a href="config/general">$T('cmenu-general')</a></li>
+	            <li><a href="config/directories">$T('cmenu-folders')</a></li>
+	            <li><a href="config/switches">$T('cmenu-switches')</a></li>
+	            <li><a href="config/server">$T('cmenu-servers')</a></li>
+	            <li><a href="config/scheduling">$T('cmenu-scheduling')</a></li>
+	            <li><a href="config/rss">$T('cmenu-rss')</a></li>
+	            <li><a href="config/email">$T('cmenu-email')</a></li>
+	            <li><a href="config/newzbin">$T('cmenu-newzbin')</a></li>
+	            <li><a href="config/categories">$T('cmenu-cat')</a></li>
+	            <li><a href="config/sorting">$T('cmenu-sorting')</a></li>
       		</ul>
       	</li>
-        <li><a id="manual_refresh_wrapper">$T('Plush-button-refresh')</a></li>
+        <li><a id="manual_refresh_wrapper"><b>$T('Plush-button-refresh')</b></a></li>
 	    <!--#if $new_release#-->
         <li><a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a></li>
 	    <!--#end if#-->
