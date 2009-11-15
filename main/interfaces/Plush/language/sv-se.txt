@@ -15,7 +15,7 @@ addnzb            Lägg till NZB
 fetch             Hämta
 uploadTip         Ladda upp: .nzb .rar .zip .gz
 sort              Sortera
-sortAgeAsc        Sortera efter Ålder <small>(Äldst&rarr;Nyast)
+sortAgeAsc        Sortera efter Ålder <small>(Äldst&rarr;Nyast)</small>
 sortAgeDesc       Sortera efter Ålder <small>(Nyast&rarr;Äldst)</small>
 sortNameAsc       Sortera efter Namn <small>(A&rarr;Z)</small>
 sortNameDesc      Sortera efter Namn <small>(Z&rarr;A)</small>
