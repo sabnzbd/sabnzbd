@@ -2779,6 +2779,7 @@ def build_header(prim):
     header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last()
+    header['active_lang'] = cfg.LANGUAGE.get()
     if prim:
         header['webdir'] = sabnzbd.WEB_DIR
     else:
