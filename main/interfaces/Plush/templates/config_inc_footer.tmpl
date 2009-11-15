@@ -14,13 +14,13 @@
     #if $pane=="General"#
         <div class="left_links">
             <a id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#" rel2="$T('restart1')">
-            	<span class="config_sprite_container sprite_nzo_reload">&nbsp;</span> $T('button-restart') SABnzbd</a>
+            	<span class="config_sprite_container sprite_config_general_restart">&nbsp;</span> $T('button-restart') SABnzbd</a>
         </div>
     #end if#
     #if $pane=="Email"#
         <div class="left_links">
             <a id="test_email" href="../../connections/testmail?session=$session" rel="$T('askTestEmail')">
-            	<span class="config_sprite_container sprite_config_email_options">&nbsp;</span> $T('link-testEmail')</a>
+            	<span class="config_sprite_container sprite_config_email_test">&nbsp;</span> $T('link-testEmail')</a>
         </div>
     #end if#
 
