@@ -36,7 +36,7 @@ warnings          Varningar
 
 # General
 button-refresh    Uppdatera
-left              vänster
+left              kvar
 page              sida
 everything        Allt
 prev              Föregående
