@@ -32,7 +32,7 @@ pauseForPrompt    Pausa hur många minuter?
 purge             Rensa
 onQueueFinish     Vid slut
 warnings          Varningar
-
+cmenu-scheduling  Schema
 
 # General
 button-refresh    Uppdatera

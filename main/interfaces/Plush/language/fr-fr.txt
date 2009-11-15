@@ -33,7 +33,7 @@ purge             Vider
 onQueueFinish     En Fin de queue
 warnings          Avertissements
 updateAvailable   Mise à Jour Disponible!
-
+cmenu-scheduling  Planification
 
 # General
 button-refresh    Rafraîchir

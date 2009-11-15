@@ -33,6 +33,7 @@ purge             Purge
 onQueueFinish     On Finish
 warnings          Warnings
 updateAvailable   Update Available!
+cmenu-scheduling  Scheduling
 
 # General
 button-refresh    Refresh

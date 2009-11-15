@@ -33,6 +33,7 @@ purge             Opschonen
 onQueueFinish     Bij lege wachtrij
 warnings          Meldingen
 updateAvailable   Beschikbare Update!
+cmenu-scheduling  Taakplanner
 
 
 # General

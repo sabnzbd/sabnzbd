@@ -34,6 +34,7 @@ purge             Leeren
 onQueueFinish     Wenn fertig
 warnings          Warnungen
 updateAvailable   Neue Version verfügbar!
+cmenu-scheduling  Planung
 
 # General
 button-refresh    Neu laden
