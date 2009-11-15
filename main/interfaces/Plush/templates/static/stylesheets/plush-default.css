@@ -268,10 +268,10 @@ select {
 /* tile-x sprite */
 .tilex_sprite_container { background: url('../images/plush-default/sprite-tilex.png') repeat-x top right; }
 .sprite_tile_bottom_wrap { background-position: 0 0; } 
-.sprite_tile_qh { background-position: 1px -31px; } /* 1px match pinstriping next to "QUEUE" (or offset image properly) */
-.sprite_tile_qhistory { background-position: 1px -47px; } /* subtract 16 from above */
-.sprite_tile_qh_bottom { background-position: 0 -99px; } 
-.sprite_tile_znavbar { background-position: 0 -138px; } 
+.sprite_tile_qh { background-position: 0 -27px; } 
+.sprite_tile_qhistory { background-position: 0 -43px; } /* subtract 16 from above */
+.sprite_tile_qh_bottom { background-position: 0 -95px; } 
+.sprite_tile_znavbar { background-position: 0 -134px; } 
 
 /* tile-y sprite */
 .tiley_sprite_container { background: url('../images/plush-default/sprite-tiley.png') repeat-y top right; }
@@ -474,7 +474,6 @@ select {
 }
  
 #btm-wrapper {
-	background-position: left bottom;
 	clear: both;
 	height: 26px;
 }
