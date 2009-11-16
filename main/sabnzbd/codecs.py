@@ -21,18 +21,17 @@ sabnzbd.codecs - Unicoded filename support
 
 import os
 import sys
+import locale
 from xml.sax.saxutils import escape
 from Cheetah.Filters import Filter
 
 import sabnzbd
 
-if 1:#try:
-    import locale
-    gUTF = (not sabnzbd.WIN32) and \
-           (sabnzbd.DARWIN or locale.getdefaultlocale()[1].lower().find('utf') >= 0)
-#except:
-#    # Incorrect locale implementation, assume the worst
-#    gUTF = False
+try:
+    gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
+except:
+    # Incorrect locale implementation, assume the worst
+    gUTF = False
 
 def reliable_unpack_names():
     """ See if it is safe to rely on unrar names """
@@ -44,7 +43,7 @@ def reliable_unpack_names():
 def name_fixer(p):
     """ Return UTF-8 encoded string, if appropriate for the platform """
 
-    if gUTF:
+    if sabnzbd.DARWIN:
         return p.decode('Latin-1', 'replace').encode('utf-8', 'replace').replace('?', '_')
     else:
         return p
@@ -54,7 +53,7 @@ def unicoder(p):
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
-        if gUTF:
+        if sabnzbd.DARWIN:
             try:
                 return p.decode('utf-8')
             except:
@@ -78,7 +77,7 @@ def xml_name(p, keep_escape=False, encoding=None):
     if isinstance(p, unicode):
         pass
     elif isinstance(p, str):
-        if gUTF or encoding == 'utf-8':
+        if sabnzbd.DARWIN or encoding == 'utf-8':
             p = p.decode('utf-8', 'replace')
         else:
             p = p.decode('Latin-1', 'replace')
