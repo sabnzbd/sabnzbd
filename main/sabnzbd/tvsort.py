@@ -30,6 +30,7 @@ import sabnzbd
 from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename, get_ext
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
+from sabnzbd.codecs import titler
 from sabnzbd.lang import T, Ta
 
 RE_SAMPLE = re.compile(sample_match, re.I)
@@ -60,18 +61,6 @@ COUNTRY_REP = ('(US)', '(UK)', '(EU)', '(CA)', '(YU)', '(VE)', '(TR)', '(CH)', \
                '(CO)', '(CN)', '(CL)', '(BG)', '(BR)', '(BE)', '(AT)', '(AU)', \
                '(AW)', '(AR)', '(AL)', '(AF)')
 
-
-def titler(p):
-    """ title() replacement
-        Python's title() fails with Latin-1, so use Unicode detour.
-    """
-    if sabnzbd.DARWIN:
-        try:
-            return p.decode('utf-8').title().encode('utf-8')
-        except:
-            return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
-    else:
-        return p.decode('latin-1', 'replace').title().encode('latin-1', 'replace')
 
 
 def move_to_parent_folder(workdir):
