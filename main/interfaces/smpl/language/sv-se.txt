@@ -15,7 +15,6 @@ showEdit        Visa Redigeringsalternativ
 hideEdit        Dölj Redigeringsalternativ 
 timeleft        Återstående tid
 purgeQueue      Ta bort alla
-purgeQueueConf  Ta bort alla saker från kön?
 progress        Arbetar
 delete          Ta bort
 downloading     Laddar ner
@@ -31,7 +30,6 @@ refresr         Uppdateringsfrekvens
 restartOK?      Är du säker på att du vill starta om SABnzbd?
 warnings        Varningar
 getbookmarks    Hämta bokmärken
-purgehistOK?    Ta bort alla saker från historiken?
 purgefailhistOK? Ta bort alla felaktiga saker från historiken?
 purgehist       Ta bort alla
 purgefailhist   Ta bort felaktiga saker

@@ -9,33 +9,33 @@
 to: $to
 from: $from
 date: $date
-subject: SABnzbd has <!--#if $status then "completed" else "failed" #--> job $name
+subject: SABnzbd har <!--#if $status then "completed" else "failed" #--> jobb $name
 X-priority: 5
 X-MS-priority: 5
 ## After this comes the body, the empty line is required!
 
-Hi,
+Hej,
 <!--#if $status #-->
-SABnzbd has downloaded "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
+SABnzbd har laddat ner "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
 <!--#else#-->
-SABnzbd has failed to download "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
+SABnzbd misslyckades att ladda ner "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
 <!--#end if#-->
-Finished at $end_time
-Downloaded $size
+Slutade $end_time
+Nedladdat $size
 
-Results of the job:
+Resulttat av jobbet:
 <!--#for $stage in $stages #-->
-Stage $stage <!--#slurp#-->
+Steg $stage <!--#slurp#-->
 <!--#for $result in $stages[$stage]#-->
     $result <!--#slurp#-->
 <!--#end for#-->
 <!--#end for#-->
 <!--#if $script!="" #-->
-Output from user script "$script" (Exit code = $script_ret):
+Utmatning från användarskript "$script" (Exit code = $script_ret):
 $script_output
 <!--#end if#-->
 <!--#if $status #-->
-Enjoy!
+Lycka till!
 <!--#else#-->
-Sorry!
+Tyvärr!
 <!--#end if#-->

@@ -1,5 +1,5 @@
 # -*- coding: latin-1 -*-
-# Sverige # Svenska
+# Sweden # Swedish
 
 special-decimal   .
 special-1000      ,
@@ -128,15 +128,19 @@ error-fetchNewzbin@1 Fel vid hämtning av msgid %s från www.newzbin.com -\
 fetchNZB@1        Försöker att hämta NZB från %s
 eoq-actions       Actions
 eoq-scripts       Scripts
+purgeQueue        Ta bort kö
+purgeQueueConf    Ta bort alla saker från kön?
 
 # History page
 purgeHist         Ta bort Historik
+purgeHistConf     Ta bort alla saker från historiken?
 hideDetails       Göm detaljer
 showDetails       Visa detaljer
 sizeHist          Historikstorlek
 completed         Färdig
 size              Storlek
 status            Status
+msg-reAdded@1     Jobb "%s" är återinlagt i kön
 
 # Connections page
 link-forceDisc    Tvinga frånkoppling
@@ -323,6 +327,9 @@ explain-ignore_samples   Filtrera ut sample-filer (ex. video samplingar).
 igsam-off                Av
 igsam-del                Ta bort efter nedladdning
 igsam-not                Ladda inte ned.
+opt-ssl_type             SSL typ
+explain-ssl_type         Använd V23 om inte din leverantör kräver annat!
+
 
 # Config->Server
 configServer             Serverkonfiguration
@@ -372,6 +379,7 @@ sch-pause                Pausa
 sch-shutdown             Stäng av
 sch-restart              Starta om
 sch-speedlimit           Hastighetsgräns
+sch-pause_all            Pausa Allt
 
 # Config->RSS
 configRSS                RSS-konfiguration
@@ -389,6 +397,7 @@ rss-type                 Typ
 rss-filter               Filter
 rss-accept               Acceptera
 rss-reject               Avvisa
+rss-must                 Kräver
 rss-delFilter            X
 rss-matched              Matchade
 rss-notMatched           Matchade inte
@@ -562,7 +571,6 @@ his-retryURL2            Försök igen
 
 # Errors and Warnings
 error-noPar2             par2 binär... EJ funnen!
-error-noStartup@2        Initialisering av %s-%s misslyckades, avbryter
 error-noWebUi            Det gick inte att starta webbkontrollen
 error-noYEnc             _yenc modul... EJ funnen!
 error-sameHTTP-HTTPS     Kan ej öppna HTTP och HTTPS portarna på samma gång
@@ -621,6 +629,7 @@ error-mailSend           Det gick inte att skicka e-mail
 error-mailTempl@1        Kan ej finna e-mail mallar i %s
 error-mailTLS            Det gick inte att initialisera TLS anslutning
 warn-noEmailClose        Det gick inte att stänga e-mail anslutning
+msg-emailOK              E-mail sändning lyckades
 error-regex@1            Det gick inte att kompilera regex för sök-sträng: %s
 error-accessDir@2        %s mapp: %s åtkomst misslyckad
 error-createDir@1        Kan ej skapa mapp %s
@@ -691,6 +700,73 @@ error-tvSimRename@2      Det gick inte att döpa om liknande fil: %s till %s
 error-tvTemp@1           Kan inte skapa temporär fil för %s
 warn-matrixBadRep@1      Ogiltigt nzbmatrix rapporteringsnummer %s
 warn-matrixFail          Anslutningsproblem till nzbmatrix server.
+warn-noRepair            Inget PAR2 program funnet, reparation ej möjlig\n
+warn-missingFiles        \nVarning: alla filer blev inte uppackade, se logg
+error-joinMismatch       Förväntad storlek är inte lika verklig storlek
+error-joinFail@1         Filsammanslagning av %s misslyckades
+error-joinFail@2         [%s] Fel "%s" under filsammanslagning
+msg-joinOK@3             [%s] Slår ihop %s fil(er)%s
+error-unpackFail@1       Uppackning misslyckades, %s
+error-unpackFail@2       [%s] Fel "%s" under uppackning av RAR fil(er)
+error-badArchive         Öppnande av huvudarkiv misslyckades (krypterat eller trasigt)
+error-unpackFailed@1     Uppackning misslyckades, gick inte att hitta %s
+error-unpackCRC          Uppackning misslyckades, CRC-fel
+error-unpackFull         Uppackning misslyckades, skrivfel eller disken full?
+error-unpackFailLog      Uppackning misslyckades, se logg
+error-unpackPassword     Uppackning misslyckades, arkivet kräver lösenord
+error-unpackMissing      Uppackning misslyckades, en väntad fil är inte uppackad
+msg-unpackDone@4         Uppackad %s fil%s/mapp%s i %s
+msg-unzipDone@3          %s filer%s i %s
+msg-QuickCheck           Snabbkontroll...
+msg-QuickChecking        Snabbkontrollerar
+msg-QuickOK@1            [%s] Snabbkontroll OK
+msg-startRepair          Startar reparation
+error-repairFailed@1     Reparation misslyckades, %s
+error-repairBad@2        Fel "%s" medans par2_repair kördes på %s
+msg-verify               Verifierar...
+msg-verifyOK@2           [%s] Verifierad i %s, alla filer är ok
+msg-repairNeeded         Kräver reparation
+msg-repairNeeded@2       [%s] Verifiering i %s, kräver reparation
+error-noMainPacket       Huvudarkiv saknas...
+error-repairBlocks@1     Misslyckad reparation, finns ej tillräckligt med reparationsblock (%s saknas)
+msg-fetchBlocks@1        Hämtar %s block...
+msg-repairing            Reparerar
+msg-repairDone@2         [%s] Reparerad i %s
+msg-verifying            Verifierar
+msg-DownloadedIn@2       Hämtade i %s vid ett genomsnitt på %sB/s
+msg-noParSets@1          [%s] Ingen par2 sats
+msg-noPostProc           Ingen efterbehandling på grund av misslyckad verifiering
+msg-sentToQ@1            Skickat %s till kö
+msg-runScript@1          Kör användarskript %s
+msg-ranScript@1          Körde %s
+link-more                Mer
+link-viewSc              Visa skriptutmatning
+warn-OutRetention        Hämtning misslyclades - Out of your server's retention?
+warn-PostCrash           Efterbehandling kraschade, se loggfil
+msg-moving               Flyttar
+msg-running              Kör skript
+msg-joining              Slår ihop
+msg-unpacking            Packar upp
+msg-repair               Reparerar
+msg-fetching             Hämtar
+msg-path                 Genväg
+
+stage-download           Ladda ned
+stage-repair             Reparera
+stage-filejoin           Slår ihop filer
+stage-unpack             Packa upp
+stage-script             Skript
+
+post-Completed           Färdig
+post-Failed              Misslyckades
+post-Queued              Köad
+post-Repairing           Reparerar...
+post-Extracting          Extraherar...
+post-Moving              Flyttar...
+post-Running             Kör skript...
+post-Fetching            Hämtar extra block...
+post-QuickCheck          Snabbkontroll...
+post-Verifying           Verifierar...
 
 #Growl Messages
 grwl-notif-startup       Uppstart/Nedstängning
@@ -728,3 +804,13 @@ osx-menu-wizard          Gå till guiden
 osx-menu-empty           Tom
 osx-menu-shutdowning     Stänger...
 
+email-full@2             \
+to: %s\n\
+from: %s\n\
+subject: SABnzbd rapporterar om Full disk\n\
+\n\
+Hej,\n\
+\n\
+SABnzbd har stoppat nedladdning för att disken nästan är full.\n\
+Var vänlig gör plats för nedladdningen och återuppta SABnzbd's nedladdning manuellt.\n\
+\n
