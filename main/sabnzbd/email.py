@@ -164,7 +164,8 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     ret = "No templates found"
     for temp in lst:
         if os.access(temp, os.R_OK):
-            message = Template(file=temp,
+            source = _decode_file(temp)
+            message = Template(source=source,
                                 searchList=[parm],
                                 filter=LatinFilter,
                                 compilerSettings={'directiveStartToken': '<!--#',
@@ -187,3 +188,22 @@ def diskfull():
         return send(T('email-full@2') % (cfg.EMAIL_TO.get(), cfg.EMAIL_FROM.get()))
     else:
         return ""
+
+
+################################################################################
+def _decode_file(path):
+    """ Return content of file in Unicode string
+        using encoding as specified in the file.
+        Work-around for dumb handling of decoding by Cheetah.
+    """
+    fp = open(path, 'r')
+    txt = fp.readline()
+    m = re.search(r'#encoding[:\s]+(\S+)', txt)
+    if m and m.group(1):
+        encoding = m.group(1)
+    else:
+        encoding = 'latin-1'
+    source = fp.read()
+    fp.close()
+
+    return source.decode(encoding)
