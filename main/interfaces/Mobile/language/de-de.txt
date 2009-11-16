@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Deutschland # Deutsch
+# Translation by Severin Heiniger
 # Mobile
 
 # misc
