@@ -25,7 +25,7 @@
 </head>
 <body>
 
-	<div id="main_menu" class="tilex_sprite_container sprite_tile_znavbar">
+	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
     <ul class="sf-menu sf-navbar">
         <li>
             <a class="sf-with-ul">SABnzbd</a>
@@ -150,7 +150,7 @@
 
         <div id="hdr-queue" class="tilex_sprite_container sprite_tile_qh">
             <div class="logo main_sprite_container sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
-            <div class="main_sprite_container sprite_topright_queue" id="queue-buttons">
+            <div id="queue-buttons" class="lang-$active_lang main_sprite_container sprite_topright_queue">
                 <ul>
                     <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
                     <li class="main_sprite_container sprite_q_menu_pausefor">

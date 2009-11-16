@@ -427,6 +427,13 @@ select {
     width:200px;
     z-index:100;
   }
+  #queue-buttons.lang-nl-du ul li ul,
+  #queue-buttons.lang-fr-fr ul li ul{
+    width:235px;
+  }
+  #queue-buttons.lang-de-de ul li ul{
+    width:250px;
+  }
   #queue-buttons ul li.sprite_q_queue ul{
     right:0;
   }
@@ -467,6 +474,16 @@ select {
     position:absolute;
     right:200px;
     top:0;
+  }
+  #queue-buttons.lang-nl-du ul li ul li ul,
+    #queue-buttons.lang-nl-du ul li.sprite_q_queue ul li ul,
+  #queue-buttons.lang-fr-fr ul li ul li ul,
+    #queue-buttons.lang-fr-fr ul li.sprite_q_queue ul li ul{
+    right:235px;
+  }
+  #queue-buttons.lang-de-de ul li ul li ul,
+    #queue-buttons.lang-de-de ul li.sprite_q_queue ul li ul{
+    right:250px;
   }
   
 #queue-wrap {
@@ -877,6 +894,17 @@ tr:hover .history_added { color: black; }
   position:absolute;
   top:0;
 }
+#main_menu ul li ul li ul li{
+  width:188px;
+}
+#main_menu.lang-nl-du ul li ul li ul li,
+#main_menu.lang-fr-fr ul li ul li ul li,
+#main_menu.lang-sv-se ul li ul li ul li{
+  width:240px;
+}
+#main_menu.lang-de-de ul li ul li ul li{
+  width:270px;
+}
 #main_menu ul li ul li#plushoptions ul li:first-child a,
 #main_menu ul li ul li#processingContainer ul li{
   padding:4px 6px;
@@ -928,6 +956,10 @@ tr:hover .history_added { color: black; }
 }
 #main_menu ul li ul#last_warning_link li a{
   min-width: 440px;
+}
+
+#main_menu.lang-fr-fr #addID_input{
+  width: 110px;
 }
 
 .sf-shadow ul { /* if superfish shadows are enabled lets make it happen! 
@@ -1274,6 +1306,9 @@ fieldset.EntryFieldSet {
 	text-align: left;
 	width: 84px; 
 }
+.config_nav.lang-de-de {
+	width: 130px; 
+}
  
 	.config_nav ul {
 		border: none;
@@ -1432,6 +1467,7 @@ legend .config_sprite_container {
 		}
  
 .config_margin { margin: 5px 10px 0 110px; }
+.config_margin.lang-de-de { margin: 5px 10px 0 130px; }
  
 .right_links {
 	float: right;

@@ -69,7 +69,7 @@
 	<input type="hidden" name="session" value="$session">
     <input type="hidden" name="action_key" id="action_key" />
 
-    <div class="config_nav">
+    <div class="config_nav lang-$active_lang">
         <ul>
             <li><a class="config_menu" id="nzo_reload"><span class="config_sprite_container sprite_nzo_reload">$T('Plush-button-refresh')</span></a></li>
             <br/>&nbsp;$T('sch-action'):
@@ -86,12 +86,8 @@
         </ul>
     </div>
 
-    <div id="config_container" class="config_margin">
+    <div id="config_container" class="config_margin lang-$active_lang">
         <div id="config_content">
-
-    <!-- ************************************
-                PAGE CONTENT IS BELOW
-        ************************************ -->
 
             <table class="nzoTable">
                 <tr><th></th><th>$T('size')&nbsp;($T('MB'))</th><th>$T('nzo-age')</th><th>$T('nzo-filename')/$T('nzo-subject')</th></tr>
@@ -106,10 +102,6 @@
                     </tr>
                 <!--#end for#-->
             </table>
-
-    <!-- ************************************
-                PAGE CONTENT IS ABOVE
-        ************************************ -->
 
         </div>
     </div>
