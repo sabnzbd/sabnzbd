@@ -1,4 +1,4 @@
-## Temporary restriction: No accented characters allowed, only plain ASCII
+#encoding UTF-8
 ##
 ## Default Email template for SABnzbd
 ## This a Cheetah template
@@ -10,7 +10,7 @@
 to: $to
 from: $from
 date: $date
-subject: SABnzbd <!--#if $status then "hat" else "konnte" #--> Auftrag $name <!--#if $status then "erfolgreich ausgefuehrt" else "nicht ausfuehren" #-->
+subject: SABnzbd <!--#if $status then "hat" else "konnte" #--> Auftrag $name <!--#if $status then "erfolgreich ausgeführt" else "nicht ausführen" #-->
 X-priority: 5
 X-MS-priority: 5
 ## After this comes the body, the empty line is required!
