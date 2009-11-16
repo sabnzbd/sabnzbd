@@ -758,8 +758,8 @@ function loadtitle() {
         document.getElementById(formName+'-result').innerHTML = "$T('srv-testing')";
         element = document.getElementById(formName);
         values = getFormValues(element);
-        
-        
+
+
         url = "tapi?mode=config&name=test_server&output=json&session="+session;
 		var d = doXHR(url,
 	    {
@@ -773,14 +773,14 @@ function loadtitle() {
             var result = evalJSON(d.responseText);
             if (result.value.result) {
                 cls = 'success';
-                
+
             } else {
                 cls = 'failure';
             }
-            
+
             message = '<span class="'+ cls +'">'+ result.value.message +'</span>';
             document.getElementById(formName+'-result').innerHTML = message;
-        })  
+        })
     }
 
 	//a function for submitting forms, grabs all the form info the the form defined by saveelement. Can also execute an additional page get after the post
@@ -1122,7 +1122,7 @@ function loadingJSON(){
 			<div id="RightContainer" class="left-border">
 <div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">
     <form action="addID" method="get">
-        <input type="text" style="width:218px;" name="id" value="Enter URL<!--#if $varExists('newzbinDetails') then ' or Report ID' else '' #-->" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
+        <input type="text" style="width:218px;" name="id" value="$T('enterURL')<!--#if $varExists('newzbinDetails') then $T('enterID') else '' #-->" onfocus="clearForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')" onblur="setForm(this, 'Enter URL<!--#if $varExists('newzbinDetails') then " or Report ID" else "" #-->')">
         <!--#if $cat_list#-->
             <select name="cat" >
                 <optgroup label="$T('category')">

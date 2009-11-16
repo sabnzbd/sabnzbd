@@ -99,6 +99,8 @@ pr-force          Tvinga
 pr-normal         Normal
 pr-high           Hög
 pr-low            Låg
+enterURL          URL
+enterID           &nbsp;eller Report ID
 
 # Queue page
 link-sortByName   Sortera efter namn

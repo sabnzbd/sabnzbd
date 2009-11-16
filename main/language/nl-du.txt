@@ -96,6 +96,8 @@ pr-force          Forceren
 pr-normal         Normaal
 pr-high           Hoog
 pr-low            Laag
+enterURL          URL
+enterID           &nbsp;of Report ID
 
 # Queue page
 link-sortByName   Op naam

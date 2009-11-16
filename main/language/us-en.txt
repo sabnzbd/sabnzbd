@@ -98,6 +98,8 @@ pr-force          Force
 pr-normal         Normal
 pr-high           High
 pr-low            Low
+enterURL          Enter URL
+enterID           &nbsp;or Report ID
 
 # Queue page
 link-sortByName   Sort by name
