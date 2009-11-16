@@ -1,26 +1,27 @@
-# -*- coding: latin-1 -*-
-# Sweden # Swedish
+# -*- coding: utf-8 -*-
+# Sverige # Svenska
+# Translation by "Kristoffer (Malmis) MalmstrÃ¶m" <malmis@malmis.com>
 # Plush
 
 # Menu
 maxSpeed          Max hastighet
-options           Plush Inställningar
+options           Plush InstÃ¤llningar
 refreshRate       Uppdateringsintervall
-confirmDeleteQueue Bekräfta Kö-borttagningar
-confirmDeleteHistory Bekräfta Historik-borttagningar
+confirmDeleteQueue BekrÃ¤fta KÃ¶-borttagningar
+confirmDeleteHistory BekrÃ¤fta Historik-borttagningar
 blockRefresh      Block Refreshes on Hover
 explain-blockRefresh This will prevent refreshing content when your mouse cursor is hovering over the queue.
 disabled          Avaktiverad
-addnzb            Lägg till NZB
-fetch             Hämta
+addnzb            LÃ¤gg till NZB
+fetch             HÃ¤mta
 uploadTip         Ladda upp: .nzb .rar .zip .gz
 sort              Sortera
-sortAgeAsc        Sortera efter Ålder <small>(Äldst&rarr;Nyast)</small>
-sortAgeDesc       Sortera efter Ålder <small>(Nyast&rarr;Äldst)</small>
+sortAgeAsc        Sortera efter Ã…lder <small>(Ã„ldst&rarr;Nyast)</small>
+sortAgeDesc       Sortera efter Ã…lder <small>(Nyast&rarr;Ã„ldst)</small>
 sortNameAsc       Sortera efter Namn <small>(A&rarr;Z)</small>
 sortNameDesc      Sortera efter Namn <small>(Z&rarr;A)</small>
-sortSizeAsc       Sortera efter Storlek <small>(Minst&rarr;Störst)</small>
-sortSizeDesc      Sortera efter Storlek <small>(Störst&rarr;Minst)</small>
+sortSizeAsc       Sortera efter Storlek <small>(Minst&rarr;StÃ¶rst)</small>
+sortSizeDesc      Sortera efter Storlek <small>(StÃ¶rst&rarr;Minst)</small>
 pause5m           Pausa 5 minuter
 pause15m          Pausa 15 minuter
 pause30m          Pausa 30 minuter
@@ -28,11 +29,11 @@ pause1h           Pausa 1 timme
 pause3h           Pausa 3 timmar
 pause6h           Pausa 6 timmar
 pauseFor          Pausa i...
-pauseForPrompt    Pausa hur många minuter?
+pauseForPrompt    Pausa hur mÃ¥nga minuter?
 purge             Rensa
 onQueueFinish     Vid slut
 warnings          Varningar
-updateAvailable   Uppdatering tillgänglig
+updateAvailable   Uppdatering tillgÃ¤nglig
 cmenu-scheduling  Schema
 
 # General
@@ -40,28 +41,28 @@ button-refresh    Uppdatera
 left              kvar
 page              sida
 everything        Allt
-prev              Föregående
-next              Nästa
-confirm           Är du säker?
-confirmWithoutSavingPrompt Ändringarna har inte sparats och kommer att försvinna.
-nzo-range         Omfång
+prev              FÃ¶regÃ¥ende
+next              NÃ¤sta
+confirm           Ã„r du sÃ¤ker?
+confirmWithoutSavingPrompt Ã„ndringarna har inte sparats och kommer att fÃ¶rsvinna.
+nzo-range         OmfÃ¥ng
 
 # Queue
-idle              Väntar
-remaining         Återstår
-notEnoughSpace    Inte tillräckligt med diskutrymme för att kunna fortsätta ladda ned.
+idle              VÃ¤ntar
+remaining         Ã…terstÃ¥r
+notEnoughSpace    Inte tillrÃ¤ckligt med diskutrymme fÃ¶r att kunna fortsÃ¤tta ladda ned.
 freeSpace         Ledigt diskutrymme
 freeSpaceTemp     Ledigt temputrymme
-confirmPurgeQ     Töm kön?
+confirmPurgeQ     TÃ¶m kÃ¶n?
 
 # History
 total             Totalt
 thisWeek          Denna vecka
-thisMonth         Denna månad
-openSourceURL     Öppen källdkod URL
-openInfoURL       Öppen informations URL
-path              Genväg
+thisMonth         Denna mÃ¥nad
+openSourceURL     Ã–ppen kÃ¤lldkod URL
+openInfoURL       Ã–ppen informations URL
+path              GenvÃ¤g
 storage           Lagring
 viewScriptLog     Visa skriptlogg
-confirmPurgeH     Töm historiken?
+confirmPurgeH     TÃ¶m historiken?
 

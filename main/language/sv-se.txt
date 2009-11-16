@@ -1,5 +1,6 @@
-# -*- coding: latin-1 -*-
-# Sweden # Swedish
+# -*- coding: utf-8 -*-
+# Sverige # Svenska
+# Translation by "Kristoffer (Malmis) MalmstrÃ¶m" <malmis@malmis.com>
 
 special-decimal   .
 special-1000      ,
@@ -18,43 +19,43 @@ minute            minut
 minutes           minuter
 second            sekund
 seconds           sekunder
-month             Månad
-year              År
+month             MÃ¥nad
+year              Ã…r
 day               Dag
 days              Dagar
 daily             Dagligen
-monday            Måndag
+monday            MÃ¥ndag
 tuesday           Tisdag
 wednesday         Onsdag
 thursday          Torsdag
 friday            Fredag
-saturday          Lördag
-sunday            Söndag
-day-of-month      Månadsdag
+saturday          LÃ¶rdag
+sunday            SÃ¶ndag
+day-of-month      MÃ¥nadsdag
 filename          Filnamn
 
 # General template elements
 signOn            Det automatiska usenet nedladdningsverktyget
 button-save       Spara
-queued            Köad
-button-back       Bakåt
+queued            KÃ¶ad
+button-back       BakÃ¥t
 button-x          X
 
 # Header
 menu-home         Hem
-menu-queue        Kö
+menu-queue        KÃ¶
 menu-history      Historik
 menu-config       Konfiguration
 menu-cons         Anslutningar
-menu-help         Hjälp
+menu-help         HjÃ¤lp
 menu-wiki         Wiki
 menu-forums       Forum
 menu-irc          IRC
-cmenu-general     Allmänt
+cmenu-general     AllmÃ¤nt
 cmenu-folders     Mappar
 cmenu-switches    Switchar
 cmenu-servers     Servrar
-cmenu-scheduling  Schemaläggare
+cmenu-scheduling  SchemalÃ¤ggare
 cmenu-rss         RSS
 cmenu-email       E-mail
 cmenu-newzbin     Index-sidor
@@ -62,26 +63,26 @@ cmenu-cat         Kategorier
 cmenu-sorting     Sortering
 
 # Footer
-ft-download       Temporär nedladdningmapp
-ft-complete       Färdig nedladdningsmapp
+ft-download       TemporÃ¤r nedladdningmapp
+ft-complete       FÃ¤rdig nedladdningsmapp
 ft-speed          Nedladdningshastighet
-ft-queued         Köad
+ft-queued         KÃ¶ad
 ft-paused         PAUSAD
 ft-buffer@2       Sparat %s artiklar (%s)
 ft-sysload        Sysload
 ft-warning        VARNINGAR
-ft-newRelease@1   Ny utgåva %s tillgänglig
+ft-newRelease@1   Ny utgÃ¥va %s tillgÃ¤nglig
 
 # Main page
-addNewJobs        Lägg till ny nedladdning
-shutdownOK?       Är du säker på att du vill stänga av SABnzbd?
-link-shutdown     Stäng Av
+addNewJobs        LÃ¤gg till ny nedladdning
+shutdownOK?       Ã„r du sÃ¤ker pÃ¥ att du vill stÃ¤nga av SABnzbd?
+link-shutdown     StÃ¤ng Av
 link-pause        Pausa
-link-resume       Återuppta
-button-add        Lägg till
-add               Lägg till
+link-resume       Ã…teruppta
+button-add        LÃ¤gg till
+add               LÃ¤gg till
 reportId          Rapport-id
-addFile           Lägg till fil
+addFile           LÃ¤gg till fil
 category          Kategori
 pp                Bearbetar
 script            Skript
@@ -96,54 +97,54 @@ pp-u              P
 pp-d              T
 pr-force          Tvinga
 pr-normal         Normal
-pr-high           Hög
-pr-low            Låg
+pr-high           HÃ¶g
+pr-low            LÃ¥g
 
 # Queue page
 link-sortByName   Sortera efter namn
-link-sortByAge    Sortera efter ålder
+link-sortByAge    Sortera efter Ã¥lder
 link-sortBySize   Sortera efter storlek
-link-hideFiles    Göm filer
+link-hideFiles    GÃ¶m filer
 link-showFiles    Visa filer
-onQueueFinish     När kön är färdig
-shutdownPc        Stäng av PC
-standbyPc         Sparläge PC
-hibernatePc       Viloläge PC
-shutdownSab       Stäng av SABnzbd
-speedLimit        Hastighetsgräns
-pauseFor          Pausa för
+onQueueFinish     NÃ¤r kÃ¶n Ã¤r fÃ¤rdig
+shutdownPc        StÃ¤ng av PC
+standbyPc         SparlÃ¤ge PC
+hibernatePc       VilolÃ¤ge PC
+shutdownSab       StÃ¤ng av SABnzbd
+speedLimit        HastighetsgrÃ¤ns
+pauseFor          Pausa fÃ¶r
 mode              Bearbetar
 order             Ordning
 name              Namn
-remainTotal       Återstår/Totalt
+remainTotal       Ã…terstÃ¥r/Totalt
 eta               ETA
-age               År
+age               Ã…r
 button-del        Ta bort
-button-resume     Återuppta
+button-resume     Ã…teruppta
 button-pause      Pausa
-unknown           okänd
-fetchingNewzbin@1 hämtar msgid %s från www.newzbin.com
-error-fetchNewzbin@1 Fel vid hämtning av msgid %s från www.newzbin.com -\
-                  Kolla så att användarnamn och lösenord är inställt
-fetchNZB@1        Försöker att hämta NZB från %s
+unknown           okÃ¤nd
+fetchingNewzbin@1 hÃ¤mtar msgid %s frÃ¥n www.newzbin.com
+error-fetchNewzbin@1 Fel vid hÃ¤mtning av msgid %s frÃ¥n www.newzbin.com -\
+                  Kolla sÃ¥ att anvÃ¤ndarnamn och lÃ¶senord Ã¤r instÃ¤llt
+fetchNZB@1        FÃ¶rsÃ¶ker att hÃ¤mta NZB frÃ¥n %s
 eoq-actions       Actions
 eoq-scripts       Scripts
-purgeQueue        Ta bort kö
-purgeQueueConf    Ta bort alla saker från kön?
+purgeQueue        Ta bort kÃ¶
+purgeQueueConf    Ta bort alla saker frÃ¥n kÃ¶n?
 
 # History page
 purgeHist         Ta bort Historik
-purgeHistConf     Ta bort alla saker från historiken?
-hideDetails       Göm detaljer
+purgeHistConf     Ta bort alla saker frÃ¥n historiken?
+hideDetails       GÃ¶m detaljer
 showDetails       Visa detaljer
 sizeHist          Historikstorlek
-completed         Färdig
+completed         FÃ¤rdig
 size              Storlek
 status            Status
-msg-reAdded@1     Jobb "%s" är återinlagt i kön
+msg-reAdded@1     Jobb "%s" Ã¤r Ã¥terinlagt i kÃ¶n
 
 # Connections page
-link-forceDisc    Tvinga frånkoppling
+link-forceDisc    Tvinga frÃ¥nkoppling
 askTestEmail      Detta kommer att skicka ett test e-mail till ditt konto.
 link-showLog      Visa logg
 link-showWeblog   Visa webblogg
@@ -153,7 +154,7 @@ log-errWarn       Fel/Varning
 log-info          + Info
 log-debug         + Debug
 connections       Anslutningar
-thread            Tråd
+thread            TrÃ¥d
 emailResult       E-mail testresultat
 lastWarnings      Senaste Varningar
 clearWarnings     rensa
@@ -164,310 +165,310 @@ error             FEL:
 # Configuration
 configuration     Konfiguration
 confgFile         Konfig fil
-explain-Restart   Knappen nedanför kommer att starta om SABnzbd..\n\
-                  Använd den när du tror att programmet har något stabilitetsproblem.\n\
-                  Nedladdningar kommer att pausas före omstarten och återupptas efteråt.
+explain-Restart   Knappen nedanfÃ¶r kommer att starta om SABnzbd..\n\
+                  AnvÃ¤nd den nÃ¤r du tror att programmet har nÃ¥got stabilitetsproblem.\n\
+                  Nedladdningar kommer att pausas fÃ¶re omstarten och Ã¥terupptas efterÃ¥t.
 button-restart    Starta om
 version           Version
 uptime            Upptid
 error             Fel
 badParm           Fel parameter
-error-badValue@2  Fel värde för %s: %s
+error-badValue@2  Fel vÃ¤rde fÃ¶r %s: %s
 error-noFolder@1  Mappen "%s" finns inte
-error-QnotEmpty   Fel: Kön är inte tom, kan inte byta mapp.
-error-noUNC@1     UNC sökväg "%s" är inte tillåten här
-error-notOctal@1  %s är inte rätt siffervärde
+error-QnotEmpty   Fel: KÃ¶n Ã¤r inte tom, kan inte byta mapp.
+error-noUNC@1     UNC sÃ¶kvÃ¤g "%s" Ã¤r inte tillÃ¥ten hÃ¤r
+error-notOctal@1  %s Ã¤r inte rÃ¤tt siffervÃ¤rde
 
 # Config->General
-generalConfig         Allmän konfiguration
-restartRequired       Ändringar kräver omstart av SABnzbd!
+generalConfig         AllmÃ¤n konfiguration
+restartRequired       Ã„ndringar krÃ¤ver omstart av SABnzbd!
 webServer             SABnzbd Webbserver
 opt-host              SABnzbd Adress
-explain-host          Adress som SABnzbd ska lyssna på.
+explain-host          Adress som SABnzbd ska lyssna pÃ¥.
 opt-port              SABnzbd Port
-explain-port          Port som SABnzbd ska lyssna på.
+explain-port          Port som SABnzbd ska lyssna pÃ¥.
 opt-web_dir           Webbkontrollsutseende
-explain-web_dir       Välj ett skin.
+explain-web_dir       VÃ¤lj ett skin.
 opt-web_dir2          Andra Webbkontrollsutseende
 explain-web_dir2      Aktivera ett alternativt skin.
 webAuth               Webbserver autentiserng
-opt-web_username      SABnzbd Användarnamn
-explain-web_username  Väljbart autentiserings användarnamn.
-opt-web_password      SABnzbd Lösenord
-explain-web_password  Väljbart autentiserings lösenord.
-httpsSupport          HTTPS Stöd
+opt-web_username      SABnzbd AnvÃ¤ndarnamn
+explain-web_username  VÃ¤ljbart autentiserings anvÃ¤ndarnamn.
+opt-web_password      SABnzbd LÃ¶senord
+explain-web_password  VÃ¤ljbart autentiserings lÃ¶senord.
+httpsSupport          HTTPS StÃ¶d
 opt-enable_https      HTTPS Aktivera
 opt-notInstalled      (ej installerat)
-explain-enable_https  Aktivera åtkomst till webbkontrollen med HTTPS adress.
+explain-enable_https  Aktivera Ã¥tkomst till webbkontrollen med HTTPS adress.
 opt-https_port        HTTPS Port
-explain-https_port    Port som SABnzbd ska lyssna på för HTTPS kommunikation.
+explain-https_port    Port som SABnzbd ska lyssna pÃ¥ fÃ¶r HTTPS kommunikation.
 opt-https_cert        HTTPS Certifikat
-explain-https_cert    Filnamn eller sökväg till HTTPS Certifikat.
+explain-https_cert    Filnamn eller sÃ¶kvÃ¤g till HTTPS Certifikat.
 opt-https_key         HTTPS Nyckel
-explain-https_key     Filnamn eller sökväg till HTTPS Nyckel.
+explain-https_key     Filnamn eller sÃ¶kvÃ¤g till HTTPS Nyckel.
 tuning                Justeringar
-opt-refresh_rate      Automatisk uppdateringsintervall av kö:
-explain-refresh_rate  Uppdateringsintervall av kö-sidan (sek, 0= ingen).
+opt-refresh_rate      Automatisk uppdateringsintervall av kÃ¶:
+explain-refresh_rate  Uppdateringsintervall av kÃ¶-sidan (sek, 0= ingen).
 opt-rss_rate          RSS Uppdateringsintervall
 explain-rss_rate      Uppdateringsintervall (i minuter, minst 15).
-opt-bandwidth_limit   Hastighetsbegränsning för Nedladdning
-explain-bandwidth_limit Medelhastighetsbegränsning för Nedladdning (i KB/s - kilobyte per sekund).
-opt-cache_limitstr    Cachestorlek för artiklar
-explain-cache_limitstr Sparar artiklar i minnet för att reducera diskåtkomst.\n\
-                      <i>I bytes, följt av K,M,G. Till exempel: "64M" eller "128M"</i>
+opt-bandwidth_limit   HastighetsbegrÃ¤nsning fÃ¶r Nedladdning
+explain-bandwidth_limit MedelhastighetsbegrÃ¤nsning fÃ¶r Nedladdning (i KB/s - kilobyte per sekund).
+opt-cache_limitstr    Cachestorlek fÃ¶r artiklar
+explain-cache_limitstr Sparar artiklar i minnet fÃ¶r att reducera diskÃ¥tkomst.\n\
+                      <i>I bytes, fÃ¶ljt av K,M,G. Till exempel: "64M" eller "128M"</i>
 opt-cleanup_list      Rensa lista
-explain-cleanup_list  Lista med filändelser som ska tas bort efter nedladdning.\n\
+explain-cleanup_list  Lista med filÃ¤ndelser som ska tas bort efter nedladdning.\n\
                       Till exempel: <b>.nfo</b> or <b>.nfo, .sfv</b>
-button-saveChanges    Spara ändringar
-opt-language          Språk
-explain-language      Välj språk till webbkontrollen.
+button-saveChanges    Spara Ã¤ndringar
+opt-language          SprÃ¥k
+explain-language      VÃ¤lj sprÃ¥k till webbkontrollen.
 opt-apikey            API-nyckel
-explain-apikey        Denna nyckel ger tredjepartsprogram tillgång till SABnzbd.
+explain-apikey        Denna nyckel ger tredjepartsprogram tillgÃ¥ng till SABnzbd.
 button-apikey         Generera Ny Nyckel
-opt-disableApikey     Stäng av API-nyckel
-explain-disableApikey Kräv ingen API-nyckel.
-explain-disableApikeyWarn ANVÄND PÅ EGEN RISK! 
-restart1              Förbereder omstart...\n
+opt-disableApikey     StÃ¤ng av API-nyckel
+explain-disableApikey KrÃ¤v ingen API-nyckel.
+explain-disableApikeyWarn ANVÃ„ND PÃ… EGEN RISK! 
+restart1              FÃ¶rbereder omstart...\n
 restart2              &nbsp\n\
-                      SABnzbd nedstängning färdig.\n\
-                      Vänta ungefär 5 sekunder och klicka sedan på knappen under..\n\n\
+                      SABnzbd nedstÃ¤ngning fÃ¤rdig.\n\
+                      VÃ¤nta ungefÃ¤r 5 sekunder och klicka sedan pÃ¥ knappen under..\n\n\
                       <strong><a href="..">Ladda om</a></strong>\n
 
 # Config->Folders
 folderConfig            Mappkonfiguration
-explain-folderConfig    <em>OBS:</em> Mappar kommer att skapas automatiskt när du Sparar. Du måste ange exakta sökvägar till dina mappar för att spara utanför standardmapparna.
-userFolders             Användarmappar
+explain-folderConfig    <em>OBS:</em> Mappar kommer att skapas automatiskt nÃ¤r du Sparar. Du mÃ¥ste ange exakta sÃ¶kvÃ¤gar till dina mappar fÃ¶r att spara utanfÃ¶r standardmapparna.
+userFolders             AnvÃ¤ndarmappar
 in                      I
-opt-download_dir        Temporär nedladdningsmapp
-explain-download_dir    Plats för att lagra ej bearbetade nedladdningar.\n\
-                        <i>Kan endast ändras när kön är tom.</i>
-opt-download_free       Minimal fri plats för temporär nedladdningsmapp
-explain-download_free   Auto-pausa när fri plats är nära sin gräns.\n\
-                        <i>I bytes, följt av K,M,G,T. Till exempel: "800M" or "8G"</i>
-opt-complete_dir        Färdig nedladdningsmapp
-explain-complete_dir    Plats för att lagra bearbetade och färdiga nedladdningar.\n\
-                        <i>Kan åsidosättas av användar-definierade kategorier.</i>
-opt-permissions         Rättigheter för färdiga nedladdningar
-explain-permissions     Sätt rättigheter för färdiga filer och mappar.\n\
-                        <i>Använd siffror. Till exempel: "755" or "777"</i>
-opt-dirscan_dir         Övervakad Mapp
-explain-dirscan_dir     Mapp som igenomsöks automatiskt efter .nzb filer.\n\
-                        <i>Skannar även igenom .zip .rar och .tar.gz arkiv efter .nzb filer.</i>
-opt-dirscan_speed       Skanningsintervall för Övervakade mappar
-explain-dirscan_speed   Sekunder mellan skanningar för .nzb filer.
+opt-download_dir        TemporÃ¤r nedladdningsmapp
+explain-download_dir    Plats fÃ¶r att lagra ej bearbetade nedladdningar.\n\
+                        <i>Kan endast Ã¤ndras nÃ¤r kÃ¶n Ã¤r tom.</i>
+opt-download_free       Minimal fri plats fÃ¶r temporÃ¤r nedladdningsmapp
+explain-download_free   Auto-pausa nÃ¤r fri plats Ã¤r nÃ¤ra sin grÃ¤ns.\n\
+                        <i>I bytes, fÃ¶ljt av K,M,G,T. Till exempel: "800M" or "8G"</i>
+opt-complete_dir        FÃ¤rdig nedladdningsmapp
+explain-complete_dir    Plats fÃ¶r att lagra bearbetade och fÃ¤rdiga nedladdningar.\n\
+                        <i>Kan Ã¥sidosÃ¤ttas av anvÃ¤ndar-definierade kategorier.</i>
+opt-permissions         RÃ¤ttigheter fÃ¶r fÃ¤rdiga nedladdningar
+explain-permissions     SÃ¤tt rÃ¤ttigheter fÃ¶r fÃ¤rdiga filer och mappar.\n\
+                        <i>AnvÃ¤nd siffror. Till exempel: "755" or "777"</i>
+opt-dirscan_dir         Ã–vervakad Mapp
+explain-dirscan_dir     Mapp som igenomsÃ¶ks automatiskt efter .nzb filer.\n\
+                        <i>Skannar Ã¤ven igenom .zip .rar och .tar.gz arkiv efter .nzb filer.</i>
+opt-dirscan_speed       Skanningsintervall fÃ¶r Ã–vervakade mappar
+explain-dirscan_speed   Sekunder mellan skanningar fÃ¶r .nzb filer.
 opt-script_dir          Efterbehandlings skriptmapp
-explain-script_dir      Mapp innehållande skript för efterbehandling.
-opt-email_dir           Mapp för E-mail mallar
-explain-email_dir       Mapp som innehåller användar-definierade e-mail mallar.
+explain-script_dir      Mapp innehÃ¥llande skript fÃ¶r efterbehandling.
+opt-email_dir           Mapp fÃ¶r E-mail mallar
+explain-email_dir       Mapp som innehÃ¥ller anvÃ¤ndar-definierade e-mail mallar.
 systemFolders           Systemmappar
-opt-cache_dir           Temporär-mapp
-explain-cache_dir       Plats för temporär lagring.\n\
-                        <i>Kan endas ändras när kön är tom.</i>\n\
-                        <i>Kräver omstart av SABnzbd!</i>
+opt-cache_dir           TemporÃ¤r-mapp
+explain-cache_dir       Plats fÃ¶r temporÃ¤r lagring.\n\
+                        <i>Kan endas Ã¤ndras nÃ¤r kÃ¶n Ã¤r tom.</i>\n\
+                        <i>KrÃ¤ver omstart av SABnzbd!</i>
 opt-log_dir             Loggmapp
-explain-log_dir         Plats för sparade loggfiler från SABnzbd.\n\
-                        <i>Kräver omstart av SABnzbd!</i>
+explain-log_dir         Plats fÃ¶r sparade loggfiler frÃ¥n SABnzbd.\n\
+                        <i>KrÃ¤ver omstart av SABnzbd!</i>
 opt-nzb_backup_dir      .nzb Reservmapp
-explain-nzb_backup_dir  Plats där .nzb filer sparas.
+explain-nzb_backup_dir  Plats dÃ¤r .nzb filer sparas.
 
 # Config->Switches
 switchesConfig           Parameterkonfiguration
 processingSwitches       Bearbetar parametrar
 opt-quick_check          Aktivera Snabbkoll
-explain-quick_check      Strunta i par2 kontroll när filerna är 100% giltiga.
+explain-quick_check      Strunta i par2 kontroll nÃ¤r filerna Ã¤r 100% giltiga.
 opt-enable_unrar         Aktivera Unrar
 explain-enable_unrar     Aktiverar inbyggda Unrar funktionen.
 opt-enable_unzip         Aktivera Unzip
 explain-enable_unzip     Aktiverar inbyggda Unzip funktionen.
 opt-enable_filejoin      Aktivera Filsammanslagning (Filejoin)
-explain-enable_filejoin  Slår ihop filer med filändelserna .001, .002 etc. till en fil.
+explain-enable_filejoin  SlÃ¥r ihop filer med filÃ¤ndelserna .001, .002 etc. till en fil.
 opt-enable_tsjoin        Aktivera TS Sammanslagning (TS Joining)
-explain-ts_join          Slår ihop filer med filändelserna .001.ts, .002.ts etc. till en fil.
+explain-ts_join          SlÃ¥r ihop filer med filÃ¤ndelserna .001.ts, .002.ts etc. till en fil.
 opt-enable_par_cleanup   Aktivera Par rensning (Par Cleanup)
 explain-enable_par_cleanup Rensar bort par filer (om verifiering/reparation lyckades).
-opt-fail_on_crc          Vid fel på på yEnc CRC
-explain-fail_on_crc      Använd backup-server vid yEnc crc fel.
-opt-top_only             Bara artiklarna för början av kön
-explain-top_only         Aktivera för lägre minnesanvändning. Avaktivera för att förhindra långsamma jobb att blockera kön.
+opt-fail_on_crc          Vid fel pÃ¥ pÃ¥ yEnc CRC
+explain-fail_on_crc      AnvÃ¤nd backup-server vid yEnc crc fel.
+opt-top_only             Bara artiklarna fÃ¶r bÃ¶rjan av kÃ¶n
+explain-top_only         Aktivera fÃ¶r lÃ¤gre minnesanvÃ¤ndning. Avaktivera fÃ¶r att fÃ¶rhindra lÃ¥ngsamma jobb att blockera kÃ¶n.
 opt-safe_postproc        Efterbehandla endast verifierade jobb
 explain-safe_postproc    Efterbehandla enbart jobb som passerat PAR2 kontrollen.
-opt-no_dupes             Förhindra nedladdningsdubletter
+opt-no_dupes             FÃ¶rhindra nedladdningsdubletter
 explain-no_dupes         Strunta i jobb om en sparad .nzb med samma namn redan finns.
 opt-dirscan_opts         Standard efterbehandling
-explain-dirscan_opts     Används när efterbehandlingen är bestämd efter kategori.
-opt-dirscan_script       Standard användarskript
-explain-dirscan_script   Används när användarskript är bestämd efter kategori.
+explain-dirscan_opts     AnvÃ¤nds nÃ¤r efterbehandlingen Ã¤r bestÃ¤md efter kategori.
+opt-dirscan_script       Standard anvÃ¤ndarskript
+explain-dirscan_script   AnvÃ¤nds nÃ¤r anvÃ¤ndarskript Ã¤r bestÃ¤md efter kategori.
 opt-dirscan_priority     Standard prioritet
-explain-dirscan_priority Använd när ingen prioritet är bestämd av kategori.
+explain-dirscan_priority AnvÃ¤nd nÃ¤r ingen prioritet Ã¤r bestÃ¤md av kategori.
 opt-par_option           Extra PAR2 parametrar
-explain-par_option       Läs Wiki Help för detta!
+explain-par_option       LÃ¤s Wiki Help fÃ¶r detta!
 opt-nice                 Bra parametrar
-explain-nice             Läs Wiki Help för detta!
+explain-nice             LÃ¤s Wiki Help fÃ¶r detta!
 opt-ionice               IONice parametrar
-explain-ionice           Läs Wiki Help för detta!
+explain-ionice           LÃ¤s Wiki Help fÃ¶r detta!
 otherSwitches            Andra parametrar
-opt-auto_disconnect      Koppla ifrån när kön är tom
-explain-auto_disconnect  Koppla ifrån usenet servrarna när kön är tom eller pausad.
+opt-auto_disconnect      Koppla ifrÃ¥n nÃ¤r kÃ¶n Ã¤r tom
+explain-auto_disconnect  Koppla ifrÃ¥n usenet servrarna nÃ¤r kÃ¶n Ã¤r tom eller pausad.
 opt-send_group           Skicka grupp
-explain-send_group       Skicka gruppkommando innan du begär artiklar.
-opt-auto_sort            Sortera efter ålder
-explain-auto_sort        Sortera automatiskt efter (medel) ålder.
-opt-check_new_rel        Kolla efter ny utgåva
-explain-check_new_rel    Kolla efter ny utgåva av SABnzbd varje vecka.
-opt-replace_spaces       Ersätt mellanslag i mappnamn
-explain-replace_spaces   Ersätt mellanslag med understreck i mappnamn.
-opt-replace_illegal      Ersätt otillåtna tecken i mappnamn.
-explain-replace_illegal  Ersätt otillåtna tecken i mappnamn med motsvarande tecken (annars ta bort).
-opt-auto_browser         Starta webbläsare vid uppstart
-explain-auto_browser     Startar standard webbläsaren när SABnzbd startar.
+explain-send_group       Skicka gruppkommando innan du begÃ¤r artiklar.
+opt-auto_sort            Sortera efter Ã¥lder
+explain-auto_sort        Sortera automatiskt efter (medel) Ã¥lder.
+opt-check_new_rel        Kolla efter ny utgÃ¥va
+explain-check_new_rel    Kolla efter ny utgÃ¥va av SABnzbd varje vecka.
+opt-replace_spaces       ErsÃ¤tt mellanslag i mappnamn
+explain-replace_spaces   ErsÃ¤tt mellanslag med understreck i mappnamn.
+opt-replace_illegal      ErsÃ¤tt otillÃ¥tna tecken i mappnamn.
+explain-replace_illegal  ErsÃ¤tt otillÃ¥tna tecken i mappnamn med motsvarande tecken (annars ta bort).
+opt-auto_browser         Starta webblÃ¤sare vid uppstart
+explain-auto_browser     Startar standard webblÃ¤saren nÃ¤r SABnzbd startar.
 opt-pause_on_post_processing Pausa nedladdning under efterbehandling
-explain-pause_on_post_processing Pausas nedladdning när efterbehandling börjar och återupptar nedladdning när efterbehandling är klar.
+explain-pause_on_post_processing Pausas nedladdning nÃ¤r efterbehandling bÃ¶rjar och Ã¥terupptar nedladdning nÃ¤r efterbehandling Ã¤r klar.
 opt-ignore_samples       Ignorera Sample-filer
 explain-ignore_samples   Filtrera ut sample-filer (ex. video samplingar).
 igsam-off                Av
 igsam-del                Ta bort efter nedladdning
 igsam-not                Ladda inte ned.
 opt-ssl_type             SSL typ
-explain-ssl_type         Använd V23 om inte din leverantör kräver annat!
+explain-ssl_type         AnvÃ¤nd V23 om inte din leverantÃ¶r krÃ¤ver annat!
 
 
 # Config->Server
 configServer             Serverkonfiguration
-addServer                Lägg till server
+addServer                LÃ¤gg till server
 srv-host                 Adress
 srv-port                 Port
-srv-username             Användarnamn
-srv-password             Lösenord
+srv-username             AnvÃ¤ndarnamn
+srv-password             LÃ¶senord
 srv-timeout              Timeout
 srv-connections          Anslutningar
 srv-ssl                  SSL
 srv-fillserver           Reserv server
 srv-optional             Valfri
 srv-enable               Aktivera
-button-addServer         Lägg till server
+button-addServer         LÃ¤gg till server
 button-delServer         Ta bort server
-error-needServer         Kräver serveradress
+error-needServer         KrÃ¤ver serveradress
 button-testServer        Testserver
 srv-testing              Testar serverdetaljer...
-srv-testHint             Klicka nedan för att testa.
+srv-testHint             Klicka nedan fÃ¶r att testa.
 srv-success              Anslutning lyckades!
-srv-noHost               Adressen är inte inställd.
-srv-noConnections        Det är inga anslutningar aktiverade. Var vänlig aktivera minst en anslutning.
-srv-starredPass          Lösenordet är dolt med ******, försök igen
+srv-noHost               Adressen Ã¤r inte instÃ¤lld.
+srv-noConnections        Det Ã¤r inga anslutningar aktiverade. Var vÃ¤nlig aktivera minst en anslutning.
+srv-starredPass          LÃ¶senordet Ã¤r dolt med ******, fÃ¶rsÃ¶k igen
 srv-invalidDetails       Ogiltiga serverdetaljer
-srv-timedoutSSL          Timeout: Försök aktivera SSL eller anslut via en annan port.
+srv-timedoutSSL          Timeout: FÃ¶rsÃ¶k aktivera SSL eller anslut via en annan port.
 srv-timedout             Timeout
-srv-failedAuth           Autentisering misslyckades, kontrollera användarnamn och lösenord.
-srv-noAuth               Servern kräven användarnamn och lösenord.
-srv-tooManyConnections   För många anslutningar, pausa en nedladdning eller försök igen senare
+srv-failedAuth           Autentisering misslyckades, kontrollera anvÃ¤ndarnamn och lÃ¶senord.
+srv-noAuth               Servern krÃ¤ven anvÃ¤ndarnamn och lÃ¶senord.
+srv-tooManyConnections   FÃ¶r mÃ¥nga anslutningar, pausa en nedladdning eller fÃ¶rsÃ¶k igen senare
 srv-generalFail@1        Det gick inte att ansluta (%s)
 
 # Config->Scheduling
 configSchedule           Schemakonfiguration
-addSchedule              Lägg till schema
-sch-frequency            Förekomst
-sch-action               Åtgärd
+addSchedule              LÃ¤gg till schema
+sch-frequency            FÃ¶rekomst
+sch-action               Ã…tgÃ¤rd
 sch-arguments            Argument
-button-addSchedule       Lägg till schema
+button-addSchedule       LÃ¤gg till schema
 button-delSchedule       Ta bort
 currentSchedules         Aktuella scheman
 sch-task                 Uppgift
 sch-disable_server       avaktivera server
 sch-enable_server        aktivera server
-sch-resume               Återuppta
+sch-resume               Ã…teruppta
 sch-pause                Pausa
-sch-shutdown             Stäng av
+sch-shutdown             StÃ¤ng av
 sch-restart              Starta om
-sch-speedlimit           Hastighetsgräns
+sch-speedlimit           HastighetsgrÃ¤ns
 sch-pause_all            Pausa Allt
 
 # Config->RSS
 configRSS                RSS-konfiguration
-newFeedURI               Ny flödesadress
-explain-RSS              Kryssrutan bredvid flödesnamnet ska aktiveras för att flödet automatiskt ska kontrolleras för nya objekt.\n\
-                         Kontrollfrekvens finns på den allmänna konfigurations sidan.\n\
-                         När ett flöde läggs till kommer det bara att välja nya objekt och inte allt som redan finns i RSS-flöded så länge du inte klickar på "Tvinga nedladdning".
-feedDefinition           Flödesdestination
-feed                     Flöde
-button-delFeed           Ta bort flöde
-button-preFeed           Förhandsgranska
+newFeedURI               Ny flÃ¶desadress
+explain-RSS              Kryssrutan bredvid flÃ¶desnamnet ska aktiveras fÃ¶r att flÃ¶det automatiskt ska kontrolleras fÃ¶r nya objekt.\n\
+                         Kontrollfrekvens finns pÃ¥ den allmÃ¤nna konfigurations sidan.\n\
+                         NÃ¤r ett flÃ¶de lÃ¤ggs till kommer det bara att vÃ¤lja nya objekt och inte allt som redan finns i RSS-flÃ¶ded sÃ¥ lÃ¤nge du inte klickar pÃ¥ "Tvinga nedladdning".
+feedDefinition           FlÃ¶desdestination
+feed                     FlÃ¶de
+button-delFeed           Ta bort flÃ¶de
+button-preFeed           FÃ¶rhandsgranska
 button-forceFeed         Tvinga nedladdning
 rss-order                Ordning
 rss-type                 Typ
 rss-filter               Filter
 rss-accept               Acceptera
 rss-reject               Avvisa
-rss-must                 Kräver
+rss-must                 KrÃ¤ver
 rss-delFilter            X
 rss-matched              Matchade
 rss-notMatched           Matchade inte
 rss-done                 Nedladdae
-rss-downloaded           Nedladdade än så länge
+rss-downloaded           Nedladdade Ã¤n sÃ¥ lÃ¤nge
 link-download            Ladda ned
 explain-rssStar          Jobb markerade med '*' kommer ej att laddas ned automatiskt.
 
 # Config->Email
 configEmail              E-mail notifiering
 emailOptions             E-mail alternativ
-opt-email_endjob         E-mail notifiering när jobb är slutfört
+opt-email_endjob         E-mail notifiering nÃ¤r jobb Ã¤r slutfÃ¶rt
 email-never              Aldrig
 email-always             Alltid
 email-errorOnly          Bara vid fel
-opt-email_full           Full hårddisk notifiering
-explain-email_full       Skicka e-mail när hårddisken är full och SABnzbd har pausat.
+opt-email_full           Full hÃ¥rddisk notifiering
+explain-email_full       Skicka e-mail nÃ¤r hÃ¥rddisken Ã¤r full och SABnzbd har pausat.
 opt-email_dir            Mapp med e-mail mallar
-explain-email_dir        Mapp som innehåller användardefinierade mallar..\n\
-                         I förhållande till 
-emailAccount             E-mail kontoinställningar
+explain-email_dir        Mapp som innehÃ¥ller anvÃ¤ndardefinierade mallar..\n\
+                         I fÃ¶rhÃ¥llande till 
+emailAccount             E-mail kontoinstÃ¤llningar
 opt-email_server         SMTP Server
-explain-email_server     Ställ in din ISP's server för utgående e-mail.
+explain-email_server     StÃ¤ll in din ISP's server fÃ¶r utgÃ¥ende e-mail.
 opt-email_to             E-mail mottagare
 explain-email_to         E-mail adress att skicka e-mailen till.
-opt-email_from           E-mail sändare
-explain-email_from       Vem ska vi skicka e-mailet från?
-opt-email_account        VALFRITT Kontoanvändarnamn
-explain-email_account    Användarnamn för e-mail som kräver autentisering.
-opt-email_pwd            VALFRITT Användarlösenord
-explain-email_pwd        Lösenord för e-mail som kräver autentisering.
-error-badEmailAd@1       %s är inte en godkänd e-mail adress
+opt-email_from           E-mail sÃ¤ndare
+explain-email_from       Vem ska vi skicka e-mailet frÃ¥n?
+opt-email_account        VALFRITT KontoanvÃ¤ndarnamn
+explain-email_account    AnvÃ¤ndarnamn fÃ¶r e-mail som krÃ¤ver autentisering.
+opt-email_pwd            VALFRITT AnvÃ¤ndarlÃ¶senord
+explain-email_pwd        LÃ¶senord fÃ¶r e-mail som krÃ¤ver autentisering.
+error-badEmailAd@1       %s Ã¤r inte en godkÃ¤nd e-mail adress
 
 # Config->Newzbin
-explain-newzbin          Om du har ett konto på <strong>www.newzbin.com</strong>,\
-                         så kan du skriva in din användarinformation här.\n\
-                         Detta kommer att tillgängliggöra extra funktioner.
-accountInfo              Användarinfo
-opt-username_newzbin     Newzbin Användarnamn
-explain-username_newzbin Ställ in ditt användarnamn här.
-opt-password_newzbin     Newzbin Lösenord
-explain-password_newzbin Ställ in ditt användarlösenord här.
-newzbinBookmarks         Bearbetar bokmärken
-opt-newzbin_bookmarks    Hämta bokmärken automatiskt
-explain-newzbin_bookmarks Hämtar jobb från bokmärken automatiskt.
-link-getBookmarks        Hämta bokmärken nu
-link-HideBM              Göm bearbetade bokmärken
-link-ShowBM              Visa bearbetade bokmärken
-opt-newzbin_unbookmark   Ta bort bokmärke efter nedladdning
-explain-newzbin_unbookmark Ta bort från bokmärkeslistan när nedladdning är genomförd.
+explain-newzbin          Om du har ett konto pÃ¥ <strong>www.newzbin.com</strong>,\
+                         sÃ¥ kan du skriva in din anvÃ¤ndarinformation hÃ¤r.\n\
+                         Detta kommer att tillgÃ¤ngliggÃ¶ra extra funktioner.
+accountInfo              AnvÃ¤ndarinfo
+opt-username_newzbin     Newzbin AnvÃ¤ndarnamn
+explain-username_newzbin StÃ¤ll in ditt anvÃ¤ndarnamn hÃ¤r.
+opt-password_newzbin     Newzbin LÃ¶senord
+explain-password_newzbin StÃ¤ll in ditt anvÃ¤ndarlÃ¶senord hÃ¤r.
+newzbinBookmarks         Bearbetar bokmÃ¤rken
+opt-newzbin_bookmarks    HÃ¤mta bokmÃ¤rken automatiskt
+explain-newzbin_bookmarks HÃ¤mtar jobb frÃ¥n bokmÃ¤rken automatiskt.
+link-getBookmarks        HÃ¤mta bokmÃ¤rken nu
+link-HideBM              GÃ¶m bearbetade bokmÃ¤rken
+link-ShowBM              Visa bearbetade bokmÃ¤rken
+opt-newzbin_unbookmark   Ta bort bokmÃ¤rke efter nedladdning
+explain-newzbin_unbookmark Ta bort frÃ¥n bokmÃ¤rkeslistan nÃ¤r nedladdning Ã¤r genomfÃ¶rd.
 opt-bookmark_rate        Uppdateringsintervall
 explain-bookmark_rate    I minuter (minst 15 min).
-processedBM              Bearbetar bokmärken
-explain-nzbmatrix        Om du har ett konto på <strong>www.nzbmatrix.com</strong>,\
-                         så kan du skriva in din användarinformation här.\n\
-                         Det krävs för att du ska kunna använda RSS-flödet från nzbmatrix.
-opt-username_matrix      NzbMatrix Användarnamn
-explain-username_matrix  Ställ in ditt användarnamn här.
-opt-password_matrix      NzbMatrix Lösenord
-explain-password_matrix  Ställ in ditt användarlösenord här.
+processedBM              Bearbetar bokmÃ¤rken
+explain-nzbmatrix        Om du har ett konto pÃ¥ <strong>www.nzbmatrix.com</strong>,\
+                         sÃ¥ kan du skriva in din anvÃ¤ndarinformation hÃ¤r.\n\
+                         Det krÃ¤vs fÃ¶r att du ska kunna anvÃ¤nda RSS-flÃ¶det frÃ¥n nzbmatrix.
+opt-username_matrix      NzbMatrix AnvÃ¤ndarnamn
+explain-username_matrix  StÃ¤ll in ditt anvÃ¤ndarnamn hÃ¤r.
+opt-password_matrix      NzbMatrix LÃ¶senord
+explain-password_matrix  StÃ¤ll in ditt anvÃ¤ndarlÃ¶senord hÃ¤r.
 opt-apikey_matrix        NzbMatrix API-nyckel
-explain-apikey_matrix    Ställ in API-nyckel för NzbMatrix här.
+explain-apikey_matrix    StÃ¤ll in API-nyckel fÃ¶r NzbMatrix hÃ¤r.
 
 # Config->Cat
-configCat                Användardefinierade kategorier
+configCat                AnvÃ¤ndardefinierade kategorier
 explain-configCat        Definierar efterbehandling och lagring.
 explain-catNewzbin       The Newzbin column will map listed Newzbin categories to your own.
-link-initCat             Klicka här för att ställa in newzbin kategorier.
-explain-relFolder        Relativa mappar är baserade på
-catFolderPath            Mapp/Sökväg
+link-initCat             Klicka hÃ¤r fÃ¶r att stÃ¤lla in newzbin kategorier.
+explain-relFolder        Relativa mappar Ã¤r baserade pÃ¥
+catFolderPath            Mapp/SÃ¶kvÃ¤g
 catNewzbin               NewzBin
 catGroups                Grupper
 button-delCat            X
@@ -478,22 +479,22 @@ seriesSorting            Seriesortering
 sort-show                Show
 sort-name                Namn
 opt-tvsort               Aktivera TV sortering
-explain-tvsort           Aktiverar sortering och omdöpning av episoder.
-sort-legenda             Hjälp till Sorteringssträng
+explain-tvsort           Aktiverar sortering och omdÃ¶pning av episoder.
+sort-legenda             HjÃ¤lp till SorteringsstrÃ¤ng
 button-clear             Rensa
-presetSort               Förinställningar
+presetSort               FÃ¶rinstÃ¤llningar
 example                  Exempel
-genericSort              Allmän sortering
+genericSort              AllmÃ¤n sortering
 opt-movieSort            Aktivera filmsortering
-explain-movieSort        Aktiverar sortering och omdöpning av filer.
-opt-movieExtra           Låt nedladdning i extramapp vara
-explain-movieExtra       Aktivera om nedladdning inte är flyttad till egen mapp.
-affectedCat              Påverkade kategorier
+explain-movieSort        Aktiverar sortering och omdÃ¶pning av filer.
+opt-movieExtra           LÃ¥t nedladdning i extramapp vara
+explain-movieExtra       Aktivera om nedladdning inte Ã¤r flyttad till egen mapp.
+affectedCat              PÃ¥verkade kategorier
 sort-meaning             Betyder
-sort-pattern             Mönster
+sort-pattern             MÃ¶nster
 sort-result              Resultat
-button-Season1x05        1x05 Säsongsmapp
-button-SeasonS01E05      S01E05 Säsongsmapp
+button-Season1x05        1x05 SÃ¤songsmapp
+button-SeasonS01E05      S01E05 SÃ¤songsmapp
 button-Ep1x05            1x05 Episodmapp
 button-EpS01E05          S01E05 Episodmapp
 sort-title               Titel
@@ -504,34 +505,34 @@ show-name                Show Namn
 show-sp-name             Show Namn
 show-dot-name            Show.Namn
 show-us-name             Show_Namn
-show-seasonNum           Säsongsnummer
+show-seasonNum           SÃ¤songsnummer
 show-epNum               Episodnummer
 ep-name                  Episodnamn
 ep-sp-name               Episodnamn
 ep-dot-name              Episod.Namn
 ep-us-name               Episod_Namn
-fileExt                  Filändelse
-extension                ändelse
+fileExt                  FilÃ¤ndelse
+extension                Ã¤ndelse
 partNumber               Delnummer
 decade                   Tiotal
 orgFilename              Originalfilnamn
-lowercase                Små bokstäver
+lowercase                SmÃ¥ bokstÃ¤ver
 TEXT                     TEXT
 text                     text
 sort-File                fil
-sortString               Sorteringssträng
+sortString               SorteringsstrÃ¤ng
 multiPartLabel           Multi-del etikett
 button-inFolders         In mapp
 button-noFolders         Ingen mapp
 dateSorting              Datum sortering
 opt-dateSort             Aktivera datumssortering
-explain-dateSort         Aktiverar sortering och omdöpning av datummärkta filer.
-button-ShowNameF          Visa Namn på mapp
-button-YMF               År-Månads mappar
+explain-dateSort         Aktiverar sortering och omdÃ¶pning av datummÃ¤rkta filer.
+button-ShowNameF          Visa Namn pÃ¥ mapp
+button-YMF               Ã…r-MÃ¥nads mappar
 button-DailyF            Dagliga mappar
 
 # NZO
-nzoDetails               Ändra NZB detaljer
+nzoDetails               Ã„ndra NZB detaljer
 nzoName                  Namn
 nzo-delete               Ta bort
 nzo-top                  Topp
@@ -542,179 +543,179 @@ nzo-all                  Alla
 nzo-none                 Ingen
 nzo-invert               Invertera
 nzo-filename             Filnamn
-nzo-subject              Ämne
-nzo-age                  År
+nzo-subject              Ã„mne
+nzo-age                  Ã…r
 nzo-selection            Urval
 
 # Internal texts
-msg-warning-ambiLocalhost Varning: LOCALHOST är tvetydigt, använda numerisk IP-adress .
-msg-invalidServer@2      Serveradressen "%s:%s" är ej giltig.
+msg-warning-ambiLocalhost Varning: LOCALHOST Ã¤r tvetydigt, anvÃ¤nda numerisk IP-adress .
+msg-invalidServer@2      Serveradressen "%s:%s" Ã¤r ej giltig.
 
 warn-missingKey          Saknar sessionsnyckel
-error-missingKey         Fel: Kräver sessionsnyckel
+error-missingKey         Fel: KrÃ¤ver sessionsnyckel
 warn-badSession          Fel sessionsnyckel
 error-badKey             Fel: Fel sessionsnyckel
-warn-authMissing         Autentisering saknas, ange användarnamn / lösenord från Konfiguration-> Allmänt\
+warn-authMissing         Autentisering saknas, ange anvÃ¤ndarnamn / lÃ¶senord frÃ¥n Konfiguration-> AllmÃ¤nt\
                          i ditt tredjepartsprogram:
 error-authMissing        Fel: Saknar autentisering
-warn-apikeyNone          API-nyckel saknas, skriv in api-nyckeln från Konfiguration-> Allmänt\
+warn-apikeyNone          API-nyckel saknas, skriv in api-nyckeln frÃ¥n Konfiguration-> AllmÃ¤nt\
                          i ditt tredjepartsprogram:
-warn-apikeyBad           API-nyckel felaktig, använd api-nyckeln från Konfiguration-> Allmänt\
+warn-apikeyBad           API-nyckel felaktig, anvÃ¤nd api-nyckeln frÃ¥n Konfiguration-> AllmÃ¤nt\
                          i ditt tredjepartsprogram:
 error-noSecUI            Fel: Inget andrainterface definierat.
 
-his-badArchive           Fel, Oanvändbar akrivfil
-his-cannotGetReport      Det gick inte att hämta newzbin rapport
-his-failedURL            Det gick inte att lägga till url
-his-retryURL1            URL hämtning misslyckades
-his-retryURL2            Försök igen
+his-badArchive           Fel, OanvÃ¤ndbar akrivfil
+his-cannotGetReport      Det gick inte att hÃ¤mta newzbin rapport
+his-failedURL            Det gick inte att lÃ¤gga till url
+his-retryURL1            URL hÃ¤mtning misslyckades
+his-retryURL2            FÃ¶rsÃ¶k igen
 
 # Errors and Warnings
-error-noPar2             par2 binär... EJ funnen!
+error-noPar2             par2 binÃ¤r... EJ funnen!
 error-noWebUi            Det gick inte att starta webbkontrollen
 error-noYEnc             _yenc modul... EJ funnen!
-error-sameHTTP-HTTPS     Kan ej öppna HTTP och HTTPS portarna på samma gång
-warn-0000                Tänk på att 0.0.0.0 värdnamnet behöver en IPv6-adress för extern åtkomst
-warn-noCertKey           Avaktiverade HTTPS på grund av felande CERT och KEY filer
-warn-noSkin@1            Kan inte hitta webb mall: %s, försök med standard mall
-warn-noUnrar             unrar binär... EJ funnen!
-warn-noUnzip             unzip binär... EJ funnen!
+error-sameHTTP-HTTPS     Kan ej Ã¶ppna HTTP och HTTPS portarna pÃ¥ samma gÃ¥ng
+warn-0000                TÃ¤nk pÃ¥ att 0.0.0.0 vÃ¤rdnamnet behÃ¶ver en IPv6-adress fÃ¶r extern Ã¥tkomst
+warn-noCertKey           Avaktiverade HTTPS pÃ¥ grund av felande CERT och KEY filer
+warn-noSkin@1            Kan inte hitta webb mall: %s, fÃ¶rsÃ¶k med standard mall
+warn-noUnrar             unrar binÃ¤r... EJ funnen!
+warn-noUnzip             unzip binÃ¤r... EJ funnen!
 error-failMkstemp        Fel i tempfile.mkstemp
-error-fetchReport@1      Fel vid hämtning av msgid %s från www.newzbin.com -
+error-fetchReport@1      Fel vid hÃ¤mtning av msgid %s frÃ¥n www.newzbin.com -
 error-hibernate          Failed to hibernate system
 error-loading@1          Laddning av %s misslyckades
 error-saveX@1            Sparar %s misslyckades
 error-saveXtoY@2         Sparar %s till %s misslyckades
-error-standby            Det gick inte att sätta systemet i viloläge
-error-tempFile@1         Kan inte skapa temp fil för %s
-warn-noServer@1          Försöker att sätta status på icke existerande server %s
-warn-noSpace             För lite diskutrymme pausar systemet
-warn-signal@1            Signal %s mottagen, sparar och stänger...
+error-standby            Det gick inte att sÃ¤tta systemet i vilolÃ¤ge
+error-tempFile@1         Kan inte skapa temp fil fÃ¶r %s
+warn-noServer@1          FÃ¶rsÃ¶ker att sÃ¤tta status pÃ¥ icke existerande server %s
+warn-noSpace             FÃ¶r lite diskutrymme pausar systemet
+warn-signal@1            Signal %s mottagen, sparar och stÃ¤nger...
 warn-flushFailed@1       Flushing %s misslyckades -> ingen art_id
 error-diskError@1        Diskfel vid skapande av fil %s
-error-diskFull           Disken är full! Pausar...
+error-diskFull           Disken Ã¤r full! Pausar...
 warn-artMissing@1        %s saknas
 error-badIni@1           Felaktig konfigurationsfil %s
 error-createIni@1        Kan ej skapa konfigurationsfil %s
-error-encPw@1            Felaktigt kodat lösenord %s
+error-encPw@1            Felaktigt kodat lÃ¶senord %s
 error-version@2          Felaktigt versionsnummer %s i %s"
 error-badHisNewline@1    Felaktig loggning i historiken av %s (\\r\\n)
 error-badHisSemic@1      Felaktig loggning i historiken av %s (;)
-error-sqlClose           Det gick inte att stänga databasen, se logg
+error-sqlClose           Det gick inte att stÃ¤nga databasen, se logg
 error-sqlCmd             SQL Kommando misslyckades, se logg
 error-sqlCommit          SQL Commit misslyckades, se logg
 error-decode@1           Avkodning av %s misslyckades
-error-decodeUnknown@1    Okänt fel under avkodning av %s
-warn-artAllMissing@1     %s => saknas från alla servrar, kastar
+error-decodeUnknown@1    OkÃ¤nt fel under avkodning av %s
+warn-artAllMissing@1     %s => saknas frÃ¥n alla servrar, kastar
 warn-badYEnc@1           Felaktigt utformad yEnc artikel i %s
 warn-crcError@3          CRC Fel i %s (%s -> %s)
-error-readWatched@1      Kan ej läsa övervakad mapp %s
+error-readWatched@1      Kan ej lÃ¤sa Ã¶vervakad mapp %s
 error-remove@1           Fel vid borttagning av %s
-warn-noRead@1            Kan ej läsa %s
+warn-noRead@1            Kan ej lÃ¤sa %s
 error-except             Undantag?
 error-noInit@3           Det gick inte att initialisera %s@%s:%s
 error-serverFailed@4     Anslutning av %s@%s:%s misslyckades, meddelande=%s
-error-serverLogin@1      Det gick inte att logga in på server %s
+error-serverLogin@1      Det gick inte att logga in pÃ¥ server %s
 error-serverNoConn@2     Kan ej ansluta till server %s [%s]
-error-serverTooMany@2    För många anslutningar till server %s:%s
+error-serverTooMany@2    FÃ¶r mÃ¥nga anslutningar till server %s:%s
 warn-ignoreServer@2      Server %s kommer att ignoreras i %s minuter
-warn-noActiveServers     Inga aktiva primära servrar definierade, kommer inte att ladda ned!
+warn-noActiveServers     Inga aktiva primÃ¤ra servrar definierade, kommer inte att ladda ned!
 warn-noConnectServer@2   Kan ej ansluta till server %s [%s]
-error-accountSharing     Misstänkt kontodelning
-error-serverCred@1       Server %s kräver användarnamn/lösenord
-warn-thread@3            Tråd %s@%s:%s:
+error-accountSharing     MisstÃ¤nkt kontodelning
+error-serverCred@1       Server %s krÃ¤ver anvÃ¤ndarnamn/lÃ¶senord
+warn-thread@3            TrÃ¥d %s@%s:%s:
 error-mailAuth           Autentisering till mailserver misslyckades
 error-mailNoConn         Det gick inte att ansluta till mailserver
 error-mailSend           Det gick inte att skicka e-mail
 error-mailTempl@1        Kan ej finna e-mail mallar i %s
 error-mailTLS            Det gick inte att initialisera TLS anslutning
-warn-noEmailClose        Det gick inte att stänga e-mail anslutning
-msg-emailOK              E-mail sändning lyckades
-error-regex@1            Det gick inte att kompilera regex för sök-sträng: %s
-error-accessDir@2        %s mapp: %s åtkomst misslyckad
+warn-noEmailClose        Det gick inte att stÃ¤nga e-mail anslutning
+msg-emailOK              E-mail sÃ¤ndning lyckades
+error-regex@1            Det gick inte att kompilera regex fÃ¶r sÃ¶k-strÃ¤ng: %s
+error-accessDir@2        %s mapp: %s Ã¥tkomst misslyckad
 error-createDir@1        Kan ej skapa mapp %s
 error-makeFile@1         Skapande av (%s) misslyckades
 error-moveFile@2         Det gick inte att flyta %s till %s
-error-portNoAccess@1     Du har ingen behörighet för att använda port %s
+error-portNoAccess@1     Du har ingen behÃ¶righet fÃ¶r att anvÃ¤nda port %s
 error-regConnect         Kan ej ansluta till registret HKEY_CURRENT_USER.
-error-regOpen@1          Kan ej öppna registernyckel "%s".
-error-regSpecial         Det gick inte att läsa registernyckel för specialmappar
+error-regOpen@1          Kan ej Ã¶ppna registernyckel "%s".
+error-regSpecial         Det gick inte att lÃ¤sa registernyckel fÃ¶r specialmappar
 error-sslFiles           Det gick inte att skapa SSL-nyckel eller certifikat.
-error-urlGet@1           Det gick inte att hämta url %s
-warn-noBrowser           Kan inte starta webbläsaren, hittades troligtvis inte
-warn-pyopenssl           pyopenssl modul saknas, var vändlig installera för https åtkomst
-error-fileJoin@2         Fel "%s" när du kör file_join på %s
-error-filePar2@2         Fel %s när du kör par2_repair på %s
-error-fileRead@1         notrar(): läsning %s misslyckades
-error-fileUnrar@2        Fel "%s" när du kör rar_unpack på %s
-error-fileUnzip@2        Fel "%s" när du kör unzip() på %s
+error-urlGet@1           Det gick inte att hÃ¤mta url %s
+warn-noBrowser           Kan inte starta webblÃ¤saren, hittades troligtvis inte
+warn-pyopenssl           pyopenssl modul saknas, var vÃ¤ndlig installera fÃ¶r https Ã¥tkomst
+error-fileJoin@2         Fel "%s" nÃ¤r du kÃ¶r file_join pÃ¥ %s
+error-filePar2@2         Fel %s nÃ¤r du kÃ¶r par2_repair pÃ¥ %s
+error-fileRead@1         notrar(): lÃ¤sning %s misslyckades
+error-fileUnrar@2        Fel "%s" nÃ¤r du kÃ¶r rar_unpack pÃ¥ %s
+error-fileUnzip@2        Fel "%s" nÃ¤r du kÃ¶r unzip() pÃ¥ %s
 warn-cannotFind@1        FEL: gick inte att hitta "%s"
 warn-crcFailed@1         FEL: CRC misslyckades i "%s"
 warn-delFailed@1         Borttagning av %s misslyckades!
 warn-encrypted           FEL: krypterad fil:
 warn-error@1             FEL: %s
-warn-MissExpectedFile@1  Saknade förväntad fil: %s => unrar fel?
+warn-MissExpectedFile@1  Saknade fÃ¶rvÃ¤ntad fil: %s => unrar fel?
 warn-writeError@1        FEL: skrivningsfel (%s)
 error-connect@1          Det gick inte att ansluta: %s
-error-newsSSL            Denna server tillåter ej SSL på denna port
+error-newsSSL            Denna server tillÃ¥ter ej SSL pÃ¥ denna port
 error-noSSL              Misslyckades med importering av OpenSSL modul. Ansluter utan SSL
-error-nbInfo@1           Newzbin servern misslyckades ge info för %s
-error-nbProtocol         Newzbin server ändrade sitt protokoll
+error-nbInfo@1           Newzbin servern misslyckades ge info fÃ¶r %s
+error-nbProtocol         Newzbin server Ã¤ndrade sitt protokoll
 error-nbReport@1         Newzbin rapporterade %s ej funnen
 error-nbUnkownError@1    Newzbin ger odokumenterad felkod (%s)
 error-nbUnkownError@2    Newzbin ger odokumenterad felkod (%s, %s)
 error-nbUpdate@1         Det gick inte att uppdatera newzbin jobb %s
-warn-nbCredit            Du har ingen kredit på ditt Newzbin konto
-warn-nbNoAuth            Obehörig, kontrollera ditt newzbin användarnamn/lösenord
-warn-nbNoDelBM@1         Det gick inte att ta bort newzbin bokmärke %s
-error-qAdd@1             Det gick inte att lägga till  %s, tar bort
-error-qBad               Felaktig köfil funnen, kan ej fortsätta
+warn-nbCredit            Du har ingen kredit pÃ¥ ditt Newzbin konto
+warn-nbNoAuth            ObehÃ¶rig, kontrollera ditt newzbin anvÃ¤ndarnamn/lÃ¶senord
+warn-nbNoDelBM@1         Det gick inte att ta bort newzbin bokmÃ¤rke %s
+error-qAdd@1             Det gick inte att lÃ¤gga till  %s, tar bort
+error-qBad               Felaktig kÃ¶fil funnen, kan ej fortsÃ¤tta
 error-qCorruptFile@1     Laddningsfel %s, felaktig fil detekterad
-warn-unknownEncoding@1   %s -> Okänd kodning
+warn-unknownEncoding@1   %s -> OkÃ¤nd kodning
 error-qDupPart@3         Dublett del %s, men olika ID-s (%s // %s)
 error-qImport@1          Det gick inte att importera %s
-warn-badImport@2         Det gick inte att importera %s filer från %s
-warn-badNZB@3            Felaktig NZB fil %s, hoppar över (orsak=%s, linje=%s)
-warn-emptyFile@1         Fil %s är tom, hoppar över
-warn-skipDup@1           Hoppar över dubletter av NZB "%s"
+warn-badImport@2         Det gick inte att importera %s filer frÃ¥n %s
+warn-badNZB@3            Felaktig NZB fil %s, hoppar Ã¶ver (orsak=%s, linje=%s)
+warn-emptyFile@1         Fil %s Ã¤r tom, hoppar Ã¶ver
+warn-skipDup@1           Hoppar Ã¶ver dubletter av NZB "%s"
 error-ppCleanup@1        Rensning av %s misslyckades.
 error-ppDelFailed@1      Borttagning av %s misslyckades
-error-ppDelNzo           Det gick inte att ta bort nzo från efterbehandlings kön (id)
+error-ppDelNzo           Det gick inte att ta bort nzo frÃ¥n efterbehandlings kÃ¶n (id)
 error-ppDelWorkdir@1     Det gick inte att ta bort arbetsmapp (%s)
-error-ppFailed@1         Efterbehandling misslyckades för %s
+error-ppFailed@1         Efterbehandling misslyckades fÃ¶r %s
 error-ppLogFile@1        Det gick inte att skapa loggfil %s
-error-ppPermissions@1    Det gick inte att ändra rättigheter på %s
-error-ppRename@2         Det gick inte att döpa om "%s" till "%s"
-warn-badPPQueue@2        Det gick inte att ladda efterbehandlings kön: Fel version (kräver:%s, hittade:%s)
-error-rssBadFeed@1       Felaktigt RSS-flödesbeskrivning "%s"
+error-ppPermissions@1    Det gick inte att Ã¤ndra rÃ¤ttigheter pÃ¥ %s
+error-ppRename@2         Det gick inte att dÃ¶pa om "%s" till "%s"
+warn-badPPQueue@2        Det gick inte att ladda efterbehandlings kÃ¶n: Fel version (krÃ¤ver:%s, hittade:%s)
+error-rssBadFeed@1       Felaktigt RSS-flÃ¶desbeskrivning "%s"
 error-rssRegex@1         Gick ej att kompilera regex: %s
 warn-emptyRSS@1          Tom RSS post hittades (%s)
-warn-failRSS@1           Det gick inte att hämta RSS flödet från %s
-warn-failRSS@2           Det gick inte att hämta RSS flödet från %s: %s
+warn-failRSS@1           Det gick inte att hÃ¤mta RSS flÃ¶det frÃ¥n %s
+warn-failRSS@2           Det gick inte att hÃ¤mta RSS flÃ¶det frÃ¥n %s: %s
 warn-badSched@3          Fel schema %s vid %s:%s
-warn-badSchedAction@1    Okänd åtgärd: %s
-warn-schedNoServer@1     Schema för icke existerande server %s
-error-tvInfo@1           Det gick inte att hämta TV info (%s)
-error-tvRename@2         Det gick inte att döpa om: %s till %s
-error-tvSimRename@2      Det gick inte att döpa om liknande fil: %s till %s
-error-tvTemp@1           Kan inte skapa temporär fil för %s
+warn-badSchedAction@1    OkÃ¤nd Ã¥tgÃ¤rd: %s
+warn-schedNoServer@1     Schema fÃ¶r icke existerande server %s
+error-tvInfo@1           Det gick inte att hÃ¤mta TV info (%s)
+error-tvRename@2         Det gick inte att dÃ¶pa om: %s till %s
+error-tvSimRename@2      Det gick inte att dÃ¶pa om liknande fil: %s till %s
+error-tvTemp@1           Kan inte skapa temporÃ¤r fil fÃ¶r %s
 warn-matrixBadRep@1      Ogiltigt nzbmatrix rapporteringsnummer %s
 warn-matrixFail          Anslutningsproblem till nzbmatrix server.
-warn-noRepair            Inget PAR2 program funnet, reparation ej möjlig\n
+warn-noRepair            Inget PAR2 program funnet, reparation ej mÃ¶jlig\n
 warn-missingFiles        \nVarning: alla filer blev inte uppackade, se logg
-error-joinMismatch       Förväntad storlek är inte lika verklig storlek
+error-joinMismatch       FÃ¶rvÃ¤ntad storlek Ã¤r inte lika verklig storlek
 error-joinFail@1         Filsammanslagning av %s misslyckades
 error-joinFail@2         [%s] Fel "%s" under filsammanslagning
-msg-joinOK@3             [%s] Slår ihop %s fil(er)%s
+msg-joinOK@3             [%s] SlÃ¥r ihop %s fil(er)%s
 error-unpackFail@1       Uppackning misslyckades, %s
 error-unpackFail@2       [%s] Fel "%s" under uppackning av RAR fil(er)
-error-badArchive         Öppnande av huvudarkiv misslyckades (krypterat eller trasigt)
+error-badArchive         Ã–ppnande av huvudarkiv misslyckades (krypterat eller trasigt)
 error-unpackFailed@1     Uppackning misslyckades, gick inte att hitta %s
 error-unpackCRC          Uppackning misslyckades, CRC-fel
 error-unpackFull         Uppackning misslyckades, skrivfel eller disken full?
 error-unpackFailLog      Uppackning misslyckades, se logg
-error-unpackPassword     Uppackning misslyckades, arkivet kräver lösenord
-error-unpackMissing      Uppackning misslyckades, en väntad fil är inte uppackad
+error-unpackPassword     Uppackning misslyckades, arkivet krÃ¤ver lÃ¶senord
+error-unpackMissing      Uppackning misslyckades, en vÃ¤ntad fil Ã¤r inte uppackad
 msg-unpackDone@4         Uppackad %s fil%s/mapp%s i %s
 msg-unzipDone@3          %s filer%s i %s
 msg-QuickCheck           Snabbkontroll...
@@ -722,87 +723,87 @@ msg-QuickChecking        Snabbkontrollerar
 msg-QuickOK@1            [%s] Snabbkontroll OK
 msg-startRepair          Startar reparation
 error-repairFailed@1     Reparation misslyckades, %s
-error-repairBad@2        Fel "%s" medans par2_repair kördes på %s
+error-repairBad@2        Fel "%s" medans par2_repair kÃ¶rdes pÃ¥ %s
 msg-verify               Verifierar...
-msg-verifyOK@2           [%s] Verifierad i %s, alla filer är ok
-msg-repairNeeded         Kräver reparation
-msg-repairNeeded@2       [%s] Verifiering i %s, kräver reparation
+msg-verifyOK@2           [%s] Verifierad i %s, alla filer Ã¤r ok
+msg-repairNeeded         KrÃ¤ver reparation
+msg-repairNeeded@2       [%s] Verifiering i %s, krÃ¤ver reparation
 error-noMainPacket       Huvudarkiv saknas...
-error-repairBlocks@1     Misslyckad reparation, finns ej tillräckligt med reparationsblock (%s saknas)
-msg-fetchBlocks@1        Hämtar %s block...
+error-repairBlocks@1     Misslyckad reparation, finns ej tillrÃ¤ckligt med reparationsblock (%s saknas)
+msg-fetchBlocks@1        HÃ¤mtar %s block...
 msg-repairing            Reparerar
 msg-repairDone@2         [%s] Reparerad i %s
 msg-verifying            Verifierar
-msg-DownloadedIn@2       Hämtade i %s vid ett genomsnitt på %sB/s
+msg-DownloadedIn@2       HÃ¤mtade i %s vid ett genomsnitt pÃ¥ %sB/s
 msg-noParSets@1          [%s] Ingen par2 sats
-msg-noPostProc           Ingen efterbehandling på grund av misslyckad verifiering
-msg-sentToQ@1            Skickat %s till kö
-msg-runScript@1          Kör användarskript %s
-msg-ranScript@1          Körde %s
+msg-noPostProc           Ingen efterbehandling pÃ¥ grund av misslyckad verifiering
+msg-sentToQ@1            Skickat %s till kÃ¶
+msg-runScript@1          KÃ¶r anvÃ¤ndarskript %s
+msg-ranScript@1          KÃ¶rde %s
 link-more                Mer
 link-viewSc              Visa skriptutmatning
-warn-OutRetention        Hämtning misslyclades - Out of your server's retention?
+warn-OutRetention        HÃ¤mtning misslyclades - Out of your server's retention?
 warn-PostCrash           Efterbehandling kraschade, se loggfil
 msg-moving               Flyttar
-msg-running              Kör skript
-msg-joining              Slår ihop
+msg-running              KÃ¶r skript
+msg-joining              SlÃ¥r ihop
 msg-unpacking            Packar upp
 msg-repair               Reparerar
-msg-fetching             Hämtar
-msg-path                 Genväg
+msg-fetching             HÃ¤mtar
+msg-path                 GenvÃ¤g
 
 stage-download           Ladda ned
 stage-repair             Reparera
-stage-filejoin           Slår ihop filer
+stage-filejoin           SlÃ¥r ihop filer
 stage-unpack             Packa upp
 stage-script             Skript
 
-post-Completed           Färdig
+post-Completed           FÃ¤rdig
 post-Failed              Misslyckades
-post-Queued              Köad
+post-Queued              KÃ¶ad
 post-Repairing           Reparerar...
 post-Extracting          Extraherar...
 post-Moving              Flyttar...
-post-Running             Kör skript...
-post-Fetching            Hämtar extra block...
+post-Running             KÃ¶r skript...
+post-Fetching            HÃ¤mtar extra block...
 post-QuickCheck          Snabbkontroll...
 post-Verifying           Verifierar...
 
 #Growl Messages
-grwl-notif-startup       Uppstart/Nedstängning
+grwl-notif-startup       Uppstart/NedstÃ¤ngning
 grwl-notif-dl            NZB Tillagd
 grwl-notif-pp            Efterbehandling
 grwl-notif-other         Andra meddelanden
-grwl-shutdown-begin-msg  Påbörjar nedstängning av SABnzbd..
-grwl-shutdown-end-msg    SABnzbd nedstängning utförd.
+grwl-shutdown-begin-msg  PÃ¥bÃ¶rjar nedstÃ¤ngning av SABnzbd..
+grwl-shutdown-end-msg    SABnzbd nedstÃ¤ngning utfÃ¶rd.
 grwl-paused-msg          Pausad
-grwl-nzbadd-title        NZB tillagd i kön
-grwl-newversion-msg      Ny utgåva tillgänglig
+grwl-nzbadd-title        NZB tillagd i kÃ¶n
+grwl-newversion-msg      Ny utgÃ¥va tillgÃ¤nglig
 
 #OSX Menu
 osx-menu-warnings        Varningar
-osx-menu-status-idle     Sysslolös
+osx-menu-status-idle     SysslolÃ¶s
 osx-menu-status-paused   Pausad
 osx-menu-pause           Pausa
 osx-menu-min             min.
-osx-menu-resume          Återuppta
-osx-menu-queue           Kö
-osx-menu-queuelimit    	 Kö (10 första sakerna)
+osx-menu-resume          Ã…teruppta
+osx-menu-queue           KÃ¶
+osx-menu-queuelimit    	 KÃ¶ (10 fÃ¶rsta sakerna)
 osx-menu-history         Historik
 osx-menu-historylimit    Historik (10 senaste sakerna)
-osx-menu-speedlimit      Hastighetsbegränsning
+osx-menu-speedlimit      HastighetsbegrÃ¤nsning
 osx-menu-none            Ingen
-osx-menu-getnewzbinbm    Hämta Newzbin bokmärken
-osx-menu-complete        Färdig mapp\t\t\t
-osx-menu-incomplete      Ofullständig mapp\t\t
+osx-menu-getnewzbinbm    HÃ¤mta Newzbin bokmÃ¤rken
+osx-menu-complete        FÃ¤rdig mapp\t\t\t
+osx-menu-incomplete      OfullstÃ¤ndig mapp\t\t
 osx-menu-restart         Starta om
 osx-menu-quit            Avsluta
 osx-menu-config          Konfiguration
-osx-menu-purgequeue      Rensa kö
+osx-menu-purgequeue      Rensa kÃ¶
 osx-menu-purgehistory    Rensa historik
-osx-menu-wizard          Gå till guiden
+osx-menu-wizard          GÃ¥ till guiden
 osx-menu-empty           Tom
-osx-menu-shutdowning     Stänger...
+osx-menu-shutdowning     StÃ¤nger...
 
 email-full@2             \
 to: %s\n\
@@ -811,6 +812,6 @@ subject: SABnzbd rapporterar om Full disk\n\
 \n\
 Hej,\n\
 \n\
-SABnzbd har stoppat nedladdning för att disken nästan är full.\n\
-Var vänlig gör plats för nedladdningen och återuppta SABnzbd's nedladdning manuellt.\n\
+SABnzbd har stoppat nedladdning fÃ¶r att disken nÃ¤stan Ã¤r full.\n\
+Var vÃ¤nlig gÃ¶r plats fÃ¶r nedladdningen och Ã¥teruppta SABnzbd's nedladdning manuellt.\n\
 \n

@@ -1,46 +1,47 @@
-# -*- coding: latin-1 -*-
-# Sweden # Swedish
+# -*- coding: utf-8 -*-
+# Sverige # Svenska
+# Translation by "Kristoffer (Malmis) MalmstrÃ¶m" <malmis@malmis.com>
 
 thisWeek        Denna vecka
-thisMonth       Denna månad
+thisMonth       Denna mÃ¥nad
 size            Storlek
-links           Länkar
-first           Första
+links           LÃ¤nkar
+first           FÃ¶rsta
 previous        Prev
-next            Nästa
+next            NÃ¤sta
 last            Sista
-edit            Ändra
-editDetails     Ändra uppgifter
+edit            Ã„ndra
+editDetails     Ã„ndra uppgifter
 showEdit        Visa Redigeringsalternativ 
-hideEdit        Dölj Redigeringsalternativ 
-timeleft        Återstående tid
+hideEdit        DÃ¶lj Redigeringsalternativ 
+timeleft        Ã…terstÃ¥ende tid
 purgeQueue      Ta bort alla
 progress        Arbetar
 delete          Ta bort
 downloading     Laddar ner
-idle            Väntar
+idle            VÃ¤ntar
 paused          Pausad
 emailsent       Skickat E-mail!
 saving          Sparar..
 saved           Sparad
 failed          Misslyckades
 speed           Hastighet
-toggleadd       Visa/Dölj Lägg till NZB
+toggleadd       Visa/DÃ¶lj LÃ¤gg till NZB
 refresr         Uppdateringsfrekvens
-restartOK?      Är du säker på att du vill starta om SABnzbd?
+restartOK?      Ã„r du sÃ¤ker pÃ¥ att du vill starta om SABnzbd?
 warnings        Varningar
-getbookmarks    Hämta bokmärken
-purgefailhistOK? Ta bort alla felaktiga saker från historiken?
+getbookmarks    HÃ¤mta bokmÃ¤rken
+purgefailhistOK? Ta bort alla felaktiga saker frÃ¥n historiken?
 purgehist       Ta bort alla
 purgefailhist   Ta bort felaktiga saker
-path            Genväg
-age             Ålder
+path            GenvÃ¤g
+age             Ã…lder
 speed           Hastighet
 numresults@3    Visar %s till %s av %s resultat
 oneresult       Visar 1 resultat
 noresult        Inga resultat
 custom          Anpassa
-dualView1       Flerskärm1
-dualView2       Flerskärm2
+dualView1       FlerskÃ¤rm1
+dualView2       FlerskÃ¤rm2
 eta             ETA
 refreshr        Uppdateringsfrekvens

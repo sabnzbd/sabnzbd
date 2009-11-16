@@ -1,53 +1,54 @@
-# -*- coding: latin-1 -*-
-# Sweden # Swedish
+# -*- coding: utf-8 -*-
+# Sverige # Svenska
+# Translation by "Kristoffer (Malmis) MalmstrÃ¶m" <malmis@malmis.com>
 
 quickstart           SABnzbd Snabbstart Guide
 version              SABnzbd Version
 
-previous             Föregående
-next                 Nästa
+previous             FÃ¶regÃ¥ende
+next                 NÃ¤sta
 zoom                 Zooma
 
 skin                 Skin
-explain-skin         Vilket skin vill du använda till SABnzbd?
+explain-skin         Vilket skin vill du anvÃ¤nda till SABnzbd?
 
-access               Åtkomst
-access-anypc         Jag vill att SABnzbd ska bli nåbart från vilken dator som helst i mitt nätverk.
-access-mypc          Jag vill att SABnzbd ska bli nåbart enbart från min dator.
-access-pass          Lösenordsskydda åtkomst till SABnzbd (rekommenderas)
-access-https         Aktivera HTTPS åtkomst till SABnzbd.
+access               Ã…tkomst
+access-anypc         Jag vill att SABnzbd ska bli nÃ¥bart frÃ¥n vilken dator som helst i mitt nÃ¤tverk.
+access-mypc          Jag vill att SABnzbd ska bli nÃ¥bart enbart frÃ¥n min dator.
+access-pass          LÃ¶senordsskydda Ã¥tkomst till SABnzbd (rekommenderas)
+access-https         Aktivera HTTPS Ã¥tkomst till SABnzbd.
 
 misc                 Diverse
-misc-browser         Starta webbläsaren med SABnzbd's sida när programet startas.
+misc-browser         Starta webblÃ¤saren med SABnzbd's sida nÃ¤r programet startas.
 
 server               Serveruppgifter
-explain-server       Fyll i uppgifter om din primära usenet leverantör.
-server-help          Hjälp
-server-help1         För att ladda ner från usenet du behöver tillgång till en leverantör. Din internetleverantör kan ge dig tillgång, men en premie leverantör rekommenderas.
-server-help2@2       Har du inte någon usenet leverantör? Vi rekommenderar att prova %s eller %s.
-server-con-explain   Antalet anslutningar som tillåts av din leverantör
-server-ssl-explain   Välj bara om din leverantör tillåter SSL-anslutningar.
-server-text          Klicka här för att testa dina angivna serveruppgifter.
-server-required      Detta fält krävs.
+explain-server       Fyll i uppgifter om din primÃ¤ra usenet leverantÃ¶r.
+server-help          HjÃ¤lp
+server-help1         FÃ¶r att ladda ner frÃ¥n usenet du behÃ¶ver tillgÃ¥ng till en leverantÃ¶r. Din internetleverantÃ¶r kan ge dig tillgÃ¥ng, men en premie leverantÃ¶r rekommenderas.
+server-help2@2       Har du inte nÃ¥gon usenet leverantÃ¶r? Vi rekommenderar att prova %s eller %s.
+server-con-explain   Antalet anslutningar som tillÃ¥ts av din leverantÃ¶r
+server-ssl-explain   VÃ¤lj bara om din leverantÃ¶r tillÃ¥ter SSL-anslutningar.
+server-text          Klicka hÃ¤r fÃ¶r att testa dina angivna serveruppgifter.
+server-required      Detta fÃ¤lt krÃ¤vs.
 server-number        Ange ett heltal.
 
-index-explain        Om du är medlem på newzbin eller nzbmatrix kan du ange ditt användarnamn och lösenord här så kan vi hämta deras nzb filer. Detta stadium kan hoppas över om du inte använder deras tjänster.
-index-bookmark       Ladda automatiskt ned bokmärkta poster.
+index-explain        Om du Ã¤r medlem pÃ¥ newzbin eller nzbmatrix kan du ange ditt anvÃ¤ndarnamn och lÃ¶senord hÃ¤r sÃ¥ kan vi hÃ¤mta deras nzb filer. Detta stadium kan hoppas Ã¶ver om du inte anvÃ¤nder deras tjÃ¤nster.
+index-bookmark       Ladda automatiskt ned bokmÃ¤rkta poster.
 optional             Valfritt
 example              Ex.
 button-testServer    Test Server
 
 restarting           Startar om SABnzbd...
-complete             Installationen är nu utförd!
-tip1                 SABnzbd kommer nu att köras i bakgrunden.
-tip2                 SABnzbd kommer inte att stängas av om du stänger ett fönster eller en tab i webbläsaren.
-tip3@1               Efter att SABnzbd har startat om kommer du att ha kunna komma åt SABnzbd på denna plats: %s
-tip4                 Det är rekommenderat att du sparar denna plats som ett bokmärke för att komma åt SABnzbd när det körs i bakgrunden.
-tip-wiki             Övrig hjälp kan du hitta på våran 
-goto                 Gå till SABnzbd
+complete             Installationen Ã¤r nu utfÃ¶rd!
+tip1                 SABnzbd kommer nu att kÃ¶ras i bakgrunden.
+tip2                 SABnzbd kommer inte att stÃ¤ngas av om du stÃ¤nger ett fÃ¶nster eller en tab i webblÃ¤saren.
+tip3@1               Efter att SABnzbd har startat om kommer du att ha kunna komma Ã¥t SABnzbd pÃ¥ denna plats: %s
+tip4                 Det Ã¤r rekommenderat att du sparar denna plats som ett bokmÃ¤rke fÃ¶r att komma Ã¥t SABnzbd nÃ¤r det kÃ¶rs i bakgrunden.
+tip-wiki             Ã–vrig hjÃ¤lp kan du hitta pÃ¥ vÃ¥ran 
+goto                 GÃ¥ till SABnzbd
 
 step-one             Steg ett
-step-two             Steg två
+step-two             Steg tvÃ¥
 step-three           Steg tre
 step-four            Steg fyra
 step-five            Steg fem

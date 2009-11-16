@@ -1,24 +1,25 @@
-# -*- coding: latin-1 -*-
-# Sweden # Swedish
+# -*- coding: utf-8 -*-
+# Sverige # Svenska
+# Translation by "Kristoffer (Malmis) MalmstrÃ¶m" <malmis@malmis.com>
 # Mobile
 
 # misc
-button-prev       Föregående
-button-next       Nästa
+button-prev       FÃ¶regÃ¥ende
+button-next       NÃ¤sta
 button-refresh    Uppdatera
-button-close      Stäng
+button-close      StÃ¤ng
 button-options    Alternativ
 page              Sida
-confirm-delete    Är du säker på att du vill ta bort
+confirm-delete    Ã„r du sÃ¤ker pÃ¥ att du vill ta bort
 warnings          Varningar
-button-purgeQ     Töm kö
-confirm-purgeQ    Vill du verkligen tömma kön?
-button-purgeH     Töm historik
-confirm-purgeH    Vill du verkligen tömma historiken?
-left              Vänster
+button-purgeQ     TÃ¶m kÃ¶
+confirm-purgeQ    Vill du verkligen tÃ¶mma kÃ¶n?
+button-purgeH     TÃ¶m historik
+confirm-purgeH    Vill du verkligen tÃ¶mma historiken?
+left              VÃ¤nster
 
 # pause interval
-button-pauseInterval Sätt pausintervall
+button-pauseInterval SÃ¤tt pausintervall
 pauseInterval     Pausintervall
 pause5m           Pausa 5 minuter
 pause15m          Pause 15 minuter
@@ -31,9 +32,9 @@ pause24h          Pausa 24 timmar
 
 # queue sort
 sort              Sortera
-sortAgeAsc        Sortera efter ålder <small>Äldst&rarr;Nyast</small>
-sortAgeDesc       Sortera efter ålder <small>Nyast&rarr;Äldst</small>
+sortAgeAsc        Sortera efter Ã¥lder <small>Ã„ldst&rarr;Nyast</small>
+sortAgeDesc       Sortera efter Ã¥lder <small>Nyast&rarr;Ã„ldst</small>
 sortNameAsc       Sortera efter namn <small>A&rarr;Z</small>
 sortNameDesc      Sortera efter namn <small>Z&rarr;A</small>
-sortSizeAsc       Sortera efter storlek <small>Minst&rarr;Störst</small>
-sortSizeDesc      Sortera efter storlek <small>Störst&rarr;Minst</small>
+sortSizeAsc       Sortera efter storlek <small>Minst&rarr;StÃ¶rst</small>
+sortSizeDesc      Sortera efter storlek <small>StÃ¶rst&rarr;Minst</small>
