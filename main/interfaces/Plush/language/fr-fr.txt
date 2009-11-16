@@ -48,7 +48,7 @@ nzo-range         Gamme
 idle              EN ATTENTE
 remaining         Restant
 notEnoughSpace    Espace disque insuffisant pour terminer les téléchargements !
-freeSpace         Epace Libre
+freeSpace         Espace Libre
 freeSpaceTemp     Libre (Temp)
 confirmPurgeQ     Vider la Queue?
 
