@@ -356,6 +356,8 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
+    if 'http' not in url:
+        return
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
