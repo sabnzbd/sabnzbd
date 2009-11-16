@@ -435,7 +435,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
-    filename = codecs.name_fixer(nzbfile.filename)
+    # Consider reception of Latin-1 names for non-Windows platforms
+    # When an OSX/Unix server receives a file from Windows platform
+    filename = codecs.special_fixer(nzbfile.filename)
 
     if not sabnzbd.WIN32:
         # If windows client sends file to Unix server backslashed may

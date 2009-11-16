@@ -48,6 +48,24 @@ def name_fixer(p):
     else:
         return p
 
+def special_fixer(p):
+    """ Return string appropriate for the platform.
+        Also takes care of the situation where a non-Windows/UTF-8 system
+        receives a latin-1 encoded name.
+    """
+    if sabnzbd.WIN32:
+        return p
+    else:
+        if gUTF or sabnzbd.DARWIN:
+            try:
+                # First see if it isn't just UTF-8
+                return p.decode('utf-8').encode('utf-8')
+            except:
+                # Now assume it's latin-1
+                return p.decode('Latin-1').encode('utf-8')
+        else:
+            return p
+
 def unicoder(p):
     """ Make sure a Unicode string is returned """
     if isinstance(p, unicode):
