@@ -532,13 +532,13 @@ jQuery(function($) { // safely invoke $ selector
 				}
 				return false; // aborts <form> submission
 			});
-			$('#addID_input').val('enter URL')
+			$('#addID_input').val('URL')
 			.focus( function(){
-				if ($(this).val()=="enter URL")
+				if ($(this).val()=="URL")
 					$(this).val('');
 			}).blur( function(){
 				if (!$(this).val())
-					$(this).val('enter URL');
+					$(this).val('URL');
 			});
 
 			// Upload NZB ajax with webtoolkit
