@@ -1,4 +1,12 @@
 -------------------------------------------------------------------------------
+0.5.0Alpha11 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+* Fix foreign character problems in several places
+* Add Swedish translation
+* Plush tweaks
+* Allow foreign characters in email templates
+* Prevent selection of "Mobile" skin as primary
+-------------------------------------------------------------------------------
 0.5.0Alpha10 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 * Fix foreign character problems in several places
