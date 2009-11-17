@@ -564,7 +564,7 @@ class MainPage:
                     return report(output, _MSG_NO_VALUE2)
             elif name == 'rename':
                 if value and value2:
-                    nzbqueue.rename_nzo(value, value2)
+                    nzbqueue.rename_nzo(value, special_fixer(value2))
                     return report(output)
                 else:
                     return report(output, _MSG_NO_VALUE2)
