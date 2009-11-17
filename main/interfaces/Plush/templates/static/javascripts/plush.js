@@ -513,7 +513,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Fetch NZB by URL/Newzbin Report ID
 			$('#addID').click(function(){ // also works when hitting enter because of <form>
-				if ($('#addID_input').val()!='enter URL') {
+				if ($('#addID_input').val()!='URL') {
 					$.ajax({
 						type: "POST",
 						url: "tapi",
