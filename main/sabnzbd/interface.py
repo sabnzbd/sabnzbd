@@ -1647,10 +1647,12 @@ class ConfigGeneral:
                 cols = ListColors(rweb)
                 if cols:
                     for col in cols:
-                        wlist.append(add_color(rweb, col))
+                        if rweb != 'Mobile':
+                            wlist.append(add_color(rweb, col))
                         wlist2.append(add_color(rweb, col))
                 else:
-                    wlist.append(rweb)
+                    if rweb != 'Mobile':
+                        wlist.append(rweb)
                     wlist2.append(rweb)
         conf['web_list'] = wlist
         conf['web_list2'] = wlist2
