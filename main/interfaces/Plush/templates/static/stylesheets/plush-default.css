@@ -429,10 +429,10 @@ select {
   }
   #queue-buttons.lang-nl-du ul li ul,
   #queue-buttons.lang-fr-fr ul li ul{
-    width:235px;
+    width:245px;
   }
   #queue-buttons.lang-de-de ul li ul{
-    width:250px;
+    width:260px;
   }
   #queue-buttons ul li.sprite_q_queue ul{
     right:0;
@@ -479,11 +479,11 @@ select {
     #queue-buttons.lang-nl-du ul li.sprite_q_queue ul li ul,
   #queue-buttons.lang-fr-fr ul li ul li ul,
     #queue-buttons.lang-fr-fr ul li.sprite_q_queue ul li ul{
-    right:235px;
+    right:245px;
   }
   #queue-buttons.lang-de-de ul li ul li ul,
     #queue-buttons.lang-de-de ul li.sprite_q_queue ul li ul{
-    right:250px;
+    right:260px;
   }
   
 #queue-wrap {
@@ -900,10 +900,10 @@ tr:hover .history_added { color: black; }
 #main_menu.lang-nl-du ul li ul li ul li,
 #main_menu.lang-fr-fr ul li ul li ul li,
 #main_menu.lang-sv-se ul li ul li ul li{
-  width:240px;
+  width:250px;
 }
 #main_menu.lang-de-de ul li ul li ul li{
-  width:270px;
+  width:280px;
 }
 #main_menu ul li ul li#plushoptions ul li:first-child a,
 #main_menu ul li ul li#processingContainer ul li{
@@ -959,7 +959,7 @@ tr:hover .history_added { color: black; }
 }
 
 #main_menu.lang-fr-fr #addID_input{
-  width: 110px;
+  width: 120px;
 }
 
 .sf-shadow ul { /* if superfish shadows are enabled lets make it happen! 
@@ -1307,7 +1307,7 @@ fieldset.EntryFieldSet {
 	width: 84px; 
 }
 .config_nav.lang-de-de {
-	width: 130px; 
+	width: 140px; 
 }
  
 	.config_nav ul {
@@ -1467,7 +1467,7 @@ legend .config_sprite_container {
 		}
  
 .config_margin { margin: 5px 10px 0 110px; }
-.config_margin.lang-de-de { margin: 5px 10px 0 130px; }
+.config_margin.lang-de-de { margin: 5px 10px 0 140px; }
  
 .right_links {
 	float: right;
