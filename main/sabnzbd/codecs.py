@@ -72,7 +72,7 @@ def unicoder(p):
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
-        if sabnzbd.DARWIN:
+        if sabnzbd.DARWIN or gUTF:
             try:
                 return p.decode('utf-8')
             except:

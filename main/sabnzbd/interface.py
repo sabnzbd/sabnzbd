@@ -619,7 +619,7 @@ class MainPage:
                 history = bool(kwargs.get('history'))
 
                 info, pnfo_list, bytespersec, verboseList, dictn = \
-                    build_queue(history=history, start=start, limit=limit, json=output=='json')
+                    build_queue(history=history, start=start, limit=limit, output=output)
                 info['categories'] = info.pop('cat_list')
                 info['scripts'] = info.pop('script_list')
                 return report(output, keyword='queue', data=remove_callable(info))
@@ -3034,7 +3034,7 @@ def qstatus_data():
         jobs.append( { "id" : nzo_id,
                         "mb":bytes,
                         "mbleft":bytesleft,
-                        "filename":filename,
+                        "filename":unicoder(filename),
                         "msgid":msgid,
                         "timeleft":calc_timeleft(bytesleftprogess, bpsnow) } )
 
@@ -3300,8 +3300,8 @@ class xml_factory:
 
 
 def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=None,
-                dictionary=None, history=False, start=None, limit=None, dummy2=None, json=False):
-    if json:
+                dictionary=None, history=False, start=None, limit=None, dummy2=None, output=None):
+    if output:
         converter = unicoder
     else:
         converter = xml_name
