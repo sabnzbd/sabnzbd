@@ -44,7 +44,7 @@ from sabnzbd.misc import real_path, create_real_path, loadavg, \
      get_filename, cat_to_opts, IntConv
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
-from sabnzbd.codecs import TRANS, xml_name, LatinFilter, unicoder
+from sabnzbd.codecs import TRANS, xml_name, LatinFilter, unicoder, special_fixer
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.articlecache as articlecache
@@ -1037,7 +1037,7 @@ class NzoPage:
         if index != None:
             nzbqueue.switch(nzo_id, index)
         if name != None:
-            sabnzbd.nzbqueue.change_name(nzo_id, name)
+            sabnzbd.nzbqueue.change_name(nzo_id, special_fixer(name))
         if cat != None:
             sabnzbd.nzbqueue.change_cat(nzo_id,cat)
         if script != None:

@@ -59,7 +59,8 @@ def special_fixer(p):
         if gUTF or sabnzbd.DARWIN:
             try:
                 # First see if it isn't just UTF-8
-                return p.decode('utf-8').encode('utf-8')
+                p.decode('utf-8')
+                return p
             except:
                 # Now assume it's latin-1
                 return p.decode('Latin-1').encode('utf-8')
@@ -96,6 +97,8 @@ def xml_name(p, keep_escape=False, encoding=None):
         pass
     elif isinstance(p, str):
         if sabnzbd.DARWIN or encoding == 'utf-8':
+            p = p.decode('utf-8', 'replace')
+        elif gUTF:
             p = p.decode('utf-8', 'replace')
         else:
             p = p.decode('Latin-1', 'replace')
