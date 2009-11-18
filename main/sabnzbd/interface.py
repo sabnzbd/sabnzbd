@@ -973,6 +973,8 @@ class NzoPage:
                 delete = pnfo[PNFO_DELETE_FIELD]
                 unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
                 script = pnfo[PNFO_SCRIPT_FIELD]
+                if script is None:
+                    script = 'None'
                 cat = pnfo[PNFO_EXTRA_FIELD1]
                 if not cat:
                     cat = 'None'
