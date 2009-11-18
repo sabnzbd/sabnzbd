@@ -1,5 +1,5 @@
 # -*- coding: latin-1 -*-
-# France # Français
+# Français
 
 special-decimal   .
 special-1000      .

@@ -1,5 +1,5 @@
 # -*- coding: latin-1 -*-
-# United States # English
+# English (US)
 
 special-decimal   .
 special-1000      ,

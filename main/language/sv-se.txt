@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Sverige # Svenska
+# Svenska
 # Translation by "Kristoffer (Malmis) Malmström" <malmis@malmis.com>
 
 special-decimal   .

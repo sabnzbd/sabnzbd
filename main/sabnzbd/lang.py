@@ -105,8 +105,8 @@ def list_languages(path):
         except IOError:
             continue
 
-        encoding, country, language = _get_headers(fp)
-        long = u"%s - %s" % (country, language)
+        encoding, language = _get_headers(fp)
+        long = u"%s" % language
         list.append((lang, long))
         fp.close()
     return list
@@ -125,9 +125,9 @@ def _parse_lang_file(dic, name, prefix=''):
         logging.error("Cannot open language file %s", name)
         return False
 
-    encoding, country, language = _get_headers(f)
-    logging.debug("Language file %s, encoding=%s, country=%s, language=%s",
-                  name, encoding, country, language)
+    encoding, language = _get_headers(f)
+    logging.debug("Language file %s, encoding=%s, language=%s",
+                  name, encoding, language)
 
     if prefix:
         prefix += '-'
@@ -167,9 +167,9 @@ def _parse_lang_file(dic, name, prefix=''):
 
 
 def _get_headers(fp):
-    """ Return encoding, country and language
+    """ Return encoding and language
         # -*- coding: latin-1 -*-
-        # United Kingdom # English (UK)
+        # English (UK) # remarks
     """
     txt = fp.readline()
     m = re.search(r'#\s*-\*-\s+coding:\s+(\S+)\s+-\*-', txt)
@@ -179,15 +179,13 @@ def _get_headers(fp):
         encoding = 'latin-1'
 
     txt = fp.readline()
-    m = re.search(r'#\s*([^#]+)#([^#]+)', txt)
+    m = re.search(r'#\s*([^#]+)#*', txt)
     if m:
-        country = m.group(1).strip().decode(encoding)
-        language = m.group(2).strip().decode(encoding)
+        language = m.group(1).strip().decode(encoding)
     else:
-        country = ''
         language = ''
 
-    return encoding, country, language
+    return encoding, language
 
 
 _RE_COUNT = re.compile(r'(\S+)@(\d+)')
