@@ -47,7 +47,7 @@ next              Weiter
 confirm           Sind Sie sicher?
 confirmWithoutSavingPrompt Die Änderungen wurden nicht gespeichert und werden verloren gehen.
 nzo-range         Bereich
-progress          Bleiben
+progress          Fortschritt
 
 # Queue
 idle              LEERLAUF
