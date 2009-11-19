@@ -39,7 +39,7 @@ cmenu-scheduling  Planung
 
 # General
 button-refresh    Neu laden
-left              Verbleibend
+left              verb.
 page              Seite
 everything        Alles
 prev              Züruck
@@ -47,6 +47,7 @@ next              Weiter
 confirm           Sind Sie sicher?
 confirmWithoutSavingPrompt Die Änderungen wurden nicht gespeichert und werden verloren gehen.
 nzo-range         Bereich
+progress          Bleiben
 
 # Queue
 idle              LEERLAUF

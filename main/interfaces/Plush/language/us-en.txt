@@ -45,6 +45,7 @@ next              Next
 confirm           Are you sure?
 confirmWithoutSavingPrompt Changes have not been saved, and will be lost.
 nzo-range         Range
+progress          Progress
 
 # Queue
 idle              IDLE

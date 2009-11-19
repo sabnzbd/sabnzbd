@@ -90,13 +90,20 @@
         <div id="config_content">
 
             <table class="nzoTable">
-                <tr><th></th><th>$T('size')&nbsp;($T('MB'))</th><th>$T('nzo-age')</th><th>$T('nzo-filename')/$T('nzo-subject')</th></tr>
+                <tr><th></th><th>$T('Plush-progress')</th><th>$T('nzo-age')</th><th>$T('nzo-filename')/$T('nzo-subject')</th></tr>
                 <!--#set $oddLine = False#-->
                 <!--#for $file in $active_files#-->
                     <!--#set $oddLine = not $oddLine#-->
                     <tr id="$file.nzf_id" class="nzf_row <!--#if $oddLine then "oddLine" else "evenLine"#--> active">
                         <td><input type="checkbox" name="$file.nzf_id" id="box-$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
-                        <td class="alignRight">$file.mb</td>
+						<td valign="middle">
+							<div class="main_sprite_container sprite_progressbar_bg">
+								<div class="main_sprite_container sprite_progress_done" style="background-position: -<!--#if $file.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($file.mbleft) / float($file.mb) * 100))#-->px -347px">
+									<div class="totalDownload">$file.mbleft&nbsp;<small>$T('Plush-left')</small></div>
+									<div class="currentDownload">$file.mb&nbsp;<small>$T('MB')</small></div>
+								</div>
+							</div>
+						</td>
                         <td class="alignRight">$file.age</td>
                         <td class="filename">$file.filename</td>
                     </tr>

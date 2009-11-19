@@ -46,6 +46,7 @@ next              Nästa
 confirm           Är du säker?
 confirmWithoutSavingPrompt Ändringarna har inte sparats och kommer att försvinna.
 nzo-range         Omfång
+progress          Framsteg
 
 # Queue
 idle              Väntar

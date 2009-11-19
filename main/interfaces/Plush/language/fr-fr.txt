@@ -43,6 +43,7 @@ everything        Tout
 prev              Préc.
 next              Suiv.
 nzo-range         Gamme
+progress          Rester
 
 # Queue
 idle              EN ATTENTE

@@ -44,6 +44,7 @@ everything        Alles
 prev              Vorige
 next              Volgende
 nzo-range         Waaier
+progress          Het blijven
 
 # Queue
 idle              RUST
