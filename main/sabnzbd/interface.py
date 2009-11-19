@@ -1035,6 +1035,7 @@ class NzoPage:
         script = kwargs.get('script',None)
         cat = kwargs.get('cat',None)
         priority = kwargs.get('priority',None)
+        nzo = sabnzbd.nzbqueue.get_nzo(nzo_id)
 
         if index != None:
             nzbqueue.switch(nzo_id, index)
@@ -1046,7 +1047,7 @@ class NzoPage:
             sabnzbd.nzbqueue.change_script(nzo_id,script)
         if pp != None:
             sabnzbd.nzbqueue.change_opts(nzo_id,pp)
-        if priority != None:
+        if priority != None and nzo and nzo.get_priority() != int(priority):
             sabnzbd.nzbqueue.set_priority(nzo_id, priority)
 
         args = [arg for arg in args if arg != 'save']
