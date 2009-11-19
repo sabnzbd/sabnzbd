@@ -90,7 +90,7 @@
         <div id="config_content">
 
             <table class="nzoTable">
-                <tr><th></th><th>$T('Plush-progress')</th><th>$T('nzo-age')</th><th>$T('nzo-filename')/$T('nzo-subject')</th></tr>
+                <tr><th></th><th>$T('Plush-progress')</th><th>$T('nzo-filename')/$T('nzo-subject')</th><th>$T('nzo-age')</th></tr>
                 <!--#set $oddLine = False#-->
                 <!--#for $file in $active_files#-->
                     <!--#set $oddLine = not $oddLine#-->
@@ -104,8 +104,8 @@
 								</div>
 							</div>
 						</td>
-                        <td class="alignRight">$file.age</td>
                         <td class="filename">$file.filename</td>
+                        <td class="alignRight">$file.age</td>
                     </tr>
                 <!--#end for#-->
             </table>
