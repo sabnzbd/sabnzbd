@@ -39,7 +39,7 @@ cmenu-scheduling  Planung
 
 # General
 button-refresh    Neu laden
-left              verb.
+left              rest
 page              Seite
 everything        Alles
 prev              Züruck
