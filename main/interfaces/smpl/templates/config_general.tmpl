@@ -3,7 +3,7 @@
 <form class="cmxform" id="configGeneral" autocomplete="off">
 
 <fieldset class="EntryFieldSet">
-<legend>$T('webServer')</legend>
+<legend>$T('webServer') <i>($T('restartRequired'))</i></legend>
 <hr />
 			<label for "host" class="label">$T('opt-host'):</label>
 			<input type="text" name="host" value="$host">
@@ -83,7 +83,7 @@
 
 </fieldset>
 <fieldset class="EntryFieldSet">
-<legend>$T('httpsSupport')</legend>
+<legend>$T('httpsSupport') <i>($T('restartRequired'))</i></legend>
 <hr />
 
 		    <label><span class="label">$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('opt-notInstalled') else ""#-->:</span>

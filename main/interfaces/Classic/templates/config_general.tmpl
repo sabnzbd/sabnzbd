@@ -12,6 +12,7 @@
 <fieldset class="EntryFieldSet">
 
 <legend>$T('webServer')</legend>
+<i>$T('restartRequired')</i><br/><br/>
 <strong>$T('opt-host'):</strong><br>
 $T('explain-host')<br>
 <input type="text" name="host" value="$host">
@@ -83,6 +84,7 @@ $T('explain-web_password')<br>
 <div class="EntryBlock">
 <fieldset class="EntryFieldSet">
 <legend>$T('httpsSupport')</legend>
+<i>$T('restartRequired')</i><br/><br/>
 <label><input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
 <strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('opt-notInstalled') else ""#--></strong></label><br/>
 $T('explain-enable_https')<br>

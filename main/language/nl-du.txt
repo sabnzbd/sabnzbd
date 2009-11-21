@@ -181,7 +181,7 @@ error-notOctal@1  %s is geen correct octaal getal
 # Config->General
 generalConfig          Algemene instellingen
 restartRequired        Wijzigingen worden pas aktief na herstart!
-webServer              Web server (<i>herstart nodig</i>)
+webServer              Web server
 opt-host               Host
 explain-host           Host adres waar op SABnzbd luistert.
 opt-port               Poort
@@ -195,7 +195,7 @@ opt-web_username       Gebruikersnaam
 explain-web_username   Gebruikersnaam voor web login.
 opt-web_password       Wachtwoord
 explain-web_password   Wachtwoord voor web login.
-httpsSupport           HTTPS ondersteuning (<i>herstart nodig</i>)
+httpsSupport           HTTPS ondersteuning
 opt-enable_https       Maak HTTPS mogelijk
 opt-notInstalled       niet geinstalleerd
 explain-enable_https   Sta gebruik van HTTPS toe.
