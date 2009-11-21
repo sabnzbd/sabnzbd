@@ -198,6 +198,7 @@ def initialize(pause_downloader = False, clean_up = False, force_save= False, ev
     cfg.ENABLE_HTTPS.callback(guard_restart)
     cfg.BANDWIDTH_LIMIT.callback(guard_speedlimit)
     cfg.TOP_ONLY.callback(guard_top_only)
+    cfg.PAUSE_ON_POST_PROCESSING.callback(guard_pause_on_pp)
 
     ### Set cache limit
     articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY.get())
@@ -335,6 +336,13 @@ def guard_top_only():
     """ Callback for change of top_only option """
     nzbqueue.set_top_only(cfg.TOP_ONLY.get())
 
+def guard_pause_on_pp():
+    """ Callback for change of pause-download-on-pp """
+    if cfg.PAUSE_ON_POST_PROCESSING.get():
+        pass # Not safe to idle downloader, because we don't know
+             # if post-processing is active now
+    else:
+        downloader.unidle_downloader()
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
 
