@@ -907,8 +907,6 @@ class NzbObject(TryList):
             return None
 
     def purge_data(self):
-        nzf_ids = []
-
         for nzf in self.__files:
             sabnzbd.remove_data(nzf.nzf_id)
 

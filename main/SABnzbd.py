@@ -982,7 +982,6 @@ def main():
             logging.info('[osx] IO priority set to throttle for process scope')
         except:
             logging.info('[osx] IO priority setting not supported')
-            pass
 
     if AUTOBROWSER != None:
         sabnzbd.cfg.AUTOBROWSER.set(AUTOBROWSER)

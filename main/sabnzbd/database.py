@@ -33,11 +33,10 @@ import datetime
 from calendar import MONDAY
 import zlib
 import logging
-from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_VERSION, DB_HISTORY_NAME
+from sabnzbd.constants import DB_HISTORY_NAME
 from sabnzbd.lang import T, Ta
 from sabnzbd.codecs import unicoder
 

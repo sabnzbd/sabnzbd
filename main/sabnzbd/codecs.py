@@ -19,8 +19,6 @@
 sabnzbd.codecs - Unicoded filename support
 """
 
-import os
-import sys
 import locale
 from xml.sax.saxutils import escape
 from Cheetah.Filters import Filter

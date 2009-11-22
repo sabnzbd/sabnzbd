@@ -32,7 +32,7 @@ import sabnzbd.downloader
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T, Ta
+from sabnzbd.lang import Ta
 
 
 __SCHED = None  # Global pointer to Scheduler instance
@@ -295,7 +295,7 @@ def scheduled_resume():
     """
     global __PAUSE_END
     if __PAUSE_END is None:
-       sabnzbd.unpause_all()
+        sabnzbd.unpause_all()
 
 
 def __oneshot_resume(when):

@@ -86,7 +86,7 @@ class Option:
         """ Set value based on dictionary """
         try:
             return self.set(dict['value'])
-        except:
+        except KeyError:
             return False
 
     def __set(self, value):
@@ -130,7 +130,7 @@ class OptionNumber(Option):
                     value = int(value)
                 else:
                     value = float(value)
-            except:
+            except ValueError:
                 value = 0
             if self.__validation:
                 error, val = self.__validation(value)
@@ -305,13 +305,13 @@ def add_to_database(section, keyword, object):
 
 @synchronized(CONFIG_LOCK)
 def delete_from_database(section, keyword):
-        global database, CFG, modified
-        del database[section][keyword]
-        try:
-            del CFG[section][keyword]
-        except KeyError:
-            pass
-        modified = True
+    global database, CFG, modified
+    del database[section][keyword]
+    try:
+        del CFG[section][keyword]
+    except KeyError:
+        pass
+    modified = True
 
 
 class ConfigServer:
@@ -621,7 +621,7 @@ def read_config(path):
     """ Read the complete INI file and check its version number
         if OK, pass values to config-database
     """
-    global CFG, database, categories, rss_feeds, servers, modified
+    global CFG, database, modified
 
     if not os.path.exists(path):
         # No file found, create default INI file
@@ -660,9 +660,9 @@ def read_config(path):
                 except KeyError:
                     pass
 
-    categories = define_categories()
-    rss_feeds = define_rss()
-    servers = define_servers()
+    define_categories()
+    define_rss()
+    define_servers()
 
     modified = False
     return True
@@ -821,7 +821,7 @@ def decode_password(pw, name):
     if pw and pw.startswith(__PW_PREFIX):
         for n in range(len(__PW_PREFIX), len(pw), 2):
             try:
-                ch = chr( int(pw[n] + pw[n+1],16) )
+                ch = chr( int(pw[n] + pw[n+1], 16) )
             except:
                 logging.error(Ta('error-encPw@1'), name)
                 return ''

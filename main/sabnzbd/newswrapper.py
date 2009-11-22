@@ -23,12 +23,12 @@ import errno
 import socket
 from threading import Thread
 from nntplib import NNTPPermanentError
-from time import time
+import time
 import logging
 
 import sabnzbd
 from sabnzbd.constants import *
-from sabnzbd.lang import T, Ta
+from sabnzbd.lang import Ta
 
 try:
     from OpenSSL import SSL
@@ -45,7 +45,6 @@ _RLock = threading.RLock
 del threading
 
 import select
-import os
 
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
@@ -204,7 +203,7 @@ class NewsWrapper:
                          self.server.username, self.server.password, self.blocking)
         self.recv = self.nntp.sock.recv
 
-        self.timeout = time() + self.server.timeout
+        self.timeout = time.time() + self.server.timeout
 
     def finish_connect(self):
         if not self.server.username or not self.server.password:
@@ -235,20 +234,20 @@ class NewsWrapper:
             else:
                 self.connected = True
 
-        self.timeout = time() + self.server.timeout
+        self.timeout = time.time() + self.server.timeout
 
     def body(self):
-        self.timeout = time() + self.server.timeout
+        self.timeout = time.time() + self.server.timeout
         command = 'BODY <%s>\r\n' % (self.article.article)
         self.nntp.sock.sendall(command)
 
     def send_group(self, group):
-        self.timeout = time() + self.server.timeout
+        self.timeout = time.time() + self.server.timeout
         command = 'GROUP %s\r\n' % (group)
         self.nntp.sock.sendall(command)
 
     def recv_chunk(self, block=False):
-        self.timeout = time() + self.server.timeout
+        self.timeout = time.time() + self.server.timeout
         while 1:
             try:
                 chunk = self.recv(32768)
@@ -295,10 +294,10 @@ class NewsWrapper:
         # Wait before re-using this newswrapper
         if wait:
             # Reset due to error condition, use server timeout
-            self.timeout = time() + self.server.timeout
+            self.timeout = time.time() + self.server.timeout
         else:
             # Reset for internal reasons, just wait 5 sec
-            self.timeout = time() + 5
+            self.timeout = time.time() + 5
 
     def terminate(self):
         """ Close connection and remove nntp object """

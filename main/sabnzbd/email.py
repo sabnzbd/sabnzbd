@@ -24,7 +24,6 @@ from sabnzbd.utils import ssmtplib
 import smtplib
 import os
 import logging
-import subprocess
 import re
 import time
 import glob

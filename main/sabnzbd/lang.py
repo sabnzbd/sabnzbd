@@ -97,7 +97,7 @@ def list_languages(path):
     """ Return list of languages-choices
         Each choice is a list, 0: short name, 1: long name
     """
-    list = []
+    lst = []
     for name in glob.glob(path + '/*.txt'):
         lang = os.path.basename(name).replace('.txt','')
         try:
@@ -106,8 +106,8 @@ def list_languages(path):
             continue
 
         encoding, language = _get_headers(fp)
-        long = u"%s" % language
-        list.append((lang, long))
+        long_name = u"%s" % language
+        lst.append((lang, long_name))
         fp.close()
     return list
 
@@ -121,7 +121,7 @@ def _parse_lang_file(dic, name, prefix=''):
     """
     try:
         f = open(name, "r")
-    except:
+    except IOError:
         logging.error("Cannot open language file %s", name)
         return False
 
@@ -133,6 +133,7 @@ def _parse_lang_file(dic, name, prefix=''):
         prefix += '-'
     lcount = 0
     multi = False
+    msg = ''
     for line in f.xreadlines():
         line = line.strip('\n').decode(encoding)
         lcount += 1

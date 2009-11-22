@@ -19,15 +19,11 @@
 sabnzbd.nzbqueue - nzb queue
 """
 
-import sys
 import os
 import logging
-import sabnzbd
-import time
 import datetime
 
-from threading import Thread, RLock
-
+import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts
@@ -115,8 +111,10 @@ class NzbQueue(TryList):
         return future_nzo
 
     @synchronized(NZBQUEUE_LOCK)
-    def insert_future(self, future, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info={}):
+    def insert_future(self, future, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
         """ Refresh a placeholder nzo with an actual nzo """
+        if nzo_info is None:
+            nzo_info = {}
         nzo_id = future.nzo_id
         if nzo_id in self.__nzo_table:
             try:
@@ -264,7 +262,7 @@ class NzbQueue(TryList):
 
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove_multiple(self, nzo_ids, add_to_history = True):
+    def remove_multiple(self, nzo_ids):
         for nzo_id in nzo_ids:
             self.remove(nzo_id, add_to_history = False, save = False)
         self.save()
@@ -485,10 +483,12 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def set_priority_multiple(self, nzo_ids, priority):
         try:
+            n = -1
             for nzo_id in nzo_ids:
-                self.set_priority(nzo_id, priority)
+                n = self.set_priority(nzo_id, priority)
+            return n
         except:
-            pass
+            return -1
 
     @synchronized(NZBQUEUE_LOCK)
     def set_original_dirname(self, nzo_id, name):
@@ -757,9 +757,9 @@ def remove_nzo(nzo_id, add_to_history = True, unload=False):
     global __NZBQ
     if __NZBQ: __NZBQ.remove(nzo_id, add_to_history, unload)
 
-def remove_multiple_nzos(nzo_ids, add_to_history = True):
+def remove_multiple_nzos(nzo_ids):
     global __NZBQ
-    if __NZBQ: __NZBQ.remove_multiple(nzo_ids, add_to_history)
+    if __NZBQ: __NZBQ.remove_multiple(nzo_ids)
 
 def remove_all_nzo():
     global __NZBQ
@@ -896,8 +896,10 @@ def add_nzo(nzo):
     if __NZBQ: __NZBQ.add(nzo)
 
 @synchronized_CV
-def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info={}):
+def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
     global __NZBQ
+    if nzo_info is None:
+        nzo_info = {}
     if __NZBQ: __NZBQ.insert_future(future_nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
 
 @synchronized_CV
@@ -915,7 +917,7 @@ def get_nzo(nzo_id):
 @synchronized_CV
 def set_priority_multiple(nzo_ids, priority):
     global __NZBQ
-    if __NZBQ: __NZBQ.set_priority_multiple(nzo_ids, priority)
+    if __NZBQ: return __NZBQ.set_priority_multiple(nzo_ids, priority)
 
 @synchronized_CV
 def sort_queue(field, reverse=False):

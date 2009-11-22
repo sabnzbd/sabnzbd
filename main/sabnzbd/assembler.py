@@ -19,7 +19,6 @@
 sabnzbd.assembler - threaded assembly/decoding of files
 """
 
-import sys
 import os
 import Queue
 import binascii
@@ -27,7 +26,6 @@ import logging
 import struct
 from threading import Thread
 from time import sleep
-import subprocess
 try:
     import hashlib
     new_md5 = hashlib.md5
@@ -41,7 +39,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.articlecache
 import sabnzbd.postproc
 import sabnzbd.downloader
-from sabnzbd.lang import T, Ta
+from sabnzbd.lang import Ta
 
 
 #------------------------------------------------------------------------------
@@ -118,7 +116,7 @@ class Assembler(Thread):
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.get_type())
                     try:
-                        filepath = _assemble(nzo, nzf, filepath, dupe)
+                        filepath = _assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
                         # 28 == disk full => pause downloader
                         if errno == 28:
@@ -139,7 +137,7 @@ class Assembler(Thread):
                 sabnzbd.postproc.process(nzo)
 
 
-def _assemble(nzo, nzf, path, dupe):
+def _assemble(nzf, path, dupe):
     if os.path.exists(path):
         unique_path = get_unique_path(path, create_dir = False)
         if dupe:

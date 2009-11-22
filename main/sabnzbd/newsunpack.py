@@ -28,7 +28,7 @@ from time import time
 
 import sabnzbd
 from sabnzbd.codecs import TRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
-from sabnzbd.utils.rarfile import is_rarfile, RarFile
+from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.misc import format_time_string, find_on_path
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T, Ta
@@ -388,12 +388,10 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
 
             # Delete the old files if we have to
             if delete and newfiles:
-                i = 0
                 for rar in rars:
                     logging.info("Deleting %s", rar)
                     try:
                         os.remove(rar)
-                        i += 1
                     except OSError:
                         logging.warning(Ta('warn-delFailed@1'), rar)
 
@@ -403,7 +401,6 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
                         logging.info("Deleting %s", brokenrar)
                         try:
                             os.remove(brokenrar)
-                            i += 1
                         except OSError:
                             logging.warning(Ta('warn-delFailed@1'), brokenrar)
 
@@ -661,7 +658,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         readd = False
         try:
             nzo.set_action_line(T('msg-repair'), T('msg-startRepair'))
-            logging.info('Scanning "%s"' % parfile)
+            logging.info('Scanning "%s"', parfile)
 
             joinables, zips, rars, ts = build_filelists(workdir, None)
 
@@ -690,8 +687,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
     try:
         if cfg.enable_par_cleanup.get():
-            i = 0
-
             new_dir_content = os.listdir(workdir)
 
             for path in new_dir_content:
@@ -701,7 +696,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
                         logging.info("Deleting %s", path)
                         os.remove(path)
-                        i += 1
                     except:
                         logging.warning(Ta('warn-delFailed@1'), path)
 
@@ -712,7 +706,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                 try:
                     logging.info("Deleting %s", path)
                     os.remove(path)
-                    i += 1
                 except:
                     logging.warning(Ta('warn-delFailed@1'), path)
 
@@ -720,7 +713,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                 try:
                     logging.info("Deleting %s", path2)
                     os.remove(path2)
-                    i += 1
                 except:
                     logging.warning(Ta('warn-delFailed@1'), path2)
 
@@ -728,7 +720,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                 try:
                     logging.info("Deleting %s", parfile)
                     os.remove(parfile)
-                    i += 1
                 except OSError:
                     logging.warning(Ta('warn-delFailed@1'), parfile)
 
@@ -741,7 +732,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                     logging.info("Deleting %s", filepath)
                     try:
                         os.remove(filepath)
-                        i += 1
                     except OSError:
                         logging.warning(Ta('warn-delFailed@1'), filepath)
     except:
@@ -793,7 +783,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
     verifytotal = 0
     verified = 0
 
-    lines = []
     # Loop over the output, whee
     while 1:
         char = proc.read(1)

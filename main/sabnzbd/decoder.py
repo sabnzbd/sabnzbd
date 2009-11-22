@@ -38,7 +38,7 @@ import sabnzbd.downloader
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 from sabnzbd.codecs import name_fixer
-from sabnzbd.lang import T, Ta
+from sabnzbd.lang import Ta
 
 #-------------------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ class Decoder(Thread):
     def __init__(self, servers):
         Thread.__init__(self)
 
-        self.queue = Queue.Queue();
+        self.queue = Queue.Queue()
         self.servers = servers
 
     def decode(self, article, lines):

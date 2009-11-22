@@ -20,20 +20,14 @@ sabnzbd.dirscanner - Scanner for Watched Folder
 """
 
 import os
-import sys
 import time
 import logging
-import urllib
 import re
 import zipfile
 import gzip
-import webbrowser
-import tempfile
-import shutil
 import threading
 
 import sabnzbd
-from sabnzbd.decorators import synchronized
 from sabnzbd.constants import *
 from sabnzbd.utils.rarfile import is_rarfile, RarFile
 import sabnzbd.nzbstuff as nzbstuff
@@ -41,7 +35,7 @@ import sabnzbd.misc as misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
-from sabnzbd.lang import T, Ta
+from sabnzbd.lang import Ta
 
 ################################################################################
 # Wrapper functions
@@ -271,6 +265,8 @@ class DirScanner(threading.Thread):
 
         self.shutdown = False
         self.error_reported = False # Prevents mulitple reporting of missing watched folder
+        self.dirscan_dir = cfg.DIRSCAN_DIR.get_path()
+        self.dirscan_speed = cfg.DIRSCAN_SPEED.get()
         cfg.DIRSCAN_DIR.callback(self.newdir)
 
     def newdir(self):

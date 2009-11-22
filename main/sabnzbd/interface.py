@@ -29,18 +29,16 @@ import glob
 import urllib
 from xml.sax.saxutils import escape
 
-from sabnzbd.utils.rsslib import RSS, Item, Namespace
+from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.json import JsonWriter
 import sabnzbd
 import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
 
-from sabnzbd.utils import listquote
-from sabnzbd.utils.configobj import ConfigObj
 from Cheetah.Template import Template
 import sabnzbd.email as email
-from sabnzbd.misc import real_path, create_real_path, loadavg, \
-     to_units, from_units, diskfree, disktotal, get_ext, sanitize_foldername, \
+from sabnzbd.misc import real_path, loadavg, \
+     to_units, diskfree, disktotal, get_ext, sanitize_foldername, \
      get_filename, cat_to_opts, IntConv
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
@@ -53,7 +51,7 @@ import sabnzbd.postproc as postproc
 import sabnzbd.downloader as downloader
 import sabnzbd.bpsmeter as bpsmeter
 import sabnzbd.nzbqueue as nzbqueue
-from sabnzbd.database import get_history_handle, build_history_info, unpack_history_info
+from sabnzbd.database import build_history_info, unpack_history_info
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 
@@ -197,11 +195,9 @@ def check_session(kwargs):
     if not key:
         logging.warning(Ta('warn-missingKey'))
         msg = T('error-missingKey')
-        pass
     elif key != cfg.API_KEY.get():
         logging.warning(Ta('warn-badKey'))
         msg = T('error-badKey')
-        pass
     return msg
 
 
@@ -261,6 +257,8 @@ class NoPage:
 #------------------------------------------------------------------------------
 _MSG_NO_VALUE         = 'expect one parameter'
 _MSG_NO_VALUE2        = 'expect two parameters'
+_MSG_INT_VALUE        = 'expect integer value'
+_MSG_NO_ITEM          = 'item does not exist'
 _MSG_NOT_IMPLEMENTED  = 'not implemented'
 _MSG_NO_FILE          = 'no file given'
 _MSG_NO_PATH          = 'file does not exist'
@@ -551,7 +549,7 @@ class MainPage:
                     return report(output)
                 elif value:
                     items = value.split(',')
-                    nzbqueue.remove_multiple_nzos(items, False)
+                    nzbqueue.remove_multiple_nzos(items)
                     return report(output)
                 else:
                     return report(output, _MSG_NO_VALUE)
@@ -1758,21 +1756,21 @@ class ConfigGeneral:
         raise dcRaiser(self.__root, kwargs)
 
 def change_web_dir(web_dir):
+    try:
+        web_dir, web_color = web_dir.split(' - ')
+    except:
         try:
-            web_dir, web_color = web_dir.split(' - ')
+            web_color = DEF_SKIN_COLORS[web_dir.lower()]
         except:
-            try:
-                web_color = DEF_SKIN_COLORS[web_dir.lower()]
-            except:
-                web_color = ''
+            web_color = ''
 
-        web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
+    web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 
-        if not os.path.exists(web_dir_path):
-            return badParameterResponse('Cannot find web template: %s' % web_dir_path)
-        else:
-            cfg.WEB_DIR.set(web_dir)
-            cfg.WEB_COLOR.set(web_color)
+    if not os.path.exists(web_dir_path):
+        return badParameterResponse('Cannot find web template: %s' % web_dir_path)
+    else:
+        cfg.WEB_DIR.set(web_dir)
+        cfg.WEB_COLOR.set(web_color)
 
 
 #------------------------------------------------------------------------------
@@ -3296,7 +3294,7 @@ class xml_factory:
         elif isinstance(lst, tuple):
             text = self._tuple(keyw, lst)
         elif keyw:
-                text = '<%s>%s</%s>\n' % (keyw, xml_name(lst, encoding='utf-8'), keyw)
+            text = '<%s>%s</%s>\n' % (keyw, xml_name(lst, encoding='utf-8'), keyw)
         else:
             text = ''
         return text

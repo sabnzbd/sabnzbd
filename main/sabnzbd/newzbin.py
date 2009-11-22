@@ -342,6 +342,7 @@ class Bookmarks:
         self.bookmarks = sabnzbd.load_data(BOOKMARK_FILE_NAME)
         if not self.bookmarks:
             self.bookmarks = []
+        self.__busy = False
 
     @synchronized(BOOK_LOCK)
     def run(self, delete=None):

@@ -19,7 +19,6 @@
 sabnzbd.cfg - Configuration Parameters
 """
 
-import os
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
@@ -149,7 +148,7 @@ else:
 
 USERNAME = OptionStr('misc', 'username')
 PASSWORD = OptionPassword('misc', 'password')
-BANDWIDTH_LIMIT = OptionNumber('misc', 'bandwidth_limit', 0)
+BANDWIDTH_LIMIT = OptionStr('misc', 'bandwidth_limit', 0)
 REFRESH_RATE = OptionNumber('misc', 'refresh_rate', 0)
 RSS_RATE = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
 CACHE_LIMIT = OptionStr('misc', 'cache_limit')

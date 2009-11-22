@@ -21,14 +21,12 @@ sabnzbd.wizard - Wizard Webinterface
 
 import os
 import cherrypy
-import logging
 from Cheetah.Template import Template
 
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.lang import T, list_languages, reset_language
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.misc import IntConv
 import sabnzbd.interface
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg

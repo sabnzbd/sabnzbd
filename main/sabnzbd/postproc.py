@@ -27,17 +27,14 @@ import sabnzbd
 import urllib
 import time
 import re
-from xml.sax.saxutils import escape
-import subprocess
 
-from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
-from threading import Thread, RLock
+from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          get_unique_filename, \
                          on_cleanup_list
 from sabnzbd.tvsort import Sorter
-from sabnzbd.constants import TOP_PRIORITY, DB_HISTORY_NAME, POSTPROC_QUEUE_FILE_NAME, \
+from sabnzbd.constants import TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match
 from sabnzbd.codecs import TRANS, unicoder
 import sabnzbd.newzbin
@@ -539,13 +536,13 @@ def Cat2Dir(cat, defdir):
 def addPrefixes(path,nzo):
     dirprefix = nzo.get_dirprefix()
     for _dir in dirprefix:
-            if not _dir:
-                continue
-            if not path:
-                break
-            basepath = os.path.basename(os.path.abspath(path))
-            if _dir != basepath.lower():
-                path = os.path.join(path, _dir)
+        if not _dir:
+            continue
+        if not path:
+            break
+        basepath = os.path.basename(os.path.abspath(path))
+        if _dir != basepath.lower():
+            path = os.path.join(path, _dir)
     return path
 
 

@@ -20,13 +20,11 @@ sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 """
 
 import os
-import sys
 import time
 import re
 import logging
 import Queue
 import urllib, urllib2
-import cookielib
 import tempfile
 from threading import *
 
@@ -42,7 +40,7 @@ import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T, Ta
+from sabnzbd.lang import Ta
 
 #------------------------------------------------------------------------------
 # Wrapper functions

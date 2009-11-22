@@ -35,7 +35,7 @@ import time
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import *
-import nzbqueue
+import sabnzbd.nzbqueue
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T, Ta
@@ -265,7 +265,6 @@ def get_user_shellfolders():
                 except:
                     # probably a pywintypes.error error such as folder does not exist
                     logging.error("Traceback: ", exc_info = True)
-                    pass
             i += 1
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
@@ -945,7 +944,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from OpenSSL import crypto
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
-             TYPE_RSA, TYPE_DSA, serial
+             TYPE_RSA, serial
     except:
         logging.warning(Ta('warn-pyopenssl'))
         return False

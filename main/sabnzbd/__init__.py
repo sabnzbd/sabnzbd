@@ -154,8 +154,8 @@ def connect_db(thread_index):
 
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader = False, clean_up = False, force_save= False, evalSched=False):
-    global __INITIALIZED__, \
+def initialize(pause_downloader = False, clean_up = False, evalSched=False):
+    global __INITIALIZED__, __SHUTTING_DOWN__,\
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, \
            DEBUG_DELAY, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
@@ -271,7 +271,7 @@ def start():
 
 @synchronized(INIT_LOCK)
 def halt():
-    global __INITIALIZED__
+    global __INITIALIZED__, __SHUTTING_DOWN__
 
     if __INITIALIZED__:
         logging.info('SABnzbd shutting down...')
