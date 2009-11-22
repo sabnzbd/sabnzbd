@@ -647,14 +647,7 @@ def cherrypy_logging(log_path):
     h.setLevel(logging.DEBUG)
     h.setFormatter(cherrypy._cplogging.logfmt)
     log.error_log.addHandler(h)
-    '''
-    # Make a new RotatingFileHandler for the access log.
-    fname = getattr(log, "rot_access_file", "access.log")
-    h = handlers.RotatingFileHandler(fname, 'a', maxBytes, backupCount)
-    h.setLevel(logging.DEBUG)
-    h.setFormatter(cherrypy._cplogging.logfmt)
-    log.access_log.addHandler(h)
-    '''
+
 
 #------------------------------------------------------------------------------
 def main():
@@ -662,7 +655,6 @@ def main():
 
     AUTOBROWSER = None
     autorestarted = False
-    testlog = False # Allow log options for test-releases
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -711,7 +703,7 @@ def main():
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'delay=', 'force',
-                                    'version', 'https=', 'testlog', 'autorestarted'])
+                                    'version', 'https=', 'autorestarted'])
     except getopt.GetoptError:
         print_help()
         exit_sab(2)
@@ -799,9 +791,6 @@ def main():
             https_port = int(arg)
             re_argv.append(opt)
             re_argv.append(arg)
-        elif opt in ('--testlog'):
-            testlog = True
-            re_argv.append(opt)
 
     # Detect Windows variant
     if sabnzbd.WIN32:
@@ -887,10 +876,6 @@ def main():
     else:
         sabnzbd.cfg.LOG_LEVEL.set(logging_level)
 
-    ver, testRelease = convert_version(sabnzbd.__version__)
-    if testRelease and not testlog:
-        logging_level = 2
-
     logdir = sabnzbd.cfg.LOG_DIR.get_path()
     if fork and not logdir:
         print "Error:"
@@ -968,9 +953,6 @@ def main():
     else:
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
-
-    if testRelease:
-        logging.info('Test release, setting maximum logging levels')
 
     # OSX 10.5 I/O priority setting
     if sabnzbd.DARWIN:
@@ -1165,8 +1147,8 @@ def main():
     while not sabnzbd.SABSTOP:
         time.sleep(3)
 
-        # Check for loglevel changes, ignore for non-final releases
-        if LOG_FLAG and (testlog or not testRelease):
+        # Check for loglevel changes
+        if LOG_FLAG:
             LOG_FLAG = False
             level = LOGLEVELS[sabnzbd.cfg.LOG_LEVEL.get()]
             logger.setLevel(level)
