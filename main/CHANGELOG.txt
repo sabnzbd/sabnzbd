@@ -1,5 +1,5 @@
 -------------------------------------------------------------------------------
-0.5.0 by The SABnzbd-Team
+0.5.0Beta1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Highlights
     * Multi-language UI: English, French, Dutch, German and Swedish
@@ -25,7 +25,7 @@ More Tech stuff
     * Windows: optional association of NZB files with SABnzbd (double-click support)
 
 -------------------------------------------------------------------------------
-0.5.0Beta1 by The SABnzbd-Team
+0.5.0Alpha12 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 * Drop country names from language strings
 * Fixed crash when setting script to None
