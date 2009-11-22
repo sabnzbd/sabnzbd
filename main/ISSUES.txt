@@ -4,7 +4,7 @@ List of known issues.
 
 - On Linux when you download files they may have the wrong character encoding.
   You will see this only when downloaded files contain accented characters.
-  You need to fix it yourself by running the convmv utility (availaible for most Linux platforms)
+  You need to fix it yourself by running the convmv utility (availaible for most Linux platforms).
 
 - The "Watched Folder" sometimes fails to delete the NZB files it has
   processed. This happens when other software still accesses these files.
@@ -19,8 +19,8 @@ List of known issues.
 - Memory usage can sometimes have high peaks. This makes using SABnzbd on very low
   memory systems (eg a SAN device) a challenge.
 
-- SABnzbd is not compatible with some ZoneAlarm firewall versions.
-  Comodo and the Windows firewall work fine.
+- SABnzbd is not compatible with some software firewall versions.
+  The Mircosoft Windows firewall work fine.
 
 - Sometimes logging stops. This is a notorious bug in Python logging. SABnzbd will
   function as normal. If you run from sources or use the --console option with the

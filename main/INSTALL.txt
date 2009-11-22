@@ -73,7 +73,7 @@ Unix/Linux/OSX (source)
     openssl => v0.9.8g      http://www.openssl.org/
 
 Embedded modules (no need to install)
-    CherryPy-3.2pre         http://www.cherrypy.org
+    CherryPy-3.2 rev2138    http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
@@ -106,7 +106,7 @@ may help you solve problems easier.
 -------------------------------------------------------------------------------
 
 Visit the WIKI site:
-    http://sabnzbd.wikidot.com/
+    http://wiki.sabnzbd.org/
 
 
 -------------------------------------------------------------------------------
