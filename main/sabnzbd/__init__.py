@@ -330,7 +330,7 @@ def guard_restart():
 
 def guard_speedlimit():
     """ Callback for change of bandwidth_limit, sets actual speed """
-    downloader.limit_speed(cfg.BANDWIDTH_LIMIT.get_int())
+    downloader.limit_speed(cfg.BANDWIDTH_LIMIT.get())
 
 def guard_top_only():
     """ Callback for change of top_only option """
