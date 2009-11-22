@@ -109,7 +109,7 @@ def list_languages(path):
         long_name = u"%s" % language
         lst.append((lang, long_name))
         fp.close()
-    return list
+    return lst
 
 
 # Matches : acronym     message text # comment
