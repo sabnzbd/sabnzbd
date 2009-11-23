@@ -232,6 +232,11 @@ class SABnzbdDelegate(NSObject):
 
     def updateAction_(self, notification):
         try:
+            if os.path.exists("%s/notDisplayMenu" % (sabnzbd.DIR_APPDATA)):
+                sabnzbd.OSX_ICON = 0
+            else:
+                sabnzbd.OSX_ICON = 1
+            
             if sabnzbd.OSX_ICON:
                 if self.status_removed == 1:
                     self.buildMenu()
