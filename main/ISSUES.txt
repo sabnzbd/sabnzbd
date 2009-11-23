@@ -2,6 +2,11 @@ List of known issues.
 
 *** Known problems ***
 
+- On OSX you may encounter downloaded files with foreign characters.
+  The par2 repair may fail when the files were created on a Windows system.
+  The problem is caused by the PAR2 utility and we cannot currently fix this.
+  This does not apply to files inside RAR files.
+
 - On Linux when you download files they may have the wrong character encoding.
   You will see this only when downloaded files contain accented characters.
   You need to fix it yourself by running the convmv utility (availaible for most Linux platforms).
