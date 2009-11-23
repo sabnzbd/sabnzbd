@@ -6,10 +6,10 @@
 maxSpeed          Vitesse Maxi
 options           Options Plush
 refreshRate       Délai Rafraichissement
-confirmDeleteQueue Confirmer Suppressions Queue
+confirmDeleteQueue Confirmer Suppressions File d'attente
 confirmDeleteHistory Confirmer Suppressions Historique
 blockRefresh      Bloquer Rafraîchissements Au Survol
-explain-blockRefresh Permet d'éviter le rafraîchisssment du contenu quand la souris survole la queue.
+explain-blockRefresh Permet d'éviter le rafraîchisssment du contenu quand la souris survole la file d'attente.
 disabled          Désactivé
 addnzb            Ajouter NZB
 fetch             Récupérer
@@ -17,10 +17,10 @@ uploadTip         Charger: .nzb .rar .zip .gz
 sort              Trier
 sortAgeAsc        Trier par Age <small>(Moins récent&rarr;Plus récent)</small>
 sortAgeDesc       Trier par Age <small>(Plus récent&rarr;Moins récent)</small>
-sortNameAsc       Trier par Name <small>(A&rarr;Z)</small>
-sortNameDesc      Trier par Name <small>(Z&rarr;A)</small>
-sortSizeAsc       Trier par Size <small>(Plus petit&rarr;Plus gros)</small>
-sortSizeDesc      Trier par Size <small>(Plus gros&rarr;Plus petit)</small>
+sortNameAsc       Trier par Nom <small>(A&rarr;Z)</small>
+sortNameDesc      Trier par Nom <small>(Z&rarr;A)</small>
+sortSizeAsc       Trier par Taille <small>(Plus petit&rarr;Plus gros)</small>
+sortSizeDesc      Trier par Taille <small>(Plus gros&rarr;Plus petit)</small>
 pause5m           Pause pour 5 minutes
 pause15m          Pause pour 15 minutes
 pause30m          Pause pour 30 minutes
@@ -30,7 +30,7 @@ pause6h           Pause pour 6 heures
 pauseFor          Pause pour...
 pauseForPrompt    Pause pour combien de minutes?
 purge             Vider
-onQueueFinish     En Fin de queue
+onQueueFinish     En Fin de file d'attente
 warnings          Avertissements
 updateAvailable   Mise à Jour Disponible!
 cmenu-scheduling  Planification
@@ -42,7 +42,7 @@ page              page
 everything        Tout
 prev              Préc.
 next              Suiv.
-nzo-range         Gamme
+nzo-range         Intervalle
 progress          Rester
 
 # Queue
@@ -51,7 +51,7 @@ remaining         Restant
 notEnoughSpace    Espace disque insuffisant pour terminer les téléchargements !
 freeSpace         Espace Libre
 freeSpaceTemp     Libre (Temp)
-confirmPurgeQ     Vider la Queue?
+confirmPurgeQ     Vider la file d'attente?
 
 # History
 total             Total

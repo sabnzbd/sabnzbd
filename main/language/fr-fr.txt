@@ -19,7 +19,7 @@ minutes           mins
 second            sec
 seconds           secondes
 month             Mois
-year              Year
+year              Année
 day               Jour
 days              Jours
 daily             Quotidien
@@ -43,7 +43,7 @@ button-x          X
 
 # Header
 menu-home         Accueil
-menu-queue        Queue
+menu-queue        File D'Attente
 menu-history      Historique
 menu-config       Config
 menu-cons         Connexions
@@ -84,7 +84,7 @@ add               Ajouter
 reportId          Report-id
 addFile           Ajouter un fichier
 category          Catégorie
-pp                PP
+pp                Traitement
 script            Script
 priority          Priorité
 pp-none           Télécharger
@@ -108,7 +108,7 @@ link-sortByAge    Trier par âge
 link-sortBySize   Trier par taille
 link-hideFiles    Masquer fichiers
 link-showFiles    Afficher fichiers
-onQueueFinish     En fin de queue
+onQueueFinish     En fin de file d'attente
 shutdownPc        Eteindre PC
 standbyPc         Mettre en veille PC
 hibernatePc       Mettre en hibernation PC
@@ -131,8 +131,8 @@ error-fetchNewzbin@1 Erreur Récupération msgid %s depuis www.newzbin.com -\
 fetchNZB@1        Essai de récupération du NZB depuis %s
 eoq-actions       Actions
 eoq-scripts       Scripts
-purgeQueue        Vider Queue
-purgeQueueConf    Supprimer tous les éléments de la queue ?
+purgeQueue        Vider file d'attente
+purgeQueueConf    Supprimer tous les éléments de la file d'attente ?
 
 
 # History page
@@ -144,7 +144,7 @@ sizeHist          Taille Historique
 completed         Terminés
 size              Taille
 status            Statut
-msg-reAdded@1     %s a été remis en queue
+msg-reAdded@1     %s a été remis en file d'attente
 
 # Connections page
 link-forceDisc    Forcer Déconnexion
@@ -174,12 +174,12 @@ explain-Restart   Le bouton ci-dessous redémarrera SABnzbd.\n\
                   Les téléchargements en cours seront mis en pause puis repris.
 button-restart    Redémarrer
 version           Version
-uptime            Uptime
+uptime            Démarré Depuis
 error             Erreur
 badParm           Parameter incorrect
 error-badValue@2  Valeur incorrecte pour %s: %s
 error-noFolder@1  Le dossier "%s" n'existe pas
-error-QnotEmpty   Erreur : La queue n'est pas vide, impossible de changer le dossier.
+error-QnotEmpty   Erreur : La file d'attente n'est pas vide, impossible de changer le dossier.
 error-noUNC@1     Les chemins UNC "%s" ne sont pas permis ici
 error-notOctal@1  %s n'est pas une valeur octale correcte
 
@@ -211,7 +211,7 @@ explain-https_cert    Fichier or chemin du certificat HTTPS.
 opt-https_key         Clé HTTPS
 explain-https_key     Fichier or chemin de la clé HTTPS.
 tuning                Tuning
-opt-refresh_rate      Intervalle de rafraîchissement de la queue :
+opt-refresh_rate      Intervalle de rafraîchissement de la file d'attente :
 explain-refresh_rate  Intervalle de rafraichissement dans l'interface web (en sec, 0=aucun).
 opt-rss_rate          Invervalle de vérification RSS
 explain-rss_rate      Intervalle de vérification (en minutes, minimum 15).
@@ -245,7 +245,7 @@ userFolders             Dossiers Utilisateur
 in                      Dans
 opt-download_dir        Dossier Incomplets
 explain-download_dir    Pour le sotckage des téléchargements en cours, non post-traités.\n\
-                        <i>Ne peut être modifié que lorsque la queue est vide.</i>
+                        <i>Ne peut être modifié que lorsque la file d'attente est vide.</i>
 opt-download_free       Espace disque minimum pour le Dossier Téléchargement Temporaire
 explain-download_free   Met en pause automatiquement les téléchargements si l'espace passe en dessous de ce montant.\n\
                         <i>En bytes, peut être suivi de K,M,G,T. Par exemple : "800M" ou "8G"</i>
@@ -267,7 +267,7 @@ explain-email_dir       Dossier contenant les modèles d'email définis par l'util
 systemFolders           Dossiers Systèmes
 opt-cache_dir           Dossier du Cache
 explain-cache_dir       pour le stockage temporaire.\n\
-                        <i>Ne peut être modifié que lorsque la queue est vide.</i>\n\
+                        <i>Ne peut être modifié que lorsque la file d'attente est vide.</i>\n\
                         <i>Redémarrage requis !</i>
 opt-log_dir             Dossier de Log
 explain-log_dir         pour le stockage des fichiers de log de SABnzbd.\n\
@@ -292,8 +292,8 @@ opt-enable_par_cleanup   Activer Nettoyage Par2
 explain-enable_par_cleanup Supprimer les fichiers Par2 (uniquement si la vérification/réparation a réussi).
 opt-fail_on_crc          Echec lors d'erreurs crc yEnc
 explain-fail_on_crc      Utilise les serveurs de soutient si il y a des erreurs crc yEnc.
-opt-top_only             Ne télécharge uniquement que les articles en tête de queue
-explain-top_only         Activer pour dimininuer l'utilisation de la RAM. Désactiver pour éviter les téléchargement lents bloquant la queue.
+opt-top_only             Ne télécharge uniquement que les articles en tête de file d'attente
+explain-top_only         Activer pour dimininuer l'utilisation de la RAM. Désactiver pour éviter les téléchargement lents bloquant la file d'attente.
 opt-safe_postproc        Post-traiter uniquement les téléchargements vérifiés
 explain-safe_postproc    Limite le post-traitement aux téléchargements qui ont passés avec succès les vérifications par2.
 opt-no_dupes             Eviter les duplications de téléchargement
@@ -304,15 +304,15 @@ opt-dirscan_script       Script utilisateur par défaut
 explain-dirscan_script   Utilisé quand la catégorie de précise pas de choix.
 opt-dirscan_priority     Priorité par défaut
 explain-dirscan_priority Utilisé quand la catégorie de précise pas de choix.
-opt-par_option           Paramètres PAR2 supplémentaires :
+opt-par_option           Paramètres PAR2 supplémentaires
 explain-par_option       Consultez le Wiki pour plus d'info à ce sujet (en anglais) !
 opt-nice                 Paramètres Nice
 explain-nice             Consultez le Wiki pour plus d'info à ce sujet (en anglais) !
 opt-ionice               Paramètres IONice
 explain-ionice           Consultez le Wiki pour plus d'info à ce sujet (en anglais) !
 otherSwitches            Autres options
-opt-auto_disconnect      Déconnexion lorsque la queue est vide
-explain-auto_disconnect  Déconnexion du serveur(s) Usenet lorsque la queue est vide ou en pause.
+opt-auto_disconnect      Déconnexion lorsque la file d'attente est vide
+explain-auto_disconnect  Déconnexion du serveur(s) Usenet lorsque la file d'attente est vide ou en pause.
 opt-send_group           Envoyer Group
 explain-send_group       Envoyer la commande group avant la demande des articles.
 opt-auto_sort            Trier par âge
@@ -328,12 +328,12 @@ explain-auto_browser     Lance le navigateur web au démarrage de SABnzbd.
 opt-pause_on_post_processing Mettre en pause les téléchargement lors du post-traitement
 explain-pause_on_post_processing Met en pause les téléchargements lors des post-traitement et les reprend ensuite.
 opt-ignore_samples       Ignorer les Samples
-explain-ignore_samples   Filtre les fichiers sample de la queue.
+explain-ignore_samples   Filtre les fichiers sample de la file d'attente.
 igsam-off                Non
 igsam-del                Supprimer après téléchargement
 igsam-not                Ne pas télécharger
 opt-ssl_type             SSL type
-explain-ssl_type         Use V23 unless your provider requires otherwise!
+explain-ssl_type         Utiliser V23 à moins que votre fournisseur exige autrement!
 
 # Config->Server
 configServer             Configuration Serveur
@@ -675,7 +675,7 @@ warn-nbCredit            Pas de crédits sur votre compte Newzbin
 warn-nbNoAuth            Non autorisé, vérifiez vos identifiant / mot de passe newzbin
 warn-nbNoDelBM@1         Impossible de retirer le marque-page newzbin %s
 error-qAdd@1             Erreur lors de l'ajout de %s, supprimé
-error-qBad               Fichier de queue incompatible, impossible à traiter
+error-qBad               Fichier de file d'attente incompatible, impossible à traiter
 error-qCorruptFile@1     Erreur lors du chargement de loading %s, fichier corrompu détécté
 warn-unknownEncoding@1   %s -> Encodage inconnu
 error-qDupPart@3         Partie dupliquée %s, mais ID-s différents (%s // %s)
@@ -692,7 +692,7 @@ error-ppFailed@1         Echec du post-traitement pour %s
 error-ppLogFile@1        Impossible de créer le fichier de log %s
 error-ppPermissions@1    Impossible de changer les permissions pour %s
 error-ppRename@2         Erreur lors du renommage de "%s" en "%s"
-warn-badPPQueue@2        Echec lors du chargement de la queue de post-traitement : Mauvaise version (nécessaire:%s, trouvée:%s)
+warn-badPPQueue@2        Echec lors du chargement de la file d'attente de post-traitement : Mauvaise version (nécessaire:%s, trouvée:%s)
 error-rssBadFeed@1       Description du flux RSS incorrecte "%s"
 error-rssRegex@1         Impossible de compiler la regex : %s
 warn-emptyRSS@1          Entrée vide de flux RSS trouvée (%s)
@@ -724,9 +724,9 @@ error-unpackPassword     Echec de la décompression, l'archive nécessite un mot d
 error-unpackMissing      Echec de la décompression, un fichier attendu n'a pas été décompressé
 msg-unpackDone@4         %s fichier%s/dossier%s décompressés en %s
 msg-unzipDone@3          %s fichier%s en %s
-msg-QuickCheck           Quick check...
-msg-QuickChecking        Quick Check en cours
-msg-QuickOK@1            [%s] Quick Check OK
+msg-QuickCheck           Contrôle Rapide...
+msg-QuickChecking        Contrôle Rapide en cours
+msg-QuickOK@1            [%s] Contrôle Rapide OK
 msg-startRepair          Réparation en cours
 error-repairFailed@1     Echec de la réparation, %s
 error-repairBad@2        Erreur "%s" lors la réparation de %s
@@ -743,7 +743,7 @@ msg-verifying            Vérification en cours
 msg-DownloadedIn@2       Téléchargé en %s à %sB/s en moyenne
 msg-noParSets@1          [%s] Pas de fichiers par2
 msg-noPostProc           Pas de post-traitement car la vérification a echoué
-msg-sentToQ@1            %s mis en queue
+msg-sentToQ@1            %s mis en file d'attente
 msg-runScript@1          Exécution du script utilisateur %s en cours
 msg-ranScript@1          %s exécuté
 link-more                Plus
@@ -766,13 +766,13 @@ stage-script             Script
 
 post-Completed           Terminé
 post-Failed              Echoué
-post-Queued              En queue
+post-Queued              En file d'attente
 post-Repairing           Réparation en cours...
 post-Extracting          Décompression en cours...
 post-Moving              Déplacement en cours...
 post-Running             Exécution de script en cours...
 post-Fetching            Téléchargement des extra blocs...
-post-QuickCheck          Quick Check...
+post-QuickCheck          Contrôle rapide...
 post-Verifying           Vérification...
 
 #Growl Messages
@@ -783,7 +783,7 @@ grwl-notif-other         Autres Messages
 grwl-shutdown-begin-msg  Arrêt en cours...
 grwl-shutdown-end-msg    SABnzbd arrêt terminé
 grwl-paused-msg          En Pause
-grwl-nzbadd-title        NZB ajouté à la queue
+grwl-nzbadd-title        NZB ajouté à la file d'attente
 grwl-newversion-msg      Nouvelle version disponible
 
 #OSX Menu
@@ -793,8 +793,8 @@ osx-menu-status-paused   En Pause
 osx-menu-pause           Pause
 osx-menu-min             min.
 osx-menu-resume          Reprendre
-osx-menu-queue           Queue
-osx-menu-queuelimit    	 Queue - 10 premiers éléments
+osx-menu-queue           File d'attente
+osx-menu-queuelimit    	 File d'attente - 10 premiers éléments
 osx-menu-history         Historique
 osx-menu-historylimit    Historique - 10 derniers éléments
 osx-menu-speedlimit      Limite Vitesse
@@ -805,7 +805,7 @@ osx-menu-incomplete      Dossier Incomplets\t\t
 osx-menu-restart         Redémarrer SABnzbd
 osx-menu-quit            Quitter SABnzbd
 osx-menu-config          Configuration
-osx-menu-purgequeue      Vider Queue
+osx-menu-purgequeue      Vider File d'attente
 osx-menu-purgehistory    Vider Historique
 osx-menu-wizard          Ouvrir l'assistant
 osx-menu-empty           Vide

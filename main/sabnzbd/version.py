@@ -4,5 +4,5 @@
 
 # You MUST use double quotes (so " and not ')
 
-__version__ = "trunk"
+__version__ = "sab-trunk"
 __baseline__ = "unknown"
