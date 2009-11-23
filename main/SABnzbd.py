@@ -699,7 +699,15 @@ def main():
 
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "phdvncw:l:s:f:t:b:2:",
+        # Ugly hack to remove the extra "SABnzbd*" parameter the Windows binary
+        # gets when it's restarted
+        if len(sys.argv) > 1 and \
+           sys.argv[1].lower().find('sabnzbd') >= 0 and \
+           not sys.argv[1].startswith('-'):
+            slice = 2
+        else:
+            slice = 1
+        opts, args = getopt.getopt(sys.argv[slice:], "phdvncw:l:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'delay=', 'force',
