@@ -43,12 +43,12 @@ page              Pagina
 everything        Alles
 prev              Vorige
 next              Volgende
-nzo-range         Waaier
-progress          Het blijven
+nzo-range         Bereik
+progress          Voortgang
 
 # Queue
 idle              RUST
-remaining         Overblijvend
+remaining         Nog te doen
 notEnoughSpace    Onvoldoende schijfruimte over!
 freeSpace         Vrije ruimte
 freeSpaceTemp     Vrij (tijdelijk)
