@@ -113,4 +113,4 @@ date_match = ['(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
 
 year_match = '[\W](\d{4})[\W]??' # Something '(YYYY)' or '.YYYY.' or ' YYYY '
 
-sample_match = '((^|[\W_])sample\d*[\W_])|(-s\.)|(^s-)' # something-sample.avi s-something.avi something-s.avi
+sample_match = '((^|[\W_])sample\d*[\W_])|(-s\.)' # something-sample.avi s-something.avi something-s.avi
