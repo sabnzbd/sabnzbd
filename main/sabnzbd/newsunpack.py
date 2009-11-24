@@ -314,7 +314,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                         join_num = len(joinable_sets[joinable_set])
                         perc = (100.0/join_num)*(i)
                         logging.debug("Processing %s", joinable)
-                        nzo.set_action_line(T('msg-Joining'), '%.0f%%' % perc)
+                        nzo.set_action_line(T('msg-joining'), '%.0f%%' % perc)
                         f = open(joinable, 'rb')
                         joined_file.write(f.read())
                         f.close()
