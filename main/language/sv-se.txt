@@ -808,12 +808,12 @@ osx-menu-empty           Tom
 osx-menu-shutdowning     Stänger...
 
 email-full@2             \
-to: %s\n\
-from: %s\n\
-subject: SABnzbd rapporterar om Full disk\n\
-\n\
-Hej,\n\
-\n\
-SABnzbd har stoppat nedladdning för att disken nästan är full.\n\
-Var vänlig gör plats för nedladdningen och återuppta SABnzbd's nedladdning manuellt.\n\
-\n
+to: %s\r\
+from: %s\r\
+subject: SABnzbd rapporterar om Full disk\r\
+\r\
+Hej,\r\
+\r\
+SABnzbd har stoppat nedladdning för att disken nästan är full.\r\
+Var vänlig gör plats för nedladdningen och återuppta SABnzbd's nedladdning manuellt.\r\
+\r

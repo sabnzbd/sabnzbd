@@ -812,12 +812,12 @@ osx-menu-empty           Vide
 osx-menu-shutdowning     Arrêt en cours...
 
 email-full@2             \
-to: %s\n\
-from: %s\n\
-subject: SABnzbd : Espace disque insuffisant\n\
-\n\
-Hi,\n\
-\n\
-SABnzbd a mis en pause les téléchargements car le disque est presque plein.\n\
-Veuillez libérer de l'espace et reprendre les téléchargements manuellement.\n\
-\n
+to: %s\r\
+from: %s\r\
+subject: SABnzbd : Espace disque insuffisant\r\
+\r\
+Hi,\r\
+\r\
+SABnzbd a mis en pause les téléchargements car le disque est presque plein.\r\
+Veuillez libérer de l'espace et reprendre les téléchargements manuellement.\r\
+\r

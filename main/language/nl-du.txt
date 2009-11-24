@@ -792,12 +792,12 @@ osx-menu-empty           Leeg
 osx-menu-shutdowning     Afsluiten...
 
 email-full@2             \
-to: %s\n\
-from: %s\n\
-subject: SABnzbd: harde schijf vol\n\
-\n\
-Hallo,\n\
-\n\
-SABnzbd is gestopt met downloaden omdat de harde schijf bijna vol is.\n\
-Maak ruimte vrij en start SABnzbd handmatig door.\n\
-\n
+to: %s\r\
+from: %s\r\
+subject: SABnzbd: harde schijf vol\r\
+\r\
+Hallo,\r\
+\r\
+SABnzbd is gestopt met downloaden omdat de harde schijf bijna vol is.\r\
+Maak ruimte vrij en start SABnzbd handmatig door.\r\
+\r

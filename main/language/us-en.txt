@@ -807,12 +807,12 @@ osx-menu-empty           Empty
 osx-menu-shutdowning     Stopping...
 
 email-full@2             \
-to: %s\n\
-from: %s\n\
-subject: SABnzbd reports Disk Full\n\
-\n\
-Hi,\n\
-\n\
-SABnzbd has stopped downloading, because the disk is almost full.\n\
-Please make room and resume SABnzbd manually.\n\
-\n
+to: %s\r\
+from: %s\r\
+subject: SABnzbd reports Disk Full\r\
+\r\
+Hi,\r\
+\r\
+SABnzbd has stopped downloading, because the disk is almost full.\r\
+Please make room and resume SABnzbd manually.\r\
+\r

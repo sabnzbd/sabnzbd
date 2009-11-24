@@ -860,12 +860,12 @@ osx-menu-empty           Leer
 osx-menu-shutdowning     Beenden...
 
 email-full@2             \
-to: %s\n\
-from: %s\n\
-subject: SABnzbd meldet eine volle Festplatte\n\
-\n\
-Hallo,\n\
-\n\
-SABnzbd hat mit dem Herunterladen aufgehört, da die Festplatte fast voll ist.\n\
-Bitte geben Sie manuell Speicherplatz frei und setzen Sie die Downloads danach fort.\n\
-\n
+to: %s\r\
+from: %s\r\
+subject: SABnzbd meldet eine volle Festplatte\r\
+\r\
+Hallo,\r\
+\r\
+SABnzbd hat mit dem Herunterladen aufgehört, da die Festplatte fast voll ist.\r\
+Bitte geben Sie manuell Speicherplatz frei und setzen Sie die Downloads danach fort.\r\
+\r

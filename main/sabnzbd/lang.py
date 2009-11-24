@@ -140,7 +140,7 @@ def _parse_lang_file(dic, name, prefix=''):
         m = re.search(_RE_LINE, line)
         if m and not m.group(1).startswith('#'):
             if multi:
-                if msg.endswith('\\n'):
+                if msg.endswith('\\n') or msg.endswith('\\r'):
                     msg = msg + m.group(1) + m.group(2) + m.group(3)
                 else:
                     msg = msg + " " + m.group(1) + m.group(2) + m.group(3)
@@ -154,7 +154,7 @@ def _parse_lang_file(dic, name, prefix=''):
                 multi = False
                 msg = msg.strip()
                 if msg.find('\\') >= 0:
-                    msg = msg.replace('\\n', '<br />').replace('\\t', '\t').replace('\\@', '#').replace('\s', ' ')
+                    msg = msg.replace('\\n', '<br />').replace('\\t', '\t').replace('\\@', '#').replace('\s', ' ').replace('\\r','\r\n')
                 if key not in dic:
                     if msg.count('%s') == _get_count(key)[1]:
                         dic[key] = msg
