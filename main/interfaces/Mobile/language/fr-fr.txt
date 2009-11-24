@@ -7,21 +7,21 @@ button-prev       Préc.
 button-next       Suiv.
 button-first      Premier
 button-last       Dernier
-button-refresh    Rafra”chir
+button-refresh    Rafraîchir
 button-close      Fermer
 button-options    Options
 page              Page
-confirm-delete    Etes-vous sžr de vouloir supprimer
+confirm-delete    Etes-vous sûr de vouloir supprimer ?
 warnings          Avertissements
 button-purgeQ     Vider la Queue
-confirm-purgeQ    Vider la Queue?
+confirm-purgeQ    Vider la Queue ?
 button-purgeH     Vider l'Historique
-confirm-purgeH    Vider l'Historique?
+confirm-purgeH    Vider l'Historique ?
 left              Rest.
-rename            Retitrez
+rename            Renommer
 
 # pause interval
-button-pauseInterval Entrez Pause Interval
+button-pauseInterval Entrer Durée Pause
 pauseInterval     Pause Interval
 pause5m           Pause pour 5 minutes
 pause15m          Pause pour 15 minutes
@@ -34,9 +34,9 @@ pause24h          Pause pour 24 heures
 
 # queue sort
 sort              Trier
-sortAgeAsc        Trier par Age <small>Moins rŽcent&rarr;Plus rŽcent</small>
-sortAgeDesc       Trier par Age <small>Plus rŽcent&rarr;Moins rŽcent</small>
-sortNameAsc       Trier par Name <small>A&rarr;Z</small>
-sortNameDesc      Trier par Name <small>Z&rarr;A</small>
-sortSizeAsc       Trier par Size <small>Plus petit&rarr;Plus gros</small>
-sortSizeDesc      Trier par Size <small>Plus gros&rarr;Plus petit</small>
+sortAgeAsc        Trier par Age <small>Moins récent&rarr;Plus récent</small>
+sortAgeDesc       Trier par Age <small>Plus récent&rarr;Moins récent</small>
+sortNameAsc       Trier par Nom <small>A&rarr;Z</small>
+sortNameDesc      Trier par Nom <small>Z&rarr;A</small>
+sortSizeAsc       Trier par Taille <small>Plus petit&rarr;Plus gros</small>
+sortSizeDesc      Trier par Taille <small>Plus gros&rarr;Plus petit</small>

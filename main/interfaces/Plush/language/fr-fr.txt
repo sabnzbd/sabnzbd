@@ -12,8 +12,8 @@ blockRefresh      Bloquer Rafraîchissements Au Survol
 explain-blockRefresh Permet d'éviter le rafraîchisssment du contenu quand la souris survole la file d'attente.
 disabled          Désactivé
 addnzb            Ajouter NZB
-fetch             Récupérer
-uploadTip         Charger: .nzb .rar .zip .gz
+fetch             Charger
+uploadTip         Charger : .nzb .rar .zip .gz
 sort              Trier
 sortAgeAsc        Trier par Age <small>(Moins récent&rarr;Plus récent)</small>
 sortAgeDesc       Trier par Age <small>(Plus récent&rarr;Moins récent)</small>
@@ -42,8 +42,10 @@ page              page
 everything        Tout
 prev              Préc.
 next              Suiv.
+confirm           Etes-vous sûrs ?
+confirmWithoutSavingPrompt Les modifications n'ont pas été enregistrées et seront perdues.
 nzo-range         Intervalle
-progress          Rester
+progress          Progression
 
 # Queue
 idle              EN ATTENTE

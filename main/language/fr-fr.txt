@@ -159,16 +159,16 @@ log-debug         + Debug
 connections       Connexions
 thread            Thread
 emailResult       Résultat du test Email
-lastWarnings      Derniers avertissements
+lastWarnings      Avertissements Récents
 clearWarnings     effacer
-server-blocked    bloqué
+server-blocked    Débloquer
 warning           AVERTISSEMENT:
 error             ERREUR:
 
 
 # Configuration
 configuration     Configuration
-confgFile         FichierConfig
+confgFile         Fichier de Configuration
 explain-Restart   Le bouton ci-dessous redémarrera SABnzbd.\n\
                   Utilisez le si vous pensez avoir un problème de stabilité.\n\
                   Les téléchargements en cours seront mis en pause puis repris.
@@ -176,7 +176,7 @@ button-restart    Redémarrer
 version           Version
 uptime            Démarré Depuis
 error             Erreur
-badParm           Parameter incorrect
+badParm           Paramètre incorrect
 error-badValue@2  Valeur incorrecte pour %s: %s
 error-noFolder@1  Le dossier "%s" n'existe pas
 error-QnotEmpty   Erreur : La file d'attente n'est pas vide, impossible de changer le dossier.
@@ -186,7 +186,7 @@ error-notOctal@1  %s n'est pas une valeur octale correcte
 # Config->General
 generalConfig         Configuration Générale
 restartRequired       Les modifications nécessiteront un redémarrage de SABnzbd !
-webServer             Serveur Web
+webServer             SABnzbd Serveur Web
 opt-host              Hôte SABnzbd
 explain-host          Hôte sur lequel SABnzbd doit attendre les connexions.
 opt-port              Port SABnzbd
@@ -195,7 +195,7 @@ opt-web_dir           Interface Web
 explain-web_dir       Choisissez un thème.
 opt-web_dir2          Seconde Interface Web
 explain-web_dir2      Choisissez un thème pour la 2nde interface web.
-webAuth               Autentification serveur Web
+webAuth               Autentification Serveur Web
 opt-web_username      Identifiant SABnzbd
 explain-web_username  Nom d'utilisateur pour l'autentification (optionnel).
 opt-web_password      Mot de passe SABnzbd
@@ -216,10 +216,10 @@ explain-refresh_rate  Intervalle de rafraichissement dans l'interface web (en se
 opt-rss_rate          Invervalle de vérification RSS
 explain-rss_rate      Intervalle de vérification (en minutes, minimum 15).
 opt-bandwidth_limit   Limite de vitesse de téléchargement
-explain-bandwidth_limit Limite de vitesse de téléchargement en kilobytes par second(kB/s)
+explain-bandwidth_limit Limite de vitesse de téléchargement en kilobytes par seconde (kB/s)
 opt-cache_limitstr    Limite d'Article en cache
 explain-cache_limitstr Permet de mettre en cache en RAM les articles pour réduire les accès disques.\n\
-                      <i>En bytes, put être suivi de K,M,G. Par exemple : "64M" ou "128M"</i>
+                      <i>En bytes, peut être suivi de K,M,G. Par exemple : "64M" ou "128M"</i>
 opt-cleanup_list      Liste de nettoyage
 explain-cleanup_list  Liste des extensions de fichiers qui doivent être supprimés après téléchargement\n\
                       Par exemple:  <b>.nfo</b> or <b>.nfo, .sfv</b>
@@ -322,7 +322,7 @@ explain-check_new_rel    Vérfie hebdomadairement la sortie d'une nouvelle versio
 opt-replace_spaces       Remplacer les espaces dans les noms de dossier
 explain-replace_spaces   Remplace les espaces par des underscores dans les noms de dossiers.
 opt-replace_illegal      Remplacer les caractères illégaux dans les noms de dossier
-explain-replace_illegal  Remplacer les caractères illégaux dans les noms de dossier par des équivalents (ou les supprime).
+explain-replace_illegal  Remplace les caractères illégaux dans les noms de dossier par des équivalents (ou les supprime).
 opt-auto_browser         Lancer le navigateur web au démarrage
 explain-auto_browser     Lance le navigateur web au démarrage de SABnzbd.
 opt-pause_on_post_processing Mettre en pause les téléchargement lors du post-traitement
@@ -333,7 +333,7 @@ igsam-off                Non
 igsam-del                Supprimer après téléchargement
 igsam-not                Ne pas télécharger
 opt-ssl_type             SSL type
-explain-ssl_type         Utiliser V23 à moins que votre fournisseur exige autrement!
+explain-ssl_type         Utiliser V23 à moins que votre fournisseur exige autrement !
 
 # Config->Server
 configServer             Configuration Serveur
