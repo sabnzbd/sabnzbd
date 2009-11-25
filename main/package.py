@@ -315,13 +315,24 @@ if target == 'app':
     
     APP = ['SABnzbd.py']
     DATA_FILES = ['interfaces','language','osx/osx',('',glob.glob("osx/resources/*"))]
+    NZBFILE = dict(
+            CFBundleTypeExtensions = [ "nzb","zip","rar" ],
+            CFBundleTypeIconFile = 'nzbfile.icns',
+            CFBundleTypeMIMETypes = [ "text/nzb" ],
+            CFBundleTypeName = 'NZB File',
+            CFBundleTypeRole = 'Viewer',
+            LSTypeIsPackage = 0,
+            NSPersistentStoreTypeKey = 'Binary',   
+    )
     OPTIONS = {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
        'NSUIElement':1,
        #'CFBundleName':'SABnzbd+',
        'CFBundleShortVersionString':release,
        'NSHumanReadableCopyright':'The SABnzbd-Team',
-       'CFBundleIdentifier':'org.sabnzbd.team'}}
-    
+       'CFBundleIdentifier':'org.sabnzbd.team',
+       'CFBundleDocumentTypes':[NZBFILE]
+       }}
+           
     setup(
         app=APP,
         data_files=DATA_FILES,
@@ -369,6 +380,7 @@ if target == 'app':
     #os.system(SvnRevert)
     os.system(SvnRevertApp + "NSIS_Installer.nsi")
     os.system(SvnRevertApp + VERSION_FILEAPP)
+    os.system(SvnRevertApp + VERSION_FILE)
     os.system(SvnUpdateApp)
 
 elif target == 'binary':
