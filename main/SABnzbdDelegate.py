@@ -35,7 +35,7 @@ import sabnzbd
 import sabnzbd.cfg
 
 from sabnzbd.constants import *
-from sabnzbd.misc import launch_a_browser,get_filename,get_ext,diskfree
+from sabnzbd.misc import launch_a_browser,get_filename,get_ext,diskfree,to_units
 from sabnzbd.lang import T
 from sabnzbd.utils import osx
 
@@ -385,10 +385,10 @@ class SABnzbdDelegate(NSObject):
             elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
                 
                 self.state = ""
-                speed = bpsnow/KIBI
+                speed = to_units(bpsnow, spaces=1)
                 timeleft = (speed>1 and self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD],bpsnow)) or "--"
                 
-                statusbarText = "\n\n%s\n%d KB/s\n" % (timeleft, speed)
+                statusbarText = "\n\n%s\n%s\n" % (timeleft, speed)
                 
                 if sabnzbd.SABSTOP:
                     statusbarText = "..."
