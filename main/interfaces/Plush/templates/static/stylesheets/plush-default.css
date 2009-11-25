@@ -427,12 +427,12 @@ select {
     width:200px;
     z-index:100;
   }
-  #queue-buttons.lang-nl-du ul li ul,
-  #queue-buttons.lang-fr-fr ul li ul{
+  #queue-buttons.lang-nl-du ul li ul{
     width:245px;
   }
-  #queue-buttons.lang-de-de ul li ul{
-    width:260px;
+  #queue-buttons.lang-de-de ul li ul,
+  #queue-buttons.lang-fr-fr ul li ul{
+    width:265px;
   }
   #queue-buttons ul li.sprite_q_queue ul{
     right:0;
@@ -476,14 +476,14 @@ select {
     top:0;
   }
   #queue-buttons.lang-nl-du ul li ul li ul,
-    #queue-buttons.lang-nl-du ul li.sprite_q_queue ul li ul,
-  #queue-buttons.lang-fr-fr ul li ul li ul,
-    #queue-buttons.lang-fr-fr ul li.sprite_q_queue ul li ul{
+    #queue-buttons.lang-nl-du ul li.sprite_q_queue ul li ul{
     right:245px;
   }
   #queue-buttons.lang-de-de ul li ul li ul,
-    #queue-buttons.lang-de-de ul li.sprite_q_queue ul li ul{
-    right:260px;
+    #queue-buttons.lang-de-de ul li.sprite_q_queue ul li ul,
+  #queue-buttons.lang-fr-fr ul li ul li ul,
+    #queue-buttons.lang-fr-fr ul li.sprite_q_queue ul li ul{
+    right:265px;
   }
   
 #queue-wrap {
@@ -1284,8 +1284,7 @@ fieldset.EntryFieldSet {
   #catTable td input.Add,
   #catTable td input.Save{
     font-size:0.8333em;
-    width:50px;
-  
+    width:75px;
   }
   #catTable td input.Delete {
     font-size:0.8333em;
