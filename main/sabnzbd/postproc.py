@@ -190,6 +190,8 @@ class PostProcessor(Thread):
 
             start = time.time()
 
+            folder_rename = cfg.FOLDER_RENAME.get()
+
             # keep track of if par2 fails
             parResult = True
             # keep track of any unpacking errors
@@ -292,11 +294,14 @@ class PostProcessor(Thread):
                 complete_dir = file_sorter.detect(dirname, complete_dir)
 
                 workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
-                tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
-                try:
-                    os.rename(workdir_complete, tmp_workdir_complete)
-                except:
-                    pass # On failure, just use the original name
+                if folder_rename:
+                    tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
+                    try:
+                        os.rename(workdir_complete, tmp_workdir_complete)
+                    except:
+                        pass # On failure, just use the original name
+                else:
+                    tmp_workdir_complete = workdir_complete
 
                 newfiles = []
                 ## Run Stage 2: Unpack
@@ -346,16 +351,16 @@ class PostProcessor(Thread):
 
                 if not nzb_list:
                     ## Give destination its final name
-                    if unpackError or not parResult:
-                        workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
-                        workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
-
-                    try:
-                        os.rename(tmp_workdir_complete, workdir_complete)
-                        nzo.set_dirname(os.path.basename(workdir_complete))
-                    except:
-                        logging.error(Ta('error-ppRename@2'), tmp_workdir_complete, workdir_complete)
-                        logging.debug("Traceback: ", exc_info = True)
+                    if folder_rename:
+                        if unpackError or not parResult:
+                            workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
+                            workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
+                        try:
+                            os.rename(tmp_workdir_complete, workdir_complete)
+                            nzo.set_dirname(os.path.basename(workdir_complete))
+                        except:
+                            logging.error(Ta('error-ppRename@2'), tmp_workdir_complete, workdir_complete)
+                            logging.debug("Traceback: ", exc_info = True)
 
                     if unpackError: jobResult = jobResult + 2
 

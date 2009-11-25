@@ -99,6 +99,7 @@ NO_DUPES = OptionBool('misc', 'no_dupes', False)
 IGNORE_SAMPLES = OptionNumber('misc', 'ignore_samples', 0, 0, 2)
 CREATE_GROUP_FOLDERS = OptionBool('misc', 'create_group_folders', False)
 AUTO_SORT = OptionBool('misc', 'auto_sort', False)
+FOLDER_RENAME = OptionBool('misc', 'folder_rename', True)
 
 SAFE_POSTPROC = OptionBool('misc', 'safe_postproc', False)
 PAUSE_ON_POST_PROCESSING = OptionBool('misc', 'pause_on_post_processing', False)
