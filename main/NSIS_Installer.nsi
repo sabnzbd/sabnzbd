@@ -208,7 +208,12 @@ Section Uninstall
 
     ; Delete installation files are carefully as possible
     ; Using just rmdir /r "$instdir" is considered unsafe!
-    RMDir /r "$INSTDIR\language"
+    RMDir /r "$INSTDIR\language\*de-de.t*"
+    RMDir /r "$INSTDIR\language\*us-en.t*"
+    RMDir /r "$INSTDIR\language\*nl-du.t*"
+    RMDir /r "$INSTDIR\language\*fr-fr.t*"
+    RMDir /r "$INSTDIR\language\*sv-se.t*"
+    RMDir    "$INSTDIR\language"
     RMDir /r "$INSTDIR\interfaces\Classic"
     RMDir /r "$INSTDIR\interfaces\Plush"
     RMDir /r "$INSTDIR\interfaces\smpl"
