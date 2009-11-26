@@ -186,7 +186,7 @@ class Wizard:
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('wizard-step-five')
         info['number'] = 5
-        info['helpuri'] = 'http://sabnzbd.wikidot.com/'
+        info['helpuri'] = 'http://wiki.sabnzbd.org/'
         info['session'] = cfg.API_KEY.get()
 
         info['access_url'], info['urls'] = self.get_access_info()

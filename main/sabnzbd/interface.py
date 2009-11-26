@@ -2772,7 +2772,7 @@ def build_header(prim):
     if speed_limit <= 0:
         speed_limit = ''
 
-    header['helpuri'] = 'http://sabnzbd.wikidot.com/'
+    header['helpuri'] = 'http://wiki.sabnzbd.org/'
     header['diskspace1'] = "%.2f" % diskfree(cfg.DOWNLOAD_DIR.get_path())
     header['diskspace2'] = "%.2f" % diskfree(cfg.COMPLETE_DIR.get_path())
     header['diskspacetotal1'] = "%.2f" % disktotal(cfg.DOWNLOAD_DIR.get_path())
