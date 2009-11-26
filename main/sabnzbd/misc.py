@@ -280,7 +280,7 @@ def get_user_shellfolders():
 #------------------------------------------------------------------------------
 def windows_variant():
     """ Determine Windows variant
-        Return platform, vista_plus, x64
+        Return vista_plus, x64
     """
     from win32api import GetVersionEx
     from win32con import VER_PLATFORM_WIN32_NT
