@@ -242,7 +242,6 @@ Win32WindowName  = 'SABnzbd.exe'
 
 fileIns = prod + '-win32-setup.exe'
 fileBin = prod + '-win32-bin.zip'
-fileWSr = prod + '-win32-src.zip'
 fileSrc = prod + '-src.tar.gz'
 fileDmg = prod + '-osx.dmg'
 fileOSr = prod + '-osx-src.tar.gz'
@@ -312,7 +311,7 @@ if target == 'app':
 
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
-    
+
     APP = ['SABnzbd.py']
     DATA_FILES = ['interfaces','language','osx/osx',('',glob.glob("osx/resources/*"))]
     NZBFILE = dict(
@@ -322,7 +321,7 @@ if target == 'app':
             CFBundleTypeName = 'NZB File',
             CFBundleTypeRole = 'Viewer',
             LSTypeIsPackage = 0,
-            NSPersistentStoreTypeKey = 'Binary',   
+            NSPersistentStoreTypeKey = 'Binary',
     )
     OPTIONS = {'argv_emulation': True, 'iconfile': 'osx/resources/sabnzbdplus.icns','plist': {
        'NSUIElement':1,
@@ -332,7 +331,7 @@ if target == 'app':
        'CFBundleIdentifier':'org.sabnzbd.team',
        'CFBundleDocumentTypes':[NZBFILE]
        }}
-           
+
     setup(
         app=APP,
         data_files=DATA_FILES,
@@ -493,15 +492,6 @@ else:
 
     # Prepare the TAR.GZ pacakge
     CreateTar('srcdist', fileSrc, prod)
-
-    # Prepare the ZIP for W32 package
-    os.rename('srcdist', prod)
-    DeleteFiles(fileWSr)
-    # First the text files (unix-->dos)
-    os.system('zip -9 -r -X -l %s %s -i *.py *.txt *.css *.js *.tmpl *.cmd -x *licenses/Python*' % (fileWSr, prod))
-    # Second the binary files
-    os.system('zip -9 -r -X %s %s -x *.py *.txt *.css *.js *.tmpl *.cmd *licenses/Python*' % (fileWSr, prod))
-    os.rename(prod, 'srcdist')
 
     os.system(SvnRevert)
 
