@@ -66,7 +66,8 @@ from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
      check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
-     panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates
+     panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates, \
+     windows_variant
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -367,27 +368,6 @@ def GetProfileInfo(vista_plus):
         panic("Cannot access the user profile.",
               "Please start with sabnzbd.ini file in another location")
         exit_sab(2)
-
-
-#------------------------------------------------------------------------------
-def windows_variant():
-    """ Determine Windows variant
-        Return vista_plus, x64
-    """
-    from win32api import GetVersionEx
-    from win32con import VER_PLATFORM_WIN32_NT
-
-    vista_plus = x64 = False
-    maj, min, buildno, plat, csd = GetVersionEx()
-
-    if plat == VER_PLATFORM_WIN32_NT:
-        vista_plus = maj > 5
-        if vista_plus:
-            try:
-                x64 = os.path.isdir(os.path.join(os.environ['SystemRoot'], 'SysWow64'))
-            except KeyError:
-                pass
-    return vista_plus, x64
 
 
 #------------------------------------------------------------------------------

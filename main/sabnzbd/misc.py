@@ -243,9 +243,9 @@ def get_user_shellfolders():
 
     # Then open the registry key where Windows stores the Shell Folder locations
     try:
-        key = _winreg.OpenKey(hive, "Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
+        key = _winreg.OpenKey(hive, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
     except WindowsError:
-        logging.error(Ta('error-regOpen@1'), "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders")
+        logging.error(Ta('error-regOpen@1'), r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
         _winreg.CloseKey(hive)
         return values
 
@@ -275,6 +275,37 @@ def get_user_shellfolders():
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
         return {}
+
+
+#------------------------------------------------------------------------------
+def windows_variant():
+    """ Determine Windows variant
+        Return platform, vista_plus, x64
+    """
+    from win32api import GetVersionEx
+    from win32con import VER_PLATFORM_WIN32_NT
+    import _winreg
+
+    vista_plus = x64 = False
+    maj, min, buildno, plat, csd = GetVersionEx()
+
+    if plat == VER_PLATFORM_WIN32_NT:
+        vista_plus = maj > 5
+        if vista_plus:
+            # Must be done the hard way, because the Python runtime lies to us.
+            # This does *not* work:
+            #     return os.environ['PROCESSOR_ARCHITECTURE'] == 'AMD64'
+            # because the Python runtime returns 'X86' even on an x64 system!
+            key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
+                    r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
+            for n in xrange(_winreg.QueryInfoKey(key)[1]):
+                name, value, val_type = _winreg.EnumValue(key, n)
+                if name == 'PROCESSOR_ARCHITECTURE':
+                    x64 = value.upper() == u'AMD64'
+                    break
+            _winreg.CloseKey(key)
+
+    return vista_plus, x64
 
 
 ################################################################################
