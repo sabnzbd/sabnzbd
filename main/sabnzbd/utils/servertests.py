@@ -32,16 +32,16 @@ from sabnzbd.lang import T
 
 def test_nntp_server_dict(kwargs):
     # Grab the host/port/user/pass/connections/ssl
-    host = kwargs.get('host','')
+    host = kwargs.get('host', '').strip()
     if not host:
         return False, T('srv-noHost')
-    username = kwargs.get('username',None)
-    password = kwargs.get('password',None)
-    connections = IntConv(kwargs.get('connections',0))
+    username = kwargs.get('username', '').strip()
+    password = kwargs.get('password', '').strip()
+    connections = IntConv(kwargs.get('connections', 0))
     if not connections:
         return False, T('srv-noConnections')
-    ssl = IntConv(kwargs.get('ssl',0))
-    port = IntConv(kwargs.get('port',0))
+    ssl = IntConv(kwargs.get('ssl', 0))
+    port = IntConv(kwargs.get('port', 0))
     if not port:
         if ssl:
             port = 563
@@ -51,6 +51,7 @@ def test_nntp_server_dict(kwargs):
 
     return test_nntp_server(host, port, username=username, \
                         password=password, ssl=ssl)
+
 
 def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout=120):
     ''' Will connect (blocking) to the nttp server and report back any errors '''
