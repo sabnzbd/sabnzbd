@@ -67,6 +67,11 @@ class HistoryDB:
         self.c = self.con.cursor()
         if create_table:
             self.create_history_db()
+        else:
+            # Run VACCUUM on sqlite
+            # When an object (table, index, or trigger) is dropped from the database, it leaves behind empty space
+            # http://www.sqlite.org/lang_vacuum.html
+            self.execute('VACUUM')
 
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
