@@ -28,6 +28,7 @@ import os
 import glob
 import logging
 import re
+import operator
 
 _T = {}        # Global language dictionary
 _DIRS = []     # List of active (language-folder, prefix) tuples
@@ -109,7 +110,8 @@ def list_languages(path):
         long_name = u"%s" % language
         lst.append((lang, long_name))
         fp.close()
-    return lst
+    return sorted(lst ,key=operator.itemgetter(1))
+
 
 
 # Matches : acronym     message text # comment
