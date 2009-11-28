@@ -643,10 +643,19 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Queue sort (6-in-1)
 			$('#queue_sort_list .queue_sort').click(function(event) {
+				var sort, dir;
+				switch ($(this).attr('id')) {
+					case 'sortAgeAsc':		sort='avg_age';	dir='asc';	break;
+					case 'sortAgeDesc':		sort='avg_age';	dir='desc';	break;
+					case 'sortNameAsc':		sort='name';	dir='asc';	break;
+					case 'sortNameDesc':	sort='name';	dir='desc';	break;
+					case 'sortSizeAsc':		sort='size';	dir='asc';	break;
+					case 'sortSizeDesc':	sort='size';	dir='desc';	break;
+				}
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: {mode:'queue', name:'sort', sort: $(this).attr('rel'), dir: $(this).attr('rel2'), apikey: $.plush.apikey},
+					data: {mode:'queue', name:'sort', sort: sort, dir: dir, apikey: $.plush.apikey},
 					success: $.plush.refreshQueue
 				});
 			});
@@ -882,6 +891,14 @@ jQuery(function($) { // safely invoke $ selector
 					function(){ $(this).addClass('sprite_ql_cross_on'); },
 					function(){ $(this).removeClass('sprite_ql_cross_on'); }
 				);
+
+				// Styling that is broken in IE (IE8 auto-closes select menus if defined)
+				if (!$.browser.msie) {
+					$('#queueTable tr').hover(
+						function(){ $(this).find('td.options select').addClass('hovering'); },
+						function(){ $(this).find('td.options select').removeClass('hovering'); }
+					);
+				}
 				
 			}); // end livequery
 			
@@ -1010,7 +1027,7 @@ jQuery(function($) { // safely invoke $ selector
 			
 			// Purge
 			$('#hist_purge').click(function(event) {
-				if (confirm($('#hist_purge').attr('rel'))) {
+				if (confirm( $.plush.TconfirmPurgeH )) {
 					$.ajax({
 						type: "POST",
 						url: "tapi",

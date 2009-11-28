@@ -130,7 +130,7 @@ select {
 }
  
 .new_release_link { 
-	color: darkgreen; 
+	color: #006400; 
 }
  
 .pointer { 
@@ -146,7 +146,7 @@ select {
 }
  
 #warning_message {
-	color: darkred;
+	color: #8B0000;
 	font-weight: bold;
 }
  
@@ -157,11 +157,13 @@ select {
  
 /* for jQuery Tooltip Plugin */
 #tooltip {
-	background-color: lightyellow;
+	background-color: #FFFFE0;
 	border: 1px solid #111;
 	color: #000;
 	font-size: 11px;
 	opacity: 0.85;
+	/*-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=85)";
+	filter: alpha(opacity=85);*/
 	padding: 5px;
 	position: absolute;
 	z-index: 3000;
@@ -276,7 +278,7 @@ select {
 /* tile-y sprite */
 .tiley_sprite_container { background: url('../images/plush-default/sprite-tiley.png') repeat-y top right; }
 .sprite_tile_page_wrap { background-position: 0 0; } 
-.sprite_tile_queue_wrap { background-position: -17px right; } 
+.sprite_tile_queue_wrap { background-position: bottom right; } 
 
 
 .box_fatbottom {
@@ -590,7 +592,7 @@ select {
   	padding:2px;
   }
 
-  .queueTable tr:hover select {
+  .queueTable tr select.hovering {
     background:#fff;
     border: 1px solid #c0c0c0;
     color: #000; 
@@ -603,7 +605,7 @@ select {
 	  border:1px solid #d0d0d0;
 	  background: #d5d5d5;
   }
-	.queueTable tr.alt:hover select {
+	.queueTable tr.alt select.hovering {
 	  border:1px solid #b0b0b0;
 	  background: #fff;
   }
@@ -774,9 +776,9 @@ tr:hover .history_added { color: black; }
 }
  
 .hvFaded {
-	-moz-opacity: .25;
-	filter: alpha(opacity=25);
 	opacity: .25;
+	/*-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+	filter: alpha(opacity=25);*/
 }
  
 .pointer { cursor: pointer; }
@@ -962,14 +964,16 @@ tr:hover .history_added { color: black; }
   width: 110px;
 }
 
-.sf-shadow ul { /* if superfish shadows are enabled lets make it happen! 
-	background:	url('../images/plush-default/shadow.png') no-repeat bottom right;*/
+/*
+.sf-shadow ul {  if superfish shadows are enabled lets make it happen! 
+	background:	url('../images/plush-default/shadow.png') no-repeat bottom right;
 	padding: 0 8px 9px 0;
 	-moz-border-radius-bottomleft: 17px;
 	-moz-border-radius-topright: 17px;
 	-webkit-border-top-right-radius: 17px;
 	-webkit-border-bottom-left-radius: 17px;
 }
+*/
 
 #uploadTip {
 	overflow: hidden;
@@ -1039,7 +1043,7 @@ tr:hover .history_added { color: black; }
 }
 
 #cboxLoadedContent a {
-	color: darkblue;
+	color: #00008B;
 }
  
 /*#cboxLoadingGraphic{background:url(images/loading.gif) center center no-repeat;}*/
@@ -1146,7 +1150,7 @@ table.nzoTable {
 	  background-color: #f8f8f8;
 	}
 	table.nzoTable tr.nzo_highlight {
-	  background-color:lightyellow;
+	  background-color:#FFFFE0;
 	}
 	table.nzoTable tr:hover {
 		background-color: #666;
@@ -1363,11 +1367,11 @@ legend .config_sprite_container {
 }
 
 #config_content legend.latestWarnings,
-#config_content legend.serverDisabled { background-color:darkred; }
+#config_content legend.serverDisabled { background-color:#8B0000; }
 #config_content legend.lastEmail,
-#config_content legend.serverBackup { background-color:darkblue; }
+#config_content legend.serverBackup { background-color:#00008B; }
 #config_content legend.serverOptional { background-color:#009090; }
-#config_content legend.serverEnabled { background-color:darkgreen; }
+#config_content legend.serverEnabled { background-color:#006400; }
 
  
 /* sprite-config.png */

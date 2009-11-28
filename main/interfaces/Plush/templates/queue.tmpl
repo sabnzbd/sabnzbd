@@ -76,7 +76,7 @@
         </div>
     </td>
 
-    <td class="eta" nowrap>
+    <td class="eta nowrap">
         <!--#if not $paused#-->
         $slot.timeleft&nbsp;$T('Plush-left')<br/>$slot.eta
         <!--#else#-->
@@ -84,7 +84,7 @@
         <!--#end if#-->
     </td>
 
-    <td class="options" nowrap>
+    <td class="options nowrap">
         <!--#if $cat_list#-->
         <select class="change_cat"><optgroup label="$T('category')">
             <!--#for $ct in $cat_list#-->

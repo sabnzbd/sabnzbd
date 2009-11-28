@@ -1,6 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"/>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
     <title>SABnzbd+ Plush</title>
     <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
@@ -19,6 +22,7 @@
         	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
         	$.plush.Tnext = "$T('Plush-next')";
         	$.plush.Tconfirmation = "$T('Plush-confirm')";
+        	$.plush.TconfirmPurgeH = "$T('Plush-confirmPurgeH')";
 		});
     </script>
 
@@ -26,6 +30,8 @@
 <body>
 
 	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
+    <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
+	    <input type="hidden" name="apikey" value="$session" />
     <ul class="sf-menu sf-navbar">
         <li>
             <a class="sf-with-ul">SABnzbd</a>
@@ -45,9 +51,9 @@
 	                        <option value="1800">30 $T('minute')</option>
 	                        <option value="0">$T('Plush-disabled')</option>
                     	</select></a></li>
-                    	<li><a><input type="checkbox" id="confirmDeleteQueue" checked /> $T("Plush-confirmDeleteQueue")</a></li>
-                    	<li><a><input type="checkbox" id="confirmDeleteHistory" checked /> $T("Plush-confirmDeleteHistory")</a></li>
-                    	<li id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><a><input type="checkbox" id="blockRefresh" checked /> $T("Plush-blockRefresh")</a></li>
+                    	<li><a><input type="checkbox" id="confirmDeleteQueue" checked="checked" /> $T("Plush-confirmDeleteQueue")</a></li>
+                    	<li><a><input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")</a></li>
+                    	<li id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><a><input type="checkbox" id="blockRefresh" checked="checked" /> $T("Plush-blockRefresh")</a></li>
                     </ul>
                 </li>
                 <li><a class="sf-with-ul">$T('menu-help')</a>
@@ -63,9 +69,7 @@
         <li>
             <a class="sf-with-ul">$T('Plush-addnzb')</a>
             <ul>
-                <li><a><form><input type="text" id="addID_input" size="18" /><input type="submit" id="addID" value="$T('Plush-fetch')" /></form></a></li>
-                <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
-				    <input type="hidden" name="apikey" value="$session" />
+                <li><a><input type="text" id="addID_input" size="18" /><input type="submit" id="addID" value="$T('Plush-fetch')" /></a></li>
                     <li>
                     	<a id="uploadTip" title="$T('Plush-uploadTip')">
             				<input type="hidden" name="mode" value="addfile" />
@@ -86,7 +90,7 @@
                         <!--#end if#-->
                         <li><label>$T('priority'):</label>
                             <select id="addID_priority" name="priority">
-                                <option value="-100" selected>$T('default')</option>
+                                <option value="-100" selected="selected">$T('default')</option>
                                 <option value="2">$T('pr-force')</option>
                                 <option value="1">$T('pr-high')</option>
                                 <option value="0">$T('pr-normal')</option>
@@ -116,7 +120,6 @@
 				<!--#if $varExists('newzbinDetails')#-->
                 <li><a title="Newzbin - $T('link-getBookmarks')" id="fetch_newzbin_bookmarks" class="pointer">$T('link-getBookmarks')</a></li>
           		<!--#end if#-->
-          		</form>
             </ul>
         </li>
         <li>
@@ -143,6 +146,7 @@
         <li><a id="warning_message">$warning.replace(' ','&nbsp;')</a></li>
 	    <!--#end if#-->
     </ul>
+	</form>
 	</div>
 
 
@@ -197,12 +201,12 @@
                             <li>
                                 <a class="sf-with-ul">$T('Plush-sort')</a>
                                 <ul id="queue_sort_list">
-                                    <li class="queue_sort pointer" rel="avg_age" rel2="asc"><a>$T('Plush-sortAgeAsc')</a></li>
-                                    <li class="queue_sort pointer" rel="avg_age" rel2="desc"><a>$T('Plush-sortAgeDesc')</a></li>
-                                    <li class="queue_sort pointer" rel="name" rel2="asc"><a>$T('Plush-sortNameAsc')</a></li>
-                                    <li class="queue_sort pointer" rel="name" rel2="desc"><a>$T('Plush-sortNameDesc')</a></li>
-                                    <li class="queue_sort pointer" rel="size" rel2="asc"><a>$T('Plush-sortSizeAsc')</a></li>
-                                    <li class="queue_sort pointer" rel="size" rel2="desc"><a>$T('Plush-sortSizeDesc')</a></li>
+                                    <li class="queue_sort pointer" id="sortAgeAsc"><a>$T('Plush-sortAgeAsc')</a></li>
+                                    <li class="queue_sort pointer" id="sortAgeDesc"><a>$T('Plush-sortAgeDesc')</a></li>
+                                    <li class="queue_sort pointer" id="sortNameAsc"><a>$T('Plush-sortNameAsc')</a></li>
+                                    <li class="queue_sort pointer" id="sortNameDesc"><a>$T('Plush-sortNameDesc')</a></li>
+                                    <li class="queue_sort pointer" id="sortSizeAsc"><a>$T('Plush-sortSizeAsc')</a></li>
+                                    <li class="queue_sort pointer" id="sortSizeDesc"><a>$T('Plush-sortSizeDesc')</a></li>
                                 </ul>
                             </li>
                             <li><a id="queue_purge" class="pointer" rel="$T('Plush-confirmPurgeQ')">$T('Plush-purge')</a></li>
@@ -225,7 +229,7 @@
                 <input type="hidden" id="queue_view_preference" value="" />
             </div>
 			<div class="box_fatbottom tilex_sprite_container sprite_tile_qh_bottom" id="box_fatbottom_queue">
-			    <div class="right_stats" id="queue_stats" nowrap></div>
+			    <div class="right_stats nowrap" id="queue_stats"></div>
 			    <div class="left_stats">
 			    	<select id="queue-pagination-perpage" class="pagination-perpage">
 			    		<option value="5">5 / $T('Plush-page')</option>
@@ -245,7 +249,7 @@
 				<h1>$T('menu-history').upper()</h1>
                 <div class="box_banner_r">
                     <ul class="box_banner_menu">
-                        <li class="main_sprite_container sprite_h_purge show" id="hist_purge" title="$T('purgeHist')" rel="$T('Plush-confirmPurgeH')"></li>
+                        <li class="main_sprite_container sprite_h_purge show" id="hist_purge" title="$T('purgeHist')"></li>
                     </ul>
                 </div>
             </div>
@@ -257,7 +261,7 @@
                 <input type="hidden" id="history_view_preference" value="" />
             </div>
 			<div class="box_fatbottom history_stats tilex_sprite_container sprite_tile_qh_bottom">
-			    <div class="right_stats" id="history_stats" nowrap></div>
+			    <div class="right_stats nowrap" id="history_stats"></div>
 			    <div class="left_stats">
 			    	<select id="history-pagination-perpage" class="pagination-perpage">
 			    		<option value="5">5 / $T('Plush-page')</option>
