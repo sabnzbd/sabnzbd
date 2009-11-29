@@ -471,16 +471,16 @@ class OptionFilters(Option):
     def set_dict(self, values):
         """ Create filter list from dictionary with keys 'filter[0-9]+' """
         filters = []
-        n = 0
-        for kw in sorted(values.keys()):
-            if kw.startswith('filter'):
+        for n in xrange(len(values)):
+            kw = 'filter%d' % n
+            val = values.get(kw)
+            if val is not None:
                 val = values[kw]
                 if type(val) == type([]):
                     filters.append(val)
                 else:
                     filters.append(listquote.simplelist(val))
-                n = n + 1
-        if n > 0:
+        if filters:
             self.set(filters)
         return True
 
