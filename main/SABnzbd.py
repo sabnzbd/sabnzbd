@@ -813,9 +813,9 @@ def main():
 
     sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA, sabnzbd.DIR_PROG, sabnzbd.DIR_INTERFACES)
 
-    if not config.read_config(inifile):
-        panic('"%s" is not a valid configuration file.' % inifile, \
-              'Specify a correct file or delete this file.')
+    res, msg = config.read_config(inifile)
+    if not res:
+        panic(msg, 'Specify a correct file or delete this file.')
         exit_sab(1)
 
     # Determine web host address

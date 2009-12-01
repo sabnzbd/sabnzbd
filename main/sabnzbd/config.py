@@ -630,22 +630,19 @@ def read_config(path):
             fp.write("__version__=%s\n[misc]\n[logging]\n" % __CONFIG_VERSION)
             fp.close()
         except IOError:
-            logging.error(Ta('error-createIni@1'), path)
-            return False
+            return False, 'Cannot create INI file %s' % path
 
     try:
         CFG = configobj.ConfigObj(path)
         try:
             if int(CFG['__version__']) > int(__CONFIG_VERSION):
-                logging.error("Incorrect version number %s in %s", CFG['__version__'], path)
-                return False
+                return False, "Incorrect version number %s in %s" %(CFG['__version__'], path)
         except KeyError:
             CFG['__version__'] = __CONFIG_VERSION
         except ValueError:
             CFG['__version__'] = __CONFIG_VERSION
     except configobj.ConfigObjError, strerror:
-        logging.error(Ta('error-badIni@1'), path)
-        return False
+        return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
 
     compatibility_fix(CFG['misc'])
 
@@ -665,7 +662,8 @@ def read_config(path):
     define_servers()
 
     modified = False
-    return True
+    return True, ""
+
 
 
 @synchronized(SAVE_CONFIG_LOCK)
