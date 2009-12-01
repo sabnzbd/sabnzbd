@@ -930,15 +930,14 @@ def check_for_folder(path):
             return True
     return False
 
+_RE_LOWERCASE = re.compile('{([^{]*)}')
 def toLowercase(path):
     ''' Lowercases any characters enclosed in {} '''
-    RE_LOWERCASE = re.compile('\{([^\{]*)\}', re.I)
-    while 1:
-        m = RE_LOWERCASE.match(path)
+    while True:
+        m = _RE_LOWERCASE.search(path)
         if not m:
             break
-        section = path[m.start(1):m.end(1)].lower()
-        folders = path[:m.start()] + section + path[m.end():]
+        path = path[:m.start()] + m.group(1).lower() + path[m.end():]
 
     # just incase
     path = path.replace('{', '')
