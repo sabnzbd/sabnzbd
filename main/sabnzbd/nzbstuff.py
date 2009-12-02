@@ -546,6 +546,10 @@ class NzbObject(TryList):
             logging.warning(Ta('warn-badNZB@3'),
                           filename, err.getMessage(), err.getLineNumber())
             raise ValueError
+        except Exception, err:
+            handler.remove_files()
+            logging.warning(Ta('warn-badNZB@3'), filename, err, 0)
+            raise ValueError
 
         sabnzbd.backup_nzb(filename, nzb)
 
