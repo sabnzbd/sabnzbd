@@ -27,6 +27,11 @@ import sabnzbd
 import datetime
 import xml.sax
 import xml.sax.handler
+import xml.sax.xmlreader
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 from sabnzbd.constants import *
 import sabnzbd.misc
@@ -538,9 +543,18 @@ class NzbObject(TryList):
             logging.warning(Ta('warn-skipDup@1'), filename)
             raise TypeError
 
-        handler = NzbParser(self)
+        # Must create a lower level XML parser because we must
+        # disable the reading of the DTD file from newzbin.com
+        # by setting "feature_external_ges" to 0.
+
+        parser = xml.sax.make_parser()
+        parser.setFeature(xml.sax.handler.feature_external_ges, 0)
+        parser.setContentHandler(NzbParser(self))
+        parser.setErrorHandler(xml.sax.handler.ErrorHandler())
+        inpsrc = xml.sax.xmlreader.InputSource()
+        inpsrc.setByteStream(StringIO(nzb))
         try:
-            xml.sax.parseString(nzb, handler)
+            parser.parse(inpsrc)
         except xml.sax.SAXParseException, err:
             handler.remove_files()
             logging.warning(Ta('warn-badNZB@3'),
