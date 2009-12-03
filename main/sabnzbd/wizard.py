@@ -177,7 +177,7 @@ class Wizard:
                 cfg.USERNAME_NEWZBIN.set(kwargs.get('newzbin_user',''))
                 cfg.PASSWORD_NEWZBIN.set(kwargs.get('newzbin_pass',''))
             cfg.NEWZBIN_BOOKMARKS.set(kwargs.get('newzbin_bookmarks', '0'))
-            if 'matrix_user' in kwargs and 'matrix_pass' in kwargs:
+            if 'matrix_user' in kwargs and 'matrix_apikey' in kwargs:
                 cfg.MATRIX_USERNAME.set(kwargs.get('matrix_user',''))
                 cfg.MATRIX_APIKEY.set(kwargs.get('matrix_apikey',''))
 
