@@ -40,20 +40,22 @@ from sabnzbd.constants import DB_HISTORY_NAME
 from sabnzbd.lang import T, Ta
 from sabnzbd.codecs import unicoder
 
-__HISTORY_DB = None  # Will contain full path to history database
+_HISTORY_DB = None        # Will contain full path to history database
+_DONE_CLEANING = False    # Ensure we only do one Vacuum per session
 
 def get_history_handle():
     """ Get an instance of the history db hanlder """
-    global __HISTORY_DB
-    if not __HISTORY_DB:
-        __HISTORY_DB = os.path.join(sabnzbd.cfg.ADMIN_DIR.get_path(), DB_HISTORY_NAME)
-    return HistoryDB(__HISTORY_DB)
+    global _HISTORY_DB
+    if not _HISTORY_DB:
+        _HISTORY_DB = os.path.join(sabnzbd.cfg.ADMIN_DIR.get_path(), DB_HISTORY_NAME)
+    return HistoryDB(_HISTORY_DB)
 
 
 # Note: Add support for execute return values
 
 class HistoryDB:
     def __init__(self, db_path):
+        global _DONE_CLEANING
         #Thread.__init__(self)
         if not os.path.exists(db_path):
             create_table = True
@@ -67,10 +69,11 @@ class HistoryDB:
         self.c = self.con.cursor()
         if create_table:
             self.create_history_db()
-        else:
-            # Run VACCUUM on sqlite
+        elif not _DONE_CLEANING:
+            # Run VACUUM on sqlite
             # When an object (table, index, or trigger) is dropped from the database, it leaves behind empty space
             # http://www.sqlite.org/lang_vacuum.html
+            _DONE_CLEANING = True
             self.execute('VACUUM')
 
     def execute(self, command, args=(), save=False):
