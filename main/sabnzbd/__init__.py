@@ -674,6 +674,7 @@ def load_data(_id, remove = True, do_pickle = True):
     except:
         logging.error(Ta('error-loading@1'), path)
         logging.debug("Traceback: ", exc_info = True)
+        return None
 
     return data
 
