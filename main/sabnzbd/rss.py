@@ -164,6 +164,7 @@ class RSSQueue:
         #           script : script
         #           prio : priority
         #           time : timestamp (used for time-based clean-up)
+        #           order : order in the RSS feed
 
         self.shutdown = False
         self.__running = False
@@ -256,6 +257,7 @@ class RSSQueue:
             logging.info("RSS Feed was empty: %s", uri)
             return
 
+        order = 0
         # Filter out valid new links
         for entry in entries:
             if self.shutdown: return
@@ -313,14 +315,20 @@ class RSSQueue:
                             result = False
                             break
 
-                    if result:
-                        act = download and not first
-                        if link in jobs:
-                            act = act and not jobs[link]['status'].endswith('*')
-                            act = act or force
-                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript, act, priority=defPriority)
+                    act = download and not first
+                    if link in jobs:
+                        act = act and not jobs[link]['status'].endswith('*')
+                        act = act or force
+                        star = first or jobs[link]['status'].endswith('*')
                     else:
-                        _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript, False, priority=defPriority)
+                        star = first
+                    if result:
+                        _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript,
+                                    act, star, order, priority=defPriority)
+                    else:
+                        _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript,
+                                    False, star, order, priority=defPriority)
+            order += 1
 
 
         # If links are in table for more than 4 weeks, remove
@@ -402,12 +410,13 @@ class RSSQueue:
 
 RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
 
-def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NORMAL_PRIORITY):
+def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order, priority=NORMAL_PRIORITY):
     """ Process one link """
     if script=='': script = None
     if pp=='': pp = None
 
     jobs[link] = {}
+    jobs[link]['order'] = order
     nzbname = misc.sanitize_foldername(title)
     m = RE_NEWZBIN.search(link)
     if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
@@ -417,7 +426,10 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             logging.info("Adding %s (%s) to queue", m.group(3), title)
             sabnzbd.add_msgid(m.group(3), pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
         else:
-            jobs[link]['status'] = flag + '*'
+            if star:
+                jobs[link]['status'] = flag + '*'
+            else:
+                jobs[link]['status'] = flag
             jobs[link]['title'] = title
             jobs[link]['url'] = m.group(3)
             jobs[link]['cat'] = cat
@@ -431,7 +443,10 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, priority=NOR
             logging.info("Adding %s (%s) to queue", link, title)
             sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
         else:
-            jobs[link]['status'] = flag + '*'
+            if star:
+                jobs[link]['status'] = flag + '*'
+            else:
+                jobs[link]['status'] = flag
             jobs[link]['title'] = title
             jobs[link]['url'] = link
             jobs[link]['cat'] = cat

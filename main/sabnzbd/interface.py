@@ -2681,8 +2681,8 @@ def ShowRssLog(feed, all):
     """
     jobs = sabnzbd.rss.show_result(feed)
     names = jobs.keys()
-    # Sort in reverse chronological order (newest first)
-    names.sort(lambda x, y: int(jobs[y]['time']*100.0 - jobs[x]['time']*100.0))
+    # Sort in the order the jobs came from the feed
+    names.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
 
     qfeed = escape(feed.replace('/','%2F').replace('?', '%3F'))
 
