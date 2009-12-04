@@ -270,6 +270,9 @@ class RSSQueue:
                 logging.debug("Traceback: ", exc_info = True)
 
             if link:
+                # Make sure there are no spaces in the URL
+                link = link.replace(' ','')
+
                 title = entry.title
                 newlinks.append(link)
 
