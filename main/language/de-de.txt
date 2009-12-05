@@ -618,7 +618,7 @@ error-noSecUI            Fehler: Keine sekundäre Oberfläche angegeben.
 his-badArchive           Fehlgeschlagen. Unültige Archiv-Datei.
 his-cannotGetReport      Abrufen des Newzbin-Berichts fehlgeschlagen
 his-failedURL            Hinzufügen der URL fehlgeschlagen
-his-retryURL1            Abrufen der URL fehlgeschlagen
+his-retryURL1@1          Abrufen der URL fehlgeschlagen; %s
 his-retryURL2            Erneut versuchen
 
 # Errors and Warnings
@@ -695,7 +695,7 @@ error-regConnect         Verbindung zu Registry-Umgebung HKEY_CURRENT_USER konnt
 error-regOpen@1          Registry-Schlüssel %s konnte nicht geöffnet werden.
 error-regSpecial         Lesen der Registry-Schlüssel für spezielle Ordner fehlgeschlagen.
 error-sslFiles           Fehler beim Anlegen des SSL-Schlüssels und -Zertifikats.
-error-urlGet@1           Fehler beim Abrufen der URL %s.
+error-urlGet@2           Fehler beim Abrufen der URL %s (Fehler = %s)
 warn-noBrowser           Der Standard-Browser konnte nicht gestartet werden, da er wahrscheinlich nicht gefunden wurde.
 warn-pyopenssl           pyopenssl-Modul fehlt. Bitte installieren für SSL-Unterstützung.
 error-fileJoin@2         Fehler "%s" beim Ausführen von file_join auf %s
@@ -754,7 +754,7 @@ error-tvRename@2         Umbenennen von %s nach %s fehlgeschlagen.
 error-tvSimRename@2      Umbenennen der gleichen Datei von %s nach %s fehlgeschlagen.
 error-tvTemp@1           Temporäre Datei für %s konnte nicht angelegt werden.
 warn-matrixBadRep@1      Ungültige nzbmatrix.com-Bericht-ID %s.
-warn-matrixFail          Problem beim Zugriff auf den nzbmatrix.com-Server.
+warn-matrixFail@1        Problem beim Zugriff auf den nzbmatrix.com-Server (%s)
 warn-noRepair            Kein PAR2-Programm gefunden. Eine Reparatur ist nicht möglich\n
 warn-missingFiles        \nWarnung: Nicht alle Dateien wurden entpackt. Beachten Sie das Protokoll.
 error-joinMismatch       Die tatsächliche Grösse entsprach nicht der erwarteten Grösse.

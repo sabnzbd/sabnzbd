@@ -552,7 +552,7 @@ error-noSecUI            Fout: geen secundaire interface ingesteld.
 his-badArchive           Mislukt, onbruikbaar archief bestand
 his-cannotGetReport      Mislukt, kan newzbin rapport niet vinden
 his-failedURL            URL ophalen mislukt
-his-retryURL1            URL ophalen mislukt
+his-retryURL1@1          URL ophalen mislukt; %s
 his-retryURL2            Opnieuw
 
 # Errors and Warnings
@@ -627,7 +627,7 @@ error-regConnect         Kan geen verbinding maken met register deel HKEY_CURREN
 error-regOpen@1          Kan register sleutel "%s" niet lezen
 error-regSpecial         Kan register sleutels voor speciale mappen niet lezen
 error-sslFiles           Fout bij aanmaken van SSL sleutel en certificaat
-error-urlGet@1           Fout bij ophalen via URL %s
+error-urlGet@2           Fout bij ophalen via URL %s (oorzaak = "%s")
 warn-noBrowser           Kan de web-browser niet starten, geen gevonden
 warn-pyopenssl           Module "pyopenssl" ontbreekt, geen HTTPS mogelijk
 error-fileJoin@2         Fout %s bij samenvoegen van %s
@@ -686,7 +686,7 @@ error-tvRename@2         Hernoemen van %s tot %s mislukt
 error-tvSimRename@2      Hernoemen van gelijkaardig bestand %s tot %s mislukt
 error-tvTemp@1           Aanmaken tijdelijk bestand %s mislukt
 warn-matrixBadRep@1      Ongeldig nzbmatrix rapport nummer %s
-warn-matrixFail          Kan nzbmatrix niet bereiken
+warn-matrixFail@1        Geen toegang tot nzbmatrix (%s)
 warn-noRepair            Geen PAR2 programma, kan geen reparaties uitvoeren\n
 warn-missingFiles        \nLet op: niet alle bestanded zijn uitgepakt, zie log
 error-joinMismatch       Verwachte lengte ongelijk aan echte lengte

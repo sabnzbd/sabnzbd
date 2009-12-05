@@ -569,7 +569,7 @@ error-noSecUI            Fel: Inget andrainterface definierat.
 his-badArchive           Fel, Oanvändbar akrivfil
 his-cannotGetReport      Det gick inte att hämta newzbin rapport
 his-failedURL            Det gick inte att lägga till url
-his-retryURL1            URL hämtning misslyckades
+his-retryURL1@1          URL hämtning misslyckades; %s
 his-retryURL2            Försök igen
 
 # Errors and Warnings
@@ -643,7 +643,7 @@ error-regConnect         Kan ej ansluta till registret HKEY_CURRENT_USER.
 error-regOpen@1          Kan ej öppna registernyckel "%s".
 error-regSpecial         Det gick inte att läsa registernyckel för specialmappar
 error-sslFiles           Det gick inte att skapa SSL-nyckel eller certifikat.
-error-urlGet@1           Det gick inte att hämta url %s
+error-urlGet@2           Det gick inte att hämta url %s (fel = "%s")
 warn-noBrowser           Kan inte starta webbläsaren, hittades troligtvis inte
 warn-pyopenssl           pyopenssl modul saknas, var vändlig installera för https åtkomst
 error-fileJoin@2         Fel "%s" när du kör file_join på %s
@@ -702,7 +702,7 @@ error-tvRename@2         Det gick inte att döpa om: %s till %s
 error-tvSimRename@2      Det gick inte att döpa om liknande fil: %s till %s
 error-tvTemp@1           Kan inte skapa temporär fil för %s
 warn-matrixBadRep@1      Ogiltigt nzbmatrix rapporteringsnummer %s
-warn-matrixFail          Anslutningsproblem till nzbmatrix server.
+warn-matrixFail@1        Anslutningsproblem till nzbmatrix server (%s)
 warn-noRepair            Inget PAR2 program funnet, reparation ej möjlig\n
 warn-missingFiles        \nVarning: alla filer blev inte uppackade, se logg
 error-joinMismatch       Förväntad storlek är inte lika verklig storlek

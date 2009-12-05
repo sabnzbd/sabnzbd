@@ -24,22 +24,22 @@ import time
 import re
 import logging
 import Queue
-import urllib, urllib2
-import tempfile
+import urllib
 from threading import *
 
 import socket
 try:
     socket.ssl
-    _HAVE_SSL = True
+    _PROTOCOL = 'https'
 except:
-    _HAVE_SSL = False
+    _PROTOCOL = 'http'
 
 import sabnzbd
 import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.cfg as cfg
+import sabnzbd.codecs as codecs
 from sabnzbd.lang import Ta
 
 #------------------------------------------------------------------------------
@@ -118,41 +118,43 @@ class URLGrabber(Thread):
                 logging.debug('Dropping URL %s, job entry missing', url)
                 continue
 
-            # NZBmatrix api support - not used if authentication is already in the url
-            if 'nzbmatrix.com' in url and ('apikey' not in url and 'username' not in url):
-                fn, filename = _grab_nzbmatrix(url)
-            # Normal http fetching support
-            else:
-                # _grab_url cannot reside in a function, because the tempfile
-                # would not survive the end of the function
-                logging.info('Grabbing URL %s', url)
-                opener = urllib.FancyURLopener({})
-                opener.prompt_user_passwd = None
-                opener.addheaders = []
-                opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-                opener.addheader('Accept-encoding','gzip')
-                filename = None
-                try:
-                    fn, header = opener.retrieve(url)
-                except:
-                    fn = None
-                    filename = True
+            # Add nzbmatrix credentials if needed
+            url, matrix_id = _matrix_url(url)
 
-                if fn:
-                    for tup in header.items():
-                        for item in tup:
-                            if "filename=" in item:
-                                filename = item[item.index("filename=") + 9:].strip(';').strip('"')
-                                break
+            # _grab_url cannot reside in a function, because the tempfile
+            # would not survive the end of the function
+            logging.info('Grabbing URL %s', url)
+            opener = urllib.FancyURLopener({})
+            opener.prompt_user_passwd = None
+            opener.addheaders = []
+            opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
+            opener.addheader('Accept-encoding','gzip')
+            filename = None
+            msg = ''
+            try:
+                fn, header = opener.retrieve(url)
+            except:
+                fn = None
 
-            # Check if the filepath is specified, if not use the filename as whether it should be retried (bool)
+            if fn:
+                for tup in header.items():
+                    for item in tup:
+                        if "filename=" in item:
+                            filename = item[item.index("filename=") + 9:].strip(';').strip('"')
+                            break
+
+            if matrix_id:
+                fn, msg = _analyse_matrix(fn, matrix_id)
+
+            # Check if the filepath is specified, if not use the msg
+            # as whether it should be retried (bool)
             if not fn:
                 retry_count -= 1
-                if retry_count > 0:
+                if retry_count > 0 and not msg:
                     logging.info('Retry URL %s', url)
                     self.queue.put((url, future_nzo, retry_count))
                 else:
-                    misc.bad_fetch(future_nzo, url, retry=filename)
+                    misc.bad_fetch(future_nzo, url, msg, retry=True)
                 continue
 
             if not filename:
@@ -191,116 +193,55 @@ class URLGrabber(Thread):
 
 
 
-RE_NZBMATRIX = re.compile(r'nzbmatrix.com/(.*)[\?&]id=(\d+)', re.I)
+#-------------------------------------------------------------------------------
+_RE_NZBMATRIX = re.compile(r'nzbmatrix.com/(.*)[\?&]id=(\d+)', re.I)
 
-def _grab_nzbmatrix(url):
-    """
-    Grab one msgid from nzbmatrix
-    Returns:
-        path
-        filename
-    """
+def _matrix_url(url):
+    """ Patch up the url for nzbmatrix.com """
 
-    m = RE_NZBMATRIX.search(url)
+    matrix_id = 0
+    m = _RE_NZBMATRIX.search(url)
     if m:
-        msgid = m.group(2)
-    else:
-        return (None, None)
-
-    logging.info('Fetching NZB for nzbmatrix report #%s', msgid)
-
-    headers = {'User-agent' : 'SABnzbd+/' + sabnzbd.version.__version__}
-
-    # Current api syntax: http://nzbmatrix.com/api-nzb-download.php?id={NZBID}&username={USERNAME}&apikey={APIKEY}
-    if _HAVE_SSL:
-        request_url = 'https://nzbmatrix.com/api-nzb-download.php?'
-    else:
-        request_url = 'http://nzbmatrix.com/api-nzb-download.php?'
-
-    arguments = {'id': msgid, 'username': cfg.MATRIX_USERNAME.get(), 'apikey': cfg.MATRIX_APIKEY.get()}
-    # NZBMatrix API does not currently support sending details over POST, so use GET instead
-    request_url += urllib.urlencode(arguments)
+        matrix_id = m.group(2)
+        if 'username=' not in url or 'apikey=' not in url:
+            user = codecs.xml_name(cfg.MATRIX_USERNAME.get())
+            key = codecs.xml_name(cfg.MATRIX_APIKEY.get())
+            url = '%s://nzbmatrix.com/api-nzb-download.php?id=%s&username=%s&apikey=%s' % \
+                  (_PROTOCOL, matrix_id, user, key)
+    return url, matrix_id
 
 
-    try:
-        # Send off the download request
-        logging.info('Downloading NZB: %s', request_url)
-        request = urllib2.Request(request_url, headers=headers)
 
-        # Open the url
-        response = urllib2.urlopen(request)
+def _analyse_matrix(fn, matrix_id):
+    """ Analyse respons of nzbmatrix
+    """
+    msg = ''
+    if not fn:
+        # No response, just retry
+        return (None, msg)
 
-        # read the response into memory (could do with only reading first 80 bytes or so)
-        data = response.read()
+    f = open(fn, 'r')
+    data = f.read(40)
+    f.close()
 
-        # Check for an error response
-        if data.startswith('error'):
-            # Check if we are required to wait - if so sleep the urlgrabber
-            if 'please_wait' in data[6:]:
-                # must wait x amount of seconds
-                wait = data[18:]
-                if wait.isdigit():
-                    time.sleep(int(wait))
-                    # Return, but tell the urlgrabber to retry
-                    return (None, True)
-            else:
-                matrix_report_error(data[6:])
-                return (None, False)
-
-        # save the filename from the headers
-        filename = response.info()["Content-Disposition"].split("\"")[1]
-    except:
-        logging.debug("Traceback: ", exc_info = True)
-        logging.warning(Ta('warn-matrixFail'))
-        return (None, True)
+    # Check for an error response
+    if data.startswith('error'):
+        # Check if we are required to wait - if so sleep the urlgrabber
+        if 'please_wait' in data[6:]:
+            # must wait x amount of seconds
+            wait = data[18:]
+            if wait.isdigit():
+                time.sleep(int(wait))
+                # Return, but tell the urlgrabber to retry
+                return (None, msg)
+        else:
+            msg = Ta('warn-matrixFail@1') % data[6:]
+            return (None, msg)
 
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably an invalid report number
-        logging.warning(Ta('warn-matrixBadRep@1'), msgid)
-        return (None, False)
+        msg = Ta('warn-matrixBadRep@1') % matrix_id
+        return (None, msg)
 
-    # save the file to disk
-    filename = os.path.basename(filename)
-    root, ext = os.path.splitext(filename)
+    return fn, msg
 
-    try:
-        fn, path = tempfile.mkstemp(suffix=ext, text=False)
-        os.write(fn, data)
-        os.close(fn)
-    except:
-        logging.error(Ta('error-tvTemp@1'), filename)
-        logging.debug("Traceback: ", exc_info = True)
-        path = None
-
-    return (path, filename)
-
-def matrix_report_error(error_msg):
-    """
-    Looks for the error supplied in the response form nzbmatrix and gives an appropriate error message
-    # error:invalid_login = There is a problem with the username you have provided.
-    # error:invalid_api = There is a problem with the API Key you have provided.
-    # error:invalid_nzbid = There is a problem with the NZBid supplied.
-    # error:please_wait_x = Please wait x seconds before retry.
-    # error:vip_only = You need to be VIP or higher to access.
-    # error:disabled_account = User Account Disabled.
-    # error:x_daily_limit = You have reached the daily download limit of x.
-    # error:no_nzb_found = No NZB found.
-    """
-
-    if error_msg == 'invalid_login':
-        logging.warning(Ta('warn-matrixFail'))
-    elif error_msg == 'invalid_api':
-        logging.warning(Ta('warn-matrixFail'))
-    elif error_msg == 'invalid_nzbid':
-        logging.warning(Ta('warn-matrixFail'))
-    elif error_msg == 'vip_only':
-        logging.warning(Ta('warn-matrixFail'))
-    elif error_msg == 'disabled_account':
-        logging.warning(Ta('warn-matrixFail'))
-    elif error_msg == 'daily_limit':
-        logging.warning(Ta('warn-matrixFail'))
-    elif error_msg == 'no_nzb_found':
-        logging.warning(Ta('warn-matrixFail'))
-    else:
-        # Unrecognised error message
-        logging.warning(Ta('warn-matrixFail'))

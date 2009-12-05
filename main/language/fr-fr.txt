@@ -573,7 +573,7 @@ error-noSecUI            Erreur : Pas d'interface secondaire définie.
 his-badArchive           Echec, Fichier d'archive inutilisable
 his-cannotGetReport      Echec de récupération du rapport newzbin
 his-failedURL            Echec de l'ajout de l'URL
-his-retryURL1            Echec de récupération de l'URL
+his-retryURL1@1          Echec de récupération de l'URL; %s
 his-retryURL2            Essayer de nouveau
 
 # Errors and Warnings
@@ -647,7 +647,7 @@ error-regConnect         Impossible de se connecter au registre HKEY_CURRENT_USE
 error-regOpen@1          Impossible d'ouvrir la clé de registre "%s".
 error-regSpecial         Echec de la lecture des clés de registre pour les dossiers spéciaux
 error-sslFiles           Erreur lors de la création de la clé et du certificat SSL
-error-urlGet@1           Erreur lors de la récupération de l'url %s
+error-urlGet@2           Erreur lors de la récupération de l'url %s (erreur = "%s")
 warn-noBrowser           Impossible de lancer le navigateur web, potentiellement non trouvé
 warn-pyopenssl           module pyopenssl manquant, nécessaire pour l'accès HTTPS
 error-fileJoin@2         Erreur "%s" lors de l'exécution de file_join sur %s
@@ -706,7 +706,7 @@ error-tvRename@2         Echec du renommage : %s en %s
 error-tvSimRename@2      Echec du renommange des fichiers similaires : %s en %s
 error-tvTemp@1           Impossible de créer le fichier temporaire %s
 warn-matrixBadRep@1      Numéro de rapport nzbmatrix invalide %s
-warn-matrixFail          Problème d'accès au serveur nzbmatrix.
+warn-matrixFail@1        Problème d'accès au serveur nzbmatrix (%s)
 warn-noRepair            Le binaire PAR2 n'a pas été trouvé, les réparations ne sont pas possibles\n
 warn-missingFiles        \nAttention : tous les fichiers n'ont pas été décompressés, voir le log
 error-joinMismatch       La taille ne correspond pas à la taille attendue

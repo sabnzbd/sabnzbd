@@ -568,7 +568,7 @@ error-noSecUI            Error: No secondary interface defined.
 his-badArchive           Failed, Unusable archive file
 his-cannotGetReport      Failed to fetch newzbin report
 his-failedURL            Failed to add url
-his-retryURL1            URL Fetching failed
+his-retryURL1@1          URL Fetching failed; %s
 his-retryURL2            Try again
 
 # Errors and Warnings
@@ -642,7 +642,7 @@ error-regConnect         Cannot connect to registry hive HKEY_CURRENT_USER.
 error-regOpen@1          Cannot open registry key "%s".
 error-regSpecial         Failed to read registry keys for special folders
 error-sslFiles           Error creating SSL key and certificate
-error-urlGet@1           Error getting url %s
+error-urlGet@2           Error getting url %s (cause= "%s")
 warn-noBrowser           Cannot launch the browser, probably not found
 warn-pyopenssl           pyopenssl module missing, please install for https access
 error-fileJoin@2         Error "%s" while running file_join on %s
@@ -701,7 +701,7 @@ error-tvRename@2         Failed to rename: %s to %s
 error-tvSimRename@2      Failed to rename similar file: %s to %s
 error-tvTemp@1           Cannot create temp file for %s
 warn-matrixBadRep@1      Invalid nzbmatrix report number %s
-warn-matrixFail          Problem accessing nzbmatrix server.
+warn-matrixFail@1        Problem accessing nzbmatrix server (%s)
 warn-noRepair            No PAR2 program found, repairs not possible\n
 warn-missingFiles        \nWarning: not all files were unpacked, see log
 error-joinMismatch       Expected size did not equal actual size

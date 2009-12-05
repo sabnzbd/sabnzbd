@@ -804,9 +804,9 @@ def get_filepath(path, nzo, filename):
     return fullPath
 
 
-def bad_fetch(nzo, url, retry=False, archive=False):
+def bad_fetch(nzo, url, msg='', retry=False, archive=False):
     """ Create History entry for failed URL Fetch """
-    logging.error(Ta('error-urlGet@1'), url)
+    logging.error(Ta('error-urlGet@2'), url, msg)
 
     pp = nzo.get_pp()
     if pp:
@@ -835,8 +835,8 @@ def bad_fetch(nzo, url, retry=False, archive=False):
         nzbname = nzo.get_dirname_rename()
         if nzbname:
             nzbname = '&nzbname=%s' % urllib.quote(nzbname)
-        text = T('his-retryURL1')+', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
-        parms = (cfg.API_KEY.get(), urllib.quote(url), pp, cat, script, nzbname)
+        text = T('his-retryURL1@1')+', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
+        parms = (msg, cfg.API_KEY.get(), urllib.quote(url), pp, cat, script, nzbname)
         nzo.set_fail_msg(text % parms)
     else:
         if archive:
