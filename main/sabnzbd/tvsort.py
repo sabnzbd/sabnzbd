@@ -61,6 +61,11 @@ COUNTRY_REP = ('(US)', '(UK)', '(EU)', '(CA)', '(YU)', '(VE)', '(TR)', '(CH)', \
                '(CO)', '(CN)', '(CL)', '(BG)', '(BR)', '(BE)', '(AT)', '(AU)', \
                '(AW)', '(AR)', '(AL)', '(AF)')
 
+_RE_ENDEXT = re.compile(r'\.%ext[{}]*$', re.I)
+
+def endswith_ext(path):
+    m = _RE_ENDEXT.search(path)
+    return m is not None
 
 
 def move_to_parent_folder(workdir):
@@ -277,7 +282,7 @@ class SeriesSorter:
 
         path = self.sort_string
 
-        if path.endswith('.%ext'):
+        if endswith_ext(path):
             extension = True
             path = path.replace(".%ext", '')
         else:
@@ -377,6 +382,19 @@ class SeriesSorter:
             logging.debug('Nothing to rename, %s', files)
 
 
+_RE_MULTIPLE = ( \
+    re.compile(r'cd\W?(\d+)\W?', re.I),        # .cd1.avi
+    re.compile(r'\w\W?([\w\d])[{}]*$', re.I),  # blah1.avi blaha.avi
+    re.compile(r'\w\W([\w\d])\W', re.I)        # blah-1-ok.avi blah-a-ok.avi
+)
+def check_for_multiple(files):
+    for regex in _RE_MULTIPLE:
+        matched_files = check_for_sequence(regex, files)
+        if matched_files:
+            return matched_files
+    return ''
+
+
 def check_for_sequence(regex, files):
     matches = {}
     prefix = None
@@ -396,30 +414,29 @@ def check_for_sequence(regex, files):
 
     key_prev = 0
     passed = True
-    alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m']
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
 
     # Check the dictionary to see if the keys are in a numeric or alphabetic sequence
-    match_copy = matches.copy()
-    for m in match_copy.iteritems():
-        key, file = m
-        if key.isdigit():
-            key = int(key)
+    for akey in sorted(matches.keys()):
+        if akey.isdigit():
+            key = int(akey)
+        elif akey in alphabet:
+            key = alphabet.find(akey) + 1
+        else:
+            passed = False
+
+        if passed:
             if not key_prev:
                 key_prev = key
             else:
-                if key - key_prev == 1:
+                if key_prev + 1 == key:
                     key_prev = key
                 else:
                     passed = False
-        else:
-            if alphabet[key_prev] == key:
-                key_prev += 1
-                # convert {'b':'filename-b.avi'} to {'2', 'filename-b.avi'}
-                matches.pop(key)
-                matches[key_prev] = file
-
-            else:
-                passed = False
+        if passed:
+            # convert {'b':'filename-b.avi'} to {'2', 'filename-b.avi'}
+            item = matches.pop(akey)
+            matches[str(key)] = item
 
     if passed:
         return matches
@@ -504,7 +521,7 @@ class GenericSorter:
 
         path = self.sort_string
 
-        if path.endswith('.%ext'):
+        if endswith_ext(path):
             extension = True
             path = path.replace(".%ext", '')
         else:
@@ -596,7 +613,7 @@ class GenericSorter:
         ## Sequence File Handling
         # if there is more than one extracted file check for CD1/1/A in the title
         elif self.extra:
-            matched_files = self.check_for_multiple(files)
+            matched_files = check_for_multiple(files)
             # rename files marked as in a set
             if matched_files:
                 logging.debug("Renaming a series of generic files (%s)", matched_files)
@@ -616,22 +633,6 @@ class GenericSorter:
                     rename_similar(current_path, file, self.filename_set)
             else:
                 logging.debug("Movie files not in sequence %s", _files)
-
-
-    def check_for_multiple(self, files):
-        expressions = []
-        matched_files = []
-
-        expressions.append(re.compile('cd\W?(\d)\W', re.I)) # .cd1.avi
-        expressions.append(re.compile('\w\W?([\w\d])$', re.I)) # blah1.avi blaha.avi
-        expressions.append(re.compile('\w\W([\w\d])\W', re.I)) # blah-1-ok.avi blah-a-ok.avi
-
-        for regex in expressions:
-            regex = re.compile(regex, re.I)
-            matched_files = check_for_sequence(regex, files)
-            if matched_files:
-                return matched_files
-        return ''
 
 
 class DateSorter:
@@ -713,7 +714,7 @@ class DateSorter:
 
         path = self.sort_string
 
-        if path.endswith('.%ext'):
+        if endswith_ext(path):
             extension = True
             path = path.replace(".%ext", '')
         else:
