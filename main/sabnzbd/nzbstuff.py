@@ -1251,6 +1251,9 @@ RE_PASSWORD2 = re.compile(r'(.+){{([^{}]+)}}$')
 def scan_password(name):
     """ Get password (if any) from the title
     """
+    if 'http://' in name or 'https://' in name:
+        return name, None
+
     m = RE_PASSWORD1.search(name)
     if not m:
         m = RE_PASSWORD2.search(name)
