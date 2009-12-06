@@ -52,10 +52,10 @@
             <!--#if $stage.name.lower() == "script"#-->
                 <a href="scriptlog?name=$line.nzo_id" class="modal" rel="scriptlog">
                     <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower() pointer" title='$T('Plush-viewScriptLog')'>&nbsp;</div>
-                    <!--#for $action in $stage.actions#-->
-                    	<h3 class="hvMessageScript"><!--#echo $action.replace("'","&rsquo;") #--></h3>
-                    <!--#end for#-->
                 </a>
+                <!--#for $action in $stage.actions#-->
+                	<h3 class="hvMessageScript"><!--#echo $action.replace("'","&rsquo;").replace("<a href","<a class='modal' rel='scriptlog2' href") #--></h3>
+                <!--#end for#-->
             <!--#else#-->
                 <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower()" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
             <!--#end if#-->
