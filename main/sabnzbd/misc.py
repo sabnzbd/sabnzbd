@@ -1016,7 +1016,7 @@ def find_on_path(targets):
     for path in paths:
         for target in targets:
             target_path = os.path.abspath(os.path.join(path, target))
-            if os.access(target_path, os.X_OK):
+            if os.path.isfile(target_path) and os.access(target_path, os.X_OK):
                 return target_path
     return None
 
