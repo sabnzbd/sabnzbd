@@ -769,6 +769,14 @@ tr:hover .history_added { color: black; }
 	width: 100%;
 }
  
+.hvMessageScript {
+	clear: both;
+	color: #006400;
+	font-size: 80%;
+	font-weight: bold;
+	width: 100%;
+}
+ 
 .icon_history_verbose {
 	cursor: help;
 	display: inline;
