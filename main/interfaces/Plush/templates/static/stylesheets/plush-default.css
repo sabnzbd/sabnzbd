@@ -378,6 +378,8 @@ select {
 	cursor: default;
 	font-weight: normal;
 	margin: 32px 0 0 38px;
+	width:180px;
+	overflow:hidden;
 }
 
 #queue-buttons {
@@ -519,7 +521,7 @@ select {
   margin:0 auto;
   overflow:hidden;
   padding-top:12px;
-  width:308px;
+  width:432px;
 }
  
 .sprite_sabnzbdplus_logo {
