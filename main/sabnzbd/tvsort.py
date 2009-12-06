@@ -27,7 +27,8 @@ import logging
 import re
 
 import sabnzbd
-from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_filename, get_ext
+from sabnzbd.misc import move_to_path, cleanup_empty_directories, \
+                         get_unique_filename, get_ext, renamer, remove_dir
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
 from sabnzbd.codecs import titler
@@ -84,7 +85,7 @@ def move_to_parent_folder(workdir):
 
     cleanup_empty_directories(workdir)
     try:
-        os.rmdir(workdir)
+        remove_dir(workdir)
     except:
         pass
 
@@ -371,7 +372,7 @@ class SeriesSorter:
             if not os.path.exists(newpath):
                 try:
                     logging.debug("Rename: %s to %s", filepath,newpath)
-                    os.rename(filepath,newpath)
+                    renamer(filepath,newpath)
                 except:
                     logging.error("Failed to rename: %s to %s", current_path, newpath)
                     logging.debug("Traceback: ", exc_info = True)
@@ -604,7 +605,7 @@ class GenericSorter:
                 newpath = os.path.join(current_path, newname)
                 try:
                     logging.debug("Rename: %s to %s", filepath,newpath)
-                    os.rename(filepath,newpath)
+                    renamer(filepath,newpath)
                 except:
                     logging.error(Ta('error-tvRename@2'), filepath, newpath)
                     logging.debug("Traceback: ", exc_info = True)
@@ -626,7 +627,7 @@ class GenericSorter:
                     newpath = os.path.join(current_path, name)
                     try:
                         logging.debug("Rename: %s to %s", filepath,newpath)
-                        os.rename(filepath,newpath)
+                        renamer(filepath,newpath)
                     except:
                         logging.error(Ta('error-tvRename@2'), filepath, newpath)
                         logging.debug("Traceback: ", exc_info = True)
@@ -802,7 +803,7 @@ class DateSorter:
                         if not os.path.exists(newpath):
                             try:
                                 logging.debug("Rename: %s to %s", filepath,newpath)
-                                os.rename(filepath,newpath)
+                                renamer(filepath,newpath)
                             except:
                                 logging.error(Ta('error-tvRename@2'), current_path, newpath)
                                 logging.debug("Traceback: ", exc_info = True)
@@ -973,7 +974,7 @@ def rename_similar(path, file, name):
                 if not os.path.exists(newpath):
                     try:
                         logging.debug("Rename: %s to %s", fpath,newpath)
-                        os.rename(fpath,newpath)
+                        renamer(fpath,newpath)
                     except:
                         logging.error(Ta('error-tvSimRename@2'), path, newpath)
                         logging.debug("Traceback: ", exc_info = True)

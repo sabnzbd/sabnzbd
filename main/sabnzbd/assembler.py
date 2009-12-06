@@ -34,7 +34,7 @@ except:
     new_md5 = md5.new
 
 import sabnzbd
-from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path
+from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path, renamer
 import sabnzbd.cfg as cfg
 import sabnzbd.articlecache
 import sabnzbd.postproc
@@ -143,7 +143,7 @@ def _assemble(nzf, path, dupe):
         if dupe:
             path = unique_path
         else:
-            os.rename(path, unique_path)
+            renamer(path, unique_path)
 
     fout = open(path, 'ab')
 

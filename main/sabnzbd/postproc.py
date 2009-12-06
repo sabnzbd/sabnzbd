@@ -32,7 +32,7 @@ from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          get_unique_filename, \
-                         on_cleanup_list
+                         on_cleanup_list, renamer, remove_dir
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match
@@ -297,7 +297,7 @@ class PostProcessor(Thread):
                 if folder_rename:
                     tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
                     try:
-                        os.rename(workdir_complete, tmp_workdir_complete)
+                        renamer(workdir_complete, tmp_workdir_complete)
                     except:
                         pass # On failure, just use the original name
                 else:
@@ -328,7 +328,7 @@ class PostProcessor(Thread):
                 ## Remove download folder
                 try:
                     if os.path.exists(workdir):
-                        os.rmdir(workdir)
+                        remove_dir(workdir)
                 except:
                     logging.error(Ta('error-ppDelWorkdir@1'), workdir)
                     logging.debug("Traceback: ", exc_info = True)
@@ -343,7 +343,7 @@ class PostProcessor(Thread):
                     if nzb_list:
                         nzo.set_unpack_info('Download', T('msg-sentToQ@1') % unicoder(nzb_list))
                         try:
-                            os.rmdir(tmp_workdir_complete)
+                            remove_dir(tmp_workdir_complete)
                         except:
                             pass
                     else:
@@ -356,7 +356,7 @@ class PostProcessor(Thread):
                             workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                             workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
                         try:
-                            os.rename(tmp_workdir_complete, workdir_complete)
+                            renamer(tmp_workdir_complete, workdir_complete)
                             nzo.set_dirname(os.path.basename(workdir_complete))
                         except:
                             logging.error(Ta('error-ppRename@2'), tmp_workdir_complete, workdir_complete)

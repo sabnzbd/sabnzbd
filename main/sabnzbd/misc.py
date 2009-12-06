@@ -707,7 +707,7 @@ def get_unique_filename(path, new_path, i=1):
             path, uniq_path = get_unique_filename(path, new_path, i=i+1)
         else:
             try:
-                os.rename(path, uniq_path)
+                renamer(path, uniq_path)
                 path = path.replace(fn, uniq_name)
             except:
                 return path, new_path
@@ -739,7 +739,7 @@ def move_to_path(path, new_path, unique=True):
                                                   path,new_path, unique)
         try:
             # First try cheap rename
-            os.rename(path, new_path)
+            renamer(path, new_path)
         except:
             # Cannot rename, try copying
             try:
@@ -761,7 +761,7 @@ def cleanup_empty_directories(path):
         for root, dirs, files in os.walk(path, topdown=False):
             if not dirs and not files and root != path:
                 try:
-                    os.rmdir(root)
+                    remove_dir(root)
                     repeat = True
                 except:
                     pass
@@ -1208,3 +1208,45 @@ def linux_standby():
         if proxy.Get(interface, 'can-suspend', dbus_interface=pinterface):
             proxy.Suspend(dbus_interface=interface)
     time.sleep(10)
+
+
+#------------------------------------------------------------------------------
+
+def renamer(old, new):
+    """ Rename file/folder with retries for Win32 """
+    if sabnzbd.WIN32:
+        retries = 5
+        while retries > 0:
+            try:
+                os.rename(old, new)
+                return
+            except WindowsError, err:
+                if err[0] == 32:
+                    logging.info('Retry rename %s to %s', old, new)
+                    retries -= 1
+                else:
+                    raise WindowsError(err)
+            time.sleep(3)
+        raise WindowsError(err)
+    else:
+        os.rename(old, new)
+
+
+def remove_dir(path):
+    """ Remove directory with retries for Win32 """
+    if sabnzbd.WIN32:
+        retries = 5
+        while retries > 0:
+            try:
+                os.rmdir(path)
+                return
+            except WindowsError, err:
+                if err[0] == 32:
+                    logging.info('Retry delete %s', path)
+                    retries -= 1
+                else:
+                    raise WindowsError(err)
+            time.sleep(3)
+        raise WindowsError(err)
+    else:
+        os.rmdir(path)
