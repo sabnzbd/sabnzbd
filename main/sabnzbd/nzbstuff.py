@@ -574,7 +574,7 @@ class NzbObject(TryList):
                     break
 
         # Determine category and find pp/script values
-        self.__cat, pp, self.__script, self.__priority = cat_to_opts(cat, pp, script, priority)
+        self.__cat, pp, self.__script, self.__priority = cat_to_opts(cat, pp, script, self.__priority)
         self.__repair, self.__unpack, self.__delete = sabnzbd.pp_to_opts(pp)
 
         if cfg.CREATE_GROUP_FOLDERS.get():
