@@ -21,6 +21,7 @@ sabnzbd.nzbqueue - nzb queue
 
 import os
 import logging
+import time
 import datetime
 
 import sabnzbd
@@ -567,7 +568,9 @@ class NzbQueue(TryList):
             self.reset_try_list()
 
         if file_done:
-            sabnzbd.save_data(nzo, nzo.nzo_id)
+            if nzo.extra3 is None or time.time() > nzo.extra3:
+                sabnzbd.save_data(nzo, nzo.nzo_id)
+                nzo.extra3 = time.time() + float(cfg.SAVE_INTERVAL.get())
 
             _type = nzf.get_type()
 

@@ -136,6 +136,7 @@ ADMIN_DIR = OptionDir('misc', 'admin_dir', 'admin', validation=validate_safedir)
 #LOG_DIR = OptionDir('misc', 'log_dir', 'logs')
 DIRSCAN_DIR = OptionDir('misc', 'dirscan_dir', create=False)
 DIRSCAN_SPEED = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
+SAVE_INTERVAL = OptionNumber('misc', 'save_interval', 1*60)
 
 CHERRYHOST = OptionStr('misc','host', DEF_HOST)
 if sabnzbd.WIN32:

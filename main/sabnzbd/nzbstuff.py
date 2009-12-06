@@ -513,7 +513,7 @@ class NzbObject(TryList):
         self.extra1 = nzbname
 
         self.extra2 = password
-        self.extra3 = None
+        self.extra3 = None # Will hold earliest next save time of NZO
         self.extra4 = None
         self.extra5 = None
         self.extra6 = None
