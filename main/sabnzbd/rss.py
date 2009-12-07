@@ -362,9 +362,11 @@ class RSSQueue:
 
         if not (self.__running or sabnzbd.PAUSED_ALL):
             self.__running = True
+            active = False
             feeds = config.get_rss()
             for feed in feeds:
                 if feeds[feed].enable.get():
+                    active = True
                     self.run_feed(feed, download=True, ignoreFirst=True)
                     # Wait 30 seconds, else sites may get irritated
                     for x in xrange(30):
@@ -373,7 +375,8 @@ class RSSQueue:
                             return
                         else:
                             time.sleep(1.0)
-            self.save()
+            if active:
+                self.save()
             self.__running = False
 
 
