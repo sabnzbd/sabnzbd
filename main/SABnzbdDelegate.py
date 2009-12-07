@@ -582,7 +582,7 @@ class SABnzbdDelegate(NSObject):
     def to_units(self, val):
         """ Convert number to K/M/G/T/P notation
         """
-        TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
+        TAB_UNITS = ("", "K", "M", "G", "T", "P")
         val = str(val).strip()
         if val == "-1":
             return val
@@ -591,14 +591,15 @@ class SABnzbdDelegate(NSObject):
             val = float(val)
         except:
             return ''
+
         while (val > 1023.0) and (n < 5):
             val = val / 1024.0
             n= n+1
         unit = TAB_UNITS[n]
         if n>1:
-            return "%.2f %sB/s" % (val, unit)
+            return " %.2f %sB/s " % (val, unit)
         else:
-            return "%d %sB/s" % (val, unit)
+            return " %d %sB/s " % (val, unit)
 
     def openBrowserAction_(self, sender):
         if sender.representedObject:
