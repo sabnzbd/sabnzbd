@@ -1,12 +1,26 @@
 -------------------------------------------------------------------------------
 0.5.0Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
-* Corrections in translations
-* Add "hidden" option to enable/disable final folder renaming (__UNPACK/__FAILED)
-* Email about disk-full was malformed
+Fixes
+* nzbmatrix.com support fixed (fetch NZB and Wizard settings)
+* Problems on some systems because of reading NZB-spec from newzbin
+  for each NZB file
+* When an RSS feed has more than 9 filters, the order was disturbed
+* Fixed several TVSort problems including a hangup
+* Each RSS preview added jobs marked "will not be downloaded"
+  instead of just the very first scan.
+* Email reporting disk-full was malformed
 * Sample detection was to eager to detect
-* Association of NZB files with SABnzbd for OSX
+* Improve detection of 64bit versions of Windows Vista/7/Server2008
+* Explicit priorities in nzb upload were ignored
+* Corrections in translations
+Improvements
+* INI-only option to reduce the amount of admin saves (important for very large NZBs)
+* INI-only option to enable/disable final folder renaming (__UNPACK/__FAILED)
 * Fixed OSX uninstaller so that it will leave extra skins on the disk
+* Association of NZB files with SABnzbd for OSX
+* Retry folder renames and deletions on Windows
+* Don't save RSS admin to disk, when no feeds are active
 
 -------------------------------------------------------------------------------
 0.5.0Beta1 by The SABnzbd-Team
