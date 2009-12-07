@@ -1,5 +1,16 @@
 List of known issues.
 
+*** Under investigation ***
+- We are investigating reports of downloads hanging in the
+  last bit of the actual download.
+- On some systems, SABnzbd gradually uses more memory without
+  ever reducing it.
+
+So far we have too little information to reproduce these problems.
+Please report such problems on the forum with as much information
+as possibe (OS, amount of usenet servers etc.)
+
+
 *** Known problems ***
 
 - On OSX you may encounter downloaded files with foreign characters.
