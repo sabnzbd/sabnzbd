@@ -40,7 +40,7 @@ echo "  done."
 
 echo "4/5 > Installing update..."
 cd ..
-rm -rd sabnzbd interfaces/Classic interfaces/Mobile interfaces/Plush interfaces/smpl interfaces/wizard language osx MainMenu.nib cherrypy licenses>/dev/null
+rm -rd sabnzbd interfaces/Concept interfaces/Classic interfaces/Mobile interfaces/Plush interfaces/smpl interfaces/wizard language osx MainMenu.nib cherrypy licenses>/dev/null
 mv -f interfaces interfaces_tmp>/dev/null
 mv -f tmp/* ./>/dev/null
 cp -r interfaces_tmp/* interfaces/>/dev/null

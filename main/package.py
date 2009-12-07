@@ -307,6 +307,7 @@ if target == 'app':
 
     #remove prototype and iphone interfaces
     os.system("rm -rf interfaces/prototype>/dev/null")
+    os.system("rm -rf interfaces/Concept>/dev/null")
     os.system("rm -rf interfaces/iphone>/dev/null")
 
     #build SABnzbd.py
