@@ -38,6 +38,7 @@ from sabnzbd.constants import *
 import sabnzbd.nzbqueue
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+from sabnzbd.codecs import unicoder
 from sabnzbd.lang import T, Ta
 
 if sabnzbd.FOUNDATION:
@@ -807,6 +808,7 @@ def get_filepath(path, nzo, filename):
 def bad_fetch(nzo, url, msg='', retry=False, archive=False):
     """ Create History entry for failed URL Fetch """
     logging.error(Ta('error-urlGet@2'), url, msg)
+    msg = unicoder(msg)
 
     pp = nzo.get_pp()
     if pp:
@@ -835,6 +837,8 @@ def bad_fetch(nzo, url, msg='', retry=False, archive=False):
         nzbname = nzo.get_dirname_rename()
         if nzbname:
             nzbname = '&nzbname=%s' % urllib.quote(nzbname)
+        else:
+            nzbname = ''
         text = T('his-retryURL1@1')+', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
         parms = (msg, cfg.API_KEY.get(), urllib.quote(url), pp, cat, script, nzbname)
         nzo.set_fail_msg(text % parms)
