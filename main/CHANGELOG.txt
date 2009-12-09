@@ -1,4 +1,11 @@
 -------------------------------------------------------------------------------
+0.5.0Beta3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+* Solved problems with adding NZB by URL (also through RSS)
+* Proper display of download speed in OSX menu
+* Fixed compatibility of Plush and IE8
+-------------------------------------------------------------------------------
 0.5.0Beta2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Fixes
