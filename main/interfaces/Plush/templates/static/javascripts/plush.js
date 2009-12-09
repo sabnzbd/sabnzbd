@@ -859,7 +859,7 @@ jQuery(function($) { // safely invoke $ selector
 				// 3-in-1 change nzb [category + processing + script]
 				$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').change(function(e){
 					var val = $(this).parent().parent().attr('id');
-					var cval = $(this).attr('class');
+					var cval = $(this).attr('class').split(" ")[0]; // ignore added "hovering" class
 					$.ajax({
 						type: "POST",
 						url: "tapi",
