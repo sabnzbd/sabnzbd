@@ -24,7 +24,7 @@ server               Server Details
 explain-server       Please enter in the details of your primary usenet provider.
 server-help          Help
 server-help1         In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended.
-server-help2@2       Don't have a usenet provider? We recommend trying %s or %s.
+server-help2@1       Don't have a usenet provider? We recommend trying %s.
 server-con-explain   The number of connections allowed by your provider
 server-ssl-explain   Select only if your provider allows SSL connections.
 server-text          Click to test the entered details.

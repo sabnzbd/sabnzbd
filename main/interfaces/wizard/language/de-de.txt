@@ -26,7 +26,7 @@ explain-server       Geben Sie bitte die Informationen zu Ihrem Usenet-Provider 
 server-help          Hilfe
 server-help1         Um aus dem Usenet herunterladen zu können, benötigen Sie Zugriff auf einen Usenet-Provider.\
                      Ihr ISP bieten dies möglicherweise an, jedoch werden kostenpflichtige Provider empfohlen.
-server-help2@2       Wenn Sie noch keinen Usenet-Provider haben, empfehlen wir Ihnen %s oder %s.
+server-help2@1       Wenn Sie noch keinen Usenet-Provider haben, empfehlen wir Ihnen %s.
 server-con-explain   Die Anzahl der Verbindungen, die der Provider erlaubt.
 server-ssl-explain   Nur auswählen, wenn der Provider SSL-Verbindungen erlaubt.
 server-text          Klicken um die eingegebenen Informationen zu überprüfen.

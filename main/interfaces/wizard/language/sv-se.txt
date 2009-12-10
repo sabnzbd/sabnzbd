@@ -25,7 +25,7 @@ server               Serveruppgifter
 explain-server       Fyll i uppgifter om din primära usenet leverantör.
 server-help          Hjälp
 server-help1         För att ladda ner från usenet du behöver tillgång till en leverantör. Din internetleverantör kan ge dig tillgång, men en premie leverantör rekommenderas.
-server-help2@2       Har du inte någon usenet leverantör? Vi rekommenderar att prova %s eller %s.
+server-help2@1       Har du inte någon usenet leverantör? Vi rekommenderar att prova %s.
 server-con-explain   Antalet anslutningar som tillåts av din leverantör
 server-ssl-explain   Välj bara om din leverantör tillåter SSL-anslutningar.
 server-text          Klicka här för att testa dina angivna serveruppgifter.

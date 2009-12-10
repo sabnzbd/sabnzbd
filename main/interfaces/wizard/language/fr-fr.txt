@@ -24,7 +24,7 @@ server               Serveurs
 explain-server       Entrez les informations sur votre principal fournisseur usenet.
 server-help          Aide
 server-help1         Pour pouvoir télécharger sur les newsgroups, il est nécessaire d'avoir un fournisseur usenet. Votre FAI peut vous en fournir un, un fournisseur usenet premium est tout de même recommandé.
-server-help2@2       Vous n'avez pas de fournisseur usenet ? Nous vous recommendons d'essayer %s ou %s.
+server-help2@1       Vous n'avez pas de fournisseur usenet ? Nous vous recommendons d'essayer %s.
 server-con-explain   Le nombre de connexions autorisées par votre fournisseur usenet
 server-ssl-explain   Cochez uniquement si votre fournisseur usenet permet les connexions SSL.
 server-text          Cliquez pour tester les informations entrées.
