@@ -25,7 +25,7 @@ server-help          Hulp
 server-help1         Om te kunnen downloaded van Usenet, heb je een provider nodig.\
                      Je Internet bedrijf heeft misschien een server,\
                      maar we bevelen een betaalde server aan.
-server-help2@1       Heb je nog geen Usenet provider? Wij bevelen %s.
+server-help2@1       Heb je nog geen Usenet provider? Wij bevelen %s aan.
 server-con-explain   Het aantal verbindingen dat je provider toestaat.
 server-ssl-explain   Vink dit alleen aan als je provider SSL verbindingen toestaat.
 server-text          Klik om de verbinding te testen.
