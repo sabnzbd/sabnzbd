@@ -805,9 +805,15 @@ def get_filepath(path, nzo, filename):
     return fullPath
 
 
+def _force_latin(txt):
+    if isinstance(txt, unicode):
+        return txt.encode('latin-1', 'replace')
+    else:
+        return txt
+
 def bad_fetch(nzo, url, msg='', retry=False, archive=False):
     """ Create History entry for failed URL Fetch """
-    logging.error(Ta('error-urlGet@2'), url, msg)
+    logging.error(Ta('error-urlGet@2'), _force_latin(url), _force_latin(msg))
     msg = unicoder(msg)
 
     pp = nzo.get_pp()
