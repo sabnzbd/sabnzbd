@@ -134,6 +134,9 @@ class NNTP:
             if sabnzbd.WIN32 and not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, self)).start()
             else:
+                # if blocking (server test) only wait for 4 seconds during connect until timeout
+                if block:
+                    self.sock.settimeout(4)
                 self.sock.connect((self.host, self.port))
                 if not block:
                     self.sock.setblocking(0)

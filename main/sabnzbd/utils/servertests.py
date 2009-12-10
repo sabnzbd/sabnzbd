@@ -20,7 +20,6 @@ sabnzbd.utils.servertests - Debugging server connections. Currently only NNTP se
 """
 
 import socket
-socket.setdefaulttimeout(4)
 import sys
 
 from sabnzbd.newswrapper import NewsWrapper
@@ -53,8 +52,9 @@ def test_nntp_server_dict(kwargs):
                         password=password, ssl=ssl)
 
 
-def test_nntp_server(host, port, username=None, password=None, ssl=None, timeout=120):
+def test_nntp_server(host, port, username=None, password=None, ssl=None):
     ''' Will connect (blocking) to the nttp server and report back any errors '''
+    timeout = 4.0
     if '*' in password and not password.strip('*'):
         # If the password is masked, try retrieving it from the config
         servers = get_servers()
