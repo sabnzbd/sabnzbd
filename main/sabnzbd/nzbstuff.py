@@ -547,9 +547,10 @@ class NzbObject(TryList):
         # disable the reading of the DTD file from newzbin.com
         # by setting "feature_external_ges" to 0.
 
+        handler = NzbParser(self)
         parser = xml.sax.make_parser()
         parser.setFeature(xml.sax.handler.feature_external_ges, 0)
-        parser.setContentHandler(NzbParser(self))
+        parser.setContentHandler(handler)
         parser.setErrorHandler(xml.sax.handler.ErrorHandler())
         inpsrc = xml.sax.xmlreader.InputSource()
         inpsrc.setByteStream(StringIO(nzb))
