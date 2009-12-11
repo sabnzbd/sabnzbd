@@ -53,18 +53,20 @@
                 <a href="scriptlog?name=$line.nzo_id" class="modal" rel="scriptlog">
                     <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower() pointer" title='$T('Plush-viewScriptLog')'>&nbsp;</div>
                 </a>
-                <!--#for $action in $stage.actions#-->
-                	<h3 class="hvMessageScript"><!--#echo $action.replace("'","&rsquo;").replace("<a href","<a class='modal' rel='scriptlog2' href") #--></h3>
-                <!--#end for#-->
+		        <!--#if not $line.action_line#-->
+	                <!--#for $action in $stage.actions#-->
+	                	<h3 class="hvMessageScript"><!--#echo $action.replace("'","&rsquo;").replace("<a href","<a class='modal' rel='scriptlog2' href") #--></h3>
+	                <!--#end for#-->
+	            <!--#end if#-->
             <!--#else#-->
                 <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower()" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
             <!--#end if#-->
         <!--#end for#-->
         <!--#if $line.action_line#-->
-        <h3 class="hvMessage">&raquo;&nbsp;$line.action_line&nbsp;</h3>
+        <h3 class="hvMessageAction">&raquo;&nbsp;$line.action_line&nbsp;</h3>
         <!--#end if#-->
         <!--#if $line.fail_message#-->
-        <h3 class="hvMessage">&raquo;&nbsp;$line.fail_message&nbsp;</h3>
+        <h3 class="hvMessageFail">&raquo;&nbsp;$line.fail_message&nbsp;</h3>
         <!--#end if#-->
     </td>
     

@@ -761,9 +761,17 @@ tr:hover .nzb_status_grippie {
  
 tr:hover .history_added { color: black; }
  
-.hvMessage {
+.hvMessageFail {
 	clear: both;
 	color: #DE2424;
+	font-size: 80%;
+	font-weight: bold;
+	width: 100%;
+}
+  
+.hvMessageAction {
+	clear: both;
+	color: #00008B;
 	font-size: 80%;
 	font-weight: bold;
 	width: 100%;
