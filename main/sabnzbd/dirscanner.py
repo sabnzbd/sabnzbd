@@ -301,7 +301,6 @@ class DirScanner(threading.Thread):
 
                 root, ext = os.path.splitext(path)
                 ext = ext.lower()
-                priority = cfg.DIRSCAN_PRIORITY.get()
                 candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
                 if candidate:
                     try:
@@ -341,7 +340,7 @@ class DirScanner(threading.Thread):
 
                     # Handle ZIP files, but only when containing just NZB files
                     if ext in ('.zip', '.rar') :
-                        res = ProcessArchiveFile(filename, path, catdir=catdir, priority=priority)
+                        res = ProcessArchiveFile(filename, path, catdir=catdir)
                         if res == -1:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
@@ -351,7 +350,7 @@ class DirScanner(threading.Thread):
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb
                     elif ext == '.nzb' or filename.lower().endswith('.nzb.gz'):
-                        res = ProcessSingleFile(filename, path, catdir=catdir, priority=priority)
+                        res = ProcessSingleFile(filename, path, catdir=catdir)
                         if res < 0:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
