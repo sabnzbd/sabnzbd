@@ -379,7 +379,7 @@ class PostProcessor(Thread):
 
                     ## Run the user script
                     fname = ""
-                    if (not nzb_list) and cfg.SCRIPT_DIR.get_path() and script and script!='None' and script!='Default':
+                    if parResult and (not nzb_list) and cfg.SCRIPT_DIR.get_path() and script and script!='None' and script!='Default':
                         #set the current nzo status to "Ext Script...". Used in History
                         script_path = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
                         if os.path.exists(script_path):

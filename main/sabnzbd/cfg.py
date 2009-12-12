@@ -101,7 +101,7 @@ CREATE_GROUP_FOLDERS = OptionBool('misc', 'create_group_folders', False)
 AUTO_SORT = OptionBool('misc', 'auto_sort', False)
 FOLDER_RENAME = OptionBool('misc', 'folder_rename', True)
 
-SAFE_POSTPROC = OptionBool('misc', 'safe_postproc', False)
+SAFE_POSTPROC = OptionBool('misc', 'safe_postproc', True)
 PAUSE_ON_POST_PROCESSING = OptionBool('misc', 'pause_on_post_processing', False)
 
 SCHEDULES = OptionList('misc', 'schedlines')
