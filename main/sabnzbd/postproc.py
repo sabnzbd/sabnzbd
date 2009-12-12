@@ -334,6 +334,10 @@ class PostProcessor(Thread):
                     logging.debug("Traceback: ", exc_info = True)
 
 
+                ## Set permissions right
+                if not sabnzbd.WIN32:
+                    perm_script(tmp_workdir_complete, cfg.UMASK.get())
+
                 if parResult:
                     ## Remove files matching the cleanup list
                     CleanUpList(tmp_workdir_complete, True)
@@ -372,10 +376,6 @@ class PostProcessor(Thread):
                         if newfiles and file_sorter.is_sortfile():
                             file_sorter.rename(newfiles, workdir_complete)
                             workdir_complete = file_sorter.move(workdir_complete)
-
-                    ## Set permissions right
-                    if cfg.UMASK.get() and not sabnzbd.WIN32:
-                        perm_script(workdir_complete, cfg.UMASK.get())
 
                     ## Run the user script
                     fname = ""
@@ -499,8 +499,9 @@ def perm_script(wdir, umask):
     try:
         # Make sure that user R is on
         umask = int(umask, 8) | int('0400', 8)
-    except:
-        return
+    except ValueError:
+        # Get the effective permissions of the session
+        umask = int('0777', 8) & (sabnzbd.ORG_UMASK ^ int('0777', 8))
 
     # Remove X bits for files
     umask_file = umask & int('7666', 8)

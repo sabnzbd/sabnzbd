@@ -47,6 +47,8 @@ if os.name == 'nt':
     except:
         pass
 elif os.name == 'posix':
+    ORG_UMASK = os.umask(18)
+    os.umask(ORG_UMASK)
     POSIX = True
     import platform
     if platform.system().lower() == 'darwin':
