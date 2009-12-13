@@ -470,7 +470,7 @@ def _get_link(uri, entry):
     uri = uri.lower()
     if 'newzbin' in uri or 'newzxxx'in uri:
         link = entry.link
-        if not (link and link.lower().find('/post/') > 0):
+        if not (link and '/post/' in link.lower()):
             # Use alternative link
             link = entry.links[0].href
     elif 'nzbindex.nl'in uri or 'animeusenet.org' in uri:
@@ -481,7 +481,7 @@ def _get_link(uri, entry):
         if not link:
             link = entry.links[0].href
 
-    if link and link.lower().find('http') >= 0:
+    if link and 'http' in link.lower():
         return link
     else:
         logging.warning(Ta('warn-emptyRSS@1'), link)

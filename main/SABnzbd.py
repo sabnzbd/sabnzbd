@@ -438,11 +438,11 @@ def get_webhost(cherryhost, cherryport, https_port):
         info = socket.getaddrinfo(localhost, None)
     for item in info:
         ip = item[4][0]
-        if ip.find('169.254.') == 0:
+        if ip.startswith('169.254.'):
             pass # Is an APIPA
-        elif ip.find(':') >= 0:
+        elif ':' in ip:
             ipv6 = True
-        elif ip.find('.') >= 0 and not ipv4:
+        elif '.' in ip and not ipv4:
             ipv4 = True
             hostip = ip
 
@@ -469,7 +469,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = localhost
 
     # IPV6 address
-    elif cherryhost.find('[') >= 0 or cherryhost.find(':') >= 0:
+    elif '[' in cherryhost or ':' in cherryhost:
         browserhost = cherryhost
 
     # IPV6 numeric address
@@ -488,7 +488,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = cherryhost
 
     # Some systems don't like brackets in numerical ipv6
-    if cherryhost.find('[') >= 0:
+    if '[' in cherryhost:
         try:
             info = socket.getaddrinfo(cherryhost, None)
         except:
@@ -689,7 +689,7 @@ def main():
         # Ugly hack to remove the extra "SABnzbd*" parameter the Windows binary
         # gets when it's restarted
         if len(sys.argv) > 1 and \
-           sys.argv[1].lower().find('sabnzbd') >= 0 and \
+           'sabnzbd' in sys.argv[1].lower() and \
            not sys.argv[1].startswith('-'):
             slice = 2
         else:
@@ -880,7 +880,7 @@ def main():
     if clean_up:
         xlist= glob.glob(logdir + '/*')
         for x in xlist:
-            if x.find(RSS_FILE_NAME) < 0:
+            if RSS_FILE_NAME not in x:
                 os.remove(x)
 
     try:

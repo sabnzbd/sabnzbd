@@ -119,7 +119,7 @@ def PairList(src):
                 if path.find('.svn') < 0 and path.find('_svn') < 0 :
                     flist = []
                     for file in files:
-                        if not (file.endswith('.bak') or file.endswith('.pyc') or file.endswith('.pyo') or (file.find('~') >= 0)):
+                        if not (file.endswith('.bak') or file.endswith('.pyc') or file.endswith('.pyo') or '~' in file):
                             flist.append(os.path.join(root, file).replace('\\','/'))
                     if flist:
                         lst.append((path, flist))
@@ -482,7 +482,7 @@ else:
             front, ext = os.path.splitext(file)
             base = os.path.basename(file)
             fullname = os.path.normpath(os.path.abspath(dest + '/' + base))
-            if (ext.lower() not in ('.pyc', '.pyo', '.bak')) and (ext.find('~') < 0):
+            if (ext.lower() not in ('.pyc', '.pyo', '.bak')) and '~' not in ext):
                 shutil.copy2(file, dest)
                 Dos2Unix(fullname)
 

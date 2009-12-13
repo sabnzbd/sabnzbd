@@ -531,7 +531,7 @@ class NzbObject(TryList):
 
         # Apply conversion option to final folder, called __original_dirname
         # Yeah, I know :(
-        if cfg.REPLACE_DOTS.get() and self.__original_dirname.find(' ') < 0:
+        if cfg.REPLACE_DOTS.get() and ' ' not in self.__original_dirname:
             logging.info('Replacing dots with spaces in %s', self.__original_dirname)
             self.__original_dirname = self.__original_dirname.replace('.',' ')
         if cfg.REPLACE_SPACES.get():
@@ -1198,7 +1198,7 @@ def CatConvert(cat):
                 newzbin = []
             for name in newzbin:
                 if name.lower() == cat.lower():
-                    if name.find('.') < 0:
+                    if '.' not in name:
                         logging.debug('Convert newzbin-cat "%s" to user-cat "%s"', cat, ucat)
                     else:
                         logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat)

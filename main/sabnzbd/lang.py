@@ -155,7 +155,7 @@ def _parse_lang_file(dic, name, prefix=''):
             else:
                 multi = False
                 msg = msg.strip()
-                if msg.find('\\') >= 0:
+                if '\\' in msg:
                     msg = msg.replace('\\n', '<br />').replace('\\t', '\t').replace('\\@', '#').replace('\s', ' ').replace('\\r','\r\n')
                 if key not in dic:
                     if msg.count('%s') == _get_count(key)[1]:
