@@ -504,7 +504,7 @@ class GenericSorter:
         if year_m:
             # Find the last matched date
             # Keep year_m to use in getTitles
-            year = RE_YEAR.findall(self.original_dirname)[-1]
+            year = RE_YEAR.findall(self.original_dirname)[-1][0]
             self.movie_info['year'] = year
         else:
             self.movie_info['year'] = ''
