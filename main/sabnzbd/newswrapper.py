@@ -136,7 +136,7 @@ class NNTP:
             else:
                 # if blocking (server test) only wait for 4 seconds during connect until timeout
                 if block:
-                    self.sock.settimeout(4)
+                    self.sock.settimeout(10)
                 self.sock.connect((self.host, self.port))
                 if not block:
                     self.sock.setblocking(0)
@@ -326,7 +326,7 @@ class SSLConnection:
               'makefile', 'get_app_data', 'set_app_data', 'state_string',
               'sock_shutdown', 'get_peer_certificate', 'want_read',
               'want_write', 'set_connect_state', 'set_accept_state',
-              'connect_ex', 'sendall', 'do_handshake'):
+              'connect_ex', 'sendall', 'do_handshake', 'settimeout'):
         exec """def %s(self, *args):
             self._lock.acquire()
             try:
