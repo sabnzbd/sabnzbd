@@ -28,11 +28,13 @@ Board = "Beta Releases"
 *******************************************
 *** Upgrading from 0.4.x                ***
 *******************************************
-Do *not* install the new version over the old one.
-Remove the old one first or install in a seperate folder.
-You can re-use your sabnzbd.ini file.
-You cannot re-use an unfinished download queue or keep the download history.
-We promise that this is the last time you will lose your history.
+When upgrading from a 0.4.x release such as 0.4.12 your old settings will be kept.
+You will however be given a fresh queue and history. If you have items in your queue
+from the older version of SABnzbd, you can either re-import the nzb files if you kept
+an nzb backup folder, or temporarily go back to 0.4.x until your queue is complete.
+
+The history is now stored in a better format meaning future upgrades should be backwards
+compatible.
 
 
 *******************************************
