@@ -162,7 +162,7 @@ CLEANUP_LIST = OptionList('misc', 'cleanup_list')
 
 LOG_WEB = OptionBool('logging', 'enable_cherrypy_logging', False)
 LOG_DIR = OptionDir('misc', 'log_dir', 'logs')
-LOG_LEVEL = OptionNumber('logging', 'log_level', 0, 0, 2)
+LOG_LEVEL = OptionNumber('logging', 'log_level', 1, 0, 2)
 LOG_SIZE = OptionStr('logging', 'max_log_size', '5242880')
 LOG_BACKUPS = OptionNumber('logging', 'log_backups', 5, 1, 1024)
 
