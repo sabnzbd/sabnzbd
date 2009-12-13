@@ -202,6 +202,7 @@ class MSGIDGrabber(Thread):
                     sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
                 except:
                     logging.error(Ta('error-nbUpdate@1'), msgid)
+                    logging.debug("Traceback: ", exc_info = True)
                     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, False)
                 msgid = None
             else:
@@ -252,6 +253,7 @@ def _grabnzb(msgid):
 
     except:
         _warn_user('Problem accessing Newzbin server, wait 1 min.')
+        logging.debug("Traceback: ", exc_info = True)
         return retry
 
     # Get the filename
@@ -372,6 +374,7 @@ class Bookmarks:
             response = conn.getresponse()
         except:
             _warn_user('Problem accessing Newzbin server.')
+            logging.debug("Traceback: ", exc_info = True)
             return
 
         data = response.read()
