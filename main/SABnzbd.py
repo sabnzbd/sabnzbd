@@ -67,7 +67,7 @@ import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
      check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
      panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates, \
-     windows_variant
+     windows_variant, ip_extract
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -442,10 +442,9 @@ def get_webhost(cherryhost, cherryport, https_port):
             pass # Is an APIPA
         elif ip.find(':') >= 0:
             ipv6 = True
-        elif ip.find('.') >= 0:
+        elif ip.find('.') >= 0 and not ipv4:
             ipv4 = True
             hostip = ip
-            break
 
     # A blank host will use the local ip address
     if cherryhost == '':
@@ -502,6 +501,14 @@ def get_webhost(cherryhost, cherryport, https_port):
 
     if ipv6 and ipv4 and cherryhost == '' and sabnzbd.WIN32:
         logging.warning(Ta('warn-0000'))
+
+    if cherryhost == 'localhost' and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+        # On the Ubuntu family, localhost leads to problems for CherryPy
+        ips = ip_extract()
+        if '127.0.0.1' in ips and '::1' in ips:
+            cherryhost = '127.0.0.1'
+            if ips[0] != '127.0.0.1':
+                browserhost = '127.0.0.1'
 
     if cherryport is None:
         cherryport = sabnzbd.cfg.CHERRYPORT.get_int()
