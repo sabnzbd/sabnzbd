@@ -36,7 +36,7 @@ as possibe (OS, amount of usenet servers etc.)
   memory systems (eg a SAN device) a challenge.
 
 - SABnzbd is not compatible with some software firewall versions.
-  The Mircosoft Windows firewall work fine.
+  The Mircosoft Windows Firewall work fine.
 
 - Sometimes logging stops. This is a notorious bug in Python logging. SABnzbd will
   function as normal. If you run from sources or use the --console option with the
@@ -45,3 +45,7 @@ as possibe (OS, amount of usenet servers etc.)
 
 - Some people have reported problems with very large jobs (think 50G +)
   Especially on low memory systems.
+  The is a work-around for this. Find the sabnzbd.ini file and find this line:
+      save_interval = 1
+  This is the minimum amount of minutes between subsequent saves of the
+  internal administration to disk. For very large downloads, 10 minutes is good setting.

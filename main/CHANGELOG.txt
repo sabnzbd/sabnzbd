@@ -1,4 +1,19 @@
 -------------------------------------------------------------------------------
+0.5.0Beta4 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+* Fixed poor reliability of reading RSS feeds and subsequent NZB fetches
+  (caused by a too short time-out value).
+* Posix: when user has not set a permissions value, use the account's
+  default permissions (prevents problems with permissions coming from rar files)
+* When option "Post-process only verified jobs" is set, do not execute
+  user-script when job fails
+* NZB files read in from categorized watched folder did not inherit
+  the category's priority
+* Fixed error reporting about incorrect NZB file
+* Improved year recognition in tvsort
+* Some skin fixes
+-------------------------------------------------------------------------------
 0.5.0Beta3 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Fixes:
