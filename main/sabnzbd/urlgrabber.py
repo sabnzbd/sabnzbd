@@ -39,7 +39,6 @@ import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.cfg as cfg
-import sabnzbd.codecs as codecs
 from sabnzbd.lang import Ta
 
 #------------------------------------------------------------------------------
@@ -204,8 +203,8 @@ def _matrix_url(url):
     if m:
         matrix_id = m.group(2)
         if 'username=' not in url or 'apikey=' not in url:
-            user = codecs.xml_name(cfg.MATRIX_USERNAME.get())
-            key = codecs.xml_name(cfg.MATRIX_APIKEY.get())
+            user = urllib.quote_plus(cfg.MATRIX_USERNAME.get())
+            key = urllib.quote_plus(cfg.MATRIX_APIKEY.get())
             url = '%s://nzbmatrix.com/api-nzb-download.php?id=%s&username=%s&apikey=%s' % \
                   (_PROTOCOL, matrix_id, user, key)
     return url, matrix_id
