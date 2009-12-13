@@ -11,7 +11,7 @@
 	<a onClick="javascript:loadSearch('history/tog_verbose', 'historySearch', 'limit=$limit&start=0', -1,this.parentNode.parentNode.id);"><!--#if $isverbose then $T('hideDetails') else $T('showDetails')#--></a></span>
 </div>
 
-<% import datetime %>
+<% import time %>
 
 <!--#if $lines#-->
 <table id="historyTable">
@@ -47,8 +47,9 @@
         <td></td>
         <td colspan="5">
         <%
-d = datetime.datetime.fromtimestamp(float(line['completed']))
-t = "%s:%s" % (str(d.hour).rjust(2,'0'), str(d.minute).rjust(2,'0'))
+completed = time.localtime(float(line['completed']))
+t = time.strftime("%H:%M:%S on %A %d %B %Y", completed)
+
         %>
         <div class="left-margin line-height">
             Completed at $t
