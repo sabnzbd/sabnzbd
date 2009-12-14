@@ -473,7 +473,7 @@ def _get_link(uri, entry):
         if not (link and '/post/' in link.lower()):
             # Use alternative link
             link = entry.links[0].href
-    elif 'nzbindex.nl'in uri or 'animeusenet.org' in uri:
+    elif 'nzbindex.nl' in uri or 'nzbindex.com' in uri or 'animeusenet.org' in uri:
         link = entry.enclosures[0]['href']
     elif not link:
         # Try standard link first
