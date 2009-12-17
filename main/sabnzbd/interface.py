@@ -196,7 +196,7 @@ def check_session(kwargs):
         logging.warning(Ta('warn-missingKey'))
         msg = T('error-missingKey')
     elif key != cfg.API_KEY.get():
-        logging.warning(Ta('warn-badKey'))
+        logging.warning(Ta('error-badKey'))
         msg = T('error-badKey')
     return msg
 
