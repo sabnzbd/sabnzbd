@@ -644,7 +644,8 @@ def read_config(path):
     except configobj.ConfigObjError, strerror:
         return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
 
-    compatibility_fix(CFG['misc'])
+    if 'misc' in CFG:
+        compatibility_fix(CFG['misc'])
 
     # Use CFG data to set values for all static options
     for section in database:
