@@ -136,7 +136,11 @@ class guiHandler(logging.Handler):
         if len(self.store) >= self.size:
             # Loose the oldest record
             self.store.pop(0)
-        self.store.append(self.format(record))
+        try:
+            self.store.append(self.format(record))
+        except UnicodeDecodeError:
+            # Catch elusive Unicode conversion problems
+            pass
 
     def clear(self):
         self.store = []
