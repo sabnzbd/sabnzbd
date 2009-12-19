@@ -482,7 +482,7 @@ else:
             front, ext = os.path.splitext(file)
             base = os.path.basename(file)
             fullname = os.path.normpath(os.path.abspath(dest + '/' + base))
-            if (ext.lower() not in ('.pyc', '.pyo', '.bak')) and '~' not in ext):
+            if (ext.lower() not in ('.pyc', '.pyo', '.bak')) and '~' not in ext:
                 shutil.copy2(file, dest)
                 Dos2Unix(fullname)
 
