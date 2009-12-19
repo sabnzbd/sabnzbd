@@ -64,10 +64,6 @@ def start():
     if __DOWNLOADER: __DOWNLOADER.start()
 
 
-def process(nzf):
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.process(nzf)
-
 def servers():
     global __DOWNLOADER
     if __DOWNLOADER: return __DOWNLOADER.servers
