@@ -109,6 +109,13 @@ def xml_name(p, keep_escape=False, encoding=None):
         return escape(p).encode('ascii', 'xmlcharrefreplace')
 
 
+def latin1(txt):
+    """ When Unicode, convert to Latin-1 """
+    if isinstance(txt, unicode):
+        return txt.encode('latin-1', 'replace')
+    else:
+        return txt
+
 
 def encode_for_xml(ustr, encoding='ascii'):
     """
