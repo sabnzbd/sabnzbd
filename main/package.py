@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python -OO
 #
 # Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
 #
@@ -16,7 +16,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import sabnzbd
 from distutils.core import setup
 
 import glob
@@ -282,7 +281,7 @@ options = dict(
       url = 'http://sourceforge.net/projects/sabnzbdplus',
       author = 'The SABnzbd-Team',
       author_email = 'team@sabnzbd.org',
-      description = 'SABnzbd ' + str(sabnzbd.__version__),
+      #description = 'SABnzbd ' + str(sabnzbd.__version__),
       scripts = ['SABnzbd.py'], # One day, add  'setup.py'
       packages = ['sabnzbd', 'sabnzbd.utils'],
       platforms = ['posix'],
@@ -304,6 +303,12 @@ if target == 'app':
 
     #mount sparseimage
     os.system("hdiutil mount %s" % (fileImg))
+
+    # Unpack cherrypy
+    os.system("unzip -o cherrypy.zip")
+
+    import sabnzbd
+    options['description'] = 'SABnzbd ' + str(sabnzbd.__version__)
 
     #remove prototype and iphone interfaces
     os.system("rm -rf interfaces/prototype>/dev/null")
@@ -388,6 +393,12 @@ elif target == 'binary':
         print "Sorry, only works on Windows!"
         os.system(SvnRevert)
         exit(1)
+
+    # Unpack cherrypy
+    os.system("unzip -o cherrypy.zip")
+
+    import sabnzbd
+    options['description'] = 'SABnzbd ' + str(sabnzbd.__version__)
 
     sys.argv[1] = 'py2exe'
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
@@ -488,7 +499,7 @@ else:
 
     # Install CherryPy
     os.chdir(root)
-    os.system("unzip -o ../cherrypy-svn2138.zip")
+    os.system("unzip -o ../cherrypy.zip")
     os.chdir('..')
 
     # Prepare the TAR.GZ pacakge
