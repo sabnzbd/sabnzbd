@@ -683,6 +683,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             msg = sys.exc_info()[1]
             nzo.set_fail_msg(T('error-repairFailed@1') % msg)
             logging.error(Ta('error-filePar2@2'), msg, setname)
+            logging.debug("Traceback: ", exc_info = True)
             return readd, result
 
     try:
@@ -761,221 +762,229 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
         classic = True
 
     for joinable in joinables:
-        command.append(joinable)
+        if setname in joinable:
+            command.append(joinable)
 
     stup, need_shell, command, creationflags = build_command(command)
 
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         startupinfo=stup, creationflags=creationflags)
+    try:
+        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             startupinfo=stup, creationflags=creationflags)
 
-    proc = p.stdout
+        proc = p.stdout
 
-    if p.stdin:
-        p.stdin.close()
+        if p.stdin:
+            p.stdin.close()
 
-    # Set up our variables
-    pars = []
-    datafiles = []
+        # Set up our variables
+        pars = []
+        datafiles = []
 
-    linebuf = ''
-    finished = 0
-    readd = False
-
-    verifynum = 1
-    verifytotal = 0
-    verified = 0
-
-    # Loop over the output, whee
-    while 1:
-        char = proc.read(1)
-        if not char:
-            break
-
-        # Line not complete yet
-        if char not in ('\n', '\r'):
-            linebuf += char
-            continue
-
-        line = linebuf.strip()
         linebuf = ''
+        finished = 0
+        readd = False
 
-        # Skip empty lines
-        if line == '':
-            continue
+        verifynum = 1
+        verifytotal = 0
+        verified = 0
 
-        # And off we go
-        if line.startswith('All files are correct'):
-            msg = T('msg-verifyOK@2') % (unicoder(setname), format_time_string(time() - start))
-            nzo.set_unpack_info('Repair', msg, set=setname)
-            logging.info('Verified in %s, all files correct',
-                         format_time_string(time() - start))
-            finished = 1
+        # Loop over the output, whee
+        while 1:
+            char = proc.read(1)
+            if not char:
+                break
 
-        elif line.startswith('Repair is required'):
-            msg = T('msg-repairNeeded@2') % (unicoder(setname), format_time_string(time() - start))
-            nzo.set_unpack_info('Repair', msg, set=setname)
-            logging.info('Verified in %s, repair is required',
-                          format_time_string(time() - start))
-            start = time()
-            verified = 1
-
-        elif line.startswith('Main packet not found'):
-            ## Initialparfile probaly didn't decode properly,
-            logging.info(Ta('error-noMainPacket'))
-
-            extrapars = parfile_nzf.get_extrapars()
-
-            logging.info("%s", extrapars)
-
-            ## Look for the smallest par2file
-            block_table = {}
-            for nzf in extrapars:
-                block_table[int(nzf.get_blocks())] = nzf
-
-            if block_table:
-                nzf = block_table[min(block_table.keys())]
-
-                logging.info("Found new par2file %s",
-                             nzf.get_filename())
-
-                nzo.add_parfile(nzf)
-                ## mark for readd
-                readd = True
-
-        elif line.startswith('You need'):
-            chunks = line.split()
-
-            needed_blocks = int(chunks[2])
-
-            logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
-
-            avail_blocks = 0
-
-            extrapars = parfile_nzf.get_extrapars()
-
-            block_table = {}
-
-            for nzf in extrapars:
-                # Don't count extrapars that are completed already
-                if nzf.completed():
-                    continue
-
-                blocks = int(nzf.get_blocks())
-
-                avail_blocks += blocks
-
-                if blocks not in block_table:
-                    block_table[blocks] = []
-
-                block_table[blocks].append(nzf)
-
-            logging.info('%s blocks available', avail_blocks)
-
-
-            force = False
-            if (avail_blocks < needed_blocks) and (avail_blocks > 0):
-                # Tell SAB that we always have enough blocks, so that
-                # it will try to load all pars anyway
-                msg = T('error-repairBlocks@1') % str(int(needed_blocks - avail_blocks))
-                nzo.set_fail_msg(msg)
-                msg = u'[%s] %s' % (unicoder(setname), msg)
-                nzo.set_unpack_info('Repair', msg, set=setname)
-                nzo.set_status('Failed')
-                needed_blocks = avail_blocks
-                force = True
-
-            if avail_blocks >= needed_blocks:
-                added_blocks = 0
-                readd = True
-
-                while added_blocks < needed_blocks:
-                    block_size = min(block_table.keys())
-                    extrapar_list = block_table[block_size]
-
-                    if extrapar_list:
-                        nzo.add_parfile(extrapar_list.pop())
-                        added_blocks += block_size
-
-                    else:
-                        block_table.pop(block_size)
-
-                logging.info('Added %s blocks to %s',
-                             added_blocks, nzo.get_dirname())
-
-                if not force:
-                    msg = T('msg-fetchBlocks@1') % str(added_blocks)
-                    nzo.set_status('Fetching')
-                    nzo.set_action_line(T('msg-fetching'), msg)
-
-            else:
-                msg = T('error-repairBlocks@1') % str(needed_blocks)
-                nzo.set_fail_msg(msg)
-                nzo.set_unpack_info('Repair', msg, set=setname)
-                nzo.set_status('Failed')
-
-
-        elif line.startswith('Repair is possible'):
-            start = time()
-            nzo.set_action_line(T('msg-repairing'), '%2d%%' % (0))
-
-        elif line.startswith('Repairing:'):
-            chunks = line.split()
-            per = float(chunks[-1][:-1])
-            nzo.set_action_line(T('msg-repairing'), '%2d%%' % (per))
-            nzo.set_status('Repairing')
-
-        elif line.startswith('Repair complete'):
-            msg = T('msg-repairDone@2') % (unicoder(setname), format_time_string(time() - start))
-            nzo.set_unpack_info('Repair', msg, set=setname)
-            logging.info('Repaired in %s', format_time_string(time() - start))
-            finished = 1
-
-        elif line.startswith('File:') and line.find('data blocks from') > 0:
-            # Find out if a joinable file has been used for joining
-            for jn in joinables:
-                if line.find(os.path.split(jn)[1]) > 0:
-                    used_joinables.append(jn)
-                    break
-
-        elif 'Could not write' in line and 'at offset 0:' in line and not classic:
-            # Hit a bug in par2-tbb, retry with par2-classic
-            retry_classic = True
-
-        # This has to go here, zorg
-        elif not verified:
-            if line.startswith('Verifying source files'):
-                nzo.set_action_line(T('msg-verifying'), '01/%02d' % verifytotal)
-                nzo.set_status('Verifying')
-
-            elif line.startswith('Scanning:'):
-                pass
-
-            else:
-                # Loading parity files
-                m = LOADING_RE.match(line)
-                if m:
-                    pars.append(m.group(1))
-                    continue
-
-            # Target files
-            m = TARGET_RE.match(line)
-            if m:
-                if verifytotal == 0 or verifynum < verifytotal:
-                    verifynum += 1
-                    nzo.set_action_line(T('msg-verifying'), '%02d/%02d' % (verifynum, verifytotal))
-                    nzo.set_status('Verifying')
-                datafiles.append(m.group(1))
+            # Line not complete yet
+            if char not in ('\n', '\r'):
+                linebuf += char
                 continue
 
-            # Verify done
-            m = re.match(r'There are (\d+) recoverable files', line)
-            if m:
-                verifytotal = int(m.group(1))
+            line = linebuf.strip()
+            linebuf = ''
 
-    p.wait()
+            # Skip empty lines
+            if line == '':
+                continue
+
+            # And off we go
+            if line.startswith('All files are correct'):
+                msg = T('msg-verifyOK@2') % (unicoder(setname), format_time_string(time() - start))
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                logging.info('Verified in %s, all files correct',
+                             format_time_string(time() - start))
+                finished = 1
+
+            elif line.startswith('Repair is required'):
+                msg = T('msg-repairNeeded@2') % (unicoder(setname), format_time_string(time() - start))
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                logging.info('Verified in %s, repair is required',
+                              format_time_string(time() - start))
+                start = time()
+                verified = 1
+
+            elif line.startswith('Main packet not found'):
+                ## Initialparfile probaly didn't decode properly,
+                logging.info(Ta('error-noMainPacket'))
+
+                extrapars = parfile_nzf.get_extrapars()
+
+                logging.info("%s", extrapars)
+
+                ## Look for the smallest par2file
+                block_table = {}
+                for nzf in extrapars:
+                    block_table[int(nzf.get_blocks())] = nzf
+
+                if block_table:
+                    nzf = block_table[min(block_table.keys())]
+
+                    logging.info("Found new par2file %s",
+                                 nzf.get_filename())
+
+                    nzo.add_parfile(nzf)
+                    ## mark for readd
+                    readd = True
+
+            elif line.startswith('You need'):
+                chunks = line.split()
+
+                needed_blocks = int(chunks[2])
+
+                logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
+
+                avail_blocks = 0
+
+                extrapars = parfile_nzf.get_extrapars()
+
+                block_table = {}
+
+                for nzf in extrapars:
+                    # Don't count extrapars that are completed already
+                    if nzf.completed():
+                        continue
+
+                    blocks = int(nzf.get_blocks())
+
+                    avail_blocks += blocks
+
+                    if blocks not in block_table:
+                        block_table[blocks] = []
+
+                    block_table[blocks].append(nzf)
+
+                logging.info('%s blocks available', avail_blocks)
+
+
+                force = False
+                if (avail_blocks < needed_blocks) and (avail_blocks > 0):
+                    # Tell SAB that we always have enough blocks, so that
+                    # it will try to load all pars anyway
+                    msg = T('error-repairBlocks@1') % str(int(needed_blocks - avail_blocks))
+                    nzo.set_fail_msg(msg)
+                    msg = u'[%s] %s' % (unicoder(setname), msg)
+                    nzo.set_unpack_info('Repair', msg, set=setname)
+                    nzo.set_status('Failed')
+                    needed_blocks = avail_blocks
+                    force = True
+
+                if avail_blocks >= needed_blocks:
+                    added_blocks = 0
+                    readd = True
+
+                    while added_blocks < needed_blocks:
+                        block_size = min(block_table.keys())
+                        extrapar_list = block_table[block_size]
+
+                        if extrapar_list:
+                            nzo.add_parfile(extrapar_list.pop())
+                            added_blocks += block_size
+
+                        else:
+                            block_table.pop(block_size)
+
+                    logging.info('Added %s blocks to %s',
+                                 added_blocks, nzo.get_dirname())
+
+                    if not force:
+                        msg = T('msg-fetchBlocks@1') % str(added_blocks)
+                        nzo.set_status('Fetching')
+                        nzo.set_action_line(T('msg-fetching'), msg)
+
+                else:
+                    msg = T('error-repairBlocks@1') % str(needed_blocks)
+                    nzo.set_fail_msg(msg)
+                    nzo.set_unpack_info('Repair', msg, set=setname)
+                    nzo.set_status('Failed')
+
+
+            elif line.startswith('Repair is possible'):
+                start = time()
+                nzo.set_action_line(T('msg-repairing'), '%2d%%' % (0))
+
+            elif line.startswith('Repairing:'):
+                chunks = line.split()
+                per = float(chunks[-1][:-1])
+                nzo.set_action_line(T('msg-repairing'), '%2d%%' % (per))
+                nzo.set_status('Repairing')
+
+            elif line.startswith('Repair complete'):
+                msg = T('msg-repairDone@2') % (unicoder(setname), format_time_string(time() - start))
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                logging.info('Repaired in %s', format_time_string(time() - start))
+                finished = 1
+
+            elif line.startswith('File:') and line.find('data blocks from') > 0:
+                # Find out if a joinable file has been used for joining
+                for jn in joinables:
+                    if line.find(os.path.split(jn)[1]) > 0:
+                        used_joinables.append(jn)
+                        break
+
+            elif 'Could not write' in line and 'at offset 0:' in line and not classic:
+                # Hit a bug in par2-tbb, retry with par2-classic
+                retry_classic = True
+
+            elif not verified:
+                if line.startswith('Verifying source files'):
+                    nzo.set_action_line(T('msg-verifying'), '01/%02d' % verifytotal)
+                    nzo.set_status('Verifying')
+
+                elif line.startswith('Scanning:'):
+                    pass
+
+                else:
+                    # Loading parity files
+                    m = LOADING_RE.match(line)
+                    if m:
+                        pars.append(m.group(1))
+                        continue
+
+                # Target files
+                m = TARGET_RE.match(line)
+                if m:
+                    if verifytotal == 0 or verifynum < verifytotal:
+                        verifynum += 1
+                        nzo.set_action_line(T('msg-verifying'), '%02d/%02d' % (verifynum, verifytotal))
+                        nzo.set_status('Verifying')
+                    datafiles.append(m.group(1))
+                    continue
+
+                # Verify done
+                m = re.match(r'There are (\d+) recoverable files', line)
+                if m:
+                    verifytotal = int(m.group(1))
+
+        p.wait()
+    except WindowsError, err:
+        if err[0] == '87' and not classic:
+            # Hit a bug in par2-tbb, retry with par2-classic
+            retry_classic = True
+        else:
+            raise WindowsError(err)
 
     if retry_classic:
+        logging.debug('Retry PAR2-joining with par2-classic')
         return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True)
     else:
         return (finished, readd, pars, datafiles, used_joinables)
