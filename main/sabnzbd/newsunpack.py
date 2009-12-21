@@ -742,20 +742,23 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     return readd, result
 
 
-def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
+def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
+    retry_classic = False
     used_joinables = []
     #set the current nzo status to "Verifying...". Used in History
     nzo.set_status('Verifying')
     start = time()
 
-    if is_new_partype(nzo, setname) or not PAR2C_COMMAND:
+    if (is_new_partype(nzo, setname) and not classic) or not PAR2C_COMMAND:
         if cfg.par_option.get():
             command = [str(PAR2_COMMAND), 'r', str(cfg.par_option.get().strip()), parfile]
         else:
             command = [str(PAR2_COMMAND), 'r', parfile]
+        classic = not PAR2C_COMMAND
     else:
         command = [str(PAR2C_COMMAND), 'r', parfile]
+        classic = True
 
     for joinable in joinables:
         command.append(joinable)
@@ -935,6 +938,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
                     used_joinables.append(jn)
                     break
 
+        elif 'Could not write' in line and 'at offset 0:' in line and not classic:
+            # Hit a bug in par2-tbb, retry with par2-classic
+            retry_classic = True
+
         # This has to go here, zorg
         elif not verified:
             if line.startswith('Verifying source files'):
@@ -968,7 +975,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables):
 
     p.wait()
 
-    return (finished, readd, pars, datafiles, used_joinables)
+    if retry_classic:
+        return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True)
+    else:
+        return (finished, readd, pars, datafiles, used_joinables)
 
 #-------------------------------------------------------------------------------
 
