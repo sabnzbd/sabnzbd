@@ -699,8 +699,8 @@ class MainPage:
                 cat, pp, script, cat_priority = cat_to_opts(cat)
 
                 nzbqueue.change_script(nzo_id, script)
-                nzbqueue.change_priority(nzo_id, cat_priority)
                 nzbqueue.change_opts(nzo_id, pp)
+                nzbqueue.set_priority(nzo_id, cat_priority)
                 return report(output)
             else:
                 return report(output, _MSG_NO_VALUE)
@@ -1215,7 +1215,7 @@ class QueuePage:
 
             nzbqueue.change_script(nzo_id, script)
             nzbqueue.change_opts(nzo_id, pp)
-            nzbqueue.change_priority(nzo_id, priority)
+            nzbqueue.set_priority(nzo_id, priority)
 
         raise queueRaiser(self.__root, kwargs)
 
