@@ -350,73 +350,73 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 #------------------------------------------------------------------------------
 
 def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
-    try:
-        errors = False
-        extracted_files = []
+    errors = False
+    extracted_files = []
 
-        rar_sets = {}
-        for rar in rars:
-            rar_set = os.path.splitext(os.path.basename(rar))[0]
-            if RAR_RE_V3.search(rar_set):
-                rar_set = os.path.splitext(rar_set)[0]
-            if not rar_set in rar_sets:
-                rar_sets[rar_set] = []
-            rar_sets[rar_set].append(rar)
+    rar_sets = {}
+    for rar in rars:
+        rar_set = os.path.splitext(os.path.basename(rar))[0]
+        if RAR_RE_V3.search(rar_set):
+            rar_set = os.path.splitext(rar_set)[0]
+        if not rar_set in rar_sets:
+            rar_sets[rar_set] = []
+        rar_sets[rar_set].append(rar)
 
-        logging.debug('Rar_sets: %s', rar_sets)
+    logging.debug('Rar_sets: %s', rar_sets)
 
-        for rar_set in rar_sets:
-            # Run the RAR extractor
-            rar_sets[rar_set].sort(rar_sort)
+    for rar_set in rar_sets:
+        # Run the RAR extractor
+        rar_sets[rar_set].sort(rar_sort)
 
-            rarpath = rar_sets[rar_set][0]
+        rarpath = rar_sets[rar_set][0]
 
 
-            extraction_path = workdir
-            if workdir_complete:
-                extraction_path = workdir_complete
+        extraction_path = workdir
+        if workdir_complete:
+            extraction_path = workdir_complete
 
-            logging.info("Extracting rarfile %s (belonging to %s) to %s",
-                         rarpath, rar_set, extraction_path)
+        logging.info("Extracting rarfile %s (belonging to %s) to %s",
+                     rarpath, rar_set, extraction_path)
 
+        try:
             newfiles, rars = RAR_Extract(rarpath, len(rar_sets[rar_set]),
                                          nzo, rar_set, extraction_path)
+            success = True
+        except:
+            success = False
+            errors = True
+            msg = sys.exc_info()[1]
+            nzo.set_fail_msg(T('error-unpackFail@1') % msg)
+            setname = nzo.get_dirname()
+            nzo.set_unpack_info('Unpack', T('error-unpackFail@2') % (unicoder(setname), msg))
 
+            logging.error(Ta('error-fileUnrar@2'), msg, setname)
+
+        if success:
             logging.debug('rar_unpack(): Rars: %s', rars)
             logging.debug('rar_unpack(): Newfiles: %s', newfiles)
-
             extracted_files.extend(newfiles)
 
-            # Delete the old files if we have to
-            if delete and newfiles:
-                for rar in rars:
-                    logging.info("Deleting %s", rar)
+        # Delete the old files if we have to
+        if success and delete and newfiles:
+            for rar in rars:
+                logging.info("Deleting %s", rar)
+                try:
+                    os.remove(rar)
+                except OSError:
+                    logging.warning(Ta('warn-delFailed@1'), rar)
+
+                brokenrar = '%s.1' % (rar)
+
+                if os.path.exists(brokenrar):
+                    logging.info("Deleting %s", brokenrar)
                     try:
-                        os.remove(rar)
+                        os.remove(brokenrar)
                     except OSError:
-                        logging.warning(Ta('warn-delFailed@1'), rar)
+                        logging.warning(Ta('warn-delFailed@1'), brokenrar)
 
-                    brokenrar = '%s.1' % (rar)
+    return errors, extracted_files
 
-                    if os.path.exists(brokenrar):
-                        logging.info("Deleting %s", brokenrar)
-                        try:
-                            os.remove(brokenrar)
-                        except OSError:
-                            logging.warning(Ta('warn-delFailed@1'), brokenrar)
-
-            if not extracted_files:
-                errors = True
-
-        return errors, extracted_files
-    except:
-        msg = sys.exc_info()[1]
-        nzo.set_fail_msg(T('error-unpackFail@1') % msg)
-        setname = nzo.get_dirname()
-        nzo.set_unpack_info('Unpack', T('error-unpackFail@2') % (unicoder(setname), msg))
-
-        logging.error(Ta('error-fileUnrar@2'), msg, setname)
-        return True, ''
 
 def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
     start = time()
