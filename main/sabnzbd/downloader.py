@@ -45,7 +45,6 @@ _PENALTY_UNKNOWN = 3
 _PENALTY_502     = 5
 _PENALTY_TIMEOUT = 10
 _PENALTY_SHARE   = 15
-_PENALTY_TOOMANY = 10
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -144,28 +143,8 @@ def update_server(oldserver, newserver):
     except:
         logging.exception("Error accessing DOWNLOADER?")
 
-@synchronized_CV
-def disconnect():
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.disconnect()
-
-@synchronized_CV
-def set_paused(state):
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.paused = state
-
-@synchronized_CV
-def delayed():
-    global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.delayed
-
-@synchronized_CV
-def unblock(server):
-    global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.unblock(server)
-
-
 #------------------------------------------------------------------------------
+
 def paused():
     global __DOWNLOADER
     if __DOWNLOADER: return __DOWNLOADER.paused
@@ -173,6 +152,22 @@ def paused():
 def get_limit():
     global __DOWNLOADER
     if __DOWNLOADER: return __DOWNLOADER.get_limit()
+
+def disconnect():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.disconnect()
+
+def set_paused(state):
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.paused = state
+
+def delayed():
+    global __DOWNLOADER
+    if __DOWNLOADER: return __DOWNLOADER.delayed
+
+def unblock(server):
+    global __DOWNLOADER
+    if __DOWNLOADER: return __DOWNLOADER.unblock(server)
 
 
 #------------------------------------------------------------------------------
@@ -561,7 +556,6 @@ class Downloader(Thread):
                                     server.errormsg = Ta('error-serverTooMany@2') % ('', '')
                                     logging.error(Ta('error-serverTooMany@2'), server.host, server.port)
                                     self.__reset_nw(nw, None, warn=False, destroy=True)
-                                    self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
                             elif ecode in ('502', '481') and clues_too_many_ip(msg):
                                 # Account sharing?
