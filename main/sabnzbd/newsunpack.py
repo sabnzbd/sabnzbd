@@ -51,6 +51,7 @@ EXTRACTFROM_RE = re.compile(r'^Extracting\sfrom\s(.+)')
 SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
 VOLPAR2_RE = re.compile(r'\.*vol[0-9]+\+[0-9]+\.par2', re.I)
+FULLVOLPAR2_RE = re.compile(r'(.*[^.])(\.*vol[0-9]+\+[0-9]+\.par2)', re.I)
 TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
 
 PAR2_COMMAND = None
@@ -649,7 +650,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
         result = True
         # Poor man's list of other pars, should not be needed
         # but sometimes too many are downloaded
-        pars = ParsOfSet(workdir, setname)
+        pars = pars_of_set(workdir, setname)
 
     else:
 
@@ -1121,14 +1122,12 @@ def QuickCheck(set, nzo):
     return result
 
 
-def ParsOfSet(wdir, setname):
+def pars_of_set(wdir, setname):
     """ Return list of par2 files matching the set """
-
     list = []
-    size = len(setname)
-
     for file in os.listdir(wdir):
-        if VOLPAR2_RE.search(file[size:]):
+        m = FULLVOLPAR2_RE.search(file)
+        if m and m.group(1) == setname and m.group(2):
             list.append(file)
     return list
 
