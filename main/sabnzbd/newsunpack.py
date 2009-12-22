@@ -915,6 +915,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 else:
                     msg = T('error-repairBlocks@1') % str(needed_blocks)
                     nzo.set_fail_msg(msg)
+                    msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg, set=setname)
                     nzo.set_status('Failed')
 
