@@ -42,8 +42,6 @@ from sabnzbd.lang import T, Ta
 from sabnzbd.misc import to_units, cat_to_opts
 from sabnzbd.codecs import unicoder
 
-HAVE_CELEMENTTREE = True
-
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
 SUBJECT_FN_MATCHER = re.compile(r'"(.*)"')
