@@ -673,7 +673,6 @@ error-serverLogin@1      Anmelden beim Server fehlgeschlagen. %s
 error-serverNoConn@2     Verbindung zum Server %s kann nicht hergestellt werden. %s
 error-serverTooMany@2    Zu viele Verbindungen zum server %s:%s
 warn-ignoreServer@2      Server %s wird für %s Minuten ignoriert
-warn-noActiveServers     Kein aktiver primärer Server definiert. Es wird nichts heruntergeladen.
 warn-noConnectServer@2   Verbindung zum Server %s kann nicht hergestellt werden. %s
 error-accountSharing     Möglicherweise wird das Konto geteilt
 error-serverCred@1       Server %s benötigt ein Benutzername und ein Passwort
@@ -706,7 +705,7 @@ error-fileUnzip@2        Fehler "%s" beim Ausführen von unzip auf %s
 warn-cannotFind@1        %s konnte nicht gefunden werden.
 warn-crcFailed@1         CRC-Fehler in %s.
 warn-delFailed@1         Löschen von %s fehlgeschlagen!
-warn-encrypted           Fehler: Verschlüsselte Datei: 
+warn-encrypted           Fehler: Verschlüsselte Datei:
 warn-error@1             Fehler: %s
 warn-MissExpectedFile@1  Erwartete Datei %s nicht gefunden. Unrar-Fehler?
 warn-writeError@1        Fehler beim Schreiben: %s

@@ -45,6 +45,7 @@ _PENALTY_UNKNOWN = 3
 _PENALTY_502     = 5
 _PENALTY_TIMEOUT = 10
 _PENALTY_SHARE   = 15
+_PENALTY_TOOMANY = 10
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -143,6 +144,22 @@ def update_server(oldserver, newserver):
     except:
         logging.exception("Error accessing DOWNLOADER?")
 
+@synchronized_CV
+def set_paused(state):
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.paused = state
+
+@synchronized_CV
+def unblock(server):
+    global __DOWNLOADER
+    if __DOWNLOADER: return __DOWNLOADER.unblock(server)
+
+@synchronized_CV
+def wakeup():
+    # Just let the decorator rattle the semaphore
+    pass
+
+
 #------------------------------------------------------------------------------
 
 def paused():
@@ -157,18 +174,13 @@ def disconnect():
     global __DOWNLOADER
     if __DOWNLOADER: __DOWNLOADER.disconnect()
 
-def set_paused(state):
-    global __DOWNLOADER
-    if __DOWNLOADER: __DOWNLOADER.paused = state
-
 def delayed():
     global __DOWNLOADER
     if __DOWNLOADER: return __DOWNLOADER.delayed
 
-def unblock(server):
+def active_primaries():
     global __DOWNLOADER
-    if __DOWNLOADER: return __DOWNLOADER.unblock(server)
-
+    if __DOWNLOADER: return __DOWNLOADER.active_primaries()
 
 #------------------------------------------------------------------------------
 class Server:
@@ -248,13 +260,8 @@ class Downloader(Thread):
         self.servers = []
         self._timers = {}
 
-        primary = False
         for server in config.get_servers():
-            if self.init_server(None, server):
-                primary = True
-
-        if not primary:
-            logging.warning(Ta('warn-noActiveServers'))
+            self.init_server(None, server)
 
         self.decoder = Decoder(self.servers)
 
@@ -353,6 +360,13 @@ class Downloader(Thread):
             else:
                 return True
 
+    def active_primaries(self):
+        """ Check if any primary server is defined and active """
+        for server in self.servers:
+            if server.active and not server.fillserver:
+                return True
+        return False
+
     def run(self):
         self.decoder.start()
 
@@ -373,7 +387,7 @@ class Downloader(Thread):
                             server.errormsg = T('warn-ignoreServer@2') % ('', _PENALTY_TIMEOUT)
                             logging.warning(Ta('warn-ignoreServer@2'), server.id, _PENALTY_TIMEOUT)
                             self.plan_server(server.id, _PENALTY_TIMEOUT)
-
+                            sabnzbd.nzbqueue.reset_all_try_lists()
                 if server.restart:
                     if not server.busy_threads:
                         newid = server.newid
@@ -382,6 +396,7 @@ class Downloader(Thread):
                         if newid:
                             self.init_server(None, newid)
                         self.__restart -= 1
+                        sabnzbd.nzbqueue.reset_all_try_lists()
                         # Have to leave this loop, because we removed element
                         break
                     else:
@@ -552,10 +567,12 @@ class Downloader(Thread):
                             if ((ecode in ('502', '400')) and clues_too_many(msg)) or \
                                 (ecode == '481' and clues_too_many(msg)):
                                 # Too many connections: remove this thread and reduce thread-setting for server
+                                # Plan to go back to the full number after a penalty timeout
                                 if server.active:
                                     server.errormsg = Ta('error-serverTooMany@2') % ('', '')
                                     logging.error(Ta('error-serverTooMany@2'), server.host, server.port)
                                     self.__reset_nw(nw, None, warn=False, destroy=True)
+                                    self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
                             elif ecode in ('502', '481') and clues_too_many_ip(msg):
                                 # Account sharing?
@@ -588,6 +605,7 @@ class Downloader(Thread):
                                     if penalty and server.optional:
                                         logging.info('Server %s ignored for %s minutes', server.id, penalty)
                                         self.plan_server(server.id, penalty)
+                                    sabnzbd.nzbqueue.reset_all_try_lists()
                                 self.__reset_nw(nw, None, warn=False)
                             continue
                         except:
@@ -627,6 +645,7 @@ class Downloader(Thread):
                             server.active = False
                             server.errormsg = T('error-serverCred@1') % ''
                             self.plan_server(server.id, 0)
+                            sabnzbd.nzbqueue.reset_all_try_lists()
                         msg = T('error-serverCred@1') % ('%s:%s' % (nw.server.host, nw.server.port))
                         self.__reset_nw(nw, msg)
 

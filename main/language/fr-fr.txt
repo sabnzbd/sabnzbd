@@ -625,7 +625,6 @@ error-serverLogin@1      Echec de la connexion au serveur %s
 error-serverNoConn@2     Ne peut se connecter au serveur %s [%s]
 error-serverTooMany@2    Trop de connexions au serveur %s:%s
 warn-ignoreServer@2      Le serveur %s sera ignoré pendant %s minutes
-warn-noActiveServers     Aucun serveur primaire défini, pas de téléchargement possible !
 warn-noConnectServer@2   Impossible de se connecter au serveur %s [%s]
 error-accountSharing     Partage de compte probable
 error-serverCred@1       Le serveur %s requiert des identifiant/mot de passe

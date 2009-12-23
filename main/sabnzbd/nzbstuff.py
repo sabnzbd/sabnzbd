@@ -33,6 +33,7 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.misc
 import sabnzbd.config as config
@@ -66,7 +67,7 @@ class Article(TryList):
         self.nzf = nzf
 
     def get_article(self, server):
-        if server.fillserver and not self.allow_fill_server:
+        if server.fillserver and (not self.allow_fill_server) and sabnzbd.active_primaries():
             return None
 
         if not self.fetcher and not self.server_in_try_list(server):
@@ -615,6 +616,12 @@ class NzbObject(TryList):
             self.__finished_files.append(nzf)
             nzf.deleted = True
         return not bool(self.__files)
+
+    def reset_all_try_lists(self):
+        for nzf in self.__files:
+            # nzf.reset_all_try_lists()
+            nzf.reset_try_list()
+        self.reset_try_list()
 
     def remove_article(self, article):
         nzf = article.nzf

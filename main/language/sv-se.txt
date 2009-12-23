@@ -229,7 +229,7 @@ explain-apikey        Denna nyckel ger tredjepartsprogram tillgång till SABnzbd
 button-apikey         Generera Ny Nyckel
 opt-disableApikey     Stäng av API-nyckel
 explain-disableApikey Kräv ingen API-nyckel.
-explain-disableApikeyWarn ANVÄND PÅ EGEN RISK! 
+explain-disableApikeyWarn ANVÄND PÅ EGEN RISK!
 restart1              Förbereder omstart...\n
 restart2              &nbsp\n\
                       SABnzbd nedstängning färdig.\n\
@@ -420,7 +420,7 @@ opt-email_full           Full hårddisk notifiering
 explain-email_full       Skicka e-mail när hårddisken är full och SABnzbd har pausat.
 opt-email_dir            Mapp med e-mail mallar
 explain-email_dir        Mapp som innehåller användardefinierade mallar..\n\
-                         I förhållande till 
+                         I förhållande till
 emailAccount             E-mail kontoinställningar
 opt-email_server         SMTP Server
 explain-email_server     Ställ in din ISP's server för utgående e-mail.
@@ -621,7 +621,6 @@ error-serverLogin@1      Det gick inte att logga in på server %s
 error-serverNoConn@2     Kan ej ansluta till server %s [%s]
 error-serverTooMany@2    För många anslutningar till server %s:%s
 warn-ignoreServer@2      Server %s kommer att ignoreras i %s minuter
-warn-noActiveServers     Inga aktiva primära servrar definierade, kommer inte att ladda ned!
 warn-noConnectServer@2   Kan ej ansluta till server %s [%s]
 error-accountSharing     Misstänkt kontodelning
 error-serverCred@1       Server %s kräver användarnamn/lösenord

@@ -754,3 +754,8 @@ def check_all_tasks():
         logging.info('Restarting crashed scheduler')
         sabnzbd.scheduler.init()
     return True
+
+
+# Required wrapper because nzbstuff.py cannot import downloader.py
+def active_primaries():
+    return sabnzbd.downloader.active_primaries()

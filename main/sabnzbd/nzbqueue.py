@@ -498,9 +498,18 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def reset_try_lists(self, nzf = None, nzo = None):
-        nzf.reset_try_list()
-        nzo.reset_try_list()
+        if nzf:
+            nzf.reset_try_list()
+        if nzo:
+            nzo.reset_try_list()
         self.reset_try_list()
+
+    @synchronized(NZBQUEUE_LOCK)
+    def reset_all_try_lists(self):
+        for nzo in self.__nzo_list:
+            nzo.reset_all_try_lists()
+        self.reset_try_list()
+
 
     @synchronized(NZBQUEUE_LOCK)
     def has_articles_for(self, server):
@@ -542,9 +551,8 @@ class NzbQueue(TryList):
                     if article:
                         return article
 
-            # WHY WAS THIS NEEDED?
             # No articles for this server, block server (until reset issued)
-            #self.add_to_try_list(server)
+            self.add_to_try_list(server)
 
     @synchronized(NZBQUEUE_LOCK)
     def register_article(self, article):
@@ -868,6 +876,10 @@ def cleanup_nzo(nzo):
 def reset_try_lists(nzf = None, nzo = None):
     global __NZBQ
     if __NZBQ: __NZBQ.reset_try_lists(nzf, nzo)
+
+def reset_all_try_lists():
+    global __NZBQ
+    if __NZBQ: __NZBQ.reset_all_try_lists()
 
 def save():
     global __NZBQ

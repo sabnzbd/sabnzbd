@@ -145,7 +145,7 @@ class Decoder(Thread):
         fill_server_found = False
 
         for server in self.servers:
-            if not article.server_in_try_list(server):
+            if server.active and not article.server_in_try_list(server):
                 if server.fillserver:
                     fill_server_found = True
                 else:
