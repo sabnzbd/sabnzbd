@@ -1,4 +1,19 @@
 -------------------------------------------------------------------------------
+0.5.0Beta5 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+- Removed potential deadlock from Downloader
+- Allow backup servers to be used when all primaries blocked or inactive
+- Scheduled PAUSE_ALL failed to stop downloading
+- Will now continue unpacking other rar-sets when one rar-set fails to unpack
+  (but only when option "Post-process Verified jobs" is off)
+- QuickPar messed up the par files of multi-set NZBs
+- When the par2 tool joined multi-part files of a multi-NZB, it mixed up files
+  from other sets
+- Work-around for a bug in par2-tbb (making if fail to join some multi-part jobs).
+- When scaling down the number of connections of a server,
+  will now retry with the full amount 10 minutes later.
+-------------------------------------------------------------------------------
 0.5.0Beta4 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Fixes:
