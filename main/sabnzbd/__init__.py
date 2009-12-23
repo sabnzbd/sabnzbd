@@ -391,6 +391,7 @@ def save_state():
 def pause_all():
     global PAUSED_ALL
     PAUSED_ALL = True
+    sabnzbd.downloader.pause_downloader()
     logging.debug('PAUSED_ALL active')
 
 def unpause_all():
@@ -735,6 +736,9 @@ def check_all_tasks():
     if not sabnzbd.assembler.alive():
         logging.info('Restarting because of crashed assembler')
         return False
+
+    # Kick the downloader, in case it missed the semaphore
+    sabnzbd.downloader.wakeup()
 
     # Restartable threads
     if not sabnzbd.dirscanner.alive():
