@@ -698,7 +698,12 @@ def main():
             slice = 2
         else:
             slice = 1
-        opts, args = getopt.getopt(sys.argv[slice:], "phdvncw:l:s:f:t:b:2:",
+
+        # Prepend options from env-variable to options
+        args = os.environ.get('SABnzbd', '').split()
+        args.extend(sys.argv[slice:])
+
+        opts, args = getopt.getopt(args, "phdvncw:l:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'delay=', 'force',
