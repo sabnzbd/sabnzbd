@@ -112,6 +112,7 @@ WEBLOGFILE = None
 LOGHANDLER = None
 GUIHANDLER = None
 AMBI_LOCALHOST = False
+WIN_SERVICE = None      # Instance of our Win32 Service Class
 
 WEB_DIR = None
 WEB_DIR2 = None

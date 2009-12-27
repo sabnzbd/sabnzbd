@@ -309,6 +309,48 @@ def windows_variant():
     return vista_plus, x64
 
 
+#------------------------------------------------------------------------------
+
+_SERVICE_KEY = 'SYSTEM\\CurrentControlSet\\services\\'
+_SERVICE_PARM = 'CommandLine'
+
+def get_serv_parms(service):
+    """ Get the service command line parameters from Registry """
+    import _winreg
+
+    value = []
+    try:
+        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
+        for n in xrange(_winreg.QueryInfoKey(key)[1]):
+            name, value, val_type = _winreg.EnumValue(key, n)
+            if name == _SERVICE_PARM:
+                break
+        _winreg.CloseKey(key)
+    except WindowsError:
+        pass
+    for n in xrange(len(value)):
+        value[n] = latin1(value[n])
+    return value
+
+
+def set_serv_parms(service, args):
+    """ Set the service command line parameters in Registry """
+    import _winreg
+
+    uargs = []
+    for arg in args:
+        uargs.append(unicoder(arg))
+
+    try:
+        key = _winreg.CreateKey(_winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
+        _winreg.SetValueEx(key, _SERVICE_PARM, None, _winreg.REG_MULTI_SZ, uargs)
+        _winreg.CloseKey(key)
+    except WindowsError:
+        return False
+    return True
+
+
+
 ################################################################################
 # Launch a browser for various purposes
 # including panic messages

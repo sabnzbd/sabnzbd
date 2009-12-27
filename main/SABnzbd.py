@@ -67,25 +67,35 @@ import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
      check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
      panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates, \
-     windows_variant, ip_extract
+     windows_variant, ip_extract, set_serv_parms, get_serv_parms
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader as downloader
+from sabnzbd.codecs import unicoder
 from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
 
 from threading import Thread
 
-LOG_FLAG = False  # Global for this module, signalling loglevel change
+LOG_FLAG = False        # Global for this module, signalling loglevel change
+
+_first_log = True
+def FORCELOG(txt):
+    global _first_log
+    if _first_log:
+        os.remove('d:/temp/debug.txt')
+        _first_log = False
+    ff = open('d:/temp/debug.txt', 'a+')
+    ff.write(txt)
+    ff.write('\n')
+    ff.close()
 
 
 #------------------------------------------------------------------------------
-signal.signal(signal.SIGINT, sabnzbd.sig_handler)
-signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
-
 try:
     import win32api
+    import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
 except ImportError:
     if sabnzbd.WIN32:
@@ -641,13 +651,175 @@ def cherrypy_logging(log_path):
 
 
 #------------------------------------------------------------------------------
+def commandline_handler(frozen=True):
+    """ Split win32-service commands are true parameters
+        Returns:
+            service, sab_opts, serv_opts, upload_nzbs
+    """
+    service = ''
+    sab_opts = []
+    serv_inst = False
+    serv_opts = [os.path.normpath(os.path.abspath(sys.argv[0]))]
+    upload_nzbs = []
+
+    # Ugly hack to remove the extra "SABnzbd*" parameter the Windows binary
+    # gets when it's restarted
+    if len(sys.argv) > 1 and \
+       'sabnzbd' in sys.argv[1].lower() and \
+       not sys.argv[1].startswith('-'):
+        slice = 2
+    else:
+        slice = 1
+
+    # Prepend options from env-variable to options
+    info = os.environ.get('SABnzbd', '').split()
+    info.extend(sys.argv[slice:])
+
+    try:
+        opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
+                                   ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
+                                    'weblogging=', 'server=', 'templates',
+                                    'template2', 'browser=', 'config-file=', 'delay=', 'force',
+                                    'version', 'https=', 'autorestarted',
+                                    # Below Win32 Service options
+                                    'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
+                                    'interactive', 'wait=',
+                                    ])
+    except getopt.GetoptError:
+        print_help()
+        exit_sab(2)
+
+    # Check for Win32 service commands
+    if args and args[0] in ('install', 'update', 'remove', 'start', 'stop', 'restart', 'debug'):
+        service = args[0]
+        serv_opts.extend(args)
+
+    if not service:
+        # Get and remove any NZB file names
+        for entry in args:
+            if get_ext(entry) in ('.nzb', '.zip','.rar', '.nzb.gz'):
+                upload_nzbs.append(entry)
+
+    for opt, arg in opts:
+        if opt in ('password','username','startup','perfmonini', 'perfmondll', 'interactive', 'wait'):
+            # Service option, just collect
+            if service:
+                serv_opts.append(opt)
+                if arg:
+                    serv_opts.append(arg)
+        else:
+            if opt == '-f':
+                arg = os.path.normpath(os.path.abspath(arg))
+            sab_opts.append((opt, arg))
+
+    return service, sab_opts, serv_opts, upload_nzbs
+
+
+def get_f_option(opts):
+    """ Return value of the -f option """
+    for opt, arg in opts:
+        if opt == '-f':
+            return arg
+    else:
+        return None
+
+
+#------------------------------------------------------------------------------
 def main():
     global LOG_FLAG
 
     AUTOBROWSER = None
     autorestarted = False
+    sabnzbd.MY_FULLNAME = sys.argv[0]
+    fork = False
+    pause = False
+    inifile = None
+    cherryhost = None
+    cherryport = None
+    https_port = None
+    cherrypylogging = None
+    clean_up = False
+    logging_level = None
+    web_dir = None
+    web_dir2 = None
+    delay = 0.0
+    vista_plus = False
+    vista64 = False
+    force_web = False
+    re_argv = [sys.argv[0]]
 
-    sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sys.argv[0]))
+    service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
+
+    for opt, arg in sab_opts:
+        if opt == '--servicecall':
+            sabnzbd.MY_FULLNAME = arg
+        elif opt in ('-d', '--daemon'):
+            if not sabnzbd.WIN32:
+                fork = True
+            AUTOBROWSER = False
+            sabnzbd.DAEMON = True
+            consoleLogging = False
+            re_argv.append(opt)
+        elif opt in ('-f', '--config-file'):
+            inifile = arg
+            re_argv.append(opt)
+            re_argv.append(arg)
+        elif opt in ('-h', '--help'):
+            print_help()
+            exit_sab(0)
+        elif opt in ('-t', '--templates'):
+            web_dir = arg
+        elif opt in ('-2', '--template2'):
+            web_dir2 = arg
+        elif opt in ('-s', '--server'):
+            (cherryhost, cherryport) = split_host(arg)
+        elif opt in ('-n', '--nobrowser'):
+            AUTOBROWSER = False
+        elif opt in ('-b', '--browser'):
+            try:
+                AUTOBROWSER = bool(int(arg))
+            except:
+                AUTOBROWSER = True
+        elif opt in ('--autorestarted'):
+            autorestarted = True
+        elif opt in ('-c', '--clean'):
+            clean_up = True
+        elif opt in ('-w', '--weblogging'):
+            try:
+                cherrypylogging = int(arg)
+            except:
+                cherrypylogging = -1
+            if cherrypylogging < 0 or cherrypylogging > 2:
+                print_help()
+                exit_sab(1)
+        elif opt in ('-l', '--logging'):
+            try:
+                logging_level = int(arg)
+            except:
+                logging_level = -1
+            if logging_level < 0 or logging_level > 2:
+                print_help()
+                exit_sab(1)
+        elif opt in ('-v', '--version'):
+            print_version()
+            exit_sab(0)
+        elif opt in ('-p', '--pause'):
+            pause = True
+        elif opt in ('--delay',):
+            # For debugging of memory leak only!!
+            try:
+                delay = float(arg)
+            except:
+               pass
+        elif opt in ('--force',):
+            force_web = True
+            re_argv.append(opt)
+        elif opt in ('--https',):
+            https_port = int(arg)
+            re_argv.append(opt)
+            re_argv.append(arg)
+
+    sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_PROG = os.path.dirname(sabnzbd.MY_FULLNAME)
     sabnzbd.DIR_INTERFACES = real_path(sabnzbd.DIR_PROG, DEF_INTERFACES)
@@ -679,122 +851,6 @@ def main():
     logger = logging.getLogger('')
     logger.setLevel(logging.WARNING)
     logger.addHandler(gui_log)
-
-    # Create a list of passed files to load on startup
-    # or pass to an already running instance of sabnzbd
-    upload_nzbs = []
-    for entry in sys.argv:
-        if get_ext(entry) in ('.nzb','.zip','.rar', '.nzb.gz'):
-            upload_nzbs.append(entry)
-            sys.argv.remove(entry)
-
-
-    try:
-        # Ugly hack to remove the extra "SABnzbd*" parameter the Windows binary
-        # gets when it's restarted
-        if len(sys.argv) > 1 and \
-           'sabnzbd' in sys.argv[1].lower() and \
-           not sys.argv[1].startswith('-'):
-            slice = 2
-        else:
-            slice = 1
-
-        # Prepend options from env-variable to options
-        args = os.environ.get('SABnzbd', '').split()
-        args.extend(sys.argv[slice:])
-
-        opts, args = getopt.getopt(args, "phdvncw:l:s:f:t:b:2:",
-                                   ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
-                                    'weblogging=', 'server=', 'templates',
-                                    'template2', 'browser=', 'config-file=', 'delay=', 'force',
-                                    'version', 'https=', 'autorestarted'])
-    except getopt.GetoptError:
-        print_help()
-        exit_sab(2)
-
-    fork = False
-    pause = False
-    inifile = None
-    cherryhost = None
-    cherryport = None
-    https_port = None
-    cherrypylogging = None
-    clean_up = False
-    logging_level = None
-    web_dir = None
-    web_dir2 = None
-    delay = 0.0
-    vista_plus = False
-    vista64 = False
-    force_web = False
-    re_argv = [sys.argv[0]]
-
-    for opt, arg in opts:
-        if (opt in ('-d', '--daemon')):
-            if not sabnzbd.WIN32:
-                fork = True
-            AUTOBROWSER = False
-            sabnzbd.DAEMON = True
-            consoleLogging = False
-            re_argv.append(opt)
-        elif opt in ('-h', '--help'):
-            print_help()
-            exit_sab(0)
-        elif opt in ('-f', '--config-file'):
-            inifile = arg
-            re_argv.append(opt)
-            re_argv.append(arg)
-        elif opt in ('-t', '--templates'):
-            web_dir = arg
-        elif opt in ('-2', '--template2'):
-            web_dir2 = arg
-        elif opt in ('-s', '--server'):
-            (cherryhost, cherryport) = split_host(arg)
-        elif opt in ('-n', '--nobrowser'):
-            AUTOBROWSER = False
-        elif opt in ('-b', '--browser'):
-            try:
-                AUTOBROWSER = bool(int(arg))
-            except:
-                AUTOBROWSER = True
-        elif opt in ('--autorestarted'):
-            autorestarted = True
-        elif opt in ('-c', '--clean'):
-            clean_up= True
-        elif opt in ('-w', '--weblogging'):
-            try:
-                cherrypylogging = int(arg)
-            except:
-                cherrypylogging = -1
-            if cherrypylogging < 0 or cherrypylogging > 2:
-                print_help()
-                exit_sab(1)
-        elif opt in ('-l', '--logging'):
-            try:
-                logging_level = int(arg)
-            except:
-                logging_level = -1
-            if logging_level < 0 or logging_level > 2:
-                print_help()
-                exit_sab(1)
-        elif opt in ('-v', '--version'):
-            print_version()
-            exit_sab(0)
-        elif opt in ('-p', '--pause'):
-            pause = True
-        elif opt in ('--delay'):
-            # For debugging of memory leak only!!
-            try:
-                delay = float(arg)
-            except:
-                pass
-        elif opt in ('--force'):
-            force_web = True
-            re_argv.append(opt)
-        elif opt in ('--https'):
-            https_port = int(arg)
-            re_argv.append(opt)
-            re_argv.append(arg)
 
     # Detect Windows variant
     if sabnzbd.WIN32:
@@ -836,12 +892,24 @@ def main():
 
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)
+    enable_https = sabnzbd.cfg.ENABLE_HTTPS.get()
+
+    # When this is a daemon, just check and bail out if port in use
+    if sabnzbd.DAEMON:
+        if enable_https and https_port:
+            try:
+                cherrypy.process.servers.check_port(cherryhost, https_port)
+            except IOError, error:
+                Bail_Out(browserhost, cherryport)
+        try:
+            cherrypy.process.servers.check_port(cherryhost, cherryport)
+        except IOError, error:
+            Bail_Out(browserhost, cherryport)
 
     # If an instance of sabnzbd(same version) is already running on this port, launch the browser
     # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
     # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
     ## SSL
-    enable_https = sabnzbd.cfg.ENABLE_HTTPS.get()
     if enable_https and https_port:
         try:
             cherrypy.process.servers.check_port(browserhost, https_port)
@@ -978,6 +1046,10 @@ def main():
 
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
+
+    if not sabnzbd.WIN_SERVICE:
+        signal.signal(signal.SIGINT, sabnzbd.sig_handler)
+        signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 
     init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True)
 
@@ -1149,7 +1221,16 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
-        time.sleep(3)
+        if sabnzbd.WIN_SERVICE:
+            rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
+                 sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)
+            if rc == win32event.WAIT_OBJECT_0:
+                sabnzbd.save_state()
+                logging.info('Leaving SABnzbd')
+                sabnzbd.SABSTOP = True
+                return
+        else:
+            time.sleep(3)
 
         # Check for loglevel changes
         if LOG_FLAG:
@@ -1202,6 +1283,9 @@ def main():
                     pid = os.fork()
                     if pid == 0:
                         os.execv(sys.executable, args)
+            elif sabnzbd.WIN_SERVICE:
+                # Hope for the service manager to restart us
+                sys.exit(1)
             else:
                 cherrypy.engine._do_execv()
 
@@ -1218,22 +1302,126 @@ def main():
         os._exit(0)
 
 
+
+#####################################################################
+#
+# Windows Service Support
+#
+if sabnzbd.WIN32:
+    import servicemanager
+    class SABnzbd(win32serviceutil.ServiceFramework):
+        """ Win32 Service Handler """
+
+        _svc_name_ = 'SABnzbd'
+        _svc_display_name_ = 'SABnzbd Binary Newsreader'
+        _svc_deps_ = ["EventLog", "Tcpip"]
+        _svc_description_ = 'Automated downloading from Usenet. ' \
+                            'Set to "automatic" to start the service at system startup. ' \
+                            'You may need to login with a real user account when you need ' \
+                            'access to network shares.'
+
+        def __init__(self, args):
+            win32serviceutil.ServiceFramework.__init__(self, args)
+
+            self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
+            self.overlapped = pywintypes.OVERLAPPED()
+            self.overlapped.hEvent = win32event.CreateEvent(None, 0, 0, None)
+            sabnzbd.WIN_SERVICE = self
+
+        def SvcDoRun(self):
+            msg = 'SABnzbd-service %s' % sabnzbd.__version__
+            self.Logger(servicemanager.PYS_SERVICE_STARTED, msg + ' has started')
+            sys.argv = get_serv_parms(self._svc_name_)
+            main()
+            self.Logger(servicemanager.PYS_SERVICE_STOPPED, msg + ' has stopped')
+
+        def SvcStop(self):
+            self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
+            win32event.SetEvent(self.hWaitStop)
+
+        def Logger(self, state, msg):
+            win32evtlogutil.ReportEvent(self._svc_display_name_,
+                                        state, 0,
+                                        servicemanager.EVENTLOG_INFORMATION_TYPE,
+                                        (self._svc_name_, unicoder(msg)))
+
+        def ErrLogger(self, msg, text):
+            win32evtlogutil.ReportEvent(self._svc_display_name_,
+                                        servicemanager.PYS_SERVICE_STOPPED, 0,
+                                        servicemanager.EVENTLOG_ERROR_TYPE,
+                                        (self._svc_name_, unicoder(msg)),
+                                        unicoder(text))
+
+
+def prep_service_parms(args):
+    """ Prepare parameter list for service """
+
+    # Must store our original path, because the Python Service launcher
+    # won't give it to us.
+    serv = [os.path.normpath(os.path.abspath(sys.argv[0]))]
+
+    # Convert the tuples to list
+    for arg in args:
+        serv.append(arg[0])
+        if arg[1]:
+            serv.append(arg[1])
+
+    # Make sure we run in daemon mode
+    serv.append('-d')
+    return serv
+
+
+def HandleCommandLine(allow_service=True):
+    """ Handle command line for a Windows Service
+        Prescribed name that will be called by Py2Exe.
+        You MUST set 'cmdline_style':'custom' in the package.py!
+        Returns True when any service commands were detected.
+    """
+    service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
+    if service and not allow_service:
+        # The other frozen apps don't support Services
+        print "For service support, use SABnzbd-service.exe"
+        return True
+    elif service:
+        if service in ('install', 'update'):
+            # In this case check for required parameters
+            path = get_f_option(sab_opts)
+            if not path:
+                print 'The -f <path> parameter is required.\n' \
+                      'Use: -f <path> %s' % service
+                return True
+
+            # First run the service installed, because this will
+            # set the service key in the Registry
+            win32serviceutil.HandleCommandLine(SABnzbd, argv=serv_opts)
+
+            # Add our own parameter to the Registry
+            sab_opts = prep_service_parms(sab_opts)
+            if set_serv_parms(SABnzbd._svc_name_, sab_opts):
+                print '\nYou may need to set additional Service parameters.\n' \
+                      'Run services.msc from a command prompt.\n'
+            else:
+                print 'Cannot set required Registry info.'
+        else:
+            # Other service commands need no manipulation
+            win32serviceutil.HandleCommandLine(SABnzbd)
+    return bool(service)
+
+
+
 #####################################################################
 #
 # Platform specific startup code
 #
+if __name__ == '__main__':
 
-if not getattr(sys, 'frozen', None) == 'macosx_app':
-    # Windows & Unix/Linux
+    if sabnzbd.WIN32:
+        if not HandleCommandLine(allow_service=not hasattr(sys, "frozen")):
+            main()
 
-    if __name__ == '__main__':
-        main()
+    elif getattr(sys, 'frozen', None) == 'macosx_app':
+        # OSX binary
 
-else:
-
-    # OSX
-
-    if __name__ == '__main__':
         try:
             from PyObjCTools import AppHelper
             from SABnzbdDelegate import SABnzbdDelegate
@@ -1259,4 +1447,7 @@ else:
 
         except:
             main()
+
+    else:
+        main()
 

@@ -201,6 +201,18 @@ def Unix2Dos(name):
         exit(1)
 
 
+def rename_file(folder, old, new):
+    try:
+        oldpath = "%s/%s" % (folder, old)
+        newpath = "%s/%s" % (folder, new)
+        if os.path.exists(newpath):
+            os.remove(newpath)
+        os.rename(oldpath, newpath)
+    except WindowsError:
+        print "Cannot create %s" % newpath
+        exit(1)
+
+
 print sys.argv[0]
 
 #OSX if svnversion not installed install SCPlugin and execute these commands
@@ -228,7 +240,7 @@ if len(sys.argv) < 2:
 else:
     target = sys.argv[1]
 
-if target not in ('source', 'binary', 'app'):
+if target not in ('source', 'binary', 'installer', 'app'):
     print 'Usage: package.py binary|source|app'
     exit(1)
 
@@ -236,8 +248,10 @@ if target not in ('source', 'binary', 'app'):
 base, release = os.path.split(os.getcwd())
 
 prod = 'SABnzbd-' + release
+Win32ServiceName = 'SABnzbd-service.exe'
 Win32ConsoleName = 'SABnzbd-console.exe'
 Win32WindowName  = 'SABnzbd.exe'
+Win32TempName    = 'SABnzbd-windows.exe'
 
 fileIns = prod + '-win32-setup.exe'
 fileBin = prod + '-win32-bin.zip'
@@ -388,7 +402,7 @@ if target == 'app':
     os.system(SvnRevertApp + VERSION_FILE)
     os.system(SvnUpdateApp)
 
-elif target == 'binary':
+elif target in ('binary', 'installer'):
     if not py2exe:
         print "Sorry, only works on Windows!"
         os.system(SvnRevert)
@@ -414,16 +428,13 @@ elif target == 'binary':
                          }
     options['zipfile'] = 'lib/sabnzbd.zip'
 
+
+    ############################
     # Generate the console-app
     options['console'] = program
     setup(**options)
-    try:
-        if os.path.exists("dist/%s" % Win32ConsoleName):
-            os.remove("dist/%s" % Win32ConsoleName)
-        os.rename("dist/%s" % Win32WindowName, "dist/%s" % Win32ConsoleName)
-    except:
-        print "Cannot create dist/%s" % Win32ConsoleName
-        exit(1)
+    rename_file('dist', Win32WindowName, Win32ConsoleName)
+
 
     # Make sure that the root files are DOS format
     for file in options['data_files'][0][1]:
@@ -431,26 +442,45 @@ elif target == 'binary':
     DeleteFiles('dist/Sample-PostProc.sh')
     DeleteFiles('dist/PKG-INFO')
 
-    # Generate the windowed-app (skip datafiles now)
-    del options['console']
-    del options['data_files']
-    options['windows'] = program
-    setup(**options)
-
     DeleteFiles('*.ini')
 
-    # Copy the proper OpenSSL files into the dist folder
-    shutil.copy2('win/openssl/libeay32.dll', 'dist/lib')
-    shutil.copy2('win/openssl/ssleay32.dll', 'dist/lib')
-
-    os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
-              (release, fileIns))
+    if sys.version_info < (2,6):
+        # Copy the proper OpenSSL files into the dist folder
+        shutil.copy2('win/openssl/libeay32.dll', 'dist/lib')
+        shutil.copy2('win/openssl/ssleay32.dll', 'dist/lib')
 
 
-    DeleteFiles(fileBin)
-    os.rename('dist', prod)
-    os.system('zip -9 -r -X %s %s' % (fileBin, prod))
-    os.rename(prod, 'dist')
+    ############################
+    # Generate the windowed-app
+    options['windows'] = program
+    del options['data_files']
+    del options['console']
+    setup(**options)
+    rename_file('dist', Win32WindowName, Win32TempName)
+
+
+    ############################
+    # Generate the service-app
+    options['service'] = [{'modules':["SABnzbd"], 'cmdline_style':'custom'}]
+    del options['windows']
+    setup(**options)
+    rename_file('dist', Win32WindowName, Win32ServiceName)
+
+    # Give the Windows app its proper name
+    rename_file('dist', Win32TempName, Win32WindowName)
+
+
+    ############################
+    if target == 'installer':
+
+        os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
+                  (release, fileIns))
+
+        DeleteFiles(fileBin)
+        os.rename('dist', prod)
+        os.system('zip -9 -r -X %s %s' % (fileBin, prod))
+        os.rename(prod, 'dist')
+
     os.system(SvnRevert)
 
 else:
