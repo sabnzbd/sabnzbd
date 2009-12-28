@@ -30,6 +30,7 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.misc as misc
+import sabnzbd.email as email
 
 import sabnzbd.utils.feedparser as feedparser
 from sabnzbd.lang import T, Ta
@@ -191,6 +192,7 @@ class RSSQueue:
         if not feed: return
 
         newlinks = []
+        new_downloads = []
 
         # Preparations, get options
         try:
@@ -328,11 +330,16 @@ class RSSQueue:
                     if result:
                         _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript,
                                     act, star, order, priority=defPriority)
+                        if act:
+                            new_downloads.append(title)
                     else:
                         _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript,
                                     False, star, order, priority=defPriority)
             order += 1
 
+        # Send email if wanted and not "forced"
+        if new_downloads and cfg.EMAIL_RSS.get() and not force:
+            email.rss_mail(feed, new_downloads)
 
         # If links are in table for more than 4 weeks, remove
         # Flag old D/B links as obsolete, so that they don't show up in Preview

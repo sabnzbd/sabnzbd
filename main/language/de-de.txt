@@ -479,6 +479,8 @@ explain-email_account    Für authentifizierte E-Mails wird der Kontoname benöt
 opt-email_pwd            Optionales Konto-Passwort
 explain-email_pwd        Für authentifizierte E-Mails wird das Passwort benötigt.
 error-badEmailAd@1       %s ist keine gültige E-Mail-Adresse
+opt-email_rss            Send RSS notifications
+explain-email_rss        Send email when an RSS feed adds jobs to the queue.
 
 # Config->Newzbin
 explain-newzbin          Wenn Sie ein Konto bei <strong>www.newzbin.com</strong> haben,\

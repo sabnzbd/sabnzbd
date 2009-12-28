@@ -412,6 +412,9 @@ explain-email_account    Wanneer authenticatie nodig is, gebruikersnaam.
 opt-email_pwd            OPTIE: Account wachtwoord
 explain-email_pwd        Wanneer authenticatie nodig is, wachtwoord.
 error-badEmailAd@1       %s is geen geldig email adres
+opt-email_rss            Zend email voor RSS
+explain-email_rss        Zend email wanneer een RSS bron opdrachten\n\
+                         aan de queue toevoegd.
 
 # Config->Newzbin
 explain-newzbin          Wanneer je een account bij <strong>www.newzbin.com</strong> hebt,\

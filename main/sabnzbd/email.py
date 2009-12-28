@@ -123,42 +123,27 @@ def send(message):
 ################################################################################
 from Cheetah.Template import Template
 
-def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_output, script_ret):
-    """ Send email using templates """
+def send_with_template(prefix, parm):
+    """ Send an email using template """
 
-    # Translate the stage names
-    xstages = {}
-    for stage in stages:
-        xstages[T('stage-'+stage.lower())] = stages[stage]
-
-    parm = {}
-    parm['status'] = status
     parm['to'] = cfg.EMAIL_TO.get()
     parm['from'] = cfg.EMAIL_FROM.get()
     parm['date'] = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
-    parm['name'] = filename
-    parm['path'] = path
-    parm['msgid'] = str(msgid)
-    parm['stages'] = xstages
-    parm['script'] = script
-    parm['script_output'] = script_output
-    parm['script_ret'] = script_ret
-    parm['cat'] = cat
-    parm['size'] = "%sB" % to_units(bytes)
-    parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
 
     lst = []
     path = cfg.EMAIL_DIR.get_path()
     if path and os.path.exists(path):
         try:
-            lst = glob.glob(os.path.join(path, '*.tmpl'))
+            lst = glob.glob(os.path.join(path, '%s-*.tmpl' % prefix))
         except:
             logging.error(Ta('error-mailTempl@1'), path)
     else:
         path = os.path.join(sabnzbd.DIR_PROG, DEF_LANGUAGE)
-        path = os.path.join(path, 'email-%s.tmpl' % cfg.LANGUAGE.get())
-        if os.path.exists(path):
-            lst = [path]
+        tpath = os.path.join(path, '%s-%s.tmpl' % (prefix, cfg.LANGUAGE.get()))
+        if os.path.exists(tpath):
+            lst = [tpath]
+        else:
+            lst = [os.path.join(path, '%s-us-en.tmpl' % prefix)]
 
     ret = "No templates found"
     for temp in lst:
@@ -173,6 +158,36 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
             del message
     return ret
 
+
+def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_output, script_ret):
+    """ Send end-of-job email """
+
+    # Translate the stage names
+    xstages = {}
+    for stage in stages:
+        xstages[T('stage-'+stage.lower())] = stages[stage]
+
+    parm = {}
+    parm['status'] = status
+    parm['name'] = filename
+    parm['path'] = path
+    parm['msgid'] = str(msgid)
+    parm['stages'] = xstages
+    parm['script'] = script
+    parm['script_output'] = script_output
+    parm['script_ret'] = script_ret
+    parm['cat'] = cat
+    parm['size'] = "%sB" % to_units(bytes)
+    parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+
+    return send_with_template('email', parm)
+
+
+def rss_mail(feed, jobs):
+    """ Send notification email containing list of files """
+
+    parm = {'amount' : len(jobs), 'feed' : feed, 'jobs' : jobs}
+    return send_with_template('rss', parm)
 
 
 ################################################################################

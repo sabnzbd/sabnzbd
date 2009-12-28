@@ -434,6 +434,8 @@ explain-email_account    Si une autentification pour l'envoi est requise, l'iden
 opt-email_pwd            OPTIONAL: Mot de passe
 explain-email_pwd        Si une autentification pour l'envoi est requise, le mot de passe.
 error-badEmailAd@1       %s n'est pas une adresse email valide
+opt-email_rss            Send RSS notifications
+explain-email_rss        Send email when an RSS feed adds jobs to the queue.
 
 # Config->Newzbin
 explain-newzbin          Si vous avez un compte sur <strong>www.newzbin.com</strong>,\

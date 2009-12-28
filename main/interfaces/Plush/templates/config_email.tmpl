@@ -21,6 +21,11 @@
     <small>$T('explain-email_full')</small>
 
     <br/><br/>
+    <input type="checkbox" name="email_rss" value="1" <!--#if $email_rss > 0 then "checked=1" else ""#--> />
+    <strong>$T('opt-email_rss')</strong><br/>
+    <small>$T('explain-email_rss')</small>
+
+    <br/><br/>
 	<strong>$T('opt-email_dir'):</strong><br/>
 	<small>$T('explain-email_dir')</small><br/>
 	<input type="text" size="40" name="email_dir" value="$email_dir">

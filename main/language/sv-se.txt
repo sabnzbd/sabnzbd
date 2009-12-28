@@ -421,6 +421,9 @@ explain-email_full       Skicka e-mail när hårddisken är full och SABnzbd har
 opt-email_dir            Mapp med e-mail mallar
 explain-email_dir        Mapp som innehåller användardefinierade mallar..\n\
                          I förhållande till
+opt-email_rss            Send RSS notifications
+explain-email_rss        Send email when an RSS feed adds jobs to the queue.
+
 emailAccount             E-mail kontoinställningar
 opt-email_server         SMTP Server
 explain-email_server     Ställ in din ISP's server för utgående e-mail.

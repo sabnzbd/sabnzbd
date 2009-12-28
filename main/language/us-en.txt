@@ -418,7 +418,10 @@ email-errorOnly          Error-only
 opt-email_full           Disk Full Notifications
 explain-email_full       Send email when disk is full and SABnzbd is paused.
 opt-email_dir            Folder containing email templates
-explain-email_dir        Folder containing user defined email templates.\n\
+explain-email_dir        Folder containing user defined email templates.
+opt-email_rss            Send RSS notifications
+explain-email_rss        Send email when an RSS feed adds jobs to the queue.
+
                          Relative to
 emailAccount             Email Account Settings
 opt-email_server         SMTP Server

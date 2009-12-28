@@ -2888,7 +2888,7 @@ def calc_age(date):
 LIST_EMAIL = (
     'email_endjob', 'email_full',
     'email_server', 'email_to', 'email_from',
-    'email_account', 'email_pwd', 'email_dir'
+    'email_account', 'email_pwd', 'email_dir', 'email_rss'
     )
 
 class ConfigEmail:
