@@ -2095,6 +2095,7 @@ class ConfigRss:
 
 
 #------------------------------------------------------------------------------
+_SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit', 'pause_post', 'resume_post')
 
 class ConfigScheduling:
     def __init__(self, web_dir, root, prim):
@@ -2121,7 +2122,8 @@ class ConfigScheduling:
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        actions = ['resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit']
+        actions = []
+        actions.extend(_SCHED_ACTIONS)
         days = get_days()
         conf['schedlines'] = []
         snum = 1
@@ -2181,7 +2183,7 @@ class ConfigScheduling:
         if minute and hour  and dayofweek and action:
             if (action == 'speedlimit') and arguments.isdigit():
                 pass
-            elif action in ('resume', 'pause', 'pause_all', 'shutdown', 'restart'):
+            elif action in _SCHED_ACTIONS:
                 arguments = ''
             elif action.find(':') > 0:
                 if arguments == '1':

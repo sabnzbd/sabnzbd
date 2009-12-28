@@ -80,6 +80,18 @@ def history_queue():
     global __POSTPROC
     if __POSTPROC: return __POSTPROC.get_queue()
 
+def pause_post():
+    global __POSTPROC
+    if __POSTPROC: return __POSTPROC.pause()
+
+def resume_post():
+    global __POSTPROC
+    if __POSTPROC: return __POSTPROC.resume()
+
+def status_post():
+    global __POSTPROC
+    if __POSTPROC: return __POSTPROC.status()
+
 def stop():
     global __POSTPROC
     if __POSTPROC:
@@ -126,6 +138,8 @@ class PostProcessor(Thread):
             self.queue = Queue.Queue()
             for nzo in self.history_queue:
                 self.process(nzo)
+        self.__stop = False
+        self.__paused = False
 
 
     def save(self):
@@ -169,6 +183,7 @@ class PostProcessor(Thread):
     def stop(self):
         self.queue.put(None)
         self.save()
+        self.__stop = True
 
     def empty(self):
         return self.queue.empty()
@@ -176,9 +191,21 @@ class PostProcessor(Thread):
     def get_queue(self):
         return self.history_queue
 
+    def pause(self):
+        self.__paused = True
+
+    def resume(self):
+        self.__paused = False
+
+    def status(self):
+        return self.__paused
+
     def run(self):
         while 1:
             if self.queue.empty(): HandleEmptyQueue()
+
+            while (not self.__stop) and self.__paused:
+                time.sleep(5)
 
             ## Get a job from the queue, quit on empty job
             nzo = self.queue.get()

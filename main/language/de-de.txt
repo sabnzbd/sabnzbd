@@ -423,6 +423,8 @@ sch-shutdown             Beenden
 sch-restart              Neu starten
 sch-speedlimit           Geschwindigkeitsbegrenzung
 sch-pause_all            Alle anhalten
+sch-pause_post           Nachbearbeiten anhalten
+sch-resume_post          Nachbearbeiten fortsetzen
 
 # Config->RSS
 configRSS                RSS-Einstellungen

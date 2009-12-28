@@ -93,6 +93,10 @@ def init():
         elif action_name == 'restart':
             action = sabnzbd.restart_program
             arguments = []
+        elif action_name == 'pause_post':
+            action = sabnzbd.postproc.pause_post
+        elif action_name == 'resume_post':
+            action = sabnzbd.postproc.resume_post
         elif action_name == 'speedlimit' and arguments != []:
             action = sabnzbd.downloader.limit_speed
         elif action_name == 'enable_server' and arguments != []:
@@ -238,6 +242,7 @@ def analyse(was_paused=False):
     """
     paused = None
     paused_all = False
+    pause_post = False
     speedlimit = None
     servers = {}
 
@@ -255,6 +260,10 @@ def analyse(was_paused=False):
         elif action == 'resume':
             paused = False
             paused_all = False
+        elif action == 'pause_post':
+            pause_post = True
+        elif action == 'resume_post':
+            pause_post = False
         elif action == 'speedlimit' and value!=None:
             speedlimit = int(ev[2])
         elif action == 'enable_server':
@@ -275,6 +284,10 @@ def analyse(was_paused=False):
             sabnzbd.unpause_all()
         sabnzbd.downloader.set_paused(paused or paused_all)
 
+    if pause_post:
+        sabnzbd.postproc.pause_post()
+    else:
+        sabnzbd.postproc.resume_post()
     if speedlimit:
         sabnzbd.downloader.limit_speed(speedlimit)
     for serv in servers:

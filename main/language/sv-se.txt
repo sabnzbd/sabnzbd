@@ -383,6 +383,8 @@ sch-shutdown             Stäng av
 sch-restart              Starta om
 sch-speedlimit           Hastighetsgräns
 sch-pause_all            Pausa Allt
+sch-pause_post           Pausa efterbehandla
+sch-resume_post          Återuppta efterbehandla
 
 # Config->RSS
 configRSS                RSS-konfiguration

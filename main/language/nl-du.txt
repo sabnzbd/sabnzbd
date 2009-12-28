@@ -363,6 +363,8 @@ sch-shutdown             Afsluiten
 sch-restart              Herstarten
 sch-speedlimit           Maximum snelheid
 sch-pause_all            Alles pauzeren
+sch-pause_post           Pauzeer nabewerken
+sch-resume_post          Hervat nabewerken
 
 
 # Config->RSS
