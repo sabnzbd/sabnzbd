@@ -36,7 +36,7 @@ import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
-import sabnzbd.email as email
+import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, loadavg, \
      to_units, diskfree, disktotal, get_ext, sanitize_foldername, \
      get_filename, cat_to_opts, IntConv
@@ -2509,7 +2509,7 @@ class ConnectionInfo:
         pack['download'] = ['action 1', 'action 2']
         pack['unpack'] = ['action 1', 'action 2']
 
-        self.__lastmail= email.endjob('Test Job', 123, 'unknown', True,
+        self.__lastmail= emailer.endjob('Test Job', 123, 'unknown', True,
                                       os.path.normpath(os.path.join(cfg.COMPLETE_DIR.get_path(), '/unknown/Test Job')),
                                       str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n', 0)
         raise dcRaiser(self.__root, kwargs)

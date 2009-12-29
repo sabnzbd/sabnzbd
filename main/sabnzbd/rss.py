@@ -30,7 +30,7 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.misc as misc
-import sabnzbd.email as email
+import sabnzbd.emailer as emailer
 
 import sabnzbd.utils.feedparser as feedparser
 from sabnzbd.lang import T, Ta
@@ -339,7 +339,7 @@ class RSSQueue:
 
         # Send email if wanted and not "forced"
         if new_downloads and cfg.EMAIL_RSS.get() and not force:
-            email.rss_mail(feed, new_downloads)
+            emailer.rss_mail(feed, new_downloads)
 
         # If links are in table for more than 4 weeks, remove
         # Flag old D/B links as obsolete, so that they don't show up in Preview

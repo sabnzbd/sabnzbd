@@ -38,7 +38,7 @@ from sabnzbd.constants import TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match
 from sabnzbd.codecs import TRANS, unicoder
 import sabnzbd.newzbin
-import sabnzbd.email as email
+import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.downloader as downloader
 import sabnzbd.config as config
@@ -429,7 +429,7 @@ class PostProcessor(Thread):
                     ## Email the results
                     if (not nzb_list) and cfg.EMAIL_ENDJOB.get():
                         if (cfg.EMAIL_ENDJOB.get() == 1) or (cfg.EMAIL_ENDJOB.get() == 2 and (unpackError or not parResult)):
-                            email.endjob(dirname, msgid, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
+                            emailer.endjob(dirname, msgid, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
                                          nzo.get_unpack_info(), script, TRANS(script_log), script_ret)
 
                     if fname:

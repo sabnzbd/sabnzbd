@@ -435,9 +435,6 @@ MSG_OTHER = r'''
 def panic_message(panic, a=None, b=None):
     """Create the panic message from templates
     """
-    if (not cfg.AUTOBROWSER.get()) or sabnzbd.DAEMON:
-        return
-
     if sabnzbd.WIN32:
         os_str = 'Press Startkey+R and type the line (example):'
         prog_path = '"%s"' % sabnzbd.MY_FULLNAME
@@ -470,6 +467,12 @@ def panic_message(panic, a=None, b=None):
 
 
     msg = MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg)
+
+    if sabnzbd.WIN_SERVICE:
+        sabnzbd.WIN_SERVICE.ErrLogger('Panic exit', msg)
+
+    if (not cfg.AUTOBROWSER.get()) or sabnzbd.DAEMON:
+        return
 
     msgfile, url = tempfile.mkstemp(suffix='.html')
     os.write(msgfile, msg)

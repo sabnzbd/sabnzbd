@@ -73,7 +73,7 @@ import sabnzbd.dirscanner as dirscanner
 import sabnzbd.urlgrabber as urlgrabber
 import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
-import sabnzbd.email as email
+import sabnzbd.emailer as emailer
 import sabnzbd.articlecache as articlecache
 import sabnzbd.newsunpack
 import sabnzbd.codecs as codecs
@@ -613,7 +613,7 @@ def CheckFreeSpace():
             logging.warning(Ta('warn-noSpace'))
             # Pause downloader, but don't save, since the disk is almost full!
             downloader.pause_downloader(save=False)
-            email.diskfull()
+            emailer.diskfull()
 
 
 ################################################################################
