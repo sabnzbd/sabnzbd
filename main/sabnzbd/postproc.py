@@ -526,9 +526,13 @@ def perm_script(wdir, umask):
     try:
         # Make sure that user R is on
         umask = int(umask, 8) | int('0400', 8)
+        report_errors = True
     except ValueError:
-        # Get the effective permissions of the session
+        # No or no valid permissions
+        # Use the effective permissions of the session
+        # Don't report errors (because the system might not support it)
         umask = int('0777', 8) & (sabnzbd.ORG_UMASK ^ int('0777', 8))
+        report_errors = False
 
     # Remove X bits for files
     umask_file = umask & int('7666', 8)
@@ -538,14 +542,16 @@ def perm_script(wdir, umask):
         try:
             os.chmod(root, umask)
         except:
-            logging.error(Ta('error-ppPermissions@1'), root)
-            logging.debug("Traceback: ", exc_info = True)
+            if report_errors:
+                logging.error(Ta('error-ppPermissions@1'), root)
+                logging.debug("Traceback: ", exc_info = True)
         for name in files:
             try:
                 os.chmod(join(root, name), umask_file)
             except:
-                logging.error(Ta('error-ppPermissions@1'), join(root, name))
-                logging.debug("Traceback: ", exc_info = True)
+                if report_errors:
+                    logging.error(Ta('error-ppPermissions@1'), join(root, name))
+                    logging.debug("Traceback: ", exc_info = True)
 
 
 def Cat2Dir(cat, defdir):
