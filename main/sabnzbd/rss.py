@@ -265,9 +265,10 @@ class RSSQueue:
             if self.shutdown: return
 
             try:
-                link = _get_link(uri, entry)
+                link, category = _get_link(uri, entry)
             except (AttributeError, IndexError):
                 link = None
+                category = ''
                 logging.error('Incompatible feed %s', uri)
                 logging.debug("Traceback: ", exc_info = True)
 
@@ -292,6 +293,13 @@ class RSSQueue:
                     logging.debug('Trying title %s', title)
                     result = False
                     for n in xrange(regcount):
+                        if category and reTypes[n]=='C':
+                            found = re.search(regexes[n], category)
+                            if not found:
+                                logging.debug("Filter rejected on rule %d", n)
+                                result = False
+                                break
+
                         found = re.search(regexes[n], title)
                         if reTypes[n]=='M' and not found:
                             logging.debug("Filter rejected on rule %d", n)
@@ -471,11 +479,13 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order,
 
 
 def _get_link(uri, entry):
-    """ Retrieve the post link from this entry """
-
+    """ Retrieve the post link from this entry
+        Returns (link, category)
+    """
     link = None
+    category = ''
     uri = uri.lower()
-    if 'newzbin' in uri or 'newzxxx'in uri:
+    if 'newzbin.com' in uri or 'newzxxx.com'in uri:
         link = entry.link
         if not (link and '/post/' in link.lower()):
             # Use alternative link
@@ -489,7 +499,11 @@ def _get_link(uri, entry):
             link = entry.links[0].href
 
     if link and 'http' in link.lower():
-        return link
+        try:
+            category = entry.category
+        except:
+            category = ''
+        return link, category
     else:
         logging.warning(Ta('warn-emptyRSS@1'), link)
-        return None
+        return None, ''

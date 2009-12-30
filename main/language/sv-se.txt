@@ -403,6 +403,7 @@ rss-filter               Filter
 rss-accept               Acceptera
 rss-reject               Avvisa
 rss-must                 Kräver
+rss-mustcat              KräverKat
 rss-delFilter            X
 rss-matched              Matchade
 rss-notMatched           Matchade inte

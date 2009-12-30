@@ -385,6 +385,7 @@ rss-filter               Filter
 rss-accept               Accepteren
 rss-reject               Verwerpen
 rss-must                 Verplicht
+rss-mustcat              VerplichteCat
 rss-delFilter            X
 rss-matched              Geselecteerd
 rss-notMatched           Niet geselecteerd

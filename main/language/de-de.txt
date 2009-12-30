@@ -447,6 +447,7 @@ rss-filter               Filter
 rss-accept               Akzeptieren
 rss-reject               Verwerfen
 rss-must                 Benötigt
+rss-mustcat              BenötigtKat
 rss-delFilter            X
 rss-matched              Entspricht
 rss-notMatched           Entspricht nicht
