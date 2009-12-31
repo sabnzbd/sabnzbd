@@ -35,11 +35,10 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.constants import *
-import sabnzbd.config as config
+from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
-from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
 from sabnzbd.codecs import unicoder
 
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
