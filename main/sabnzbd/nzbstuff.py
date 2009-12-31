@@ -35,12 +35,11 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.constants import *
-import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
-from sabnzbd.misc import to_units, cat_to_opts
+from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
 from sabnzbd.codecs import unicoder
 
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
@@ -443,7 +442,7 @@ class NzbObject(TryList):
             dname, ext = os.path.splitext(dirname) # Used for folder name for final unpack
             if ext.lower() == '.nzb':
                 dirname = dname
-            dirname = sabnzbd.misc.sanitize_foldername(dirname)
+            dirname = sanitize_foldername(dirname)
         dirname, password = scan_password(dirname)
 
         self.__dirname = dirname      # Keeps track of the working folder
@@ -569,7 +568,7 @@ class NzbObject(TryList):
 
         if cat is None:
             for grp in self.__group:
-                cat = CatConvert(grp)
+                cat = cat_convert(grp)
                 if cat:
                     break
 
@@ -724,7 +723,7 @@ class NzbObject(TryList):
     def set_name(self, name):
         if isinstance(name, str):
             name, self.extra2 = scan_password(name)
-            self.__original_dirname = sabnzbd.misc.sanitize_foldername(name)
+            self.__original_dirname = sanitize_foldername(name)
             return True
         return False
 
@@ -1184,45 +1183,6 @@ def SplitFileName(name):
     else:
         return name.strip(), ""
 
-def CatConvert(cat):
-    """ Convert newzbin-category/group-name to user categories.
-        If no match found, but newzbin-cat equals user-cat, then return user-cat
-        If no match found, return None
-    """
-    newcat = cat
-    found = False
-
-    if cat and cat.lower() != 'none':
-        cats = config.get_categories()
-        for ucat in cats:
-            try:
-                newzbin = cats[ucat].newzbin.get()
-                if type(newzbin) != type([]):
-                    newzbin = [newzbin]
-            except:
-                newzbin = []
-            for name in newzbin:
-                if name.lower() == cat.lower():
-                    if '.' not in name:
-                        logging.debug('Convert newzbin-cat "%s" to user-cat "%s"', cat, ucat)
-                    else:
-                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat)
-                    newcat = ucat
-                    found = True
-                    break
-            if found:
-                break
-
-        if not found:
-            for ucat in cats:
-                if cat.lower() == ucat.lower():
-                    found = True
-                    break
-
-    if found:
-        return newcat
-    else:
-        return None
 
 def format_time_string(seconds, days=0):
 
