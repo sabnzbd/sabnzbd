@@ -29,7 +29,7 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.misc as misc
+from sabnzbd.misc import cat_convert, sanitize_foldername
 import sabnzbd.emailer as emailer
 
 import sabnzbd.utils.feedparser as feedparser
@@ -87,6 +87,11 @@ def clear_feed(feed):
     if __RSS: __RSS.clear_feed(feed)
 
 ################################################################################
+
+def notdefault(item):
+    """ Return True if not None/"None"/"Default"/""
+    """
+    return bool(item) and item.lower() not in ('default', 'none')
 
 
 def ListUris():
@@ -308,17 +313,19 @@ class RSSQueue:
                         if found and reTypes[n]=='A':
                             logging.debug("Filter matched on rule %d", n)
                             result = True
-                            if reCats[n]:
+                            if notdefault(reCats[n]):
                                 myCat = reCats[n]
+                            elif category:
+                                myCat = cat_convert(category)
                             else:
                                 myCat = defCat
-                            if rePPs[n]:
+                            if notdefault(rePPs[n]):
                                 myPP = rePPs[n]
-                            elif not reCats[n]:
+                            elif not (reCats[n] or category):
                                 myPP = defPP
-                            if reScripts[n]:
+                            if notdefault(reScripts[n]):
                                 myScript = reScripts[n]
-                            elif not reCats[n]:
+                            elif not (notdefault(reCats[n]) or category):
                                 myScript = defScript
                             #elif not rePriority[n]:
                                 #myScript = defScript
@@ -438,7 +445,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order,
 
     jobs[link] = {}
     jobs[link]['order'] = order
-    nzbname = misc.sanitize_foldername(title)
+    nzbname = sanitize_foldername(title)
     m = RE_NEWZBIN.search(link)
     if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
         if download:

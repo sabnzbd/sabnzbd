@@ -37,8 +37,7 @@ from threading import *
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch
-from sabnzbd.nzbstuff import CatConvert
+from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch, cat_convert
 from sabnzbd.codecs import name_fixer
 import sabnzbd.newswrapper
 import sabnzbd.nzbqueue
@@ -191,7 +190,7 @@ class MSGIDGrabber(Thread):
                 script = nzo.get_script()
                 cat = nzo.get_cat()
                 if not cat:
-                    cat = CatConvert(newzbin_cat)
+                    cat = cat_convert(newzbin_cat)
 
                 priority = nzo.get_priority()
                 nzbname = nzo.get_dirname_rename()

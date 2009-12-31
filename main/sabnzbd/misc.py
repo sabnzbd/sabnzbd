@@ -63,6 +63,7 @@ def safe_lower(txt):
         return ''
 
 
+#------------------------------------------------------------------------------
 def cat_to_opts(cat, pp=None, script=None, priority=None):
     """
         Derive options from category, if option not already defined.
@@ -99,6 +100,49 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
             priority = cfg.DIRSCAN_PRIORITY.get()
 
     return cat, pp, script, priority
+
+
+#------------------------------------------------------------------------------
+def cat_convert(cat):
+    """ Convert newzbin/nzbs.org category/group-name to user categories.
+        If no match found, but newzbin-cat equals user-cat, then return user-cat
+        If no match found, return None
+    """
+    newcat = cat
+    found = False
+
+    if cat and cat.lower() != 'none':
+        cats = config.get_categories()
+        for ucat in cats:
+            try:
+                newzbin = cats[ucat].newzbin.get()
+                if type(newzbin) != type([]):
+                    newzbin = [newzbin]
+            except:
+                newzbin = []
+            for name in newzbin:
+                if name.lower() == cat.lower():
+                    if '.' not in name:
+                        logging.debug('Convert newzbin/nzbs.org cat "%s" to user-cat "%s"', cat, ucat)
+                    else:
+                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat)
+                    newcat = ucat
+                    found = True
+                    break
+            if found:
+                break
+
+        if not found:
+            for ucat in cats:
+                if cat.lower() == ucat.lower():
+                    found = True
+                    break
+
+    if found:
+        return newcat
+    else:
+        return None
+
 
 ################################################################################
 # sanitize_filename                                                            #
