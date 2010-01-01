@@ -29,7 +29,7 @@ from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, sanitize_foldername
+from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re
 import sabnzbd.emailer as emailer
 
 import sabnzbd.utils.feedparser as feedparser
@@ -101,7 +101,7 @@ def ListUris():
         uris.append(uri)
     return uris
 
-def ConvertFilter(text):
+def convert_filter(text):
     """ Return compiled regex.
         If string starts with re: it's a real regex
         else quote all regex specials, replace '*' by '.*'
@@ -109,21 +109,7 @@ def ConvertFilter(text):
     if text[:3].lower() == 're:':
         txt = text[3:]
     else:
-        txt = text.replace('\\','\\\\')
-        txt = txt.replace('^','\^')
-        txt = txt.replace('$','\$')
-        txt = txt.replace('.','\.')
-        txt = txt.replace('[','\[')
-        txt = txt.replace(']','\]')
-        txt = txt.replace('(','\(')
-        txt = txt.replace(')','\)')
-        txt = txt.replace('+','\+')
-        txt = txt.replace('?','\?')
-        txt = txt.replace('|','\|')
-        txt = txt.replace('{','\{')
-        txt = txt.replace('}','\}')
-        txt = txt.replace('*','.*')
-
+        txt = wildcard_to_re(text)
     try:
         return re.compile(txt, re.I)
     except:
@@ -229,7 +215,7 @@ class RSSQueue:
             rePPs.append(filter[1])
             reScripts.append(filter[2])
             reTypes.append(filter[3])
-            regexes.append(ConvertFilter(filter[4]))
+            regexes.append(convert_filter(filter[4]))
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI

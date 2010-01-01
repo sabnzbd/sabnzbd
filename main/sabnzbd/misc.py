@@ -103,6 +103,28 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
 
 
 #------------------------------------------------------------------------------
+_wildcard_to_regex = {
+    '\\': r'\\',
+    '^' : r'\^',
+    '$' : r'\$',
+    '.' : r'\.',
+    '[' : r'\[',
+    ']' : r'\]',
+    '(' : r'\(',
+    ')' : r'\)',
+    '+' : r'\+',
+    '?' : r'.' ,
+    '|' : r'\|',
+    '{' : r'\{',
+    '}' : r'\}',
+    '*' : r'.*'
+}
+def wildcard_to_re(text):
+    """ Convert plain wildcard string (with '*' and '?') to regex.
+    """
+    return ''.join([_wildcard_to_regex.get(ch, ch) for ch in text])
+
+#------------------------------------------------------------------------------
 def cat_convert(cat):
     """ Convert newzbin/nzbs.org category/group-name to user categories.
         If no match found, but newzbin-cat equals user-cat, then return user-cat
@@ -121,7 +143,7 @@ def cat_convert(cat):
             except:
                 newzbin = []
             for name in newzbin:
-                if name.lower() == cat.lower():
+                if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
                     if '.' not in name:
                         logging.debug('Convert newzbin/nzbs.org cat "%s" to user-cat "%s"', cat, ucat)
                     else:
