@@ -169,27 +169,32 @@ def cat_convert(cat):
 ################################################################################
 # sanitize_filename                                                            #
 ################################################################################
-if sabnzbd.WIN32:
-    CH_ILLEGAL = r'\/<>?*:|"'
-    CH_LEGAL   = r'++{}!@-#`'
-else:
-    CH_ILLEGAL = r'/'
-    CH_LEGAL   = r'+'
+_FILE_CH_MAPPER = {
+    '\\' : '+',
+    '/'  : '+',
+    '<'  : '{',
+    '>'  : '}',
+    '?'  : '!',
+    '*'  : '@',
+    ':'  : '-',
+    '|'  : '#',
+    '"'  : '`'
+    }
+
+_FOLDER_REMOVER = ''.join(_FILE_CH_MAPPER.keys())
+
+if not sabnzbd.WIN32:
+    _FILE_CH_MAPPER = {
+        '/'  : '+'
+        }
+
 
 def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
-    illegal = CH_ILLEGAL
-    legal   = CH_LEGAL
-
-    lst = []
-    for ch in name.strip():
-        if ch in illegal:
-            ch = legal[illegal.find(ch)]
-        lst.append(ch)
-    name = ''.join(lst)
-
+    name = name.strip()
+    name = ''.join([_FILE_CH_MAPPER.get(ch, ch) for ch in name])
     if not name:
         name = 'unknown'
 
@@ -204,24 +209,14 @@ def sanitize_foldername(name):
     """ Return foldername with dodgy chars converted to safe ones
         Remove any leading and trailing dot and space characters
     """
-    illegal = r'\/<>?*:|"'
-    legal   = r'++{}!@-#`'
-
-    repl = cfg.REPLACE_ILLEGAL.get()
-    lst = []
-    for ch in name.strip():
-        if ch in illegal:
-            if repl:
-                ch = legal[illegal.find(ch)]
-                lst.append(ch)
-        else:
-            lst.append(ch)
-    name = ''.join(lst)
-
     name = name.strip('. ')
+    if cfg.REPLACE_ILLEGAL.get():
+        name = ''.join([_FILE_CH_MAPPER.get(ch, ch) for ch in name])
+    else:
+        name = name.translate(None, _FOLDER_REMOVER)
+
     if not name:
         name = 'unknown'
-
     return name
 
 
