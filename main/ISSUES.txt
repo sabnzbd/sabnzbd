@@ -8,11 +8,6 @@ So far we have too little information to reproduce these problems.
 Please report such problems on the forum with as much information
 as possibe (OS, amount of usenet servers etc.)
 
-*** (hopefully) Solved issue ***
-  We are investigating reports of downloads hanging in the
-  last bit of the actual download.
-  0.5.0 Beta5 attempts to fix this. Let us hear your experience.
-
 
 *** Known problems ***
 

@@ -164,6 +164,7 @@ clearWarnings     Leeren
 server-blocked    Freigeben
 warning           WARNUNG:
 error             FEHLER:
+server-resolving  &nbsp;Adresse auflösen
 
 # Configuration
 configuration     Einstellungen

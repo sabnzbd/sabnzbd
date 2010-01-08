@@ -163,6 +163,7 @@ clearWarnings     rensa
 server-blocked    Ta bort blockering
 warning           VARNING:
 error             FEL:
+server-resolving  &nbsp;Lösa adress
 
 # Configuration
 configuration     Konfiguration

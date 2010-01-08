@@ -1,5 +1,5 @@
 *******************************************
-*** This is SABnzbd 0.5.0 Beta5         ***
+*** This is SABnzbd 0.6.0 Alpha0        ***
 *******************************************
 SABnzbd is an open-source cross-platform binary newsreader.
 It simplifies the process of downloading from Usenet dramatically,
@@ -16,7 +16,7 @@ http://wiki.sabnzbd.org/
 *******************************************
 *** Beta Software                       ***
 *******************************************
-This is Beta software, it´s almost mature.
+This is Beta software, itï¿½s almost mature.
 We are quite confident, but not enough people
 have used it yet.
 

@@ -118,4 +118,4 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None):
         return False, T('srv-generalFail@1') % xml_name(nw.lines[0])
 
     # Close the connection
-    nw.terminate()
+    nw.terminate(quit=True)

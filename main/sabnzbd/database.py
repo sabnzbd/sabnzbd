@@ -378,14 +378,10 @@ def unpack_history_info(item):
 def decode_factory(text):
     '''
         Recursivly looks through the supplied argument
-        and converts and text to utf-8
+        and converts and text to Unicode
     '''
     if isinstance(text, str):
-        if sabnzbd.WIN32:
-            return text.decode('Latin-1', 'replace').encode('utf-8', 'replace')
-        else:
-            return text.decode('utf-8', 'replace')
-
+        return unicoder(text)
 
     elif isinstance(text, list):
         new_text = []

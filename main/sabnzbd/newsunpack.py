@@ -661,7 +661,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             nzo.set_action_line(T('msg-repair'), T('msg-startRepair'))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, zips, rars, ts = build_filelists(workdir, None)
+            joinables, zips, rars, ts = build_filelists(workdir, None, check_rar=False)
 
             finished, readd, pars, datafiles, used_joinables = PAR_Verify(parfile, parfile_nzf, nzo,
                                                                           setname, joinables)
@@ -1046,7 +1046,7 @@ def par_sort(a, b):
     elif bext == 'par2':
         return 1
 
-def build_filelists(workdir, workdir_complete):
+def build_filelists(workdir, workdir_complete, check_rar=True):
     joinables, zips, rars = ([], [], [])
 
     filelist = []
@@ -1060,11 +1060,14 @@ def build_filelists(workdir, workdir_complete):
             for _file in files:
                 filelist.append(os.path.join(root, _file))
 
-    joinables = [f for f in filelist if SPLITFILE_RE.search(f) and notrar(f)]
+    if check_rar:
+        joinables = [f for f in filelist if SPLITFILE_RE.search(f) and not israr(f)]
+    else:
+        joinables = [f for f in filelist if SPLITFILE_RE.search(f)]
 
     zips = [f for f in filelist if ZIP_RE.search(f)]
 
-    rars = [f for f in filelist if RAR_RE.search(f) and f not in joinables]
+    rars = [f for f in filelist if RAR_RE.search(f) and israr(f)]
 
     ts = [f for f in filelist if TS_RE.search(f) and f not in joinables]
 
@@ -1075,7 +1078,7 @@ def build_filelists(workdir, workdir_complete):
 
     return (joinables, zips, rars, ts)
 
-def notrar(f):
+def israr(f):
     logging.debug("notrar(): testing %s", f)
     try:
         _f = open(f, 'rb')
@@ -1087,9 +1090,9 @@ def notrar(f):
 
     if header != 'Rar!':
         logging.debug("notrar(): joinable file %s", f)
-        return True
+        return False
 
-    return False
+    return True
 
 
 def QuickCheck(set, nzo):

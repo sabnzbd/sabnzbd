@@ -49,6 +49,33 @@ import select
 
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
+
+#------------------------------------------------------------------------------
+# getaddrinfo() can be very slow. In some situations this can lead
+# to delayed starts and timeouts on connections.
+# Because of this, the results will be cached in the server object.
+
+def _retrieve_info(server):
+    """ Async attempt to run getaddrinfo() for specified server
+    """
+    info = GetServerParms(server.host, server.port)
+
+    if info is None:
+        server.bad_cons += server.threads
+    else:
+        server.bad_cons = 0
+    (server.info, server.request) = (info, False)
+    sabnzbd.downloader.wakeup()
+
+
+def request_server_info(server):
+    """ Launch async request to resolve server address
+    """
+    if not server.request:
+        server.request = True
+        Thread(target=_retrieve_info, args=(server,)).start()
+
+
 def GetServerParms(host, port):
     # Make sure port is numeric (unicode input not supported)
     try:
@@ -99,17 +126,16 @@ def con(sock, host, port, sslenabled, nntp):
         nntp.error(e)
 
 class NNTP:
-    def __init__(self, host, port, sslenabled, nntp, user=None, password=None, block=False):
+    def __init__(self, host, port, info, sslenabled, nntp, user=None, password=None, block=False):
         self.host = host
         self.port = port
         self.nntp = nntp
         self.blocking = block
         self.error_msg = None
-        res= GetServerParms(self.host, self.port)
-        if not res:
+        if not info:
             raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
-        af, socktype, proto, canonname, sa = res[0]
+        af, socktype, proto, canonname, sa = info[0]
 
         if sslenabled and _ssl:
             # Some users benefit from SSLv2 not being capped.
@@ -175,7 +201,8 @@ class NNTP:
         if self.blocking:
             raise socket.error(errno.ECONNREFUSED, msg)
         else:
-            logging.error(msg)
+            logging.info(msg)
+            self.nntp.server.warning = msg
 
 class NewsWrapper:
     def __init__(self, server, thrdnum, block=False):
@@ -202,7 +229,7 @@ class NewsWrapper:
         self.pass_ok = False
 
     def init_connect(self):
-        self.nntp = NNTP(self.server.host, self.server.port, self.server.ssl, self,
+        self.nntp = NNTP(self.server.host, self.server.port, self.server.info, self.server.ssl, self,
                          self.server.username, self.server.password, self.blocking)
         self.recv = self.nntp.sock.recv
 
@@ -283,11 +310,12 @@ class NewsWrapper:
         self.data = ''
         self.lines = []
 
-    def hard_reset(self, wait=True):
+    def hard_reset(self, wait=True, quit=True):
         if self.nntp:
             try:
-                self.nntp.sock.sendall('QUIT\r\n')
-                time.sleep(0.1)
+                if quit:
+                    self.nntp.sock.sendall('QUIT\r\n')
+                    time.sleep(0.1)
                 self.nntp.sock.close()
             except:
                 pass
@@ -302,12 +330,13 @@ class NewsWrapper:
             # Reset for internal reasons, just wait 5 sec
             self.timeout = time.time() + 5
 
-    def terminate(self):
+    def terminate(self, quit=False):
         """ Close connection and remove nntp object """
         if self.nntp:
             try:
-                self.nntp.sock.sendall('QUIT\r\n')
-                time.sleep(0.1)
+                if quit:
+                    self.nntp.sock.sendall('QUIT\r\n')
+                    time.sleep(0.1)
                 self.nntp.sock.close()
             except:
                 pass

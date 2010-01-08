@@ -162,6 +162,7 @@ clearWarnings     clear
 server-blocked    Unblock
 warning           WARNING:
 error             ERROR:
+server-resolving  &nbsp;Resolving address
 
 # Configuration
 configuration     Configuration

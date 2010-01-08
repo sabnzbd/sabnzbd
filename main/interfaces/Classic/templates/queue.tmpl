@@ -40,9 +40,9 @@ $T('onQueueFinish'):
 <!--#end if#-->
 </select>
 | $T('speedLimit'):
-<input id="speedbox" type="text" value="$speedlimit" onChange="location = './set_speedlimit?session=$session&value='+this.value">$T('KBs')
+<input id="speedbox" type="text" value="$speedlimit" onChange="location = './set_speedlimit?session=$session&value='+this.value">&nbsp;$T('KBs')
 | $T('pauseFor'):
-<input id="speedbox" type="text" size=5 value="" onChange="location = './set_pause?session=$session&value='+this.value">$T('minute')
+<input id="speedbox" type="text" size=5 value="" onChange="location = './set_pause?session=$session&value='+this.value">&nbsp;$T('minute')
 |
 <a href="./purge?session=$session" onclick="return confirm('$T('purgeQueueConf').replace("'","`") ');">$T('purgeQueue')</a>
 </span>

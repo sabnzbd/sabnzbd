@@ -29,7 +29,7 @@ from nntplib import NNTPPermanentError
 import sabnzbd
 from sabnzbd.decorators import synchronized_CV, CV
 from sabnzbd.decoder import Decoder
-from sabnzbd.newswrapper import NewsWrapper
+from sabnzbd.newswrapper import NewsWrapper, request_server_info
 from sabnzbd.utils import osx
 from sabnzbd.constants import *
 import sabnzbd.config as config
@@ -205,6 +205,9 @@ class Server:
         self.active = True
         self.bad_cons = 0
         self.errormsg = ''
+        self.warning = ''
+        self.info = None     # Will hold getaddrinfo() list
+        self.request = False # True if a getaddrinfo() request is pending
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i+1))
@@ -219,7 +222,7 @@ class Server:
                 readers.pop(fno)
             if fno and fno in writers:
                 writers.pop(fno)
-            nw.terminate()
+            nw.terminate(quit=True)
         self.idle_threads = []
 
     def __repr__(self):
@@ -367,6 +370,18 @@ class Downloader(Thread):
                 return True
         return False
 
+    def maybe_block_server(self, server):
+        if server.optional and server.active and (server.bad_cons/server.threads) > 3:
+            # Optional and active server had too many problems,
+            # disable it now and send a re-enable plan to the scheduler
+            server.bad_cons = 0
+            server.active = False
+            server.errormsg = T('warn-ignoreServer@2') % ('', _PENALTY_TIMEOUT)
+            logging.warning(Ta('warn-ignoreServer@2'), server.id, _PENALTY_TIMEOUT)
+            self.plan_server(server.id, _PENALTY_TIMEOUT)
+            sabnzbd.nzbqueue.reset_all_try_lists()
+
+
     def run(self):
         self.decoder.start()
 
@@ -379,15 +394,7 @@ class Downloader(Thread):
                         else:
                             self.__reset_nw(nw, "timed out")
                         server.bad_cons += 1
-                        if server.optional and server.active and (server.bad_cons/server.threads) > 3:
-                            # Optional and active server had too many problems,
-                            # disable it now and send a re-enable plan to the scheduler
-                            server.bad_cons = 0
-                            server.active = False
-                            server.errormsg = T('warn-ignoreServer@2') % ('', _PENALTY_TIMEOUT)
-                            logging.warning(Ta('warn-ignoreServer@2'), server.id, _PENALTY_TIMEOUT)
-                            self.plan_server(server.id, _PENALTY_TIMEOUT)
-                            sabnzbd.nzbqueue.reset_all_try_lists()
+                        self.maybe_block_server(server)
                 if server.restart:
                     if not server.busy_threads:
                         newid = server.newid
@@ -417,6 +424,11 @@ class Downloader(Thread):
                             nw.timeout = None
 
                     if not server.active:
+                        break
+
+                    if server.info is None:
+                        self.maybe_block_server(server)
+                        request_server_info(server)
                         break
 
                     article = sabnzbd.nzbqueue.get_article(server)
@@ -465,10 +477,11 @@ class Downloader(Thread):
 
             if self.force_disconnect:
                 for server in self.servers:
-                    for nw in server.idle_threads[:]:
-                        self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False)
-                    for nw in server.busy_threads[:]:
-                        self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False)
+                    for nw in server.idle_threads + server.busy_threads:
+                        quit = nw.connected and server.active
+                        self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, quit=quit)
+                    # Make sure server address resolution is refreshed
+                    server.info = None
 
                 self.force_disconnect = False
 
@@ -571,7 +584,7 @@ class Downloader(Thread):
                                 if server.active:
                                     server.errormsg = Ta('error-serverTooMany@2') % ('', '')
                                     logging.error(Ta('error-serverTooMany@2'), server.host, server.port)
-                                    self.__reset_nw(nw, None, warn=False, destroy=True)
+                                    self.__reset_nw(nw, None, warn=False, destroy=True, quit=True)
                                     self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
                             elif ecode in ('502', '481') and clues_too_many_ip(msg):
@@ -606,7 +619,7 @@ class Downloader(Thread):
                                         logging.info('Server %s ignored for %s minutes', server.id, penalty)
                                         self.plan_server(server.id, penalty)
                                     sabnzbd.nzbqueue.reset_all_try_lists()
-                                self.__reset_nw(nw, None, warn=False)
+                                self.__reset_nw(nw, None, warn=False, quit=True)
                             continue
                         except:
                             logging.error(Ta('error-serverFailed@4'),
@@ -647,7 +660,7 @@ class Downloader(Thread):
                             self.plan_server(server.id, 0)
                             sabnzbd.nzbqueue.reset_all_try_lists()
                         msg = T('error-serverCred@1') % ('%s:%s' % (nw.server.host, nw.server.port))
-                        self.__reset_nw(nw, msg)
+                        self.__reset_nw(nw, msg, quit=True)
 
                 if done:
                     logging.info('Thread %s@%s:%s: %s done',
@@ -659,8 +672,7 @@ class Downloader(Thread):
                     server.busy_threads.remove(nw)
                     server.idle_threads.append(nw)
 
-
-    def __reset_nw(self, nw, errormsg, warn=True, wait=True, destroy=False):
+    def __reset_nw(self, nw, errormsg, warn=True, wait=True, destroy=False, quit=False):
         server = nw.server
         article = nw.article
         fileno = None
@@ -670,7 +682,8 @@ class Downloader(Thread):
             nw.nntp.error_msg = None
 
         if warn and errormsg:
-            logging.warning('Thread %s@%s:%s: ' + errormsg,
+            server.warning = errormsg
+            logging.info('Thread %s@%s:%s: ' + errormsg,
                              nw.thrdnum, server.host, server.port)
         elif errormsg:
             logging.info('Thread %s@%s:%s: ' + errormsg,
@@ -697,9 +710,9 @@ class Downloader(Thread):
             sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
 
         if destroy:
-            nw.terminate()
+            nw.terminate(quit=quit)
         else:
-            nw.hard_reset(wait)
+            nw.hard_reset(wait, quit=quit)
 
     def __request_article(self, nw):
         try:
@@ -720,7 +733,7 @@ class Downloader(Thread):
                 self.read_fds[fileno] = nw
         except:
             logging.error(Ta('error-except'))
-            self.__reset_nw(nw, "server broke off connection")
+            self.__reset_nw(nw, "server broke off connection", quit=True)
 
     #------------------------------------------------------------------------------
     # Timed restart of servers admin.

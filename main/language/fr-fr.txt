@@ -164,6 +164,7 @@ clearWarnings     effacer
 server-blocked    Débloquer
 warning           AVERTISSEMENT:
 error             ERREUR:
+server-resolving  &nbsp;Résoudre l'adresse
 
 
 # Configuration

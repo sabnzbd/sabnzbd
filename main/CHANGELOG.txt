@@ -1,4 +1,13 @@
 -------------------------------------------------------------------------------
+0.5.0Beta6 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+- Solve problems with unwilling servers and "random" server time-outs.
+- Do not generate warnings for intermittent server problems.
+- Joinable rar-sets were not always properly joined.
+- Fixed timing problems when SABnzbd is running behind an Apache server
+- Don't report failed default permissions setting when the user has set none
+-------------------------------------------------------------------------------
 0.5.0Beta5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Fixes:

@@ -2479,7 +2479,13 @@ class ConnectionInfo:
                 if nw.connected:
                     connected += 1
 
+            if server.warning and not (connected or server.errormsg):
+                connected = unicoder(server.warning)
+
+            if server.request and not server.info:
+                connected = T('server-resolving')
             busy.sort()
+
             header['servers'].append((server.host, server.port, connected, busy, server.ssl,
                                       server.active, server.errormsg, server.fillserver, server.optional))
 

@@ -160,6 +160,7 @@ clearWarnings     Wissen
 server-blocked    Deblokkeren
 warning           WAARSCHUWING:
 error             FOUT:
+server-resolving  &nbsp;Adres opzoeken
 
 # Configuration
 configuration     Instellingen
