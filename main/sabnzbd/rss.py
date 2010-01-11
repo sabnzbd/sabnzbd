@@ -169,12 +169,12 @@ class RSSQueue:
         """ Run the query for one URI and apply filters """
         self.shutdown = False
 
-        def DupTitle(fd, title):
+        def dup_title(fd, title):
             for f in self.jobs:
                 if f == fd:
                     for lk in self.jobs[fd]:
                         item = self.jobs[fd][lk]
-                        if item['status'][0]=='D' and item['title']==title:
+                        if item.get('status', ' ')[0]=='D' and item.get('title', '')==title:
                             return True
                     return False
             return False
@@ -270,7 +270,7 @@ class RSSQueue:
                 title = entry.title
                 newlinks.append(link)
 
-                if cfg.NO_DUPES.get() and DupTitle(feed, title):
+                if cfg.NO_DUPES.get() and dup_title(feed, title):
                     logging.info("Ignoring duplicate job %s", title)
                     continue
 
