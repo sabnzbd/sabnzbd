@@ -209,11 +209,12 @@ def sanitize_foldername(name):
     """ Return foldername with dodgy chars converted to safe ones
         Remove any leading and trailing dot and space characters
     """
+    #global _FOLDER_REMOVER
     name = name.strip('. ')
     if cfg.REPLACE_ILLEGAL.get():
         name = ''.join([_FILE_CH_MAPPER.get(ch, ch) for ch in name])
     else:
-        name = name.translate(None, _FOLDER_REMOVER)
+        name = ''.join([ch for ch in name if ch not in _FOLDER_REMOVER])
 
     if not name:
         name = 'unknown'
