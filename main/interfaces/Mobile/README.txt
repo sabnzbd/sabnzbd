@@ -7,12 +7,12 @@ LIBRARIES USED
 
 jQuery
 http://jquery.com
-Copyright (c) 2009 John Resig
+Copyright (c) 2010 John Resig
 See LICENSE-MIT & LICENSE-GPL
 
 Sizzle CSS Selector Engine
 http://sizzlejs.com/
-Copyright (c) 2009 The Dojo Foundation
+Copyright (c) 2010 The Dojo Foundation
 See LICENSE-MIT, LICENSE-BSD, & LICENSE-GPL
 
 jQuery jQTouch Plugin
