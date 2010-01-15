@@ -39,7 +39,7 @@ from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, loadavg, \
      to_units, diskfree, disktotal, get_ext, sanitize_foldername, \
-     get_filename, cat_to_opts, IntConv
+     get_filename, cat_to_opts, IntConv, panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 import sabnzbd.newzbin as newzbin
 from sabnzbd.codecs import TRANS, xml_name, LatinFilter, unicoder, special_fixer
@@ -357,6 +357,11 @@ class MainPage:
 
     @cherrypy.expose
     def index(self, **kwargs):
+        if sabnzbd.OLD_QUEUE and not cfg.warned_old_queue.get():
+            cfg.warned_old_queue.set(True)
+            config.save_config()
+            return panic_old_queue()
+
         if kwargs.get('skip_wizard') or config.get_servers():
             info, pnfo_list, bytespersec = build_header(self.__prim)
 
@@ -369,9 +374,13 @@ class MainPage:
             info['cat'] = 'Default'
             info['cat_list'] = ListCats(True)
 
-            if sabnzbd.newsunpack.PAR2_COMMAND:
-                info['warning'] = ""
-            else:
+            info['warning'] = ''
+            if cfg.enable_unrar.get():
+                if sabnzbd.newsunpack.RAR_PROBLEM:
+                    info['warning'] = T('warn-badUnrar')
+                if not sabnzbd.newsunpack.RAR_COMMAND:
+                    info['warning'] = T('warn-noUnpack')
+            if not sabnzbd.newsunpack.PAR2_COMMAND:
                 info['warning'] = T('warn-noRepair')
 
             template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
@@ -1953,6 +1962,8 @@ class ConfigRss:
     def upd_rss_feed(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
+        if kwargs.get('enable') is not None:
+            del kwargs['enable']
         try:
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:

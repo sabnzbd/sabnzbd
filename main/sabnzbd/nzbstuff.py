@@ -511,7 +511,7 @@ class NzbObject(TryList):
 
         self.extra2 = password
         self.extra3 = None # Will hold earliest next save time of NZO
-        self.extra4 = None
+        self.extra4 = None # Will hold save timeout for this NZO
         self.extra5 = None
         self.extra6 = None
 
@@ -582,6 +582,9 @@ class NzbObject(TryList):
             self.__files.sort(cmp=_nzf_cmp_date)
         else:
             self.__files.sort(cmp=_nzf_cmp_name)
+
+        # Set nzo save-delay to 6 sec per GB with a max of 5 min
+        self.extra4 = min(6.0 * float(self.__bytes) / GIGI, 300.0)
 
     ## begin nzo.Mutators #####################################################
     ## excluding nzo.__try_list ###############################################

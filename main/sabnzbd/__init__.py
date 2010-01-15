@@ -123,6 +123,7 @@ SABSTOP = False
 RESTART_REQ = False
 OSX_ICON = 1
 PAUSED_ALL = False
+OLD_QUEUE = False
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
@@ -163,7 +164,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
            DEBUG_DELAY, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
-           DARWIN, RESTART_REQ, OSX_ICON
+           DARWIN, RESTART_REQ, OSX_ICON, OLD_QUEUE
 
     if __INITIALIZED__:
         return False
@@ -208,6 +209,10 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
 
     ### Set language files
     lang.install_language(DIR_LANGUAGE, cfg.LANGUAGE.get())
+
+    ### Check for old queue (when a new queue is not present)
+    if not os.path.exists(os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME)):
+        OLD_QUEUE = bool(glob.glob(os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_TMPL % '?')))
 
     ###
     ### Initialize threads

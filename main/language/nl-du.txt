@@ -694,11 +694,14 @@ error-tvTemp@1           Aanmaken tijdelijk bestand %s mislukt
 warn-matrixBadRep@1      Ongeldig nzbmatrix rapport nummer %s
 warn-matrixFail@1        Geen toegang tot nzbmatrix (%s)
 warn-noRepair            Geen PAR2 programma, kan geen reparaties uitvoeren\n
+warn-noUnpack            Geen UNRAR programma gevonden, uitpakken van RAR bestanden niet mogelijk\n
+warn-badUnrar            Versie van UNRAR wordt niet aanbevolen,\
+                         download UNRAR van http://www.rarlab.com/rar_add.htm\n
 warn-missingFiles        \nLet op: niet alle bestanded zijn uitgepakt, zie log
 error-joinMismatch       Verwachte lengte ongelijk aan echte lengte
 error-joinFail@1         Samenvoegen van Bestanden %s is mislukt
 error-joinFail@2         [%s] Fout "%s" bij samenvoegen van bestanden
-msg-joinOK@3             [%s] %s bestand%s samengevoegd
+msg-joinOK@2             [%s] %s bestanden samengevoegd
 error-unpackFail@1       Uitpakken mislukt, %s
 error-unpackFail@2       [%s] Fout "%s" bij het uitpakken van RAR bestanden
 error-badArchive         Kan hoofd archief bestand niet openen (beschadigd of versleuteld)
@@ -708,8 +711,8 @@ error-unpackFull         Uitpakken mislukt,  schrijffout of schijf vol?
 error-unpackFailLog      Uitpakken mislukt,  zie log
 error-unpackPassword     Uitpakken mislukt, archief heeft wachtwoord nodig
 error-unpackMissing      Uitpakken mislukt, er zijn te weinig bestanden uitgepakt
-msg-unpackDone@4         %s bestand%s/map%s uitgepakt in %s
-msg-unzipDone@3          %s bestand%s in %s
+msg-unpackDone@2         %s bestanden/mappen uitgepakt in %s
+msg-unzipDone@2          %s bestanden in %s
 msg-QuickCheck           Snelle Controle...
 msg-QuickChecking        Snelle Controle uitvoeren
 msg-QuickOK@1            [%s] Snelle Controle OK

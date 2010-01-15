@@ -1,4 +1,18 @@
 -------------------------------------------------------------------------------
+0.5.0RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+- Fix broken server test in Wizard and Config->Servers
+- Add tbbmalloc.dll to par2 program (prevents problems when you have
+  another version of that file on your system)
+- Fix uneven download speed of very large NZBs
+- Include special par2 variant for OSX 10.6+ (automatically selected)
+- Fix problem with the script folder path containing a space
+- Fix disabling of RSS feeds when changing settings
+- When forcing disconnect don't try to send "Quit" to a non-responding server
+- Warn user (once) about presence of old queue file
+- Updated German texts
+-------------------------------------------------------------------------------
 0.5.0Beta6 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Fixes:

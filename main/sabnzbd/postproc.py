@@ -449,10 +449,10 @@ class PostProcessor(Thread):
 
                 ## Show final status in history
                 if parResult and not unpackError:
-                    osx.sendGrowlMsg("Download Completed",filename,osx.NOTIFICATION['pp'])
+                    osx.sendGrowlMsg("Download Completed",filename,osx.NOTIFICATION['complete'])
                     nzo.set_status('Completed')
                 else:
-                    osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['pp'])
+                    osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['complete'])
                     nzo.set_status('Failed')
 
             except:
@@ -463,6 +463,7 @@ class PostProcessor(Thread):
                 #    pass
                 logging.debug("Traceback: ", exc_info = True)
                 nzo.set_fail_msg(T('warn-PostCrash'))
+                osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['complete'])
                 nzo.set_status('Failed')
 
             # If the folder only contains one file OR folder, have that as the path

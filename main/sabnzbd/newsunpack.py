@@ -35,6 +35,7 @@ from sabnzbd.lang import T, Ta
 
 if sabnzbd.WIN32:
     try:
+        import win32api
         from win32con import SW_HIDE
         from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
     except ImportError:
@@ -60,6 +61,7 @@ RAR_COMMAND = None
 NICE_COMMAND = None
 ZIP_COMMAND = None
 IONICE_COMMAND = None
+RAR_PROBLEM = False
 
 def find_programs(curdir):
     """Find external programs
@@ -72,7 +74,16 @@ def find_programs(curdir):
             return None
 
     if sabnzbd.DARWIN:
-        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
+        try:
+            os_version = subprocess.Popen("sw_vers -productVersion", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
+            #par2-sl from Macpar Deluxe 4.1 is only 10.6 and later
+            if int(os_version.split('.')[1]) >= 6:
+                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
+            else:
+                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
+        except:
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-classic')
+
         sabnzbd.newsunpack.RAR_COMMAND =  check(curdir, 'osx/unrar/unrar')
 
     if sabnzbd.WIN32:
@@ -93,7 +104,8 @@ def find_programs(curdir):
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path('nice')
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path('ionice')
         sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
-
+        if not cfg.ignore_wrong_unrar.get():
+            sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
 
 #------------------------------------------------------------------------------
 def external_processing(extern_proc, complete_dir, filename, msgid, nicename, cat, group, status):
@@ -326,7 +338,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 
                     joined_file.flush()
                     joined_file.close()
-                    msg = T('msg-joinOK@3') % (unicoder(joinable_set), i, add_s(i))
+                    msg = T('msg-joinOK@2') % (unicoder(joinable_set), i)
                     nzo.set_unpack_info('Filejoin', msg, set=joinable_set)
                     newfiles.append(joinable_set)
             except:
@@ -551,7 +563,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
         else:
             logging.info('Skipping unrar file check due to unreliable file names')
 
-    msg = T('msg-unpackDone@4') % (str(len(extracted)), add_s(len(extracted)), add_s(len(extracted)), format_time_string(time() - start))
+    msg = T('msg-unpackDone@2') % (str(len(extracted)), format_time_string(time() - start))
     nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg), set=setname)
     logging.info('%s', msg)
 
@@ -580,7 +592,7 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
             else:
                 i += 1
 
-        msg = T('msg-unzipDone@3') % (str(i),add_s(i), format_time_string(time() - tms))
+        msg = T('msg-unzipDone@2') % (str(i), format_time_string(time() - tms))
         nzo.set_unpack_info('Unpack', msg)
 
         # Delete the old files if we have to
@@ -1018,6 +1030,11 @@ def build_command(command):
         stup.wShowWindow = SW_HIDE
         creationflags = IDLE_PRIORITY_CLASS
 
+        # Work-around for bug in Python's Popen function,
+        # scripts with spaces in the path don't work.
+        if need_shell and ' ' in command[0]:
+            command[0] = win32api.GetShortPathName(command[0])
+
     return (stup, need_shell, command, creationflags)
 
 # Sort the various RAR filename formats properly :\
@@ -1155,3 +1172,16 @@ def add_s(i):
         return 's'
     else:
         return ''
+
+
+def unrar_check(rar):
+    """ Return True if correct version of unrar is found """
+    if rar:
+        try:
+            version = subprocess.Popen(rar, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
+        except:
+            return False
+        m = re.search("RAR\s(\d+)\.(\d+)\s+.*Alexander Roshal", version)
+        if m:
+            return (int(m.group(1)), int(m.group(2))) >= (3, 80)
+    return False

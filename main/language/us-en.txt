@@ -709,11 +709,14 @@ error-tvTemp@1           Cannot create temp file for %s
 warn-matrixBadRep@1      Invalid nzbmatrix report number %s
 warn-matrixFail@1        Problem accessing nzbmatrix server (%s)
 warn-noRepair            No PAR2 program found, repairs not possible\n
+warn-noUnpack            No UNRAR program found, unpacking RAR files is not possible\n
+warn-badUnrar            Your UNRAR version is not recommended,\
+                         get it from http://www.rarlab.com/rar_add.htm\n
 warn-missingFiles        \nWarning: not all files were unpacked, see log
 error-joinMismatch       Expected size did not equal actual size
 error-joinFail@1         File join of %s failed
 error-joinFail@2         [%s] Error "%s" while joining files
-msg-joinOK@3             [%s] Joined %s file%s
+msg-joinOK@2             [%s] Joined %s files
 error-unpackFail@1       Unpacking failed, %s
 error-unpackFail@2       [%s] Error "%s" while unpacking RAR files
 error-badArchive         Failed opening main archive (encrypted or damaged)
@@ -723,8 +726,8 @@ error-unpackFull         Unpacking failed, write error or disk is full?
 error-unpackFailLog      Unpacking failed, see log
 error-unpackPassword     Unpacking failed, archive requires a password
 error-unpackMissing      Unpacking failed, an expected file was not unpacked
-msg-unpackDone@4         Unpacked %s file%s/folder%s in %s
-msg-unzipDone@3          %s file%s in %s
+msg-unpackDone@2         Unpacked %s files/folders in %s
+msg-unzipDone@2          %s files in %s
 msg-QuickCheck           Quick check...
 msg-QuickChecking        Quick Checking
 msg-QuickOK@1            [%s] Quick Check OK

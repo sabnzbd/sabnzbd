@@ -430,7 +430,7 @@ MSG_BAD_NEWS = r'''
     <blockquote>
         %s
     </blockquote>
-    <br>Program did not start!<br>
+    <br>%s<br>
     </body>
 </html>
 '''
@@ -494,6 +494,14 @@ MSG_OTHER = r'''
     %s<br>
 '''
 
+MSG_OLD_QUEUE = r'''
+    SABnzbd detected a Queue and History from an older (0.4.x) release.<br><br>
+    Both queue and history will be ignored and may get lost!<br><br>
+    You may choose to stop SABnzbd and finish the queue with the older program.<br><br>
+    Click OK to continue to SABnzbd<br><br>
+    <FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="OK"/></FORM>
+'''
+
 def panic_message(panic, a=None, b=None):
     """Create the panic message from templates
     """
@@ -527,8 +535,8 @@ def panic_message(panic, a=None, b=None):
     else:
         msg = MSG_OTHER % (a, b)
 
-
-    msg = MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg)
+    msg = MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__,
+                          msg, 'Program did not start!')
 
     if sabnzbd.WIN_SERVICE:
         sabnzbd.WIN_SERVICE.ErrLogger('Panic exit', msg)
@@ -557,6 +565,10 @@ def panic_queue(name):
 
 def panic_tmpl(name):
     launch_a_browser(panic_message(PANIC_TEMPL, name, 0))
+
+def panic_old_queue():
+    msg = MSG_OLD_QUEUE
+    return MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg, '')
 
 def panic(reason, remedy=""):
     print "\nFatal error:\n  %s\n%s" % (reason, remedy)

@@ -17,8 +17,8 @@ if [ -d $DIR_TMP ]; then
 fi
 
 echo "2/5 > Exporting last svn revision..."
-svn export http://svn2.assembla.com/svn/SABnzbd/trunk/main/ $DIR_TMP>/dev/null
-SVN_REV=`svn info http://svn2.assembla.com/svn/SABnzbd/trunk/main/ |  awk '$1 == "Revision:" {print $2}'`
+svn export http://svn2.assembla.com/svn/SABnzbd/branches/sabnzbd-0.5.x/ $DIR_TMP>/dev/null
+SVN_REV=`svn info http://svn2.assembla.com/svn/SABnzbd/branches/sabnzbd-0.5.x/ |  awk '$1 == "Revision:" {print $2}'`
 echo "  done."
 
 echo "3/5 > Cleaning up for OSX binary..."

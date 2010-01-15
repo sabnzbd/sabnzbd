@@ -40,10 +40,3 @@ as possibe (OS, amount of usenet servers etc.)
   function as normal. If you run from sources or use the --console option with the
   Win32-binary, you will see that logging continues in the console window, but
   nothing will be written to the log-files.
-
-- Some people have reported problems with very large jobs (think 50G +)
-  Especially on low memory systems.
-  The is a work-around for this. Find the sabnzbd.ini file and find this line:
-      save_interval = 1
-  This is the minimum amount of minutes between subsequent saves of the
-  internal administration to disk. For very large downloads, 10 minutes is good setting.

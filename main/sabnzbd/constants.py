@@ -51,7 +51,8 @@ MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
 BYTES_FILE_NAME  = 'bytes%s.sab' % QUEUE_VERSION
-QUEUE_FILE_NAME  = 'queue%s.sab' % QUEUE_VERSION
+QUEUE_FILE_TMPL  = 'queue%s.sab'
+QUEUE_FILE_NAME  =  QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME    = 'rss_data.sab'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'

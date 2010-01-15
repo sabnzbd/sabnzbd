@@ -133,7 +133,10 @@ class NNTP:
         self.blocking = block
         self.error_msg = None
         if not info:
-            raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
+            if block:
+                info = GetServerParms(host, port)
+            else:
+                raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
         af, socktype, proto, canonname, sa = info[0]
 

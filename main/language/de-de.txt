@@ -766,11 +766,15 @@ error-tvTemp@1           Temporäre Datei für %s konnte nicht angelegt werden.
 warn-matrixBadRep@1      Ungültige nzbmatrix.com-Bericht-ID %s.
 warn-matrixFail@1        Problem beim Zugriff auf den nzbmatrix.com-Server (%s)
 warn-noRepair            Kein PAR2-Programm gefunden. Eine Reparatur ist nicht möglich\n
+warn-noUnpack            Kein UNRAR-Programm gefunden. Das Entpacken von RAR-Dateien ist nicht möglich\n
+warn-badUnrar            Das verwendete UNRAR-Programm wird nicht empfohlen.\
+                         Laden Sie UNRAR stattdessen herunter von\
+                         http://www.rarlab.com/rar_add.htm\n
 warn-missingFiles        \nWarnung: Nicht alle Dateien wurden entpackt. Beachten Sie das Protokoll.
 error-joinMismatch       Die tatsächliche Grösse entsprach nicht der erwarteten Grösse.
 error-joinFail@1         Fehler beim Zusammenfügen von %s
 error-joinFail@2         [%s] Fehler "%s" beim Zusammenfügen der Dateien
-msg-joinOK@3             [%s] %s Datei%s zusammengefügt
+msg-joinOK@2             [%s] %s Dateien zusammengefügt
 error-unpackFail@1       Entpacken fehlgeschlagen. %s
 error-unpackFail@2       [%s] Fehler "%s" beim Entpacken der RAR-Dateien
 error-badArchive         Öffnen des Hauptarchivs fehlgeschlagen. Es ist verschlüsselt oder beschädigt.
@@ -780,8 +784,8 @@ error-unpackFull         Entpacken fehlgeschlagen. Fehler beim Schreiben oder vo
 error-unpackFailLog      Entpacken fehlgeschlagen. Beachten Sie das Protokoll.
 error-unpackPassword     Entpacken fehlgeschlagen. Archiv benötigt ein Passwort.
 error-unpackMissing      Entpacken fehlgeschlagen. Eine erwartete Datei wurde nicht entpackt.
-msg-unpackDone@4         %s Datei%s/Ordner%s entpackt in %s
-msg-unzipDone@3          %s Datei %s in %s
+msg-unpackDone@2         %s Datei(en)/Ordner entpackt in %s
+msg-unzipDone@2          %s Dateien in %s
 msg-QuickCheck           Ausführen der schnellen Überprüfung...
 msg-QuickChecking        Schnelle Überprüfung
 msg-QuickOK@1            [%s] Schnelle Überprüfung erfolgreich

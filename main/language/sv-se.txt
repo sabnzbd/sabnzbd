@@ -710,11 +710,14 @@ error-tvTemp@1           Kan inte skapa temporär fil för %s
 warn-matrixBadRep@1      Ogiltigt nzbmatrix rapporteringsnummer %s
 warn-matrixFail@1        Anslutningsproblem till nzbmatrix server (%s)
 warn-noRepair            Inget PAR2 program funnet, reparation ej möjlig\n
+warn-noUnpack            Inget UNRAR program funnet, uppackning ej möjlig\n
+warn-badUnrar            Din version av UNRAR rekommenderas inte,\
+                         få UNRAR från http://www.rarlab.com/rar_add.htm\n
 warn-missingFiles        \nVarning: alla filer blev inte uppackade, se logg
 error-joinMismatch       Förväntad storlek är inte lika verklig storlek
 error-joinFail@1         Filsammanslagning av %s misslyckades
 error-joinFail@2         [%s] Fel "%s" under filsammanslagning
-msg-joinOK@3             [%s] Slår ihop %s fil(er)%s
+msg-joinOK@2             [%s] Slår ihop %s filer
 error-unpackFail@1       Uppackning misslyckades, %s
 error-unpackFail@2       [%s] Fel "%s" under uppackning av RAR fil(er)
 error-badArchive         Öppnande av huvudarkiv misslyckades (krypterat eller trasigt)
@@ -724,8 +727,8 @@ error-unpackFull         Uppackning misslyckades, skrivfel eller disken full?
 error-unpackFailLog      Uppackning misslyckades, se logg
 error-unpackPassword     Uppackning misslyckades, arkivet kräver lösenord
 error-unpackMissing      Uppackning misslyckades, en väntad fil är inte uppackad
-msg-unpackDone@4         Uppackad %s fil%s/mapp%s i %s
-msg-unzipDone@3          %s filer%s i %s
+msg-unpackDone@2         Uppackad %s filer/mappar i %s
+msg-unzipDone@2          %s filer i %s
 msg-QuickCheck           Snabbkontroll...
 msg-QuickChecking        Snabbkontrollerar
 msg-QuickOK@1            [%s] Snabbkontroll OK

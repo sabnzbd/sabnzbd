@@ -84,6 +84,7 @@ enable_par_cleanup = OptionBool('misc', 'enable_par_cleanup', True)
 par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)
 nice = OptionStr('misc', 'nice',  '', validation=no_nonsense)
 ionice = OptionStr('misc', 'ionice',  '', validation=no_nonsense)
+ignore_wrong_unrar = OptionBool('misc', 'ignore_wrong_unrar', False)
 
 USERNAME_NEWZBIN = OptionStr('newzbin', 'username')
 PASSWORD_NEWZBIN = OptionPassword('newzbin', 'password')
@@ -137,7 +138,6 @@ ADMIN_DIR = OptionDir('misc', 'admin_dir', 'admin', validation=validate_safedir)
 #LOG_DIR = OptionDir('misc', 'log_dir', 'logs')
 DIRSCAN_DIR = OptionDir('misc', 'dirscan_dir', create=False)
 DIRSCAN_SPEED = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
-SAVE_INTERVAL = OptionNumber('misc', 'save_interval', 1*60)
 
 CHERRYHOST = OptionStr('misc','host', DEF_HOST)
 if sabnzbd.WIN32:
@@ -160,6 +160,7 @@ WEB_DIR2 = OptionStr('misc', 'web_dir2')
 WEB_COLOR = OptionStr('misc', 'web_color', '')
 WEB_COLOR2 = OptionStr('misc', 'web_color2')
 CLEANUP_LIST = OptionList('misc', 'cleanup_list')
+warned_old_queue = OptionBool('misc', 'warned_old_queue', False)
 
 LOG_WEB = OptionBool('logging', 'enable_cherrypy_logging', False)
 LOG_DIR = OptionDir('misc', 'log_dir', 'logs')

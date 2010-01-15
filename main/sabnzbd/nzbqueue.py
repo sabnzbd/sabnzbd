@@ -435,6 +435,10 @@ class NzbQueue(TryList):
                     nzo_id_pos1 = i
                     break
 
+            # Don't change priority and order if priority is the same as asked
+            if priority == self.__nzo_list[nzo_id_pos1].get_priority():
+                return nzo_id_pos1
+
             nzo.set_priority(priority)
 
             if nzo_id_pos1 != -1:
@@ -573,7 +577,10 @@ class NzbQueue(TryList):
         if file_done:
             if nzo.extra3 is None or time.time() > nzo.extra3:
                 sabnzbd.save_data(nzo, nzo.nzo_id)
-                nzo.extra3 = time.time() + float(cfg.SAVE_INTERVAL.get())
+                if nzo.extra4 is None:
+                    nzo.extra3 = None
+                else:
+                    nzo.extra3 = time.time() + nzo.extra4
 
             _type = nzf.get_type()
 

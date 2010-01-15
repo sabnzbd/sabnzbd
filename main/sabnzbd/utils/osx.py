@@ -21,7 +21,7 @@
 #         Registration is made too early, the language module has not read the text file yet
 #from sabnzbd.lang import T
 #NOTIFICATION = {'startup':'grwl-notif-startup','download':'grwl-notif-dl','pp':'grwl-notif-pp','other':'grwl-notif-other'}
-NOTIFICATION = {'startup':'1. On Startup/Shutdown','download':'2. On adding NZB','pp':'3. On post-processing','other':'4. Other Messages'}
+NOTIFICATION = {'startup':'1. On Startup/Shutdown','download':'2. On adding NZB','pp':'3. On post-processing','complete':'4. On download terminated','other':'5. Other Messages'}
 
 try:
     import Growl
