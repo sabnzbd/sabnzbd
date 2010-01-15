@@ -98,9 +98,9 @@ pp-d              L
 pr-force          Erzwingen
 pr-normal         Normal
 pr-high           Hoch
-pr-low            Tief
+pr-low            Gering
 enterURL          URL
-enterID           &nbsp;oder Report ID
+enterID           &nbsp;oder Report-ID
 
 # Queue page
 link-sortByName   Nach Name sortieren
@@ -164,7 +164,7 @@ clearWarnings     Leeren
 server-blocked    Freigeben
 warning           WARNUNG:
 error             FEHLER:
-server-resolving  &nbsp;Adresse auflösen
+server-resolving  &nbsp;Adresse wird aufgelöst...
 
 # Configuration
 configuration     Einstellungen
@@ -362,7 +362,7 @@ explain-pause_on_post_processing Hält die Downloads zu Beginn der\
                          Nachbearbeitung an\n\
                          und setzt sie danach fort.
 opt-ignore_samples       Beispieldateien ignorieren
-explain-ignore_samples   Beispieldateien herausfiltern (z. B. Videoausschnitte)
+explain-ignore_samples   Beispieldateien herausfiltern (z.B. Videoausschnitte)
 igsam-off                Nein
 igsam-del                Nach dem Download löschen
 igsam-not                Nicht herunterladen
@@ -437,7 +437,7 @@ explain-RSS              Aktivieren Sie das Feld neben dem Feed-Namen,\
                          Wenn ein Feed hinzugefügt wird, werden nur neue Einträge\
                          verarbeitet und nicht diejenigen, die bereits im RSS-Feed\
                          enthalten waren, ausser Sie klicken "Download erzwingen".
-feedDefinition           Feed Definition
+feedDefinition           Feed-Definition
 feed                     Feed
 button-delFeed           Feed löschen
 button-preFeed           Vorschau
@@ -483,8 +483,9 @@ explain-email_account    Für authentifizierte E-Mails wird der Kontoname benöt
 opt-email_pwd            Optionales Konto-Passwort
 explain-email_pwd        Für authentifizierte E-Mails wird das Passwort benötigt.
 error-badEmailAd@1       %s ist keine gültige E-Mail-Adresse
-opt-email_rss            Send RSS notifications
-explain-email_rss        Send email when an RSS feed adds jobs to the queue.
+opt-email_rss            RSS-Benachrichtigungen senden
+explain-email_rss        E-Mail senden, wenn ein RSS-Feed einen Auftrag zur\
+                         Warteschlange hinzufügt.
 
 # Config->Newzbin
 explain-newzbin          Wenn Sie ein Konto bei <strong>www.newzbin.com</strong> haben,\
@@ -610,7 +611,7 @@ error-missingKey         Fehler: Sitzungs-Schlüssel wird benötigt
 warn-badSession          Sitzungs-Schlüssel ungültig
 error-badKey             Fehler: Sitzungs-Schlüssel ungültig
 warn-authMissing         Authentifizierung fehlt. Bitte Benutzernamen und\
-                         Passwort aus Einstellungen->Allgemein in die extern\
+                         Passwort aus Einstellungen->Allgemein in die externe\
                          Anwendung eingeben:
 error-authMissing        Fehler: Authentifizierung fehlt
 warn-apikeyNone          API-Schlüssel fehlt. Bitte API-Schlüssel aus\
@@ -629,7 +630,7 @@ his-retryURL2            Erneut versuchen
 
 # Errors and Warnings
 error-noPar2             par2-Programmdatei nicht gefunden!
-error-noWebUi            Starten der Weboberfläche fehlgeschlagen
+error-noWebUi            Fehler beim Starten der Weboberfläche.
 error-noYEnc             _yenc-Modul nicht gefunden!
 error-sameHTTP-HTTPS     HTTP- und HTTPS-Ports dürfen nicht gleich sein.
 warn-0000                Bitte beachten Sie, dass der 0.0.0.0-Hostname eine\
@@ -642,11 +643,11 @@ warn-noUnrar             unrar-Programmdatei nicht gefunden!
 warn-noUnzip             unzip-Programmdatei nicht gefunden!
 error-failMkstemp        Fehler in tempfile.mkstemp
 error-fetchReport@1      Fehler beim Abrufen von %s von newzbin.com -
-error-hibernate          Wechsel in den Ruhezustand fehlgeschlagen
-error-loading@1          Laden von %s fehlgeschlagen
-error-saveX@1            Speichern von %s fehlgeschlagen
-error-saveXtoY@2         Speichern von %s nach %s fehlgeschlagen
-error-standby            Wechsel in den Bereitschaftsmodus fehlgeschlagen
+error-hibernate          Fehler beim Wechsel in den Ruhezustand
+error-loading@1          Fehler beim Laden von %s
+error-saveX@1            Fehler beim Speichern von %s
+error-saveXtoY@2         Fehler beim Speichern von %s nach %s
+error-standby            Fehler beim Wechsel in den Bereitschaftsmodus
 error-tempFile@1         Temporäre Datei für %s konnte nicht angelegt werden
 warn-noServer@1          Versuche Status für nicht existierenden Server %s zu setzen
 warn-noSpace             Angehalten wegen zu wenig freiem Speicherplatz
@@ -659,15 +660,18 @@ error-badIni@1           Ungültige Konfigurationsdatei %s
 error-createIni@1        Konfigurationsdatei %s kann nicht angelegt werden
 error-encPw@1            Ungültig kodiertes Passwort %s
 error-version@2          Ungültige Version %s in %s
-error-badHisNewline@1    Invalid stage logging in history for %s (\\r\\n)
-error-badHisSemic@1      Invalid stage logging in history for %s (;)
-error-sqlClose           Failed to close database, see log
-error-sqlCmd             SQL-Befehl fehlgeschlagen. Beachten Sie das Protokoll.
-error-sqlCommit          SQL Commit Failed, see log
-error-decode@1           Dekodieren von %s fehlgeschlagen.
-error-decodeUnknown@1    Unbekannter Fehler %s beim dekodieren
+error-badHisNewline@1    Ungültiges Stufen-Protokoll im Verlauf für %s (\\r\\n)
+error-badHisSemic@1      Ungültiges Stufen-Protokoll im Verlauf für %s (;)
+error-sqlClose           Fehler beim Schliessen der Datenbank. Beachten Sie das\
+                         Nachrichtenprotokoll.
+error-sqlCmd             SQL-Befehl fehlgeschlagen. Beachten Sie das\
+                         Nachrichtenprotokoll.
+error-sqlCommit          SQL-Commit fehlgeschlagen. Beachten Sie das\
+                         Nachrichtenprotokoll.
+error-decode@1           Fehler beim Dekodieren von %s.
+error-decodeUnknown@1    Unbekannter Fehler %s beim Dekodieren
 warn-artAllMissing@1     %s wurde auf keinem Server gefunden und daher übersprungen
-warn-badYEnc@1           Badly formed yEnc article in %s
+warn-badYEnc@1           Ungültiger yEnc-Artikel in %s
 warn-crcError@3          CRC-Fehler in %s (%s -> %s)
 error-readWatched@1      Überwachter Ordner %s kann nicht gelesen werden
 error-remove@1           Fehler beim Entfernen von %s
@@ -739,8 +743,9 @@ warn-emptyFile@1         Die Datei %s ist leer und wird daher übersprungen
 warn-skipDup@1           Überspringe doppelt vorhandene NZB-Datei %s.
 error-ppCleanup@1        Aufräumen von %s fehlgeschlagen
 error-ppDelFailed@1      Entfernen von %s fehlgeschlagen
-error-ppDelNzo           Failed to remove nzo from postproc queue (id)
-error-ppDelWorkdir@1     Fehler beim entfernen des Arbeitsverzeichnisses %s.
+error-ppDelNzo           Fehler beim Entfernen der NZB-Datei von der\
+                         Nachbearbeitungs-Warteschlange (id)
+error-ppDelWorkdir@1     Fehler beim Entfernen des Arbeitsverzeichnisses %s.
 error-ppFailed@1         Nachbearbeitung von %s fehlgeschlagen
 error-ppLogFile@1        Protokolldatei %s konnte nicht angelegt werden
 error-ppPermissions@1    Rechte von %s konnten nicht geändert werden
@@ -801,8 +806,8 @@ msg-runScript@1          Ausführen des Benutzer-Skripts %s
 msg-ranScript@1          %s ausgeführt
 link-more                Mehr
 link-viewSc              Skript-Ausgabe anzeigen
-warn-OutRetention        Download failed - Out of your server's retention?
-warn-PostCrash           PostProcessing Crashed, see logfile
+warn-OutRetention        Fehler beim Herunterladen. Ist die Datei zu alt?
+warn-PostCrash           Nachbearbeitung ist abgestürzt. Beachten Sie das Nachrichtenprotokoll.
 msg-moving               Verschieben
 msg-running              Ausführen des Skripts
 msg-joining              Zusammenfügen
