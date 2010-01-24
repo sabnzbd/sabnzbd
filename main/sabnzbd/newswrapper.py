@@ -33,12 +33,20 @@ from sabnzbd.lang import Ta
 try:
     from OpenSSL import SSL
     _ssl = SSL
+    WantReadError = _ssl.WantReadError
     del SSL
     HAVE_SSL = True
 
 except ImportError:
     _ssl = None
     HAVE_SSL = False
+    
+    # Dummy class so this exception is ignored by clients without ssl installed
+    class WantReadError(Exception):
+        def __init__(self, value):
+            self.parameter = value
+        def __str__(self):
+            return repr(self.parameter)
 
 import threading
 _RLock = threading.RLock
@@ -105,7 +113,7 @@ def con(sock, host, port, sslenabled, nntp):
                 try:
                     sock.do_handshake()
                     break
-                except _ssl.WantReadError:
+                except WantReadError:
                     select.select([sock], [], [], 1.0)
     except socket.error, e:
         try:
@@ -174,7 +182,7 @@ class NNTP:
                         try:
                             self.sock.do_handshake()
                             break
-                        except _ssl.WantReadError:
+                        except WantReadError:
                             select.select([self.sock], [], [], 1.0)
 
         except socket.error, e:
@@ -285,7 +293,7 @@ class NewsWrapper:
             try:
                 chunk = self.recv(32768)
                 break
-            except _ssl.WantReadError:
+            except WantReadError:
                 # SSL connections will block until they are ready.
                 # Either ignore the connection until it responds
                 # Or wait in a loop until it responds
