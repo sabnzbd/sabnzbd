@@ -132,7 +132,7 @@ class Sorter:
         if self.type == 'movie':
             move_to_parent = True
             # check if we should leave the files inside an extra folder
-            if cfg.MOVIE_EXTRA_FOLDER.get():
+            if cfg.MOVIE_EXTRA_FOLDER():
                 #if there is a folder in the download, leave it in an extra folder
                 move_to_parent = not check_for_folder(workdir_complete)
             if move_to_parent:
@@ -151,8 +151,8 @@ class SeriesSorter:
         self.original_dirname = dirname
         self.original_path = path
         self.cat = cat
-        self.sort_string = cfg.TV_SORT_STRING.get()
-        self.cats = cfg.TV_CATEGORIES.get()
+        self.sort_string = cfg.TV_SORT_STRING()
+        self.cats = cfg.TV_CATEGORIES()
         self.filename_set = ''
 
         self.match_obj = None
@@ -169,7 +169,7 @@ class SeriesSorter:
 
     def match(self):
         ''' Checks the regex for a match, if so set self.match to true '''
-        if cfg.ENABLE_TV_SORTING.get() and cfg.TV_SORT_STRING.get():
+        if cfg.ENABLE_TV_SORTING() and cfg.TV_SORT_STRING():
             if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 #First check if the show matches TV episode regular expressions. Returns regex match object
                 self.match_obj, self.extras = check_regexs(self.original_dirname, series_match, double=True)
@@ -456,9 +456,9 @@ class GenericSorter:
 
         self.original_dirname = dirname
         self.original_path = path
-        self.sort_string = cfg.MOVIE_SORT_STRING.get()
-        self.extra = cfg.MOVIE_SORT_EXTRA.get()
-        self.cats = cfg.MOVIE_CATEGORIES.get()
+        self.sort_string = cfg.MOVIE_SORT_STRING()
+        self.extra = cfg.MOVIE_SORT_EXTRA()
+        self.cats = cfg.MOVIE_CATEGORIES()
         self.cat = cat
         self.filename_set = ''
 
@@ -474,7 +474,7 @@ class GenericSorter:
 
     def match(self):
         ''' Checks the category for a match, if so set self.match to true '''
-        if cfg.ENABLE_MOVIE_SORTING.get() and self.sort_string:
+        if cfg.ENABLE_MOVIE_SORTING() and self.sort_string:
             #First check if the show matches TV episode regular expressions. Returns regex match object
             if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 logging.debug("Movie Sorting - Starting folder sort (%s)", self.original_dirname)
@@ -645,8 +645,8 @@ class DateSorter:
 
         self.original_dirname = dirname
         self.original_path = path
-        self.sort_string = cfg.DATE_SORT_STRING.get()
-        self.cats = cfg.DATE_CATEGORIES.get()
+        self.sort_string = cfg.DATE_SORT_STRING()
+        self.cats = cfg.DATE_CATEGORIES()
         self.cat = cat
         self.filename_set = ''
 
@@ -663,7 +663,7 @@ class DateSorter:
 
     def match(self):
         ''' Checks the category for a match, if so set self.matched to true '''
-        if cfg.ENABLE_DATE_SORTING.get() and self.sort_string:
+        if cfg.ENABLE_DATE_SORTING() and self.sort_string:
             #First check if the show matches TV episode regular expressions. Returns regex match object
             if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 self.match_obj, self.date_type = checkForDate(self.original_dirname, date_match)
@@ -827,7 +827,7 @@ def getTitles(match, name):
         name = name[:match.start()]
 
     # Replace .US. with (US)
-    if cfg.TV_SORT_COUNTRIES.get() == 1:
+    if cfg.TV_SORT_COUNTRIES() == 1:
         for rep in COUNTRY_REP:
             # (us) > (US)
             name = replace_word(name, rep.lower(), rep)
@@ -837,7 +837,7 @@ def getTitles(match, name):
             dotted_country = '.%s.' % (rep.strip('()'))
             name = replace_word(name, dotted_country, rep)
     # Remove .US. and (US)
-    elif cfg.TV_SORT_COUNTRIES.get() == 2:
+    elif cfg.TV_SORT_COUNTRIES() == 2:
         for rep in COUNTRY_REP:
             # Remove (US)
             name = replace_word(name, rep, '')
@@ -854,11 +854,11 @@ def getTitles(match, name):
     title = title.replace("'S", "'s")
 
     # Replace titled country names, (Us) with (US) and so on
-    if cfg.TV_SORT_COUNTRIES.get() == 1:
+    if cfg.TV_SORT_COUNTRIES() == 1:
         for rep in COUNTRY_REP:
             title = title.replace(titler(rep), rep)
     # Remove country names, ie (Us)
-    elif cfg.TV_SORT_COUNTRIES.get() == 2:
+    elif cfg.TV_SORT_COUNTRIES() == 2:
         for rep in COUNTRY_REP:
             title = title.replace(titler(rep), '').strip()
 

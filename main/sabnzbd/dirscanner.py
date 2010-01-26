@@ -266,7 +266,7 @@ class DirScanner(threading.Thread):
         self.shutdown = False
         self.error_reported = False # Prevents mulitple reporting of missing watched folder
         self.dirscan_dir = cfg.DIRSCAN_DIR.get_path()
-        self.dirscan_speed = cfg.DIRSCAN_SPEED.get()
+        self.dirscan_speed = cfg.DIRSCAN_SPEED()
         cfg.DIRSCAN_DIR.callback(self.newdir)
 
     def newdir(self):
@@ -274,7 +274,7 @@ class DirScanner(threading.Thread):
         self.ignored = {}
         self.suspected = {}
         self.dirscan_dir = cfg.DIRSCAN_DIR.get_path()
-        self.dirscan_speed = cfg.DIRSCAN_SPEED.get()
+        self.dirscan_speed = cfg.DIRSCAN_SPEED()
 
     def stop(self):
         self.save()

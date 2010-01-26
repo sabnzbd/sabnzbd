@@ -98,7 +98,7 @@ def pause_downloader(save=True):
     global __DOWNLOADER
     if __DOWNLOADER:
         __DOWNLOADER.pause()
-        if cfg.AUTODISCONNECT.get():
+        if cfg.AUTODISCONNECT():
             __DOWNLOADER.disconnect()
         if save:
             sabnzbd.save_state()
@@ -243,7 +243,7 @@ class Downloader(Thread):
         self.paused = paused
 
         #used for throttling bandwidth and scheduling bandwidth changes
-        self.bandwidth_limit = cfg.BANDWIDTH_LIMIT.get()
+        self.bandwidth_limit = cfg.BANDWIDTH_LIMIT()
         cfg.BANDWIDTH_LIMIT.callback(self.speed_set)
 
         # Used for reducing speed
@@ -284,17 +284,17 @@ class Downloader(Thread):
         servers = config.get_servers()
         if newserver in servers:
             srv = servers[newserver]
-            enabled = srv.enable.get()
-            host = srv.host.get()
-            port = srv.port.get()
-            timeout = srv.timeout.get()
-            threads = srv.connections.get()
-            fillserver = srv.fillserver.get()
+            enabled = srv.enable()
+            host = srv.host()
+            port = srv.port()
+            timeout = srv.timeout()
+            threads = srv.connections()
+            fillserver = srv.fillserver()
             primary = enabled and (not fillserver) and (threads > 0)
-            ssl = srv.ssl.get() and sabnzbd.newswrapper.HAVE_SSL
-            username = srv.username.get()
-            password = srv.password.get()
-            optional = srv.optional.get()
+            ssl = srv.ssl() and sabnzbd.newswrapper.HAVE_SSL
+            username = srv.username()
+            password = srv.password()
+            optional = srv.optional()
             create = True
 
         if oldserver:
@@ -354,7 +354,7 @@ class Downloader(Thread):
         return self.bandwidth_limit
 
     def speed_set(self):
-        self.bandwidth_limit = cfg.BANDWIDTH_LIMIT.get()
+        self.bandwidth_limit = cfg.BANDWIDTH_LIMIT()
 
     def is_paused(self):
         if not self.paused:
@@ -735,7 +735,7 @@ class Downloader(Thread):
 
     def __request_article(self, nw):
         try:
-            if cfg.SEND_GROUP.get() and nw.article.nzf.nzo.get_group() != nw.group:
+            if cfg.SEND_GROUP() and nw.article.nzf.nzo.get_group() != nw.group:
                 group = nw.article.nzf.nzo.get_group()
                 logging.info('Thread %s@%s:%s: GROUP <%s>',
                              nw.thrdnum, nw.server.host,

@@ -205,10 +205,10 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
     cfg.PAUSE_ON_POST_PROCESSING.callback(guard_pause_on_pp)
 
     ### Set cache limit
-    articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY.get())
+    articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY())
 
     ### Set language files
-    lang.install_language(DIR_LANGUAGE, cfg.LANGUAGE.get())
+    lang.install_language(DIR_LANGUAGE, cfg.LANGUAGE())
 
     ### Check for old queue (when a new queue is not present)
     if not os.path.exists(os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME)):
@@ -338,15 +338,15 @@ def guard_restart():
 
 def guard_speedlimit():
     """ Callback for change of bandwidth_limit, sets actual speed """
-    downloader.limit_speed(cfg.BANDWIDTH_LIMIT.get())
+    downloader.limit_speed(cfg.BANDWIDTH_LIMIT())
 
 def guard_top_only():
     """ Callback for change of top_only option """
-    nzbqueue.set_top_only(cfg.TOP_ONLY.get())
+    nzbqueue.set_top_only(cfg.TOP_ONLY())
 
 def guard_pause_on_pp():
     """ Callback for change of pause-download-on-pp """
-    if cfg.PAUSE_ON_POST_PROCESSING.get():
+    if cfg.PAUSE_ON_POST_PROCESSING():
         pass # Not safe to idle downloader, because we don't know
              # if post-processing is active now
     else:
@@ -360,7 +360,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
     if priority == None: priority = NORMAL_PRIORITY
 
 
-    if cfg.USERNAME_NEWZBIN.get() and cfg.PASSWORD_NEWZBIN.get():
+    if cfg.USERNAME_NEWZBIN() and cfg.PASSWORD_NEWZBIN():
         logging.info('Fetching msgid %s from www.newzbin.com', msgid)
         msg = T('fetchingNewzbin@1') % msgid
 
@@ -417,7 +417,7 @@ def backup_exists(filename):
     """ Return True if backup exists and no_dupes is set
     """
     path = cfg.NZB_BACKUP_DIR.get_path()
-    return path and sabnzbd.cfg.NO_DUPES.get() and \
+    return path and sabnzbd.cfg.NO_DUPES() and \
            os.path.exists(os.path.join(path, filename+'.gz'))
 
 @synchronized(NZB_LOCK)
@@ -613,7 +613,7 @@ def keep_awake():
 
 
 def CheckFreeSpace():
-    if cfg.DOWNLOAD_FREE.get() and not downloader.paused():
+    if cfg.DOWNLOAD_FREE() and not downloader.paused():
         if misc.diskfree(cfg.DOWNLOAD_DIR.get_path()) < cfg.DOWNLOAD_FREE.get_float() / GIGI:
             logging.warning(Ta('warn-noSpace'))
             # Pause downloader, but don't save, since the disk is almost full!

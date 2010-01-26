@@ -260,7 +260,7 @@ def Web_Template(key, defweb, wdir):
     """
     if wdir is None:
         try:
-            wdir = fix_webname(key.get())
+            wdir = fix_webname(key())
         except:
             wdir = ''
     if not wdir:
@@ -283,7 +283,7 @@ def Web_Template(key, defweb, wdir):
             panic_tmpl(full_dir)
             exit_sab(1)
 
-    sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), wdir)
+    sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE(), wdir)
 
     return real_path(full_dir, "templates")
 
@@ -436,7 +436,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         return (host, port, browserhost)
     """
     if cherryhost is None:
-        cherryhost = sabnzbd.cfg.CHERRYHOST.get()
+        cherryhost = sabnzbd.cfg.CHERRYHOST()
     else:
         sabnzbd.cfg.CHERRYHOST.set(cherryhost)
 
@@ -892,7 +892,7 @@ def main():
 
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)
-    enable_https = sabnzbd.cfg.ENABLE_HTTPS.get()
+    enable_https = sabnzbd.cfg.ENABLE_HTTPS()
 
     # When this is a daemon, just check and bail out if port in use
     if sabnzbd.DAEMON:
@@ -939,12 +939,12 @@ def main():
 
 
     if cherrypylogging is None:
-        cherrypylogging = sabnzbd.cfg.LOG_WEB.get()
+        cherrypylogging = sabnzbd.cfg.LOG_WEB()
     else:
         sabnzbd.cfg.LOG_WEB.set(cherrypylogging)
 
     if logging_level is None:
-        logging_level = sabnzbd.cfg.LOG_LEVEL.get()
+        logging_level = sabnzbd.cfg.LOG_LEVEL()
     else:
         sabnzbd.cfg.LOG_LEVEL.set(logging_level)
 
@@ -966,7 +966,7 @@ def main():
         rollover_log = logging.handlers.RotatingFileHandler(\
             sabnzbd.LOGFILE, 'a+',
             logsize,
-            sabnzbd.cfg.LOG_BACKUPS.get())
+            sabnzbd.cfg.LOG_BACKUPS())
 
         format = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
         rollover_log.setFormatter(logging.Formatter(format))
@@ -1040,7 +1040,7 @@ def main():
     if AUTOBROWSER != None:
         sabnzbd.cfg.AUTOBROWSER.set(AUTOBROWSER)
     else:
-        AUTOBROWSER = sabnzbd.cfg.AUTOBROWSER.get()
+        AUTOBROWSER = sabnzbd.cfg.AUTOBROWSER()
 
     sabnzbd.cfg.DEBUG_DELAY.set(delay)
 
@@ -1064,15 +1064,15 @@ def main():
     web_dir2 = Web_Template(sabnzbd.cfg.WEB_DIR2, '', fix_webname(web_dir2))
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-    sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE.get(), 'wizard')
+    sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE(), 'wizard')
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
     sabnzbd.WIZARD_DIR = wizard_dir
 
-    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.WEB_COLOR.get(),  web_dir)
+    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.WEB_COLOR(),  web_dir)
     sabnzbd.cfg.WEB_COLOR.set(sabnzbd.WEB_COLOR)
-    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.WEB_COLOR2.get(),  web_dir2)
+    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.WEB_COLOR2(),  web_dir2)
     sabnzbd.cfg.WEB_COLOR2.set(sabnzbd.WEB_COLOR2)
 
     if fork and not sabnzbd.WIN32:
@@ -1235,7 +1235,7 @@ def main():
         # Check for loglevel changes
         if LOG_FLAG:
             LOG_FLAG = False
-            level = LOGLEVELS[sabnzbd.cfg.LOG_LEVEL.get()]
+            level = LOGLEVELS[sabnzbd.cfg.LOG_LEVEL()]
             logger.setLevel(level)
             if consoleLogging:
                 console.setLevel(level)

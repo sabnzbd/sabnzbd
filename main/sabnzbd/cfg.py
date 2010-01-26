@@ -34,7 +34,7 @@ import re
 RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
 def validate_email(value):
     global EMAIL_ENDJOB, EMAIL_FULL
-    if EMAIL_ENDJOB.get() or EMAIL_FULL.get():
+    if EMAIL_ENDJOB() or EMAIL_FULL():
         if value and RE_VAL.match(value):
             return None, value
         else:
@@ -46,7 +46,7 @@ def validate_email(value):
 def validate_server(value):
     """ Check if server non-empty"""
     global EMAIL_ENDJOB, EMAIL_FULL
-    if value == '' and (EMAIL_ENDJOB.get() or EMAIL_FULL.get()):
+    if value == '' and (EMAIL_ENDJOB() or EMAIL_FULL()):
         return T('error-needServer'), None
     else:
         return None, value

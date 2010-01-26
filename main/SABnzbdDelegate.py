@@ -85,13 +85,13 @@ class SABnzbdDelegate(NSObject):
         while T('yes')[0:1]=="#":
             time.sleep(0.5)
             logging.info("[osx] language file not loaded, waiting")
-        
+
         #Variables
         self.state = "Idle"
         self.speed = downloader.get_limit()
         self.version_notify = 1
         self.status_removed = 0
-        
+
         #Menu construction
         self.menu = NSMenu.alloc().init()
 
@@ -101,13 +101,13 @@ class SABnzbdDelegate(NSObject):
             self.isLeopard = 1
         except:
             self.isLeopard = 0
-        
+
         #Warnings Item
         self.warnings_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-warnings'), 'openBrowserAction:', '')
         if self.isLeopard:
             self.warnings_menu_item.setHidden_(YES)
         else:
-            self.warnings_menu_item.setEnabled_(NO) 
+            self.warnings_menu_item.setEnabled_(NO)
         self.warnings_menu_item.setRepresentedObject_("connections/")
         self.menu.addItem_(self.warnings_menu_item)
 
@@ -139,14 +139,14 @@ class SABnzbdDelegate(NSObject):
         self.history_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-history'), 'openBrowserAction:', '')
         self.history_menu_item.setRepresentedObject_("")
         self.menu.addItem_(self.history_menu_item)
-        
+
         #Purge History Item
         self.purgehistory_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-purgehistory'), 'purgeAction:', '')
         self.purgehistory_menu_item.setRepresentedObject_("history")
         self.purgehistory_menu_item.setAlternate_(YES)
         self.purgehistory_menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
         self.menu.addItem_(self.purgehistory_menu_item)
-        
+
         self.separator_menu_item = NSMenuItem.separatorItem()
         self.menu.addItem_(self.separator_menu_item)
 
@@ -156,38 +156,38 @@ class SABnzbdDelegate(NSObject):
         self.menu_speed = NSMenu.alloc().init()
 
         speeds ={  0 : T('osx-menu-none'), 50 :'50 KB/s' , 100 : '100 KB/s', 200 : '200 KB/s' , 300 : '300 KB/s' ,
-                   400 : '400 KB/s', 500 :'500 KB/s' , 600 : '600 KB/s', 700 : '700 KB/s' , 800 : '800 KB/s' , 
-                   900 : '900 KB/s', 1000 :'1000 KB/s' , 1500 : '1500 KB/s', 2000 : '2000 KB/s' , 3000 : '3000 KB/s' 
+                   400 : '400 KB/s', 500 :'500 KB/s' , 600 : '600 KB/s', 700 : '700 KB/s' , 800 : '800 KB/s' ,
+                   900 : '900 KB/s', 1000 :'1000 KB/s' , 1500 : '1500 KB/s', 2000 : '2000 KB/s' , 3000 : '3000 KB/s'
                 }
-                
+
         for speed in sorted(speeds.keys()):
             menu_speed_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('%s' % (speeds[speed]), 'speedlimitAction:', '')
             menu_speed_item.setRepresentedObject_("%s" % (speed))
             self.menu_speed.addItem_(menu_speed_item)
-        
+
         self.speed_menu_item.setSubmenu_(self.menu_speed)
         self.menu.addItem_(self.speed_menu_item)
 
         #Pause Item & Submenu
         self.pause_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-pause'), 'pauseAction:', '')
         self.pause_menu_item.setRepresentedObject_('0')
-        
+
         self.menu_pause = NSMenu.alloc().init()
 
         for i in range(6):
             menu_pause_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_("%s %s" % ((i+1)*10,T('osx-menu-min')), 'pauseAction:', '')
             menu_pause_item.setRepresentedObject_("%s" % ((i+1)*10))
             self.menu_pause.addItem_(menu_pause_item)
-        
+
         self.pause_menu_item.setSubmenu_(self.menu_pause)
         self.menu.addItem_(self.pause_menu_item)
-        
+
         #Resume Item
         self.resume_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-resume'), 'resumeAction:', '')
         if self.isLeopard:
             self.resume_menu_item.setHidden_(YES)
         else:
-            self.resume_menu_item.setEnabled_(NO) 
+            self.resume_menu_item.setEnabled_(NO)
         self.menu.addItem_(self.resume_menu_item)
 
         #Newzbin Item
@@ -195,12 +195,12 @@ class SABnzbdDelegate(NSObject):
         if self.isLeopard:
             self.newzbin_menu_item.setHidden_(YES)
         else:
-            self.newzbin_menu_item.setEnabled_(NO) 
+            self.newzbin_menu_item.setEnabled_(NO)
         self.menu.addItem_(self.newzbin_menu_item)
-        
+
         self.separator2_menu_item = NSMenuItem.separatorItem()
         self.menu.addItem_(self.separator2_menu_item)
-        
+
         #Complete Folder Item
         self.completefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-complete'), 'openFolderAction:', '')
         self.completefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.COMPLETE_DIR.get_path())
@@ -216,7 +216,7 @@ class SABnzbdDelegate(NSObject):
         #About Item (TO FIX)
         #menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('About SABnzbd', 'aboutAction:', '')
         #self.menu.addItem_(menu_item)
-        
+
         #Quit Item
         menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-quit'), 'terminate:', '')
         self.menu.addItem_(menu_item)
@@ -236,11 +236,11 @@ class SABnzbdDelegate(NSObject):
                 sabnzbd.OSX_ICON = 0
             else:
                 sabnzbd.OSX_ICON = 1
-            
+
             if sabnzbd.OSX_ICON:
                 if self.status_removed == 1:
                     self.buildMenu()
-                    
+
                 if self.serverUpdate():
                     self.warningsUpdate()
                     self.queueUpdate()
@@ -248,7 +248,7 @@ class SABnzbdDelegate(NSObject):
                     self.stateUpdate()
                     self.iconUpdate()
                     self.pauseUpdate()
-                    self.speedlimitUpdate() 
+                    self.speedlimitUpdate()
                     self.versionUpdate()
                     self.newzbinUpdate()
                     self.diskspaceUpdate()
@@ -261,7 +261,7 @@ class SABnzbdDelegate(NSObject):
                     self.status_item = None
         except :
             logging.info("[osx] Exception %s" % (sys.exc_info()[0]))
-            
+
     def queueUpdate(self):
         try:
             qnfo = sabnzbd.nzbqueue.queue_info()
@@ -270,7 +270,7 @@ class SABnzbdDelegate(NSObject):
             bytesleftprogess = 0
             bpsnow = sabnzbd.bpsmeter.method.get_bps()
             self.info = ""
-                
+
             self.menu_queue = NSMenu.alloc().init()
 
             if len(pnfo_list):
@@ -290,29 +290,29 @@ class SABnzbdDelegate(NSObject):
                     bytes = pnfo[PNFO_BYTES_FIELD] / MEBI
                     nzo_id = pnfo[PNFO_NZO_ID_FIELD]
                     timeleft = self.calc_timeleft(bytesleftprogess, bpsnow)
-                    
+
                     job = "%s\t(%d/%d MB) %s" % (filename, bytesleft, bytes, timeleft)
                     job_nb += 1
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     self.menu_queue.addItem_(menu_queue_item)
-            
+
                 self.info = "%d nzb(s)\t( %d / %d MB )" % (len(pnfo_list),(qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI), (qnfo[QNFO_BYTES_FIELD] / MEBI))
-            
+
             else:
                 menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-empty'), '', '')
                 self.menu_queue.addItem_(menu_queue_item)
-            
+
             self.queue_menu_item.setSubmenu_(self.menu_queue)
 
         except :
             logging.info("[osx] queueUpdate Exception %s" % (sys.exc_info()[0]))
-            
+
     def historyUpdate(self):
         try:
             # Fetch history items
             history_db = sabnzbd.database.get_history_handle()
             items, fetched_items, total_items = history_db.fetch_history(0,10,None)
-    
+
             self.menu_history = NSMenu.alloc().init()
             self.failedAttributes = { NSForegroundColorAttributeName:NSColor.redColor(), NSFontAttributeName:NSFont.menuFontOfSize_(14.0) }
 
@@ -323,7 +323,7 @@ class SABnzbdDelegate(NSObject):
             if fetched_items:
                 for history in items:
                     #logging.info("[osx] history : %s" % (history))
-                    job = "%s" % (history['name'])                    
+                    job = "%s" % (history['name'])
                     path = ""
                     if os.path.isdir(history['storage']) or os.path.isfile(history['storage']):
                         if os.path.isfile(history['storage']):
@@ -342,7 +342,7 @@ class SABnzbdDelegate(NSObject):
             else:
                 menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-empty'), '', '')
                 self.menu_history.addItem_(menu_history_item)
-                
+
             self.history_menu_item.setSubmenu_(self.menu_history)
         except :
             logging.info("[osx] historyUpdate Exception %s" % (sys.exc_info()[0]))
@@ -351,27 +351,27 @@ class SABnzbdDelegate(NSObject):
         try:
             warnings = sabnzbd.GUIHANDLER.count()
             if warnings:
-                warningsAttributes = {  
+                warningsAttributes = {
                                         NSForegroundColorAttributeName:  NSColor.redColor(),
                                         NSFontAttributeName:             NSFont.menuFontOfSize_(14.0)
                                      }
-                
+
                 warningsTitle = NSAttributedString.alloc().initWithString_attributes_( "%s : %s" % (T('osx-menu-warnings'),warnings), warningsAttributes)
 
                 self.warnings_menu_item.setAttributedTitle_(warningsTitle)
                 if self.isLeopard:
                     self.warnings_menu_item.setHidden_(NO)
                 else:
-                    self.warnings_menu_item.setEnabled_(YES) 
+                    self.warnings_menu_item.setEnabled_(YES)
             else:
                 self.warnings_menu_item.setTitle_("%s : 0" % (T('osx-menu-warnings')))
                 if self.isLeopard:
                     self.warnings_menu_item.setHidden_(YES)
                 else:
-                    self.warnings_menu_item.setEnabled_(NO) 
+                    self.warnings_menu_item.setEnabled_(NO)
         except :
             logging.info("[osx] warningsUpdate Exception %s" % (sys.exc_info()[0]))
-           
+
     def stateUpdate(self):
         try:
             qnfo = sabnzbd.nzbqueue.queue_info()
@@ -383,34 +383,34 @@ class SABnzbdDelegate(NSObject):
                 else:
                     self.setMenuTitle("")
             elif qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI > 0:
-                
+
                 self.state = ""
                 speed = self.to_units(bpsnow)
                 timeleft = (speed>1 and self.calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD],bpsnow)) or "--"
-                
+
                 statusbarText = "\n\n%s\n%s\n" % (timeleft, speed)
-                
+
                 if sabnzbd.SABSTOP:
                     statusbarText = "..."
-                
+
                 if os.path.exists("%s/notDisplaySpeed" % (sabnzbd.DIR_APPDATA)):
                 		statusbarText = ""
-                
+
                 self.setMenuTitle(statusbarText)
             else:
                 self.state = T('osx-menu-status-idle')
                 self.setMenuTitle("")
-            
+
             if self.state != "" and self.info != "":
                 self.state_menu_item.setTitle_("%s - %s" % (self.state,self.info))
             if self.info == "":
                 self.state_menu_item.setTitle_("%s" % (self.state))
             else:
                 self.state_menu_item.setTitle_("%s" % (self.info))
-                
+
         except :
             logging.info("[osx] stateUpdate Exception %s" % (sys.exc_info()[0]))
-            
+
     def iconUpdate(self):
         try:
             if downloader.paused():
@@ -419,7 +419,7 @@ class SABnzbdDelegate(NSObject):
                 self.status_item.setImage_(self.icons['idle'])
         except :
             logging.info("[osx] iconUpdate Exception %s" % (sys.exc_info()[0]))
-            
+
     def pauseUpdate(self):
         try:
             if downloader.paused():
@@ -427,14 +427,14 @@ class SABnzbdDelegate(NSObject):
                     self.resume_menu_item.setHidden_(NO)
                     self.pause_menu_item.setHidden_(YES)
                 else:
-                    self.resume_menu_item.setEnabled_(YES) 
+                    self.resume_menu_item.setEnabled_(YES)
                     self.pause_menu_item.setEnabled_(NO)
             else:
                 if self.isLeopard:
                     self.resume_menu_item.setHidden_(YES)
                     self.pause_menu_item.setHidden_(NO)
                 else:
-                    self.resume_menu_item.setEnabled_(NO) 
+                    self.resume_menu_item.setEnabled_(NO)
                     self.pause_menu_item.setEnabled_(YES)
         except :
             logging.info("[osx] pauseUpdate Exception %s" % (sys.exc_info()[0]))
@@ -453,11 +453,11 @@ class SABnzbdDelegate(NSObject):
                         menuitem.setState_(NSOffState)
         except :
             logging.info("[osx] speedlimitUpdate Exception %s" % (sys.exc_info()[0]))
-                                                    
+
     def versionUpdate(self):
         try:
             if sabnzbd.NEW_VERSION and self.version_notify:
-                #logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))              
+                #logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))
                 new_release, new_rel_url = sabnzbd.NEW_VERSION.split(';')
                 osx.sendGrowlMsg("SABnzbd","%s : %s" % (T('grwl-newversion-msg'),new_release),osx.NOTIFICATION['other'])
                 self.version_notify = 0
@@ -467,16 +467,16 @@ class SABnzbdDelegate(NSObject):
 
     def newzbinUpdate(self):
         try:
-            if sabnzbd.cfg.USERNAME_NEWZBIN.get() and sabnzbd.cfg.PASSWORD_NEWZBIN.get() and sabnzbd.cfg.NEWZBIN_BOOKMARKS.get():
+            if sabnzbd.cfg.USERNAME_NEWZBIN() and sabnzbd.cfg.PASSWORD_NEWZBIN() and sabnzbd.cfg.NEWZBIN_BOOKMARKS():
                 if self.isLeopard:
                     self.newzbin_menu_item.setHidden_(NO)
                 else:
-                    self.newzbin_menu_item.setEnabled_(YES) 
+                    self.newzbin_menu_item.setEnabled_(YES)
             else:
                 if self.isLeopard:
                     self.newzbin_menu_item.setHidden_(YES)
                 else:
-                    self.newzbin_menu_item.setEnabled_(NO) 
+                    self.newzbin_menu_item.setEnabled_(NO)
         except :
             logging.info("[osx] newzbinUpdate Exception %s" % (sys.exc_info()[0]))
 
@@ -520,7 +520,7 @@ class SABnzbdDelegate(NSObject):
                 self.separator_menu_item.setEnabled_(alternate)
                 self.separator2_menu_item.setEnabled_(alternate)
                 self.completefolder_menu_item.setEnabled_(alternate)
-                self.incompletefolder_menu_item.setEnabled_(alternate)            
+                self.incompletefolder_menu_item.setEnabled_(alternate)
             return value
 
         except :
@@ -542,7 +542,7 @@ class SABnzbdDelegate(NSObject):
             style.setLineSpacing_(0.0)
             style.setMaximumLineHeight_(9.0)
             style.setParagraphSpacing_(-3.0)
-    
+
             #Trying to change color of title to white when menu is open TO FIX
             if self.menu.highlightedItem():
                 #logging.info("Menu Clicked")
@@ -550,14 +550,14 @@ class SABnzbdDelegate(NSObject):
             else:
                 #logging.info("Menu Not Clicked")
                 titleColor = NSColor.blackColor()
-    
+
             titleAttributes = {
                 NSBaselineOffsetAttributeName :  5.0,
                 NSFontAttributeName:             NSFont.menuFontOfSize_(9.0),
                 NSParagraphStyleAttributeName:   style
                 #,NSForegroundColorAttributeName:  titleColor
                 }
-    
+
             title = NSAttributedString.alloc().initWithString_attributes_(text, titleAttributes)
             self.status_item.setAttributedTitle_(title)
         except :
@@ -606,8 +606,8 @@ class SABnzbdDelegate(NSObject):
             link = sender.representedObject()
         else:
             link = ""
-        #logging.info("[osx] opening http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.CHERRYHOST.get(), sabnzbd.cfg.CHERRYPORT.get(),link))
-        launch_a_browser("http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.CHERRYHOST.get(), sabnzbd.cfg.CHERRYPORT.get(),link),True)
+        #logging.info("[osx] opening http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.CHERRYHOST(), sabnzbd.cfg.CHERRYPORT(),link))
+        launch_a_browser("http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.CHERRYHOST(), sabnzbd.cfg.CHERRYPORT(),link),True)
 
     def speedlimitAction_(self, sender):
         #logging.info("[osx] speed limit to %s" % (sender.representedObject()))
@@ -651,7 +651,7 @@ class SABnzbdDelegate(NSObject):
         sabnzbd.halt()
         cherrypy.engine.restart()
         self.setMenuTitle("\n\n%s\n"% (T('osx-menu-shutdowning')))
-        
+
     def application_openFiles_(self, nsapp, filenames):
         #logging.info('[osx] file open')
         #logging.info('[osx] file : %s' % (filenames))

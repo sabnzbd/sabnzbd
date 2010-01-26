@@ -71,33 +71,33 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
     """
     if pp is None:
         try:
-            pp = config.get_categories()[safe_lower(cat)].pp.get()
+            pp = config.get_categories()[safe_lower(cat)].pp()
             # Get the default pp
             if pp == '':
-                pp = cfg.DIRSCAN_PP.get()
+                pp = cfg.DIRSCAN_PP()
             logging.debug('Job gets options %s', pp)
         except KeyError:
-            pp = cfg.DIRSCAN_PP.get()
+            pp = cfg.DIRSCAN_PP()
 
     if not script:
         try:
-            script = config.get_categories()[safe_lower(cat)].script.get()
+            script = config.get_categories()[safe_lower(cat)].script()
             # Get the default script
             if script == '' or safe_lower(script) == 'default':
-                script = cfg.DIRSCAN_SCRIPT.get()
+                script = cfg.DIRSCAN_SCRIPT()
             logging.debug('Job gets script %s', script)
         except KeyError:
-            script = cfg.DIRSCAN_SCRIPT.get()
+            script = cfg.DIRSCAN_SCRIPT()
 
     if priority is None or priority == DEFAULT_PRIORITY:
         try:
-            priority = config.get_categories()[safe_lower(cat)].priority.get()
+            priority = config.get_categories()[safe_lower(cat)].priority()
             # Get the default priority
             if priority == DEFAULT_PRIORITY:
-                priority = cfg.DIRSCAN_PRIORITY.get()
+                priority = cfg.DIRSCAN_PRIORITY()
             logging.debug('Job gets priority %s', script)
         except KeyError:
-            priority = cfg.DIRSCAN_PRIORITY.get()
+            priority = cfg.DIRSCAN_PRIORITY()
 
     return cat, pp, script, priority
 
@@ -137,7 +137,7 @@ def cat_convert(cat):
         cats = config.get_categories()
         for ucat in cats:
             try:
-                newzbin = cats[ucat].newzbin.get()
+                newzbin = cats[ucat].newzbin()
                 if type(newzbin) != type([]):
                     newzbin = [newzbin]
             except:
@@ -211,14 +211,14 @@ def sanitize_foldername(name):
     """
     #global _FOLDER_REMOVER
     name = name.strip('. ')
-    if cfg.REPLACE_ILLEGAL.get():
+    if cfg.REPLACE_ILLEGAL():
         name = ''.join([_FILE_CH_MAPPER.get(ch, ch) for ch in name])
     else:
         name = ''.join([ch for ch in name if ch not in _FOLDER_REMOVER])
 
     if not name:
         name = 'unknown'
-    maxlen = cfg.folder_max_length.get()
+    maxlen = cfg.folder_max_length()
     if len(name) > maxlen:
         name = name[:maxlen]
 
@@ -251,7 +251,7 @@ def create_all_dirs(path, umask=False):
                     except:
                         result = False
                     if umask:
-                        mask = cfg.UMASK.get()
+                        mask = cfg.UMASK()
                         if mask:
                             try:
                                 os.chmod(path, int(mask, 8) | 0700)
@@ -545,7 +545,7 @@ def panic_message(panic, a=None, b=None):
     if sabnzbd.WIN_SERVICE:
         sabnzbd.WIN_SERVICE.ErrLogger('Panic exit', msg)
 
-    if (not cfg.AUTOBROWSER.get()) or sabnzbd.DAEMON:
+    if (not cfg.AUTOBROWSER()) or sabnzbd.DAEMON:
         return
 
     msgfile, url = tempfile.mkstemp(suffix='.html')
@@ -582,7 +582,7 @@ def panic(reason, remedy=""):
 def launch_a_browser(url, force=False):
     """Launch a browser pointing to the URL
     """
-    if not force and not cfg.AUTOBROWSER.get() or sabnzbd.DAEMON:
+    if not force and not cfg.AUTOBROWSER() or sabnzbd.DAEMON:
         return
 
     logging.info("Lauching browser with %s", url)
@@ -658,7 +658,7 @@ def convert_version(text):
 
 def check_latest_version():
     """ Do an online check for the latest version """
-    if not cfg.VERSION_CHECK.get():
+    if not cfg.VERSION_CHECK():
         return
 
     current, testver = convert_version(sabnzbd.__version__)
@@ -963,7 +963,7 @@ def bad_fetch(nzo, url, msg='', retry=False, archive=False):
         else:
             nzbname = ''
         text = T('his-retryURL1@1')+', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
-        parms = (msg, cfg.API_KEY.get(), urllib.quote(url), pp, cat, script, nzbname)
+        parms = (msg, cfg.API_KEY(), urllib.quote(url), pp, cat, script, nzbname)
         nzo.set_fail_msg(text % parms)
     else:
         if archive:
@@ -980,11 +980,11 @@ def bad_fetch(nzo, url, msg='', retry=False, archive=False):
 def on_cleanup_list(filename, skip_nzb=False):
     """ Return True if a filename matches the clean-up list """
 
-    if cfg.CLEANUP_LIST.get():
+    if cfg.CLEANUP_LIST():
         ext = os.path.splitext(filename)[1].strip().strip('.')
         if sabnzbd.WIN32: ext = ext.lower()
 
-        for k in cfg.CLEANUP_LIST.get():
+        for k in cfg.CLEANUP_LIST():
             item = k.strip().strip('.')
             if item == ext and not (skip_nzb and item == 'nzb'):
                 return True

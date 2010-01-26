@@ -71,6 +71,10 @@ class Option:
                 anchor = anchor[section]
             anchor[keyword] = self
 
+    def __call__(self):
+        """ get() replacement """
+        return self.get()
+
     def get(self):
         """ Retrieve value field """
         if self.__value != None:
@@ -350,19 +354,19 @@ class ConfigServer:
         """ Return a dictionary with all attributes """
         dict = {}
         dict['name'] = self.__name
-        dict['host'] = self.host.get()
-        dict['port'] = self.port.get()
-        dict['timeout'] = self.timeout.get()
-        dict['username'] = self.username.get()
+        dict['host'] = self.host()
+        dict['port'] = self.port()
+        dict['timeout'] = self.timeout()
+        dict['username'] = self.username()
         if safe:
             dict['password'] = self.password.get_stars()
         else:
-            dict['password'] = self.password.get()
-        dict['connections'] = self.connections.get()
-        dict['fillserver'] = self.fillserver.get()
-        dict['ssl'] = self.ssl.get()
-        dict['enable'] = self.enable.get()
-        dict['optional'] = self.optional.get()
+            dict['password'] = self.password()
+        dict['connections'] = self.connections()
+        dict['fillserver'] = self.fillserver()
+        dict['ssl'] = self.ssl()
+        dict['enable'] = self.enable()
+        dict['optional'] = self.optional()
         return dict
 
     def delete(self):
@@ -411,11 +415,11 @@ class ConfigCat:
         """ Return a dictionary with all attributes """
         dict = {}
         dict['name'] = self.__name
-        dict['pp'] = self.pp.get()
-        dict['script'] = self.script.get()
-        dict['dir'] = self.dir.get()
+        dict['pp'] = self.pp()
+        dict['script'] = self.script()
+        dict['dir'] = self.dir()
         dict['newzbin'] = self.newzbin.get_string()
-        dict['priority'] = self.priority.get()
+        dict['priority'] = self.priority()
         return dict
 
     def delete(self):
@@ -518,12 +522,12 @@ class ConfigRSS:
         """ Return a dictionary with all attributes """
         dict = {}
         dict['name'] = self.__name
-        dict['uri'] = self.uri.get()
-        dict['cat'] = self.cat.get()
-        dict['pp'] = self.pp.get()
-        dict['script'] = self.script.get()
-        dict['enable'] = self.enable.get()
-        dict['priority'] = self.priority.get()
+        dict['uri'] = self.uri()
+        dict['cat'] = self.cat()
+        dict['pp'] = self.pp()
+        dict['script'] = self.script()
+        dict['enable'] = self.enable()
+        dict['priority'] = self.priority()
         filters = self.filters.get_dict()
         for kw in filters:
             dict[kw] = filters[kw]
@@ -697,7 +701,7 @@ def save_config(force=False):
                     CFG[sec]
                 except:
                     CFG[sec] = {}
-                value = database[section][option].get()
+                value = database[section][option]()
                 if type(value) == type(True):
                     CFG[sec][kw] = str(int(value))
                 elif type(value) == type(0):

@@ -56,13 +56,13 @@ class NzbQueue(TryList):
         self.__downloaded_items = []
 
 
-        self.__top_only = cfg.TOP_ONLY.get()
+        self.__top_only = cfg.TOP_ONLY()
         self.__top_nzo = None
 
         self.__nzo_list = []
         self.__nzo_table = {}
 
-        self.__auto_sort = cfg.AUTO_SORT.get()
+        self.__auto_sort = cfg.AUTO_SORT()
 
         nzo_ids = []
 
@@ -596,7 +596,7 @@ class NzbQueue(TryList):
 
             if not self.__nzo_list:
                 # Close server connections
-                if cfg.AUTODISCONNECT.get():
+                if cfg.AUTODISCONNECT():
                     sabnzbd.downloader.disconnect()
 
                 # Sets the end-of-queue back on if disabled

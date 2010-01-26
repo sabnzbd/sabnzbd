@@ -40,7 +40,7 @@ try:
 except ImportError:
     _ssl = None
     HAVE_SSL = False
-    
+
     # Dummy class so this exception is ignored by clients without ssl installed
     class WantReadError(Exception):
         def __init__(self, value):
@@ -150,7 +150,7 @@ class NNTP:
 
         if sslenabled and _ssl:
             # Some users benefit from SSLv2 not being capped.
-            ssl_type = sabnzbd.cfg.SSL_TYPE.get()
+            ssl_type = sabnzbd.cfg.SSL_TYPE()
             if ssl_type == 'v2':
                 ctx = _ssl.Context(_ssl.SSLv2_METHOD)
             elif ssl_type == 'v3':

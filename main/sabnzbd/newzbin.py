@@ -77,7 +77,7 @@ def getBookmarksList():
 
 def delete_bookmark(msgid):
     global __BOOKMARKS
-    if __BOOKMARKS and cfg.NEWZBIN_BOOKMARKS.get() and cfg.NEWZBIN_UNBOOKMARK.get():
+    if __BOOKMARKS and cfg.NEWZBIN_BOOKMARKS() and cfg.NEWZBIN_UNBOOKMARK():
         __BOOKMARKS.del_bookmark(msgid)
 
 
@@ -238,7 +238,7 @@ def _grabnzb(msgid):
         else:
             conn = httplib.HTTPConnection('www.newzbin.com')
 
-        postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'reportid': msgid }
+        postdata = { 'username': cfg.USERNAME_NEWZBIN(), 'password': cfg.PASSWORD_NEWZBIN(), 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
 
         headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -359,11 +359,11 @@ class Bookmarks:
 
             if delete:
                 logging.debug('Trying to delete Newzbin bookmark %s', delete)
-                postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'delete', \
+                postdata = { 'username': cfg.USERNAME_NEWZBIN(), 'password': cfg.PASSWORD_NEWZBIN(), 'action': 'delete', \
                              'reportids' : delete }
             else:
                 logging.info('Fetching Newzbin bookmarks')
-                postdata = { 'username': cfg.USERNAME_NEWZBIN.get(), 'password': cfg.PASSWORD_NEWZBIN.get(), 'action': 'fetch'}
+                postdata = { 'username': cfg.USERNAME_NEWZBIN(), 'password': cfg.PASSWORD_NEWZBIN(), 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
 
             headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -419,7 +419,7 @@ class Bookmarks:
                     if msgid and (msgid not in self.bookmarks):
                         self.bookmarks.append(msgid)
                         logging.info("Found new bookmarked msgid %s (%s)", msgid, text)
-                        sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.DIRSCAN_PRIORITY.get())
+                        sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.DIRSCAN_PRIORITY())
         else:
             logging.error(Ta('error-nbUnkownError@1'), rcode)
 

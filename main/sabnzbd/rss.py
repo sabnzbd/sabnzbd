@@ -195,13 +195,13 @@ class RSSQueue:
             logging.debug("Traceback: ", exc_info = True)
             return T('error-rssBadFeed@1') % feed
 
-        uri = feeds.uri.get()
-        defCat = feeds.cat.get()
+        uri = feeds.uri()
+        defCat = feeds.cat()
         if defCat == "":
             defCat = None
-        defPP = feeds.pp.get()
-        defScript = feeds.script.get()
-        defPriority = feeds.priority.get()
+        defPP = feeds.pp()
+        defScript = feeds.script()
+        defPriority = feeds.priority()
 
         # Preparations, convert filters to regex's
         regexes = []
@@ -209,7 +209,7 @@ class RSSQueue:
         reCats = []
         rePPs = []
         reScripts = []
-        for filter in feeds.filters.get():
+        for filter in feeds.filters():
             reCat = filter[0]
             if not reCat:
                 reCat = None
@@ -273,7 +273,7 @@ class RSSQueue:
                 title = entry.title
                 newlinks.append(link)
 
-                if cfg.NO_DUPES.get() and dup_title(feed, title):
+                if cfg.NO_DUPES() and dup_title(feed, title):
                     logging.info("Ignoring duplicate job %s", title)
                     continue
 
@@ -342,7 +342,7 @@ class RSSQueue:
             order += 1
 
         # Send email if wanted and not "forced"
-        if new_downloads and cfg.EMAIL_RSS.get() and not force:
+        if new_downloads and cfg.EMAIL_RSS() and not force:
             emailer.rss_mail(feed, new_downloads)
 
         # If links are in table for more than 4 weeks, remove
@@ -377,7 +377,7 @@ class RSSQueue:
             active = False
             feeds = config.get_rss()
             for feed in feeds:
-                if feeds[feed].enable.get():
+                if feeds[feed].enable():
                     active = True
                     self.run_feed(feed, download=True, ignoreFirst=True)
                     # Wait 30 seconds, else sites may get irritated

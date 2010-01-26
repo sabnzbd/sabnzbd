@@ -106,7 +106,7 @@ def find_programs(curdir):
         sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
-        if not cfg.ignore_wrong_unrar.get():
+        if not cfg.ignore_wrong_unrar():
             sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
 
 #------------------------------------------------------------------------------
@@ -156,7 +156,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
     newfiles = []
     error = False
 
-    if cfg.enable_filejoin.get():
+    if cfg.enable_filejoin():
         do_filejoin = False
         for joinable in xjoinables:
             if joinable not in joinables:
@@ -172,7 +172,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
             logging.info('Filejoin finished on %s', workdir)
             nzo.set_action_line('', '')
 
-    if cfg.enable_unrar.get():
+    if cfg.enable_unrar():
         do_unrar = False
         for rar in xrars:
             if rar not in rars:
@@ -188,7 +188,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
             logging.info('Unrar finished on %s', workdir)
             nzo.set_action_line('', '')
 
-    if cfg.enable_unzip.get():
+    if cfg.enable_unzip():
         do_unzip = False
         for _zip in xzips:
             if _zip not in zips:
@@ -203,7 +203,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
             logging.info('Unzip finished on %s', workdir)
             nzo.set_action_line('', '')
 
-    if cfg.enable_tsjoin.get():
+    if cfg.enable_tsjoin():
         do_tsjoin = False
         for _ts in xts:
             if _ts not in ts:
@@ -546,7 +546,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
     p.wait()
 
 
-    if cfg.UNPACK_CHECK.get():
+    if cfg.UNPACK_CHECK():
         if reliable_unpack_names():
             all_found = True
             for path in expected_files:
@@ -702,7 +702,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             return readd, result
 
     try:
-        if cfg.enable_par_cleanup.get():
+        if cfg.enable_par_cleanup():
             new_dir_content = os.listdir(workdir)
 
             for path in new_dir_content:
@@ -767,8 +767,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     start = time()
 
     if (is_new_partype(nzo, setname) and not classic) or not PAR2C_COMMAND:
-        if cfg.par_option.get():
-            command = [str(PAR2_COMMAND), 'r', str(cfg.par_option.get().strip()), parfile]
+        if cfg.par_option():
+            command = [str(PAR2_COMMAND), 'r', str(cfg.par_option().strip()), parfile]
         else:
             command = [str(PAR2_COMMAND), 'r', parfile]
         classic = not PAR2C_COMMAND
@@ -1009,14 +1009,14 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
 def build_command(command):
     if not sabnzbd.WIN32:
-        if IONICE_COMMAND and cfg.ionice.get().strip():
-            lst = cfg.ionice.get().split()
+        if IONICE_COMMAND and cfg.ionice().strip():
+            lst = cfg.ionice().split()
             lst.reverse()
             for arg in lst:
                 command.insert(0, arg)
             command.insert(0, IONICE_COMMAND)
-        if NICE_COMMAND and cfg.nice.get().strip():
-            lst = cfg.nice.get().split()
+        if NICE_COMMAND and cfg.nice().strip():
+            lst = cfg.nice().split()
             lst.reverse()
             for arg in lst:
                 command.insert(0, arg)

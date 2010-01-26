@@ -147,7 +147,7 @@ def _assemble(nzf, path, dupe):
 
     fout = open(path, 'ab')
 
-    if cfg.QUICK_CHECK.get():
+    if cfg.QUICK_CHECK():
         md5 = new_md5()
     else:
         md5 = None
