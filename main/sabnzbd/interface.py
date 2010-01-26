@@ -2384,8 +2384,8 @@ class ConfigCats:
 
 
 SORT_LIST = ( \
-    'enable_tv_sorting', 'tv_sort_string', 'enable_movie_sorting',
-    'movie_sort_string', 'movie_sort_extra', 'movie_extra_folder',
+    'enable_tv_sorting', 'tv_sort_string', 'tv_categories',
+    'enable_movie_sorting', 'movie_sort_string', 'movie_sort_extra', 'movie_extra_folder',
     'enable_date_sorting', 'date_sort_string', 'movie_categories', 'date_categories'
     )
 
@@ -2424,6 +2424,10 @@ class ConfigSorting:
             pass
         try:
             kwargs['date_categories'] = kwargs['date_cat']
+        except:
+            pass
+        try:
+            kwargs['tv_categories'] = kwargs['tv_cat']
         except:
             pass
 

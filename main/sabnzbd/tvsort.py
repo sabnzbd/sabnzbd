@@ -100,7 +100,7 @@ class Sorter:
         self.cat = cat
 
     def detect(self, dirname, complete_dir):
-        self.sorter = SeriesSorter(dirname, complete_dir)
+        self.sorter = SeriesSorter(dirname, complete_dir, self.cat)
         if self.sorter.is_match():
             complete_dir = self.sorter.get_final_path()
             self.type = 'tv'
@@ -145,12 +145,14 @@ class Sorter:
         return self.sort_file
 
 class SeriesSorter:
-    def __init__(self, dirname, path):
+    def __init__(self, dirname, path, cat):
         self.matched = False
 
         self.original_dirname = dirname
         self.original_path = path
+        self.cat = cat
         self.sort_string = cfg.TV_SORT_STRING.get()
+        self.cats = cfg.TV_CATEGORIES.get()
         self.filename_set = ''
 
         self.match_obj = None
@@ -168,11 +170,12 @@ class SeriesSorter:
     def match(self):
         ''' Checks the regex for a match, if so set self.match to true '''
         if cfg.ENABLE_TV_SORTING.get() and cfg.TV_SORT_STRING.get():
-            #First check if the show matches TV episode regular expressions. Returns regex match object
-            self.match_obj, self.extras = check_regexs(self.original_dirname, series_match, double=True)
-            if self.match_obj:
-                logging.debug("Found TV Show - Starting folder sort (%s)", self.original_dirname)
-                self.matched = True
+            if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
+                #First check if the show matches TV episode regular expressions. Returns regex match object
+                self.match_obj, self.extras = check_regexs(self.original_dirname, series_match, double=True)
+                if self.match_obj:
+                    logging.debug("Found TV Show - Starting folder sort (%s)", self.original_dirname)
+                    self.matched = True
 
 
     def is_match(self):

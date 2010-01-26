@@ -111,6 +111,7 @@ SCHEDULES = OptionList('misc', 'schedlines')
 ENABLE_TV_SORTING = OptionBool('misc', 'enable_tv_sorting', False)
 TV_SORT_STRING = OptionStr('misc', 'tv_sort_string')
 TV_SORT_COUNTRIES = OptionNumber('misc', 'tv_sort_countries', 1)
+TV_CATEGORIES = OptionList('misc', 'tv_categories', ['tv'])
 
 ENABLE_MOVIE_SORTING = OptionBool('misc', 'enable_movie_sorting', False)
 MOVIE_SORT_STRING = OptionStr('misc', 'movie_sort_string')
