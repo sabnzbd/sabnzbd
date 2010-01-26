@@ -1,4 +1,30 @@
 -------------------------------------------------------------------------------
+0.5.0RC4 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+- Ignore read-only attributes of files in a RAR archive
+- Remove potential crash on OSX when handling corrupt par2 file
+- Enable manual unblocking of permantly blocked servers
+- Retry permanently blocked servers after 30 minutes (compensate for shoddy servers)
+- INI-only option "folder_length_max" for trimming folder name size
+  (default 128 for Windows, for others 256)
+- Give unrar preference over rar when both installed on a Posix system
+-------------------------------------------------------------------------------
+0.5.0RC3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+- Avoid potential crash when server closes connection
+- On Connections Page: show original error message sent by server
+- Make sure unrar check isn't done for OSX
+-------------------------------------------------------------------------------
+0.5.0RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+- Increase timeout for nzb fetches from URLs to 60 sec
+- Duplicate title checking in RSS is now case-insensitive
+- Only warn about presense of old queue when no new queue is present yet
+- Don't warn when a supported RAR (instead of UNRAR) program is present
+-------------------------------------------------------------------------------
 0.5.0RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Fixes:

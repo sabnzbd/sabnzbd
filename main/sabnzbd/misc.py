@@ -218,6 +218,10 @@ def sanitize_foldername(name):
 
     if not name:
         name = 'unknown'
+    maxlen = cfg.folder_max_length.get()
+    if len(name) > maxlen:
+        name = name[:maxlen]
+
     return name
 
 
@@ -1301,7 +1305,10 @@ def linux_shutdown():
     else:
         proxy, interface, pinterface = _get_systemproxy('ConsoleKit')
         if proxy and proxy.CanStop(dbus_interface=interface):
-            proxy.Stop(dbus_interface=interface)
+            try:
+                proxy.Stop(dbus_interface=interface)
+            except dbus.exceptions.DBusException, msg:
+                logging.info('Received a DBus exception %s', latin1(msg))
     os._exit(0)
 
 
@@ -1315,7 +1322,10 @@ def linux_hibernate():
     else:
         proxy, interface, pinterface = _get_systemproxy('DeviceKit')
         if proxy and proxy.Get(interface, 'can-hibernate', dbus_interface=pinterface):
-            proxy.Hibernate(dbus_interface=interface)
+            try:
+                proxy.Hibernate(dbus_interface=interface)
+            except dbus.exceptions.DBusException, msg:
+                logging.info('Received a DBus exception %s', latin1(msg))
     time.sleep(10)
 
 
@@ -1329,7 +1339,10 @@ def linux_standby():
     else:
         proxy, interface, pinterface = _get_systemproxy('DeviceKit')
         if proxy.Get(interface, 'can-suspend', dbus_interface=pinterface):
-            proxy.Suspend(dbus_interface=interface)
+            try:
+                proxy.Suspend(dbus_interface=interface)
+            except dbus.exceptions.DBusException, msg:
+                logging.info('Received a DBus exception %s', latin1(msg))
     time.sleep(10)
 
 

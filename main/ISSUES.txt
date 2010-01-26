@@ -1,15 +1,25 @@
 List of known issues.
 
 *** Under investigation ***
-- On some systems, SABnzbd gradually uses more memory without
-  ever reducing it.
-
 So far we have too little information to reproduce these problems.
 Please report such problems on the forum with as much information
 as possibe (OS, amount of usenet servers etc.)
 
+*** (hopefully) Solved issue ***
+  We are investigating reports of downloads hanging in the
+  last bit of the actual download.
+  0.5.0 Beta5 and Beta6 and latyer attempt to fix this.
+  Let us hear your experience.
 
 *** Known problems ***
+
+- Windows cannot handle pathnames longer than 254 characters.
+  Currently, SABnzbd doesn't handle this problem gracefully.
+  We have added the INI-only option "folder_length_max" in which you
+  can set a maximum folder name size.
+  For Windows the default is 128 and for others 256.
+  A quite safe value for Windows would be 64.
+  SABnzbd will take care of overlapping names.
 
 - On OSX you may encounter downloaded files with foreign characters.
   The par2 repair may fail when the files were created on a Windows system.

@@ -174,13 +174,15 @@ class RSSQueue:
                 if f == fd:
                     for lk in self.jobs[fd]:
                         item = self.jobs[fd][lk]
-                        if item.get('status', ' ')[0]=='D' and item.get('title', '')==title:
+                        if item.get('status', ' ')[0] == 'D' and \
+                           item.get('title', '').lower() == title.lower():
                             return True
                     return False
             return False
 
 
-        if not feed: return
+        if not feed:
+            return 'No such feed'
 
         newlinks = []
         new_downloads = []
@@ -189,9 +191,9 @@ class RSSQueue:
         try:
             feeds = config.get_rss()[feed]
         except KeyError:
-            logging.error(T('error-rssBadFeed@1'), feed)
+            logging.error(Ta('error-rssBadFeed@1'), feed)
             logging.debug("Traceback: ", exc_info = True)
-            return
+            return T('error-rssBadFeed@1') % feed
 
         uri = feeds.uri.get()
         defCat = feeds.cat.get()
@@ -239,16 +241,16 @@ class RSSQueue:
         d = feedparser.parse(uri.replace('feed://', 'http://'))
         logging.debug("Done parsing %s", uri)
         if not d:
-            logging.warning(Ta('warn-failRSS@1'), uri)
-            return
+            logging.info(Ta('warn-failRSS@1'), uri)
+            return T('warn-failRSS@1') % uri
 
         entries = d.get('entries')
         if 'bozo_exception' in d and not entries:
-            logging.warning(Ta('warn-failRSS@2'), uri, str(d['bozo_exception']))
-            return
+            logging.info(Ta('warn-failRSS@2'), uri, str(d['bozo_exception']))
+            return T('warn-failRSS@2') % (uri, str(d['bozo_exception']))
         if not entries:
-            logging.info("RSS Feed was empty: %s", uri)
-            return
+            logging.info('RSS Feed was empty: %s', uri)
+            return 'RSS Feed was empty'
 
         order = 0
         # Filter out valid new links
@@ -262,6 +264,7 @@ class RSSQueue:
                 category = ''
                 logging.error('Incompatible feed %s', uri)
                 logging.debug("Traceback: ", exc_info = True)
+                return 'Incompatible feed'
 
             if link:
                 # Make sure there are no spaces in the URL
@@ -361,6 +364,7 @@ class RSSQueue:
                     logging.debug("Purging link %s", old)
                     del jobs[old]
 
+        return ''
 
     def run(self):
         """ Run all the URI's and filters """

@@ -51,6 +51,11 @@ def validate_server(value):
     else:
         return None, value
 
+#------------------------------------------------------------------------------
+if sabnzbd.WIN32:
+    DEF_FOLDER_MAX = 128
+else:
+    DEF_FOLDER_MAX = 256
 
 #------------------------------------------------------------------------------
 # Configuration instances
@@ -102,6 +107,7 @@ IGNORE_SAMPLES = OptionNumber('misc', 'ignore_samples', 0, 0, 2)
 CREATE_GROUP_FOLDERS = OptionBool('misc', 'create_group_folders', False)
 AUTO_SORT = OptionBool('misc', 'auto_sort', False)
 FOLDER_RENAME = OptionBool('misc', 'folder_rename', True)
+folder_max_length = OptionNumber('misc', 'folder_max_length', DEF_FOLDER_MAX, 20, 65000)
 
 SAFE_POSTPROC = OptionBool('misc', 'safe_postproc', True)
 PAUSE_ON_POST_PROCESSING = OptionBool('misc', 'pause_on_post_processing', False)

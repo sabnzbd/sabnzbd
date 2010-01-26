@@ -100,10 +100,12 @@ def find_programs(curdir):
         if not sabnzbd.newsunpack.PAR2_COMMAND:
             sabnzbd.newsunpack.PAR2_COMMAND = find_on_path('par2')
         if not sabnzbd.newsunpack.RAR_COMMAND:
-            sabnzbd.newsunpack.RAR_COMMAND = find_on_path(('rar', 'unrar', 'rar3', 'unrar3',))
+            sabnzbd.newsunpack.RAR_COMMAND = find_on_path(('unrar', 'rar', 'unrar3', 'rar3',))
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path('nice')
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path('ionice')
         sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
+
+    if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
         if not cfg.ignore_wrong_unrar.get():
             sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
 
@@ -454,7 +456,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
     ############################################################################
 
-    command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', password,
+    command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', '-ai', password,
                '%s' % rarfile, '%s/' % extraction_path]
 
     stup, need_shell, command, creationflags = build_command(command)

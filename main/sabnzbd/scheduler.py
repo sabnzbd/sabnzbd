@@ -345,9 +345,24 @@ def pause_int():
         return "0"
     else:
         val = __PAUSE_END - time.time()
+        if val < 0:
+            sign = '-'
+            val = abs(val)
+        else:
+            sign = ''
         min = int(val / 60L)
         sec = int(val - min*60)
-        return "%d:%02d" % (min, sec)
+        return "%s%d:%02d" % (sign, min, sec)
+
+
+def pause_check():
+    """ Unpause when time left is negative, compensate for missed schedule
+    """
+    global __PAUSE_END
+    if __PAUSE_END is not None and (__PAUSE_END - time.time()) < 0:
+        __PAUSE_END = None
+        logging.debug('Force resume, negative timer')
+        sabnzbd.unpause_all()
 
 
 #------------------------------------------------------------------------------

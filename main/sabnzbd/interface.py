@@ -2070,8 +2070,11 @@ class ConfigRss:
         if msg: return msg
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            sabnzbd.rss.run_feed(feed, download=True, force=True)
-            return ShowRssLog(feed, False)
+            msg = sabnzbd.rss.run_feed(feed, download=True, force=True)
+            if msg:
+                return badParameterResponse(msg)
+            else:
+                return ShowRssLog(feed, False)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2080,8 +2083,11 @@ class ConfigRss:
         if msg: return msg
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            sabnzbd.rss.run_feed(feed, download=False, ignoreFirst=True)
-            return ShowRssLog(feed, True)
+            msg = sabnzbd.rss.run_feed(feed, download=False, ignoreFirst=True)
+            if msg:
+                return badParameterResponse(msg)
+            else:
+                return ShowRssLog(feed, True)
         raise dcRaiser(self.__root, kwargs)
 
 

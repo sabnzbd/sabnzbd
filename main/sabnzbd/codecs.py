@@ -41,7 +41,7 @@ def reliable_unpack_names():
 def name_fixer(p):
     """ Return UTF-8 encoded string, if appropriate for the platform """
 
-    if sabnzbd.DARWIN:
+    if sabnzbd.DARWIN and p:
         return p.decode('Latin-1', 'replace').encode('utf-8', 'replace').replace('?', '_')
     else:
         return p

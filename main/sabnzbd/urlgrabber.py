@@ -194,6 +194,8 @@ class URLGrabber(Thread):
 
 #-------------------------------------------------------------------------------
 _RE_NZBMATRIX = re.compile(r'nzbmatrix.com/(.*)[\?&]id=(\d+)', re.I)
+_RE_NZBMATRIX_USER = re.compile(r'&username=([^&=]+)', re.I)
+_RE_NZBMATRIX_API  = re.compile(r'&apikey=([^&=]+)', re.I)
 
 def _matrix_url(url):
     """ Patch up the url for nzbmatrix.com """
@@ -202,7 +204,7 @@ def _matrix_url(url):
     m = _RE_NZBMATRIX.search(url)
     if m:
         matrix_id = m.group(2)
-        if 'username=' not in url or 'apikey=' not in url:
+        if not _RE_NZBMATRIX_USER.search(url) or not _RE_NZBMATRIX_API.search(url):
             user = urllib.quote_plus(cfg.MATRIX_USERNAME.get())
             key = urllib.quote_plus(cfg.MATRIX_APIKEY.get())
             url = '%s://nzbmatrix.com/api-nzb-download.php?id=%s&username=%s&apikey=%s' % \
