@@ -456,7 +456,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
     ############################################################################
 
-    command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', '-ai', password,
+    command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', password,
                '%s' % rarfile, '%s/' % extraction_path]
 
     stup, need_shell, command, creationflags = build_command(command)
