@@ -204,13 +204,7 @@ def check_session(kwargs):
 def check_apikey(kwargs, nokey=False):
     """ Check api key """
     output = kwargs.get('output')
-    if cfg.USERNAME() and cfg.PASSWORD():
-        if kwargs.get('ma_username') == cfg.USERNAME() and kwargs.get('ma_password') == cfg.PASSWORD():
-            pass
-        else:
-            logging.warning(Ta('warn-authMissing'))
-            return report(output, 'Missing authentication')
-
+    
     if cfg.DISABLE_KEY() or nokey:
         return None
     else:
