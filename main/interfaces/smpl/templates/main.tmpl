@@ -34,7 +34,8 @@
 	RefreshTime = 5;
 	var jsontimeout;
 	var cookietimeout;
-	var speed = $kbpersecrnd;
+	var speed = $speed;
+    var kbpersec = $kbpersecrnd;
     var gDual = 0;
     var gUrl;
 
@@ -250,7 +251,7 @@ if (cook!=null && cook!="")
 	for(i=1; i<20; i++) {
 	   speedlog[i-1] = speedlog[i];
 	}
-	speedlog[19] = speed;
+	speedlog[19] = kbpersec;
 
 	var speedstr = speedlog.join(',');
 	setCookie('speedlog2',speedstr,1);
