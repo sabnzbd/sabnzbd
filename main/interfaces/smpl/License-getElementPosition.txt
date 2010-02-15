@@ -1,4 +1,4 @@
-The function getElementPosition in templates/static/MochiKit/Style.js is
+The function getElementPosition in templates/static/MochiKit/MochiKit.js is
 is adapted from YAHOO.util.Dom.getXY v0.9.0.
 Copyright: Copyright (c) 2006, Yahoo! Inc. All rights reserved.
 
