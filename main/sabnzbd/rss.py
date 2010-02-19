@@ -31,6 +31,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re
 import sabnzbd.emailer as emailer
+from sabnzbd.codecs import latin1, unicoder
 
 import sabnzbd.utils.feedparser as feedparser
 from sabnzbd.lang import T, Ta
@@ -270,11 +271,14 @@ class RSSQueue:
                 # Make sure there are no spaces in the URL
                 link = link.replace(' ','')
 
-                title = entry.title
+                # Make sure only latin-1 encodable characters occur
+                atitle = latin1(entry.title)
+                title = unicoder(atitle)
+
                 newlinks.append(link)
 
                 if cfg.NO_DUPES() and dup_title(feed, title):
-                    logging.info("Ignoring duplicate job %s", title)
+                    logging.info("Ignoring duplicate job %s", atitle)
                     continue
 
                 myCat = defCat
@@ -284,7 +288,7 @@ class RSSQueue:
 
                 if (link not in jobs) or (jobs[link]['status'] in ('G', 'B', 'G*', 'B*')):
                     # Match this title against all filters
-                    logging.debug('Trying title %s', title)
+                    logging.debug('Trying title %s', atitle)
                     result = False
                     for n in xrange(regcount):
                         if category and reTypes[n]=='C':

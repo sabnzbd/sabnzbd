@@ -302,6 +302,8 @@ opt-dirscan_script       Default User Script
 explain-dirscan_script   Used when no user script is defined by the category.
 opt-dirscan_priority     Default Priority
 explain-dirscan_priority Used when no priority is defined by the category.
+opt-par2_multicore       Enable MultiCore Par2
+explain-par2_multicore   Read the Wiki Help on this!
 opt-par_option           Extra PAR2 Parameters
 explain-par_option       Read the Wiki Help on this!
 opt-nice                 Nice Parameters

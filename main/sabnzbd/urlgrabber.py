@@ -212,6 +212,7 @@ def _matrix_url(url):
     return url, matrix_id
 
 
+_RE_MATRIX_ERR = re.compile(r'please_wait[_ ]+(\d+)', re.I)
 
 def _analyse_matrix(fn, matrix_id):
     """ Analyse respons of nzbmatrix
@@ -220,23 +221,26 @@ def _analyse_matrix(fn, matrix_id):
     if not fn:
         # No response, just retry
         return (None, msg)
-
-    f = open(fn, 'r')
-    data = f.read(40)
-    f.close()
+    try:
+        f = open(fn, 'r')
+        data = f.read(40)
+        f.close()
+    except:
+        return (None, msg)
 
     # Check for an error response
-    if data.startswith('error'):
+    if data and data.startswith('error'):
         # Check if we are required to wait - if so sleep the urlgrabber
-        if 'please_wait' in data[6:]:
-            # must wait x amount of seconds
-            wait = data[18:]
-            if wait.isdigit():
-                time.sleep(int(wait))
+        m = _RE_MATRIX_ERR.search(data)
+        if m:
+            wait = int(m.group(1))
+            if wait:
+                logging.debug('Sleeping URL grabber %s sec', wait)
+                time.sleep(min(wait, 60))
                 # Return, but tell the urlgrabber to retry
                 return (None, msg)
         else:
-            msg = Ta('warn-matrixFail@1') % data[6:]
+            msg = Ta('warn-matrixFail@1') % data
             return (None, msg)
 
     if data.startswith("<!DOCTYPE"):

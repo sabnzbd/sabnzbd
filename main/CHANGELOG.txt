@@ -1,4 +1,51 @@
 -------------------------------------------------------------------------------
+0.5.0Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Relabeled to 0.5.0
+-------------------------------------------------------------------------------
+0.5.0RC8 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Add par2_multicore option to Config->Switches
+- Windows/OSX: Replaced OpenSSL libraries
+- Windows: Replaced par2-multicore by new version
+-------------------------------------------------------------------------------
+0.5.0RC7 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+- When priority of newzbin or RSS job comes from the category, it wasn't effective.
+- When unpacked file and directly download file have the same name,
+  the latter got lost
+- Make nzbmatrix error handling robust
+- When apikey is present in API call, do not require username/password
+- Windows installer is now multi-language too
+- Windows installer warns about queue when upgrading from 0.4.x
+-------------------------------------------------------------------------------
+0.5.0RC6 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Changes:
+- Add INI-only option "par2_multicore" to enable/disable par2-multicore
+Fixes:
+- Prevent crash in RSS due to odd characters
+- Prevent deadlock in downloader when server is blocked
+- Unrar option -ai  should only be used on Windows
+- Prevent deletion of par files of other sets in multi-set NZBs
+-------------------------------------------------------------------------------
+0.5.0RC5 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Fixes:
+- Incorrect job rename in SMPL skin on Windows
+- INI-only option "no_penalties" to limit timeout penalties for
+  non-optional servers to 1 minute
+- HTTPS certificate paths should default to admin_dir directive
+- The second parameter of the user script should be the original NZB file name,
+  even when the job has been renamed.
+- Show clear error message when RSS feed preview or force-download fails.
+- Don't warn about RSS reading problems when a scheduled scan is done.
+- Ignore empty "username" and "apikey" parameters in nzbmatrix.com URLs
+  and add stored values.
+- Suppress authentication warning for API call "get_scripts".
+  It's used by some external utilities to determine if username/password is required.
+-------------------------------------------------------------------------------
 0.5.0RC4 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Fixes:

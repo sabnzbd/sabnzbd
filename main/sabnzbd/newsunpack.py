@@ -40,7 +40,13 @@ if sabnzbd.WIN32:
         from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
     except ImportError:
         pass
-
+else:
+    # Define dummy WindowsError for non-Windows
+    class WindowsError(Exception):
+        def __init__(self, value):
+            self.parameter = value
+        def __str__(self):
+            return repr(self.parameter)
 
 # Regex globals
 RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|s\d\d|r\d\d|\d\d\d)$', re.I)
@@ -125,6 +131,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, creationflags=creationflags)
     except:
+        logging.debug("Failed script %s, Traceback: ", extern_proc, exc_info = True)
         return "Cannot run script %s\r\n" % extern_proc, -1
 
     output = p.stdout.read()
@@ -456,8 +463,12 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
     ############################################################################
 
-    command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', password,
-               '%s' % rarfile, '%s/' % extraction_path]
+    if sabnzbd.WIN32:
+        command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', '-ai', password,
+                   '%s' % rarfile, '%s/' % extraction_path]
+    else:
+        command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', password,
+                   '%s' % rarfile, '%s/' % extraction_path]
 
     stup, need_shell, command, creationflags = build_command(command)
 
@@ -654,20 +665,19 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
     old_dir_content = os.listdir(workdir)
     used_joinables = joinables = []
+    setpars = pars_of_set(workdir, setname)
+    result = readd = False
 
-    nzo.set_status('QuickCheck')
-    nzo.set_action_line(T('msg-repair'), T('msg-QuickChecking'))
-    if QuickCheck(setname, nzo):
-        logging.info("Quick-check for %s is OK, skipping repair", setname)
-        nzo.set_unpack_info('Repair', T('msg-QuickOK@1') % unicoder(setname), set=setname)
-        readd = False
-        result = True
-        # Poor man's list of other pars, should not be needed
-        # but sometimes too many are downloaded
-        pars = pars_of_set(workdir, setname)
+    if cfg.QUICK_CHECK.get():
+        nzo.set_status('QuickCheck')
+        nzo.set_action_line(T('msg-repair'), T('msg-QuickChecking'))
+        result = QuickCheck(setname, nzo)
+        if result:
+            logging.info("Quick-check for %s is OK, skipping repair", setname)
+            nzo.set_unpack_info('Repair', T('msg-QuickOK@1') % unicoder(setname), set=setname)
+            pars = setpars
 
-    else:
-
+    if not result:
         nzo.set_status('Repairing')
         result = False
         readd = False
@@ -739,7 +749,10 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
                 except OSError:
                     logging.warning(Ta('warn-delFailed@1'), parfile)
 
-            deletables = [ os.path.join(workdir, f) for f in pars ]
+            deletables = []
+            for f in pars:
+                if f in setpars:
+                    deletables.append(os.path.join(workdir, f))
             deletables.extend(used_joinables)
             for filepath in deletables:
                 if filepath in joinables:
@@ -765,6 +778,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     #set the current nzo status to "Verifying...". Used in History
     nzo.set_status('Verifying')
     start = time()
+
+    classic = classic or not cfg.par2_multicore.get()
+    logging.debug('Par2-classic = %s', classic)
 
     if (is_new_partype(nzo, setname) and not classic) or not PAR2C_COMMAND:
         if cfg.par_option():
@@ -1146,7 +1162,7 @@ def QuickCheck(set, nzo):
 
 
 def pars_of_set(wdir, setname):
-    """ Return list of par2 files matching the set """
+    """ Return list of par2 files (pathless) matching the set """
     list = []
     for file in os.listdir(wdir):
         m = FULLVOLPAR2_RE.search(file)

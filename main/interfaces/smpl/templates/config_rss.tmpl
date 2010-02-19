@@ -60,7 +60,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             <optgroup label="$T('priority')">
                     <option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>$T('default')</option>
                     <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>$T('pr-force')</option>
-                    <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>$T('pr-normal')</option>
+                    <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>$T('pr-high')</option>
                     <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
                     <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>$T('pr-low')</option>>
                 </optgroup>

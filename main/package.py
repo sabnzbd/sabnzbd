@@ -1,6 +1,6 @@
 #!/usr/bin/env python -OO
 #
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -443,12 +443,6 @@ elif target in ('binary', 'installer'):
     DeleteFiles('dist/PKG-INFO')
 
     DeleteFiles('*.ini')
-
-    if sys.version_info < (2,6):
-        # Copy the proper OpenSSL files into the dist folder
-        shutil.copy2('win/openssl/libeay32.dll', 'dist/lib')
-        shutil.copy2('win/openssl/ssleay32.dll', 'dist/lib')
-
 
     ############################
     # Generate the windowed-app

@@ -131,6 +131,9 @@ class NzbQueue(TryList):
                     categ = cat
                 categ, pp, script, priority = cat_to_opts(categ, pp, script, priority)
 
+                # Remember old priority
+                old_prio = future.get_priority()
+
                 try:
                     future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
                     future.nzo_id = nzo_id
@@ -141,6 +144,8 @@ class NzbQueue(TryList):
                     self.remove(nzo_id, False)
 
                 # Make sure the priority is changed now that we know the category
+                if old_prio != priority:
+                    future.set_priority(None)
                 self.set_priority(future.nzo_id, priority)
 
                 if self.__auto_sort:

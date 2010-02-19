@@ -298,6 +298,8 @@ opt-dirscan_script       Standaard script
 explain-dirscan_script   Wordt gebruikt wanneer de categorie geen script opgeeft.
 opt-dirscan_priority     Standaard prioriteit
 explain-dirscan_priority Wordt gebruikt wanneer de categorie geen prioriteit opgeeft.
+opt-par2_multicore       MultiCore Par2 toestaan
+explain-par2_multicore   Lees hier voor de Wiki pagina!
 opt-par_option           Extra PAR2 parameters:
 explain-par_option       Lees hier voor de Wiki pagina!
 opt-nice                 "Nice" parameters

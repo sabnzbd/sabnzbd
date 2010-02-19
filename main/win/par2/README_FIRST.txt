@@ -36,14 +36,14 @@ http://sourceforge.net/projects/parchive
 
 
 This version has been modified to utilise the Intel Threading Building Blocks
-2.1 library, which enables it to process files concurrently instead of the
+library, which enables it to process files concurrently instead of the
 original version's serial processing. Computers with more than one CPU or core
 such as those using Intel Core Duo, Intel Core Duo 2, or AMD Athlon X2 CPUs
 can now create or repair par2 archives much quicker than the original version.
 For example, dual core machines can achieve near-double performance when
 creating or repairing.
 
-The Intel Threading Building Blocks 2.1 library is obtained from:
+The Intel Threading Building Blocks library is obtained from:
 
 http://osstbb.intel.com/
 
@@ -172,8 +172,8 @@ Building:
 
   Mac OS X:
   - 10.5.2 or later
-  - Xcode 3.0 or 3.1 installed
-  - TBB 2.1 installed
+  - Xcode 3.0 or later installed
+  - TBB 2.1 or later installed
   - NVIDIA CUDA 2.0 toolkit installed, including the driver by performing a custom install.
     The following assumes it is installed into "/usr/local/cuda".
   - NVIDIA CUDA 2.0 SDK installed. The following assumes it is installed into "/Developer/CUDA".
@@ -182,7 +182,7 @@ Building:
   - XPSP2 or later
   - Visual C++ Express 2005 installed
   - Visual C++ Express 2008 installed
-  - TBB 2.1 installed
+  - TBB 2.1 or later installed
   - NVIDIA CUDA 2.0 toolkit installed. The following assumes it is installed into "C:\CUDA".
   - NVIDIA CUDA 2.0 SDK installed. The following assumes it is installed into
     "C:\Program Files\NVIDIA Corporation\NVIDIA CUDA SDK" .
@@ -227,39 +227,32 @@ Building:
 *** Just to repeat, the NVIDIA CUDA version should be considered experimental. ***
 
 
---- Installing the pre-built Windows (32-bit) version ---
+--- Installing the pre-built Windows version (32-bit or 64-bit) ---
 
 
-The Windows version is a 32-bit Windows build of the concurrent version of
-par2cmdline 0.4. It is distributed as an executable (par2.exe) along
-with the required Intel Threading Building Blocks 2.1 library (tbb.dll)
-which comes from the tbb21_009oss_win.tar.gz distribution.
+The Windows version is distributed as an executable (par2.exe) which has
+built into it (i.e., statically linked) the Intel Threading Building Blocks
+2.2 library, built from the tbb22_20090809oss_src.tar.gz distribution. The
+Windows version no longer requires a specific version of the C runtime
+library because the par2.exe executable is now built by statically linking
+with the C runtime library.
 
-The par2.exe and tbb.dll files included in this distribution require
-version 7.1 of the Microsoft C runtime libraries, which are probably
-already on your PC if it is running Windows 2000, Windows XP or
-Windows Vista. The Microsoft C runtime libraries are named MSVCP71.DLL
-and MSVCR71.DLL and are most likely to be in the C:\Windows\system32
-folder.
+To install, copy the par2.exe file and then invoke it from the command line.
 
-To install, place the par2.exe and tbb.dll files in a folder and
-invoke them from the command line.
-
-To uninstall, delete the par2.exe and tbb.dll files along with any
-files from the distribution folder.
+To uninstall, delete the par2.exe file along with any files from the
+distribution folder.
 
 
 --- Installing the pre-built Mac OS X version ---
 
 
-The Mac version is a "fat" universal build of the concurrent version
+The Mac version is an universal build of the concurrent version
 of par2cmdline 0.4 for Mac OS X 10.4 (32-bit binaries) and 10.5 (64-bit
 binaries). In other words, the par2 executable file contains both a 32-bit
-x86/PowerPC and a 64-bit x86_64/PowerPC-64-bit build of the par2 sources.
+x86 and a 64-bit x86_64 build of the par2 sources.
 It is distributed as an executable (par2) along with the required Intel
-Threading Building Blocks 2.1 library (libtbb.dylib). The libtbb.dylib file
-is also "fat" universal (32-bit and 64-bit versions for x86/ppc/x86_64/ppc64
-are contained inside it).
+Threading Building Blocks 2.2 library (libtbb.dylib). The libtbb.dylib file
+is also universal (32-bit and 64-bit versions for x86/x86_64 are inside it).
 
 To install, place the par2 and libtbb.dylib files in a folder and
 invoke them from the command line.
@@ -274,14 +267,15 @@ files from the distribution folder.
 The Linux versions are a 32-bit i386 and 64-bit x86_64 build of the
 concurrent version of par2cmdline 0.4 for GNU/Linux kernel version 2.6
 with GCC 4. It is distributed as an executable (par2) along with the
-required Intel Threading Building Blocks 2.1 library (libtbb.so). There
-are separate distributions for the 32-bit and 64-bit versions.
+required Intel Threading Building Blocks 2.2 library (libtbb.so and
+libtbb.so.2). There are separate distributions for the 32-bit and
+64-bit versions.
 
-To install, place the par2 and libtbb.so files in a folder and
-invoke them from the command line.
+To install, place the par2, libtbb.so and libtbb.so.2 files in a
+folder and invoke them from the command line.
 
-To uninstall, delete the par2 and libtbb.so files along with any
-files from the distribution folder.
+To uninstall, delete the par2, libtbb.so and libtbb.so.2 files along
+with any files from the distribution folder.
 
 
 --- Installing the pre-built FreeBSD version ---
@@ -289,7 +283,7 @@ files from the distribution folder.
 
 Both the 32-bit and 64-bit binaries were built using RELEASE 7.0 of FreeBSD.
 It is distributed as an executable (par2) along with the required Intel
-Threading Building Blocks 2.1 library (libtbb.so). There are separate
+Threading Building Blocks 2.2 library (libtbb.so). There are separate
 distributions for the 32-bit and 64-bit versions.
 
 To install: copy libtbb.so to /usr/local/lib, copy par2 to a convenient
@@ -307,7 +301,7 @@ For UNIX or similar systems, the included configure script should be used to
 generate a makefile which is then built with a Make utility. Before using
 them however, you may need to modify the configure scripts as detailed below.
 
-Because this version depends on the Intel Threading Building Blocks 2.1 library,
+Because this version depends on the Intel Threading Building Blocks library,
 you will need to tell the build system where the headers and libraries are in
 order to compile and link the program. There are 2 ways to do this: use the
 tbbvars.sh script included in TBB to add the appropriate environment variables,
@@ -317,11 +311,11 @@ Makefile:
 
   In `Makefile.am', for Darwin/Mac OS X, change the AM_CXXFLAGS line to:
 
-AM_CXXFLAGS = -Wall -I../tbb21_009oss/include -gfull -O3 -fvisibility=hidden -fvisibility-inlines-hidden
+AM_CXXFLAGS = -Wall -I../tbb22_20090809oss_src/include -gfull -O3 -fvisibility=hidden -fvisibility-inlines-hidden
 
   or for other POSIX systems, change the AM_CXXFLAGS line to:
 
-AM_CXXFLAGS = -Wall -I../tbb21_009oss/include
+AM_CXXFLAGS = -Wall -I../tbb22_20090809oss_src/include
 
 and modify the path to wherever your extracted Intel TBB files are. Note that it
 should point at the `include' directory inside the main tbb directory.
@@ -354,14 +348,13 @@ for the dynamic library (by passing the "-R $ORIGIN" option to the linker).
 --- Building and installing on Mac OS X systems ---
 
 
-The Mac version is a "fat" universal build of the concurrent version
+The Mac version is an universal build of the concurrent version
 of par2cmdline 0.4 for Mac OS X 10.4 (32-bit binaries) and 10.5 (64-bit
 binaries). In other words, the par2 executable file contains both a 32-bit
-x86/PowerPC and a 64-bit x86_64/PowerPC-64-bit build of the par2 sources.
+x86 and a 64-bit x86_64 build of the par2 sources.
 It is distributed as an executable (par2) along with the required Intel
-Threading Building Blocks 2.1 library (libtbb.dylib). The libtbb.dylib file
-is also "fat" universal (32-bit and 64-bit versions for x86/ppc/x86_64/ppc64
-are contained inside it).
+Threading Building Blocks 2.2 library (libtbb.dylib). The libtbb.dylib file
+is also universal (32-bit and 64-bit versions for x86/x86_64 are inside it).
 
 The par2 32-bit executable is built for 10.4, and the 64-bit executable is
 built for 10.5, which are then symbol stripped and combined using the lipo
@@ -372,8 +365,8 @@ par2 files when those files resided on a SMB server (ie, a shared folder on
 a Windows computer). Combining the mixed-OS executables solves both of these
 problems (see the 20080116 version release notes below for details).
 
-The libtbb.dylib file is built from the TBB 2.1 tbb21_009oss_src.tar.gz
-distribution. It was built for the x86, ppc, x86_64 and ppc64 architectures
+The libtbb.dylib file is built from the TBB 2.2 tbb22_20090809oss_src.tar.gz
+distribution. It was built for the x86 and x86_64 architectures
 and will therefore run on all Macs that support 10.4 or 10.5.
 
 Normally, the libtbb.dylib file is built so that for a client program to use
@@ -383,8 +376,31 @@ version included in this distribution does not require that it be installed,
 and is therefore usable "out of the box". To implement this change, the
 macos.gcc.inc file was modified with this line:
 
-LIB_LINK_FLAGS = -dynamiclib -Wl,-exported_symbols_list,$(TBB.DEF) -Wl,-install_name,@executable_path/$@
+LIB_LINK_FLAGS = -dynamiclib -Wl,-install_name,@executable_path/$@
 
+Other required changes are:
+
+ifeq (intel64,$(arch))
+    CPLUS_FLAGS += -m64 -arch x86_64 -mmacosx-version-min=10.5
+    LINK_FLAGS += -m64 -arch x86_64 -mmacosx-version-min=10.5
+    LIB_LINK_FLAGS += -m64 -arch x86_64 -mmacosx-version-min=10.5
+endif
+
+ifeq (ia32,$(arch))
+    CPLUS = g++-4.0
+    C_FLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
+    CPLUS_FLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386
+    LINK_FLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4 -arch i386
+    LIB_LINK_FLAGS += -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4 -arch i386
+endif
+
+To build the executables, configure needs to be invoked in a particular manner for both x86 and x64 builds:
+
+cd <par2_tbb_root>/build
+
+../configure --build=i686-apple-darwin10.2.0 --host=i686-apple-darwin10.2.0 CXX=g++-4.0 && sed -e 's/CXXFLAGS = -g -O2/CXXFLAGS = #-g -O2/' Makefile > Makefile.tmp && mv Makefile.tmp Makefile && make && strip par2 && mv par2 par2-x86 && make clean
+
+../configure --build=i686-apple-darwin10.2.0 --host=x86_64-apple-darwin10.2.0 && sed -e 's/CXXFLAGS = -g -O2/CXXFLAGS = #-g -O2/' Makefile > Makefile.tmp && mv Makefile.tmp Makefile && make && strip par2 && mv par2 par2-x86_64 && make clean
 
 The par2 executable has been symbol stripped (using the 'strip' command line
 tool).
@@ -394,47 +410,34 @@ tool).
 
 
 This modified version has been built and tested on Windows XP SP2 using Visual
-C++ Express 2008.
+Studio/C++ 2010 beta 2. It statically links with both the TBB and the C runtime
+library and the included project and makefiles are set up for that.
 
-For Windows, the project file for Visual Studio 2008 has been included. Open
+For Windows, the project file for Visual Studio 2010 has been included. Open
 the project file in Visual Studio and go to the project properties window.
 For the C/C++ include paths, make sure the path to where you extracted the
 Intel TBB files is correct. Similarly for the linker paths.
 
-To run the built binary, make sure the Intel TBB dynamic link library is in
-the library path - typically the tbb.dll file will be placed in either
-%WINDIR%\System32 or in the directory that the par2.exe file is in.
+To build the 32-bit version, download the source tarball from the website and
+open the sln/vcproj project files in the win32 directory with Visual C++ 2010.
+You will also need to build the TBB in a modified manner so that it statically
+links against the C runtime library and it itself is linked as a static library,
+instead of as a DLL. To do this, use the modified TBB makefiles in the
+windows-tbb directory. To use the TBB makefile, you'll need to use GNU make,
+which can be built from its source tarsal.
 
-The Windows distribution of this project is built with Visual C++ 2008 Express
-Edition but the executable is linked against the Visual Studio .NET 2003's C
-runtime library to avoid having to distribute the Visual C++ 2008's C runtime
-library.
-
-To build this version, download the source tarball from the website and use the
-included vcproj with Visual C++ Express 2008. You will need to ensure that
-the include and library paths that point to the PSDK are *above* the ones
-that point to Visual C++'s folders so that the Microsoft C Runtime that is
-used to build the program are from the older version 7.1 library and not
-the version 9.0 library that comes with Visual C++ Express 2008.
-
-In order to get things to link, the project has been modified according to
-the instructions in the "Using VS2005 to ship legacy code for XP and
-Windows 2000.html" file which is located in the "Using VS2005 to ship
-legacy code for XP and Windows 2000" folder. You will also need to copy
-the CxxFrameHandler3_to_CxxFrameHandler.obj file to your
-par2cmdline-0.4-tbb-<version> folder.
-
-To build the 64-bit executable, install the "Windows 2003 Server R2" version
+To build the 64-bit version, install the "Windows 2003 Server R2" version
 of the platform SDK and open a command line window for a 64-bit Windows XP
-build environment (in the Platform SDK program group in the Start Menu).
+build environment (in the Platform SDK program group in the Start Menu). You
+can also use any non-Express version of Visual C++.
 Change the directory to the par2cmdline-0.4-tbb-<version> directory. Move or
-copy the Makefile in the win64-prebuilt directory to its parent (ie, to the
+copy the Makefile in the win64 directory to its parent (ie, to the
 par2cmdline-0.4-tbb-<version> directory). Then invoke the 'nmake' command to
 build the binary. The result should be an executable file named
 par2_win64.exe in the par2cmdline-0.4-tbb-<version> directory. This can
-then be renamed to par2.exe if so desired. You should link the executable
-with the tbb20_20080408oss release of the TBB because the 2.1 releases don't
-support the VC7.1 runtime libraries.
+then be renamed to par2.exe if so desired. As for the 32-bit version, you
+will need to build the TBB in a modified manner. More details are in the
+win64 Makefile.
 
 
 
@@ -555,6 +558,20 @@ enough memory to not be I/O bound when creating or repairing parity/data files.
 
 --- Version History ---
 
+
+The changes in the 20100203 version are:
+
+- modified Makefile.am to use "ARCH_SCALAR" instead of "ARCH" to avoid a FreeBSD name clash
+- fixed a 64-bit-only bug in reedsolomon-x86_64-mmx.s where a size of 8 bytes caused a segfault
+(forgot to test for zero like the reedsolomon-i686-mmx.s file does); this bug only manifests in
+the 64-bit Mac, 64-bit Linux and 64-bit FreeBSD versions; reproduced by creating/repairing a
+file of exactly 16384 bytes
+- updated to Intel TBB 2.2 (tbb22_20090809oss)
+- the Mac build no longer includes the PowerPC variants (I don't use a PowerPC Mac anymore)
+- the 32-bit and 64-bit Windows builds of both par2 and the TBB library are now statically
+linked against the C runtime library to avoid the problem of requiring the installation of
+the correct CRT library (DLL). As well, par2 is statically linked against the TBB library
+to allow just one executable file to be installed (i.e., just par2.exe).
 
 The changes in the 20090203 version are:
 
@@ -889,12 +906,12 @@ The changes in the 20070831 version are:
 
 
 Vincent Tan.
-February 03, 2009.
+February 03, 2010.
 
 //
 //  Modifications for concurrent processing, Unicode support, and hierarchial
-//  directory support are Copyright (c) 2007-2008 Vincent Tan.
+//  directory support are Copyright (c) 2007-2010 Vincent Tan.
 //  Search for "#if WANT_CONCURRENT" for concurrent code.
-//  Concurrent processing utilises Intel Thread Building Blocks 2.0,
-//  Copyright (c) 2007 Intel Corp.
+//  Concurrent processing utilises Intel Thread Building Blocks 2.2,
+//  Copyright (c) 2007-2009 Intel Corp.
 //

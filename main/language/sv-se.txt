@@ -305,6 +305,8 @@ opt-dirscan_priority     Standard prioritet
 explain-dirscan_priority Använd när ingen prioritet är bestämd av kategori.
 opt-par_option           Extra PAR2 parametrar
 explain-par_option       Läs Wiki Help för detta!
+opt-par2_multicore       Aktivera MultiCore Par2
+explain-par2_multicore   Läs Wiki Help för detta!
 opt-nice                 Bra parametrar
 explain-nice             Läs Wiki Help för detta!
 opt-ionice               IONice parametrar

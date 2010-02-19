@@ -221,6 +221,11 @@ class NzbFile(TryList):
 
         self.add_to_try_list(server)
 
+    def reset_all_try_lists(self):
+        for art in self.__articles:
+            art.reset_try_list()
+        self.reset_try_list()
+
     def bytes(self):
         return self.__bytes
 
@@ -620,8 +625,7 @@ class NzbObject(TryList):
 
     def reset_all_try_lists(self):
         for nzf in self.__files:
-            # nzf.reset_all_try_lists()
-            nzf.reset_try_list()
+            nzf.reset_all_try_lists()
         self.reset_try_list()
 
     def remove_article(self, article):

@@ -333,6 +333,8 @@ explain-dirscan_priority Wird verwendet, wenn die Kategorie keine Priorität\
                          vorschreibt.
 opt-par_option           Zusätzliche PAR2-Parameter
 explain-par_option       Lesen Sie dazu die Hilfe im Wiki!
+opt-par2_multicore       MultiCore Par2 aktivieren
+explain-par2_multicore   Lesen Sie dazu die Hilfe im Wiki!
 opt-nice                 Nice-Parameter
 explain-nice             Lesen Sie dazu die Hilfe im Wiki!
 opt-ionice               IONice-Parameter

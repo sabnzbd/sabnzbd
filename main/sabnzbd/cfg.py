@@ -90,6 +90,7 @@ par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)
 nice = OptionStr('misc', 'nice',  '', validation=no_nonsense)
 ionice = OptionStr('misc', 'ionice',  '', validation=no_nonsense)
 ignore_wrong_unrar = OptionBool('misc', 'ignore_wrong_unrar', False)
+par2_multicore = OptionBool('misc', 'par2_multicore', True)
 
 USERNAME_NEWZBIN = OptionStr('newzbin', 'username')
 PASSWORD_NEWZBIN = OptionPassword('newzbin', 'password')
@@ -182,6 +183,7 @@ ENABLE_HTTPS = OptionBool('misc', 'enable_https', False)
 LANGUAGE = OptionStr('misc', 'language', 'us-en')
 SSL_TYPE = OptionStr('misc', 'ssl_type', 'v23')
 UNPACK_CHECK = OptionBool('misc', 'unpack_check', True)
+NO_PENALTIES = OptionBool('misc', 'no_penalties', False)
 
 # Internal options, not saved in INI file
 DEBUG_DELAY = OptionNumber('misc', 'debug_delay', 0, add=False)
@@ -202,5 +204,7 @@ def set_root_folders(home, lcldata, prog, interf):
     ADMIN_DIR.set_root(lcldata)
     DIRSCAN_DIR.set_root(home)
     LOG_DIR.set_root(lcldata)
+
+def set_root_folders2():
     HTTPS_CERT.set_root(ADMIN_DIR.get_path())
     HTTPS_KEY.set_root(ADMIN_DIR.get_path())

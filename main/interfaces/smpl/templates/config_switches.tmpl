@@ -87,6 +87,13 @@
 		    <span class="tips">$T('explain-dirscan_priority')</span>
 		<br class="clear" />
 
+    <!--#if $nt#-->
+		    <label><span class="label">$T('opt-par2_multicore'):</span>
+		    <input class="radio" type="checkbox" name="par2_multicore" value="1" <!--#if $par2_multicore > 0 then 'checked="1"' else ""#--> />
+		    <span class="tips">$T('explain-par2_multicore')</span></label>
+		<br class="clear" />
+    <!--#end if#-->
+
 		    <span class="label">$T('opt-par_option'):</span>
 		    <input type="text" name="par_option" value="$par_option"/>
 		    <span class="tips">$T('explain-par_option')</span></label>

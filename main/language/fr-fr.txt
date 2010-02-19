@@ -305,6 +305,8 @@ opt-dirscan_script       Script utilisateur par défaut
 explain-dirscan_script   Utilisé quand la catégorie de précise pas de choix.
 opt-dirscan_priority     Priorité par défaut
 explain-dirscan_priority Utilisé quand la catégorie de précise pas de choix.
+opt-par2_multicore       Utilisé MultiCore Par2
+explain-par2_multicore   Consultez le Wiki pour plus d'info à ce sujet (en anglais) !
 opt-par_option           Paramètres PAR2 supplémentaires
 explain-par_option       Consultez le Wiki pour plus d'info à ce sujet (en anglais) !
 opt-nice                 Paramètres Nice

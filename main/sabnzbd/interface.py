@@ -204,20 +204,34 @@ def check_session(kwargs):
 def check_apikey(kwargs, nokey=False):
     """ Check api key """
     output = kwargs.get('output')
-    
-    if cfg.DISABLE_KEY() or nokey:
-        return None
-    else:
-        key = kwargs.get('apikey')
+    mode = kwargs.get('mode', '')
 
+    # Don't give a visible warning: these commands are used by some
+    # external utilities to detect if username/password is required
+    special = mode in ('get_scripts', 'qstatus')
+
+    # First check APIKEY, if OK that's sufficient
+    if not (cfg.DISABLE_KEY() or nokey):
+        key = kwargs.get('apikey')
         if not key:
-            logging.warning(Ta('warn-apikeyNone'))
+            if not special:
+                logging.warning(Ta('warn-apikeyNone'))
             return report(output, 'API Key Required')
         elif key != cfg.API_KEY():
             logging.warning(Ta('warn-apikeyBad'))
             return report(output, 'API Key Incorrect')
         else:
             return None
+
+    # No active APIKEY, check web credentials instead
+    if cfg.USERNAME() and cfg.PASSWORD():
+        if kwargs.get('ma_username') == cfg.USERNAME() and kwargs.get('ma_password') == cfg.PASSWORD():
+            pass
+        else:
+            if not special:
+                logging.warning(Ta('warn-authMissing'))
+            return report(output, 'Missing authentication')
+    return None
 
 
 def del_from_section(kwargs):
@@ -497,7 +511,7 @@ class MainPage:
     def api(self, **kwargs):
         """Handler for API over http, with explicit authentication parameters
         """
-        if kwargs.get('mode', '') != 'version':
+        if kwargs.get('mode', '') not in ('version', 'auth'):
             msg = check_apikey(kwargs)
             if msg: return msg
         return self.api_handler(kwargs)
@@ -855,6 +869,14 @@ class MainPage:
 
         if mode == 'version':
             return report(output, keyword='version', data=sabnzbd.__version__)
+
+        if mode == 'auth':
+            auth = 'None'
+            if cfg.USERNAME.get() and cfg.PASSWORD.get():
+                auth = 'login'
+            if not cfg.DISABLE_KEY.get():
+                auth = 'apikey'
+            return report(output, keyword='auth', data=auth)
 
         if mode == 'newzbin':
             if name == 'get_bookmarks':
@@ -1532,7 +1554,7 @@ class ConfigDirectories:
 
 
 SWITCH_LIST = \
-    ('par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
+    ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
      'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
      'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
      'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',

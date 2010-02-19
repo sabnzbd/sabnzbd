@@ -52,10 +52,10 @@ OR
     Python-2.5.4            http://www.python.org
 
 Windows
-    Python-2.5.4.3          http://www.activestate.com
+    Python-2.5.latest       http://www.activestate.com
 
 Essential modules
-    cheetah-2.0.1           http://www.cheetahtemplate.org/
+    cheetah-2.0.1+          http://www.cheetahtemplate.org/
     yenc module >= 0.3      http://sabnzbd.sourceforge.net/yenc-0.3.tar.gz
                             http://sabnzbd.sourceforge.net/yenc-0.3-w32fixed.zip (Win32-only)
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
@@ -65,15 +65,20 @@ Essential modules for python 2.4 ONLY
     pysqlite3 >= 2.3.4      http://pysqlite.org (python-pysqlite2)
 
 Optional modules
-    unrar >= 3.70           http://www.rarlab.com/rar_add.htm
+    unrar >= 3.90+          http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
-    pyopenssl >= 0.6        http://sourceforge.net/projects/pyopenssl/
 
-Unix/Linux/OSX (source)
-    openssl => v0.9.8g      http://www.openssl.org/
+Optional modules Windows
+    pyopenssl >= 0.10       http://pypi.python.org/pypi/pyOpenSSL
+                            (Binaries, including the OpenSSL libraries)
 
-Embedded modules (no need to install)
-    CherryPy-3.2 rev2138    http://www.cherrypy.org
+Optional modules Unix/Linux/OSX
+    pyopenssl >= 0.7        http://pypi.python.org/pypi/pyOpenSSL
+    openssl => v0.9.8g+     http://www.openssl.org/
+                            Make sure the OpenSSL libraries match with PyOpenSSL
+
+Embedded modules (only use the included version)
+    CherryPy-3.2 rev2138 with patches  http://www.cherrypy.org
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.

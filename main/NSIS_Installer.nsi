@@ -1,5 +1,6 @@
+; -*- coding: latin-1 -*-
 ;
-; Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+; Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 ;
 ; This program is free software; you can redistribute it and/or
 ; modify it under the terms of the GNU General Public License
@@ -37,7 +38,7 @@ WindowIcon on
 
 InstallDir "$PROGRAMFILES\SABnzbd"
 InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" ""
-DirText "Select the directory to install SABnzbd+ in:"
+;DirText $(MsgSelectDir)
 
   ;Vista redirects $SMPROGRAMS to all users without this
   RequestExecutionLevel admin
@@ -53,6 +54,9 @@ DirText "Select the directory to install SABnzbd+ in:"
 ;Interface Settings
 
   !define MUI_ABORTWARNING
+
+  ;Show all languages, despite user's codepage
+  !define MUI_LANGDLL_ALLLANGUAGES
 
   !define MUI_ICON "interfaces/Classic/templates/static/images/favicon.ico"
 
@@ -71,6 +75,10 @@ DirText "Select the directory to install SABnzbd+ in:"
   !define MUI_STARTMENUPAGE_REGISTRY_KEY "Software\SABnzbd"
   !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME "Start Menu Folder"
   !define MUI_STARTMENUPAGE_DEFAULTFOLDER "SABnzbd"
+  ;Remember the installer language
+  !define MUI_LANGDLL_REGISTRY_ROOT "HKCU"
+  !define MUI_LANGDLL_REGISTRY_KEY "Software\SABnzbd"
+  !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
 
   !insertmacro MUI_PAGE_STARTMENU Application $STARTMENU_FOLDER
 
@@ -78,12 +86,12 @@ DirText "Select the directory to install SABnzbd+ in:"
   !insertmacro MUI_PAGE_INSTFILES
   !define MUI_FINISHPAGE_RUN
   !define MUI_FINISHPAGE_RUN_FUNCTION "LaunchLink"
-  !define MUI_FINISHPAGE_RUN_TEXT "Start SABnzbd (hidden)"
+  !define MUI_FINISHPAGE_RUN_TEXT $(MsgStartSab)
   !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\README.txt"
-  !define MUI_FINISHPAGE_SHOWREADME_TEXT "Show Release Notes"
+  !define MUI_FINISHPAGE_SHOWREADME_TEXT $(MsgShowRelNote)
   ;!define MUI_FINISHPAGE_LINK "View the SABnzbdPlus Wiki"
-  ;!define MUI_FINISHPAGE_LINK_LOCATION "http://sabnzbd.wikidot.com/"
-  !define MUI_FINISHPAGE_LINK "Support the project, Donate!"
+  ;!define MUI_FINISHPAGE_LINK_LOCATION "http://wiki.sabnzbd.org/"
+  !define MUI_FINISHPAGE_LINK $(MsgSupportUs)
   !define MUI_FINISHPAGE_LINK_LOCATION "http://www.sabnzbd.org/contribute/"
 
   !insertmacro MUI_PAGE_FINISH
@@ -93,42 +101,55 @@ DirText "Select the directory to install SABnzbd+ in:"
   !insertmacro MUI_UNPAGE_COMPONENTS
   !insertmacro MUI_UNPAGE_INSTFILES
 
+;--------------------------------
+;Languages
+
+  ; Set supported languages
+  !insertmacro MUI_LANGUAGE "English" ;first language is the default language
+  !insertmacro MUI_LANGUAGE "French"
+  !insertmacro MUI_LANGUAGE "German"
+  !insertmacro MUI_LANGUAGE "Dutch"
+  !insertmacro MUI_LANGUAGE "Swedish"
+
+
+;--------------------------------
+;Reserve Files
+
+  ;If you are using solid compression, files that are required before
+  ;the actual installation should be stored first in the data block,
+  ;because this will make your installer start faster.
+
+  !insertmacro MUI_RESERVEFILE_LANGDLL
+
+
 Function LaunchLink
   ExecShell "" "$INSTDIR\SABnzbd.exe"
 FunctionEnd
 
+;--------------------------------
 Function .onInit
-;make sure sabnzbd.exe isnt running..if so abort
+  !insertmacro MUI_LANGDLL_DISPLAY
 
+;make sure sabnzbd.exe isnt running..if so abort
         loop:
         StrCpy $0 "SABnzbd.exe"
 		KillProc::FindProcesses
         StrCmp $0 "0" endcheck
-        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Please close "SABnzbd.exe" first' IDOK loop IDCANCEL exitinstall
+        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgCloseSab) IDOK loop IDCANCEL exitinstall
         exitinstall:
         Abort
         endcheck:
 FunctionEnd
-;--------------------------------
-;Languages
 
-  !insertmacro MUI_LANGUAGE "English"
-
-;--------------------------------
 
 Section "SABnzbd" SecDummy
 SetOutPath "$INSTDIR"
 
-;IfFileExists $INSTDIR\sabnzbd.exe 0 endWarnExist
-;    MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Warning: overwriting an existing installation is not recommended' IDOK endWarnExist IDCANCEL 0
-;    Abort
-;endWarnExist:
-
-;IfFileExists "$LOCALAPPDATA\sabnzbd\cache\queue.sab" 0 endWarnCache
-;    IfFileExists "$LOCALAPPDATA\sabnzbd\cache\queue7.sab" endWarnCache 0
-;        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION 'Warning: do not re-use an older download queue' IDOK endWarnCache IDCANCEL 0
-;        Abort
-;endWarnCache:
+IfFileExists $INSTDIR\sabnzbd.exe 0 endWarnExist
+    IfFileExists $INSTDIR\language\us-en.txt endWarnExist 0
+        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION $(MsgOldQueue) IDOK endWarnExist IDCANCEL 0
+        Abort
+endWarnExist:
 
 ; add files / whatever that need to be installed here.
 File /r "dist\*"
@@ -147,7 +168,7 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
     CreateDirectory "$SMPROGRAMS\$STARTMENU_FOLDER"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - SafeMode.lnk" "$INSTDIR\SABnzbd-console.exe"
-    WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://sabnzbd.wikidot.com/"
+    WriteINIStr "$SMPROGRAMS\$STARTMENU_FOLDER\SABnzbd - Documentation.url" "InternetShortcut" "URL" "http://wiki.sabnzbd.org/"
     CreateShortCut "$SMPROGRAMS\$STARTMENU_FOLDER\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
 
 
@@ -157,23 +178,23 @@ WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 SectionEnd ; end of default section
 
-Section /o "Run at startup" startup
+Section /o $(MsgRunAtStart) startup
     CreateShortCut "$SMPROGRAMS\Startup\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe" "-b0"
 SectionEnd ;
 
-Section "Desktop Icon" desktop
+Section $(MsgIcon) desktop
     CreateShortCut "$DESKTOP\SABnzbd.lnk" "$INSTDIR\SABnzbd.exe"
 SectionEnd ; end of desktop icon section
 
-Section /o "NZB File association" assoc
+Section /o $(MsgAssoc) assoc
     ${registerExtension} "$INSTDIR\nzb.ico" "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
     ;${registerExtension} "$INSTDIR\SABnzbd.exe" ".nzb" "NZB File"
 SectionEnd ; end of file association section
 
 ; begin uninstall settings/section
-UninstallText "This will uninstall SABnzbd+ from your system"
+UninstallText $(MsgUninstall)
 
-Section Uninstall
+Section "un.$(MsgDelProgram)" Uninstall
 ;make sure sabnzbd.exe isnt running..if so shut it down
 
     StrCpy $0 "sabnzbd.exe"
@@ -208,11 +229,16 @@ Section Uninstall
 
     ; Delete installation files are carefully as possible
     ; Using just rmdir /r "$instdir" is considered unsafe!
-    RMDir /r "$INSTDIR\language\*de-de.t*"
-    RMDir /r "$INSTDIR\language\*us-en.t*"
-    RMDir /r "$INSTDIR\language\*nl-du.t*"
-    RMDir /r "$INSTDIR\language\*fr-fr.t*"
-    RMDir /r "$INSTDIR\language\*sv-se.t*"
+    Delete   "$INSTDIR\language\email-de-de.tmpl"
+    Delete   "$INSTDIR\language\email-us-en.tmpl"
+    Delete   "$INSTDIR\language\email-nl-du.tmpl"
+    Delete   "$INSTDIR\language\email-fr-fr.tmpl"
+    Delete   "$INSTDIR\language\email-sv-se.tmpl"
+    Delete   "$INSTDIR\language\de-de.txt"
+    Delete   "$INSTDIR\language\us-en.txt"
+    Delete   "$INSTDIR\language\nl-du.txt"
+    Delete   "$INSTDIR\language\fr-fr.txt"
+    Delete   "$INSTDIR\language\sv-se.txt"
     RMDir    "$INSTDIR\language"
     RMDir /r "$INSTDIR\interfaces\Classic"
     RMDir /r "$INSTDIR\interfaces\Plush"
@@ -246,6 +272,7 @@ Section Uninstall
     Delete "$INSTDIR\nzb.ico"
     Delete "$INSTDIR\PKG-INFO"
     Delete "$INSTDIR\python25.dll"
+    Delete "$INSTDIR\python26.dll"
     Delete "$INSTDIR\README.txt"
     Delete "$INSTDIR\SABnzbd-console.exe"
     Delete "$INSTDIR\SABnzbd.exe"
@@ -273,21 +300,105 @@ Section Uninstall
 
 SectionEnd ; end of uninstall section
 
-Section "un.Delete Settings" DelSettings
+Section "un.$(MsgDelSettings)" DelSettings
     Delete "$LOCALAPPDATA\sabnzbd\sabnzbd.ini"
     RMDir /r "$LOCALAPPDATA\sabnzbd\admin"
 SectionEnd
 
 
-Section "un.Delete Logs" DelLogs
+Section "un.$(MsgDelLogs)" DelLogs
     RMDir /r "$LOCALAPPDATA\sabnzbd\logs"
 SectionEnd
 
 
-Section "un.Delete Cache" DelCache
+Section "un.$(MsgDelCache)" DelCache
     RMDir /r "$LOCALAPPDATA\sabnzbd\cache"
     RMDir "$LOCALAPPDATA\sabnzbd"
 SectionEnd
 
 ; eof
-;
+
+;--------------------------------
+;Language strings
+; MsgWarnRunning 'Please close "SABnzbd.exe" first'
+  LangString MsgStartSab    ${LANG_ENGLISH} "Start SABnzbd (hidden)"
+  LangString MsgStartSab    ${LANG_DUTCH}   "Start SABnzbd (verborgen)"
+  LangString MsgStartSab    ${LANG_FRENCH}  "Lancer SABnzbd (caché)"
+  LangString MsgStartSab    ${LANG_GERMAN}  "SABnzbd starten (unsichtbar)"
+  LangString MsgStartSab    ${LANG_SWEDISH} "Starta SABnzbd (dold)"
+
+  LangString MsgShowRelNote ${LANG_ENGLISH} "Show Release Notes"
+  LangString MsgShowRelNote ${LANG_DUTCH}   "Toon Vrijgave Bericht (Engels)"
+  LangString MsgShowRelNote ${LANG_FRENCH}  "Afficher les notes de version"
+  LangString MsgShowRelNote ${LANG_GERMAN}  "Versionshinweise anzeigen"
+  LangString MsgShowRelNote ${LANG_SWEDISH} "Visa release noteringar"
+
+  LangString MsgSupportUs   ${LANG_ENGLISH} "Support the project, Donate!"
+  LangString MsgSupportUs   ${LANG_DUTCH}   "Steun het project, Doneer!"
+  LangString MsgSupportUs   ${LANG_FRENCH}  "Supportez le projet, faites un don !"
+  LangString MsgSupportUs   ${LANG_GERMAN}  "Bitte unterstützen Sie das Projekt durch eine Spende!"
+  LangString MsgSupportUs   ${LANG_SWEDISH} "Donera och stöd detta projekt!"
+
+  LangString MsgCloseSab    ${LANG_ENGLISH} "Please close $\"SABnzbd.exe$\" first"
+  LangString MsgCloseSab    ${LANG_DUTCH}   "Sluit $\"SABnzbd.exe$\" eerst af"
+  LangString MsgCloseSab    ${LANG_FRENCH}  "Quittez $\"SABnzbd.exe$\" avant l\'installation, SVP"
+  LangString MsgCloseSab    ${LANG_GERMAN}  "Schliessen Sie bitte zuerst $\"SABnzbd.exe$\"."
+  LangString MsgCloseSab    ${LANG_SWEDISH} "Var vänlig stäng $\"SABnzbd.exe$\" först"
+
+  LangString MsgOldQueue    ${LANG_ENGLISH} "                  >>>> WARNING <<<<$\r$\n$\r$\nIf not empty, download your current queue with the old program.$\r$\nThe new program will ignore your current queue!"
+  LangString MsgOldQueue    ${LANG_DUTCH}   "                  >>>> WAARSCHUWING <<<<$\r$\n$\r$\nIndien niet leeg, download eerst de gehele huidige wachtrij met het oude programma.$\r$\nHet nieuwe programma zal je huidige wachtrij negeren!"
+  LangString MsgOldQueue    ${LANG_FRENCH}  "                  >>>> ATTENTION <<<<$\r$\n$\r$\nsi votre file d'attente de téléchargement n'est pas vide, terminez la avec la version précédente du programme.$\r$\nLa nouvelle version l'ignorera!"
+  LangString MsgOldQueue    ${LANG_GERMAN}  "                  >>>> ACHTUNG <<<<$\r$\n$\r$\nWarten Sie, bis das alte Programm alle Downloads fertiggestellt hat.$\r$\nDas neue Programm wird die noch ausstehenden Downloads ignorieren!"
+  LangString MsgOldQueue    ${LANG_SWEDISH} "                  >>>> VARNING <<<<$\r$\n$\r$\nOm kön inte är tom, hämta din nuvarande kö med det gamla programmet.$\r$\nDet nya programmet kommer att ignorera din nuvarande kö!"
+
+  LangString MsgUninstall   ${LANG_ENGLISH} "This will uninstall SABnzbd from your system"
+  LangString MsgUninstall   ${LANG_DUTCH}   "Dit verwijdert SABnzbd van je systeem"
+  LangString MsgUninstall   ${LANG_FRENCH}  "Ceci désinstallera SABnzbd de votre système"
+  LangString MsgUninstall   ${LANG_GERMAN}  "Dies entfernt SABnzbd von Ihrem System"
+  LangString MsgUninstall   ${LANG_SWEDISH} "Detta kommer att avinstallera SABnzbd från systemet"
+
+  LangString MsgRunAtStart  ${LANG_ENGLISH} "Run at startup"
+  LangString MsgRunAtStart  ${LANG_DUTCH}   "Opstarten bij systeem start"
+  LangString MsgRunAtStart  ${LANG_FRENCH}  "Lancer au démarrage"
+  LangString MsgRunAtStart  ${LANG_GERMAN}  "Beim Systemstart ausführen"
+  LangString MsgRunAtStart  ${LANG_SWEDISH} "Kör vid uppstart"
+
+  LangString MsgIcon        ${LANG_ENGLISH} "Desktop Icon"
+  LangString MsgIcon        ${LANG_DUTCH}   "Pictogram op bureaublad"
+  LangString MsgIcon        ${LANG_FRENCH}  "Icône sur le Bureau"
+  LangString MsgIcon        ${LANG_GERMAN}  "Desktop-Symbol"
+  LangString MsgIcon        ${LANG_SWEDISH} "Skrivbordsikon"
+
+  LangString MsgAssoc       ${LANG_ENGLISH} "NZB File association"
+  LangString MsgAssoc       ${LANG_DUTCH}   "NZB bestanden koppelen aan SABnzbd"
+  LangString MsgAssoc       ${LANG_FRENCH}  "Association des fichiers NZB"
+  LangString MsgAssoc       ${LANG_GERMAN}  "Mit NZB-Dateien verknüpfen"
+  LangString MsgAssoc       ${LANG_SWEDISH} "NZB Filassosication"
+
+  LangString MsgDelProgram  ${LANG_ENGLISH} "Delete Program"
+  LangString MsgDelProgram  ${LANG_DUTCH}   "Verwijder programma"
+  LangString MsgDelProgram  ${LANG_FRENCH}  "Supprimer le programme"
+  LangString MsgDelProgram  ${LANG_GERMAN}  "Programm löschen"
+  LangString MsgDelProgram  ${LANG_SWEDISH} "Ta bort programmet"
+
+  LangString MsgDelSettings ${LANG_ENGLISH} "Delete Settings"
+  LangString MsgDelSettings ${LANG_DUTCH}   "Verwijder instellingen"
+  LangString MsgDelSettings ${LANG_FRENCH}  "Supprimer Paramètres"
+  LangString MsgDelSettings ${LANG_GERMAN}  "Einstellungen löschen"
+  LangString MsgDelSettings ${LANG_SWEDISH} "Ta bort inställningar"
+
+  LangString MsgDelLogs     ${LANG_ENGLISH} "Delete Logs"
+  LangString MsgDelLogs     ${LANG_DUTCH}   "Verwijder logging"
+  LangString MsgDelLogs     ${LANG_FRENCH}  "Supprimer les logs"
+  LangString MsgDelLogs     ${LANG_GERMAN}  "Protokoll löschen"
+  LangString MsgDelLogs     ${LANG_SWEDISH} "Ta bort logg"
+
+  LangString MsgDelCache    ${LANG_ENGLISH} "Delete Cache"
+  LangString MsgDelCache    ${LANG_DUTCH}   "Verwijder Cache"
+  LangString MsgDelCache    ${LANG_FRENCH}  "Supprimer le cache"
+  LangString MsgDelCache    ${LANG_GERMAN}  "Cache löschen"
+  LangString MsgDelCache    ${LANG_SWEDISH} "Ta bort temporär-mapp"
+
+Function un.onInit
+  !insertmacro MUI_UNGETLANGUAGE
+FunctionEnd

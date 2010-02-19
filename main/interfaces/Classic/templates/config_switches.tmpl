@@ -72,6 +72,11 @@
     </select>
     <br>
     <br>
+<!--#if $nt#-->
+    <label><input type="checkbox" name="par2_multicore" value="1" <!--#if $par2_multicore > 0 then "checked=1" else ""#--> /> <strong>$T('opt-par2_multicore')</strong></label><br>
+    $T('explain-par2_multicore')<br>
+    <br>
+<!--#end if#-->
     <strong>$T('opt-par_option'):</strong><br/>
     $T('explain-par_option')<br/>
     <input type="text" name="par_option" value="$par_option"/>

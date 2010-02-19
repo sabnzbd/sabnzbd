@@ -42,12 +42,13 @@ from sabnzbd.lang import T, Ta
 
 #------------------------------------------------------------------------------
 # Timeout penalty in minutes for each cause
-_PENALTY_UNKNOWN = 3
-_PENALTY_502     = 5
-_PENALTY_TIMEOUT = 10
-_PENALTY_SHARE   = 15
-_PENALTY_TOOMANY = 10
-_PENALTY_PERM    = 30
+_PENALTY_UNKNOWN = 3    # Unknown cause
+_PENALTY_502     = 5    # Unknown 502
+_PENALTY_TIMEOUT = 10   # Server doesn't give an answer (multiple times)
+_PENALTY_SHARE   = 10   # Account sharing detected
+_PENALTY_TOOMANY = 10   # Too many connections
+_PENALTY_PERM    = 10   # Permanent error, like bad username/password
+_PENALTY_SHORT   = 1    # Minimal penalty when no_penalties is set
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -155,6 +156,11 @@ def set_paused(state):
 def unblock(server):
     global __DOWNLOADER
     if __DOWNLOADER: return __DOWNLOADER.unblock(server)
+
+@synchronized_CV
+def unblock_all():
+    global __DOWNLOADER
+    if __DOWNLOADER: __DOWNLOADER.unblock_all()
 
 @synchronized_CV
 def wakeup():
@@ -415,7 +421,7 @@ class Downloader(Thread):
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
-                if not sabnzbd.nzbqueue.has_articles_for(server):
+                if not (server.active and sabnzbd.nzbqueue.has_articles_for(server)):
                     continue
 
                 for nw in server.idle_threads[:]:
@@ -620,6 +626,8 @@ class Downloader(Thread):
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
+                                    if (not server.optional) and cfg.NO_PENALTIES.get():
+                                        penalty = _PENALTY_SHORT
                                     if penalty and (block or server.optional):
                                         logging.info('Server %s ignored for %s minutes', server.id, penalty)
                                         self.plan_server(server.id, penalty)
@@ -797,6 +805,10 @@ class Downloader(Thread):
                 logging.debug('Unblock server %s', server_id)
                 self.init_server(server_id, server_id)
                 break
+
+    def unblock_all(self):
+        for server_id in self._timers.keys():
+            self.unblock(server_id)
 
 
 #------------------------------------------------------------------------------

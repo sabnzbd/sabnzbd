@@ -349,7 +349,7 @@ class PostProcessor(Thread):
                     for _file in files:
                         path = os.path.join(root, _file)
                         new_path = path.replace(workdir, tmp_workdir_complete)
-                        path, new_path = get_unique_filename(path,new_path)
+                        new_path = get_unique_filename(new_path)
                         move_to_path(path, new_path, unique=False)
 
                 ## Remove download folder
@@ -413,7 +413,7 @@ class PostProcessor(Thread):
                             nzo.set_status('Running')
                             nzo.set_action_line(T('msg-running'), unicoder(script))
                             nzo.set_unpack_info('Script', T('msg-runScript@1') % unicoder(script), unique=True)
-                            script_log, script_ret = external_processing(script_path, workdir_complete, filename, msgid, dirname, cat, group, jobResult)
+                            script_log, script_ret = external_processing(script_path, workdir_complete, nzo.get_filename(), msgid, dirname, cat, group, jobResult)
                             script_line = get_last_line(script_log)
                             if script_log:
                                 fname = nzo.get_nzo_id()

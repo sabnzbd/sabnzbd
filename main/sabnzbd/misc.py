@@ -169,32 +169,27 @@ def cat_convert(cat):
 ################################################################################
 # sanitize_filename                                                            #
 ################################################################################
-_FILE_CH_MAPPER = {
-    '\\' : '+',
-    '/'  : '+',
-    '<'  : '{',
-    '>'  : '}',
-    '?'  : '!',
-    '*'  : '@',
-    ':'  : '-',
-    '|'  : '#',
-    '"'  : '`'
-    }
-
-_FOLDER_REMOVER = ''.join(_FILE_CH_MAPPER.keys())
-
-if not sabnzbd.WIN32:
-    _FILE_CH_MAPPER = {
-        '/'  : '+'
-        }
-
+if sabnzbd.WIN32:
+    CH_ILLEGAL = r'\/<>?*:|"'
+    CH_LEGAL   = r'++{}!@-#`'
+else:
+    CH_ILLEGAL = r'/'
+    CH_LEGAL   = r'+'
 
 def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
-    name = name.strip()
-    name = ''.join([_FILE_CH_MAPPER.get(ch, ch) for ch in name])
+    illegal = CH_ILLEGAL
+    legal   = CH_LEGAL
+
+    lst = []
+    for ch in name.strip():
+        if ch in illegal:
+            ch = legal[illegal.find(ch)]
+        lst.append(ch)
+    name = ''.join(lst)
+
     if not name:
         name = 'unknown'
 
@@ -204,21 +199,38 @@ def sanitize_filename(name):
         ext = lowext
     return name + ext
 
+FL_ILLEGAL = CH_ILLEGAL + '\x92'
+FL_LEGAL   = CH_LEGAL + "'"
+uFL_ILLEGAL = FL_ILLEGAL.decode('latin-1')
+uFL_LEGAL   = FL_LEGAL.decode('latin-1')
 
 def sanitize_foldername(name):
     """ Return foldername with dodgy chars converted to safe ones
         Remove any leading and trailing dot and space characters
     """
-    #global _FOLDER_REMOVER
-    name = name.strip('. ')
-    if cfg.REPLACE_ILLEGAL():
-        name = ''.join([_FILE_CH_MAPPER.get(ch, ch) for ch in name])
+    if isinstance(name, unicode):
+        illegal = uFL_ILLEGAL
+        legal   = uFL_LEGAL
     else:
-        name = ''.join([ch for ch in name if ch not in _FOLDER_REMOVER])
+        illegal = FL_ILLEGAL
+        legal   = FL_LEGAL
 
+    repl = cfg.REPLACE_ILLEGAL.get()
+    lst = []
+    for ch in name.strip():
+        if ch in illegal:
+            if repl:
+                ch = legal[illegal.find(ch)]
+                lst.append(ch)
+        else:
+            lst.append(ch)
+    name = ''.join(lst)
+
+    name = name.strip('. ')
     if not name:
         name = 'unknown'
-    maxlen = cfg.folder_max_length()
+
+    maxlen = cfg.folder_max_length.get()
     if len(name) > maxlen:
         name = name[:maxlen]
 
@@ -820,25 +832,17 @@ def get_unique_path(dirpath, n=0, create_dir=True):
         return get_unique_path(dirpath, n=n+1, create_dir=create_dir)
 
 @synchronized(DIR_LOCK)
-def get_unique_filename(path, new_path, i=1):
-    #path = existing path of the file, new_path = destination
-    if os.path.exists(new_path):
-        p, fn = os.path.split(path)
-        name, ext = os.path.splitext(fn)
-        uniq_name = "%s.%s%s" % (name,i,ext)
-        uniq_path = new_path.replace(fn,uniq_name)
-        if os.path.exists(uniq_path):
-            path, uniq_path = get_unique_filename(path, new_path, i=i+1)
-        else:
-            try:
-                renamer(path, uniq_path)
-                path = path.replace(fn, uniq_name)
-            except:
-                return path, new_path
-        return path, uniq_path
-
-    else:
-        return path, new_path
+def get_unique_filename(path):
+    """ Check if path is unique. If not, add number like: "/path/name.NUM.ext".
+    """
+    num = 1
+    while os.path.exists(path):
+        path, fname = os.path.split(path)
+        name, ext = os.path.splitext(fname)
+        fname = "%s.%d%s" % (name, num, ext)
+        num += 1
+        path = os.path.join(path, fname)
+    return path
 
 
 @synchronized(DIR_LOCK)

@@ -1,29 +1,40 @@
-List of known issues.
+*******************************************
+***          Known issues               ***
+*******************************************
 
-*** Under investigation ***
-So far we have too little information to reproduce these problems.
-Please report such problems on the forum with as much information
-as possibe (OS, amount of usenet servers etc.)
-
-*** (hopefully) Solved issue ***
-  We are investigating reports of downloads hanging in the
-  last bit of the actual download.
-  0.5.0 Beta5 and Beta6 and latyer attempt to fix this.
-  Let us hear your experience.
-
-*** Known problems ***
+- When par2 or unrar hang up, never just stop SABnzbd.
+  Instead use your operating system's task manager to stop the par2 or unrar program.
+  Forcing SABnzbd to quit may damage your queues.
+  Windows-only:
+  If you keep having trouble with par2 multicore you can disable it
+  in Config->Switches.
+  This will force the use of the old and tried, but slower par2-classic program.
 
 - Windows cannot handle pathnames longer than 254 characters.
   Currently, SABnzbd doesn't handle this problem gracefully.
-  We have added the INI-only option "folder_length_max" in which you
-  can set a maximum folder name size.
+  We have added the INI-only option "folder_length_max" in which you can set
+  a maximum folder name size.
   For Windows the default is 128 and for others 256.
   A quite safe value for Windows would be 64.
   SABnzbd will take care of overlapping names.
+  See: http://wiki.sabnzbd.org/configure-special
+
+- Some Usenet servers have intermittent login (or other) problems.
+  For these the server blocking method is not very favourable.
+  There is an INI-only option that will limit blocks to 1 minute.
+      no_penalties = 1
+  See: http://wiki.sabnzbd.org/configure-special
+
+- On OSX you will have problems running Python user scripts.
+  This is caused by wrong behaviour of the Python-to-app converter we use.
+  Currently we cannot fix this. As a work-around you need to add
+  the -E parameter to the first line of your Python script.
+  Example:
+        #!/bin/python -E
 
 - On OSX you may encounter downloaded files with foreign characters.
   The par2 repair may fail when the files were created on a Windows system.
-  The problem is caused by the PAR2 utility and we cannot currently fix this.
+  The problem is caused by the PAR2 utility and we cannot fix this now.
   This does not apply to files inside RAR files.
 
 - On Linux when you download files they may have the wrong character encoding.
@@ -44,7 +55,16 @@ as possibe (OS, amount of usenet servers etc.)
   memory systems (eg a SAN device) a challenge.
 
 - SABnzbd is not compatible with some software firewall versions.
-  The Mircosoft Windows Firewall work fine.
+  The Mircosoft Windows Firewall works fine, but remember to tell this
+  firewall that SABnzbd is allowed to talk to other computers.
+
+- When SABnzbd cannot send nofication emails, check your virus scanner,
+  firewall or securiry suite. It may be blocking outgoing email.
+
+- When you are using external drives or network shares on OSX or Linux
+  make sure that the drives are mounted.
+  The operating system wil simply redirect your files to alternative locations.
+  You may have trouble finding the files when mounting the drive later.
 
 - Sometimes logging stops. This is a notorious bug in Python logging. SABnzbd will
   function as normal. If you run from sources or use the --console option with the

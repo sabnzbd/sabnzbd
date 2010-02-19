@@ -56,5 +56,4 @@ class TryList:
     def reset_try_list(self):
         """ Clean the list """
         if self.__try_list:
-            logging.debug("Reseting %s.__try_list", self)
             self.__try_list = []

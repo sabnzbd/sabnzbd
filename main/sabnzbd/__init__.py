@@ -759,6 +759,7 @@ def check_all_tasks():
     if not sabnzbd.scheduler.sched_check():
         logging.info('Restarting crashed scheduler')
         sabnzbd.scheduler.init()
+        sabnzbd.downloader.unblock_all()
 
     # Check one-shot pause
     sabnzbd.scheduler.pause_check()

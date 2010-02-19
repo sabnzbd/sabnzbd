@@ -890,6 +890,9 @@ def main():
         panic(msg, 'Specify a correct file or delete this file.')
         exit_sab(1)
 
+    # Set root folders for HTTPS server file paths
+    sabnzbd.cfg.set_root_folders2()
+
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)
     enable_https = sabnzbd.cfg.ENABLE_HTTPS()

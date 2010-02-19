@@ -61,6 +61,13 @@
             <td valign=top><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /></td>
             <td><small>$T('explain-top_only')</small></td>
         </tr>
+        <!--#if $nt#-->
+        <tr>
+            <td class=alignRight><div class="tucker">$T('opt-par2_multicore'):</div></td>
+            <td><input type="checkbox" name="par2_multicore" value="1" <!--#if $par2_multicore > 0 then "checked=1" else ""#--> /></td>
+            <td><small>$T('explain-par2_multicore')</small></td>
+        </tr>
+        <!--#end if#-->
     </table>
 
     <hr/>

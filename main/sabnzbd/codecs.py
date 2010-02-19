@@ -52,7 +52,10 @@ def special_fixer(p):
         receives a latin-1 encoded name.
     """
     if sabnzbd.WIN32:
-        return p
+        try:
+            return p.decode('utf-8').encode('latin-1')
+        except:
+            return p
     else:
         if gUTF or sabnzbd.DARWIN:
             try:

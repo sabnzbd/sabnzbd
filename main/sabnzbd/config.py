@@ -901,6 +901,7 @@ def create_api_key():
 _FIXES = \
 (
     ('bandwith_limit', 'bandwidth_limit'),
+    ('enable_par_multicore', 'par2_multicore')
 )
 
 def compatibility_fix(cf):
