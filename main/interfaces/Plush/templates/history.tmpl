@@ -14,12 +14,9 @@
 
 <table class="queueTable" id="historyTable" cellspacing="0">
 <!--#set $cur = 0#-->
-<!--#set $odd = False#-->
-<!--#if $lines#-->
 <!--#for $line in $lines #-->
-    <!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.action_line) ) or ($limit == -2 and ($cur < 5 or $line.status=="Failed" or $line.action_line) ) or $cur < $limit#-->
-    <!--#set $odd = not $odd#-->
-    <tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
+    <!--#set $cur = $cur + 1#-->
+    <tr id="$line.nzo_id" class="<!--#if $cur%2#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
 
 	<td class="nzb_status_col">
 		&nbsp;<div class="nzb_status <!--#if $line.action_line or $line.status=="Queued"#-->Loaded<!--#else if $line.status=="Failed"#-->main_sprite_container sprite_hv_error<!--#else#-->main_sprite_container sprite_hv_star<!--#end if#-->">&nbsp;</div>
@@ -79,8 +76,5 @@
     </td>
     
     </tr>
-    <!--#end if#-->
-    <!--#set $cur = $cur + 1#-->
 <!--#end for#-->
-<!--#end if#-->
 </table>

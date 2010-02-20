@@ -45,19 +45,12 @@
 
 </script>
 
-<div class="box_banner_hr main_sprite_container sprite_tile_qh_seperator"></div>
-
-<span id="stats_noofslots">$noofslots</span>
 
 <table class="queueTable" id="queueTable" cellspacing="0">
 <!--#set $cur = 0#-->
-<!--#set $odd = False#-->
-<!--#if $varExists('slots')#-->
 <!--#for $slot in $slots#-->
-    <!--#if $limit == 0 or $cur < $limit#-->
     <!--#set $cur = $cur + 1#-->
-    <!--#set $odd = not $odd#-->
-    <tr id="$slot.nzo_id"<!--#if $odd#--> class="alt"<!--#end if#-->>
+    <tr id="$slot.nzo_id"<!--#if $cur%2#--> class="alt"<!--#end if#-->>
 
 	<td class="nzb_status_col">
 		&nbsp;<div class="nzb_status <!--#if $slot.status == "Paused"#-->main_sprite_container sprite_ql_grip_paused<!--#else if $slot.status == "Downloading"#-->main_sprite_container sprite_ql_grip_active<!--#else#-->main_sprite_container sprite_ql_grip_queued<!--#end if#-->">&nbsp;</div>
@@ -115,7 +108,5 @@
     </td>
 
     </tr>
-    <!--#end if#-->
 <!--#end for#-->
-<!--#end if#-->
 </table>

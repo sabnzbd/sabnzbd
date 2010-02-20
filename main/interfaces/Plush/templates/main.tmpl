@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme?$version"/>
     <!--#end if#-->
 
+    <script type="text/javascript" src="static/javascripts/lib.js?$version"></script>
     <script type="text/javascript" src="static/javascripts/plush.js?$version"></script>
 
 	<script type="text/javascript">
@@ -222,11 +223,11 @@
         </div>
 
         <div id="queue-wrap" class="tiley_sprite_container sprite_tile_page_wrap">
+			<div class="box_banner_hr main_sprite_container sprite_tile_qh_seperator"></div>
 
             <!-- Queue ( queue.tmpl )-->
             <div id="queue">
                 <br/><p class="loading">&nbsp;</p>
-                <input type="hidden" id="queue_view_preference" value="" />
             </div>
 			<div class="box_fatbottom tilex_sprite_container sprite_tile_qh_bottom" id="box_fatbottom_queue">
 			    <div class="right_stats nowrap" id="queue_stats"></div>
@@ -258,7 +259,6 @@
             <!-- History ( history.tmpl ) -->
             <div id="history">
                 <br/><p class="loading">&nbsp;</p>
-                <input type="hidden" id="history_view_preference" value="" />
             </div>
 			<div class="box_fatbottom history_stats tilex_sprite_container sprite_tile_qh_bottom">
 			    <div class="right_stats nowrap" id="history_stats"></div>
