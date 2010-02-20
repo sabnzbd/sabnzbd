@@ -27,7 +27,7 @@ import time
 
 import sabnzbd.utils.kronos as kronos
 import sabnzbd.rss as rss
-import sabnzbd.newzbin as newzbin
+from sabnzbd.newzbin import Bookmarks
 import sabnzbd.downloader
 import sabnzbd.misc
 import sabnzbd.config as config
@@ -140,9 +140,9 @@ def init():
         interval = cfg.BOOKMARK_RATE()
         delay = random.randint(0, interval-1)
         logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
-        __SCHED.add_interval_task(newzbin.getBookmarksNow, 'Bookmarks', delay*60, interval*60,
+        __SCHED.add_interval_task(Bookmarks.do.run, 'Bookmarks', delay*60, interval*60,
                                   kronos.method.sequential, None, None)
-        __SCHED.add_single_task(newzbin.getBookmarksNow, 'Bookmarks', 20, kronos.method.sequential, None, None)
+        __SCHED.add_single_task(Bookmarks.do.run, 'Bookmarks', 20, kronos.method.sequential, None, None)
 
 
     # Subscribe to special schedule changes
