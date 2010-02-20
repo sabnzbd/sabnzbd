@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -45,86 +45,6 @@ import sabnzbd.cfg as cfg
 from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
 
-################################################################################
-# BOOKMARK Wrappers
-################################################################################
-
-__BOOKMARKS = None
-
-def bookmarks_init():
-    global __BOOKMARKS
-    if not __BOOKMARKS:
-        __BOOKMARKS = Bookmarks()
-
-
-def bookmarks_save():
-    global __BOOKMARKS
-    if __BOOKMARKS:
-        __BOOKMARKS.save()
-
-
-def getBookmarksNow():
-    global __BOOKMARKS
-    if __BOOKMARKS:
-        __BOOKMARKS.run()
-
-
-def getBookmarksList():
-    global __BOOKMARKS
-    if __BOOKMARKS:
-        return __BOOKMARKS.bookmarksList()
-
-
-def delete_bookmark(msgid):
-    global __BOOKMARKS
-    if __BOOKMARKS and cfg.NEWZBIN_BOOKMARKS() and cfg.NEWZBIN_UNBOOKMARK():
-        __BOOKMARKS.del_bookmark(msgid)
-
-
-################################################################################
-# Msgid Grabber Wrappers
-################################################################################
-__MSGIDGRABBER = None
-
-def init_grabber():
-    global __MSGIDGRABBER
-    if __MSGIDGRABBER:
-        __MSGIDGRABBER.__init__()
-    else:
-        __MSGIDGRABBER = MSGIDGrabber()
-
-
-def start_grabber():
-    global __MSGIDGRABBER
-    if __MSGIDGRABBER:
-        logging.debug('Starting msgidgrabber')
-        __MSGIDGRABBER.start()
-
-
-def stop_grabber():
-    global __MSGIDGRABBER
-    if __MSGIDGRABBER:
-        logging.debug('Stopping msgidgrabber')
-        __MSGIDGRABBER.stop()
-        try:
-            __MSGIDGRABBER.join()
-        except:
-            pass
-
-
-def grab(msgid, future_nzo):
-    global __MSGIDGRABBER
-    if __MSGIDGRABBER:
-        __MSGIDGRABBER.grab(msgid, future_nzo)
-
-def alive():
-    global __MSGIDGRABBER
-    if __MSGIDGRABBER:
-        return __MSGIDGRABBER.isAlive()
-    else:
-        return False
-
-
 
 ################################################################################
 # DirectNZB support
@@ -148,6 +68,8 @@ def _access_ok():
 
 
 class MSGIDGrabber(Thread):
+    do = None # Link to instance of thread
+
     """ Thread for msgid-grabber queue """
     def __init__(self):
         Thread.__init__(self)
@@ -155,6 +77,7 @@ class MSGIDGrabber(Thread):
         for tup in sabnzbd.nzbqueue.get_msgids():
             self.queue.put(tup)
         self.shutdown = False
+        MSGIDGrabber.do = self
 
     def grab(self, msgid, nzo):
         logging.debug("Adding msgid %s to the queue", msgid)
@@ -339,11 +262,14 @@ BOOK_LOCK = Lock()
 class Bookmarks:
     """ Get list of bookmarks from www.newzbin.com
     """
+    do = None # Link to instance
+
     def __init__(self):
         self.bookmarks = sabnzbd.load_data(BOOKMARK_FILE_NAME)
         if not self.bookmarks:
             self.bookmarks = []
         self.__busy = False
+        Bookmarks.do = self
 
     @synchronized(BOOK_LOCK)
     def run(self, delete=None):
@@ -433,6 +359,7 @@ class Bookmarks:
         return self.bookmarks
 
     def del_bookmark(self, msgid):
-        msgid = str(msgid)
-        if msgid in self.bookmarks:
-            self.run(msgid)
+        if cfg.NEWZBIN_BOOKMARKS() and cfg.NEWZBIN_UNBOOKMARK():
+            msgid = str(msgid)
+            if msgid in self.bookmarks:
+                self.run(msgid)

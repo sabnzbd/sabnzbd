@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,6 +25,8 @@ import logging
 #------------------------------------------------------------------------------
 
 class BPSMeter:
+    do = None
+
     def __init__(self, bytes_sum = 0):
         t = time.time()
 
@@ -34,6 +36,7 @@ class BPSMeter:
         self.bps = 0.0
         self.bytes_total = 0
         self.bytes_sum = bytes_sum
+        BPSMeter.do = self
 
     def update(self, bytes_recvd):
         self.bytes_total += bytes_recvd
@@ -70,4 +73,4 @@ class BPSMeter:
         return self.bps
 
 
-method = BPSMeter()
+BPSMeter()

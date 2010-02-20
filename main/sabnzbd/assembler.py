@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,51 +36,16 @@ except:
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_path, renamer
 import sabnzbd.cfg as cfg
-import sabnzbd.articlecache
-import sabnzbd.postproc
+from sabnzbd.articlecache import ArticleCache
+from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 from sabnzbd.lang import Ta
 
 
 #------------------------------------------------------------------------------
-# Wrapper functions
-
-__ASM = None  # Global pointer to post-proc instance
-
-def init():
-    global __ASM
-    if __ASM:
-        __ASM.__init__(__ASM.queue)
-    else:
-        __ASM = Assembler()
-
-def start():
-    global __ASM
-    if __ASM: __ASM.start()
-
-
-def process(nzf):
-    global __ASM
-    if __ASM: __ASM.process(nzf)
-
-def stop():
-    global __ASM
-    if __ASM:
-        __ASM.stop()
-        try:
-            __ASM.join()
-        except:
-            pass
-
-def alive():
-    global __ASM
-    if __ASM:
-        return __ASM.isAlive()
-    else:
-        return False
-
-#------------------------------------------------------------------------------
 class Assembler(Thread):
+    do = None # Link to the instance of this method
+
     def __init__ (self, queue = None):
         Thread.__init__(self)
 
@@ -88,6 +53,7 @@ class Assembler(Thread):
             self.queue = queue
         else:
             self.queue = Queue.Queue()
+        Assembler.do = self
 
     def stop(self):
         self.process(None)
@@ -134,7 +100,7 @@ class Assembler(Thread):
 
 
             else:
-                sabnzbd.postproc.process(nzo)
+                PostProcessor.do.process(nzo)
 
 
 def _assemble(nzf, path, dupe):
@@ -159,7 +125,7 @@ def _assemble(nzf, path, dupe):
         sleep(0.01)
         article = decodetable[articlenum]
 
-        data = sabnzbd.articlecache.method.load_article(article)
+        data = ArticleCache.do.load_article(article)
 
         if not data:
             logging.warning(Ta('warn-artMissing@1'), article)

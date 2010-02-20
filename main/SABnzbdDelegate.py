@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -44,6 +44,8 @@ import sabnzbd.config as config
 import sabnzbd.scheduler as scheduler
 import sabnzbd.downloader as downloader
 import sabnzbd.dirscanner as dirscanner
+from sabnzbd.bpsmeter import BPSMeter
+from sabnzbd.newzbin import Bookmarks
 from sabnzbd.database import get_history_handle
 
 status_icons = {'idle':'../Resources/sab_idle.png','pause':'../Resources/sab_pause.png','clicked':'../Resources/sab_clicked.png'}
@@ -268,7 +270,7 @@ class SABnzbdDelegate(NSObject):
             pnfo_list = qnfo[QNFO_PNFO_LIST_FIELD]
 
             bytesleftprogess = 0
-            bpsnow = sabnzbd.bpsmeter.method.get_bps()
+            bpsnow = BPSMeter.do.get_bps()
             self.info = ""
 
             self.menu_queue = NSMenu.alloc().init()
@@ -375,7 +377,7 @@ class SABnzbdDelegate(NSObject):
     def stateUpdate(self):
         try:
             qnfo = sabnzbd.nzbqueue.queue_info()
-            bpsnow = sabnzbd.bpsmeter.method.get_bps()
+            bpsnow = BPSMeter.do.get_bps()
             if downloader.paused():
                 self.state = T('osx-menu-status-paused')
                 if sabnzbd.scheduler.pause_int() != "0":
@@ -394,7 +396,7 @@ class SABnzbdDelegate(NSObject):
                     statusbarText = "..."
 
                 if os.path.exists("%s/notDisplaySpeed" % (sabnzbd.DIR_APPDATA)):
-                		statusbarText = ""
+                    statusbarText = ""
 
                 self.setMenuTitle(statusbarText)
             else:
@@ -637,7 +639,7 @@ class SABnzbdDelegate(NSObject):
         scheduler.plan_resume(0)
 
     def getNewzbinBookmarksAction_(self, sender):
-        sabnzbd.newzbin.getBookmarksNow()
+        Bookmarks.do.run()
 
     def openFolderAction_(self, sender):
         os.system('open "%s"' % sender.representedObject())

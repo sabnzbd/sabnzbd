@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -41,15 +41,15 @@ from sabnzbd.misc import real_path, loadavg, \
      to_units, diskfree, disktotal, get_ext, sanitize_foldername, \
      get_filename, cat_to_opts, IntConv, panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
-import sabnzbd.newzbin as newzbin
+from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 from sabnzbd.codecs import TRANS, xml_name, LatinFilter, unicoder, special_fixer
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.articlecache as articlecache
+from sabnzbd.articlecache import ArticleCache
 import sabnzbd.newsunpack
-import sabnzbd.postproc as postproc
+from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader as downloader
-import sabnzbd.bpsmeter as bpsmeter
+from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.nzbqueue as nzbqueue
 from sabnzbd.database import build_history_info, unpack_history_info
 import sabnzbd.wizard
@@ -880,7 +880,7 @@ class MainPage:
 
         if mode == 'newzbin':
             if name == 'get_bookmarks':
-                newzbin.getBookmarksNow()
+                Bookmarks.do.run()
                 return report(output)
             return report(output, _MSG_NOT_IMPLEMENTED)
 
@@ -2315,14 +2315,14 @@ class ConfigNewzbin:
     def getBookmarks(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        newzbin.getBookmarksNow()
+        Bookmarks.do.run()
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def showBookmarks(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        self.__bookmarks = newzbin.getBookmarksList()
+        self.__bookmarks = Bookmarks.do.bookmarksList()
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2840,7 +2840,7 @@ def build_header(prim):
 
     header['session'] = cfg.API_KEY()
 
-    bytespersec = bpsmeter.method.get_bps()
+    bytespersec = BPSMeter.do.get_bps()
     qnfo = nzbqueue.queue_info()
 
     bytesleft = qnfo[QNFO_BYTES_LEFT_FIELD]
@@ -2862,7 +2862,7 @@ def build_header(prim):
         status = 'Idle'
     header['status'] = "%s" % status
 
-    anfo  = articlecache.method.cache_info()
+    anfo  = ArticleCache.do.cache_info()
 
     header['cache_art'] = str(anfo[ANFO_ARTICLE_SUM_FIELD])
     header['cache_size'] = format_bytes(anfo[ANFO_CACHE_SIZE_FIELD])
@@ -3069,7 +3069,7 @@ def qstatus_data():
 
     jobs = []
     bytesleftprogess = 0
-    bpsnow = bpsmeter.method.get_bps()
+    bpsnow = BPSMeter.do.get_bps()
     for pnfo in pnfo_list:
         filename = pnfo[PNFO_FILENAME_FIELD]
         msgid = pnfo[PNFO_MSGID_FIELD]
@@ -3094,8 +3094,8 @@ def qstatus_data():
         "state" : state,
         "paused" : downloader.paused(),
         "pause_int" : scheduler.pause_int(),
-        "kbpersec" : bpsmeter.method.get_bps() / KIBI,
-        "speed" : to_units(bpsmeter.method.get_bps()),
+        "kbpersec" : BPSMeter.do.get_bps() / KIBI,
+        "speed" : to_units(BPSMeter.do.get_bps()),
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
@@ -3200,7 +3200,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
         return re_search.search(text)
 
     # Grab any items that are active or queued in postproc
-    queue = postproc.history_queue()
+    queue = PostProcessor.do.get_queue()
 
     # Filter out any items that don't match the search
     if search:
@@ -3583,9 +3583,9 @@ def rss_qstatus():
     item = Item()
     item.title = 'Total ETA: %s - Queued: %.2f MB - Speed: %.2f kB/s' % \
                  (
-                  calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsmeter.method.get_bps()),
+                  calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], BPSMeter.do.get_bps()),
                   qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
-                  bpsmeter.method.get_bps() / KIBI
+                  BPSMeter.do.get_bps() / KIBI
                  )
     rss.addItem(item)
 
@@ -3620,7 +3620,7 @@ def rss_qstatus():
         statusLine.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
         #ETA
         sum_bytesleft += pnfo[PNFO_BYTES_LEFT_FIELD]
-        statusLine.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, bpsmeter.method.get_bps()))
+        statusLine.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.get_bps()))
         statusLine.append("<dt>Age: %s</dt>" % calc_age(pnfo[PNFO_AVG_DATE_FIELD]))
         statusLine.append("</tr>")
         item.description = ''.join(statusLine)
@@ -3652,7 +3652,7 @@ def get_active_history(queue=None, items=None):
     if items is None:
         items = []
     if queue is None:
-        queue = postproc.history_queue()
+        queue = PostProcessor.do.get_queue()
 
     for nzo in queue:
         t = build_history_info(nzo)

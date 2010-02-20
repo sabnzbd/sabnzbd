@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -42,46 +42,11 @@ import sabnzbd.cfg as cfg
 from sabnzbd.lang import Ta
 
 #------------------------------------------------------------------------------
-# Wrapper functions
-
-__GRABBER = None  # Global pointer to url-grabber instance
-
-def init():
-    global __GRABBER
-    if __GRABBER:
-        __GRABBER.__init__()
-    else:
-        __GRABBER = URLGrabber()
-
-def start():
-    global __GRABBER
-    if __GRABBER: __GRABBER.start()
-
-def add(url, future_nzo):
-    global __GRABBER
-    if __GRABBER: __GRABBER.add(url, future_nzo)
-
-def stop():
-    global __GRABBER
-    if __GRABBER:
-        __GRABBER.stop()
-        try:
-            __GRABBER.join()
-        except:
-            pass
-
-def alive():
-    global __GRABBER
-    if __GRABBER:
-        return __GRABBER.isAlive()
-    else:
-        return False
-
-
-#------------------------------------------------------------------------------
 _RETRIES = 10
 
 class URLGrabber(Thread):
+    do = None  # Link to instance of the thread
+
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue.Queue()
@@ -89,6 +54,7 @@ class URLGrabber(Thread):
             url, nzo = tup
             self.queue.put((url, nzo, _RETRIES))
         self.shutdown = False
+        URLGrabber.do = self
 
     def add(self, url, future_nzo):
         """ Add an URL to the URLGrabber queue """

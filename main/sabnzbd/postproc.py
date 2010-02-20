@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ from sabnzbd.codecs import TRANS, unicoder
 import sabnzbd.newzbin
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
-import sabnzbd.downloader as downloader
+import sabnzbd.downloader
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
@@ -48,78 +48,11 @@ import sabnzbd.database as database
 from sabnzbd.utils import osx
 from sabnzbd.lang import T, Ta
 
-#------------------------------------------------------------------------------
-# Wrapper functions
-
-__POSTPROC = None  # Global pointer to post-proc instance
-
-def init():
-    global __POSTPROC
-    if __POSTPROC:
-        __POSTPROC.__init__(__POSTPROC.queue(), __POSTPROC.get_queue())
-    else:
-        __POSTPROC = PostProcessor()
-
-def start():
-    global __POSTPROC
-    if __POSTPROC: __POSTPROC.start()
-
-def get_queue():
-    global __POSTPROC
-    if __POSTPROC: return __POSTPROC.get_queue()
-
-def process(nzo):
-    global __POSTPROC
-    if __POSTPROC: __POSTPROC.process(nzo)
-
-def empty():
-    global __POSTPROC
-    if __POSTPROC: return __POSTPROC.empty()
-
-def history_queue():
-    global __POSTPROC
-    if __POSTPROC: return __POSTPROC.get_queue()
-
-def pause_post():
-    global __POSTPROC
-    if __POSTPROC: return __POSTPROC.pause()
-
-def resume_post():
-    global __POSTPROC
-    if __POSTPROC: return __POSTPROC.resume()
-
-def status_post():
-    global __POSTPROC
-    if __POSTPROC: return __POSTPROC.status()
-
-def stop():
-    global __POSTPROC
-    if __POSTPROC:
-        __POSTPROC.stop()
-        try:
-            __POSTPROC.join()
-        except:
-            pass
-
-def alive():
-    global __POSTPROC
-    if __POSTPROC:
-        return __POSTPROC.isAlive()
-    else:
-        return False
-
-def save():
-    global __POSTPROC
-    if __POSTPROC: __POSTPROC.save()
-
-def load():
-    global __POSTPROC
-    if __POSTPROC: __POSTPROC.load()
-
-
 
 #------------------------------------------------------------------------------
 class PostProcessor(Thread):
+    do = None  # Link to instance of the thread
+
     def __init__ (self, queue=None, history_queue=None):
         Thread.__init__(self)
 
@@ -140,6 +73,7 @@ class PostProcessor(Thread):
                 self.process(nzo)
         self.__stop = False
         self.__paused = False
+        PostProcessor.do = self
 
 
     def save(self):
@@ -213,7 +147,7 @@ class PostProcessor(Thread):
 
             ## Pause downloader, if users wants that
             if cfg.PAUSE_ON_POST_PROCESSING():
-                downloader.idle_downloader()
+                sabnzbd.downloader.idle_downloader()
 
             start = time.time()
 
@@ -288,7 +222,7 @@ class PostProcessor(Thread):
                         sabnzbd.QUEUECOMPLETEACTION_GO = False
                         nzo.set_priority(TOP_PRIORITY)
                         sabnzbd.nzbqueue.add_nzo(nzo)
-                        downloader.unidle_downloader()
+                        sabnzbd.downloader.unidle_downloader()
                         ## Break out, further downloading needed
                         continue
 
@@ -445,7 +379,7 @@ class PostProcessor(Thread):
 
                 ## Remove newzbin bookmark, if any
                 if msgid:
-                    sabnzbd.newzbin.delete_bookmark(msgid)
+                    Bookmarks.do.del_bookmark(msgid)
 
                 ## Show final status in history
                 if parResult and not unpackError:
@@ -498,7 +432,7 @@ class PostProcessor(Thread):
             self.remove(nzo)
 
             ## Allow download to proceed
-            downloader.unidle_downloader()
+            sabnzbd.downloader.unidle_downloader()
 #end post-processor
 
 

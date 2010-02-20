@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -37,47 +37,6 @@ import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 from sabnzbd.lang import Ta
 
-################################################################################
-# Wrapper functions
-################################################################################
-
-__SCANNER = None  # Global pointer to dir-scanner instance
-
-def init():
-    global __SCANNER
-    if __SCANNER:
-        __SCANNER.__init__()
-    else:
-        __SCANNER = DirScanner()
-
-def start():
-    global __SCANNER
-    if __SCANNER: __SCANNER.start()
-
-def stop():
-    global __SCANNER
-    if __SCANNER:
-        __SCANNER.stop()
-        try:
-            __SCANNER.join()
-        except:
-            pass
-
-def save():
-    global __SCANNER
-    if __SCANNER: __SCANNER.save()
-
-def alive():
-    global __SCANNER
-    if __SCANNER:
-        return __SCANNER.isAlive()
-    else:
-        return False
-
-
-################################################################################
-# Body
-################################################################################
 
 RE_CAT = re.compile(r'^{{(\w+)}}(.+)') # Category prefix
 def name_to_cat(fname, cat=None):
@@ -249,6 +208,8 @@ class DirScanner(threading.Thread):
     Candidates which turned out wrong, will be remembered and skipped in
     subsequent scans, unless changed.
     """
+    do = None # Access to instance of DirScanner
+
     def __init__(self):
         threading.Thread.__init__(self)
 
@@ -268,6 +229,7 @@ class DirScanner(threading.Thread):
         self.dirscan_dir = cfg.DIRSCAN_DIR.get_path()
         self.dirscan_speed = cfg.DIRSCAN_SPEED()
         cfg.DIRSCAN_DIR.callback(self.newdir)
+        DirScanner.do = self
 
     def newdir(self):
         """ We're notified of a dir change """

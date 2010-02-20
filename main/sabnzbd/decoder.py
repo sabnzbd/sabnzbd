@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.constants import *
-import sabnzbd.articlecache as articlecache
+from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
@@ -130,7 +130,7 @@ class Decoder(Thread):
                     register = False
 
             if data:
-                articlecache.method.save_article(article, data)
+                ArticleCache.do.save_article(article, data)
 
             if register:
                 sabnzbd.nzbqueue.register_article(article)

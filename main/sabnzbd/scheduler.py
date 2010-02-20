@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@ import sabnzbd.downloader
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+from sabnzbd.postproc import PostProcessor
 from sabnzbd.lang import Ta
 
 
@@ -94,9 +95,9 @@ def init():
             action = sabnzbd.restart_program
             arguments = []
         elif action_name == 'pause_post':
-            action = sabnzbd.postproc.pause_post
+            action = PostProcessor.do.pause
         elif action_name == 'resume_post':
-            action = sabnzbd.postproc.resume_post
+            action = PostProcessor.do.resume
         elif action_name == 'speedlimit' and arguments != []:
             action = sabnzbd.downloader.limit_speed
         elif action_name == 'enable_server' and arguments != []:
@@ -285,9 +286,9 @@ def analyse(was_paused=False):
         sabnzbd.downloader.set_paused(paused or paused_all)
 
     if pause_post:
-        sabnzbd.postproc.pause_post()
+        PostProcessor.do.pause()
     else:
-        sabnzbd.postproc.resume_post()
+        PostProcessor.do.resume()
     if speedlimit:
         sabnzbd.downloader.limit_speed(speedlimit)
     for serv in servers:

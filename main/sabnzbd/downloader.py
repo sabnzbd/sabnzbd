@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ from sabnzbd.utils import osx
 from sabnzbd.constants import *
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.bpsmeter as bpsmeter
+from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
 import sabnzbd.nzbqueue
 from sabnzbd.lang import T, Ta
@@ -332,7 +332,7 @@ class Downloader(Thread):
         osx.sendGrowlMsg("SABnzbd",T('grwl-paused-msg'),osx.NOTIFICATION['download'])
         self.paused = True
         if self.is_paused():
-            bpsmeter.method.reset()
+            BPSMeter.do.reset()
 
     def delay(self):
         logging.info("Delaying")
@@ -503,7 +503,7 @@ class Downloader(Thread):
             else:
                 read, write, error = ([], [], [])
 
-                bpsmeter.method.reset()
+                BPSMeter.do.reset()
 
                 time.sleep(1.0)
 
@@ -527,7 +527,7 @@ class Downloader(Thread):
                     self.write_fds.pop(fileno)
 
             if not read:
-                bpsmeter.method.update(0)
+                BPSMeter.do.update(0)
                 continue
 
             for selected in read:
@@ -544,7 +544,7 @@ class Downloader(Thread):
                     bytes, done, skip = (0, False, False)
 
                 if skip:
-                    bpsmeter.method.update(0)
+                    BPSMeter.do.update(0)
                     continue
 
                 if bytes < 1:
@@ -553,18 +553,18 @@ class Downloader(Thread):
 
                 else:
                     if self.bandwidth_limit:
-                        bps = bpsmeter.method.get_bps()
+                        bps = BPSMeter.do.get_bps()
                         bps += bytes
                         limit = self.bandwidth_limit * 1024
                         if bps > limit:
-                            while bpsmeter.method.get_bps() > limit:
+                            while BPSMeter.do.get_bps() > limit:
                                 time.sleep(0.05)
-                                bpsmeter.method.update(0)
-                    bpsmeter.method.update(bytes)
+                                BPSMeter.do.update(0)
+                    BPSMeter.do.update(bytes)
 
                     if nzo:
                         nzo.update_bytes(bytes)
-                        nzo.update_avg_kbs(bpsmeter.method.get_bps())
+                        nzo.update_avg_kbs(BPSMeter.do.get_bps())
 
                 if len(nw.lines) == 1:
                     code = nw.lines[0][:3]

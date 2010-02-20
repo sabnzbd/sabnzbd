@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,9 +32,9 @@ import sabnzbd.database as database
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 import sabnzbd.cfg as cfg
-import sabnzbd.articlecache
+from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
-import sabnzbd.assembler
+from sabnzbd.assembler import Assembler
 from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
 
@@ -591,7 +591,7 @@ class NzbQueue(TryList):
 
             # Only start decoding if we have a filename and type
             if filename and _type:
-                sabnzbd.assembler.process((nzo, nzf))
+                Assembler.do.process((nzo, nzf))
 
             else:
                 logging.warning(Ta('warn-unknownEncoding@1'), filename)
@@ -610,7 +610,7 @@ class NzbQueue(TryList):
                     sabnzbd.QUEUECOMPLETEACTION_GO = True
 
             # Notify assembler to call postprocessor
-            sabnzbd.assembler.process((nzo, None))
+            Assembler.do.process((nzo, None))
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -640,7 +640,7 @@ class NzbQueue(TryList):
     def cleanup_nzo(self, nzo):
         nzo.purge_data()
 
-        sabnzbd.articlecache.method.purge_articles(nzo.saved_articles)
+        ArticleCache.do.purge_articles(nzo.saved_articles)
 
         for hist_item in self.__downloaded_items:
             # refresh fields & delete nzo reference

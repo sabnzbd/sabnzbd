@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -64,21 +64,21 @@ elif os.name == 'posix':
 #------------------------------------------------------------------------
 
 import sabnzbd.nzbqueue as nzbqueue
-import sabnzbd.postproc as postproc
+from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader as downloader
-import sabnzbd.assembler as assembler
-import sabnzbd.newzbin as newzbin
+from sabnzbd.assembler import Assembler
+from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 import sabnzbd.misc as misc
-import sabnzbd.dirscanner as dirscanner
-import sabnzbd.urlgrabber as urlgrabber
+from sabnzbd.dirscanner import DirScanner,  ProcessArchiveFile, ProcessSingleFile
+from sabnzbd.urlgrabber import URLGrabber
 import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
 import sabnzbd.emailer as emailer
-import sabnzbd.articlecache as articlecache
+from sabnzbd.articlecache import ArticleCache
 import sabnzbd.newsunpack
 import sabnzbd.codecs as codecs
 import sabnzbd.config as config
-import sabnzbd.bpsmeter
+from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
@@ -205,7 +205,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
     cfg.PAUSE_ON_POST_PROCESSING.callback(guard_pause_on_pp)
 
     ### Set cache limit
-    articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY())
+    ArticleCache.do.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY())
 
     ### Set language files
     lang.install_language(DIR_LANGUAGE, cfg.LANGUAGE())
@@ -218,30 +218,30 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
     ### Initialize threads
     ###
 
-    newzbin.bookmarks_init()
+    Bookmarks()
     rss.init()
     scheduler.init()
 
     bytes = load_data(BYTES_FILE_NAME, remove = False, do_pickle = False)
     try:
         bytes = int(bytes)
-        sabnzbd.bpsmeter.method.bytes_sum = bytes
+        BPSMeter.do.bytes_sum = bytes
     except:
-        sabnzbd.bpsmeter.method.reset()
+        BPSMeter.do.method.reset()
 
     nzbqueue.init()
 
-    postproc.init()
+    PostProcessor()
 
-    assembler.init()
+    Assembler()
 
     downloader.init(pause_downloader)
 
-    dirscanner.init()
+    DirScanner()
 
-    newzbin.init_grabber()
+    MSGIDGrabber()
 
-    urlgrabber.init()
+    URLGrabber()
 
     if evalSched:
         scheduler.analyse(pause_downloader)
@@ -258,10 +258,10 @@ def start():
 
     if __INITIALIZED__:
         logging.debug('Starting postprocessor')
-        postproc.start()
+        PostProcessor.do.start()
 
         logging.debug('Starting assembler')
-        assembler.start()
+        Assembler.do.start()
 
         logging.debug('Starting downloader')
         downloader.start()
@@ -269,12 +269,12 @@ def start():
         scheduler.start()
 
         logging.debug('Starting dirscanner')
-        dirscanner.start()
+        DirScanner.do.start()
 
-        newzbin.start_grabber()
+        MSGIDGrabber.do.start()
 
         logging.debug('Starting urlgrabber')
-        urlgrabber.start()
+        URLGrabber.do.start()
 
 
 @synchronized(INIT_LOCK)
@@ -287,26 +287,47 @@ def halt():
 
         rss.stop()
 
-        newzbin.bookmarks_save()
+        Bookmarks.do.save()
 
         logging.debug('Stopping URLGrabber')
-        urlgrabber.stop()
+        URLGrabber.do.stop()
+        try:
+            URLGrabber.do.join()
+        except:
+            pass
 
         logging.debug('Stopping Newzbin-Grabber')
-        newzbin.stop_grabber()
+        MSGIDGrabber.do.stop()
+        try:
+            MSGIDGrabber.do.join()
+        except:
+            pass
 
         logging.debug('Stopping dirscanner')
-        dirscanner.stop()
+        DirScanner.do.stop()
+        try:
+            DirScanner.do.join()
+        except:
+            pass
+
 
         ## Stop Required Objects ##
         logging.debug('Stopping downloader')
         downloader.stop()
 
         logging.debug('Stopping assembler')
-        assembler.stop()
+        Assembler.do.stop()
+        try:
+            Assembler.do.join()
+        except:
+            pass
 
         logging.debug('Stopping postprocessor')
-        postproc.stop()
+        PostProcessor.do.stop()
+        try:
+            PostProcessor.do.join()
+        except:
+            pass
 
         ## Save State ##
         save_state()
@@ -329,7 +350,7 @@ def halt():
 
 def new_limit():
     """ Callback for article cache changes """
-    articlecache.method.new_limit(cfg.CACHE_LIMIT.get_int())
+    ArticleCache.do.new_limit(cfg.CACHE_LIMIT.get_int())
 
 def guard_restart():
     """ Callback for config options requiring a restart """
@@ -366,7 +387,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
 
         future_nzo = nzbqueue.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority, nzbname=nzbname)
 
-        newzbin.grab(msgid, future_nzo)
+        MSGIDGrabber.do.grab(msgid, future_nzo)
     else:
         logging.error(Ta('error-fetchNewzbin@1'), msgid)
 
@@ -382,17 +403,17 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     logging.info('Fetching %s', url)
     msg = T('fetchNZB@1') % url
     future_nzo = nzbqueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
-    urlgrabber.add(url, future_nzo)
+    URLGrabber.do.add(url, future_nzo)
 
 
 def save_state():
-    articlecache.method.flush_articles()
+    ArticleCache.do.flush_articles()
     nzbqueue.save()
-    save_data(str(sabnzbd.bpsmeter.method.get_sum()), BYTES_FILE_NAME, do_pickle = False)
+    save_data(str(BPSMeter.do.get_sum()), BYTES_FILE_NAME, do_pickle = False)
     rss.save()
-    newzbin.bookmarks_save()
-    dirscanner.save()
-    postproc.save()
+    Bookmarks.do.save()
+    DirScanner.do.save()
+    PostProcessor.do.save()
 
 def pause_all():
     global PAUSED_ALL
@@ -477,9 +498,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         logging.debug("Traceback: ", exc_info = True)
 
     if ext.lower() in ('.zip', '.rar'):
-        dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
+        ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
     else:
-        dirscanner.ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname)
+        ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname)
 
 
 ################################################################################
@@ -599,7 +620,7 @@ def run_script(script):
 def empty_queues():
     """ Return True if queues empty or non-existent """
     global __INITIALIZED__
-    return (not __INITIALIZED__) or (postproc.empty() and not nzbqueue.has_articles())
+    return (not __INITIALIZED__) or (PostProcessor.do.empty() and not nzbqueue.has_articles())
 
 
 def keep_awake():
@@ -607,7 +628,7 @@ def keep_awake():
     """
     global KERNEL32
     if KERNEL32 and not downloader.paused():
-        if (not postproc.empty()) or nzbqueue.has_articles():
+        if (not PostProcessor.do.empty()) or nzbqueue.has_articles():
             # set ES_SYSTEM_REQUIRED
             KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
 
@@ -733,13 +754,13 @@ def check_all_tasks():
         return True
 
     # Non-restartable threads, require program restart
-    if not sabnzbd.postproc.alive():
+    if not sabnzbd.PostProcessor.do.isAlive():
         logging.info('Restarting because of crashed postprocessor')
         return False
     if not sabnzbd.downloader.alive():
         logging.info('Restarting because of crashed downloader')
         return False
-    if not sabnzbd.assembler.alive():
+    if not Assembler.do.isAlive():
         logging.info('Restarting because of crashed assembler')
         return False
 
@@ -747,15 +768,15 @@ def check_all_tasks():
     sabnzbd.downloader.wakeup()
 
     # Restartable threads
-    if not sabnzbd.dirscanner.alive():
+    if not DirScanner.do.isAlive():
         logging.info('Restarting crashed dirscanner')
-        sabnzbd.dirscanner.init()
-    if not sabnzbd.urlgrabber.alive():
+        DirScanner.do.__init__()
+    if not URLGrabber.do.isAlive():
         logging.info('Restarting crashed urlgrabber')
-        sabnzbd.urlgrabber.init()
-    if not sabnzbd.newzbin.alive():
+        URLGrabber.do.__init__()
+    if not MSGIDGrabber.do.isAlive():
         logging.info('Restarting crashed newzbin')
-        sabnzbd.newzbin.init_grabber()
+        MSGIDGrabber.do.__init__()
     if not sabnzbd.scheduler.sched_check():
         logging.info('Restarting crashed scheduler')
         sabnzbd.scheduler.init()

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,6 +28,8 @@ from sabnzbd.decorators import synchronized
 
 ARTICLE_LOCK = threading.Lock()
 class ArticleCache:
+    do = None
+
     def __init__(self):
         self.__cache_limit = 0
         self.__cache_size = 0
@@ -35,6 +37,7 @@ class ArticleCache:
 
         self.__article_list = []    # List of buffered articles
         self.__article_table = {}   # Dict of buffered articles
+        ArticleCache.do = self
 
     @synchronized(ARTICLE_LOCK)
     def cache_info(self):
@@ -158,5 +161,5 @@ class ArticleCache:
         logging.debug("cache_size -> %s", self.__cache_size)
 
 
-### Global access point for article cache
-method = ArticleCache()
+### Create the instance
+ArticleCache()
