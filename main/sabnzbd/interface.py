@@ -756,6 +756,7 @@ class MainPage:
                     return report(output, _MSG_NO_VALUE)
             elif not name:
                 history, pnfo_list, bytespersec = build_header(True)
+                history['total_size'], history['month_size'], history['week_size'] = get_history_size()
                 history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True)
                 return report(output, keyword='history', data=remove_callable(history))
             else:
