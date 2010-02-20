@@ -1,4 +1,86 @@
+<% import datetime %>
+
 <script type="text/javascript">
 	if (typeof( jQuery ) == 'undefined')
 		window.location = "../"; // redirect to main on direct template hit
+    
+    // set vars within the plush object
+    jQuery(function($) {
+        $.plush.histnoofslots      = $noofslots;
+        $.plush.histstats = "<!--#if $loadavg#--><strong>$loadavg</strong>&nbsp;$T('ft-sysload')<!--#end if#--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('Plush-thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('Plush-thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('Plush-total')<!--#end if #-->";
+	});
+	
 </script>
+
+<table class="queueTable" id="historyTable" cellspacing="0">
+<!--#set $cur = 0#-->
+<!--#set $odd = False#-->
+<!--#if $lines#-->
+<!--#for $line in $lines #-->
+    <!--#if $limit == 0 or ($limit == -1 and ($line.status=="Failed" or $line.action_line) ) or ($limit == -2 and ($cur < 5 or $line.status=="Failed" or $line.action_line) ) or $cur < $limit#-->
+    <!--#set $odd = not $odd#-->
+    <tr id="$line.nzo_id" class="<!--#if $odd#-->alt<!--#end if#--> <!--#if $line.action_line #-->active<!--#end if#-->">
+
+	<td class="nzb_status_col">
+		&nbsp;<div class="nzb_status <!--#if $line.action_line or $line.status=="Queued"#-->Loaded<!--#else if $line.status=="Failed"#-->main_sprite_container sprite_hv_error<!--#else#-->main_sprite_container sprite_hv_star<!--#end if#-->">&nbsp;</div>
+	</td>
+    <td class="historyTitle">
+        $line.name
+    </td>
+    
+    <td>
+        <!--#if $line.report #-->
+            <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">
+                <div class="icon_history_verbose main_sprite_container sprite_hv_report pointer" title='$T('Plush-openSourceURL')<br><br>https://www.newzbin.com/browse/post/$line.report'>&nbsp;</div>
+            </a>
+        <!--#else if $varExists('newzbinDetails')#-->
+            <div class="icon_history_verbose main_sprite_container sprite_hv_report hvFaded">&nbsp;</div>
+        <!--#end if#-->
+        <!--#if $line.url_info #-->
+            <a href="$line.url_info" target="_blank">
+                <div class="icon_history_verbose main_sprite_container sprite_hv_star pointer" title="$T('Plush-openInfoURL')<br><br>$line.url_info">&nbsp;</div>
+            </a>
+        <!--#else if $varExists('newzbinDetails')#-->
+            <div class="icon_history_verbose main_sprite_container sprite_hv_star hvFaded">&nbsp;</div>
+        <!--#end if#-->
+	    <!--#if $line.size or $line.category or $line.path or $line.storage#-->
+	        <div class="icon_history_verbose main_sprite_container sprite_hv_stats" title='<!--#if $line.size#-->$T('size'): $line.size<br><br><!--#end if#--><!--#if $line.category#-->$T('category'): $line.category<br><br><!--#end if#--><!--#if $line.path#-->$T('Plush-path'):<br><!--#echo $line.path.replace("'","&rsquo;") #--><br><br><!--#end if#--><!--#if $line.storage#-->$T('Plush-storage'):<br><!--#echo $line.storage.replace("'","&rsquo;") #--><!--#end if#-->'>&nbsp;</div>
+	    <!--#else#-->
+	        <div class="icon_history_verbose main_sprite_container sprite_hv_stats hvFaded">&nbsp;</div>
+	    <!--#end if#-->
+	    <!--#for $stage in $line.stage_log#-->
+            <!--#if $stage.name.lower() == "script"#-->
+                <a href="scriptlog?name=$line.nzo_id" class="modal" rel="scriptlog">
+                    <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower() pointer" title='$T('Plush-viewScriptLog')'>&nbsp;</div>
+                </a>
+		        <!--#if not $line.action_line#-->
+	                <!--#for $action in $stage.actions#-->
+	                	<h3 class="hvMessageScript"><!--#echo $action.replace("'","&rsquo;").replace("<a href","<a class='modal' rel='scriptlog2' href") #--></h3>
+	                <!--#end for#-->
+	            <!--#end if#-->
+            <!--#else#-->
+                <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower()" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
+            <!--#end if#-->
+        <!--#end for#-->
+        <!--#if $line.action_line#-->
+        <h3 class="hvMessageAction">&raquo;&nbsp;$line.action_line&nbsp;</h3>
+        <!--#end if#-->
+        <!--#if $line.fail_message#-->
+        <h3 class="hvMessageFail">&raquo;&nbsp;$line.fail_message&nbsp;</h3>
+        <!--#end if#-->
+    </td>
+    
+    <td class="options nowrap">
+        <!--#if not $line.loaded#-->
+        <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
+        <small class="history_added">$d</small>
+        <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')&nbsp;NZB">&nbsp;</div>
+        <!--#end if#-->
+    </td>
+    
+    </tr>
+    <!--#end if#-->
+    <!--#set $cur = $cur + 1#-->
+<!--#end for#-->
+<!--#end if#-->
+</table>

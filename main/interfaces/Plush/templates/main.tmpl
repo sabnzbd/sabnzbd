@@ -15,27 +15,15 @@
     <!--#end if#-->
 
     <script type="text/javascript" src="static/javascripts/plush.js?$version"></script>
+
 	<script type="text/javascript">
-		jQuery.locale = {	// replace with API method to fetch translations?
-			apikey:			"$session",
-			prev:			"$T('Plush-prev')",
-			next:			"$T('Plush-next')",
-			confirmation:	"$T('Plush-confirm')",
-			confirmPurgeH:	"$T('Plush-confirmPurgeH')",
-			nzodelete:		"$T('nzo-delete')",
-			total:			"$T('Plush-total')",
-			openSourceURL:	"$T('Plush-openSourceURL')",
-			openInfoURL:	"$T('Plush-openInfoURL')",
-			size:			"$T('size')",
-			category:		"$T('category')",
-			path:			"$T('Plush-path')",
-			storage:		"$T('Plush-storage')",
-			newzbinDetails: "$varExists('newzbinDetails')" == "True",
-			viewScriptLog:  "$T('Plush-viewScriptLog')",
-			sysload:		"$T('ft-sysload')",
-			thisWeek:		"$T('Plush-thisWeek')",
-			thisMonth:		"$T('Plush-thisMonth')"
-		};
+	    jQuery(function($){
+        	$.plush.apikey = "$session";
+        	$.plush.Tprev = "$T('Plush-prev')"; // translations for pagination
+        	$.plush.Tnext = "$T('Plush-next')";
+        	$.plush.Tconfirmation = "$T('Plush-confirm')";
+        	$.plush.TconfirmPurgeH = "$T('Plush-confirmPurgeH')";
+		});
     </script>
 
 </head>
