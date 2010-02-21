@@ -18,23 +18,24 @@
 """
 sabnzbd.cfg - Configuration Parameters
 """
+import re
 
 import sabnzbd
-from sabnzbd.constants import *
+from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
+                              DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
+                              NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir, validate_dir_exists, \
                            create_api_key
 from sabnzbd.lang import T
-
 #------------------------------------------------------------------------------
 # Email validation support
 #
-import re
 RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
 def validate_email(value):
-    global EMAIL_ENDJOB, EMAIL_FULL
-    if EMAIL_ENDJOB() or EMAIL_FULL():
+    global email_endjob, email_full
+    if email_endjob() or email_full():
         if value and RE_VAL.match(value):
             return None, value
         else:
@@ -45,8 +46,8 @@ def validate_email(value):
 
 def validate_server(value):
     """ Check if server non-empty"""
-    global EMAIL_ENDJOB, EMAIL_FULL
-    if value == '' and (EMAIL_ENDJOB() or EMAIL_FULL()):
+    global email_endjob, email_full
+    if value == '' and (email_endjob() or email_full()):
         return T('error-needServer'), None
     else:
         return None, value
@@ -60,26 +61,26 @@ else:
 #------------------------------------------------------------------------------
 # Configuration instances
 #
-QUICK_CHECK = OptionBool('misc', 'quick_check', True)
-FAIL_ON_CRC = OptionBool('misc', 'fail_on_crc', False)
-SEND_GROUP = OptionBool('misc', 'send_group', False)
+quick_check = OptionBool('misc', 'quick_check', True)
+fail_on_crc = OptionBool('misc', 'fail_on_crc', False)
+send_group = OptionBool('misc', 'send_group', False)
 
-EMAIL_SERVER = OptionStr('misc', 'email_server', validation=validate_server)
-EMAIL_TO     = OptionStr('misc', 'email_to', validation=validate_email)
-EMAIL_FROM   = OptionStr('misc', 'email_from', validation=validate_email)
-EMAIL_ACCOUNT= OptionStr('misc', 'email_account')
-EMAIL_PWD    = OptionPassword('misc', 'email_pwd')
-EMAIL_ENDJOB = OptionNumber('misc', 'email_endjob', 0, 0, 2)
-EMAIL_FULL   = OptionBool('misc', 'email_full', False)
-EMAIL_DIR    = OptionDir('misc', 'email_dir', create=False, validation=validate_dir_exists)
-EMAIL_RSS    = OptionBool('misc', 'email_rss', False)
+email_server = OptionStr('misc', 'email_server', validation=validate_server)
+email_to     = OptionStr('misc', 'email_to', validation=validate_email)
+email_from   = OptionStr('misc', 'email_from', validation=validate_email)
+email_account= OptionStr('misc', 'email_account')
+email_pwd    = OptionPassword('misc', 'email_pwd')
+email_endjob = OptionNumber('misc', 'email_endjob', 0, 0, 2)
+email_full   = OptionBool('misc', 'email_full', False)
+email_dir    = OptionDir('misc', 'email_dir', create=False, validation=validate_dir_exists)
+email_rss    = OptionBool('misc', 'email_rss', False)
 
-DIRSCAN_PP = OptionNumber('misc', 'dirscan_opts', 3, 0, 3)
-VERSION_CHECK = OptionBool('misc', 'check_new_rel', True)
-DIRSCAN_SCRIPT = OptionStr('misc', 'dirscan_script', 'None')
-DIRSCAN_PRIORITY = OptionNumber('misc', 'dirscan_priority', NORMAL_PRIORITY)
-AUTOBROWSER = OptionBool('misc', 'auto_browser', True)
-REPLACE_ILLEGAL = OptionBool('misc', 'replace_illegal', True)
+dirscan_pp = OptionNumber('misc', 'dirscan_opts', 3, 0, 3)
+version_check = OptionBool('misc', 'check_new_rel', True)
+dirscan_script = OptionStr('misc', 'dirscan_script', 'None')
+dirscan_priority = OptionNumber('misc', 'dirscan_priority', NORMAL_PRIORITY)
+autobrowser = OptionBool('misc', 'auto_browser', True)
+replace_illegal = OptionBool('misc', 'replace_illegal', True)
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
 enable_unzip = OptionBool('misc', 'enable_unzip', True)
@@ -92,119 +93,119 @@ ionice = OptionStr('misc', 'ionice',  '', validation=no_nonsense)
 ignore_wrong_unrar = OptionBool('misc', 'ignore_wrong_unrar', False)
 par2_multicore = OptionBool('misc', 'par2_multicore', True)
 
-USERNAME_NEWZBIN = OptionStr('newzbin', 'username')
-PASSWORD_NEWZBIN = OptionPassword('newzbin', 'password')
-NEWZBIN_BOOKMARKS = OptionBool('newzbin', 'bookmarks', False)
-NEWZBIN_UNBOOKMARK = OptionBool('newzbin', 'unbookmark', True)
-BOOKMARK_RATE = OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
+newzbin_username = OptionStr('newzbin', 'username')
+newzbin_password = OptionPassword('newzbin', 'password')
+newzbin_bookmarks = OptionBool('newzbin', 'bookmarks', False)
+newzbin_unbookmark = OptionBool('newzbin', 'unbookmark', True)
+bookmark_rate = OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=24*60)
 
-TOP_ONLY = OptionBool('misc', 'top_only', True)
-AUTODISCONNECT = OptionBool('misc', 'auto_disconnect', True)
+top_only = OptionBool('misc', 'top_only', True)
+autodisconnect = OptionBool('misc', 'auto_disconnect', True)
 
-REPLACE_SPACES = OptionBool('misc', 'replace_spaces', False)
-REPLACE_DOTS = OptionBool('misc', 'replace_dots', False)
-NO_DUPES = OptionBool('misc', 'no_dupes', False)
-IGNORE_SAMPLES = OptionNumber('misc', 'ignore_samples', 0, 0, 2)
-CREATE_GROUP_FOLDERS = OptionBool('misc', 'create_group_folders', False)
-AUTO_SORT = OptionBool('misc', 'auto_sort', False)
-FOLDER_RENAME = OptionBool('misc', 'folder_rename', True)
+replace_spaces = OptionBool('misc', 'replace_spaces', False)
+replace_dots = OptionBool('misc', 'replace_dots', False)
+no_dupes = OptionBool('misc', 'no_dupes', False)
+ignore_samples = OptionNumber('misc', 'ignore_samples', 0, 0, 2)
+create_group_folders = OptionBool('misc', 'create_group_folders', False)
+auto_sort = OptionBool('misc', 'auto_sort', False)
+folder_rename = OptionBool('misc', 'folder_rename', True)
 folder_max_length = OptionNumber('misc', 'folder_max_length', DEF_FOLDER_MAX, 20, 65000)
 
-SAFE_POSTPROC = OptionBool('misc', 'safe_postproc', True)
-PAUSE_ON_POST_PROCESSING = OptionBool('misc', 'pause_on_post_processing', False)
+safe_postproc = OptionBool('misc', 'safe_postproc', True)
+pause_on_post_processing = OptionBool('misc', 'pause_on_post_processing', False)
 
-SCHEDULES = OptionList('misc', 'schedlines')
+schedules = OptionList('misc', 'schedlines')
 
-ENABLE_TV_SORTING = OptionBool('misc', 'enable_tv_sorting', False)
-TV_SORT_STRING = OptionStr('misc', 'tv_sort_string')
-TV_SORT_COUNTRIES = OptionNumber('misc', 'tv_sort_countries', 1)
-TV_CATEGORIES = OptionList('misc', 'tv_categories', ['tv'])
+enable_tv_sorting = OptionBool('misc', 'enable_tv_sorting', False)
+tv_sort_string = OptionStr('misc', 'tv_sort_string')
+tv_sort_countries = OptionNumber('misc', 'tv_sort_countries', 1)
+tv_categories = OptionList('misc', 'tv_categories', ['tv'])
 
-ENABLE_MOVIE_SORTING = OptionBool('misc', 'enable_movie_sorting', False)
-MOVIE_SORT_STRING = OptionStr('misc', 'movie_sort_string')
-MOVIE_SORT_EXTRA = OptionStr('misc', 'movie_sort_extra', '-cd%1', strip=False)
-MOVIE_EXTRA_FOLDER = OptionBool('misc', 'movie_extra_folder', False)
-MOVIE_CATEGORIES = OptionList('misc', 'movie_categories', ['movies'])
+enable_movie_sorting = OptionBool('misc', 'enable_movie_sorting', False)
+movie_sort_string = OptionStr('misc', 'movie_sort_string')
+movie_sort_extra = OptionStr('misc', 'movie_sort_extra', '-cd%1', strip=False)
+movie_extra_folders = OptionBool('misc', 'movie_extra_folder', False)
+movie_categories = OptionList('misc', 'movie_categories', ['movies'])
 
-ENABLE_DATE_SORTING = OptionBool('misc', 'enable_date_sorting', False)
-DATE_SORT_STRING = OptionStr('misc', 'date_sort_string')
-DATE_CATEGORIES = OptionStr('misc', 'date_categories', ['tv'])
+enable_date_sorting = OptionBool('misc', 'enable_date_sorting', False)
+date_sort_string = OptionStr('misc', 'date_sort_string')
+date_categories = OptionStr('misc', 'date_categories', ['tv'])
 
-MATRIX_USERNAME = OptionStr('nzbmatrix', 'username')
-MATRIX_APIKEY = OptionStr('nzbmatrix', 'apikey')
+matrix_username = OptionStr('nzbmatrix', 'username')
+matrix_apikey = OptionStr('nzbmatrix', 'apikey')
 
-CONFIGLOCK = OptionBool('misc', 'config_lock', 0)
+configlock = OptionBool('misc', 'config_lock', 0)
 
-UMASK = OptionStr('misc', 'permissions', '', validation=validate_octal)
-DOWNLOAD_DIR = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=validate_safedir)
-DOWNLOAD_FREE = OptionStr('misc', 'download_free')
-COMPLETE_DIR = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, apply_umask=True)
-SCRIPT_DIR = OptionDir('misc', 'script_dir', create=False, validation=validate_dir_exists)
-NZB_BACKUP_DIR = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
-CACHE_DIR = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
-ADMIN_DIR = OptionDir('misc', 'admin_dir', 'admin', validation=validate_safedir)
-#LOG_DIR = OptionDir('misc', 'log_dir', 'logs')
-DIRSCAN_DIR = OptionDir('misc', 'dirscan_dir', create=False)
-DIRSCAN_SPEED = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
+umask = OptionStr('misc', 'permissions', '', validation=validate_octal)
+download_dir = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=validate_safedir)
+download_free = OptionStr('misc', 'download_free')
+complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, apply_umask=True)
+script_dir = OptionDir('misc', 'script_dir', create=False, validation=validate_dir_exists)
+nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
+cache_dir = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
+admin_dir = OptionDir('misc', 'admin_dir', 'admin', validation=validate_safedir)
+#log_dir = OptionDir('misc', 'log_dir', 'logs')
+dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
+dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
 
-CHERRYHOST = OptionStr('misc','host', DEF_HOST)
+cherryhost = OptionStr('misc','host', DEF_HOST)
 if sabnzbd.WIN32:
-    CHERRYPORT = OptionStr('misc','port', DEF_PORT_WIN)
+    cherryport = OptionStr('misc','port', DEF_PORT_WIN)
 else:
-    CHERRYPORT = OptionStr('misc','port', DEF_PORT_UNIX)
+    cherryport = OptionStr('misc','port', DEF_PORT_UNIX)
 if sabnzbd.WIN32:
-    HTTPS_PORT = OptionStr('misc','https_port', DEF_PORT_WIN_SSL)
+    https_port = OptionStr('misc','https_port', DEF_PORT_WIN_SSL)
 else:
-    HTTPS_PORT = OptionStr('misc','https_port', DEF_PORT_UNIX_SSL)
+    https_port = OptionStr('misc','https_port', DEF_PORT_UNIX_SSL)
 
-USERNAME = OptionStr('misc', 'username')
-PASSWORD = OptionPassword('misc', 'password')
-BANDWIDTH_LIMIT = OptionNumber('misc', 'bandwidth_limit', 0)
-REFRESH_RATE = OptionNumber('misc', 'refresh_rate', 0)
-RSS_RATE = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
-CACHE_LIMIT = OptionStr('misc', 'cache_limit')
-WEB_DIR = OptionStr('misc', 'web_dir', DEF_STDINTF)
-WEB_DIR2 = OptionStr('misc', 'web_dir2')
-WEB_COLOR = OptionStr('misc', 'web_color', '')
-WEB_COLOR2 = OptionStr('misc', 'web_color2')
-CLEANUP_LIST = OptionList('misc', 'cleanup_list')
+username = OptionStr('misc', 'username')
+password = OptionPassword('misc', 'password')
+bandwidth_limit = OptionNumber('misc', 'bandwidth_limit', 0)
+refresh_rate = OptionNumber('misc', 'refresh_rate', 0)
+rss_rate = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
+cache_limit = OptionStr('misc', 'cache_limit')
+web_dir = OptionStr('misc', 'web_dir', DEF_STDINTF)
+web_dir2 = OptionStr('misc', 'web_dir2')
+web_color = OptionStr('misc', 'web_color', '')
+web_color2 = OptionStr('misc', 'web_color2')
+cleanup_list = OptionList('misc', 'cleanup_list')
 warned_old_queue = OptionBool('misc', 'warned_old_queue', False)
 
-LOG_WEB = OptionBool('logging', 'enable_cherrypy_logging', False)
-LOG_DIR = OptionDir('misc', 'log_dir', 'logs')
-LOG_LEVEL = OptionNumber('logging', 'log_level', 1, 0, 2)
-LOG_SIZE = OptionStr('logging', 'max_log_size', '5242880')
-LOG_BACKUPS = OptionNumber('logging', 'log_backups', 5, 1, 1024)
+log_web = OptionBool('logging', 'enable_cherrypy_logging', False)
+log_dir = OptionDir('misc', 'log_dir', 'logs')
+log_level = OptionNumber('logging', 'log_level', 1, 0, 2)
+log_size = OptionStr('logging', 'max_log_size', '5242880')
+log_backups = OptionNumber('logging', 'log_backups', 5, 1, 1024)
 
-HTTPS_CERT = OptionDir('misc', 'https_cert', 'server.cert', create=False)
-HTTPS_KEY = OptionDir('misc', 'https_key', 'server.key', create=False)
-ENABLE_HTTPS = OptionBool('misc', 'enable_https', False)
+https_cert = OptionDir('misc', 'https_cert', 'server.cert', create=False)
+https_key = OptionDir('misc', 'https_key', 'server.key', create=False)
+enable_https = OptionBool('misc', 'enable_https', False)
 
-LANGUAGE = OptionStr('misc', 'language', 'us-en')
-SSL_TYPE = OptionStr('misc', 'ssl_type', 'v23')
-UNPACK_CHECK = OptionBool('misc', 'unpack_check', True)
-NO_PENALTIES = OptionBool('misc', 'no_penalties', False)
+language = OptionStr('misc', 'language', 'us-en')
+ssl_type = OptionStr('misc', 'ssl_type', 'v23')
+unpack_check = OptionBool('misc', 'unpack_check', True)
+no_penalties = OptionBool('misc', 'no_penalties', False)
 
 # Internal options, not saved in INI file
-DEBUG_DELAY = OptionNumber('misc', 'debug_delay', 0, add=False)
+debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
 
-API_KEY = OptionStr('misc','api_key', create_api_key())
-DISABLE_KEY = OptionBool('misc', 'disable_api_key', False)
+api_key = OptionStr('misc','api_key', create_api_key())
+disable_key = OptionBool('misc', 'disable_api_key', False)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
 #
 def set_root_folders(home, lcldata, prog, interf):
-    EMAIL_DIR.set_root(home)
-    DOWNLOAD_DIR.set_root(home)
-    COMPLETE_DIR.set_root(home)
-    SCRIPT_DIR.set_root(home)
-    NZB_BACKUP_DIR.set_root(lcldata)
-    CACHE_DIR.set_root(lcldata)
-    ADMIN_DIR.set_root(lcldata)
-    DIRSCAN_DIR.set_root(home)
-    LOG_DIR.set_root(lcldata)
+    email_dir.set_root(home)
+    download_dir.set_root(home)
+    complete_dir.set_root(home)
+    script_dir.set_root(home)
+    nzb_backup_dir.set_root(lcldata)
+    cache_dir.set_root(lcldata)
+    admin_dir.set_root(lcldata)
+    dirscan_dir.set_root(home)
+    log_dir.set_root(lcldata)
 
 def set_root_folders2():
-    HTTPS_CERT.set_root(ADMIN_DIR.get_path())
-    HTTPS_KEY.set_root(ADMIN_DIR.get_path())
+    https_cert.set_root(admin_dir.get_path())
+    https_key.set_root(admin_dir.get_path())

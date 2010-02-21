@@ -56,13 +56,13 @@ class NzbQueue(TryList):
         self.__downloaded_items = []
 
 
-        self.__top_only = cfg.TOP_ONLY()
+        self.__top_only = cfg.top_only()
         self.__top_nzo = None
 
         self.__nzo_list = []
         self.__nzo_table = {}
 
-        self.__auto_sort = cfg.AUTO_SORT()
+        self.__auto_sort = cfg.auto_sort()
 
         nzo_ids = []
 
@@ -75,11 +75,11 @@ class NzbQueue(TryList):
                     logging.error(Ta('error-qBad'))
                     self.__downloaded_items = []
                     nzo_ids = []
-                    panic_queue(os.path.join(cfg.CACHE_DIR.get_path(),QUEUE_FILE_NAME))
+                    panic_queue(os.path.join(cfg.cache_dir.get_path(),QUEUE_FILE_NAME))
                     exit_sab(2)
             except ValueError:
                 logging.error(Ta('error-qCorruptFile@1'),
-                              os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME))
+                              os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME))
 
             for nzo_id in nzo_ids:
                 nzo = sabnzbd.load_data(nzo_id, remove = False)
@@ -601,7 +601,7 @@ class NzbQueue(TryList):
 
             if not self.__nzo_list:
                 # Close server connections
-                if cfg.AUTODISCONNECT():
+                if cfg.autodisconnect():
                     sabnzbd.downloader.disconnect()
 
                 # Sets the end-of-queue back on if disabled

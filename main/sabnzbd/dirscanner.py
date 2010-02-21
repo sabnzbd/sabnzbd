@@ -226,17 +226,17 @@ class DirScanner(threading.Thread):
 
         self.shutdown = False
         self.error_reported = False # Prevents mulitple reporting of missing watched folder
-        self.dirscan_dir = cfg.DIRSCAN_DIR.get_path()
-        self.dirscan_speed = cfg.DIRSCAN_SPEED()
-        cfg.DIRSCAN_DIR.callback(self.newdir)
+        self.dirscan_dir = cfg.dirscan_dir.get_path()
+        self.dirscan_speed = cfg.dirscan_speed()
+        cfg.dirscan_dir.callback(self.newdir)
         DirScanner.do = self
 
     def newdir(self):
         """ We're notified of a dir change """
         self.ignored = {}
         self.suspected = {}
-        self.dirscan_dir = cfg.DIRSCAN_DIR.get_path()
-        self.dirscan_speed = cfg.DIRSCAN_SPEED()
+        self.dirscan_dir = cfg.dirscan_dir.get_path()
+        self.dirscan_speed = cfg.dirscan_speed()
 
     def stop(self):
         self.save()

@@ -47,7 +47,7 @@ def get_history_handle():
     """ Get an instance of the history db hanlder """
     global _HISTORY_DB
     if not _HISTORY_DB:
-        _HISTORY_DB = os.path.join(sabnzbd.cfg.ADMIN_DIR.get_path(), DB_HISTORY_NAME)
+        _HISTORY_DB = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
     return HistoryDB(_HISTORY_DB)
 
 

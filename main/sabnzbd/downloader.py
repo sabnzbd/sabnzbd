@@ -99,7 +99,7 @@ def pause_downloader(save=True):
     global __DOWNLOADER
     if __DOWNLOADER:
         __DOWNLOADER.pause()
-        if cfg.AUTODISCONNECT():
+        if cfg.autodisconnect():
             __DOWNLOADER.disconnect()
         if save:
             sabnzbd.save_state()
@@ -249,8 +249,8 @@ class Downloader(Thread):
         self.paused = paused
 
         #used for throttling bandwidth and scheduling bandwidth changes
-        self.bandwidth_limit = cfg.BANDWIDTH_LIMIT()
-        cfg.BANDWIDTH_LIMIT.callback(self.speed_set)
+        self.bandwidth_limit = cfg.bandwidth_limit()
+        cfg.bandwidth_limit.callback(self.speed_set)
 
         # Used for reducing speed
         self.delayed = False
@@ -360,7 +360,7 @@ class Downloader(Thread):
         return self.bandwidth_limit
 
     def speed_set(self):
-        self.bandwidth_limit = cfg.BANDWIDTH_LIMIT()
+        self.bandwidth_limit = cfg.bandwidth_limit()
 
     def is_paused(self):
         if not self.paused:
@@ -626,7 +626,7 @@ class Downloader(Thread):
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
-                                    if (not server.optional) and cfg.NO_PENALTIES.get():
+                                    if (not server.optional) and cfg.no_penalties.get():
                                         penalty = _PENALTY_SHORT
                                     if penalty and (block or server.optional):
                                         logging.info('Server %s ignored for %s minutes', server.id, penalty)
@@ -743,7 +743,7 @@ class Downloader(Thread):
 
     def __request_article(self, nw):
         try:
-            if cfg.SEND_GROUP() and nw.article.nzf.nzo.get_group() != nw.group:
+            if cfg.send_group() and nw.article.nzf.nzo.get_group() != nw.group:
                 group = nw.article.nzf.nzo.get_group()
                 logging.info('Thread %s@%s:%s: GROUP <%s>',
                              nw.thrdnum, nw.server.host,

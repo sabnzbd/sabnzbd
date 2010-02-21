@@ -85,7 +85,7 @@ def check_server(host, port):
 def ListScripts(default=False):
     """ Return a list of script names """
     lst = []
-    dd = cfg.SCRIPT_DIR.get_path()
+    dd = cfg.script_dir.get_path()
 
     if dd and os.access(dd, os.R_OK):
         if default:
@@ -164,7 +164,7 @@ def Strip(txt):
 # Web login support
 def get_users():
     users = {}
-    users[cfg.USERNAME()] = cfg.PASSWORD()
+    users[cfg.username()] = cfg.password()
     return users
 
 def encrypt_pwd(pwd):
@@ -174,7 +174,7 @@ def encrypt_pwd(pwd):
 def set_auth(conf):
     """ Set the authentication for CherryPy
     """
-    if cfg.USERNAME() and cfg.PASSWORD():
+    if cfg.username() and cfg.password():
         conf.update({'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
                             'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd})
         conf.update({'/api':{'tools.basic_auth.on' : False},
@@ -195,7 +195,7 @@ def check_session(kwargs):
     if not key:
         logging.warning(Ta('warn-missingKey'))
         msg = T('error-missingKey')
-    elif key != cfg.API_KEY():
+    elif key != cfg.api_key():
         logging.warning(Ta('error-badKey'))
         msg = T('error-badKey')
     return msg
@@ -211,21 +211,21 @@ def check_apikey(kwargs, nokey=False):
     special = mode in ('get_scripts', 'qstatus')
 
     # First check APIKEY, if OK that's sufficient
-    if not (cfg.DISABLE_KEY() or nokey):
+    if not (cfg.disable_key() or nokey):
         key = kwargs.get('apikey')
         if not key:
             if not special:
                 logging.warning(Ta('warn-apikeyNone'))
             return report(output, 'API Key Required')
-        elif key != cfg.API_KEY():
+        elif key != cfg.api_key():
             logging.warning(Ta('warn-apikeyBad'))
             return report(output, 'API Key Incorrect')
         else:
             return None
 
     # No active APIKEY, check web credentials instead
-    if cfg.USERNAME() and cfg.PASSWORD():
-        if kwargs.get('ma_username') == cfg.USERNAME() and kwargs.get('ma_password') == cfg.PASSWORD():
+    if cfg.username() and cfg.password():
+        if kwargs.get('ma_username') == cfg.username() and kwargs.get('ma_password') == cfg.password():
             pass
         else:
             if not special:
@@ -373,11 +373,11 @@ class MainPage:
         if kwargs.get('skip_wizard') or config.get_servers():
             info, pnfo_list, bytespersec = build_header(self.__prim)
 
-            if cfg.USERNAME_NEWZBIN() and cfg.PASSWORD_NEWZBIN.get_stars():
+            if cfg.newzbin_username() and cfg.newzbin_password.get_stars():
                 info['newzbinDetails'] = True
 
             info['script_list'] = ListScripts(default=True)
-            info['script'] = cfg.DIRSCAN_SCRIPT()
+            info['script'] = cfg.dirscan_script()
 
             info['cat'] = 'Default'
             info['cat_list'] = ListCats(True)
@@ -402,7 +402,7 @@ class MainPage:
     #def reset_lang(self, **kwargs):
     #    msg = check_session(kwargs)
     #    if msg: return msg
-    #    reset_language(cfg.LANGUAGE())
+    #    reset_language(cfg.language())
     #    raise dcRaiser(self.__root, kwargs)
 
 
@@ -834,9 +834,9 @@ class MainPage:
             elif name == 'set_colorscheme':
                 if value:
                     if self.__prim:
-                        cfg.WEB_COLOR.set(value)
+                        cfg.web_color.set(value)
                     else:
-                        cfg.WEB_COLOR2.set(value)
+                        cfg.web_color2.set(value)
                     return report(output)
                 else:
                     return report(output, _MSG_NO_VALUE)
@@ -845,9 +845,9 @@ class MainPage:
                 return report(output)
 
             elif name == 'set_apikey':
-                cfg.API_KEY.set(config.create_api_key())
+                cfg.api_key.set(config.create_api_key())
                 config.save_config()
-                return report(output, keyword='apikey', data=cfg.API_KEY())
+                return report(output, keyword='apikey', data=cfg.api_key())
 
             elif name == 'test_server':
 
@@ -873,9 +873,9 @@ class MainPage:
 
         if mode == 'auth':
             auth = 'None'
-            if cfg.USERNAME.get() and cfg.PASSWORD.get():
+            if cfg.username.get() and cfg.password.get():
                 auth = 'login'
-            if not cfg.DISABLE_KEY.get():
+            if not cfg.disable_key.get():
                 auth = 'apikey'
             return report(output, keyword='auth', data=auth)
 
@@ -1235,9 +1235,9 @@ class QueuePage:
             if item:
                 cat, pp, script, priority = cat_to_opts(cat)
             else:
-                script = cfg.DIRSCAN_SCRIPT()
-                pp = cfg.DIRSCAN_PP()
-                priority = cfg.DIRSCAN_PRIORITY()
+                script = cfg.dirscan_script()
+                pp = cfg.dirscan_pp()
+                priority = cfg.dirscan_priority()
 
             nzbqueue.change_script(nzo_id, script)
             nzbqueue.change_opts(nzo_id, pp)
@@ -1349,7 +1349,7 @@ class HistoryPage:
 
         history['isverbose'] = self.__verbose
 
-        if cfg.USERNAME_NEWZBIN() and cfg.PASSWORD_NEWZBIN():
+        if cfg.newzbin_username() and cfg.newzbin_password():
             history['newzbinDetails'] = True
 
         #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
@@ -1520,7 +1520,7 @@ class ConfigDirectories:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
@@ -1572,7 +1572,7 @@ class ConfigSwitches:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
@@ -1645,7 +1645,7 @@ class ConfigGeneral:
             else:
                 return ''
 
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
@@ -1690,29 +1690,29 @@ class ConfigGeneral:
         conf['web_colors2'] = ['None']
         conf['web_color2'] = 'None'
 
-        conf['web_dir']  = add_color(cfg.WEB_DIR(), cfg.WEB_COLOR())
-        conf['web_dir2'] = add_color(cfg.WEB_DIR2(), cfg.WEB_COLOR2())
+        conf['web_dir']  = add_color(cfg.web_dir(), cfg.web_color())
+        conf['web_dir2'] = add_color(cfg.web_dir2(), cfg.web_color2())
 
-        conf['language'] = cfg.LANGUAGE()
+        conf['language'] = cfg.language()
         list = list_languages(sabnzbd.DIR_LANGUAGE)
         if len(list) < 2:
             list = []
         conf['lang_list'] = list
 
-        conf['disable_api_key'] = cfg.DISABLE_KEY()
-        conf['host'] = cfg.CHERRYHOST()
-        conf['port'] = cfg.CHERRYPORT()
-        conf['https_port'] = cfg.HTTPS_PORT()
-        conf['https_cert'] = cfg.HTTPS_CERT()
-        conf['https_key'] = cfg.HTTPS_KEY()
-        conf['enable_https'] = cfg.ENABLE_HTTPS()
-        conf['username'] = cfg.USERNAME()
-        conf['password'] = cfg.PASSWORD.get_stars()
-        conf['bandwidth_limit'] = cfg.BANDWIDTH_LIMIT()
-        conf['refresh_rate'] = cfg.REFRESH_RATE()
-        conf['rss_rate'] = cfg.RSS_RATE()
-        conf['cache_limit'] = cfg.CACHE_LIMIT()
-        conf['cleanup_list'] = List2String(cfg.CLEANUP_LIST())
+        conf['disable_api_key'] = cfg.disable_key()
+        conf['host'] = cfg.cherryhost()
+        conf['port'] = cfg.cherryport()
+        conf['https_port'] = cfg.https_port()
+        conf['https_cert'] = cfg.https_cert()
+        conf['https_key'] = cfg.https_key()
+        conf['enable_https'] = cfg.enable_https()
+        conf['username'] = cfg.username()
+        conf['password'] = cfg.password.get_stars()
+        conf['bandwidth_limit'] = cfg.bandwidth_limit()
+        conf['refresh_rate'] = cfg.refresh_rate()
+        conf['rss_rate'] = cfg.rss_rate()
+        conf['cache_limit'] = cfg.cache_limit()
+        conf['cleanup_list'] = List2String(cfg.cleanup_list())
 
         template = Template(file=os.path.join(self.__web_dir, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1736,14 +1736,14 @@ class ConfigGeneral:
 
         # Handle special options
         language = kwargs.get('language')
-        if language and language != cfg.LANGUAGE():
-            cfg.LANGUAGE.set(language)
+        if language and language != cfg.language():
+            cfg.language.set(language)
             reset_language(language)
 
         cleanup_list = kwargs.get('cleanup_list')
         if cleanup_list and sabnzbd.WIN32:
             cleanup_list = cleanup_list.lower()
-        cfg.CLEANUP_LIST.set_string(cleanup_list)
+        cfg.cleanup_list.set_string(cleanup_list)
 
         web_dir = kwargs.get('web_dir')
         web_dir2 = kwargs.get('web_dir2')
@@ -1755,15 +1755,15 @@ class ConfigGeneral:
         web_dir2_path = real_path(sabnzbd.DIR_INTERFACES, web_dir2)
 
         if web_dir2 == 'None':
-            cfg.WEB_DIR2.set('')
+            cfg.web_dir2.set('')
         elif os.path.exists(web_dir2_path):
-            cfg.WEB_DIR2.set(web_dir2)
-        cfg.WEB_COLOR2.set(web_color2)
+            cfg.web_dir2.set(web_dir2)
+        cfg.web_color2.set(web_color2)
 
         bandwidth_limit = kwargs.get('bandwidth_limit')
         if bandwidth_limit != None:
             bandwidth_limit = IntConv(bandwidth_limit)
-            cfg.BANDWIDTH_LIMIT.set(bandwidth_limit)
+            cfg.bandwidth_limit.set(bandwidth_limit)
 
         config.save_config()
 
@@ -1777,7 +1777,7 @@ class ConfigGeneral:
         if msg: return msg
 
         logging.debug('API Key Changed')
-        cfg.API_KEY.set(config.create_api_key())
+        cfg.api_key.set(config.create_api_key())
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 
@@ -1795,8 +1795,8 @@ def change_web_dir(web_dir):
     if not os.path.exists(web_dir_path):
         return badParameterResponse('Cannot find web template: %s' % web_dir_path)
     else:
-        cfg.WEB_DIR.set(web_dir)
-        cfg.WEB_COLOR.set(web_color)
+        cfg.web_dir.set(web_dir)
+        cfg.web_color.set(web_color)
 
 
 #------------------------------------------------------------------------------
@@ -1809,7 +1809,7 @@ class ConfigServer:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
@@ -1941,7 +1941,7 @@ class ConfigRss:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
@@ -2151,7 +2151,7 @@ class ConfigScheduling:
             days["7"] = T('sunday')
             return days
 
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
@@ -2230,10 +2230,10 @@ class ConfigScheduling:
                 action = None
 
             if action:
-                sched = cfg.SCHEDULES()
+                sched = cfg.schedules()
                 sched.append('%s %s %s %s %s' %
                                  (minute, hour, dayofweek, action, arguments))
-                cfg.SCHEDULES.set(sched)
+                cfg.schedules.set(sched)
 
         config.save_config()
         scheduler.restart(force=True)
@@ -2244,11 +2244,11 @@ class ConfigScheduling:
         msg = check_session(kwargs)
         if msg: return msg
 
-        schedules = cfg.SCHEDULES()
+        schedules = cfg.schedules()
         line = kwargs.get('line')
         if line and line in schedules:
             schedules.remove(line)
-            cfg.SCHEDULES.set(schedules)
+            cfg.schedules.set(schedules)
         config.save_config()
         scheduler.restart(force=True)
         raise dcRaiser(self.__root, kwargs)
@@ -2263,21 +2263,21 @@ class ConfigNewzbin:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        conf['username_newzbin'] = cfg.USERNAME_NEWZBIN()
-        conf['password_newzbin'] = cfg.PASSWORD_NEWZBIN.get_stars()
-        conf['newzbin_bookmarks'] = int(cfg.NEWZBIN_BOOKMARKS())
-        conf['newzbin_unbookmark'] = int(cfg.NEWZBIN_UNBOOKMARK())
-        conf['bookmark_rate'] = cfg.BOOKMARK_RATE()
+        conf['username_newzbin'] = cfg.newzbin_username()
+        conf['password_newzbin'] = cfg.newzbin_password.get_stars()
+        conf['newzbin_bookmarks'] = int(cfg.newzbin_bookmarks())
+        conf['newzbin_unbookmark'] = int(cfg.newzbin_unbookmark())
+        conf['bookmark_rate'] = cfg.bookmark_rate()
 
         conf['bookmarks_list'] = self.__bookmarks
 
-        conf['matrix_username'] = cfg.MATRIX_USERNAME()
-        conf['matrix_apikey'] = cfg.MATRIX_APIKEY()
+        conf['matrix_username'] = cfg.matrix_username()
+        conf['matrix_apikey'] = cfg.matrix_apikey()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2288,14 +2288,14 @@ class ConfigNewzbin:
         msg = check_session(kwargs)
         if msg: return msg
 
-        cfg.USERNAME_NEWZBIN.set(kwargs.get('username_newzbin'))
-        cfg.PASSWORD_NEWZBIN.set(kwargs.get('password_newzbin'))
-        cfg.NEWZBIN_BOOKMARKS.set(kwargs.get('newzbin_bookmarks'))
-        cfg.NEWZBIN_UNBOOKMARK.set(kwargs.get('newzbin_unbookmark'))
-        cfg.BOOKMARK_RATE.set(kwargs.get('bookmark_rate'))
+        cfg.newzbin_username.set(kwargs.get('username_newzbin'))
+        cfg.newzbin_password.set(kwargs.get('password_newzbin'))
+        cfg.newzbin_bookmarks.set(kwargs.get('newzbin_bookmarks'))
+        cfg.newzbin_unbookmark.set(kwargs.get('newzbin_unbookmark'))
+        cfg.bookmark_rate.set(kwargs.get('bookmark_rate'))
 
-        cfg.MATRIX_USERNAME.set(kwargs.get('matrix_username'))
-        cfg.MATRIX_APIKEY.set(kwargs.get('matrix_apikey'))
+        cfg.matrix_username.set(kwargs.get('matrix_username'))
+        cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -2305,8 +2305,8 @@ class ConfigNewzbin:
         msg = check_session(kwargs)
         if msg: return msg
 
-        cfg.MATRIX_USERNAME.set(kwargs.get('matrix_username'))
-        cfg.MATRIX_APIKEY.set(kwargs.get('matrix_apikey'))
+        cfg.matrix_username.set(kwargs.get('matrix_username'))
+        cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -2343,19 +2343,19 @@ class ConfigCats:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
 
-        if cfg.USERNAME_NEWZBIN() and cfg.PASSWORD_NEWZBIN():
+        if cfg.newzbin_username() and cfg.newzbin_password():
             conf['newzbinDetails'] = True
 
         conf['script_list'] = ListScripts(default=True)
 
         categories = config.get_categories()
         conf['have_cats'] =  categories != {}
-        conf['defdir'] = cfg.COMPLETE_DIR.get_path()
+        conf['defdir'] = cfg.complete_dir.get_path()
 
 
         empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'', 'priority':DEFAULT_PRIORITY }
@@ -2421,11 +2421,11 @@ class ConfigSorting:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
-        conf['complete_dir'] = cfg.COMPLETE_DIR.get_path()
+        conf['complete_dir'] = cfg.complete_dir.get_path()
 
         for kw in SORT_LIST:
             conf[kw] = config.get_config('misc', kw)()
@@ -2480,7 +2480,7 @@ class ConnectionInfo:
 
         header['logfile'] = sabnzbd.LOGFILE
         header['weblogfile'] = sabnzbd.WEBLOGFILE
-        header['loglevel'] = str(cfg.LOG_LEVEL())
+        header['loglevel'] = str(cfg.log_level())
 
         header['lastmail'] = self.__lastmail
 
@@ -2554,7 +2554,7 @@ class ConnectionInfo:
         pack['unpack'] = ['action 1', 'action 2']
 
         self.__lastmail= emailer.endjob('Test Job', 123, 'unknown', True,
-                                      os.path.normpath(os.path.join(cfg.COMPLETE_DIR.get_path(), '/unknown/Test Job')),
+                                      os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/Test Job')),
                                       str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n', 0)
         raise dcRaiser(self.__root, kwargs)
 
@@ -2588,7 +2588,7 @@ class ConnectionInfo:
     def change_loglevel(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        cfg.LOG_LEVEL.set(kwargs.get('loglevel'))
+        cfg.log_level.set(kwargs.get('loglevel'))
         config.save_config()
 
         raise dcRaiser(self.__root, kwargs)
@@ -2719,7 +2719,7 @@ def _make_link(qfeed, job):
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (job['url'], title)
 
     return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
-           (cfg.API_KEY() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star)
+           (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star)
 
 
 def ShowRssLog(feed, all):
@@ -2819,16 +2819,16 @@ def build_header(prim):
         speed_limit = ''
 
     header['helpuri'] = 'http://wiki.sabnzbd.org/'
-    header['diskspace1'] = "%.2f" % diskfree(cfg.DOWNLOAD_DIR.get_path())
-    header['diskspace2'] = "%.2f" % diskfree(cfg.COMPLETE_DIR.get_path())
-    header['diskspacetotal1'] = "%.2f" % disktotal(cfg.DOWNLOAD_DIR.get_path())
-    header['diskspacetotal2'] = "%.2f" % disktotal(cfg.COMPLETE_DIR.get_path())
+    header['diskspace1'] = "%.2f" % diskfree(cfg.download_dir.get_path())
+    header['diskspace2'] = "%.2f" % diskfree(cfg.complete_dir.get_path())
+    header['diskspacetotal1'] = "%.2f" % disktotal(cfg.download_dir.get_path())
+    header['diskspacetotal2'] = "%.2f" % disktotal(cfg.complete_dir.get_path())
     header['loadavg'] = loadavg()
     header['speedlimit'] = "%s" % speed_limit
     header['restart_req'] = sabnzbd.RESTART_REQ
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
     header['last_warning'] = sabnzbd.GUIHANDLER.last()
-    header['active_lang'] = cfg.LANGUAGE()
+    header['active_lang'] = cfg.language()
     if prim:
         header['webdir'] = sabnzbd.WEB_DIR
     else:
@@ -2839,7 +2839,7 @@ def build_header(prim):
     header['darwin'] = sabnzbd.DARWIN
     header['power_options'] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
 
-    header['session'] = cfg.API_KEY()
+    header['session'] = cfg.api_key()
 
     bytespersec = BPSMeter.do.get_bps()
     qnfo = nzbqueue.queue_info()
@@ -2945,7 +2945,7 @@ class ConfigEmail:
 
     @cherrypy.expose
     def index(self, **kwargs):
-        if cfg.CONFIGLOCK():
+        if cfg.configlock():
             return Protected()
 
         conf, pnfo_list, bytespersec = build_header(self.__prim)
@@ -3101,8 +3101,8 @@ def qstatus_data():
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
         "have_warnings" : str(sabnzbd.GUIHANDLER.count()),
-        "diskspace1" : diskfree(cfg.DOWNLOAD_DIR.get_path()),
-        "diskspace2" : diskfree(cfg.COMPLETE_DIR.get_path()),
+        "diskspace1" : diskfree(cfg.download_dir.get_path()),
+        "diskspace2" : diskfree(cfg.complete_dir.get_path()),
         "timeleft" : calc_timeleft(qnfo[QNFO_BYTES_LEFT_FIELD], bpsnow),
         "loadavg" : loadavg(),
         "jobs" : jobs
@@ -3368,11 +3368,11 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
     else:
         info['queue_details'] = '0'
 
-    if cfg.USERNAME_NEWZBIN() and cfg.PASSWORD_NEWZBIN():
+    if cfg.newzbin_username() and cfg.newzbin_password():
         info['newzbinDetails'] = True
 
-    if cfg.REFRESH_RATE() > 0:
-        info['refresh_rate'] = str(cfg.REFRESH_RATE())
+    if cfg.refresh_rate() > 0:
+        info['refresh_rate'] = str(cfg.refresh_rate())
     else:
         info['refresh_rate'] = ''
 
@@ -3578,7 +3578,7 @@ def rss_qstatus():
     rss.channel.title = "SABnzbd Queue"
     rss.channel.description = "Overview of current downloads"
     rss.channel.link = "http://%s:%s/sabnzbd/queue" % ( \
-        cfg.CHERRYHOST(), cfg.CHERRYPORT() )
+        cfg.cherryhost(), cfg.cherryport() )
     rss.channel.language = "en"
 
     item = Item()
@@ -3614,7 +3614,7 @@ def rss_qstatus():
             item.link    = "https://newzbin.com/browse/post/%s/" % msgid
         else:
             item.link    = "http://%s:%s/sabnzbd/history" % ( \
-            cfg.CHERRYHOST(), cfg.CHERRYPORT() )
+            cfg.cherryhost(), cfg.cherryport() )
         statusLine  = []
         statusLine.append('<tr>')
         #Total MB/MB left

@@ -301,7 +301,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.nzf_list = []
 
     def startDocument(self):
-        self.filter = cfg.IGNORE_SAMPLES()
+        self.filter = cfg.ignore_samples()
 
     def startElement(self, name, attrs):
         if name == 'segment' and self.in_nzb and self.in_file and self.in_segments:
@@ -520,7 +520,7 @@ class NzbObject(TryList):
         self.extra5 = None
         self.extra6 = None
 
-        self.create_group_folder = cfg.CREATE_GROUP_FOLDERS()
+        self.create_group_folder = cfg.create_group_folders()
 
         # Remove leading msgid_XXXX and trailing .nzb
         self.__dirname, self.__msgid = SplitFileName(self.__dirname)
@@ -533,10 +533,10 @@ class NzbObject(TryList):
 
         # Apply conversion option to final folder, called __original_dirname
         # Yeah, I know :(
-        if cfg.REPLACE_DOTS() and ' ' not in self.__original_dirname:
+        if cfg.replace_dots() and ' ' not in self.__original_dirname:
             logging.info('Replacing dots with spaces in %s', self.__original_dirname)
             self.__original_dirname = self.__original_dirname.replace('.',' ')
-        if cfg.REPLACE_SPACES():
+        if cfg.replace_spaces():
             logging.info('Replacing spaces with underscores in %s', self.__dirname)
             self.__original_dirname = self.__original_dirname.replace(' ','_')
 
@@ -580,10 +580,10 @@ class NzbObject(TryList):
         self.__cat, pp, self.__script, self.__priority = cat_to_opts(cat, pp, script, self.__priority)
         self.__repair, self.__unpack, self.__delete = sabnzbd.pp_to_opts(pp)
 
-        if cfg.CREATE_GROUP_FOLDERS():
+        if cfg.create_group_folders():
             self.__dirprefix.append(self.get_group())
 
-        if cfg.AUTO_SORT():
+        if cfg.auto_sort():
             self.__files.sort(cmp=_nzf_cmp_date)
         else:
             self.__files.sort(cmp=_nzf_cmp_name)

@@ -146,12 +146,12 @@ class PostProcessor(Thread):
             if not nzo: break
 
             ## Pause downloader, if users wants that
-            if cfg.PAUSE_ON_POST_PROCESSING():
+            if cfg.pause_on_post_processing():
                 sabnzbd.downloader.idle_downloader()
 
             start = time.time()
 
-            folder_rename = cfg.FOLDER_RENAME()
+            folder_rename = cfg.folder_rename()
 
             # keep track of if par2 fails
             parResult = True
@@ -185,7 +185,7 @@ class PostProcessor(Thread):
             try:
 
                 # Get the folder containing the download result
-                workdir = os.path.join(cfg.DOWNLOAD_DIR.get_path(), nzo.get_dirname())
+                workdir = os.path.join(cfg.download_dir.get_path(), nzo.get_dirname())
 
                 # if the directory has not been made, no files were assembled
                 if not os.path.exists(workdir):
@@ -233,17 +233,17 @@ class PostProcessor(Thread):
                 if parResult: jobResult = 0
 
                 ## Check if user allows unsafe post-processing
-                if not cfg.SAFE_POSTPROC():
+                if not cfg.safe_postproc():
                     parResult = True
 
                 ## Determine class directory
                 if config.get_categories():
-                    complete_dir = Cat2Dir(cat, cfg.COMPLETE_DIR.get_path())
-                elif cfg.CREATE_GROUP_FOLDERS():
-                    complete_dir = addPrefixes(cfg.COMPLETE_DIR.get_path(), nzo)
+                    complete_dir = Cat2Dir(cat, cfg.complete_dir.get_path())
+                elif cfg.create_group_folders():
+                    complete_dir = addPrefixes(cfg.complete_dir.get_path(), nzo)
                     complete_dir = create_dirs(complete_dir)
                 else:
-                    complete_dir = cfg.COMPLETE_DIR.get_path()
+                    complete_dir = cfg.complete_dir.get_path()
                 base_dir = os.path.normpath(complete_dir)
 
                 ## Determine destination directory
@@ -297,7 +297,7 @@ class PostProcessor(Thread):
 
                 ## Set permissions right
                 if not sabnzbd.WIN32:
-                    perm_script(tmp_workdir_complete, cfg.UMASK())
+                    perm_script(tmp_workdir_complete, cfg.umask())
 
                 if parResult:
                     ## Remove files matching the cleanup list
@@ -329,7 +329,7 @@ class PostProcessor(Thread):
 
                     if unpackError: jobResult = jobResult + 2
 
-                    if cfg.IGNORE_SAMPLES() > 0:
+                    if cfg.ignore_samples() > 0:
                         remove_samples(workdir_complete)
 
                     ## TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
@@ -340,9 +340,9 @@ class PostProcessor(Thread):
 
                     ## Run the user script
                     fname = ""
-                    if parResult and (not nzb_list) and cfg.SCRIPT_DIR.get_path() and script and script!='None' and script!='Default':
+                    if parResult and (not nzb_list) and cfg.script_dir.get_path() and script and script!='None' and script!='Default':
                         #set the current nzo status to "Ext Script...". Used in History
-                        script_path = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
+                        script_path = os.path.join(cfg.script_dir.get_path(), script)
                         if os.path.exists(script_path):
                             nzo.set_status('Running')
                             nzo.set_action_line(T('msg-running'), unicoder(script))
@@ -361,8 +361,8 @@ class PostProcessor(Thread):
                         script_ret = 0
 
                     ## Email the results
-                    if (not nzb_list) and cfg.EMAIL_ENDJOB():
-                        if (cfg.EMAIL_ENDJOB() == 1) or (cfg.EMAIL_ENDJOB() == 2 and (unpackError or not parResult)):
+                    if (not nzb_list) and cfg.email_endjob():
+                        if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpackError or not parResult)):
                             emailer.endjob(dirname, msgid, cat, mailResult, workdir_complete, nzo.get_bytes_downloaded(),
                                          nzo.get_unpack_info(), script, TRANS(script_log), script_ret)
 
@@ -498,7 +498,7 @@ def Cat2Dir(cat, defdir):
             ddir = item.dir()
         else:
             return defdir
-        ddir = real_path(cfg.COMPLETE_DIR.get_path(), ddir)
+        ddir = real_path(cfg.complete_dir.get_path(), ddir)
         ddir = create_dirs(ddir)
         if not ddir:
             ddir = defdir
@@ -540,7 +540,7 @@ def HandleEmptyQueue():
 def CleanUpList(wdir, skip_nzb):
     """ Remove all files matching the cleanup list """
 
-    if cfg.CLEANUP_LIST():
+    if cfg.cleanup_list():
         try:
             files = os.listdir(wdir)
         except:

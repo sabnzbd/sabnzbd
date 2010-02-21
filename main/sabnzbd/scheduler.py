@@ -56,7 +56,7 @@ def init():
     reset_guardian()
     __SCHED = kronos.ThreadedScheduler()
 
-    for schedule in cfg.SCHEDULES():
+    for schedule in cfg.schedules():
         arguments = []
         argument_list = None
         try:
@@ -118,14 +118,14 @@ def init():
                                   kronos.method.sequential, None, None)
 
     # Set RSS check interval
-    interval = cfg.RSS_RATE()
+    interval = cfg.rss_rate()
     delay = random.randint(0, interval-1)
     logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
     __SCHED.add_interval_task(rss.run_method, "RSS", delay*60, interval*60,
                                   kronos.method.sequential, None, None)
     __SCHED.add_single_task(rss.run_method, 'RSS', 15, kronos.method.sequential, None, None)
 
-    if cfg.VERSION_CHECK():
+    if cfg.version_check():
         # Check for new release, once per week on random time
         m = random.randint(0, 59)
         h = random.randint(0, 23)
@@ -136,8 +136,8 @@ def init():
                                  kronos.method.sequential, [], None)
 
 
-    if cfg.NEWZBIN_BOOKMARKS():
-        interval = cfg.BOOKMARK_RATE()
+    if cfg.newzbin_bookmarks():
+        interval = cfg.bookmark_rate()
         delay = random.randint(0, interval-1)
         logging.debug("Scheduling Bookmark interval task every %s min (delay=%s)", interval, delay)
         __SCHED.add_interval_task(Bookmarks.do.run, 'Bookmarks', delay*60, interval*60,
@@ -146,9 +146,9 @@ def init():
 
 
     # Subscribe to special schedule changes
-    cfg.NEWZBIN_BOOKMARKS.callback(schedule_guard)
-    cfg.BOOKMARK_RATE.callback(schedule_guard)
-    cfg.RSS_RATE.callback(schedule_guard)
+    cfg.newzbin_bookmarks.callback(schedule_guard)
+    cfg.bookmark_rate.callback(schedule_guard)
+    cfg.rss_rate.callback(schedule_guard)
 
 
 def start():
@@ -208,7 +208,7 @@ def sort_schedules(forward):
     now_hm = int(now[3])*60 + int(now[4])
     now = int(now[6])*24*60 + now_hm
 
-    for schedule in cfg.SCHEDULES():
+    for schedule in cfg.schedules():
         parms = None
         try:
             m, h, d, action, parms = schedule.split(None, 4)

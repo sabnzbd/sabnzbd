@@ -45,10 +45,10 @@ def send(message):
     if not message.strip('\n\r\t '):
         return "Skipped empty message"
 
-    if cfg.EMAIL_SERVER() and cfg.EMAIL_TO() and cfg.EMAIL_FROM():
+    if cfg.email_server() and cfg.email_to() and cfg.email_from():
 
         failure = T('error-mailSend')
-        server, port = split_host(cfg.EMAIL_SERVER())
+        server, port = split_host(cfg.email_server())
         if not port:
             port = 25
 
@@ -91,9 +91,9 @@ def send(message):
                     return failure
 
         # Authentication
-        if (cfg.EMAIL_ACCOUNT() != "") and (cfg.EMAIL_PWD() != ""):
+        if (cfg.email_account() != "") and (cfg.email_pwd() != ""):
             try:
-                mailconn.login(cfg.EMAIL_ACCOUNT(), cfg.EMAIL_PWD())
+                mailconn.login(cfg.email_account(), cfg.email_pwd())
             except:
                 logging.error(Ta('error-mailAuth'))
                 return failure
@@ -101,7 +101,7 @@ def send(message):
         try:
             if isinstance(message, unicode):
                 message = message.encode('utf8')
-            mailconn.sendmail(cfg.EMAIL_FROM(), cfg.EMAIL_TO(), message)
+            mailconn.sendmail(cfg.email_from(), cfg.email_to(), message)
         except:
             logging.error(Ta('error-mailSend'))
             return failure
@@ -117,7 +117,7 @@ def send(message):
 
 
 ################################################################################
-# EMAIL_ENDJOB
+# email_endjob
 #
 #
 ################################################################################
@@ -126,12 +126,12 @@ from Cheetah.Template import Template
 def send_with_template(prefix, parm):
     """ Send an email using template """
 
-    parm['to'] = cfg.EMAIL_TO()
-    parm['from'] = cfg.EMAIL_FROM()
+    parm['to'] = cfg.email_to()
+    parm['from'] = cfg.email_from()
     parm['date'] = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
 
     lst = []
-    path = cfg.EMAIL_DIR.get_path()
+    path = cfg.email_dir.get_path()
     if path and os.path.exists(path):
         try:
             lst = glob.glob(os.path.join(path, '%s-*.tmpl' % prefix))
@@ -139,7 +139,7 @@ def send_with_template(prefix, parm):
             logging.error(Ta('error-mailTempl@1'), path)
     else:
         path = os.path.join(sabnzbd.DIR_PROG, DEF_LANGUAGE)
-        tpath = os.path.join(path, '%s-%s.tmpl' % (prefix, cfg.LANGUAGE()))
+        tpath = os.path.join(path, '%s-%s.tmpl' % (prefix, cfg.language()))
         if os.path.exists(tpath):
             lst = [tpath]
         else:
@@ -198,8 +198,8 @@ def rss_mail(feed, jobs):
 def diskfull():
     """ Send email about disk full, no templates """
 
-    if cfg.EMAIL_FULL():
-        return send(T('email-full@2') % (cfg.EMAIL_TO(), cfg.EMAIL_FROM()))
+    if cfg.email_full():
+        return send(T('email-full@2') % (cfg.email_to(), cfg.email_from()))
     else:
         return ""
 

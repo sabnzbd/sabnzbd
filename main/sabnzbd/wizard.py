@@ -48,7 +48,7 @@ class Wizard:
         info = self.info.copy()
         info['num'] = ''
         info['number'] = 0
-        info['lang'] = cfg.LANGUAGE()
+        info['lang'] = cfg.language()
         info['languages'] = list_languages(sabnzbd.DIR_LANGUAGE)
 
         if not os.path.exists(self.__web_dir):
@@ -63,14 +63,14 @@ class Wizard:
     def one(self, **kwargs):
         # Handle special options
         language = kwargs.get('lang')
-        if language and language != cfg.LANGUAGE():
-            cfg.LANGUAGE.set(language)
+        if language and language != cfg.language():
+            cfg.language.set(language)
             reset_language(language)
 
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('wizard-step-one')
         info['number'] = 1
-        info['skin'] = cfg.WEB_DIR().lower()
+        info['skin'] = cfg.web_dir().lower()
 
         template = Template(file=os.path.join(self.__web_dir, 'one.html'),
                                 searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
@@ -87,7 +87,7 @@ class Wizard:
         info['num'] = '&raquo; %s' % T('wizard-step-two')
         info['number'] = 2
 
-        host = cfg.CHERRYHOST()
+        host = cfg.cherryhost()
         info['host'] = host
         # Allow special operation if host is not one of the defaults
         if host not in ('localhost','0.0.0.0'):
@@ -100,10 +100,10 @@ class Wizard:
         else:
             info['have_ssl'] = False
 
-        info['enable_https'] = cfg.ENABLE_HTTPS()
-        info['autobrowser'] = cfg.AUTOBROWSER()
-        info['web_user'] = cfg.USERNAME()
-        info['web_pass'] = cfg.PASSWORD()
+        info['enable_https'] = cfg.enable_https()
+        info['autobrowser'] = cfg.autobrowser()
+        info['web_user'] = cfg.username()
+        info['web_pass'] = cfg.password()
 
         template = Template(file=os.path.join(self.__web_dir, 'two.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
@@ -114,17 +114,17 @@ class Wizard:
         # Save access/autobrowser/autostart
         if kwargs:
             if 'access' in kwargs:
-                cfg.CHERRYHOST.set(kwargs['access'])
-            cfg.ENABLE_HTTPS.set(kwargs.get('enable_https',0))
-            cfg.AUTOBROWSER.set(kwargs.get('autobrowser',0))
-            cfg.USERNAME.set(kwargs.get('web_user', ''))
-            cfg.PASSWORD.set(kwargs.get('web_pass', ''))
-            if not cfg.USERNAME() or not cfg.PASSWORD():
+                cfg.cherryhost.set(kwargs['access'])
+            cfg.enable_https.set(kwargs.get('enable_https',0))
+            cfg.autobrowser.set(kwargs.get('autobrowser',0))
+            cfg.username.set(kwargs.get('web_user', ''))
+            cfg.password.set(kwargs.get('web_pass', ''))
+            if not cfg.username() or not cfg.password():
                 sabnzbd.interface.set_auth(cherrypy.config)
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('wizard-step-three')
         info['number'] = 3
-        info['session'] = cfg.API_KEY()
+        info['session'] = cfg.api_key()
 
         servers = config.get_servers()
         if not servers:
@@ -160,11 +160,11 @@ class Wizard:
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('wizard-step-four')
         info['number'] = 4
-        info['newzbin_user'] = cfg.USERNAME_NEWZBIN()
-        info['newzbin_pass'] = cfg.PASSWORD_NEWZBIN.get_stars()
-        info['newzbin_bookmarks'] = cfg.NEWZBIN_BOOKMARKS()
-        info['matrix_user'] = cfg.MATRIX_USERNAME()
-        info['matrix_apikey'] = cfg.MATRIX_APIKEY()
+        info['newzbin_user'] = cfg.newzbin_username()
+        info['newzbin_pass'] = cfg.newzbin_password.get_stars()
+        info['newzbin_bookmarks'] = cfg.newzbin_bookmarks()
+        info['matrix_user'] = cfg.matrix_username()
+        info['matrix_apikey'] = cfg.matrix_apikey()
         template = Template(file=os.path.join(self.__web_dir, 'four.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
@@ -174,12 +174,12 @@ class Wizard:
         # Save server details
         if kwargs:
             if 'newzbin_user' in kwargs and 'newzbin_pass' in kwargs:
-                cfg.USERNAME_NEWZBIN.set(kwargs.get('newzbin_user',''))
-                cfg.PASSWORD_NEWZBIN.set(kwargs.get('newzbin_pass',''))
-            cfg.NEWZBIN_BOOKMARKS.set(kwargs.get('newzbin_bookmarks', '0'))
+                cfg.newzbin_username.set(kwargs.get('newzbin_user',''))
+                cfg.newzbin_password.set(kwargs.get('newzbin_pass',''))
+            cfg.newzbin_bookmarks.set(kwargs.get('newzbin_bookmarks', '0'))
             if 'matrix_user' in kwargs and 'matrix_apikey' in kwargs:
-                cfg.MATRIX_USERNAME.set(kwargs.get('matrix_user',''))
-                cfg.MATRIX_APIKEY.set(kwargs.get('matrix_apikey',''))
+                cfg.matrix_username.set(kwargs.get('matrix_user',''))
+                cfg.matrix_apikey.set(kwargs.get('matrix_apikey',''))
 
         config.save_config()
 
@@ -187,7 +187,7 @@ class Wizard:
         info['num'] = '&raquo; %s' % T('wizard-step-five')
         info['number'] = 5
         info['helpuri'] = 'http://wiki.sabnzbd.org/'
-        info['session'] = cfg.API_KEY()
+        info['session'] = cfg.api_key()
 
         info['access_url'], info['urls'] = self.get_access_info()
 
@@ -199,7 +199,7 @@ class Wizard:
         ''' Build up a list of url's that sabnzbd can be accessed from '''
         # Access_url is used to provide the user a link to sabnzbd depending on the host
         access_uri = 'localhost'
-        cherryhost = cfg.CHERRYHOST()
+        cherryhost = cfg.cherryhost()
 
         if cherryhost == '0.0.0.0':
             import socket
@@ -252,17 +252,17 @@ class Wizard:
         urls = []
         for sock in socks:
             if sock:
-                if cfg.ENABLE_HTTPS():
-                    url = 'https://%s:%s/sabnzbd/' % (sock, cfg.HTTPS_PORT())
+                if cfg.enable_https():
+                    url = 'https://%s:%s/sabnzbd/' % (sock, cfg.https_port())
                 else:
-                    url = 'http://%s:%s/sabnzbd/' % (sock, cfg.CHERRYPORT())
+                    url = 'http://%s:%s/sabnzbd/' % (sock, cfg.cherryport())
 
                 urls.append(url)
 
-        if cfg.ENABLE_HTTPS():
-            access_url = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.HTTPS_PORT())
+        if cfg.enable_https():
+            access_url = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.https_port())
         else:
-            access_url = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.CHERRYPORT())
+            access_url = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.cherryport())
 
         return access_url, urls
 

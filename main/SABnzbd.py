@@ -283,7 +283,7 @@ def Web_Template(key, defweb, wdir):
             panic_tmpl(full_dir)
             exit_sab(1)
 
-    sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE(), wdir)
+    sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), wdir)
 
     return real_path(full_dir, "templates")
 
@@ -436,9 +436,9 @@ def get_webhost(cherryhost, cherryport, https_port):
         return (host, port, browserhost)
     """
     if cherryhost is None:
-        cherryhost = sabnzbd.cfg.CHERRYHOST()
+        cherryhost = sabnzbd.cfg.cherryhost()
     else:
-        sabnzbd.cfg.CHERRYHOST.set(cherryhost)
+        sabnzbd.cfg.cherryhost.set(cherryhost)
 
     # Get IP address, but discard APIPA/IPV6
     # If only APIPA's or IPV6 are found, fall back to localhost
@@ -525,19 +525,19 @@ def get_webhost(cherryhost, cherryport, https_port):
                 browserhost = '127.0.0.1'
 
     if cherryport is None:
-        cherryport = sabnzbd.cfg.CHERRYPORT.get_int()
+        cherryport = sabnzbd.cfg.cherryport.get_int()
     else:
-        sabnzbd.cfg.CHERRYPORT.set(str(cherryport))
+        sabnzbd.cfg.cherryport.set(str(cherryport))
 
     if https_port is None:
-        https_port = sabnzbd.cfg.HTTPS_PORT.get_int()
+        https_port = sabnzbd.cfg.https_port.get_int()
     else:
-        sabnzbd.cfg.HTTPS_PORT.set(str(https_port))
+        sabnzbd.cfg.https_port.set(str(https_port))
         # if the https port was specified, assume they want HTTPS enabling also
-        sabnzbd.cfg.ENABLE_HTTPS.set(True)
+        sabnzbd.cfg.enable_https.set(True)
 
     if cherryport == https_port:
-        sabnzbd.cfg.ENABLE_HTTPS.set(False)
+        sabnzbd.cfg.enable_https.set(False)
         logging.error(Ta('error-sameHTTP-HTTPS'))
 
     return cherryhost, cherryport, browserhost, https_port
@@ -728,7 +728,7 @@ def get_f_option(opts):
 def main():
     global LOG_FLAG
 
-    AUTOBROWSER = None
+    autobrowser = None
     autorestarted = False
     sabnzbd.MY_FULLNAME = sys.argv[0]
     fork = False
@@ -756,7 +756,7 @@ def main():
         elif opt in ('-d', '--daemon'):
             if not sabnzbd.WIN32:
                 fork = True
-            AUTOBROWSER = False
+            autobrowser = False
             sabnzbd.DAEMON = True
             consoleLogging = False
             re_argv.append(opt)
@@ -774,12 +774,12 @@ def main():
         elif opt in ('-s', '--server'):
             (cherryhost, cherryport) = split_host(arg)
         elif opt in ('-n', '--nobrowser'):
-            AUTOBROWSER = False
+            autobrowser = False
         elif opt in ('-b', '--browser'):
             try:
-                AUTOBROWSER = bool(int(arg))
+                autobrowser = bool(int(arg))
             except:
-                AUTOBROWSER = True
+                autobrowser = True
         elif opt in ('--autorestarted'):
             autorestarted = True
         elif opt in ('-c', '--clean'):
@@ -895,7 +895,7 @@ def main():
 
     # Determine web host address
     cherryhost, cherryport, browserhost, https_port = get_webhost(cherryhost, cherryport, https_port)
-    enable_https = sabnzbd.cfg.ENABLE_HTTPS()
+    enable_https = sabnzbd.cfg.enable_https()
 
     # When this is a daemon, just check and bail out if port in use
     if sabnzbd.DAEMON:
@@ -924,7 +924,7 @@ def main():
                 if not check_for_sabnzbd(url, upload_nzbs):
                     port = find_free_port(browserhost, https_port)
                     if port > 0:
-                        sabnzbd.cfg.HTTPS_PORT.set(port)
+                        sabnzbd.cfg.https_port.set(port)
                         cherryport = port
     ## NonSSL
     try:
@@ -937,21 +937,21 @@ def main():
             if not check_for_sabnzbd(url, upload_nzbs):
                 port = find_free_port(browserhost, cherryport)
                 if port > 0:
-                    sabnzbd.cfg.CHERRYPORT.set(port)
+                    sabnzbd.cfg.cherryport.set(port)
                     cherryport = port
 
 
     if cherrypylogging is None:
-        cherrypylogging = sabnzbd.cfg.LOG_WEB()
+        cherrypylogging = sabnzbd.cfg.log_web()
     else:
-        sabnzbd.cfg.LOG_WEB.set(cherrypylogging)
+        sabnzbd.cfg.log_web.set(cherrypylogging)
 
     if logging_level is None:
-        logging_level = sabnzbd.cfg.LOG_LEVEL()
+        logging_level = sabnzbd.cfg.log_level()
     else:
-        sabnzbd.cfg.LOG_LEVEL.set(logging_level)
+        sabnzbd.cfg.log_level.set(logging_level)
 
-    logdir = sabnzbd.cfg.LOG_DIR.get_path()
+    logdir = sabnzbd.cfg.log_dir.get_path()
     if fork and not logdir:
         print "Error:"
         print "I refuse to fork without a log directory!"
@@ -965,11 +965,11 @@ def main():
 
     try:
         sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
-        logsize = sabnzbd.cfg.LOG_SIZE.get_int()
+        logsize = sabnzbd.cfg.log_size.get_int()
         rollover_log = logging.handlers.RotatingFileHandler(\
             sabnzbd.LOGFILE, 'a+',
             logsize,
-            sabnzbd.cfg.LOG_BACKUPS())
+            sabnzbd.cfg.log_backups())
 
         format = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
         rollover_log.setFormatter(logging.Formatter(format))
@@ -1040,12 +1040,12 @@ def main():
         except:
             logging.info('[osx] IO priority setting not supported')
 
-    if AUTOBROWSER != None:
-        sabnzbd.cfg.AUTOBROWSER.set(AUTOBROWSER)
+    if autobrowser != None:
+        sabnzbd.cfg.autobrowser.set(autobrowser)
     else:
-        AUTOBROWSER = sabnzbd.cfg.AUTOBROWSER()
+        autobrowser = sabnzbd.cfg.autobrowser()
 
-    sabnzbd.cfg.DEBUG_DELAY.set(delay)
+    sabnzbd.cfg.debug_delay.set(delay)
 
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
@@ -1063,20 +1063,20 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    web_dir  = Web_Template(sabnzbd.cfg.WEB_DIR,  DEF_STDINTF,  fix_webname(web_dir))
-    web_dir2 = Web_Template(sabnzbd.cfg.WEB_DIR2, '', fix_webname(web_dir2))
+    web_dir  = Web_Template(sabnzbd.cfg.web_dir,  DEF_STDINTF,  fix_webname(web_dir))
+    web_dir2 = Web_Template(sabnzbd.cfg.web_dir2, '', fix_webname(web_dir2))
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-    sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.LANGUAGE(), 'wizard')
+    sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
     sabnzbd.WIZARD_DIR = wizard_dir
 
-    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.WEB_COLOR(),  web_dir)
-    sabnzbd.cfg.WEB_COLOR.set(sabnzbd.WEB_COLOR)
-    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.WEB_COLOR2(),  web_dir2)
-    sabnzbd.cfg.WEB_COLOR2.set(sabnzbd.WEB_COLOR2)
+    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(),  web_dir)
+    sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
+    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(),  web_dir2)
+    sabnzbd.cfg.web_color2.set(sabnzbd.WEB_COLOR2)
 
     if fork and not sabnzbd.WIN32:
         daemonize()
@@ -1131,8 +1131,8 @@ def main():
                             'error_page.401': sabnzbd.misc.error_page_401
                            })
 
-    https_cert = sabnzbd.cfg.HTTPS_CERT.get_path()
-    https_key = sabnzbd.cfg.HTTPS_KEY.get_path()
+    https_cert = sabnzbd.cfg.https_cert.get_path()
+    https_key = sabnzbd.cfg.https_key.get_path()
     if enable_https:
         # If either the HTTPS certificate or key do not exist, make some self-signed ones.
         if not (https_cert and os.path.exists(https_cert)) or not (https_key and os.path.exists(https_key)):
@@ -1184,7 +1184,7 @@ def main():
 
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
 
-    sabnzbd.cfg.LOG_LEVEL.callback(guard_loglevel)
+    sabnzbd.cfg.log_level.callback(guard_loglevel)
 
     try:
         # Use internal cherrypy check first to prevent ugly tracebacks
@@ -1238,7 +1238,7 @@ def main():
         # Check for loglevel changes
         if LOG_FLAG:
             LOG_FLAG = False
-            level = LOGLEVELS[sabnzbd.cfg.LOG_LEVEL()]
+            level = LOGLEVELS[sabnzbd.cfg.log_level()]
             logger.setLevel(level)
             if consoleLogging:
                 console.setLevel(level)

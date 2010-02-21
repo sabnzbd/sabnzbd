@@ -31,13 +31,13 @@ def upload_file(url, fp):
     """ Function for uploading nzbs to a running sabnzbd instance """
     try:
         fp = urllib.quote_plus(fp)
-        pp = cfg.DIRSCAN_PP()
-        script = cfg.DIRSCAN_SCRIPT()
-        priority = cfg.DIRSCAN_PRIORITY()
+        pp = cfg.dirscan_pp()
+        script = cfg.dirscan_script()
+        priority = cfg.dirscan_priority()
         url = '%sapi?mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (url, fp, pp, script, priority)
-        username = cfg.USERNAME()
-        password = cfg.PASSWORD()
-        apikey = cfg.API_KEY()
+        username = cfg.username()
+        password = cfg.password()
+        apikey = cfg.api_key()
         if username and password:
             url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
         if apikey:
@@ -53,9 +53,9 @@ def add_local(f):
     if os.path.exists(f):
         fn = get_filename(f)
         if fn:
-            pp = cfg.DIRSCAN_PP()
-            script = cfg.DIRSCAN_SCRIPT()
-            priority = cfg.DIRSCAN_PRIORITY()
+            pp = cfg.dirscan_pp()
+            script = cfg.dirscan_script()
+            priority = cfg.dirscan_priority()
             if get_ext(fn) in ('.zip','.rar', '.gz'):
                 ProcessArchiveFile(fn, f, pp=pp, script=script, priority=priority, keep=True)
             elif get_ext(fn) in ('.nzb'):

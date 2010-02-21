@@ -74,30 +74,30 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
             pp = config.get_categories()[safe_lower(cat)].pp()
             # Get the default pp
             if pp == '':
-                pp = cfg.DIRSCAN_PP()
+                pp = cfg.dirscan_pp()
             logging.debug('Job gets options %s', pp)
         except KeyError:
-            pp = cfg.DIRSCAN_PP()
+            pp = cfg.dirscan_pp()
 
     if not script:
         try:
             script = config.get_categories()[safe_lower(cat)].script()
             # Get the default script
             if script == '' or safe_lower(script) == 'default':
-                script = cfg.DIRSCAN_SCRIPT()
+                script = cfg.dirscan_script()
             logging.debug('Job gets script %s', script)
         except KeyError:
-            script = cfg.DIRSCAN_SCRIPT()
+            script = cfg.dirscan_script()
 
     if priority is None or priority == DEFAULT_PRIORITY:
         try:
             priority = config.get_categories()[safe_lower(cat)].priority()
             # Get the default priority
             if priority == DEFAULT_PRIORITY:
-                priority = cfg.DIRSCAN_PRIORITY()
+                priority = cfg.dirscan_priority()
             logging.debug('Job gets priority %s', script)
         except KeyError:
-            priority = cfg.DIRSCAN_PRIORITY()
+            priority = cfg.dirscan_priority()
 
     return cat, pp, script, priority
 
@@ -215,7 +215,7 @@ def sanitize_foldername(name):
         illegal = FL_ILLEGAL
         legal   = FL_LEGAL
 
-    repl = cfg.REPLACE_ILLEGAL.get()
+    repl = cfg.replace_illegal.get()
     lst = []
     for ch in name.strip():
         if ch in illegal:
@@ -263,7 +263,7 @@ def create_all_dirs(path, umask=False):
                     except:
                         result = False
                     if umask:
-                        mask = cfg.UMASK()
+                        mask = cfg.umask()
                         if mask:
                             try:
                                 os.chmod(path, int(mask, 8) | 0700)
@@ -557,7 +557,7 @@ def panic_message(panic, a=None, b=None):
     if sabnzbd.WIN_SERVICE:
         sabnzbd.WIN_SERVICE.ErrLogger('Panic exit', msg)
 
-    if (not cfg.AUTOBROWSER()) or sabnzbd.DAEMON:
+    if (not cfg.autobrowser()) or sabnzbd.DAEMON:
         return
 
     msgfile, url = tempfile.mkstemp(suffix='.html')
@@ -594,7 +594,7 @@ def panic(reason, remedy=""):
 def launch_a_browser(url, force=False):
     """Launch a browser pointing to the URL
     """
-    if not force and not cfg.AUTOBROWSER() or sabnzbd.DAEMON:
+    if not force and not cfg.autobrowser() or sabnzbd.DAEMON:
         return
 
     logging.info("Lauching browser with %s", url)
@@ -670,7 +670,7 @@ def convert_version(text):
 
 def check_latest_version():
     """ Do an online check for the latest version """
-    if not cfg.VERSION_CHECK():
+    if not cfg.version_check():
         return
 
     current, testver = convert_version(sabnzbd.__version__)
@@ -967,7 +967,7 @@ def bad_fetch(nzo, url, msg='', retry=False, archive=False):
         else:
             nzbname = ''
         text = T('his-retryURL1@1')+', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
-        parms = (msg, cfg.API_KEY(), urllib.quote(url), pp, cat, script, nzbname)
+        parms = (msg, cfg.api_key(), urllib.quote(url), pp, cat, script, nzbname)
         nzo.set_fail_msg(text % parms)
     else:
         if archive:
@@ -984,11 +984,11 @@ def bad_fetch(nzo, url, msg='', retry=False, archive=False):
 def on_cleanup_list(filename, skip_nzb=False):
     """ Return True if a filename matches the clean-up list """
 
-    if cfg.CLEANUP_LIST():
+    if cfg.cleanup_list():
         ext = os.path.splitext(filename)[1].strip().strip('.')
         if sabnzbd.WIN32: ext = ext.lower()
 
-        for k in cfg.CLEANUP_LIST():
+        for k in cfg.cleanup_list():
             item = k.strip().strip('.')
             if item == ext and not (skip_nzb and item == 'nzb'):
                 return True

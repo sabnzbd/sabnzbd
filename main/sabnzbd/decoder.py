@@ -108,7 +108,7 @@ class Decoder(Thread):
 
                     data = e.data
 
-                    if cfg.FAIL_ON_CRC():
+                    if cfg.fail_on_crc():
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
@@ -116,7 +116,7 @@ class Decoder(Thread):
                 except BadYenc, e:
                     logging.warning("Badly formed yEnc article in %s", article)
 
-                    if cfg.FAIL_ON_CRC():
+                    if cfg.fail_on_crc():
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False

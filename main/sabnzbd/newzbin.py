@@ -161,7 +161,7 @@ def _grabnzb(msgid):
         else:
             conn = httplib.HTTPConnection('www.newzbin.com')
 
-        postdata = { 'username': cfg.USERNAME_NEWZBIN(), 'password': cfg.PASSWORD_NEWZBIN(), 'reportid': msgid }
+        postdata = { 'username': cfg.newzbin_username(), 'password': cfg.newzbin_password(), 'reportid': msgid }
         postdata = urllib.urlencode(postdata)
 
         headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -285,11 +285,11 @@ class Bookmarks:
 
             if delete:
                 logging.debug('Trying to delete Newzbin bookmark %s', delete)
-                postdata = { 'username': cfg.USERNAME_NEWZBIN(), 'password': cfg.PASSWORD_NEWZBIN(), 'action': 'delete', \
+                postdata = { 'username': cfg.newzbin_username(), 'password': cfg.newzbin_password(), 'action': 'delete', \
                              'reportids' : delete }
             else:
                 logging.info('Fetching Newzbin bookmarks')
-                postdata = { 'username': cfg.USERNAME_NEWZBIN(), 'password': cfg.PASSWORD_NEWZBIN(), 'action': 'fetch'}
+                postdata = { 'username': cfg.newzbin_username(), 'password': cfg.newzbin_password(), 'action': 'fetch'}
             postdata = urllib.urlencode(postdata)
 
             headers['Content-type'] = 'application/x-www-form-urlencoded'
@@ -345,7 +345,7 @@ class Bookmarks:
                     if msgid and (msgid not in self.bookmarks):
                         self.bookmarks.append(msgid)
                         logging.info("Found new bookmarked msgid %s (%s)", msgid, text)
-                        sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.DIRSCAN_PRIORITY())
+                        sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.dirscan_priority())
         else:
             logging.error(Ta('error-nbUnkownError@1'), rcode)
 
@@ -359,7 +359,7 @@ class Bookmarks:
         return self.bookmarks
 
     def del_bookmark(self, msgid):
-        if cfg.NEWZBIN_BOOKMARKS() and cfg.NEWZBIN_UNBOOKMARK():
+        if cfg.newzbin_bookmarks() and cfg.newzbin_unbookmark():
             msgid = str(msgid)
             if msgid in self.bookmarks:
                 self.run(msgid)

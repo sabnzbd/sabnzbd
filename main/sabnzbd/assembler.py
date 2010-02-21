@@ -77,7 +77,7 @@ class Assembler(Thread):
 
                 dupe = nzo.check_for_dupe(nzf)
 
-                filepath = get_filepath(cfg.DOWNLOAD_DIR.get_path(), nzo, filename)
+                filepath = get_filepath(cfg.download_dir.get_path(), nzo, filename)
 
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.get_type())
@@ -113,7 +113,7 @@ def _assemble(nzf, path, dupe):
 
     fout = open(path, 'ab')
 
-    if cfg.QUICK_CHECK():
+    if cfg.quick_check():
         md5 = new_md5()
     else:
         md5 = None

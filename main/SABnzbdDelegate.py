@@ -469,7 +469,7 @@ class SABnzbdDelegate(NSObject):
 
     def newzbinUpdate(self):
         try:
-            if sabnzbd.cfg.USERNAME_NEWZBIN() and sabnzbd.cfg.PASSWORD_NEWZBIN() and sabnzbd.cfg.NEWZBIN_BOOKMARKS():
+            if sabnzbd.cfg.newzbin_username() and sabnzbd.cfg.newzbin_password() and sabnzbd.cfg.NEWZBIN_BOOKMARKS():
                 if self.isLeopard:
                     self.newzbin_menu_item.setHidden_(NO)
                 else:

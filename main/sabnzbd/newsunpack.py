@@ -557,7 +557,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
     p.wait()
 
 
-    if cfg.UNPACK_CHECK():
+    if cfg.unpack_check():
         if reliable_unpack_names():
             all_found = True
             for path in expected_files:

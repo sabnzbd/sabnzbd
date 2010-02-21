@@ -176,43 +176,43 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
 
     ### Clean the cache folder, if requested
     if clean_up:
-        xlist= glob.glob(cfg.CACHE_DIR.get_path() + '/*')
+        xlist= glob.glob(cfg.cache_dir.get_path() + '/*')
         for x in xlist:
             os.remove(x)
 
     ### If dirscan_dir cannot be created, set a proper value anyway.
     ### Maybe it's a network path that's temporarily missing.
-    path = cfg.DIRSCAN_DIR.get_path()
+    path = cfg.dirscan_dir.get_path()
     if not os.path.exists(path):
-        sabnzbd.misc.create_real_path(cfg.DIRSCAN_DIR.ident(), '', path, False)
+        sabnzbd.misc.create_real_path(cfg.dirscan_dir.ident(), '', path, False)
 
     ### Set call backs for Config items
-    cfg.CACHE_LIMIT.callback(new_limit)
-    cfg.CHERRYHOST.callback(guard_restart)
-    cfg.CHERRYPORT.callback(guard_restart)
-    cfg.WEB_DIR.callback(guard_restart)
-    cfg.WEB_DIR2.callback(guard_restart)
-    cfg.WEB_COLOR.callback(guard_restart)
-    cfg.WEB_COLOR2.callback(guard_restart)
-    cfg.LOG_DIR.callback(guard_restart)
-    cfg.CACHE_DIR.callback(guard_restart)
-    cfg.HTTPS_PORT.callback(guard_restart)
-    cfg.HTTPS_CERT.callback(guard_restart)
-    cfg.HTTPS_KEY.callback(guard_restart)
-    cfg.ENABLE_HTTPS.callback(guard_restart)
-    cfg.BANDWIDTH_LIMIT.callback(guard_speedlimit)
-    cfg.TOP_ONLY.callback(guard_top_only)
-    cfg.PAUSE_ON_POST_PROCESSING.callback(guard_pause_on_pp)
+    cfg.cache_limit.callback(new_limit)
+    cfg.cherryhost.callback(guard_restart)
+    cfg.cherryport.callback(guard_restart)
+    cfg.web_dir.callback(guard_restart)
+    cfg.web_dir2.callback(guard_restart)
+    cfg.web_color.callback(guard_restart)
+    cfg.web_color2.callback(guard_restart)
+    cfg.log_dir.callback(guard_restart)
+    cfg.cache_dir.callback(guard_restart)
+    cfg.https_port.callback(guard_restart)
+    cfg.https_cert.callback(guard_restart)
+    cfg.https_key.callback(guard_restart)
+    cfg.enable_https.callback(guard_restart)
+    cfg.bandwidth_limit.callback(guard_speedlimit)
+    cfg.top_only.callback(guard_top_only)
+    cfg.pause_on_post_processing.callback(guard_pause_on_pp)
 
     ### Set cache limit
-    ArticleCache.do.new_limit(cfg.CACHE_LIMIT.get_int(), cfg.DEBUG_DELAY())
+    ArticleCache.do.new_limit(cfg.cache_limit.get_int(), cfg.debug_delay())
 
     ### Set language files
-    lang.install_language(DIR_LANGUAGE, cfg.LANGUAGE())
+    lang.install_language(DIR_LANGUAGE, cfg.language())
 
     ### Check for old queue (when a new queue is not present)
-    if not os.path.exists(os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_NAME)):
-        OLD_QUEUE = bool(glob.glob(os.path.join(cfg.CACHE_DIR.get_path(), QUEUE_FILE_TMPL % '?')))
+    if not os.path.exists(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME)):
+        OLD_QUEUE = bool(glob.glob(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_TMPL % '?')))
 
     ###
     ### Initialize threads
@@ -350,7 +350,7 @@ def halt():
 
 def new_limit():
     """ Callback for article cache changes """
-    ArticleCache.do.new_limit(cfg.CACHE_LIMIT.get_int())
+    ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
 def guard_restart():
     """ Callback for config options requiring a restart """
@@ -359,15 +359,15 @@ def guard_restart():
 
 def guard_speedlimit():
     """ Callback for change of bandwidth_limit, sets actual speed """
-    downloader.limit_speed(cfg.BANDWIDTH_LIMIT())
+    downloader.limit_speed(cfg.bandwidth_limit())
 
 def guard_top_only():
     """ Callback for change of top_only option """
-    nzbqueue.set_top_only(cfg.TOP_ONLY())
+    nzbqueue.set_top_only(cfg.top_only())
 
 def guard_pause_on_pp():
     """ Callback for change of pause-download-on-pp """
-    if cfg.PAUSE_ON_POST_PROCESSING():
+    if cfg.pause_on_post_processing():
         pass # Not safe to idle downloader, because we don't know
              # if post-processing is active now
     else:
@@ -381,7 +381,7 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
     if priority == None: priority = NORMAL_PRIORITY
 
 
-    if cfg.USERNAME_NEWZBIN() and cfg.PASSWORD_NEWZBIN():
+    if cfg.newzbin_username() and cfg.newzbin_password():
         logging.info('Fetching msgid %s from www.newzbin.com', msgid)
         msg = T('fetchingNewzbin@1') % msgid
 
@@ -437,21 +437,21 @@ NZB_LOCK = Lock()
 def backup_exists(filename):
     """ Return True if backup exists and no_dupes is set
     """
-    path = cfg.NZB_BACKUP_DIR.get_path()
-    return path and sabnzbd.cfg.NO_DUPES() and \
+    path = cfg.nzb_backup_dir.get_path()
+    return path and sabnzbd.cfg.no_dupes() and \
            os.path.exists(os.path.join(path, filename+'.gz'))
 
 @synchronized(NZB_LOCK)
 def backup_nzb(filename, data):
     """ Backup NZB file
     """
-    if cfg.NZB_BACKUP_DIR.get_path():
+    if cfg.nzb_backup_dir.get_path():
         backup_name = filename + '.gz'
 
         # Need to go to the backup folder to
         # prevent the pathname being embedded in the GZ file
         here = os.getcwd()
-        os.chdir(cfg.NZB_BACKUP_DIR.get_path())
+        os.chdir(cfg.nzb_backup_dir.get_path())
 
         logging.info("Backing up %s", backup_name)
         try:
@@ -460,7 +460,7 @@ def backup_nzb(filename, data):
             _f.flush()
             _f.close()
         except:
-            logging.error("Saving %s to %s failed", backup_name, cfg.NZB_BACKUP_DIR.get_path())
+            logging.error("Saving %s to %s failed", backup_name, cfg.nzb_backup_dir.get_path())
             logging.debug("Traceback: ", exc_info = True)
 
         os.chdir(here)
@@ -609,7 +609,7 @@ def change_queue_complete_action(action):
 
 
 def run_script(script):
-    command = os.path.join(cfg.SCRIPT_DIR.get_path(), script)
+    command = os.path.join(cfg.script_dir.get_path(), script)
     stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
     logging.info('Spawning external command %s', command)
     subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -634,8 +634,8 @@ def keep_awake():
 
 
 def CheckFreeSpace():
-    if cfg.DOWNLOAD_FREE() and not downloader.paused():
-        if misc.diskfree(cfg.DOWNLOAD_DIR.get_path()) < cfg.DOWNLOAD_FREE.get_float() / GIGI:
+    if cfg.download_free() and not downloader.paused():
+        if misc.diskfree(cfg.download_dir.get_path()) < cfg.download_free.get_float() / GIGI:
             logging.warning(Ta('warn-noSpace'))
             # Pause downloader, but don't save, since the disk is almost full!
             downloader.pause_downloader(save=False)
@@ -650,7 +650,7 @@ IO_LOCK = RLock()
 @synchronized(IO_LOCK)
 def get_new_id(prefix):
     try:
-        fd, l = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, cfg.CACHE_DIR.get_path())
+        fd, l = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, cfg.cache_dir.get_path())
         os.close(fd)
         head, tail = os.path.split(l)
         return tail
@@ -661,7 +661,7 @@ def get_new_id(prefix):
 
 @synchronized(IO_LOCK)
 def save_data(data, _id, do_pickle = True, doze=0):
-    path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
+    path = os.path.join(cfg.cache_dir.get_path(), _id)
     logging.info("Saving data for %s in %s", _id, path)
 
     try:
@@ -682,7 +682,7 @@ def save_data(data, _id, do_pickle = True, doze=0):
 
 @synchronized(IO_LOCK)
 def load_data(_id, remove = True, do_pickle = True):
-    path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
+    path = os.path.join(cfg.cache_dir.get_path(), _id)
     logging.info("Loading data for %s from %s", _id, path)
 
     if not os.path.exists(path):
@@ -711,7 +711,7 @@ def load_data(_id, remove = True, do_pickle = True):
 
 @synchronized(IO_LOCK)
 def remove_data(_id):
-    path = os.path.join(cfg.CACHE_DIR.get_path(), _id)
+    path = os.path.join(cfg.cache_dir.get_path(), _id)
     try:
         os.remove(path)
         logging.info("%s removed", path)

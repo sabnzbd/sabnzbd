@@ -277,7 +277,7 @@ class RSSQueue:
 
                 newlinks.append(link)
 
-                if cfg.NO_DUPES() and dup_title(feed, title):
+                if cfg.no_dupes() and dup_title(feed, title):
                     logging.info("Ignoring duplicate job %s", atitle)
                     continue
 
@@ -346,7 +346,7 @@ class RSSQueue:
             order += 1
 
         # Send email if wanted and not "forced"
-        if new_downloads and cfg.EMAIL_RSS() and not force:
+        if new_downloads and cfg.email_rss() and not force:
             emailer.rss_mail(feed, new_downloads)
 
         # If links are in table for more than 4 weeks, remove
