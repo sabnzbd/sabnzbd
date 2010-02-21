@@ -668,7 +668,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     setpars = pars_of_set(workdir, setname)
     result = readd = False
 
-    if cfg.QUICK_CHECK.get():
+    if cfg.quick_check.get():
         nzo.set_status('QuickCheck')
         nzo.set_action_line(T('msg-repair'), T('msg-QuickChecking'))
         result = QuickCheck(setname, nzo)
