@@ -560,12 +560,16 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
     if cfg.unpack_check():
         if reliable_unpack_names():
             all_found = True
+            # Loop through and check for the presence of all the files the archive contained
             for path in expected_files:
                 path = unicode2local(path)
                 fullpath = os.path.join(extraction_path, path)
-                if path.endswith('/') or os.path.exists(fullpath):
-                    logging.debug("Checking existance of %s", fullpath)
-                else:
+                logging.debug("Checking existance of %s", fullpath)
+                if path.endswith('/'):
+                    # Folder
+                    continue
+                if not os.path.exists(fullpath):
+                    # There was a missing file, show a warning
                     all_found = False
                     logging.warning(Ta('warn-MissExpectedFile@1'), path)
 
