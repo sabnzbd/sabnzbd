@@ -47,6 +47,12 @@ def schedule_guard():
     global SCHEDULE_GUARD_FLAG
     SCHEDULE_GUARD_FLAG = True
 
+def pp_pause():
+    PostProcessor.do.pause()
+
+def pp_resume():
+    PostProcessor.do.resume()
+
 
 def init():
     """ Create the scheduler and set all required events
@@ -95,9 +101,9 @@ def init():
             action = sabnzbd.restart_program
             arguments = []
         elif action_name == 'pause_post':
-            action = PostProcessor.do.pause
+            action = pp_pause
         elif action_name == 'resume_post':
-            action = PostProcessor.do.resume
+            action = pp_resume
         elif action_name == 'speedlimit' and arguments != []:
             action = sabnzbd.downloader.limit_speed
         elif action_name == 'enable_server' and arguments != []:
