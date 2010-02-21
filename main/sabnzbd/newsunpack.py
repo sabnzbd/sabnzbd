@@ -575,6 +575,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
             if not all_found:
                 nzo.set_fail_msg(T('error-unpackMissing'))
+                logging.debug("Expecting files: %s" % expected_files)
                 nzo.set_unpack_info('Unpack', T('error-unpackMissing'), set=setname)
                 return ((), ())
         else:
