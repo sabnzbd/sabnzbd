@@ -33,7 +33,7 @@
     </tr>
     <tr>
     	<td class="alignRight"><input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/></td>
-    	<td><label for="ssl"><strong>$T('srv-ssl')</strong> <!--#if int($have_ssl) == 0 then " $T('opt-notInstalled')" else ""#--></label></td>
+    	<td><label for="ssl"><strong>$T('srv-ssl')</strong> <!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#--></label></td>
     </tr>
     <tr>
     	<td class="alignRight"><input type="checkbox" name="fillserver" id="fillserver" value="1"/></td>
@@ -94,7 +94,7 @@
     </tr>
     <tr>
         <td class="alignRight"><input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> /></td>
-        <td><label for="ssl$cur"><strong>$T('srv-ssl')</strong> <!--#if int($have_ssl) == 0 then " $T('opt-notInstalled')" else ""#--></label></td>
+        <td><label for="ssl$cur"><strong>$T('srv-ssl')</strong> <!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#--></label></td>
     </tr>
     <tr>
         <td class="alignRight"><input type="checkbox" name="fillserver" id="fillserver$cur" value="1" <!--#if int($servers[$server]['fillserver']) != 0 then "checked=1" else ""#--> /></td>
