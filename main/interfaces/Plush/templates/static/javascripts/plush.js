@@ -220,10 +220,55 @@ jQuery(function($){
 
 		InitQueue : function() {
 			
+			// Pause/resume toggle (queue)
+			$('#pause_resume').click(function(event) {
+				if ( $(event.target).hasClass('sprite_q_pause_on') ) {
+					$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
+					$('#pause_int').html("");
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'resume', apikey: $.plush.apikey}
+					});
+				} else {
+					$('#pause_resume').removeClass('sprite_q_pause').addClass('sprite_q_pause_on');
+					$('#pause_int').html("");
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'pause', apikey: $.plush.apikey}
+					});
+				}
+			});
+
+			// Set queue per-page preference
+			$("#queue-pagination-perpage").val($.plush.queuePerPage);
+			$.plush.queuecurpage = 0; // default 1st page
+
+			// Pagination per-page selection
+			$("#queue-pagination-perpage").change(function(event){
+				$.plush.queuecurpage = Math.floor($.plush.queuecurpage * $.plush.queuePerPage / $(event.target).val() );
+				$.plush.queuePerPage = $(event.target).val();
+				$.cookie('queuePerPage', $.plush.queuePerPage, { expires: 365 });
+				$.plush.queueforcerepagination = true;
+				$.plush.RefreshQueue();
+			});
+			
 			// Skip queue refresh on mouseover
 			$('#queue').hover(
 				function(){ $.plush.skipRefresh=true; }, // over
 				function(){ $.plush.skipRefresh=false; } // out
+			);
+
+			// refresh on mouseout after deletion
+			$('#queue').hover(	// $.mouseout was triggering too often
+				function(){}, // over
+				function(){	  // out
+					if ($.plush.pendingQueueRefresh) {
+						$.plush.pendingQueueRefresh = false;
+						$.plush.RefreshQueue();
+					}
+				}
 			);
 			
 			// NZB pause/resume individual toggle
@@ -274,29 +319,76 @@ jQuery(function($){
 				}
 			});
 
-			// refresh on mouseout after deletion
-			$('#queue').hover(	// $.mouseout was triggering too often
-				function(){}, // over
-				function(){	  // out
-					if ($.plush.pendingQueueRefresh) {
-						$.plush.pendingQueueRefresh = false;
-						$.plush.RefreshQueue();
+			// NZB change priority
+			$('#queueTable .options .proc_priority').live('change',function(){
+				var nzbid = $(this).parent().parent().attr('id');
+				var oldPos = $('#'+nzbid)[0].rowIndex + $.plush.queuecurpage * $.plush.queuePerPage;
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode:'queue', name:'priority', value: nzbid, value2: $(this).val(), apikey: $.plush.apikey},
+					success: function(newPos){
+						// reposition the nzb if necessary (new position is returned by the API)
+						if (parseInt(newPos) < $.plush.queuecurpage * $.plush.queuePerPage
+						 		|| ($.plush.queuecurpage + 1) * $.plush.queuePerPage < parseInt(newPos)) {
+							$.plush.skipRefresh = false;
+							$.plush.RefreshQueue();
+						} else if (oldPos < newPos)
+							$('#'+nzbid).insertAfter($('#queueTable tr:eq('+ (newPos - $.plush.queuecurpage * $.plush.queuePerPage) +')'));
+						else if (oldPos > newPos)
+							$('#'+nzbid).insertBefore($('#queueTable tr:eq('+ (newPos - $.plush.queuecurpage * $.plush.queuePerPage) +')'));
 					}
-				}
-			);
+				});
+			});
 			
-			// Pagination per-page selection
-			$("#queue-pagination-perpage").change(function(event){
-				$.plush.queuecurpage = Math.floor($.plush.queuecurpage * $.plush.queuePerPage / $(event.target).val() );
-				$.plush.queuePerPage = $(event.target).val();
-				$.cookie('queuePerPage', $.plush.queuePerPage, { expires: 365 });
-				$.plush.queueforcerepagination = true;
-				$.plush.RefreshQueue();
+			// 3-in-1 change nzb [category + processing + script]
+			$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').live('change',function(e){
+				var val = $(this).parent().parent().attr('id');
+				var cval = $(this).attr('class').split(" ")[0]; // ignore added "hovering" class
+				$.ajax({
+					type: "POST",
+					url: "tapi",
+					data: {mode: cval, value: val, value2: $(this).val(), apikey: $.plush.apikey},
+					success: function(resp){
+						// each category can define different priority/processing/script -- must be accounted for
+						if (cval=="change_cat") {
+							$.plush.skipRefresh = false;
+							$.plush.RefreshQueue(); // this is not ideal, but the API does not yet offer a nice way of refreshing just one nzb
+						}
+					}
+				});
+			});
+			
+			// NZB icon hover states -- done here rather than in CSS:hover due to sprites
+			$('#queueTable tr').live('mouseover mouseout', function(event) {
+				if (event.type == 'mouseover') {
+					$(this).find('td .icon_nzb_remove').addClass('sprite_ql_cross');
+					$(this).find('td .sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued_on');
+					$(this).find('td .sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused_on');
+				} else {
+					$(this).find('td .icon_nzb_remove').removeClass('sprite_ql_cross');
+					$(this).find('td .sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued_on');
+					$(this).find('td .sprite_ql_grip_paused_on').toggleClass('sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused_on');
+				}
+			});
+			$('#queueTable tr td .icon_nzb_remove').live('mouseover mouseout', function(event) {
+				if (event.type == 'mouseover') {
+					$(this).addClass('sprite_ql_cross_on');
+				} else {
+					$(this).removeClass('sprite_ql_cross_on');
+				}
 			});
 
-			// Set queue per-page preference
-			$("#queue-pagination-perpage").val($.plush.queuePerPage);
-			$.plush.queuecurpage = 0; // default 1st page
+			// Styling that is broken in IE (IE8 auto-closes select menus if defined)
+			if (!$.browser.msie) {
+				$('#queueTable tr').live('mouseover mouseout', function(event) {
+					if (event.type == 'mouseover') {
+						$(this).find('td.options select').addClass('hovering');
+					} else {
+						$(this).find('td.options select').removeClass('hovering');
+					}
+				});
+			}
 			
 			// Sustained binding of events for elements added to DOM
 			// Same idea as jQuery live(), but use jQuery livequery() plugin for functions/events not supported by live()
@@ -353,94 +445,7 @@ jQuery(function($){
 					}
 				});
 				
-				// NZB change priority
-				$('#queueTable .options .proc_priority').change(function(){
-					var nzbid = $(this).parent().parent().attr('id');
-					var oldPos = $('#'+nzbid)[0].rowIndex + $.plush.queuecurpage * $.plush.queuePerPage;
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'queue', name:'priority', value: nzbid, value2: $(this).val(), apikey: $.plush.apikey},
-						success: function(newPos){
-							// reposition the nzb if necessary (new position is returned by the API)
-							if (parseInt(newPos) < $.plush.queuecurpage * $.plush.queuePerPage
-							 		|| ($.plush.queuecurpage + 1) * $.plush.queuePerPage < parseInt(newPos)) {
-								$.plush.skipRefresh = false;
-								$.plush.RefreshQueue();
-							} else if (oldPos < newPos)
-								$('#'+nzbid).insertAfter($('#queueTable tr:eq('+ (newPos - $.plush.queuecurpage * $.plush.queuePerPage) +')'));
-							else if (oldPos > newPos)
-								$('#'+nzbid).insertBefore($('#queueTable tr:eq('+ (newPos - $.plush.queuecurpage * $.plush.queuePerPage) +')'));
-						}
-					});
-				});
-				
-				// 3-in-1 change nzb [category + processing + script]
-				$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').change(function(e){
-					var val = $(this).parent().parent().attr('id');
-					var cval = $(this).attr('class').split(" ")[0]; // ignore added "hovering" class
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode: cval, value: val, value2: $(this).val(), apikey: $.plush.apikey},
-						success: function(resp){
-							// each category can define different priority/processing/script -- must be accounted for
-							if (cval=="change_cat") {
-								$.plush.skipRefresh = false;
-								$.plush.RefreshQueue(); // this is not ideal, but the API does not yet offer a nice way of refreshing just one nzb
-							}
-						}
-					});
-				});
-				
-				// NZB icon hover states -- done here rather than in CSS:hover due to sprites
-				$('#queueTable tr').hover(
-					function(){
-						$(this).find('td .icon_nzb_remove').addClass('sprite_ql_cross');
-						$(this).find('td .sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued_on');
-						$(this).find('td .sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused_on');
-					},
-					function(){
-						$(this).find('td .icon_nzb_remove').removeClass('sprite_ql_cross');
-						$(this).find('td .sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued_on');
-						$(this).find('td .sprite_ql_grip_paused_on').toggleClass('sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused_on');
-					}
-				);
-				$('#queueTable tr td .icon_nzb_remove').hover(
-					function(){ $(this).addClass('sprite_ql_cross_on'); },
-					function(){ $(this).removeClass('sprite_ql_cross_on'); }
-				);
-
-				// Styling that is broken in IE (IE8 auto-closes select menus if defined)
-				if (!$.browser.msie) {
-					$('#queueTable tr').hover(
-						function(){ $(this).find('td.options select').addClass('hovering'); },
-						function(){ $(this).find('td.options select').removeClass('hovering'); }
-					);
-				}
-				
 			}); // end livequery
-			
-			// Pause/resume toggle (queue)
-			$('#pause_resume').click(function(event) {
-				if ( $(event.target).hasClass('sprite_q_pause_on') ) {
-					$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
-					$('#pause_int').html("");
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'resume', apikey: $.plush.apikey}
-					});
-				} else {
-					$('#pause_resume').removeClass('sprite_q_pause').addClass('sprite_q_pause_on');
-					$('#pause_int').html("");
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'pause', apikey: $.plush.apikey}
-					});
-				}
-			});
 
 		}, // end $.plush.InitQueue()
 		
@@ -449,6 +454,50 @@ jQuery(function($){
 		//	$.plush.InitHistory() -- History Events
 
 		InitHistory : function() {
+			
+			// Purge
+			$('#hist_purge').click(function(event) {
+				if (confirm( $.plush.TconfirmPurgeH )) {
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'history', name:'delete', value:'all', apikey: $.plush.apikey},
+						success: $.plush.RefreshHistory
+					});
+				}
+			});
+
+			// refresh on mouseout after deletion
+			$('#history').hover(	// $.mouseout was triggering too often
+				function(){}, // over
+				function(){	  // out
+					if ($.plush.pendingHistoryRefresh) {
+						$.plush.pendingHistoryRefresh = false;
+						$.plush.RefreshHistory();
+					}
+				}
+			);
+
+			// colorbox event bindings - so history doesn't refresh when viewing modal (thereby breaking rel prev/next)
+			$().bind('cbox_open', function(){ $.plush.modalOpen=true; });
+			$().bind('cbox_closed', function(){ $.plush.modalOpen=false; });
+			$().bind('cbox_complete', function(){
+				$('#cboxLoadedContent input').hide(); // hide back button
+				$('#cboxLoadedContent h3').append('<br/><br/>'); // add spacing to header
+			});
+
+			// Set history per-page preference
+			$("#history-pagination-perpage").val($.plush.histPerPage);
+			$.plush.histcurpage = 0; // default 1st page
+			
+			// Pagination per-page selection
+			$("#history-pagination-perpage").change(function(event){
+				$.plush.histcurpage = Math.floor($.plush.histcurpage * $.plush.histPerPage / $(event.target).val() );
+				$.plush.histPerPage = $(event.target).val();
+				$.cookie('histPerPage', $.plush.histPerPage, { expires: 365 });
+				$.plush.histforcerepagination = true;
+				$.plush.RefreshHistory();
+			});
 			
 			// NZB individual removal
 			$('#history .sprite_ql_cross').live('click', function(event) {
@@ -469,33 +518,28 @@ jQuery(function($){
 					});
 				}
 			});
-
-			// refresh on mouseout after deletion
-			$('#history').hover(	// $.mouseout was triggering too often
-				function(){}, // over
-				function(){	  // out
-					if ($.plush.pendingHistoryRefresh) {
-						$.plush.pendingHistoryRefresh = false;
-						$.plush.RefreshHistory();
-					}
-				}
-			);
 			
-			// Pagination per-page selection
-			$("#history-pagination-perpage").change(function(event){
-				$.plush.histcurpage = Math.floor($.plush.histcurpage * $.plush.histPerPage / $(event.target).val() );
-				$.plush.histPerPage = $(event.target).val();
-				$.cookie('histPerPage', $.plush.histPerPage, { expires: 365 });
-				$.plush.histforcerepagination = true;
-				$.plush.RefreshHistory();
+			// Remove NZB hover states -- done here rather than in CSS:hover due to sprites
+			$('#historyTable tr').live('mouseover mouseout', function(event) {
+				if (event.type == 'mouseover') {
+					$(this).find('.icon_nzb_remove').addClass('sprite_ql_cross');
+				} else {
+					$(this).find('.icon_nzb_remove').removeClass('sprite_ql_cross');
+				}
 			});
-
-			// Set history per-page preference
-			$("#history-pagination-perpage").val($.plush.histPerPage);
-			$.plush.histcurpage = 0; // default 1st page
+			$('#historyTable tr td .icon_nzb_remove').live('mouseover mouseout', function(event) {
+				if (event.type == 'mouseover') {
+					$(this).addClass('sprite_ql_cross_on');
+				} else {
+					$(this).removeClass('sprite_ql_cross_on');
+				}
+			});
 
 			// Sustained binding of events for elements added to DOM
 			$('#historyTable').livequery(function() {
+				
+				// modal for viewing script logs
+				$('#historyTable .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
 				// Build pagination only when needed
 				if ( ( $.plush.histforcerepagination && $.plush.histnoofslots > $.plush.histPerPage) || $.plush.histnoofslots > $.plush.histPerPage && 
@@ -519,41 +563,8 @@ jQuery(function($){
 					$("#history-pagination").html(''); // remove pages if history empty
 				}
 				$.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
-				
-				// modal for viewing script logs
-				$('#historyTable .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
-				
-				// Remove NZB hover states -- done here rather than in CSS:hover due to sprites
-				$('#historyTable tr').hover(
-					function(){ $(this).find('.icon_nzb_remove').addClass('sprite_ql_cross'); },
-					function(){ $(this).find('.icon_nzb_remove').removeClass('sprite_ql_cross'); }
-				);
-				$('#historyTable tr td .icon_nzb_remove').hover(
-					function(){ $(this).addClass('sprite_ql_cross_on'); },
-					function(){ $(this).removeClass('sprite_ql_cross_on'); }
-				);
 
 			}); // end livequery
-
-			// colorbox event bindings - so history doesn't refresh when viewing modal (thereby breaking rel prev/next)
-			$().bind('cbox_open', function(){ $.plush.modalOpen=true; });
-			$().bind('cbox_closed', function(){ $.plush.modalOpen=false; });
-			$().bind('cbox_complete', function(){
-				$('#cboxLoadedContent input').hide(); // hide back button
-				$('#cboxLoadedContent h3').append('<br/><br/>'); // add spacing to header
-			});
-			
-			// Purge
-			$('#hist_purge').click(function(event) {
-				if (confirm( $.plush.TconfirmPurgeH )) {
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'history', name:'delete', value:'all', apikey: $.plush.apikey},
-						success: $.plush.RefreshHistory
-					});
-				}
-			});
 			
 		}, // end $.plush.InitHistory()
 
@@ -672,7 +683,6 @@ jQuery(function($){
 					// Remove spinner graphic from pagination
 					$('#queue-pagination span').removeClass('loading');
 					
-					// *** don't forget the live() & livequery() methods defined in $.plush.initEvents() ***
 				},
 				error: function() {
 					// Failed refresh notification
@@ -718,7 +728,6 @@ jQuery(function($){
 					// Remove spinner graphic from pagination
 					$('#history-pagination span').removeClass('loading');
 					
-					// *** don't forget the live() & livequery() methods defined in $.plush.initEvents() ***
 				}
 			});
 			
@@ -730,8 +739,6 @@ jQuery(function($){
 
 
 jQuery(document).ready(function($){
-
 	$.plush.Init();		// Initialize Plush UI
 	$.plush.Refresh();	// Initiate Plush refresh cycle
-			
 });
