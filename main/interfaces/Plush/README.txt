@@ -1,5 +1,5 @@
 
-Plush 3.0 for SABnzbd+ 0.5 | October 23 2009
+Plush 3.1 for SABnzbd+ 0.5 | February 23 2010
 assembled by pairofdimes - see LICENSE-CC.txt
 
 =======================
@@ -51,6 +51,11 @@ http://jquery.malsup.com/corner/
 Authors: Dave Methvin & Mike Alsup
 See LICENSE-MIT & LICENSE-GPL
 
+jQuery FlipTip (with modifications by pairofdimes)
+http://learningjquery.com
+Copyright (c) 2010 Karl Swedberg
+See http://creativecommons.org/licenses/by-sa/2.5/
+
 jQuery hoverIntent
 http://cherne.net/brian/resources/jquery.hoverIntent.html
 Brian Cherne
@@ -74,11 +79,6 @@ See LICENSE-MIT & LICENSE-GPL
 jQuery Table Drag & Drop
 http://www.isocra.com/2008/02/table-drag-and-drop-jquery-plugin
 Copyright (c) 2008 Denis Howlett
-See LICENSE-MIT & LICENSE-GPL
-
-jQuery Tooltip
-http://bassistance.de/jquery-plugins/jquery-plugin-tooltip
-Copyright (c) 2006-2008 Jšrn Zaefferer
 See LICENSE-MIT & LICENSE-GPL
 
 WebToolkit

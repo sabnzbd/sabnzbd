@@ -20,19 +20,11 @@ jQuery(function($){
 		//	$.plush.Init() -- initialize all the UI events
 
 		Init : function() {
-
 			$.plush.InitAddNZB();
 			$.plush.InitMainMenu();
 			$.plush.InitQueue();
 			$.plush.InitHistory();
-
-			// Static tooltips
-			$('#explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #last_warning, #pause_resume, #hist_purge').tooltip({
-				extraClass:	"tooltip",
-				track:		true,
-				showURL: false
-			});
-
+			$.plush.InitTooltips();
 		}, // end $.plush.Init()
 
 
@@ -214,6 +206,73 @@ jQuery(function($){
 
 		}, // end $.plush.InitMainMenu()
 			
+		
+		// ***************************************************************
+		//	$.plush.InitTooltips() -- title tootlips on hover
+
+		InitTooltips : function() {
+
+			/*
+				jQuery FlipTip (with modifications by pairofdimes)
+				http://learningjquery.com
+				Copyright (c) 2010 Karl Swedberg
+				See http://creativecommons.org/licenses/by-sa/2.5/
+			*/
+			var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body');
+			var $win = $(window), tipTitle = '';
+
+			var tipPosition = function(event) {
+				var winWidth = $win.width(),
+				    winBottom = $win.scrollTop() + $win.height(),
+				    tipWidth = $liveTip.outerWidth(),
+				    tipHeight = $liveTip.outerHeight(),
+				    pageX = event.pageX,
+				    pageY = event.pageY;
+				if (pageX + tipWidth + 12 > winWidth)
+					pageX += 12 - (pageX + tipWidth + 12 - winWidth);
+				else
+					pageX += 12;
+				if (pageY + tipHeight + 12 > winBottom)
+					pageY -= (tipHeight + 12);
+				else
+					pageY += 12;
+				$liveTip.css({
+					top: pageY,
+					left: pageX
+				});
+			};
+
+			// make these work: #time-left, #have_warnings, #explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pauseForPrompt, 
+			$('#pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose').live('mouseover mouseout mousemove', function(event) {
+				var $link = $(event.target);
+				if (!$link.length) { return; }
+				var link = $link[0];
+				var coords = {left: '-1000em'};
+
+				switch(event.type){
+					case 'mouseover':
+						$link.data('tipActive', true);
+						tipTitle = link.title;
+						link.title = '';
+						if (!tipTitle) { return; }
+						$liveTip.html('<div>'+tipTitle+'</div>').show()
+						tipPosition(event);
+						break;
+
+					case 'mouseout':
+						$link.removeData('tipActive');
+						$liveTip.hide();
+						link.title = tipTitle || link.title;        
+						break;
+
+					case 'mousemove':
+						if ($link.data('tipActive'))
+				    		tipPosition(event);
+						break;
+				};
+			});
+		},
+
 
 		// ***************************************************************
 		//	$.plush.InitQueue() - Queue Events
@@ -634,13 +693,8 @@ jQuery(function($){
 					// Refresh state notification
 					$('#manual_refresh_wrapper').removeClass('refreshing');
 	
-					// Tooltips
+					// Tooltip on ETA
 					$('#time-left').attr('title',$.plush.eta);
-					$('#time-left, #queueTable tr .download-title a').tooltip({
-						extraClass:	"tooltip",
-						showURL: false,
-						track: true
-					});
 					
 					// Speed limit selector
 					if ($("#maxSpeed-option").val() != $.plush.speedlimit && !$.plush.focusedOnSpeedChanger)
@@ -671,17 +725,14 @@ jQuery(function($){
 
 					// Update bottom right stats
 					$('#queue_stats').html($.plush.queuestats);
-					
+
 					// Update warnings count/latest warning text in main menu
 					$('#have_warnings').html('('+$.plush.have_warnings+')');
-					$('#last_warning').attr('title',$.plush.last_warning).tooltip({
-						extraClass:	"tooltip",
-						track:		true,
-						showURL: false
-					});
 					
 					// Remove spinner graphic from pagination
 					$('#queue-pagination span').removeClass('loading');
+
+
 					
 				},
 				error: function() {
@@ -718,12 +769,6 @@ jQuery(function($){
 
 					// Update bottom right stats
 					$('#history_stats').html($.plush.histstats);
-	
-					// Tooltips for verbose notices
-					$('#history .icon_history_verbose').tooltip({
-						extraClass:	"tooltip",
-						track:		true
-					});
 					
 					// Remove spinner graphic from pagination
 					$('#history-pagination span').removeClass('loading');

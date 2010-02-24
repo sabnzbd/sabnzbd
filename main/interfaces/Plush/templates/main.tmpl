@@ -157,7 +157,7 @@
             <div class="logo main_sprite_container sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
             <div id="queue-buttons" class="lang-$active_lang main_sprite_container sprite_topright_queue">
                 <ul>
-                    <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause')&nbsp;&frasl;&nbsp;$T('link-resume')" id="pause_resume"></li>
+                    <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause') &frasl; $T('link-resume')" id="pause_resume"></li>
                     <li class="main_sprite_container sprite_q_menu_pausefor">
                       <a href="#"></a>
                       <ul id="set_pause_list">
@@ -167,7 +167,7 @@
                           <li><a href="javascript:void(0)" class="set_pause pointer" rel="60">$T('Plush-pause1h')</a></li>
                           <li><a href="javascript:void(0)" class="set_pause pointer" rel="180">$T('Plush-pause3h')</a></li>
                           <li><a href="javascript:void(0)" class="set_pause pointer" rel="360">$T('Plush-pause6h')</a></li>
-                          <li><a href="javascript:void(0)" class="set_pause pointer" rel="custom" title="$T('Plush-pauseForPrompt')">$T('Plush-pauseFor')</a></li>
+                          <li><a href="javascript:void(0)" class="set_pause pointer" rel="custom" id="pauseForPrompt" title="$T('Plush-pauseForPrompt')">$T('Plush-pauseFor')</a></li>
                       </ul>
                     </li>
 					<li id="pause_int"></li>
