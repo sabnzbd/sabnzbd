@@ -1,5 +1,5 @@
 // *****************************************************************
-// Plush config code as follows, by pairofdimes (see LICENSE-CC.txt)
+// Plush Config code as follows, by pairofdimes (see LICENSE-CC.txt)
 
 jQuery(document).ready(function($){
 
