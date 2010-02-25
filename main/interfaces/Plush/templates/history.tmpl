@@ -10,6 +10,7 @@
 	
 </script>
 
+<!--#if $limit > 1 or $search#-->
 <table class="queueTable" id="historyTable" cellspacing="0">
 <!--#set $cur = 0#-->
 <!--#for $line in $lines #-->
@@ -76,3 +77,4 @@
     </tr>
 <!--#end for#-->
 </table>
+<!--#end if#-->

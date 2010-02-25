@@ -562,6 +562,8 @@ jQuery(function($){
 				$.plush.histPerPage = $(event.target).val();
 				$.cookie('histPerPage', $.plush.histPerPage, { expires: 365 });
 				$.plush.histforcerepagination = true;
+				if ($.plush.histPerPage=="1")
+					$("#history-pagination").html(''); // pagination rebuild not triggered on blank history (disabled)
 				$.plush.RefreshHistory();
 			});
 			
@@ -608,7 +610,9 @@ jQuery(function($){
 				$('#historyTable .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
 				// Build pagination only when needed
-				if ( ( $.plush.histforcerepagination && $.plush.histnoofslots > $.plush.histPerPage) || $.plush.histnoofslots > $.plush.histPerPage && 
+				if ($.plush.histPerPage=="1") // disabled history
+					$("#history-pagination").html(''); // remove pages if history empty
+				else if ( ( $.plush.histforcerepagination && $.plush.histnoofslots > $.plush.histPerPage) || $.plush.histnoofslots > $.plush.histPerPage && 
 						Math.ceil($.plush.histprevslots/$.plush.histPerPage) != 
 						Math.ceil($.plush.histnoofslots/$.plush.histPerPage) ) {
 					
@@ -625,9 +629,8 @@ jQuery(function($){
 						callback: $.plush.RefreshHistory
 					});
 					$('#history-pagination span').removeClass('loading'); // hide spinner graphic
-				} else if ($.plush.histnoofslots <= $.plush.histPerPage) {
+				} else if ($.plush.histnoofslots <= $.plush.histPerPage)
 					$("#history-pagination").html(''); // remove pages if history empty
-				}
 				$.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
 
 			}); // end livequery
@@ -711,7 +714,9 @@ jQuery(function($){
 			else if (page != $.plush.histcurpage)
 				$.plush.histcurpage = page;
 			
-			if ($('#historySearchBox').val())
+			if ($('#historySearchBox').val() && $.plush.histPerPage == "1") // history disabled
+				var data = {start: 0, limit: 0, search: $('#historySearchBox').val() };
+			else if ($('#historySearchBox').val())
 				var data = {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage, search: $('#historySearchBox').val() };
 			else
 				var data = {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage};
