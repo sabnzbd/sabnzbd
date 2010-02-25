@@ -1,13 +1,11 @@
 <% import datetime %>
-
 <script type="text/javascript">
 	if (typeof( jQuery ) == 'undefined')
 		window.location = "../"; // redirect to main on direct template hit
     
-    // set vars within the plush object
     jQuery(function($) {
         $.plush.histnoofslots      = $noofslots;
-        $.plush.histstats = "<!--#if $loadavg#--><strong>$loadavg</strong>&nbsp;$T('ft-sysload')<!--#end if#--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('Plush-thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('Plush-thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('Plush-total')<!--#end if #-->";
+        $.plush.SetHistoryStats("<!--#if $loadavg#--><strong>$loadavg</strong>&nbsp;$T('ft-sysload')<!--#end if#--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('Plush-thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('Plush-thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('Plush-total')<!--#end if #-->");
 	});
 	
 </script>

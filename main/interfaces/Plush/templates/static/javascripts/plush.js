@@ -633,27 +633,17 @@ jQuery(function($){
 
 		Refresh : function(force) {
 			
-			// Clear timeout in case multiple refreshes are triggered
-			clearTimeout($.plush.timeout);
+			clearTimeout($.plush.timeout);	// prevent back-to-back refreshes
 			
 			if (force || $.plush.refreshRate > 0) {
-			
-				// no longer a need for a pending history refresh (associated with nzb deletions)
-				// (queue var reset in $.plush.RefreshQueue() due to possible blocking
-				$.plush.pendingHistoryRefresh = false;
-
 				$.plush.RefreshQueue();
 				$.plush.RefreshHistory();
-				
-				// Loop
-				$.plush.timeout = setTimeout("$.plush.Refresh()", $.plush.refreshRate*1000);
-
-			} else if (!$.plush.histstats) {
+				$.plush.timeout = setTimeout("$.plush.Refresh()", $.plush.refreshRate*1000); // loop
+			} else if (!$('#history_stats').html()) {
 				// Initial load if refresh rate saved as "Disabled"
 				$.plush.RefreshQueue();
 				$.plush.RefreshHistory();
 			}
-			
 		}, // end $.plush.Refresh()
 
 
@@ -662,11 +652,9 @@ jQuery(function($){
 		
 		RefreshQueue : function(page) {
 			
-			// Skip refresh if cursor hovers queue, to prevent annoyance
-			if ($.plush.blockRefresh && $.plush.skipRefresh) {
-				$('#manual_refresh_wrapper').addClass('refresh_skipped');
-				return false;
-			}
+			// Skip refresh if cursor hovers queue, to prevent UI annoyance
+			if ($.plush.blockRefresh && $.plush.skipRefresh)
+				return $('#manual_refresh_wrapper').addClass('refresh_skipped');
 
 			// no longer a need for a pending queue refresh (associated with nzb deletions)
 			$.plush.pendingQueueRefresh = false;
@@ -686,71 +674,29 @@ jQuery(function($){
 				url: "queue/",
 				data: {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage},
 				success: function(result){
-					
-					// Replace queue contents with queue.tmpl -- this file also sets several stat vars via javascript
-					$('#queue').html(result);
-					
-					// Refresh state notification
-					$('#manual_refresh_wrapper').removeClass('refreshing');
-	
-					// Tooltip on ETA
-					$('#time-left').attr('title',$.plush.eta);
-					
-					// Speed limit selector
-					if ($("#maxSpeed-option").val() != $.plush.speedlimit && !$.plush.focusedOnSpeedChanger)
-						$("#maxSpeed-option").val($.plush.speedlimit);
-					
-					// Completion script selector
-					if ($("#onQueueFinish-option").val() != $.plush.finishaction)
-						$("#onQueueFinish-option").val($.plush.finishaction);
-					
-					// Pause/resume button state
-					if ( $.plush.paused && !$('#pause_resume').hasClass('sprite_q_pause_on') )
-						$('#pause_resume').removeClass('sprite_q_pause').addClass('sprite_q_pause_on');
-					else if ( !$.plush.paused && !$('#pause_resume').hasClass('sprite_q_pause') )
-						$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
-					
-					// Pause interval
-					($.plush.pause_int == "0") ? $('#pause_int').html("") : $('#pause_int').html($.plush.pause_int);
-					
-					// ETA/speed stats at top of queue
-					if ($.plush.queuenoofslots < 1)
-						$('#stats_speed, #stats_eta').html('&mdash;');
-					else if ($.plush.kbpersec < 1 && $.plush.paused)
-						$('#stats_speed, #stats_eta').html('&mdash;');
-					else {
-						$('#stats_speed').html($.plush.speed+"B/s");
-						$('#stats_eta').html($.plush.timeleft);
-					}
-
-					// Update bottom right stats
-					$('#queue_stats').html($.plush.queuestats);
-
-					// Update warnings count/latest warning text in main menu
-					$('#have_warnings').html('('+$.plush.have_warnings+')');
-					
-					// Remove spinner graphic from pagination
-					$('#queue-pagination span').removeClass('loading');
-
-
-					
+					$('#queue').html(result);								// Replace queue contents with queue.tmpl
+					$('#queue-pagination span').removeClass('loading');		// Remove spinner graphic from pagination
+					$('#manual_refresh_wrapper').removeClass('refreshing');	// Refresh state notification
 				},
 				error: function() {
-					// Failed refresh notification
-					$('#manual_refresh_wrapper').addClass('refresh_skipped');
+					$('#manual_refresh_wrapper').addClass('refresh_skipped');	// Failed refresh notification
 				}
 			});
 			
 		}, // end $.plush.RefreshQueue()
-		
+
 		
 		// ***************************************************************
 		//	$.plush.RefreshHistory() -- fetch HTML data from history.tmpl (AHAH)
 
 		RefreshHistory : function(page) {
 
-			if ($.plush.modalOpen) // Skip refreshing when modal is open, which destroys colorbox rel prev/next
+			// Skip refreshing when modal is open, which destroys colorbox rel prev/next
+			if ($.plush.modalOpen)
 				return;
+			
+			// no longer a need for a pending history refresh (associated with nzb deletions)
+			$.plush.pendingHistoryRefresh = false;
 			
 			// Deal with pagination for start/limit
 			if (typeof( page ) == 'undefined')
@@ -763,20 +709,83 @@ jQuery(function($){
 				url: "history/",
 				data: {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage},
 				success: function(result){
-					
-					// Replace history contents with history.tmpl -- this file sets a couple stat vars via javascript
-					$('#history').html(result);
-
-					// Update bottom right stats
-					$('#history_stats').html($.plush.histstats);
-					
-					// Remove spinner graphic from pagination
-					$('#history-pagination span').removeClass('loading');
-					
+					$('#history').html(result);								// Replace history contents with history.tmpl
+					$('#history-pagination span').removeClass('loading');	// Remove spinner graphic from pagination
 				}
 			});
 			
-		} // end $.plush.RefreshHistory()
+		}, // end $.plush.RefreshHistory()
+		
+
+		// ***************************************************************
+		//	$.plush.SetQueueStats(str) -- called from queue.tmpl
+		SetQueueStats : function(str) {
+			$('#queue_stats').html(str);
+		},
+		
+
+		// ***************************************************************
+		//	$.plush.SetQueueSpeedLimit(str) -- called from queue.tmpl
+		SetQueueSpeedLimit : function(str) {
+			if ($("#maxSpeed-option").val() != str && !$.plush.focusedOnSpeedChanger)
+				$("#maxSpeed-option").val(str);
+		},
+		
+
+		// ***************************************************************
+		//	$.plush.SetQueueFinishAction(str) -- called from queue.tmpl
+		SetQueueFinishAction : function(str) {
+			if ($("#onQueueFinish-option").val() != str)
+				$("#onQueueFinish-option").val(str);
+		},
+		
+
+		// ***************************************************************
+		//	$.plush.SetQueuePauseInfo(paused,str) -- called from queue.tmpl
+		SetQueuePauseInfo : function(paused,str) {
+			$.plush.paused = paused;
+					
+			// Pause/resume button state
+			if ( paused && !$('#pause_resume').hasClass('sprite_q_pause_on') )
+				$('#pause_resume').removeClass('sprite_q_pause').addClass('sprite_q_pause_on');
+			else if ( !paused && !$('#pause_resume').hasClass('sprite_q_pause') )
+				$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
+
+			// Pause interval
+			(str == "0") ? $('#pause_int').html("") : $('#pause_int').html(str);
+		},
+		
+
+		// ***************************************************************
+		//	$.plush.SetQueueETAStats(speed,kbpersec,timeleft,eta) -- called from queue.tmpl
+		SetQueueETAStats : function(speed,kbpersec,timeleft,eta) {
+
+			// ETA/speed stats at top of queue
+			if ($.plush.queuenoofslots < 1)
+				$('#stats_speed, #stats_eta').html('&mdash;');
+			else if (kbpersec < 1 && $.plush.paused)
+				$('#stats_speed, #stats_eta').html('&mdash;');
+			else {
+				$('#stats_speed').html(speed+"B/s");
+				$('#stats_eta').html(timeleft);
+			}
+			$('#time-left').attr('title',eta);	// Tooltip on "time left"
+		},
+		
+
+		// ***************************************************************
+		//	$.plush.SetWarnings(have_warnings,last_warning) -- called from queue.tmpl
+		SetWarnings : function(have_warnings,last_warning) {
+			$('#have_warnings').html('('+have_warnings+')');		// Update warnings count/latest warning text in main menu
+			$('#last_warning').attr('title',last_warning);
+		},
+
+
+		// ***************************************************************
+		//	$.plush.SetHistoryStats(str) -- called from history.tmpl
+		SetHistoryStats : function(str) {
+			$('#history_stats').html(str);
+		}
 
 	}; // end $.plush object
 
