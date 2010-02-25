@@ -355,7 +355,19 @@ select {
 	float:right;
 	height: 52px;
 	margin-left: 1px; 
-	width:50px;
+	width:350px;
+}
+
+#historySearchBox {
+	color:white;
+	border:1px solid gray;
+	width:120px;
+	margin: 8px 8px 0 0;
+	padding-right:20px;
+	background: url('../images/plush-default/viewmag.png') no-repeat top right;
+	/*background-color: black;*/
+	/*background: url('../images/plush-default/sprite-main.png') no-repeat top right;
+	background-position: 0 -671px;*/
 }
  
 #hdr-queue {

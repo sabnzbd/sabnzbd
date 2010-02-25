@@ -514,6 +514,13 @@ jQuery(function($){
 
 		InitHistory : function() {
 			
+			// Search
+			$('#historySearchForm').submit(function(){
+				$.plush.histcurpage = 0;
+				$.plush.RefreshHistory();
+				return false;
+			});
+			
 			// Purge
 			$('#hist_purge').click(function(event) {
 				if (confirm( $.plush.TconfirmPurgeH )) {
@@ -704,10 +711,15 @@ jQuery(function($){
 			else if (page != $.plush.histcurpage)
 				$.plush.histcurpage = page;
 			
+			if ($('#historySearchBox').val())
+				var data = {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage, search: $('#historySearchBox').val() };
+			else
+				var data = {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage};
+				
 			$.ajax({
 				type: "POST",
 				url: "history/",
-				data: {start: ( page * $.plush.histPerPage ), limit: $.plush.histPerPage},
+				data: data,
 				success: function(result){
 					$('#history').html(result);								// Replace history contents with history.tmpl
 					$('#history-pagination span').removeClass('loading');	// Remove spinner graphic from pagination
