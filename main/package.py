@@ -333,7 +333,7 @@ if target == 'app':
     sys.argv[1] = 'py2app'
 
     APP = ['SABnzbd.py']
-    DATA_FILES = ['interfaces','language','osx/osx',('',glob.glob("osx/resources/*"))]
+    DATA_FILES = ['interfaces','language',('',glob.glob("osx/resources/*"))]
     NZBFILE = dict(
             CFBundleTypeExtensions = [ "nzb","zip","rar" ],
             CFBundleTypeIconFile = 'nzbfile.icns',
@@ -360,7 +360,11 @@ if target == 'app':
     )
 
     #copy unrar & par2 binary to avoid striping
-    os.system("cp -pr osx/osx dist/SABnzbd.app/Contents/Resources/>/dev/null")
+    os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx>/dev/null")
+    os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
+    os.system("cp -pR osx/par2/ dist/SABnzbd.app/Contents/Resources/osx/par2>/dev/null")
+    os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
+    os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("chmod +x dist/SABnzbd.app/Contents/Resources/update>/dev/null")
     os.system("find dist/SABnzbd.app -name .svn | xargs rm -rf")
 
