@@ -82,7 +82,7 @@ jQuery(document).ready(function($){
 	            
 	            // range event interaction -- see further above
 	            if (last1) last2 = last1;
-	            last1 = $(event.target).parent()[0].rowIndex; //$('.nzoTable').index( $(this).parent() );
+	            last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
 	        });
 
 			// 
