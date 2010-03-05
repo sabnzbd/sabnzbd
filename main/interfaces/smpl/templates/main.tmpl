@@ -68,17 +68,17 @@
         var slash = "\\";
         input.toLowerCase()
         input = input.replace(/%ext/g,'avi');
-        input = input.replace(/%sn/g,'Show Name');
-        input = input.replace(/%s.n/g,'Show.Name');
-        input = input.replace(/%s_n/g,'Show_Name');
+	    input = input.replace(/%sn/g,'$T("show-sp-name")');
+	    input = input.replace(/%s\.n/g,'$T("show-dot-name")');
+	    input = input.replace(/%s\_n/g,'$T("show-us-name")');
         input = input.replace(/%0s/g,'01');
         input = input.replace(/%s/g,'1');
-        input = input.replace(/%en/g,'Episode Name');
-        input = input.replace(/%e\.n/g,'Episode.Name');
-        input = input.replace(/%e\_n/g,'Episode_Name');
+	    input = input.replace(/%en/g,'$T("ep-sp-name")');
+	    input = input.replace(/%e\.n/g,'$T("ep-dot-name")');
+	    input = input.replace(/%e\_n/g,'$T("ep-us-name")');
         input = input.replace(/%0e/g,'05');
         input = input.replace(/%e/g,'5');
-		input = input.replace(/%fn/g,'file');
+		input = input.replace(/%fn/g,'$T("sort-File")');
 
         document.getElementById('previewtv').innerHTML = getOutput(input);
     }
@@ -146,15 +146,15 @@
         extra = input2.replace(/%1/g,'1');
         var slash = "\\";
         ext = extra + '.avi'
-        input = input.replace(/.%ext/g,ext);
+        input = input.replace(/\.%ext/g,ext);
         input = input.replace(/%ext/g,'avi');
-        input = input.replace(/%title/g,'Movie Name');
-        input = input.replace(/%.title/g,'Movie.Name');
-        input = input.replace(/%_title/g,'Movie_Name');
+	    input = input.replace(/%title/g,'$T("movie-sp-name")');
+	    input = input.replace(/%\.title/g,'$T("movie-dot-name")');
+	    input = input.replace(/%\_title/g,'$T("movie-us-name")');
         input = input.replace(/%y/g,'2000');
         input = input.replace(/%decade/g,'00');
 		input = input.replace(/%0decade/g,'2000');
-		input = input.replace(/%fn/g,'file');
+		input = input.replace(/%fn/g,'$T("sort-File")');
 
         var regex = /\{([^\{]*)\}/g;
         var str = input;
@@ -184,15 +184,15 @@
         var slash = "\\";
         input.toLowerCase()
         input = input.replace(/%ext/g,'avi');
-        input = input.replace(/%t/g,'Show Name');
-        input = input.replace(/%.t/g,'Show.Name');
-        input = input.replace(/%_t/g,'Show_Name');
-        input = input.replace(/%decade/g,'00');
+	    input = input.replace(/%t/g,'$T("show-sp-name")');
+	    input = input.replace(/%\.t/g,'$T("show-dot-name")');
+	    input = input.replace(/%\_t/g,'$T("show-us-name")');
+	    input = input.replace(/%decade/g,'00');
 		input = input.replace(/%0decade/g,'2000');
-		input = input.replace(/%fn/g,'file');
-        input = input.replace(/%desc/g,'Episode Name');
-        input = input.replace(/%\.desc/g,'Episode.Name');
-        input = input.replace(/%\_desc/g,'Episode_Name');
+		input = input.replace(/%fn/g,'$T("sort-File")');
+	    input = input.replace(/%desc/g,'$T("ep-sp-name")');
+	    input = input.replace(/%\.desc/g,'$T("ep-dot-name")');
+	    input = input.replace(/%\_desc/g,'$T("ep-us-name")');
         input = input.replace(/%0d/g,'02');
         input = input.replace(/%d/g,'2');
         input = input.replace(/%0m/g,'01');

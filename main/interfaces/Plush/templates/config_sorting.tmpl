@@ -29,8 +29,8 @@
 	    input.toLowerCase()
 	    input = input.replace(/%ext/g,'avi');
 	    input = input.replace(/%sn/g,'$T("show-sp-name")');
-	    input = input.replace(/%s.n/g,'$T("show-dot-name")');
-	    input = input.replace(/%s_n/g,'$T("show-us-name")');
+	    input = input.replace(/%s\.n/g,'$T("show-dot-name")');
+	    input = input.replace(/%s\_n/g,'$T("show-us-name")');
 	    input = input.replace(/%0s/g,'01');
 	    input = input.replace(/%s/g,'1');
 	    input = input.replace(/%en/g,'$T("ep-sp-name")');
@@ -106,11 +106,11 @@
 	    extra = input2.replace(/%1/g,'1');
 	    var slash = "\\";
 	    ext = extra + '.avi'
-	    input = input.replace(/.%ext/g,ext);
+	    input = input.replace(/\.%ext/g,ext);
 	    input = input.replace(/%ext/g,'avi');
 	    input = input.replace(/%title/g,'$T("movie-sp-name")');
-	    input = input.replace(/%.title/g,'$T("movie-dot-name")');
-	    input = input.replace(/%_title/g,'$T("move-us-name")');
+	    input = input.replace(/%\.title/g,'$T("movie-dot-name")');
+	    input = input.replace(/%\_title/g,'$T("movie-us-name")');
 	    input = input.replace(/%y/g,'2000');
 	    input = input.replace(/%decade/g,'00');
 		input = input.replace(/%0decade/g,'2000');
@@ -145,8 +145,8 @@
 	    input.toLowerCase()
 	    input = input.replace(/%ext/g,'avi');
 	    input = input.replace(/%t/g,'$T("show-sp-name")');
-	    input = input.replace(/%.t/g,'$T("show-dot-name")');
-	    input = input.replace(/%_t/g,'$T("show-us-name")');
+	    input = input.replace(/%\.t/g,'$T("show-dot-name")');
+	    input = input.replace(/%\_t/g,'$T("show-us-name")');
 	    input = input.replace(/%decade/g,'00');
 		input = input.replace(/%0decade/g,'2000');
 		input = input.replace(/%fn/g,'$T("sort-File")');
