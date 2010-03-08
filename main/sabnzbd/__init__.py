@@ -227,7 +227,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
         bytes = int(bytes)
         BPSMeter.do.bytes_sum = bytes
     except:
-        BPSMeter.do.method.reset()
+        BPSMeter.do.reset()
 
     nzbqueue.init()
 
