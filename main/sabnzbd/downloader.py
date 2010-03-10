@@ -626,7 +626,7 @@ class Downloader(Thread):
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
-                                    if (not server.optional) and cfg.no_penalties.get():
+                                    if (not server.optional) and cfg.no_penalties():
                                         penalty = _PENALTY_SHORT
                                     if penalty and (block or server.optional):
                                         logging.info('Server %s ignored for %s minutes', server.id, penalty)

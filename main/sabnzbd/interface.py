@@ -384,7 +384,7 @@ class MainPage:
 
             info['warning'] = ''
             if cfg.enable_unrar():
-                if sabnzbd.newsunpack.RAR_PROBLEM and not cfg.ignore_wrong_unrar.get():
+                if sabnzbd.newsunpack.RAR_PROBLEM and not cfg.ignore_wrong_unrar():
                     info['warning'] = T('warn-badUnrar')
                 if not sabnzbd.newsunpack.RAR_COMMAND:
                     info['warning'] = T('warn-noUnpack')
@@ -755,7 +755,7 @@ class MainPage:
                 else:
                     return report(output, _MSG_NO_VALUE)
             elif not name:
-                search = kwargs.get('search') 
+                search = kwargs.get('search')
                 history, pnfo_list, bytespersec = build_header(True)
                 history['total_size'], history['month_size'], history['week_size'] = get_history_size()
                 history['slots'], fetched_items, history['noofslots'] = build_history(start=start, limit=limit, verbose=True, search=search)
@@ -874,9 +874,9 @@ class MainPage:
 
         if mode == 'auth':
             auth = 'None'
-            if cfg.username.get() and cfg.password.get():
+            if cfg.username() and cfg.password():
                 auth = 'login'
-            if not cfg.disable_key.get():
+            if not cfg.disable_key():
                 auth = 'apikey'
             return report(output, keyword='auth', data=auth)
 

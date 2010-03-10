@@ -661,7 +661,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
     setpars = pars_of_set(workdir, setname)
     result = readd = False
 
-    if cfg.quick_check.get():
+    if cfg.quick_check():
         nzo.set_status('QuickCheck')
         nzo.set_action_line(T('msg-repair'), T('msg-QuickChecking'))
         result = QuickCheck(setname, nzo)
@@ -772,7 +772,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     nzo.set_status('Verifying')
     start = time()
 
-    classic = classic or not cfg.par2_multicore.get()
+    classic = classic or not cfg.par2_multicore()
     logging.debug('Par2-classic = %s', classic)
 
     if (is_new_partype(nzo, setname) and not classic) or not PAR2C_COMMAND:

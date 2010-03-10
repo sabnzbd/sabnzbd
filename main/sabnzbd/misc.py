@@ -215,7 +215,7 @@ def sanitize_foldername(name):
         illegal = FL_ILLEGAL
         legal   = FL_LEGAL
 
-    repl = cfg.replace_illegal.get()
+    repl = cfg.replace_illegal()
     lst = []
     for ch in name.strip():
         if ch in illegal:
@@ -230,7 +230,7 @@ def sanitize_foldername(name):
     if not name:
         name = 'unknown'
 
-    maxlen = cfg.folder_max_length.get()
+    maxlen = cfg.folder_max_length()
     if len(name) > maxlen:
         name = name[:maxlen]
 
