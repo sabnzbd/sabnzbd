@@ -45,3 +45,4 @@ dualView1       DualView 1
 dualView2       DualView 2
 eta             ETA
 refreshr        Aktualisierungsrate
+hourmin         Stunde:Min

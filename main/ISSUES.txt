@@ -25,13 +25,6 @@
       no_penalties = 1
   See: http://wiki.sabnzbd.org/configure-special
 
-- On OSX you will have problems running Python user scripts.
-  This is caused by wrong behaviour of the Python-to-app converter we use.
-  Currently we cannot fix this. As a work-around you need to add
-  the -E parameter to the first line of your Python script.
-  Example:
-        #!/bin/python -E
-
 - On OSX you may encounter downloaded files with foreign characters.
   The par2 repair may fail when the files were created on a Windows system.
   The problem is caused by the PAR2 utility and we cannot fix this now.

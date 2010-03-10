@@ -337,7 +337,7 @@ function timedPause(mins)
 {
     if (mins == null)
     {
-        mins = prompt("Pause for how many minutes?");
+        mins = prompt("$T('pauseForPrompt')");
     }
     url = 'tapi?mode=config&name=set_pause&value=' + mins +'&session='+session;
     d = doSimpleXMLHttpRequest(url);

@@ -112,8 +112,7 @@ def find_programs(curdir):
         sabnzbd.newsunpack.ZIP_COMMAND = find_on_path('unzip')
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
-        if not cfg.ignore_wrong_unrar():
-            sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
+        sabnzbd.newsunpack.RAR_PROBLEM = not unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
 
 #------------------------------------------------------------------------------
 def external_processing(extern_proc, complete_dir, filename, msgid, nicename, cat, group, status):
@@ -155,8 +154,12 @@ def SimpleRarExtract(rarfile, name):
     return ret, output
 
 #------------------------------------------------------------------------------
+def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts, depth=0):
+    if depth > 5:
+        logging.warning('Unpack nesting too deep [%s]', nzo.get_dirname())
+        return False, []
+    depth += 1
 
-def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts):
     xjoinables, xzips, xrars, xts = build_filelists(workdir, workdir_complete)
 
     rerun = False
@@ -164,63 +167,42 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
     error = False
 
     if cfg.enable_filejoin():
-        do_filejoin = False
-        for joinable in xjoinables:
-            if joinable not in joinables:
-                do_filejoin = True
-                rerun = True
-                break
-
-        if do_filejoin:
+        new_joins = [jn for jn in xjoinables if jn not in joinables]
+        if new_joins:
+            rerun = True
             logging.info('Filejoin starting on %s', workdir)
-            error, newf = file_join(nzo, workdir, workdir_complete, dele, xjoinables)
+            error, newf = file_join(nzo, workdir, workdir_complete, dele, new_joins)
             if newf:
                 newfiles.extend(newf)
             logging.info('Filejoin finished on %s', workdir)
             nzo.set_action_line('', '')
 
     if cfg.enable_unrar():
-        do_unrar = False
-        for rar in xrars:
-            if rar not in rars:
-                do_unrar = True
-                rerun = True
-                break
-
-        if do_unrar:
+        new_rars = [rar for rar in xrars if rar not in rars]
+        if new_rars:
+            rerun = True
             logging.info('Unrar starting on %s', workdir)
-            error, newf = rar_unpack(nzo, workdir, workdir_complete, dele, xrars)
+            error, newf = rar_unpack(nzo, workdir, workdir_complete, dele, new_rars)
             if newf:
                 newfiles.extend(newf)
             logging.info('Unrar finished on %s', workdir)
             nzo.set_action_line('', '')
 
     if cfg.enable_unzip():
-        do_unzip = False
-        for _zip in xzips:
-            if _zip not in zips:
-                do_unzip = True
-                rerun = True
-                break
-
-        if do_unzip:
+        new_zips = [zip for zip in xzips if zip not in zips]
+        if new_zips:
             logging.info('Unzip starting on %s', workdir)
-            if unzip(nzo, workdir, workdir_complete, dele, xzips):
+            if unzip(nzo, workdir, workdir_complete, dele, new_zips):
                 error = True
             logging.info('Unzip finished on %s', workdir)
             nzo.set_action_line('', '')
 
     if cfg.enable_tsjoin():
-        do_tsjoin = False
-        for _ts in xts:
-            if _ts not in ts:
-                do_tsjoin = True
-                rerun = True
-                break
-
-        if do_tsjoin:
+        new_ts = [_ts for _ts in xts if _ts not in ts]
+        if new_ts:
+            rerun = True
             logging.info('TS Joining starting on %s', workdir)
-            error, newf = file_join(nzo, workdir, workdir_complete, dele, xts)
+            error, newf = file_join(nzo, workdir, workdir_complete, dele, new_ts)
             if newf:
                 newfiles.extend(newf)
             logging.info('TS Joining finished on %s', workdir)
@@ -229,7 +211,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
 
     if rerun:
         z, y = unpack_magic(nzo, workdir, workdir_complete, dele, xjoinables,
-                            xzips, xrars, xts)
+                            xzips, xrars, xts, depth)
         if z:
             error = z
         if y:
@@ -464,9 +446,15 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
     ############################################################################
 
     if sabnzbd.WIN32:
+        # Use all flags
         command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', '-ai', password,
                    '%s' % rarfile, '%s/' % extraction_path]
+    elif RAR_PROBLEM:
+        # Use only oldest options (specifically no "-or")
+        command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', password,
+                   '%s' % rarfile, '%s/' % extraction_path]
     else:
+        # Don't use "-ai" (not needed for non-Windows)
         command = ['%s' % RAR_COMMAND, 'x', '-idp', '-o-', '-or', password,
                    '%s' % rarfile, '%s/' % extraction_path]
 
@@ -558,7 +546,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
 
     if cfg.unpack_check():
-        if reliable_unpack_names():
+        if reliable_unpack_names() and not RAR_PROBLEM:
             all_found = True
             # Loop through and check for the presence of all the files the archive contained
             for path in expected_files:
@@ -579,7 +567,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
                 nzo.set_unpack_info('Unpack', T('error-unpackMissing'), set=setname)
                 return ((), ())
         else:
-            logging.info('Skipping unrar file check due to unreliable file names')
+            logging.info('Skipping unrar file check due to unreliable file names or old unrar')
 
     msg = T('msg-unpackDone@2') % (str(len(extracted)), format_time_string(time() - start))
     nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg), set=setname)
@@ -1028,7 +1016,30 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
 #-------------------------------------------------------------------------------
 
+_RE_PYTHON = re.compile(r'^(#!.*/python)\s+(.*)$')
+
+def fix_python_script(command):
+    """ Implement a work-around for Python userscripts on OSX """
+    try:
+        fp = open(command[0], 'r')
+        line = fp.readline(100)
+        fp.close()
+        m = _RE_PYTHON.search(line)
+        if m:
+            # Work-around for the incorrect Python paths passed
+            # by the OSX.app to Python scripts.
+            # Run the Python interpreter directly and insert the -E parameter
+            command.insert(0, m.group(2))
+            command.insert(0, '-E')
+            command.insert(0, m.group(1))
+    except IOError:
+        pass
+
+
 def build_command(command):
+    if sabnzbd.DARWIN:
+        fix_python_script(command)
+
     if not sabnzbd.WIN32:
         if IONICE_COMMAND and cfg.ionice().strip():
             lst = cfg.ionice().split()
@@ -1086,17 +1097,20 @@ def par_sort(a, b):
     elif bext == 'par2':
         return 1
 
+
 def build_filelists(workdir, workdir_complete, check_rar=True):
-    joinables, zips, rars = ([], [], [])
-
-    filelist = []
-
-    for root, dirs, files in os.walk(workdir):
-        for _file in files:
-            filelist.append(os.path.join(root, _file))
+    """ Build filelists, if workdir_complete has files, ignore workdir.
+        Optionally test content to establish RAR-ness
+    """
+    joinables, zips, rars, filelist = ([], [], [], [])
 
     if workdir_complete:
         for root, dirs, files in os.walk(workdir_complete):
+            for _file in files:
+                filelist.append(os.path.join(root, _file))
+
+    if workdir and not filelist:
+        for root, dirs, files in os.walk(workdir):
             for _file in files:
                 filelist.append(os.path.join(root, _file))
 

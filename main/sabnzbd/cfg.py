@@ -27,7 +27,7 @@ from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDI
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir, validate_dir_exists, \
-                           create_api_key
+                           create_api_key, validate_notempty
 from sabnzbd.lang import T
 #------------------------------------------------------------------------------
 # Email validation support
@@ -139,7 +139,7 @@ configlock = OptionBool('misc', 'config_lock', 0)
 umask = OptionStr('misc', 'permissions', '', validation=validate_octal)
 download_dir = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=validate_safedir)
 download_free = OptionStr('misc', 'download_free')
-complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, apply_umask=True)
+complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, apply_umask=True, validation=validate_notempty)
 script_dir = OptionDir('misc', 'script_dir', create=False, validation=validate_dir_exists)
 nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
 cache_dir = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
@@ -172,7 +172,7 @@ cleanup_list = OptionList('misc', 'cleanup_list')
 warned_old_queue = OptionBool('misc', 'warned_old_queue', False)
 
 log_web = OptionBool('logging', 'enable_cherrypy_logging', False)
-log_dir = OptionDir('misc', 'log_dir', 'logs')
+log_dir = OptionDir('misc', 'log_dir', 'logs', validation=validate_notempty)
 log_level = OptionNumber('logging', 'log_level', 1, 0, 2)
 log_size = OptionStr('logging', 'max_log_size', '5242880')
 log_backups = OptionNumber('logging', 'log_backups', 5, 1, 1024)

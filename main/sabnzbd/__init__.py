@@ -378,8 +378,6 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
-    if priority == None: priority = NORMAL_PRIORITY
-
 
     if cfg.newzbin_username() and cfg.newzbin_password():
         logging.info('Fetching msgid %s from www.newzbin.com', msgid)
@@ -398,7 +396,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
-    if 'nzbindex.nl/' in url or 'nzbindex.com/' in url:
+    if 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url:
         nzbname = ''
     logging.info('Fetching %s', url)
     msg = T('fetchNZB@1') % url

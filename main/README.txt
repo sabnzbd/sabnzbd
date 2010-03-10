@@ -15,6 +15,14 @@ http://wiki.sabnzbd.org/
 >>> PLEASE ALSO READ THE FILE "ISSUES.txt" <<<
 
 *******************************************
+*** Upgrading from 0.5.0                ***
+*******************************************
+Stop SABnzbd.
+Install new version over the old one
+Start SABnzbd.
+
+
+*******************************************
 *** Upgrading from 0.4.x                ***
 *******************************************
 

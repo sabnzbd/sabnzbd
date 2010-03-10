@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -42,8 +42,7 @@ LOWERCASE = ('the','of','and','at','vs','a','an','but','nor','for','on',\
                          'so','yet')
 UPPERCASE = ('III', 'II', 'IV')
 
-replace_prev = {'\\':'/'}
-replace_after = {
+REPLACE_AFTER = {
     '()': '',
     '..': '.',
     '__': '_',
@@ -284,40 +283,46 @@ class SeriesSorter:
     def construct_path(self):
         ''' Replaces the sort string with real values such as Show Name and Episode Number '''
 
-        path = self.sort_string
+        sorter = self.sort_string.replace('\\', '/')
+        mapping = []
 
-        if endswith_ext(path):
+        if endswith_ext(sorter):
             extension = True
-            path = path.replace(".%ext", '')
+            sorter = sorter.replace('.%ext', '')
         else:
             extension = False
 
-        for key, name in replace_prev.iteritems():
-            path = path.replace(key, name)
 
-        path = path.replace('%sn', self.show_info['show_name'])
-        path = path.replace('%s.n', self.show_info['show_name_two'])
-        path = path.replace('%s_n', self.show_info['show_name_three'])
+        # Replace Show name
+        mapping.append(('%sn', self.show_info['show_name']))
+        mapping.append(('%s.n', self.show_info['show_name_two']))
+        mapping.append(('%s_n', self.show_info['show_name_three']))
 
         # Replace season number
-        path = path.replace('%s', self.show_info['season_num'])
-        path = path.replace('%0s', self.show_info['season_num_alt'])
+        mapping.append(('%s', self.show_info['season_num']))
+        mapping.append(('%0s', self.show_info['season_num_alt']))
 
         # Replace episode names
         if self.show_info['ep_name']:
-            path = path.replace('%en', self.show_info['ep_name'])
-            path = path.replace('%e.n', self.show_info['ep_name_two'])
-            path = path.replace('%e_n', self.show_info['ep_name_three'])
-
-        # If no descriptions were found we need to replace %en and eat up surrounding characters
-        path = removeDescription(path, '%e[\._]?n')
+            mapping.append(('%en', self.show_info['ep_name']))
+            mapping.append(('%e.n', self.show_info['ep_name_two']))
+            mapping.append(('%e_n', self.show_info['ep_name_three']))
+        else:
+            mapping.append(('%en', ''))
+            mapping.append(('%e.n', ''))
+            mapping.append(('%e_n', ''))
 
         # Replace episode number
-        path = path.replace('%e', self.show_info['episode_num'])
-        path = path.replace('%0e', self.show_info['episode_num_alt'])
+        mapping.append(('%e', self.show_info['episode_num']))
+        mapping.append(('%0e', self.show_info['episode_num_alt']))
 
+        # Make sure unsupported %desc is removed
+        mapping.append(('%desc', ''))
 
-        for key, name in replace_after.iteritems():
+        # Replace elements
+        path = path_subst(sorter, mapping)
+
+        for key, name in REPLACE_AFTER.iteritems():
             path = path.replace(key, name)
 
         # Lowercase all characters encased in {}
@@ -330,7 +335,6 @@ class SeriesSorter:
             self.rename_or_not = True
         else:
             head = path
-
 
         return head
 
@@ -523,36 +527,35 @@ class GenericSorter:
 
     def construct_path(self):
 
-        path = self.sort_string
+        sorter = self.sort_string.replace('\\', '/')
+        mapping = []
 
-        if endswith_ext(path):
+        if endswith_ext(sorter):
             extension = True
-            path = path.replace(".%ext", '')
+            sorter = sorter.replace(".%ext", '')
         else:
             extension = False
 
-        for key, name in replace_prev.iteritems():
-            path = path.replace(key, name)
-
         # Replace title
-        path = path.replace('%title', self.movie_info['title'])
-        path = path.replace('%.title', self.movie_info['title_two'])
-        path = path.replace('%_title', self.movie_info['title_three'])
+        mapping.append(('%title', self.movie_info['title']))
+        mapping.append(('%.title', self.movie_info['title_two']))
+        mapping.append(('%_title', self.movie_info['title_three']))
 
-        path = path.replace('%t', self.movie_info['title'])
-        path = path.replace('%.t', self.movie_info['title_two'])
-        path = path.replace('%_t', self.movie_info['title_three'])
+        # Replace title (short forms)
+        mapping.append(('%t', self.movie_info['title']))
+        mapping.append(('%.t', self.movie_info['title_two']))
+        mapping.append(('%_t', self.movie_info['title_three']))
 
         # Replace year
-        path = path.replace('%y', self.movie_info['year'])
+        mapping.append(('%y', self.movie_info['year']))
 
         # Replace decades
-        path = path.replace('%decade', self.movie_info['decade'])
-        path = path.replace('%0decade', self.movie_info['decade_two'])
+        mapping.append(('%decade', self.movie_info['decade']))
+        mapping.append(('%0decade', self.movie_info['decade_two']))
 
+        path = path_subst(sorter, mapping)
 
-
-        for key, name in replace_after.iteritems():
+        for key, name in REPLACE_AFTER.iteritems():
             path = path.replace(key, name)
 
 
@@ -716,58 +719,60 @@ class DateSorter:
 
     def construct_path(self):
 
-        path = self.sort_string
+        sorter = self.sort_string.replace('\\', '/')
+        mapping = []
 
-        if endswith_ext(path):
+        if endswith_ext(sorter):
             extension = True
-            path = path.replace(".%ext", '')
+            sorter= sorter.replace(".%ext", '')
         else:
             extension = False
 
-        for key, name in replace_prev.iteritems():
-            path = path.replace(key, name)
-
         # Replace title
-        path = path.replace('%title', self.date_info['title'])
-        path = path.replace('%.title', self.date_info['title_two'])
-        path = path.replace('%_title', self.date_info['title_three'])
+        mapping.append(('%title', self.date_info['title']))
+        mapping.append(('%.title', self.date_info['title_two']))
+        mapping.append(('%_title', self.date_info['title_three']))
 
-        path = path.replace('%t', self.date_info['title'])
-        path = path.replace('%.t', self.date_info['title_two'])
-        path = path.replace('%_t', self.date_info['title_three'])
+        mapping.append(('%t', self.date_info['title']))
+        mapping.append(('%.t', self.date_info['title_two']))
+        mapping.append(('%_t', self.date_info['title_three']))
 
-        path = path.replace('%sn', self.date_info['title'])
-        path = path.replace('%s.n', self.date_info['title_two'])
-        path = path.replace('%s_n', self.date_info['title_three'])
+        mapping.append(('%sn', self.date_info['title']))
+        mapping.append(('%s.n', self.date_info['title_two']))
+        mapping.append(('%s_n', self.date_info['title_three']))
 
         # Replace year
-        path = path.replace('%year', self.date_info['year'])
-        path = path.replace('%y', self.date_info['year'])
+        mapping.append(('%year', self.date_info['year']))
+        mapping.append(('%y', self.date_info['year']))
 
         if self.date_info['ep_name']:
-            path = path.replace('%desc', self.date_info['ep_name'])
-            path = path.replace('%.desc', self.date_info['ep_name_two'])
-            path = path.replace('%_desc', self.date_info['ep_name_three'])
+            mapping.append(('%desc', self.date_info['ep_name']))
+            mapping.append(('%.desc', self.date_info['ep_name_two']))
+            mapping.append(('%_desc', self.date_info['ep_name_three']))
+        else:
+            mapping.append(('%desc', ''))
+            mapping.append(('%.desc', ''))
+            mapping.append(('%_desc', ''))
 
         # Replace decades
-        path = path.replace('%decade', self.date_info['decade'])
-        path = path.replace('%0decade', self.date_info['decade_two'])
+        mapping.append(('%decade', self.date_info['decade']))
+        mapping.append(('%0decade', self.date_info['decade_two']))
 
         # Replace month
-        path = path.replace('%m', self.date_info['month'])
-        path = path.replace('%0m', self.date_info['month_two'])
+        mapping.append(('%m', self.date_info['month']))
+        mapping.append(('%0m', self.date_info['month_two']))
 
         # Replace date
-        path = path.replace('%d', self.date_info['date'])
-        path = path.replace('%0d', self.date_info['date_two'])
+        mapping.append(('%d', self.date_info['date']))
+        mapping.append(('%0d', self.date_info['date_two']))
 
-        for key, name in replace_after.iteritems():
+        path = path_subst(sorter, mapping)
+
+        for key, name in REPLACE_AFTER.iteritems():
             path = path.replace(key, name)
 
         # Lowercase all characters encased in {}
         path = toLowercase(path)
-
-        path = removeDescription(path, '%[\._]?desc')
 
         # Strip any extra ' ' '.' or '_' around foldernames
         path = stripFolders(path)
@@ -813,6 +818,27 @@ class DateSorter:
                             rename_similar(current_path, file, self.filename_set)
                             break
 
+
+def path_subst(path, mapping):
+    """ Replace the sort sting elements by real values.
+        Non-elements are copied literally.
+        path = the sort string
+        mapping = array of tuples that maps all elements to their values
+    """
+    newpath = []
+    plen = len(path)
+    n = 0
+    while n < plen:
+        result = path[n]
+        if result == '%':
+            for key, value in mapping:
+                if path.startswith(key, n):
+                    n += len(key)-1
+                    result = value
+                    break
+        newpath.append(result)
+        n += 1
+    return ''.join(newpath)
 
 
 def getTitles(match, name):
@@ -883,7 +909,7 @@ def getTitles(match, name):
 
 def replace_word(input, one, two):
     ''' Regex replace on just words '''
-    regex = re.compile('\W(%s)(\W|$)' % one, re.I)
+    regex = re.compile(r'\W(%s)(\W|$)' % one, re.I)
     matches = regex.findall(input)
     if matches:
         for m in matches:
@@ -900,7 +926,7 @@ def getDescriptions(match, name):
         ep_name = name[match.end():] # Need to improve for multi ep support
     else:
         ep_name = name
-    RE_EPNAME = re.compile('_?-[_\W]', re.I)
+    RE_EPNAME = re.compile(r'_?-[_\W]', re.I)
     m = RE_EPNAME.search(ep_name)
     if m:
         ep_name = ep_name[m.end():].strip('_').strip().strip('_').replace('.', ' ').replace('_', ' ')
@@ -910,11 +936,6 @@ def getDescriptions(match, name):
     else:
         return '', '', ''
 
-def removeDescription(path, desc_token):
-    regex_string = '(\W*)(token)(\s?)'.replace('token', desc_token)
-    epname_re = re.compile(regex_string)
-    path = epname_re.sub('', path)
-    return path
 
 def getDecades(year):
     if year:
@@ -935,7 +956,7 @@ def check_for_folder(path):
             return True
     return False
 
-_RE_LOWERCASE = re.compile('{([^{]*)}')
+_RE_LOWERCASE = re.compile(r'{([^{]*)}')
 def toLowercase(path):
     ''' Lowercases any characters enclosed in {} '''
     while True:

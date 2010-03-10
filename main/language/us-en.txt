@@ -131,11 +131,11 @@ fetchNZB@1        Trying to fetch NZB from %s
 eoq-actions       Actions
 eoq-scripts       Scripts
 purgeQueue        Purge Queue
-purgeQueueConf    Delete the all items from the queue?
+purgeQueueConf    Delete all items from the queue?
 
 # History page
 purgeHist         Purge History
-purgeHistConf     Delete the all items from the history?
+purgeHistConf     Delete all items from History?
 hideDetails       Hide details
 showDetails       Show details
 sizeHist          History Size

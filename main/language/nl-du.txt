@@ -12,9 +12,9 @@ none              Geen
 KBs               KB/s
 MB                MB
 hour              uur
-hour              uren
+hours             uren
 minute            min
-minutes           mins
+minutes           min
 second            sec
 seconds           seconden
 month             maand
@@ -33,7 +33,7 @@ day-of-month      dagnummer
 filename          Bestandsnaam
 
 # General template elements
-signOn            Het automatisch download wonder
+signOn            De automatische Usenet downloader
 button-save       Opslaan
 queued            Rij
 button-back       Terug
@@ -326,7 +326,7 @@ explain-pause_on_post_processing Onderbreek downloaden tijdens nabewerken.
 opt-ignore_samples       Verwerking van "sample" bestanden
 explain-ignore_samples   Wat te doen met "sample" bestanden?
 igsam-off                Behouden
-igsam-del                Vewijderen na download
+igsam-del                Verwijderen na download
 igsam-not                Niet downloaden
 opt-ssl_type             SSL type
 explain-ssl_type         Gebruik V23, behalve wanneer persé nodig voor je Internet provider!
@@ -400,7 +400,7 @@ explain-rssStar          Items met een ster '*' worden niet automatisch gedownlo
 # Config->Email
 configEmail              Email berichten
 emailOptions             Email Opties
-opt-email_endjob         Zend email bij eind opdracht
+opt-email_endjob         Zend email na voltooien van elke download
 email-never              Nooit
 email-always             Altijd
 email-errorOnly          Alleen bij fouten
@@ -413,7 +413,7 @@ opt-email_to             Email bestemming
 explain-email_to         Adres waarnaar de email verstuurd wordt.
 opt-email_from           Email afzender
 explain-email_from       Wie zou de email gestuurd moeten hebben?
-opt-email_account        OPTIE: Account gebruikersnaan
+opt-email_account        OPTIE: Account gebruikersnaam
 explain-email_account    Wanneer authenticatie nodig is, gebruikersnaam.
 opt-email_pwd            OPTIE: Account wachtwoord
 explain-email_pwd        Wanneer authenticatie nodig is, wachtwoord.

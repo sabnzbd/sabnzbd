@@ -42,7 +42,7 @@ from sabnzbd.misc import real_path, loadavg, \
      get_filename, cat_to_opts, IntConv, panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
-from sabnzbd.codecs import TRANS, xml_name, LatinFilter, unicoder, special_fixer
+from sabnzbd.codecs import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -384,7 +384,7 @@ class MainPage:
 
             info['warning'] = ''
             if cfg.enable_unrar():
-                if sabnzbd.newsunpack.RAR_PROBLEM:
+                if sabnzbd.newsunpack.RAR_PROBLEM and not cfg.ignore_wrong_unrar.get():
                     info['warning'] = T('warn-badUnrar')
                 if not sabnzbd.newsunpack.RAR_COMMAND:
                     info['warning'] = T('warn-noUnpack')
@@ -1547,6 +1547,7 @@ class ConfigDirectories:
         for kw in LIST_DIRPAGE:
             value = kwargs.get(kw)
             if value != None:
+                value = platform_encode(value)
                 msg = config.get_config('misc', kw).set(value)
                 if msg:
                     return badParameterResponse(msg)
@@ -1598,7 +1599,7 @@ class ConfigSwitches:
 
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
-            value = kwargs.get(kw)
+            value = platform_encode(kwargs.get(kw))
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
@@ -1730,7 +1731,7 @@ class ConfigGeneral:
         # Handle general options
         for kw in GENERAL_LIST:
             item = config.get_config('misc', kw)
-            value = kwargs.get(kw)
+            value = platform_encode(kwargs.get(kw))
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
@@ -1794,7 +1795,7 @@ def change_web_dir(web_dir):
     web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 
     if not os.path.exists(web_dir_path):
-        return badParameterResponse('Cannot find web template: %s' % web_dir_path)
+        return badParameterResponse('Cannot find web template: %s' % unicoder(web_dir_path))
     else:
         cfg.web_dir.set(web_dir)
         cfg.web_color.set(web_color)
@@ -2038,7 +2039,8 @@ class ConfigRss:
         script = ConvertSpecials(kwargs.get('script'))
         cat = ConvertSpecials(kwargs.get('cat'))
 
-        cfg.filters.update(int(kwargs.get('index',0)), (cat, pp, script, kwargs.get('filter_type'), kwargs.get('filter_text')))
+        cfg.filters.update(int(kwargs.get('index',0)), (cat, pp, script, kwargs.get('filter_type'), \
+                           platform_encode(kwargs.get('filter_text'))))
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 
@@ -2392,6 +2394,8 @@ class ConfigCats:
             if name:
                 config.delete('categories', name)
             name = newname.lower()
+            if kwargs.get('dir'):
+                kwargs['dir'] = platform_encode(kwargs['dir'])
             config.ConfigCat(name, kwargs)
 
         config.save_config()
@@ -2457,7 +2461,7 @@ class ConfigSorting:
 
         for kw in SORT_LIST:
             item = config.get_config('misc', kw)
-            value = kwargs.get(kw)
+            value = platform_encode(kwargs.get(kw))
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
@@ -2623,7 +2627,7 @@ def badParameterResponse(msg):
            <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
 </body>
 </html>
-''' % (sabnzbd.__version__, T('error'), T('badParm'), msg, T('button-back'))
+''' % (sabnzbd.__version__, T('error'), T('badParm'), unicoder(msg), T('button-back'))
 
 def ShowFile(name, path):
     """Return a html page listing a file and a 'back' button
@@ -2970,9 +2974,9 @@ class ConfigEmail:
         if msg: return msg
 
         for kw in LIST_EMAIL:
-            msg = config.get_config('misc', kw).set(kwargs.get(kw))
+            msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('error-badValue@2') % (kw, msg))
+                return badParameterResponse(T('error-badValue@2') % (kw, unicoder(msg)))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)

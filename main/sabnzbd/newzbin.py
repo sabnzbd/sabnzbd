@@ -345,7 +345,7 @@ class Bookmarks:
                     if msgid and (msgid not in self.bookmarks):
                         self.bookmarks.append(msgid)
                         logging.info("Found new bookmarked msgid %s (%s)", msgid, text)
-                        sabnzbd.add_msgid(int(msgid), None, None, priority=cfg.dirscan_priority())
+                        sabnzbd.add_msgid(int(msgid), None, None, priority=None)
         else:
             logging.error(Ta('error-nbUnkownError@1'), rcode)
 
@@ -359,7 +359,7 @@ class Bookmarks:
         return self.bookmarks
 
     def del_bookmark(self, msgid):
-        if cfg.newzbin_bookmarks() and cfg.newzbin_unbookmark():
+        if cfg.newzbin_unbookmark():
             msgid = str(msgid)
             if msgid in self.bookmarks:
                 self.run(msgid)

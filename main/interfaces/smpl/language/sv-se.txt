@@ -12,8 +12,8 @@ next            Nästa
 last            Sista
 edit            Ändra
 editDetails     Ändra uppgifter
-showEdit        Visa Redigeringsalternativ 
-hideEdit        Dölj Redigeringsalternativ 
+showEdit        Visa Redigeringsalternativ
+hideEdit        Dölj Redigeringsalternativ
 timeleft        Återstående tid
 purgeQueue      Ta bort alla
 progress        Arbetar
@@ -45,3 +45,4 @@ dualView1       Flerskärm1
 dualView2       Flerskärm2
 eta             ETA
 refreshr        Uppdateringsfrekvens
+hourmin         Timme:Minut

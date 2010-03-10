@@ -44,3 +44,4 @@ dualView1       VueDuoV
 dualView2       VueDuoH
 eta             TRE
 refreshr        Rafraîchissement
+hourmin         Heure:Min

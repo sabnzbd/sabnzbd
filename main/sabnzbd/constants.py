@@ -101,17 +101,17 @@ NORMAL_PRIORITY = 0
 LOW_PRIORITY = -1
 DEFAULT_PRIORITY = -100
 
-series_match = [ ('([sS]|[\d]+)x(\d+)', # 1x01
-                     ['^[-\.]+([sS]|[\d])+x(\d+)', '^[-\.](\d+)'] ),  #(MATCHER, [EXTRA,MATCHERS])
+series_match = [ (r'([sS]|[\d]+)x(\d+)', # 1x01
+                     [r'^[-\.]+([sS]|[\d])+x(\d+)', r'^[-\.](\d+)'] ),  #(MATCHER, [EXTRA,MATCHERS])
 
-                      ('[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
-                       ['^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)', '^[-\.](\d+)']) ] # Extra matchers
+                      (r'[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
+                       [r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)', r'^[-\.](\d+)']) ] # Extra matchers
 
                       #possibly flawed - 101 - support: [\.\- \s]?(\d)(\d{2,2})[\.\- \s]?
 
-date_match = ['(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
-              '(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
+date_match = [r'(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
+              r'(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
 
-year_match = '[\W]([1|2]\d{3})([^\w]|$)' # Something '(YYYY)' or '.YYYY.' or ' YYYY '
+year_match = r'[\W]([1|2]\d{3})([^\w]|$)' # Something '(YYYY)' or '.YYYY.' or ' YYYY '
 
-sample_match = '((^|[\W_])sample\d*[\W_])|(-s\.)' # something-sample.avi something-s.avi
+sample_match = r'((^|[\W_])sample\d*[\W_])|(-s\.)' # something-sample.avi something-s.avi

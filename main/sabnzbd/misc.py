@@ -333,7 +333,7 @@ def get_user_shellfolders():
             name, value, val_type = _winreg.EnumValue(key, i)
             try:
                 values[name] = value.encode('latin-1')
-            except UnicodeDecodeError:
+            except UnicodeEncodeError:
                 try:
                     # If the path name cannot be converted to latin-1 (contains high ASCII value strings)
                     # then try and use the short name
@@ -344,6 +344,7 @@ def get_user_shellfolders():
                 except:
                     # probably a pywintypes.error error such as folder does not exist
                     logging.error("Traceback: ", exc_info = True)
+                    values[name] = 'c:\\'
             i += 1
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)

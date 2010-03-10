@@ -39,7 +39,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
-from sabnzbd.codecs import unicoder
+from sabnzbd.codecs import unicoder, platform_encode
 
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
@@ -430,6 +430,9 @@ class NzbObject(TryList):
                  priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None):
         TryList.__init__(self)
 
+        filename = platform_encode(filename)
+        nzbname = platform_encode(nzbname)
+
         if pp is None:
             r = u = d = None
         else:
@@ -721,14 +724,11 @@ class NzbObject(TryList):
         return self.extra2
 
     def set_original_dirname(self, name):
-        if isinstance(name, str):
-            self.__original_dirname = name.strip()
-        else:
-            self.__original_dirname = name
+        self.__original_dirname = platform_encode(name.strip())
 
     def set_name(self, name):
         if isinstance(name, str):
-            name, self.extra2 = scan_password(name)
+            name, self.extra2 = scan_password(platform_encode(name))
             self.__original_dirname = sanitize_foldername(name)
             return True
         return False

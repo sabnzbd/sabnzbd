@@ -43,3 +43,4 @@ dualView1       Dubbel1
 dualView2       Dubbel2
 eta             ETA
 refreshr        Verversen
+hourmin         Uur:Min

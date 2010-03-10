@@ -26,7 +26,10 @@ from Cheetah.Filters import Filter
 import sabnzbd
 
 try:
-    gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
+    if sabnzbd.DARWIN:
+        gUTF = True
+    else:
+        gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
 except:
     # Incorrect locale implementation, assume the worst
     gUTF = False
@@ -38,10 +41,34 @@ def reliable_unpack_names():
     else:
         return gUTF
 
+def platform_encode(p):
+    """ Return the correct encoding for the platform:
+        Latin-1 for Windows/Posix-non-UTF and UTF-8 for OSX/Posix-UTF
+    """
+    if isinstance(p, unicode):
+        if gUTF:
+            return p.encode('utf-8')
+        else:
+            return p.encode('latin-1', 'replace').replace('?', '_')
+    elif isinstance(p, basestring):
+        if gUTF:
+            try:
+                p.decode('utf-8')
+                return p
+            except:
+                return p.decode('latin-1').encode('utf-8')
+        else:
+            try:
+                return p.decode('utf-8').encode('latin-1', 'replace').replace('?', '_')
+            except:
+                return p
+    else:
+        return p
+
 def name_fixer(p):
     """ Return UTF-8 encoded string, if appropriate for the platform """
 
-    if sabnzbd.DARWIN and p:
+    if gUTF and p:
         return p.decode('Latin-1', 'replace').encode('utf-8', 'replace').replace('?', '_')
     else:
         return p
@@ -53,11 +80,11 @@ def special_fixer(p):
     """
     if sabnzbd.WIN32:
         try:
-            return p.decode('utf-8').encode('latin-1')
+            return p.decode('utf-8').encode('latin-1', 'replace').replace('?', '_')
         except:
             return p
     else:
-        if gUTF or sabnzbd.DARWIN:
+        if gUTF:
             try:
                 # First see if it isn't just UTF-8
                 p.decode('utf-8')
@@ -73,7 +100,7 @@ def unicoder(p):
     if isinstance(p, unicode):
         return p
     if isinstance(p, str):
-        if sabnzbd.DARWIN or gUTF:
+        if gUTF:
             try:
                 return p.decode('utf-8')
             except:
@@ -115,7 +142,7 @@ def xml_name(p, keep_escape=False, encoding=None):
 def latin1(txt):
     """ When Unicode, convert to Latin-1 """
     if isinstance(txt, unicode):
-        return txt.encode('latin-1', 'replace')
+        return txt.encode('latin-1', 'replace').replace('?', '_')
     else:
         return txt
 
@@ -149,17 +176,21 @@ def titler(p):
 
 class LatinFilter(Filter):
     """ Make sure Cheetah gets only Unicode strings """
-    def filter(self, val,
-               str=str,
-               **kw):
+    def filter(self, val, str=str, **kw):
         if isinstance(val, unicode):
             return val
         elif isinstance(val, basestring):
-            return val.decode('latin-1', 'replace')
+            if gUTF:
+                try:
+                    return val.decode('utf-8', 'replace')
+                except:
+                    return val.decode('latin-1', 'replace')
+            else:
+                return val.decode('latin-1', 'replace')
         elif val is None:
-            return ''
+            return u''
         else:
-            return str(val)
+            return unicode(str(val))
 
 
 ################################################################################

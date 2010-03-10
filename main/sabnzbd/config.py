@@ -195,9 +195,9 @@ class OptionDir(Option):
         if value != None and value != self.get():
             value = value.strip()
             if self.__validation:
-                error, val = self.__validation(self.__root, value)
+                error, value = self.__validation(self.__root, value, self._Option__default_val)
             if not error:
-                if self.__create:
+                if value and self.__create:
                     res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask)
                     if not res:
                         error = "Cannot create %s folder %s" % (self.ident()[1], path)
@@ -853,30 +853,39 @@ def validate_octal(value):
         return Ta('error-notOctal@1') % value, None
 
 
-def validate_no_unc(root, value):
+def validate_no_unc(root, value, default):
     """ Check if path isn't a UNC path """
     # Only need to check the 'value' part
     if value and not value.startswith(r'\\'):
-        return None, value
+        return validate_notempty(root, value, default)
     else:
         return Ta('error-noUNC@1') % value, None
 
 
-def validate_safedir(root, value):
+def validate_safedir(root, value, default):
     """ Allow only when queues are empty and no UNC """
     if sabnzbd.empty_queues():
-        return validate_no_unc(root, value)
+        return validate_no_unc(root, value, default)
     else:
         return Ta('error-QnotEmpty'), None
 
 
-def validate_dir_exists(root, value):
+def validate_dir_exists(root, value, default):
     """ Check if directory exists """
     p = sabnzbd.misc.real_path(root, value)
     if os.path.exists(p):
         return None, value
     else:
         return Ta('error-noFolder@1') % p, None
+
+
+def validate_notempty(root, value, default):
+    """ If value is empty, return default """
+    if value:
+        return None, value
+    else:
+        return None, default
+
 
 def create_api_key():
     import time

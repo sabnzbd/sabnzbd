@@ -75,6 +75,7 @@ class PostProcessor(Thread):
         self.__paused = False
         PostProcessor.do = self
 
+        self.__busy = False # True while a job is being processed
 
     def save(self):
         """ Save postproc queue """
@@ -120,7 +121,7 @@ class PostProcessor(Thread):
         self.__stop = True
 
     def empty(self):
-        return self.queue.empty()
+        return self.queue.empty() and not self.__busy
 
     def get_queue(self):
         return self.history_queue
@@ -136,6 +137,7 @@ class PostProcessor(Thread):
 
     def run(self):
         while 1:
+            self.__busy = False
             if self.queue.empty(): HandleEmptyQueue()
 
             while (not self.__stop) and self.__paused:
@@ -149,6 +151,7 @@ class PostProcessor(Thread):
             if cfg.pause_on_post_processing():
                 sabnzbd.downloader.idle_downloader()
 
+            self.__busy = True
             start = time.time()
 
             folder_rename = cfg.folder_rename()

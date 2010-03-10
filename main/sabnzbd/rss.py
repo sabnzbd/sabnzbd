@@ -493,6 +493,10 @@ def _get_link(uri, entry):
             link = entry.links[0].href
     elif 'nzbindex.nl' in uri or 'nzbindex.com' in uri or 'animeusenet.org' in uri:
         link = entry.enclosures[0]['href']
+    elif 'feed.nzbclub.com' in uri:
+        link = entry.link
+        if link:
+            link = link.replace('nzb_view.aspx', 'nzb_download.aspx')
     elif not link:
         # Try standard link first
         link = entry.link
