@@ -1016,7 +1016,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
 #-------------------------------------------------------------------------------
 
-_RE_PYTHON = re.compile(r'^(#!.*/python)\s+(.*)$')
+_RE_PYTHON = re.compile(r'^#!(.*/python)\s+(.*)$')
 
 def fix_python_script(command):
     """ Implement a work-around for Python userscripts on OSX """

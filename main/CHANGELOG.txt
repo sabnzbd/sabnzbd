@@ -4,6 +4,7 @@
 - TV Season sort now has "affected categories" too. Check your settings!!
 - Fixed problems that could lead to an infinite unpacking loop
   (when using a "sick" NZB and using +U instead of +D postprocessing)
+- Duplicate title checking in RSS is now done across all feeds
 - Fixed issues with accented characters in NZB names when using RSS
 - Fixed issues with accented characters in category folder names when using RSS
 - Plush: fix nzo range selection when clicking checkboxes

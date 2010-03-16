@@ -451,7 +451,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         cherryhost = '0.0.0.0'
         info = socket.getaddrinfo(localhost, None)
     for item in info:
-        ip = item[4][0]
+        ip = str(item[4][0])
         if ip.startswith('169.254.'):
             pass # Is an APIPA
         elif ':' in ip:
