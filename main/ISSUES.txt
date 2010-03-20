@@ -2,6 +2,10 @@
 ***          Known issues               ***
 *******************************************
 
+- To prevent unexpectedly large NZBs from eating your quotum you can set
+  the option 'size_limit' in the INI file.
+  Any NZB larger than this size will be set to paused and get a low priority.
+
 - When par2 or unrar hang up, never just stop SABnzbd.
   Instead use your operating system's task manager to stop the par2 or unrar program.
   Forcing SABnzbd to quit may damage your queues.

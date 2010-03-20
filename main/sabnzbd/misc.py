@@ -45,7 +45,7 @@ if sabnzbd.FOUNDATION:
     import Foundation
 
 RE_VERSION = re.compile('(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
-RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]*)', re.I)
+RE_UNITS = re.compile('(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 
 PANIC_NONE  = 0

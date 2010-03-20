@@ -1,6 +1,8 @@
 -------------------------------------------------------------------------------
 0.5.1 RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
+- Add 'size_limit' option. Any job bigger than this limit will be set to
+  low priority and be paused.
 - TV Season sort now has "affected categories" too. Check your settings!!
 - Fixed problems that could lead to an infinite unpacking loop
   (when using a "sick" NZB and using +U instead of +D postprocessing)

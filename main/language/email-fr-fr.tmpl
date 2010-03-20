@@ -1,41 +1,41 @@
 ##
-## Default Email template for SABnzbd
-## This a Cheetah template
+## Template Email pour SABnzbd
+## Ceci est un template Cheetah
 ## Documentation: http://sabnzbd.wikidot.com/email-templates
 ##
-## Newlines and whitespace are significant!
+## Les retours à la ligne et les espaces sont importants !
 ##
-## These are the email headers
+## Entêtes de l'email
 to: $to
 from: $from
 date: $date
-subject: SABnzbd has <!--#if $status then "completed" else "failed" #--> job $name
+subject: SABnzbd <!--#if $status then "Succès" else "Echec" #--> du téléchargement $name
 X-priority: 5
 X-MS-priority: 5
-## After this comes the body, the empty line is required!
+## Le contenu du message, la ligne vide est obligatoire !
 
-Hi,
+Bonjour,
 <!--#if $status #-->
-SABnzbd has downloaded "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
+SABnzbd a téléchargé avec succès "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
 <!--#else#-->
-SABnzbd has failed to download "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
+SABnzbd a téléchargé sans succès "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
 <!--#end if#-->
-Finished at $end_time
-Downloaded $size
+Terminé à $end_time
+Téléchargé $size
 
-Results of the job:
+Résultat du téléchargement :
 <!--#for $stage in $stages #-->
-Stage $stage <!--#slurp#-->
+Etape $stage <!--#slurp#-->
 <!--#for $result in $stages[$stage]#-->
     $result <!--#slurp#-->
 <!--#end for#-->
 <!--#end for#-->
 <!--#if $script!="" #-->
-Output from user script "$script" (Exit code = $script_ret):
+Sortie du script utilisateur "$script" (Code Retour = $script_ret):
 $script_output
 <!--#end if#-->
 <!--#if $status #-->
-Enjoy!
+A bientôt !
 <!--#else#-->
-Sorry!
+Désolé !
 <!--#end if#-->

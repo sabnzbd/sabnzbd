@@ -169,7 +169,7 @@ class SeriesSorter:
     def match(self):
         ''' Checks the regex for a match, if so set self.match to true '''
         if cfg.enable_tv_sorting() and cfg.tv_sort_string():
-            if (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
+            if (not self.cats) or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 #First check if the show matches TV episode regular expressions. Returns regex match object
                 self.match_obj, self.extras = check_regexs(self.original_dirname, series_match, double=True)
                 if self.match_obj:

@@ -23,7 +23,6 @@ import os
 import time
 import re
 import logging
-import sabnzbd
 import datetime
 import xml.sax
 import xml.sax.handler
@@ -593,6 +592,14 @@ class NzbObject(TryList):
 
         # Set nzo save-delay to 6 sec per GB with a max of 5 min
         self.extra4 = min(6.0 * float(self.__bytes) / GIGI, 300.0)
+
+        # Pause job when above size limit
+        limit = cfg.SIZE_LIMIT.get_int()
+        if limit and self.__bytes > limit:
+            logging.info('Job too large, forcing low prio and paused (%s)', self.__dirname)
+            self.pause_nzo()
+            self.set_priority(LOW_PRIORITY)
+
 
     ## begin nzo.Mutators #####################################################
     ## excluding nzo.__try_list ###############################################

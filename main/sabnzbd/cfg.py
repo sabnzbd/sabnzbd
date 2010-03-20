@@ -119,7 +119,7 @@ schedules = OptionList('misc', 'schedlines')
 enable_tv_sorting = OptionBool('misc', 'enable_tv_sorting', False)
 tv_sort_string = OptionStr('misc', 'tv_sort_string')
 tv_sort_countries = OptionNumber('misc', 'tv_sort_countries', 1)
-tv_categories = OptionList('misc', 'tv_categories', ['tv'])
+tv_categories = OptionList('misc', 'tv_categories', '')
 
 enable_movie_sorting = OptionBool('misc', 'enable_movie_sorting', False)
 movie_sort_string = OptionStr('misc', 'movie_sort_string')
@@ -147,6 +147,7 @@ admin_dir = OptionDir('misc', 'admin_dir', 'admin', validation=validate_safedir)
 #log_dir = OptionDir('misc', 'log_dir', 'logs')
 dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
+SIZE_LIMIT = OptionStr('misc', 'size_limit')
 
 cherryhost = OptionStr('misc','host', DEF_HOST)
 if sabnzbd.WIN32:

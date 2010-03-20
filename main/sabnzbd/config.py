@@ -213,10 +213,15 @@ class OptionList(Option):
         Option.__init__(self, section, keyword, default_val, add=add)
 
     def set(self, value):
-        """ Set value, convert single item to list of one """
+        """ Set value, convert single item to list of one
+            Empty string will be an empty list.
+        """
         if value != None:
             if type(value) != type([]):
-                value = [ value ]
+                if value == '':
+                    value = []
+                else:
+                    value = [ value ]
             return self._Option__set(value)
         return None
 
