@@ -33,7 +33,6 @@ class ArticleCache:
     def __init__(self):
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__doze = 0
 
         self.__article_list = []    # List of buffered articles
         self.__article_table = {}   # Dict of buffered articles
@@ -44,10 +43,9 @@ class ArticleCache:
         return (len(self.__article_list), self.__cache_size, self.__cache_limit)
 
     @synchronized(ARTICLE_LOCK)
-    def new_limit(self, limit, doze=0):
+    def new_limit(self, limit):
         """ Called when cache limit changes """
         self.__cache_limit = limit
-        self.__doze = doze
 
 
     @synchronized(ARTICLE_LOCK)
@@ -95,6 +93,7 @@ class ArticleCache:
     @synchronized(ARTICLE_LOCK)
     def load_article(self, article):
         data = None
+        nzo = article.nzf.nzo
 
         if article in self.__article_list:
             data = self.__article_table.pop(article)
@@ -103,10 +102,8 @@ class ArticleCache:
             logging.info("Loaded %s from cache", article)
             logging.debug("cache_size -> %s", self.__cache_size)
         elif article.art_id:
-            data = sabnzbd.load_data(article.art_id, remove = True,
-                                     do_pickle = False)
+            data = sabnzbd.load_data(article.art_id, nzo.get_workpath(), remove=True, do_pickle=False)
 
-        nzo = article.nzf.nzo
         if article in nzo.saved_articles:
             nzo.saved_articles.remove(article)
 
@@ -129,7 +126,7 @@ class ArticleCache:
                 data = self.__article_table.pop(article)
                 self.__cache_size -= len(data)
             if article.art_id:
-                sabnzbd.remove_data(article.art_id)
+                sabnzbd.remove_data(article.art_id, article.nzf.nzo.get_workpath())
 
     def __flush_article(self, article, data):
         nzf = article.nzf
@@ -145,7 +142,9 @@ class ArticleCache:
         if art_id:
             logging.info("Flushing %s to disk", article)
             logging.debug("cache_size -> %s", self.__cache_size)
-            sabnzbd.save_data(data, art_id, do_pickle = False, doze=self.__doze)
+            # Save data, but don't complain when destistation folder is missing
+            # because this flush may come after completion of the NZO.
+            sabnzbd.save_data(data, art_id, nzo.get_workpath(), do_pickle = False, silent=True)
         else:
             logging.warning("Flushing %s failed -> no art_id", article)
 

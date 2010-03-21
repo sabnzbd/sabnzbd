@@ -265,7 +265,7 @@ class Bookmarks:
     do = None # Link to instance
 
     def __init__(self):
-        self.bookmarks = sabnzbd.load_data(BOOKMARK_FILE_NAME)
+        self.bookmarks = sabnzbd.load_admin(BOOKMARK_FILE_NAME)
         if not self.bookmarks:
             self.bookmarks = []
         self.__busy = False
@@ -353,7 +353,7 @@ class Bookmarks:
 
     @synchronized(BOOK_LOCK)
     def save(self):
-        sabnzbd.save_data(self.bookmarks, BOOKMARK_FILE_NAME)
+        sabnzbd.save_admin(self.bookmarks, BOOKMARK_FILE_NAME)
 
     def bookmarksList(self):
         return self.bookmarks

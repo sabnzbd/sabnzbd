@@ -215,7 +215,7 @@ class DirScanner(threading.Thread):
 
         self.newdir()
         try:
-            dir, self.ignored, self.suspected = sabnzbd.load_data(SCAN_FILE_NAME, remove = False)
+            dir, self.ignored, self.suspected = sabnzbd.load_admin(SCAN_FILE_NAME)
             if dir != self.dirscan_dir:
                 self.ignored = {}
                 self.suspected = {}
@@ -244,7 +244,7 @@ class DirScanner(threading.Thread):
         self.shutdown = True
 
     def save(self):
-        sabnzbd.save_data((self.dirscan_dir, self.ignored, self.suspected), sabnzbd.SCAN_FILE_NAME)
+        sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), sabnzbd.SCAN_FILE_NAME)
 
     def run(self):
         def run_dir(folder, catdir):

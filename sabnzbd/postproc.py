@@ -32,7 +32,7 @@ from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          get_unique_filename, \
-                         on_cleanup_list, renamer, remove_dir
+                         on_cleanup_list, renamer, remove_dir, remove_all
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match
@@ -80,12 +80,12 @@ class PostProcessor(Thread):
     def save(self):
         """ Save postproc queue """
         logging.info("Saving postproc queue")
-        sabnzbd.save_data((POSTPROC_QUEUE_VERSION, self.history_queue), POSTPROC_QUEUE_FILE_NAME)
+        sabnzbd.save_admin((POSTPROC_QUEUE_VERSION, self.history_queue), POSTPROC_QUEUE_FILE_NAME)
 
     def load(self):
         """ Save postproc queue """
         logging.info("Loading postproc queue")
-        data = sabnzbd.load_data(POSTPROC_QUEUE_FILE_NAME)
+        data = sabnzbd.load_admin(POSTPROC_QUEUE_FILE_NAME)
         try:
             version, history_queue = data
             if POSTPROC_QUEUE_VERSION != version:
@@ -188,7 +188,7 @@ class PostProcessor(Thread):
             try:
 
                 # Get the folder containing the download result
-                workdir = os.path.join(cfg.download_dir.get_path(), nzo.get_dirname())
+                workdir = os.path.join(cfg.download_dir.get_path(), nzo.get_workdir())
 
                 # if the directory has not been made, no files were assembled
                 if not os.path.exists(workdir):
@@ -288,15 +288,6 @@ class PostProcessor(Thread):
                         new_path = path.replace(workdir, tmp_workdir_complete)
                         new_path = get_unique_filename(new_path)
                         move_to_path(path, new_path, unique=False)
-
-                ## Remove download folder
-                try:
-                    if os.path.exists(workdir):
-                        remove_dir(workdir)
-                except:
-                    logging.error(Ta('error-ppDelWorkdir@1'), workdir)
-                    logging.debug("Traceback: ", exc_info = True)
-
 
                 ## Set permissions right
                 if not sabnzbd.WIN32:
@@ -433,6 +424,16 @@ class PostProcessor(Thread):
             # Remove the nzo from the history_queue list
             # This list is simply used for the creation of the history in interface.py
             self.remove(nzo)
+
+            ## Remove download folder
+            try:
+                if os.path.exists(workdir):
+                    logging.debug('Removing workdir %s', workdir)
+                    remove_all(os.path.join(workdir, '__ADMIN__'))
+                    remove_dir(workdir)
+            except:
+                logging.error(Ta('error-ppDelWorkdir@1'), workdir)
+                logging.debug("Traceback: ", exc_info = True)
 
             ## Allow download to proceed
             sabnzbd.downloader.unidle_downloader()

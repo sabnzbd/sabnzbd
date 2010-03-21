@@ -104,7 +104,6 @@ QUEUECOMPLETEACTION = None #stores the name of the function to be called
 QUEUECOMPLETEARG = None #stores an extra arguments that need to be passed
 QUEUECOMPLETEACTION_GO = False # Booleen value whether to run an action or not at the queue end.
 
-DEBUG_DELAY = 0
 DAEMON = None
 
 LOGFILE = None
@@ -158,10 +157,9 @@ def connect_db(thread_index):
 
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader = False, clean_up = False, evalSched=False):
+def initialize(pause_downloader = False, clean_up = False, evalSched=False, repair=False):
     global __INITIALIZED__, __SHUTTING_DOWN__,\
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, \
-           DEBUG_DELAY, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            DARWIN, RESTART_REQ, OSX_ICON, OLD_QUEUE
@@ -205,7 +203,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
 
     ### Set cache limit
-    ArticleCache.do.new_limit(cfg.cache_limit.get_int(), cfg.debug_delay())
+    ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     ### Set language files
     lang.install_language(DIR_LANGUAGE, cfg.language())
@@ -222,14 +220,14 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
     rss.init()
     scheduler.init()
 
-    bytes = load_data(BYTES_FILE_NAME, remove = False, do_pickle = False)
+    bytes = load_admin(BYTES_FILE_NAME, do_pickle=False)
     try:
         bytes = int(bytes)
         BPSMeter.do.bytes_sum = bytes
     except:
         BPSMeter.do.reset()
 
-    nzbqueue.init()
+    nzbqueue.init(repair)
 
     PostProcessor()
 
@@ -407,7 +405,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
 def save_state():
     ArticleCache.do.flush_articles()
     nzbqueue.save()
-    save_data(str(BPSMeter.do.get_sum()), BYTES_FILE_NAME, do_pickle = False)
+    save_admin(str(BPSMeter.do.get_sum()), BYTES_FILE_NAME, do_pickle=False)
     rss.save()
     Bookmarks.do.save()
     DirScanner.do.save()
@@ -646,11 +644,13 @@ def CheckFreeSpace():
 IO_LOCK = RLock()
 
 @synchronized(IO_LOCK)
-def get_new_id(prefix):
+def get_new_id(prefix, path):
+    """ Return unique prefixed admin identifier within 'savedir/__ADMIN__'
+    """
     try:
-        fd, l = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, cfg.cache_dir.get_path())
+        fd, tpath = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, path)
         os.close(fd)
-        head, tail = os.path.split(l)
+        head, tail = os.path.split(tpath)
         return tail
     except:
         logging.error(Ta('error-failMkstemp'))
@@ -658,9 +658,9 @@ def get_new_id(prefix):
 
 
 @synchronized(IO_LOCK)
-def save_data(data, _id, do_pickle = True, doze=0):
-    path = os.path.join(cfg.cache_dir.get_path(), _id)
+def save_data(data, _id, path, do_pickle = True, silent=False):
     logging.info("Saving data for %s in %s", _id, path)
+    path = os.path.join(path, _id)
 
     try:
         _f = open(path, 'wb')
@@ -668,9 +668,6 @@ def save_data(data, _id, do_pickle = True, doze=0):
             cPickle.dump(data, _f, 2)
         else:
             _f.write(data)
-        if doze:
-            # Only for debugging decoder overflow
-            time.sleep(doze)
         _f.flush()
         _f.close()
     except:
@@ -679,15 +676,14 @@ def save_data(data, _id, do_pickle = True, doze=0):
 
 
 @synchronized(IO_LOCK)
-def load_data(_id, remove = True, do_pickle = True):
-    path = os.path.join(cfg.cache_dir.get_path(), _id)
-    logging.info("Loading data for %s from %s", _id, path)
+def load_data(_id, path, remove=True, do_pickle=True):
+    path = os.path.join(path, _id)
 
     if not os.path.exists(path):
         logging.info("%s missing", path)
         return None
 
-    data = None
+    logging.info("Loading data for %s from %s", _id, path)
 
     try:
         _f = open(path, 'rb')
@@ -698,7 +694,7 @@ def load_data(_id, remove = True, do_pickle = True):
         _f.close()
 
         if remove:
-            remove_data(_id)
+            os.remove(path)
     except:
         logging.error(Ta('error-loading@1'), path)
         logging.debug("Traceback: ", exc_info = True)
@@ -708,13 +704,68 @@ def load_data(_id, remove = True, do_pickle = True):
 
 
 @synchronized(IO_LOCK)
-def remove_data(_id):
-    path = os.path.join(cfg.cache_dir.get_path(), _id)
+def remove_data(_id, path):
+    path = os.path.join(path, _id)
     try:
-        os.remove(path)
-        logging.info("%s removed", path)
+        if os.path.exists(path):
+            os.remove(path)
+            logging.info("%s removed", path)
     except:
-        pass
+        logging.info("Failed to remove %s", path)
+        logging.debug("Traceback: ", exc_info = True)
+
+
+
+@synchronized(IO_LOCK)
+def save_admin(data, _id, do_pickle=True):
+    """ Save data in admin folder in specified format """
+    path = os.path.join(cfg.admin_dir.get_path(), _id)
+    logging.info("Saving data for %s in %s", _id, path)
+
+    try:
+        f = open(path, 'wb')
+        if do_pickle:
+            cPickle.dump(data, f, 2)
+        else:
+            f.write(data)
+        f.flush()
+        f.close()
+    except:
+        logging.error(Ta('error-saveX@1'), path)
+        logging.debug("Traceback: ", exc_info = True)
+
+
+@synchronized(IO_LOCK)
+def load_admin(_id, remove=False, do_pickle=True):
+    """ Read data in admin folder in specified format """
+    path = os.path.join(cfg.admin_dir.get_path(), _id)
+    logging.info("Loading data for %s from %s", _id, path)
+
+    if not os.path.exists(path):
+        logging.info("%s missing, trying old cache", path)
+        path = os.path.join(cfg.cache_dir.get_path(), _id)
+        if not os.path.exists(path):
+            logging.info("%s missing", path)
+            return None
+        remove = True
+
+    try:
+        f = open(path, 'rb')
+        if do_pickle:
+            data = cPickle.load(f)
+        else:
+            data = f.read()
+        f.close()
+
+        if remove:
+            os.remove(path)
+    except:
+        logging.error(Ta('error-loading@1'), path)
+        logging.debug("Traceback: ", exc_info = True)
+        return None
+
+    return data
+
 
 
 def pp_to_opts(pp):

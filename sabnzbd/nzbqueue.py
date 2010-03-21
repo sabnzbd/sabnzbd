@@ -23,11 +23,13 @@ import os
 import logging
 import time
 import datetime
+import glob
 
 import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts
+from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts, \
+                         get_admin_path
 import sabnzbd.database as database
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -50,11 +52,8 @@ def DeleteLog(name):
 #-------------------------------------------------------------------------------
 
 class NzbQueue(TryList):
-    def __init__(self):
+    def __init__(self, repair):
         TryList.__init__(self)
-
-        self.__downloaded_items = []
-
 
         self.__top_only = cfg.top_only()
         self.__top_nzo = None
@@ -64,25 +63,38 @@ class NzbQueue(TryList):
 
         self.__auto_sort = cfg.auto_sort()
 
-        nzo_ids = []
 
-        data = sabnzbd.load_data(QUEUE_FILE_NAME, remove = False)
+        if repair:
+            # Reconstruct the queue from the content of the "incomplete" folder
+            for item in glob.glob(os.path.join(cfg.download_dir.get_path(), '*')):
+                path = os.path.join(item, '__ADMIN__')
+                wpath = os.path.join(path, 'SABnzbd_nzo_*')
+                nzo_id = glob.glob(wpath)
+                if len(nzo_id) == 1:
+                    nzo = sabnzbd.load_data(os.path.basename(nzo_id[0]), path)
+                    if nzo:
+                        self.add(nzo, save = False)
 
-        if data:
-            try:
-                queue_vers, nzo_ids, self.__downloaded_items = data
-                if not queue_vers == QUEUE_VERSION:
-                    logging.error(Ta('error-qBad'))
-                    self.__downloaded_items = []
-                    nzo_ids = []
-                    panic_queue(os.path.join(cfg.cache_dir.get_path(),QUEUE_FILE_NAME))
-                    exit_sab(2)
-            except ValueError:
-                logging.error(Ta('error-qCorruptFile@1'),
-                              os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME))
+        else:
+            # Read the queue from the saved file
+            nzo_ids = []
+            data = sabnzbd.load_admin(QUEUE_FILE_NAME)
+            if data:
+                try:
+                    queue_vers, nzo_ids, dummy = data
+                    if not queue_vers == QUEUE_VERSION:
+                        logging.error(Ta('error-qBad'))
+                        nzo_ids = []
+                        panic_queue(os.path.join(cfg.cache_dir.get_path(),QUEUE_FILE_NAME))
+                        exit_sab(2)
+                except ValueError:
+                    logging.error(Ta('error-qCorruptFile@1'),
+                                  os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME))
 
             for nzo_id in nzo_ids:
-                nzo = sabnzbd.load_data(nzo_id, remove = False)
+                folder, _id = os.path.split(nzo_id)
+                path = get_admin_path(bool(folder), folder)
+                nzo = sabnzbd.load_data(_id, path)
                 if nzo:
                     self.add(nzo, save = False)
 
@@ -94,11 +106,13 @@ class NzbQueue(TryList):
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list:
-            nzo_ids.append(nzo.nzo_id)
-            sabnzbd.save_data(nzo, nzo.nzo_id)
+            if nzo.extra5:
+                nzo_ids.append(os.path.join(nzo.get_workdir(), nzo.nzo_id))
+            else:
+                nzo_ids.append(nzo.nzo_id)
+            sabnzbd.save_data(nzo, nzo.nzo_id, nzo.get_workpath())
 
-        sabnzbd.save_data((QUEUE_VERSION, nzo_ids,
-                           self.__downloaded_items), QUEUE_FILE_NAME)
+        sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
     @synchronized(NZBQUEUE_LOCK)
     def set_top_only(self, value):
@@ -197,7 +211,7 @@ class NzbQueue(TryList):
 
 
         if not nzo.nzo_id:
-            nzo.nzo_id = sabnzbd.get_new_id('nzo')
+            nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.get_workpath())
 
         if nzo.nzo_id:
             nzo.deleted = False
@@ -246,6 +260,8 @@ class NzbQueue(TryList):
             nzo.deleted = True
             self.__nzo_list.remove(nzo)
 
+            sabnzbd.remove_data(nzo_id, nzo.get_workpath())
+
             if add_to_history:
                 # Create the history DB instance
                 history_db = database.get_history_handle()
@@ -257,7 +273,6 @@ class NzbQueue(TryList):
             elif cleanup:
                 self.cleanup_nzo(nzo)
 
-            sabnzbd.remove_data(nzo_id)
             if save:
                 self.save()
 
@@ -277,8 +292,8 @@ class NzbQueue(TryList):
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
             self.__nzo_list.remove(nzo)
+            sabnzbd.remove_data(nzo_id, nzo.get_workpath())
             self.cleanup_nzo(nzo)
-            sabnzbd.remove_data(nzo_id)
         del lst
         self.save()
 
@@ -496,16 +511,6 @@ class NzbQueue(TryList):
             return -1
 
     @synchronized(NZBQUEUE_LOCK)
-    def set_original_dirname(self, nzo_id, name):
-        try:
-            if name:
-                nzo = self.__nzo_table[nzo_id]
-                name = sanitize_foldername(name)
-                nzo.set_original_dirname(name)
-        except:
-            pass
-
-    @synchronized(NZBQUEUE_LOCK)
     def reset_try_lists(self, nzf = None, nzo = None):
         if nzf:
             nzf.reset_try_list()
@@ -581,7 +586,7 @@ class NzbQueue(TryList):
 
         if file_done:
             if nzo.extra3 is None or time.time() > nzo.extra3:
-                sabnzbd.save_data(nzo, nzo.nzo_id)
+                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.get_workpath())
                 if nzo.extra4 is None:
                     nzo.extra3 = None
                 else:
@@ -642,16 +647,9 @@ class NzbQueue(TryList):
 
         ArticleCache.do.purge_articles(nzo.saved_articles)
 
-        for hist_item in self.__downloaded_items:
-            # refresh fields & delete nzo reference
-            if hist_item.nzo and hist_item.nzo == nzo:
-                hist_item.cleanup()
-                logging.debug('%s cleaned up',
-                              nzo.get_dirname())
-
     @synchronized(NZBQUEUE_LOCK)
     def debug(self):
-        return (self.__downloaded_items[:], self.__nzo_list[:],
+        return ([], self.__nzo_list[:],
                 self.__nzo_table.copy(), self.try_list[:])
 
 
@@ -730,12 +728,12 @@ def sort_queue_function(nzo_list, method, reverse):
 
 __NZBQ = None  # Global pointer to NzbQueue instance
 
-def init():
+def init(repair):
     global __NZBQ
     if __NZBQ:
-        __NZBQ.__init__()
+        __NZBQ.__init__(repair)
     else:
-        __NZBQ = NzbQueue()
+        __NZBQ = NzbQueue(repair)
 
 def start():
     global __NZBQ

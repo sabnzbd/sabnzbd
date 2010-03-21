@@ -31,6 +31,7 @@ import threading
 import subprocess
 import socket
 import time
+import glob
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -905,7 +906,7 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
-    dirname = nzo.get_dirname()
+    dirname = nzo.get_workdir()
     created = nzo.get_dirname_created()
 
     dName = dirname
@@ -918,7 +919,6 @@ def get_filepath(path, nzo, filename):
                 break
             except:
                 pass
-        nzo.set_dirname(dName, created = True)
 
     fPath = os.path.join(os.path.join(path, dName), filename)
     n = 0
@@ -931,6 +931,16 @@ def get_filepath(path, nzo, filename):
             break
 
     return fullPath
+
+
+def get_admin_path(newstyle, name):
+    """ Return news-style full path to __ADMIN__ folder of names job
+        or else the old cache path
+    """
+    if newstyle:
+        return os.path.join(os.path.join(cfg.download_dir.get_path(), name), '__ADMIN__')
+    else:
+       return cfg.cache_dir.get_path()
 
 
 def bad_fetch(nzo, url, msg='', retry=False, archive=False):
@@ -959,7 +969,7 @@ def bad_fetch(nzo, url, msg='', retry=False, archive=False):
 
     if url:
         nzo.set_filename(url)
-        nzo.set_original_dirname(url)
+        nzo.set_dirname(url)
 
     if retry:
         nzbname = nzo.get_dirname_rename()
@@ -1390,4 +1400,12 @@ def remove_dir(path):
             time.sleep(3)
         raise WindowsError(err)
     else:
+        os.rmdir(path)
+
+
+def remove_all(path):
+    """ Remove folder its content """
+    if os.path.exists(path):
+        for f in glob.glob(os.path.join(path, '*')):
+            os.remove(f)
         os.rmdir(path)

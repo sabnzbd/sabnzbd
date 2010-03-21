@@ -267,6 +267,11 @@ opt-cache_dir           Cache Folder
 explain-cache_dir       Location for temporary storage.\n\
                         <i>Can only be changed when queue is empty.</i>\n\
                         <i>Requires SABnzbd restart!</i>
+opt-admin_dir           Administrative Folder
+explain-admin_dir       Location for queue admin and history database.\n\
+                        <i>Can only be changed when queue is empty.</i>\n\
+                        <i>Data will <b>not</b> be moved.</i>\n\
+                        <i>Requires SABnzbd restart!</i>
 opt-log_dir             Log Folder
 explain-log_dir         Location of log files for SABnzbd.\n\
                         <i>Requires SABnzbd restart!</i>

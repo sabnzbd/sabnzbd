@@ -34,7 +34,8 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.constants import *
-from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
+from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
+                         get_unique_path, get_admin_path
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
@@ -73,7 +74,7 @@ class Article(TryList):
 
     def get_art_id(self):
         if not self.art_id:
-            self.art_id = sabnzbd.get_new_id("article")
+            self.art_id = sabnzbd.get_new_id("article", self.nzf.nzo.get_workpath())
         return self.art_id
 
     def __getstate__(self):
@@ -127,7 +128,7 @@ class NzbFile(TryList):
 
         # Public
         self.nzo = nzo
-        self.nzf_id = sabnzbd.get_new_id("nzf")
+        self.nzf_id = sabnzbd.get_new_id("nzf", nzo.get_workpath())
         self.deleted = False
 
         self.valid = False
@@ -138,7 +139,7 @@ class NzbFile(TryList):
         self.valid = bool(article_db)
 
         if self.valid and self.nzf_id:
-            sabnzbd.save_data(article_db, self.nzf_id)
+            sabnzbd.save_data(article_db, self.nzf_id, nzo.get_workpath())
 
     ## begin nzf.Mutators #####################################################
     ## excluding nzf.__try_list ###############################################
@@ -148,7 +149,7 @@ class NzbFile(TryList):
     def finish_import(self):
         logging.info("Finishing import on %s", self.__subject)
 
-        article_db = sabnzbd.load_data(self.nzf_id)
+        article_db = sabnzbd.load_data(self.nzf_id, self.nzo.get_workpath())
         if article_db:
             for partnum in article_db:
                 art_id = article_db[partnum][0]
@@ -399,7 +400,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             else:
                 logging.info('Error importing %s, skipping', self.filename)
                 if nzf.nzf_id:
-                    sabnzbd.remove_data(nzf.nzf_id)
+                    sabnzbd.remove_data(nzf.nzf_id, self.nzo.get_workpath())
                 self.skipped_files += 1
 
         elif name == 'nzb':
@@ -416,7 +417,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
     def remove_files(self):
         """ Remove all created NZF objects """
         for nzf in self.nzf_list:
-            sabnzbd.remove_data(nzf.nzf_id)
+            sabnzbd.remove_data(nzf.nzf_id, self.nzo.get_workpath())
 
 
 ################################################################################
@@ -519,7 +520,7 @@ class NzbObject(TryList):
         self.extra2 = password
         self.extra3 = None # Will hold earliest next save time of NZO
         self.extra4 = None # Will hold save timeout for this NZO
-        self.extra5 = None
+        self.extra5 = True # New style caching
         self.extra6 = None
 
         self.create_group_folder = cfg.create_group_folders()
@@ -546,6 +547,13 @@ class NzbObject(TryList):
             # File already exists and we have no_dupes set
             logging.warning(Ta('warn-skipDup@1'), filename)
             raise TypeError
+
+        # Create "incomplete" folder
+        wp = get_unique_path(os.path.join(cfg.download_dir.get_path(), self.__dirname), create_dir=True)
+        if wp:
+            os.mkdir(os.path.join(wp, '__ADMIN__'))
+        wp, self.__dirname = os.path.split(wp)
+        self.__created = True
 
         # Must create a lower level XML parser because we must
         # disable the reading of the DTD file from newzbin.com
@@ -711,9 +719,14 @@ class NzbObject(TryList):
     def set_cat(self, cat):
         self.__cat = cat
 
-    def set_dirname(self, dirname, created = False):
+    def set_dirname(self, dirname):
+        if isinstance(dirname, str):
+            self.__original_dirname = dirname.strip()
+        else:
+            self.__original_dirname = dirname
+
+    def set_workdir(self, dirname, created):
         self.__dirname = dirname
-        self.__created = created
 
     def set_filename(self, filename):
         self.__filename = filename
@@ -729,9 +742,6 @@ class NzbObject(TryList):
 
     def get_password(self):
         return self.extra2
-
-    def set_original_dirname(self, name):
-        self.__original_dirname = platform_encode(name.strip())
 
     def set_name(self, name):
         if isinstance(name, str):
@@ -919,7 +929,16 @@ class NzbObject(TryList):
         return self.__partable.copy()
 
     def get_dirname(self):
+        """ Return the final destination name """
+        return self.__original_dirname
+
+    def get_workdir(self):
+        """ Return the "incomplete" folder basename """
         return self.__dirname
+
+    def get_workpath(self):
+        """ Return the full path for my __ADMIN__ folder (or old style cache) """
+        return get_admin_path(self.extra5, self.__dirname)
 
     def get_dirname_rename(self):
         return self.extra1
@@ -930,12 +949,6 @@ class NzbObject(TryList):
     def get_filename(self):
         return self.__filename
 
-    #def get_cat(self):
-    #    if self.__cat:
-    #        return self.__cat
-    #    else:
-    #        return ''
-
     def get_group(self):
         if self.__group:
             return self.__group[0]
@@ -944,14 +957,14 @@ class NzbObject(TryList):
 
     def purge_data(self):
         for nzf in self.__files:
-            sabnzbd.remove_data(nzf.nzf_id)
+            sabnzbd.remove_data(nzf.nzf_id, self.get_workpath())
 
         for _set in self.__extrapars:
             for nzf in self.__extrapars[_set]:
-                sabnzbd.remove_data(nzf.nzf_id)
+                sabnzbd.remove_data(nzf.nzf_id, self.get_workpath())
 
         for nzf in self.__finished_files:
-            sabnzbd.remove_data(nzf.nzf_id)
+            sabnzbd.remove_data(nzf.nzf_id, self.get_workpath())
 
     def get_avg_date(self):
         return self.__avg_date

@@ -1508,7 +1508,7 @@ class ConfigPage:
 
 #------------------------------------------------------------------------------
 LIST_DIRPAGE = ( \
-    'download_dir', 'download_free', 'complete_dir', 'cache_dir',
+    'download_dir', 'download_free', 'complete_dir', 'cache_dir', 'admin_dir',
     'nzb_backup_dir', 'dirscan_dir', 'dirscan_speed', 'script_dir',
     'email_dir', 'permissions', 'log_dir'
     )
