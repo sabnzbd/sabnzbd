@@ -37,7 +37,7 @@ from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
-from sabnzbd.codecs import name_fixer
+from sabnzbd.encoding import name_fixer
 from sabnzbd.lang import Ta
 
 #-------------------------------------------------------------------------------

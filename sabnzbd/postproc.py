@@ -36,7 +36,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match
-from sabnzbd.codecs import TRANS, unicoder
+from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newzbin import Bookmarks
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner

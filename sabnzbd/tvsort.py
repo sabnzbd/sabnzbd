@@ -31,7 +31,7 @@ from sabnzbd.misc import move_to_path, cleanup_empty_directories, \
                          get_unique_filename, get_ext, renamer, remove_dir
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
-from sabnzbd.codecs import titler
+from sabnzbd.encoding import titler
 from sabnzbd.lang import Ta
 
 RE_SAMPLE = re.compile(sample_match, re.I)

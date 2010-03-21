@@ -38,7 +38,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_NAME
 from sabnzbd.lang import T, Ta
-from sabnzbd.codecs import unicoder
+from sabnzbd.encoding import unicoder
 
 _HISTORY_DB = None        # Will contain full path to history database
 _DONE_CLEANING = False    # Ensure we only do one Vacuum per session

@@ -72,7 +72,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader as downloader
-from sabnzbd.codecs import unicoder
+from sabnzbd.encoding import unicoder
 from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
 

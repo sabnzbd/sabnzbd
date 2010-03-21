@@ -38,7 +38,7 @@ from sabnzbd.constants import *
 import sabnzbd.nzbqueue
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.codecs import unicoder, latin1
+from sabnzbd.encoding import unicoder, latin1
 from sabnzbd.lang import T, Ta
 
 if sabnzbd.FOUNDATION:

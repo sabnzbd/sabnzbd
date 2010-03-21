@@ -38,7 +38,7 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.decorators import synchronized
 from sabnzbd.misc import cat_to_opts, sanitize_foldername, bad_fetch, cat_convert
-from sabnzbd.codecs import name_fixer
+from sabnzbd.encoding import name_fixer
 import sabnzbd.newswrapper
 import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
