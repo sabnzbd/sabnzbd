@@ -76,7 +76,7 @@ import sabnzbd.rss as rss
 import sabnzbd.emailer as emailer
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.newsunpack
-import sabnzbd.codecs as codecs
+import sabnzbd.encoding as encoding
 import sabnzbd.config as config
 from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.cfg as cfg
@@ -475,7 +475,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
 
     # Consider reception of Latin-1 names for non-Windows platforms
     # When an OSX/Unix server receives a file from Windows platform
-    filename = codecs.special_fixer(nzbfile.filename)
+    filename = encoding.special_fixer(nzbfile.filename)
 
     if not sabnzbd.WIN32:
         # If windows client sends file to Unix server backslashed may

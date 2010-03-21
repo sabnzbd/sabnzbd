@@ -31,7 +31,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, sanitize_foldername, wildcard_to_re
 import sabnzbd.emailer as emailer
-from sabnzbd.codecs import latin1, unicoder
+from sabnzbd.encoding import latin1, unicoder
 
 import sabnzbd.utils.feedparser as feedparser
 from sabnzbd.lang import T, Ta

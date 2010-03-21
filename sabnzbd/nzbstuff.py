@@ -38,7 +38,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
-from sabnzbd.codecs import unicoder, platform_encode
+from sabnzbd.encoding import unicoder, platform_encode
 
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)

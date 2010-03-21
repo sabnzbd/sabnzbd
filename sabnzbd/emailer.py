@@ -30,7 +30,7 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host
-from sabnzbd.codecs import LatinFilter
+from sabnzbd.encoding import LatinFilter
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T, Ta
 

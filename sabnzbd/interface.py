@@ -42,7 +42,7 @@ from sabnzbd.misc import real_path, loadavg, \
      get_filename, cat_to_opts, IntConv, panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
-from sabnzbd.codecs import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode
+from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache

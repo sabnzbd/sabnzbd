@@ -27,7 +27,7 @@ import logging
 from time import time
 
 import sabnzbd
-from sabnzbd.codecs import TRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
+from sabnzbd.encoding import TRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.misc import format_time_string, find_on_path
 import sabnzbd.cfg as cfg
