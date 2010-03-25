@@ -575,7 +575,7 @@ warn-apikeyBad           API-nyckel felaktig, använd api-nyckeln från Konfigur
                          i ditt tredjepartsprogram:
 error-noSecUI            Fel: Inget andrainterface definierat.
 
-his-badArchive           Fel, Oanvändbar akrivfil
+his-badArchive           Oanvändbar NZB fil
 his-cannotGetReport      Det gick inte att hämta newzbin rapport
 his-failedURL            Det gick inte att lägga till url
 his-retryURL1@1          URL hämtning misslyckades; %s

@@ -624,7 +624,7 @@ warn-apikeyBad           API-Schlüssel ungültig. Bitte API-Schlüssel aus\
                          eingeben:
 error-noSecUI            Fehler: Keine sekundäre Oberfläche angegeben.
 
-his-badArchive           Fehlgeschlagen. Unültige Archiv-Datei.
+his-badArchive           Ungültige NZB-Datei.
 his-cannotGetReport      Abrufen des Newzbin-Berichts fehlgeschlagen
 his-failedURL            Hinzufügen der URL fehlgeschlagen
 his-retryURL1@1          Abrufen der URL fehlgeschlagen; %s
