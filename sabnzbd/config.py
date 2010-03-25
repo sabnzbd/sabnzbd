@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -81,6 +81,9 @@ class Option:
             return self.__value
         else:
             return self.__default_val
+
+    def get_string(self):
+        return str(self.get())
 
     def get_dict(self, safe=False):
         """ Return value a dictionary """
@@ -207,23 +210,23 @@ class OptionDir(Option):
 
 class OptionList(Option):
     """ List option class """
-    def __init__(self, section, keyword, default_val=None, add=True):
+    def __init__(self, section, keyword, default_val=None, validation=None, add=True):
+        self.__validation = validation
         if default_val is None:
             default_val = []
         Option.__init__(self, section, keyword, default_val, add=add)
 
     def set(self, value):
-        """ Set value, convert single item to list of one
-            Empty string will be an empty list.
-        """
-        if value != None:
-            if type(value) != type([]):
-                if value == '':
-                    value = []
-                else:
-                    value = [ value ]
-            return self._Option__set(value)
-        return None
+        """ Set the list given a comma-separated string or a list"""
+        error = None
+        if value is not None:
+            if not isinstance(value, list):
+                value = listquote.simplelist(value)
+            if self.__validation:
+                error, value = self.__validation(value)
+            if not error:
+                self._Option__set(value)
+        return error
 
     def get_string(self):
         """ Return the list as a comma-separated string """
@@ -236,13 +239,6 @@ class OptionList(Option):
             txt += lst[n]
             if n < r-1: txt += ', '
         return txt
-
-    def set_string(self, txt):
-        """ Set the list given a comma-separated string """
-        if type(txt) == type(''):
-            self._Option__set(listquote.simplelist(txt))
-        else:
-            self._Option__set(txt)
 
 
 class OptionStr(Option):
@@ -277,6 +273,7 @@ class OptionPassword(Option):
     """ Password class """
     def __init__(self, section, keyword, default_val='', add=True):
         Option.__init__(self, section, keyword, default_val, add=add)
+        self.get_string = self.get_stars
 
     def get(self):
         """ Return decoded password """
@@ -410,10 +407,7 @@ class ConfigCat:
                 value = values[kw]
             except KeyError:
                 continue
-            if kw == 'newzbin':
-                exec 'self.%s.set_string(value)' % kw
-            else:
-                exec 'self.%s.set(value)' % kw
+            exec 'self.%s.set(value)' % kw
         return True
 
     def get_dict(self, safe=False):
