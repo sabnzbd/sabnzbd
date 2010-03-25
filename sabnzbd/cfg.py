@@ -29,19 +29,19 @@ from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            validate_octal, validate_safedir, validate_dir_exists, \
                            create_api_key, validate_notempty
 from sabnzbd.lang import T
+from sabnzbd.utils import listquote
+
 #------------------------------------------------------------------------------
 # Email validation support
 #
 RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
 def validate_email(value):
-    global email_endjob, email_full
-    if email_endjob() or email_full():
-        if value and RE_VAL.match(value):
-            return None, value
-        else:
-            return T('error-badEmailAd@1') % value, None
-    else:
-        return None, value
+    global EMAIL_ENDJOB, EMAIL_FULL
+    if EMAIL_ENDJOB.get() or EMAIL_FULL.get():
+        for addr in listquote.simplelist(value):
+            if not (addr and RE_VAL.match(addr)):
+                return T('error-badEmailAd@1') % addr, None
+    return None, value
 
 
 def validate_server(value):

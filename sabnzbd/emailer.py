@@ -33,6 +33,7 @@ from sabnzbd.misc import to_units, split_host
 from sabnzbd.encoding import LatinFilter
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T, Ta
+from sabnzbd.utils import listquote
 
 
 ################################################################################
@@ -101,7 +102,8 @@ def send(message):
         try:
             if isinstance(message, unicode):
                 message = message.encode('utf8')
-            mailconn.sendmail(cfg.email_from(), cfg.email_to(), message)
+            for recipient in listquote.simplelist(cfg.EMAIL_TO.get()):
+                mailconn.sendmail(cfg.EMAIL_FROM.get(), recipient, message)
         except:
             logging.error(Ta('error-mailSend'))
             return failure
