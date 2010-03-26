@@ -578,7 +578,7 @@ warn-apikeyBad           Clé API incorrecte, utilisez la clé API de la configura
 error-apikeyBad          Erreur : Clé API incorrecte
 error-noSecUI            Erreur : Pas d'interface secondaire définie.
 
-his-badArchive           Echec, Fichier d'archive inutilisable
+his-badArchive           Fichier NZB inutilisable
 his-cannotGetReport      Echec de récupération du rapport newzbin
 his-failedURL            Echec de l'ajout de l'URL
 his-retryURL1@1          Echec de récupération de l'URL; %s

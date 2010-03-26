@@ -1,0 +1,68 @@
+﻿# -*- coding: utf-8 -*-
+# Dansk # Danmark
+# Translation by "René (Jarhead) Larsen" <warzdk@gmail.com>
+# Plush
+
+# Menu
+maxSpeed          Max hastighed
+options           Plush Instillninger
+refreshRate       Opdateringsinterval
+confirmDeleteQueue Bekræft Kø-fjernelse
+confirmDeleteHistory Bekræft Historik-fjernelse
+blockRefresh      Block Refreshes on Hover
+explain-blockRefresh Dette vil forhindre indhold i at blive opdateret når musens markør kører hen over køen
+disabled          Deaktiveret
+addnzb            Tilføj NZB
+fetch             Hente
+uploadTip         Upload: .nzb .rar .zip .gz
+sort              Sortere
+sortAgeAsc        Sortere efter Alder <small>(Ældst&rarr;Nyeste)</small>
+sortAgeDesc       Sortera efter Alder <small>(Nyeste&rarr;Ældst)</small>
+sortNameAsc       Sortere efter Navn <small>(A&rarr;Z)</small>
+sortNameDesc      Sortere efter Navn <small>(Z&rarr;A)</small>
+sortSizeAsc       Sortere efter Størrelse <small>(Mindst&rarr;Størst)</small>
+sortSizeDesc      Sortere efter Størrelse <small>(Størst&rarr;Mindst)</small>
+pause5m           Pause 5 minutter
+pause15m          Pause 15 minutter
+pause30m          Pause 30 minutter
+pause1h           Pause 1 time
+pause3h           Pause 3 timer
+pause6h           Pause 6 timer
+pauseFor          Pause i...
+pauseForPrompt    Pause i hvor mange minutter?
+purge             Slet
+onQueueFinish     Ved afslutning
+warnings          Advarsler
+updateAvailable   Opdatering tilgængelig
+cmenu-scheduling  Skabalon
+
+# General
+button-refresh    Opdatere
+left              tilbage
+page              side
+everything        Alt
+prev              Foregående
+next              Næste
+confirm           Er du sikker?
+confirmWithoutSavingPrompt Ændringerne er ikke gemt og vil blive mistet.
+nzo-range         Omfang
+progress          Fremgang
+
+# Queue
+idle              Venter
+remaining         Resterende
+notEnoughSpace    Ikke nok diskplads til at fuldføre downloads.
+freeSpace         Ledig diskplas
+freeSpaceTemp     Ledig tempdiskplads
+confirmPurgeQ     Tøm køen?
+
+# History
+total             Totalt
+thisWeek          Denne uge
+thisMonth         Denne måned
+openSourceURL     Åbn kildekode URL
+openInfoURL       Åbn informations URL
+path              Genvej
+storage           Opbevaring
+viewScriptLog     Vis scriptlogg
+confirmPurgeH     Tøm historiken?

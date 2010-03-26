@@ -66,22 +66,24 @@ def CheckPath(name):
 
 
 def PatchVersion(name):
-    """ Patch in the SVN baseline number, but only when this is
+    """ Patch in the Bazaar baseline number, but only when this is
         an unmodified checkout
     """
     try:
-        pipe = subprocess.Popen(SvnVersion, shell=True, stdout=subprocess.PIPE).stdout
-        svn = pipe.read().strip(' \t\n\r')
+        pipe = subprocess.Popen(BzrVersion, shell=True, stdout=subprocess.PIPE).stdout
+        for line in pipe.read().split('\n'):
+            if 'revno: ' in line:
+                bzr = line.split(' ')[1].strip()
         pipe.close()
     except:
         pass
 
-    if not svn:
-        print "WARNING: Cannot run %s" % SvnVersion
-        svn = 'unknown'
+    if not bzr:
+        print "WARNING: Cannot run %s" % BzrVersion
+        bzr = 'unknown'
 
-    if not (svn and svn.isdigit()):
-        svn = 'unknown'
+    if not (bzr and bzr.isdigit()):
+        bzr = 'unknown'
 
     try:
         ver = open(VERSION_FILE, 'rb')
@@ -92,7 +94,7 @@ def PatchVersion(name):
         return
 
     regex = re.compile(r'__baseline__\s+=\s+"\w*"')
-    text = re.sub(r'__baseline__\s*=\s*"[^"]*"', '__baseline__ = "%s"' % svn, text)
+    text = re.sub(r'__baseline__\s*=\s*"[^"]*"', '__baseline__ = "%s"' % bzr, text)
     text = re.sub(r'__version__\s*=\s*"[^"]*"', '__version__ = "%s"' % name, text)
     try:
         ver = open(VERSION_FILE, 'wb')
@@ -108,14 +110,14 @@ def PairList(src):
         A dir returns for its root and each of its subdirs
             (path, <list-of-file>)
         Always return paths with Unix slashes.
-        Skip all SVN elements, .bak .pyc .pyo and *.~*
+        Skip all Bazaar elements, .bak .pyc .pyo and *.~*
     """
     lst = []
     for item in src:
         if item.endswith('/'):
             for root, dirs, files in os.walk(item.rstrip('/\\')):
                 path = root.replace('\\', '/')
-                if path.find('.svn') < 0 and path.find('_svn') < 0 :
+                if path.find('.bzr') < 0:
                     flist = []
                     for file in files:
                         if not (file.endswith('.bak') or file.endswith('.pyc') or file.endswith('.pyo') or '~' in file):
@@ -215,12 +217,11 @@ def rename_file(folder, old, new):
 
 print sys.argv[0]
 
-#OSX if svnversion not installed install SCPlugin and execute these commands
+#OSX if bzrversion not installed install SCPlugin and execute these commands
 #sudo cp /Library/Contextual\ Menu\ Items/SCFinderPlugin.plugin/Contents/Resources/SCPluginUIDaemon.app/Contents/lib/lib* /usr/lib
-#sudo cp /Library/Contextual\ Menu\ Items/SCFinderPlugin.plugin/Contents/Resources/SCPluginUIDaemon.app/Contents/bin/svnversion /usr/bin
+#sudo cp /Library/Contextual\ Menu\ Items/SCFinderPlugin.plugin/Contents/Resources/SCPluginUIDaemon.app/Contents/bin/bzrversion /usr/bin
 
-SvnVersion = CheckPath('svnversion')
-SvnRevert = CheckPath('svn')
+Bazaar = CheckPath('bzr')
 ZipCmd = CheckPath('zip')
 UnZipCmd = CheckPath('unzip')
 if os.name == 'nt':
@@ -228,12 +229,13 @@ if os.name == 'nt':
 else:
     NSIS = '-'
 
-if not (SvnVersion and SvnRevert and ZipCmd and UnZipCmd and NSIS):
-    exit(1)
+BzrRevertApp =  Bazaar + ' revert '
+BzrUpdateApp = Bazaar + ' update '
+BzrRevert =  Bazaar + ' revert ' + VERSION_FILE
+BzrVersion = Bazaar + ' version-info'
 
-SvnRevertApp =  SvnRevert + ' revert '
-SvnUpdateApp = SvnRevert + ' update '
-SvnRevert =  SvnRevert + ' revert ' + VERSION_FILE
+if not (BzrVersion and BzrRevert and ZipCmd and UnZipCmd and NSIS):
+    exit(1)
 
 if len(sys.argv) < 2:
     target = None
@@ -308,7 +310,7 @@ options = dict(
 if target == 'app':
     if not platform.system() == 'Darwin':
         print "Sorry, only works on Apple OSX!"
-        os.system(SvnRevert)
+        os.system(BzrRevert)
         exit(1)
 
     #Create sparseimage from template
@@ -366,7 +368,7 @@ if target == 'app':
     os.system("mkdir dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("cp -pR osx/unrar/ dist/SABnzbd.app/Contents/Resources/osx/unrar>/dev/null")
     os.system("chmod +x dist/SABnzbd.app/Contents/Resources/update>/dev/null")
-    os.system("find dist/SABnzbd.app -name .svn | xargs rm -rf")
+    os.system("find dist/SABnzbd.app -name .bzr | xargs rm -rf")
 
     #copy builded app to mounted sparseimage
     os.system("cp -r dist/SABnzbd.app /Volumes/SABnzbd/>/dev/null")
@@ -380,7 +382,7 @@ if target == 'app':
     os.system("rm -rf cherrypy*.zip")
 
     #Create src tar.gz
-    os.system("tar -czf %s --exclude \".svn\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
+    os.system("tar -czf %s --exclude \".bzr\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
     os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
@@ -400,16 +402,16 @@ if target == 'app':
     #Remove sparseimage
     os.system("rm %s>/dev/null" % (fileImg))
 
-    #os.system(SvnRevert)
-    os.system(SvnRevertApp + "NSIS_Installer.nsi")
-    os.system(SvnRevertApp + VERSION_FILEAPP)
-    os.system(SvnRevertApp + VERSION_FILE)
-    os.system(SvnUpdateApp)
+    #os.system(BzrRevert)
+    os.system(BzrRevertApp + "NSIS_Installer.nsi")
+    os.system(BzrRevertApp + VERSION_FILEAPP)
+    os.system(BzrRevertApp + VERSION_FILE)
+    os.system(BzrUpdateApp)
 
 elif target in ('binary', 'installer'):
     if not py2exe:
         print "Sorry, only works on Windows!"
-        os.system(SvnRevert)
+        os.system(BzrRevert)
         exit(1)
 
     # Unpack cherrypy
@@ -472,14 +474,14 @@ elif target in ('binary', 'installer'):
     if target == 'installer':
 
         os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
-                  (release, fileIns))
+                  (prod, fileIns))
 
         DeleteFiles(fileBin)
         os.rename('dist', prod)
         os.system('zip -9 -r -X %s %s' % (fileBin, prod))
         os.rename(prod, 'dist')
 
-    os.system(SvnRevert)
+    os.system(BzrRevert)
 
 else:
     # Prepare Source distribution package.
@@ -533,5 +535,5 @@ else:
     # Prepare the TAR.GZ pacakge
     CreateTar('srcdist', fileSrc, prod)
 
-    os.system(SvnRevert)
+    os.system(BzrRevert)
 

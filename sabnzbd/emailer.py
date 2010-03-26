@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -101,7 +101,8 @@ def send(message):
         try:
             if isinstance(message, unicode):
                 message = message.encode('utf8')
-            mailconn.sendmail(cfg.email_from(), cfg.email_to(), message)
+            for recipient in cfg.email_to():
+                mailconn.sendmail(cfg.EMAIL_FROM.get(), recipient, message)
         except:
             logging.error(Ta('error-mailSend'))
             return failure
@@ -126,7 +127,7 @@ from Cheetah.Template import Template
 def send_with_template(prefix, parm):
     """ Send an email using template """
 
-    parm['to'] = cfg.email_to()
+    parm['to'] = cfg.email_to.get_string()
     parm['from'] = cfg.email_from()
     parm['date'] = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
 
@@ -199,7 +200,7 @@ def diskfull():
     """ Send email about disk full, no templates """
 
     if cfg.email_full():
-        return send(T('email-full@2') % (cfg.email_to(), cfg.email_from()))
+        return send(T('email-full@2') % (cfg.email_to.get_string(), cfg.email_from()))
     else:
         return ""
 
