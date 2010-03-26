@@ -1,5 +1,14 @@
 -------------------------------------------------------------------------------
-0.5.1 RC1 by The SABnzbd-Team
+ 0.5.2 RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Accept comma-separated email address in "email_to" option.
+- Allow manual retry of URL-based NZB fetches when a bad NZB is received
+- Add INI-file option "size_limit" that sets any oversized job
+  to paused and low priority.
+- Added French translation of email template
+- Add Danish translation
+-------------------------------------------------------------------------------
+ 0.5.1 RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Add 'size_limit' option. Any job bigger than this limit will be set to
   low priority and be paused.

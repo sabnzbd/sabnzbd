@@ -558,7 +558,7 @@ warn-apikeyBad           API Sleutel is fout Vul de API Sleutel van "Algememe in
 error-apikeyBad          Fout: API Sleutel fout
 error-noSecUI            Fout: geen secundaire interface ingesteld.
 
-his-badArchive           Mislukt, onbruikbaar archief bestand
+his-badArchive           Onbruikbaar NZB bestand
 his-cannotGetReport      Mislukt, kan newzbin rapport niet vinden
 his-failedURL            URL ophalen mislukt
 his-retryURL1@1          URL ophalen mislukt; %s

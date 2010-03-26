@@ -1745,7 +1745,7 @@ class ConfigGeneral:
         cleanup_list = kwargs.get('cleanup_list')
         if cleanup_list and sabnzbd.WIN32:
             cleanup_list = cleanup_list.lower()
-        cfg.cleanup_list.set_string(cleanup_list)
+        cfg.cleanup_list.set(cleanup_list)
 
         web_dir = kwargs.get('web_dir')
         web_dir2 = kwargs.get('web_dir2')
@@ -2959,10 +2959,7 @@ class ConfigEmail:
         conf['my_lcldata'] = sabnzbd.DIR_LCLDATA
 
         for kw in LIST_EMAIL:
-            if kw == 'email_pwd':
-                conf[kw] = config.get_config('misc', kw).get_stars()
-            else:
-                conf[kw] = config.get_config('misc', kw)()
+            conf[kw] = config.get_config('misc', kw).get_string()
 
         template = Template(file=os.path.join(self.__web_dir, 'config_email.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)

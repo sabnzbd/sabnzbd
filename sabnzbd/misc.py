@@ -942,10 +942,12 @@ def get_admin_path(newstyle, name):
     else:
        return cfg.cache_dir.get_path()
 
-
-def bad_fetch(nzo, url, msg='', retry=False, archive=False):
-    """ Create History entry for failed URL Fetch """
-    logging.error(Ta('error-urlGet@2'), latin1(url), latin1(msg))
+def bad_fetch(nzo, url, msg='', retry=False, content=False):
+    """ Create History entry for failed URL Fetch
+        msg : message to be logged
+        retry : make retry link in histort
+        content : report in history that cause is a bad NZB file
+    """
     msg = unicoder(msg)
 
     pp = nzo.get_pp()
@@ -971,22 +973,23 @@ def bad_fetch(nzo, url, msg='', retry=False, archive=False):
         nzo.set_filename(url)
         nzo.set_dirname(url)
 
+    if content:
+        # Bad content
+        msg = T('his-badArchive')
+    else:
+        # Failed fetch
+        msg = T('his-failedURL')
+
     if retry:
         nzbname = nzo.get_dirname_rename()
         if nzbname:
             nzbname = '&nzbname=%s' % urllib.quote(nzbname)
         else:
             nzbname = ''
-        text = T('his-retryURL1@1')+', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
+        text = T('his-retryURL1@1') + ', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
         parms = (msg, cfg.api_key(), urllib.quote(url), pp, cat, script, nzbname)
         nzo.set_fail_msg(text % parms)
     else:
-        if archive:
-            msg = T('his-badArchive')
-        elif not '://' in url:
-            msg = T('his-cannotGetReport')
-        else:
-            msg = T('his-failedURL')
         nzo.set_fail_msg(msg)
 
     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)

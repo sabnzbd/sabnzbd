@@ -140,7 +140,7 @@ class URLGrabber(Thread):
                 elif res == -2:
                     self.add(url, future_nzo)
                 else:
-                    misc.bad_fetch(future_nzo, url, retry=False)
+                    misc.bad_fetch(future_nzo, url, retry=True, content=True)
             # Check if a supported archive
             else:
                 if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
@@ -151,7 +151,7 @@ class URLGrabber(Thread):
                         os.remove(fn)
                     except:
                         pass
-                    misc.bad_fetch(future_nzo, url, retry=False, archive=True)
+                    misc.bad_fetch(future_nzo, url, retry=True, content=True)
 
             # Don't pound the website!
             time.sleep(5.0)

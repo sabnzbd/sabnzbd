@@ -1,0 +1,40 @@
+﻿# -*- coding: utf-8 -*-
+# Dansk # Danmark
+# Translation by "René (Jarhead) Larsen" <warzdk@gmail.com>
+# Mobile
+
+# misc
+button-prev       Foregående
+button-next       Næste
+button-refresh    Opdatere
+button-close      Luk
+button-options    Alternativ
+page              Side
+confirm-delete    Er du sikker på at du vil slette
+warnings          Advarsler
+button-purgeQ     Tom kø
+confirm-purgeQ    Vil du virkelig tømme køen?
+button-purgeH     Tøm historik
+confirm-purgeH    Vil du virkelig tømme historiken?
+left              Venster
+
+# pause interval
+button-pauseInterval Sæt pauseinterval
+pauseInterval     Pauseinterval
+pause5m           Pause 5 minutter
+pause15m          Pause 15 minutter
+pause30m          Pause 30 minutter
+pause1h           Pause 1 time
+pause3h           Pause 3 timer
+pause6h           Pause 6 timer
+pause12h          Pause 12 timer
+pause24h          Pause 24 timer
+
+# queue sort
+sort              Sortere
+sortAgeAsc        Sortere efter alder <small>Ældst&rarr;Nyeste</small>
+sortAgeDesc       Sortere efter alder <small>Nyeste&rarr;Ældst</small>
+sortNameAsc       Sortere efter navn <small>A&rarr;Z</small>
+sortNameDesc      Sortere efter navn <small>Z&rarr;A</small>
+sortSizeAsc       Sortere efter størrelse <small>Mindst&rarr;Størst</small>
+sortSizeDesc      Sortere efter størrelse <small>Størst&rarr;Mindst</small>

@@ -579,7 +579,7 @@ warn-apikeyBad           API Key incorrect, Use the api key from Config->General
                          in your 3rd party program:
 error-noSecUI            Error: No secondary interface defined.
 
-his-badArchive           Failed, Unusable archive file
+his-badArchive           Unusable NZB file
 his-cannotGetReport      Failed to fetch newzbin report
 his-failedURL            Failed to add url
 his-retryURL1@1          URL Fetching failed; %s

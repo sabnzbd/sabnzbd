@@ -1,0 +1,47 @@
+﻿# -*- coding: utf-8 -*-
+# Dansk # Danmark
+# Translation by "René (Jarhead) Larsen" <warzdk@gmail.com>
+
+thisWeek        Denne uge
+thisMonth       Denne måned
+size            Størrelse
+links           Links
+first           Førsta
+previous        Foregående
+next            Næste
+last            Sidste
+edit            Rediger
+editDetails     Rediger detaljer
+showEdit        Vis Redigeringsalternativ 
+hideEdit        Skjul Redigeringsalternativ 
+timeleft        Resterende tid
+purgeQueue      Fjern alle
+progress        Arbejder
+delete          Slet
+downloading     Downloader
+idle            Venter
+paused          Pauset
+emailsent       Sendt E-mail!
+saving          Gemmer..
+saved           Gemt
+failed          Mislykkedes
+speed           Hastighed
+toggleadd       Vis/Skjul Tilføj NZB
+refresr         Opdateringsfrekvens
+restartOK?      Er du sikker på at du vil genstarte SABnzbd?
+warnings        Advarsler
+getbookmarks    Hent bogmærker
+purgefailhistOK? Slet alle mislykkedes emner fra historiken?
+purgehist       Fjern alle
+purgefailhist   Fjern alle mislykket emner
+path            Genvej
+age             Alder
+speed           Hastighed
+numresults@3    Viser %s til %s af %s resultat
+oneresult       Viser 1 resultat
+noresult        Ingen resultater
+custom          Tilpasse
+dualView1       Flerskærme1
+dualView2       Flerskærme2
+eta             ETA
+refreshr        Opdateringsfrekvens
