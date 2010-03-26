@@ -90,6 +90,9 @@ class Assembler(Thread):
                             sabnzbd.downloader.pause_downloader()
                         else:
                             logging.error(Ta('error-diskError@1'), filepath)
+                    except:
+                        logging.error('Fatal error in Assembler', exc_info = True)
+                        break
 
                     setname = nzf.get_setname()
                     if nzf.is_par2() and (nzo.get_md5pack(setname) is None):

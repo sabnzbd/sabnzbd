@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,6 +29,7 @@ from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            validate_octal, validate_safedir, validate_dir_exists, \
                            create_api_key, validate_notempty
 from sabnzbd.lang import T
+
 #------------------------------------------------------------------------------
 # Email validation support
 #
@@ -36,12 +37,14 @@ RE_VAL = re.compile('[^@ ]+@[^.@ ]+\.[^.@ ]')
 def validate_email(value):
     global email_endjob, email_full
     if email_endjob() or email_full():
-        if value and RE_VAL.match(value):
-            return None, value
+        if isinstance(value, list):
+            values = value
         else:
-            return T('error-badEmailAd@1') % value, None
-    else:
-        return None, value
+            values = [value]
+        for addr in values:
+            if not (addr and RE_VAL.match(addr)):
+                return T('error-badEmailAd@1') % addr, None
+    return None, value
 
 
 def validate_server(value):
@@ -66,7 +69,7 @@ fail_on_crc = OptionBool('misc', 'fail_on_crc', False)
 send_group = OptionBool('misc', 'send_group', False)
 
 email_server = OptionStr('misc', 'email_server', validation=validate_server)
-email_to     = OptionStr('misc', 'email_to', validation=validate_email)
+email_to     = OptionList('misc', 'email_to', validation=validate_email)
 email_from   = OptionStr('misc', 'email_from', validation=validate_email)
 email_account= OptionStr('misc', 'email_account')
 email_pwd    = OptionPassword('misc', 'email_pwd')
