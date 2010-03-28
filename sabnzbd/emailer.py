@@ -229,10 +229,10 @@ def _prepare_message(txt):
     """ Do the proper message encodings
     """
     msg = Message()
-    msg.set_charset('iso-8859-1')
+    msg.set_charset('UTF-8')
     payload = []
     body = False
-    for line in txt.encode('latin-1').split('\n'):
+    for line in txt.encode('utf-8').split('\n'):
         if not line:
             body = True
         if body:
@@ -241,5 +241,5 @@ def _prepare_message(txt):
             m = RE_HEADER.search(line)
             if m:
                 msg.add_header(m.group(1).strip(), m.group(2).strip())
-    msg.set_payload('\n'.join(payload), 'iso-8859-1')
+    msg.set_payload('\n'.join(payload), 'UTF-8')
     return msg.as_string()
