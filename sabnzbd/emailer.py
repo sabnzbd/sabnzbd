@@ -98,11 +98,9 @@ def send(message):
                 logging.error(Ta('error-mailAuth'))
                 return failure
 
+        message = _prepare_message(message)
         try:
-            if isinstance(message, unicode):
-                message = message.encode('utf8')
-            for recipient in cfg.email_to():
-                mailconn.sendmail(cfg.EMAIL_FROM.get(), recipient, message)
+            mailconn.sendmail(cfg.email_from(), cfg.email_to(), message)
         except:
             logging.error(Ta('error-mailSend'))
             return failure
@@ -222,3 +220,26 @@ def _decode_file(path):
     fp.close()
 
     return source.decode(encoding)
+
+
+################################################################################
+from email.message import Message
+RE_HEADER = re.compile(r'^([^:]+):(.*)')
+def _prepare_message(txt):
+    """ Do the proper message encodings
+    """
+    msg = Message()
+    msg.set_charset('iso-8859-1')
+    payload = []
+    body = False
+    for line in txt.encode('latin-1').split('\n'):
+        if not line:
+            body = True
+        if body:
+            payload.append(line)
+        else:
+            m = RE_HEADER.search(line)
+            if m:
+                msg.add_header(m.group(1).strip(), m.group(2).strip())
+    msg.set_payload('\n'.join(payload), 'iso-8859-1')
+    return msg.as_string()
