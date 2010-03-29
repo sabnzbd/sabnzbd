@@ -538,7 +538,9 @@ def get_webhost(cherryhost, cherryport, https_port):
 
     if cherryport == https_port:
         sabnzbd.cfg.enable_https.set(False)
-        logging.error(Ta('error-sameHTTP-HTTPS'))
+        # Should have a translated message, but that's not available yet
+        #logging.error(Ta('error-sameHTTP-HTTPS'))
+        logging.error('HTTP and HTTPS ports cannot be the same')
 
     return cherryhost, cherryport, browserhost, https_port
 
@@ -1198,7 +1200,8 @@ def main():
                 exit_sab(2)
         else:
             logging.debug("Failed to start web-interface: ", exc_info = True)
-            Bail_Out(browserhost, cherryport)
+            # When error 13 occurs, we have no access rights
+            Bail_Out(browserhost, cherryport, '13' in str(error))
     except socket.error, error:
         logging.debug("Failed to start web-interface: ", exc_info = True)
         Bail_Out(browserhost, cherryport, access=True)
