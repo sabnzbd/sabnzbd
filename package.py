@@ -243,7 +243,7 @@ else:
     target = sys.argv[1]
 
 if target not in ('source', 'binary', 'installer', 'app'):
-    print 'Usage: package.py binary|source|app'
+    print 'Usage: package.py binary|installer|source|app'
     exit(1)
 
 # Derive release name from path
