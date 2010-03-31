@@ -180,12 +180,12 @@ class LatinFilter(Filter):
         if isinstance(val, unicode):
             return val
         elif isinstance(val, basestring):
-            if gUTF:
-                try:
-                    return val.decode('utf-8', 'replace')
-                except:
-                    return val.decode('latin-1', 'replace')
-            else:
+            try:
+                if sabnzbd.WIN32:
+                    return val.decode('latin-1')
+                else:
+                    return val.decode('utf-8')
+            except:
                 return val.decode('latin-1', 'replace')
         elif val is None:
             return u''
