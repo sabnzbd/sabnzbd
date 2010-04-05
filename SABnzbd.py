@@ -1386,6 +1386,13 @@ def prep_service_parms(args):
     return serv
 
 
+SERVICE_MSG = """
+You may need to set additional Service parameters.
+Run services.msc from a command prompt.
+
+Don't forget to install the Service SABnzbd-helper.exe too!
+"""
+
 def HandleCommandLine(allow_service=True):
     """ Handle command line for a Windows Service
         Prescribed name that will be called by Py2Exe.
@@ -1413,8 +1420,7 @@ def HandleCommandLine(allow_service=True):
             # Add our own parameter to the Registry
             sab_opts = prep_service_parms(sab_opts)
             if set_serv_parms(SABnzbd._svc_name_, sab_opts):
-                print '\nYou may need to set additional Service parameters.\n' \
-                      'Run services.msc from a command prompt.\n'
+                print SERVICE_MSG
             else:
                 print 'Cannot set required Registry info.'
         else:
