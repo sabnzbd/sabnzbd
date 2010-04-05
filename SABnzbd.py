@@ -97,7 +97,10 @@ try:
     import win32api
     import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
+    from util.mailslot import MailSlot
 except ImportError:
+    class MailSlot:
+        pass
     if sabnzbd.WIN32:
         print "Sorry, requires Python module PyWin32."
         sys.exit(1)
@@ -1290,8 +1293,14 @@ def main():
                     if pid == 0:
                         os.execv(sys.executable, args)
             elif sabnzbd.WIN_SERVICE:
-                # Hope for the service manager to restart us
-                sys.exit(1)
+                logging.info('Asking the SABnzbdHelper service for a restart')
+                mail = MailSlot()
+                if mail.connect():
+                    mail.send('restart')
+                    mail.disconnect()
+                else:
+                    logging.error('Cannot reach the SABnzbdHelper service')
+                return
             else:
                 cherrypy.engine._do_execv()
 
@@ -1320,7 +1329,7 @@ if sabnzbd.WIN32:
 
         _svc_name_ = 'SABnzbd'
         _svc_display_name_ = 'SABnzbd Binary Newsreader'
-        _svc_deps_ = ["EventLog", "Tcpip"]
+        _svc_deps_ = ["EventLog", "Tcpip", "SABHelper"]
         _svc_description_ = 'Automated downloading from Usenet. ' \
                             'Set to "automatic" to start the service at system startup. ' \
                             'You may need to login with a real user account when you need ' \
@@ -1377,6 +1386,13 @@ def prep_service_parms(args):
     return serv
 
 
+SERVICE_MSG = """
+You may need to set additional Service parameters.
+Run services.msc from a command prompt.
+
+Don't forget to install the Service SABnzbd-helper.exe too!
+"""
+
 def HandleCommandLine(allow_service=True):
     """ Handle command line for a Windows Service
         Prescribed name that will be called by Py2Exe.
@@ -1404,8 +1420,7 @@ def HandleCommandLine(allow_service=True):
             # Add our own parameter to the Registry
             sab_opts = prep_service_parms(sab_opts)
             if set_serv_parms(SABnzbd._svc_name_, sab_opts):
-                print '\nYou may need to set additional Service parameters.\n' \
-                      'Run services.msc from a command prompt.\n'
+                print SERVICE_MSG
             else:
                 print 'Cannot set required Registry info.'
         else:
