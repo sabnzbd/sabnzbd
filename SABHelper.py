@@ -20,14 +20,7 @@ if sys.version_info < (2,4):
     print "Sorry, requires Python 2.4 or higher."
     sys.exit(1)
 
-import logging
-import logging.handlers
 import os
-import getopt
-import signal
-import glob
-import socket
-import platform
 import time
 import subprocess
 
@@ -45,6 +38,16 @@ from sabnzbd.utils.mailslot import MailSlot
 #------------------------------------------------------------------------------
 
 WIN_SERVICE = None
+
+#------------------------------------------------------------------------------
+def HandleCommandLine(allow_service=True):
+    """ Handle command line for a Windows Service
+        Prescribed name that will be called by Py2Exe.
+        You MUST set 'cmdline_style':'custom' in the package.py!
+        Returns True when any service commands were detected.
+    """
+    win32serviceutil.HandleCommandLine(SABHelper)
+
 
 #------------------------------------------------------------------------------
 def main():
@@ -70,14 +73,14 @@ def main():
 # Windows Service Support
 #
 import servicemanager
-class SABnzbdHelper(win32serviceutil.ServiceFramework):
+class SABHelper(win32serviceutil.ServiceFramework):
     """ Win32 Service Handler """
 
-    _svc_name_ = 'SABnzbdHelper'
-    _svc_display_name_ = 'SABnzbd Binary Newsreader (Helper)'
+    _svc_name_ = 'SABHelper'
+    _svc_display_name_ = 'SABnzbd Helper'
     _svc_deps_ = ["EventLog", "Tcpip"]
     _svc_description_ = 'Automated downloading from Usenet. ' \
-                        'This service helps SABnzbd to restart itself.'
+                        'This service helps SABnzbdcd.. to restart itself.'
 
     def __init__(self, args):
         global WIN_SERVICE
@@ -89,7 +92,7 @@ class SABnzbdHelper(win32serviceutil.ServiceFramework):
         WIN_SERVICE = self
 
     def SvcDoRun(self):
-        msg = 'SABnzbdHelper-service'
+        msg = 'SABHelper-service'
         self.Logger(servicemanager.PYS_SERVICE_STARTED, msg + ' has started')
         res = main()
         self.Logger(servicemanager.PYS_SERVICE_STOPPED, msg + ' has stopped' + res)
@@ -119,4 +122,4 @@ class SABnzbdHelper(win32serviceutil.ServiceFramework):
 #
 if __name__ == '__main__':
 
-    win32serviceutil.HandleCommandLine(SABnzbdHelper, argv=sys.argv)
+    win32serviceutil.HandleCommandLine(SABHelper, argv=sys.argv)
