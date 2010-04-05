@@ -97,7 +97,10 @@ try:
     import win32api
     import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
+    from sabnzbd.utils.mailslot import MailSlot
 except ImportError:
+    class MailSlot:
+        pass
     if sabnzbd.WIN32:
         print "Sorry, requires Python module PyWin32."
         sys.exit(1)
@@ -1290,8 +1293,14 @@ def main():
                     if pid == 0:
                         os.execv(sys.executable, args)
             elif sabnzbd.WIN_SERVICE:
-                # Hope for the service manager to restart us
-                sys.exit(1)
+                logging.info('Asking the SABnzbdHelper service for a restart')
+                mail = MailSlot()
+                if mail.connect():
+                    mail.send('restart')
+                    mail.disconnect()
+                else:
+                    logging.error('Cannot reach the SABnzbdHelper service')
+                return
             else:
                 cherrypy.engine._do_execv()
 
