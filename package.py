@@ -427,7 +427,7 @@ elif target in ('binary', 'installer'):
     options['options'] = {"py2exe":
                               {
                                 "bundle_files": 3,
-                                "packages": "email,xml,Cheetah",
+                                "packages": "email,xml,Cheetah,win32file",
                                 "excludes": ["pywin", "pywin.debugger", "pywin.debugger.dbgcon", "pywin.dialogs",
                                              "pywin.dialogs.list", "Tkconstants", "Tkinter", "tcl"],
                                 "optimize": 2,
@@ -480,7 +480,7 @@ elif target in ('binary', 'installer'):
     options['service'] = [{'modules':["SABHelper"], 'cmdline_style':'custom'}]
     options['packages'] = ['util']
     options['data_files'] = []
-    del options['options']['py2exe']['packages']
+    options['options']['py2exe']['packages'] = "win32file"
 
     setup(**options)
     rename_file('dist', Win32HelperName, Win32ServiceHelpName)

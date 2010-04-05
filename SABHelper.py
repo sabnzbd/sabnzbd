@@ -29,9 +29,8 @@ try:
     import win32api, win32file
     import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
 except ImportError:
-    if sabnzbd.WIN32:
-        print "Sorry, requires Python module PyWin32."
-        sys.exit(1)
+    print "Sorry, requires Python module PyWin32."
+    sys.exit(1)
 
 from util.mailslot import MailSlot
 
