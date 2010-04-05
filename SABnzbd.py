@@ -560,15 +560,16 @@ def is_sabnzbd_running(url):
     except:
         return False
 
-def find_free_port(host, currentport, i=0):
-    while i >=10 and currentport <= 49151:
+def find_free_port(host, currentport):
+    n = 0
+    while n < 10 and currentport <= 49151:
         try:
             cherrypy.process.servers.check_port(host, currentport)
             return currentport
         except:
-            currentport+=5
-            i+=1
-    return -1
+            currentport += 5
+            n += 1
+    return 0
 
 def check_for_sabnzbd(url, upload_nzbs):
     # Check for a running instance of sabnzbd(same version) on this port
@@ -930,7 +931,7 @@ def main():
                     port = find_free_port(browserhost, https_port)
                     if port > 0:
                         sabnzbd.cfg.https_port.set(port)
-                        cherryport = port
+                        https_port = port
     ## NonSSL
     try:
         cherrypy.process.servers.check_port(browserhost, cherryport)
