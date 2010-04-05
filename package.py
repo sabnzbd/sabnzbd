@@ -478,8 +478,9 @@ elif target in ('binary', 'installer'):
     options['scripts'] = ['SABHelper.py']
     options['zipfile'] = 'lib/sabhelper.zip'
     options['service'] = [{'modules':["SABHelper"], 'cmdline_style':'custom'}]
-    options['packages'] = ['sabnzbd.utils']
+    options['packages'] = ['util']
     options['data_files'] = []
+    del options['options']['py2exe']['packages']
 
     setup(**options)
     rename_file('dist', Win32HelperName, Win32ServiceHelpName)

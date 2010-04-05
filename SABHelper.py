@@ -33,7 +33,7 @@ except ImportError:
         print "Sorry, requires Python module PyWin32."
         sys.exit(1)
 
-from sabnzbd.utils.mailslot import MailSlot
+from util.mailslot import MailSlot
 
 #------------------------------------------------------------------------------
 

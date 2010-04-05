@@ -97,7 +97,7 @@ try:
     import win32api
     import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
-    from sabnzbd.utils.mailslot import MailSlot
+    from util.mailslot import MailSlot
 except ImportError:
     class MailSlot:
         pass
