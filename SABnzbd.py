@@ -1329,7 +1329,7 @@ if sabnzbd.WIN32:
 
         _svc_name_ = 'SABnzbd'
         _svc_display_name_ = 'SABnzbd Binary Newsreader'
-        _svc_deps_ = ["EventLog", "Tcpip"]
+        _svc_deps_ = ["EventLog", "Tcpip", "SABHelper"]
         _svc_description_ = 'Automated downloading from Usenet. ' \
                             'Set to "automatic" to start the service at system startup. ' \
                             'You may need to login with a real user account when you need ' \
