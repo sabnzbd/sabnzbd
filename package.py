@@ -243,7 +243,7 @@ else:
     target = sys.argv[1]
 
 if target not in ('source', 'binary', 'installer', 'app'):
-    print 'Usage: package.py binary|source|app'
+    print 'Usage: package.py binary|installer|source|app'
     exit(1)
 
 # Derive release name from path
@@ -251,8 +251,10 @@ base, release = os.path.split(os.getcwd())
 
 prod = 'SABnzbd-' + release
 Win32ServiceName = 'SABnzbd-service.exe'
+Win32ServiceHelpName = 'SABnzbd-helper.exe'
 Win32ConsoleName = 'SABnzbd-console.exe'
 Win32WindowName  = 'SABnzbd.exe'
+Win32HelperName  = 'SABHelper.exe'
 Win32TempName    = 'SABnzbd-windows.exe'
 
 fileIns = prod + '-win32-setup.exe'
@@ -298,7 +300,7 @@ options = dict(
       author = 'The SABnzbd-Team',
       author_email = 'team@sabnzbd.org',
       #description = 'SABnzbd ' + str(sabnzbd.__version__),
-      scripts = ['SABnzbd.py'], # One day, add  'setup.py'
+      scripts = ['SABnzbd.py', 'SABHelper.py'], # One day, add  'setup.py'
       packages = ['sabnzbd', 'sabnzbd.utils'],
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2) or later',
@@ -425,7 +427,7 @@ elif target in ('binary', 'installer'):
     options['options'] = {"py2exe":
                               {
                                 "bundle_files": 3,
-                                "packages": "email,xml,Cheetah",
+                                "packages": "email,xml,Cheetah,win32file",
                                 "excludes": ["pywin", "pywin.debugger", "pywin.debugger.dbgcon", "pywin.dialogs",
                                              "pywin.dialogs.list", "Tkconstants", "Tkinter", "tcl"],
                                 "optimize": 2,
@@ -434,6 +436,7 @@ elif target in ('binary', 'installer'):
                          }
     options['zipfile'] = 'lib/sabnzbd.zip'
 
+    options['scripts'] = ['SABnzbd.py']
 
     ############################
     # Generate the console-app
@@ -468,6 +471,20 @@ elif target in ('binary', 'installer'):
 
     # Give the Windows app its proper name
     rename_file('dist', Win32TempName, Win32WindowName)
+
+
+    ############################
+    # Generate the Helper service-app
+    options['scripts'] = ['SABHelper.py']
+    options['zipfile'] = 'lib/sabhelper.zip'
+    options['service'] = [{'modules':["SABHelper"], 'cmdline_style':'custom'}]
+    options['packages'] = ['util']
+    options['data_files'] = []
+    options['options']['py2exe']['packages'] = "win32file"
+
+    setup(**options)
+    rename_file('dist', Win32HelperName, Win32ServiceHelpName)
+
 
 
     ############################

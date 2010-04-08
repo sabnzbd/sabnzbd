@@ -1,3 +1,4 @@
+#encoding UTF-8
 ##
 ## Template Email pour SABnzbd
 ## Ceci est un template Cheetah
@@ -9,7 +10,7 @@
 to: $to
 from: $from
 date: $date
-subject: SABnzbd <!--#if $status then "Succès" else "Echec" #--> du téléchargement $name
+subject: SABnzbd <!--#if $status#-->Succès<!--#else#-->Echec<!--#end if#--> du téléchargement $name
 X-priority: 5
 X-MS-priority: 5
 ## Le contenu du message, la ligne vide est obligatoire !

@@ -2558,9 +2558,9 @@ class ConnectionInfo:
         pack['download'] = ['action 1', 'action 2']
         pack['unpack'] = ['action 1', 'action 2']
 
-        self.__lastmail= emailer.endjob('Test Job', 123, 'unknown', True,
-                                      os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/Test Job')),
-                                      str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\n', 0)
+        self.__lastmail= emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
+                                      os.path.normpath(os.path.join(cfg.COMPLETE_DIR.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                      str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose

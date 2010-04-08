@@ -97,7 +97,10 @@ try:
     import win32api
     import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
+    from util.mailslot import MailSlot
 except ImportError:
+    class MailSlot:
+        pass
     if sabnzbd.WIN32:
         print "Sorry, requires Python module PyWin32."
         sys.exit(1)
@@ -539,7 +542,9 @@ def get_webhost(cherryhost, cherryport, https_port):
 
     if cherryport == https_port:
         sabnzbd.cfg.enable_https.set(False)
-        logging.error(Ta('error-sameHTTP-HTTPS'))
+        # Should have a translated message, but that's not available yet
+        #logging.error(Ta('error-sameHTTP-HTTPS'))
+        logging.error('HTTP and HTTPS ports cannot be the same')
 
     return cherryhost, cherryport, browserhost, https_port
 
@@ -556,15 +561,16 @@ def is_sabnzbd_running(url):
     except:
         return False
 
-def find_free_port(host, currentport, i=0):
-    while i >=10 and currentport <= 49151:
+def find_free_port(host, currentport):
+    n = 0
+    while n < 10 and currentport <= 49151:
         try:
             cherrypy.process.servers.check_port(host, currentport)
             return currentport
         except:
-            currentport+=5
-            i+=1
-    return -1
+            currentport += 5
+            n += 1
+    return 0
 
 def check_for_sabnzbd(url, upload_nzbs):
     # Check for a running instance of sabnzbd(same version) on this port
@@ -923,7 +929,7 @@ def main():
                     port = find_free_port(browserhost, https_port)
                     if port > 0:
                         sabnzbd.cfg.https_port.set(port)
-                        cherryport = port
+                        https_port = port
     ## NonSSL
     try:
         cherrypy.process.servers.check_port(browserhost, cherryport)
@@ -1194,7 +1200,8 @@ def main():
                 exit_sab(2)
         else:
             logging.debug("Failed to start web-interface: ", exc_info = True)
-            Bail_Out(browserhost, cherryport)
+            # When error 13 occurs, we have no access rights
+            Bail_Out(browserhost, cherryport, '13' in str(error))
     except socket.error, error:
         logging.debug("Failed to start web-interface: ", exc_info = True)
         Bail_Out(browserhost, cherryport, access=True)
@@ -1283,8 +1290,14 @@ def main():
                     if pid == 0:
                         os.execv(sys.executable, args)
             elif sabnzbd.WIN_SERVICE:
-                # Hope for the service manager to restart us
-                sys.exit(1)
+                logging.info('Asking the SABnzbdHelper service for a restart')
+                mail = MailSlot()
+                if mail.connect():
+                    mail.send('restart')
+                    mail.disconnect()
+                else:
+                    logging.error('Cannot reach the SABnzbdHelper service')
+                return
             else:
                 cherrypy.engine._do_execv()
 
@@ -1313,7 +1326,7 @@ if sabnzbd.WIN32:
 
         _svc_name_ = 'SABnzbd'
         _svc_display_name_ = 'SABnzbd Binary Newsreader'
-        _svc_deps_ = ["EventLog", "Tcpip"]
+        _svc_deps_ = ["EventLog", "Tcpip", "SABHelper"]
         _svc_description_ = 'Automated downloading from Usenet. ' \
                             'Set to "automatic" to start the service at system startup. ' \
                             'You may need to login with a real user account when you need ' \
@@ -1370,6 +1383,13 @@ def prep_service_parms(args):
     return serv
 
 
+SERVICE_MSG = """
+You may need to set additional Service parameters.
+Run services.msc from a command prompt.
+
+Don't forget to install the Service SABnzbd-helper.exe too!
+"""
+
 def HandleCommandLine(allow_service=True):
     """ Handle command line for a Windows Service
         Prescribed name that will be called by Py2Exe.
@@ -1397,8 +1417,7 @@ def HandleCommandLine(allow_service=True):
             # Add our own parameter to the Registry
             sab_opts = prep_service_parms(sab_opts)
             if set_serv_parms(SABnzbd._svc_name_, sab_opts):
-                print '\nYou may need to set additional Service parameters.\n' \
-                      'Run services.msc from a command prompt.\n'
+                print SERVICE_MSG
             else:
                 print 'Cannot set required Registry info.'
         else:

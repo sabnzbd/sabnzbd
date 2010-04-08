@@ -328,6 +328,9 @@ class SeriesSorter:
         # Lowercase all characters encased in {}
         path = toLowercase(path)
 
+        # Strip any extra ' ' '.' or '_' around foldernames
+        path = stripFolders(path)
+
         # Split the last part of the path up for the renamer
         if extension:
             head, tail = os.path.split(path)

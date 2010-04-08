@@ -476,8 +476,8 @@ MSG_BAD_PORT = r'''
 
 MSG_ILL_PORT = r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
-    Port %s on %s was tried , but the account SABnzbd has no permission to use it.<br>
-    On Linux systems, normal users must use ports above 1023.<br>
+    Port %s on %s was tried , but the account used for SABnzbd has no permission to use it.<br>
+    On OSX and Linux systems, normal users must use ports above 1023.<br>
     <br>
     Please restart SABnzbd with a different port number.<br>
     <br>

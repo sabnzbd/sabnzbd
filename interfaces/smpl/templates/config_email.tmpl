@@ -8,9 +8,9 @@
 
 
             <span class="label">$T('opt-email_endjob'):</span>
-                <input class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == 0 then "checked=1" else ""#--> /> $T('email-never')
-                <input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob == 1 then "checked=1" else ""#--> /> $T('email-always')
-                <input class="radio" type="radio" name="email_endjob" value="2" <!--#if $email_endjob == 2 then "checked=1" else ""#--> /> $T('email-errorOnly')
+                <input class="radio" type="radio" name="email_endjob" value="0" <!--#if $email_endjob == "0" then "checked=1" else ""#--> /> $T('email-never')
+                <input class="radio" type="radio" name="email_endjob" value="1" <!--#if $email_endjob == "1" then "checked=1" else ""#--> /> $T('email-always')
+                <input class="radio" type="radio" name="email_endjob" value="2" <!--#if $email_endjob == "2" then "checked=1" else ""#--> /> $T('email-errorOnly')
 			<span class="tips">$T('opt-email_endjob')</span>
 		<br class="clear" />
 

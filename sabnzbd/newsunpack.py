@@ -121,6 +121,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
                str(nicename), str(msgid), str(cat), str(group), str(status)]
 
     stup, need_shell, command, creationflags = build_command(command)
+    env = fix_env()
 
     logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s)', \
                  extern_proc, complete_dir, filename, nicename, msgid, cat, group, status)
@@ -128,7 +129,7 @@ def external_processing(extern_proc, complete_dir, filename, msgid, nicename, ca
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                            startupinfo=stup, creationflags=creationflags)
+                            startupinfo=stup, env=env, creationflags=creationflags)
     except:
         logging.debug("Failed script %s, Traceback: ", extern_proc, exc_info = True)
         return "Cannot run script %s\r\n" % extern_proc, -1
@@ -1016,30 +1017,20 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
 #-------------------------------------------------------------------------------
 
-_RE_PYTHON = re.compile(r'^#!(.*/python)\s+(.*)$')
-
-def fix_python_script(command):
-    """ Implement a work-around for Python userscripts on OSX """
-    try:
-        fp = open(command[0], 'r')
-        line = fp.readline(100)
-        fp.close()
-        m = _RE_PYTHON.search(line)
-        if m:
-            # Work-around for the incorrect Python paths passed
-            # by the OSX.app to Python scripts.
-            # Run the Python interpreter directly and insert the -E parameter
-            command.insert(0, m.group(2))
-            command.insert(0, '-E')
-            command.insert(0, m.group(1))
-    except IOError:
-        pass
+def fix_env():
+    """ OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
+        other: return None
+    """
+    if sabnzbd.DARWIN:
+        env = os.environ.copy()
+        if 'PYTHONPATH' in env: del env['PYTHONPATH']
+        if 'PYTHONHOME' in env: del env['PYTHONHOME']
+        return env
+    else:
+        return None
 
 
 def build_command(command):
-    if sabnzbd.DARWIN:
-        fix_python_script(command)
-
     if not sabnzbd.WIN32:
         if IONICE_COMMAND and cfg.ionice().strip():
             lst = cfg.ionice().split()
