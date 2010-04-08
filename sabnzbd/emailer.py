@@ -47,6 +47,8 @@ def send(message):
 
     if cfg.email_server() and cfg.email_to() and cfg.email_from():
 
+        message = _prepare_message(message)
+
         failure = T('error-mailSend')
         server, port = split_host(cfg.email_server())
         if not port:
@@ -98,7 +100,6 @@ def send(message):
                 logging.error(Ta('error-mailAuth'))
                 return failure
 
-        message = _prepare_message(message)
         try:
             mailconn.sendmail(cfg.email_from(), cfg.email_to(), message)
         except:
@@ -224,15 +225,29 @@ def _decode_file(path):
 
 ################################################################################
 from email.message import Message
+from email.header import Header
+from email.encoders import encode_quopri
 RE_HEADER = re.compile(r'^([^:]+):(.*)')
+
 def _prepare_message(txt):
     """ Do the proper message encodings
     """
+    def plain(val):
+        """ Return True when val is plain ASCII """
+        try:
+            val.decode('ascii')
+            return True
+        except:
+            return False
+
+    # Use Latin-1 because not all email clients know UTF-8.
+    code = 'ISO-8859-1'
+
     msg = Message()
-    msg.set_charset('UTF-8')
+    msg.set_charset(code)
     payload = []
     body = False
-    for line in txt.encode('utf-8').split('\n'):
+    for line in txt.encode(code, 'replace').split('\n'):
         if not line:
             body = True
         if body:
@@ -240,6 +255,16 @@ def _prepare_message(txt):
         else:
             m = RE_HEADER.search(line)
             if m:
-                msg.add_header(m.group(1).strip(), m.group(2).strip())
-    msg.set_payload('\n'.join(payload), 'UTF-8')
+                keyword = m.group(1).strip()
+                value = m.group(2).strip()
+                if plain(value):
+                    # Don't encode if not needed, because some email clients
+                    # choke when headers like "date" are encoded.
+                    msg.add_header(keyword, value)
+                else:
+                    header = Header(value, code)
+                    msg[keyword] = header
+
+    msg.set_payload('\n'.join(payload), code)
+    encode_quopri(msg)
     return msg.as_string()
