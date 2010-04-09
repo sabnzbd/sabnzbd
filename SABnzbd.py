@@ -1228,6 +1228,17 @@ def main():
         check_latest_version()
     autorestarted = False
 
+
+    mail = None
+    if sabnzbd.WIN_SERVICE:
+        mail = MailSlot()
+        if mail.connect():
+            logging.info('Connected to the SABHelper service')
+            mail.send('active')
+        else:
+            logging.error('Cannot reach the SABHelper service')
+            mail = None
+
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
@@ -1263,6 +1274,9 @@ def main():
             if not sabnzbd.check_all_tasks():
                 autorestarted = True
                 cherrypy.engine.execv = True
+            # Notify guardian
+            if sabnzbd.WIN_SERVICE and mail:
+                mail.send('active')
         else:
             timer += 1
 
@@ -1293,20 +1307,18 @@ def main():
                     pid = os.fork()
                     if pid == 0:
                         os.execv(sys.executable, args)
-            elif sabnzbd.WIN_SERVICE:
-                logging.info('Asking the SABnzbdHelper service for a restart')
-                mail = MailSlot()
-                if mail.connect():
-                    mail.send('restart')
-                    mail.disconnect()
-                else:
-                    logging.error('Cannot reach the SABnzbdHelper service')
+            elif sabnzbd.WIN_SERVICE and mail:
+                logging.info('Asking the SABHelper service for a restart')
+                mail.send('restart')
+                mail.disconnect()
                 return
             else:
                 cherrypy.engine._do_execv()
 
     config.save_config()
 
+    if sabnzbd.WIN_SERVICE and mail:
+        mail.send('stop')
     notify("SAB_Shutdown", None)
     osx.sendGrowlMsg('SABnzbd',T('grwl-shutdown-end-msg'),osx.NOTIFICATION['startup'])
     logging.info('Leaving SABnzbd')
