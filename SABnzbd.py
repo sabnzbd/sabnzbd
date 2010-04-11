@@ -369,17 +369,21 @@ def GetProfileInfo(vista_plus):
                 pass
 
     elif sabnzbd.DARWIN:
-        sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % (os.environ['HOME'])
-        sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
-        sabnzbd.DIR_HOME = os.environ['HOME']
-        ok = True
+        home = os.environ.get('HOME')
+        if home:
+            sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % home
+            sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+            sabnzbd.DIR_HOME = home
+            ok = True
 
     else:
         # Unix/Linux
-        sabnzbd.DIR_APPDATA = '%s/.%s' % (os.environ['HOME'], DEF_WORKDIR)
-        sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
-        sabnzbd.DIR_HOME = os.environ['HOME']
-        ok = True
+        home = os.environ.get('HOME')
+        if home:
+            sabnzbd.DIR_APPDATA = '%s/.%s' % (home, DEF_WORKDIR)
+            sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+            sabnzbd.DIR_HOME = home
+            ok = True
 
     if not ok:
         panic("Cannot access the user profile.",
