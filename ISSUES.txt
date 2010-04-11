@@ -14,6 +14,12 @@
   in Config->Switches.
   This will force the use of the old and tried, but slower par2-classic program.
 
+- A bug in Windows 7 may cause severe memory leaks when you use SABnzbd in
+  combination with some virus scanners and firewals.
+  Install this hotfix:
+  Description: http://support.microsoft.com/kb/979223/en-us
+  Download location: http://support.microsoft.com/hotfix/KBHotfix.aspx?kbnum=979223&kbln=en-us
+
 - Windows cannot handle pathnames longer than 254 characters.
   Currently, SABnzbd doesn't handle this problem gracefully.
   We have added the INI-only option "folder_length_max" in which you can set
