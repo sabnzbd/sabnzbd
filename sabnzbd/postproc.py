@@ -525,9 +525,8 @@ def addPrefixes(path,nzo):
 
 def HandleEmptyQueue():
     """ Check if empty queue calls for action """
-    sabnzbd.save_state()
-
     if sabnzbd.QUEUECOMPLETEACTION_GO:
+        sabnzbd.save_state()
         logging.info("Queue has finished, launching: %s (%s)", \
             sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
         if sabnzbd.QUEUECOMPLETEARG:
