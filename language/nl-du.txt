@@ -368,6 +368,7 @@ sch-speedlimit           Maximum snelheid
 sch-pause_all            Alles pauzeren
 sch-pause_post           Pauzeer nabewerken
 sch-resume_post          Hervat nabewerken
+sch-scan_folder          Bewaakte map uitlezen
 
 
 # Config->RSS

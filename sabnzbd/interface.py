@@ -2132,7 +2132,8 @@ class ConfigRss:
 
 
 #------------------------------------------------------------------------------
-_SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit', 'pause_post', 'resume_post')
+_SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
+                  'pause_post', 'resume_post', 'scan_folder')
 
 class ConfigScheduling:
     def __init__(self, web_dir, root, prim):

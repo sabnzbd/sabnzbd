@@ -149,7 +149,7 @@ cache_dir = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
 admin_dir = OptionDir('misc', 'admin_dir', 'admin', validation=validate_safedir)
 #log_dir = OptionDir('misc', 'log_dir', 'logs')
 dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
-dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 1, 3600)
+dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
 SIZE_LIMIT = OptionStr('misc', 'size_limit')
 
 cherryhost = OptionStr('misc','host', DEF_HOST)
