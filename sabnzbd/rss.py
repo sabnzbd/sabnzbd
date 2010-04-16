@@ -250,7 +250,7 @@ class RSSQueue:
             return T('warn-failRSS@2') % (uri, str(d['bozo_exception']))
         if not entries:
             logging.info('RSS Feed was empty: %s', uri)
-            return 'RSS Feed was empty'
+            return ''
 
         order = 0
         # Filter out valid new links
