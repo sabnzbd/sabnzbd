@@ -113,6 +113,44 @@ def guard_loglevel():
 
 
 #------------------------------------------------------------------------------
+# Improved RotatingFileHandler
+# See: http://www.mail-archive.com/python-bugs-list@python.org/msg53913.html
+# http://bugs.python.org/file14420/NTSafeLogging.py
+# Thanks Erik Antelman
+#
+if sabnzbd.WIN32:
+
+    import msvcrt
+    import _subprocess
+    import codecs
+
+    def duplicate(handle, inheritable=False):
+        target_process = _subprocess.GetCurrentProcess()
+        return _subprocess.DuplicateHandle(
+            _subprocess.GetCurrentProcess(), handle, target_process,
+            0, inheritable, _subprocess.DUPLICATE_SAME_ACCESS).Detach()
+
+    class MyRotatingFileHandler(logging.handlers.RotatingFileHandler):
+        def _open(self):
+            """
+            Open the current base file with the (original) mode and encoding.
+            Return the resulting stream.
+            """
+            if self.encoding is None:
+                stream = open(self.baseFilename, self.mode)
+                newosf = duplicate(msvcrt.get_osfhandle(stream.fileno()), inheritable=False)
+                newFD  = msvcrt.open_osfhandle(newosf,os.O_APPEND)
+                newstream = os.fdopen(newFD,self.mode)
+                stream.close()
+                return newstream
+            else:
+                stream = codecs.open(self.baseFilename, self.mode, self.encoding)
+            return stream
+
+else:
+    MyRotatingFileHandler = logging.handlers.RotatingFileHandler
+
+#------------------------------------------------------------------------------
 class FilterCP3:
     ### Filter out all CherryPy3-Access logging that we receive,
     ### because we have the root logger
@@ -654,7 +692,7 @@ def cherrypy_logging(log_path):
 
     # Make a new RotatingFileHandler for the error log.
     fname = getattr(log, "rot_error_file", log_path)
-    h = logging.handlers.RotatingFileHandler(fname, 'a', maxBytes, backupCount)
+    h = MyRotatingFileHandler(fname, 'a', maxBytes, backupCount)
     h.setLevel(logging.DEBUG)
     h.setFormatter(cherrypy._cplogging.logfmt)
     log.error_log.addHandler(h)
@@ -976,7 +1014,7 @@ def main():
     try:
         sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
         logsize = sabnzbd.cfg.log_size.get_int()
-        rollover_log = logging.handlers.RotatingFileHandler(\
+        rollover_log = MyRotatingFileHandler(\
             sabnzbd.LOGFILE, 'a+',
             logsize,
             sabnzbd.cfg.log_backups())
