@@ -49,7 +49,7 @@ def platform_encode(p):
         if gUTF:
             return p.encode('utf-8')
         else:
-            return p.encode('latin-1', 'replace').replace('?', '_')
+            return p.encode('latin-1', 'replace')
     elif isinstance(p, basestring):
         if gUTF:
             try:
@@ -59,7 +59,7 @@ def platform_encode(p):
                 return p.decode('latin-1').encode('utf-8')
         else:
             try:
-                return p.decode('utf-8').encode('latin-1', 'replace').replace('?', '_')
+                return p.decode('utf-8').encode('latin-1', 'replace')
             except:
                 return p
     else:

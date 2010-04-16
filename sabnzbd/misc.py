@@ -970,7 +970,7 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
         msg = T('his-badArchive')
     else:
         # Failed fetch
-        msg = T('his-failedURL')
+        msg = ' (' + msg + ')'
 
     if retry:
         nzbname = nzo.get_dirname_rename()

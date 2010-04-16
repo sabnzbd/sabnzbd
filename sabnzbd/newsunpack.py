@@ -354,7 +354,6 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 #------------------------------------------------------------------------------
 
 def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
-    errors = False
     extracted_files = []
 
     rar_sets = {}
@@ -385,10 +384,9 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
         try:
             newfiles, rars = RAR_Extract(rarpath, len(rar_sets[rar_set]),
                                          nzo, rar_set, extraction_path)
-            success = True
+            success = newfiles and rars
         except:
             success = False
-            errors = True
             msg = sys.exc_info()[1]
             nzo.set_fail_msg(T('error-unpackFail@1') % msg)
             setname = nzo.get_dirname()
@@ -419,7 +417,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
                     except OSError:
                         logging.warning(Ta('warn-delFailed@1'), brokenrar)
 
-    return errors, extracted_files
+    return not success, extracted_files
 
 
 def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
