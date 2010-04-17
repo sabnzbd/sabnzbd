@@ -283,11 +283,12 @@ class PostProcessor(Thread):
                 nzo.set_status('Moving')
                 nzo.set_action_line(T('msg-moving'), '...')
                 for root, dirs, files in os.walk(workdir):
-                    for _file in files:
-                        path = os.path.join(root, _file)
-                        new_path = path.replace(workdir, tmp_workdir_complete)
-                        new_path = get_unique_filename(new_path)
-                        move_to_path(path, new_path, unique=False)
+                    if not root.endswith('__ADMIN__'):
+                        for _file in files:
+                            path = os.path.join(root, _file)
+                            new_path = path.replace(workdir, tmp_workdir_complete)
+                            new_path = get_unique_filename(new_path)
+                            move_to_path(path, new_path, unique=False)
 
                 ## Set permissions right
                 if not sabnzbd.WIN32:
