@@ -437,29 +437,35 @@ def backup_exists(filename):
     return path and sabnzbd.cfg.no_dupes() and \
            os.path.exists(os.path.join(path, filename+'.gz'))
 
-@synchronized(NZB_LOCK)
 def backup_nzb(filename, data):
     """ Backup NZB file
     """
-    if cfg.nzb_backup_dir.get_path():
-        backup_name = filename + '.gz'
+    path = cfg.nzb_backup_dir.get_path()
+    if path:
+        save_compressed(path, filename, data)
 
-        # Need to go to the backup folder to
-        # prevent the pathname being embedded in the GZ file
-        here = os.getcwd()
-        os.chdir(cfg.nzb_backup_dir.get_path())
 
-        logging.info("Backing up %s", backup_name)
-        try:
-            _f = gzip.GzipFile(backup_name, 'wb')
-            _f.write(data)
-            _f.flush()
-            _f.close()
-        except:
-            logging.error("Saving %s to %s failed", backup_name, cfg.nzb_backup_dir.get_path())
-            logging.debug("Traceback: ", exc_info = True)
+@synchronized(NZB_LOCK)
+def save_compressed(folder, filename, data):
+    """ Save compressed NZB file in folder
+    """
+    # Need to go to the save folder to
+    # prevent the pathname being embedded in the GZ file
+    here = os.getcwd()
+    os.chdir(folder)
 
-        os.chdir(here)
+    filename += '.gz'
+    logging.info("Backing up %s", os.path.join(folder, filename))
+    try:
+        f = gzip.GzipFile(filename, 'wb')
+        f.write(data)
+        f.flush()
+        f.close()
+    except:
+        logging.error("Saving %s failed", os.path.join(folder, filename))
+        logging.debug("Traceback: ", exc_info = True)
+
+    os.chdir(here)
 
 
 ################################################################################

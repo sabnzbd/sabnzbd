@@ -579,6 +579,7 @@ class NzbObject(TryList):
             raise ValueError
 
         sabnzbd.backup_nzb(filename, nzb)
+        sabnzbd.save_compressed(self.get_workpath(), filename, nzb)
 
         if cat is None:
             for grp in self.__group:
