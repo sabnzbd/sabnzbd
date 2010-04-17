@@ -1,5 +1,23 @@
 -------------------------------------------------------------------------------
- 0.5.2 RC2 by The SABnzbd-Team
+ 0.5.2 RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed: Large queue caused very slow UI and high memory usage
+- Fixed: Some very large rar sets failed to unpack
+- Fixed: garbled emails were sent
+- Python user scripts now run properly on OSX
+- Fixed: SeasonSort could produce trailing spaces, which fail on Windows
+- Fixed: unpacking errors not properly reported to user script
+- Keep trying when receiving garbage from nzbmatrix.com
+- Add total-size fields to API-call History.
+- Auto-search for free port when specified port is occupied
+- Improve reporting of newzbin errors
+-------------------------------------------------------------------------------
+ 0.5.1 Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix accented character problems in emails
+- Warn when user doesn't have permission to use a web port (Linux/OSX)
+-------------------------------------------------------------------------------
+ 0.5.1 RC2 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Accept comma-separated email address in "email_to" option.
 - Allow manual retry of URL-based NZB fetches when a bad NZB is received

@@ -29,6 +29,7 @@ import sabnzbd.utils.kronos as kronos
 import sabnzbd.rss as rss
 from sabnzbd.newzbin import Bookmarks
 import sabnzbd.downloader
+import sabnzbd.dirscanner
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -110,6 +111,8 @@ def init():
             action = sabnzbd.enable_server
         elif action_name == 'disable_server' and arguments != []:
             action = sabnzbd.disable_server
+        elif action_name == 'scan_folder':
+            action = sabnzbd.dirscanner.dirscan
         else:
             logging.warning(Ta('warn-badSchedAction@1'), action_name)
             continue

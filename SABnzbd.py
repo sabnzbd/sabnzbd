@@ -113,6 +113,44 @@ def guard_loglevel():
 
 
 #------------------------------------------------------------------------------
+# Improved RotatingFileHandler
+# See: http://www.mail-archive.com/python-bugs-list@python.org/msg53913.html
+# http://bugs.python.org/file14420/NTSafeLogging.py
+# Thanks Erik Antelman
+#
+if sabnzbd.WIN32:
+
+    import msvcrt
+    import _subprocess
+    import codecs
+
+    def duplicate(handle, inheritable=False):
+        target_process = _subprocess.GetCurrentProcess()
+        return _subprocess.DuplicateHandle(
+            _subprocess.GetCurrentProcess(), handle, target_process,
+            0, inheritable, _subprocess.DUPLICATE_SAME_ACCESS).Detach()
+
+    class MyRotatingFileHandler(logging.handlers.RotatingFileHandler):
+        def _open(self):
+            """
+            Open the current base file with the (original) mode and encoding.
+            Return the resulting stream.
+            """
+            if self.encoding is None:
+                stream = open(self.baseFilename, self.mode)
+                newosf = duplicate(msvcrt.get_osfhandle(stream.fileno()), inheritable=False)
+                newFD  = msvcrt.open_osfhandle(newosf,os.O_APPEND)
+                newstream = os.fdopen(newFD,self.mode)
+                stream.close()
+                return newstream
+            else:
+                stream = codecs.open(self.baseFilename, self.mode, self.encoding)
+            return stream
+
+else:
+    MyRotatingFileHandler = logging.handlers.RotatingFileHandler
+
+#------------------------------------------------------------------------------
 class FilterCP3:
     ### Filter out all CherryPy3-Access logging that we receive,
     ### because we have the root logger
@@ -370,17 +408,21 @@ def GetProfileInfo(vista_plus):
                 pass
 
     elif sabnzbd.DARWIN:
-        sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % (os.environ['HOME'])
-        sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
-        sabnzbd.DIR_HOME = os.environ['HOME']
-        ok = True
+        home = os.environ.get('HOME')
+        if home:
+            sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % home
+            sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+            sabnzbd.DIR_HOME = home
+            ok = True
 
     else:
         # Unix/Linux
-        sabnzbd.DIR_APPDATA = '%s/.%s' % (os.environ['HOME'], DEF_WORKDIR)
-        sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
-        sabnzbd.DIR_HOME = os.environ['HOME']
-        ok = True
+        home = os.environ.get('HOME')
+        if home:
+            sabnzbd.DIR_APPDATA = '%s/.%s' % (home, DEF_WORKDIR)
+            sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+            sabnzbd.DIR_HOME = home
+            ok = True
 
     if not ok:
         panic("Cannot access the user profile.",
@@ -651,7 +693,7 @@ def cherrypy_logging(log_path):
 
     # Make a new RotatingFileHandler for the error log.
     fname = getattr(log, "rot_error_file", log_path)
-    h = logging.handlers.RotatingFileHandler(fname, 'a', maxBytes, backupCount)
+    h = MyRotatingFileHandler(fname, 'a', maxBytes, backupCount)
     h.setLevel(logging.DEBUG)
     h.setFormatter(cherrypy._cplogging.logfmt)
     log.error_log.addHandler(h)
@@ -970,7 +1012,7 @@ def main():
     try:
         sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
         logsize = sabnzbd.cfg.log_size.get_int()
-        rollover_log = logging.handlers.RotatingFileHandler(\
+        rollover_log = MyRotatingFileHandler(\
             sabnzbd.LOGFILE, 'a+',
             logsize,
             sabnzbd.cfg.log_backups())
@@ -1224,6 +1266,17 @@ def main():
         check_latest_version()
     autorestarted = False
 
+
+    mail = None
+    if sabnzbd.WIN_SERVICE:
+        mail = MailSlot()
+        if mail.connect():
+            logging.info('Connected to the SABHelper service')
+            mail.send('active')
+        else:
+            logging.error('Cannot reach the SABHelper service')
+            mail = None
+
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
@@ -1259,6 +1312,9 @@ def main():
             if not sabnzbd.check_all_tasks():
                 autorestarted = True
                 cherrypy.engine.execv = True
+            # Notify guardian
+            if sabnzbd.WIN_SERVICE and mail:
+                mail.send('active')
         else:
             timer += 1
 
@@ -1289,20 +1345,18 @@ def main():
                     pid = os.fork()
                     if pid == 0:
                         os.execv(sys.executable, args)
-            elif sabnzbd.WIN_SERVICE:
-                logging.info('Asking the SABnzbdHelper service for a restart')
-                mail = MailSlot()
-                if mail.connect():
-                    mail.send('restart')
-                    mail.disconnect()
-                else:
-                    logging.error('Cannot reach the SABnzbdHelper service')
+            elif sabnzbd.WIN_SERVICE and mail:
+                logging.info('Asking the SABHelper service for a restart')
+                mail.send('restart')
+                mail.disconnect()
                 return
             else:
                 cherrypy.engine._do_execv()
 
     config.save_config()
 
+    if sabnzbd.WIN_SERVICE and mail:
+        mail.send('stop')
     notify("SAB_Shutdown", None)
     osx.sendGrowlMsg('SABnzbd',T('grwl-shutdown-end-msg'),osx.NOTIFICATION['startup'])
     logging.info('Leaving SABnzbd')

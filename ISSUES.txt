@@ -14,6 +14,12 @@
   in Config->Switches.
   This will force the use of the old and tried, but slower par2-classic program.
 
+- A bug in Windows 7 may cause severe memory leaks when you use SABnzbd in
+  combination with some virus scanners and firewals.
+  Install this hotfix:
+  Description: http://support.microsoft.com/kb/979223/en-us
+  Download location: http://support.microsoft.com/hotfix/KBHotfix.aspx?kbnum=979223&kbln=en-us
+
 - Windows cannot handle pathnames longer than 254 characters.
   Currently, SABnzbd doesn't handle this problem gracefully.
   We have added the INI-only option "folder_length_max" in which you can set
@@ -62,8 +68,3 @@
   make sure that the drives are mounted.
   The operating system wil simply redirect your files to alternative locations.
   You may have trouble finding the files when mounting the drive later.
-
-- Sometimes logging stops. This is a notorious bug in Python logging. SABnzbd will
-  function as normal. If you run from sources or use the --console option with the
-  Win32-binary, you will see that logging continues in the console window, but
-  nothing will be written to the log-files.

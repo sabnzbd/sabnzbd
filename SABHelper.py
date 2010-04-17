@@ -43,25 +43,43 @@ def HandleCommandLine(allow_service=True):
     """ Handle command line for a Windows Service
         Prescribed name that will be called by Py2Exe.
         You MUST set 'cmdline_style':'custom' in the package.py!
-        Returns True when any service commands were detected.
     """
     win32serviceutil.HandleCommandLine(SABHelper)
+
+
+def start_sab():
+    return subprocess.Popen('net start SABnzbd', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
 
 
 #------------------------------------------------------------------------------
 def main():
 
     mail = MailSlot()
-    if not mail.create(200):
+    if not mail.create(10):
         return '- Cannot create Mailslot'
 
+    active = False  # SABnzbd should be running
+    counter = 0     # Time allowed for SABnzbd to be silent
     while True:
         msg = mail.receive()
         if msg == 'restart':
             time.sleep(1.0)
-            res = subprocess.Popen('net start SABnzbd', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
+            counter = 0
+            start_sab()
+        elif msg == 'stop':
+            active = False
+        elif msg == 'active':
+            active = True
+            counter = 0
+
+        if active:
+            counter += 1
+            if counter > 120: # 120 seconds
+                counter = 0
+                start_sab()
+
         rc = win32event.WaitForMultipleObjects((WIN_SERVICE.hWaitStop,
-             WIN_SERVICE.overlapped.hEvent), 0, 500)
+             WIN_SERVICE.overlapped.hEvent), 0, 1000)
         if rc == win32event.WAIT_OBJECT_0:
             mail.disconnect()
             return ''
@@ -79,7 +97,7 @@ class SABHelper(win32serviceutil.ServiceFramework):
     _svc_display_name_ = 'SABnzbd Helper'
     _svc_deps_ = ["EventLog", "Tcpip"]
     _svc_description_ = 'Automated downloading from Usenet. ' \
-                        'This service helps SABnzbdcd.. to restart itself.'
+                        'This service helps SABnzbd to restart itself.'
 
     def __init__(self, args):
         global WIN_SERVICE

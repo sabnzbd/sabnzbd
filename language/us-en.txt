@@ -392,6 +392,7 @@ sch-speedlimit           Speedlimit
 sch-pause_all            Pause All
 sch-pause_post           Pause post-processing
 sch-resume_post          Resume post-processing
+sch-scan_folder          Scan watched folder
 
 # Config->RSS
 configRSS                RSS Configuration

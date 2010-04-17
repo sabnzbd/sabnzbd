@@ -2132,7 +2132,8 @@ class ConfigRss:
 
 
 #------------------------------------------------------------------------------
-_SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit', 'pause_post', 'resume_post')
+_SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
+                  'pause_post', 'resume_post', 'scan_folder')
 
 class ConfigScheduling:
     def __init__(self, web_dir, root, prim):
@@ -2182,7 +2183,7 @@ class ConfigScheduling:
                     act = ''
                 if act in ('enable_server', 'disable_server'):
                     action = T("sch-" + act) + ' ' + server
-            item = (snum, h, '%02d' % int(m), days[day], action)
+            item = (snum, h, '%02d' % int(m), days.get(day, '**'), action)
             conf['taskinfo'].append(item)
             snum += 1
 

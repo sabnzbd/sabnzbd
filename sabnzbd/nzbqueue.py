@@ -99,8 +99,8 @@ class NzbQueue(TryList):
                     self.add(nzo, save = False)
 
     @synchronized(NZBQUEUE_LOCK)
-    def save(self):
-        """ Save queue """
+    def save(self, save_nzo=None):
+        """ Save queue, all nzo's or just the specified one """
         logging.info("Saving queue")
 
         nzo_ids = []
@@ -110,7 +110,8 @@ class NzbQueue(TryList):
                 nzo_ids.append(os.path.join(nzo.get_workdir(), nzo.nzo_id))
             else:
                 nzo_ids.append(nzo.nzo_id)
-            sabnzbd.save_data(nzo, nzo.nzo_id, nzo.get_workpath())
+            if save_nzo is None or nzo is save_nzo:
+               sabnzbd.save_data(nzo, nzo.nzo_id, nzo.get_workpath())
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -151,7 +152,7 @@ class NzbQueue(TryList):
                 try:
                     future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
                     future.nzo_id = nzo_id
-                    self.save()
+                    self.save(future)
                 except ValueError:
                     self.remove(nzo_id, False)
                 except TypeError:
@@ -245,7 +246,7 @@ class NzbQueue(TryList):
                     #if the queue is empty then simple append the item to the bottom
                     self.__nzo_list.append(nzo)
             if save:
-                self.save()
+                self.save(nzo)
 
             if nzo.get_status() not in ('Fetching',):
                 osx.sendGrowlMsg(T('grwl-nzbadd-title'),nzo.get_filename(),osx.NOTIFICATION['download'])
@@ -274,14 +275,15 @@ class NzbQueue(TryList):
                 self.cleanup_nzo(nzo)
 
             if save:
-                self.save()
+                self.save(nzo)
 
 
     @synchronized(NZBQUEUE_LOCK)
     def remove_multiple(self, nzo_ids):
         for nzo_id in nzo_ids:
             self.remove(nzo_id, add_to_history = False, save = False)
-        self.save()
+        # Save with invalid nzo_id, to that only queue file is saved
+        self.save('x')
 
     @synchronized(NZBQUEUE_LOCK)
     def remove_all(self):
@@ -891,9 +893,9 @@ def reset_all_try_lists():
     global __NZBQ
     if __NZBQ: __NZBQ.reset_all_try_lists()
 
-def save():
+def save(nzo=None):
     global __NZBQ
-    if __NZBQ: __NZBQ.save()
+    if __NZBQ: __NZBQ.save(nzo)
 
 def generate_future(msg, pp, script, cat, url, priority, nzbname):
     global __NZBQ

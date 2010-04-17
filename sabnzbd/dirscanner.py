@@ -228,6 +228,7 @@ class DirScanner(threading.Thread):
         self.error_reported = False # Prevents mulitple reporting of missing watched folder
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
+        self.busy = False
         cfg.dirscan_dir.callback(self.newdir)
         DirScanner.do = self
 
@@ -247,6 +248,20 @@ class DirScanner(threading.Thread):
         sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), sabnzbd.SCAN_FILE_NAME)
 
     def run(self):
+        logging.info('Dirscanner starting up')
+        self.shutdown = False
+
+        while not self.shutdown:
+            # Use variable scan delay
+            x = max(self.dirscan_speed, 1)
+            while (x > 0) and not self.shutdown:
+                time.sleep(1.0)
+                x = x - 1
+
+            if self.dirscan_speed and not self.shutdown:
+                self.scan()
+
+    def scan(self):
         def run_dir(folder, catdir):
             try:
                 files = os.listdir(folder)
@@ -326,18 +341,10 @@ class DirScanner(threading.Thread):
             CleanList(self.ignored, folder, files)
             CleanList(self.suspected, folder, files)
 
-        logging.info('Dirscanner starting up')
-        self.shutdown = False
-
-        while not self.shutdown:
-            # Use variable scan delay
+        if not self.busy:
+            self.busy = True
             dirscan_dir = self.dirscan_dir
-            x = self.dirscan_speed
-            while (x > 0) and not self.shutdown:
-                time.sleep(1.0)
-                x = x - 1
-
-            if dirscan_dir and not self.shutdown and not sabnzbd.PAUSED_ALL:
+            if dirscan_dir and not sabnzbd.PAUSED_ALL:
                 run_dir(dirscan_dir, None)
 
                 try:
@@ -353,4 +360,10 @@ class DirScanner(threading.Thread):
                     dpath = os.path.join(dirscan_dir, dd)
                     if os.path.isdir(dpath) and dd.lower() in cats:
                         run_dir(dpath, dd.lower())
+            self.busy = False
 
+
+def dirscan():
+    """ Wrapper required for scheduler """
+    logging.info('Scheduled folder scan')
+    DirScanner.do.scan()

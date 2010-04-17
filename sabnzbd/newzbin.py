@@ -132,7 +132,7 @@ class MSGIDGrabber(Thread):
                     sleeper(int(filename))
                 else:
                     # Fatal error, give up on this one
-                    bad_fetch(nzo, msgid, retry=False)
+                    bad_fetch(nzo, msgid, msg=nzo_info, retry=True)
                     msgid = None
 
             osx.sendGrowlMsg(T('grwl-nzbadd-title'),filename,osx.NOTIFICATION['download'])
@@ -146,7 +146,7 @@ class MSGIDGrabber(Thread):
 def _grabnzb(msgid):
     """ Grab one msgid from newzbin """
 
-    nothing  = (None, None, None, None)
+    msg = ''
     retry = (60, None, None, None)
     nzo_info = {'msgid': msgid}
 
@@ -188,7 +188,7 @@ def _grabnzb(msgid):
         pass
     if not (rcode or rtext):
         logging.error(T('error-nbProtocol'))
-        return nothing
+        return None, None, None, None
 
     # Official return codes:
     # 200 = OK, NZB content follows
@@ -221,27 +221,27 @@ def _grabnzb(msgid):
         return int(wait+1), None, None, None
 
     if rcode in ('402'):
-        logging.warning(Ta('warn-nbCredit'))
-        return nothing
+        msg = Ta('warn-nbCredit')
+        return None, None, None, msg
 
     if rcode in ('401'):
-        logging.warning(Ta('warn-nbNoAuth'))
-        return nothing
+        msg = Ta('warn-nbNoAuth')
+        return None, None, None, msg
 
     if rcode in ('400', '404'):
-        logging.error(Ta('error-nbReport@1'), msgid)
-        return nothing
+        msg = Ta('error-nbReport@1') % msgid
+        return None, None, None, msg
 
     if rcode != '200':
-        logging.error(Ta('error-nbUnkownError@2'), rcode, rtext)
-        return nothing
+        msg = Ta('error-nbUnkownError@2') % (rcode, rtext)
+        return None, None, None, msg
 
     # Process data
     report_name = response.getheader('X-DNZB-Name')
     report_cat  = response.getheader('X-DNZB-Category')
     if not (report_name and report_cat):
-        logging.error(Ta('error-nbInfo@1'), msgid)
-        return nothing
+        msg = Ta('error-nbInfo@1') %  msgid
+        return None, None, None, msg
 
     # sanitize report_name
     newname = sanitize_foldername(report_name)
