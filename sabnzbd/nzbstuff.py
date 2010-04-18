@@ -990,15 +990,18 @@ class NzbObject(TryList):
             return None
 
     def purge_data(self):
+        wpath = self.get_workpath()
         for nzf in self.__files:
-            sabnzbd.remove_data(nzf.nzf_id, self.get_workpath())
+            sabnzbd.remove_data(nzf.nzf_id, wpath)
 
         for _set in self.__extrapars:
             for nzf in self.__extrapars[_set]:
-                sabnzbd.remove_data(nzf.nzf_id, self.get_workpath())
+                sabnzbd.remove_data(nzf.nzf_id, wpath)
 
         for nzf in self.__finished_files:
-            sabnzbd.remove_data(nzf.nzf_id, self.get_workpath())
+            sabnzbd.remove_data(nzf.nzf_id, wpath)
+
+        del_attrib_file(wpath)
 
     def get_avg_date(self):
         return self.__avg_date
@@ -1295,7 +1298,7 @@ def scan_password(name):
 def get_attrib_file(path, size):
     """ Read job's attributes from file """
     attribs = []
-    path = os.path.join(path, 'attributes.txt')
+    path = os.path.join(path, ATTRIB_FILE)
     try:
         f = open(path, 'r')
     except:
@@ -1313,7 +1316,7 @@ def get_attrib_file(path, size):
 
 def set_attrib_file(path, attribs):
     """ Write job's attributes to file """
-    path = os.path.join(path, 'attributes.txt')
+    path = os.path.join(path, ATTRIB_FILE)
     try:
         f = open(path, 'w')
     except:
@@ -1322,3 +1325,12 @@ def set_attrib_file(path, attribs):
     for item in attribs:
         f.write('%s\n' % item)
     f.close()
+
+
+def del_attrib_file(path):
+    """ Remove job's attribute file """
+    path = os.path.join(path, ATTRIB_FILE)
+    try:
+        os.remove(path)
+    except:
+        pass
