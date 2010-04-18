@@ -84,8 +84,8 @@ class NzbQueue(TryList):
             for item in glob.glob(os.path.join(cfg.download_dir.get_path(), '*')):
                 name = os.path.basename(item)
                 path = os.path.join(item, JOB_ADMIN)
-                remove_all(path, 'SABnzbd_*')
                 cat, pp, script, prio = get_attrib_file(path, 4)
+                remove_all(path, 'SABnzbd_*')
                 filename = glob.glob(os.path.join(path, '*.gz'))
                 if len(filename) == 1:
                     ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
