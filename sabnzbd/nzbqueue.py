@@ -67,30 +67,11 @@ class NzbQueue(TryList):
 
     def read_queue(self, repair):
         """ Read queue from disk, supporting repair modes
+            0 = no repairs
+            1 = use existing queue, add missing "incomplete" folders
+            2 = Discard all queue admin, reconstruct from "incomplete" folders
         """
-        if repair == 1:
-            # Reconstruct only the main queue file from the content of the "incomplete" folder
-            for item in glob.glob(os.path.join(cfg.download_dir.get_path(), '*')):
-                path = os.path.join(item, JOB_ADMIN)
-                nzo_id = glob.glob(os.path.join(path, 'SABnzbd_nzo_*'))
-                if len(nzo_id) == 1:
-                    nzo = sabnzbd.load_data(os.path.basename(nzo_id[0]), path)
-                    if nzo:
-                        self.add(nzo, save = False)
-
-        elif repair == 2:
-            # Reconstruct all queue and job admin from the content of the "incomplete" folder
-            # rebuilding all data structures from the saved NZB files
-            for item in glob.glob(os.path.join(cfg.download_dir.get_path(), '*')):
-                name = os.path.basename(item)
-                path = os.path.join(item, JOB_ADMIN)
-                cat, pp, script, prio = get_attrib_file(path, 4)
-                remove_all(path, 'SABnzbd_*')
-                filename = glob.glob(os.path.join(path, '*.gz'))
-                if len(filename) == 1:
-                    ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
-
-        else:
+        if repair < 2:
             # Read the queue from the saved files
             nzo_ids = []
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
@@ -98,20 +79,45 @@ class NzbQueue(TryList):
                 try:
                     queue_vers, nzo_ids, dummy = data
                     if not queue_vers == QUEUE_VERSION:
-                        logging.error(Ta('error-qBad'))
                         nzo_ids = []
-                        panic_queue(os.path.join(cfg.cache_dir.get_path(),QUEUE_FILE_NAME))
-                        exit_sab(2)
+                        logging.error(Ta('error-qBad'))
+                        if not repair:
+                            panic_queue(os.path.join(cfg.cache_dir.get_path(),QUEUE_FILE_NAME))
+                            exit_sab(2)
                 except ValueError:
+                    nzo_ids = []
                     logging.error(Ta('error-qCorruptFile@1'),
                                   os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME))
+                    if not repair:
+                        return
 
-            for nzo_id in nzo_ids:
-                folder, _id = os.path.split(nzo_id)
-                path = get_admin_path(bool(folder), folder)
-                nzo = sabnzbd.load_data(_id, path)
-                if nzo:
-                    self.add(nzo, save = False)
+        # First handle jobs in the queue file
+        folders = []
+        for nzo_id in nzo_ids:
+            folder, _id = os.path.split(nzo_id)
+            path = get_admin_path(bool(folder), folder)
+            nzo = sabnzbd.load_data(_id, path)
+            if nzo:
+                self.add(nzo, save=False)
+                folders.append(folder)
+
+        # Scan for any folders in "incomplete" that are not yet in the queue
+        if repair:
+            for folder in glob.glob(os.path.join(cfg.download_dir.get_path(), '*')):
+                if os.path.basename(folder) not in folders:
+                    self.repair_job(folder)
+
+
+    def repair_job(self, folder):
+        """ Reconstruct admin for a single job folder """
+        name = os.path.basename(folder)
+        path = os.path.join(folder, JOB_ADMIN)
+        cat, pp, script, prio = get_attrib_file(path, 4)
+        remove_all(path, 'SABnzbd_*')
+        filename = glob.glob(os.path.join(path, '*.gz'))
+        if len(filename) == 1:
+            ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
+
 
     @synchronized(NZBQUEUE_LOCK)
     def save(self, save_nzo=None):

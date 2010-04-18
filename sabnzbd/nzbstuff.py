@@ -559,6 +559,8 @@ class NzbObject(TryList):
             remove_all(adir, 'SABnzbd_*')
         else:
             wdir = get_unique_path(wdir, create_dir=True)
+            adir = os.path.join(wdir, JOB_ADMIN)
+
         if not os.path.exists(adir):
             os.mkdir(adir)
         dummy, self.__dirname = os.path.split(wdir)
@@ -588,7 +590,7 @@ class NzbObject(TryList):
             raise ValueError
 
         sabnzbd.backup_nzb(filename, nzb)
-        sabnzbd.save_compressed(adir, filename, nzb)
+        sabnzbd.save_compressed(adir, filename+".nzb", nzb)
 
         if reuse:
             self.check_existing_files(wdir)

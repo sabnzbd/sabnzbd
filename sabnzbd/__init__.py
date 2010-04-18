@@ -455,7 +455,10 @@ def save_compressed(folder, filename, data):
     here = os.getcwd()
     os.chdir(folder)
 
-    filename += '.gz'
+    if filename.endswith('.nzb'):
+        filename += '.gz'
+    else:
+        filename += '.nzb.gz'
     logging.info("Backing up %s", os.path.join(folder, filename))
     try:
         f = gzip.GzipFile(filename, 'wb')

@@ -240,7 +240,7 @@ def print_help():
     print "  -v  --version            Print version information"
     print "  -c  --clean              Remove queue, cache and logs"
     print "  -p  --pause              Start in paused mode"
-    print "      --repair             Try to reconstruct the queue from the incomplete folder"
+    print "      --repair             Add orphaned jobs from the incomplete folder to the queue"
     print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
