@@ -157,7 +157,7 @@ def connect_db(thread_index):
 
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader = False, clean_up = False, evalSched=False, repair=False):
+def initialize(pause_downloader = False, clean_up = False, evalSched=False, repair=0):
     global __INITIALIZED__, __SHUTTING_DOWN__,\
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
@@ -227,7 +227,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     except:
         BPSMeter.do.reset()
 
-    nzbqueue.init(repair)
+    nzbqueue.init()
+    nzbqueue.read_queue(repair)
 
     PostProcessor()
 
@@ -650,13 +651,13 @@ def CheckFreeSpace():
 IO_LOCK = RLock()
 
 @synchronized(IO_LOCK)
-def get_new_id(prefix, path):
-    """ Return unique prefixed admin identifier within 'savedir/__ADMIN__'
+def get_new_id(prefix, folder):
+    """ Return unique prefixed admin identifier within folder'
     """
     try:
-        fd, tpath = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, path)
+        fd, path = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, folder)
         os.close(fd)
-        head, tail = os.path.split(tpath)
+        head, tail = os.path.split(path)
         return tail
     except:
         logging.error(Ta('error-failMkstemp'))

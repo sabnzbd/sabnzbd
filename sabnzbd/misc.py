@@ -934,11 +934,11 @@ def get_filepath(path, nzo, filename):
 
 
 def get_admin_path(newstyle, name):
-    """ Return news-style full path to __ADMIN__ folder of names job
+    """ Return news-style full path to job-admin folder of names job
         or else the old cache path
     """
     if newstyle:
-        return os.path.join(os.path.join(cfg.download_dir.get_path(), name), '__ADMIN__')
+        return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
     else:
        return cfg.cache_dir.get_path()
 
@@ -1406,9 +1406,13 @@ def remove_dir(path):
         os.rmdir(path)
 
 
-def remove_all(path):
+def remove_all(path, pattern='*'):
     """ Remove folder its content """
     if os.path.exists(path):
-        for f in glob.glob(os.path.join(path, '*')):
+        for f in glob.glob(os.path.join(path, pattern)):
             os.remove(f)
-        os.rmdir(path)
+        try:
+            os.rmdir(path)
+        except:
+            pass
+

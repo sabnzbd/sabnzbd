@@ -283,7 +283,7 @@ class PostProcessor(Thread):
                 nzo.set_status('Moving')
                 nzo.set_action_line(T('msg-moving'), '...')
                 for root, dirs, files in os.walk(workdir):
-                    if not root.endswith('__ADMIN__'):
+                    if not root.endswith(JOB_ADMIN):
                         for _file in files:
                             path = os.path.join(root, _file)
                             new_path = path.replace(workdir, tmp_workdir_complete)
@@ -430,7 +430,7 @@ class PostProcessor(Thread):
             try:
                 if os.path.exists(workdir):
                     logging.debug('Removing workdir %s', workdir)
-                    remove_all(os.path.join(workdir, '__ADMIN__'))
+                    remove_all(os.path.join(workdir, JOB_ADMIN))
                     remove_dir(workdir)
             except:
                 logging.error(Ta('error-ppDelWorkdir@1'), workdir)

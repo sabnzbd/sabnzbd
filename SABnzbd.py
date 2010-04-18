@@ -241,6 +241,8 @@ def print_help():
     print "  -c  --clean              Remove queue, cache and logs"
     print "  -p  --pause              Start in paused mode"
     print "      --repair             Try to reconstruct the queue from the incomplete folder"
+    print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
+    print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
 
 def print_version():
@@ -729,7 +731,7 @@ def commandline_handler(frozen=True):
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
-                                    'version', 'https=', 'autorestarted', 'repair',
+                                    'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -794,7 +796,7 @@ def main():
     vista_plus = False
     vista64 = False
     force_web = False
-    repair = False
+    repair = 0
     re_argv = [sys.argv[0]]
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
@@ -862,7 +864,10 @@ def main():
             re_argv.append(opt)
             re_argv.append(arg)
         elif opt in ('--repair',):
-            repair = True
+            repair = 1
+            pause = True
+        elif opt in ('--repair-all',):
+            repair = 2
             pause = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))

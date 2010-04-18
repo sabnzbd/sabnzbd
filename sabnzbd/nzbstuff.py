@@ -22,6 +22,7 @@ sabnzbd.nzbstuff - misc
 import os
 import time
 import re
+import glob
 import logging
 import datetime
 import xml.sax
@@ -35,11 +36,12 @@ except ImportError:
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-                         get_unique_path, get_admin_path
+                         get_unique_path, get_admin_path, remove_all, \
+                         sanitize_filename
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
-from sabnzbd.encoding import unicoder, platform_encode
+from sabnzbd.encoding import unicoder, platform_encode, latin1
 
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
@@ -549,10 +551,17 @@ class NzbObject(TryList):
             raise TypeError
 
         # Create "incomplete" folder
-        wp = get_unique_path(os.path.join(cfg.download_dir.get_path(), self.__dirname), create_dir=True)
-        if wp:
-            os.mkdir(os.path.join(wp, '__ADMIN__'))
-        wp, self.__dirname = os.path.split(wp)
+        wdir = os.path.join(cfg.download_dir.get_path(), self.__dirname)
+        adir = os.path.join(wdir, JOB_ADMIN)
+        nzo_file = glob.glob(os.path.join(adir, 'SABnzbd_nzo_*'))
+        reuse = os.path.exists(wdir) and not nzo_file
+        if reuse:
+            remove_all(adir, 'SABnzbd_*')
+        else:
+            wdir = get_unique_path(wdir, create_dir=True)
+        if not os.path.exists(adir):
+            os.mkdir(adir)
+        dummy, self.__dirname = os.path.split(wdir)
         self.__created = True
 
         # Must create a lower level XML parser because we must
@@ -579,7 +588,10 @@ class NzbObject(TryList):
             raise ValueError
 
         sabnzbd.backup_nzb(filename, nzb)
-        sabnzbd.save_compressed(self.get_workpath(), filename, nzb)
+        sabnzbd.save_compressed(adir, filename, nzb)
+
+        if reuse:
+            self.check_existing_files(wdir)
 
         if cat is None:
             for grp in self.__group:
@@ -710,6 +722,25 @@ class NzbObject(TryList):
             self.set_download_report()
 
         return (file_done, post_done, reset)
+
+
+    def check_existing_files(self, wdir):
+        """ Check if downloaded files already exits, for these set NZF to complete
+        """
+        wdir = os.path.join(wdir, '*')
+        files = [os.path.basename(f) for f in glob.glob(wdir) if os.path.isfile(f)]
+        for nzf in self.__files[:]:
+            alleged_name = nzf.get_filename()
+            subject = sanitize_filename(latin1(nzf.get_subject()))
+            ready = alleged_name in files
+            if not ready:
+                for f in files:
+                    if f in subject:
+                        ready = True
+                        break
+            if ready:
+                self.remove_nzf(nzf)
+
 
     def set_opts(self, pp):
         self.__repair, self.__unpack, self.__delete = sabnzbd.pp_to_opts(pp)
@@ -940,7 +971,7 @@ class NzbObject(TryList):
         return self.__dirname
 
     def get_workpath(self):
-        """ Return the full path for my __ADMIN__ folder (or old style cache) """
+        """ Return the full path for my job-admin folder (or old style cache) """
         return get_admin_path(self.extra5, self.__dirname)
 
     def get_dirname_rename(self):
@@ -1116,6 +1147,9 @@ class NzbObject(TryList):
     def set_md5pack(self, name, pack):
         self.md5packs[name] = pack
 
+    def save_attribs(self):
+        set_attrib_file(self.get_workpath(), (self.__cat, self.get_pp(), self.__script, self.__priority))
+
     def __build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
         for nzf_id in nzf_ids:
@@ -1256,3 +1290,35 @@ def scan_password(name):
         return m.group(1).strip('. '), m.group(2).strip()
     else:
         return name.strip('. '), None
+
+
+def get_attrib_file(path, size):
+    """ Read job's attributes from file """
+    attribs = []
+    path = os.path.join(path, 'attributes.txt')
+    try:
+        f = open(path, 'r')
+    except:
+        return [None for n in xrange(size)]
+
+    for n in xrange(size):
+        line = f.readline()
+        if line:
+            attribs.append(line.strip('\n '))
+        else:
+            attribs.append(None)
+    f.close()
+    return attribs
+
+
+def set_attrib_file(path, attribs):
+    """ Write job's attributes to file """
+    path = os.path.join(path, 'attributes.txt')
+    try:
+        f = open(path, 'w')
+    except:
+        return
+
+    for item in attribs:
+        f.write('%s\n' % item)
+    f.close()

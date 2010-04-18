@@ -27,9 +27,9 @@ import glob
 
 import sabnzbd
 from sabnzbd.trylist import TryList
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzbstuff import NzbObject, get_attrib_file, set_attrib_file
 from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts, \
-                         get_admin_path
+                         get_admin_path, remove_all
 import sabnzbd.database as database
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -39,6 +39,7 @@ import sabnzbd.downloader
 from sabnzbd.assembler import Assembler
 from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
+from sabnzbd.dirscanner import ProcessSingleFile
 
 
 def DeleteLog(name):
@@ -52,7 +53,7 @@ def DeleteLog(name):
 #-------------------------------------------------------------------------------
 
 class NzbQueue(TryList):
-    def __init__(self, repair):
+    def __init__(self):
         TryList.__init__(self)
 
         self.__top_only = cfg.top_only()
@@ -64,19 +65,33 @@ class NzbQueue(TryList):
         self.__auto_sort = cfg.auto_sort()
 
 
-        if repair:
-            # Reconstruct the queue from the content of the "incomplete" folder
+    def read_queue(self, repair):
+        """ Read queue from disk, supporting repair modes
+        """
+        if repair == 1:
+            # Reconstruct only the main queue file from the content of the "incomplete" folder
             for item in glob.glob(os.path.join(cfg.download_dir.get_path(), '*')):
-                path = os.path.join(item, '__ADMIN__')
-                wpath = os.path.join(path, 'SABnzbd_nzo_*')
-                nzo_id = glob.glob(wpath)
+                path = os.path.join(item, JOB_ADMIN)
+                nzo_id = glob.glob(os.path.join(path, 'SABnzbd_nzo_*'))
                 if len(nzo_id) == 1:
                     nzo = sabnzbd.load_data(os.path.basename(nzo_id[0]), path)
                     if nzo:
                         self.add(nzo, save = False)
 
+        elif repair == 2:
+            # Reconstruct all queue and job admin from the content of the "incomplete" folder
+            # rebuilding all data structures from the saved NZB files
+            for item in glob.glob(os.path.join(cfg.download_dir.get_path(), '*')):
+                name = os.path.basename(item)
+                path = os.path.join(item, JOB_ADMIN)
+                remove_all(path, 'SABnzbd_*')
+                cat, pp, script, prio = get_attrib_file(path, 4)
+                filename = glob.glob(os.path.join(path, '*.gz'))
+                if len(filename) == 1:
+                    ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
+
         else:
-            # Read the queue from the saved file
+            # Read the queue from the saved files
             nzo_ids = []
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
             if data:
@@ -112,6 +127,7 @@ class NzbQueue(TryList):
                 nzo_ids.append(nzo.nzo_id)
             if save_nzo is None or nzo is save_nzo:
                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.get_workpath())
+               nzo.save_attribs()
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -730,12 +746,12 @@ def sort_queue_function(nzo_list, method, reverse):
 
 __NZBQ = None  # Global pointer to NzbQueue instance
 
-def init(repair):
+def init():
     global __NZBQ
     if __NZBQ:
-        __NZBQ.__init__(repair)
+        __NZBQ.__init__()
     else:
-        __NZBQ = NzbQueue(repair)
+        __NZBQ = NzbQueue()
 
 def start():
     global __NZBQ
@@ -754,6 +770,11 @@ def stop():
 def debug():
     global __NZBQ
     if __NZBQ: return __NZBQ.debug()
+
+
+def read_queue(repair):
+    global __NZBQ
+    if __NZBQ: __NZBQ.read_queue(repair)
 
 def move_up_bulk(nzo_id, nzf_ids):
     global __NZBQ
