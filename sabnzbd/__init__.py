@@ -396,8 +396,6 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
-    if 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url:
-        nzbname = ''
     logging.info('Fetching %s', url)
     msg = T('fetchNZB@1') % url
     future_nzo = nzbqueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)

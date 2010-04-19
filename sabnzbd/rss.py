@@ -285,7 +285,7 @@ class RSSQueue:
                 myScript = ''
                 #myPriority = 0
 
-                if (link not in jobs) or (jobs[link]['status'] in ('G', 'B', 'G*', 'B*')):
+                if (link not in jobs) or (jobs[link].get('status', '?') in ('G', 'B', 'G*', 'B*')):
                     # Match this title against all filters
                     logging.debug('Trying title %s', atitle)
                     result = False
@@ -438,7 +438,10 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order,
 
     jobs[link] = {}
     jobs[link]['order'] = order
-    nzbname = sanitize_foldername(title)
+    if special_rss_site(link):
+        nzbname = None
+    else:
+        nzbname = sanitize_foldername(title)
     m = RE_NEWZBIN.search(link)
     if m and m.group(1).lower() == 'newz' and m.group(2) and m.group(3):
         if download:
@@ -511,3 +514,9 @@ def _get_link(uri, entry):
     else:
         logging.warning(Ta('warn-emptyRSS@1'), link)
         return None, ''
+
+
+def special_rss_site(url):
+    """ Return True if url describes an RSS site with odd titles
+    """
+    return 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url

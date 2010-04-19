@@ -2702,9 +2702,13 @@ def ShowOK(url):
 
 def _make_link(qfeed, job):
     # Return downlink for a job
-    name = urllib.quote_plus(job['url'])
+    url = job['url']
+    name = urllib.quote_plus(url)
     title = job['title'].encode('latin-1')
-    nzbname = '&nzbname=%s' % urllib.quote(sanitize_foldername(title))
+    if sabnzbd.rss.special_rss_site(url):
+        nzbname = ''
+    else:
+        nzbname = '&nzbname=%s' % urllib.quote(sanitize_foldername(title))
     if job['cat']:
         cat = '&cat=' + escape(job['cat'])
     else:
@@ -2723,8 +2727,8 @@ def _make_link(qfeed, job):
     star = '&nbsp;*' * int(job['status'].endswith('*'))
 
     title = xml_name(job['title'])
-    if job['url'].isdigit():
-        title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (job['url'], title)
+    if url.isdigit():
+        title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
 
     return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
            (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star)
