@@ -42,7 +42,7 @@ from sabnzbd.misc import real_path, loadavg, \
      get_filename, cat_to_opts, IntConv, panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
-from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode
+from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode, latin1
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -2702,33 +2702,42 @@ def ShowOK(url):
 
 def _make_link(qfeed, job):
     # Return downlink for a job
-    url = job['url']
+    url = job.get('url', '')
+    status = job.get('status', '')
+    title = job.get('title', '')
+    cat = job.get('cat')
+    pp = job.get('pp')
+    script = job.get('script')
+    prio = job.get('prio')
+
     name = urllib.quote_plus(url)
-    title = job['title'].encode('latin-1')
-    if sabnzbd.rss.special_rss_site(url):
+    if 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url:
         nzbname = ''
     else:
-        nzbname = '&nzbname=%s' % urllib.quote(sanitize_foldername(title))
-    if job['cat']:
-        cat = '&cat=' + escape(job['cat'])
+        nzbname = '&nzbname=%s' % urllib.quote(sanitize_foldername(latin1(title)))
+    if cat:
+        cat = '&cat=' + escape(cat)
     else:
         cat = ''
-    if job['pp'] is None:
+    if pp is None:
         pp = ''
     else:
-        pp = '&pp=' + escape(str(job['pp']))
-    if job['script']:
-        script = '&script=' + escape(job['script'])
+        pp = '&pp=' + escape(str(pp))
+    if script:
+        script = '&script=' + escape(script)
     else:
         script = ''
-    if job['prio']:
-        prio = '&priority=' + str(job['prio'])
+    if prio:
+        prio = '&priority=' + str(prio)
+    else:
+        prio = ''
 
-    star = '&nbsp;*' * int(job['status'].endswith('*'))
+    star = '&nbsp;*' * int(status.endswith('*'))
 
-    title = xml_name(job['title'])
     if url.isdigit():
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
+    else:
+        title = xml_name(title)
 
     return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
            (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star)

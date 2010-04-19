@@ -285,7 +285,7 @@ class RSSQueue:
                 myScript = ''
                 #myPriority = 0
 
-                if (link not in jobs) or (jobs[link].get('status', '?') in ('G', 'B', 'G*', 'B*')):
+                if (link not in jobs) or (jobs[link].get('status', ' ') in ('G', 'B', 'G*', 'B*')):
                     # Match this title against all filters
                     logging.debug('Trying title %s', atitle)
                     result = False
@@ -329,9 +329,9 @@ class RSSQueue:
 
                     act = download and not first
                     if link in jobs:
-                        act = act and not jobs[link]['status'].endswith('*')
+                        act = act and not jobs[link].get('status', '').endswith('*')
                         act = act or force
-                        star = first or jobs[link]['status'].endswith('*')
+                        star = first or jobs[link].get('status', '').endswith('*')
                     else:
                         star = first
                     if result:
@@ -355,7 +355,7 @@ class RSSQueue:
         olds  = jobs.keys()
         for old in olds:
             if old not in newlinks:
-                if jobs[old]['status'][0] in ('G', 'B'):
+                if jobs[old].get('status', ' ')[0] in ('G', 'B'):
                     jobs[old]['status'] = 'X'
                 try:
                     tm = float(jobs[old]['time'])
