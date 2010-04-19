@@ -525,7 +525,7 @@ class MainPage:
 
         if mode == 'set_config':
             if kwargs.get('section') == 'servers':
-                handle_server_api(output, kwargs)
+                kwargs['keyword'] = handle_server_api(output, kwargs)
             else:
                 res = config.set_config(kwargs)
                 if not res:
@@ -1920,17 +1920,19 @@ def handle_server_api(output, kwargs):
         if host:
             name = '%s:%s' % (host, port)
         else:
-            return False
+            return name
 
     server = config.get_config('servers', name)
     if server:
         server.set_dict(kwargs)
         old_name = name
+        name = '%s:%s' % (server.host(), server.port())
+        server.rename(name)
     else:
         config.ConfigServer(name, kwargs)
         old_name = None
     downloader.update_server(old_name, name)
-
+    return name
 
 
 #------------------------------------------------------------------------------
