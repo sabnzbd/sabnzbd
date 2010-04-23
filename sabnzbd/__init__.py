@@ -214,6 +214,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
     if not os.path.exists(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME)):
         OLD_QUEUE = bool(glob.glob(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_TMPL % '?')))
 
+    sabnzbd.change_queue_complete_action(cfg.queue_complete())
+
     ###
     ### Initialize threads
     ###

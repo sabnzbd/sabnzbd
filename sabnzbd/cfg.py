@@ -104,6 +104,7 @@ bookmark_rate = OptionNumber('newzbin', 'bookmark_rate', 60, minval=15, maxval=2
 
 top_only = OptionBool('misc', 'top_only', True)
 autodisconnect = OptionBool('misc', 'auto_disconnect', True)
+queue_complete = OptionStr('misc', 'queue_complete')
 
 replace_spaces = OptionBool('misc', 'replace_spaces', False)
 replace_dots = OptionBool('misc', 'replace_dots', False)

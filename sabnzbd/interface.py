@@ -1187,7 +1187,10 @@ class QueuePage:
         """
         msg = check_session(kwargs)
         if msg: return msg
-        sabnzbd.change_queue_complete_action(kwargs.get('action'))
+        action = kwargs.get('action')
+        sabnzbd.change_queue_complete_action(action)
+        cfg.queue_complete.set(action)
+        config.save_config()
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
