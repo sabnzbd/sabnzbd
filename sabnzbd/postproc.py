@@ -536,9 +536,8 @@ def HandleEmptyQueue():
         else:
             Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
 
-        sabnzbd.QUEUECOMPLETEACTION = None
-        sabnzbd.QUEUECOMPLETEARG = None
         sabnzbd.QUEUECOMPLETEACTION_GO = False
+        sabnzbd.change_queue_complete_action(cfg.queue_complete())
 
 
 def CleanUpList(wdir, skip_nzb):
