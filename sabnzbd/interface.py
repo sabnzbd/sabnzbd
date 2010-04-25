@@ -3295,6 +3295,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
     # Unreverse the queue
     items.reverse()
 
+    retry_folders = []
     for item in items:
         if details_show_all:
             item['show_details'] = 'True'
@@ -3309,6 +3310,16 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
             item['size'] = ''
         if not item.has_key('loaded'):
             item['loaded'] = False
+        path = platform_encode(item.get('path', ''))
+        item['retry'] = int(bool(item.get('fail_message') and \
+                                 path and \
+                                 path not in retry_folders and \
+                                 path.startswith(cfg.download_dir.get_path()) and \
+                                 os.path.exists(path)) and \
+                                 not bool(glob.glob(os.path.join(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*'))) \
+                                 )
+        if item['retry']:
+            retry_folders.append(path)
 
     return (items, fetched_items, total_items)
 
