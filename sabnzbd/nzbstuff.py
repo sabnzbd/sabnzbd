@@ -479,10 +479,10 @@ class NzbObject(TryList):
         self.__extrapars = {}         # Holds the extra parfile names for all sets
         self.md5packs = {}            # Holds the md5pack for each set
 
-        self.__files = []
-        self.__files_table = {}
+        self.__files = []             # List of all NZFs
+        self.__files_table = {}       # Dictionary of NZFs indexed using NZF_ID
 
-        self.__finished_files = []
+        self.__finished_files = []    # List of al finished NZFs
 
         #the current status of the nzo eg:
         #Queued, Downloading, Repairing, Unpacking, Failed, Complete
@@ -532,7 +532,7 @@ class NzbObject(TryList):
         if msgid:
             self.__msgid = msgid
 
-        if not nzb:
+        if nzb is None:
             # This is a slot for a future NZB, ready now
             return
 
@@ -545,7 +545,7 @@ class NzbObject(TryList):
             logging.info('Replacing spaces with underscores in %s', self.__dirname)
             self.__original_dirname = self.__original_dirname.replace(' ','_')
 
-        if sabnzbd.backup_exists(filename):
+        if nzb and sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
             logging.warning(Ta('warn-skipDup@1'), filename)
             raise TypeError
@@ -570,30 +570,28 @@ class NzbObject(TryList):
         # disable the reading of the DTD file from newzbin.com
         # by setting "feature_external_ges" to 0.
 
-        handler = NzbParser(self)
-        parser = xml.sax.make_parser()
-        parser.setFeature(xml.sax.handler.feature_external_ges, 0)
-        parser.setContentHandler(handler)
-        parser.setErrorHandler(xml.sax.handler.ErrorHandler())
-        inpsrc = xml.sax.xmlreader.InputSource()
-        inpsrc.setByteStream(StringIO(nzb))
-        try:
-            parser.parse(inpsrc)
-        except xml.sax.SAXParseException, err:
-            handler.remove_files()
-            logging.warning(Ta('warn-badNZB@3'),
-                          filename, err.getMessage(), err.getLineNumber())
-            raise ValueError
-        except Exception, err:
-            handler.remove_files()
-            logging.warning(Ta('warn-badNZB@3'), filename, err, 0)
-            raise ValueError
+        if nzb:
+            handler = NzbParser(self)
+            parser = xml.sax.make_parser()
+            parser.setFeature(xml.sax.handler.feature_external_ges, 0)
+            parser.setContentHandler(handler)
+            parser.setErrorHandler(xml.sax.handler.ErrorHandler())
+            inpsrc = xml.sax.xmlreader.InputSource()
+            inpsrc.setByteStream(StringIO(nzb))
+            try:
+                parser.parse(inpsrc)
+            except xml.sax.SAXParseException, err:
+                handler.remove_files()
+                logging.warning(Ta('warn-badNZB@3'),
+                              filename, err.getMessage(), err.getLineNumber())
+                raise ValueError
+            except Exception, err:
+                handler.remove_files()
+                logging.warning(Ta('warn-badNZB@3'), filename, err, 0)
+                raise ValueError
 
-        sabnzbd.backup_nzb(filename, nzb)
-        sabnzbd.save_compressed(adir, filename+".nzb", nzb)
-
-        if reuse:
-            self.check_existing_files(wdir)
+            sabnzbd.backup_nzb(filename, nzb)
+            sabnzbd.save_compressed(adir, filename, nzb)
 
         if cat is None:
             for grp in self.__group:
@@ -607,6 +605,9 @@ class NzbObject(TryList):
 
         if cfg.create_group_folders():
             self.__dirprefix.append(self.get_group())
+
+        if reuse:
+            self.check_existing_files(wdir)
 
         if cfg.auto_sort():
             self.__files.sort(cmp=_nzf_cmp_date)
@@ -661,16 +662,8 @@ class NzbObject(TryList):
             nzf.reset_all_try_lists()
         self.reset_try_list()
 
-    def remove_article(self, article):
-        nzf = article.nzf
-        file_done, reset = nzf.remove_article(article)
 
-        if file_done:
-            self.remove_nzf(nzf)
-
-        if reset:
-            self.reset_try_list()
-
+    def handle_par2(self, nzf, file_done):
         ## Special treatment for first part of par2 file
         fn = nzf.get_filename()
         if (not nzf.is_par2()) and fn and fn.strip().lower().endswith('.par2'):
@@ -716,6 +709,19 @@ class NzbObject(TryList):
             else:
                 nzf.set_filename(nzf.get_subject())
 
+
+    def remove_article(self, article):
+        nzf = article.nzf
+        file_done, reset = nzf.remove_article(article)
+
+        if file_done:
+            self.remove_nzf(nzf)
+
+        if reset:
+            self.reset_try_list()
+
+        self.handle_par2(nzf, file_done)
+
         post_done = False
         if not self.__files:
             post_done = True
@@ -729,19 +735,44 @@ class NzbObject(TryList):
     def check_existing_files(self, wdir):
         """ Check if downloaded files already exits, for these set NZF to complete
         """
-        wdir = os.path.join(wdir, '*')
-        files = [os.path.basename(f) for f in glob.glob(wdir) if os.path.isfile(f)]
+        # Get a list of already present files
+        wdirpat = os.path.join(wdir, '*')
+        files = [os.path.basename(f) for f in glob.glob(wdirpat) if os.path.isfile(f)]
+        logging.debug('Existing files %s', str(files))
+
+        # Flag files from NZB that already exist as finished
         for nzf in self.__files[:]:
             alleged_name = nzf.get_filename()
             subject = sanitize_filename(latin1(nzf.get_subject()))
             ready = alleged_name in files
             if not ready:
-                for f in files:
-                    if f in subject:
+                for filename in files[:]:
+                    if filename in subject:
                         ready = True
+                        files.remove(filename)
                         break
             if ready:
+                nzf.set_filename(filename)
+                self.handle_par2(nzf, file_done=True)
                 self.remove_nzf(nzf)
+
+        logging.debug('Left over existing files %s', str(files))
+        try:
+            # Create an NZF for each remaining existing file
+            for filename in files:
+                tup = os.stat(os.path.join(wdir, filename))
+                tm = datetime.datetime.fromtimestamp(tup.st_mtime)
+                nzf = NzbFile(tm, '"%s"' % filename, [], tup.st_size, self)
+                self.__files.append(nzf)
+                self.__files_table[nzf.nzf_id] = nzf
+                self.__bytes += nzf.bytes()
+                nzf.set_filename(filename)
+                self.handle_par2(nzf, file_done=True)
+                self.remove_nzf(nzf)
+                logging.info('File %s added to job', filename)
+        except:
+            logging.debug('Bad NZB handling')
+            logging.debug("Traceback: ", exc_info = True)
 
 
     def set_opts(self, pp):
@@ -991,7 +1022,8 @@ class NzbObject(TryList):
         else:
             return None
 
-    def purge_data(self):
+    def purge_data(self, keep_basic=False):
+        """ Remove all admin info, 'keep_basic' preserves attribs and nzb """
         wpath = self.get_workpath()
         for nzf in self.__files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
@@ -1003,7 +1035,8 @@ class NzbObject(TryList):
         for nzf in self.__finished_files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
 
-        del_attrib_file(wpath)
+        if not keep_basic:
+            clean_folder(wpath)
 
     def get_avg_date(self):
         return self.__avg_date
@@ -1329,10 +1362,15 @@ def set_attrib_file(path, attribs):
     f.close()
 
 
-def del_attrib_file(path):
-    """ Remove job's attribute file """
-    path = os.path.join(path, ATTRIB_FILE)
+def clean_folder(path):
+    """ Remove job's admin files and parent if empty """
+    for file in glob.glob(os.path.join(path, '*')):
+        try:
+            os.remove(file)
+        except:
+            pass
     try:
-        os.remove(path)
+        os.rmdir(path)
+        os.rmdir(os.path.split(path)[0])
     except:
         pass

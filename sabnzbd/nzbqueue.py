@@ -71,9 +71,9 @@ class NzbQueue(TryList):
             1 = use existing queue, add missing "incomplete" folders
             2 = Discard all queue admin, reconstruct from "incomplete" folders
         """
+        nzo_ids = []
         if repair < 2:
             # Read the queue from the saved files
-            nzo_ids = []
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
             if data:
                 try:
@@ -108,15 +108,22 @@ class NzbQueue(TryList):
                     self.repair_job(folder)
 
 
-    def repair_job(self, folder):
+    def repair_job(self, folder, new_nzb=None):
         """ Reconstruct admin for a single job folder """
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         cat, pp, script, prio = get_attrib_file(path, 4)
         remove_all(path, 'SABnzbd_*')
-        filename = glob.glob(os.path.join(path, '*.gz'))
-        if len(filename) == 1:
-            ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
+        if new_nzb is None:
+            filename = glob.glob(os.path.join(path, '*.gz'))
+            if len(filename) > 0:
+                ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
+            else:
+                nzo = NzbObject(name, 0, pp, script, '', cat=cat, priority=prio, nzbname=name)
+                self.add(nzo)
+        else:
+            remove_all(path, '*.gz')
+            sabnzbd.add_nzbfile(new_nzb, pp=pp, script=script, cat=cat, priority=prio, nzbname=name)
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -228,13 +235,17 @@ class NzbQueue(TryList):
     def add(self, nzo, save=True):
         sabnzbd.QUEUECOMPLETEACTION_GO = False
 
+        if not nzo.nzo_id:
+            nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.get_workpath())
+
+        # If no files are to be downloaded anymore, send to postproc
+        if not nzo._NzbObject__files:
+            sabnzbd.proxy_postproc(nzo)
+            return
+
         # Reset try_lists
         nzo.reset_try_list()
         self.reset_try_list()
-
-
-        if not nzo.nzo_id:
-            nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.get_workpath())
 
         if nzo.nzo_id:
             nzo.deleted = False
@@ -277,7 +288,7 @@ class NzbQueue(TryList):
             self.sort_by_avg_age()
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove(self, nzo_id, add_to_history = True, unload=False, save=True, cleanup=True):
+    def remove(self, nzo_id, add_to_history = True, unload=False, save=True, cleanup=True, keep_basic=False):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
@@ -294,7 +305,7 @@ class NzbQueue(TryList):
                 history_db.close()
 
             elif cleanup:
-                self.cleanup_nzo(nzo)
+                self.cleanup_nzo(nzo, keep_basic)
 
             if save:
                 self.save(nzo)
@@ -330,7 +341,10 @@ class NzbQueue(TryList):
             if nzf:
                 post_done = nzo.remove_nzf(nzf)
                 if post_done:
-                    self.remove(nzo_id, add_to_history = False)
+                    keep_basic = nzo.get_files()
+                    if keep_basic:
+                        sabnzbd.proxy_postproc(nzo)
+                    self.remove(nzo_id, add_to_history = False, keep_basic=keep_basic)
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -666,8 +680,8 @@ class NzbQueue(TryList):
         return empty
 
     @synchronized(NZBQUEUE_LOCK)
-    def cleanup_nzo(self, nzo):
-        nzo.purge_data()
+    def cleanup_nzo(self, nzo, keep_basic=False):
+        nzo.purge_data(keep_basic)
 
         ArticleCache.do.purge_articles(nzo.saved_articles)
 
@@ -908,9 +922,9 @@ def resume_multiple_nzo(jobs):
     global __NZBQ
     if __NZBQ: __NZBQ.resume_multiple_nzo(jobs)
 
-def cleanup_nzo(nzo):
+def cleanup_nzo(nzo, keep_basic=False):
     global __NZBQ
-    if __NZBQ: __NZBQ.cleanup_nzo(nzo)
+    if __NZBQ: __NZBQ.cleanup_nzo(nzo, keep_basic)
 
 def reset_try_lists(nzf = None, nzo = None):
     global __NZBQ
@@ -968,3 +982,9 @@ def set_priority_multiple(nzo_ids, priority):
 def sort_queue(field, reverse=False):
     global __NZBQ
     if __NZBQ: __NZBQ.sort_queue(field, reverse)
+
+@synchronized_CV
+@synchronized(NZBQUEUE_LOCK)
+def repair_job(folder, new_nzb):
+    global __NZBQ
+    if __NZBQ: __NZBQ.repair_job(folder, new_nzb)

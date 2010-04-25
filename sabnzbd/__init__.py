@@ -229,10 +229,10 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     except:
         BPSMeter.do.reset()
 
+    PostProcessor()
+
     nzbqueue.init()
     nzbqueue.read_queue(repair)
-
-    PostProcessor()
 
     Assembler()
 
@@ -850,3 +850,7 @@ def check_all_tasks():
 # Required wrapper because nzbstuff.py cannot import downloader.py
 def active_primaries():
     return sabnzbd.downloader.active_primaries()
+
+
+def proxy_postproc(nzo):
+    sabnzbd.postproc.PostProcessor.do.process(nzo)

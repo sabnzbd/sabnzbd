@@ -267,6 +267,13 @@ class HistoryDB:
             return ''
 
 
+    def get_path(self, nzo_id):
+        t = (nzo_id,)
+        if self.execute('SELECT path FROM history WHERE nzo_id=?', t):
+            return self.c.fetchone()['path']
+        else:
+            return ''
+
 def dict_factory(cursor, row):
     d = {}
     for idx, col in enumerate(cursor.description):

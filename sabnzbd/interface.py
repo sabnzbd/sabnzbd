@@ -452,7 +452,7 @@ class MainPage:
         if msg: return msg
 
         nzbfile = kwargs.get('nzbfile')
-        if nzbfile != None and nzbfile.filename and nzbfile.value:
+        if nzbfile is not None and nzbfile.filename and nzbfile.value:
             sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
                                 kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
         raise dcRaiser(self.__root, kwargs)
@@ -1401,6 +1401,20 @@ class HistoryPage:
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
+    def retry_pp(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzbfile = kwargs.get('nzbfile')
+        job = kwargs.get('job')
+        if job:
+            jobs = job.split(',')
+            history_db = cherrypy.thread_data.history_db
+            for job in jobs:
+                self.retry_job(platform_encode(history_db.get_path(job)), nzbfile)
+            history_db.remove_history(jobs)
+        raise queueRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
     def purge_failed(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
@@ -1463,6 +1477,11 @@ class HistoryPage:
             return ShowOK(url)
         else:
             raise dcRaiser(self.__root, kwargs)
+
+    def retry_job(self, folder, new_nzb):
+        """ Re enter failed job in the download queue """
+        if folder:
+            nzbqueue.repair_job(folder, new_nzb)
 
 #------------------------------------------------------------------------------
 class ConfigPage:
