@@ -109,12 +109,12 @@ class NzbQueue(TryList):
 
 
     def repair_job(self, folder, new_nzb=None):
-        """ Reconstruct admin for a single job folder """
+        """ Reconstruct admin for a single job folder, optionally with new NZB """
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         cat, pp, script, prio = get_attrib_file(path, 4)
         remove_all(path, 'SABnzbd_*')
-        if new_nzb is None:
+        if new_nzb is None or not new_nzb.filename:
             filename = glob.glob(os.path.join(path, '*.gz'))
             if len(filename) > 0:
                 ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
@@ -240,6 +240,7 @@ class NzbQueue(TryList):
 
         # If no files are to be downloaded anymore, send to postproc
         if not nzo._NzbObject__files:
+            sabnzbd.remove_data(nzo.nzo_id, nzo.get_workpath())
             sabnzbd.proxy_postproc(nzo)
             return
 
