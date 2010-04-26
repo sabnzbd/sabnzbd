@@ -1,7 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
-# Dansk # Danmark
-# Translation by "René (Jarhead) Larsen" <warzdk@gmail.com>
-# Jeg modtager gerne rettelser/forbedringer af oversættelsen til SABnzbd.
+# Dansk
+# Translation by "René (Jarhead)" warzdk@gmail.com Jeg modtager gerne rettelser/forbedringer af oversættelsen til SABnzbd.
 
 special-decimal   .
 special-1000      ,
@@ -36,7 +35,7 @@ day-of-month      Månedsdag
 filename          Filnavn
 
 # General template elements
-signOn            Det automatiske usenet downloads værktøj
+signOn            Det automatiske usenet download værktøj
 button-save       Gem
 queued            I Kø
 button-back       Tilbage
@@ -54,7 +53,7 @@ menu-forums       Forum
 menu-irc          IRC
 cmenu-general     Generelt
 cmenu-folders     Mapper
-cmenu-switches    Switchar
+cmenu-switches    Parameter
 cmenu-servers     Server
 cmenu-scheduling  Planlægning
 cmenu-rss         RSS
@@ -65,7 +64,7 @@ cmenu-sorting     Sortering
 
 # Footer
 ft-download       Midlertidig download mappe
-ft-complete       Færdige download mappe
+ft-complete       Færdig download mappe
 ft-speed          Download hastighed
 ft-queued         I Køen
 ft-paused         PAUSET
@@ -111,7 +110,7 @@ link-showFiles    Vis filer
 onQueueFinish     Når køen er færdig
 shutdownPc        Luk computer
 standbyPc         Sæt computer i standby
-hibernatePc       Sæt computer I dvale
+hibernatePc       Sæt computer i dvale
 shutdownSab       Afslut  SABnzbd
 speedLimit        Hastighedsbrgrænsning
 pauseFor          Pause for
@@ -654,7 +653,7 @@ error-fileRead@1         notrar(): læsning %s mislykkedes
 error-fileUnrar@2        Fejl "%s" når du køre rar_unpack på %s
 error-fileUnzip@2        Fejl "%s" når du køre unzip() på %s
 warn-cannotFind@1        FEJL: lykkedes ikke at finde "%s"
-warn-crcFailed@1         FEL: CRC mislykkedes i "%s"
+warn-crcFailed@1         FEJL: CRC mislykkedes i "%s"
 warn-delFailed@1         Fjernelse af %s mislykkedes!
 warn-encrypted           FEJL: krypteret fil:
 warn-error@1             FEJL: %s
@@ -718,7 +717,7 @@ error-unpackFail@1       Udpakning mislykkedes, %s
 error-unpackFail@2       [%s] Fejl "%s" under udpakning af RAR fil(er)
 error-badArchive         Åbning af hovedarkiv mislykkedes (krypteret eller ødelagt)
 error-unpackFailed@1     Udpakning mislykkedes, kunne ikke finde %s
-error-unpackCRC          Udpakning mislykkedes, CRC-fel
+error-unpackCRC          Udpakning mislykkedes, CRC-fejl
 error-unpackFull         Udpakning mislykkedes, skrivefejl eller disken fuld?
 error-unpackFailLog      Udpakning mislykkedes, se logg
 error-unpackPassword     Udpakning mislykkedes, arkivet kræver password
@@ -736,8 +735,8 @@ msg-verifyOK@2           [%s] Bekræftelse i %s, alle filer er ok
 msg-repairNeeded         Kræver reparation
 msg-repairNeeded@2       [%s] Bekræftelse i %s, kræver reparation
 error-noMainPacket       Hovedarkiv mangler...
-error-repairBlocks@1     Reparation mislykkedes, ikke nok reparation blokke (%s saknas)
-msg-fetchBlocks@1        Hentar %s block...
+error-repairBlocks@1     Reparation mislykkedes, ikke nok reparation blokke (%s mangler)
+msg-fetchBlocks@1        Henter %s block...
 msg-repairing            Reparerer
 msg-repairDone@2         [%s] Repareret i %s
 msg-verifying            Bekræfter
@@ -749,7 +748,7 @@ msg-runScript@1          Kør bruger script %s
 msg-ranScript@1          Kørte %s
 link-more                Mere
 link-viewSc              Vis script udlæsning
-warn-OutRetention        Hentning mislykkedes - Out of your server's retention?
+warn-OutRetention        Hentning mislykkedes – Findes ikke hos din server's retention?
 warn-PostCrash           Efterbehandling smadret, se loggfil
 msg-moving               Flytter
 msg-running              Køre script
