@@ -174,7 +174,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     ### Clean the cache folder, if requested
     if clean_up:
-        xlist= glob.glob(cfg.cache_dir.get_path() + '/*')
+        xlist= misc.globber(cfg.cache_dir.get_path())
         for x in xlist:
             os.remove(x)
 
@@ -210,7 +210,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     ### Check for old queue (when a new queue is not present)
     if not os.path.exists(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME)):
-        OLD_QUEUE = bool(glob.glob(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_TMPL % '?')))
+        OLD_QUEUE = bool(misc.globber(cfg.cache_dir.get_path(), QUEUE_FILE_TMPL % '?'))
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete())
 
@@ -654,17 +654,21 @@ def CheckFreeSpace():
 IO_LOCK = RLock()
 
 @synchronized(IO_LOCK)
-def get_new_id(prefix, folder):
+def get_new_id(prefix, folder, check_list=None):
     """ Return unique prefixed admin identifier within folder'
     """
-    try:
-        fd, path = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, folder)
-        os.close(fd)
-        head, tail = os.path.split(path)
-        return tail
-    except:
-        logging.error(Ta('error-failMkstemp'))
-        logging.debug("Traceback: ", exc_info = True)
+    while True:
+        try:
+            if not os.path.exists(folder):
+                os.mkdir(folder)
+            fd, path = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, folder)
+            os.close(fd)
+            head, tail = os.path.split(path)
+            if not check_list or tail not in check_list:
+                return tail
+        except:
+            logging.error(Ta('error-failMkstemp'))
+            logging.debug("Traceback: ", exc_info = True)
 
 
 @synchronized(IO_LOCK)

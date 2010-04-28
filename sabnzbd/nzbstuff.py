@@ -37,7 +37,7 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, \
-                         sanitize_filename
+                         sanitize_filename, globber
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
@@ -553,7 +553,7 @@ class NzbObject(TryList):
         # Create "incomplete" folder
         wdir = os.path.join(cfg.download_dir.get_path(), self.__dirname)
         adir = os.path.join(wdir, JOB_ADMIN)
-        nzo_file = glob.glob(os.path.join(adir, 'SABnzbd_nzo_*'))
+        nzo_file = globber(adir, 'SABnzbd_nzo_*')
         reuse = os.path.exists(wdir) and not nzo_file
         if reuse:
             remove_all(adir, 'SABnzbd_*')
@@ -736,8 +736,7 @@ class NzbObject(TryList):
         """ Check if downloaded files already exits, for these set NZF to complete
         """
         # Get a list of already present files
-        wdirpat = os.path.join(wdir, '*')
-        files = [os.path.basename(f) for f in glob.glob(wdirpat) if os.path.isfile(f)]
+        files = [os.path.basename(f) for f in globber(wdir) if os.path.isfile(f)]
         logging.debug('Existing files %s', str(files))
 
         # Flag files from NZB that already exist as finished
@@ -1005,7 +1004,7 @@ class NzbObject(TryList):
 
     def get_workpath(self):
         """ Return the full path for my job-admin folder (or old style cache) """
-        return get_admin_path(self.extra5, self.__dirname)
+        return get_admin_path(self.extra5, self.__dirname, self.futuretype)
 
     def get_dirname_rename(self):
         return self.extra1
@@ -1364,7 +1363,7 @@ def set_attrib_file(path, attribs):
 
 def clean_folder(path):
     """ Remove job's admin files and parent if empty """
-    for file in glob.glob(os.path.join(path, '*')):
+    for file in globber(path):
         try:
             os.remove(file)
         except:

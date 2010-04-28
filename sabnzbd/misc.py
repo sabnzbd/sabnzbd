@@ -63,6 +63,11 @@ def safe_lower(txt):
     else:
         return ''
 
+#------------------------------------------------------------------------------
+def globber(path, pattern='*'):
+    """ Do a glob.glob(), disabling the [] pattern in 'path' """
+    return glob.glob(os.path.join(path, pattern).replace('[', '[[]'))
+
 
 #------------------------------------------------------------------------------
 def cat_to_opts(cat, pp=None, script=None, priority=None):
@@ -933,12 +938,15 @@ def get_filepath(path, nzo, filename):
     return fullPath
 
 
-def get_admin_path(newstyle, name):
+def get_admin_path(newstyle, name, future):
     """ Return news-style full path to job-admin folder of names job
         or else the old cache path
     """
     if newstyle:
-        return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+        if future:
+            return os.path.join(cfg.admin_dir.get_path(), 'future')
+        else:
+            return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
     else:
        return cfg.cache_dir.get_path()
 

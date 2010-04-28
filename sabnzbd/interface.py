@@ -39,7 +39,7 @@ from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, loadavg, \
      to_units, diskfree, disktotal, get_ext, sanitize_foldername, \
-     get_filename, cat_to_opts, IntConv, panic_old_queue
+     get_filename, cat_to_opts, IntConv, panic_old_queue, globber
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode, latin1
@@ -92,7 +92,7 @@ def ListScripts(default=False):
             lst = ['Default', 'None']
         else:
             lst = ['None']
-        for script in glob.glob(dd + '/*'):
+        for script in globber(dd):
             if os.path.isfile(script):
                 sc= os.path.basename(script)
                 if sc != "_svn" and sc != ".svn":
@@ -1652,7 +1652,7 @@ class ConfigGeneral:
             dd = os.path.abspath(web_dir + '/templates/static/stylesheets/colorschemes')
             if (not dd) or (not os.access(dd, os.R_OK)):
                 return lst
-            for color in glob.glob(dd + '/*'):
+            for color in globber(dd):
                 col= os.path.basename(color).replace('.css','')
                 if col != "_svn" and col != ".svn":
                     lst.append(col)
@@ -1686,7 +1686,7 @@ class ConfigGeneral:
 
         wlist = []
         wlist2 = ['None']
-        interfaces = glob.glob(sabnzbd.DIR_INTERFACES + "/*")
+        interfaces = globber(sabnzbd.DIR_INTERFACES)
         for k in interfaces:
             if k.endswith(DEF_STDINTF):
                 interfaces.remove(k)
@@ -3316,7 +3316,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
                                  path not in retry_folders and \
                                  path.startswith(cfg.download_dir.get_path()) and \
                                  os.path.exists(path)) and \
-                                 not bool(glob.glob(os.path.join(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*'))) \
+                                 not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*')) \
                                  )
         if item['retry']:
             retry_folders.append(path)

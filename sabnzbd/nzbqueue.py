@@ -29,7 +29,7 @@ import sabnzbd
 from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject, get_attrib_file, set_attrib_file
 from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts, \
-                         get_admin_path, remove_all
+                         get_admin_path, remove_all, globber
 import sabnzbd.database as database
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
@@ -95,17 +95,26 @@ class NzbQueue(TryList):
         folders = []
         for nzo_id in nzo_ids:
             folder, _id = os.path.split(nzo_id)
-            path = get_admin_path(bool(folder), folder)
+            # Try as normal job
+            path = get_admin_path(bool(folder), folder, False)
             nzo = sabnzbd.load_data(_id, path)
+            if not nzo:
+                # Try as future job
+                path = get_admin_path(bool(folder), folder, True)
+                nzo = sabnzbd.load_data(_id, path)
             if nzo:
                 self.add(nzo, save=False)
                 folders.append(folder)
 
         # Scan for any folders in "incomplete" that are not yet in the queue
         if repair:
-            for folder in glob.glob(os.path.join(cfg.download_dir.get_path(), '*')):
+            for folder in globber(cfg.download_dir.get_path()):
                 if os.path.basename(folder) not in folders:
                     self.repair_job(folder)
+            # Handle any lost future jobs
+            for nzo_id in globber(os.path.join(cfg.admin_dir.get_path(), 'future')):
+                if nzo_id not in self.__nzo_table:
+                    self.add(nzo, save=False)
 
 
     def repair_job(self, folder, new_nzb=None):
@@ -115,7 +124,7 @@ class NzbQueue(TryList):
         cat, pp, script, prio = get_attrib_file(path, 4)
         remove_all(path, 'SABnzbd_*')
         if new_nzb is None or not new_nzb.filename:
-            filename = glob.glob(os.path.join(path, '*.gz'))
+            filename = globber(path, '*.gz')
             if len(filename) > 0:
                 ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
             else:
@@ -140,7 +149,8 @@ class NzbQueue(TryList):
                 nzo_ids.append(nzo.nzo_id)
             if save_nzo is None or nzo is save_nzo:
                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.get_workpath())
-               nzo.save_attribs()
+               if not nzo.futuretype:
+                   nzo.save_attribs()
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -163,6 +173,7 @@ class NzbQueue(TryList):
         nzo_id = future.nzo_id
         if nzo_id in self.__nzo_table:
             try:
+                sabnzbd.remove_data(nzo_id, future.get_workpath())
                 logging.info("Regenerating item: %s", nzo_id)
                 r, u, d = future.get_repair_opts()
                 if not r is None:
@@ -236,10 +247,10 @@ class NzbQueue(TryList):
         sabnzbd.QUEUECOMPLETEACTION_GO = False
 
         if not nzo.nzo_id:
-            nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.get_workpath())
+            nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.get_workpath(), self.__nzo_table)
 
         # If no files are to be downloaded anymore, send to postproc
-        if not nzo._NzbObject__files:
+        if not nzo._NzbObject__files and not nzo.futuretype:
             sabnzbd.remove_data(nzo.nzo_id, nzo.get_workpath())
             sabnzbd.proxy_postproc(nzo)
             return
