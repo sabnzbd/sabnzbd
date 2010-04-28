@@ -67,7 +67,7 @@ import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
      check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
      panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates, \
-     windows_variant, ip_extract, set_serv_parms, get_serv_parms
+     windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -1009,7 +1009,7 @@ def main():
         sys.exit(1)
 
     if clean_up:
-        xlist= glob.glob(logdir + '/*')
+        xlist= globber(logdir)
         for x in xlist:
             if RSS_FILE_NAME not in x:
                 os.remove(x)
