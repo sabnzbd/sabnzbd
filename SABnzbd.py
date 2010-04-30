@@ -130,7 +130,7 @@ if sabnzbd.WIN32:
             _subprocess.GetCurrentProcess(), handle, target_process,
             0, inheritable, _subprocess.DUPLICATE_SAME_ACCESS).Detach()
 
-    class MyRotatingFileHandler(logging.handlers.RotatingFileHandler):
+    class NewRotatingFileHandler(logging.handlers.RotatingFileHandler):
         def _open(self):
             """
             Open the current base file with the (original) mode and encoding.
@@ -148,7 +148,7 @@ if sabnzbd.WIN32:
             return stream
 
 else:
-    MyRotatingFileHandler = logging.handlers.RotatingFileHandler
+    NewRotatingFileHandler = logging.handlers.RotatingFileHandler
 
 #------------------------------------------------------------------------------
 class FilterCP3:
@@ -681,7 +681,7 @@ def evaluate_inipath(path):
             return path
 
 
-def cherrypy_logging(log_path):
+def cherrypy_logging(log_path, log_handler):
     log = cherrypy.log
     log.access_file = ''
     log.error_file = ''
@@ -692,7 +692,7 @@ def cherrypy_logging(log_path):
 
     # Make a new RotatingFileHandler for the error log.
     fname = getattr(log, "rot_error_file", log_path)
-    h = MyRotatingFileHandler(fname, 'a', maxBytes, backupCount)
+    h = log_handler(fname, 'a', maxBytes, backupCount)
     h.setLevel(logging.DEBUG)
     h.setFormatter(cherrypy._cplogging.logfmt)
     log.error_log.addHandler(h)
@@ -1011,10 +1011,16 @@ def main():
             if RSS_FILE_NAME not in x:
                 os.remove(x)
 
+    log_new = sabnzbd.cfg.log_new()
+    if log_new:
+        log_handler = NewRotatingFileHandler
+    else:
+        log_handler = logging.handlers.RotatingFileHandler
+    sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
+    logsize = sabnzbd.cfg.log_size.get_int()
+
     try:
-        sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
-        logsize = sabnzbd.cfg.log_size.get_int()
-        rollover_log = MyRotatingFileHandler(\
+        rollover_log = log_handler(\
             sabnzbd.LOGFILE, 'a+',
             logsize,
             sabnzbd.cfg.log_backups())
@@ -1154,7 +1160,7 @@ def main():
         if logdir:
             sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
         # Define our custom logger for cherrypy errors
-        cherrypy_logging(sabnzbd.WEBLOGFILE)
+        cherrypy_logging(sabnzbd.WEBLOGFILE, log_handler)
         if not fork:
             try:
                 x= sys.stderr.fileno
