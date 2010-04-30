@@ -121,6 +121,7 @@ age               Leeftijd
 button-del        Wis
 button-resume     Doorgaan
 button-pause      Pauzeer
+butten-retry      Opnieuw
 unknown           onbekend
 fetchingNewzbin@1 Ophalen rapport %s van www.newzbin.com
 error-fetchNewzbin@1 Fout bij ophalen van rapport %s van www.newzbin.com -\

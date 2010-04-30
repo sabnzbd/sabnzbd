@@ -178,7 +178,10 @@ class PostProcessor(Thread):
             priority = nzo.priority
 
             ## Collect the par files
-            parTable = nzo.partable.copy()
+            if nzo.partable:
+                parTable = nzo.partable.copy()
+            else:
+                parTable = {}
             repairSets = parTable.keys()
 
             # Get the NZB name
