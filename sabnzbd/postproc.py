@@ -178,7 +178,7 @@ class PostProcessor(Thread):
             priority = nzo.priority
 
             ## Collect the par files
-            parTable = nzo.get_partable.copy()
+            parTable = nzo.partable.copy()
             repairSets = parTable.keys()
 
             # Get the NZB name
@@ -284,7 +284,7 @@ class PostProcessor(Thread):
 
                     ## Move any (left-over) files to destination
                     nzo.status = 'Moving'
-                    nzo.set_action_line(T('msg-moving') % '...')
+                    nzo.set_action_line(T('msg-moving'), '...')
                     for root, dirs, files in os.walk(workdir):
                         if not root.endswith(JOB_ADMIN):
                             for _file in files:

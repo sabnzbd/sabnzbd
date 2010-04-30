@@ -44,6 +44,8 @@ from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
 from sabnzbd.encoding import unicoder, platform_encode, latin1
 
+__all__ = ['Article', 'NzbFile', 'NzbObject']
+
 # Name potterns
 RE_NEWZBIN = re.compile(r"msgid_(\w+) (.+)(\.nzb)$", re.I)
 RE_NORMAL  = re.compile(r"(.+)(\.nzb)", re.I)
@@ -665,9 +667,9 @@ class NzbObject(TryList):
             self.check_existing_files(wdir)
 
         if cfg.auto_sort():
-            self.files.sort(cmp=_nzf_cmp_date)
+            self.files.sort(cmp=nzf_cmp_date)
         else:
-            self.files.sort(cmp=_nzf_cmp_name)
+            self.files.sort(cmp=nzf_cmp_name)
 
         # Set nzo save-delay to 6 sec per GB with a max of 5 min
         self.save_timeout = min(6.0 * float(self.bytes) / GIGI, 300.0)
@@ -1139,7 +1141,7 @@ class NzbObject(TryList):
 
 #-------------------------------------------------------------------------------
 
-def _nzf_get_filename(nzf):
+def nzf_get_filename(nzf):
     # Return filename, if the filename not set, try the
     # the full subject line instead. Can produce non-ideal results
     name = nzf.filename
@@ -1150,16 +1152,16 @@ def _nzf_get_filename(nzf):
     return name.lower()
 
 
-def _nzf_cmp_date(nzf1, nzf2):
+def nzf_cmp_date(nzf1, nzf2):
     # Compare files based on date, but give vol-par files preference
-    return _nzf_cmp_name(nzf1, nzf2, name=False)
+    return nzf_cmp_name(nzf1, nzf2, name=False)
 
 
-def _nzf_cmp_name(nzf1, nzf2, name=True):
+def nzf_cmp_name(nzf1, nzf2, name=True):
     # The comparison will sort .par2 files to the top of the queue followed by .rar files,
     # they will then be sorted by name.
-    name1 = _nzf_get_filename(nzf1)
-    name2 = _nzf_get_filename(nzf2)
+    name1 = nzf_get_filename(nzf1)
+    name2 = nzf_get_filename(nzf2)
 
     is_par1 = 'vol' in name1 and '.par2' in name1
     is_par2 = 'vol' in name2 and '.par2' in name2

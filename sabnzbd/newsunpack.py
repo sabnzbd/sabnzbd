@@ -1140,7 +1140,7 @@ def israr(f):
 def QuickCheck(set, nzo):
     """ Check all on-the-fly md5sums of a set """
 
-    md5pack = nzo.md5pack.get(set)
+    md5pack = nzo.md5packs.get(set)
     if md5pack is None:
         return False
 
@@ -1180,7 +1180,7 @@ def pars_of_set(wdir, setname):
 
 def is_new_partype(nzo, setname):
     """ Determine the PAR2 program type, based on the filename encoding """
-    pack = nzo.md5pack.get(setname)
+    pack = nzo.md5packs.get(setname)
     if not pack:
         return True
     for name in pack.keys():

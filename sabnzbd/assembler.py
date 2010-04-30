@@ -95,10 +95,10 @@ class Assembler(Thread):
                         break
 
                     setname = nzf.setname
-                    if nzf.is_par2 and (nzo.md5pack.get(setname) is None):
+                    if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
                         pack = GetMD5Hashes(filepath)
                         if pack:
-                            nzo.md5pack[setname] = pack
+                            nzo.md5packs[setname] = pack
                             logging.debug('Got md5pack for set %s', setname)
 
 
