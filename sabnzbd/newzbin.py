@@ -108,15 +108,14 @@ class MSGIDGrabber(Thread):
             if filename and data:
                 filename = name_fixer(filename)
 
-                _r, _u, _d = nzo.get_repair_opts()
-                pp = sabnzbd.opts_to_pp(_r, _u, _d)
-                script = nzo.get_script()
-                cat = nzo.get_cat()
+                pp = nzo.pp
+                script = nzo.script
+                cat = nzo.cat
                 if not cat:
                     cat = cat_convert(newzbin_cat)
 
-                priority = nzo.get_priority()
-                nzbname = nzo.get_dirname_rename()
+                priority = nzo.priority
+                nzbname = nzo.custom_name
 
                 cat, pp, script, priority = cat_to_opts(cat, pp, script, priority)
 

@@ -563,7 +563,7 @@ class Downloader(Thread):
                     BPSMeter.do.update(bytes)
 
                     if nzo:
-                        nzo.update_bytes(bytes)
+                        nzo.bytes_downloaded += bytes
                         nzo.update_avg_kbs(BPSMeter.do.get_bps())
 
                 if len(nw.lines) == 1:
@@ -652,7 +652,7 @@ class Downloader(Thread):
 
                         logging.debug("group command ok -> %s",
                                       nw.lines)
-                        nw.group = nw.article.nzf.nzo.get_group()
+                        nw.group = nw.article.nzf.nzo.group
                         nw.lines = []
                         nw.data = ''
                         self.__request_article(nw)
@@ -743,8 +743,8 @@ class Downloader(Thread):
 
     def __request_article(self, nw):
         try:
-            if cfg.send_group() and nw.article.nzf.nzo.get_group() != nw.group:
-                group = nw.article.nzf.nzo.get_group()
+            if cfg.send_group() and nw.article.nzf.nzo.group != nw.group:
+                group = nw.article.nzf.nzo.group
                 logging.info('Thread %s@%s:%s: GROUP <%s>',
                              nw.thrdnum, nw.server.host,
                              nw.server.port, group)

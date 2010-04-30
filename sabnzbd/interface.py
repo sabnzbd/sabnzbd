@@ -1072,7 +1072,7 @@ class NzoPage:
             sabnzbd.nzbqueue.change_script(nzo_id,script)
         if pp != None:
             sabnzbd.nzbqueue.change_opts(nzo_id,pp)
-        if priority != None and nzo and nzo.get_priority() != int(priority):
+        if priority != None and nzo and nzo.priority != int(priority):
             sabnzbd.nzbqueue.set_priority(nzo_id, priority)
 
         args = [arg for arg in args if arg != 'save']
@@ -2537,10 +2537,10 @@ class ConnectionInfo:
                     art_name = xml_name(article.article)
                     #filename field is not always present
                     try:
-                        nzf_name = xml_name(nzf.get_filename())
+                        nzf_name = xml_name(nzf.filename)
                     except: #attribute error
-                        nzf_name = xml_name(nzf.get_subject())
-                    nzo_name = xml_name(nzo.get_dirname())
+                        nzf_name = xml_name(nzf.subject)
+                    nzo_name = xml_name(nzo.final_name)
 
                 busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
 
@@ -3245,7 +3245,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
 
     # Filter out any items that don't match the search
     if search:
-        queue = [nzo for nzo in queue if matches_search(nzo.get_original_dirname(), search)]
+        queue = [nzo for nzo in queue if matches_search(nzo.final_name, search)]
 
     # Multi-page support for postproc items
     if start > len(queue):
@@ -3713,7 +3713,7 @@ def get_active_history(queue=None, items=None):
             item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
             item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
             item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = t
-        item['action_line'] = nzo.get_action_line()
+        item['action_line'] = nzo.action_line
         item = unpack_history_info(item)
 
         item['loaded'] = True

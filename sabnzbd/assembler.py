@@ -72,15 +72,15 @@ class Assembler(Thread):
 
             if nzf:
                 sabnzbd.CheckFreeSpace()
-                filename = sanitize_filename(nzf.get_filename())
-                nzf.set_filename(filename)
+                filename = sanitize_filename(nzf.filename)
+                nzf.filename = filename
 
                 dupe = nzo.check_for_dupe(nzf)
 
                 filepath = get_filepath(cfg.download_dir.get_path(), nzo, filename)
 
                 if filepath:
-                    logging.info('Decoding %s %s', filepath, nzf.get_type())
+                    logging.info('Decoding %s %s', filepath, nzf.type)
                     try:
                         filepath = _assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
@@ -94,11 +94,11 @@ class Assembler(Thread):
                         logging.error('Fatal error in Assembler', exc_info = True)
                         break
 
-                    setname = nzf.get_setname()
-                    if nzf.is_par2() and (nzo.get_md5pack(setname) is None):
+                    setname = nzf.setname
+                    if nzf.is_par2 and (nzo.md5pack.get(setname) is None):
                         pack = GetMD5Hashes(filepath)
                         if pack:
-                            nzo.set_md5pack(setname, pack)
+                            nzo.md5pack[setname] = pack
                             logging.debug('Got md5pack for set %s', setname)
 
 
@@ -121,8 +121,8 @@ def _assemble(nzf, path, dupe):
     else:
         md5 = None
 
-    _type = nzf.get_type()
-    decodetable = nzf.get_decodetable()
+    _type = nzf.type
+    decodetable = nzf.decodetable
 
     for articlenum in decodetable:
         sleep(0.01)

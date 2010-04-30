@@ -102,7 +102,7 @@ class ArticleCache:
             logging.info("Loaded %s from cache", article)
             logging.debug("cache_size -> %s", self.__cache_size)
         elif article.art_id:
-            data = sabnzbd.load_data(article.art_id, nzo.get_workpath(), remove=True, do_pickle=False)
+            data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True, do_pickle=False)
 
         if article in nzo.saved_articles:
             nzo.saved_articles.remove(article)
@@ -126,7 +126,7 @@ class ArticleCache:
                 data = self.__article_table.pop(article)
                 self.__cache_size -= len(data)
             if article.art_id:
-                sabnzbd.remove_data(article.art_id, article.nzf.nzo.get_workpath())
+                sabnzbd.remove_data(article.art_id, article.nzf.nzo.workpath)
 
     def __flush_article(self, article, data):
         nzf = article.nzf
@@ -144,7 +144,7 @@ class ArticleCache:
             logging.debug("cache_size -> %s", self.__cache_size)
             # Save data, but don't complain when destistation folder is missing
             # because this flush may come after completion of the NZO.
-            sabnzbd.save_data(data, art_id, nzo.get_workpath(), do_pickle = False, silent=True)
+            sabnzbd.save_data(data, art_id, nzo.workpath, do_pickle = False, silent=True)
         else:
             logging.warning("Flushing %s failed -> no art_id", article)
 

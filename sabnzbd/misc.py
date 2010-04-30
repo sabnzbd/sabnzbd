@@ -911,8 +911,8 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
-    dirname = nzo.get_workdir()
-    created = nzo.get_dirname_created()
+    dirname = nzo.work_name
+    created = nzo.created
 
     dName = dirname
     if not created:
@@ -958,28 +958,28 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     """
     msg = unicoder(msg)
 
-    pp = nzo.get_pp()
+    pp = nzo.pp
     if pp:
         pp = '&pp=%s' % urllib.quote(pp)
     else:
         pp = ''
-    cat = nzo.get_cat()
+    cat = nzo.cat
     if cat:
         cat = '&cat=%s' % urllib.quote(cat)
     else:
         cat = ''
-    script = nzo.get_script()
+    script = nzo.script
     if script:
         script = '&script=%s' % urllib.quote(script)
     else:
         script = ''
 
-    nzo.set_status('Failed')
+    nzo.status = 'Failed'
 
 
     if url:
-        nzo.set_filename(url)
-        nzo.set_dirname(url)
+        nzo.filename = url
+        nzo.final_name = url.strip()
 
     if content:
         # Bad content
@@ -989,16 +989,16 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
         msg = ' (' + msg + ')'
 
     if retry:
-        nzbname = nzo.get_dirname_rename()
+        nzbname = nzo.custom_name
         if nzbname:
             nzbname = '&nzbname=%s' % urllib.quote(nzbname)
         else:
             nzbname = ''
         text = T('his-retryURL1@1') + ', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
         parms = (msg, cfg.api_key(), urllib.quote(url), pp, cat, script, nzbname)
-        nzo.set_fail_msg(text % parms)
+        nzo.fail_msg = text % parms
     else:
-        nzo.set_fail_msg(msg)
+        nzo.fail_msg = msg
 
     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
 
@@ -1417,7 +1417,7 @@ def remove_dir(path):
 def remove_all(path, pattern='*'):
     """ Remove folder its content """
     if os.path.exists(path):
-        for f in glob.glob(os.path.join(path, pattern)):
+        for f in globber(path, pattern):
             os.remove(f)
         try:
             os.rmdir(path)

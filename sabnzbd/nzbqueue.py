@@ -143,12 +143,12 @@ class NzbQueue(TryList):
         nzo_ids = []
         # Aggregate nzo_ids and save each nzo
         for nzo in self.__nzo_list:
-            if nzo.extra5:
-                nzo_ids.append(os.path.join(nzo.get_workdir(), nzo.nzo_id))
+            if nzo.new_caching:
+                nzo_ids.append(os.path.join(nzo.work_name, nzo.nzo_id))
             else:
                 nzo_ids.append(nzo.nzo_id)
             if save_nzo is None or nzo is save_nzo:
-               sabnzbd.save_data(nzo, nzo.nzo_id, nzo.get_workpath())
+               sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
                if not nzo.futuretype:
                    nzo.save_attribs()
 
@@ -173,21 +173,21 @@ class NzbQueue(TryList):
         nzo_id = future.nzo_id
         if nzo_id in self.__nzo_table:
             try:
-                sabnzbd.remove_data(nzo_id, future.get_workpath())
+                sabnzbd.remove_data(nzo_id, future.workpath)
                 logging.info("Regenerating item: %s", nzo_id)
-                r, u, d = future.get_repair_opts()
+                r, u, d = future.repair_opts
                 if not r is None:
                     pp = sabnzbd.opts_to_pp(r, u, d)
-                scr = future.get_script()
+                scr = future.script
                 if scr is None:
                     scr = script
-                categ = future.get_cat()
+                categ = future.cat
                 if categ is None:
                     categ = cat
                 categ, pp, script, priority = cat_to_opts(categ, pp, script, priority)
 
                 # Remember old priority
-                old_prio = future.get_priority()
+                old_prio = future.priority
 
                 try:
                     future.__init__(filename, msgid, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
@@ -200,7 +200,7 @@ class NzbQueue(TryList):
 
                 # Make sure the priority is changed now that we know the category
                 if old_prio != priority:
-                    future.set_priority(None)
+                    future.priority = None
                 self.set_priority(future.nzo_id, priority)
 
                 if self.__auto_sort:
@@ -218,22 +218,22 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def change_opts(self, nzo_id, pp):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].set_opts(pp)
+            self.__nzo_table[nzo_id].pp = pp
 
     @synchronized(NZBQUEUE_LOCK)
     def change_script(self, nzo_id, script):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].set_script(script)
+            self.__nzo_table[nzo_id].script = script
 
     @synchronized(NZBQUEUE_LOCK)
     def change_cat(self, nzo_id, cat):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].set_cat(cat)
+            self.__nzo_table[nzo_id].cat = cat
 
     @synchronized(NZBQUEUE_LOCK)
     def change_name(self, nzo_id, name):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].set_name(name)
+            self.__nzo_table[nzo_id].final_name_pw = name
 
     @synchronized(NZBQUEUE_LOCK)
     def get_nzo(self, nzo_id):
@@ -247,11 +247,11 @@ class NzbQueue(TryList):
         sabnzbd.QUEUECOMPLETEACTION_GO = False
 
         if not nzo.nzo_id:
-            nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.get_workpath(), self.__nzo_table)
+            nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.workpath, self.__nzo_table)
 
         # If no files are to be downloaded anymore, send to postproc
-        if not nzo._NzbObject__files and not nzo.futuretype:
-            sabnzbd.remove_data(nzo.nzo_id, nzo.get_workpath())
+        if not nzo.files and not nzo.futuretype:
+            sabnzbd.remove_data(nzo.nzo_id, nzo.workpath)
             sabnzbd.proxy_postproc(nzo)
             return
 
@@ -261,7 +261,7 @@ class NzbQueue(TryList):
 
         if nzo.nzo_id:
             nzo.deleted = False
-            priority = nzo.get_priority()
+            priority = nzo.priority
             self.__nzo_table[nzo.nzo_id] = nzo
             if priority == TOP_PRIORITY:
                 #A top priority item (usually a completed download fetching pars)
@@ -278,7 +278,7 @@ class NzbQueue(TryList):
                     pos = 0
                     added = False
                     for position in self.__nzo_list:
-                        if position.get_priority() < priority:
+                        if position.priority < priority:
                             self.__nzo_list.insert(pos, nzo)
                             added=True
                             break
@@ -293,8 +293,8 @@ class NzbQueue(TryList):
             if save:
                 self.save(nzo)
 
-            if nzo.get_status() not in ('Fetching',):
-                osx.sendGrowlMsg(T('grwl-nzbadd-title'),nzo.get_filename(),osx.NOTIFICATION['download'])
+            if nzo.status not in ('Fetching',):
+                osx.sendGrowlMsg(T('grwl-nzbadd-title'), nzo.filename, osx.NOTIFICATION['download'])
 
         if self.__auto_sort:
             self.sort_by_avg_age()
@@ -306,7 +306,7 @@ class NzbQueue(TryList):
             nzo.deleted = True
             self.__nzo_list.remove(nzo)
 
-            sabnzbd.remove_data(nzo_id, nzo.get_workpath())
+            sabnzbd.remove_data(nzo_id, nzo.workpath)
 
             if add_to_history:
                 # Create the history DB instance
@@ -339,7 +339,7 @@ class NzbQueue(TryList):
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
             self.__nzo_list.remove(nzo)
-            sabnzbd.remove_data(nzo_id, nzo.get_workpath())
+            sabnzbd.remove_data(nzo_id, nzo.workpath)
             self.cleanup_nzo(nzo)
         del lst
         self.save()
@@ -353,7 +353,7 @@ class NzbQueue(TryList):
             if nzf:
                 post_done = nzo.remove_nzf(nzf)
                 if post_done:
-                    keep_basic = nzo.get_files()
+                    keep_basic = nzo.finished_files
                     if keep_basic:
                         sabnzbd.proxy_postproc(nzo)
                     self.remove(nzo_id, add_to_history = False, keep_basic=keep_basic)
@@ -368,7 +368,7 @@ class NzbQueue(TryList):
     def pause_nzo(self, nzo_id):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
-            nzo.pause_nzo()
+            nzo.pause()
             logging.debug("Paused nzo: %s", nzo_id)
 
     @synchronized(NZBQUEUE_LOCK)
@@ -380,7 +380,7 @@ class NzbQueue(TryList):
     def resume_nzo(self, nzo_id):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
-            nzo.resume_nzo()
+            nzo.resume()
             logging.debug("Resumed nzo: %s", nzo_id)
 
     @synchronized(NZBQUEUE_LOCK)
@@ -399,20 +399,20 @@ class NzbQueue(TryList):
             return (-1, 0)
 
         #get the priorities of the two items
-        nzo1_priority = nzo1.get_priority()
-        nzo2_priority = nzo2.get_priority()
+        nzo1_priority = nzo1.priority
+        nzo2_priority = nzo2.priority
         try:
             #get the item id of the item below to use in priority changing
             item_id_3 = self.__nzo_list[i+1].nzo_id
             #if there is an item below the id1 and id2 then we need that too
             #to determine whether to change the priority
             nzo3 = self.__nzo_table[item_id_3]
-            nzo3_priority = nzo3.get_priority()
+            nzo3_priority = nzo3.priority
             #if id1 is surrounded by items of a different priority then change it's pririty to match
             if nzo2_priority != nzo1_priority and nzo3_priority != nzo1_priority or nzo2_priority > nzo1_priority:
-                nzo1.set_priority(nzo2_priority)
+                nzo1.priority = nzo2_priority
         except:
-            nzo1.set_priority(nzo2_priority)
+            nzo1.priority = nzo2_priority
         item_id_pos1 = -1
         item_id_pos2 = -1
         for i in xrange(len(self.__nzo_list)):
@@ -424,9 +424,9 @@ class NzbQueue(TryList):
                 item = self.__nzo_list[item_id_pos1]
                 del self.__nzo_list[item_id_pos1]
                 self.__nzo_list.insert(item_id_pos2, item)
-                return (item_id_pos2, nzo1.get_priority())
+                return (item_id_pos2, nzo1.priority)
         # If moving failed/no movement took place
-        return (-1, nzo1.get_priority())
+        return (-1, nzo1.priority)
 
     @synchronized(NZBQUEUE_LOCK)
     def get_position(self, nzb_id):
@@ -506,10 +506,10 @@ class NzbQueue(TryList):
                     break
 
             # Don't change priority and order if priority is the same as asked
-            if priority == self.__nzo_list[nzo_id_pos1].get_priority():
+            if priority == self.__nzo_list[nzo_id_pos1].priority:
                 return nzo_id_pos1
 
-            nzo.set_priority(priority)
+            nzo.priority = priority
 
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
@@ -530,7 +530,7 @@ class NzbQueue(TryList):
                         p = 0
                         added = False
                         for position in self.__nzo_list:
-                            if position.get_priority() < priority:
+                            if position.priority < priority:
                                 self.__nzo_list.insert(p, nzo)
                                 pos = p
                                 added=True
@@ -583,7 +583,7 @@ class NzbQueue(TryList):
         elif self.__top_only:
             for nzo in self.__nzo_list:
                 # Ignore any items that are in a paused or grabbing state
-                if nzo.get_status() not in ('Paused', 'Grabbing'):
+                if nzo.status not in ('Paused', 'Grabbing'):
                     return not nzo.server_in_try_list(server)
         else:
             return not self.server_in_try_list(server)
@@ -593,7 +593,7 @@ class NzbQueue(TryList):
         ''' Check if the queue contains any Forced
         Priority items to download while paused '''
         for nzo in self.__nzo_list:
-            if nzo.get_priority() == TOP_PRIORITY and nzo.get_status() != 'Paused':
+            if nzo.priority == TOP_PRIORITY and nzo.status != 'Paused':
                 return True
         return False
 
@@ -602,7 +602,7 @@ class NzbQueue(TryList):
         if self.__top_only:
             if self.__nzo_list:
                 for nzo in self.__nzo_list:
-                    if not nzo.get_status() == 'Paused':
+                    if not nzo.status == 'Paused':
                         article = nzo.get_article(server)
                         if article:
                             return article
@@ -610,7 +610,7 @@ class NzbQueue(TryList):
         else:
             for nzo in self.__nzo_list:
                 # Don't try to get an article if server is in try_list of nzo
-                if not nzo.server_in_try_list(server) and nzo.get_status() != 'Paused':
+                if not nzo.server_in_try_list(server) and nzo.status != 'Paused':
                     article = nzo.get_article(server)
                     if article:
                         return article
@@ -629,20 +629,20 @@ class NzbQueue(TryList):
 
         file_done, post_done, reset = nzo.remove_article(article)
 
-        filename = nzf.get_filename()
+        filename = nzf.filename
 
         if reset:
             self.reset_try_list()
 
         if file_done:
-            if nzo.extra3 is None or time.time() > nzo.extra3:
-                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.get_workpath())
-                if nzo.extra4 is None:
-                    nzo.extra3 = None
+            if nzo.next_save is None or time.time() > nzo.next_save:
+                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
+                if nzo.save_timeout is None:
+                    nzo.next_save = None
                 else:
-                    nzo.extra3 = time.time() + nzo.extra4
+                    nzo.next_save = time.time() + nzo.save_timeout
 
-            _type = nzf.get_type()
+            _type = nzf.type
 
             # Only start decoding if we have a filename and type
             if filename and _type:
@@ -675,7 +675,7 @@ class NzbQueue(TryList):
         pnfo_list = []
         for nzo in self.__nzo_list:
             pnfo = nzo.gather_info(for_cli = for_cli)
-            if nzo.get_status() != 'Paused':
+            if nzo.status != 'Paused':
                 bytes += pnfo[PNFO_BYTES_FIELD]
                 bytes_left += pnfo[PNFO_BYTES_LEFT_FIELD]
             pnfo_list.append(pnfo)
@@ -708,7 +708,7 @@ class NzbQueue(TryList):
         lst = []
         for nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
-            url = nzo.get_future()
+            url = nzo.url
             if nzo.futuretype and url.lower().startswith('http'):
                 lst.append((url, nzo))
         return lst
@@ -718,7 +718,7 @@ class NzbQueue(TryList):
         lst = []
         for nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
-            msgid = nzo.get_future()
+            msgid = nzo.url
             if nzo.futuretype and (msgid.isdigit() or len(msgid)==5):
                 lst.append((msgid, nzo))
         return lst
@@ -729,8 +729,8 @@ class NzbQueue(TryList):
 #-------------------------------------------------------------------------------
 
 def _nzo_date_cmp(nzo1, nzo2):
-    avg_date1 = nzo1.get_avg_date()
-    avg_date2 = nzo2.get_avg_date()
+    avg_date1 = nzo1.avg_date
+    avg_date2 = nzo2.avg_date
 
     if avg_date1 is None and avg_date2 is None:
         return 0
@@ -743,16 +743,16 @@ def _nzo_date_cmp(nzo1, nzo2):
     return cmp(avg_date1, avg_date2)
 
 def _nzo_name_cmp(nzo1, nzo2):
-    return cmp(nzo1.get_filename(), nzo2.get_filename())
+    return cmp(nzo1.filename, nzo2.filename)
 
 def _nzo_size_cmp(nzo1, nzo2):
-    return cmp(nzo1.get_bytes(), nzo2.get_bytes())
+    return cmp(nzo1.bytes, nzo2.bytes)
 
 def sort_queue_function(nzo_list, method, reverse):
-    super_high_priority = [nzo for nzo in nzo_list if nzo.get_priority() == TOP_PRIORITY]
-    high_priority = [nzo for nzo in nzo_list if nzo.get_priority() == HIGH_PRIORITY]
-    normal_priority = [nzo for nzo in nzo_list if nzo.get_priority() == NORMAL_PRIORITY]
-    low_priority = [nzo for nzo in nzo_list if nzo.get_priority() == LOW_PRIORITY]
+    super_high_priority = [nzo for nzo in nzo_list if nzo.priority == TOP_PRIORITY]
+    high_priority = [nzo for nzo in nzo_list if nzo.priority == HIGH_PRIORITY]
+    normal_priority = [nzo for nzo in nzo_list if nzo.priority == NORMAL_PRIORITY]
+    low_priority = [nzo for nzo in nzo_list if nzo.priority == LOW_PRIORITY]
 
     super_high_priority.sort(cmp=method, reverse=reverse)
     high_priority.sort(cmp=method, reverse=reverse)

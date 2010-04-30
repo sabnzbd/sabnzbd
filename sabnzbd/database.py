@@ -287,8 +287,8 @@ def build_history_info(nzo, storage='', path='', postproc_time=0, script_output=
     storage = decode_factory(storage)
     script_line = decode_factory(script_line)
 
-    flagRepair, flagUnpack, flagDelete = nzo.get_repair_opts()
-    nzo_info = decode_factory(nzo.get_nzo_info())
+    flagRepair, flagUnpack, flagDelete = nzo.repair_opts
+    nzo_info = decode_factory(nzo.nzo_info)
 
     # Get the url and newzbin msgid
     report = decode_factory(nzo_info.get('msgid', ''))
@@ -297,22 +297,22 @@ def build_history_info(nzo, storage='', path='', postproc_time=0, script_output=
     else:
         url = decode_factory(nzo_info.get('url', ''))
 
-    #group = nzo.get_group()
+    #group = nzo.group
 
     completed = int(time.time())
-    name = decode_factory(nzo.get_original_dirname())
+    name = decode_factory(nzo.final_name)
 
-    nzb_name = decode_factory(nzo.get_filename())
-    category = decode_factory(nzo.get_cat())
+    nzb_name = decode_factory(nzo.filename)
+    category = decode_factory(nzo.cat)
     pps = ['','R','U','D']
     try:
         pp = pps[sabnzbd.opts_to_pp(flagRepair, flagUnpack, flagDelete)]
     except:
         pp = ''
-    script = decode_factory(nzo.get_script())
-    status = decode_factory(nzo.get_status())
-    nzo_id = nzo.get_nzo_id()
-    bytes = nzo.get_bytes_downloaded()
+    script = decode_factory(nzo.script)
+    status = decode_factory(nzo.status)
+    nzo_id = nzo.nzo_id
+    bytes = nzo.bytes_downloaded
 
     if script_output:
         # Compress the output of the script
@@ -323,13 +323,13 @@ def build_history_info(nzo, storage='', path='', postproc_time=0, script_output=
 
     download_time = decode_factory(nzo_info.get('download_time', 0))
 
-    downloaded = nzo.get_bytes_downloaded()
+    downloaded = nzo.bytes_downloaded
     completeness = 0
-    fail_message = decode_factory(nzo.get_fail_msg())
+    fail_message = decode_factory(nzo.fail_msg)
     url_info = nzo_info.get('more_info', '')
 
     # Get the dictionary containing the stages and their unpack process
-    stages = decode_factory(nzo.get_unpack_info())
+    stages = decode_factory(nzo.unpack_info)
     # Pack the ditionary up into a single string
     # Stage Name is seperated by ::: stage lines by ; and stages by \r\n
     lines = []
