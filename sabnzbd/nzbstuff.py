@@ -789,7 +789,6 @@ class NzbObject(TryList):
         """
         # Get a list of already present files
         files = [os.path.basename(f) for f in globber(wdir) if os.path.isfile(f)]
-        logging.debug('Existing files %s', str(files))
 
         # Flag files from NZB that already exist as finished
         for nzf in self.files[:]:
@@ -807,7 +806,6 @@ class NzbObject(TryList):
                 self.handle_par2(nzf, file_done=True)
                 self.remove_nzf(nzf)
 
-        logging.debug('Left over existing files %s', str(files))
         try:
             # Create an NZF for each remaining existing file
             for filename in files:
