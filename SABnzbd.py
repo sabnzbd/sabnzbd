@@ -67,7 +67,7 @@ import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
      check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
      panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates, \
-     windows_variant, ip_extract, set_serv_parms, get_serv_parms
+     windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -240,6 +240,9 @@ def print_help():
     print "  -v  --version            Print version information"
     print "  -c  --clean              Remove queue, cache and logs"
     print "  -p  --pause              Start in paused mode"
+    print "      --repair             Add orphaned jobs from the incomplete folder to the queue"
+    print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
+    print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
 
 def print_version():
@@ -727,8 +730,8 @@ def commandline_handler(frozen=True):
         opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging=', 'server=', 'templates',
-                                    'template2', 'browser=', 'config-file=', 'delay=', 'force',
-                                    'version', 'https=', 'autorestarted',
+                                    'template2', 'browser=', 'config-file=', 'force',
+                                    'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -790,10 +793,10 @@ def main():
     logging_level = None
     web_dir = None
     web_dir2 = None
-    delay = 0.0
     vista_plus = False
     vista64 = False
     force_web = False
+    repair = 0
     re_argv = [sys.argv[0]]
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
@@ -853,12 +856,6 @@ def main():
             exit_sab(0)
         elif opt in ('-p', '--pause'):
             pause = True
-        elif opt in ('--delay',):
-            # For debugging of memory leak only!!
-            try:
-                delay = float(arg)
-            except:
-               pass
         elif opt in ('--force',):
             force_web = True
             re_argv.append(opt)
@@ -866,6 +863,12 @@ def main():
             https_port = int(arg)
             re_argv.append(opt)
             re_argv.append(arg)
+        elif opt in ('--repair',):
+            repair = 1
+            pause = True
+        elif opt in ('--repair-all',):
+            repair = 2
+            pause = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1006,7 +1009,7 @@ def main():
         sys.exit(1)
 
     if clean_up:
-        xlist= glob.glob(logdir + '/*')
+        xlist= globber(logdir)
         for x in xlist:
             if RSS_FILE_NAME not in x:
                 os.remove(x)
@@ -1099,8 +1102,6 @@ def main():
     else:
         autobrowser = sabnzbd.cfg.autobrowser()
 
-    sabnzbd.cfg.debug_delay.set(delay)
-
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
 
@@ -1108,7 +1109,7 @@ def main():
         signal.signal(signal.SIGINT, sabnzbd.sig_handler)
         signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 
-    init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True)
+    init_ok = sabnzbd.initialize(pause, clean_up, evalSched=True, repair=repair)
 
     if not init_ok:
         logging.error('Initializing %s-%s failed, aborting',

@@ -123,7 +123,7 @@ class RSSQueue:
     def __init__(self):
         self.jobs = {}
         try:
-            feeds = sabnzbd.load_data(RSS_FILE_NAME, remove = False)
+            feeds = sabnzbd.load_admin(RSS_FILE_NAME)
             if type(feeds) == type({}):
                 for feed in feeds:
                     self.jobs[feed] = {}
@@ -407,7 +407,7 @@ class RSSQueue:
 
     @synchronized(LOCK)
     def save(self):
-        sabnzbd.save_data(self.jobs, sabnzbd.RSS_FILE_NAME)
+        sabnzbd.save_admin(self.jobs, sabnzbd.RSS_FILE_NAME)
 
     @synchronized(LOCK)
     def delete(self, feed):

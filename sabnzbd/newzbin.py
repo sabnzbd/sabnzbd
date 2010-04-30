@@ -108,15 +108,14 @@ class MSGIDGrabber(Thread):
             if filename and data:
                 filename = name_fixer(filename)
 
-                _r, _u, _d = nzo.get_repair_opts()
-                pp = sabnzbd.opts_to_pp(_r, _u, _d)
-                script = nzo.get_script()
-                cat = nzo.get_cat()
+                pp = nzo.pp
+                script = nzo.script
+                cat = nzo.cat
                 if not cat:
                     cat = cat_convert(newzbin_cat)
 
-                priority = nzo.get_priority()
-                nzbname = nzo.get_dirname_rename()
+                priority = nzo.priority
+                nzbname = nzo.custom_name
 
                 cat, pp, script, priority = cat_to_opts(cat, pp, script, priority)
 
@@ -265,7 +264,7 @@ class Bookmarks:
     do = None # Link to instance
 
     def __init__(self):
-        self.bookmarks = sabnzbd.load_data(BOOKMARK_FILE_NAME)
+        self.bookmarks = sabnzbd.load_admin(BOOKMARK_FILE_NAME)
         if not self.bookmarks:
             self.bookmarks = []
         self.__busy = False
@@ -353,7 +352,7 @@ class Bookmarks:
 
     @synchronized(BOOK_LOCK)
     def save(self):
-        sabnzbd.save_data(self.bookmarks, BOOKMARK_FILE_NAME)
+        sabnzbd.save_admin(self.bookmarks, BOOKMARK_FILE_NAME)
 
     def bookmarksList(self):
         return self.bookmarks

@@ -92,7 +92,7 @@ class Decoder(Thread):
                     logging.info("Decoding %s", article)
 
                     data = decode(article, lines)
-                    nzf.increase_article_count()
+                    nzf.article_count += 1
                 except IOError, e:
                     logging.error(Ta('error-decode@1'), article)
                     sabnzbd.downloader.pause_downloader()
@@ -187,8 +187,8 @@ def decode(article, data):
             found = False
             for i in xrange(10):
                 if data[i].startswith('begin '):
-                    nzf.set_filename(name_fixer(data[i].split(None, 2)[2]))
-                    nzf.set_type('uu')
+                    nzf.filename = name_fixer(data[i].split(None, 2)[2])
+                    nzf.type = 'uu'
                     found = True
                     break
             if found:
@@ -204,11 +204,11 @@ def decode(article, data):
         #Deal with yenc encoded posts
         elif (ybegin and yend):
             if 'name' in ybegin:
-                nzf.set_filename(name_fixer(ybegin['name']))
+                nzf.filename = name_fixer(ybegin['name'])
             else:
                 logging.debug("Possible corrupt header detected " + \
                               "=> ybegin: %s", ybegin)
-            nzf.set_type('yenc')
+            nzf.type = 'yenc'
             # Decode data
             if HAVE_YENC:
                 decoded_data, crc = _yenc.decode_string(''.join(data))[:2]

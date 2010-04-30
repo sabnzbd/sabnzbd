@@ -39,7 +39,7 @@ from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, loadavg, \
      to_units, diskfree, disktotal, get_ext, sanitize_foldername, \
-     get_filename, cat_to_opts, IntConv, panic_old_queue
+     get_filename, cat_to_opts, IntConv, panic_old_queue, globber
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks, MSGIDGrabber
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode, latin1
@@ -92,7 +92,7 @@ def ListScripts(default=False):
             lst = ['Default', 'None']
         else:
             lst = ['None']
-        for script in glob.glob(dd + '/*'):
+        for script in globber(dd):
             if os.path.isfile(script):
                 sc= os.path.basename(script)
                 if sc != "_svn" and sc != ".svn":
@@ -452,7 +452,7 @@ class MainPage:
         if msg: return msg
 
         nzbfile = kwargs.get('nzbfile')
-        if nzbfile != None and nzbfile.filename and nzbfile.value:
+        if nzbfile is not None and nzbfile.filename and nzbfile.value:
             sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
                                 kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
         raise dcRaiser(self.__root, kwargs)
@@ -1072,7 +1072,7 @@ class NzoPage:
             sabnzbd.nzbqueue.change_script(nzo_id,script)
         if pp != None:
             sabnzbd.nzbqueue.change_opts(nzo_id,pp)
-        if priority != None and nzo and nzo.get_priority() != int(priority):
+        if priority != None and nzo and nzo.priority != int(priority):
             sabnzbd.nzbqueue.set_priority(nzo_id, priority)
 
         args = [arg for arg in args if arg != 'save']
@@ -1401,6 +1401,20 @@ class HistoryPage:
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
+    def retry_pp(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzbfile = kwargs.get('nzbfile')
+        job = kwargs.get('job')
+        if job:
+            jobs = job.split(',')
+            history_db = cherrypy.thread_data.history_db
+            for job in jobs:
+                self.retry_job(platform_encode(history_db.get_path(job)), nzbfile)
+            history_db.remove_history(jobs)
+        raise queueRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
     def purge_failed(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
@@ -1464,6 +1478,11 @@ class HistoryPage:
         else:
             raise dcRaiser(self.__root, kwargs)
 
+    def retry_job(self, folder, new_nzb):
+        """ Re enter failed job in the download queue """
+        if folder:
+            nzbqueue.repair_job(folder, new_nzb)
+
 #------------------------------------------------------------------------------
 class ConfigPage:
     def __init__(self, web_dir, root, prim):
@@ -1511,7 +1530,7 @@ class ConfigPage:
 
 #------------------------------------------------------------------------------
 LIST_DIRPAGE = ( \
-    'download_dir', 'download_free', 'complete_dir', 'cache_dir',
+    'download_dir', 'download_free', 'complete_dir', 'cache_dir', 'admin_dir',
     'nzb_backup_dir', 'dirscan_dir', 'dirscan_speed', 'script_dir',
     'email_dir', 'permissions', 'log_dir'
     )
@@ -1633,7 +1652,7 @@ class ConfigGeneral:
             dd = os.path.abspath(web_dir + '/templates/static/stylesheets/colorschemes')
             if (not dd) or (not os.access(dd, os.R_OK)):
                 return lst
-            for color in glob.glob(dd + '/*'):
+            for color in globber(dd):
                 col= os.path.basename(color).replace('.css','')
                 if col != "_svn" and col != ".svn":
                     lst.append(col)
@@ -1667,7 +1686,7 @@ class ConfigGeneral:
 
         wlist = []
         wlist2 = ['None']
-        interfaces = glob.glob(sabnzbd.DIR_INTERFACES + "/*")
+        interfaces = globber(sabnzbd.DIR_INTERFACES)
         for k in interfaces:
             if k.endswith(DEF_STDINTF):
                 interfaces.remove(k)
@@ -2518,10 +2537,10 @@ class ConnectionInfo:
                     art_name = xml_name(article.article)
                     #filename field is not always present
                     try:
-                        nzf_name = xml_name(nzf.get_filename())
+                        nzf_name = xml_name(nzf.filename)
                     except: #attribute error
-                        nzf_name = xml_name(nzf.get_subject())
-                    nzo_name = xml_name(nzo.get_dirname())
+                        nzf_name = xml_name(nzf.subject)
+                    nzo_name = xml_name(nzo.final_name)
 
                 busy.append((nw.thrdnum, art_name, nzf_name, nzo_name))
 
@@ -3226,7 +3245,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
 
     # Filter out any items that don't match the search
     if search:
-        queue = [nzo for nzo in queue if matches_search(nzo.get_original_dirname(), search)]
+        queue = [nzo for nzo in queue if matches_search(nzo.final_name, search)]
 
     # Multi-page support for postproc items
     if start > len(queue):
@@ -3276,6 +3295,7 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
     # Unreverse the queue
     items.reverse()
 
+    retry_folders = []
     for item in items:
         if details_show_all:
             item['show_details'] = 'True'
@@ -3290,6 +3310,16 @@ def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_l
             item['size'] = ''
         if not item.has_key('loaded'):
             item['loaded'] = False
+        path = platform_encode(item.get('path', ''))
+        item['retry'] = int(bool(item.get('fail_message') and \
+                                 path and \
+                                 path not in retry_folders and \
+                                 path.startswith(cfg.download_dir.get_path()) and \
+                                 os.path.exists(path)) and \
+                                 not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*')) \
+                                 )
+        if item['retry']:
+            retry_folders.append(path)
 
     return (items, fetched_items, total_items)
 
@@ -3683,7 +3713,7 @@ def get_active_history(queue=None, items=None):
             item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
             item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
             item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'] = t
-        item['action_line'] = nzo.get_action_line()
+        item['action_line'] = nzo.action_line
         item = unpack_history_info(item)
 
         item['loaded'] = True

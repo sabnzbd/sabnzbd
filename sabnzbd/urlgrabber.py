@@ -125,12 +125,11 @@ class URLGrabber(Thread):
             if not filename:
                 filename = os.path.basename(url) + '.nzb'
             filename = misc.sanitize_foldername(filename)
-            _r, _u, _d = future_nzo.get_repair_opts()
-            pp = sabnzbd.opts_to_pp(_r, _u, _d)
-            script = future_nzo.get_script()
-            cat = future_nzo.get_cat()
-            priority = future_nzo.get_priority()
-            nzbname = future_nzo.get_dirname_rename()
+            pp = future_nzo.pp
+            script = future_nzo.script
+            cat = future_nzo.cat
+            priority = future_nzo.priority
+            nzbname = future_nzo.custom_name
 
             # Check if nzb file
             if os.path.splitext(filename)[1].lower() == '.nzb':

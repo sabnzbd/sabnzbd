@@ -31,6 +31,7 @@ import threading
 import subprocess
 import socket
 import time
+import glob
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -61,6 +62,11 @@ def safe_lower(txt):
         return txt.lower()
     else:
         return ''
+
+#------------------------------------------------------------------------------
+def globber(path, pattern='*'):
+    """ Do a glob.glob(), disabling the [] pattern in 'path' """
+    return glob.glob(os.path.join(path, pattern).replace('[', '[[]'))
 
 
 #------------------------------------------------------------------------------
@@ -905,8 +911,8 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
-    dirname = nzo.get_dirname()
-    created = nzo.get_dirname_created()
+    dirname = nzo.work_name
+    created = nzo.created
 
     dName = dirname
     if not created:
@@ -918,7 +924,6 @@ def get_filepath(path, nzo, filename):
                 break
             except:
                 pass
-        nzo.set_dirname(dName, created = True)
 
     fPath = os.path.join(os.path.join(path, dName), filename)
     n = 0
@@ -933,37 +938,48 @@ def get_filepath(path, nzo, filename):
     return fullPath
 
 
+def get_admin_path(newstyle, name, future):
+    """ Return news-style full path to job-admin folder of names job
+        or else the old cache path
+    """
+    if newstyle:
+        if future:
+            return os.path.join(cfg.admin_dir.get_path(), 'future')
+        else:
+            return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+    else:
+       return cfg.cache_dir.get_path()
+
 def bad_fetch(nzo, url, msg='', retry=False, content=False):
     """ Create History entry for failed URL Fetch
         msg : message to be logged
         retry : make retry link in histort
         content : report in history that cause is a bad NZB file
     """
-    logging.error(Ta('error-urlGet@2'), latin1(url), latin1(msg))
     msg = unicoder(msg)
 
-    pp = nzo.get_pp()
+    pp = nzo.pp
     if pp:
         pp = '&pp=%s' % urllib.quote(pp)
     else:
         pp = ''
-    cat = nzo.get_cat()
+    cat = nzo.cat
     if cat:
         cat = '&cat=%s' % urllib.quote(cat)
     else:
         cat = ''
-    script = nzo.get_script()
+    script = nzo.script
     if script:
         script = '&script=%s' % urllib.quote(script)
     else:
         script = ''
 
-    nzo.set_status('Failed')
+    nzo.status = 'Failed'
 
 
     if url:
-        nzo.set_filename(url)
-        nzo.set_original_dirname(url)
+        nzo.filename = url
+        nzo.final_name = url.strip()
 
     if content:
         # Bad content
@@ -973,16 +989,16 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
         msg = ' (' + msg + ')'
 
     if retry:
-        nzbname = nzo.get_dirname_rename()
+        nzbname = nzo.custom_name
         if nzbname:
             nzbname = '&nzbname=%s' % urllib.quote(nzbname)
         else:
             nzbname = ''
         text = T('his-retryURL1@1') + ', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
         parms = (msg, cfg.api_key(), urllib.quote(url), pp, cat, script, nzbname)
-        nzo.set_fail_msg(text % parms)
+        nzo.fail_msg = text % parms
     else:
-        nzo.set_fail_msg(msg)
+        nzo.fail_msg = msg
 
     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, add_to_history=True, unload=True)
 
@@ -1396,3 +1412,15 @@ def remove_dir(path):
         raise WindowsError(err)
     else:
         os.rmdir(path)
+
+
+def remove_all(path, pattern='*'):
+    """ Remove folder its content """
+    if os.path.exists(path):
+        for f in globber(path, pattern):
+            os.remove(f)
+        try:
+            os.rmdir(path)
+        except:
+            pass
+

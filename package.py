@@ -26,6 +26,7 @@ import tarfile
 import re
 import subprocess
 import shutil
+import time
 try:
     import py2exe
 except ImportError:
@@ -496,6 +497,7 @@ elif target in ('binary', 'installer'):
         DeleteFiles(fileBin)
         os.rename('dist', prod)
         os.system('zip -9 -r -X %s %s' % (fileBin, prod))
+        time.sleep(1.0)
         os.rename(prod, 'dist')
 
     os.system(BzrRevert)

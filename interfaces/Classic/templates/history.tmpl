@@ -40,6 +40,14 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
                 <input type="hidden" name="session" value="$session">
 				<input type="submit" value="$T('button-del')"></form>
 			<!--#end if#-->
+            <br/>
+			<!--#if $line.retry#-->
+				<form action="retry_pp" method="post" enctype="multipart/form-data">
+                <input type="file" name="nzbfile">
+				<input type="hidden" value="$line.nzo_id" name="job">
+                <input type="hidden" name="session" value="$session">
+				<input type="submit" value="$T('button-retry')"></form>
+			<!--#end if#-->
         </td>
         </tr>
         <!--#if $line.show_details#-->

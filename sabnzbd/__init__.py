@@ -104,7 +104,6 @@ QUEUECOMPLETEACTION = None #stores the name of the function to be called
 QUEUECOMPLETEARG = None #stores an extra arguments that need to be passed
 QUEUECOMPLETEACTION_GO = False # Booleen value whether to run an action or not at the queue end.
 
-DEBUG_DELAY = 0
 DAEMON = None
 
 LOGFILE = None
@@ -158,10 +157,9 @@ def connect_db(thread_index):
 
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader = False, clean_up = False, evalSched=False):
+def initialize(pause_downloader = False, clean_up = False, evalSched=False, repair=0):
     global __INITIALIZED__, __SHUTTING_DOWN__,\
            LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, \
-           DEBUG_DELAY, \
            DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
            DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG , DIR_INTERFACES, \
            DARWIN, RESTART_REQ, OSX_ICON, OLD_QUEUE
@@ -176,7 +174,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
 
     ### Clean the cache folder, if requested
     if clean_up:
-        xlist= glob.glob(cfg.cache_dir.get_path() + '/*')
+        xlist= misc.globber(cfg.cache_dir.get_path())
         for x in xlist:
             os.remove(x)
 
@@ -205,14 +203,14 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
 
     ### Set cache limit
-    ArticleCache.do.new_limit(cfg.cache_limit.get_int(), cfg.debug_delay())
+    ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     ### Set language files
     lang.install_language(DIR_LANGUAGE, cfg.language())
 
     ### Check for old queue (when a new queue is not present)
     if not os.path.exists(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME)):
-        OLD_QUEUE = bool(glob.glob(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_TMPL % '?')))
+        OLD_QUEUE = bool(misc.globber(cfg.cache_dir.get_path(), QUEUE_FILE_TMPL % '?'))
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete())
 
@@ -224,16 +222,17 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False):
     rss.init()
     scheduler.init()
 
-    bytes = load_data(BYTES_FILE_NAME, remove = False, do_pickle = False)
+    bytes = load_admin(BYTES_FILE_NAME, do_pickle=False)
     try:
         bytes = int(bytes)
         BPSMeter.do.bytes_sum = bytes
     except:
         BPSMeter.do.reset()
 
-    nzbqueue.init()
-
     PostProcessor()
+
+    nzbqueue.init()
+    nzbqueue.read_queue(repair)
 
     Assembler()
 
@@ -407,7 +406,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
 def save_state():
     ArticleCache.do.flush_articles()
     nzbqueue.save()
-    save_data(str(BPSMeter.do.get_sum()), BYTES_FILE_NAME, do_pickle = False)
+    save_admin(str(BPSMeter.do.get_sum()), BYTES_FILE_NAME, do_pickle=False)
     rss.save()
     Bookmarks.do.save()
     DirScanner.do.save()
@@ -439,29 +438,38 @@ def backup_exists(filename):
     return path and sabnzbd.cfg.no_dupes() and \
            os.path.exists(os.path.join(path, filename+'.gz'))
 
-@synchronized(NZB_LOCK)
 def backup_nzb(filename, data):
     """ Backup NZB file
     """
-    if cfg.nzb_backup_dir.get_path():
-        backup_name = filename + '.gz'
+    path = cfg.nzb_backup_dir.get_path()
+    if path:
+        save_compressed(path, filename, data)
 
-        # Need to go to the backup folder to
-        # prevent the pathname being embedded in the GZ file
-        here = os.getcwd()
-        os.chdir(cfg.nzb_backup_dir.get_path())
 
-        logging.info("Backing up %s", backup_name)
-        try:
-            _f = gzip.GzipFile(backup_name, 'wb')
-            _f.write(data)
-            _f.flush()
-            _f.close()
-        except:
-            logging.error("Saving %s to %s failed", backup_name, cfg.nzb_backup_dir.get_path())
-            logging.debug("Traceback: ", exc_info = True)
+@synchronized(NZB_LOCK)
+def save_compressed(folder, filename, data):
+    """ Save compressed NZB file in folder
+    """
+    # Need to go to the save folder to
+    # prevent the pathname being embedded in the GZ file
+    here = os.getcwd()
+    os.chdir(folder)
 
-        os.chdir(here)
+    if filename.endswith('.nzb'):
+        filename += '.gz'
+    else:
+        filename += '.nzb.gz'
+    logging.info("Backing up %s", os.path.join(folder, filename))
+    try:
+        f = gzip.GzipFile(filename, 'wb')
+        f.write(data)
+        f.flush()
+        f.close()
+    except:
+        logging.error("Saving %s failed", os.path.join(folder, filename))
+        logging.debug("Traceback: ", exc_info = True)
+
+    os.chdir(here)
 
 
 ################################################################################
@@ -646,21 +654,27 @@ def CheckFreeSpace():
 IO_LOCK = RLock()
 
 @synchronized(IO_LOCK)
-def get_new_id(prefix):
-    try:
-        fd, l = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, cfg.cache_dir.get_path())
-        os.close(fd)
-        head, tail = os.path.split(l)
-        return tail
-    except:
-        logging.error(Ta('error-failMkstemp'))
-        logging.debug("Traceback: ", exc_info = True)
+def get_new_id(prefix, folder, check_list=None):
+    """ Return unique prefixed admin identifier within folder'
+    """
+    while True:
+        try:
+            if not os.path.exists(folder):
+                os.mkdir(folder)
+            fd, path = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, folder)
+            os.close(fd)
+            head, tail = os.path.split(path)
+            if not check_list or tail not in check_list:
+                return tail
+        except:
+            logging.error(Ta('error-failMkstemp'))
+            logging.debug("Traceback: ", exc_info = True)
 
 
 @synchronized(IO_LOCK)
-def save_data(data, _id, do_pickle = True, doze=0):
-    path = os.path.join(cfg.cache_dir.get_path(), _id)
+def save_data(data, _id, path, do_pickle = True, silent=False):
     logging.info("Saving data for %s in %s", _id, path)
+    path = os.path.join(path, _id)
 
     try:
         _f = open(path, 'wb')
@@ -668,9 +682,6 @@ def save_data(data, _id, do_pickle = True, doze=0):
             cPickle.dump(data, _f, 2)
         else:
             _f.write(data)
-        if doze:
-            # Only for debugging decoder overflow
-            time.sleep(doze)
         _f.flush()
         _f.close()
     except:
@@ -679,15 +690,14 @@ def save_data(data, _id, do_pickle = True, doze=0):
 
 
 @synchronized(IO_LOCK)
-def load_data(_id, remove = True, do_pickle = True):
-    path = os.path.join(cfg.cache_dir.get_path(), _id)
-    logging.info("Loading data for %s from %s", _id, path)
+def load_data(_id, path, remove=True, do_pickle=True):
+    path = os.path.join(path, _id)
 
     if not os.path.exists(path):
         logging.info("%s missing", path)
         return None
 
-    data = None
+    logging.info("Loading data for %s from %s", _id, path)
 
     try:
         _f = open(path, 'rb')
@@ -698,7 +708,7 @@ def load_data(_id, remove = True, do_pickle = True):
         _f.close()
 
         if remove:
-            remove_data(_id)
+            os.remove(path)
     except:
         logging.error(Ta('error-loading@1'), path)
         logging.debug("Traceback: ", exc_info = True)
@@ -708,13 +718,68 @@ def load_data(_id, remove = True, do_pickle = True):
 
 
 @synchronized(IO_LOCK)
-def remove_data(_id):
-    path = os.path.join(cfg.cache_dir.get_path(), _id)
+def remove_data(_id, path):
+    path = os.path.join(path, _id)
     try:
-        os.remove(path)
-        logging.info("%s removed", path)
+        if os.path.exists(path):
+            os.remove(path)
+            logging.info("%s removed", path)
     except:
-        pass
+        logging.info("Failed to remove %s", path)
+        logging.debug("Traceback: ", exc_info = True)
+
+
+
+@synchronized(IO_LOCK)
+def save_admin(data, _id, do_pickle=True):
+    """ Save data in admin folder in specified format """
+    path = os.path.join(cfg.admin_dir.get_path(), _id)
+    logging.info("Saving data for %s in %s", _id, path)
+
+    try:
+        f = open(path, 'wb')
+        if do_pickle:
+            cPickle.dump(data, f, 2)
+        else:
+            f.write(data)
+        f.flush()
+        f.close()
+    except:
+        logging.error(Ta('error-saveX@1'), path)
+        logging.debug("Traceback: ", exc_info = True)
+
+
+@synchronized(IO_LOCK)
+def load_admin(_id, remove=False, do_pickle=True):
+    """ Read data in admin folder in specified format """
+    path = os.path.join(cfg.admin_dir.get_path(), _id)
+    logging.info("Loading data for %s from %s", _id, path)
+
+    if not os.path.exists(path):
+        logging.info("%s missing, trying old cache", path)
+        path = os.path.join(cfg.cache_dir.get_path(), _id)
+        if not os.path.exists(path):
+            logging.info("%s missing", path)
+            return None
+        remove = True
+
+    try:
+        f = open(path, 'rb')
+        if do_pickle:
+            data = cPickle.load(f)
+        else:
+            data = f.read()
+        f.close()
+
+        if remove:
+            os.remove(path)
+    except:
+        logging.error(Ta('error-loading@1'), path)
+        logging.debug("Traceback: ", exc_info = True)
+        return None
+
+    return data
+
 
 
 def pp_to_opts(pp):
@@ -789,3 +854,7 @@ def check_all_tasks():
 # Required wrapper because nzbstuff.py cannot import downloader.py
 def active_primaries():
     return sabnzbd.downloader.active_primaries()
+
+
+def proxy_postproc(nzo):
+    sabnzbd.postproc.PostProcessor.do.process(nzo)

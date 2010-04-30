@@ -123,6 +123,7 @@ age               AGE
 button-del        Del
 button-resume     Resume
 button-pause      Pause
+button-retry      Retry
 unknown           unknown
 fetchingNewzbin@1 fetching msgid %s from www.newzbin.com
 error-fetchNewzbin@1 Error Fetching msgid %s from www.newzbin.com -\
@@ -266,6 +267,11 @@ systemFolders           System Folders
 opt-cache_dir           Cache Folder
 explain-cache_dir       Location for temporary storage.\n\
                         <i>Can only be changed when queue is empty.</i>\n\
+                        <i>Requires SABnzbd restart!</i>
+opt-admin_dir           Administrative Folder
+explain-admin_dir       Location for queue admin and history database.\n\
+                        <i>Can only be changed when queue is empty.</i>\n\
+                        <i>Data will <b>not</b> be moved.</i>\n\
                         <i>Requires SABnzbd restart!</i>
 opt-log_dir             Log Folder
 explain-log_dir         Location of log files for SABnzbd.\n\
