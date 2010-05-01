@@ -108,13 +108,20 @@ class NzbQueue(TryList):
 
         # Scan for any folders in "incomplete" that are not yet in the queue
         if repair:
-            for folder in globber(cfg.download_dir.get_path()):
-                if os.path.basename(folder) not in folders:
-                    self.repair_job(folder)
+            self.scan_jobs(folders)
             # Handle any lost future jobs
             for nzo_id in globber(os.path.join(cfg.admin_dir.get_path(), 'future')):
                 if nzo_id not in self.__nzo_table:
                     self.add(nzo, save=False)
+
+
+    def scan_jobs(self, folders=None):
+        """ Scan "incomplete" for mssing folders """
+        if not folders:
+            folders = [nzo.work_name for nzo in self.__nzo_list]
+        for folder in globber(cfg.download_dir.get_path()):
+            if os.path.basename(folder) not in folders:
+                self.repair_job(folder)
 
 
     def repair_job(self, folder, new_nzb=None):
@@ -126,13 +133,13 @@ class NzbQueue(TryList):
         if new_nzb is None or not new_nzb.filename:
             filename = globber(path, '*.gz')
             if len(filename) > 0:
-                ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True)
+                ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True, pre=False)
             else:
                 nzo = NzbObject(name, 0, pp, script, '', cat=cat, priority=prio, nzbname=name)
                 self.add(nzo)
         else:
             remove_all(path, '*.gz')
-            sabnzbd.add_nzbfile(new_nzb, pp=pp, script=script, cat=cat, priority=prio, nzbname=name)
+            sabnzbd.add_nzbfile(new_nzb, pp=pp, script=script, cat=cat, priority=prio, nzbname=name, pre=False)
 
 
     @synchronized(NZBQUEUE_LOCK)
@@ -1000,3 +1007,9 @@ def sort_queue(field, reverse=False):
 def repair_job(folder, new_nzb):
     global __NZBQ
     if __NZBQ: __NZBQ.repair_job(folder, new_nzb)
+
+@synchronized_CV
+@synchronized(NZBQUEUE_LOCK)
+def scan_jobs(folders=None):
+    global __NZBQ
+    if __NZBQ: __NZBQ.scan_jobs(folders)

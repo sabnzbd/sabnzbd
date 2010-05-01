@@ -59,6 +59,7 @@ BOOKMARK_FILE_NAME = 'bookmarks.sab'
 SCAN_FILE_NAME    = 'watched_data.sab'
 JOB_ADMIN = '__ADMIN__'
 ATTRIB_FILE = 'SABnzbd_attrib'
+REPAIR_REQUEST = 'repair-all.sab'
 
 DB_HISTORY_VERSION = 1
 DB_QUEUE_VERSION = 1

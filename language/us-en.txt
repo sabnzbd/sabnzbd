@@ -172,6 +172,13 @@ explain-Restart   The button below will restart SABnzbd.\n\
                   Use it when you think the program has a stability problem.\n\
                   Downloading will be paused before the restart and resume afterwards.
 button-restart    Restart
+button-scan       Scan
+explain-Scan      The "Scan" button will search the temporary download folder for\n\
+                  folders missing from the queue.
+button-repair     Repair
+explain-Repair    The "Repair" button will restart SABnzbd and do a complete\n\
+                  reconstrution of the queue content, preserving already downloaded files.\n\
+                  This will modify the queue order.
 version           Version
 uptime            Uptime
 error             Error

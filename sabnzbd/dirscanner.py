@@ -132,7 +132,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     return status
 
 
-def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False, priority=None, nzbname=None):
+def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
+                      priority=None, nzbname=None, pre=True):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
@@ -166,7 +167,11 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         # The name is used as the name of the folder, so sanitize it using folder specific santization
         name = misc.sanitize_foldername(name)
 
-    accept, name, pp, cat, script, priority = sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority)
+    if pre:
+        accept, name, pp, cat, script, priority = sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority)
+    else:
+        accept = True
+
     if accept:
         try:
             nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname)

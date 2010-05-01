@@ -11,10 +11,22 @@
 <b>$T('confgFile'):</b> $configfn
 </p>
 
-$T('explain-Restart')<br/><br/>
-
+$T('explain-Restart')<br/>
 <form action="saveGeneral" method="post">
 <input type="submit" onclick="this.form.action='restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
 </form>
+<br/><br/>
+
+$T('explain-Scan')<br/>
+<form action="saveGeneral" method="post">
+<input type="submit" onclick="this.form.action='scan?session=$session'; this.form.submit(); return false;" value="$T('button-scan')"/>
+</form>
+<br/><br/>
+
+$T('explain-Repair')<br/>
+<form action="saveGeneral" method="post">
+<input type="submit" onclick="this.form.action='repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
+</form>
+
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

@@ -214,6 +214,10 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete())
 
+    if check_repair_request():
+        repair = 2
+        pause_downloader = True
+
     ###
     ### Initialize threads
     ###
@@ -476,7 +480,7 @@ def save_compressed(folder, filename, data):
 ## CV synchronized (notifies downloader)                                      ##
 ################################################################################
 @synchronized_CV
-def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None):
+def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, pre=True):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -506,7 +510,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if ext.lower() in ('.zip', '.rar'):
         ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
     else:
-        ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname)
+        ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, pre=pre)
 
 
 ################################################################################
@@ -801,6 +805,28 @@ def opts_to_pp(repair, unpack, delete):
     if unpack: pp += 1
     if delete: pp += 1
     return pp
+
+
+def request_repair():
+    """ Request a full repair on next restart """
+    path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
+    try:
+        f = open(path, 'w')
+        f.write('\n')
+        f.close()
+    except:
+        pass
+
+def check_repair_request():
+    """ Return True if repair request found, remove afterwards """
+    path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
+    if os.path.exists(path):
+        try:
+            os.remove(path)
+        except:
+            pass
+        return True
+    return False
 
 
 def SimpleRarExtract(rarfile, fn):

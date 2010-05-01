@@ -1527,6 +1527,24 @@ class ConfigPage:
             yield T('restart2')
             cherrypy.engine.restart()
 
+    @cherrypy.expose
+    def repair(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg:
+            yield msg
+        else:
+            sabnzbd.request_repair()
+            yield T('restart1')
+            sabnzbd.halt()
+            yield T('restart2')
+            cherrypy.engine.restart()
+
+    @cherrypy.expose
+    def scan(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        nzbqueue.scan_jobs()
+        raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
 LIST_DIRPAGE = ( \
