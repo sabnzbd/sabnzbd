@@ -597,16 +597,17 @@ class NzbObject(TryList):
             logging.info('Replacing spaces with underscores in %s', self.final_name)
             self.final_name = self.final_name.replace(' ','_')
 
-        if nzb and sabnzbd.backup_exists(filename):
-            # File already exists and we have no_dupes set
-            logging.warning(Ta('warn-skipDup@1'), filename)
-            raise TypeError
-
-        # Create "incomplete" folder
+        # Determione "incomplete" folder and detect reuse
         wdir = os.path.join(cfg.download_dir.get_path(), self.work_name)
         adir = os.path.join(wdir, JOB_ADMIN)
         nzo_file = globber(adir, 'SABnzbd_nzo_*')
         reuse = os.path.exists(wdir) and not nzo_file
+
+        if (not reuse) and nzb and sabnzbd.backup_exists(filename):
+            # File already exists and we have no_dupes set
+            logging.warning(Ta('warn-skipDup@1'), filename)
+            raise TypeError
+
         if reuse:
             remove_all(adir, 'SABnzbd_*')
         else:

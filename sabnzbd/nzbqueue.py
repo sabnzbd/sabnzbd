@@ -39,8 +39,7 @@ import sabnzbd.downloader
 from sabnzbd.assembler import Assembler
 from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
-from sabnzbd.dirscanner import ProcessSingleFile
-
+from sabnzbd.encoding import latin1
 
 def DeleteLog(name):
     if name:
@@ -133,12 +132,15 @@ class NzbQueue(TryList):
         if new_nzb is None or not new_nzb.filename:
             filename = globber(path, '*.gz')
             if len(filename) > 0:
-                ProcessSingleFile(name, filename[0], pp=pp, script=script, cat=cat, priority=prio, keep=True, pre=False)
+                logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
+                sabnzbd.add_nzbfile(filename[0], pp=pp, script=script, cat=cat, priority=prio, nzbname=name, pre=False)
             else:
+                logging.debug('Repair job %s without stored NZB', latin1(name))
                 nzo = NzbObject(name, 0, pp, script, '', cat=cat, priority=prio, nzbname=name)
                 self.add(nzo)
         else:
             remove_all(path, '*.gz')
+            logging.debug('Repair job %s without new NZB (%s)', latin1(name), latin1(new_nzb.filename))
             sabnzbd.add_nzbfile(new_nzb, pp=pp, script=script, cat=cat, priority=prio, nzbname=name, pre=False)
 
 

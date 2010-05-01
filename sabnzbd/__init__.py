@@ -172,11 +172,13 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     ### Set global database connection for Web-UI threads
     cherrypy.engine.subscribe('start_thread', connect_db)
 
-    ### Clean the cache folder, if requested
+    ### Clean-up, if requested
     if clean_up:
-        xlist= misc.globber(cfg.cache_dir.get_path())
-        for x in xlist:
-            os.remove(x)
+        # Old cache folder
+        misc.remove_all(cfg.cache_dir.get_path(), '*.sab')
+        misc.remove_all(cfg.cache_dir.get_path(), 'SABnzbd_*')
+        # New admin folder
+        misc.remove_all(cfg.admin_dir.get_path(), '*.sab')
 
     ### If dirscan_dir cannot be created, set a proper value anyway.
     ### Maybe it's a network path that's temporarily missing.
@@ -485,9 +487,16 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
 
-    # Consider reception of Latin-1 names for non-Windows platforms
-    # When an OSX/Unix server receives a file from Windows platform
-    filename = encoding.special_fixer(nzbfile.filename)
+    if isinstance(nzbfile, str):
+        # File coming from queue repair
+        filename = nzbfile
+        keep = True
+    else:
+        # File coming from API/TAPI
+        # Consider reception of Latin-1 names for non-Windows platforms
+        # When an OSX/Unix server receives a file from Windows platform
+        filename = encoding.special_fixer(nzbfile.filename)
+        keep = False
 
     if not sabnzbd.WIN32:
         # If windows client sends file to Unix server backslashed may
@@ -499,18 +508,21 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
 
     logging.info('Adding %s', filename)
 
-    try:
-        f, path = tempfile.mkstemp(suffix=ext, text=False)
-        os.write(f, nzbfile.value)
-        os.close(f)
-    except:
-        logging.error(Ta('error-tempFile@1'), filename)
-        logging.debug("Traceback: ", exc_info = True)
+    if isinstance(nzbfile, str):
+        path = nzbfile
+    else:
+        try:
+            f, path = tempfile.mkstemp(suffix=ext, text=False)
+            os.write(f, nzbfile.value)
+            os.close(f)
+        except:
+            logging.error(Ta('error-tempFile@1'), filename)
+            logging.debug("Traceback: ", exc_info = True)
 
     if ext.lower() in ('.zip', '.rar'):
         ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
     else:
-        ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, pre=pre)
+        ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, keep=keep, pre=pre)
 
 
 ################################################################################
