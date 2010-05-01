@@ -109,6 +109,20 @@
             <!--#end for#-->
             </select>
 
+        </td><td>
+
+            <strong>$T('opt-pre_script'):</strong><br/>
+            <small>$T('explain-pre_script')</small><br/>
+            <select name="pre_script">
+            <!--#for $sc in $script_list#-->
+            <!--#if $sc.lower() == $pre_script.lower()#-->
+                <option value="$sc" selected>$sc</option>
+            <!--#else#-->
+                <option value="$sc">$sc</option>
+            <!--#end if#-->
+            <!--#end for#-->
+            </select>
+
         </td>
       </tr>
       <tr><td colspan="3">&nbsp;</td></tr>

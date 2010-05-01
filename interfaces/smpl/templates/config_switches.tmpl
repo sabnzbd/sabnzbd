@@ -75,6 +75,20 @@
             <!--#end for#-->
             </select>
 		    <span class="tips">$T('explain-dirscan_script')</span>
+
+		<br class="clear" />
+
+		    <span class="label">$T('opt-pre_script'):</span>
+            <select name="pre_script" id="pre_script" class="select">
+            <!--#for $sc in $script_list#-->
+                <!--#if $sc.lower() == $pre_script.lower()#-->
+                    <option value="$sc" selected>$sc</option>
+                <!--#else#-->
+                    <option value="$sc">$sc</option>
+                <!--#end if#-->
+            <!--#end for#-->
+            </select>
+		    <span class="tips">$T('explain-pre_script')</span>
 		<br class="clear" />
 
 		    <span class="label">$T('opt-dirscan_priority'):</span>

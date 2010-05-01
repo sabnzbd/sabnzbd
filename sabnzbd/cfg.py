@@ -84,6 +84,7 @@ dirscan_script = OptionStr('misc', 'dirscan_script', 'None')
 dirscan_priority = OptionNumber('misc', 'dirscan_priority', NORMAL_PRIORITY)
 autobrowser = OptionBool('misc', 'auto_browser', True)
 replace_illegal = OptionBool('misc', 'replace_illegal', True)
+pre_script = OptionStr('misc', 'pre_script')
 
 enable_unrar = OptionBool('misc', 'enable_unrar', True)
 enable_unzip = OptionBool('misc', 'enable_unzip', True)

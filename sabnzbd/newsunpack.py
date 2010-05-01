@@ -27,9 +27,10 @@ import logging
 from time import time
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
+from sabnzbd.encoding import TRANS, UNTRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.misc import format_time_string, find_on_path
+from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T, Ta
 
@@ -1210,3 +1211,65 @@ def unrar_check(rar):
         if m:
             return (int(m.group(1)), int(m.group(2))) >= (3, 80)
     return False
+
+
+
+def analyse_show(name):
+    """ Do a quick SeasonSort check and return basic facts """
+    job = SeriesSorter(name, None, None, force=True)
+    if job.is_match():
+        job.get_values()
+    info = job.show_info
+    return info.get('show_name', ''), \
+           info.get('season_num', ''), \
+           info.get('episode_num', ''), \
+           info.get('ep_name', '')
+
+
+def pre_queue(name, pp, cat, script, priority):
+    """ Run pre-queue script (if any) and process results
+    """
+    def fix(p):
+        if not p or str(p).lower() == 'none':
+            return ''
+        else:
+            return UNTRANS(str(p))
+
+    values = [True, name, pp, cat, script, priority]
+    if cfg.pre_script():
+        name = os.path.splitext(name)[0]
+        pre_script = os.path.join(cfg.script_dir.get_path(), cfg.pre_script())
+        command = [pre_script, name, fix(pp), fix(cat), fix(script), fix(priority) ]
+        command.extend(analyse_show(name))
+
+        stup, need_shell, command, creationflags = build_command(command)
+        env = fix_env()
+
+        logging.info('Running pre-queue script %s(%s, %s, %s, %s, %s, %s, %s, %s, %s)', *command)
+
+        try:
+            p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                startupinfo=stup, env=env, creationflags=creationflags)
+        except:
+            logging.debug("Failed script %s, Traceback: ", pre_script, exc_info = True)
+            return values
+
+        output = p.stdout.read()
+        ret = p.wait()
+        if ret == 0:
+            n = 0
+            for line in output.split('\n'):
+                line = line.strip('\r\n \'"')
+                if n < len(values) and line:
+                    try:
+                        values[n] = int(line)
+                    except:
+                        values[n] = TRANS(line)
+                    n += 1
+        if values[0]:
+            logging.info('Pre-Q accepts %s', name)
+        else:
+            logging.info('Pre-Q refuses %s', name)
+
+    return values

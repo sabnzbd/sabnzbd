@@ -306,6 +306,8 @@ opt-dirscan_opts         Default Post-Processing
 explain-dirscan_opts     Used when no post-processing is defined by the category.
 opt-dirscan_script       Default User Script
 explain-dirscan_script   Used when no user script is defined by the category.
+opt-pre_script           Pre-queue user script
+explain-pre_script       Used before an NZB enters the queue.
 opt-dirscan_priority     Default Priority
 explain-dirscan_priority Used when no priority is defined by the category.
 opt-par2_multicore       Enable MultiCore Par2

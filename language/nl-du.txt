@@ -297,6 +297,8 @@ opt-dirscan_opts         Standaard nabewerking
 explain-dirscan_opts     Wordt gebruikt wanneer de categorie geen nabewerking opgeeft.
 opt-dirscan_script       Standaard script
 explain-dirscan_script   Wordt gebruikt wanneer de categorie geen script opgeeft.
+opt-pre_script           Wachtrij filter script
+explain-pre_script       Wordt uitgevoerd vóór een NZB de queue in gaat
 opt-dirscan_priority     Standaard prioriteit
 explain-dirscan_priority Wordt gebruikt wanneer de categorie geen prioriteit opgeeft.
 opt-par2_multicore       MultiCore Par2 toestaan

@@ -144,7 +144,7 @@ class Sorter:
         return self.sort_file
 
 class SeriesSorter:
-    def __init__(self, dirname, path, cat):
+    def __init__(self, dirname, path, cat, force=False):
         self.matched = False
 
         self.original_dirname = dirname
@@ -163,13 +163,13 @@ class SeriesSorter:
         self.show_info = {}
 
         #Check if it is a TV show on init()
-        self.match()
+        self.match(force)
 
 
-    def match(self):
+    def match(self, force=False):
         ''' Checks the regex for a match, if so set self.match to true '''
-        if cfg.enable_tv_sorting() and cfg.tv_sort_string():
-            if (not self.cats) or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
+        if force or (cfg.enable_tv_sorting() and cfg.tv_sort_string()):
+            if force or (not self.cats) or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 #First check if the show matches TV episode regular expressions. Returns regex match object
                 self.match_obj, self.extras = check_regexs(self.original_dirname, series_match, double=True)
                 if self.match_obj:

@@ -296,11 +296,6 @@ class NzbFile(TryList):
 ################################################################################
 class NzbParser(xml.sax.handler.ContentHandler):
     """ Forgiving parser for NZB's """
-    # Accesses private variables of NzbObject instances to keep
-    # queue-compatibility with previous trunk versions.
-    # Ideally the methods of this class could be added to NzbObject,
-    # but this would also break compatibility.
-    # Hence, this solution.
     def __init__ (self, nzo):
         self.nzo = nzo
         self.in_nzb = False
