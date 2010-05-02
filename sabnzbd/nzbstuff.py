@@ -448,7 +448,7 @@ NzbObjectMapper = (
     ('_NzbObject__msgid',            'msgid'),
     ('_NzbObject__cat',              'cat'),
     ('_NzbObject__url',              'url'),
-    ('_NzbObject__group',            'group'),
+    ('_NzbObject__group',            'groups'),
     ('_NzbObject__avg_date',         'avg_date'),
     ('_NzbObject__dirprefix',        'dirprefix'),
     ('_NzbObject__partable',         'partable'),
@@ -524,7 +524,7 @@ class NzbObject(TryList):
             self.url = str(url)     # Either newzbin-id or URL queued (future-type only)
         else:
             self.url = ''
-        self.group = []
+        self.groups = []
         self.avg_date = datetime.datetime.fromtimestamp(0.0)
         self.dirprefix = []
 
@@ -647,7 +647,7 @@ class NzbObject(TryList):
             sabnzbd.save_compressed(adir, filename, nzb)
 
         if cat is None:
-            for grp in self.group:
+            for grp in self.groups:
                 cat = cat_convert(grp)
                 if cat:
                     break
@@ -976,8 +976,8 @@ class NzbObject(TryList):
 
     @property
     def group(self):
-        if self.group:
-            return self.group[0]
+        if self.groups:
+            return self.groups[0]
         else:
             return None
 
