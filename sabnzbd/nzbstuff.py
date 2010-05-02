@@ -418,7 +418,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
     def endDocument(self):
         """ End of the file """
-        self.nzo.group = self.groups
+        self.nzo.groups = self.groups
         self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / self.valids)
         if self.skipped_files:
             logging.warning(Ta('warn-badImport@2'),
