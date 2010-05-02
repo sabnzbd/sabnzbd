@@ -27,7 +27,7 @@ import glob
 
 import sabnzbd
 from sabnzbd.trylist import TryList
-from sabnzbd.nzbstuff import NzbObject, get_attrib_file, set_attrib_file
+from sabnzbd.nzbstuff import NzbObject, get_attrib_file
 from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts, \
                          get_admin_path, remove_all, globber
 import sabnzbd.database as database
@@ -128,6 +128,8 @@ class NzbQueue(TryList):
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         cat, pp, script, prio = get_attrib_file(path, 4)
+        if prio == TOP_PRIORITY:
+            prio = DEFAULT_PRIORITY
         remove_all(path, 'SABnzbd_*')
         if new_nzb is None or not new_nzb.filename:
             filename = globber(path, '*.gz')

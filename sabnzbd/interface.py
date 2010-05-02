@@ -661,7 +661,7 @@ class MainPage:
         limit = kwargs.get('limit')
         nzbname = kwargs.get('nzbname')
 
-        if mode == 'addfile':
+        if mode in ('addfile', 'retry'):
             # When uploading via flash it will send the nzb in a kw arg called Filedata
             if name is None or isinstance(name, str) or isinstance(name, unicode):
                 name = kwargs.get('Filedata')
@@ -669,11 +669,20 @@ class MainPage:
             if name is None or isinstance(name, str) or isinstance(name, unicode):
                 name = kwargs.get('nzbfile')
 
-            if name is not None and name.filename and name.value:
-                sabnzbd.add_nzbfile(name, pp, script, cat, priority, nzbname)
-                return report(output)
+            if mode == 'addfile':
+                # Regular job creation
+                if name is not None and name.filename and name.value:
+                    sabnzbd.add_nzbfile(name, pp, script, cat, priority, nzbname)
+                    return report(output)
+                else:
+                    return report(output, _MSG_NO_VALUE)
             else:
-                return report(output, _MSG_NO_VALUE)
+                # Retry job from history
+                if retry_job(value, name):
+                    return report(output)
+                else:
+                    return report(output, _MSG_NO_ITEM)
+
 
         if mode == 'addlocalfile':
             if name:
@@ -693,6 +702,7 @@ class MainPage:
                 return report(output)
             else:
                 return report(output, _MSG_NO_VALUE)
+
 
         if mode == 'switch':
             if value and value2:
@@ -891,12 +901,22 @@ class MainPage:
             cherrypy.engine.restart()
             return report(output)
 
+        if mode == 'restart-repair':
+            sabnzbd.request_repair()
+            sabnzbd.halt()
+            cherrypy.engine.restart()
+            return report(output)
+
         if mode == 'disconnect':
             downloader.disconnect()
             return report(output)
 
         if mode == 'osx_icon':
             sabnzbd.OSX_ICON = int(value != '0')
+            return report(output)
+
+        if mode == 'rescan':
+            nzbqueue.scan_jobs()
             return report(output)
 
         return report(output, _MSG_NOT_IMPLEMENTED)
@@ -1404,14 +1424,7 @@ class HistoryPage:
     def retry_pp(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        nzbfile = kwargs.get('nzbfile')
-        job = kwargs.get('job')
-        if job:
-            jobs = job.split(',')
-            history_db = cherrypy.thread_data.history_db
-            for job in jobs:
-                self.retry_job(platform_encode(history_db.get_path(job)), nzbfile)
-            history_db.remove_history(jobs)
+        retry_job(kwargs.get('job'), kwargs.get('nzbfile'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -1478,10 +1491,16 @@ class HistoryPage:
         else:
             raise dcRaiser(self.__root, kwargs)
 
-    def retry_job(self, folder, new_nzb):
-        """ Re enter failed job in the download queue """
-        if folder:
-            nzbqueue.repair_job(folder, new_nzb)
+def retry_job(job, new_nzb):
+    """ Re enter failed job in the download queue """
+    if job:
+        history_db = cherrypy.thread_data.history_db
+        path = history_db.get_path(job)
+        if path:
+            nzbqueue.repair_job(platform_encode(path), new_nzb)
+            history_db.remove_history(job)
+            return True
+    return False
 
 #------------------------------------------------------------------------------
 class ConfigPage:
