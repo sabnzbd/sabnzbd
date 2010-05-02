@@ -128,8 +128,6 @@ class NzbQueue(TryList):
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         cat, pp, script, prio = get_attrib_file(path, 4)
-        if prio == TOP_PRIORITY:
-            prio = DEFAULT_PRIORITY
         remove_all(path, 'SABnzbd_*')
         if new_nzb is None or not new_nzb.filename:
             filename = globber(path, '*.gz')
@@ -229,7 +227,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def change_opts(self, nzo_id, pp):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].pp = pp
+            self.__nzo_table[nzo_id].set_pp(pp)
 
     @synchronized(NZBQUEUE_LOCK)
     def change_script(self, nzo_id, script):
@@ -244,7 +242,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def change_name(self, nzo_id, name):
         if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].final_name_pw = name
+            self.__nzo_table[nzo_id].set_final_name_pw(name)
 
     @synchronized(NZBQUEUE_LOCK)
     def get_nzo(self, nzo_id):

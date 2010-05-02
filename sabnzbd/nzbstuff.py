@@ -97,14 +97,14 @@ class Article(TryList):
         return self.art_id
 
     def __getstate__(self):
-        """ Load from pickle file, translating attributes """
+        """ Save to pickle file, translating attributes """
         dict_ = {}
         for tup in ArticleMapper:
             dict_[tup[0]] = self.__dict__[tup[1]]
         return dict_
 
     def __setstate__(self, dict_):
-        """ Save to pickle file, translating attributes """
+        """ Load from pickle file, translating attributes """
         for tup in ArticleMapper:
             try:
                 self.__dict__[tup[1]] = dict_[tup[0]]
@@ -271,14 +271,14 @@ class NzbFile(TryList):
         return min(self.decodetable)
 
     def __getstate__(self):
-        """ Load from pickle file, translating attributes """
+        """ Save to pickle file, translating attributes """
         dict_ = {}
         for tup in NzbFileMapper:
             dict_[tup[0]] = self.__dict__[tup[1]]
         return dict_
 
     def __setstate__(self, dict_):
-        """ Save to pickle file, translating attributes """
+        """ Load from pickle file, translating attributes """
         for tup in NzbFileMapper:
             try:
                 self.__dict__[tup[1]] = dict_[tup[0]]
@@ -826,8 +826,7 @@ class NzbObject(TryList):
         else:
             return sabnzbd.opts_to_pp(self.repair, self.unpack, self.delete)
 
-    @pp.setter
-    def pp(self, value):
+    def set_pp(self, value):
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(value)
 
     @property
@@ -837,8 +836,7 @@ class NzbObject(TryList):
         else:
             return self.final_name
 
-    @final_name_pw.setter
-    def final_name_pw(self, name):
+    def set_final_name_pw(self, name):
         if isinstance(name, str):
             name, self.password = scan_password(platform_encode(name))
             self.final_name = sanitize_foldername(name)
@@ -1091,7 +1089,8 @@ class NzbObject(TryList):
         return self.repair, self.unpack, self.delete
 
     def save_attribs(self):
-        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority))
+        if self.priority != TOP_PRIORITY:
+            set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
@@ -1112,14 +1111,14 @@ class NzbObject(TryList):
                 nzf_ids.remove(nzf_id)
 
     def __getstate__(self):
-        """ Load from pickle file, translating attributes """
+        """ Save to pickle file, translating attributes """
         dict_ = {}
         for tup in NzbObjectMapper:
             dict_[tup[0]] = self.__dict__[tup[1]]
         return dict_
 
     def __setstate__(self, dict_):
-        """ Save to pickle file, translating attributes """
+        """ Load from pickle file, translating attributes """
         for tup in NzbObjectMapper:
             try:
                 self.__dict__[tup[1]] = dict_[tup[0]]
