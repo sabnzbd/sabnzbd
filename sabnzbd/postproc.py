@@ -170,6 +170,7 @@ class PostProcessor(Thread):
             script_line = ''
 
             ## Get the job flags
+            nzo.save_attribs()
             flagRepair, flagUnpack, flagDelete = nzo.repair_opts
             pp = nzo.pp
             script = nzo.script

@@ -483,7 +483,7 @@ NzbObjectMapper = (
 class NzbObject(TryList):
     def __init__(self, filename, msgid, pp, script, nzb = None,
                  futuretype = False, cat = None, url=None,
-                 priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None):
+                 priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None, reuse=False):
         TryList.__init__(self)
 
         filename = platform_encode(filename)
@@ -597,11 +597,9 @@ class NzbObject(TryList):
             logging.info('Replacing spaces with underscores in %s', self.final_name)
             self.final_name = self.final_name.replace(' ','_')
 
-        # Determione "incomplete" folder and detect reuse
+        # Determine "incomplete" folder
         wdir = os.path.join(cfg.download_dir.get_path(), self.work_name)
         adir = os.path.join(wdir, JOB_ADMIN)
-        nzo_file = globber(adir, 'SABnzbd_nzo_*')
-        reuse = os.path.exists(wdir) and not nzo_file
 
         if (not reuse) and nzb and sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
@@ -609,7 +607,7 @@ class NzbObject(TryList):
             raise TypeError
 
         if reuse:
-            remove_all(adir, 'SABnzbd_*')
+            remove_all(adir, 'SABnzbd_nz?-*')
         else:
             wdir = get_unique_path(wdir, create_dir=True)
             adir = os.path.join(wdir, JOB_ADMIN)
@@ -652,12 +650,17 @@ class NzbObject(TryList):
                 if cat:
                     break
 
+        if cfg.create_group_folders():
+            self.dirprefix.append(self.group)
+
+        # Pickup backed-up attributes when re-using
+        if reuse:
+            cat, pp, script, self.priority, name = get_attrib_file(self.workpath, 5)
+            self.set_final_name_pw(name)
+
         # Determine category and find pp/script values
         self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, self.priority)
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
-
-        if cfg.create_group_folders():
-            self.dirprefix.append(self.group)
 
         if reuse:
             self.check_existing_files(wdir)
@@ -672,7 +675,7 @@ class NzbObject(TryList):
 
         # Pause job when above size limit
         limit = cfg.SIZE_LIMIT.get_int()
-        if limit and self.bytes > limit:
+        if not reuse and limit and self.bytes > limit:
             logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
             self.pause()
             self.priority = LOW_PRIORITY
@@ -994,7 +997,9 @@ class NzbObject(TryList):
         for nzf in self.finished_files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
 
-        if not keep_basic:
+        if keep_basic:
+            clean_folder(wpath, 'SABnzbd_nz?_*')
+        else:
             clean_folder(wpath)
 
     def gather_info(self, for_cli = False):
@@ -1089,8 +1094,11 @@ class NzbObject(TryList):
         return self.repair, self.unpack, self.delete
 
     def save_attribs(self):
-        if self.priority != TOP_PRIORITY:
-            set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority))
+        if self.priority == TOP_PRIORITY:
+            prio = HIGH_PRIORITY
+        else:
+            prio = self.priority
+        set_attrib_file(self.workpath, (self.cat, self.pp, self.script, prio, self.final_name_pw))
 
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
@@ -1255,9 +1263,13 @@ def get_attrib_file(path, size):
         return [None for n in xrange(size)]
 
     for n in xrange(size):
-        line = f.readline()
+        line = f.readline().strip('\n ')
         if line:
-            attribs.append(line.strip('\n '))
+            try:
+                line = int(line)
+            except:
+                pass
+            attribs.append(line)
         else:
             attribs.append(None)
     f.close()
@@ -1277,9 +1289,9 @@ def set_attrib_file(path, attribs):
     f.close()
 
 
-def clean_folder(path):
+def clean_folder(path, pattern='*'):
     """ Remove job's admin files and parent if empty """
-    for file in globber(path):
+    for file in globber(path, pattern):
         try:
             os.remove(file)
         except:

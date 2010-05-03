@@ -482,7 +482,7 @@ def save_compressed(folder, filename, data):
 ## CV synchronized (notifies downloader)                                      ##
 ################################################################################
 @synchronized_CV
-def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, pre=True):
+def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False):
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -522,7 +522,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if ext.lower() in ('.zip', '.rar'):
         ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
     else:
-        ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, keep=keep, pre=pre)
+        ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname, keep=keep, reuse=reuse)
 
 
 ################################################################################

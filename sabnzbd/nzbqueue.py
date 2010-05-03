@@ -27,7 +27,7 @@ import glob
 
 import sabnzbd
 from sabnzbd.trylist import TryList
-from sabnzbd.nzbstuff import NzbObject, get_attrib_file
+from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import panic_queue, exit_sab, sanitize_foldername, cat_to_opts, \
                          get_admin_path, remove_all, globber
 import sabnzbd.database as database
@@ -127,21 +127,19 @@ class NzbQueue(TryList):
         """ Reconstruct admin for a single job folder, optionally with new NZB """
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
-        cat, pp, script, prio = get_attrib_file(path, 4)
-        remove_all(path, 'SABnzbd_*')
         if new_nzb is None or not new_nzb.filename:
             filename = globber(path, '*.gz')
             if len(filename) > 0:
                 logging.debug('Repair job %s by reparsing stored NZB', latin1(name))
-                sabnzbd.add_nzbfile(filename[0], pp=pp, script=script, cat=cat, priority=prio, nzbname=name, pre=False)
+                sabnzbd.add_nzbfile(filename[0], pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
             else:
                 logging.debug('Repair job %s without stored NZB', latin1(name))
-                nzo = NzbObject(name, 0, pp, script, '', cat=cat, priority=prio, nzbname=name)
+                nzo = NzbObject(name, 0, pp=None, script=None, nzb='', cat=None, priority=None, nzbname=name, reuse=True)
                 self.add(nzo)
         else:
             remove_all(path, '*.gz')
             logging.debug('Repair job %s without new NZB (%s)', latin1(name), latin1(new_nzb.filename))
-            sabnzbd.add_nzbfile(new_nzb, pp=pp, script=script, cat=cat, priority=prio, nzbname=name, pre=False)
+            sabnzbd.add_nzbfile(new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True)
 
 
     @synchronized(NZBQUEUE_LOCK)
