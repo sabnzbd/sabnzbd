@@ -843,6 +843,7 @@ class NzbObject(TryList):
         if isinstance(name, str):
             name, self.password = scan_password(platform_encode(name))
             self.final_name = sanitize_foldername(name)
+            self.save_attribs()
 
     def pause(self):
         self.status = 'Paused'
