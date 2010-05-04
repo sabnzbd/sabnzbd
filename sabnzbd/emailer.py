@@ -224,9 +224,16 @@ def _decode_file(path):
 
 
 ################################################################################
-from email.message import Message
-from email.header import Header
-from email.encoders import encode_quopri
+try:
+    from email.message import Message
+    from email.header import Header
+    from email.encoders import encode_quopri
+except:
+    # Python 2.4 uses different names
+    from email.Message import Message
+    from email.Header import Header
+    from email.Encoders import encode_quopri
+
 RE_HEADER = re.compile(r'^([^:]+):(.*)')
 
 def _prepare_message(txt):
