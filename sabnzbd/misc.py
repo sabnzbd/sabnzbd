@@ -938,6 +938,18 @@ def get_filepath(path, nzo, filename):
     return fullPath
 
 
+def make_script_path(script):
+    """ Return full script path, if any valid script exists, else None """
+    s_path = None
+    path = cfg.script_dir.get_path()
+    if path and script:
+        if script.lower() not in ('none', 'default'):
+            s_path = os.path.join(path, script)
+            if not os.path.exists(s_path):
+                s_path = None
+    return s_path
+
+
 def get_admin_path(newstyle, name, future):
     """ Return news-style full path to job-admin folder of names job
         or else the old cache path

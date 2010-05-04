@@ -35,7 +35,6 @@ import sabnzbd.misc as misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
-import sabnzbd.newsunpack
 from sabnzbd.lang import Ta
 
 
@@ -109,15 +108,12 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 name = os.path.basename(name)
                 name = misc.sanitize_foldername(name)
                 if data:
-                    accept, name, pp, cat, script, priority = \
-                           sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority)
-                    if accept:
-                        try:
-                            nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority)
-                        except:
-                            nzo = None
-                        if nzo:
-                            sabnzbd.nzbqueue.add_nzo(nzo)
+                    try:
+                        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority)
+                    except:
+                        nzo = None
+                    if nzo:
+                        sabnzbd.nzbqueue.add_nzo(nzo)
         zf.close()
         try:
             if not keep: os.remove(path)
@@ -167,32 +163,26 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         # The name is used as the name of the folder, so sanitize it using folder specific santization
         name = misc.sanitize_foldername(name)
 
-    if not reuse:
-        accept, name, pp, cat, script, priority = sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority)
-    else:
-        accept = True
+    try:
+        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname, reuse=reuse)
+    except TypeError:
+        # Duplicate, ignore
+        nzo = None
+    except:
+        if data.find("<nzb") >= 0 and data.find("</nzb") < 0:
+            # Looks like an incomplete file, retry
+            return -2
+        else:
+            return -1
 
-    if accept:
-        try:
-            nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname, reuse=reuse)
-        except TypeError:
-            # Duplicate, ignore
-            nzo = None
-        except:
-            if data.find("<nzb") >= 0 and data.find("</nzb") < 0:
-                # Looks like an incomplete file, retry
-                return -2
-            else:
-                return -1
-
-        if nzo:
-            sabnzbd.nzbqueue.add_nzo(nzo)
-        try:
-            if not keep: os.remove(path)
-        except:
-            logging.error(Ta('error-remove@1'), path)
-            logging.debug("Traceback: ", exc_info = True)
-            return 1
+    if nzo:
+        sabnzbd.nzbqueue.add_nzo(nzo)
+    try:
+        if not keep: os.remove(path)
+    except:
+        logging.error(Ta('error-remove@1'), path)
+        logging.debug("Traceback: ", exc_info = True)
+        return 1
 
     return 0
 

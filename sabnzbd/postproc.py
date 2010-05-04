@@ -31,7 +31,7 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-                         get_unique_filename, \
+                         get_unique_filename, make_script_path, \
                          on_cleanup_list, renamer, remove_dir, remove_all
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
@@ -341,21 +341,20 @@ class PostProcessor(Thread):
 
                     ## Run the user script
                     fname = ""
-                    if parResult and (not nzb_list) and cfg.script_dir.get_path() and script and script!='None' and script!='Default':
+                    script_path = make_script_path(script)
+                    if parResult and (not nzb_list) and script_path:
                         #set the current nzo status to "Ext Script...". Used in History
-                        script_path = os.path.join(cfg.script_dir.get_path(), script)
-                        if os.path.exists(script_path):
-                            nzo.status = 'Running'
-                            nzo.set_action_line(T('msg-running'), unicoder(script))
-                            nzo.set_unpack_info('Script', T('msg-runScript@1') % unicoder(script), unique=True)
-                            script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename, msgid, dirname, cat, group, jobResult)
-                            script_line = get_last_line(script_log)
-                            if script_log:
-                                fname = nzo.nzo_id
-                            if script_line:
-                                nzo.set_unpack_info('Script', script_line, unique=True)
-                            else:
-                                nzo.set_unpack_info('Script', T('msg-ranScript@1') % unicoder(script), unique=True)
+                        nzo.status = 'Running'
+                        nzo.set_action_line(T('msg-running'), unicoder(script))
+                        nzo.set_unpack_info('Script', T('msg-runScript@1') % unicoder(script), unique=True)
+                        script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename, msgid, dirname, cat, group, jobResult)
+                        script_line = get_last_line(script_log)
+                        if script_log:
+                            fname = nzo.nzo_id
+                        if script_line:
+                            nzo.set_unpack_info('Script', script_line, unique=True)
+                        else:
+                            nzo.set_unpack_info('Script', T('msg-ranScript@1') % unicoder(script), unique=True)
                     else:
                         script = ""
                         script_line = ""

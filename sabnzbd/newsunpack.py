@@ -29,7 +29,7 @@ from time import time
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
 from sabnzbd.utils.rarfile import RarFile
-from sabnzbd.misc import format_time_string, find_on_path
+from sabnzbd.misc import format_time_string, find_on_path, make_script_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.lang import T, Ta
@@ -1226,7 +1226,7 @@ def analyse_show(name):
            info.get('ep_name', '')
 
 
-def pre_queue(name, pp, cat, script, priority):
+def pre_queue(name, pp, cat, script, priority, size, groups):
     """ Run pre-queue script (if any) and process results
     """
     def fix(p):
@@ -1235,17 +1235,17 @@ def pre_queue(name, pp, cat, script, priority):
         else:
             return UNTRANS(str(p))
 
-    values = [True, name, pp, cat, script, priority]
-    if cfg.pre_script():
+    values = [1, name, pp, cat, script, priority, None]
+    script_path = make_script_path(cfg.pre_script())
+    if script_path:
         name = os.path.splitext(name)[0]
-        pre_script = os.path.join(cfg.script_dir.get_path(), cfg.pre_script())
-        command = [pre_script, name, fix(pp), fix(cat), fix(script), fix(priority) ]
+        command = [script_path, name, fix(pp), fix(cat), fix(script), fix(priority), str(size), ' '.join(groups)]
         command.extend(analyse_show(name))
 
         stup, need_shell, command, creationflags = build_command(command)
         env = fix_env()
 
-        logging.info('Running pre-queue script %s(%s, %s, %s, %s, %s, %s, %s, %s, %s)', *command)
+        logging.info('Running pre-queue script %s(' + '%s, '*(len(command)-1) + ')', *command)
 
         try:
             p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -1266,7 +1266,7 @@ def pre_queue(name, pp, cat, script, priority):
                         values[n] = int(line)
                     except:
                         values[n] = TRANS(line)
-                    n += 1
+                n += 1
         if values[0]:
             logging.info('Pre-Q accepts %s', name)
         else:

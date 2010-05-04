@@ -896,3 +896,7 @@ def active_primaries():
 
 def proxy_postproc(nzo):
     sabnzbd.postproc.PostProcessor.do.process(nzo)
+
+def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
+    return sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority, size, groups)
+

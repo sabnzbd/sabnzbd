@@ -424,11 +424,6 @@ class NzbParser(xml.sax.handler.ContentHandler):
             logging.warning(Ta('warn-badImport@2'),
                             self.skipped_files, self.nzo.filename)
 
-    def remove_files(self):
-        """ Remove all created NZF objects """
-        for nzf in self.nzf_list:
-            sabnzbd.remove_data(nzf.nzf_id, self.nzo.workpath)
-
 
 ################################################################################
 # NzbObject                                                                    #
@@ -632,12 +627,12 @@ class NzbObject(TryList):
             try:
                 parser.parse(inpsrc)
             except xml.sax.SAXParseException, err:
-                handler.remove_files()
+                self.purge_data(keep_basic=reuse)
                 logging.warning(Ta('warn-badNZB@3'),
                               filename, err.getMessage(), err.getLineNumber())
                 raise ValueError
             except Exception, err:
-                handler.remove_files()
+                self.purge_data(keep_basic=reuse)
                 logging.warning(Ta('warn-badNZB@3'), filename, err, 0)
                 raise ValueError
 
@@ -660,6 +655,32 @@ class NzbObject(TryList):
 
         # Determine category and find pp/script values
         self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, self.priority)
+
+        # Run user pre-queue script if needed
+        if not reuse:
+            accept, name, pp, cat, script, priority, group = \
+                    sabnzbd.proxy_pre_queue(self.final_name_pw, pp, cat, script,
+                                            self.priority, self.bytes, self.groups)
+            if accept < 1:
+                self.purge_data()
+                raise TypeError
+            if name:
+                self.set_final_name_pw(name)
+            if group:
+                self.groups = [group]
+        else:
+            accept = 1
+
+        # Pause job when above size limit
+        if accept > 1:
+            limit = 1
+        else:
+            limit = cfg.SIZE_LIMIT.get_int()
+        if not reuse and limit and self.bytes > limit:
+            logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
+            self.pause()
+            self.priority = LOW_PRIORITY
+
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
 
         if reuse:
@@ -672,13 +693,6 @@ class NzbObject(TryList):
 
         # Set nzo save-delay to 6 sec per GB with a max of 5 min
         self.save_timeout = min(6.0 * float(self.bytes) / GIGI, 300.0)
-
-        # Pause job when above size limit
-        limit = cfg.SIZE_LIMIT.get_int()
-        if not reuse and limit and self.bytes > limit:
-            logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
-            self.pause()
-            self.priority = LOW_PRIORITY
 
 
     def check_for_dupe(self, nzf):
