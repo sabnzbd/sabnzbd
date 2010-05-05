@@ -572,6 +572,7 @@ class NzbObject(TryList):
         self.save_timeout = None
         self.new_caching = True
         self.extra6 = None
+        self.pp_active = False  # Signals active post-processing (not saved)
 
         self.create_group_folder = cfg.create_group_folders()
 
@@ -993,6 +994,11 @@ class NzbObject(TryList):
         return get_admin_path(self.new_caching, self.work_name, self.futuretype)
 
     @property
+    def downpath(self):
+        """ Return the full path for my job-admin folder (or old style cache) """
+        return os.path.join(cfg.download_dir.get_path(), self.work_name)
+
+    @property
     def group(self):
         if self.groups:
             return self.groups[0]
@@ -1148,6 +1154,7 @@ class NzbObject(TryList):
             except KeyError:
                 # Handle new attributes
                 self.__dict__[tup[1]] = None
+        self.pp_active = False
         TryList.__init__(self)
 
 

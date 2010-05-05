@@ -1415,9 +1415,11 @@ class HistoryPage:
         if msg: return msg
         job = kwargs.get('job')
         if job:
-            jobs = job.split(',')
             history_db = cherrypy.thread_data.history_db
-            history_db.remove_history(jobs)
+            jobs = job.split(',')
+            for job in jobs:
+                PostProcessor.do.delete(job)
+                history_db.remove_history(job)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -3253,7 +3255,7 @@ def get_history_size():
     bytes, month, week = history_db.get_history_size()
     return (format_bytes(bytes), format_bytes(month), format_bytes(week))
 
-def build_history(loaded=False, start=None, limit=None, verbose=False, verbose_list=None, search=None):
+def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None):
 
     if not verbose_list:
         verbose_list = []
@@ -3728,7 +3730,7 @@ def format_history_for_queue():
 
     for item in history_items:
         slot = {'nzo_id':item['nzo_id'],
-                'msgid':item['report'], 'filename':xml_name(item['name']), 'loaded':True,
+                'msgid':item['report'], 'filename':xml_name(item['name']), 'loaded':False,
                 'stages':item['stage_log'], 'status':item['status'], 'bytes':item['bytes'],
                 'size':item['size']}
         slotinfo.append(slot)
@@ -3753,7 +3755,7 @@ def get_active_history(queue=None, items=None):
         item['action_line'] = nzo.action_line
         item = unpack_history_info(item)
 
-        item['loaded'] = True
+        item['loaded'] = nzo.pp_active
         if item['bytes']:
             item['size'] = format_bytes(item['bytes'])
         else:

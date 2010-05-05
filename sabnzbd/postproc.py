@@ -84,6 +84,7 @@ class PostProcessor(Thread):
 
     def load(self):
         """ Save postproc queue """
+        self.history_queue = []
         logging.info("Loading postproc queue")
         data = sabnzbd.load_admin(POSTPROC_QUEUE_FILE_NAME)
         try:
@@ -91,15 +92,19 @@ class PostProcessor(Thread):
             if POSTPROC_QUEUE_VERSION != version:
                 logging.warning(Ta('warn-badPPQueue@2'), POSTPROC_QUEUE_VERSION, version)
             if isinstance(history_queue, list):
-                self.history_queue = history_queue
-                return True
-            else:
-                self.history_queue = []
-                return False
+                self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.downpath)]
         except:
-            self.history_queue = []
-            return False
+            pass
 
+    def delete(self, nzo_id):
+        """ Remove a job from the post processor queue """
+        for nzo in self.history_queue:
+            if nzo.nzo_id == nzo_id:
+                self.remove(nzo)
+                nzo.purge_data(keep_basic=True)
+                logging.info('Removed job %s from postproc queue', nzo.work_name)
+                nzo.work_name = '' # Mark as deleted job
+                break
 
     def process(self, nzo):
         if nzo not in self.history_queue:
@@ -124,7 +129,7 @@ class PostProcessor(Thread):
         return self.queue.empty() and not self.__busy
 
     def get_queue(self):
-        return self.history_queue
+        return [nzo for nzo in self.history_queue if nzo.work_name]
 
     def pause(self):
         self.__paused = True
@@ -146,6 +151,13 @@ class PostProcessor(Thread):
             ## Get a job from the queue, quit on empty job
             nzo = self.queue.get()
             if not nzo: break
+
+            ## This job was already deleted.
+            if not nzo.work_name:
+                continue
+
+            ## Flag NZO as being processed
+            nzo.pp_active = True
 
             ## Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
@@ -192,7 +204,7 @@ class PostProcessor(Thread):
             try:
 
                 # Get the folder containing the download result
-                workdir = os.path.join(cfg.download_dir.get_path(), nzo.work_name)
+                workdir = nzo.downpath
 
                 # if the directory has not been made, no files were assembled
                 if not os.path.exists(workdir):
