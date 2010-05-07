@@ -1019,7 +1019,7 @@ class NzbObject(TryList):
         for nzf in self.finished_files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
 
-        if nzo.new_caching:
+        if self.new_caching:
             if keep_basic:
                 clean_folder(wpath, 'SABnzbd_nz?_*')
                 clean_fodler(wpath, 'SABnzbd_article_*')
