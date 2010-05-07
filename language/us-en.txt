@@ -177,7 +177,7 @@ explain-Scan      The "Scan" button will search the temporary download folder fo
                   folders missing from the queue.
 button-repair     Repair
 explain-Repair    The "Repair" button will restart SABnzbd and do a complete\n\
-                  reconstrution of the queue content, preserving already downloaded files.\n\
+                  reconstruction of the queue content, preserving already downloaded files.\n\
                   This will modify the queue order.
 version           Version
 uptime            Uptime
