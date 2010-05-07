@@ -124,6 +124,7 @@ age               Alter
 button-del        Löschen
 button-resume     Fortsetzen
 button-pause      Anhalten
+button-retry      Erneut versuchen
 unknown           unbekannt
 fetchingNewzbin@1 Abrufen der Download-ID %s von newzbin.com
 error-fetchNewzbin@1 Fehler beim Abrufen der Download-ID %s von newzbin.com -\
@@ -169,11 +170,19 @@ server-resolving  &nbsp;Adresse wird aufgelöst...
 # Configuration
 configuration     Einstellungen
 confgFile         Konfigurationsdatei
-explain-Restart   Der Knopf unten startet SABnzbd neu.\n\
+explain-Restart   Ein Klick auf den Knopf "Neu starten" startet SABnzbd neu.\n\
                   Benutzen Sie ihn, falls ein Stabilitätsproblem vorliegt.\n\
                   Die Downloads werden vor dem Neustart angehalten und danach\
                   fortgesetzt.
 button-restart    Neu starten
+button-scan       Ein Klick auf den Knopf "Scannen" such im temporären \n\
+                  Download-Ordner nach Ordnern, die in der Warteschlange\n\
+                  nicht aufgeführt sind.
+button-repair     Reparieren
+explain-Repair    Ein Klick auf den Knopf "Reparieren" startet SABnzbd neu\n\
+                  und baut die Warteschlange neu auf, wobei bereits\n\
+                  heruntergeladene Dateien bestehen bleiben. Die Reihenfolge\n\
+                  der Warteschlange wird dabei verändert.
 version           Version
 uptime            Zeit seit Start
 error             Fehler
@@ -282,6 +291,12 @@ opt-email_dir           Ordner mit E-Mail-Vorlagen
 explain-email_dir       Ordner, der benutzerdefinierte E-Mail-Vorlagen enthält.
 systemFolders           System-Ordner
 opt-cache_dir           Cache-Ordner
+opt-admin_dir           Administrativer Ordner
+explain-admin_dir       Ordner, der die für die Warteschlange und den Verlauf\n\
+                        verwendeten Datenbanken enthält.\n\
+                        <i>Kann nur geändert werden, wenn die Warteschlange leer ist.</i>\n\
+                        <i>Es werden <b>keine</b> Dateien entfernt.</i>\n\
+                        <i>Benötigt einen Neustart von SABnzbd!</i>
 explain-cache_dir       Wird als temporärer Speicherplatz verwendet.\n\
                         <i>Kann nur geändert werden, wenn die Warteschlange leer ist.</i>\n\
                         <i>Benötigt einen Neustart von SABnzbd!</i>
@@ -328,12 +343,15 @@ explain-dirscan_opts     Wird verwendet, wenn die Kategorie keine\
 opt-dirscan_script       Standardmässiges Benutzer-Skript
 explain-dirscan_script   Wird verwendet, wenn die Kategorie kein\
                          Benutzer-Skript vorschreibt.
+opt-pre_script           Benutzer-Skript vor Warteschlange
+explain-pre_script       Wird verwendet, bevor eine NZB-Datei zur Warteschlange\
+                         hinzugefügt wird.
 opt-dirscan_priority     Standardmässige Priorität
 explain-dirscan_priority Wird verwendet, wenn die Kategorie keine Priorität\
                          vorschreibt.
 opt-par_option           Zusätzliche PAR2-Parameter
 explain-par_option       Lesen Sie dazu die Hilfe im Wiki!
-opt-par2_multicore       MultiCore Par2 aktivieren
+opt-par2_multicore       Mehrkernprozessor-Unterstützung von PAR2 verwenden
 explain-par2_multicore   Lesen Sie dazu die Hilfe im Wiki!
 opt-nice                 Nice-Parameter
 explain-nice             Lesen Sie dazu die Hilfe im Wiki!
@@ -428,6 +446,7 @@ sch-speedlimit           Geschwindigkeitsbegrenzung
 sch-pause_all            Alle anhalten
 sch-pause_post           Nachbearbeiten anhalten
 sch-resume_post          Nachbearbeiten fortsetzen
+sch-scan_folder          Überwachten Ordner scannen
 
 # Config->RSS
 configRSS                RSS-Einstellungen
@@ -450,7 +469,7 @@ rss-filter               Filter
 rss-accept               Akzeptieren
 rss-reject               Verwerfen
 rss-must                 Benötigt
-rss-mustcat              BenötigtKat
+rss-mustcat              Benötigt Kategorie
 rss-delFilter            X
 rss-matched              Entspricht
 rss-notMatched           Entspricht nicht
@@ -471,8 +490,12 @@ opt-email_full           Benachrichtigung bei voller Festplatte
 explain-email_full       E-Mail senden, wenn die Festplatte voll ist und SABnzbd\
                          angehalten wird.
 opt-email_dir            Ordner mit E-Mail-Vorlagen
-explain-email_dir        Ordner, der die benutzerdefinierten E-Mail-Vorlagen enthält.\n\
-                         Relativ zu
+explain-email_dir        Ordner, der die benutzerdefinierten E-Mail-Vorlagen\
+                         enthält.
+opt-email_rss            RSS-Benachrichtigungen senden
+explain-email_rss        E-Mail senden, wenn ein RSS-Feed einen Auftrag zur\
+                         Warteschlange hinzufügt.
+
 emailAccount             E-Mail-Kontoeinstellungen
 opt-email_server         SMTP-Server
 explain-email_server     ISP-Server für ausgehende E-Mails angeben.
@@ -485,9 +508,6 @@ explain-email_account    Für authentifizierte E-Mails wird der Kontoname benöt
 opt-email_pwd            Optionales Konto-Passwort
 explain-email_pwd        Für authentifizierte E-Mails wird das Passwort benötigt.
 error-badEmailAd@1       %s ist keine gültige E-Mail-Adresse
-opt-email_rss            RSS-Benachrichtigungen senden
-explain-email_rss        E-Mail senden, wenn ein RSS-Feed einen Auftrag zur\
-                         Warteschlange hinzufügt.
 
 # Config->Newzbin
 explain-newzbin          Wenn Sie ein Konto bei <strong>www.newzbin.com</strong> haben,\
@@ -706,7 +726,7 @@ error-regConnect         Verbindung zu Registry-Umgebung HKEY_CURRENT_USER konnt
 error-regOpen@1          Registry-Schlüssel %s konnte nicht geöffnet werden.
 error-regSpecial         Lesen der Registry-Schlüssel für spezielle Ordner fehlgeschlagen.
 error-sslFiles           Fehler beim Anlegen des SSL-Schlüssels und -Zertifikats.
-error-urlGet@2           Fehler beim Abrufen der URL %s (Fehler = %s)
+error-urlGet@2           Fehler beim Abrufen der URL %s: %s
 warn-noBrowser           Der Standard-Browser konnte nicht gestartet werden, da er wahrscheinlich nicht gefunden wurde.
 warn-pyopenssl           pyopenssl-Modul fehlt. Bitte installieren für SSL-Unterstützung.
 error-fileJoin@2         Fehler "%s" beim Ausführen von file_join auf %s
@@ -766,7 +786,7 @@ error-tvRename@2         Umbenennen von %s nach %s fehlgeschlagen.
 error-tvSimRename@2      Umbenennen der gleichen Datei von %s nach %s fehlgeschlagen.
 error-tvTemp@1           Temporäre Datei für %s konnte nicht angelegt werden.
 warn-matrixBadRep@1      Ungültige nzbmatrix.com-Bericht-ID %s.
-warn-matrixFail@1        Problem beim Zugriff auf den nzbmatrix.com-Server (%s)
+warn-matrixFail@1        Problem beim Zugriff auf den nzbmatrix.com-Server: %s
 warn-noRepair            Kein PAR2-Programm gefunden. Eine Reparatur ist nicht möglich\n
 warn-noUnpack            Kein UNRAR-Programm gefunden. Das Entpacken von RAR-Dateien ist nicht möglich\n
 warn-badUnrar            Das verwendete UNRAR-Programm wird nicht empfohlen.\
