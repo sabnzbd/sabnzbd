@@ -603,7 +603,8 @@ class NzbObject(TryList):
             raise TypeError
 
         if reuse:
-            remove_all(adir, 'SABnzbd_nz?-*')
+            remove_all(adir, 'SABnzbd_nz?_*')
+            remove_all(adir, 'SABnzbd_article_*')
         else:
             wdir = get_unique_path(wdir, create_dir=True)
             adir = os.path.join(wdir, JOB_ADMIN)
@@ -1018,10 +1019,12 @@ class NzbObject(TryList):
         for nzf in self.finished_files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
 
-        if keep_basic:
-            clean_folder(wpath, 'SABnzbd_nz?_*')
-        else:
-            clean_folder(wpath)
+        if nzo.new_caching:
+            if keep_basic:
+                clean_folder(wpath, 'SABnzbd_nz?_*')
+                clean_fodler(wpath, 'SABnzbd_article_*')
+            else:
+                clean_folder(wpath)
 
     def gather_info(self, for_cli = False):
         bytes_left_all = 0
