@@ -265,6 +265,7 @@ class RSSQueue:
                 logging.error('Incompatible feed %s', uri)
                 logging.debug("Traceback: ", exc_info = True)
                 return 'Incompatible feed'
+            category = latin1(category)
 
             if link:
                 # Make sure there are no spaces in the URL
@@ -290,42 +291,41 @@ class RSSQueue:
                     logging.debug('Trying title %s', atitle)
                     result = False
                     for n in xrange(regcount):
+                        if notdefault(reCats[n]):
+                            myCat = reCats[n]
+                        elif category:
+                            myCat = cat_convert(category)
+                        else:
+                            myCat = defCat
+                        if notdefault(rePPs[n]):
+                            myPP = rePPs[n]
+                        elif not (reCats[n] or category):
+                            myPP = defPP
+                        if notdefault(reScripts[n]):
+                            myScript = reScripts[n]
+                        elif not (notdefault(reCats[n]) or category):
+                            myScript = defScript
+
                         if category and reTypes[n]=='C':
                             found = re.search(regexes[n], category)
                             if not found:
                                 logging.debug("Filter rejected on rule %d", n)
                                 result = False
                                 break
-
-                        found = re.search(regexes[n], title)
-                        if reTypes[n]=='M' and not found:
-                            logging.debug("Filter rejected on rule %d", n)
-                            result = False
-                            break
-                        if found and reTypes[n]=='A':
-                            logging.debug("Filter matched on rule %d", n)
-                            result = True
-                            if notdefault(reCats[n]):
-                                myCat = reCats[n]
-                            elif category:
-                                myCat = cat_convert(category)
-                            else:
-                                myCat = defCat
-                            if notdefault(rePPs[n]):
-                                myPP = rePPs[n]
-                            elif not (reCats[n] or category):
-                                myPP = defPP
-                            if notdefault(reScripts[n]):
-                                myScript = reScripts[n]
-                            elif not (notdefault(reCats[n]) or category):
-                                myScript = defScript
-                            #elif not rePriority[n]:
-                                #myScript = defScript
-                            break
-                        if found and reTypes[n]=='R':
-                            logging.debug("Filter rejected on rule %d", n)
-                            result = False
-                            break
+                        else:
+                            found = re.search(regexes[n], title)
+                            if reTypes[n]=='M' and not found:
+                                logging.debug("Filter rejected on rule %d", n)
+                                result = False
+                                break
+                            if found and reTypes[n]=='A':
+                                logging.debug("Filter matched on rule %d", n)
+                                result = True
+                                break
+                            if found and reTypes[n]=='R':
+                                logging.debug("Filter rejected on rule %d", n)
+                                result = False
+                                break
 
                     act = download and not first
                     if link in jobs:
@@ -340,7 +340,7 @@ class RSSQueue:
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, link, title, 'B', defCat, defPP, defScript,
+                        _HandleLink(jobs, link, title, 'B', myCat, myPP, myScript,
                                     False, star, order, priority=defPriority)
             order += 1
 
