@@ -707,7 +707,7 @@ error-ppCleanup@1        Cleanup of %s failed.
 error-ppDelFailed@1      Removing %s failed
 error-ppDelNzo           Failed to remove nzo from postproc queue (id)
 error-ppDelWorkdir@1     Error removing workdir (%s)
-error-ppFailed@1         Post Processing Failed for %s
+error-ppFailed@2         Post Processing Failed for %s (%s)
 error-ppLogFile@1        Cannot create logfile %s
 error-ppPermissions@1    Cannot change permissions of %s
 error-ppRename@2         Error renaming "%s" to "%s"
@@ -771,7 +771,7 @@ msg-ranScript@1          Ran %s
 link-more                More
 link-viewSc              View script output
 warn-OutRetention        Download failed - Out of your server's retention?
-warn-PostCrash           PostProcessing Crashed, see logfile
+warn-PostCrash@1         PostProcessing Crashed, see logfile (%s)
 msg-moving               Moving
 msg-running              Running script
 msg-joining              Joining

@@ -208,6 +208,12 @@ class OptionDir(Option):
                 self._Option__set(value)
         return error
 
+    def set_create(self):
+        """ Enable auto-creation and create now """
+        self.__create = True
+        self.get_path()
+
+
 class OptionList(Option):
     """ List option class """
     def __init__(self, section, keyword, default_val=None, validation=None, add=True):

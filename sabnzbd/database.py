@@ -280,10 +280,12 @@ def dict_factory(cursor, row):
         d[col[0]] = row[idx]
     return d
 
-def build_history_info(nzo, storage='', path='', postproc_time=0, script_output='', script_line=''):
+def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_output='', script_line=''):
     ''' Collects all the information needed for the database '''
 
-    path = decode_factory(path)
+    if not downpath:
+        downpath = nzo.downpath
+    path = decode_factory(downpath)
     storage = decode_factory(storage)
     script_line = decode_factory(script_line)
 

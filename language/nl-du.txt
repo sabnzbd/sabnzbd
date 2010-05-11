@@ -680,7 +680,7 @@ error-ppCleanup@1        Opschonen van %s mislukt
 error-ppDelFailed@1      Verwijderen van %s mislukt
 error-ppDelNzo           Verwijderen van nzo van nabewerkingswachtrij mislukt
 error-ppDelWorkdir@1     Fout bij verwijderen van werkmap %s
-error-ppFailed@1         Nabewerking van %s mislukt
+error-ppFailed@2         Nabewerking van %s mislukt (%s)
 error-ppLogFile@1        Kan geen log bestand %s aanmaken
 error-ppPermissions@1    Kan beveiliging van %s niet aanpassen
 error-ppRename@2         Fout bij hernoemen van "%s" tot "%s"

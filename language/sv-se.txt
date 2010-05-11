@@ -692,7 +692,7 @@ error-ppCleanup@1        Rensning av %s misslyckades.
 error-ppDelFailed@1      Borttagning av %s misslyckades
 error-ppDelNzo           Det gick inte att ta bort nzo från efterbehandlings kön (id)
 error-ppDelWorkdir@1     Det gick inte att ta bort arbetsmapp (%s)
-error-ppFailed@1         Efterbehandling misslyckades för %s
+error-ppFailed@2         Efterbehandling misslyckades för %s (%s)
 error-ppLogFile@1        Det gick inte att skapa loggfil %s
 error-ppPermissions@1    Det gick inte att ändra rättigheter på %s
 error-ppRename@2         Det gick inte att döpa om "%s" till "%s"

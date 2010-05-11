@@ -996,7 +996,7 @@ class NzbObject(TryList):
 
     @property
     def downpath(self):
-        """ Return the full path for my job-admin folder (or old style cache) """
+        """ Return the full path for my download folder """
         return os.path.join(cfg.download_dir.get_path(), self.work_name)
 
     @property

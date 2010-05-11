@@ -1605,6 +1605,7 @@ class ConfigDirectories:
         msg = check_session(kwargs)
         if msg: return msg
 
+        cfg.complete_dir.set_create()
         for kw in LIST_DIRPAGE:
             value = kwargs.get(kw)
             if value != None:

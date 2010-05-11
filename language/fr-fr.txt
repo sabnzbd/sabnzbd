@@ -695,7 +695,7 @@ error-ppCleanup@1        Echec du nettoyage de %s.
 error-ppDelFailed@1      Echec de la suppression de %s
 error-ppDelNzo           Echec de la suppression du nzo de la qeueu de post-traitement (id)
 error-ppDelWorkdir@1     Erreur lors de la suppression du dossier de travail (%s)
-error-ppFailed@1         Echec du post-traitement pour %s
+error-ppFailed@2         Echec du post-traitement pour %s (%s)
 error-ppLogFile@1        Impossible de créer le fichier de log %s
 error-ppPermissions@1    Impossible de changer les permissions pour %s
 error-ppRename@2         Erreur lors du renommage de "%s" en "%s"

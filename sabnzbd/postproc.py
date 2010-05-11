@@ -162,6 +162,7 @@ class PostProcessor(Thread):
             ## Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
                 sabnzbd.downloader.idle_downloader()
+            cfg.complete_dir.set_create()
 
             self.__busy = True
             start = time.time()
@@ -180,6 +181,7 @@ class PostProcessor(Thread):
             postproc_time = 0
             script_log = ''
             script_line = ''
+            crash_msg = ''
 
             ## Get the job flags
             nzo.save_attribs()
@@ -277,6 +279,10 @@ class PostProcessor(Thread):
                     complete_dir = file_sorter.detect(dirname, complete_dir)
 
                     workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
+                    if not os.path.exists(workdir_complete):
+                        crash_msg = 'Cannot create final folder %s' % workdir_complete
+                        raise IOError
+
                     if folder_rename:
                         tmp_workdir_complete = prefix(workdir_complete, '_UNPACK_')
                         try:
@@ -404,13 +410,15 @@ class PostProcessor(Thread):
             except:
                 #Cause a crash when reparing par2 sets with accents
                 #try:
-                logging.error(Ta('error-ppFailed@1'), filename)
+                logging.error(Ta('error-ppFailed@2'), filename, crash_msg)
                 #except:
                 #    pass
-                logging.debug("Traceback: ", exc_info = True)
-                nzo.fail_msg = T('warn-PostCrash')
+                if not crash_msg:
+                    logging.debug("Traceback: ", exc_info = True)
+                nzo.fail_msg = T('warn-PostCrash@1') % unicoder(crash_msg)
                 osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['complete'])
                 nzo.status = 'Failed'
+                parResult = False
 
             if parResult:
                 # If the folder only contains one file OR folder, have that as the path
@@ -428,7 +436,7 @@ class PostProcessor(Thread):
             history_db = database.get_history_handle()
             # Add the nzo to the database. Only the path, script and time taken is passed
             # Other information is obtained from the nzo
-            history_db.add_history_db(nzo, workdir_complete, rel_path, postproc_time, script_log, script_line)
+            history_db.add_history_db(nzo, workdir_complete, nzo.downpath, postproc_time, script_log, script_line)
             # The connection is only used once, so close it here
             history_db.close()
 

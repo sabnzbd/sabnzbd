@@ -768,7 +768,7 @@ error-ppDelFailed@1      Entfernen von %s fehlgeschlagen
 error-ppDelNzo           Fehler beim Entfernen der NZB-Datei von der\
                          Nachbearbeitungs-Warteschlange (id)
 error-ppDelWorkdir@1     Fehler beim Entfernen des Arbeitsverzeichnisses %s.
-error-ppFailed@1         Nachbearbeitung von %s fehlgeschlagen
+error-ppFailed@2         Nachbearbeitung von %s fehlgeschlagen (%s)
 error-ppLogFile@1        Protokolldatei %s konnte nicht angelegt werden
 error-ppPermissions@1    Rechte von %s konnten nicht geändert werden
 error-ppRename@2         Fehler beim Umbenennen von "%s" nach "%s"

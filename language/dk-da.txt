@@ -291,7 +291,7 @@ explain-enable_par_cleanup Oprydning af par filer (hvis kontrollerede / reparati
 opt-fail_on_crc          Ved fejl på yEnc CRC
 explain-fail_on_crc      Anvend backup-server ved yEnc CRC fejl.
 opt-top_only             Kun artiklerne fra starten af køen
-explain-top_only         Aktiver til mindre brug af hukommelse. Deaktiver for at forhindre langsom job fra at blokerer køen 
+explain-top_only         Aktiver til mindre brug af hukommelse. Deaktiver for at forhindre langsom job fra at blokerer køen
 opt-safe_postproc        Efterbehandling kun verificerede jobs
 explain-safe_postproc    Kun udføre efterbehandling af jobs som har bestået PAR2 kontrollen.
 opt-no_dupes             Forhindre downloadnings dubletter
@@ -685,7 +685,7 @@ error-ppCleanup@1        Fjernelse af %s mislykkedes.
 error-ppDelFailed@1      Fjernelse  af%s mislykkedes
 error-ppDelNzo           Det lykkedes ikke at fjerne nzo fra efterbehandlings køen (id)
 error-ppDelWorkdir@1     Det lykkedes ikke at fjerne arbejdsmappen (%s)
-error-ppFailed@1         Efterbehandling mislykkedes for %s
+error-ppFailed@2         Efterbehandling mislykkedes for %s (%s)
 error-ppLogFile@1        Det lykkedes ikke at skabe loggfil %s
 error-ppPermissions@1    Det lykkedes ikke at ændre rettigheder på %s
 error-ppRename@2         Det lykkedes ikke at omdøbe "%s" til "%s"
