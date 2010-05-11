@@ -95,7 +95,6 @@ class URLGrabber(Thread):
             opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
             opener.addheader('Accept-encoding','gzip')
             filename = None
-            msg = ''
             try:
                 fn, header = opener.retrieve(url)
             except:
@@ -109,13 +108,15 @@ class URLGrabber(Thread):
                             break
 
             if matrix_id:
-                fn, msg = _analyse_matrix(fn, matrix_id)
+                fn, msg, retry = _analyse_matrix(fn, matrix_id)
+            else:
+                msg = ''
+                retry = True
 
-            # Check if the filepath is specified, if not use the msg
-            # as whether it should be retried (bool)
+            # Check if the filepath is specified, if not, check if a retry is allowed.
             if not fn:
                 retry_count -= 1
-                if retry_count > 0 and not msg:
+                if retry_count > 0 and retry:
                     logging.info('Retry URL %s', url)
                     self.queue.put((url, future_nzo, retry_count))
                 else:
@@ -185,13 +186,13 @@ def _analyse_matrix(fn, matrix_id):
     msg = ''
     if not fn:
         # No response, just retry
-        return (None, msg)
+        return (None, msg, True)
     try:
         f = open(fn, 'r')
         data = f.read(40)
         f.close()
     except:
-        return (None, msg)
+        return (None, msg, True)
 
     # Check for an error response
     if data and data.startswith('error'):
@@ -203,15 +204,15 @@ def _analyse_matrix(fn, matrix_id):
                 logging.debug('Sleeping URL grabber %s sec', wait)
                 time.sleep(min(wait, 60))
                 # Return, but tell the urlgrabber to retry
-                return (None, msg)
+                return (None, msg, True)
         else:
+            # Clear error message, don't retry
             msg = Ta('warn-matrixFail@1') % data
-            return (None, msg)
+            return (fn, msg, False)
 
     if data.startswith("<!DOCTYPE"):
-        # We got HTML, probably an invalid report number
+        # We got HTML, probably a temporary problem, keep trying
         msg = Ta('warn-matrixBadRep@1') % matrix_id
-        return (None, msg)
+        return (None, msg, True)
 
-    return fn, msg
-
+    return fn, msg, False
