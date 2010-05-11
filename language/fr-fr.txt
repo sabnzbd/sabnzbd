@@ -40,6 +40,7 @@ button-save       Enregistrer
 queued            En attente
 button-back       Retour
 button-x          X
+confirm           Etes-vous sûrs ?
 
 # Header
 menu-home         Accueil

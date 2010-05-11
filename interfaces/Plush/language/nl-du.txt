@@ -45,6 +45,8 @@ prev              Vorige
 next              Volgende
 nzo-range         Bereik
 progress          Voortgang
+confirm           Weet je het zeker?
+confirmWithoutSavingPrompt Wijzigingen niet opgeslagen en zullen verloren gaan.
 
 # Queue
 idle              RUST

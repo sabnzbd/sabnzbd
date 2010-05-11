@@ -40,6 +40,7 @@ button-save       Gem
 queued            I Kø
 button-back       Tilbage
 button-x          X
+confirm           Er du sikker?
 
 # Header
 menu-home         Hjem

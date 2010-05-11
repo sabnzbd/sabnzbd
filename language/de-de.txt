@@ -40,6 +40,7 @@ button-save       Speichern
 queued            In der Warteschlange
 button-back       Zurück
 button-x          X
+confirm           Sind Sie sicher?
 
 # Header
 menu-home         Startseite

@@ -39,6 +39,7 @@ button-save       Save
 queued            Queued
 button-back       Back
 button-x          X
+confirm           Are you sure?
 
 # Header
 menu-home         Home

@@ -24,7 +24,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <div class="EntryBlock" id="update_$feed">
 
             <input type="text" size="92" name="uri" value="$rss[$feed]['uri']"/>
-            <input type="submit" onclick="javascript:submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )" value="$T('button-delFeed')"/>
+            <input type="submit" onclick="javascript:if (confirm('$T('confirm').replace("'","`") ')) {submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )}" value="$T('button-delFeed')"/>
             <input type="submit" onClick="javascript:location='./config/rss/test_rss_feed?feed=$feed&session=$session'" value="$T('button-preFeed')"/>
             <input type="submit" onClick="javascript:location='./config/rss/download_rss_feed?feed=$feed&session=$session'" value="$T('button-forceFeed')"/>
             <br/><br/>
