@@ -1022,7 +1022,7 @@ class NzbObject(TryList):
         if self.new_caching:
             if keep_basic:
                 clean_folder(wpath, 'SABnzbd_nz?_*')
-                clean_fodler(wpath, 'SABnzbd_article_*')
+                clean_folder(wpath, 'SABnzbd_article_*')
             else:
                 clean_folder(wpath)
 
