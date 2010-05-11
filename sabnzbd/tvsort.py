@@ -976,6 +976,10 @@ def toLowercase(path):
 def stripFolders(folders):
     f = folders.strip('/').split('/')
 
+    # For path beginning with a slash, insert empty element to prevent loss
+    if folders.strip()[0] in '/\\':
+        f.insert(0, '')
+
     def strip_all(x):
         x = x.strip().strip('_')
         if sabnzbd.WIN32:

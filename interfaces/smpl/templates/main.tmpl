@@ -109,7 +109,12 @@
             com = com.substring(0, len-1)
         }
 
-        output = com+slash+input;
+        // If the pattern starts with absolute path, don't prepend default folder
+        if (input[0] == "/" || input[0] == slash || input[1] == ':') {
+            output = input;
+        } else {
+            output = com+slash+input;
+        }
         return output
     }
 
