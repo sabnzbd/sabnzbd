@@ -309,6 +309,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.valids = 0
         self.skipped_files = 0
         self.nzf_list = []
+        self.groups = []
 
     def startDocument(self):
         self.filter = cfg.ignore_samples()
@@ -419,7 +420,8 @@ class NzbParser(xml.sax.handler.ContentHandler):
     def endDocument(self):
         """ End of the file """
         self.nzo.groups = self.groups
-        self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / self.valids)
+        files = max(1, self.valids)
+        self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / files)
         if self.skipped_files:
             logging.warning(Ta('warn-badImport@2'),
                             self.skipped_files, self.nzo.filename)
