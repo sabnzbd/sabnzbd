@@ -77,7 +77,7 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None):
         while not nw.connected:
             nw.lines = []
             nw.recv_chunk(block=True)
-            nw.finish_connect()
+            nw.finish_connect('')
 
     except socket.timeout, e:
         if port != 119 and not ssl:

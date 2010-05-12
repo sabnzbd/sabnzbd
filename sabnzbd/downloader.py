@@ -568,11 +568,11 @@ class Downloader(Thread):
 
                 if len(nw.lines) == 1:
                     code = nw.lines[0][:3]
-                    if not nw.connected:
+                    if not nw.connected or code == '480':
                         done = False
 
                         try:
-                            nw.finish_connect()
+                            nw.finish_connect(code)
                             logging.debug("%s@%s:%s last message -> %s",
                                          nw.thrdnum, nw.server.host,
                                          nw.server.port, nw.lines[0])

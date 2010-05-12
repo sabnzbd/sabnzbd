@@ -150,7 +150,7 @@ class NNTP:
 
         if sslenabled and _ssl:
             # Some users benefit from SSLv2 not being capped.
-            ssl_type = sabnzbd.cfg.ssl_type()
+            ssl_type = sabnzbd.cfg.ssl_type.get()
             if ssl_type == 'v2':
                 ctx = _ssl.Context(_ssl.SSLv2_METHOD)
             elif ssl_type == 'v3':
@@ -238,6 +238,7 @@ class NewsWrapper:
 
         self.user_ok = False
         self.pass_ok = False
+        self.force_login = False
 
     def init_connect(self):
         self.nntp = NNTP(self.server.host, self.server.port, self.server.info, self.server.ssl, self,
@@ -246,22 +247,30 @@ class NewsWrapper:
 
         self.timeout = time.time() + self.server.timeout
 
-    def finish_connect(self):
-        if not self.server.username or not self.server.password:
+    def finish_connect(self, code):
+        if not (self.server.username or self.server.password or self.force_login):
             self.connected = True
             self.user_sent = True
             self.user_ok = True
             self.pass_sent = True
             self.pass_ok = True
 
-        if self.lines and self.lines[0][:3] == '400':
+        if code == '480':
+            self.force_login = True
+            self.connected = False
+            self.user_sent = False
+            self.user_ok = False
+            self.pass_sent = False
+            self.pass_ok = False
+
+        if code == '400':
             raise NNTPPermanentError(self.lines[0])
         elif not self.user_sent:
             command = 'authinfo user %s\r\n' % (self.server.username)
             self.nntp.sock.sendall(command)
             self.user_sent = True
         elif not self.user_ok:
-            if self.lines[0][:3] == '381':
+            if code == '381':
                 self.user_ok = True
 
         if self.user_ok and not self.pass_sent:
@@ -269,7 +278,7 @@ class NewsWrapper:
             self.nntp.sock.sendall(command)
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
-            if self.lines[0][:3] != '281':
+            if code != '281':
                 # Assume that login failed (code 481 or other)
                 raise NNTPPermanentError(self.lines[0])
             else:
