@@ -971,10 +971,10 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
     msg = unicoder(msg)
 
     pp = nzo.pp
-    if pp:
-        pp = '&pp=%s' % urllib.quote(pp)
-    else:
+    if pp is None:
         pp = ''
+    else:
+        pp = '&pp=%s' % str(pp)
     cat = nzo.cat
     if cat:
         cat = '&cat=%s' % urllib.quote(cat)

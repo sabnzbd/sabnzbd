@@ -208,7 +208,7 @@ def _analyse_matrix(fn, matrix_id):
         else:
             # Clear error message, don't retry
             msg = Ta('warn-matrixFail@1') % data
-            return (fn, msg, False)
+            return (None, msg, False)
 
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably a temporary problem, keep trying
