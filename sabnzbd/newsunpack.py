@@ -374,10 +374,10 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
 
         rarpath = rar_sets[rar_set][0]
 
-
-        extraction_path = workdir
-        if workdir_complete:
+        if workdir_complete and rarpath.startswith(workdir):
             extraction_path = workdir_complete
+        else:
+            extraction_path = os.path.split(rarpath)[0]
 
         logging.info("Extracting rarfile %s (belonging to %s) to %s",
                      rarpath, rar_set, extraction_path)
@@ -589,9 +589,10 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
             logging.info("Starting extract on zipfile: %s ", _zip)
             nzo.set_action_line(T('msg-unpacking'), '%s' % unicoder(_zip))
 
-            extraction_path = workdir
-            if workdir_complete:
+            if workdir_complete and _zip.startswith(workdir):
                 extraction_path = workdir_complete
+            else:
+                extraction_path = os.path.split(_zip)[0]
 
             if ZIP_Extract(_zip, extraction_path):
                 unzip_failed = True
