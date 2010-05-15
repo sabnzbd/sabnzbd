@@ -939,7 +939,6 @@ tr:hover .history_added { color: black; }
 #main_menu.lang-de-de ul li ul li ul li{
   width:280px;
 }
-#main_menu ul li ul li#plushoptions ul li:first-child a,
 #main_menu ul li ul li#processingContainer ul li{
   padding:4px 6px;
 }
@@ -1082,10 +1081,12 @@ tr:hover .history_added { color: black; }
 #cboxLoadingOverlay { background: #DDD; }
  
 #cboxTitle {
-	color: #000;
+	color: #fff;
+	font-size:200%;
+	font-weight: bold;
 	left: 0;
 	position: absolute;
-	top: -22px;
+	top: -32px;
 }
  
 #cboxCurrent {
