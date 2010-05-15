@@ -333,6 +333,7 @@ class PostProcessor(Thread):
                     else:
                         CleanUpList(tmp_workdir_complete, False)
 
+                script_output = ""
                 if parResult and not nzb_list:
                     ## Give destination its final name
                     if folder_rename:
@@ -358,17 +359,17 @@ class PostProcessor(Thread):
                             workdir_complete = file_sorter.move(workdir_complete)
 
                     ## Run the user script
-                    fname = ""
                     script_path = make_script_path(script)
                     if parResult and (not nzb_list) and script_path:
                         #set the current nzo status to "Ext Script...". Used in History
                         nzo.status = 'Running'
                         nzo.set_action_line(T('msg-running'), unicoder(script))
                         nzo.set_unpack_info('Script', T('msg-runScript@1') % unicoder(script), unique=True)
-                        script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename, msgid, dirname, cat, group, jobResult)
+                        script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
+                                                                     msgid, dirname, cat, group, jobResult)
                         script_line = get_last_line(script_log)
                         if script_log:
-                            fname = nzo.nzo_id
+                            script_output = nzo.nzo_id
                         if script_line:
                             nzo.set_unpack_info('Script', script_line, unique=True)
                         else:
@@ -378,22 +379,26 @@ class PostProcessor(Thread):
                         script_line = ""
                         script_ret = 0
 
-                    if fname:
-                        # Can do this only now, otherwise it would show up in the email
-                        if script_ret:
-                            script_ret = 'Exit(%s) ' % script_ret
-                        else:
-                            script_ret = ''
-                        if script_line:
-                            nzo.set_unpack_info('Script','%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, urllib.quote(fname), T('link-more')), unique=True)
-                        else:
-                            nzo.set_unpack_info('Script','%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(fname), T('link-viewSc')), unique=True)
-
                 ## Email the results
                 if (not nzb_list) and cfg.email_endjob():
                     if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpackError or not parResult)):
                         emailer.endjob(dirname, msgid, cat, mailResult, workdir_complete, nzo.bytes_downloaded,
-                                     nzo.unpack_info, script, TRANS(script_log), script_ret)
+                                       nzo.unpack_info, script, TRANS(script_log), script_ret)
+
+                if script_output:
+                    # Can do this only now, otherwise it would show up in the email
+                    if script_ret:
+                        script_ret = 'Exit(%s) ' % script_ret
+                    else:
+                        script_ret = ''
+                    if script_line:
+                        nzo.set_unpack_info('Script',
+                                            '%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, urllib.quote(script_output),
+                                             T('link-more')), unique=True)
+                    else:
+                        nzo.set_unpack_info('Script',
+                                            '%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(script_output),
+                                            T('link-viewSc')), unique=True)
 
                 ## Remove newzbin bookmark, if any
                 if parResult and msgid:
