@@ -510,8 +510,14 @@ jQuery(function($){
 				// Drag and drop sorting
 				$("#queueTable").tableDnD({
 					onDrop: function(table, row) {
+						
 						if (table.tBodies[0].rows.length < 2)
 							return false;
+						
+						// adjust odd row background coloring
+						$("tr:odd", '#queueTable').removeClass("alt"); 
+						$("tr:even", '#queueTable').addClass("alt"); 
+
 						// determine which position the repositioned row is at now
 						var val2;
 						for ( var i=0; i < table.tBodies[0].rows.length; i++ ) {
