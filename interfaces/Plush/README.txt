@@ -1,5 +1,5 @@
 
-Plush 3.1 for SABnzbd+ 0.5 | February 23 2010
+Plush 3.2 for SABnzbd+ 0.6 | May 15 2010
 assembled by pairofdimes - see LICENSE-CC.txt
 
 =======================
@@ -54,7 +54,7 @@ See LICENSE-MIT & LICENSE-GPL
 jQuery FlipTip (with modifications by pairofdimes)
 http://learningjquery.com
 Copyright (c) 2010 Karl Swedberg
-See http://creativecommons.org/licenses/by-sa/2.5/
+See LICENSE-MIT & LICENSE-GPL
 
 jQuery hoverIntent
 http://cherne.net/brian/resources/jquery.hoverIntent.html
