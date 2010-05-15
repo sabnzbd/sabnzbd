@@ -13,7 +13,7 @@
 	<!--#end if#-->
 </small></div>
 
-<table id="catTable">
+<table class="catTable">
     <tr>
         <th align="center">$T('category')</th>
         <th align="center">$T('mode')</th>
@@ -21,8 +21,9 @@
         <!--#if $script_list#--><th align="center">$T('script')</th><!--#end if#-->
         <th align="center">$T('catFolderPath')</th>
         <th align="center"><!--#if $varExists('newzbinDetails')#--> $T('catNewzbin') / <!--#end if#--> $T('catGroups')</th>
-        <th></th>
+        <th>&nbsp;</th>
     </tr>
+</table>
     
     <!--#set $odd = False#-->
     <!--#set $cur = 0#-->
@@ -31,12 +32,13 @@
     <!--#set $cur = $cur+1#-->
 
     <form action="save" method="get">
-	<input type="hidden" name="session" value="$session">
 
+	<table class="catTable">
     <tr class="<!--#if $odd then "odd" else "even"#-->">
         
         
         <td>
+			<input type="hidden" name="session" value="$session">
             <input type="hidden" value="$slot.name" name="name"/>
             <input type="text" name="newname" value="$slot.name"/>
         </td>
@@ -75,7 +77,7 @@
         
         <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"/></td>
         
-        <td nowrap>
+        <td class="lastCol" nowrap>
             
             <input type="submit" class="Save" value="<!--#if $cur == 1 then $T('button-add') else $T('button-save')#-->"/>
 
@@ -86,10 +88,10 @@
         </td>
         
     </tr>
+    </table>
     </form>
     <!--#end for#-->
     
-</table>
 &nbsp;
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

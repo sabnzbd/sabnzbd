@@ -1291,32 +1291,35 @@ fieldset.EntryFieldSet {
   .update-rss fieldset.EntryFieldSet .feeduri{
   	width:99%;
   }
-#catTable {
+.catTable {
   width:99%;
 }
-  #catTable th,
-  #catTable td {
+  .catTable th,
+  .catTable td {
     padding:3px 3px 5px;
   }
-  #catTable th {
+  .catTable th {
     font-weight:bold;
   }
-  #catTable td select {
+  .catTable td select {
     background:#fff;
     padding:3px;
     width:100%;
   }
-  #catTable td input {
+  .catTable td input {
     width:98%;
   }
-  #catTable td input.Add,
-  #catTable td input.Save{
+  .catTable td input.Add,
+  .catTable td input.Save{
     font-size:0.8333em;
     width:75px;
   }
-  #catTable td input.Delete {
+  .catTable td input.Delete {
     font-size:0.8333em;
     width:26px;  
+  }
+  .catTable td.lastCol {
+	width:120px;
   }
 
 #schedulingTable td, #switchesTable td {
