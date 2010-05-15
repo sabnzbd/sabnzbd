@@ -154,7 +154,7 @@
     <div id="page-wrap" class="tiley_sprite_container sprite_tile_queue_wrap">
 
         <div id="hdr-queue" class="tilex_sprite_container sprite_tile_qh">
-            <div class="logo main_sprite_container sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
+            <div class="logo main_sprite_container sprite_topleft_queue"><h1><div class="initial-loading">&nbsp;</div>$T('menu-queue').upper()</h1></div>
             <div id="queue-buttons" class="lang-$active_lang main_sprite_container sprite_topright_queue">
                 <ul>
                     <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause') &frasl; $T('link-resume')" id="pause_resume"></li>
@@ -226,9 +226,7 @@
 			<div class="box_banner_hr main_sprite_container sprite_tile_qh_seperator"></div>
 
             <!-- Queue ( queue.tmpl )-->
-            <div id="queue">
-                <br/><p class="loading">&nbsp;</p>
-            </div>
+            <div id="queue"></div>
 			<div class="box_fatbottom tilex_sprite_container sprite_tile_qh_bottom" id="box_fatbottom_queue">
 			    <div class="right_stats nowrap" id="queue_stats"></div>
 			    <div class="left_stats">
@@ -246,8 +244,8 @@
 			</div>
 
             <!-- History Menu/Banner -->
-            <div class="box_banner_history tilex_sprite_container sprite_tile_qhistory">
-				<h1>$T('menu-history').upper()</h1>
+            <div id="hdr-history" class="box_banner_history tilex_sprite_container sprite_tile_qhistory">
+				<h1><div class="initial-loading">&nbsp;</div>$T('menu-history').upper() </h1>
                 <div class="box_banner_r">
                     <ul class="box_banner_menu">
                         <li class="main_sprite_container sprite_h_purge show" id="hist_purge" title="$T('purgeHist')"></li>
@@ -258,9 +256,7 @@
             <div class="box_banner_hr main_sprite_container sprite_tile_qh_seperator"></div>
 
             <!-- History ( history.tmpl ) -->
-            <div id="history">
-                <br/><p class="loading">&nbsp;</p>
-            </div>
+            <div id="history"></div>
 			<div class="box_fatbottom history_stats tilex_sprite_container sprite_tile_qh_bottom">
 			    <div class="right_stats nowrap" id="history_stats"></div>
 			    <div class="left_stats">

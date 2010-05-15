@@ -208,7 +208,7 @@ select {
 			color: #B1B1B1;
 		}
  
-	.pagination .loading { background: #FFF url('../images/plush-default/spinner.gif') 50% 50% no-repeat; }
+	.pagination .loading { background: #FFF url('../images/plush-default/loading-spinner.gif') 50% 50% no-repeat; }
  
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
@@ -649,16 +649,23 @@ tr:hover .nzb_status_grippie {
 	padding-left: 16px;
 }
  
-	.nzb_status.Loaded { background: url('../images/plush-default/spinner.gif') no-repeat; }
+	.nzb_status.Loaded { background: url('../images/plush-default/loading-spinner.gif') no-repeat; }
  
 #queueTable .nzb_status {
   cursor: pointer;
 }
  
-.loading {
-	background: url('../images/plush-default/spinner.gif') 4px 50% no-repeat;
+.loading { /* remove? */
+	background: url('../images/plush-default/loading-spinner.gif') 4px 50% no-repeat;
 	display: inline;
 	padding-left: 16px;
+}
+.initial-loading {
+	background: url('../images/plush-default/loading-bar.gif') 4px 50% no-repeat;
+	opacity: .25;
+	position:absolute;
+	width: 138px;
+	margin: -2px 0px 0px 100px;
 }
  
 .queueTable td.historyTitle { 

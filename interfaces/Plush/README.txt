@@ -92,7 +92,6 @@ templates/static/images/plush-default/sabnzbdplus_logo.png
 templates/static/images/plush-default/sabnzbdplus.ico
 
 Thanks goes out to sbultez for supplying:
-templates/static/images/plush-default/spinner.gif
 templates/static/images/plush-default/hv_*.png
 templates/static/images/plush-default/q_stats_needspace.png
 templates/static/images/plush-default/ql_cross.png
@@ -101,6 +100,9 @@ templates/static/images/plush-default/ql_row_on.png
 
 Thanks goes out to rAf for supplying:
 templates/static/images/plush-default/ql_grip_*.png
+
+www.AjaxLoad.info generated:
+templates/static/images/plush-default/loading-*.gif
 
 Nuvola Icon Set
 http://www.icon-king.com/?p=15

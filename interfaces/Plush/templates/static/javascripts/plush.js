@@ -715,6 +715,7 @@ jQuery(function($){
 				url: "queue/",
 				data: {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage},
 				success: function(result){
+					$('#hdr-queue .initial-loading').hide();
 					$('#queue').html(result);								// Replace queue contents with queue.tmpl
 					$('#queue-pagination span').removeClass('loading');		// Remove spinner graphic from pagination
 					$('#manual_refresh_wrapper').removeClass('refreshing');	// Refresh state notification
@@ -757,6 +758,7 @@ jQuery(function($){
 				url: "history/",
 				data: data,
 				success: function(result){
+					$('#hdr-history .initial-loading').hide();
 					$('#history').html(result);								// Replace history contents with history.tmpl
 					$('#history-pagination span').removeClass('loading');	// Remove spinner graphic from pagination
 				}
