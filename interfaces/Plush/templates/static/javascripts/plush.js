@@ -211,65 +211,96 @@ jQuery(function($){
 		//	$.plush.InitTooltips() -- title tootlips on hover
 
 		InitTooltips : function() {
+			// TO DO:
+			//		clean up implementation, unfortunately was not built as a plugin
+			//		fix glitching on superfish tooltips (#uploadTip doesn't work, #fetch_newzbin_bookmarks only works when hover from side)
 
 			/*
-				jQuery FlipTip (with modifications by pairofdimes)
-				http://learningjquery.com
-				Copyright (c) 2010 Karl Swedberg
-				See http://creativecommons.org/licenses/by-sa/2.5/
-			*/
-			var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body');
-			var $win = $(window), tipTitle = '';
+			 * jQuery tooltips
+			 * Version 1.1  (April 6, 2010)
+			 * @requires jQuery v1.4.2+
+			 * @author Karl Swedberg
+			 *
+			 * Dual licensed under the MIT and GPL licenses:
+			 * http://www.opensource.org/licenses/mit-license.php
+			 * http://www.gnu.org/licenses/gpl.html
+			 *
+			 */
+  
+			var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body'),
+			    $win = $(window),
+			    showTip;
 
-			var tipPosition = function(event) {
-				var winWidth = $win.width(),
-				    winBottom = $win.scrollTop() + $win.height(),
-				    tipWidth = $liveTip.outerWidth(),
-				    tipHeight = $liveTip.outerHeight(),
-				    pageX = event.pageX,
-				    pageY = event.pageY;
-				if (pageX + tipWidth + 12 > winWidth)
-					pageX += 12 - (pageX + tipWidth + 12 - winWidth);
-				else
-					pageX += 12;
-				if (pageY + tipHeight + 12 > winBottom)
-					pageY -= (tipHeight + 12);
-				else
-					pageY += 12;
-				$liveTip.css({
-					top: pageY,
-					left: pageX
-				});
+			var tip = {
+			  title: '',
+			  offset: 12,
+			  delay: 0, 		// changed
+			  position: function(event) {
+			    var positions = {x: event.pageX, y: event.pageY};
+			    var dimensions = {
+			      x: [
+			        $win.width(),
+			        $liveTip.outerWidth()
+			      ],
+			      y: [
+			        $win.scrollTop() + $win.height(),
+			        $liveTip.outerHeight()
+			      ]
+			    };
+
+			    for ( var axis in dimensions ) {
+
+			      if (dimensions[axis][0] < dimensions[axis][1] + positions[axis] + this.offset) {
+			        positions[axis] -= dimensions[axis][1] + this.offset;
+			      } else {
+			        positions[axis] += this.offset;
+			      }
+
+			    }
+
+			    $liveTip.css({
+			      top: positions.y,
+			      left: positions.x
+			    });
+			  }
 			};
 
-			// make these work: #time-left, #have_warnings, #explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pauseForPrompt, 
-			$('#pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose').live('mouseover mouseout mousemove', function(event) {
-				var $link = $(event.target);
-				if (!$link.length) { return; }
-				var link = $link[0];
-				var coords = {left: '-1000em'};
+			$('body').delegate('#time-left, #have_warnings, #explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pauseForPrompt, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+			  var link = this,
+			      $link = $(this);
 
-				switch(event.type){
-					case 'mouseover':
-						$link.data('tipActive', true);
-						tipTitle = link.title;
-						link.title = '';
-						if (!tipTitle) { return; }
-						$liveTip.html('<div>'+tipTitle+'</div>').show()
-						tipPosition(event);
-						break;
+			  if (event.type == 'mouseover') {
+			    tip.title = link.title;
+			    link.title = '';
 
-					case 'mouseout':
-						$link.removeData('tipActive');
-						$liveTip.hide();
-						link.title = tipTitle || link.title;        
-						break;
+			    showTip = setTimeout(function() {
 
-					case 'mousemove':
-						if ($link.data('tipActive'))
-				    		tipPosition(event);
-						break;
-				};
+			      $link.data('tipActive', true);
+
+			      tip.position(event);
+
+			      $liveTip
+			      .html('<div>' + tip.title + '</div>') //<div>' + link.href + '</div>')  	// changed
+			      //.fadeOut(0)  															// changed
+			      .show();//.fadeIn(200);  													// changed
+
+			    }, tip.delay);
+			  }
+
+			  if (event.type == 'mouseout') {
+			    link.title = tip.title || link.title;
+			    if ($link.data('tipActive')) {
+			      $link.removeData('tipActive');
+			      $liveTip.hide();
+			    } else {
+			      clearTimeout(showTip);
+			    }
+			  }
+
+			  if (event.type == 'mousemove' && $link.data('tipActive')) {
+			    tip.position(event);
+			  }
+  
 			});
 		},
 

@@ -161,6 +161,7 @@ select {
   padding: 4px;
   border: 2px solid #9c9;
   border-radius: 4px;
+  z-index:99999;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
 }
