@@ -30,49 +30,30 @@
 </head>
 <body>
 
-<div style='display:none'> 
-	<div id="plush_options_modal">
-       	<ul>
-       		<li>$T('Plush-refreshRate'):&nbsp;<select id="refreshRate-option">
-                <option value="1">1 $T('second')</option>
-                <option value="2">2 $T('second')</option>
-                <option value="4">4 $T('second')</option>
-                <option value="8">8 $T('second')</option>
-                <option value="16">16 $T('second')</option>
-                <option value="30">30 $T('second')</option>
-                <option value="60">1 $T('minute')</option>
-                <option value="120">2 $T('minute')</option>
-                <option value="900">15 $T('minute')</option>
-                <option value="1800">30 $T('minute')</option>
-                <option value="0">$T('Plush-disabled')</option>
-           	</select></li>
-           	<li><input type="checkbox" id="confirmDeleteQueue" checked="checked" /> $T("Plush-confirmDeleteQueue")</li>
-           	<li><input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")</li>
-           	<li id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><input type="checkbox" id="blockRefresh" checked="checked" /> $T("Plush-blockRefresh")</li>
-        </ul>
-	</div>
-</div>
-
-	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
-    <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
-	    <input type="hidden" name="apikey" value="$session" />
-    <ul class="sf-menu sf-navbar">
-        <li>
-            <a class="sf-with-ul">SABnzbd</a>
-            <ul>
-                <li id="plush_options"><a>$T('Plush-options')</a></li>
-                <li><a class="sf-with-ul">$T('menu-help')</a>
-                    <ul>
-                        <li><a href="$helpuri" target="_blank">$T('menu-wiki')</a></li>
-                        <li><a href="http://forums.sabnzbd.org" target="_blank">$T('menu-forums')</a></li>
-                        <li><a href="http://www.sabnzbd.org/live-chat/" target="_blank">$T('menu-irc')</a></li>
-                    </ul>
-                </li>
-                <li><a class="pointer" id="shutdown_sabnzbd" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></li>
-            </ul>
-        </li>
-        <li>
-            <a class="sf-with-ul">$T('Plush-addnzb')</a>
+	<!-- modals -->
+	<div style='display:none'> 
+		<div id="plush_options_modal">
+	       	<ul>
+	       		<li>$T('Plush-refreshRate'):&nbsp;<select id="refreshRate-option">
+	                <option value="1">1 $T('second')</option>
+	                <option value="2">2 $T('second')</option>
+	                <option value="4">4 $T('second')</option>
+	                <option value="8">8 $T('second')</option>
+	                <option value="16">16 $T('second')</option>
+	                <option value="30">30 $T('second')</option>
+	                <option value="60">1 $T('minute')</option>
+	                <option value="120">2 $T('minute')</option>
+	                <option value="900">15 $T('minute')</option>
+	                <option value="1800">30 $T('minute')</option>
+	                <option value="0">$T('Plush-disabled')</option>
+	           	</select></li>
+	           	<li><input type="checkbox" id="confirmDeleteQueue" checked="checked" /> $T("Plush-confirmDeleteQueue")</li>
+	           	<li><input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")</li>
+	           	<li id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><input type="checkbox" id="blockRefresh" checked="checked" /> $T("Plush-blockRefresh")</li>
+	        </ul>
+		</div>
+		
+		<div id="add_nzb_modal">
             <ul>
                 <li><a><input type="text" id="addID_input" size="18" /><input type="submit" id="addID" value="$T('Plush-fetch')" /></a></li>
                     <li>
@@ -126,7 +107,29 @@
                 <li><a title="Newzbin - $T('link-getBookmarks')" id="fetch_newzbin_bookmarks" class="pointer">$T('link-getBookmarks')</a></li>
           		<!--#end if#-->
             </ul>
+		</div>
+
+	</div>
+
+	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
+    <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
+	    <input type="hidden" name="apikey" value="$session" />
+    <ul class="sf-menu sf-navbar">
+        <li>
+            <a class="sf-with-ul">SABnzbd</a>
+            <ul>
+                <li id="plush_options"><a>$T('Plush-options')</a></li>
+                <li><a class="sf-with-ul">$T('menu-help')</a>
+                    <ul>
+                        <li><a href="$helpuri" target="_blank">$T('menu-wiki')</a></li>
+                        <li><a href="http://forums.sabnzbd.org" target="_blank">$T('menu-forums')</a></li>
+                        <li><a href="http://www.sabnzbd.org/live-chat/" target="_blank">$T('menu-irc')</a></li>
+                    </ul>
+                </li>
+                <li><a class="pointer" id="shutdown_sabnzbd" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></li>
+            </ul>
         </li>
+        <li><a id="add_nzb">$T('Plush-addnzb')</a></li>
         <li>
   			<a class="sf-with-ul" href="connections" id="last_warning">$T('menu-config')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
       		<ul class="config_links">

@@ -98,7 +98,9 @@ jQuery(function($){
 	  		  dropShadows: false
 	  		});
 	
+			// modals
 			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
