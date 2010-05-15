@@ -179,6 +179,9 @@ button-restart    Neu starten
 button-scan       Ein Klick auf den Knopf "Scannen" such im temporären \n\
                   Download-Ordner nach Ordnern, die in der Warteschlange\n\
                   nicht aufgeführt sind.
+explain-Scan      Ein Klick auf den Knopf "Scannen" sucht im temporären\n\
+                  Download-Ordner nach Ordnern, die in der Warteschlange\n\
+                  nicht aufgeführt sind.
 button-repair     Reparieren
 explain-Repair    Ein Klick auf den Knopf "Reparieren" startet SABnzbd neu\n\
                   und baut die Warteschlange neu auf, wobei bereits\n\
