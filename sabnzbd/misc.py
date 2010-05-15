@@ -1389,7 +1389,7 @@ def linux_standby():
 def renamer(old, new):
     """ Rename file/folder with retries for Win32 """
     if sabnzbd.WIN32:
-        retries = 5
+        retries = 15
         while retries > 0:
             try:
                 os.rename(old, new)
@@ -1409,7 +1409,7 @@ def renamer(old, new):
 def remove_dir(path):
     """ Remove directory with retries for Win32 """
     if sabnzbd.WIN32:
-        retries = 5
+        retries = 15
         while retries > 0:
             try:
                 os.rmdir(path)
