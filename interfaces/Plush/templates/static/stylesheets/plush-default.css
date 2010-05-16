@@ -389,7 +389,7 @@ select {
 	overflow:hidden;
 }
 
-#queue-buttons {
+.queue-buttons {
 	float:right;
 	height:37px;
 	padding-top:34px;
@@ -398,12 +398,12 @@ select {
 	white-space:nowrap;
 }
 	
-	#queue-buttons ul {
+	.queue-buttons ul {
 	  float:left;
 		margin-right:24px;
 	} 	
  
-	#queue-buttons #pause_int {
+	.queue-buttons #pause_int {
     color:#ccc;
     font-size:small;
     padding-right:16px;
@@ -412,7 +412,7 @@ select {
     text-indent:0;
     top:34px;
 	}
-	#queue-buttons ul li {
+	.queue-buttons ul li {
 	  float: left;
 	  cursor:pointer;
   	display:block;
@@ -421,11 +421,11 @@ select {
 	  text-indent:-5000px;
 	  width:21px;
   }
-  #queue-buttons ul li.sprite_q_queue {
+  .queue-buttons ul li.sprite_q_queue {
     margin-left:10px;
   }
 
-  #queue-buttons ul li ul{ /* Second Level */
+  .queue-buttons ul li ul{ /* Second Level */
     border-bottom:2px solid #403f3f;
     border-right:2px solid #403f3f;
   	display:none;
@@ -438,17 +438,17 @@ select {
     width:200px;
     z-index:100;
   }
-  #queue-buttons.lang-nl-du ul li ul{
+  .queue-buttons.lang-nl-du ul li ul{
     width:245px;
   }
-  #queue-buttons.lang-de-de ul li ul,
-  #queue-buttons.lang-fr-fr ul li ul{
+  .queue-buttons.lang-de-de ul li ul,
+  .queue-buttons.lang-fr-fr ul li ul{
     width:265px;
   }
-  #queue-buttons ul li.sprite_q_queue ul{
+  .queue-buttons ul li.sprite_q_queue ul{
     right:0;
   }
-  #queue-buttons ul li ul li{
+  .queue-buttons ul li ul li{
     background:#1d1c1c;
     border-top:1px solid #474646;
     clear:left;
@@ -457,11 +457,11 @@ select {
     text-indent:0;
     width:100%;
   }
-  #queue-buttons ul li ul li:first-child{
+  .queue-buttons ul li ul li:first-child{
     border:0;
   }
   
-  #queue-buttons ul li ul li a{
+  .queue-buttons ul li ul li a{
     color:#aaa;
     clear:left;
     float:left;
@@ -470,30 +470,30 @@ select {
     text-align:left;
     width:188px;
   }
-  #queue-buttons ul li ul li a:hover{
+  .queue-buttons ul li ul li a:hover{
     color:#eee;
   }
-  #queue-buttons ul li.sprite_q_queue ul li a:hover {
+  .queue-buttons ul li.sprite_q_queue ul li a:hover {
     text-decoration:none;
   }
-  #queue-buttons ul li ul li #onQueueFinish-option{
+  .queue-buttons ul li ul li #onQueueFinish-option{
     width:130px;
   }
-  #queue-buttons ul li ul li ul,
-    #queue-buttons ul li.sprite_q_queue ul li ul{   /* Third Level */
+  .queue-buttons ul li ul li ul,
+    .queue-buttons ul li.sprite_q_queue ul li ul{   /* Third Level */
     border:0;
     position:absolute;
     right:200px;
     top:0;
   }
-  #queue-buttons.lang-nl-du ul li ul li ul,
-    #queue-buttons.lang-nl-du ul li.sprite_q_queue ul li ul{
+  .queue-buttons.lang-nl-du ul li ul li ul,
+    .queue-buttons.lang-nl-du ul li.sprite_q_queue ul li ul{
     right:245px;
   }
-  #queue-buttons.lang-de-de ul li ul li ul,
-    #queue-buttons.lang-de-de ul li.sprite_q_queue ul li ul,
-  #queue-buttons.lang-fr-fr ul li ul li ul,
-    #queue-buttons.lang-fr-fr ul li.sprite_q_queue ul li ul{
+  .queue-buttons.lang-de-de ul li ul li ul,
+    .queue-buttons.lang-de-de ul li.sprite_q_queue ul li ul,
+  .queue-buttons.lang-fr-fr ul li ul li ul,
+    .queue-buttons.lang-fr-fr ul li.sprite_q_queue ul li ul{
     right:265px;
   }
   

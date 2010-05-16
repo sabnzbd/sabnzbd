@@ -184,7 +184,7 @@
 
         <div id="hdr-queue" class="tilex_sprite_container sprite_tile_qh">
             <div class="logo main_sprite_container sprite_topleft_queue"><h1><div class="initial-loading">&nbsp;</div>$T('menu-queue').upper()</h1></div>
-            <div id="queue-buttons" class="lang-$active_lang main_sprite_container sprite_topright_queue">
+            <div class="queue-buttons lang-$active_lang main_sprite_container sprite_topright_queue">
                 <ul>
                     <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause') &frasl; $T('link-resume')" id="pause_resume"></li>
                     <li class="main_sprite_container sprite_q_menu_pausefor">
@@ -204,7 +204,6 @@
           			<li class="main_sprite_container sprite_q_queue">
                         <a class="sf-with-ul">$T('menu-queue')</a>
                         <ul>
-                            <li><a>$T('Plush-maxSpeed'):&nbsp;&nbsp;<input type="text" id="maxSpeed-option" size="6" />&nbsp;&nbsp;$T('KBs')</a></li>
                             <li>
                                 <a class="sf-with-ul">$T('Plush-onQueueFinish'):
                                     <select id="onQueueFinish-option">
@@ -246,9 +245,19 @@
                 </ul>
             </div>
             <div class="centerpiece">
-                <div class="main_sprite_container sprite_rounded_area_bg" id="speed"><p><span id="stats_speed">&hellip;</span></p></div>
+				<div class="main_sprite_container sprite_rounded_area_bg" id="speed"><p><span id="stats_speed">&hellip;</span></p></div>
                 <div id="queue_logo" class="main_sprite_container sprite_sabnzbdplus_logo"></div>
                 <div class="main_sprite_container sprite_rounded_area_bg" id="time-left"><p><span id="stats_eta">&hellip;</span>&nbsp;$T('Plush-left')</p></div>
+				<div style="float:left; margin-top:-13px;" class="queue-buttons">
+	                <ul>
+	          			<li class="main_sprite_container sprite_q_queue">
+							<a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
+	                        <ul>
+	                            <li><a>$T('Plush-maxSpeed'):&nbsp;&nbsp;<input type="text" id="maxSpeed-option" size="6" />&nbsp;&nbsp;$T('KBs')</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
             </div>
         </div>
 

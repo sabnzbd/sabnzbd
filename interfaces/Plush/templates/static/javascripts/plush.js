@@ -93,7 +93,7 @@ jQuery(function($){
 				autoArrows:	true,
 	  			dropShadows: false
 	  		});
-	  		$("#queue-buttons ul").superfish({
+	  		$(".queue-buttons ul").superfish({
 	  		  autoArrows: false,
 	  		  dropShadows: false
 	  		});
