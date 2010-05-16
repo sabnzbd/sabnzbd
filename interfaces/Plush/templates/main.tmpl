@@ -31,7 +31,8 @@
 <body>
 
 	<!-- modals -->
-	<div style='display:none'> 
+	<div style='display:none'>
+		
 		<div id="plush_options_modal">
 	       	<ul>
 	       		<li>$T('Plush-refreshRate'):&nbsp;<select id="refreshRate-option">
@@ -109,6 +110,27 @@
             </ul>
 		</div>
 
+		<div id="pause_interval_modal">
+			<fieldset class="EntryFieldSet">
+    			<legend><strong>Pause for Interval...</strong></legend>
+				<table>
+					<tr><td>Days</td><td><input type="text" size="4" value="0" /></td></tr>
+					<tr><td>Hours</td><td><input type="text" size="4" value="0" /></td></tr>
+					<tr><td>Minutes</td><td><input type="text" size="4" value="0" /></td></tr>
+					<tr><td></td><td><input type="button" value="Pause" /></td></tr>
+				</table>
+			</fieldset>
+			<fieldset class="EntryFieldSet">
+    			<legend><strong>Pause Until...</strong></legend>
+				<table>
+					<tr><td>Time</td><td>{{{ am/pm time picker goes here }}}</td></tr>
+					<tr><td>Date</td><td>{{{ calendar widget goes here }}}</td></tr>
+					<tr><td>Zone</td><td><input type="radio" name="zone" checked> My Time <input type="radio" name="zone"> Daemon's Time</td></tr>
+					<tr><td></td><td><input type="button" value="Pause" /></td></tr>
+				</table>
+			</fieldset>
+		</div>
+
 	</div>
 
 	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
@@ -175,6 +197,7 @@
                           <li><a href="javascript:void(0)" class="set_pause pointer" rel="180">$T('Plush-pause3h')</a></li>
                           <li><a href="javascript:void(0)" class="set_pause pointer" rel="360">$T('Plush-pause6h')</a></li>
                           <li><a href="javascript:void(0)" class="set_pause pointer" rel="custom" id="pauseForPrompt" title="$T('Plush-pauseForPrompt')">$T('Plush-pauseFor')</a></li>
+                          <li><a id="pause_interval">Custom Pause Interval</a></li>
                       </ul>
                     </li>
 					<li id="pause_int"></li>
