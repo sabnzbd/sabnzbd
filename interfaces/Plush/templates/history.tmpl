@@ -21,7 +21,7 @@
 		&nbsp;<div class="nzb_status <!--#if $line.action_line or $line.status=="Queued"#-->Loaded<!--#else if $line.status=="Failed"#-->main_sprite_container sprite_hv_error<!--#else#-->main_sprite_container sprite_hv_star<!--#end if#-->">&nbsp;</div>
 	</td>
     <td class="historyTitle">
-        $line.name
+        <a href="scriptlog?name=$line.nzo_id" class="modal" rel="verbosity">$line.name</a>
     </td>
     
     <td>
