@@ -901,17 +901,18 @@ class NzbObject(TryList):
         for nzf in self.files:
             # Don't try to get an article if server is in try_list of nzf
             if not nzf.server_in_try_list(server):
-                # Only load NZF when it's a primary server
-                # or when it's a backup server without active primaries
-                if server.fillserver ^ sabnzbd.active_primaries():
-                    nzf.finish_import()
-                    # Still not finished? Something went wrong...
-                    if not nzf.import_finished:
-                        logging.error(Ta('error-qImport@1'), nzf)
-                        nzf_remove_list.append(nzf)
+                if not nzf.import_finished:
+                    # Only load NZF when it's a primary server
+                    # or when it's a backup server without active primaries
+                    if server.fillserver ^ sabnzbd.active_primaries():
+                        nzf.finish_import()
+                        # Still not finished? Something went wrong...
+                        if not nzf.import_finished:
+                            logging.error(Ta('error-qImport@1'), nzf)
+                            nzf_remove_list.append(nzf)
+                            continue
+                    else:
                         continue
-                else:
-                    continue
 
                 article = nzf.get_article(server)
                 if article:
