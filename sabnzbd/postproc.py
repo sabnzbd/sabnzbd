@@ -169,15 +169,15 @@ class PostProcessor(Thread):
 
             folder_rename = cfg.folder_rename()
 
-            # keep track of if par2 fails
-            parResult = True
+            # keep track of whether we can continue
+            all_ok = True
+            # keep track of par problems
+            parError = False
             # keep track of any unpacking errors
             unpackError = False
             nzb_list = []
             # These need to be initialised incase of a crash
             workdir_complete = ''
-            base_dir = ''
-            rel_path = ''
             postproc_time = 0
             script_log = ''
             script_line = ''
@@ -214,20 +214,20 @@ class PostProcessor(Thread):
                     nzo.fail_msg = emsg
                     nzo.status = 'Failed'
                     # do not run unpacking or parity verification
-                    flagRepair = flagUnpack = parResult = False
-                    unpackError = True
+                    flagRepair = flagUnpack = False
+                    parError = unpackError = True
 
                 logging.info('Starting PostProcessing on %s' + \
                              ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s',
                              filename, flagRepair, flagUnpack, flagDelete, script)
-                osx.sendGrowlMsg("Post-processing",filename,osx.NOTIFICATION['pp'])
+                osx.sendGrowlMsg("Post-processing", filename, osx.NOTIFICATION['pp'])
                 ## Run Stage 1: Repair
                 if flagRepair:
                     logging.info('Par2 check starting on %s', filename)
                     reAdd = False
                     if not repairSets:
                         logging.info("No par2 sets for %s", filename)
-                        nzo.set_unpack_info('Repair',T('msg-noParSets@1') % unicoder(filename))
+                        nzo.set_unpack_info('Repair', T('msg-noParSets@1') % unicoder(filename))
 
                     for _set in repairSets:
                         logging.info("Running repair on set %s", _set)
@@ -236,7 +236,7 @@ class PostProcessor(Thread):
                         if need_reAdd:
                             reAdd = True
                         else:
-                            parResult = parResult and res
+                            parError = parError or not res
 
                     if reAdd:
                         logging.info('Readded %s to queue', filename)
@@ -249,18 +249,14 @@ class PostProcessor(Thread):
 
                     logging.info('Par2 check finished on %s', filename)
 
-                mailResult = parResult
-                jobResult = 1
-                if parResult: jobResult = 0
-
                 ## Check if user allows unsafe post-processing
-                if not cfg.safe_postproc():
-                    parResult = True
+                if cfg.safe_postproc():
+                    all_ok = not parError
 
                 # Set complete dir to workdir in case we need to abort
                 workdir_complete = workdir
 
-                if parResult:
+                if all_ok:
                     ## Determine class directory
                     if config.get_categories():
                         complete_dir = Cat2Dir(cat, cfg.complete_dir.get_path())
@@ -269,7 +265,6 @@ class PostProcessor(Thread):
                         complete_dir = create_dirs(complete_dir)
                     else:
                         complete_dir = cfg.complete_dir.get_path()
-                    base_dir = os.path.normpath(complete_dir)
 
                     ## Determine destination directory
                     dirname = nzo.final_name
@@ -295,49 +290,54 @@ class PostProcessor(Thread):
                     newfiles = []
                     ## Run Stage 2: Unpack
                     if flagUnpack:
-                        if parResult:
+                        if all_ok:
                             #set the current nzo status to "Extracting...". Used in History
                             nzo.status = 'Extracting'
                             logging.info("Running unpack_magic on %s", filename)
                             unpackError, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flagDelete, (), (), (), ())
                             logging.info("unpack_magic finished on %s", filename)
                         else:
-                            nzo.set_unpack_info('Unpack',T('msg-noPostProc'))
+                            nzo.set_unpack_info('Unpack', T('msg-noPostProc'))
 
-                    ## Move any (left-over) files to destination
-                    nzo.status = 'Moving'
-                    nzo.set_action_line(T('msg-moving'), '...')
-                    for root, dirs, files in os.walk(workdir):
-                        if not root.endswith(JOB_ADMIN):
-                            for _file in files:
-                                path = os.path.join(root, _file)
-                                new_path = path.replace(workdir, tmp_workdir_complete)
-                                new_path = get_unique_filename(new_path)
-                                move_to_path(path, new_path, unique=False)
+                    if cfg.safe_postproc():
+                        all_ok = all_ok and not unpackError
+
+                    if all_ok:
+                        ## Move any (left-over) files to destination
+                        nzo.status = 'Moving'
+                        nzo.set_action_line(T('msg-moving'), '...')
+                        for root, dirs, files in os.walk(workdir):
+                            if not root.endswith(JOB_ADMIN):
+                                for _file in files:
+                                    path = os.path.join(root, _file)
+                                    new_path = path.replace(workdir, tmp_workdir_complete)
+                                    new_path = get_unique_filename(new_path)
+                                    move_to_path(path, new_path, unique=False)
 
                     ## Set permissions right
                     if not sabnzbd.WIN32:
                         perm_script(tmp_workdir_complete, cfg.umask())
 
-                    ## Remove files matching the cleanup list
-                    CleanUpList(tmp_workdir_complete, True)
+                    if all_ok:
+                        ## Remove files matching the cleanup list
+                        CleanUpList(tmp_workdir_complete, True)
 
-                    ## Check if this is an NZB-only download, if so redirect to queue
-                    nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat, priority=priority)
-                    if nzb_list:
-                        nzo.set_unpack_info('Download', T('msg-sentToQ@1') % unicoder(nzb_list))
-                        try:
-                            remove_dir(tmp_workdir_complete)
-                        except:
-                            pass
-                    else:
-                        CleanUpList(tmp_workdir_complete, False)
+                        ## Check if this is an NZB-only download, if so redirect to queue
+                        nzb_list = NzbRedirect(tmp_workdir_complete, pp, script, cat, priority=priority)
+                        if nzb_list:
+                            nzo.set_unpack_info('Download', T('msg-sentToQ@1') % unicoder(nzb_list))
+                            try:
+                                remove_dir(tmp_workdir_complete)
+                            except:
+                                pass
+                        else:
+                            CleanUpList(tmp_workdir_complete, False)
 
                 script_output = ""
-                if parResult and not nzb_list:
+                if all_ok and not nzb_list:
                     ## Give destination its final name
                     if folder_rename:
-                        if unpackError or not parResult:
+                        if not all_ok:
                             workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                             workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
                         try:
@@ -347,20 +347,20 @@ class PostProcessor(Thread):
                             logging.error(Ta('error-ppRename@2'), tmp_workdir_complete, workdir_complete)
                             logging.debug("Traceback: ", exc_info = True)
 
-                    if unpackError: jobResult = jobResult + 2
+                    jobResult = int(parError) + int(unpackError)*2
 
                     if cfg.ignore_samples() > 0:
                         remove_samples(workdir_complete)
 
                     ## TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
-                    if not unpackError or parResult:
+                    if all_ok:
                         if newfiles and file_sorter.is_sortfile():
                             file_sorter.rename(newfiles, workdir_complete)
                             workdir_complete = file_sorter.move(workdir_complete)
 
                     ## Run the user script
                     script_path = make_script_path(script)
-                    if parResult and (not nzb_list) and script_path:
+                    if all_ok and (not nzb_list) and script_path:
                         #set the current nzo status to "Ext Script...". Used in History
                         nzo.status = 'Running'
                         nzo.set_action_line(T('msg-running'), unicoder(script))
@@ -381,8 +381,8 @@ class PostProcessor(Thread):
 
                 ## Email the results
                 if (not nzb_list) and cfg.email_endjob():
-                    if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpackError or not parResult)):
-                        emailer.endjob(dirname, msgid, cat, mailResult, workdir_complete, nzo.bytes_downloaded,
+                    if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpackError or parError)):
+                        emailer.endjob(dirname, msgid, cat, all_ok, workdir_complete, nzo.bytes_downloaded,
                                        nzo.unpack_info, script, TRANS(script_log), script_ret)
 
                 if script_output:
@@ -401,15 +401,15 @@ class PostProcessor(Thread):
                                             T('link-viewSc')), unique=True)
 
                 ## Remove newzbin bookmark, if any
-                if parResult and msgid:
+                if msgid and all_ok:
                     Bookmarks.do.del_bookmark(msgid)
 
                 ## Show final status in history
-                if parResult and not unpackError:
-                    osx.sendGrowlMsg("Download Completed",filename,osx.NOTIFICATION['complete'])
+                if all_ok:
+                    osx.sendGrowlMsg("Download Completed", filename, osx.NOTIFICATION['complete'])
                     nzo.status = 'Completed'
                 else:
-                    osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['complete'])
+                    osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
                     nzo.status = 'Failed'
 
             except:
@@ -421,18 +421,15 @@ class PostProcessor(Thread):
                 if not crash_msg:
                     logging.debug("Traceback: ", exc_info = True)
                 nzo.fail_msg = T('warn-PostCrash@1') % unicoder(crash_msg)
-                osx.sendGrowlMsg("Download Failed",filename,osx.NOTIFICATION['complete'])
+                osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
                 nzo.status = 'Failed'
-                parResult = False
+                parError = True
 
-            if parResult:
+            if all_ok:
                 # If the folder only contains one file OR folder, have that as the path
                 # Be aware that series/generic/date sorting may move a single file into a folder containing other files
                 workdir_complete = one_file_or_folder(workdir_complete)
                 workdir_complete = os.path.normpath(workdir_complete)
-
-            # Create a relative path removing the complete_dir folder or category folder
-            rel_path = os.path.normpath(workdir_complete).replace(base_dir, '')
 
             # Log the overall time taken for postprocessing
             postproc_time = int(time.time() - start)
@@ -447,8 +444,8 @@ class PostProcessor(Thread):
 
             ## Clean up the NZO
             try:
-                logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not parResult))
-                sabnzbd.nzbqueue.cleanup_nzo(nzo, keep_basic=not parResult)
+                logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
+                sabnzbd.nzbqueue.cleanup_nzo(nzo, keep_basic=not all_ok)
             except:
                 logging.error(Ta('error-ppCleanup@1'), nzo.final_name)
                 logging.debug("Traceback: ", exc_info = True)
@@ -458,7 +455,7 @@ class PostProcessor(Thread):
             self.remove(nzo)
 
             ## Remove download folder
-            if parResult:
+            if all_ok:
                 try:
                     if os.path.exists(workdir):
                         logging.debug('Removing workdir %s', workdir)
