@@ -92,11 +92,13 @@ jQuery(function($){
 			// Main menu -- uses jQuery hoverIntent
 			$("#main_menu ul.sf-menu").superfish({
 				autoArrows:	true,
-	  			dropShadows: false
+	  			dropShadows: false,
+			    speed:0, delay:0
 	  		});
 	  		$(".queue-buttons ul").superfish({
-	  		  autoArrows: false,
-	  		  dropShadows: false
+	  		    autoArrows: false,
+	  		    dropShadows: false,
+			    speed:0, delay:0
 	  		});
 	
 			// modals
