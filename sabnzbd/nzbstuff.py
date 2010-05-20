@@ -357,7 +357,6 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
         elif name == 'groups' and self.in_nzb and self.in_file:
             self.in_groups = True
-            self.groups = []
 
         elif name == 'nzb':
             self.in_nzb = True
@@ -370,7 +369,9 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
     def endElement(self, name):
         if name == 'group' and self.in_group:
-            self.groups.append(str(''.join(self.group_name)))
+            group = str(''.join(self.group_name))
+            if group not in self.groups:
+                self.groups.append(group)
             self.in_group = False
 
         elif name == 'segment' and self.in_segment:
