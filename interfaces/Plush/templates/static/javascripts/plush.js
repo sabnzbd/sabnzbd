@@ -46,11 +46,13 @@ jQuery(function($){
 							script:   $("#addID_script").val(),
 							cat:	  $("#addID_cat").val(),
 							priority: $("#addID_priority").val(),
+							nzbname:  "test",
 							apikey:	  $.plush.apikey
 						},
 						success: $.plush.RefreshQueue
 					});
 					$("#addID_input").val('');
+					$('#nzbname').val(''); 
 				}
 				return false; // aborts <form> submission
 			});
@@ -66,7 +68,7 @@ jQuery(function($){
 			// Upload NZB ajax with webtoolkit
 			$('#uploadNZBFile').change( function(){ $('#uploadNZBForm').submit(); });
 			$('#uploadNZBForm').submit( function(){
-				return AIM.submit(this, {'onComplete': $.plush.RefreshQueue})
+				return AIM.submit(this, {'onComplete': function(){ $('#nzbname').val(''); $.plush.RefreshQueue(); }})
 			});
 
 			// Fetch Newzbin Bookmarks
