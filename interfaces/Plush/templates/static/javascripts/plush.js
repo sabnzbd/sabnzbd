@@ -199,6 +199,7 @@ jQuery(function($){
 				var minutes = $(event.target).attr('rel');
 				if (minutes == "custom")
 					minutes = prompt($(event.target).attr('title'));
+				$.plush.SetQueuePauseInfo(true,minutes+':00');
 				$.ajax({
 					type: "POST",
 					url: "tapi",
