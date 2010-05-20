@@ -9,17 +9,18 @@
 <head>
     
     <title>SABnzbd+ $version - $T('queued'): $mbleft $T('MB')</title>
+    
+    #if $color_scheme#
+    <link rel="shortcut icon" type="image/ico" href="$path/static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
+    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/$color_scheme/$color_scheme.css?$version"/>
+    #else#
     <link rel="shortcut icon" type="image/ico" href="$path/static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
+    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/gold/gold.css?$version"/>
+    #end if#
     
     <script type="text/javascript" src="$path/static/javascripts/lib.js?$version"></script>
     <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
-    
-    #if $color_scheme#
-    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/$color_scheme/theme.css?$version"/>
-    #else#
-    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/gold/theme.css?$version"/>
-    #end if#
-    
+
 	<script type="text/javascript">
         var config_pane = "$pane";
         var help_uri = "$help_uri";

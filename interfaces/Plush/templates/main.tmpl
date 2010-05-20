@@ -7,12 +7,13 @@
 
     <title>SABnzbd+ Plush</title>
     <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="rss?mode=history"/>
-    <link rel="shortcut icon" type="image/ico" href="static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
 
     <!--#if $color_scheme#-->
-    <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme/theme.css?$version"/>
+    <link rel="shortcut icon" type="image/ico" href="static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
+    <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/$color_scheme/$color_scheme.css?$version"/>
     <!--#else#-->
-    <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/gold/theme.css?$version"/>
+    <link rel="shortcut icon" type="image/ico" href="static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
+    <link rel="stylesheet" type="text/css" href="static/stylesheets/colorschemes/gold/gold.css?$version"/>
     <!--#end if#-->
 
     <script type="text/javascript" src="static/javascripts/lib.js?$version"></script>
