@@ -8,9 +8,10 @@ jQuery(function($){
 		// ***************************************************************
 		//	Plush defaults
 		
-		refreshRate:   			$.cookie('refreshRate')  ? $.cookie('refreshRate')  : 30,   // refresh rate in seconds
-		queuePerPage:   		$.cookie('queuePerPage') ? $.cookie('queuePerPage') : 10,	// pagination - nzbs per page
-		histPerPage:   			$.cookie('histPerPage')  ? $.cookie('histPerPage')  : 10,	// pagination - nzbs per page
+		refreshRate:   			$.cookie('refreshRate')     ? $.cookie('refreshRate')  : 30,   // refresh rate in seconds
+		containerWidth:   		$.cookie('containerWidth')  ? $.cookie('containerWidth')  : '90%',   // refresh rate in seconds
+		queuePerPage:   		$.cookie('queuePerPage')    ? $.cookie('queuePerPage') : 10,	// pagination - nzbs per page
+		histPerPage:   			$.cookie('histPerPage')     ? $.cookie('histPerPage')  : 10,	// pagination - nzbs per page
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
@@ -99,7 +100,7 @@ jQuery(function($){
 	  		});
 	
 			// modals
-			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"300px", height:"300px", initialWidth:"300px", initialHeight:"300px", speed:0, opacity:0.7 });
 			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"300px", height:"300px", initialWidth:"300px", initialHeight:"300px", speed:0, opacity:0.7 });
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
@@ -119,6 +120,13 @@ jQuery(function($){
 				$.cookie('refreshRate', $.plush.refreshRate, { expires: 365 });
 				$.plush.Refresh();
 			});
+			
+			// Refresh rate
+			$("#containerWidth-option").val($.plush.containerWidth).change( function() {
+				$.plush.containerWidth = $("#containerWidth-option").val();
+				$.cookie('containerWidth', $.plush.containerWidth, { expires: 365 });
+				$('#page-wrap').css('width',$.plush.containerWidth);
+			}).trigger('change');
 			
 			// Confirm Queue Deletions toggle
 			$("#confirmDeleteQueue").attr('checked', $.plush.confirmDeleteQueue ).change( function() {
