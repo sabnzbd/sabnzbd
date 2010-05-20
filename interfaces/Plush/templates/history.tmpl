@@ -64,6 +64,13 @@
         <!--#if $line.fail_message#-->
         <h3 class="hvMessageFail">&raquo;&nbsp;$line.fail_message&nbsp;</h3>
         <!--#end if#-->
+		<!--#if $line.retry#-->
+			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
+               <input type="file" name="nzbfile">
+			   <input type="hidden" value="$line.nzo_id" name="job">
+               <input type="hidden" name="session" value="$session">
+			<input type="submit" value="$T('button-retry')"></form>
+		<!--#end if#-->
     </td>
     
     <td class="options nowrap">
