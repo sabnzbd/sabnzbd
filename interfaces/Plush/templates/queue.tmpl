@@ -49,8 +49,10 @@
     <!--#set $cur = $cur + 1#-->
     <tr id="$slot.nzo_id"<!--#if $cur%2#--> class="alt"<!--#end if#-->>
 
-	<td class="nzb_status_col">
-		&nbsp;<div class="nzb_status <!--#if $slot.status == "Paused"#-->main_sprite_container sprite_ql_grip_paused<!--#else if $slot.status == "Downloading"#-->main_sprite_container sprite_ql_grip_active<!--#else#-->main_sprite_container sprite_ql_grip_queued<!--#end if#-->">&nbsp;</div>
+	<td class="nzb_status_col nowrap">
+		&nbsp;<div class="nzb_status <!--#if $slot.status == "Paused"#-->main_sprite_container sprite_ql_grip_paused<!--#else if $slot.status == "Downloading"#-->main_sprite_container sprite_ql_grip_active<!--#else#-->main_sprite_container sprite_ql_grip_queued<!--#end if#-->">&nbsp;
+		</div>
+			<input type="checkbox" class="multiops" />
 	</td>
 
     <td class="download-title">
@@ -101,7 +103,7 @@
             <!--#end for#-->
         </optgroup></select>
         <!--#end if#-->
-        <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')&nbsp;NZB">&nbsp;</div>
+        <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')">&nbsp;</div>
     </td>
 
     </tr>

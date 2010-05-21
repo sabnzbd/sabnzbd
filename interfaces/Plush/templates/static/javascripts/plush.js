@@ -212,9 +212,6 @@ jQuery(function($){
 			
 			// Custom pause internval modal
 			$("#pause_interval").colorbox({ inline:true, href:"#pause_interval_modal", title:$("#pause_interval").text(), width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
-
-			// multi-operations modal
-			$("#multi_operations").colorbox({ inline:true, href:"#multi_operations_modal", title:$("#multi_operations").text(), width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 			
 			// Manual refresh
 			$('#manual_refresh_wrapper').click(function(e){
@@ -565,6 +562,94 @@ jQuery(function($){
 				});
 				
 			}); // end livequery
+
+
+			// Multi-Operations
+	        // selections
+	        $("#multiops_select_all").click(function(){
+	            $("INPUT[type='checkbox']","#queueTable").attr('checked', true);
+	        });
+	        var last1, last2;
+	        $("#multiops_select_range").click(function(){
+	        	if (last1 && last2 && last1 < last2)
+		            $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).attr('checked', true);
+		        else if (last1 && last2)
+		            $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).attr('checked', true);
+	        });
+	        $("INPUT[type='checkbox']","#queueTable").live('click',function(event) { // range event interaction
+	            if (last1) last2 = last1;
+	            last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
+	        });
+	        $("#multiops_select_invert").click(function(){
+	            $("INPUT[type='checkbox']","#queueTable").each( function() {
+	                $(this).attr('checked', !$(this).attr('checked'));
+	            });
+	        });
+	        $("#multiops_select_none").click(function(){
+	            $("INPUT[type='checkbox']","#queueTable").attr('checked', false);
+	        });
+			$("a","#multiops_inputs").click(function(e){
+				// prevent button text highlighting
+			    e.target.onselectstart = function() { return false; };
+			    e.target.unselectable = "on";
+			    e.target.style.MozUserSelect = "none";
+			});
+
+			$('#multi_reset').click(function(){
+				$('#multi_status, #multi_cat, #multi_priority, #multi_pp, #multi_script').val('');
+			});
+
+			$('#multi_apply').click(function(){
+				
+				var nzo_ids = "";
+	            $("INPUT[type='checkbox']:checked","#queueTable").each( function() {
+					nzo_ids += "," + $(this).parent().parent().attr('id');
+				});
+				nzo_ids = nzo_ids.substr(1);
+				if (!nzo_ids) return;
+
+				$(this).attr('disabled',true);
+
+				if ($('#multi_status').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'queue', name:$('#multi_status').val(), value: nzo_ids, apikey: $.plush.apikey}
+					});
+
+				if ($('#multi_cat').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode: 'change_cat', value: nzo_ids, value2: $('#multi_cat').val(), apikey: $.plush.apikey}
+					});
+
+				if ($('#multi_priority').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode: 'proc_priority', value: nzo_ids, value2: $('#multi_priority').val(), apikey: $.plush.apikey}
+					});
+
+				if ($('#multi_pp').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode: 'change_opts', value: nzo_ids, value2: $('#multi_pp').val(), apikey: $.plush.apikey}
+					});
+
+				if ($('#multi_script').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode: 'change_script', value: nzo_ids, value2: $('#multi_script').val(), apikey: $.plush.apikey}
+					});
+
+
+
+				$(this).attr('disabled',false);
+				$.plush.RefreshQueue();
+			});
 
 		}, // end $.plush.InitQueue()
 		

@@ -24,7 +24,6 @@ body {
 	line-height: 1;
 	color: #000;
 	background: #fff;
-	height:100%;
 }
 ol, ul {
 	list-style: none;
@@ -122,6 +121,7 @@ a:hover,a:active{
 body {
 	background: #B1B1B1;
 	padding-bottom: 10px; 
+	height:100%;
 }
  
 select {
@@ -705,6 +705,32 @@ tr:hover .nzb_status_grippie {
 }
  
 .sprite_ql_cross_on { cursor: pointer; }
+
+
+#multiops_bar {
+	padding:4px;
+	height:22px;
+}
+#multiops_title {
+	color: #C0C0C0;
+	font-style: italic;
+	padding-left: 20px;
+	padding-top:5px;
+}
+#multiops_inputs {
+	float:right;
+}
+#multiops_inputs select {
+	margin:2px;
+}
+#multiops_inputs input {
+	color:#000;
+}
+#multiops_inputs a {
+	cursor:pointer;
+	color:#FFF;
+}
+
  
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------

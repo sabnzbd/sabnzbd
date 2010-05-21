@@ -116,7 +116,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
         <!--#if not $line.loaded#-->
         <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
         <small class="history_added">$d</small>
-        <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')&nbsp;NZB">&nbsp;</div>
+        <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')">&nbsp;</div>
         <!--#end if#-->
     </td>
     
