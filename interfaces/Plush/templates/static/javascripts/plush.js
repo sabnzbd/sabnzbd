@@ -645,10 +645,27 @@ jQuery(function($){
 						data: {mode: 'change_script', value: nzo_ids, value2: $('#multi_script').val(), apikey: $.plush.apikey}
 					});
 
-
-
 				$(this).attr('disabled',false);
 				$.plush.RefreshQueue();
+			});
+
+			$('#multi_delete').click(function(){
+
+				var nzo_ids = "";
+	            $("INPUT[type='checkbox']:checked","#queueTable").each( function() {
+					nzo_ids += "," + $(this).parent().parent().attr('id');
+				});
+				nzo_ids = nzo_ids.substr(1);
+				if (!nzo_ids) return;
+
+				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'queue', name:'delete', value: nzo_ids, apikey: $.plush.apikey},
+						success: $.plush.RefreshQueue
+					});
+				}
 			});
 
 		}, // end $.plush.InitQueue()
