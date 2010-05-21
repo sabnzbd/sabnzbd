@@ -357,7 +357,6 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
         elif name == 'groups' and self.in_nzb and self.in_file:
             self.in_groups = True
-            self.groups = []
 
         elif name == 'nzb':
             self.in_nzb = True
@@ -370,7 +369,9 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
     def endElement(self, name):
         if name == 'group' and self.in_group:
-            self.groups.append(str(''.join(self.group_name)))
+            group = str(''.join(self.group_name))
+            if group not in self.groups:
+                self.groups.append(group)
             self.in_group = False
 
         elif name == 'segment' and self.in_segment:
@@ -901,17 +902,18 @@ class NzbObject(TryList):
         for nzf in self.files:
             # Don't try to get an article if server is in try_list of nzf
             if not nzf.server_in_try_list(server):
-                # Only load NZF when it's a primary server
-                # or when it's a backup server without active primaries
-                if server.fillserver ^ sabnzbd.active_primaries():
-                    nzf.finish_import()
-                    # Still not finished? Something went wrong...
-                    if not nzf.import_finished:
-                        logging.error(Ta('error-qImport@1'), nzf)
-                        nzf_remove_list.append(nzf)
+                if not nzf.import_finished:
+                    # Only load NZF when it's a primary server
+                    # or when it's a backup server without active primaries
+                    if server.fillserver ^ sabnzbd.active_primaries():
+                        nzf.finish_import()
+                        # Still not finished? Something went wrong...
+                        if not nzf.import_finished:
+                            logging.error(Ta('error-qImport@1'), nzf)
+                            nzf_remove_list.append(nzf)
+                            continue
+                    else:
                         continue
-                else:
-                    continue
 
                 article = nzf.get_article(server)
                 if article:

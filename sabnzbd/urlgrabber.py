@@ -95,6 +95,7 @@ class URLGrabber(Thread):
             opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
             opener.addheader('Accept-encoding','gzip')
             filename = None
+            category = None
             try:
                 fn, header = opener.retrieve(url)
             except:
@@ -102,10 +103,14 @@ class URLGrabber(Thread):
 
             if fn:
                 for tup in header.items():
+                    try:
+                        if 'category_id' in tup[0]:
+                            category = tup[1].strip()
+                    except:
+                        pass
                     for item in tup:
                         if "filename=" in item:
                             filename = item[item.index("filename=") + 9:].strip(';').strip('"')
-                            break
 
             if matrix_id:
                 fn, msg, retry = _analyse_matrix(fn, matrix_id)
@@ -129,6 +134,8 @@ class URLGrabber(Thread):
             pp = future_nzo.pp
             script = future_nzo.script
             cat = future_nzo.cat
+            if cat is None and category:
+                cat = misc.CatConvert(category)
             priority = future_nzo.priority
             nzbname = future_nzo.custom_name
 

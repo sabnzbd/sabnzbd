@@ -151,7 +151,7 @@ def cat_convert(cat):
             for name in newzbin:
                 if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
                     if '.' not in name:
-                        logging.debug('Convert newzbin/nzbs.org cat "%s" to user-cat "%s"', cat, ucat)
+                        logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat)
                     else:
                         logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat)
                     newcat = ucat

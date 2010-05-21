@@ -3351,7 +3351,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         if not item.has_key('loaded'):
             item['loaded'] = False
         path = platform_encode(item.get('path', ''))
-        item['retry'] = int(bool(item.get('fail_message') and \
+        item['retry'] = int(bool(item.get('status') == 'Failed' and \
                                  path and \
                                  path not in retry_folders and \
                                  path.startswith(cfg.download_dir.get_path()) and \

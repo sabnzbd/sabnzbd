@@ -507,9 +507,12 @@ def _get_link(uri, entry):
 
     if link and 'http' in link.lower():
         try:
-            category = entry.category
+            category = entry.categoryid
         except:
-            category = ''
+            try:
+                category = entry.category
+            except:
+                category = ''
         return link, category
     else:
         logging.warning(Ta('warn-emptyRSS@1'), link)

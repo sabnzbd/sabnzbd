@@ -49,10 +49,10 @@ def schedule_guard():
     SCHEDULE_GUARD_FLAG = True
 
 def pp_pause():
-    PostProcessor.do.pause()
+    PostProcessor.do.pause = True
 
 def pp_resume():
-    PostProcessor.do.resume()
+    PostProcessor.do.pause = False
 
 
 def init():
@@ -294,10 +294,7 @@ def analyse(was_paused=False):
             sabnzbd.unpause_all()
         sabnzbd.downloader.set_paused(paused or paused_all)
 
-    if pause_post:
-        PostProcessor.do.pause()
-    else:
-        PostProcessor.do.resume()
+    PostProcessor.do.pause = pause_post
     if speedlimit:
         sabnzbd.downloader.limit_speed(speedlimit)
     for serv in servers:
