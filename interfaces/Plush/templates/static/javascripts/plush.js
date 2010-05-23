@@ -15,7 +15,7 @@ jQuery(function($){
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
-		
+		multiOps:               false, // is multi-operations menu visible in queue
 		
 		// ***************************************************************
 		//	$.plush.Init() -- initialize all the UI events
@@ -208,6 +208,18 @@ jQuery(function($){
 					data: {mode:'config', name:'set_pause', value: minutes, apikey: $.plush.apikey},
 					success: $.plush.RefreshQueue
 				});
+			});
+			
+			$('#multiops_toggle').click(function(){
+				if( $('#multiops_bar').is(':visible') ) { // hide
+					$('#multiops_bar').hide();
+					$.plush.multiOps = false;
+					$('#queue tr td.nzb_status_col input').remove();
+				} else { // show
+					$('#multiops_bar').show();
+					$.plush.multiOps = true;
+					$('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
+				}
 			});
 			
 			// Manual refresh
@@ -860,6 +872,8 @@ jQuery(function($){
 				success: function(result){
 					$('#hdr-queue .initial-loading').hide();
 					$('#queue').html(result);								// Replace queue contents with queue.tmpl
+					if ($.plush.multiOps)	// add checkboxes
+						$('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
 					$('#queue-pagination span').removeClass('loading');		// Remove spinner graphic from pagination
 					$('#manual_refresh_wrapper').removeClass('refreshing');	// Refresh state notification
 				},
