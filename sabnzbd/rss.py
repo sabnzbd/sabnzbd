@@ -132,15 +132,18 @@ class RSSQueue:
                         if type(data) == type([]):
                             # Convert previous list-based store to dictionary
                             new = {}
-                            new['status'] = data[0]
-                            new['title'] = data[1]
-                            new['url'] = data[2]
-                            new['cat'] = data[3]
-                            new['pp'] = data[4]
-                            new['script'] = data[5]
-                            new['time'] = data[6]
-                            new['prio'] = str(NORMAL_PRIORITY)
-                            self.jobs[feed][link] = new
+                            try:
+                                new['status'] = data[0]
+                                new['title'] = data[1]
+                                new['url'] = data[2]
+                                new['cat'] = data[3]
+                                new['pp'] = data[4]
+                                new['script'] = data[5]
+                                new['time'] = data[6]
+                                new['prio'] = str(NORMAL_PRIORITY)
+                                self.jobs[feed][link] = new
+                            except IndexError:
+                                del new
                         else:
                             self.jobs[feed][link] = feeds[feed][link]
         except IOError:
@@ -507,7 +510,7 @@ def _get_link(uri, entry):
 
     if link and 'http' in link.lower():
         try:
-            category = entry.categoryid
+            category = entry.cattext
         except:
             try:
                 category = entry.category

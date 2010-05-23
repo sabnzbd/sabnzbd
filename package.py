@@ -109,7 +109,7 @@ def PairList(src):
         return a list of (destn-dir, sourcelist) tuples.
         A file returns (path, [name])
         A dir returns for its root and each of its subdirs
-            (path, <list-of-file>)
+            (path, <list-of-files>)
         Always return paths with Unix slashes.
         Skip all Bazaar elements, .bak .pyc .pyo and *.~*
     """
@@ -278,6 +278,7 @@ data = [ 'README.txt',
          'COPYRIGHT.txt',
          'LICENSE.txt',
          'ISSUES.txt',
+         'nzbmatrix.txt',
          'nzb.ico',
          'Sample-PostProc.cmd',
          'Sample-PostProc.sh',
@@ -446,9 +447,12 @@ elif target in ('binary', 'installer'):
     rename_file('dist', Win32WindowName, Win32ConsoleName)
 
 
-    # Make sure that the root files are DOS format
-    for file in options['data_files'][0][1]:
-        Unix2Dos("dist/%s" % file)
+    # Make sure that all TXT and CMD files are DOS format
+    for tup in options['data_files']:
+        for file in tup[1]:
+            name, ext = os.path.splitext(file)
+            if ext.lower() in ('.txt', '.cmd'):
+                Unix2Dos("dist/%s" % file)
     DeleteFiles('dist/Sample-PostProc.sh')
     DeleteFiles('dist/PKG-INFO')
 

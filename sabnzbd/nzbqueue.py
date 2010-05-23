@@ -223,19 +223,24 @@ class NzbQueue(TryList):
                          nzo_id)
 
     @synchronized(NZBQUEUE_LOCK)
-    def change_opts(self, nzo_id, pp):
-        if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].set_pp(pp)
+    def change_opts(self, nzo_ids, pp):
+        for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
+            if nzo_id in self.__nzo_table:
+                self.__nzo_table[nzo_id].set_pp(pp)
 
     @synchronized(NZBQUEUE_LOCK)
-    def change_script(self, nzo_id, script):
-        if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].script = script
+    def change_script(self, nzo_ids, script):
+        for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
+            if nzo_id in self.__nzo_table:
+                self.__nzo_table[nzo_id].script = script
 
     @synchronized(NZBQUEUE_LOCK)
-    def change_cat(self, nzo_id, cat):
-        if nzo_id in self.__nzo_table:
-            self.__nzo_table[nzo_id].cat = cat
+    def change_cat(self, nzo_ids, cat):
+        for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
+            if nzo_id in self.__nzo_table:
+                nzo = self.__nzo_table[nzo_id]
+                nzo.cat, nzo.pp, nzo.script, prio = cat_to_opts(cat)
+                self.set_priority(nzo_id, prio)
 
     @synchronized(NZBQUEUE_LOCK)
     def change_name(self, nzo_id, name):
@@ -496,9 +501,7 @@ class NzbQueue(TryList):
         else:
             logging.debug("Sort: %s not recognised", field)
 
-
-    @synchronized(NZBQUEUE_LOCK)
-    def set_priority(self, nzo_id, priority):
+    def __set_priority(self, nzo_id, priority):
         """ Sets the priority on the nzo and places it in the queue at the approrioate position """
         try:
             priority = int(priority)
@@ -558,11 +561,11 @@ class NzbQueue(TryList):
             return -1
 
     @synchronized(NZBQUEUE_LOCK)
-    def set_priority_multiple(self, nzo_ids, priority):
+    def set_priority(self, nzo_ids, priority):
         try:
             n = -1
-            for nzo_id in nzo_ids:
-                n = self.set_priority(nzo_id, priority)
+            for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
+                n = self.__set_priority(nzo_id, priority)
             return n
         except:
             return -1
@@ -917,14 +920,6 @@ def queue_info(for_cli = False):
     global __NZBQ
     if __NZBQ: return __NZBQ.queue_info(for_cli = for_cli)
 
-#def purge_history(job=None):
-#    global __NZBQ
-#    if __NZBQ: __NZBQ.purge(job)
-
-#def remove_multiple_history(jobs=None):
-#    global __NZBQ
-#    if __NZBQ: __NZBQ.remove_multiple_history(jobs)
-
 def get_msgids():
     global __NZBQ
     if __NZBQ: return __NZBQ.get_msgids()
@@ -981,21 +976,16 @@ def insert_future_nzo(future_nzo, filename, msgid, data, pp=None, script=None, c
     if __NZBQ: __NZBQ.insert_future(future_nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
 
 @synchronized_CV
-def set_priority(nzo_id, priority):
+def set_priority(nzo_ids, priority):
     global __NZBQ
     if __NZBQ:
-        return __NZBQ.set_priority(nzo_id, priority)
+        return __NZBQ.set_priority(nzo_ids, priority)
 
 @synchronized_CV
 def get_nzo(nzo_id):
     global __NZBQ
     if __NZBQ:
         return __NZBQ.get_nzo(nzo_id)
-
-@synchronized_CV
-def set_priority_multiple(nzo_ids, priority):
-    global __NZBQ
-    if __NZBQ: return __NZBQ.set_priority_multiple(nzo_ids, priority)
 
 @synchronized_CV
 def sort_queue(field, reverse=False):

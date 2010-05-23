@@ -101,7 +101,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
             # Get the default priority
             if priority == DEFAULT_PRIORITY:
                 priority = cfg.dirscan_priority()
-            logging.debug('Job gets priority %s', script)
+            logging.debug('Job gets priority %s', priority)
         except KeyError:
             priority = cfg.dirscan_priority()
 

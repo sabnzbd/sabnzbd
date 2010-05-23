@@ -607,11 +607,7 @@ class MainPage:
                             priority = int(value2)
                         except:
                             return report(output, _MSG_INT_VALUE)
-                        items = value.split(',')
-                        if len(items) > 1:
-                            pos = nzbqueue.set_priority_multiple(items, priority)
-                        else:
-                            pos = nzbqueue.set_priority(value, priority)
+                        pos = nzbqueue.set_priority(value, priority)
                         # Returns the position in the queue, -1 is incorrect job-id
                         return report(output, keyword='position', data=pos)
                     except:
@@ -718,54 +714,29 @@ class MainPage:
 
         if mode == 'change_cat':
             if value and value2:
+                nzo_id = value
                 cat = value2
                 if cat == 'None':
                     cat = None
-                items = value.split(',')
-                if len(items) > 1:
-                    for nzo_id in items:
-                        nzbqueue.change_cat(nzo_id, cat)
-                        cat, pp, script, cat_priority = cat_to_opts(cat)
-
-                        nzbqueue.change_script(nzo_id, script)
-                        nzbqueue.change_opts(nzo_id, pp)
-                        nzbqueue.set_priority(nzo_id, cat_priority)
-                else:
-                    nzo_id = value
-                    nzbqueue.change_cat(nzo_id, cat)
-                    cat, pp, script, cat_priority = cat_to_opts(cat)
-
-                    nzbqueue.change_script(nzo_id, script)
-                    nzbqueue.change_opts(nzo_id, pp)
-                    nzbqueue.set_priority(nzo_id, cat_priority)
+                nzbqueue.change_cat(nzo_id, cat)
                 return report(output)
             else:
                 return report(output, _MSG_NO_VALUE)
 
         if mode == 'change_script':
             if value and value2:
+                nzo_id = value
                 script = value2
                 if script.lower() == 'none':
                     script = None
-                items = value.split(',')
-                if len(items) > 1:
-                    for nzo_id in items:
-                        nzbqueue.change_script(nzo_id, script)
-                else:
-                    nzo_id = value
-                    nzbqueue.change_script(nzo_id, script)
+                nzbqueue.change_script(nzo_id, script)
                 return report(output)
             else:
                 return report(output, _MSG_NO_VALUE)
 
         if mode == 'change_opts':
             if value and value2 and value2.isdigit():
-                items = value.split(',')
-                if len(items) > 1:
-                    for nzo_id in items:
-                        nzbqueue.change_opts(nzo_id, int(value2))
-                else:
-                    nzbqueue.change_opts(value, int(value2))
+                nzbqueue.change_opts(value, int(value2))
             return report(output)
 
         if mode == 'fullstatus':
