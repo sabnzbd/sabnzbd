@@ -676,6 +676,10 @@ class NzbObject(TryList):
         else:
             accept = 1
 
+        # Re-evaluate results from pre-queue script
+        self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, self.priority)
+        self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
+
         # Pause job when above size limit
         if accept > 1:
             limit = 1
@@ -686,7 +690,6 @@ class NzbObject(TryList):
             self.pause()
             self.priority = LOW_PRIORITY
 
-        self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
 
         if reuse:
             self.check_existing_files(wdir)

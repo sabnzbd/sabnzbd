@@ -1012,7 +1012,10 @@ def main():
         xlist= globber(logdir)
         for x in xlist:
             if RSS_FILE_NAME not in x:
-                os.remove(x)
+                try:
+                    os.remove(x)
+                except:
+                    pass
 
     log_new = sabnzbd.cfg.log_new()
     if log_new:

@@ -562,9 +562,17 @@ jQuery(function($){
 				});
 				
 			}); // end livequery
+			
+			$.plush.InitQueueMultiOperations();
+
+		}, // end $.plush.InitQueue()
 
 
-			// Multi-Operations
+		// ***************************************************************
+		//	$.plush.InitQueueMultiOperations() - Queue Multi-Operation Events
+
+		InitQueueMultiOperations : function() {
+			
 	        // selections
 	        $("#multiops_select_all").click(function(){
 	            $("INPUT[type='checkbox']","#queueTable").attr('checked', true);
@@ -594,11 +602,13 @@ jQuery(function($){
 			    e.target.unselectable = "on";
 			    e.target.style.MozUserSelect = "none";
 			});
-
+			
+			// reset ui options
 			$('#multi_reset').click(function(){
 				$('#multi_status, #multi_cat, #multi_priority, #multi_pp, #multi_script').val('');
 			});
 
+			// apply options - cat/priority/pp/script
 			$('#multi_apply').click(function(){
 				
 				var nzo_ids = "";
@@ -628,7 +638,7 @@ jQuery(function($){
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: {mode: 'proc_priority', value: nzo_ids, value2: $('#multi_priority').val(), apikey: $.plush.apikey}
+						data: {mode:'queue', name:'priority', value: nzo_ids, value2: $('#multi_priority').val(), apikey: $.plush.apikey}
 					});
 
 				if ($('#multi_pp').val())
@@ -649,6 +659,7 @@ jQuery(function($){
 				$.plush.RefreshQueue();
 			});
 
+			// nzb removal
 			$('#multi_delete').click(function(){
 
 				var nzo_ids = "";
@@ -668,8 +679,8 @@ jQuery(function($){
 				}
 			});
 
-		}, // end $.plush.InitQueue()
-		
+		}, // end $.plush.InitQueueMultiOperations()
+
 		
 		// ***************************************************************
 		//	$.plush.InitHistory() -- History Events
