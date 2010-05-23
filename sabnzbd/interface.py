@@ -607,11 +607,7 @@ class MainPage:
                             priority = int(value2)
                         except:
                             return report(output, _MSG_INT_VALUE)
-                        items = value.split(',')
-                        if len(items) > 1:
-                            pos = nzbqueue.set_priority_multiple(items, priority)
-                        else:
-                            pos = nzbqueue.set_priority(value, priority)
+                        pos = nzbqueue.set_priority(value, priority)
                         # Returns the position in the queue, -1 is incorrect job-id
                         return report(output, keyword='position', data=pos)
                     except:
@@ -723,11 +719,6 @@ class MainPage:
                 if cat == 'None':
                     cat = None
                 nzbqueue.change_cat(nzo_id, cat)
-                cat, pp, script, cat_priority = cat_to_opts(cat)
-
-                nzbqueue.change_script(nzo_id, script)
-                nzbqueue.change_opts(nzo_id, pp)
-                nzbqueue.set_priority(nzo_id, cat_priority)
                 return report(output)
             else:
                 return report(output, _MSG_NO_VALUE)
