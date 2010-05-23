@@ -210,9 +210,6 @@ jQuery(function($){
 				});
 			});
 			
-			// Custom pause internval modal
-			$("#pause_interval").colorbox({ inline:true, href:"#pause_interval_modal", title:$("#pause_interval").text(), width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
-			
 			// Manual refresh
 			$('#manual_refresh_wrapper').click(function(e){
 				// prevent button text highlighting
