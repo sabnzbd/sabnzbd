@@ -114,6 +114,7 @@ class URLGrabber(Thread):
 
             if matrix_id:
                 fn, msg, retry = _analyse_matrix(fn, matrix_id)
+                category = map_matrix(category)
             else:
                 msg = ''
                 retry = True
@@ -135,7 +136,7 @@ class URLGrabber(Thread):
             script = future_nzo.script
             cat = future_nzo.cat
             if cat is None and category:
-                cat = misc.CatConvert(category)
+                cat = misc.cat_convert(category)
             priority = future_nzo.priority
             nzbname = future_nzo.custom_name
 
@@ -223,3 +224,32 @@ def _analyse_matrix(fn, matrix_id):
         return (None, msg, True)
 
     return fn, msg, False
+
+
+#------------------------------------------------------------------------------
+_MATRIX_MAP = None
+
+def map_matrix(index):
+    """ Translate nzbmatrix category_id to category text """
+
+    if _MATRIX_MAP is None:
+        read_matrix_cats()
+    return _MATRIX_MAP.get(index, index)
+
+
+def read_matrix_cats():
+    """ Read mapping of NzbMatrix categories """
+    global _MATRIX_MAP
+
+    _MATRIX_MAP = {}
+    path = os.path.join(sabnzbd.DIR_PROG, 'nzbmatrix.txt')
+    try:
+        for line in open(path, 'r'):
+            try:
+                number, text = line.split(',', 1)
+                _MATRIX_MAP[number] = text.strip(', \n\r')
+            except ValueError:
+                pass
+    except IOError:
+        logging.warning('Cannot open %s', path)
+

@@ -510,7 +510,7 @@ def _get_link(uri, entry):
 
     if link and 'http' in link.lower():
         try:
-            category = entry.categoryid
+            category = entry.cattext
         except:
             try:
                 category = entry.category

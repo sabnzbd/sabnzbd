@@ -271,6 +271,7 @@ Section "un.$(MsgDelProgram)" Uninstall
     Delete "$INSTDIR\INSTALL.txt"
     Delete "$INSTDIR\ISSUES.txt"
     Delete "$INSTDIR\LICENSE.txt"
+    Delete "$INSTDIR\nzbmatrix.txt"
     Delete "$INSTDIR\MSVCR71.dll"
     Delete "$INSTDIR\nzb.ico"
     Delete "$INSTDIR\PKG-INFO"
