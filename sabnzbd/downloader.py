@@ -23,12 +23,12 @@ import time
 import select
 import logging
 import datetime
-from threading import Thread
+from threading import Thread, RLock
 from nntplib import NNTPPermanentError
 import socket
 
 import sabnzbd
-from sabnzbd.decorators import synchronized_CV, CV
+from sabnzbd.decorators import synchronized, synchronized_CV, CV
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
 from sabnzbd.utils import osx
@@ -49,6 +49,8 @@ _PENALTY_SHARE   = 10   # Account sharing detected
 _PENALTY_TOOMANY = 10   # Too many connections
 _PENALTY_PERM    = 10   # Permanent error, like bad username/password
 _PENALTY_SHORT   = 1    # Minimal penalty when no_penalties is set
+
+TIMER_LOCK = RLock()
 
 #------------------------------------------------------------------------------
 # Wrapper functions
@@ -91,6 +93,11 @@ def alive():
         return __DOWNLOADER.isAlive()
     else:
         return False
+
+def check():
+    global __DOWNLOADER
+    if __DOWNLOADER:
+        __DOWNLOADER.check_timers()
 
 #------------------------------------------------------------------------------
 
@@ -259,7 +266,7 @@ class Downloader(Thread):
 
         self.shutdown = False
 
-        # A user might change server parsm again before server restart is ready.
+        # A user might change server parms again before server restart is ready.
         # Keep a counter to prevent multiple restarts
         self.__restart = 0
 
@@ -773,16 +780,18 @@ class Downloader(Thread):
     # are neutralized.
     # Each server has a dictionary entry, consisting of a list of timestamps.
 
+    @synchronized(TIMER_LOCK)
     def plan_server(self, server_id, interval):
         """ Plan the restart of a server in 'interval' minutes """
         logging.debug('Set planned server resume %s in %s mins', server_id, interval)
         if server_id not in self._timers:
             self._timers[server_id] = []
-        stamp = datetime.datetime.now()
+        stamp = time.time() + 60.0 * interval
         self._timers[server_id].append(stamp)
         if interval:
             sabnzbd.scheduler.plan_server(self.trigger_server, [server_id, stamp], interval)
 
+    @synchronized(TIMER_LOCK)
     def trigger_server(self, server_id, timestamp):
         """ Called by scheduler, start server if timer still valid """
         logging.debug('Trigger planned server resume %s', server_id)
@@ -791,11 +800,10 @@ class Downloader(Thread):
                 del self._timers[server_id]
                 self.init_server(server_id, server_id)
 
+    @synchronized(TIMER_LOCK)
     def unblock(self, server_id):
         # Remove timer
         try:
-            # Use this instead of if/del, because the line below is atomic
-            # an if/del could be victim of a race condition
             del self._timers[server_id]
         except KeyError:
             pass
@@ -810,6 +818,24 @@ class Downloader(Thread):
         for server_id in self._timers.keys():
             self.unblock(server_id)
 
+    @synchronized(TIMER_LOCK)
+    def check_timers(self):
+        """ Make sure every server without a non-expired timer is active """
+        # Clean expired timers
+        now = time.time()
+        kicked = []
+        for server_id in self._timers.keys():
+            if not [stamp for stamp in self._timers[server_id] if stamp >= now]:
+                logging.debug('Forcing re-evaluation of server %s', server_id)
+                del self._timers[server_id]
+                self.init_server(server_id, server_id)
+                kicked.append(server_id)
+        # Activate every inactive server without an active timer
+        for server in self.servers:
+            if server.id not in self._timers:
+                if server.id not in kicked and not server.active:
+                    logging.debug('Forcing activation of server %s', server.id)
+                    self.init_server(server.id, server.id)
 
 #------------------------------------------------------------------------------
 def clues_login(text):

@@ -868,6 +868,9 @@ def check_all_tasks():
     # Kick the downloader, in case it missed the semaphore
     sabnzbd.downloader.wakeup()
 
+    # Make sure the right servers are active
+    sabnzbd.downloader.check()
+
     # Restartable threads
     if not DirScanner.do.isAlive():
         logging.info('Restarting crashed dirscanner')
