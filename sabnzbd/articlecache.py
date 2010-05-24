@@ -27,7 +27,7 @@ from sabnzbd.decorators import synchronized
 
 
 ARTICLE_LOCK = threading.Lock()
-class ArticleCache:
+class ArticleCache(object):
     do = None
 
     def __init__(self):

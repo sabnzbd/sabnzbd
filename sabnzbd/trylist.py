@@ -28,6 +28,10 @@ from threading import Lock
 # TryList keeps track of which servers have been tried for
 # a specific article
 
+# TryList should be redefined as a new-style class.
+# However, this would break queue compatibility with
+# previous releases (despite the mapping done in nzbstuff).
+
 TRYLIST_LOCK = Lock()
 class TryList:
     def __init__(self):

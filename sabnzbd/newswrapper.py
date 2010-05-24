@@ -133,7 +133,7 @@ def con(sock, host, port, sslenabled, nntp):
     except _ssl.Error, e:
         nntp.error(e)
 
-class NNTP:
+class NNTP(object):
     def __init__(self, host, port, info, sslenabled, nntp, user=None, password=None, block=False):
         self.host = host
         self.port = port
@@ -215,7 +215,7 @@ class NNTP:
             logging.info(msg)
             self.nntp.server.warning = msg
 
-class NewsWrapper:
+class NewsWrapper(object):
     def __init__(self, server, thrdnum, block=False):
         self.server = server
         self.thrdnum = thrdnum
@@ -363,7 +363,7 @@ class NewsWrapper:
         del self.nntp
 
 
-class SSLConnection:
+class SSLConnection(object):
     def __init__(self, *args):
         self._ssl_conn = apply(_ssl.Connection, args)
         self._lock = _RLock()

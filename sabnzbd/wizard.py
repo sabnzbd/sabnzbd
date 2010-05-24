@@ -32,7 +32,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
 #------------------------------------------------------------------------------
-class Wizard:
+class Wizard(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         # Get the path for the folder named wizard

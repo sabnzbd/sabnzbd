@@ -198,7 +198,7 @@ def active_primaries():
     if __DOWNLOADER: return __DOWNLOADER.active_primaries()
 
 #------------------------------------------------------------------------------
-class Server:
+class Server(object):
     def __init__(self, id, host, port, timeout, threads, fillserver, ssl, username = None,
                  password = None, optional=False):
         self.id = id

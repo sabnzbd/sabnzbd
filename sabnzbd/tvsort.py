@@ -91,7 +91,7 @@ def move_to_parent_folder(workdir):
     return path1
 
 
-class Sorter:
+class Sorter(object):
     def __init__(self, cat):
         self.sorter = None
         self.type = None
@@ -143,7 +143,7 @@ class Sorter:
     def is_sortfile(self):
         return self.sort_file
 
-class SeriesSorter:
+class SeriesSorter(object):
     def __init__(self, dirname, path, cat, force=False):
         self.matched = False
 
@@ -457,7 +457,7 @@ def check_for_sequence(regex, files):
 
 
 
-class GenericSorter:
+class GenericSorter(object):
     def __init__(self, dirname, path, cat):
         self.matched = False
 
@@ -645,7 +645,7 @@ class GenericSorter:
                 logging.debug("Movie files not in sequence %s", _files)
 
 
-class DateSorter:
+class DateSorter(object):
     def __init__(self, dirname, path, cat):
         self.matched = False
 

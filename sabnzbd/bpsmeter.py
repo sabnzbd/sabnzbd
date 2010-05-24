@@ -24,7 +24,7 @@ import logging
 
 #------------------------------------------------------------------------------
 
-class BPSMeter:
+class BPSMeter(object):
     do = None
 
     def __init__(self, bytes_sum = 0):

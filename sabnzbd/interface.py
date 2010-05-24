@@ -253,7 +253,7 @@ def del_from_section(kwargs):
 
 
 #------------------------------------------------------------------------------
-class NoPage:
+class NoPage(object):
     def __init__(self):
         pass
 
@@ -346,7 +346,7 @@ def report(output, error=None, keyword='value', data=None):
     return response
 
 
-class MainPage:
+class MainPage(object):
     def __init__(self, web_dir, root, web_dir2=None, root2=None, prim=True, first=0):
         self.__root = root
         self.__web_dir = web_dir
@@ -946,7 +946,7 @@ class MainPage:
             raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
-class NzoPage:
+class NzoPage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1124,7 +1124,7 @@ class NzoPage:
         raise dcRaiser(url, kwargs)
 
 #------------------------------------------------------------------------------
-class QueuePage:
+class QueuePage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1346,7 +1346,7 @@ class QueuePage:
         scheduler.plan_resume(IntConv(kwargs.get('value')))
         raise dcRaiser(self.__root, kwargs)
 
-class HistoryPage:
+class HistoryPage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1496,7 +1496,7 @@ def retry_job(job, new_nzb):
     return False
 
 #------------------------------------------------------------------------------
-class ConfigPage:
+class ConfigPage(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1565,7 +1565,7 @@ LIST_DIRPAGE = ( \
     'email_dir', 'permissions', 'log_dir'
     )
 
-class ConfigDirectories:
+class ConfigDirectories(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1619,7 +1619,7 @@ SWITCH_LIST = \
     )
 
 #------------------------------------------------------------------------------
-class ConfigSwitches:
+class ConfigSwitches(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1669,7 +1669,7 @@ GENERAL_LIST = (
     'enable_https', 'https_port', 'https_cert', 'https_key'
     )
 
-class ConfigGeneral:
+class ConfigGeneral(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1856,7 +1856,7 @@ def change_web_dir(web_dir):
 
 #------------------------------------------------------------------------------
 
-class ConfigServer:
+class ConfigServer(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -1990,7 +1990,7 @@ def handle_server_api(output, kwargs):
 
 #------------------------------------------------------------------------------
 
-class ConfigRss:
+class ConfigRss(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2190,7 +2190,7 @@ class ConfigRss:
 _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
                   'pause_post', 'resume_post', 'scan_folder')
 
-class ConfigScheduling:
+class ConfigScheduling(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2313,7 +2313,7 @@ class ConfigScheduling:
         raise dcRaiser(self.__root, kwargs)
 
 #------------------------------------------------------------------------------
-class ConfigNewzbin:
+class ConfigNewzbin(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2394,7 +2394,7 @@ class ConfigNewzbin:
 
 #------------------------------------------------------------------------------
 
-class ConfigCats:
+class ConfigCats(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2474,7 +2474,7 @@ SORT_LIST = ( \
     )
 
 #------------------------------------------------------------------------------
-class ConfigSorting:
+class ConfigSorting(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -2528,7 +2528,7 @@ class ConfigSorting:
 
 #------------------------------------------------------------------------------
 
-class ConnectionInfo:
+class ConnectionInfo(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -3011,7 +3011,7 @@ LIST_EMAIL = (
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
     )
 
-class ConfigEmail:
+class ConfigEmail(object):
     def __init__(self, web_dir, root, prim):
         self.__root = root
         self.__web_dir = web_dir
@@ -3370,7 +3370,7 @@ def json_list(section, lst):
     return { section : d }
 
 
-class xml_factory:
+class xml_factory(object):
     """
     Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
     Current limitations:

@@ -45,7 +45,7 @@ modified = False            # Signals a change in option dictionary
                             # Should be reset after saving to settings file
 
 
-class Option:
+class Option(object):
     """ Basic option class, basic fields """
     def __init__(self, section, keyword, default_val=None, add=True):
         """ Basic option
@@ -326,7 +326,7 @@ def delete_from_database(section, keyword):
     modified = True
 
 
-class ConfigServer:
+class ConfigServer(object):
     """ Class defining a single server """
     def __init__(self, name, values):
 
@@ -391,7 +391,7 @@ class ConfigServer:
         return 'servers', self.__name
 
 
-class ConfigCat:
+class ConfigCat(object):
     """ Class defining a single category """
     def __init__(self, name, values):
         self.__name = name
@@ -493,7 +493,7 @@ class OptionFilters(Option):
             self.set(filters)
         return True
 
-class ConfigRSS:
+class ConfigRSS(object):
     """ Class defining a single Feed definition """
     def __init__(self, name, values):
         self.__name = name
