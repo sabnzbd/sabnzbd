@@ -26,7 +26,7 @@ from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.downloader import Server, clues_login, clues_too_many
 from sabnzbd.config import get_servers
 from sabnzbd.encoding import xml_name
-from sabnzbd.interface import IntConv
+from sabnzbd.interface import int_conv
 from sabnzbd.lang import T
 
 def test_nntp_server_dict(kwargs):
@@ -36,11 +36,11 @@ def test_nntp_server_dict(kwargs):
         return False, T('srv-noHost')
     username = kwargs.get('username', '').strip()
     password = kwargs.get('password', '').strip()
-    connections = IntConv(kwargs.get('connections', 0))
+    connections = int_conv(kwargs.get('connections', 0))
     if not connections:
         return False, T('srv-noConnections')
-    ssl = IntConv(kwargs.get('ssl', 0))
-    port = IntConv(kwargs.get('port', 0))
+    ssl = int_conv(kwargs.get('ssl', 0))
+    port = int_conv(kwargs.get('port', 0))
     if not port:
         if ssl:
             port = 563
