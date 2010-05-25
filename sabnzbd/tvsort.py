@@ -929,15 +929,13 @@ def getDescriptions(match, name):
         ep_name = name[match.end():] # Need to improve for multi ep support
     else:
         ep_name = name
-    RE_EPNAME = re.compile(r'_?-[_\W]', re.I)
-    m = RE_EPNAME.search(ep_name)
-    if m:
-        ep_name = ep_name[m.end():].strip('_').strip().strip('_').replace('.', ' ').replace('_', ' ')
-        ep_name2 = ep_name.replace(" - ", "-").replace(" ", ".")
-        ep_name3 = ep_name.replace(" ", "_")
-        return ep_name, ep_name2, ep_name3
-    else:
-        return '', '', ''
+    ep_name = ep_name.strip(' _.')
+    if ep_name.startswith('-'):
+        ep_name = ep_name.strip('- _.')
+    ep_name = ep_name.replace('.', ' ').replace('_', ' ')
+    ep_name2 = ep_name.replace(" - ", "-").replace(" ", ".")
+    ep_name3 = ep_name.replace(" ", "_")
+    return ep_name, ep_name2, ep_name3
 
 
 def getDecades(year):
