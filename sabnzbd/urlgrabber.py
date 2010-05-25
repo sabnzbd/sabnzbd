@@ -96,6 +96,7 @@ class URLGrabber(Thread):
             opener.addheader('Accept-encoding','gzip')
             filename = None
             category = None
+            nzo_info = {}
             try:
                 fn, header = opener.retrieve(url)
             except:
@@ -104,13 +105,23 @@ class URLGrabber(Thread):
             if fn:
                 for tup in header.items():
                     try:
-                        if 'category_id' in tup[0]:
-                            category = tup[1].strip()
+                        item = tup[0].lower()
+                        value = tup[1].strip()
                     except:
-                        pass
-                    for item in tup:
-                        if "filename=" in item:
-                            filename = item[item.index("filename=") + 9:].strip(';').strip('"')
+                        continue
+                    if item in ('category_id', 'x-dnzb-category'):
+                        category = value
+                    elif item in ('x-dnzb-moreinfo',):
+                        nzo_info['more_info'] = value
+                    elif item in ('x-dnzb-name',):
+                        filename = value
+                        if not filename.endswith('.nzb'):
+                            filename += '.nzb'
+
+                    if not filename:
+                        for item in tup:
+                            if "filename=" in item:
+                                filename = item[item.index("filename=") + 9:].strip(';').strip('"')
 
             if matrix_id:
                 fn, msg, retry = _analyse_matrix(fn, matrix_id)
@@ -142,7 +153,8 @@ class URLGrabber(Thread):
 
             # Check if nzb file
             if os.path.splitext(filename)[1].lower() == '.nzb':
-                res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
+                res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority, \
+                                                   nzbname=nzbname, nzo_info=nzo_info)
                 if res == 0:
                     nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                 elif res == -2:

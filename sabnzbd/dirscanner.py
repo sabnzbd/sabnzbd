@@ -129,7 +129,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
 
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
-                      priority=None, nzbname=None, reuse=False):
+                      priority=None, nzbname=None, reuse=False, nzo_info=None):
     """ Analyse file and create a job from it
         Supports NZB, NZB.GZ and GZ.NZB-in-disguise
         returns: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
@@ -164,7 +164,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         name = misc.sanitize_foldername(name)
 
     try:
-        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname, reuse=reuse)
+        nzo = nzbstuff.NzbObject(name, 0, pp, script, data, cat=cat, priority=priority, nzbname=nzbname,
+                                 nzo_info=nzo_info, reuse=reuse)
     except TypeError:
         # Duplicate, ignore
         nzo = None
