@@ -104,13 +104,23 @@ NORMAL_PRIORITY = 0
 LOW_PRIORITY = -1
 DEFAULT_PRIORITY = -100
 
-series_match = [ (r'([sS]|[\d]+)x(\d+)', # 1x01
-                     [r'^[-\.]+([sS]|[\d])+x(\d+)', r'^[-\.](\d+)'] ),  #(MATCHER, [EXTRA,MATCHERS])
+#(MATCHER, [EXTRA,MATCHERS])
+series_match = [ (r'( [sS]|[\d]+)x(\d+)', # 1x01
+                      [ r'^[-\.]+([sS]|[\d])+x(\d+)',
+                        r'^[-\.](\d+)'
+                      ] ),
 
-                      (r'[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
-                       [r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)', r'^[-\.](\d+)']) ] # Extra matchers
-
-                      #possibly flawed - 101 - support: [\.\- \s]?(\d)(\d{2,2})[\.\- \s]?
+                 (r'[Ss](\d+)[\.\-]?[Ee](\d+)',  # S01E01
+                      [ r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)',
+                        r'^[-\.](\d+)'
+                      ] ),
+                 (r'[ -_\.](\d)(\d{2,2})[ -_\.]', # .101. / _101_ / etc.
+                      [
+                      ] ),
+                 (r'[ -_\.](\d)(\d{2,2})$', # .101 at end of title
+                      [
+                      ] )
+               ]
 
 date_match = [r'(\d{4})\W(\d{1,2})\W(\d{1,2})', #2008-10-16
               r'(\d{1,2})\W(\d{1,2})\W(\d{4})'] #10.16.2008
