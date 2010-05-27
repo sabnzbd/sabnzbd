@@ -16,6 +16,7 @@ jQuery(function($){
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
 		multiOps:               false, // is multi-operations menu visible in queue
+		multiOpsChecks:         null,
 		
 		// ***************************************************************
 		//	$.plush.Init() -- initialize all the UI events
@@ -214,10 +215,12 @@ jQuery(function($){
 				if( $('#multiops_bar').is(':visible') ) { // hide
 					$('#multiops_bar').hide();
 					$.plush.multiOps = false;
+					$.plush.multiOpsChecks = null;
 					$('#queue tr td.nzb_status_col input').remove();
 				} else { // show
 					$('#multiops_bar').show();
 					$.plush.multiOps = true;
+					$.plush.multiOpsChecks = new Array();
 					$('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
 				}
 			});
@@ -584,26 +587,33 @@ jQuery(function($){
 			
 	        // selections
 	        $("#multiops_select_all").click(function(){
-	            $("INPUT[type='checkbox']","#queueTable").attr('checked', true);
+	            $("INPUT[type='checkbox']","#queueTable").attr('checked', true).trigger('change');
 	        });
 	        var last1, last2;
 	        $("#multiops_select_range").click(function(){
 	        	if (last1 && last2 && last1 < last2)
-		            $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).attr('checked', true);
+		            $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).attr('checked', true).trigger('change');
 		        else if (last1 && last2)
-		            $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).attr('checked', true);
-	        });
-	        $("INPUT[type='checkbox']","#queueTable").live('click',function(event) { // range event interaction
-	            if (last1) last2 = last1;
-	            last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
+		            $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).attr('checked', true).trigger('change');
 	        });
 	        $("#multiops_select_invert").click(function(){
 	            $("INPUT[type='checkbox']","#queueTable").each( function() {
-	                $(this).attr('checked', !$(this).attr('checked'));
+	                $(this).attr('checked', !$(this).attr('checked')).trigger('change');
 	            });
 	        });
 	        $("#multiops_select_none").click(function(){
-	            $("INPUT[type='checkbox']","#queueTable").attr('checked', false);
+	            $("INPUT[type='checkbox']","#queueTable").attr('checked', false).trigger('change');
+	        });
+	        $(".multiops","#queueTable").live('change',function(event) {
+				// range event interaction
+	            if (last1) last2 = last1;
+	            last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
+
+				// checkbox state persistence
+				if ($(this).attr('checked'))
+					$.plush.multiOpsChecks[$(this).parent().parent().attr('id')] = true;
+				else if ($.plush.multiOpsChecks[$(this).parent().parent().attr('id')])
+					delete $.plush.multiOpsChecks[$(this).parent().parent().attr('id')];
 	        });
 			$("a","#multiops_inputs").click(function(e){
 				// prevent button text highlighting
@@ -872,8 +882,14 @@ jQuery(function($){
 				success: function(result){
 					$('#hdr-queue .initial-loading').hide();
 					$('#queue').html(result);								// Replace queue contents with queue.tmpl
+
 					if ($.plush.multiOps)	// add checkboxes
 						$('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
+					if ($.plush.multiOpsChecks) // checkbox state persistence
+						for (var nzo_id in $.plush.multiOpsChecks)
+							$('#'+nzo_id+' .multiops').attr('checked',true);
+
+
 					$('#queue-pagination span').removeClass('loading');		// Remove spinner graphic from pagination
 					$('#manual_refresh_wrapper').removeClass('refreshing');	// Refresh state notification
 				},
