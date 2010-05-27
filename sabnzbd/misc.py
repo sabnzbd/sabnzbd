@@ -1046,14 +1046,7 @@ def loadavg():
     if sabnzbd.WIN32 or sabnzbd.DARWIN:
         return ""
     try:
-        loadavgstr = open('/proc/loadavg', 'r').readline().strip()
-    except:
-        return ""
-
-    data = loadavgstr.split()
-    try:
-        a1, a5, a15 = map(float, data[:3])
-        return "%.2f, %.2f, %.2f" % (a1, a5, a15)
+        return "%.2f, %.2f, %.2f" % os.getloadavg()
     except:
         return ""
 
