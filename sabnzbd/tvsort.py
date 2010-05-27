@@ -91,7 +91,7 @@ def move_to_parent_folder(workdir):
     return path1
 
 
-class Sorter:
+class Sorter(object):
     def __init__(self, cat):
         self.sorter = None
         self.type = None
@@ -143,7 +143,7 @@ class Sorter:
     def is_sortfile(self):
         return self.sort_file
 
-class SeriesSorter:
+class SeriesSorter(object):
     def __init__(self, dirname, path, cat, force=False):
         self.matched = False
 
@@ -457,7 +457,7 @@ def check_for_sequence(regex, files):
 
 
 
-class GenericSorter:
+class GenericSorter(object):
     def __init__(self, dirname, path, cat):
         self.matched = False
 
@@ -645,7 +645,7 @@ class GenericSorter:
                 logging.debug("Movie files not in sequence %s", _files)
 
 
-class DateSorter:
+class DateSorter(object):
     def __init__(self, dirname, path, cat):
         self.matched = False
 
@@ -929,15 +929,13 @@ def getDescriptions(match, name):
         ep_name = name[match.end():] # Need to improve for multi ep support
     else:
         ep_name = name
-    RE_EPNAME = re.compile(r'_?-[_\W]', re.I)
-    m = RE_EPNAME.search(ep_name)
-    if m:
-        ep_name = ep_name[m.end():].strip('_').strip().strip('_').replace('.', ' ').replace('_', ' ')
-        ep_name2 = ep_name.replace(" - ", "-").replace(" ", ".")
-        ep_name3 = ep_name.replace(" ", "_")
-        return ep_name, ep_name2, ep_name3
-    else:
-        return '', '', ''
+    ep_name = ep_name.strip(' _.')
+    if ep_name.startswith('-'):
+        ep_name = ep_name.strip('- _.')
+    ep_name = ep_name.replace('.', ' ').replace('_', ' ')
+    ep_name2 = ep_name.replace(" - ", "-").replace(" ", ".")
+    ep_name3 = ep_name.replace(" ", "_")
+    return ep_name, ep_name2, ep_name3
 
 
 def getDecades(year):

@@ -1060,7 +1060,7 @@ def loadavg():
 
 def format_time_string(seconds, days=0):
     """ Return a formatted and translated time string """
-    seconds = IntConv(seconds)
+    seconds = int_conv(seconds)
     completestr = []
     if days:
         completestr.append('%s %s' % (days, s_returner('day', days)))
@@ -1087,7 +1087,7 @@ def s_returner(item, value):
     else:
         return T(item + 's')
 
-def IntConv(value):
+def int_conv(value):
     """Safe conversion to int"""
     try:
         value = int(value)

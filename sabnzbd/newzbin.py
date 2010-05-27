@@ -258,7 +258,7 @@ def _grabnzb(msgid):
 ################################################################################
 BOOK_LOCK = Lock()
 
-class Bookmarks:
+class Bookmarks(object):
     """ Get list of bookmarks from www.newzbin.com
     """
     do = None # Link to instance

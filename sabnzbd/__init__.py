@@ -801,7 +801,7 @@ def load_admin(_id, remove=False, do_pickle=True):
 def pp_to_opts(pp):
     """ Convert numeric processinf options to (repair, unpack, delete) """
     # Convert the pp to an int
-    pp = sabnzbd.interface.IntConv(pp)
+    pp = sabnzbd.interface.int_conv(pp)
     if pp == 0 : return (False, False, False)
     if pp == 1 : return (True, False, False)
     if pp == 2 : return (True, True, False)

@@ -119,7 +119,7 @@ def convert_filter(text):
 
 
 LOCK = threading.RLock()
-class RSSQueue:
+class RSSQueue(object):
     def __init__(self):
         self.jobs = {}
         try:

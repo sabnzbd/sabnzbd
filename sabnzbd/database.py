@@ -53,7 +53,7 @@ def get_history_handle():
 
 # Note: Add support for execute return values
 
-class HistoryDB:
+class HistoryDB(object):
     def __init__(self, db_path):
         global _DONE_CLEANING
         #Thread.__init__(self)
