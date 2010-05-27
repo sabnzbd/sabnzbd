@@ -120,10 +120,7 @@ jQuery(document).ready(function($){
 				});
 			});
         	$('#sabnzbd_restart').click(function(){
-        		if (confirm($('#sabnzbd_restart').attr('rel'))) {
-        			$('#sabnzbd_restart').html($('#sabnzbd_restart').attr('rel2'));
-        			$.post('../../tapi', {mode: 'restart', session: apikey} );
-        		}
+        		return confirm($(this).attr('rel'));
         	});
         	break;
 

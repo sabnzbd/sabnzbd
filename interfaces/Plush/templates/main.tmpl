@@ -45,7 +45,9 @@
                         <li><a href="http://www.sabnzbd.org/live-chat/" target="_blank">$T('menu-irc')</a></li>
                     </ul>
                 </li>
-                <li><a class="pointer" id="shutdown_sabnzbd" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></li>
+                <li><a href="connections/disconnect?session=$session" class="pointer">$T('link-forceDisc')</a></li>
+                <li><a href="config/restart?session=$session" class="pointer" id="sabnzbd_restart" rel="<!--#echo $T('explain-Restart').replace("<br />","\n")#-->">$T('sch-restart')</a></li>
+                <li><a href="shutdown?session=$session" class="pointer" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></li>
             </ul>
         </li>
         <li><a id="add_nzb">$T('Plush-addnzb')</a></li>
@@ -288,7 +290,7 @@
                 <option value="900">15 $T('minute')</option>
                 <option value="1800">30 $T('minute')</option>
                 <option value="0">$T('Plush-disabled')</option>
-           	</select><br/>
+           	</select><br/><br/>
 	       	Container Width:
 			<select id="containerWidth-option">
                 <option value="100%">100%</option>
@@ -298,32 +300,25 @@
                 <option value="60%">60%</option>
                 <option value="50%">50%</option>
                 <option value="40%">40%</option>
-           	</select><br/>
-           	<input type="checkbox" id="confirmDeleteQueue" checked="checked" /> $T("Plush-confirmDeleteQueue")<br/>
-           	<input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")<br/>
+           	</select><br/><br/>
+           	<input type="checkbox" id="confirmDeleteQueue" checked="checked" /> $T("Plush-confirmDeleteQueue")<br/><br/>
+           	<input type="checkbox" id="confirmDeleteHistory" checked="checked" /> $T("Plush-confirmDeleteHistory")<br/><br/>
            	<span id="explain-blockRefresh" title="$T("Plush-explain-blockRefresh")"><input type="checkbox" id="blockRefresh" checked="checked" /> $T("Plush-blockRefresh")</span>
 		</div>
 		
 		<div id="add_nzb_modal">
-			<input type="text" id="addID_input" size="18" /> <input type="submit" id="addID" value="$T('Plush-fetch')" />
+			<input type="text" id="addID_input" size="30" /> <input type="submit" id="addID" value="$T('Plush-fetch')" />
 			<br/><br/>
 		    <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
 				$T('Plush-uploadTip')
 			    <input type="hidden" name="apikey" value="$session" />
    				<input type="hidden" name="mode" value="addfile" />
    				<input type="file" id="uploadNZBFile" name="name" size="10" />
-
 				<br/><br/>
-				Optionally specify a filename:<br/>
-			    <input type="text" name="nzbname" id="nzbname" size="40" />
-
-			</form>
-			<br/>
-			<fieldset id="processingContainer">
-				<legend>$T('pp')</legend>
+				$T('pp')
 				<table>
 					<!--#if $cat_list#-->
-					<tr><td><label>$T('category'):</label></td>
+					<tr><td style="text-align:right">$T('category'):</td>
 						<td><select id="addID_cat" name="cat">
 							<!--#for $ct in $cat_list#-->
 							<option value="$ct">$Tspec($ct)</option>
@@ -331,7 +326,7 @@
 							</select>
 					</td></tr>
 					<!--#end if#-->
-					<tr><td><label>$T('priority'):</label></td>
+					<tr><td style="text-align:right">$T('priority'):</td>
 						<td><select id="addID_priority" name="priority">
 							<option value="-100" selected="selected">$T('default')</option>
 							<option value="2">$T('pr-force')</option>
@@ -340,7 +335,7 @@
 							<option value="-1">$T('pr-low')</option>
 							</select>
 					</td></tr>
-					<tr><td><label>$T('pp'):</label></td>
+					<tr><td style="text-align:right">$T('pp'):</td>
 						<td><select id="addID_pp" name="pp">
 							<option value="-1">$T('default')</option>
 							<option value="0">$T('pp-none')</option>
@@ -350,7 +345,7 @@
 							</select>
 					</td></tr>
 					<!--#if $script_list#-->
-					<tr><td><label>$T('script'):</label></td>
+					<tr><td style="text-align:right">$T('script'):</td>
 						<td><select id="addID_script" name="script">
 							<!--#for $sc in $script_list#-->
 							<option value="$sc">$Tspec($sc)</option>
@@ -359,7 +354,12 @@
 					</td></tr>
 					<!--#end if#-->
             	</table>
-            </fieldset>
+
+				<br/>
+				Optionally specify a filename:<br/>
+			    <input type="text" name="nzbname" id="nzbname" size="40" />
+
+			</form>
 		</div>
 
 	</div>

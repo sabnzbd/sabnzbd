@@ -13,7 +13,7 @@
     #end if#
     #if $pane=="General"#
         <div class="left_links">
-            <a id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#" rel2="$T('restart1')">
+            <a href="../restart?session=$session" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#">
             	<span class="config_sprite_container sprite_config_general_restart">&nbsp;</span> $T('button-restart') SABnzbd</a>
         </div>
     #end if#

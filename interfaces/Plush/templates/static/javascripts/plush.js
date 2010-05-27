@@ -105,7 +105,7 @@ jQuery(function($){
 	  		});
 	
 			// modals
-			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"300px", height:"300px", initialWidth:"300px", initialHeight:"300px", speed:0, opacity:0.7 });
+			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"225px", height:"225px", initialWidth:"225px", initialHeight:"225px", speed:0, opacity:0.7 });
 			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"300px", height:"300px", initialWidth:"300px", initialHeight:"300px", speed:0, opacity:0.7 });
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
@@ -151,10 +151,14 @@ jQuery(function($){
 				$.cookie('blockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365 });
 			});
 			
+			// Sabnzbd restart
+			$('#sabnzbd_restart').click( function(){
+				return confirm($(this).attr('rel'));
+			});
+			
 			// Sabnzbd shutdown
-			$('#shutdown_sabnzbd').click( function(){
-				if(confirm($('#shutdown_sabnzbd').attr('rel')))
-					window.location='shutdown?session='+$.plush.apikey;
+			$('#sabnzbd_shutdown').click( function(){
+				return confirm($(this).attr('rel'));
 			});
 			
 			// Queue "Upon Completion" script
@@ -297,7 +301,7 @@ jQuery(function($){
 			  }
 			};
 
-			$('body').delegate('#time-left, #have_warnings, #explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pauseForPrompt, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+			$('body').delegate('#time-left, #explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pauseForPrompt, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
 			  var link = this,
 			      $link = $(this);
 

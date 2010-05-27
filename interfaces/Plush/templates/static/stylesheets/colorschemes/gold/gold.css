@@ -1021,6 +1021,10 @@ tr:hover .history_added { color: black; }
   width: 110px;
 }
 
+#addID{
+	color:#000;
+}
+
 /*
 .sf-shadow ul {  if superfish shadows are enabled lets make it happen! 
 	background:	url('images/shadow.png') no-repeat bottom right;
