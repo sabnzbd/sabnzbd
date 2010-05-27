@@ -137,7 +137,7 @@
                                 </ul>
                             </li>
                             <li><a id="queue_purge" class="pointer" rel="$T('Plush-confirmPurgeQ')">$T('Plush-purge')</a></li>
-                            <li><a id="multiops_toggle" class="pointer">Multi-Operations</a></li>
+                            <li><a id="multiops_toggle" class="pointer">$T('Plush-multiOperations')</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -166,18 +166,18 @@
 			<div id="multiops_bar" class="tilex_sprite_container sprite_tile_qhistory" style="display:none">
 				<div id="multiops_inputs">
 					
-				<a id="multiops_select_all">All</a>
-				<a id="multiops_select_range">Range</a>
-				<a id="multiops_select_invert">Invert</a>
-				<a id="multiops_select_none">None</a> |
+				<a id="multiops_select_all">$T('nzo-all').capitalize()</a>
+				<a id="multiops_select_range">$T('Plush-nzo-range').capitalize()</a>
+				<a id="multiops_select_invert">$T('nzo-invert').capitalize()</a>
+				<a id="multiops_select_none">$T('nzo-none').capitalize()</a> |
 
 				<input type="button" id="multi_reset" value="Reset" />
 				<input type="button" id="multi_apply" value="Apply to Selected" /> |
 
                       <select id="multi_status">
-						  <option value="">Status</option>
-                          <option value="pause">Pause</option>
-                          <option value="resume">Resume</option>
+						  <option value="">$T('status')</option>
+                          <option value="pause">$T('sch-pause')</option>
+                          <option value="resume">$T('sch-resume')</option>
                       </select>
                   <!--#if $cat_list#-->
                       <select id="multi_cat">
@@ -211,7 +211,7 @@
                   <!--#end if#-->
         | <div id="multi_delete" class="main_sprite_container icon_nzb_remove sprite_ql_cross_on" title="$T('nzo-delete')">&nbsp;</div>
 			</div>
-    			<div id="multiops_title">Multi-Operations</div>
+    			<div id="multiops_title">$T('Plush-multiOperations')</div>
 			</div>
 
             <!-- Queue ( queue.tmpl )-->
@@ -356,7 +356,7 @@
             	</table>
 
 				<br/>
-				Optionally specify a filename:<br/>
+				$T('Plush-addnzb-filename'):<br/>
 			    <input type="text" name="nzbname" id="nzbname" size="40" />
 
 			</form>
