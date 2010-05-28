@@ -281,10 +281,6 @@ class RSSQueue(object):
 
                 newlinks.append(link)
 
-                if cfg.no_dupes() and dup_title(title):
-                    logging.info("Ignoring duplicate job %s", atitle)
-                    continue
-
                 myCat = defCat
                 myPP = ''
                 myScript = ''
@@ -309,6 +305,11 @@ class RSSQueue(object):
                             myScript = reScripts[n]
                         elif not (notdefault(reCats[n]) or category):
                             myScript = defScript
+
+                        if cfg.no_dupes() and dup_title(title):
+                            logging.debug("Rejected as duplicate")
+                            n = -1
+                            break
 
                         if category and reTypes[n]=='C':
                             found = re.search(regexes[n], category)

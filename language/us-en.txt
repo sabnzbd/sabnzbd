@@ -704,6 +704,7 @@ warn-badImport@2         Failed to import %s files from %s
 warn-badNZB@3            Invalid NZB file %s, skipping (reason=%s, line=%s)
 warn-emptyFile@1         File %s is empty, skipping
 warn-skipDup@1           Skipping duplicate NZB "%s"
+msg-duplicate            duplicate
 error-ppCleanup@1        Cleanup of %s failed.
 error-ppDelFailed@1      Removing %s failed
 error-ppDelNzo           Failed to remove nzo from postproc queue (id)

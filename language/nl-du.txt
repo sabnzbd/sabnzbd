@@ -677,6 +677,7 @@ warn-badImport@2         Importeren van %s bestanden van %s mislukt
 warn-badNZB@3            Foutief NZB bestand %s, overslaan (reden=%s, regel=%s)
 warn-emptyFile@1         Bestand %s is leeg, overslaan
 warn-skipDup@1           Overslaan van dubbel NZB bestand "%s"
+msg-duplicate            dubbel
 error-ppCleanup@1        Opschonen van %s mislukt
 error-ppDelFailed@1      Verwijderen van %s mislukt
 error-ppDelNzo           Verwijderen van nzo van nabewerkingswachtrij mislukt

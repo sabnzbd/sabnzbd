@@ -2218,7 +2218,10 @@ def _make_link(qfeed, job):
         prio = ''
 
     star = '&nbsp;*' * int(status.endswith('*'))
-    rule = '&nbsp;#%s' % str(rule)
+    if rule < 0:
+        rule = '&nbsp;%s!' % T('msg-duplicate')
+    else:
+        rule = '&nbsp;#%s' % str(rule)
 
     if url.isdigit():
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
