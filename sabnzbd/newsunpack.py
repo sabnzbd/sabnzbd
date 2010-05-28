@@ -28,7 +28,7 @@ from time import time
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
-from sabnzbd.utils.rarfile import RarFile
+from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
@@ -1105,13 +1105,13 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
                 filelist.append(os.path.join(root, _file))
 
     if check_rar:
-        joinables = [f for f in filelist if SPLITFILE_RE.search(f) and not israr(f)]
+        joinables = [f for f in filelist if SPLITFILE_RE.search(f) and not is_rarfile(f)]
     else:
         joinables = [f for f in filelist if SPLITFILE_RE.search(f)]
 
     zips = [f for f in filelist if ZIP_RE.search(f)]
 
-    rars = [f for f in filelist if RAR_RE.search(f) and israr(f)]
+    rars = [f for f in filelist if RAR_RE.search(f) and is_rarfile(f)]
 
     ts = [f for f in filelist if TS_RE.search(f) and f not in joinables]
 
@@ -1121,22 +1121,6 @@ def build_filelists(workdir, workdir_complete, check_rar=True):
     logging.debug("build_filelists(): ts: %s", ts)
 
     return (joinables, zips, rars, ts)
-
-def israr(f):
-    logging.debug("notrar(): testing %s", f)
-    try:
-        _f = open(f, 'rb')
-        header = _f.read(4)
-        _f.close()
-    except:
-        logging.error(Ta('error-fileRead@1'), f)
-        return False
-
-    if header != 'Rar!':
-        logging.debug("notrar(): joinable file %s", f)
-        return False
-
-    return True
 
 
 def QuickCheck(set, nzo):

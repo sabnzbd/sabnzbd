@@ -308,6 +308,8 @@ opt-top_only             Only Get Articles for Top of Queue
 explain-top_only         Enable for less memory usage. Disable to prevent slow jobs from blocking the queue.
 opt-safe_postproc        Post-Process Only Verified Jobs
 explain-safe_postproc    Only perform post-processing on jobs that passed all PAR2 checks.
+opt-pause_on_pwrar       Pause job when encrypted RAR is downloaded
+explain-pause_on_pwrar   You'll need to set a password and resume the job.
 opt-no_dupes             Prevent Duplicate Downloads
 explain-no_dupes         Skip a job if a backed-up .nzb with the same name exists.
 opt-dirscan_opts         Default Post-Processing
@@ -680,6 +682,7 @@ warn-crcFailed@1         ERROR: CRC failed in "%s"
 warn-delFailed@1         Deleting %s failed!
 warn-encrypted           ERROR: encrypted file:
 warn-error@1             ERROR: %s
+warn-encrar@1            WARNING: Paused job "%s" because of encrypted RAR file
 warn-MissExpectedFile@1  Missing expected file: %s => unrar error?
 warn-writeError@1        ERROR: write error (%s)
 error-connect@1          Failed to connect: %s
@@ -705,6 +708,7 @@ warn-badNZB@3            Invalid NZB file %s, skipping (reason=%s, line=%s)
 warn-emptyFile@1         File %s is empty, skipping
 warn-skipDup@1           Skipping duplicate NZB "%s"
 msg-duplicate            duplicate
+msg-encrypted            ENCRYPTED
 error-ppCleanup@1        Cleanup of %s failed.
 error-ppDelFailed@1      Removing %s failed
 error-ppDelNzo           Failed to remove nzo from postproc queue (id)
