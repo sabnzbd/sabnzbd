@@ -141,6 +141,7 @@ class RSSQueue(object):
                                 new['script'] = data[5]
                                 new['time'] = data[6]
                                 new['prio'] = str(NORMAL_PRIORITY)
+                                new['rule'] = 0
                                 self.jobs[feed][link] = new
                             except IndexError:
                                 del new
@@ -339,12 +340,12 @@ class RSSQueue(object):
                         star = first
                     if result:
                         _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript,
-                                    act, star, order, priority=defPriority)
+                                    act, star, order, priority=defPriority, rule=n)
                         if act:
                             new_downloads.append(title)
                     else:
                         _HandleLink(jobs, link, title, 'B', myCat, myPP, myScript,
-                                    False, star, order, priority=defPriority)
+                                    False, star, order, priority=defPriority, rule=n)
             order += 1
 
         # Send email if wanted and not "forced"
@@ -434,7 +435,8 @@ class RSSQueue(object):
 
 RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
 
-def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order, priority=NORMAL_PRIORITY):
+def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order,
+                priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script=='': script = None
     if pp=='': pp = None
@@ -482,7 +484,7 @@ def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order,
             jobs[link]['prio'] = str(priority)
 
     jobs[link]['time'] = time.time()
-
+    jobs[link]['rule'] = rule
 
 def _get_link(uri, entry):
     """ Retrieve the post link from this entry

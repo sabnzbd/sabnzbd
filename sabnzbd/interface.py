@@ -2193,6 +2193,7 @@ def _make_link(qfeed, job):
     pp = job.get('pp')
     script = job.get('script')
     prio = job.get('prio')
+    rule = job.get('rule', 0)
 
     name = urllib.quote_plus(url)
     if 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url:
@@ -2217,14 +2218,15 @@ def _make_link(qfeed, job):
         prio = ''
 
     star = '&nbsp;*' * int(status.endswith('*'))
+    rule = '&nbsp;#%s' % str(rule)
 
     if url.isdigit():
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
     else:
         title = xml_name(title)
 
-    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
-           (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star)
+    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s%s<br/>' % \
+           (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star, rule)
 
 
 def ShowRssLog(feed, all):
