@@ -242,7 +242,10 @@ class RarFile:
             if not h:
                 if more_vols:
                     volume += 1
-                    fd = open(self._gen_volname(volume), "rb")
+                    try:
+                        fd = open(self._gen_volname(volume), "rb")
+                    except:
+                        fd = None
                     more_vols = 0
                     if fd:
                         continue
@@ -256,11 +259,11 @@ class RarFile:
                 self.uses_volumes = h.flags & RAR_MAIN_VOLUME
                 self.is_solid = h.flags & RAR_MAIN_SOLID
                 self.got_mainhdr = 1
+                if h.flags & RAR_MAIN_PASSWORD:
+                    self.encrypted = 1
             elif h.type == RAR_BLOCK_ENDARC:
                 more_vols = h.flags & RAR_ENDARC_NEXT_VOLUME
 
-            if h.flags & RAR_MAIN_PASSWORD:
-                self.encrypted = 1
             # store it
             self._process_entry(h)
 
