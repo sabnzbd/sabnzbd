@@ -163,8 +163,9 @@ def _assemble(nzf, path, dupe):
                             chunks.append(tmpdata)
                         except binascii.Error, msg:
                             logging.info('Decode failed in part %s: %s', article.article, msg)
-                fout.write(''.join(chunks))
-                if md5: md5.update(''.join(chunks))
+                data = ''.join(chunks)
+                fout.write(data)
+                if md5: md5.update(data)
 
     fout.flush()
     fout.close()
