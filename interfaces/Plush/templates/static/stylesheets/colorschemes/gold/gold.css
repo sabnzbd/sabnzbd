@@ -1094,7 +1094,7 @@ tr:hover .history_added { color: black; }
 #cboxOverlay { background: #000; }
  
 #colorbox { }
-#colorbox.upper { margin-top:-25%; }
+#colorbox.upper { margin-top:-10%; }
  
 #cboxContent { margin-top: 32px; }
  
