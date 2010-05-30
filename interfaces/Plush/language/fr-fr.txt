@@ -4,7 +4,8 @@
 
 # Menu
 maxSpeed          Vitesse Maxi
-options           Options Plush
+options           Options
+plushoptions      Options Plush
 refreshRate       Délai Rafraichissement
 confirmDeleteQueue Confirmer Suppressions File d'attente
 confirmDeleteHistory Confirmer Suppressions Historique

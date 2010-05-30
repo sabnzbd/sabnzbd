@@ -299,7 +299,8 @@ select {
 	text-indent:-5000px;
 	width:58px; 
 }
-	
+.plush_wrapper .main_sprite_container { height:15px; }
+
 #history_stats { padding-top: 16px; }
  
 .box_fatbottom .left_stats { float: left; }
@@ -526,9 +527,8 @@ select {
 --------------------------------------------------------------------------------------------------------------- */
 .centerpiece {
   margin:0 auto;
-  overflow:hidden;
-  padding-top:12px;
-  width:432px;
+  padding:12px 0 0 45px;
+  width:372px;
 }
  
 .sprite_sabnzbdplus_logo {
@@ -662,10 +662,9 @@ tr:hover .nzb_status_grippie {
 }
 .initial-loading {
 	background: url('images/loading-bar.gif') 4px 50% no-repeat;
-	opacity: .25;
 	position:absolute;
 	width: 138px;
-	margin: -2px 0px 0px 100px;
+	margin: 4px 0px 0px 100px;
 }
  
 .queueTable td.historyTitle { 
@@ -1094,7 +1093,8 @@ tr:hover .history_added { color: black; }
 */
 #cboxOverlay { background: #000; }
  
-#colorbox {  }
+#colorbox { }
+#colorbox.upper { margin-top:-25%; }
  
 #cboxContent { margin-top: 32px; }
  

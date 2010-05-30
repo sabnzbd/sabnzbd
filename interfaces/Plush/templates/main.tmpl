@@ -34,10 +34,12 @@
 
 	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
     <ul class="sf-menu sf-navbar">
+        <li><a id="add_nzb">$T('Plush-addnzb')</a></li>
+        <li><a id="manual_refresh_wrapper"><b>$T('Plush-button-refresh')</b></a></li>
         <li>
-            <a class="sf-with-ul">SABnzbd</a>
+            <a class="sf-with-ul">$T('Plush-options')</a>
             <ul>
-                <li id="plush_options"><a>$T('Plush-options')</a></li>
+                <li id="plush_options"><a>$T('Plush-plushoptions')</a></li>
                 <li><a class="sf-with-ul">$T('menu-help')</a>
                     <ul>
                         <li><a href="$helpuri" target="_blank">$T('menu-wiki')</a></li>
@@ -50,7 +52,6 @@
                 <li><a href="shutdown?session=$session" class="pointer" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></li>
             </ul>
         </li>
-        <li><a id="add_nzb">$T('Plush-addnzb')</a></li>
         <li>
   			<a class="sf-with-ul" href="connections" id="last_warning">$T('menu-config')&nbsp;<small id="have_warnings">($have_warnings)</small></a>
       		<ul class="config_links">
@@ -67,7 +68,6 @@
 	            <li><a href="config/sorting">$T('cmenu-sorting')</a></li>
       		</ul>
       	</li>
-        <li><a id="manual_refresh_wrapper"><b>$T('Plush-button-refresh')</b></a></li>
 	    <!--#if $new_release#-->
         <li><a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a></li>
 	    <!--#end if#-->
@@ -81,7 +81,7 @@
     <div id="page-wrap" class="tiley_sprite_container sprite_tile_queue_wrap">
 
         <div id="hdr-queue" class="tilex_sprite_container sprite_tile_qh">
-            <div class="logo main_sprite_container sprite_topleft_queue"><h1><div class="initial-loading">&nbsp;</div>$T('menu-queue').upper()</h1></div>
+            <div class="logo main_sprite_container sprite_topleft_queue"><h1>$T('menu-queue').upper()</h1></div>
             <div class="queue-buttons lang-$active_lang main_sprite_container sprite_topright_queue">
                 <ul>
                     <li class="main_sprite_container <!--#if $paused then 'sprite_q_pause_on' else 'sprite_q_pause'#-->" title="$T('link-pause') &frasl; $T('link-resume')" id="pause_resume"></li>
@@ -228,13 +228,14 @@
 			    		<option value="50">50 / $T('Plush-page')</option>
 			    		<option value="9999999">$T('Plush-everything')</option>
 			    	</select>
+					<div class="initial-loading">&nbsp;</div>
 			    	<div id="queue-pagination" class="pagination"></div>
 			    </div>
 			</div>
 
             <!-- History Menu/Banner -->
             <div id="hdr-history" class="box_banner_history tilex_sprite_container sprite_tile_qhistory">
-				<h1><div class="initial-loading">&nbsp;</div>$T('menu-history').upper() </h1>
+				<h1>$T('menu-history').upper() </h1>
                 <div class="box_banner_r">
                     <ul class="box_banner_menu">
                         <li class="main_sprite_container sprite_h_purge show" id="hist_purge" title="$T('purgeHist')"></li>
@@ -259,6 +260,7 @@
 			    		<option value="9999999">$T('Plush-everything')</option>
 						<option value="1">$T('Plush-disabled')</option>
 			    	</select>
+					<div class="initial-loading">&nbsp;</div>
 			    	<div id="history-pagination" class="pagination"></div>
 			    </div>
 			    <div class="plush_wrapper"><div class="main_sprite_container sprite_sabnzbdplus_plush">&nbsp;</div></div>

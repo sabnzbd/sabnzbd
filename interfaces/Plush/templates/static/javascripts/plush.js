@@ -105,8 +105,14 @@ jQuery(function($){
 	  		});
 	
 			// modals
-			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"225px", height:"225px", initialWidth:"225px", initialHeight:"225px", speed:0, opacity:0.7 });
-			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"300px", height:"300px", initialWidth:"300px", initialHeight:"300px", speed:0, opacity:0.7 });
+			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"300px", height:"300px", initialWidth:"300px", initialHeight:"300px", speed:0, opacity:0.7,
+			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
+			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
+			});
+			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"225px", height:"225px", initialWidth:"225px", initialHeight:"225px", speed:0, opacity:0.7,
+			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
+			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
+			});
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
@@ -301,7 +307,7 @@ jQuery(function($){
 			  }
 			};
 
-			$('body').delegate('#time-left, #explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pauseForPrompt, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+			$('body').delegate('#time-left, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
 			  var link = this,
 			      $link = $(this);
 
@@ -863,8 +869,10 @@ jQuery(function($){
 		RefreshQueue : function(page) {
 			
 			// Skip refresh if cursor hovers queue, to prevent UI annoyance
-			if ($.plush.blockRefresh && $.plush.skipRefresh)
+			if ($.plush.blockRefresh && $.plush.skipRefresh) {
+				$.plush.pendingQueueRefresh = true;
 				return $('#manual_refresh_wrapper').addClass('refresh_skipped');
+			}
 
 			// no longer a need for a pending queue refresh (associated with nzb deletions)
 			$.plush.pendingQueueRefresh = false;
@@ -884,7 +892,12 @@ jQuery(function($){
 				url: "queue/",
 				data: {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage},
 				success: function(result){
-					$('#hdr-queue .initial-loading').hide();
+					if (!result) {
+						$('#manual_refresh_wrapper').addClass('refresh_skipped');	// Failed refresh notification
+						return;
+					}
+					
+					$('.left_stats .initial-loading').hide();
 					$('#queue').html(result);								// Replace queue contents with queue.tmpl
 
 					if ($.plush.multiOps)	// add checkboxes
@@ -896,9 +909,6 @@ jQuery(function($){
 
 					$('#queue-pagination span').removeClass('loading');		// Remove spinner graphic from pagination
 					$('#manual_refresh_wrapper').removeClass('refreshing');	// Refresh state notification
-				},
-				error: function() {
-					$('#manual_refresh_wrapper').addClass('refresh_skipped');	// Failed refresh notification
 				}
 			});
 			
@@ -935,7 +945,11 @@ jQuery(function($){
 				url: "history/",
 				data: data,
 				success: function(result){
-					$('#hdr-history .initial-loading').hide();
+					if (!result) {
+						$('#manual_refresh_wrapper').addClass('refresh_skipped');	// Failed refresh notification
+						return;
+					}
+					$('.left_stats .initial-loading').hide();
 					$('#history').html(result);								// Replace history contents with history.tmpl
 					$('#history-pagination span').removeClass('loading');	// Remove spinner graphic from pagination
 				}

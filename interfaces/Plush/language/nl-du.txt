@@ -4,7 +4,8 @@
 
 # Menu
 maxSpeed          Max Snelheid
-options           Plush instellingen
+options           Instellingen
+plushoptions      Plush instellingen
 refreshRate       Verversingstempo
 confirmDeleteQueue Bevestig verwijderen uit wachtrij
 confirmDeleteHistory Bevestig verwijderen uit geschiedenis

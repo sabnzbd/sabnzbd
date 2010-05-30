@@ -5,7 +5,8 @@
 
 # Menu
 maxSpeed          Max hastighet
-options           Plush Inställningar
+options           Inställningar
+plushoptions      Plush Inställningar
 refreshRate       Uppdateringsintervall
 confirmDeleteQueue Bekräfta Kö-borttagningar
 confirmDeleteHistory Bekräfta Historik-borttagningar
