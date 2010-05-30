@@ -53,7 +53,7 @@ body,
 input,
 textarea{
 	font:75% 'Helvetica Neue', Arial, Helvetica, sans-serif;
-	color:#555550;
+	color:#000;
 }
 html>body{
 	font-size:12px;

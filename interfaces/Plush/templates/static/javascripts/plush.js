@@ -67,9 +67,9 @@ jQuery(function($){
 			});
 
 			// Upload NZB ajax with webtoolkit
-			$('#uploadNZBFile').change( function(){ $('#uploadNZBForm').submit(); });
 			$('#uploadNZBForm').submit( function(){
-				return AIM.submit(this, {'onComplete': function(){ $('#nzbname').val(''); $.plush.RefreshQueue(); }})
+				$('#uploadingSpinner').fadeIn('slow');
+				return AIM.submit(this, {'onComplete': function(){ $('#uploadingSpinner').fadeOut('slow'); $('#nzbname').val(''); $.plush.RefreshQueue(); }})
 			});
 
 			// Fetch Newzbin Bookmarks
@@ -105,7 +105,7 @@ jQuery(function($){
 	  		});
 	
 			// modals
-			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"300px", height:"300px", initialWidth:"300px", initialHeight:"300px", speed:0, opacity:0.7,
+			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"300px", height:"325px", initialWidth:"300px", initialHeight:"325px", speed:0, opacity:0.7,
 			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
 			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
 			});

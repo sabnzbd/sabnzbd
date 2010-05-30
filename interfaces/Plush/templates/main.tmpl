@@ -312,10 +312,11 @@
 			<input type="text" id="addID_input" size="30" /> <input type="submit" id="addID" value="$T('Plush-fetch')" />
 			<br/><br/>
 		    <form action="tapi" id="uploadNZBForm" method="post" enctype="multipart/form-data">
-				$T('Plush-uploadTip')
+				$T('Plush-uploadTip')<br/>
 			    <input type="hidden" name="apikey" value="$session" />
    				<input type="hidden" name="mode" value="addfile" />
-   				<input type="file" id="uploadNZBFile" name="name" size="10" />
+   				<input type="file" id="uploadNZBFile" name="name" size="10" /><br/>
+				<input type="submit" value="Upload" /><span id="uploadingSpinner" class="loading" style="display:none;">&nbsp;</span>
 				<br/><br/>
 				$T('pp')
 				<table>
