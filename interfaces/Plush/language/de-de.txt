@@ -5,7 +5,8 @@
 
 # Menu
 maxSpeed          Maximale Geschwindigkeit
-options           Plush-Einstellungen
+options           Einstellungen
+plushoptions      Plush-Einstellungen
 refreshRate       Aktualisierungsrate
 confirmDeleteQueue Löschen von Downloads bestätigen
 confirmDeleteHistory Löschen von Verlaufeinträgen bestätigen

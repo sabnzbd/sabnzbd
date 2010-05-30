@@ -53,7 +53,7 @@ body,
 input,
 textarea{
 	font:75% 'Helvetica Neue', Arial, Helvetica, sans-serif;
-	color:#555550;
+	color:#000;
 }
 html>body{
 	font-size:12px;
@@ -161,6 +161,7 @@ select {
   padding: 4px;
   border: 2px solid #9c9;
   border-radius: 4px;
+  z-index:99999;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
 }
@@ -207,7 +208,7 @@ select {
 			color: #B1B1B1;
 		}
  
-	.pagination .loading { background: #FFF url('../images/plush-default/spinner.gif') 50% 50% no-repeat; }
+	.pagination .loading { background: #FFF url('images/loading-spinner.gif') 50% 50% no-repeat; }
  
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
@@ -220,7 +221,7 @@ select {
 
  
 /* sprite-main.png */
-.main_sprite_container { background: url('../images/plush-default/sprite-main.png') no-repeat top right; }
+.main_sprite_container { background: url('images/sprite-main.png') no-repeat top right; }
 
 #main_menu ul li a span.sf-sub-indicator { background-position: 0 5px; } 
 #main_menu ul li ul li a span.sf-sub-indicator { background-position: 0 -16px; } 
@@ -262,7 +263,7 @@ select {
 .sprite_topright_queue { background-position: right -991px; } /* right */
 
 /* tile-x sprite */
-.tilex_sprite_container { background: url('../images/plush-default/sprite-tilex.png') repeat-x top right; }
+.tilex_sprite_container { background: url('images/sprite-tilex.png') repeat-x top right; }
 .sprite_tile_bottom_wrap { background-position: 0 0; } 
 .sprite_tile_qh { background-position: 0 -27px; } 
 .sprite_tile_qhistory { background-position: 0 -43px; } /* subtract 16 from above */
@@ -270,7 +271,7 @@ select {
 .sprite_tile_znavbar { background-position: 0 -134px; } 
 
 /* tile-y sprite */
-.tiley_sprite_container { background: url('../images/plush-default/sprite-tiley.png') repeat-y top right; }
+.tiley_sprite_container { background: url('images/sprite-tiley.png') repeat-y top right; }
 .sprite_tile_page_wrap { background-position: 0 0; } 
 .sprite_tile_queue_wrap { background-position: bottom right; } 
 
@@ -298,7 +299,8 @@ select {
 	text-indent:-5000px;
 	width:58px; 
 }
-	
+.plush_wrapper .main_sprite_container { height:15px; }
+
 #history_stats { padding-top: 16px; }
  
 .box_fatbottom .left_stats { float: left; }
@@ -329,7 +331,7 @@ select {
 #page-wrap {
 	clear:both;
 	margin: 0px auto;
-	width: 95%; 
+	width: 90%; 
 }
  
 .box_banner_hr {
@@ -364,9 +366,9 @@ select {
 	width:120px;
 	margin: 8px 8px 0 0;
 	padding-right:20px;
-	background: url('../images/plush-default/viewmag.png') no-repeat top right;
+	background: url('images/viewmag.png') no-repeat top right;
 	/*background-color: black;*/
-	/*background: url('../images/plush-default/sprite-main.png') no-repeat top right;
+	/*background: url('images/sprite-main.png') no-repeat top right;
 	background-position: 0 -671px;*/
 }
  
@@ -388,7 +390,7 @@ select {
 	overflow:hidden;
 }
 
-#queue-buttons {
+.queue-buttons {
 	float:right;
 	height:37px;
 	padding-top:34px;
@@ -397,12 +399,12 @@ select {
 	white-space:nowrap;
 }
 	
-	#queue-buttons ul {
+	.queue-buttons ul {
 	  float:left;
 		margin-right:24px;
 	} 	
  
-	#queue-buttons #pause_int {
+	.queue-buttons #pause_int {
     color:#ccc;
     font-size:small;
     padding-right:16px;
@@ -411,7 +413,7 @@ select {
     text-indent:0;
     top:34px;
 	}
-	#queue-buttons ul li {
+	.queue-buttons ul li {
 	  float: left;
 	  cursor:pointer;
   	display:block;
@@ -420,11 +422,11 @@ select {
 	  text-indent:-5000px;
 	  width:21px;
   }
-  #queue-buttons ul li.sprite_q_queue {
+  .queue-buttons ul li.sprite_q_queue {
     margin-left:10px;
   }
 
-  #queue-buttons ul li ul{ /* Second Level */
+  .queue-buttons ul li ul{ /* Second Level */
     border-bottom:2px solid #403f3f;
     border-right:2px solid #403f3f;
   	display:none;
@@ -437,17 +439,17 @@ select {
     width:200px;
     z-index:100;
   }
-  #queue-buttons.lang-nl-du ul li ul{
+  .queue-buttons.lang-nl-du ul li ul{
     width:245px;
   }
-  #queue-buttons.lang-de-de ul li ul,
-  #queue-buttons.lang-fr-fr ul li ul{
+  .queue-buttons.lang-de-de ul li ul,
+  .queue-buttons.lang-fr-fr ul li ul{
     width:265px;
   }
-  #queue-buttons ul li.sprite_q_queue ul{
+  .queue-buttons ul li.sprite_q_queue ul{
     right:0;
   }
-  #queue-buttons ul li ul li{
+  .queue-buttons ul li ul li{
     background:#1d1c1c;
     border-top:1px solid #474646;
     clear:left;
@@ -456,11 +458,11 @@ select {
     text-indent:0;
     width:100%;
   }
-  #queue-buttons ul li ul li:first-child{
+  .queue-buttons ul li ul li:first-child{
     border:0;
   }
   
-  #queue-buttons ul li ul li a{
+  .queue-buttons ul li ul li a{
     color:#aaa;
     clear:left;
     float:left;
@@ -469,30 +471,30 @@ select {
     text-align:left;
     width:188px;
   }
-  #queue-buttons ul li ul li a:hover{
+  .queue-buttons ul li ul li a:hover{
     color:#eee;
   }
-  #queue-buttons ul li.sprite_q_queue ul li a:hover {
+  .queue-buttons ul li.sprite_q_queue ul li a:hover {
     text-decoration:none;
   }
-  #queue-buttons ul li ul li #onQueueFinish-option{
+  .queue-buttons ul li ul li #onQueueFinish-option{
     width:130px;
   }
-  #queue-buttons ul li ul li ul,
-    #queue-buttons ul li.sprite_q_queue ul li ul{   /* Third Level */
+  .queue-buttons ul li ul li ul,
+    .queue-buttons ul li.sprite_q_queue ul li ul{   /* Third Level */
     border:0;
     position:absolute;
     right:200px;
     top:0;
   }
-  #queue-buttons.lang-nl-du ul li ul li ul,
-    #queue-buttons.lang-nl-du ul li.sprite_q_queue ul li ul{
+  .queue-buttons.lang-nl-du ul li ul li ul,
+    .queue-buttons.lang-nl-du ul li.sprite_q_queue ul li ul{
     right:245px;
   }
-  #queue-buttons.lang-de-de ul li ul li ul,
-    #queue-buttons.lang-de-de ul li.sprite_q_queue ul li ul,
-  #queue-buttons.lang-fr-fr ul li ul li ul,
-    #queue-buttons.lang-fr-fr ul li.sprite_q_queue ul li ul{
+  .queue-buttons.lang-de-de ul li ul li ul,
+    .queue-buttons.lang-de-de ul li.sprite_q_queue ul li ul,
+  .queue-buttons.lang-fr-fr ul li ul li ul,
+    .queue-buttons.lang-fr-fr ul li.sprite_q_queue ul li ul{
     right:265px;
   }
   
@@ -525,9 +527,8 @@ select {
 --------------------------------------------------------------------------------------------------------------- */
 .centerpiece {
   margin:0 auto;
-  overflow:hidden;
-  padding-top:12px;
-  width:432px;
+  padding:12px 0 0 45px;
+  width:372px;
 }
  
 .sprite_sabnzbdplus_logo {
@@ -648,16 +649,22 @@ tr:hover .nzb_status_grippie {
 	padding-left: 16px;
 }
  
-	.nzb_status.Loaded { background: url('../images/plush-default/spinner.gif') no-repeat; }
+	.nzb_status.Loaded { background: url('images/loading-spinner.gif') no-repeat; }
  
 #queueTable .nzb_status {
   cursor: pointer;
 }
  
-.loading {
-	background: url('../images/plush-default/spinner.gif') 4px 50% no-repeat;
+.loading { /* remove? */
+	background: url('images/loading-spinner.gif') 4px 50% no-repeat;
 	display: inline;
 	padding-left: 16px;
+}
+.initial-loading {
+	background: url('images/loading-bar.gif') 4px 50% no-repeat;
+	position:absolute;
+	width: 138px;
+	margin: 4px 0px 0px 100px;
 }
  
 .queueTable td.historyTitle { 
@@ -696,6 +703,32 @@ tr:hover .nzb_status_grippie {
 }
  
 .sprite_ql_cross_on { cursor: pointer; }
+
+
+#multiops_bar {
+	padding:4px;
+	height:22px;
+}
+#multiops_title {
+	color: #C0C0C0;
+	font-style: italic;
+	padding-left: 20px;
+	padding-top:5px;
+}
+#multiops_inputs {
+	float:right;
+}
+#multiops_inputs select {
+	margin:2px;
+}
+#multiops_inputs input {
+	color:#000;
+}
+#multiops_inputs a {
+	cursor:pointer;
+	color:#FFF;
+}
+
  
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
@@ -852,7 +885,7 @@ tr:hover .history_added { color: black; }
 #manual_refresh_wrapper.refresh_skipped b { border-bottom: 1px solid red; }
 
 #main_menu ul li a span {
-  background: url('../images/plush-default/sprite-main.png') no-repeat center left;
+  background: url('images/sprite-main.png') no-repeat center left;
   display:block;
   height:1.5em;
   right:5px;
@@ -870,7 +903,7 @@ tr:hover .history_added { color: black; }
   left:10px;
   margin:0;
   position:absolute;
-  top:21px;
+  top:18px;
   width:200px;
   z-index:100;
 }
@@ -893,7 +926,7 @@ tr:hover .history_added { color: black; }
   width:188px;
 }
 #main_menu ul li ul li a span {
-  background: url('../images/plush-default/sprite-main.png') no-repeat top left;
+  background: url('images/sprite-main.png') no-repeat top left;
   height:auto;
   top:32%;
 }
@@ -931,7 +964,6 @@ tr:hover .history_added { color: black; }
 #main_menu.lang-de-de ul li ul li ul li{
   width:280px;
 }
-#main_menu ul li ul li#plushoptions ul li:first-child a,
 #main_menu ul li ul li#processingContainer ul li{
   padding:4px 6px;
 }
@@ -988,9 +1020,13 @@ tr:hover .history_added { color: black; }
   width: 110px;
 }
 
+#addID{
+	color:#000;
+}
+
 /*
 .sf-shadow ul {  if superfish shadows are enabled lets make it happen! 
-	background:	url('../images/plush-default/shadow.png') no-repeat bottom right;
+	background:	url('images/shadow.png') no-repeat bottom right;
 	padding: 0 8px 9px 0;
 	-moz-border-radius-bottomleft: 17px;
 	-moz-border-radius-topright: 17px;
@@ -1057,7 +1093,8 @@ tr:hover .history_added { color: black; }
 */
 #cboxOverlay { background: #000; }
  
-#colorbox {  }
+#colorbox { }
+#colorbox.upper { margin-top:-10%; }
  
 #cboxContent { margin-top: 32px; }
  
@@ -1074,10 +1111,12 @@ tr:hover .history_added { color: black; }
 #cboxLoadingOverlay { background: #DDD; }
  
 #cboxTitle {
-	color: #000;
+	color: #fff;
+	font-size:200%;
+	font-weight: bold;
 	left: 0;
 	position: absolute;
-	top: -22px;
+	top: -32px;
 }
  
 #cboxCurrent {
@@ -1088,7 +1127,7 @@ tr:hover .history_added { color: black; }
 }
  
 #cboxSlideshow, #cboxPrevious, #cboxNext, #cboxClose {
-	background: url('../images/plush-default/sprite-jq-colorbox.png') 0 0 no-repeat;
+	background: url('images/sprite-jq-colorbox.png') 0 0 no-repeat;
 	height: 20px;
 	position: absolute;
 	text-indent: -9999px;
@@ -1291,32 +1330,35 @@ fieldset.EntryFieldSet {
   .update-rss fieldset.EntryFieldSet .feeduri{
   	width:99%;
   }
-#catTable {
+.catTable {
   width:99%;
 }
-  #catTable th,
-  #catTable td {
+  .catTable th,
+  .catTable td {
     padding:3px 3px 5px;
   }
-  #catTable th {
+  .catTable th {
     font-weight:bold;
   }
-  #catTable td select {
+  .catTable td select {
     background:#fff;
     padding:3px;
     width:100%;
   }
-  #catTable td input {
+  .catTable td input {
     width:98%;
   }
-  #catTable td input.Add,
-  #catTable td input.Save{
+  .catTable td input.Add,
+  .catTable td input.Save{
     font-size:0.8333em;
     width:75px;
   }
-  #catTable td input.Delete {
+  .catTable td input.Delete {
     font-size:0.8333em;
     width:26px;  
+  }
+  .catTable td.lastCol {
+	width:120px;
   }
 
 #schedulingTable td, #switchesTable td {
@@ -1399,7 +1441,7 @@ legend .config_sprite_container {
 
  
 /* sprite-config.png */
-.config_sprite_container { background: url('../images/plush-default/sprite-config.png') no-repeat top left; }
+.config_sprite_container { background: url('images/sprite-config.png') no-repeat top left; }
 
 .sprite_config_connections_disconnect { background-position: 0 0; } 
 .sprite_config_connections_encrypted { background-position: 0 -25px; } 

@@ -25,7 +25,7 @@
     <tr><td class="alignRight"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td><td><input type="text" size="5" name="connections"/></td></tr>
     <tr><td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>$T('second')</small></td></tr>
 
-    <td><td colspan="2">&nbsp;</td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
 
     <tr>
     	<td class="alignRight"><input type="checkbox" name="enable" id="enable" value="1" checked="1"/></td>
@@ -87,7 +87,7 @@
         <td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td>
         <td><input type="text" size="5" name="timeout" value="$servers[$server]['timeout']"/>&nbsp;<small>seconds</small></td>
     </tr>
-    <td><td colspan="2">&nbsp;</td></tr>
+    <tr><td colspan="2">&nbsp;</td></tr>
     <tr>
         <td class="alignRight"><input type="checkbox" name="enable" id="enable$cur" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></td>
         <td><label for="enable$cur"><strong>$T('srv-enable')</strong></label></td>

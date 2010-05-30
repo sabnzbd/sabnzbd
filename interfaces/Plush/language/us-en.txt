@@ -4,7 +4,8 @@
 
 # Menu
 maxSpeed          Max Speed
-options           Plush Options
+options           Options
+plushoptions      Plush Options
 refreshRate       Refresh Rate
 confirmDeleteQueue Confirm Queue Deletions
 confirmDeleteHistory Confirm History Deletions
@@ -12,6 +13,7 @@ blockRefresh      Block Refreshes on Hover
 explain-blockRefresh This will prevent refreshing content when your mouse cursor is hovering over the queue.
 disabled          Disabled
 addnzb            Add NZB
+addnzb-filename   Optionally specify a filename
 fetch             Fetch
 uploadTip         Upload: .nzb .rar .zip .gz
 sort              Sort
@@ -54,6 +56,7 @@ notEnoughSpace    Not enough disk space to complete downloads!
 freeSpace         Free Space
 freeSpaceTemp     Free (Temp)
 confirmPurgeQ     Purge the Queue?
+multiOperations   Multi-Operations
 
 # History
 total             Total

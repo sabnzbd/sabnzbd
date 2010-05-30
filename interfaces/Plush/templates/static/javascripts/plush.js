@@ -8,13 +8,15 @@ jQuery(function($){
 		// ***************************************************************
 		//	Plush defaults
 		
-		refreshRate:   			$.cookie('refreshRate')  ? $.cookie('refreshRate')  : 30,   // refresh rate in seconds
-		queuePerPage:   		$.cookie('queuePerPage') ? $.cookie('queuePerPage') : 10,	// pagination - nzbs per page
-		histPerPage:   			$.cookie('histPerPage')  ? $.cookie('histPerPage')  : 10,	// pagination - nzbs per page
+		refreshRate:   			$.cookie('refreshRate')     ? $.cookie('refreshRate')  : 30,   // refresh rate in seconds
+		containerWidth:   		$.cookie('containerWidth')  ? $.cookie('containerWidth')  : '90%',   // refresh rate in seconds
+		queuePerPage:   		$.cookie('queuePerPage')    ? $.cookie('queuePerPage') : 10,	// pagination - nzbs per page
+		histPerPage:   			$.cookie('histPerPage')     ? $.cookie('histPerPage')  : 10,	// pagination - nzbs per page
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
-		
+		multiOps:               false, // is multi-operations menu visible in queue
+		multiOpsChecks:         null,
 		
 		// ***************************************************************
 		//	$.plush.Init() -- initialize all the UI events
@@ -45,11 +47,13 @@ jQuery(function($){
 							script:   $("#addID_script").val(),
 							cat:	  $("#addID_cat").val(),
 							priority: $("#addID_priority").val(),
+							nzbname:  "test",
 							apikey:	  $.plush.apikey
 						},
 						success: $.plush.RefreshQueue
 					});
 					$("#addID_input").val('');
+					$('#nzbname').val(''); 
 				}
 				return false; // aborts <form> submission
 			});
@@ -63,13 +67,13 @@ jQuery(function($){
 			});
 
 			// Upload NZB ajax with webtoolkit
-			$('#uploadNZBFile').change( function(){ $('#uploadNZBForm').submit(); });
 			$('#uploadNZBForm').submit( function(){
-				return AIM.submit(this, {'onComplete': $.plush.RefreshQueue})
+				$('#uploadingSpinner').fadeIn('slow');
+				return AIM.submit(this, {'onComplete': function(){ $('#uploadingSpinner').fadeOut('slow'); $('#nzbname').val(''); $.plush.RefreshQueue(); }})
 			});
 
 			// Fetch Newzbin Bookmarks
-			$('#fetch_newzbin_bookmarks').click(function(){
+			/*$('#fetch_newzbin_bookmarks').click(function(){
 				$.ajax({
 					type: "POST",
 					url: "tapi",
@@ -78,7 +82,7 @@ jQuery(function($){
 						$.plush.RefreshQueue();
 					}
 				});
-			});
+			});*/
 
 		}, // end $.plush.InitAddNZB()
 
@@ -91,12 +95,24 @@ jQuery(function($){
 			// Main menu -- uses jQuery hoverIntent
 			$("#main_menu ul.sf-menu").superfish({
 				autoArrows:	true,
-	  			dropShadows: false
+	  			dropShadows: false,
+			    speed:0, delay:0
 	  		});
-	  		$("#queue-buttons ul").superfish({
-	  		  autoArrows: false,
-	  		  dropShadows: false
+	  		$(".queue-buttons ul").superfish({
+	  		    autoArrows: false,
+	  		    dropShadows: false,
+			    speed:0, delay:0
 	  		});
+	
+			// modals
+			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"300px", height:"325px", initialWidth:"300px", initialHeight:"325px", speed:0, opacity:0.7,
+			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
+			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
+			});
+			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"225px", height:"225px", initialWidth:"225px", initialHeight:"225px", speed:0, opacity:0.7,
+			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
+			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
+			});
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
@@ -116,6 +132,13 @@ jQuery(function($){
 				$.plush.Refresh();
 			});
 			
+			// Refresh rate
+			$("#containerWidth-option").val($.plush.containerWidth).change( function() {
+				$.plush.containerWidth = $("#containerWidth-option").val();
+				$.cookie('containerWidth', $.plush.containerWidth, { expires: 365 });
+				$('#page-wrap').css('width',$.plush.containerWidth);
+			}).trigger('change');
+			
 			// Confirm Queue Deletions toggle
 			$("#confirmDeleteQueue").attr('checked', $.plush.confirmDeleteQueue ).change( function() {
 				$.plush.confirmDeleteQueue = $("#confirmDeleteQueue").attr('checked');
@@ -134,10 +157,14 @@ jQuery(function($){
 				$.cookie('blockRefresh', $.plush.blockRefresh ? 1 : 0, { expires: 365 });
 			});
 			
+			// Sabnzbd restart
+			$('#sabnzbd_restart').click( function(){
+				return confirm($(this).attr('rel'));
+			});
+			
 			// Sabnzbd shutdown
-			$('#shutdown_sabnzbd').click( function(){
-				if(confirm($('#shutdown_sabnzbd').attr('rel')))
-					window.location='shutdown?session='+$.plush.apikey;
+			$('#sabnzbd_shutdown').click( function(){
+				return confirm($(this).attr('rel'));
 			});
 			
 			// Queue "Upon Completion" script
@@ -185,12 +212,27 @@ jQuery(function($){
 				var minutes = $(event.target).attr('rel');
 				if (minutes == "custom")
 					minutes = prompt($(event.target).attr('title'));
+				$.plush.SetQueuePauseInfo(true,minutes+':00');
 				$.ajax({
 					type: "POST",
 					url: "tapi",
 					data: {mode:'config', name:'set_pause', value: minutes, apikey: $.plush.apikey},
 					success: $.plush.RefreshQueue
 				});
+			});
+			
+			$('#multiops_toggle').click(function(){
+				if( $('#multiops_bar').is(':visible') ) { // hide
+					$('#multiops_bar').hide();
+					$.plush.multiOps = false;
+					$.plush.multiOpsChecks = null;
+					$('#queue tr td.nzb_status_col input').remove();
+				} else { // show
+					$('#multiops_bar').show();
+					$.plush.multiOps = true;
+					$.plush.multiOpsChecks = new Array();
+					$('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
+				}
 			});
 			
 			// Manual refresh
@@ -211,65 +253,96 @@ jQuery(function($){
 		//	$.plush.InitTooltips() -- title tootlips on hover
 
 		InitTooltips : function() {
+			// TO DO:
+			//		clean up implementation, unfortunately was not built as a plugin
+			//		fix glitching on superfish tooltips (#uploadTip doesn't work, #fetch_newzbin_bookmarks only works when hover from side)
 
 			/*
-				jQuery FlipTip (with modifications by pairofdimes)
-				http://learningjquery.com
-				Copyright (c) 2010 Karl Swedberg
-				See http://creativecommons.org/licenses/by-sa/2.5/
-			*/
-			var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body');
-			var $win = $(window), tipTitle = '';
+			 * jQuery tooltips
+			 * Version 1.1  (April 6, 2010)
+			 * @requires jQuery v1.4.2+
+			 * @author Karl Swedberg
+			 *
+			 * Dual licensed under the MIT and GPL licenses:
+			 * http://www.opensource.org/licenses/mit-license.php
+			 * http://www.gnu.org/licenses/gpl.html
+			 *
+			 */
+  
+			var $liveTip = $('<div id="livetip"></div>').hide().appendTo('body'),
+			    $win = $(window),
+			    showTip;
 
-			var tipPosition = function(event) {
-				var winWidth = $win.width(),
-				    winBottom = $win.scrollTop() + $win.height(),
-				    tipWidth = $liveTip.outerWidth(),
-				    tipHeight = $liveTip.outerHeight(),
-				    pageX = event.pageX,
-				    pageY = event.pageY;
-				if (pageX + tipWidth + 12 > winWidth)
-					pageX += 12 - (pageX + tipWidth + 12 - winWidth);
-				else
-					pageX += 12;
-				if (pageY + tipHeight + 12 > winBottom)
-					pageY -= (tipHeight + 12);
-				else
-					pageY += 12;
-				$liveTip.css({
-					top: pageY,
-					left: pageX
-				});
+			var tip = {
+			  title: '',
+			  offset: 12,
+			  delay: 0, 		// changed
+			  position: function(event) {
+			    var positions = {x: event.pageX, y: event.pageY};
+			    var dimensions = {
+			      x: [
+			        $win.width(),
+			        $liveTip.outerWidth()
+			      ],
+			      y: [
+			        $win.scrollTop() + $win.height(),
+			        $liveTip.outerHeight()
+			      ]
+			    };
+
+			    for ( var axis in dimensions ) {
+
+			      if (dimensions[axis][0] < dimensions[axis][1] + positions[axis] + this.offset) {
+			        positions[axis] -= dimensions[axis][1] + this.offset;
+			      } else {
+			        positions[axis] += this.offset;
+			      }
+
+			    }
+
+			    $liveTip.css({
+			      top: positions.y,
+			      left: positions.x
+			    });
+			  }
 			};
 
-			// make these work: #time-left, #have_warnings, #explain-blockRefresh, #uploadTip, #fetch_newzbin_bookmarks, #pauseForPrompt, 
-			$('#pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose').live('mouseover mouseout mousemove', function(event) {
-				var $link = $(event.target);
-				if (!$link.length) { return; }
-				var link = $link[0];
-				var coords = {left: '-1000em'};
+			$('body').delegate('#time-left, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+			  var link = this,
+			      $link = $(this);
 
-				switch(event.type){
-					case 'mouseover':
-						$link.data('tipActive', true);
-						tipTitle = link.title;
-						link.title = '';
-						if (!tipTitle) { return; }
-						$liveTip.html('<div>'+tipTitle+'</div>').show()
-						tipPosition(event);
-						break;
+			  if (event.type == 'mouseover') {
+			    tip.title = link.title;
+			    link.title = '';
 
-					case 'mouseout':
-						$link.removeData('tipActive');
-						$liveTip.hide();
-						link.title = tipTitle || link.title;        
-						break;
+			    showTip = setTimeout(function() {
 
-					case 'mousemove':
-						if ($link.data('tipActive'))
-				    		tipPosition(event);
-						break;
-				};
+			      $link.data('tipActive', true);
+
+			      tip.position(event);
+
+			      $liveTip
+			      .html('<div>' + tip.title + '</div>') //<div>' + link.href + '</div>')  	// changed
+			      //.fadeOut(0)  															// changed
+			      .show();//.fadeIn(200);  													// changed
+
+			    }, tip.delay);
+			  }
+
+			  if (event.type == 'mouseout') {
+			    link.title = tip.title || link.title;
+			    if ($link.data('tipActive')) {
+			      $link.removeData('tipActive');
+			      $liveTip.hide();
+			    } else {
+			      clearTimeout(showTip);
+			    }
+			  }
+
+			  if (event.type == 'mousemove' && $link.data('tipActive')) {
+			    tip.position(event);
+			  }
+  
 			});
 		},
 
@@ -479,8 +552,14 @@ jQuery(function($){
 				// Drag and drop sorting
 				$("#queueTable").tableDnD({
 					onDrop: function(table, row) {
+						
 						if (table.tBodies[0].rows.length < 2)
 							return false;
+						
+						// adjust odd row background coloring
+						$("tr:odd", '#queueTable').removeClass("alt"); 
+						$("tr:even", '#queueTable').addClass("alt"); 
+
 						// determine which position the repositioned row is at now
 						var val2;
 						for ( var i=0; i < table.tBodies[0].rows.length; i++ ) {
@@ -505,9 +584,132 @@ jQuery(function($){
 				});
 				
 			}); // end livequery
+			
+			$.plush.InitQueueMultiOperations();
 
 		}, // end $.plush.InitQueue()
-		
+
+
+		// ***************************************************************
+		//	$.plush.InitQueueMultiOperations() - Queue Multi-Operation Events
+
+		InitQueueMultiOperations : function() {
+			
+	        // selections
+	        $("#multiops_select_all").click(function(){
+	            $("INPUT[type='checkbox']","#queueTable").attr('checked', true).trigger('change');
+	        });
+	        var last1, last2;
+	        $("#multiops_select_range").click(function(){
+	        	if (last1 && last2 && last1 < last2)
+		            $("INPUT[type='checkbox']","#queueTable").slice(last1,last2).attr('checked', true).trigger('change');
+		        else if (last1 && last2)
+		            $("INPUT[type='checkbox']","#queueTable").slice(last2,last1).attr('checked', true).trigger('change');
+	        });
+	        $("#multiops_select_invert").click(function(){
+	            $("INPUT[type='checkbox']","#queueTable").each( function() {
+	                $(this).attr('checked', !$(this).attr('checked')).trigger('change');
+	            });
+	        });
+	        $("#multiops_select_none").click(function(){
+	            $("INPUT[type='checkbox']","#queueTable").attr('checked', false).trigger('change');
+	        });
+	        $(".multiops","#queueTable").live('change',function(event) {
+				// range event interaction
+	            if (last1) last2 = last1;
+	            last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
+
+				// checkbox state persistence
+				if ($(this).attr('checked'))
+					$.plush.multiOpsChecks[$(this).parent().parent().attr('id')] = true;
+				else if ($.plush.multiOpsChecks[$(this).parent().parent().attr('id')])
+					delete $.plush.multiOpsChecks[$(this).parent().parent().attr('id')];
+	        });
+			$("a","#multiops_inputs").click(function(e){
+				// prevent button text highlighting
+			    e.target.onselectstart = function() { return false; };
+			    e.target.unselectable = "on";
+			    e.target.style.MozUserSelect = "none";
+			});
+			
+			// reset ui options
+			$('#multi_reset').click(function(){
+				$('#multi_status, #multi_cat, #multi_priority, #multi_pp, #multi_script').val('');
+			});
+
+			// apply options - cat/priority/pp/script
+			$('#multi_apply').click(function(){
+				
+				var nzo_ids = "";
+	            $("INPUT[type='checkbox']:checked","#queueTable").each( function() {
+					nzo_ids += "," + $(this).parent().parent().attr('id');
+				});
+				nzo_ids = nzo_ids.substr(1);
+				if (!nzo_ids) return;
+
+				$(this).attr('disabled',true);
+
+				if ($('#multi_status').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'queue', name:$('#multi_status').val(), value: nzo_ids, apikey: $.plush.apikey}
+					});
+
+				if ($('#multi_cat').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode: 'change_cat', value: nzo_ids, value2: $('#multi_cat').val(), apikey: $.plush.apikey}
+					});
+
+				if ($('#multi_priority').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'queue', name:'priority', value: nzo_ids, value2: $('#multi_priority').val(), apikey: $.plush.apikey}
+					});
+
+				if ($('#multi_pp').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode: 'change_opts', value: nzo_ids, value2: $('#multi_pp').val(), apikey: $.plush.apikey}
+					});
+
+				if ($('#multi_script').val())
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode: 'change_script', value: nzo_ids, value2: $('#multi_script').val(), apikey: $.plush.apikey}
+					});
+
+				$(this).attr('disabled',false);
+				$.plush.RefreshQueue();
+			});
+
+			// nzb removal
+			$('#multi_delete').click(function(){
+
+				var nzo_ids = "";
+	            $("INPUT[type='checkbox']:checked","#queueTable").each( function() {
+					nzo_ids += "," + $(this).parent().parent().attr('id');
+				});
+				nzo_ids = nzo_ids.substr(1);
+				if (!nzo_ids) return;
+
+				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'queue', name:'delete', value: nzo_ids, apikey: $.plush.apikey},
+						success: $.plush.RefreshQueue
+					});
+				}
+			});
+
+		}, // end $.plush.InitQueueMultiOperations()
+
 		
 		// ***************************************************************
 		//	$.plush.InitHistory() -- History Events
@@ -608,6 +810,10 @@ jQuery(function($){
 				
 				// modal for viewing script logs
 				$('#historyTable .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+				$("#historyTable .modal-detail").colorbox({ inline:true,
+					href: function(){return "#details-"+$(this).parent().parent().attr('id');},
+					title:function(){return $(this).text();},
+					width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
 				// Build pagination only when needed
 				if ($.plush.histPerPage=="1") // disabled history
@@ -663,8 +869,10 @@ jQuery(function($){
 		RefreshQueue : function(page) {
 			
 			// Skip refresh if cursor hovers queue, to prevent UI annoyance
-			if ($.plush.blockRefresh && $.plush.skipRefresh)
+			if ($.plush.blockRefresh && $.plush.skipRefresh) {
+				$.plush.pendingQueueRefresh = true;
 				return $('#manual_refresh_wrapper').addClass('refresh_skipped');
+			}
 
 			// no longer a need for a pending queue refresh (associated with nzb deletions)
 			$.plush.pendingQueueRefresh = false;
@@ -684,12 +892,23 @@ jQuery(function($){
 				url: "queue/",
 				data: {start: ( page * $.plush.queuePerPage ), limit: $.plush.queuePerPage},
 				success: function(result){
+					if (!result) {
+						$('#manual_refresh_wrapper').addClass('refresh_skipped');	// Failed refresh notification
+						return;
+					}
+					
+					$('.left_stats .initial-loading').hide();
 					$('#queue').html(result);								// Replace queue contents with queue.tmpl
+
+					if ($.plush.multiOps)	// add checkboxes
+						$('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
+					if ($.plush.multiOpsChecks) // checkbox state persistence
+						for (var nzo_id in $.plush.multiOpsChecks)
+							$('#'+nzo_id+' .multiops').attr('checked',true);
+
+
 					$('#queue-pagination span').removeClass('loading');		// Remove spinner graphic from pagination
 					$('#manual_refresh_wrapper').removeClass('refreshing');	// Refresh state notification
-				},
-				error: function() {
-					$('#manual_refresh_wrapper').addClass('refresh_skipped');	// Failed refresh notification
 				}
 			});
 			
@@ -726,6 +945,11 @@ jQuery(function($){
 				url: "history/",
 				data: data,
 				success: function(result){
+					if (!result) {
+						$('#manual_refresh_wrapper').addClass('refresh_skipped');	// Failed refresh notification
+						return;
+					}
+					$('.left_stats .initial-loading').hide();
 					$('#history').html(result);								// Replace history contents with history.tmpl
 					$('#history-pagination span').removeClass('loading');	// Remove spinner graphic from pagination
 				}

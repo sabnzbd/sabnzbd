@@ -1,5 +1,5 @@
 
-Plush 3.1 for SABnzbd+ 0.5 | February 23 2010
+Plush 3.2 for SABnzbd+ 0.6 | May 15 2010
 assembled by pairofdimes - see LICENSE-CC.txt
 
 =======================
@@ -54,7 +54,7 @@ See LICENSE-MIT & LICENSE-GPL
 jQuery FlipTip (with modifications by pairofdimes)
 http://learningjquery.com
 Copyright (c) 2010 Karl Swedberg
-See http://creativecommons.org/licenses/by-sa/2.5/
+See LICENSE-MIT & LICENSE-GPL
 
 jQuery hoverIntent
 http://cherne.net/brian/resources/jquery.hoverIntent.html
@@ -92,7 +92,6 @@ templates/static/images/plush-default/sabnzbdplus_logo.png
 templates/static/images/plush-default/sabnzbdplus.ico
 
 Thanks goes out to sbultez for supplying:
-templates/static/images/plush-default/spinner.gif
 templates/static/images/plush-default/hv_*.png
 templates/static/images/plush-default/q_stats_needspace.png
 templates/static/images/plush-default/ql_cross.png
@@ -101,6 +100,9 @@ templates/static/images/plush-default/ql_row_on.png
 
 Thanks goes out to rAf for supplying:
 templates/static/images/plush-default/ql_grip_*.png
+
+www.AjaxLoad.info generated:
+templates/static/images/plush-default/loading-*.gif
 
 Nuvola Icon Set
 http://www.icon-king.com/?p=15

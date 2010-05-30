@@ -21,9 +21,48 @@
 		&nbsp;<div class="nzb_status <!--#if $line.action_line or $line.status=="Queued"#-->Loaded<!--#else if $line.status=="Failed"#-->main_sprite_container sprite_hv_error<!--#else#-->main_sprite_container sprite_hv_star<!--#end if#-->">&nbsp;</div>
 	</td>
     <td class="historyTitle">
-        $line.name
+        <a href="scriptlog?name=$line.nzo_id" class="modal-detail" rel="details">$line.name</a>
+
+
+		<div style="display:none">
+<div id="details-$line.nzo_id">
+<table width="100%">
+    <tr><th>$T('completed')</th><th>$T('name')</th><th>$T('size')</th><th>$T('status')</th></tr>
+<%
+compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%m-%d %H:%M:%S')
+%>
+        <tr>
+        <td>$compl</td>
+        <td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td>
+        <td>$line.size</td><td>$T('post-'+$line.status)</td>
+
+        </tr>
+</table>
+<br/><br/>
+
+            <!--#set $oddLine = not False#-->
+            <!--#for $stage in $line.stage_log#-->
+                <!--#set $oddLine = not $oddLine#-->
+                <dt><b>$T('stage-'+$stage.name.title.lower())</b></dt>
+                <!--#for $action in $stage.actions#-->
+                     <dd>$action</dd>
+                            <!--#end for#-->
+                     <br />
+            <!--#end for#-->
+            <!--#if $line.category#-->
+                <dt><b>$T('category')</b></dt>
+                <dd>$line.category</dd>
+                <br />
+            <!--#end if#-->
+            <!--#if $line.storage#-->
+                <dt><b>$T('msg-path')</b></dt>
+                <dd>$line.storage</dd>
+                <br />
+            <!--#end if#-->
+		</div>
+		</div>
+
     </td>
-    
     <td>
         <!--#if $line.report #-->
             <a href="https://www.newzbin.com/browse/post/$line.report/" target="_blank">
@@ -64,13 +103,20 @@
         <!--#if $line.fail_message#-->
         <h3 class="hvMessageFail">&raquo;&nbsp;$line.fail_message&nbsp;</h3>
         <!--#end if#-->
+		<!--#if $line.retry#-->
+			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
+               <input type="file" name="nzbfile">
+			   <input type="hidden" value="$line.nzo_id" name="job">
+               <input type="hidden" name="session" value="$session">
+			<input type="submit" value="$T('button-retry')"></form>
+		<!--#end if#-->
     </td>
     
     <td class="options nowrap">
         <!--#if not $line.loaded#-->
         <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
         <small class="history_added">$d</small>
-        <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')&nbsp;NZB">&nbsp;</div>
+        <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')">&nbsp;</div>
         <!--#end if#-->
     </td>
     

@@ -1,11 +1,12 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # Dansk # Danmark
 # Translation by "René (Jarhead) Larsen" <warzdk@gmail.com>
 # Plush
 
 # Menu
 maxSpeed          Max hastighed
-options           Plush Instillninger
+options           Instillninger
+plushoptions      Plush Instillninger
 refreshRate       Opdateringsinterval
 confirmDeleteQueue Bekræft Kø-fjernelse
 confirmDeleteHistory Bekræft Historik-fjernelse

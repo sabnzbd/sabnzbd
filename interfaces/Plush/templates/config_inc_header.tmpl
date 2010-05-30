@@ -9,16 +9,18 @@
 <head>
     
     <title>SABnzbd+ $version - $T('queued'): $mbleft $T('MB')</title>
-    <link rel="shortcut icon" type="image/ico" href="$path/static/images/plush-default/sabnzbdplus.ico"/>
+    
+    #if $color_scheme#
+    <link rel="shortcut icon" type="image/ico" href="$path/static/stylesheets/colorschemes/$color_scheme/images/sabnzbdplus.ico"/>
+    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/$color_scheme/$color_scheme.css?$version"/>
+    #else#
+    <link rel="shortcut icon" type="image/ico" href="$path/static/stylesheets/colorschemes/gold/images/sabnzbdplus.ico"/>
+    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/gold/gold.css?$version"/>
+    #end if#
     
     <script type="text/javascript" src="$path/static/javascripts/lib.js?$version"></script>
     <script type="text/javascript" src="$path/static/javascripts/config.js?$version"></script>
-    
-    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/plush-default.css?$version"/>
-    #if $color_scheme and $color_scheme != "plush-default.css" and $color_scheme != "default.css"#
-    <link rel="stylesheet" type="text/css" href="$path/static/stylesheets/colorschemes/$color_scheme?$version"/>
-    #end if#
-    
+
 	<script type="text/javascript">
         var config_pane = "$pane";
         var help_uri = "$help_uri";

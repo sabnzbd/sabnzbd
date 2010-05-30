@@ -12,7 +12,30 @@
 		<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
 	</select>
 	<!--#if int($cache_max)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#-->
+
+	<br/><br/>
+	<table width="100%"><tr><td>
+		$T('explain-Restart')<br/>
+		<form action="saveGeneral" method="post">
+		<input type="submit" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
+		</form>
+	</td><td><br/>
+		$T('explain-Scan')<br/>
+		<form action="saveGeneral" method="post">
+		<input type="submit" onclick="this.form.action='../config/scan?session=$session'; this.form.submit(); return false;" value="$T('button-scan')"/>
+		</form>
+	</td><td>
+		$T('explain-Repair')<br/>
+		<form action="saveGeneral" method="post">
+		<input type="submit" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
+		</form>
+	</td></tr></table>
+
 </small></div>
+
+
+
+
 
 <!--#if $servers#-->
 	<!--#for $server in $servers#-->
@@ -51,7 +74,7 @@
 		<!--#for $warn in $warnings#-->
 			<li><pre>$warn</pre></li>
 		<!--#end for#-->
-		</ul></small>
+		</ol></small>
 	</fieldset>
 <!--#end if#-->
 
