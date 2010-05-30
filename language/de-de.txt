@@ -767,6 +767,7 @@ warn-badImport@2         Importieren von %s Dateien von %s fehlgeschlagen
 warn-badNZB@3            Ungültige NZB-Datei %s wird übersprungen: %s auf Zeile %s
 warn-emptyFile@1         Die Datei %s ist leer und wird daher übersprungen
 warn-skipDup@1           Überspringe doppelt vorhandene NZB-Datei %s.
+msg-duplicate            doppelt
 error-ppCleanup@1        Aufräumen von %s fehlgeschlagen
 error-ppDelFailed@1      Entfernen von %s fehlgeschlagen
 error-ppDelNzo           Fehler beim Entfernen der NZB-Datei von der\

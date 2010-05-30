@@ -152,7 +152,7 @@ class URLGrabber(Thread):
             nzbname = future_nzo.custom_name
 
             # Check if nzb file
-            if os.path.splitext(filename)[1].lower() == '.nzb':
+            if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz'):
                 res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority, \
                                                    nzbname=nzbname, nzo_info=nzo_info)
                 if res == 0:

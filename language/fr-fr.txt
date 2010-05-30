@@ -692,6 +692,7 @@ warn-badImport@2         Echec lors de l'importation des fichiers %s depuis %s
 warn-badNZB@3            Fichier NZB invalide %s, rejeté (raison=%s, ligne=%s)
 warn-emptyFile@1         Fichier %s vide, rejeté
 warn-skipDup@1           Rejet du NZB dupliqué "%s"
+msg-duplicate            dupliqué
 error-ppCleanup@1        Echec du nettoyage de %s.
 error-ppDelFailed@1      Echec de la suppression de %s
 error-ppDelNzo           Echec de la suppression du nzo de la qeueu de post-traitement (id)

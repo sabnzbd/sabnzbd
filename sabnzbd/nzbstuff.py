@@ -474,7 +474,7 @@ NzbObjectMapper = (
     ('extra3',                       'next_save'),     # Earliest next save time of NZO
     ('extra4',                       'save_timeout'),  # Save timeout for this NZO
     ('extra5',                       'new_caching'),   # New style caching
-    ('extra6',                       'extra6'),
+    ('extra6',                       'encrypted'),     # Encrypted RAR file encountered
     ('create_group_folder',          'create_group_folder')
 )
 
@@ -574,7 +574,7 @@ class NzbObject(TryList):
         self.next_save = None
         self.save_timeout = None
         self.new_caching = True
-        self.extra6 = None
+        self.encrypted = False
         self.pp_active = False  # Signals active post-processing (not saved)
 
         self.create_group_folder = cfg.create_group_folders()
@@ -858,6 +858,8 @@ class NzbObject(TryList):
     def final_name_pw(self):
         if self.password:
             return '%s / %s' % (self.final_name, self.password)
+        elif self.encrypted and self.status == 'Paused':
+            return '%s [%s]' % (self.final_name, Ta('msg-encrypted'))
         else:
             return self.final_name
 
@@ -1270,6 +1272,7 @@ def s_returner(value):
 
 RE_PASSWORD1 = re.compile(r'([^/\\]+)[/\\](.+)')
 RE_PASSWORD2 = re.compile(r'(.+){{([^{}]+)}}$')
+RE_PASSWORD3 = re.compile(r'(.+)\s+password\s*=\s*(.+)$', re.I)
 def scan_password(name):
     """ Get password (if any) from the title
     """
@@ -1279,6 +1282,8 @@ def scan_password(name):
     m = RE_PASSWORD1.search(name)
     if not m:
         m = RE_PASSWORD2.search(name)
+    if not m:
+        m = RE_PASSWORD3.search(name)
     if m:
         return m.group(1).strip('. '), m.group(2).strip()
     else:

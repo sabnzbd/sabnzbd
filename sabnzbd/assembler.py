@@ -39,6 +39,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
+from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.lang import Ta
 
 
@@ -101,7 +102,9 @@ class Assembler(Thread):
                             nzo.md5packs[setname] = pack
                             logging.debug('Got md5pack for set %s', setname)
 
-
+                    if check_encrypted_rar(nzo, filepath):
+                        logging.warning(Ta('warn-encrar@1'), nzo.final_name)
+                        nzo.pause()
             else:
                 PostProcessor.do.process(nzo)
 
@@ -244,3 +247,16 @@ def ParseFilePacket(f, header):
             return filename, hash
 
     return nothing
+
+
+def check_encrypted_rar(nzo, filepath):
+    """ Check if file is rar and is encrypted """
+    encrypted = False
+    if not nzo.password and cfg.pause_on_pwrar() and is_rarfile(filepath):
+        zf = RarFile(filepath)
+        encrypted = zf.encrypted
+        if encrypted:
+            nzo.encrypted = True
+        zf.close()
+        del zf
+    return encrypted

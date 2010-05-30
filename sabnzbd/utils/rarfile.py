@@ -130,6 +130,8 @@ class RarFile:
 
         self.info_list = []
         self.is_solid = 0
+        self.encrypted = 0
+        self.corrupt = 0
         self.uses_newnumbering = 0
         self.uses_volumes = 0
         self.info_callback = info_callback
@@ -240,7 +242,10 @@ class RarFile:
             if not h:
                 if more_vols:
                     volume += 1
-                    fd = open(self._gen_volname(volume), "rb")
+                    try:
+                        fd = open(self._gen_volname(volume), "rb")
+                    except:
+                        fd = None
                     more_vols = 0
                     if fd:
                         continue
@@ -254,6 +259,8 @@ class RarFile:
                 self.uses_volumes = h.flags & RAR_MAIN_VOLUME
                 self.is_solid = h.flags & RAR_MAIN_SOLID
                 self.got_mainhdr = 1
+                if h.flags & RAR_MAIN_PASSWORD:
+                    self.encrypted = 1
             elif h.type == RAR_BLOCK_ENDARC:
                 more_vols = h.flags & RAR_ENDARC_NEXT_VOLUME
 
@@ -312,8 +319,9 @@ class RarFile:
             return h
 
         # crc failed
-        logging.error("CRC mismatch! ofs =%s", h.header_offset)
+        logging.debug("CRC mismatch! ofs =%s", h.header_offset)
         # instead panicing, send eof
+        self.corrupt = 1
         return None
 
     # read file-specific header
@@ -330,6 +338,9 @@ class RarFile:
         h.name_size = fld[7]
         h.mode = fld[8]
         pos = HDRLEN
+
+        if h.flags & RAR_FILE_PASSWORD:
+            self.encrypted = 1
 
         if h.flags & RAR_FILE_LARGE:
             h1, h2 = unpack("<LL", h.data[pos:pos+8])

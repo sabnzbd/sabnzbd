@@ -1073,7 +1073,7 @@ SWITCH_LIST = \
      'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
      'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
      'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'nice', 'ionice',
-     'dirscan_priority', 'ssl_type', 'pre_script'
+     'dirscan_priority', 'ssl_type', 'pre_script', 'pause_on_pwrar'
     )
 
 #------------------------------------------------------------------------------
@@ -2193,6 +2193,7 @@ def _make_link(qfeed, job):
     pp = job.get('pp')
     script = job.get('script')
     prio = job.get('prio')
+    rule = job.get('rule', 0)
 
     name = urllib.quote_plus(url)
     if 'nzbindex.nl/' in url or 'nzbindex.com/' in url or 'nzbclub.com/' in url:
@@ -2217,14 +2218,18 @@ def _make_link(qfeed, job):
         prio = ''
 
     star = '&nbsp;*' * int(status.endswith('*'))
+    if rule < 0:
+        rule = '&nbsp;%s!' % T('msg-duplicate')
+    else:
+        rule = '&nbsp;#%s' % str(rule)
 
     if url.isdigit():
         title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
     else:
         title = xml_name(title)
 
-    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s<br/>' % \
-           (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star)
+    return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s%s<br/>' % \
+           (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star, rule)
 
 
 def ShowRssLog(feed, all):

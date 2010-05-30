@@ -689,6 +689,7 @@ warn-badImport@2         Det gick inte att importera %s filer från %s
 warn-badNZB@3            Felaktig NZB fil %s, hoppar över (orsak=%s, linje=%s)
 warn-emptyFile@1         Fil %s är tom, hoppar över
 warn-skipDup@1           Hoppar över dubletter av NZB "%s"
+msg-duplicate            dubletter
 error-ppCleanup@1        Rensning av %s misslyckades.
 error-ppDelFailed@1      Borttagning av %s misslyckades
 error-ppDelNzo           Det gick inte att ta bort nzo från efterbehandlings kön (id)
