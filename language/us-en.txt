@@ -755,6 +755,7 @@ msg-unzipDone@2          %s files in %s
 msg-QuickCheck           Quick check...
 msg-QuickChecking        Quick Checking
 msg-QuickOK@1            [%s] Quick Check OK
+msg-failedSFV@1          Some files failed to verify against "%s"
 msg-startRepair          Starting Repair
 error-repairFailed@1     Repairing failed, %s
 error-repairBad@2        Error "%s" while running par2_repair on set %s

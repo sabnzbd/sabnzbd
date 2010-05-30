@@ -28,11 +28,11 @@ import urllib
 import time
 import re
 
-from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing
+from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
                          get_unique_filename, make_script_path, \
-                         on_cleanup_list, renamer, remove_dir, remove_all
+                         on_cleanup_list, renamer, remove_dir, remove_all, globber
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
      POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN
@@ -457,27 +457,40 @@ def parring(nzo, workdir):
     re_add = False
     par_error = False
 
-    if not repair_sets:
-        logging.info("No par2 sets for %s", filename)
-        nzo.set_unpack_info('Repair', T('msg-noParSets@1') % unicoder(filename))
+    if repair_sets:
 
-    for set_ in repair_sets:
-        logging.info("Running repair on set %s", set_)
-        parfile_nzf = par_table[set_]
-        need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, set_)
-        if need_re_add:
-            re_add = True
+        for set_ in repair_sets:
+            logging.info("Running repair on set %s", set_)
+            parfile_nzf = par_table[set_]
+            need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, set_)
+            if need_re_add:
+                re_add = True
+            else:
+                par_error = par_error or not res
+
+        if re_add:
+            logging.info('Readded %s to queue', filename)
+            sabnzbd.QUEUECOMPLETEACTION_GO = False
+            nzo.priority = TOP_PRIORITY
+            sabnzbd.nzbqueue.add_nzo(nzo)
+            sabnzbd.downloader.unidle_downloader()
+
+        logging.info('Par2 check finished on %s', filename)
+
+    else:
+        # See if alternative SFV check is possible
+        if cfg.sfv_check():
+            for sfv in globber(workdir, '*.sfv'):
+                par_error = par_error or not sfv_check(sfv)
+            if par_error:
+                nzo.set_unpack_info('Repair', T('msg-failedSFV@1') % unicoder(os.path.basename(sfv)))
         else:
-            par_error = par_error or not res
+            sfv = None
 
-    if re_add:
-        logging.info('Readded %s to queue', filename)
-        sabnzbd.QUEUECOMPLETEACTION_GO = False
-        nzo.priority = TOP_PRIORITY
-        sabnzbd.nzbqueue.add_nzo(nzo)
-        sabnzbd.downloader.unidle_downloader()
+        if not sfv:
+            logging.info("No par2 sets for %s", filename)
+            nzo.set_unpack_info('Repair', T('msg-noParSets@1') % unicoder(filename))
 
-    logging.info('Par2 check finished on %s', filename)
     return par_error, re_add
 
 

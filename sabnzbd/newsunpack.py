@@ -25,6 +25,7 @@ import re
 import subprocess
 import logging
 from time import time
+import binascii
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
@@ -1198,6 +1199,56 @@ def unrar_check(rar):
     return False
 
 
+#-------------------------------------------------------------------------------
+def sfv_check(sfv_path):
+    """ Verify files using SFV file,
+        input: full path of sfv, file are assumed to be relative to sfv
+        returns: True when all files verified OK
+    """
+    try:
+        fp = open(sfv_path, 'r')
+    except:
+        logging.info('Cannot open SFV file %s', sfv_path)
+        return False
+    root = os.path.split(sfv_path)[0]
+    status = True
+    for line in fp:
+        line = line.strip('\n\r ')
+        if line[0] != ';':
+            x = line.rfind(' ')
+            filename = line[:x].strip()
+            checksum = line[x:].strip()
+            path = os.path.join(root, filename)
+            if os.path.exists(path):
+                if crc_check(path, checksum):
+                    logging.debug('File %s passed SFV check', path)
+                else:
+                    logging.warning('File %s did not pass SFV check', path)
+                    status = False
+            else:
+                logging.warning('File %s mssing in SFV check', path)
+    fp.close()
+    return status
+
+
+def crc_check(path, target_crc):
+    """ Return True if file matches CRC """
+    try:
+        fp = open(path, 'rb')
+    except:
+        return False
+    crc = binascii.crc32('')
+    while 1:
+        data = fp.read(4096)
+        if not data:
+            break
+        crc = binascii.crc32(data, crc)
+    fp.close()
+    crc = '%08x' % (crc & 0xffffffff,)
+    return crc.lower() == target_crc.lower()
+
+
+#-------------------------------------------------------------------------------
 
 def analyse_show(name):
     """ Do a quick SeasonSort check and return basic facts """

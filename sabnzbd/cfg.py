@@ -67,6 +67,7 @@ else:
 quick_check = OptionBool('misc', 'quick_check', True)
 fail_on_crc = OptionBool('misc', 'fail_on_crc', False)
 send_group = OptionBool('misc', 'send_group', False)
+sfv_check = OptionBool('misc', 'sfv_check', True)
 
 email_server = OptionStr('misc', 'email_server', validation=validate_server)
 email_to     = OptionList('misc', 'email_to', validation=validate_email)
