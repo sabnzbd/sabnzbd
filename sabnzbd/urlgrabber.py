@@ -74,104 +74,112 @@ class URLGrabber(Thread):
             if not url:
                 continue
 
-            # If nzo entry deleted, give up
             try:
-                deleted = future_nzo.deleted
+                # If nzo entry deleted, give up
+                try:
+                    deleted = future_nzo.deleted
+                except:
+                    deleted = True
+                if deleted:
+                    logging.debug('Dropping URL %s, job entry missing', url)
+                    continue
+
+                # Add nzbmatrix credentials if needed
+                url, matrix_id = _matrix_url(url)
+
+                # _grab_url cannot reside in a function, because the tempfile
+                # would not survive the end of the function
+                logging.info('Grabbing URL %s', url)
+                opener = urllib.FancyURLopener({})
+                opener.prompt_user_passwd = None
+                opener.addheaders = []
+                opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
+                opener.addheader('Accept-encoding','gzip')
+                filename = None
+                category = None
+                nzo_info = {}
+                try:
+                    fn, header = opener.retrieve(url)
+                except:
+                    fn = None
+
+                if fn:
+                    for tup in header.items():
+                        try:
+                            item = tup[0].lower()
+                            value = tup[1].strip()
+                        except:
+                            continue
+                        if item in ('category_id', 'x-dnzb-category'):
+                            category = value
+                        elif item in ('x-dnzb-moreinfo',):
+                            nzo_info['more_info'] = value
+                        elif item in ('x-dnzb-name',):
+                            filename = value
+                            if not filename.endswith('.nzb'):
+                                filename += '.nzb'
+
+                        if not filename:
+                            for item in tup:
+                                if "filename=" in item:
+                                    filename = item[item.index("filename=") + 9:].strip(';').strip('"')
+
+                if matrix_id:
+                    fn, msg, retry = _analyse_matrix(fn, matrix_id)
+                    category = map_matrix(category)
+                else:
+                    msg = ''
+                    retry = True
+
+                # Check if the filepath is specified, if not, check if a retry is allowed.
+                if not fn:
+                    retry_count -= 1
+                    if retry_count > 0 and retry:
+                        logging.info('Retry URL %s', url)
+                        self.queue.put((url, future_nzo, retry_count))
+                    else:
+                        misc.bad_fetch(future_nzo, url, msg, retry=True)
+                    continue
+
+                if not filename:
+                    filename = os.path.basename(url) + '.nzb'
+                filename = misc.sanitize_foldername(filename)
+                pp = future_nzo.pp
+                script = future_nzo.script
+                cat = future_nzo.cat
+                if cat is None and category:
+                    cat = misc.cat_convert(category)
+                priority = future_nzo.priority
+                nzbname = future_nzo.custom_name
+
+                # Check if nzb file
+                if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz'):
+                    res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority, \
+                                                       nzbname=nzbname, nzo_info=nzo_info)
+                    if res == 0:
+                        nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                    elif res == -2:
+                        self.add(url, future_nzo)
+                    elif matrix_id:
+                        # Keep retrying NzbMatrix forever
+                        self.add(url, future_nzo)
+                    else:
+                        misc.bad_fetch(future_nzo, url, retry=True, content=True)
+                # Check if a supported archive
+                else:
+                    if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
+                        nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
+                    else:
+                        # Not a supported filetype, not an nzb (text/html ect)
+                        try:
+                            os.remove(fn)
+                        except:
+                            pass
+                        misc.bad_fetch(future_nzo, url, retry=True, content=True)
             except:
-                deleted = True
-            if deleted:
-                logging.debug('Dropping URL %s, job entry missing', url)
-                continue
+               logging.error('URLGRABBER CRASHED', exc_info=True)
+               logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
-            # Add nzbmatrix credentials if needed
-            url, matrix_id = _matrix_url(url)
-
-            # _grab_url cannot reside in a function, because the tempfile
-            # would not survive the end of the function
-            logging.info('Grabbing URL %s', url)
-            opener = urllib.FancyURLopener({})
-            opener.prompt_user_passwd = None
-            opener.addheaders = []
-            opener.addheader('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
-            opener.addheader('Accept-encoding','gzip')
-            filename = None
-            category = None
-            nzo_info = {}
-            try:
-                fn, header = opener.retrieve(url)
-            except:
-                fn = None
-
-            if fn:
-                for tup in header.items():
-                    try:
-                        item = tup[0].lower()
-                        value = tup[1].strip()
-                    except:
-                        continue
-                    if item in ('category_id', 'x-dnzb-category'):
-                        category = value
-                    elif item in ('x-dnzb-moreinfo',):
-                        nzo_info['more_info'] = value
-                    elif item in ('x-dnzb-name',):
-                        filename = value
-                        if not filename.endswith('.nzb'):
-                            filename += '.nzb'
-
-                    if not filename:
-                        for item in tup:
-                            if "filename=" in item:
-                                filename = item[item.index("filename=") + 9:].strip(';').strip('"')
-
-            if matrix_id:
-                fn, msg, retry = _analyse_matrix(fn, matrix_id)
-                category = map_matrix(category)
-            else:
-                msg = ''
-                retry = True
-
-            # Check if the filepath is specified, if not, check if a retry is allowed.
-            if not fn:
-                retry_count -= 1
-                if retry_count > 0 and retry:
-                    logging.info('Retry URL %s', url)
-                    self.queue.put((url, future_nzo, retry_count))
-                else:
-                    misc.bad_fetch(future_nzo, url, msg, retry=True)
-                continue
-
-            if not filename:
-                filename = os.path.basename(url) + '.nzb'
-            filename = misc.sanitize_foldername(filename)
-            pp = future_nzo.pp
-            script = future_nzo.script
-            cat = future_nzo.cat
-            if cat is None and category:
-                cat = misc.cat_convert(category)
-            priority = future_nzo.priority
-            nzbname = future_nzo.custom_name
-
-            # Check if nzb file
-            if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz'):
-                res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority, \
-                                                   nzbname=nzbname, nzo_info=nzo_info)
-                if res == 0:
-                    nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
-                elif res == -2:
-                    self.add(url, future_nzo)
-                else:
-                    misc.bad_fetch(future_nzo, url, retry=True, content=True)
-            # Check if a supported archive
-            else:
-                if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
-                    nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
-                else:
-                    # Not a supported filetype, not an nzb (text/html ect)
-                    try:
-                        os.remove(fn)
-                    except:
-                        pass
-                    misc.bad_fetch(future_nzo, url, retry=True, content=True)
 
             # Don't pound the website!
             time.sleep(5.0)
