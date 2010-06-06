@@ -32,6 +32,10 @@ saturday          Samedi
 sunday            Dimanche
 day-of-month      Jour du mois
 filename          Nom de fichier
+total             Total
+today             Aujourd'hui
+thisWeek          Semaine
+thisMonth         Mois
 
 
 # General template elements

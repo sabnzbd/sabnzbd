@@ -59,9 +59,6 @@ freeSpaceTemp     Freier Speicherplatz (Ordner mit temporären Dateien)
 confirmPurgeQ     Warteschlange leeren?
 
 # History
-total             Gesamt
-thisWeek          Diese Woche
-thisMonth         Dieser Monat
 openSourceURL     Open Source-URL
 openInfoURL       Open Informational-URL
 path              Pfad

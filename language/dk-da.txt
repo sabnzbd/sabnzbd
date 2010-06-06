@@ -33,6 +33,10 @@ saturday          Lørdag
 sunday            Søndag
 day-of-month      Månedsdag
 filename          Filnavn
+total             Totalt
+today             I dag
+thisWeek          Denne uge
+thisMonth         Denne måned
 
 # General template elements
 signOn            Det automatiske usenet download værktøj

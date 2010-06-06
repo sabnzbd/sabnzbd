@@ -1334,6 +1334,9 @@ class ConfigServer(object):
         servers = config.get_servers()
         for svr in servers:
             new[svr] = servers[svr].get_dict(safe=True)
+            t, m, w, d = BPSMeter.do.amounts(svr)
+            if t:
+                new[svr]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
         conf['servers'] = new
 
         if sabnzbd.newswrapper.HAVE_SSL:

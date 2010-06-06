@@ -33,6 +33,10 @@ saturday          Lördag
 sunday            Söndag
 day-of-month      Månadsdag
 filename          Filnamn
+total             Totalt
+today             I dag
+thisWeek          Denna vecka
+thisMonth         Denna månad
 
 # General template elements
 signOn            Det automatiska usenet nedladdningsverktyget

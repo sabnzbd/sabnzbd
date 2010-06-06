@@ -39,6 +39,15 @@
 			<input class="radio" type="checkbox" name="enable" value="1" <!--#if int($servers[$server]['enable']) != 0 then "checked=1" else ""#--> /></label>
    		<br class="clear" />
 
+        <!--#if 'amounts' in $servers[$server]#-->
+        <table border="1" >
+           <tr><td>$T('total')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][0]</td>
+               <td>&nbsp;&nbsp;&nbsp;&nbsp;$T('thisMonth')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][1]</td></tr>
+           <tr><td>$T('today')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][3]</td>
+               <td>&nbsp;&nbsp;&nbsp;&nbsp;$T('thisWeek')</td><td>&nbsp;&nbsp;$servers[$server]['amounts'][2]</td></tr>
+        </table>
+        <!--#end if#-->
+
         <div id="$servers[$server]['host']$servers[$server]['port']-result" class="server-test">$T('srv-testHint')</div>
 		<input type="hidden" name="server" value="$server">
 

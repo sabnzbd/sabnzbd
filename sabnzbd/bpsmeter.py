@@ -96,11 +96,12 @@ class BPSMeter(object):
 
     def save(self):
         """ Save admin to disk """
-        data = (self.last_update, self.grand_total,
-                self.day_total, self.week_total, self.month_total,
-                self.end_of_day, self.end_of_week, self.end_of_month,
-               )
-        sabnzbd.save_admin(data, BYTES_FILE_NAME)
+        if self.grand_total or self.day_total or self.week_total or self.month_total:
+            data = (self.last_update, self.grand_total,
+                    self.day_total, self.week_total, self.month_total,
+                    self.end_of_day, self.end_of_week, self.end_of_month,
+                   )
+            sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
 
     def read(self):
@@ -193,6 +194,13 @@ class BPSMeter(object):
                 sum([v for v in self.week_total.values()]),
                 sum([v for v in self.day_total.values()])
                )
+
+    def amounts(self, server):
+        """ Return grand, month, week, day totals for specified server """
+        return self.grand_total.get(server, 0L), \
+               self.month_total.get(server, 0L), \
+               self.week_total.get(server, 0L),  \
+               self.day_total.get(server, 0L)
 
     def get_bps(self):
         return self.bps

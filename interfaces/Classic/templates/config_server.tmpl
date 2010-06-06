@@ -53,6 +53,14 @@
       <input type="hidden" name="session" value="$session">
       <p><input type="submit" value="$T('button-saveChanges')"></p>
       <p><input type="submit" onclick="this.form.action='delServer'; this.form.submit(); return false;" value="$T('button-delServer')"></p>
+      <!--#if 'amounts' in $servers[$server]#-->
+      <table border="1">
+        <tr><td>$T('total')</td><td>$servers[$server]['amounts'][0]</td>
+            <td>$T('thisMonth')</td><td>$servers[$server]['amounts'][1]</td></tr>
+        <tr><td>$T('today')</td><td>$servers[$server]['amounts'][3]</td>
+            <td>$T('thisWeek')</td><td>$servers[$server]['amounts'][2]</td></tr>
+      </table>
+      <!--#end if#-->
     </fieldset>
   </form>
 <!--#end for#-->

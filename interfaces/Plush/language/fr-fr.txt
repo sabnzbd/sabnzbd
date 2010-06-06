@@ -57,9 +57,6 @@ freeSpaceTemp     Libre (Temp)
 confirmPurgeQ     Vider la file d'attente?
 
 # History
-total             Total
-thisWeek          Semaine
-thisMonth         Mois
 openSourceURL     Ouvrir URL Source
 openInfoURL       Ouvrir URL Info.
 path              Chemin

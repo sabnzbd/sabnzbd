@@ -2,8 +2,6 @@
 # Sverige # Svenska
 # Translation by "Kristoffer (Malmis) Malmström" <malmis@malmis.com>
 
-thisWeek        Denna vecka
-thisMonth       Denna månad
 size            Storlek
 links           Länkar
 first           Första

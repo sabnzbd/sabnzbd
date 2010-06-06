@@ -2,8 +2,6 @@
 # Dansk # Danmark
 # Translation by "René (Jarhead) Larsen" <warzdk@gmail.com>
 
-thisWeek        Denne uge
-thisMonth       Denne måned
 size            Størrelse
 links           Links
 first           Førsta
@@ -12,8 +10,8 @@ next            Næste
 last            Sidste
 edit            Rediger
 editDetails     Rediger detaljer
-showEdit        Vis Redigeringsalternativ 
-hideEdit        Skjul Redigeringsalternativ 
+showEdit        Vis Redigeringsalternativ
+hideEdit        Skjul Redigeringsalternativ
 timeleft        Resterende tid
 purgeQueue      Fjern alle
 progress        Arbejder

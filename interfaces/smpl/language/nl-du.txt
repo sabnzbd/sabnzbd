@@ -1,8 +1,6 @@
 ﻿# -*- coding: UTF-8 -*-
 # Nederland # Nederlands
 
-thisWeek        Deze week
-thisMonth       Deze maand
 size            Omvang
 links           Links
 first           Eerste
