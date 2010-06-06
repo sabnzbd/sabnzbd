@@ -2,12 +2,12 @@
 <script type="text/javascript">
 	if (typeof( jQuery ) == 'undefined')
 		window.location = "../"; // redirect to main on direct template hit
-    
+
     jQuery(function($) {
         $.plush.histnoofslots      = $noofslots;
-        $.plush.SetHistoryStats("<!--#if $loadavg#--><strong>$loadavg</strong>&nbsp;$T('ft-sysload')<!--#end if#--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('Plush-thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('Plush-thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('Plush-total')<!--#end if #-->");
+        $.plush.SetHistoryStats("<!--#if $loadavg#--><strong>$loadavg</strong>&nbsp;$T('ft-sysload')<!--#end if#--><!--#if $day_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$day_size</strong>&nbsp;$T('today')<!--#end if #--><!--#if $week_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$week_size</strong>&nbsp;$T('Plush-thisWeek')<!--#end if #--><!--#if $month_size#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$month_size</strong>&nbsp;$T('Plush-thisMonth')<!--#end if #--><!--#if $lines#-->&nbsp;&nbsp;&nbsp;&nbsp;<strong>$total_size</strong>&nbsp;$T('Plush-total')<!--#end if #-->");
 	});
-	
+
 </script>
 
 <!--#if $limit > 1 or $search#-->
@@ -111,7 +111,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
 			<input type="submit" value="$T('button-retry')"></form>
 		<!--#end if#-->
     </td>
-    
+
     <td class="options nowrap">
         <!--#if not $line.loaded#-->
         <% d = datetime.datetime.fromtimestamp(float(line['completed'])) %>
@@ -119,7 +119,7 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
         <div class="main_sprite_container icon_nzb_remove" title="$T('nzo-delete')">&nbsp;</div>
         <!--#end if#-->
     </td>
-    
+
     </tr>
 <!--#end for#-->
 </table>

@@ -30,7 +30,6 @@ except:
 import os
 import time
 import datetime
-from calendar import MONDAY
 import zlib
 import logging
 
@@ -39,6 +38,7 @@ import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_NAME
 from sabnzbd.lang import T, Ta
 from sabnzbd.encoding import unicoder
+from sabnzbd.bpsmeter import this_week, this_month
 
 _HISTORY_DB = None        # Will contain full path to history database
 _DONE_CLEANING = False    # Ensure we only do one Vacuum per session
@@ -200,7 +200,7 @@ class HistoryDB(object):
         if not limit:
             limit = total_items
 
-        t = (search, start,limit)
+        t = (search, start, limit)
         fetch_ok = self.execute("""SELECT * FROM history WHERE name LIKE ? ORDER BY completed desc LIMIT ?, ?""", t)
 
         if fetch_ok:
@@ -229,8 +229,9 @@ class HistoryDB(object):
             total = 0
 
         # Amount downloaded this month
-        r = time.gmtime(time.time())
-        month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
+        #r = time.gmtime(time.time())
+        #month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
+        month_timest = int(this_month(time.time()))
 
         if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (month_timest,)):
             f = self.c.fetchone()
@@ -239,8 +240,7 @@ class HistoryDB(object):
             month = 0
 
         # Amount downloaded this week
-        monday = find_monday()
-        week_timest = int(time.mktime(find_monday()))
+        week_timest = int(this_week(time.time()))
 
         if self.execute('''SELECT sum(bytes) FROM history WHERE "completed">?''', (week_timest,)):
             f = self.c.fetchone()
@@ -405,12 +405,4 @@ def decode_factory(text):
         return new_text
     else:
         return text
-
-
-def find_monday():
-    last_monday = datetime.date.today()
-    minus_one_day = datetime.timedelta(days=1)
-    while last_monday.weekday() != MONDAY:
-        last_monday -= minus_one_day
-    return (last_monday.year, last_monday.month, last_monday.day, 0, 1, 1, 0, 0, 0)
 
