@@ -36,6 +36,7 @@ onQueueFinish     Vid slut
 warnings          Varningar
 updateAvailable   Uppdatering tillgänglig
 cmenu-scheduling  Schema
+enableJavascript  You must enable JavaScript for Plush to function!
 
 # General
 button-refresh    Uppdatera

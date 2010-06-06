@@ -35,6 +35,7 @@ onQueueFinish     En Fin de file d'attente
 warnings          Avertissements
 updateAvailable   Mise à Jour Disponible!
 cmenu-scheduling  Planification
+enableJavascript  You must enable JavaScript for Plush to function!
 
 # General
 button-refresh    Rafraîchir

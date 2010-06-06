@@ -37,6 +37,7 @@ onQueueFinish     Wenn fertig
 warnings          Warnungen
 updateAvailable   Neue Version verfügbar!
 cmenu-scheduling  Planung
+enableJavascript  You must enable JavaScript for Plush to function!
 
 # General
 button-refresh    Neu laden

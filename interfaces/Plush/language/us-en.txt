@@ -36,6 +36,7 @@ onQueueFinish     On Finish
 warnings          Warnings
 updateAvailable   Update Available!
 cmenu-scheduling  Scheduling
+enableJavascript  You must enable JavaScript for Plush to function!
 
 # General
 button-refresh    Refresh

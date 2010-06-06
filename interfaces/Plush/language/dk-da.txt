@@ -36,6 +36,7 @@ onQueueFinish     Ved afslutning
 warnings          Advarsler
 updateAvailable   Opdatering tilgængelig
 cmenu-scheduling  Skabalon
+enableJavascript  You must enable JavaScript for Plush to function!
 
 # General
 button-refresh    Opdatere

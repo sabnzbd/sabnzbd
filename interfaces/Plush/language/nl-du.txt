@@ -35,7 +35,7 @@ onQueueFinish     Bij lege wachtrij
 warnings          Meldingen
 updateAvailable   Beschikbare Update!
 cmenu-scheduling  Taakplanner
-
+enableJavascript  You must enable JavaScript for Plush to function!
 
 # General
 button-refresh    Ververs
