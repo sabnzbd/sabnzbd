@@ -32,11 +32,10 @@ saturday          Samedi
 sunday            Dimanche
 day-of-month      Jour du mois
 filename          Nom de fichier
-total             Total
+thisWeek          Cette semaine
+thisMonth         Ce mois
 today             Aujourd'hui
-thisWeek          Semaine
-thisMonth         Mois
-
+total             Total
 
 # General template elements
 signOn            Le téléchargement usenet tout inclus
@@ -129,6 +128,7 @@ age               AGE
 button-del        Supprimer
 button-resume     Reprendre
 button-pause      Pause
+button-retry      Réessayer
 unknown           inconnu
 fetchingNewzbin@1 récupération msgid %s depuis www.newzbin.com
 error-fetchNewzbin@1 Erreur Récupération msgid %s depuis www.newzbin.com -\
@@ -138,7 +138,6 @@ eoq-actions       Actions
 eoq-scripts       Scripts
 purgeQueue        Vider file d'attente
 purgeQueueConf    Supprimer tous les éléments de la file d'attente ?
-
 
 # History page
 purgeHist         Effacer l'historique
@@ -171,7 +170,6 @@ warning           AVERTISSEMENT:
 error             ERREUR:
 server-resolving  &nbsp;Résoudre l'adresse
 
-
 # Configuration
 configuration     Configuration
 confgFile         Fichier de Configuration
@@ -179,6 +177,13 @@ explain-Restart   Le bouton ci-dessous redémarrera SABnzbd.\n\
                   Utilisez le si vous pensez avoir un problème de stabilité.\n\
                   Les téléchargements en cours seront mis en pause puis repris.
 button-restart    Redémarrer
+button-scan       Analyser
+explain-Scan      Le bouton "Analyser" recherche dans le dossier temporaire pour\n\ 
+                  les dossiers manquants dans la file d'attente.
+button-repair     Réparer
+explain-Repair    Le bouton "Réparer" redémarre SABnzbd et fait une complète\n\
+                  reconstruction de la file d'attente, il conserve les fichiers déjà téléchargés.\n\
+                  Ceci modifiera l'ordre de la file d'attente.
 version           Version
 uptime            Démarré Depuis
 error             Erreur
@@ -241,7 +246,7 @@ explain-disableApikeyAttention AUX RISQUES !
 restart1              Initialisation du redémarrage...\n
 restart2              &nbsp\n\
                       Extinction de SABnzbd terminée.\n\
-                      Veuillez attendre plus de 5 secondes et cliquer cliquer sur le bouton suivant.\n\n\
+                      Veuillez attendre plus de 5 secondes et cliquer sur le bouton ci-dessous.\n\n\
                       <strong><a href="..">Rafraîchir</a></strong>\n
 
 # Config->Folders
@@ -274,7 +279,12 @@ systemFolders           Dossiers Systèmes
 opt-cache_dir           Dossier du Cache
 explain-cache_dir       pour le stockage temporaire.\n\
                         <i>Ne peut être modifié que lorsque la file d'attente est vide.</i>\n\
-                        <i>Redémarrage requis !</i>
+                        <i>Redémarrage requis!</i>
+opt-admin_dir           Dossier Administrateur
+explain-admin_dir       Emplacement file d'attente admin et historique base de données.\n\
+                        <i>Ne peut être changé que lorsque la file d'attente est vide.</i>\n\
+                        <i>Les données seront <b>not</b> déplacées.</i>\n\
+                        <i>Requiert un redémarrage de SABnzbd !</i>																						
 opt-log_dir             Dossier de Log
 explain-log_dir         pour le stockage des fichiers de log de SABnzbd.\n\
                         <i>Redémarrage requis !</i>
@@ -302,12 +312,16 @@ opt-top_only             Ne télécharge uniquement que les articles en tête de fi
 explain-top_only         Activer pour dimininuer l'utilisation de la RAM. Désactiver pour éviter les téléchargement lents bloquant la file d'attente.
 opt-safe_postproc        Post-traiter uniquement les téléchargements vérifiés
 explain-safe_postproc    Limite le post-traitement aux téléchargements qui ont passés avec succès les vérifications par2.
+opt-pause_on_pwrar       Pause lorsque le RAR téléchargé est crypté
+explain-pause_on_pwrar   Vous devrez définir un mot de passe avant de reprendre.
 opt-no_dupes             Eviter les duplications de téléchargement
 explain-no_dupes         Si un .nzb sauvegargé du même nom existe, le téléchargement ne sera pas effectué.
 opt-dirscan_opts         Post-traitement par défaut
 explain-dirscan_opts     Utilisé quand la catégorie de précise pas de choix.
 opt-dirscan_script       Script utilisateur par défaut
 explain-dirscan_script   Utilisé quand la catégorie de précise pas de choix.
+opt-pre_script           Script utilisateur de pré-file d'attente
+explain-pre_script       Employée avant qu’un NZB entre dans la file d'attente.
 opt-dirscan_priority     Priorité par défaut
 explain-dirscan_priority Utilisé quand la catégorie de précise pas de choix.
 opt-par2_multicore       Utilisé MultiCore Par2
@@ -334,7 +348,7 @@ explain-replace_illegal  Remplace les caractères illégaux dans les noms de dossi
 opt-auto_browser         Lancer le navigateur web au démarrage
 explain-auto_browser     Lance le navigateur web au démarrage de SABnzbd.
 opt-pause_on_post_processing Mettre en pause les téléchargement lors du post-traitement
-explain-pause_on_post_processing Met en pause les téléchargements lors des post-traitement et les reprend ensuite.
+explain-pause_on_post_processing Met en pause les téléchargements lors des post-traitement et les reprends ensuite.
 opt-ignore_samples       Ignorer les Samples
 explain-ignore_samples   Filtre les fichiers sample de la file d'attente.
 igsam-off                Non
@@ -342,6 +356,7 @@ igsam-del                Supprimer après téléchargement
 igsam-not                Ne pas télécharger
 opt-ssl_type             SSL type
 explain-ssl_type         Utiliser V23 à moins que votre fournisseur exige autrement !
+
 
 # Config->Server
 configServer             Configuration Serveur
@@ -394,6 +409,7 @@ sch-speedlimit           Limite de vitesse
 sch-pause_all            Pause tout
 sch-pause_post           Pause post-traitement
 sch-resume_post          Reprendre post-traitement
+sch-scan_folder          Analyser le dossier a surveillé
 
 # Config->RSS
 configRSS                Configuration RSS
@@ -431,8 +447,11 @@ email-errorOnly          Erreurs-uniquement
 opt-email_full           Notifications de disque dur plein
 explain-email_full       Envoie un email lorsque le disque dur est plein et que SABnzbd a été mis en pause.
 opt-email_dir            Dossier contenant les modèles d'email
-explain-email_dir        Dossier contenant les modèles d'email définis par l'utilisateur.\n\
-                         Relatif  à
+explain-email_dir        Dossier contenant les modèles d'email définis par l'utilisateur.
+opt-email_rss            Envoyer RSS notifications	
+explain-email_rss        Envoyer un email quand un flux RSS ajoute un fichier dans la file d'attente.
+
+                         Par rapport à
 emailAccount             Paramètres du compte Email
 opt-email_server         Serveur SMTP
 explain-email_server     Entrez le serveur de courrier sortant de votre FAI.
@@ -445,8 +464,6 @@ explain-email_account    Si une autentification pour l'envoi est requise, l'iden
 opt-email_pwd            OPTIONAL: Mot de passe
 explain-email_pwd        Si une autentification pour l'envoi est requise, le mot de passe.
 error-badEmailAd@1       %s n'est pas une adresse email valide
-opt-email_rss            Send RSS notifications
-explain-email_rss        Send email when an RSS feed adds jobs to the queue.
 
 # Config->Newzbin
 explain-newzbin          Si vous avez un compte sur <strong>www.newzbin.com</strong>,\
@@ -547,7 +564,6 @@ button-ShowNameF         Dossier Nom Série
 button-YMF               Dossiers Année-Mois
 button-DailyF            Dossiers Quotidiens
 
-
 # NZO
 nzoDetails               Editer les détails du NZB
 nzoName                  Nom
@@ -557,8 +573,8 @@ nzo-up                   Monter
 nzo-down                 Descendre
 nzo-bottom               Dernier
 nzo-all                  Tous
-nzo-none                 Auncun
-nzo-invert               inverser
+nzo-none                 Aucun
+nzo-invert               Inverser
 nzo-filename             Nom de fichier
 nzo-subject              Sujets
 nzo-age                  Age
@@ -577,11 +593,9 @@ warn-authMissing         Autentification manquante, entrez votre idenifiant/mot 
 error-authMissing        Erreur : Autentification manquante
 warn-apikeyNone          Clé API manquante, entrez la clé API de la configuration générale\
                          dans votre application tierce :
-error-apikeyNone         Clé API Requise
 warn-apikeyBad           Clé API incorrecte, utilisez la clé API de la configuration générale\
                          dans votre application tierce :
-error-apikeyBad          Erreur : Clé API incorrecte
-error-noSecUI            Erreur : Pas d'interface secondaire définie.
+error-noSecUI            Erreur : Pas d'interface secondaire définie.	 
 
 his-badArchive           Fichier NZB inutilisable
 his-cannotGetReport      Echec de récupération du rapport newzbin
@@ -667,15 +681,16 @@ error-filePar2@2         Erreur %s lors de l'exécutiion de par2_repair sur %s
 error-fileRead@1         notrar(): echec de lecture de %s
 error-fileUnrar@2        Erreur "%s" lors de l'exécution de rar_unpack sur %s
 error-fileUnzip@2        Erreur "%s" lors de l'exécution de unzip sur %s
-warn-cannotFind@1        ERREUR : impossoble de trouver "%s"
+warn-cannotFind@1        ERREUR : impossible de trouver "%s"
 warn-crcFailed@1         ERREUR : echec CRC pour "%s"
 warn-delFailed@1         Echec de la suppression de %s !
 warn-encrypted           ERREUR : Fichier encryptés :
 warn-error@1             ERREUR : %s
+warn-encrar@1            AVERTISSEMENT:Mise en pause de "%s" en raison de fichiers RAR crypté
 warn-MissExpectedFile@1  Le fichier attendu est manquant : %s => erreur unrar ?
 warn-writeError@1        ERREUR : erreur d'écriture (%s)
 error-connect@1          Impossible de se connecter : %s
-error-newsSSL            Ce serveur d'accèpte pas de SSL sur ce port
+error-newsSSL            Ce serveur n'accèpte pas de SSL sur ce port
 error-noSSL              Erreur lors de l'importation du module OpenSSL. Connection sans SSL
 error-nbInfo@1           Impossible d'obtenir les informations pour %s du serveur Newzbin
 error-nbProtocol         Le serveur Newzbin a changé son protocole
@@ -696,7 +711,8 @@ warn-badImport@2         Echec lors de l'importation des fichiers %s depuis %s
 warn-badNZB@3            Fichier NZB invalide %s, rejeté (raison=%s, ligne=%s)
 warn-emptyFile@1         Fichier %s vide, rejeté
 warn-skipDup@1           Rejet du NZB dupliqué "%s"
-msg-duplicate            dupliqué
+msg-duplicate            Dupliqué
+msg-encrypted            Crypté
 error-ppCleanup@1        Echec du nettoyage de %s.
 error-ppDelFailed@1      Echec de la suppression de %s
 error-ppDelNzo           Echec de la suppression du nzo de la qeueu de post-traitement (id)
@@ -743,6 +759,7 @@ msg-unzipDone@2          %s fichiers en %s
 msg-QuickCheck           Contrôle Rapide...
 msg-QuickChecking        Contrôle Rapide en cours
 msg-QuickOK@1            [%s] Contrôle Rapide OK
+msg-failedSFV@1          Certains fichiers n'ont pas pu être vérifier "%s"
 msg-startRepair          Réparation en cours
 error-repairFailed@1     Echec de la réparation, %s
 error-repairBad@2        Erreur "%s" lors la réparation de %s
@@ -765,7 +782,7 @@ msg-ranScript@1          %s exécuté
 link-more                Plus
 link-viewSc              Voir le résultat du script
 warn-OutRetention        Echec de téléchargement - Rétention du serveur dépassée ?
-warn-PostCrash           Le post-traitement a planté, voir log
+warn-PostCrash@1         Le post-traitement a planté, voir log (%s)
 msg-moving               Déplacement
 msg-running              Exécution de script
 msg-joining              Concaténation
