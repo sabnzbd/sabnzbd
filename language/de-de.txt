@@ -33,6 +33,10 @@ saturday          Samstag
 sunday            Sonntag
 day-of-month      Tag im Monat
 filename          Dateiname
+total             Gesamt
+today             Heute
+thisWeek          Diese Woche
+thisMonth         Dieser Monat
 
 # General template elements
 signOn            Automatisiertes Programm für Usenet-Downloads

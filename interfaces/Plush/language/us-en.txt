@@ -60,9 +60,6 @@ confirmPurgeQ     Purge the Queue?
 multiOperations   Multi-Operations
 
 # History
-total             Total
-thisWeek          This Week
-thisMonth         This Month
 openSourceURL     Open Source URL
 openInfoURL       Open Informational URL
 path              Path

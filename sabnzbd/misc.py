@@ -31,6 +31,8 @@ import threading
 import subprocess
 import socket
 import time
+import datetime
+from calendar import MONDAY
 import glob
 
 import sabnzbd
@@ -764,10 +766,15 @@ def to_units(val, spaces=0):
         val = val / 1024.0
         n= n+1
     unit = TAB_UNITS[n]
-    if unit:
-        return "%.2f %s" % (val, unit)
+    if not unit:
+        unit = ' ' * spaces
+    if n > 2:
+        digits = 1
     else:
-        return "%.0f%s" % (val, ' '*spaces)
+        digits = 0
+
+    format = '%%.%sf %%s' % digits
+    return format % (val, unit)
 
 #------------------------------------------------------------------------------
 def same_file(a, b):
@@ -1073,6 +1080,7 @@ def format_time_string(seconds, days=0):
         return p.encode('latin-1')
     else:
         return p
+
 
 def s_returner(item, value):
     if value == 1:

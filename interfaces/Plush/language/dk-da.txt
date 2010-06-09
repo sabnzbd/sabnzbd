@@ -59,9 +59,6 @@ freeSpaceTemp     Ledig tempdiskplads
 confirmPurgeQ     Tøm køen?
 
 # History
-total             Totalt
-thisWeek          Denne uge
-thisMonth         Denne måned
 openSourceURL     Åbn kildekode URL
 openInfoURL       Åbn informations URL
 path              Genvej

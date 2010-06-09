@@ -58,9 +58,6 @@ freeSpaceTemp     Vrij (tijdelijk)
 confirmPurgeQ     Verwijder uit de Wachtrij?
 
 # History
-total             Totaal
-thisWeek          Deze Week
-thisMonth         Deze Maand
 openSourceURL     Open Source URL
 openInfoURL       Open Informatie URL
 path              Pad

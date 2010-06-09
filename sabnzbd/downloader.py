@@ -534,7 +534,7 @@ class Downloader(Thread):
                     self.write_fds.pop(fileno)
 
             if not read:
-                BPSMeter.do.update(0)
+                BPSMeter.do.update()
                 continue
 
             for selected in read:
@@ -551,7 +551,7 @@ class Downloader(Thread):
                     bytes, done, skip = (0, False, False)
 
                 if skip:
-                    BPSMeter.do.update(0)
+                    BPSMeter.do.update()
                     continue
 
                 if bytes < 1:
@@ -566,8 +566,8 @@ class Downloader(Thread):
                         if bps > limit:
                             while BPSMeter.do.get_bps() > limit:
                                 time.sleep(0.05)
-                                BPSMeter.do.update(0)
-                    BPSMeter.do.update(bytes)
+                                BPSMeter.do.update()
+                    BPSMeter.do.update(server.id, bytes)
 
                     if nzo:
                         nzo.bytes_downloaded += bytes

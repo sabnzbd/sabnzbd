@@ -50,7 +50,7 @@ GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
 
-BYTES_FILE_NAME  = 'bytes%s.sab' % QUEUE_VERSION
+BYTES_FILE_NAME  = 'totals%s.sab' % QUEUE_VERSION
 QUEUE_FILE_TMPL  = 'queue%s.sab'
 QUEUE_FILE_NAME  =  QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
@@ -114,10 +114,10 @@ series_match = [ (r'( [sS]|[\d]+)x(\d+)', # 1x01
                       [ r'^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)',
                         r'^[-\.](\d+)'
                       ] ),
-                 (r'[ -_\.](\d)(\d{2,2})[ -_\.]', # .101. / _101_ / etc.
+                 (r'[ \-_\.](\d)(\d{2,2})[ \-_\.]', # .101. / _101_ / etc.
                       [
                       ] ),
-                 (r'[ -_\.](\d)(\d{2,2})$', # .101 at end of title
+                 (r'[ \-_\.](\d)(\d{2,2})$', # .101 at end of title
                       [
                       ] )
                ]

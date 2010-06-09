@@ -31,6 +31,10 @@ saturday          zaterdag
 sunday            zondag
 day-of-month      dagnummer
 filename          Bestandsnaam
+total             Totaal
+today             Vandaag
+thisWeek          Deze Week
+thisMonth         Deze Maand
 
 # General template elements
 signOn            De automatische Usenet downloader

@@ -228,12 +228,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     rss.init()
     scheduler.init()
 
-    bytes = load_admin(BYTES_FILE_NAME, do_pickle=False)
-    try:
-        bytes = int(bytes)
-        BPSMeter.do.bytes_sum = bytes
-    except:
-        BPSMeter.do.reset()
+    BPSMeter.do.read()
 
     PostProcessor()
 
@@ -412,7 +407,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
 def save_state():
     ArticleCache.do.flush_articles()
     nzbqueue.save()
-    save_admin(str(BPSMeter.do.get_sum()), BYTES_FILE_NAME, do_pickle=False)
+    BPSMeter.do.save()
     rss.save()
     Bookmarks.do.save()
     DirScanner.do.save()
@@ -903,3 +898,6 @@ def proxy_postproc(nzo):
 def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
     return sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority, size, groups)
 
+def proxy_get_history_size():
+    history_db = sabnzbd.database.get_history_handle()
+    return history_db.get_history_size()

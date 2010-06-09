@@ -59,9 +59,6 @@ freeSpaceTemp     Ledigt temputrymme
 confirmPurgeQ     Töm kön?
 
 # History
-total             Totalt
-thisWeek          Denna vecka
-thisMonth         Denna månad
 openSourceURL     Öppen källdkod URL
 openInfoURL       Öppen informations URL
 path              Genväg

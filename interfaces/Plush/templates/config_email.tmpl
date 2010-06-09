@@ -16,12 +16,12 @@
         <input type="radio" name="email_endjob" value="2" <!--#if $email_endjob == "2" then "checked=1" else ""#--> /> $T('email-errorOnly')
 
     <br/><br/>
-    <input type="checkbox" name="email_full" value="1" <!--#if $email_full > 0 then "checked=1" else ""#--> />
+    <input type="checkbox" name="email_full" value="1" <!--#if $email_full != "0" then "checked=1" else ""#--> />
     <strong>$T('opt-email_full')</strong><br/>
     <small>$T('explain-email_full')</small>
 
     <br/><br/>
-    <input type="checkbox" name="email_rss" value="1" <!--#if $email_rss > 0 then "checked=1" else ""#--> />
+    <input type="checkbox" name="email_rss" value="1" <!--#if $email_rss != "0" then "checked=1" else ""#--> />
     <strong>$T('opt-email_rss')</strong><br/>
     <small>$T('explain-email_rss')</small>
 

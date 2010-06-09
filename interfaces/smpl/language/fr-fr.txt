@@ -1,8 +1,6 @@
 # -*- coding: latin-1 -*-
 # France # Français
 
-thisWeek        Semaine
-thisMonth       Mois
 size            Taille
 links           Liens
 first           Premier

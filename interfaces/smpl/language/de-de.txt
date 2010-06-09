@@ -2,8 +2,6 @@
 # Deutschland # Deutsch
 # Translation by Severin Heiniger
 
-thisWeek        In dieser Woche
-thisMonth       In diesem Monat
 size            Grösse
 links           Links
 first           Anfang

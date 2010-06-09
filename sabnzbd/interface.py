@@ -34,11 +34,12 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
-from sabnzbd.misc import real_path, \
+from sabnzbd.misc import real_path, to_units, \
      diskfree, sanitize_foldername, \
      cat_to_opts, int_conv, panic_old_queue, globber
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
+from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, platform_encode, latin1
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -839,7 +840,9 @@ class HistoryPage(object):
         #history_items, total_bytes, bytes_beginning = sabnzbd.history_info()
         #history['bytes_beginning'] = "%.2f" % (bytes_beginning / GIGI)
 
-        history['total_size'], history['month_size'], history['week_size'] = get_history_size()
+        grand, month, week, day = BPSMeter.do.get_sums()
+        history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
+                to_units(grand), to_units(month), to_units(week), to_units(day)
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search)
 
@@ -1331,6 +1334,9 @@ class ConfigServer(object):
         servers = config.get_servers()
         for svr in servers:
             new[svr] = servers[svr].get_dict(safe=True)
+            t, m, w, d = BPSMeter.do.amounts(svr)
+            if t:
+                new[svr]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
         conf['servers'] = new
 
         if sabnzbd.newswrapper.HAVE_SSL:
