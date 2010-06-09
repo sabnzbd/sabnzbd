@@ -36,6 +36,7 @@ warnings          Avertissements
 updateAvailable   Mise à Jour Disponible!
 cmenu-scheduling  Planification
 enableJavascript  You must enable JavaScript for Plush to function!
+containerWidth    Container Width
 
 # General
 button-refresh    Rafraîchir
@@ -56,6 +57,8 @@ notEnoughSpace    Espace disque insuffisant pour terminer les téléchargements !
 freeSpace         Espace Libre
 freeSpaceTemp     Libre (Temp)
 confirmPurgeQ     Vider la file d'attente?
+reset             Reset
+applySelected     Apply to Selected
 
 # History
 openSourceURL     Ouvrir URL Source

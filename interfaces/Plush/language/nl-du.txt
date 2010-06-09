@@ -36,6 +36,7 @@ warnings          Meldingen
 updateAvailable   Beschikbare Update!
 cmenu-scheduling  Taakplanner
 enableJavascript  You must enable JavaScript for Plush to function!
+containerWidth    Container Width
 
 # General
 button-refresh    Ververs
@@ -56,6 +57,8 @@ notEnoughSpace    Onvoldoende schijfruimte over!
 freeSpace         Vrije ruimte
 freeSpaceTemp     Vrij (tijdelijk)
 confirmPurgeQ     Verwijder uit de Wachtrij?
+reset             Reset
+applySelected     Apply to Selected
 
 # History
 openSourceURL     Open Source URL

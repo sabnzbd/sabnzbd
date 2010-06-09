@@ -37,6 +37,7 @@ warnings          Advarsler
 updateAvailable   Opdatering tilgængelig
 cmenu-scheduling  Skabalon
 enableJavascript  You must enable JavaScript for Plush to function!
+containerWidth    Container Width
 
 # General
 button-refresh    Opdatere
@@ -57,6 +58,8 @@ notEnoughSpace    Ikke nok diskplads til at fuldføre downloads.
 freeSpace         Ledig diskplas
 freeSpaceTemp     Ledig tempdiskplads
 confirmPurgeQ     Tøm køen?
+reset             Reset
+applySelected     Apply to Selected
 
 # History
 openSourceURL     Åbn kildekode URL
