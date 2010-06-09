@@ -14,22 +14,28 @@
 	<!--#if int($cache_max)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#-->
 
 	<br/><br/>
-	<table width="100%"><tr><td>
-		$T('explain-Restart')<br/>
-		<form action="saveGeneral" method="post">
-		<input type="submit" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
-		</form>
-	</td><td><br/>
-		$T('explain-Scan')<br/>
-		<form action="saveGeneral" method="post">
-		<input type="submit" onclick="this.form.action='../config/scan?session=$session'; this.form.submit(); return false;" value="$T('button-scan')"/>
-		</form>
-	</td><td>
-		$T('explain-Repair')<br/>
-		<form action="saveGeneral" method="post">
-		<input type="submit" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
-		</form>
-	</td></tr></table>
+	<table width="100%">
+		<tr>
+			<td>$T('explain-Restart')</td>
+			<td>$T('explain-Scan')</td>
+			<td>$T('explain-Repair')</td>
+		</tr>
+		<tr>
+			<td>
+				<form action="saveGeneral" method="post">
+					<input type="submit" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
+				</form>
+			</td><td>
+				<form action="saveGeneral" method="post">
+					<input type="submit" onclick="this.form.action='../config/scan?session=$session'; this.form.submit(); return false;" value="$T('button-scan')"/>
+				</form>
+			</td><td>
+				<form action="saveGeneral" method="post">
+					<input type="submit" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
+				</form>
+			</td>
+		</tr>
+	</table>
 
 </small></div>
 
