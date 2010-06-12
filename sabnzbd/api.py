@@ -75,8 +75,13 @@ def api_handler(kwargs):
 
 
 #------------------------------------------------------------------------------
+def _api_get_config(name, output, kwargs):
+    """ API: accepts output, keyword, section """
+    res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
+    return report(output, keyword='config', data=data)
+
 def _api_set_config(name, output, kwargs):
-    """ API: accepts name, output, keyword, section """
+    """ API: accepts output, keyword, section """
     if kwargs.get('section') == 'servers':
         kwargs['keyword'] = handle_server_api(output, kwargs)
     else:
@@ -89,13 +94,11 @@ def _api_set_config(name, output, kwargs):
 
 
 def _api_del_config(name, output, kwargs):
-    """ API: accepts name, output, keyword, section """
+    """ API: accepts output, keyword, section """
     if del_from_section(kwargs):
         return report(output)
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
-    res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
-    return report(output, keyword='config', data=data)
 
 
 def _api_qstatus(name, output, kwargs):
@@ -607,6 +610,7 @@ def _api_config_undefined(output, kwargs):
 
 #------------------------------------------------------------------------------
 _api_table = {
+    'get_config'      : _api_get_config,
     'set_config'      : _api_set_config,
     'del_config'      : _api_del_config,
     'qstatus'         : _api_qstatus,
