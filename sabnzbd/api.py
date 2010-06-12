@@ -99,8 +99,6 @@ def _api_del_config(name, output, kwargs):
         return report(output)
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
-    res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
-    return report(output, keyword='config', data=data)
 
 
 def _api_qstatus(name, output, kwargs):
