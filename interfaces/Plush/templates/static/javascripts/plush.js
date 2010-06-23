@@ -47,7 +47,7 @@ jQuery(function($){
 							script:   $("#addID_script").val(),
 							cat:	  $("#addID_cat").val(),
 							priority: $("#addID_priority").val(),
-							nzbname:  "test",
+							nzbname:  $("#addID_nzbname").val(),
 							apikey:	  $.plush.apikey
 						},
 						success: $.plush.RefreshQueue
