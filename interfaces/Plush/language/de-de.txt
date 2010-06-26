@@ -37,6 +37,8 @@ onQueueFinish     Wenn fertig
 warnings          Warnungen
 updateAvailable   Neue Version verfügbar!
 cmenu-scheduling  Planung
+enableJavascript  You must enable JavaScript for Plush to function!
+containerWidth    Container Width
 
 # General
 button-refresh    Neu laden
@@ -57,6 +59,8 @@ notEnoughSpace    Nicht genug freier Speicherplatz für fertige Downloads!
 freeSpace         Freier Speicherplatz
 freeSpaceTemp     Freier Speicherplatz (Ordner mit temporären Dateien)
 confirmPurgeQ     Warteschlange leeren?
+reset             Reset
+applySelected     Apply to Selected
 
 # History
 openSourceURL     Open Source-URL

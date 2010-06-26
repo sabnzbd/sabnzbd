@@ -36,6 +36,8 @@ onQueueFinish     Vid slut
 warnings          Varningar
 updateAvailable   Uppdatering tillgänglig
 cmenu-scheduling  Schema
+enableJavascript  You must enable JavaScript for Plush to function!
+containerWidth    Container Width
 
 # General
 button-refresh    Uppdatera
@@ -56,6 +58,8 @@ notEnoughSpace    Inte tillräckligt med diskutrymme för att kunna fortsätta l
 freeSpace         Ledigt diskutrymme
 freeSpaceTemp     Ledigt temputrymme
 confirmPurgeQ     Töm kön?
+reset             Reset
+applySelected     Apply to Selected
 
 # History
 openSourceURL     Öppen källdkod URL

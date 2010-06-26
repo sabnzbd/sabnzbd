@@ -162,9 +162,9 @@ jQuery(document).ready(function($){
 				});
 				return false;
 			});
-			$().bind('cbox_complete', function(){
-				$('#cboxLoadedContent input').hide(); // hide back button
-				$('#cboxLoadedContent h3').append('<br/><br/>'); // add spacing to header
+			$(document).bind('cbox_complete', function(){
+				$('#cboxTitle').text( $('#cboxLoadedContent h3').text() );
+				$('#cboxLoadedContent input, #cboxLoadedContent h3').hide(); // hide back button, title
 				$('#cboxLoadedContent a').click(function(event){
 					if( $(event.target).attr('target') != '_blank' ) {
 						$.ajax({ url: $(event.target).attr('href') }); // ajax downloads

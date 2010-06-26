@@ -32,6 +32,8 @@
 </head>
 <body>
 
+	<noscript><h1 align="center">$T('Plush-enableJavascript')</h1></noscript>
+
 	<div id="main_menu" class="lang-$active_lang tilex_sprite_container sprite_tile_znavbar">
     <ul class="sf-menu sf-navbar">
         <li><a id="add_nzb">$T('Plush-addnzb')</a></li>
@@ -171,8 +173,8 @@
 				<a id="multiops_select_invert">$T('nzo-invert').capitalize()</a>
 				<a id="multiops_select_none">$T('nzo-none').capitalize()</a> |
 
-				<input type="button" id="multi_reset" value="Reset" />
-				<input type="button" id="multi_apply" value="Apply to Selected" /> |
+				<input type="button" id="multi_reset" value="$T('Plush-reset')" />
+				<input type="button" id="multi_apply" value="$T('Plush-applySelected')" /> |
 
                       <select id="multi_status">
 						  <option value="">$T('status')</option>
@@ -293,7 +295,7 @@
                 <option value="1800">30 $T('minute')</option>
                 <option value="0">$T('Plush-disabled')</option>
            	</select><br/><br/>
-	       	Container Width:
+	       	$T('Plush-containerWidth'):
 			<select id="containerWidth-option">
                 <option value="100%">100%</option>
                 <option value="90%">90%</option>
@@ -315,8 +317,9 @@
 				$T('Plush-uploadTip')<br/>
 			    <input type="hidden" name="apikey" value="$session" />
    				<input type="hidden" name="mode" value="addfile" />
-   				<input type="file" id="uploadNZBFile" name="name" size="10" /><br/>
-				<input type="submit" value="Upload" /><span id="uploadingSpinner" class="loading" style="display:none;">&nbsp;</span>
+   				<input type="file" id="uploadNZBFile" name="name" size="12" style="width:180px;" />
+				<input type="submit" value="Upload" />
+				<span id="uploadingSpinner" class="loading" style="display:none">&nbsp;</span>
 				<br/><br/>
 				$T('pp')
 				<table>
@@ -360,7 +363,7 @@
 
 				<br/>
 				$T('Plush-addnzb-filename'):<br/>
-			    <input type="text" name="nzbname" id="nzbname" size="38" />
+			    <input type="text" name="nzbname" id="addID_nzbname" size="38" />
 
 			</form>
 		</div>

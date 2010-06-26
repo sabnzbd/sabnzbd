@@ -35,6 +35,8 @@ onQueueFinish     En Fin de file d'attente
 warnings          Avertissements
 updateAvailable   Mise à Jour Disponible!
 cmenu-scheduling  Planification
+enableJavascript  Vous devez activer JavaScript pour certaines fonctions de Plush!
+containerWidth    Largeur de L'affichage
 
 # General
 button-refresh    Rafraîchir
@@ -55,6 +57,8 @@ notEnoughSpace    Espace disque insuffisant pour terminer les téléchargements !
 freeSpace         Espace Libre
 freeSpaceTemp     Libre (Temp)
 confirmPurgeQ     Vider la file d'attente?
+reset             Par défaut
+applySelected     Appliquer aux sélectionnées
 
 # History
 openSourceURL     Ouvrir URL Source
