@@ -782,6 +782,7 @@ def main():
     autobrowser = None
     autorestarted = False
     sabnzbd.MY_FULLNAME = sys.argv[0]
+    sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
     fork = False
     pause = False
     inifile = None
