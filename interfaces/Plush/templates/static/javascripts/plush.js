@@ -69,7 +69,7 @@ jQuery(function($){
 			// Upload NZB ajax with webtoolkit
 			$('#uploadNZBForm').submit( function(){
 				$('#uploadingSpinner').fadeIn('slow');
-				return AIM.submit(this, {'onComplete': function(){ $('#uploadingSpinner').fadeOut('slow'); $('#nzbname').val(''); $.plush.RefreshQueue(); }})
+				return AIM.submit(this, {'onComplete': function(){ $('#uploadingSpinner').fadeOut('slow'); $('#uploadNZBFile,#nzbname').val(''); $.plush.RefreshQueue(); }})
 			});
 
 			// Fetch Newzbin Bookmarks
