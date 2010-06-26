@@ -105,11 +105,11 @@ jQuery(function($){
 	  		});
 	
 			// modals
-			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"300px", height:"325px", initialWidth:"300px", initialHeight:"325px", speed:0, opacity:0.7,
+			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"350px", height:"375px", initialWidth:"350px", initialHeight:"375px", speed:0, opacity:0.7,
 			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
 			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
 			});
-			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"225px", height:"225px", initialWidth:"225px", initialHeight:"225px", speed:0, opacity:0.7,
+			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"275px", height:"275px", initialWidth:"275px", initialHeight:"275px", speed:0, opacity:0.7,
 			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
 			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
 			});
@@ -747,11 +747,11 @@ jQuery(function($){
 			);
 
 			// colorbox event bindings - so history doesn't refresh when viewing modal (thereby breaking rel prev/next)
-			$().bind('cbox_open', function(){ $.plush.modalOpen=true; });
-			$().bind('cbox_closed', function(){ $.plush.modalOpen=false; });
-			$().bind('cbox_complete', function(){
-				$('#cboxLoadedContent input').hide(); // hide back button
-				$('#cboxLoadedContent h3').append('<br/><br/>'); // add spacing to header
+			$(document).bind('cbox_open', function(){ $.plush.modalOpen=true; });
+			$(document).bind('cbox_closed', function(){ $.plush.modalOpen=false; });
+			$(document).bind('cbox_complete', function(){
+				if ($('#cboxLoadedContent h3').text()) $('#cboxTitle').text( $('#cboxLoadedContent h3').text() );
+				$('#cboxLoadedContent input[type=button], #cboxLoadedContent h3').hide(); // hide back button, title
 			});
 
 			// Set history per-page preference
