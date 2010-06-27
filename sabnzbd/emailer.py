@@ -254,14 +254,16 @@ def _prepare_message(txt):
     msg.set_charset(code)
     payload = []
     body = False
+    header = False
     for line in txt.encode(code, 'replace').split('\n'):
-        if not line:
+        if header and not line:
             body = True
         if body:
             payload.append(line)
         else:
             m = RE_HEADER.search(line)
             if m:
+                header = True
                 keyword = m.group(1).strip()
                 value = m.group(2).strip()
                 if plain(value):
