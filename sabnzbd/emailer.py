@@ -275,5 +275,12 @@ def _prepare_message(txt):
                     msg[keyword] = header
 
     msg.set_payload('\n'.join(payload), code)
+
+    # Prevent double header (because it will be added again by encode_quopri)
+    try:
+        del msg['Content-Transfer-Encoding']
+    except:
+        pass
+
     encode_quopri(msg)
     return msg.as_string()
