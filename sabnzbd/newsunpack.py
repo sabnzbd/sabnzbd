@@ -1290,7 +1290,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 startupinfo=stup, env=env, creationflags=creationflags)
         except:
-            logging.debug("Failed script %s, Traceback: ", pre_script, exc_info = True)
+            logging.debug("Failed script %s, Traceback: ", script_path, exc_info = True)
             return values
 
         output = p.stdout.read()
