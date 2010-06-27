@@ -11,7 +11,7 @@
 to: $to
 from: $from
 date: $date
-subject: SABnzbd har <!--#if $status then "completed" else "failed" #--> jobb $name
+subject: SABnzbd har <!--#if $status then "hentet" else "fejlet" #--> job $name
 X-priority: 5
 X-MS-priority: 5
 ## After this comes the body, the empty line is required!
@@ -22,12 +22,12 @@ SABnzbd har hentet "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid
 <!--#else#-->
 SABnzbd mislykkedes at hente "$name" <!--#if $msgid=="" then "" else "(newzbin #" + $msgid + ")"#-->
 <!--#end if#-->
-Slutade $end_time
-Nedladdat $size
+Tidspunkt: $end_time
+Størrelse: $size
 
-Resultat af jobbet:
+Resultat:
 <!--#for $stage in $stages #-->
-Steg $stage <!--#slurp#-->
+$stage <!--#slurp#-->
 <!--#for $result in $stages[$stage]#-->
     $result <!--#slurp#-->
 <!--#end for#-->
@@ -37,7 +37,7 @@ Udlæsning fra burger scripts "$script" (Exit code = $script_ret):
 $script_output
 <!--#end if#-->
 <!--#if $status #-->
-Held og lykke!
+Downloadet med SABnzbd!
 <!--#else#-->
 Desværre!
 <!--#end if#-->
