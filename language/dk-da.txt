@@ -405,6 +405,7 @@ button-forceFeed         Gennemtving download
 rss-order                Sortering
 rss-type                 Type
 rss-filter               Filter
+rss-skip                 Skip
 rss-accept               Acceptere
 rss-reject               Afvise
 rss-must                 Krav

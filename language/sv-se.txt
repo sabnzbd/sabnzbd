@@ -408,6 +408,7 @@ button-forceFeed         Tvinga nedladdning
 rss-order                Ordning
 rss-type                 Typ
 rss-filter               Filter
+rss-skip                 Skip
 rss-accept               Acceptera
 rss-reject               Avvisa
 rss-must                 Kräver

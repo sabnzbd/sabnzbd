@@ -111,6 +111,8 @@ def queueRaiser(root, kwargs):
 def dcRaiser(root, kwargs):
     return Raiser(root, _dc=kwargs.get('_dc'))
 
+def rssRaiser(root, kwargs):
+    return Raiser(root, feed=kwargs.get('feed'))
 
 #------------------------------------------------------------------------------
 def IsNone(value):
@@ -1432,6 +1434,10 @@ class ConfigRss(object):
         self.__root = root
         self.__web_dir = web_dir
         self.__prim = prim
+        self.__refresh_readout = None # Set to URL when new readout is needed
+        self.__refresh_download = False
+        self.__refresh_force = False
+        self.__refresh_ignore = False
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -1456,8 +1462,25 @@ class ConfigRss(object):
 
             rss[feed]['pick_cat'] = pick_cat
             rss[feed]['pick_script'] = pick_script
+            rss[feed]['link'] = urllib.quote_plus(feed)
 
+        active_feed = kwargs.get('feed', '')
+        conf['active_feed'] = active_feed
         conf['rss'] = rss
+
+        if active_feed:
+            readout = bool(self.__refresh_readout)
+            logging.debug('RSS READOUT = %s', readout)
+            if not readout:
+                self.__refresh_download = False
+                self.__refresh_force = False
+                self.__refresh_ignore = False
+            sabnzbd.rss.run_feed(active_feed, download=self.__refresh_download, force=self.__refresh_force, \
+                                 ignoreFirst=self.__refresh_ignore, readout=readout)
+            self.__refresh_readout = None
+
+            conf['downloaded'], conf['matched'], conf['unmatched'] = GetRssLog(active_feed)
+
 
         # Find a unique new Feed name
         unum = 1
@@ -1483,20 +1506,23 @@ class ConfigRss(object):
             cfg.set_dict(kwargs)
             config.save_config()
 
-        raise dcRaiser(self.__root, kwargs)
+        raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def toggle_rss_feed(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            item = config.get_rss()[kwargs.get('feed')]
         except KeyError:
-            cfg = None
+            item = None
         if cfg:
-            cfg.enable.set(not cfg.enable())
+            item.enable.set(not item.enable())
             config.save_config()
-        raise dcRaiser(self.__root, kwargs)
+        if kwargs.get('table'):
+            raise dcRaiser(self.__root, kwargs)
+        else:
+            raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def add_rss_feed(self, **kwargs):
@@ -1524,7 +1550,7 @@ class ConfigRss(object):
         try:
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
-            raise dcRaiser(self.__root, kwargs)
+            raise rssRaiser(self.__root, kwargs)
 
         pp = kwargs.get('pp')
         if IsNone(pp): pp = ''
@@ -1534,7 +1560,7 @@ class ConfigRss(object):
         cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
                            platform_encode(kwargs.get('filter_text'))))
         config.save_config()
-        raise dcRaiser(self.__root, kwargs)
+        raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def pos_rss_filter(self, **kwargs):
@@ -1547,12 +1573,12 @@ class ConfigRss(object):
         try:
             cfg = config.get_rss()[feed]
         except KeyError:
-            raise dcRaiser(self.__root, kwargs)
+            raise rssRaiser(self.__root, kwargs)
 
         if current != new:
             cfg.filters.move(int(current), int(new))
             config.save_config()
-        raise dcRaiser(self.__root, kwargs)
+        raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def del_rss_feed(self, *args, **kwargs):
@@ -1570,11 +1596,11 @@ class ConfigRss(object):
         try:
             cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
-            raise dcRaiser(self.__root, kwargs)
+            raise rssRaiser(self.__root, kwargs)
 
         cfg.filters.delete(int(kwargs.get('index', 0)))
         config.save_config()
-        raise dcRaiser(self.__root, kwargs)
+        raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def download_rss_feed(self, *args, **kwargs):
@@ -1582,12 +1608,11 @@ class ConfigRss(object):
         if msg: return msg
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            msg = sabnzbd.rss.run_feed(feed, download=True, force=True)
-            if msg:
-                return badParameterResponse(msg)
-            else:
-                return ShowRssLog(feed, False)
-        raise dcRaiser(self.__root, kwargs)
+            self.__refresh_readout = feed
+            self.__refresh_download = True
+            self.__refresh_force = True
+            self.__refresh_ignore = False
+        raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def test_rss_feed(self, *args, **kwargs):
@@ -1595,12 +1620,11 @@ class ConfigRss(object):
         if msg: return msg
         if 'feed' in kwargs:
             feed = kwargs['feed']
-            msg = sabnzbd.rss.run_feed(feed, download=False, ignoreFirst=True)
-            if msg:
-                return badParameterResponse(msg)
-            else:
-                return ShowRssLog(feed, True)
-        raise dcRaiser(self.__root, kwargs)
+            self.__refresh_readout = feed
+            self.__refresh_download = False
+            self.__refresh_force = False
+            self.__refresh_ignore = True
+        raise rssRaiser(self.__root, kwargs)
 
 
     @cherrypy.expose
@@ -1620,7 +1644,29 @@ class ConfigRss(object):
             sabnzbd.add_url(id, pp, script, cat, priority, nzbname)
         # Need to pass the title instead
         sabnzbd.rss.flag_downloaded(feed, id)
-        raise dcRaiser(self.__root, kwargs)
+        raise rssRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def download(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        feed = kwargs.get('feed')
+        url = kwargs.get('url')
+        att = sabnzbd.rss.lookup_url(feed, url)
+        if att:
+            pp = att.get('pp')
+            cat = att.get('cat')
+            script = att.get('script')
+            prio = att.get('prio')
+            nzbname = att.get('nzbname')
+
+            if url and url.isdigit():
+                sabnzbd.add_msgid(url, pp, script, cat, prio, nzbname)
+            elif id:
+                sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
+            # Need to pass the title instead
+            sabnzbd.rss.flag_downloaded(feed, url)
+        raise rssRaiser(self.__root, kwargs)
 
 
 #------------------------------------------------------------------------------
@@ -2237,6 +2283,32 @@ def _make_link(qfeed, job):
     return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s%s<br/>' % \
            (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star, rule)
 
+
+
+
+def GetRssLog(feed):
+    def make_item(job):
+        url = job.get('url', '')
+        title = job.get('title', '')
+        if url.isdigit():
+            title = '<a href="https://www.newzbin.com/browse/post/%s/" target="_blank">%s</a>' % (url, title)
+        else:
+            title = xml_name(title)
+        return url, \
+               title, \
+               '*' * int(job.get('status', '').endswith('*')), \
+               job.get('rule', 0)
+
+    jobs = sabnzbd.rss.show_result(feed)
+    names = jobs.keys()
+    # Sort in the order the jobs came from the feed
+    names.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
+
+    done = [xml_name(jobs[job]['title']) for job in names if jobs[job]['status'][0] == 'D']
+    good = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'G']
+    bad  = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'B']
+
+    return done, good, bad
 
 def ShowRssLog(feed, all):
     """Return a html page listing an RSS log and a 'back' button

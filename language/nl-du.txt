@@ -394,6 +394,7 @@ button-forceFeed         Forceer download
 rss-order                Volgorde
 rss-type                 Type
 rss-filter               Filter
+rss-skip                 Overslaan
 rss-accept               Accepteren
 rss-reject               Verwerpen
 rss-must                 Verplicht

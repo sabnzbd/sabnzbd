@@ -60,9 +60,9 @@ def del_feed(feed):
     global __RSS
     if __RSS: __RSS.delete(feed)
 
-def run_feed(feed, download, ignoreFirst=False, force=False):
+def run_feed(feed, download, ignoreFirst=False, force=False, readout=True):
     global __RSS
-    if __RSS: return __RSS.run_feed(feed, download, ignoreFirst, force=force)
+    if __RSS: return __RSS.run_feed(feed, download, ignoreFirst, force=force, readout=readout)
 
 def show_result(feed):
     global __RSS
@@ -71,6 +71,10 @@ def show_result(feed):
 def flag_downloaded(feed, id):
     global __RSS
     if __RSS: __RSS.flag_downloaded(feed, id)
+
+def lookup_url(feed, id):
+    global __RSS
+    if __RSS: return __RSS.lookup_url(feed, id)
 
 def run_method():
     global __RSS
@@ -170,7 +174,7 @@ class RSSQueue(object):
         self.shutdown = True
 
     @synchronized(LOCK)
-    def run_feed(self, feed=None, download=False, ignoreFirst=False, force=False):
+    def run_feed(self, feed=None, download=False, ignoreFirst=False, force=False, readout=True):
         """ Run the query for one URI and apply filters """
         self.shutdown = False
 
@@ -181,8 +185,8 @@ class RSSQueue(object):
                     item = self.jobs[fd][lk]
                     if item.get('status', ' ')[0] == 'D' and \
                        item.get('title', '').lower() == title:
-                        return True
-            return False
+                        return fd
+            return ''
 
 
         if not feed:
@@ -225,9 +229,9 @@ class RSSQueue(object):
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
-        first = feed not in self.jobs
-        if first:
+        if feed not in self.jobs:
             self.jobs[feed] = {}
+        first = not bool(self.jobs[feed])
 
         jobs = self.jobs[feed]
 
@@ -241,43 +245,51 @@ class RSSQueue(object):
             uri += '&dl=1'
 
         # Read the RSS feed
-        logging.debug("Running feedparser on %s", uri)
-        d = feedparser.parse(uri.replace('feed://', 'http://'))
-        logging.debug("Done parsing %s", uri)
-        if not d:
-            logging.info(Ta('warn-failRSS@1'), uri)
-            return T('warn-failRSS@1') % uri
+        if readout:
+            logging.debug("Running feedparser on %s", uri)
+            d = feedparser.parse(uri.replace('feed://', 'http://'))
+            logging.debug("Done parsing %s", uri)
+            if not d:
+                logging.info(Ta('warn-failRSS@1'), uri)
+                return T('warn-failRSS@1') % uri
 
-        entries = d.get('entries')
-        if 'bozo_exception' in d and not entries:
-            logging.info(Ta('warn-failRSS@2'), uri, str(d['bozo_exception']))
-            return T('warn-failRSS@2') % (uri, str(d['bozo_exception']))
-        if not entries:
-            logging.info('RSS Feed was empty: %s', uri)
-            return ''
+            entries = d.get('entries')
+            if 'bozo_exception' in d and not entries:
+                logging.info(Ta('warn-failRSS@2'), uri, str(d['bozo_exception']))
+                return T('warn-failRSS@2') % (uri, str(d['bozo_exception']))
+            if not entries:
+                logging.info('RSS Feed was empty: %s', uri)
+                return ''
+        else:
+            entries = jobs.keys()
 
         order = 0
         # Filter out valid new links
         for entry in entries:
             if self.shutdown: return
 
-            try:
-                link, category = _get_link(uri, entry)
-            except (AttributeError, IndexError):
-                link = None
-                category = ''
-                logging.error('Incompatible feed %s', uri)
-                logging.debug("Traceback: ", exc_info = True)
-                return 'Incompatible feed'
-            category = latin1(category)
+            if readout:
+                try:
+                    link, category = _get_link(uri, entry)
+                except (AttributeError, IndexError):
+                    link = None
+                    category = ''
+                    logging.error('Incompatible feed %s', uri)
+                    logging.debug("Traceback: ", exc_info = True)
+                    return 'Incompatible feed'
+                category = latin1(category)
+                # Make sure only latin-1 encodable characters occur
+                atitle = latin1(entry.title)
+                title = unicoder(atitle)
+            else:
+                link = entry
+                category = jobs[link].get('cat', '')
+                atitle = latin1(jobs[link].get('title', ''))
+                title = unicoder(atitle)
 
             if link:
                 # Make sure there are no spaces in the URL
                 link = link.replace(' ','')
-
-                # Make sure only latin-1 encodable characters occur
-                atitle = latin1(entry.title)
-                title = unicoder(atitle)
 
                 newlinks.append(link)
 
@@ -306,10 +318,12 @@ class RSSQueue(object):
                         elif not (notdefault(reCats[n]) or category):
                             myScript = defScript
 
-                        if cfg.no_dupes() and dup_title(title):
-                            logging.debug("Rejected as duplicate")
-                            n = -1
-                            break
+                        if cfg.no_dupes():
+                            dup = dup_title(title)
+                            if dup:
+                                logging.debug("Rejected as duplicate")
+                                n = dup
+                                break
 
                         if category and reTypes[n]=='C':
                             found = re.search(regexes[n], category)
@@ -341,12 +355,12 @@ class RSSQueue(object):
                         star = first
                     if result:
                         _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript,
-                                    act, star, order, priority=defPriority, rule=n)
+                                    act, star, order, priority=defPriority, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
                         _HandleLink(jobs, link, title, 'B', myCat, myPP, myScript,
-                                    False, star, order, priority=defPriority, rule=n)
+                                    False, star, order, priority=defPriority, rule=str(n))
             order += 1
 
         # Send email if wanted and not "forced"
@@ -373,6 +387,7 @@ class RSSQueue(object):
                     del jobs[old]
 
         return ''
+
 
     def run(self):
         """ Run all the URI's and filters """
@@ -426,6 +441,15 @@ class RSSQueue(object):
             for link in lst:
                 if lst[link].get('url', '') == id:
                     lst[link]['status'] = 'D'
+
+    @synchronized(LOCK)
+    def lookup_url(self, feed, url):
+        if url and feed in self.jobs:
+            lst = self.jobs[feed]
+            for link in lst:
+                if lst[link].get('url') == url:
+                    return lst[link]
+        return None
 
     @synchronized(LOCK)
     def clear_feed(self, feed):

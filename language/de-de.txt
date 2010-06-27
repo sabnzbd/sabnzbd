@@ -474,6 +474,7 @@ button-forceFeed         Download erzwingen
 rss-order                Reihenfolge
 rss-type                 Typ
 rss-filter               Filter
+rss-skip                 Skip
 rss-accept               Akzeptieren
 rss-reject               Verwerfen
 rss-must                 Benötigt

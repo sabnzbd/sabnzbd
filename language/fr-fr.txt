@@ -178,7 +178,7 @@ explain-Restart   Le bouton ci-dessous redémarrera SABnzbd.\n\
                   Les téléchargements en cours seront mis en pause puis repris.
 button-restart    Redémarrer
 button-scan       Analyser
-explain-Scan      Le bouton "Analyser" recherche dans le dossier temporaire pour\n\ 
+explain-Scan      Le bouton "Analyser" recherche dans le dossier temporaire pour\n\
                   les dossiers manquants dans la file d'attente.
 button-repair     Réparer
 explain-Repair    Le bouton "Réparer" redémarre SABnzbd et fait une complète\n\
@@ -284,7 +284,7 @@ opt-admin_dir           Dossier Administrateur
 explain-admin_dir       Emplacement file d'attente admin et historique base de données.\n\
                         <i>Ne peut être changé que lorsque la file d'attente est vide.</i>\n\
                         <i>Les données seront <b>not</b> déplacées.</i>\n\
-                        <i>Requiert un redémarrage de SABnzbd !</i>																						
+                        <i>Requiert un redémarrage de SABnzbd !</i>
 opt-log_dir             Dossier de Log
 explain-log_dir         pour le stockage des fichiers de log de SABnzbd.\n\
                         <i>Redémarrage requis !</i>
@@ -425,6 +425,7 @@ button-forceFeed         Forcer téléchargements
 rss-order                Trier
 rss-type                 Type
 rss-filter               Filtre
+rss-skip                 Skip
 rss-accept               Accepter
 rss-reject               Rejeter
 rss-must                 Obligatoire
@@ -448,7 +449,7 @@ opt-email_full           Notifications de disque dur plein
 explain-email_full       Envoie un email lorsque le disque dur est plein et que SABnzbd a été mis en pause.
 opt-email_dir            Dossier contenant les modèles d'email
 explain-email_dir        Dossier contenant les modèles d'email définis par l'utilisateur.
-opt-email_rss            Envoyer RSS notifications	
+opt-email_rss            Envoyer RSS notifications
 explain-email_rss        Envoyer un email quand un flux RSS ajoute un fichier dans la file d'attente.
 
                          Par rapport à
@@ -595,7 +596,7 @@ warn-apikeyNone          Clé API manquante, entrez la clé API de la configuratio
                          dans votre application tierce :
 warn-apikeyBad           Clé API incorrecte, utilisez la clé API de la configuration générale\
                          dans votre application tierce :
-error-noSecUI            Erreur : Pas d'interface secondaire définie.	 
+error-noSecUI            Erreur : Pas d'interface secondaire définie.
 
 his-badArchive           Fichier NZB inutilisable
 his-cannotGetReport      Echec de récupération du rapport newzbin
