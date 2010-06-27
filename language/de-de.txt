@@ -180,9 +180,7 @@ explain-Restart   Ein Klick auf den Knopf "Neu starten" startet SABnzbd neu.\n\
                   Die Downloads werden vor dem Neustart angehalten und danach\
                   fortgesetzt.
 button-restart    Neu starten
-button-scan       Ein Klick auf den Knopf "Scannen" such im temporären \n\
-                  Download-Ordner nach Ordnern, die in der Warteschlange\n\
-                  nicht aufgeführt sind.
+button-scan       Scannen
 explain-Scan      Ein Klick auf den Knopf "Scannen" sucht im temporären\n\
                   Download-Ordner nach Ordnern, die in der Warteschlange\n\
                   nicht aufgeführt sind.
@@ -342,6 +340,9 @@ explain-top_only         Für geringere Speicher-Verwendung aktivieren.\n\
 opt-safe_postproc        Nur überprüfte Aufträge nachbearbeiten
 explain-safe_postproc    Die Nachbearbeitung nur für Aufträge durchführen,\n\
                          die alle PAR2-Überprüfungen bestanden haben.
+opt-pause_on_pwrar       Auftrag anhalten, wenn heruntergeladene RAR-Datei\
+                         verschlüsselt ist
+explain-pause_on_pwrar   Um fortzufahren, muss ein Passwort angegeben werden.
 opt-no_dupes             Herunterladen von Duplikaten verhindern
 explain-no_dupes         Überspringt einen Auftrag, wenn bereits eine NZB-Datei\n\
                          mit dem gleichen Namen existiert.
@@ -820,6 +821,7 @@ msg-unzipDone@2          %s Dateien in %s
 msg-QuickCheck           Ausführen der schnellen Überprüfung...
 msg-QuickChecking        Schnelle Überprüfung
 msg-QuickOK@1            [%s] Schnelle Überprüfung erfolgreich
+msg-failedSFV@1          Überprüfung einiger Dateien mittels %s fehlgeschlagen
 msg-startRepair          Beginn der Reparatur
 error-repairFailed@1     Reparatur fehlgeschlagen. %s
 error-repairBad@2        Fehler "%s" beim Ausführen von par2_repair auf dem Satz %s
