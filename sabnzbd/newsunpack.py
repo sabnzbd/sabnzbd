@@ -1283,7 +1283,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
         stup, need_shell, command, creationflags = build_command(command)
         env = fix_env()
 
-        logging.info('Running pre-queue script %s(' + '%s, '*(len(command)-1) + ')', *command)
+        logging.info('Running pre-queue script %s', command)
 
         try:
             p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
