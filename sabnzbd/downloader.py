@@ -342,11 +342,11 @@ class Downloader(Thread):
             BPSMeter.do.reset()
 
     def delay(self):
-        logging.info("Delaying")
+        logging.debug("Delaying")
         self.delayed = True
 
     def undelay(self):
-        logging.info("Undelaying")
+        logging.debug("Undelaying")
         self.delayed = False
 
     def wait_postproc(self):
@@ -469,7 +469,7 @@ class Downloader(Thread):
                                 logging.error(Ta('error-noInit@3'),
                                                   nw.thrdnum, server.host,
                                                   server.port)
-                                logging.debug("Traceback: ", exc_info = True)
+                                logging.info("Traceback: ", exc_info = True)
                                 self.__reset_nw(nw, "failed to initialize")
 
             # Exit-point
@@ -580,9 +580,9 @@ class Downloader(Thread):
 
                         try:
                             nw.finish_connect(code)
-                            logging.debug("%s@%s:%s last message -> %s",
-                                         nw.thrdnum, nw.server.host,
-                                         nw.server.port, nw.lines[0])
+                            if sabnzbd.LOG_ALL:
+                                logging.debug("%s@%s:%s last message -> %s", nw.thrdnum, nw.server.host,
+                                              nw.server.port, nw.lines[0])
                             nw.lines = []
                             nw.data = ''
                         except NNTPPermanentError, error:
@@ -683,9 +683,9 @@ class Downloader(Thread):
                         self.__reset_nw(nw, msg, quit=True)
 
                 if done:
-                    logging.info('Thread %s@%s:%s: %s done',
-                                 nw.thrdnum, server.host,
-                                 server.port, article.article)
+                    if sabnzbd.LOG_ALL:
+                        logging.debug('Thread %s@%s:%s: %s done', nw.thrdnum, server.host,
+                                       server.port, article.article)
                     self.decoder.decode(article, nw.lines)
 
                     nw.soft_reset()
@@ -752,14 +752,14 @@ class Downloader(Thread):
         try:
             if cfg.send_group() and nw.article.nzf.nzo.group != nw.group:
                 group = nw.article.nzf.nzo.group
-                logging.info('Thread %s@%s:%s: GROUP <%s>',
-                             nw.thrdnum, nw.server.host,
-                             nw.server.port, group)
+                if sabnzbd.LOG_ALL:
+                    logging.debug('Thread %s@%s:%s: GROUP <%s>', nw.thrdnum, nw.server.host,
+                                   nw.server.port, group)
                 nw.send_group(group)
             else:
-                logging.info('Thread %s@%s:%s: BODY %s',
-                             nw.thrdnum, nw.server.host,
-                             nw.server.port, nw.article.article)
+                if sabnzbd.LOG_ALL:
+                    logging.debug('Thread %s@%s:%s: BODY %s', nw.thrdnum, nw.server.host,
+                                  nw.server.port, nw.article.article)
                 nw.body()
 
             fileno = nw.nntp.sock.fileno()
@@ -770,7 +770,7 @@ class Downloader(Thread):
             self.__reset_nw(nw, "server broke off connection", quit=False)
         except:
             logging.error('Suspect error in downloader')
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             self.__reset_nw(nw, "server broke off connection", quit=False)
 
     #------------------------------------------------------------------------------

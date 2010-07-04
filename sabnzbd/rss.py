@@ -196,7 +196,7 @@ class RSSQueue(object):
             feeds = config.get_rss()[feed]
         except KeyError:
             logging.error(Ta('error-rssBadFeed@1'), feed)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             return T('error-rssBadFeed@1') % feed
 
         uri = feeds.uri()
@@ -267,7 +267,7 @@ class RSSQueue(object):
                 link = None
                 category = ''
                 logging.error('Incompatible feed %s', uri)
-                logging.debug("Traceback: ", exc_info = True)
+                logging.info("Traceback: ", exc_info = True)
                 return 'Incompatible feed'
             category = latin1(category)
 

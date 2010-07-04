@@ -54,13 +54,13 @@ def send(message):
         if not port:
             port = 25
 
-        logging.info("Connecting to server %s:%s", server, port)
+        logging.debug("Connecting to server %s:%s", server, port)
 
         try:
             mailconn = ssmtplib.SMTP_SSL(server, port)
             mailconn.ehlo()
 
-            logging.info("Connected to server %s:%s", server, port)
+            logging.debug("Connected to server %s:%s", server, port)
 
         except Exception, errorcode:
             if errorcode[0]:

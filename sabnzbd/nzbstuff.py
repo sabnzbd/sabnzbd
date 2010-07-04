@@ -197,7 +197,7 @@ class NzbFile(TryList):
 
     def finish_import(self):
         """ Load the article objects from disk """
-        logging.info("Finishing import on %s", self.subject)
+        logging.debug("Finishing import on %s", self.subject)
 
         article_db = sabnzbd.load_data(self.nzf_id, self.nzo.workpath)
         if article_db:
@@ -842,7 +842,7 @@ class NzbObject(TryList):
                 logging.info('File %s added to job', filename)
         except:
             logging.debug('Bad NZB handling')
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
 
     @property
     def pp(self):

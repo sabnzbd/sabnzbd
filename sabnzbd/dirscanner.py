@@ -119,7 +119,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
             if not keep: os.remove(path)
         except:
             logging.error(Ta('error-remove@1'), path)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             status = 1
     else:
         zf.close()
@@ -154,7 +154,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         f.close()
     except:
         logging.warning(Ta('warn-noRead@1'), path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
         return -2
 
 
@@ -182,7 +182,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         if not keep: os.remove(path)
     except:
         logging.error(Ta('error-remove@1'), path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
         return 1
 
     return 0

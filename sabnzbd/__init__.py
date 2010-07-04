@@ -110,6 +110,7 @@ LOGFILE = None
 WEBLOGFILE = None
 LOGHANDLER = None
 GUIHANDLER = None
+LOG_ALL = False
 AMBI_LOCALHOST = False
 WIN_SERVICE = None      # Instance of our Win32 Service Class
 
@@ -468,7 +469,7 @@ def save_compressed(folder, filename, data):
         f.close()
     except:
         logging.error("Saving %s failed", os.path.join(folder, filename))
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
     os.chdir(here)
 
@@ -512,7 +513,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             os.close(f)
         except:
             logging.error(Ta('error-tempFile@1'), filename)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
 
     if ext.lower() in ('.zip', '.rar'):
         ProcessArchiveFile(filename, path, pp, script, cat, priority=priority)
@@ -679,7 +680,7 @@ def get_new_id(prefix, folder, check_list=None):
                 return tail
         except:
             logging.error(Ta('error-failMkstemp'))
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
 
 
 @synchronized(IO_LOCK)
@@ -697,7 +698,7 @@ def save_data(data, _id, path, do_pickle = True, silent=False):
         _f.close()
     except:
         logging.error(Ta('error-saveX@1'), path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
 
 @synchronized(IO_LOCK)
@@ -722,7 +723,7 @@ def load_data(_id, path, remove=True, do_pickle=True):
             os.remove(path)
     except:
         logging.error(Ta('error-loading@1'), path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
         return None
 
     return data
@@ -737,7 +738,7 @@ def remove_data(_id, path):
             logging.info("%s removed", path)
     except:
         logging.info("Failed to remove %s", path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
 
 
@@ -757,7 +758,7 @@ def save_admin(data, _id, do_pickle=True):
         f.close()
     except:
         logging.error(Ta('error-saveX@1'), path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
 
 @synchronized(IO_LOCK)
@@ -786,7 +787,7 @@ def load_admin(_id, remove=False, do_pickle=True):
             os.remove(path)
     except:
         logging.error(Ta('error-loading@1'), path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
         return None
 
     return data

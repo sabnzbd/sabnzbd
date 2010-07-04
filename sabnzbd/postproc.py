@@ -323,7 +323,7 @@ def process_job(nzo):
                     nzo.final_name = os.path.basename(workdir_complete)
                 except:
                     logging.error(Ta('error-ppRename@2'), tmp_workdir_complete, workdir_complete)
-                    logging.debug("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info = True)
 
             job_result = int(par_error) + int(unpack_error)*2
 
@@ -393,7 +393,7 @@ def process_job(nzo):
     except:
         logging.error(Ta('error-ppFailed@2'), filename, crash_msg)
         if not crash_msg:
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
         nzo.fail_msg = T('warn-PostCrash@1') % unicoder(crash_msg)
         osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
         nzo.status = 'Failed'
@@ -422,7 +422,7 @@ def process_job(nzo):
         sabnzbd.nzbqueue.cleanup_nzo(nzo, keep_basic=not all_ok)
     except:
         logging.error(Ta('error-ppCleanup@1'), nzo.final_name)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
     ## Remove download folder
     if all_ok:
@@ -433,7 +433,7 @@ def process_job(nzo):
                 remove_dir(workdir)
         except:
             logging.error(Ta('error-ppDelWorkdir@1'), workdir)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
 
     return True
 
@@ -521,14 +521,14 @@ def perm_script(wdir, umask):
         except:
             if report_errors:
                 logging.error(Ta('error-ppPermissions@1'), root)
-                logging.debug("Traceback: ", exc_info = True)
+                logging.info("Traceback: ", exc_info = True)
         for name in files:
             try:
                 os.chmod(join(root, name), umask_file)
             except:
                 if report_errors:
                     logging.error(Ta('error-ppPermissions@1'), join(root, name))
-                    logging.debug("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info = True)
 
 
 def cat_to_dir(cat, defdir):
@@ -595,7 +595,7 @@ def cleanup_list(wdir, skip_nzb):
                     os.remove(path)
                 except:
                     logging.error(Ta('error-ppDelFailed@1'), path)
-                    logging.debug("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info = True)
 
 
 def prefix(path, pre):
@@ -666,4 +666,4 @@ def remove_samples(path):
                     os.remove(path)
                 except:
                     logging.error(Ta('error-ppDelFailed@1'), path)
-                    logging.debug("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info = True)

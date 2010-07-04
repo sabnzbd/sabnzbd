@@ -216,7 +216,7 @@ class NzbQueue(TryList):
                 self.reset_try_list()
             except:
                 logging.error(Ta('error-qAdd@1'), nzo_id)
-                logging.debug("Traceback: ", exc_info = True)
+                logging.info("Traceback: ", exc_info = True)
                 self.remove(nzo_id, False)
         else:
             logging.info("Item %s no longer in queue, omitting",

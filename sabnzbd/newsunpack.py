@@ -703,7 +703,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             msg = sys.exc_info()[1]
             nzo.fail_msg = T('error-repairFailed@1') % msg
             logging.error(Ta('error-filePar2@2'), msg, setname)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             return readd, result
 
     try:
