@@ -98,12 +98,12 @@ class PostProcessor(Thread):
         except:
             pass
 
-    def delete(self, nzo_id):
+    def delete(self, nzo_id, del_files=False):
         """ Remove a job from the post processor queue """
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
                 self.remove(nzo)
-                nzo.purge_data(keep_basic=True)
+                nzo.purge_data(keep_basic=True, del_files=del_files)
                 logging.info('Removed job %s from postproc queue', nzo.work_name)
                 nzo.work_name = '' # Mark as deleted job
                 break

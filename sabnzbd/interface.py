@@ -56,7 +56,7 @@ from sabnzbd.lang import T, Ta, list_languages, reset_language
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
                         api_handler, build_queue, rss_qstatus, \
                         retry_job, build_header, get_history_size, build_history, \
-                        format_bytes, calc_age, std_time, report
+                        format_bytes, calc_age, std_time, report, del_hist_job
 
 #------------------------------------------------------------------------------
 # Global constants
@@ -621,8 +621,9 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg: return msg
         uid = kwargs.get('uid')
+        del_files = int_conv(kwargs.get('del_files'))
         if uid:
-            nzbqueue.remove_nzo(uid, False)
+            nzbqueue.remove_nzo(uid, False, del_files=del_files)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -877,12 +878,11 @@ class HistoryPage(object):
         msg = check_session(kwargs)
         if msg: return msg
         job = kwargs.get('job')
+        del_files = int_conv(kwargs.get('del_files'))
         if job:
-            history_db = cherrypy.thread_data.history_db
             jobs = job.split(',')
             for job in jobs:
-                PostProcessor.do.delete(job)
-                history_db.remove_history(job)
+                del_hist_job(job, del_files=del_files)
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose

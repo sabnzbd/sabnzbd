@@ -1015,7 +1015,7 @@ class NzbObject(TryList):
         else:
             return None
 
-    def purge_data(self, keep_basic=False):
+    def purge_data(self, keep_basic=False, del_files=False):
         """ Remove all admin info, 'keep_basic' preserves attribs and nzb """
         wpath = self.workpath
         for nzf in self.files:
@@ -1034,6 +1034,13 @@ class NzbObject(TryList):
                 clean_folder(wpath, 'SABnzbd_article_*')
             else:
                 clean_folder(wpath)
+            if del_files:
+                clean_folder(self.downpath)
+            else:
+                try:
+                    os.rmdir(self.downpath)
+                except:
+                    pass
 
     def gather_info(self, for_cli = False):
         bytes_left_all = 0
@@ -1335,6 +1342,5 @@ def clean_folder(path, pattern='*'):
             pass
     try:
         os.rmdir(path)
-        os.rmdir(os.path.split(path)[0])
     except:
         pass

@@ -38,10 +38,14 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%
         <td>$line.size</td><td>$T('post-'+$line.status)</td>
         <td>
 			<!--#if not $line.loaded#-->
+    		  <!--#if $line.retry#-->
+                <input type="submit" onclick="if(confirm('$T('confirm').replace("'","`") ')){ if (confirm('$T('delFiles').replace("'","`") ')) window.location='delete?job=$line.nzo_id&del_files=1&session=$session'; else window.location='delete?job=$line.nzo_id&del_files=0&session=$session'; return false;}" value="$T('button-del')">
+              <!--#else#-->
 				<form action="delete" method="get">
 				<input type="hidden" value="$line.nzo_id" name="job">
                 <input type="hidden" name="session" value="$session">
 				<input type="submit" value="$T('button-del')"></form>
+	   		  <!--#end if#-->
 			<!--#end if#-->
             <br/>
 			<!--#if $line.retry#-->

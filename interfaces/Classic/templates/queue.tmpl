@@ -62,10 +62,8 @@ $T('onQueueFinish'):
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#--> $slot.priority $slot.status">
         <td><a class="verbosity_link" href="./tog_uid_verbose?session=$session&uid=$slot.nzo_id"> <!--#if $slot.active then "-" else "+" #--> </a></td>
-        <td><form action="delete" method="get">
-            <input type="hidden" name="session" value="$session">
-            <input type="hidden" value="$slot.nzo_id" name="uid">
-            <input type="submit" value="$T('button-del')"></form>
+        <td>
+            <input type="submit" onclick="if(confirm('$T('confirm').replace("'","`") ')){ if (confirm('$T('delFiles').replace("'","`") ')) window.location='delete?uid=$slot.nzo_id&del_files=1&session=$session'; else window.location='delete?uid=$slot.nzo_id&del_files=0&session=$session'; return false;}" value="$T('button-del')">
             <!--#if $slot.status == 'Paused'#-->
                 <form action="resume_nzo" method="get">
                 <input type="hidden" value="$slot.nzo_id" name="uid">

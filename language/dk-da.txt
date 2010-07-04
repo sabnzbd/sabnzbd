@@ -45,6 +45,7 @@ queued            I Kø
 button-back       Tilbage
 button-x          X
 confirm           Er du sikker?
+delFiles          Delete all downloaded files?
 
 # Header
 menu-home         Hjem

@@ -45,6 +45,7 @@ queued            Köad
 button-back       Bakåt
 button-x          X
 confirm           Är du säker?
+delFiles          Delete all downloaded files?
 
 # Header
 menu-home         Hem

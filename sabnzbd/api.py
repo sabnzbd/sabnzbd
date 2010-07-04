@@ -33,6 +33,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.downloader as downloader
 import sabnzbd.nzbqueue as nzbqueue
+import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.scheduler as scheduler
 
 from sabnzbd.utils.rsslib import RSS, Item
@@ -1250,6 +1251,19 @@ def retry_job(job, new_nzb):
             return True
     return False
 
+
+#------------------------------------------------------------------------------
+def del_hist_job(job, del_files):
+    """ Remove history element """
+    if job:
+        history_db = cherrypy.thread_data.history_db
+        path = history_db.get_path(job)
+        PostProcessor.do.delete(job, del_files=del_files)
+        history_db.remove_history(job)
+        if path and del_files and path.lower().startswith(cfg.download_dir.get_path().lower()):
+            nzbstuff.clean_folder(os.path.join(path, JOB_ADMIN))
+            nzbstuff.clean_folder(path)
+    return True
 
 #------------------------------------------------------------------------------
 def build_header(prim):
