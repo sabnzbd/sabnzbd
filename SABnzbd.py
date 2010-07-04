@@ -550,11 +550,13 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = cherryhost
 
     # Some systems don't like brackets in numerical ipv6
-    if '[' in cherryhost:
-        try:
-            info = socket.getaddrinfo(cherryhost, None)
-        except:
+        if sabnzbd.DARWIN:
             cherryhost = cherryhost.strip('[]')
+        else:
+            try:
+                info = socket.getaddrinfo(cherryhost, None)
+            except:
+                cherryhost = cherryhost.strip('[]')
 
     if ipv6 and ipv4 and \
        (browserhost not in ('localhost', '127.0.0.1', '[::1]', '::1')):
@@ -571,6 +573,11 @@ def get_webhost(cherryhost, cherryport, https_port):
             cherryhost = '127.0.0.1'
             if ips[0] != '127.0.0.1':
                 browserhost = '127.0.0.1'
+
+    # This is to please Chrome on OSX
+    if cherryhost == 'localhost' and sabnzbd.DARWIN:
+        cherryhost = '127.0.0.1'
+        browserhost = 'localhost'
 
     if cherryport is None:
         cherryport = sabnzbd.cfg.cherryport.get_int()
