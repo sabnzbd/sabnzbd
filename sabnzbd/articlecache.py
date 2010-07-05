@@ -103,7 +103,8 @@ class ArticleCache(object):
             if sabnzbd.LOG_ALL:
                 logging.debug("Loaded %s from cache", article)
         elif article.art_id:
-            data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True, do_pickle=False)
+            data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True,
+                                     do_pickle=False, silent=True)
 
         if article in nzo.saved_articles:
             nzo.saved_articles.remove(article)

@@ -685,7 +685,8 @@ def get_new_id(prefix, folder, check_list=None):
 
 @synchronized(IO_LOCK)
 def save_data(data, _id, path, do_pickle = True, silent=False):
-    logging.info("Saving data for %s in %s", _id, path)
+    if not silent:
+        logging.debug("Saving data for %s in %s", _id, path)
     path = os.path.join(path, _id)
 
     try:
@@ -702,14 +703,15 @@ def save_data(data, _id, path, do_pickle = True, silent=False):
 
 
 @synchronized(IO_LOCK)
-def load_data(_id, path, remove=True, do_pickle=True):
+def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     path = os.path.join(path, _id)
 
     if not os.path.exists(path):
         logging.info("%s missing", path)
         return None
 
-    logging.info("Loading data for %s from %s", _id, path)
+    if not silent:
+        logging.debug("Loading data for %s from %s", _id, path)
 
     try:
         _f = open(path, 'rb')
