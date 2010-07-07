@@ -194,6 +194,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
     if cfg.enable_unzip():
         new_zips = [zip for zip in xzips if zip not in zips]
         if new_zips:
+            rerun = True
             logging.info('Unzip starting on %s', workdir)
             if unzip(nzo, workdir, workdir_complete, dele, new_zips):
                 error = True
