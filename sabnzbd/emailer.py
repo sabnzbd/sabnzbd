@@ -254,14 +254,16 @@ def _prepare_message(txt):
     msg.set_charset(code)
     payload = []
     body = False
+    header = False
     for line in txt.encode(code, 'replace').split('\n'):
-        if not line:
+        if header and not line:
             body = True
         if body:
             payload.append(line)
         else:
             m = RE_HEADER.search(line)
             if m:
+                header = True
                 keyword = m.group(1).strip()
                 value = m.group(2).strip()
                 if plain(value):
@@ -273,5 +275,12 @@ def _prepare_message(txt):
                     msg[keyword] = header
 
     msg.set_payload('\n'.join(payload), code)
+
+    # Prevent double header (because it will be added again by encode_quopri)
+    try:
+        del msg['Content-Transfer-Encoding']
+    except:
+        pass
+
     encode_quopri(msg)
     return msg.as_string()

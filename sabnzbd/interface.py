@@ -2160,10 +2160,10 @@ def badParameterResponse(msg):
            <title>SABnzbd+ %s - %s/title>
 </head>
 <body>
-           <h3>%s</h3>
-           %s
-           <br><br>
-           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
+<h3>%s</h3>
+%s
+<br><br>
+<FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
 </body>
 </html>
 ''' % (sabnzbd.__version__, T('error'), T('badParm'), unicoder(msg), T('button-back'))
@@ -2185,11 +2185,11 @@ def ShowFile(name, path):
            <title>%s</title>
 </head>
 <body>
-           <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
-           <h3>%s</h3>
-           <code><pre>
-           %s
-           </pre></code><br/><br/>
+<FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
+<h3>%s</h3>
+<code><pre>
+%s
+</pre></code><br/><br/>
 </body>
 </html>
 ''' % (name, T('button-back'), name, escape(msg))

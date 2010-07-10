@@ -1018,6 +1018,10 @@ def main():
                 except:
                     pass
 
+    # Prevent the logger from raising exceptions
+    # primarily to reduce the fallout of Python issue 4749
+    logging.raiseExceptions = 0
+
     log_new = sabnzbd.cfg.log_new()
     if log_new:
         log_handler = NewRotatingFileHandler

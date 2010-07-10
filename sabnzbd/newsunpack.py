@@ -1049,7 +1049,7 @@ def build_command(command):
         creationflags = 0
 
     else:
-        need_shell = os.path.splitext(command[0])[1].lower() not in ('.exe', '.com', '.bat', '.cmd')
+        need_shell = os.path.splitext(command[0])[1].lower() not in ('.exe', '.com')
         stup = subprocess.STARTUPINFO()
         stup.dwFlags = STARTF_USESHOWWINDOW
         stup.wShowWindow = SW_HIDE
@@ -1059,6 +1059,8 @@ def build_command(command):
         # scripts with spaces in the path don't work.
         if need_shell and ' ' in command[0]:
             command[0] = win32api.GetShortPathName(command[0])
+        if need_shell:
+            command = list2cmdline(command)
 
     return (stup, need_shell, command, creationflags)
 
@@ -1288,7 +1290,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 startupinfo=stup, env=env, creationflags=creationflags)
         except:
-            logging.debug("Failed script %s, Traceback: ", pre_script, exc_info = True)
+            logging.debug("Failed script %s, Traceback: ", script_path, exc_info = True)
             return values
 
         output = p.stdout.read()
@@ -1309,3 +1311,15 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
             logging.info('Pre-Q refuses %s', name)
 
     return values
+
+
+#------------------------------------------------------------------------------
+def list2cmdline(lst):
+    """ convert list to a cmd.exe-compatible command string """
+    nlst = []
+    for arg in lst:
+        if (' ' in arg) or ('\t' in arg) or ('&' in arg) or ('|' in arg):
+            nlst.append('"%s"' % arg)
+        else:
+            nlst.append(arg)
+    return ' '.join(nlst)
