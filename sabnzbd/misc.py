@@ -615,7 +615,7 @@ def launch_a_browser(url, force=False):
             webbrowser.open(url, 1, 1)
         except:
             logging.warning(Ta('warn-noBrowser'))
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
 
 
 def error_page_401(status, message, traceback, version):
@@ -866,7 +866,7 @@ def create_dirs(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
             logging.error(Ta('error-makeFile@1'), dirpath)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             return None
     return dirpath
 
@@ -891,7 +891,7 @@ def move_to_path(path, new_path, unique=True):
                 os.remove(path)
             except:
                 logging.error(Ta('error-moveFile@2'), path, new_path)
-                logging.debug("Traceback: ", exc_info = True)
+                logging.info("Traceback: ", exc_info = True)
     return new_path
 
 
@@ -1163,7 +1163,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except:
         logging.error(Ta('error-sslFiles'))
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
         return False
 
     return True
@@ -1233,7 +1233,7 @@ def win_hibernate():
         time.sleep(10)
     except:
         logging.error(Ta('error-hibernate'))
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
 
 def win_standby():
@@ -1242,7 +1242,7 @@ def win_standby():
         time.sleep(10)
     except:
         logging.error(Ta('error-standby'))
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
 
 def win_shutdown():
@@ -1269,7 +1269,7 @@ def osx_shutdown():
         subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
     except:
         logging.error(Ta('error-shutdown'))
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
     os._exit(0)
 
 
@@ -1279,7 +1279,7 @@ def osx_standby():
         time.sleep(10)
     except:
         logging.error(Ta('error-standby'))
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
 
 def osx_hibernate():
@@ -1397,7 +1397,7 @@ def renamer(old, new):
                 return
             except WindowsError, err:
                 if err[0] == 32:
-                    logging.info('Retry rename %s to %s', old, new)
+                    logging.debug('Retry rename %s to %s', old, new)
                     retries -= 1
                 else:
                     raise WindowsError(err)
@@ -1417,7 +1417,7 @@ def remove_dir(path):
                 return
             except WindowsError, err:
                 if err[0] == 32:
-                    logging.info('Retry delete %s', path)
+                    logging.debug('Retry delete %s', path)
                     retries -= 1
                 else:
                     raise WindowsError(err)

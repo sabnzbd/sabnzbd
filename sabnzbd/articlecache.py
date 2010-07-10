@@ -56,7 +56,8 @@ class ArticleCache(object):
         if nzf.deleted or nzo.deleted:
             # Do not discard this article because the
             # file might still be processed at this moment!!
-            logging.info("%s would be discarded", article)
+            if sabnzbd.LOG_ALL:
+                logging.debug("%s would be discarded", article)
             # return
 
         saved_articles = article.nzf.nzo.saved_articles
@@ -99,10 +100,11 @@ class ArticleCache(object):
             data = self.__article_table.pop(article)
             self.__article_list.remove(article)
             self.__cache_size -= len(data)
-            logging.info("Loaded %s from cache", article)
-            logging.debug("cache_size -> %s", self.__cache_size)
+            if sabnzbd.LOG_ALL:
+                logging.debug("Loaded %s from cache", article)
         elif article.art_id:
-            data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True, do_pickle=False)
+            data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True,
+                                     do_pickle=False, silent=True)
 
         if article in nzo.saved_articles:
             nzo.saved_articles.remove(article)
@@ -119,7 +121,8 @@ class ArticleCache(object):
 
     @synchronized(ARTICLE_LOCK)
     def purge_articles(self, articles):
-        logging.debug("Purgable articles -> %s", articles)
+        if sabnzbd.LOG_ALL:
+            logging.debug("Purgable articles -> %s", articles)
         for article in articles:
             if article in self.__article_list:
                 self.__article_list.remove(article)
@@ -135,13 +138,14 @@ class ArticleCache(object):
         if nzf.deleted or nzo.deleted:
             # Do not discard this article because the
             # file might still be processed at this moment!!
-            logging.info("%s would be discarded", article)
+            if sabnzbd.LOG_ALL:
+                logging.debug("%s would be discarded", article)
             # return
 
         art_id = article.get_art_id()
         if art_id:
-            logging.info("Flushing %s to disk", article)
-            logging.debug("cache_size -> %s", self.__cache_size)
+            if sabnzbd.LOG_ALL:
+                logging.debug("Flushing %s to disk", article)
             # Save data, but don't complain when destistation folder is missing
             # because this flush may come after completion of the NZO.
             sabnzbd.save_data(data, art_id, nzo.workpath, do_pickle = False, silent=True)
@@ -156,8 +160,8 @@ class ArticleCache(object):
 
         self.__article_table[article] = data
         self.__cache_size += len(data)
-        logging.info("Added %s to cache", article)
-        logging.debug("cache_size -> %s", self.__cache_size)
+        if sabnzbd.LOG_ALL:
+            logging.debug("Added %s to cache", article)
 
 
 ### Create the instance

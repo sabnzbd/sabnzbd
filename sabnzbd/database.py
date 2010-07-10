@@ -89,7 +89,7 @@ class HistoryDB(object):
         except:
             logging.error(Ta('error-sqlCmd'))
             logging.debug("SQL: %s" , command)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             try:
                 self.con.rollback()
             except:
@@ -131,7 +131,7 @@ class HistoryDB(object):
             self.con.commit()
         except:
             logging.error(Ta('error-sqlCommit'))
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
 
     def close(self):
         try:
@@ -139,7 +139,7 @@ class HistoryDB(object):
             self.con.close()
         except:
             logging.error(Ta('error-sqlClose'))
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
 
     def remove_all(self):
         return self.execute("""DELETE FROM history""")

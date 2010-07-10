@@ -194,6 +194,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
     if cfg.enable_unzip():
         new_zips = [zip for zip in xzips if zip not in zips]
         if new_zips:
+            rerun = True
             logging.info('Unzip starting on %s', workdir)
             if unzip(nzo, workdir, workdir_complete, dele, new_zips):
                 error = True
@@ -703,7 +704,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
             msg = sys.exc_info()[1]
             nzo.fail_msg = T('error-repairFailed@1') % msg
             logging.error(Ta('error-filePar2@2'), msg, setname)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             return readd, result
 
     try:
@@ -1283,7 +1284,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
         stup, need_shell, command, creationflags = build_command(command)
         env = fix_env()
 
-        logging.info('Running pre-queue script %s(' + '%s, '*(len(command)-1) + ')', *command)
+        logging.info('Running pre-queue script %s', command)
 
         try:
             p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,

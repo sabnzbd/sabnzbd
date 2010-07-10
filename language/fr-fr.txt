@@ -44,6 +44,7 @@ queued            En attente
 button-back       Retour
 button-x          X
 confirm           Etes-vous sûrs ?
+delFiles          Delete all downloaded files?
 
 # Header
 menu-home         Accueil

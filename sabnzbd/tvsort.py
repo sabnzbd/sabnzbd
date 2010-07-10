@@ -276,7 +276,7 @@ class SeriesSorter(object):
 
         except:
             logging.error(Ta('error-tvInfo@1'), self.original_dirname)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             return False
 
 
@@ -385,7 +385,7 @@ class SeriesSorter(object):
                     renamer(filepath,newpath)
                 except:
                     logging.error("Failed to rename: %s to %s", current_path, newpath)
-                    logging.debug("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info = True)
                 rename_similar(current_path, file, self.filename_set)
             else:
                 logging.debug('Current path already exists, skipping rename, %s', newpath)
@@ -617,7 +617,7 @@ class GenericSorter(object):
                     renamer(filepath,newpath)
                 except:
                     logging.error(Ta('error-tvRename@2'), filepath, newpath)
-                    logging.debug("Traceback: ", exc_info = True)
+                    logging.info("Traceback: ", exc_info = True)
                 rename_similar(current_path, file, self.filename_set)
 
         ## Sequence File Handling
@@ -639,7 +639,7 @@ class GenericSorter(object):
                         renamer(filepath,newpath)
                     except:
                         logging.error(Ta('error-tvRename@2'), filepath, newpath)
-                        logging.debug("Traceback: ", exc_info = True)
+                        logging.info("Traceback: ", exc_info = True)
                     rename_similar(current_path, file, self.filename_set)
             else:
                 logging.debug("Movie files not in sequence %s", _files)
@@ -817,7 +817,7 @@ class DateSorter(object):
                                 renamer(filepath,newpath)
                             except:
                                 logging.error(Ta('error-tvRename@2'), current_path, newpath)
-                                logging.debug("Traceback: ", exc_info = True)
+                                logging.info("Traceback: ", exc_info = True)
                             rename_similar(current_path, file, self.filename_set)
                             break
 
@@ -1006,7 +1006,7 @@ def rename_similar(path, file, name):
                         renamer(fpath,newpath)
                     except:
                         logging.error(Ta('error-tvSimRename@2'), path, newpath)
-                        logging.debug("Traceback: ", exc_info = True)
+                        logging.info("Traceback: ", exc_info = True)
 
 
 

@@ -43,6 +43,7 @@ queued            Rij
 button-back       Terug
 button-x          X
 confirm           Weet je het zeker?
+delFiles          Alle gedownloade bestanden verwijderen?
 
 # Header
 menu-home         Opdrachten

@@ -202,7 +202,7 @@ def GetMD5Hashes(fname):
         table = {}
     except:
         logging.debug('QuickCheck parser crashed in file %s', fname)
-        logging.debug('Traceback: ', exc_info = True)
+        logging.info('Traceback: ', exc_info = True)
         table = {}
 
     f.close()
