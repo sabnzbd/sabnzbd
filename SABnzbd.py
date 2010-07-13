@@ -49,23 +49,26 @@ if not cherrypy.__version__.startswith("3.2"):
 from cherrypy import _cpserver
 from cherrypy import _cpwsgi_server
 
+SQLITE_DLL = True
 try:
     from sqlite3 import version as sqlite3_version
 except:
     try:
         from pysqlite2.dbapi2 import version as sqlite3_version
     except:
-        print "Sorry, requires Python module sqlite3 (pysqlite2 in python2.4)"
         if os.name != 'nt':
+            print "Sorry, requires Python module sqlite3 (pysqlite2 in python2.4)"
             print "Try: apt-get install python-pysqlite2"
-        sys.exit(1)
+            sys.exit(1)
+        else:
+            SQLITE_DLL = False
 
 import sabnzbd
 import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
-     check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
+     check_latest_version, panic_tmpl, panic_port, panic_fwall, panic_sqlite, panic, exit_sab, \
      panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates, \
      windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber
 import sabnzbd.scheduler as scheduler
@@ -918,6 +921,10 @@ def main():
     # Detect Windows variant
     if sabnzbd.WIN32:
         vista_plus, vista64 = windows_variant()
+
+    if not SQLITE_DLL:
+        panic_sqlite(sabnzbd.MY_FULLNAME)
+        exit_sab(2)
 
     if inifile:
         # INI file given, simplest case

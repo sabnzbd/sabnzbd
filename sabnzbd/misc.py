@@ -58,6 +58,7 @@ PANIC_QUEUE = 3
 PANIC_FWALL = 4
 PANIC_OTHER = 5
 PANIC_XPORT = 6
+PANIC_SQLITE = 7
 
 def safe_lower(txt):
     if txt:
@@ -527,6 +528,13 @@ MSG_OLD_QUEUE = r'''
     <FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="OK"/></FORM>
 '''
 
+MSG_SQLITE = r'''
+    SABnzbd detected that the file sqlite3.dll is missing.<br><br>
+    Some poorly designed virus-scanners remove this file.<br>
+    Please check your virus-scanner, try to re-install SABnzbd and complain to your virus-scanner vendor.<br>
+    <br>
+'''
+
 def panic_message(panic, a=None, b=None):
     """Create the panic message from templates
     """
@@ -557,6 +565,8 @@ def panic_message(panic, a=None, b=None):
             msg = MSG_BAD_FWALL % "It is likely that you are using ZoneAlarm on Vista.<br>"
         else:
             msg = MSG_BAD_FWALL % "<br>"
+    elif panic == PANIC_SQLITE:
+        msg = MSG_SQLITE
     else:
         msg = MSG_OTHER % (a, b)
 
@@ -590,6 +600,9 @@ def panic_queue(name):
 
 def panic_tmpl(name):
     launch_a_browser(panic_message(PANIC_TEMPL, name, 0))
+
+def panic_sqlite(name):
+    launch_a_browser(panic_message(PANIC_SQLITE, name, 0))
 
 def panic_old_queue():
     msg = MSG_OLD_QUEUE
