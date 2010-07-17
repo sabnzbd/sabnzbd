@@ -89,7 +89,7 @@ class Decoder(Thread):
 
             if lines:
                 try:
-                    logging.info("Decoding %s", article)
+                    logging.debug("Decoding %s", article)
 
                     data = decode(article, lines)
                     nzf.article_count += 1
@@ -163,7 +163,8 @@ class Decoder(Thread):
             ## Allow all servers to iterate over this nzo and nzf again ##
             sabnzbd.nzbqueue.reset_try_lists(nzf, nzo)
 
-            logging.info('%s => found at least one untested server', article)
+            if sabnzbd.LOG_ALL:
+                logging.debug('%s => found at least one untested server', article)
 
         else:
             logging.warning(Ta('warn-artAllMissing@1'), article)

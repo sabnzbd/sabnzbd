@@ -216,7 +216,7 @@ class NzbQueue(TryList):
                 self.reset_try_list()
             except:
                 logging.error(Ta('error-qAdd@1'), nzo_id)
-                logging.debug("Traceback: ", exc_info = True)
+                logging.info("Traceback: ", exc_info = True)
                 self.remove(nzo_id, False)
         else:
             logging.info("Item %s no longer in queue, omitting",
@@ -312,7 +312,7 @@ class NzbQueue(TryList):
             self.sort_by_avg_age()
 
     @synchronized(NZBQUEUE_LOCK)
-    def remove(self, nzo_id, add_to_history = True, unload=False, save=True, cleanup=True, keep_basic=False):
+    def remove(self, nzo_id, add_to_history = True, unload=False, save=True, cleanup=True, keep_basic=False, del_files=False):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
@@ -329,7 +329,7 @@ class NzbQueue(TryList):
                 history_db.close()
 
             elif cleanup:
-                self.cleanup_nzo(nzo, keep_basic)
+                self.cleanup_nzo(nzo, keep_basic, del_files)
 
             if save:
                 self.save(nzo)
@@ -702,8 +702,8 @@ class NzbQueue(TryList):
         return empty
 
     @synchronized(NZBQUEUE_LOCK)
-    def cleanup_nzo(self, nzo, keep_basic=False):
-        nzo.purge_data(keep_basic)
+    def cleanup_nzo(self, nzo, keep_basic=False, del_files=False):
+        nzo.purge_data(keep_basic, del_files)
 
         ArticleCache.do.purge_articles(nzo.saved_articles)
 
@@ -834,9 +834,9 @@ def move_bottom_bulk(nzo_id, nzf_ids):
     global __NZBQ
     if __NZBQ: __NZBQ.move_bottom_bulk(nzo_id, nzf_ids)
 
-def remove_nzo(nzo_id, add_to_history = True, unload=False):
+def remove_nzo(nzo_id, add_to_history = True, unload=False, del_files=False):
     global __NZBQ
-    if __NZBQ: __NZBQ.remove(nzo_id, add_to_history, unload)
+    if __NZBQ: __NZBQ.remove(nzo_id, add_to_history, unload, del_files=del_files)
 
 def remove_multiple_nzos(nzo_ids):
     global __NZBQ
@@ -936,9 +936,9 @@ def resume_multiple_nzo(jobs):
     global __NZBQ
     if __NZBQ: __NZBQ.resume_multiple_nzo(jobs)
 
-def cleanup_nzo(nzo, keep_basic=False):
+def cleanup_nzo(nzo, keep_basic=False, del_files=False):
     global __NZBQ
-    if __NZBQ: __NZBQ.cleanup_nzo(nzo, keep_basic)
+    if __NZBQ: __NZBQ.cleanup_nzo(nzo, keep_basic, del_files=del_files)
 
 def reset_try_lists(nzf = None, nzo = None):
     global __NZBQ

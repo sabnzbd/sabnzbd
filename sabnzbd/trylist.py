@@ -20,10 +20,11 @@ sabnzbd.trylist - trylist class
 """
 
 import logging
+from threading import Lock
 
+import sabnzbd
 from sabnzbd.decorators import synchronized
 
-from threading import Lock
 
 # TryList keeps track of which servers have been tried for
 # a specific article
@@ -46,14 +47,14 @@ class TryList:
     def add_to_try_list(self, server):
         """ Register server as having been tried already """
         if server not in self.__try_list:
-            logging.debug("Appending %s to %s.__try_list", server, self)
+            if sabnzbd.LOG_ALL: logging.debug("Appending %s to %s.__try_list", server, self)
             self.__try_list.append(server)
 
     @synchronized(TRYLIST_LOCK)
     def remove_from_try_list(self, server):
         """ Server is no longer listed as tried """
         if server in self.__try_list:
-            logging.debug("Removing %s from %s.__try_list",  server, self)
+            if sabnzbd.LOG_ALL: logging.debug("Removing %s from %s.__try_list",  server, self)
             self.__try_list.remove(server)
 
     @synchronized(TRYLIST_LOCK)

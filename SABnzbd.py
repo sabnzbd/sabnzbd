@@ -49,23 +49,26 @@ if not cherrypy.__version__.startswith("3.2"):
 from cherrypy import _cpserver
 from cherrypy import _cpwsgi_server
 
+SQLITE_DLL = True
 try:
     from sqlite3 import version as sqlite3_version
 except:
     try:
         from pysqlite2.dbapi2 import version as sqlite3_version
     except:
-        print "Sorry, requires Python module sqlite3 (pysqlite2 in python2.4)"
         if os.name != 'nt':
+            print "Sorry, requires Python module sqlite3 (pysqlite2 in python2.4)"
             print "Try: apt-get install python-pysqlite2"
-        sys.exit(1)
+            sys.exit(1)
+        else:
+            SQLITE_DLL = False
 
 import sabnzbd
 import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
-     check_latest_version, panic_tmpl, panic_port, panic_fwall, panic, exit_sab, \
+     check_latest_version, panic_tmpl, panic_port, panic_fwall, panic_sqlite, panic, exit_sab, \
      panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates, \
      windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber
 import sabnzbd.scheduler as scheduler
@@ -244,6 +247,7 @@ def print_help():
     print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
+    print "      --log-all            Log all article handling (for developers)"
 
 def print_version():
     print """
@@ -550,11 +554,13 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = cherryhost
 
     # Some systems don't like brackets in numerical ipv6
-    if '[' in cherryhost:
-        try:
-            info = socket.getaddrinfo(cherryhost, None)
-        except:
+        if sabnzbd.DARWIN:
             cherryhost = cherryhost.strip('[]')
+        else:
+            try:
+                info = socket.getaddrinfo(cherryhost, None)
+            except:
+                cherryhost = cherryhost.strip('[]')
 
     if ipv6 and ipv4 and \
        (browserhost not in ('localhost', '127.0.0.1', '[::1]', '::1')):
@@ -571,6 +577,11 @@ def get_webhost(cherryhost, cherryport, https_port):
             cherryhost = '127.0.0.1'
             if ips[0] != '127.0.0.1':
                 browserhost = '127.0.0.1'
+
+    # This is to please Chrome on OSX
+    if cherryhost == 'localhost' and sabnzbd.DARWIN:
+        cherryhost = '127.0.0.1'
+        browserhost = 'localhost'
 
     if cherryport is None:
         cherryport = sabnzbd.cfg.cherryport.get_int()
@@ -732,6 +743,7 @@ def commandline_handler(frozen=True):
                                     'weblogging=', 'server=', 'templates',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
+                                    'log-all',
                                     # Below Win32 Service options
                                     'password=', 'username=', 'startup=', 'perfmonini=', 'perfmondll=',
                                     'interactive', 'wait=',
@@ -870,6 +882,8 @@ def main():
         elif opt in ('--repair-all',):
             repair = 2
             pause = True
+        elif opt in ('--log-all',):
+            sabnzbd.LOG_ALL = True
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -907,6 +921,10 @@ def main():
     # Detect Windows variant
     if sabnzbd.WIN32:
         vista_plus, vista64 = windows_variant()
+
+    if not SQLITE_DLL:
+        panic_sqlite(sabnzbd.MY_FULLNAME)
+        exit_sab(2)
 
     if inifile:
         # INI file given, simplest case

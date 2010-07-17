@@ -45,6 +45,7 @@ queued            In der Warteschlange
 button-back       Zurück
 button-x          X
 confirm           Sind Sie sicher?
+delFiles          Delete all downloaded files?
 
 # Header
 menu-home         Startseite

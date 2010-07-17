@@ -45,7 +45,7 @@ def upload_file(url, fp):
         u = urllib2.urlopen(url)
     except:
         logging.error("Failed to upload file: %s", fp)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
 
 
 def add_local(f):

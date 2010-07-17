@@ -119,7 +119,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
             if not keep: os.remove(path)
         except:
             logging.error(Ta('error-remove@1'), path)
-            logging.debug("Traceback: ", exc_info = True)
+            logging.info("Traceback: ", exc_info = True)
             status = 1
     else:
         zf.close()
@@ -154,7 +154,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         f.close()
     except:
         logging.warning(Ta('warn-noRead@1'), path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
         return -2
 
 
@@ -182,7 +182,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         if not keep: os.remove(path)
     except:
         logging.error(Ta('error-remove@1'), path)
-        logging.debug("Traceback: ", exc_info = True)
+        logging.info("Traceback: ", exc_info = True)
         return 1
 
     return 0
@@ -231,7 +231,9 @@ class DirScanner(threading.Thread):
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
         self.busy = False
+        self.trigger = False
         cfg.dirscan_dir.callback(self.newdir)
+        cfg.dirscan_speed.callback(self.newspeed)
         DirScanner.do = self
 
     def newdir(self):
@@ -240,6 +242,11 @@ class DirScanner(threading.Thread):
         self.suspected = {}
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
+
+    def newspeed(self):
+        """ We're notified of a scan speed change """
+        self.dirscan_speed = cfg.dirscan_speed()
+        self.trigger = True
 
     def stop(self):
         self.save()
@@ -256,11 +263,12 @@ class DirScanner(threading.Thread):
         while not self.shutdown:
             # Use variable scan delay
             x = max(self.dirscan_speed, 1)
-            while (x > 0) and not self.shutdown:
+            while (x > 0) and not self.shutdown and not self.trigger:
                 time.sleep(1.0)
                 x = x - 1
 
             if self.dirscan_speed and not self.shutdown:
+                self.trigger = False
                 self.scan()
 
     def scan(self):
