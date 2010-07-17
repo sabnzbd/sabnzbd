@@ -105,11 +105,11 @@ jQuery(function($){
 	  		});
 	
 			// modals
-			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"350px", height:"375px", initialWidth:"350px", initialHeight:"375px", speed:0, opacity:0.7,
+			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), innerWidth:"350px", innerHeight:"375px", initialWidth:"350px", initialHeight:"375px", speed:0, opacity:0.7,
 			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
 			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
 			});
-			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"275px", height:"275px", initialWidth:"275px", initialHeight:"275px", speed:0, opacity:0.7,
+			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), innerWidth:"275px", innerHeight:"275px", initialWidth:"275px", initialHeight:"275px", speed:0, opacity:0.7,
 			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
 			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
 			});
@@ -404,7 +404,7 @@ jQuery(function($){
 			);
 			
 			// NZB pause/resume individual toggle
-			$('#queueTable .nzb_status').live('click',function(event){
+			$('#queue').delegate('.nzb_status','click',function(event){
 				var pid = $(this).parent().parent().attr('id');
 				if ($(this).hasClass('sprite_ql_grip_queued_on')) {
 					$(this).toggleClass('sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_paused_on');
@@ -431,7 +431,7 @@ jQuery(function($){
 			});
 			
 			// NZB individual deletion
-			$('#queue .sprite_ql_cross').live('click', function(event) {
+			$('#queue').delegate('.sprite_ql_cross','click', function(event) {
 				if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
 					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeTo('normal',0.25);
@@ -452,7 +452,7 @@ jQuery(function($){
 			});
 
 			// NZB change priority
-			$('#queueTable .options .proc_priority').live('change',function(){
+			$('#queue').delegate('.proc_priority','change',function(){
 				var nzbid = $(this).parent().parent().attr('id');
 				var oldPos = $('#'+nzbid)[0].rowIndex + $.plush.queuecurpage * $.plush.queuePerPage;
 				$.ajax({
@@ -474,7 +474,7 @@ jQuery(function($){
 			});
 			
 			// 3-in-1 change nzb [category + processing + script]
-			$('#queueTable .options .change_cat, #queueTable .options .change_opts, #queueTable .options .change_script').live('change',function(e){
+			$('#queue').delegate('.change_cat, .change_opts, .change_script','change',function(e){
 				var val = $(this).parent().parent().attr('id');
 				var cval = $(this).attr('class').split(" ")[0]; // ignore added "hovering" class
 				$.ajax({
@@ -614,7 +614,7 @@ jQuery(function($){
 	        $("#multiops_select_none").click(function(){
 	            $("INPUT[type='checkbox']","#queueTable").attr('checked', false).trigger('change');
 	        });
-	        $(".multiops","#queueTable").live('change',function(event) {
+	        $("#queue").delegate('.multiops','change',function(event) {
 				// range event interaction
 	            if (last1) last2 = last1;
 	            last1 = $(event.target).parent()[0].rowIndex ? $(event.target).parent()[0].rowIndex : $(event.target).parent().parent()[0].rowIndex;
@@ -770,7 +770,7 @@ jQuery(function($){
 			});
 			
 			// NZB individual removal
-			$('#history .sprite_ql_cross').live('click', function(event) {
+			$('#history').delegate('.sprite_ql_cross','click', function(event) {
 				if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
 					delid = $(event.target).parent().parent().attr('id');
 					$('#'+delid).fadeTo('normal',0.25);
@@ -809,11 +809,11 @@ jQuery(function($){
 			$('#historyTable').livequery(function() {
 				
 				// modal for viewing script logs
-				$('#historyTable .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+				$('#historyTable .modal').colorbox({ innerWidth:"80%", innerHeight:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				$("#historyTable .modal-detail").colorbox({ inline:true,
 					href: function(){return "#details-"+$(this).parent().parent().attr('id');},
 					title:function(){return $(this).text();},
-					width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+					innerWidth:"80%", innerHeight:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
 				// Build pagination only when needed
 				if ($.plush.histPerPage=="1") // disabled history
