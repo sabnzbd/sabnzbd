@@ -105,11 +105,11 @@ jQuery(function($){
 	  		});
 	
 			// modals
-			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), width:"350px", height:"375px", initialWidth:"350px", initialHeight:"375px", speed:0, opacity:0.7,
+			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), innerWidth:"350px", innerHeight:"375px", initialWidth:"350px", initialHeight:"375px", speed:0, opacity:0.7,
 			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
 			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
 			});
-			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), width:"275px", height:"275px", initialWidth:"275px", initialHeight:"275px", speed:0, opacity:0.7,
+			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), innerWidth:"275px", innerHeight:"275px", initialWidth:"275px", initialHeight:"275px", speed:0, opacity:0.7,
 			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
 			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
 			});
@@ -809,11 +809,11 @@ jQuery(function($){
 			$('#historyTable').livequery(function() {
 				
 				// modal for viewing script logs
-				$('#historyTable .modal').colorbox({ width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+				$('#historyTable .modal').colorbox({ innerWidth:"80%", innerHeight:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				$("#historyTable .modal-detail").colorbox({ inline:true,
 					href: function(){return "#details-"+$(this).parent().parent().attr('id');},
 					title:function(){return $(this).text();},
-					width:"80%", height:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
+					innerWidth:"80%", innerHeight:"80%", initialWidth:"80%", initialHeight:"80%", speed:0, opacity:0.7 });
 				
 				// Build pagination only when needed
 				if ($.plush.histPerPage=="1") // disabled history
