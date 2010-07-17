@@ -686,10 +686,13 @@ tr:hover .nzb_status_grippie {
 	text-decoration: none;
 }
  
-.queueTable tr:hover a { color: #000; }
- 
-.queueTable a:hover {
+.queueTable tr:hover a {
+	color: #000;
 	border-bottom: 1px dotted #606060;
+}
+ 
+.queueTable tr:hover a:hover {
+	border-bottom: 1px solid #606060;
 	cursor: pointer;
 }
  
