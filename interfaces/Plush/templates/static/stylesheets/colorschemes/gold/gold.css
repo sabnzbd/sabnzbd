@@ -1286,6 +1286,20 @@ fieldset.EntryFieldSet {
 	width:120px;
   }
 
+.rssTable { border-spacing: 1px; }
+  .rssTable th,
+  .rssTable td {
+    padding:3px 3px 5px;
+  }
+  .rssTable th {
+	background-color:#555;
+	color:#FFF;
+	font-weight:bold;
+  }
+  .rssTable td {
+	background-color:#DDD;
+  }
+
 #schedulingTable td, #switchesTable td {
     padding:3px 3px 5px;
 }
