@@ -151,6 +151,7 @@ jQuery(document).ready(function($){
         	break;
 
         case 'RSS':
+			/*
         	$(':checkbox').click(function(event){ // toggle feed
 				$(event.target).parents('form:first').attr('action','toggle_rss_feed').submit();
 				return false;
@@ -191,6 +192,7 @@ jQuery(document).ready(function($){
         		window.onbeforeunload = null;
 				window.location = $(event.target).val()+'&session='+apikey;
 			});
+			*/
 			break;
 
         case 'Email':

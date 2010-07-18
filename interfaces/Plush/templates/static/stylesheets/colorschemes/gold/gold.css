@@ -1372,11 +1372,13 @@ legend .config_sprite_container {
 }
 
 #config_content legend.latestWarnings,
-#config_content legend.serverDisabled { background-color:#8B0000; }
 #config_content legend.lastEmail,
 #config_content legend.serverBackup { background-color:#00008B; }
 #config_content legend.serverOptional { background-color:#009090; }
 #config_content legend.serverEnabled { background-color:#006400; }
+#config_content legend.serverDisabled { background-color:#8B0000; }
+#config_content legend.feedEnabled { background-color:#006400; }
+#config_content legend.feedDisabled { background-color:#8B0000; }
 
  
 /* sprite-config.png */
