@@ -976,7 +976,7 @@ def get_admin_path(newstyle, name, future):
     """
     if newstyle:
         if future:
-            return os.path.join(cfg.admin_dir.get_path(), 'future')
+            return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
         else:
             return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
     else:
