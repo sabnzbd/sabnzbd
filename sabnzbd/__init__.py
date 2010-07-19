@@ -140,7 +140,7 @@ def sig_handler(signum = None, frame = None):
     if type(signum) != type(None):
         logging.warning(Ta('warn-signal@1'), signum)
     try:
-        save_state()
+        save_state(flag=True)
     finally:
         SABSTOP = True
         os._exit(0)
@@ -220,6 +220,13 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     if check_repair_request():
         repair = 2
         pause_downloader = True
+    else:
+        # Check crash detection file
+        if load_admin(TERM_FLAG_FILE, remove=True):
+            repair = 2
+
+    # Set crash detection file
+    save_admin(1, TERM_FLAG_FILE)
 
     ###
     ### Initialize threads
@@ -333,7 +340,7 @@ def halt():
             pass
 
         ## Save State ##
-        save_state()
+        save_state(flag=True)
 
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
@@ -405,7 +412,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     URLGrabber.do.add(url, future_nzo)
 
 
-def save_state():
+def save_state(flag=False):
     ArticleCache.do.flush_articles()
     nzbqueue.save()
     BPSMeter.do.save()
@@ -413,6 +420,9 @@ def save_state():
     Bookmarks.do.save()
     DirScanner.do.save()
     PostProcessor.do.save()
+    if flag:
+        # Remove crash detector
+        load_admin(TERM_FLAG_FILE, remove=True)
 
 def pause_all():
     global PAUSED_ALL

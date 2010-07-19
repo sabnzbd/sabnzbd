@@ -1321,7 +1321,7 @@ def main():
             rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
                  sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)
             if rc == win32event.WAIT_OBJECT_0:
-                sabnzbd.save_state()
+                sabnzbd.save_state(flag=True)
                 logging.info('Leaving SABnzbd')
                 sabnzbd.SABSTOP = True
                 return

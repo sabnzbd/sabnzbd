@@ -57,6 +57,7 @@ POSTPROC_QUEUE_FILE_NAME  = 'postproc%s.sab' % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME    = 'rss_data.sab'
 BOOKMARK_FILE_NAME = 'bookmarks.sab'
 SCAN_FILE_NAME    = 'watched_data.sab'
+TERM_FLAG_FILE    = 'running.sab'
 JOB_ADMIN = '__ADMIN__'
 ATTRIB_FILE = 'SABnzbd_attrib'
 REPAIR_REQUEST = 'repair-all.sab'
