@@ -215,7 +215,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     if not os.path.exists(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME)):
         OLD_QUEUE = bool(misc.globber(cfg.cache_dir.get_path(), QUEUE_FILE_TMPL % '?'))
 
-    sabnzbd.change_queue_complete_action(cfg.queue_complete())
+    sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
     if check_repair_request():
         repair = 2
@@ -607,10 +607,11 @@ def restart_program():
     cherrypy.engine.restart()
 
 
-def change_queue_complete_action(action):
+def change_queue_complete_action(action, new=True):
     """
     Action or script to be performed once the queue has been completed
     Scripts are prefixed with 'script_'
+    When "new" is False, check wether non-script actions are acceptable
     """
     global QUEUECOMPLETE, QUEUECOMPLETEACTION, QUEUECOMPLETEARG
 
@@ -620,14 +621,19 @@ def change_queue_complete_action(action):
         #all scripts are labeled script_xxx
         _action = run_script
         _argument = action.replace('script_', '')
-    elif action == 'shutdown_pc':
-        _action = system_shutdown
-    elif action == 'hibernate_pc':
-        _action = system_hibernate
-    elif action == 'standby_pc':
-        _action = system_standby
-    elif action == 'shutdown_program':
-        _action = shutdown_program
+    elif new or cfg.queue_complete_pers.get():
+        if action == 'shutdown_pc':
+            _action = system_shutdown
+        elif action == 'hibernate_pc':
+            _action = system_hibernate
+        elif action == 'standby_pc':
+            _action = system_standby
+        elif action == 'shutdown_program':
+            _action = shutdown_program
+        else:
+            action = None
+    else:
+        action = None
 
     #keep the name of the action for matching the current select in queue.tmpl
     QUEUECOMPLETE = action
