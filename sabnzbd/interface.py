@@ -1502,7 +1502,7 @@ class ConfigRss(object):
     def add_rss_feed(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        feed= Strip(kwargs.get('feed'))
+        feed= Strip(kwargs.get('feed')).strip('[]')
         uri = Strip(kwargs.get('uri'))
         try:
             cfg = config.get_rss()[feed]
@@ -1881,7 +1881,7 @@ class ConfigCats(object):
         msg = check_session(kwargs)
         if msg: return msg
 
-        newname = kwargs.get('newname', '').strip()
+        newname = kwargs.get('newname', '').strip(' []')
         name = kwargs.get('name')
         if newname:
             if name:
