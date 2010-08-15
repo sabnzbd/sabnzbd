@@ -332,9 +332,11 @@ class Bookmarks(object):
             if delete:
                 if data.startswith('1'):
                     logging.info('Deleted newzbin bookmark %s', delete)
-                    self.bookmarks.remove(delete)
+                    if delete in self.bookmarks:
+                        self.bookmarks.remove(delete)
                 else:
-                    logging.warning(Ta('warn-nbNoDelBM@1'), delete)
+                    if delete in self.bookmarks:
+                        logging.warning(Ta('warn-nbNoDelBM@1'), delete)
             else:
                 for line in data.split('\n'):
                     try:
@@ -359,6 +361,4 @@ class Bookmarks(object):
 
     def del_bookmark(self, msgid):
         if cfg.newzbin_unbookmark():
-            msgid = str(msgid)
-            if msgid in self.bookmarks:
-                self.run(msgid)
+            self.run(str(msgid))
