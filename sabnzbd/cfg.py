@@ -23,7 +23,8 @@ import re
 import sabnzbd
 from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
                               DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
-                              NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR
+                              NORMAL_PRIORITY, DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
+                              DEF_ADMIN_DIR
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir, validate_dir_exists, \
@@ -152,7 +153,7 @@ complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False,
 script_dir = OptionDir('misc', 'script_dir', create=False, validation=validate_dir_exists)
 nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
 cache_dir = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
-admin_dir = OptionDir('misc', 'admin_dir', 'admin', validation=validate_safedir)
+admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_safedir)
 #log_dir = OptionDir('misc', 'log_dir', 'logs')
 dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
