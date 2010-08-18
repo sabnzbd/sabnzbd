@@ -50,6 +50,8 @@ from sabnzbd.database import get_history_handle
 
 status_icons = {'idle':'../Resources/sab_idle.png','pause':'../Resources/sab_pause.png','clicked':'../Resources/sab_clicked.png'}
 start_time = NSDate.date()
+debug = 1
+
 
 class SABnzbdDelegate(NSObject):
 
@@ -58,6 +60,7 @@ class SABnzbdDelegate(NSObject):
 
     def awakeFromNib(self):
         #Status Bar iniatilize
+        #if (debug == 1) : NSLog("[osx] awake")
         self.buildMenu()
         #Timer for updating menu
         self.timer = NSTimer.alloc().initWithFireDate_interval_target_selector_userInfo_repeats_(start_time, 3.0, self, 'updateAction:', None, True)
@@ -79,20 +82,25 @@ class SABnzbdDelegate(NSObject):
         self.status_item.setToolTip_('SABnzbd')
         self.status_item.setEnabled_(YES)
 
-        #Wait for SABnzbd Initialisation
-        cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
+        if (debug == 1) : NSLog("[osx] menu 1 building")
 
-        logging.info("[osx] yes=%s" % (T('yes')))
+        #Wait for SABnzbd Initialisation
+        #cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
+        
+        if (debug == 1) : NSLog("[osx] yes=%s" % (T('yes')))
 
         while T('yes')[0:1]=="#":
             time.sleep(0.5)
-            logging.info("[osx] language file not loaded, waiting")
+            if (debug == 1) : NSLog("[osx] yes=%s" % (T('yes')))
+            if (debug == 1) : NSLog("[osx] language file not loaded, waiting")
 
         #Variables
         self.state = "Idle"
         self.speed = downloader.get_limit()
         self.version_notify = 1
         self.status_removed = 0
+
+        if (debug == 1) : NSLog("[osx] menu 2 initialization")
 
         #Menu construction
         self.menu = NSMenu.alloc().init()
@@ -104,6 +112,8 @@ class SABnzbdDelegate(NSObject):
         except:
             self.isLeopard = 0
 
+        if (debug == 1) : NSLog("[osx] menu 3 construction")
+
         #Warnings Item
         self.warnings_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-warnings'), 'openBrowserAction:', '')
         if self.isLeopard:
@@ -113,10 +123,14 @@ class SABnzbdDelegate(NSObject):
         self.warnings_menu_item.setRepresentedObject_("connections/")
         self.menu.addItem_(self.warnings_menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 4 warning added")
+
         #State Item
         self.state_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-status-idle'), 'openBrowserAction:', '')
         self.state_menu_item.setRepresentedObject_("")
         self.menu.addItem_(self.state_menu_item)
+
+        if (debug == 1) : NSLog("[osx] menu 5 state added")
 
         #Config Item
         menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-config'), 'openBrowserAction:', '')
@@ -125,10 +139,14 @@ class SABnzbdDelegate(NSObject):
         menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
         self.menu.addItem_(menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 6 config added")
+
         #Queue Item
         self.queue_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-queue'), 'openBrowserAction:', '')
         self.queue_menu_item.setRepresentedObject_("")
         self.menu.addItem_(self.queue_menu_item)
+
+        if (debug == 1) : NSLog("[osx] menu 7 queue added")
 
         #Purge Queue Item
         self.purgequeue_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-purgequeue'), 'purgeAction:', '')
@@ -137,10 +155,14 @@ class SABnzbdDelegate(NSObject):
         self.purgequeue_menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
         self.menu.addItem_(self.purgequeue_menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 8 purge queue added")
+
         #History Item
         self.history_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-history'), 'openBrowserAction:', '')
         self.history_menu_item.setRepresentedObject_("")
         self.menu.addItem_(self.history_menu_item)
+
+        if (debug == 1) : NSLog("[osx] menu 9 history added")
 
         #Purge History Item
         self.purgehistory_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-purgehistory'), 'purgeAction:', '')
@@ -148,6 +170,8 @@ class SABnzbdDelegate(NSObject):
         self.purgehistory_menu_item.setAlternate_(YES)
         self.purgehistory_menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
         self.menu.addItem_(self.purgehistory_menu_item)
+
+        if (debug == 1) : NSLog("[osx] menu 10 purge history added")
 
         self.separator_menu_item = NSMenuItem.separatorItem()
         self.menu.addItem_(self.separator_menu_item)
@@ -170,6 +194,8 @@ class SABnzbdDelegate(NSObject):
         self.speed_menu_item.setSubmenu_(self.menu_speed)
         self.menu.addItem_(self.speed_menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 11 limit speed added")
+
         #Pause Item & Submenu
         self.pause_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-pause'), 'pauseAction:', '')
         self.pause_menu_item.setRepresentedObject_('0')
@@ -184,6 +210,8 @@ class SABnzbdDelegate(NSObject):
         self.pause_menu_item.setSubmenu_(self.menu_pause)
         self.menu.addItem_(self.pause_menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 12 pause added")
+
         #Resume Item
         self.resume_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-resume'), 'resumeAction:', '')
         if self.isLeopard:
@@ -191,6 +219,8 @@ class SABnzbdDelegate(NSObject):
         else:
             self.resume_menu_item.setEnabled_(NO)
         self.menu.addItem_(self.resume_menu_item)
+
+        if (debug == 1) : NSLog("[osx] menu 13 resume added")
 
         #Newzbin Item
         self.newzbin_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-getnewzbinbm'), 'getNewzbinBookmarksAction:', '')
@@ -203,15 +233,19 @@ class SABnzbdDelegate(NSObject):
         self.separator2_menu_item = NSMenuItem.separatorItem()
         self.menu.addItem_(self.separator2_menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 14 newzbin added")
+        
         #Complete Folder Item
         self.completefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-complete'), 'openFolderAction:', '')
-        self.completefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.COMPLETE_DIR.get_path())
+        self.completefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.complete_dir.get_path())
         self.menu.addItem_(self.completefolder_menu_item)
 
         #Incomplete Folder Item
         self.incompletefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-incomplete'), 'openFolderAction:', '')
-        self.incompletefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.DOWNLOAD_DIR.get_path())
+        self.incompletefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.download_dir.get_path())
         self.menu.addItem_(self.incompletefolder_menu_item)
+
+        if (debug == 1) : NSLog("[osx] menu 15 folder added")
 
         self.menu.addItem_(NSMenuItem.separatorItem())
 
@@ -223,14 +257,20 @@ class SABnzbdDelegate(NSObject):
         menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-quit'), 'terminate:', '')
         self.menu.addItem_(menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 16 quit added")
+
         #Restart Item
         menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('osx-menu-restart'), 'restartAction:', '')
         menu_item.setAlternate_(YES)
         menu_item.setKeyEquivalentModifierMask_(NSAlternateKeyMask)
         self.menu.addItem_(menu_item)
 
+        if (debug == 1) : NSLog("[osx] menu 17 restart added")
+
         #Add menu to Status Item
         self.status_item.setMenu_(self.menu)
+
+        if (debug == 1) : NSLog("[osx] menu 18 menu added")
 
     def updateAction_(self, notification):
         try:
@@ -469,7 +509,7 @@ class SABnzbdDelegate(NSObject):
 
     def newzbinUpdate(self):
         try:
-            if sabnzbd.cfg.newzbin_username() and sabnzbd.cfg.newzbin_password() and sabnzbd.cfg.NEWZBIN_BOOKMARKS():
+            if sabnzbd.cfg.newzbin_username() and sabnzbd.cfg.newzbin_password() and sabnzbd.cfg.newzbin_bookmarks():
                 if self.isLeopard:
                     self.newzbin_menu_item.setHidden_(NO)
                 else:
@@ -531,8 +571,8 @@ class SABnzbdDelegate(NSObject):
 
     def diskspaceUpdate(self):
         try:
-            self.completefolder_menu_item.setTitle_("%s%.2f GB" % (T('osx-menu-complete'),diskfree(sabnzbd.cfg.COMPLETE_DIR.get_path())))
-            self.incompletefolder_menu_item.setTitle_("%s%.2f GB" % (T('osx-menu-incomplete'),diskfree(sabnzbd.cfg.DOWNLOAD_DIR.get_path())))
+            self.completefolder_menu_item.setTitle_("%s%.2f GB" % (T('osx-menu-complete'),diskfree(sabnzbd.cfg.complete_dir.get_path())))
+            self.incompletefolder_menu_item.setTitle_("%s%.2f GB" % (T('osx-menu-incomplete'),diskfree(sabnzbd.cfg.download_dir.get_path())))
         except :
             logging.info("[osx] diskspaceUpdate Exception %s" % (sys.exc_info()[0]))
 
@@ -609,7 +649,7 @@ class SABnzbdDelegate(NSObject):
         else:
             link = ""
         #logging.info("[osx] opening http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.CHERRYHOST(), sabnzbd.cfg.CHERRYPORT(),link))
-        launch_a_browser("http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.CHERRYHOST(), sabnzbd.cfg.CHERRYPORT(),link),True)
+        launch_a_browser("http://%s:%s/sabnzbd/%s" % (sabnzbd.cfg.cherryhost(), sabnzbd.cfg.cherryport(),link),True)
 
     def speedlimitAction_(self, sender):
         #logging.info("[osx] speed limit to %s" % (sender.representedObject()))
@@ -642,7 +682,11 @@ class SABnzbdDelegate(NSObject):
         Bookmarks.do.run()
 
     def openFolderAction_(self, sender):
-        os.system('open "%s"' % sender.representedObject())
+        folder2open = sender.representedObject()
+        if isinstance(folder2open, unicode):
+            folder2open = folder2open.encode("utf-8")
+        if (debug == 1) : NSLog("[osx] %@",folder2open )
+        os.system('open "%s"' % folder2open)
 
 #    def aboutAction_(self, sender):
 #        app = NSApplication.sharedApplication()

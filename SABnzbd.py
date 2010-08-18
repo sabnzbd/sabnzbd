@@ -1131,7 +1131,7 @@ def main():
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
 
-    if not sabnzbd.WIN_SERVICE:
+    if not sabnzbd.WIN_SERVICE and not sabnzbd.DARWIN:
         signal.signal(signal.SIGINT, sabnzbd.sig_handler)
         signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 
