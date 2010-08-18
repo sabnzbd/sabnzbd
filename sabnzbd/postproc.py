@@ -576,7 +576,7 @@ def handle_empty_queue():
             Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
 
         sabnzbd.QUEUECOMPLETEACTION_GO = False
-        sabnzbd.change_queue_complete_action(cfg.queue_complete())
+        sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
 
 def cleanup_list(wdir, skip_nzb):

@@ -109,7 +109,7 @@ class NzbQueue(TryList):
         if repair:
             self.scan_jobs(folders)
             # Handle any lost future jobs
-            for nzo_id in globber(os.path.join(cfg.admin_dir.get_path(), 'future')):
+            for nzo_id in globber(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
                 if nzo_id not in self.__nzo_table:
                     self.add(nzo, save=False)
 

@@ -691,7 +691,10 @@ def save_config(force=False):
             except:
                 CFG[section] = {}
             for subsec in database[section]:
-                subsec_mod = subsec.replace('[', '{').replace(']','}')
+                if section == 'servers':
+                    subsec_mod = subsec.replace('[', '{').replace(']','}')
+                else:
+                    subsec_mod = subsec
                 try:
                     CFG[section][subsec_mod]
                 except:
