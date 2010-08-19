@@ -426,6 +426,7 @@ button-forceFeed         Forcer téléchargements
 rss-order                Trier
 rss-type                 Type
 rss-filter               Filtre
+rss-skip                 Skip
 rss-accept               Accepter
 rss-reject               Rejeter
 rss-must                 Obligatoire

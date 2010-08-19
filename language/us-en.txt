@@ -426,6 +426,7 @@ button-forceFeed         Force Download
 rss-order                Order
 rss-type                 Type
 rss-filter               Filter
+rss-skip                 Skip
 rss-accept               Accept
 rss-reject               Reject
 rss-must                 Requires

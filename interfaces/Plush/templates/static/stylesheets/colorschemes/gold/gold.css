@@ -1289,6 +1289,20 @@ fieldset.EntryFieldSet {
 	width:120px;
   }
 
+.rssTable { border-spacing: 1px; }
+  .rssTable th,
+  .rssTable td {
+    padding:3px 3px 5px;
+  }
+  .rssTable th {
+	background-color:#555;
+	color:#FFF;
+	font-weight:bold;
+  }
+  .rssTable td {
+	background-color:#DDD;
+  }
+
 #schedulingTable td, #switchesTable td {
     padding:3px 3px 5px;
 }
@@ -1361,11 +1375,13 @@ legend .config_sprite_container {
 }
 
 #config_content legend.latestWarnings,
-#config_content legend.serverDisabled { background-color:#8B0000; }
 #config_content legend.lastEmail,
 #config_content legend.serverBackup { background-color:#00008B; }
 #config_content legend.serverOptional { background-color:#009090; }
 #config_content legend.serverEnabled { background-color:#006400; }
+#config_content legend.serverDisabled { background-color:#8B0000; }
+#config_content legend.feedEnabled { background-color:#006400; }
+#config_content legend.feedDisabled { background-color:#8B0000; }
 
  
 /* sprite-config.png */

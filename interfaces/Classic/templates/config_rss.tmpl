@@ -6,24 +6,11 @@
 <!--#set global $submenu="rss"#-->
 <!--#include $webdir + "/inc_cmenu.tmpl"#-->
 
-<h2>$T('configRSS')</h2>
+<h2><a href="../rss">$T('configRSS')</a></h2>
 
-<div class="EntryBlock">
-<form action="add_rss_feed" method="post">
-<fieldset class="EntryFieldSet">
-<legend>$T('newFeedURI')</legend>
-    <input type="text" size="10" name="feed" value="$feed"/>&nbsp;
-    <input type="text" size="104" name="uri" value=""/><br/><br/>
-    <input type="hidden" name="session" value="$session">
-    <input type="submit" value="$T('button-add')"/>
-</fieldset>
-</form>
-</div>
+<!--#if $active_feed#-->
 
-<p>$T('explain-RSS')</p>
-
-<!--#for $feed in $rss#-->
-    <h3>$T('feedDefinition')</h3>
+    <!--#set $feed = $active_feed#-->
     <div class="EntryBlock">
     <form action="upd_rss_feed" method="post">
         <fieldset class="EntryFieldSet">
@@ -212,6 +199,118 @@
     </table>
     </div>
     </fieldset>
-<!--#end for#-->
+
+    <h3>$T('rss-matched')</h3>
+    <table id="catTable">
+        <tr>
+            <th>&nbsp;</th>
+            <th>&nbsp;$T('rss-skip')&nbsp;</th>
+            <th>&nbsp;$T('rss-filter')&nbsp;</th>
+            <th>Title</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $job in $matched#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <td><form action="download" method="get">
+                <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" value="$feed" name="feed"/>
+                <input type="hidden" name="session" value="$session">
+                <input type="submit" value="$T('link-download')">
+            </form>
+        </td>
+        <td>$job[2]</td>
+        <td>$job[3]</td>
+        <td>$job[1]</td>
+        </tr>
+    <!--#end for#-->
+    </table>
+
+    <h3>$T('rss-notMatched')</h3>
+    <table id="catTable">
+        <tr>
+            <th>&nbsp;</th>
+            <th>&nbsp;$T('rss-skip')&nbsp;</th>
+            <th>&nbsp;$T('rss-filter')&nbsp;</th>
+            <th>Title</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $job in $unmatched#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <td><form action="download" method="get">
+                <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" value="$feed" name="feed"/>
+                <input type="hidden" name="session" value="$session">
+                <input type="submit" value="$T('link-download')">
+            </form>
+        </td>
+        <td>$job[2]</td>
+        <td>$job[3]</td>
+        <td>$job[1]</td>
+        </tr>
+    <!--#end for#-->
+    </table>
+
+    <h3>$T('rss-done')</h3>
+    <table id="catTable">
+        <tr>
+            <th>Title</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $job in $downloaded#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <td>$job</td>
+        </tr>
+    <!--#end for#-->
+    </table>
+
+<!--#else#-->
+    <div class="EntryBlock">
+    <form action="add_rss_feed" method="post">
+    <fieldset class="EntryFieldSet">
+    <legend>$T('newFeedURI')</legend>
+        <input type="text" size="10" name="feed" value="$feed"/>&nbsp;
+        <input type="text" size="104" name="uri" value=""/><br/><br/>
+        <input type="hidden" name="session" value="$session">
+        <input type="submit" value="$T('button-add')"/>
+    </fieldset>
+    </form>
+    </div>
+
+    <p>$T('explain-RSS')</p>
+
+    <table id="catTable">
+        <tr>
+            <th></th>
+            <th>Enabled</th>
+            <th>$T('feed')</th>
+            <th>URL</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $feed in sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td><form action="del_rss_feed" method="get">
+                <input type="hidden" name="session" value="$session">
+                <input type="hidden" value="$feed" name="feed">
+                <input type="submit" value="$T('button-del')"></form>
+            </td>
+            <td><form action="upd_rss_feed" method="post">
+                <input type="hidden" name="session" value="$session">
+                <input type="hidden" value="$feed" name="feed">
+                <input type="hidden" value="1" name="table">
+                <input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
+                </form>
+            </td>
+            <td><a href="?feed=$rss[$feed]['link']">$feed</a></td>
+            <td>$rss[$feed]['uri']</td>
+        </tr>
+    <!--#end for#-->
+</table>
+
+<!--#end if#-->
+
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->
