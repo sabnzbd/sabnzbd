@@ -196,6 +196,12 @@ def process_job(nzo):
     nzo.save_attribs()
     flag_repair, flag_unpack, flag_delete = nzo.repair_opts
 
+    if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
+        # After streaming, force +D
+        nzo.set_pp(3)
+        nzo.status = 'Failed'
+        return False
+
     # Get the NZB name
     filename = nzo.final_name
     msgid = nzo.msgid
