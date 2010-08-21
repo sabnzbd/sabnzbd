@@ -70,15 +70,15 @@ fail_on_crc = OptionBool('misc', 'fail_on_crc', False)
 send_group = OptionBool('misc', 'send_group', False)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 
-email_server = OptionStr('misc', 'email_server', validation=validate_server)
-email_to     = OptionList('misc', 'email_to', validation=validate_email)
-email_from   = OptionStr('misc', 'email_from', validation=validate_email)
-email_account= OptionStr('misc', 'email_account')
-email_pwd    = OptionPassword('misc', 'email_pwd')
-email_endjob = OptionNumber('misc', 'email_endjob', 0, 0, 2)
-email_full   = OptionBool('misc', 'email_full', False)
-email_dir    = OptionDir('misc', 'email_dir', create=False, validation=validate_dir_exists)
-email_rss    = OptionBool('misc', 'email_rss', False)
+email_server  = OptionStr('misc', 'email_server', validation=validate_server)
+email_to      = OptionList('misc', 'email_to', validation=validate_email)
+email_from    = OptionStr('misc', 'email_from', validation=validate_email)
+email_account = OptionStr('misc', 'email_account')
+email_pwd     = OptionPassword('misc', 'email_pwd')
+email_endjob  = OptionNumber('misc', 'email_endjob', 0, 0, 2)
+email_full    = OptionBool('misc', 'email_full', False)
+email_dir     = OptionDir('misc', 'email_dir', create=False, validation=validate_dir_exists)
+email_rss     = OptionBool('misc', 'email_rss', False)
 
 dirscan_pp = OptionNumber('misc', 'dirscan_opts', 3, 0, 3)
 version_check = OptionBool('misc', 'check_new_rel', True)
@@ -160,15 +160,15 @@ dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
 SIZE_LIMIT = OptionStr('misc', 'size_limit')
 
-cherryhost = OptionStr('misc','host', DEF_HOST)
+cherryhost = OptionStr('misc', 'host', DEF_HOST)
 if sabnzbd.WIN32:
-    cherryport = OptionStr('misc','port', DEF_PORT_WIN)
+    cherryport = OptionStr('misc', 'port', DEF_PORT_WIN)
 else:
-    cherryport = OptionStr('misc','port', DEF_PORT_UNIX)
+    cherryport = OptionStr('misc', 'port', DEF_PORT_UNIX)
 if sabnzbd.WIN32:
-    https_port = OptionStr('misc','https_port', DEF_PORT_WIN_SSL)
+    https_port = OptionStr('misc', 'https_port', DEF_PORT_WIN_SSL)
 else:
-    https_port = OptionStr('misc','https_port', DEF_PORT_UNIX_SSL)
+    https_port = OptionStr('misc', 'https_port', DEF_PORT_UNIX_SSL)
 
 username = OptionStr('misc', 'username')
 password = OptionPassword('misc', 'password')
@@ -202,13 +202,13 @@ no_penalties = OptionBool('misc', 'no_penalties', False)
 # Internal options, not saved in INI file
 debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
 
-api_key = OptionStr('misc','api_key', create_api_key())
+api_key = OptionStr('misc', 'api_key', create_api_key())
 disable_key = OptionBool('misc', 'disable_api_key', False)
 
 #------------------------------------------------------------------------------
 # Set root folders for Folder config-items
 #
-def set_root_folders(home, lcldata, prog, interf):
+def set_root_folders(home, lcldata):
     email_dir.set_root(home)
     download_dir.set_root(home)
     complete_dir.set_root(home)

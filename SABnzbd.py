@@ -25,7 +25,6 @@ import logging.handlers
 import os
 import getopt
 import signal
-import glob
 import socket
 import platform
 import time
@@ -69,7 +68,7 @@ from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
      check_latest_version, panic_tmpl, panic_port, panic_fwall, panic_sqlite, panic, exit_sab, \
-     panic_xport, notify, split_host, convert_version, get_ext, create_https_certificates, \
+     panic_xport, notify, split_host, get_ext, create_https_certificates, \
      windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
@@ -603,7 +602,10 @@ def get_webhost(cherryhost, cherryport, https_port):
 
     return cherryhost, cherryport, browserhost, https_port
 
+
 def is_sabnzbd_running(url):
+    """ Return True when there's already a SABnzbd instance running.
+    """
     import urllib2
     try:
         url = '%sapi?mode=version' % (url)
@@ -616,7 +618,10 @@ def is_sabnzbd_running(url):
     except:
         return False
 
+
 def find_free_port(host, currentport):
+    """ Return a free port, 0 when nothing is free
+    """
     n = 0
     while n < 10 and currentport <= 49151:
         try:
@@ -627,8 +632,10 @@ def find_free_port(host, currentport):
             n += 1
     return 0
 
+
 def check_for_sabnzbd(url, upload_nzbs):
-    # Check for a running instance of sabnzbd(same version) on this port
+    """ Check for a running instance of sabnzbd(same version) on this port
+    """
     if is_sabnzbd_running(url):
         # Upload any specified nzb files to the running instance
         if upload_nzbs:
@@ -642,10 +649,12 @@ def check_for_sabnzbd(url, upload_nzbs):
         return True
     return False
 
+
 def copy_old_files(newpath):
-    # OSX only:
-    # If no INI file found but old one exists, copy it
-    # When copying the INI, also copy rss, bookmarks and watched-data
+    """ OSX only:
+        If no INI file found but old one exists, copy it
+        When copying the INI, also copy rss, bookmarks and watched-data
+    """
     if not os.path.exists(os.path.join(newpath, DEF_INI_FILE)):
         if not os.path.exists(newpath):
             os.mkdir(newpath)
@@ -676,11 +685,11 @@ def copy_old_files(newpath):
 
 
 def evaluate_inipath(path):
-    # Derive INI file path from a partial path.
-    # Full file path: if file does not exist the name must contain a dot
-    # but not a leading dot.
-    # A foldername is enough, the standard name will be appended.
-
+    """ Derive INI file path from a partial path.
+        Full file path: if file does not exist the name must contain a dot
+        but not a leading dot.
+        foldername is enough, the standard name will be appended.
+    """
     path = os.path.normpath(os.path.abspath(path))
     inipath = os.path.join(path, DEF_INI_FILE)
     if os.path.isdir(path):
@@ -688,7 +697,7 @@ def evaluate_inipath(path):
     elif os.path.isfile(path):
         return path
     else:
-        dir, name = os.path.split(path)
+        dirpart, name = os.path.split(path)
         if name.find('.') < 1:
             return inipath
         else:
@@ -696,6 +705,8 @@ def evaluate_inipath(path):
 
 
 def cherrypy_logging(log_path, log_handler):
+    """ Setup CherryPy logging
+    """
     log = cherrypy.log
     log.access_file = ''
     log.error_file = ''
@@ -953,7 +964,7 @@ def main():
             panic('Cannot create folder "%s".' % sabnzbd.DIR_LCLDATA, 'Check specified INI file location.')
             exit_sab(1)
 
-    sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA, sabnzbd.DIR_PROG, sabnzbd.DIR_INTERFACES)
+    sabnzbd.cfg.set_root_folders(sabnzbd.DIR_HOME, sabnzbd.DIR_LCLDATA)
 
     res, msg = config.read_config(inifile)
     if not res:
@@ -1068,8 +1079,8 @@ def main():
 
     if fork:
         try:
-            x= sys.stderr.fileno
-            x= sys.stdout.fileno
+            x = sys.stderr.fileno
+            x = sys.stdout.fileno
             ol_path = os.path.join(logdir, DEF_LOG_ERRFILE)
             out_log = file(ol_path, 'a+', 0)
             sys.stderr.flush()
@@ -1081,8 +1092,8 @@ def main():
 
     else:
         try:
-            x= sys.stderr.fileno
-            x= sys.stdout.fileno
+            x = sys.stderr.fileno
+            x = sys.stdout.fileno
 
             if consoleLogging:
                 console = logging.StreamHandler()
@@ -1117,8 +1128,8 @@ def main():
         logging.info('[osx] IO priority setting')
         try:
             from ctypes import cdll
-            libc=cdll.LoadLibrary('/usr/lib/libc.dylib')
-            boolSetResult=libc.setiopolicy_np(0,1,3)
+            libc = cdll.LoadLibrary('/usr/lib/libc.dylib')
+            boolSetResult = libc.setiopolicy_np(0, 1, 3)
             logging.info('[osx] IO priority set to throttle for process scope')
         except:
             logging.info('[osx] IO priority setting not supported')
