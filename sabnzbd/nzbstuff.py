@@ -38,7 +38,7 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
                          get_unique_path, get_admin_path, remove_all, \
-                         sanitize_filename, globber
+                         sanitize_filename, globber, sanitize_foldername
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
 from sabnzbd.lang import T, Ta
@@ -486,6 +486,7 @@ class NzbObject(TryList):
 
         filename = platform_encode(filename)
         nzbname = platform_encode(nzbname)
+        nzbname = sanitize_foldername(nzbname)
 
         if pp is None:
             r = u = d = None
