@@ -635,9 +635,13 @@ def read_config(path):
     if not os.path.exists(path):
         # No file found, create default INI file
         try:
+            if not sabnzbd.WIN32:
+                prev= os.umask(077)
             fp = open(path, "w")
             fp.write("__version__=%s\n[misc]\n[logging]\n" % __CONFIG_VERSION)
             fp.close()
+            if not sabnzbd.WIN32:
+                os.umask(prev)
         except IOError:
             return False, 'Cannot create INI file %s' % path
 
