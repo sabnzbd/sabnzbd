@@ -1,0 +1,40 @@
+# -*- coding: utf-8 -*-
+# Norge # norsk
+# Translation by ProtX
+# Mobile
+
+# misc
+button-prev       Forrige
+button-next       Neste
+button-refresh    Oppdatere
+button-close      Steng
+button-options    Alternativer
+page              Side
+confirm-delete    Er du sikker på at du vil fjerne
+warnings          Advarsler
+button-purgeQ     Tom kø
+confirm-purgeQ    Vil du virkelig slette køen?
+button-purgeH     Slett historikk
+confirm-purgeH    Vil du virkelig slette historikken?
+left              Venstre
+
+# pause interval
+button-pauseInterval Sett pauseintervall
+pauseInterval     Pauseintervall
+pause5m           Pause 5 minutter
+pause15m          Pause 15 minutter
+pause30m          Pause 30 minutter
+pause1h           Pause 1 time
+pause3h           Pause 3 timer
+pause6h           Pause 6 timer
+pause12h          Pause 12 timme
+pause24h          Pause 24 timer
+
+# queue sort
+sort              Sortere
+sortAgeAsc        Sorter etter alder <small>Eldst&rarr;Ny</small>
+sortAgeDesc       Sorter etter alder <small>Ny&rarr;Eldst</small>
+sortNameAsc       Sorter etter navn <small>A&rarr;Z</small>
+sortNameDesc      Sorter etter navn <small>Z&rarr;A</small>
+sortSizeAsc       Sorter etter størrelse <small>Minst&rarr;Størst</small>
+sortSizeDesc      Sorter etter størrelse <small>Størst&rarr;Minst</small>

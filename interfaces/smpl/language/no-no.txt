@@ -1,0 +1,48 @@
+﻿# -*- coding: utf-8 -*-
+# Norge # Norsk
+# Translation ProtX
+
+thisWeek        Denne uke
+thisMonth       Denne måned
+size            Størrelse
+links           Lenker
+first           Første
+previous        Forrige
+next            Neste
+last            Siste
+edit            Endre
+editDetails     Endre detaljer
+showEdit        Vis redigeringsalternativer
+hideEdit        Skjul redigeringsalternativer
+timeleft	Gjenstår
+purgeQueue      Ta bort alle
+progress        Jobb
+delete          Ta bort
+downloading     Laster ned
+idle            Venter
+paused          Pauset
+emailsent       Sendte E-post!
+saving          Lagrer..
+saved           Lagret
+failed          Mislyktes
+speed           Hastighet
+toggleadd       Vis/Skjul Legg til NZB
+refresr         Oppdateringsfrekvens
+restartOK?      Er du sikker på at du vil omstarte SABnzbd?
+warnings        Advarsler
+getbookmarks    Hente bokmerker
+purgefailhistOK? Ta bort alle feilmeldinger fra historikken?
+purgehist       Ta bort alt
+purgefailhist   Ta bort feilmeldinger
+path            Snarvei
+age		Tid
+speed           Hastighet
+numresults@3    Viser %s til %s av %s resultat
+oneresult       Viser 1 resultat
+noresult        Ingen resultat
+custom          Tilpasse
+dualView1       Visning 1
+dualView2       Visning 2
+eta             ETA
+refreshr        Oppdateringsfrekvens
+hourmin         Time:Minutt

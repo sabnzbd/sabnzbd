@@ -1,0 +1,54 @@
+# -*- coding: utf-8 -*-
+# Norge # Norsk
+# Translation by ProtX
+
+quickstart           SABnzbd Hurtigstart Guide
+version              SABnzbd Versjon
+
+previous             Forrige
+next                 Neste
+zoom                 Zoom
+
+skin                 Skinn
+explain-skin         Hvilket skinn vil du bruke i SABnzbd?
+
+access               Tilgang
+access-anypc         Jeg vil at SABnzbd skal kunne brukes fra alle datamaskiner i mitt nettverk.
+access-mypc          Jeg vil at SABnzbd kun skal kunne brukes fra min datamaskin.
+access-pass          Passordbeskytte tilgangen til SABnzbd (anbefales)
+access-https         Aktiver HTTPS protokoll for tilgang til SABnzbd.
+
+misc                 Diverse
+misc-browser         Start webleseren med SABnzbd's side når programmet startes.
+
+server               Serverinstillinger
+explain-server       Skriv inn opplysningene om din primære usenet leverandør.
+server-help          Hjelp
+server-help1         For å laste ned fra usenet trenger du tilgang til en leverandør. Din internettleverandør kan gi deg tilgang, men en "proff" leverandør anbefales.
+server-help2@1       Har du ikke noen usenet leverandør? Vi anbefaler å prøve %s.
+server-con-explain   Antallet tilkoblinger som er tillatt av din leverandør
+server-ssl-explain   Velges kun om din leverandør tillater SSL-tilkoblinger.
+server-text          Klikk her for å teste serverinstillingene.
+server-required      Detta feltet kreves.
+server-number        Bruk et heltall.
+
+index-explain        Om du er medlem på newzbin eller nzbmatrix kan du bruke ditt brukernavn og passord her så kan vi hente dine nzb filer. Dette kan hoppes over om du ikke bruker deres tjenester.
+index-bookmark       Last automatiskt ned bokmerkede poster.
+optional             Valgfritt
+example              Eks.
+button-testServer    Test Server
+
+restarting           Starter om SABnzbd...
+complete             Installasjonen er nå ferdig!
+tip1                 SABnzbd kommer nå å kjøres i bakgrunnen.
+tip2                 SABnzbd kommer ikke til å avsluttes om du lukker vinduet eller fanen i webleseren.
+tip3@1               Etter at SABnzbd har startet på nytt, treffer du SABnzbd på denne siden: %s
+tip4                 Det er anbefalt at du lagrer denne siden som et bokmerke for å treffe SABnzbd når det kjøres i bakgrunnen.
+tip-wiki             Øvrig hjelp kan du finne på vår 
+goto                 Gå til SABnzbd
+
+step-one             Steg en
+step-two             Steg to
+step-three           Steg tre
+step-four            Steg fire
+step-five            Steg fem

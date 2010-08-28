@@ -1,0 +1,25 @@
+##
+## RSS Email template for SABnzbd
+## This a Cheetah template
+## Documentation: http://sabnzbd.wikidot.com/email-templates
+##
+## Newlines and whitespace are significant!
+##
+## These are the email headers
+to: $to
+from: $from
+date: $date
+subject: SABnzbd har lagt $amount jobber til køen
+X-priority: 5
+X-MS-priority: 5
+## Etter dette kommer meldingen, den tomme linjen er nødvendig!
+
+Hei,
+
+SABnzbd har lagt $amount jobb(er) til køen.
+Disse er fra RSS feeden "$feed".
+<!--#for $job in $jobs#-->
+    $job <!--#slurp#-->
+<!--#end for#-->
+
+Hade
