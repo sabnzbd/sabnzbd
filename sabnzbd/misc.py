@@ -189,6 +189,8 @@ def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
+    if not name:
+        return name
     illegal = CH_ILLEGAL
     legal   = CH_LEGAL
 
@@ -217,6 +219,8 @@ def sanitize_foldername(name):
     """ Return foldername with dodgy chars converted to safe ones
         Remove any leading and trailing dot and space characters
     """
+    if not name:
+        return name
     if isinstance(name, unicode):
         illegal = uFL_ILLEGAL
         legal   = uFL_LEGAL
