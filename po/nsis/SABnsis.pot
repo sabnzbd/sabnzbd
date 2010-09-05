@@ -13,55 +13,55 @@ msgstr ""
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
 
-#: NSIS_Installer.nsi:331
+#: NSIS_Installer.nsi:332
 msgid "Start SABnzbd (hidden)"
 msgstr ""
 
-#: NSIS_Installer.nsi:338
+#: NSIS_Installer.nsi:340
 msgid "Show Release Notes"
 msgstr ""
 
-#: NSIS_Installer.nsi:345
+#: NSIS_Installer.nsi:348
 msgid "Support the project, Donate!"
 msgstr ""
 
-#: NSIS_Installer.nsi:352
+#: NSIS_Installer.nsi:356
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr ""
 
-#: NSIS_Installer.nsi:359
+#: NSIS_Installer.nsi:364
 msgid "                  >>>> WARNING <<<<\r\n\r\nIf not empty, download your current queue with the old program.\r\nThe new program will ignore your current queue!"
 msgstr ""
 
-#: NSIS_Installer.nsi:366
+#: NSIS_Installer.nsi:372
 msgid "This will uninstall SABnzbd from your system"
 msgstr ""
 
-#: NSIS_Installer.nsi:373
+#: NSIS_Installer.nsi:380
 msgid "Run at startup"
 msgstr ""
 
-#: NSIS_Installer.nsi:380
+#: NSIS_Installer.nsi:388
 msgid "Desktop Icon"
 msgstr ""
 
-#: NSIS_Installer.nsi:387
+#: NSIS_Installer.nsi:396
 msgid "NZB File association"
 msgstr ""
 
-#: NSIS_Installer.nsi:394
+#: NSIS_Installer.nsi:404
 msgid "Delete Program"
 msgstr ""
 
-#: NSIS_Installer.nsi:401
+#: NSIS_Installer.nsi:412
 msgid "Delete Settings"
 msgstr ""
 
-#: NSIS_Installer.nsi:408
+#: NSIS_Installer.nsi:420
 msgid "Delete Logs"
 msgstr ""
 
-#: NSIS_Installer.nsi:415
+#: NSIS_Installer.nsi:428
 msgid "Delete Cache"
 msgstr ""
 

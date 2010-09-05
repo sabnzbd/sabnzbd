@@ -1290,7 +1290,7 @@ def cache_skin_trans():
     """
     global _SKIN_CACHE
     for txt in SKIN_TEXT:
-        _SKIN_CACHE[txt] = T(SKIN_TEXT.get(txt, txt))
+        _SKIN_CACHE[txt] = Tx(SKIN_TEXT.get(txt, txt))
 
 
 def build_header(prim):

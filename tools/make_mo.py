@@ -53,7 +53,7 @@ if os.name == 'nt':
 else:
     TOOL = os.path.join(path, 'msgfmt.py')
 if not os.path.exists(TOOL):
-    TOOL = 'msgfmt.py'
+    TOOL = 'msgfmt'
 
 
 # Filter for retrieving readable language from PO file

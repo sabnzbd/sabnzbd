@@ -48,6 +48,7 @@ msgstr ""
 PO_DIR = 'po/main'
 POE_DIR = 'po/email'
 PON_DIR = 'po/nsis'
+EMAIL_DIR = 'email'
 DOMAIN = 'SABnzbd'
 DOMAIN_EMAIL = 'SABemail'
 DOMAIN_NSIS = 'SABnsis'
@@ -64,15 +65,16 @@ if os.name == 'nt':
 else:
     TOOL = os.path.join(path, 'pygettext.py')
 if not os.path.exists(TOOL):
-    TOOL = 'pygettext.py'
+    TOOL = 'pygettext'
 
 
 
 cmd = '%s %s %s' % (TOOL, PARMS, FILES)
-print cmd
+print 'Create POT file'
+#print cmd
 os.system(cmd)
 
-# Post-process the POT file
+print 'Post-process the POT file'
 src = open('%s/%s.pot.tmp' % (PO_DIR, DOMAIN), 'r')
 dst = open('%s/%s.pot' % (PO_DIR, DOMAIN), 'wb')
 dst.write(HEADER.replace('__TYPE__', 'MAIN'))
@@ -94,13 +96,13 @@ dst.close()
 os.remove('%s/%s.pot.tmp' % (PO_DIR, DOMAIN))
 
 
-# Create the email POT file
+print 'Create the email POT file'
 if not os.path.exists(POE_DIR):
     os.makedirs(POE_DIR)
 dst = open(os.path.join(POE_DIR, DOMAIN_EMAIL+'.pot'), 'wb')
 dst.write(HEADER.replace('__TYPE__', 'EMAIL'))
 
-src = open('language/email-en.tmpl', 'r')
+src = open(EMAIL_DIR+'/email-en.tmpl', 'r')
 dst.write('\n#: email/email.tmpl:1\n')
 dst.write('msgid ""\n')
 for line in src:
@@ -108,7 +110,7 @@ for line in src:
 dst.write('msgstr ""\n\n')
 src.close()
 
-src = open('language/rss-en.tmpl', 'r')
+src = open(EMAIL_DIR+'/rss-en.tmpl', 'r')
 dst.write('#: email/rss.tmpl:1\n')
 dst.write('msgid ""\n')
 for line in src:
