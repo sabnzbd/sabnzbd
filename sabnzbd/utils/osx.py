@@ -19,7 +19,6 @@
 #TO FIX : Translations are not working with this implementation
 #         Growl Registration may only be done once per run ?
 #         Registration is made too early, the language module has not read the text file yet
-#from sabnzbd.lang import T
 #NOTIFICATION = {'startup':'grwl-notif-startup','download':'grwl-notif-dl','pp':'grwl-notif-pp','other':'grwl-notif-other'}
 NOTIFICATION = {'startup':'1. On Startup/Shutdown','download':'2. On adding NZB','pp':'3. On post-processing','complete':'4. On download terminated','other':'5. Other Messages'}
 

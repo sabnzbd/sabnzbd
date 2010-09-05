@@ -34,7 +34,6 @@ import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.postproc import PostProcessor
-from sabnzbd.lang import Ta
 
 
 __SCHED = None  # Global pointer to Scheduler instance
@@ -78,7 +77,7 @@ def init():
             m = int(m)
             h = int(h)
         except:
-            logging.warning(Ta('warn-badSched@3'), action_name, m, h)
+            logging.warning(Ta('Bad schedule %s at %s:%s'), action_name, m, h)
             continue
 
         if d.isdigit():
@@ -114,7 +113,7 @@ def init():
         elif action_name == 'scan_folder':
             action = sabnzbd.dirscanner.dirscan
         else:
-            logging.warning(Ta('warn-badSchedAction@1'), action_name)
+            logging.warning(Ta('Unknown action: %s'), action_name)
             continue
 
         logging.debug("scheduling %s(%s) on days %s at %s:%s", action_name, arguments, d, h, m)
@@ -280,12 +279,12 @@ def analyse(was_paused=False):
             try:
                 servers[value] = 1
             except:
-                logging.warning(Ta('warn-schedNoServer@1'), value)
+                logging.warning(Ta('Schedule for non-existing server %s'), value)
         elif action == 'disable_server':
             try:
                 servers[value] = 0
             except:
-                logging.warning(Ta('warn-schedNoServer@1'), value)
+                logging.warning(Ta('Schedule for non-existing server %s'), value)
 
     if not was_paused:
         if paused_all:

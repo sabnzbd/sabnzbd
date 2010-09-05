@@ -38,7 +38,6 @@ import sabnzbd.downloader
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 from sabnzbd.encoding import name_fixer
-from sabnzbd.lang import Ta
 
 #-------------------------------------------------------------------------------
 
@@ -94,7 +93,7 @@ class Decoder(Thread):
                     data = decode(article, lines)
                     nzf.article_count += 1
                 except IOError, e:
-                    logging.error(Ta('error-decode@1'), article)
+                    logging.error(Ta('Decoding %s failed'), article)
                     sabnzbd.downloader.pause_downloader()
 
                     article.fetcher = None
@@ -104,7 +103,7 @@ class Decoder(Thread):
                     register = False
 
                 except CrcError, e:
-                    logging.warning(Ta('warn-crcError@3'), article, e.needcrc, e.gotcrc)
+                    logging.warning(Ta('CRC Error in %s (%s -> %s)'), article, e.needcrc, e.gotcrc)
 
                     data = e.data
 
@@ -122,7 +121,7 @@ class Decoder(Thread):
                             register = False
 
                 except:
-                    logging.error(Ta('error-decodeUnknown@1'), article)
+                    logging.error(Ta('Unknown Error while decoding %s'), article)
 
             else:
                 new_server_found = self.__search_new_server(article)
@@ -167,7 +166,7 @@ class Decoder(Thread):
                 logging.debug('%s => found at least one untested server', article)
 
         else:
-            logging.warning(Ta('warn-artAllMissing@1'), article)
+            logging.warning(Ta('%s => missing from all servers, discarding'), article)
 
         return new_server_found
 #-------------------------------------------------------------------------------

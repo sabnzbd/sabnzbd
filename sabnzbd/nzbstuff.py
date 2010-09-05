@@ -41,7 +41,6 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
                          sanitize_filename, globber, sanitize_foldername
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
-from sabnzbd.lang import T, Ta
 from sabnzbd.encoding import unicoder, platform_encode, latin1
 
 __all__ = ['Article', 'NzbFile', 'NzbObject']
@@ -379,7 +378,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             segm = str(''.join(self.article_id))
             if partnum in self.article_db:
                 if segm != self.article_db[partnum][0]:
-                    logging.error(Ta('error-qDupPart@3'),
+                    logging.error(Ta('Duplicate part %s, but different ID-s (%s // %s)'),
                                          partnum, self.article_db[partnum][0], segm)
                 else:
                     logging.info("Skipping duplicate article (%s)", segm)
@@ -397,7 +396,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
             # Create an NZF
             self.in_file = False
             if not self.article_db:
-                logging.warning(Ta('warn-emptyFile@1'), self.filename)
+                logging.warning(Ta('File %s is empty, skipping'), self.filename)
                 return
             tm = datetime.datetime.fromtimestamp(self.file_date)
             nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
@@ -424,7 +423,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         files = max(1, self.valids)
         self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / files)
         if self.skipped_files:
-            logging.warning(Ta('warn-badImport@2'),
+            logging.warning(Ta('Failed to import %s files from %s'),
                             self.skipped_files, self.nzo.filename)
 
 
@@ -603,7 +602,7 @@ class NzbObject(TryList):
 
         if (not reuse) and nzb and sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
-            logging.warning(Ta('warn-skipDup@1'), filename)
+            logging.warning(Ta('Skipping duplicate NZB "%s"'), filename)
             raise TypeError
 
         if reuse:
@@ -634,12 +633,12 @@ class NzbObject(TryList):
                 parser.parse(inpsrc)
             except xml.sax.SAXParseException, err:
                 self.purge_data(keep_basic=reuse)
-                logging.warning(Ta('warn-badNZB@3'),
+                logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
                               filename, err.getMessage(), err.getLineNumber())
                 raise ValueError
             except Exception, err:
                 self.purge_data(keep_basic=reuse)
-                logging.warning(Ta('warn-badNZB@3'), filename, err, 0)
+                logging.warning(Ta('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, 0)
                 raise ValueError
 
             sabnzbd.backup_nzb(filename, nzb)
@@ -860,7 +859,7 @@ class NzbObject(TryList):
         if self.password:
             return '%s / %s' % (self.final_name, self.password)
         elif self.encrypted and self.status == 'Paused':
-            return '%s [%s]' % (self.final_name, Ta('msg-encrypted'))
+            return '%s [%s]' % (self.final_name, Ta('ENCRYPTED'))
         else:
             return self.final_name
 
@@ -897,7 +896,7 @@ class NzbObject(TryList):
             #format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
 
-            self.set_unpack_info('Download', T('msg-DownloadedIn@2') %
+            self.set_unpack_info('Download', T('Downloaded in %s at an average of %sB/s') %
                                  (complete_time, to_units(avg_bps*1024)), unique=True)
 
 
@@ -915,7 +914,7 @@ class NzbObject(TryList):
                         nzf.finish_import()
                         # Still not finished? Something went wrong...
                         if not nzf.import_finished:
-                            logging.error(Ta('error-qImport@1'), nzf)
+                            logging.error(Ta('Error importing %s'), nzf)
                             nzf_remove_list.append(nzf)
                             continue
                     else:

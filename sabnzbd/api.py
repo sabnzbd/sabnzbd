@@ -35,10 +35,10 @@ import sabnzbd.downloader as downloader
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.scheduler as scheduler
+from sabnzbd.skintext import SKIN_TEXT
 
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.json import JsonWriter
-from sabnzbd.lang import T, Ta, Tspec
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
                          get_filename, int_conv, globber
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode
@@ -243,7 +243,7 @@ def _api_options(name, output, kwargs):
 
 def _api_translate(name, output, kwargs):
     """ API: accepts output, value(=acronym) """
-    return report(output, keyword='value', data=T(kwargs.get('value', '')))
+    return report(output, keyword='value', data=Tx(kwargs.get('value', '')))
 
 
 def _api_addfile(name, output, kwargs):
@@ -1266,6 +1266,33 @@ def del_hist_job(job, del_files):
     return True
 
 #------------------------------------------------------------------------------
+def Tspec(txt):
+    """ Translate special terms """
+    if txt == 'None':
+        return T('None')
+    elif txt == 'Default':
+        return T('Default')
+    else:
+        return txt
+
+_SKIN_CACHE = {}    # Stores pre-translated acronyms
+
+# This special is to be used in interface.py for template processing
+# to be paased for the $T function: so { ..., 'T' : Ttemplate, ...}
+def Ttemplate(txt):
+    """ Translation function for Skin texts
+    """
+    return _SKIN_CACHE.get(txt, txt)
+
+
+def cache_skin_trans():
+    """ Build cache for skin translations
+    """
+    global _SKIN_CACHE
+    for txt in SKIN_TEXT:
+        _SKIN_CACHE[txt] = T(SKIN_TEXT.get(txt, txt))
+
+
 def build_header(prim):
     try:
         uptime = calc_age(sabnzbd.START)
@@ -1281,7 +1308,7 @@ def build_header(prim):
     else:
         color = ''
 
-    header = { 'T': T, 'Tspec': Tspec, 'version':sabnzbd.__version__, 'paused':downloader.paused(),
+    header = { 'T': Ttemplate, 'Tspec': Tspec, 'Tx' : Ttemplate, 'version':sabnzbd.__version__, 'paused':downloader.paused(),
                'pause_int': scheduler.pause_int(), 'paused_all': sabnzbd.PAUSED_ALL,
                'uptime':uptime, 'color_scheme':color }
     speed_limit = downloader.get_limit()
@@ -1386,7 +1413,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         try:
             re_search = re.compile(search_text, re.I)
         except:
-            logging.error(Ta('error-regex@1'), search_text)
+            logging.error(Ta('Failed to compile regex for search term: %s'), search_text)
             return False
         return re_search.search(text)
 

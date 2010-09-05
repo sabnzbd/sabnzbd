@@ -42,7 +42,6 @@ from sabnzbd.encoding import name_fixer
 import sabnzbd.newswrapper
 import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
 
 
@@ -122,7 +121,7 @@ class MSGIDGrabber(Thread):
                 try:
                     sabnzbd.nzbqueue.insert_future_nzo(nzo, filename, msgid, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
                 except:
-                    logging.error(Ta('error-nbUpdate@1'), msgid)
+                    logging.error(Ta('Failed to update newzbin job %s'), msgid)
                     logging.info("Traceback: ", exc_info = True)
                     sabnzbd.nzbqueue.remove_nzo(nzo.nzo_id, False)
                 msgid = None
@@ -134,7 +133,7 @@ class MSGIDGrabber(Thread):
                     bad_fetch(nzo, msgid, msg=nzo_info, retry=True)
                     msgid = None
 
-            osx.sendGrowlMsg(T('grwl-nzbadd-title'),filename,osx.NOTIFICATION['download'])
+            osx.sendGrowlMsg(T('NZB added to queue'),filename,osx.NOTIFICATION['download'])
 
             # Keep some distance between the grabs
             sleeper(5)
@@ -186,7 +185,7 @@ def _grabnzb(msgid):
         # Only some reports will generate a moreinfo header
         pass
     if not (rcode or rtext):
-        logging.error(T('error-nbProtocol'))
+        logging.error(T('Newzbin server changed its protocol'))
         return None, None, None, None
 
     # Official return codes:
@@ -220,26 +219,26 @@ def _grabnzb(msgid):
         return int(wait+1), None, None, None
 
     if rcode in ('402'):
-        msg = Ta('warn-nbCredit')
+        msg = Ta('You have no credit on your Newzbin account')
         return None, None, None, msg
 
     if rcode in ('401'):
-        msg = Ta('warn-nbNoAuth')
+        msg = Ta('Unauthorised, check your newzbin username/password')
         return None, None, None, msg
 
     if rcode in ('400', '404'):
-        msg = Ta('error-nbReport@1') % msgid
+        msg = Ta('Newzbin report %s not found') % msgid
         return None, None, None, msg
 
     if rcode != '200':
-        msg = Ta('error-nbUnkownError@2') % (rcode, rtext)
+        msg = Ta('Newzbin gives undocumented error code (%s, %s)') % (rcode, rtext)
         return None, None, None, msg
 
     # Process data
     report_name = response.getheader('X-DNZB-Name')
     report_cat  = response.getheader('X-DNZB-Category')
     if not (report_name and report_cat):
-        msg = Ta('error-nbInfo@1') %  msgid
+        msg = Ta('Newzbin server fails to give info for %s') %  msgid
         return None, None, None, msg
 
     # sanitize report_name
@@ -323,9 +322,9 @@ class Bookmarks(object):
         if rcode == '204':
             logging.debug("No bookmarks set")
         elif rcode in ('401', '403'):
-            logging.warning(Ta('warn-nbNoAuth'))
+            logging.warning(Ta('Unauthorised, check your newzbin username/password'))
         elif rcode in ('402'):
-            logging.warning(Ta('warn-nbCredit'))
+            logging.warning(Ta('You have no credit on your Newzbin account'))
         elif rcode in ('500', '503'):
             _warn_user('Newzbin has a server problem (%s).' % rcode)
         elif rcode == '200':
@@ -336,7 +335,7 @@ class Bookmarks(object):
                         self.bookmarks.remove(delete)
                 else:
                     if delete in self.bookmarks:
-                        logging.warning(Ta('warn-nbNoDelBM@1'), delete)
+                        logging.warning(Ta('Could not delete newzbin bookmark %s'), delete)
             else:
                 for line in data.split('\n'):
                     try:
@@ -348,7 +347,7 @@ class Bookmarks(object):
                         logging.info("Found new bookmarked msgid %s (%s)", msgid, text)
                         sabnzbd.add_msgid(int(msgid), None, None, priority=None)
         else:
-            logging.error(Ta('error-nbUnkownError@1'), rcode)
+            logging.error(Ta('Newzbin gives undocumented error code (%s)'), rcode)
 
         self.__busy = False
 

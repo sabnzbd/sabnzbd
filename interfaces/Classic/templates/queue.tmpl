@@ -89,7 +89,7 @@ $T('onQueueFinish'):
             </td>
             <!--#end if#-->
             <td><form><select onchange="location = this.options[this.selectedIndex].value;">
-                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->>$T('pp-n')</option>
+                <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=0" <!--#if $slot.unpackopts == "0" then "selected" else ""#-->></option>
                 <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=1" <!--#if $slot.unpackopts == "1" then "selected" else ""#-->>$T('pp-r')</option>
                 <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>$T('pp-u')</option>
                 <option value="change_opts?session=$session&nzo_id=$slot.nzo_id&pp=3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>$T('pp-d')</option>

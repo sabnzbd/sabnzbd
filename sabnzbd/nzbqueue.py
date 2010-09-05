@@ -37,7 +37,6 @@ import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler
-from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
 from sabnzbd.encoding import latin1
 
@@ -79,13 +78,13 @@ class NzbQueue(TryList):
                     queue_vers, nzo_ids, dummy = data
                     if not queue_vers == QUEUE_VERSION:
                         nzo_ids = []
-                        logging.error(Ta('error-qBad'))
+                        logging.error(Ta('Incompatible queuefile found, cannot proceed'))
                         if not repair:
                             panic_queue(os.path.join(cfg.cache_dir.get_path(),QUEUE_FILE_NAME))
                             exit_sab(2)
                 except ValueError:
                     nzo_ids = []
-                    logging.error(Ta('error-qCorruptFile@1'),
+                    logging.error(Ta('Error loading %s, corrupt file detected'),
                                   os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME))
                     if not repair:
                         return
@@ -215,7 +214,7 @@ class NzbQueue(TryList):
 
                 self.reset_try_list()
             except:
-                logging.error(Ta('error-qAdd@1'), nzo_id)
+                logging.error(Ta('Error while adding %s, removing'), nzo_id)
                 logging.info("Traceback: ", exc_info = True)
                 self.remove(nzo_id, False)
         else:
@@ -306,7 +305,7 @@ class NzbQueue(TryList):
                 self.save(nzo)
 
             if nzo.status not in ('Fetching',):
-                osx.sendGrowlMsg(T('grwl-nzbadd-title'), nzo.filename, osx.NOTIFICATION['download'])
+                osx.sendGrowlMsg(T('NZB added to queue'), nzo.filename, osx.NOTIFICATION['download'])
 
         if self.__auto_sort:
             self.sort_by_avg_age()
@@ -659,7 +658,7 @@ class NzbQueue(TryList):
                 Assembler.do.process((nzo, nzf))
 
             else:
-                logging.warning(Ta('warn-unknownEncoding@1'), filename)
+                logging.warning(Ta('%s -> Unknown encoding'), filename)
 
         if post_done:
             self.remove(nzo.nzo_id, add_to_history=False, cleanup=False)

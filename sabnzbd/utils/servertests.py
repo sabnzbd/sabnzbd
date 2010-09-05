@@ -26,19 +26,18 @@ from sabnzbd.newswrapper import NewsWrapper
 from sabnzbd.downloader import Server, clues_login, clues_too_many
 from sabnzbd.config import get_servers
 from sabnzbd.encoding import xml_name
-from sabnzbd.interface import int_conv
-from sabnzbd.lang import T
+from sabnzbd.misc import int_conv
 
 def test_nntp_server_dict(kwargs):
     # Grab the host/port/user/pass/connections/ssl
     host = kwargs.get('host', '').strip()
     if not host:
-        return False, T('srv-noHost')
+        return False, T('The hostname is not set.')
     username = kwargs.get('username', '').strip()
     password = kwargs.get('password', '').strip()
     connections = int_conv(kwargs.get('connections', 0))
     if not connections:
-        return False, T('srv-noConnections')
+        return False, T('There are no connections set. Please set at least one connection.')
     ssl = int_conv(kwargs.get('ssl', 0))
     port = int_conv(kwargs.get('port', 0))
     if not port:
@@ -65,11 +64,11 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None):
                 password = srv.password()
                 got_pass = True
         if not got_pass:
-            return False, T('srv-starredPass')
+            return False, T('Password masked in ******, please re-enter')
     try:
         s = Server(-1, host, port, timeout, 1, 0, ssl, username, password)
     except:
-        return False, T('srv-invalidDetails')
+        return False, T('Invalid server details')
 
     try:
         nw = NewsWrapper(s, -1, block=True)
@@ -81,9 +80,9 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None):
 
     except socket.timeout, e:
         if port != 119 and not ssl:
-            return False, T('srv-timedoutSSL')
+            return False, T('Timed out: Try enabling SSL or connecting on a different port.')
         else:
-            return False, T('srv-timedout')
+            return False, T('Timed out')
     except socket.error, e:
         return False, xml_name(str(e))
 
@@ -103,19 +102,19 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None):
     code = nw.lines[0][:3]
 
     if code == '480':
-        return False, T('srv-noAuth')
+        return False, T('Server requires username and password.')
 
     elif code == '100' or code.startswith('2') or code.startswith('4'):
-        return True, T('srv-success')
+        return True, T('Connection Successful!')
 
     elif code == '502' or clues_login(nw.lines[0]):
-        return False, T('srv-failedAuth')
+        return False, T('Authentication failed, check username/password.')
 
     elif clues_too_many(nw.lines[0]):
-        return False, T('srv-tooManyConnections')
+        return False, T('Too many connections, please pause downloading or try again later')
 
     else:
-        return False, T('srv-generalFail@1') % xml_name(nw.lines[0])
+        return False, T('Could not determine connection result (%s)') % xml_name(nw.lines[0])
 
     # Close the connection
     nw.terminate(quit=True)

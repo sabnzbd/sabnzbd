@@ -38,7 +38,6 @@ import sabnzbd.cfg as cfg
 from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
 import sabnzbd.nzbqueue
-from sabnzbd.lang import T, Ta
 
 #------------------------------------------------------------------------------
 # Timeout penalty in minutes for each cause
@@ -328,7 +327,7 @@ class Downloader(Thread):
 
     def stop(self):
         self.shutdown = True
-        osx.sendGrowlMsg("SABnzbd",T('grwl-shutdown-begin-msg'),osx.NOTIFICATION['startup'])
+        osx.sendGrowlMsg("SABnzbd",T('Shutting down'),osx.NOTIFICATION['startup'])
 
     def resume(self):
         logging.info("Resuming")
@@ -336,7 +335,7 @@ class Downloader(Thread):
 
     def pause(self):
         logging.info("Pausing")
-        osx.sendGrowlMsg("SABnzbd",T('grwl-paused-msg'),osx.NOTIFICATION['download'])
+        osx.sendGrowlMsg("SABnzbd",T('Paused'),osx.NOTIFICATION['download'])
         self.paused = True
         if self.is_paused():
             BPSMeter.do.reset()
@@ -391,8 +390,8 @@ class Downloader(Thread):
             # disable it now and send a re-enable plan to the scheduler
             server.bad_cons = 0
             server.active = False
-            server.errormsg = T('warn-ignoreServer@2') % ('', _PENALTY_TIMEOUT)
-            logging.warning(Ta('warn-ignoreServer@2'), server.id, _PENALTY_TIMEOUT)
+            server.errormsg = T('Server %s will be ignored for %s minutes') % ('', _PENALTY_TIMEOUT)
+            logging.warning(Ta('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
             self.plan_server(server.id, _PENALTY_TIMEOUT)
             sabnzbd.nzbqueue.reset_all_try_lists()
 
@@ -466,7 +465,7 @@ class Downloader(Thread):
                                 nw.init_connect()
                                 self.write_fds[nw.nntp.sock.fileno()] = nw
                             except:
-                                logging.error(Ta('error-noInit@3'),
+                                logging.error(Ta('Failed to initialize %s@%s:%s'),
                                                   nw.thrdnum, server.host,
                                                   server.port)
                                 logging.info("Traceback: ", exc_info = True)
@@ -598,37 +597,37 @@ class Downloader(Thread):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 # Plan to go back to the full number after a penalty timeout
                                 if server.active:
-                                    server.errormsg = Ta('error-serverTooMany@2') % ('', display_msg)
-                                    logging.error(Ta('error-serverTooMany@2'), server.host, server.port)
+                                    server.errormsg = Ta('Too many connections to server %s:%s') % ('', display_msg)
+                                    logging.error(Ta('Too many connections to server %s:%s'), server.host, server.port)
                                     self.__reset_nw(nw, None, warn=False, destroy=True, quit=True)
                                     self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
                             elif ecode in ('502', '481') and clues_too_many_ip(msg):
                                 # Account sharing?
                                 if server.active:
-                                    server.errormsg = Ta('error-accountSharing') + display_msg
+                                    server.errormsg = Ta('Probable account sharing') + display_msg
                                     name = ' (%s:%s)' % (server.host, server.port)
-                                    logging.error(Ta('error-accountSharing') + name)
+                                    logging.error(Ta('Probable account sharing') + name)
                                     penalty = _PENALTY_SHARE
                             elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
-                                    server.errormsg = Ta('error-serverLogin@1') % display_msg
-                                    logging.error(Ta('error-serverLogin@1'), '%s:%s' % (server.host, server.port))
+                                    server.errormsg = Ta('Failed login for server %s') % display_msg
+                                    logging.error(Ta('Failed login for server %s'), '%s:%s' % (server.host, server.port))
                                 penalty = _PENALTY_PERM
                                 block = True
                             elif ecode == '502':
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
-                                    server.errormsg = Ta('warn-noConnectServer@2') % ('', display_msg)
-                                    logging.warning(Ta('warn-noConnectServer@2'), '%s:%s' % (server.host, server.port), msg)
+                                    server.errormsg = Ta('Cannot connect to server %s [%s]') % ('', display_msg)
+                                    logging.warning(Ta('Cannot connect to server %s [%s]'), '%s:%s' % (server.host, server.port), msg)
                                 penalty = _PENALTY_502
                                 block = True
                             else:
                                 # Unknown error, just keep trying
                                 if server.active:
-                                    server.errormsg = Ta('error-serverNoConn@2') % ('', display_msg)
-                                    logging.error(Ta('error-serverNoConn@2'),  '%s:%s' % (server.host, server.port), msg)
+                                    server.errormsg = Ta('Cannot connect to server %s [%s]') % ('', display_msg)
+                                    logging.error(Ta('Cannot connect to server %s [%s]'),  '%s:%s' % (server.host, server.port), msg)
                                     penalty = _PENALTY_UNKNOWN
                             if block or (penalty and server.optional):
                                 if server.active:
@@ -642,7 +641,7 @@ class Downloader(Thread):
                                 self.__reset_nw(nw, None, warn=False, quit=True)
                             continue
                         except:
-                            logging.error(Ta('error-serverFailed@4'),
+                            logging.error(Ta('Connecting %s@%s:%s failed, message=%s'),
                                               nw.thrdnum,
                                               nw.server.host, nw.server.port, nw.lines[0])
                             # No reset-warning needed, above logging is sufficient
@@ -676,10 +675,10 @@ class Downloader(Thread):
                     elif code == '480':
                         if server.active:
                             server.active = False
-                            server.errormsg = T('error-serverCred@1') % ''
+                            server.errormsg = T('Server %s requires user/password') % ''
                             self.plan_server(server.id, 0)
                             sabnzbd.nzbqueue.reset_all_try_lists()
-                        msg = T('error-serverCred@1') % ('%s:%s' % (nw.server.host, nw.server.port))
+                        msg = T('Server %s requires user/password') % ('%s:%s' % (nw.server.host, nw.server.port))
                         self.__reset_nw(nw, msg, quit=True)
 
                 if done:

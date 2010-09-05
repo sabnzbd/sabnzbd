@@ -27,7 +27,6 @@ import sabnzbd.constants as constants
 from sabnzbd.utils import listquote
 from sabnzbd.utils import configobj
 from sabnzbd.decorators import synchronized
-from sabnzbd.lang import Ta
 
 CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()
@@ -838,7 +837,7 @@ def decode_password(pw, name):
             try:
                 ch = chr( int(pw[n] + pw[n+1], 16) )
             except:
-                logging.error(Ta('error-encPw@1'), name)
+                logging.error(Ta('Incorrectly encoded password %s'), name)
                 return ''
             decPW += ch
         return decPW
@@ -862,7 +861,7 @@ def validate_octal(value):
         int(value, 8)
         return None, value
     except:
-        return Ta('error-notOctal@1') % value, None
+        return Ta('%s is not a correct octal value') % value, None
 
 
 def validate_no_unc(root, value, default):
@@ -871,7 +870,7 @@ def validate_no_unc(root, value, default):
     if value and not value.startswith(r'\\'):
         return validate_notempty(root, value, default)
     else:
-        return Ta('error-noUNC@1') % value, None
+        return Ta('UNC path "%s" not allowed here') % value, None
 
 
 def validate_safedir(root, value, default):
@@ -879,7 +878,7 @@ def validate_safedir(root, value, default):
     if sabnzbd.empty_queues():
         return validate_no_unc(root, value, default)
     else:
-        return Ta('error-QnotEmpty'), None
+        return Ta('Error: Queue not empty, cannot change folder.'), None
 
 
 def validate_dir_exists(root, value, default):
@@ -888,7 +887,7 @@ def validate_dir_exists(root, value, default):
     if os.path.exists(p):
         return None, value
     else:
-        return Ta('error-noFolder@1') % p, None
+        return Ta('Folder "%s" does not exist') % p, None
 
 
 def validate_notempty(root, value, default):

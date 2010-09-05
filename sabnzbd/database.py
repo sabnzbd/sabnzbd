@@ -36,7 +36,6 @@ import logging
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_NAME
-from sabnzbd.lang import T, Ta
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 
@@ -87,7 +86,7 @@ class HistoryDB(object):
                 self.save()
             return True
         except:
-            logging.error(Ta('error-sqlCmd'))
+            logging.error(Ta('SQL Command Failed, see log'))
             logging.debug("SQL: %s" , command)
             logging.info("Traceback: ", exc_info = True)
             try:
@@ -130,7 +129,7 @@ class HistoryDB(object):
         try:
             self.con.commit()
         except:
-            logging.error(Ta('error-sqlCommit'))
+            logging.error(Ta('SQL Commit Failed, see log'))
             logging.info("Traceback: ", exc_info = True)
 
     def close(self):
@@ -138,7 +137,7 @@ class HistoryDB(object):
             self.c.close()
             self.con.close()
         except:
-            logging.error(Ta('error-sqlClose'))
+            logging.error(Ta('Failed to close database, see log'))
             logging.info("Traceback: ", exc_info = True)
 
     def remove_all(self):
@@ -353,7 +352,8 @@ def unpack_history_info(item):
         try:
             lines = item['stage_log'].split('\r\n')
         except:
-            logging.error(T('error-badHisNewline@1'), unicoder(item['name']))
+            logging.error(T('Invalid stage logging in history for %s (\
+\<br />)'), unicoder(item['name']))
             logging.debug('Lines: %s', item['stage_log'])
             lines = []
         item['stage_log'] = []
@@ -370,7 +370,7 @@ def unpack_history_info(item):
             try:
                 logs = logs.split(';')
             except:
-                logging.error(T('error-badHisSemic@1'), unicoder(item['name']))
+                logging.error(T('Invalid stage logging in history for %s (;)'), unicoder(item['name']))
                 logging.debug('Logs: %s', logs)
                 logs = []
             for log in logs:

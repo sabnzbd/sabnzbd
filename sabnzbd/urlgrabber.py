@@ -39,7 +39,6 @@ import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
 import sabnzbd.nzbqueue as nzbqueue
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import Ta
 
 #------------------------------------------------------------------------------
 _RETRIES = 10
@@ -235,12 +234,12 @@ def _analyse_matrix(fn, matrix_id):
                 return (None, msg, True)
         else:
             # Clear error message, don't retry
-            msg = Ta('warn-matrixFail@1') % data
+            msg = Ta('Problem accessing nzbmatrix server (%s)') % data
             return (None, msg, False)
 
     if data.startswith("<!DOCTYPE"):
         # We got HTML, probably a temporary problem, keep trying
-        msg = Ta('warn-matrixBadRep@1') % matrix_id
+        msg = Ta('Invalid nzbmatrix report number %s') % matrix_id
         return (None, msg, True)
 
     return fn, msg, False

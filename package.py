@@ -284,7 +284,9 @@ data = [ 'README.txt',
          'Sample-PostProc.sh',
          'PKG-INFO',
          'licenses/',
-         'language/',
+         'po/',
+         'locale/'
+         'email/'
          'interfaces/Classic/',
          'interfaces/smpl/',
          'interfaces/Plush/',
@@ -339,7 +341,7 @@ if target == 'app':
     sys.argv[1] = 'py2app'
 
     APP = ['SABnzbd.py']
-    DATA_FILES = ['interfaces','language',('',glob.glob("osx/resources/*"))]
+    DATA_FILES = ['interfaces', 'locale', 'email', ('',glob.glob("osx/resources/*"))]
     NZBFILE = dict(
             CFBundleTypeExtensions = [ "nzb","zip","rar" ],
             CFBundleTypeIconFile = 'nzbfile.icns',
@@ -388,6 +390,9 @@ if target == 'app':
     #Create src tar.gz
     os.system("tar -czf %s --exclude \".bzr\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
 
+    #Create MO files
+    os.system('./make_mo.py')
+
     #Copy src tar.gz to mounted sparseimage
     os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
 
@@ -420,6 +425,9 @@ elif target in ('binary', 'installer'):
 
     # Unpack cherrypy
     os.system("unzip -o cherrypy.zip")
+
+    # Create MO files
+    os.system('make_mo.py')
 
     import sabnzbd
     options['description'] = 'SABnzbd ' + str(sabnzbd.__version__)

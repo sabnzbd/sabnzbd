@@ -62,6 +62,7 @@ except:
         else:
             SQLITE_DLL = False
 
+import sabnzbd.lang
 import sabnzbd
 import sabnzbd.interface
 from sabnzbd.constants import *
@@ -75,7 +76,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader as downloader
 from sabnzbd.encoding import unicoder
-from sabnzbd.lang import T, Ta
 from sabnzbd.utils import osx
 
 from threading import Thread
@@ -292,7 +292,7 @@ def daemonize():
 def Bail_Out(browserhost, cherryport, access=False):
     """Abort program because of CherryPy troubles
     """
-    logging.error(Ta('error-noWebUi'))
+    logging.error(Ta('Failed to start web-interface'), Ta('Cannot find web template: %s, trying standard template'))
     if access:
         panic_xport(browserhost, cherryport)
     else:
@@ -322,7 +322,7 @@ def Web_Template(key, defweb, wdir):
     logging.info("Web dir is %s", full_dir)
 
     if not os.path.exists(full_main):
-        logging.warning(Ta('warn-noSkin@1'), full_main)
+        logging.warning(Ta('Cannot find web template: %s, trying standard template'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
@@ -330,7 +330,7 @@ def Web_Template(key, defweb, wdir):
             panic_tmpl(full_dir)
             exit_sab(1)
 
-    sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), wdir)
+    #sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), wdir)
 
     return real_path(full_dir, "templates")
 
@@ -443,14 +443,14 @@ def print_modules():
         logging.info("_yenc module... found!")
     else:
         if hasattr(sys, "frozen"):
-            logging.error(Ta('error-noYEnc'))
+            logging.error(Ta('_yenc module... NOT found!'))
         else:
             logging.info("_yenc module... NOT found!")
 
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
-        logging.error(Ta('error-noPar2'))
+        logging.error(Ta('par2 binary... NOT found!'))
 
     if sabnzbd.newsunpack.PAR2C_COMMAND:
         logging.info("par2-classic binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
@@ -458,12 +458,12 @@ def print_modules():
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("unrar binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
     else:
-        logging.warning(Ta('warn-noUnrar'))
+        logging.warning(Ta('unrar binary... NOT found'))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
     else:
-        logging.warning(Ta('warn-noUnzip'))
+        logging.warning(Ta('unzip binary... NOT found!'))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:
@@ -567,7 +567,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
     if ipv6 and ipv4 and cherryhost == '' and sabnzbd.WIN32:
-        logging.warning(Ta('warn-0000'))
+        logging.warning(Ta('Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access'))
 
     if cherryhost == 'localhost' and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         # On the Ubuntu family, localhost leads to problems for CherryPy
@@ -597,7 +597,7 @@ def get_webhost(cherryhost, cherryport, https_port):
     if cherryport == https_port:
         sabnzbd.cfg.enable_https.set(False)
         # Should have a translated message, but that's not available yet
-        #logging.error(Ta('error-sameHTTP-HTTPS'))
+        #logging.error(Ta('HTTP and HTTPS ports cannot be the same'))
         logging.error('HTTP and HTTPS ports cannot be the same')
 
     return cherryhost, cherryport, browserhost, https_port
@@ -1159,7 +1159,7 @@ def main():
     web_dir2 = Web_Template(sabnzbd.cfg.web_dir2, '', fix_webname(web_dir2))
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-    sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
+    #sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
 
     sabnzbd.WEB_DIR  = web_dir
     sabnzbd.WEB_DIR2 = web_dir2
@@ -1231,7 +1231,7 @@ def main():
             create_https_certificates(https_cert, https_key)
 
         if https_port and not (os.path.exists(https_cert) or os.path.exists(https_key)):
-            logging.warning(Ta('warn-noCertKey'))
+            logging.warning(Ta('Disabled HTTPS because of missing CERT and KEY files'))
             https_port = False
 
         if https_port:
@@ -1406,7 +1406,7 @@ def main():
     if sabnzbd.WIN_SERVICE and mail:
         mail.send('stop')
     notify("SAB_Shutdown", None)
-    osx.sendGrowlMsg('SABnzbd',T('grwl-shutdown-end-msg'),osx.NOTIFICATION['startup'])
+    osx.sendGrowlMsg('SABnzbd',T('SABnzbd shutdown finished'),osx.NOTIFICATION['startup'])
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()

@@ -342,7 +342,7 @@ function timedPause(mins)
 {
     if (mins == null)
     {
-        mins = prompt("$T('pauseForPrompt')");
+        mins = prompt("$T('smpl-pauseForPrompt')");
     }
     url = 'tapi?mode=config&name=set_pause&value=' + mins +'&session='+session;
     d = doSimpleXMLHttpRequest(url);

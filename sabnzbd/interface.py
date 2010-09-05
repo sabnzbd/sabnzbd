@@ -51,12 +51,12 @@ import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 
 from sabnzbd.constants import *
-from sabnzbd.lang import T, Ta, list_languages, reset_language
+from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
                         api_handler, build_queue, rss_qstatus, \
                         retry_job, build_header, get_history_size, build_history, \
-                        format_bytes, calc_age, std_time, report, del_hist_job
+                        format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
 
 #------------------------------------------------------------------------------
 # Global constants
@@ -74,12 +74,12 @@ def check_server(host, port):
     """ Check if server address resolves properly """
 
     if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
-        return badParameterResponse(T('msg-warning-ambiLocalhost'))
+        return badParameterResponse(T('Warning: LOCALHOST is ambiguous, use numerical IP-address.'))
 
     if GetServerParms(host, int_conv(port)):
         return ""
     else:
-        return badParameterResponse(T('msg-invalidServer@2') % (host, port))
+        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port))
 
 
 def ConvertSpecials(p):
@@ -87,7 +87,7 @@ def ConvertSpecials(p):
     """
     if p is None:
         p = 'None'
-    elif p.lower() == T('default').lower():
+    elif p.lower() == T('Default').lower():
         p = ''
     return p
 
@@ -161,11 +161,11 @@ def check_session(kwargs):
         key = kwargs.get('apikey')
     msg = None
     if not key:
-        logging.warning(Ta('warn-missingKey'))
-        msg = T('error-missingKey')
+        logging.warning(Ta('Missing Session key'))
+        msg = T('Error: Session Key Required')
     elif key != cfg.api_key():
-        logging.warning(Ta('error-badKey'))
-        msg = T('error-badKey')
+        logging.warning(Ta('Error: Session Key Incorrect'))
+        msg = T('Error: Session Key Incorrect')
     return msg
 
 
@@ -184,10 +184,10 @@ def check_apikey(kwargs, nokey=False):
         key = kwargs.get('apikey')
         if not key:
             if not special:
-                logging.warning(Ta('warn-apikeyNone'))
+                logging.warning(Ta('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required')
         elif key != cfg.api_key():
-            logging.warning(Ta('warn-apikeyBad'))
+            logging.warning(Ta('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
             return report(output, 'API Key Incorrect')
         else:
             return None
@@ -198,7 +198,7 @@ def check_apikey(kwargs, nokey=False):
             pass
         else:
             if not special:
-                logging.warning(Ta('warn-authMissing'))
+                logging.warning(Ta('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
             return report(output, 'Missing authentication')
     return None
 
@@ -210,7 +210,7 @@ class NoPage(object):
 
     @cherrypy.expose
     def index(self, **kwargs):
-        return badParameterResponse(T('error-noSecUI'))
+        return badParameterResponse(T('Error: No secondary interface defined.'))
 
 
 
@@ -253,11 +253,11 @@ class MainPage(object):
             info['warning'] = ''
             if cfg.enable_unrar():
                 if sabnzbd.newsunpack.RAR_PROBLEM and not cfg.ignore_wrong_unrar():
-                    info['warning'] = T('warn-badUnrar')
+                    info['warning'] = T('Your UNRAR version is not recommended, get it from http://www.rarlab.com/rar_add.htm<br />')
                 if not sabnzbd.newsunpack.RAR_COMMAND:
-                    info['warning'] = T('warn-noUnpack')
+                    info['warning'] = T('No UNRAR program found, unpacking RAR files is not possible<br />')
             if not sabnzbd.newsunpack.PAR2_COMMAND:
-                info['warning'] = T('warn-noRepair')
+                info['warning'] = T('No PAR2 program found, repairs not possible<br />')
 
             template = Template(file=os.path.join(self.__web_dir, 'main.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -270,7 +270,7 @@ class MainPage(object):
     #def reset_lang(self, **kwargs):
     #    msg = check_session(kwargs)
     #    if msg: return msg
-    #    reset_language(cfg.language())
+    #    set_language(cfg.language())
     #    raise dcRaiser(self.__root, kwargs)
 
 
@@ -997,9 +997,9 @@ class ConfigPage(object):
         if msg:
             yield msg
         else:
-            yield T('restart1')
+            yield T('Initiating restart...<br />')
             sabnzbd.halt()
-            yield T('restart2')
+            yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
             cherrypy.engine.restart()
 
     @cherrypy.expose
@@ -1009,9 +1009,9 @@ class ConfigPage(object):
             yield msg
         else:
             sabnzbd.request_repair()
-            yield T('restart1')
+            yield T('Initiating restart...<br />')
             sabnzbd.halt()
-            yield T('restart2')
+            yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
             cherrypy.engine.restart()
 
     @cherrypy.expose
@@ -1212,7 +1212,7 @@ class ConfigGeneral(object):
         conf['web_dir2'] = add_color(cfg.web_dir2(), cfg.web_color2())
 
         conf['language'] = cfg.language()
-        list = list_languages(sabnzbd.DIR_LANGUAGE)
+        list = list_languages()
         if len(list) < 2:
             list = []
         conf['lang_list'] = list
@@ -1256,7 +1256,8 @@ class ConfigGeneral(object):
         language = kwargs.get('language')
         if language and language != cfg.language():
             cfg.language.set(language)
-            reset_language(language)
+            set_language(language)
+            sabnzbd.api.cache_skin_trans()
 
         cleanup_list = kwargs.get('cleanup_list')
         if cleanup_list and sabnzbd.WIN32:
@@ -1381,7 +1382,7 @@ def handle_server(kwargs, root=None):
 
     host = kwargs.get('host', '').strip()
     if not host:
-        return badParameterResponse(T('error-needServer'))
+        return badParameterResponse(T('Server address required'))
 
     port = kwargs.get('port', '').strip()
     if not port:
@@ -1683,14 +1684,14 @@ class ConfigScheduling(object):
     def index(self, **kwargs):
         def get_days():
             days = {}
-            days["*"] = T('daily')
-            days["1"] = T('monday')
-            days["2"] = T('tuesday')
-            days["3"] = T('wednesday')
-            days["4"] = T('thursday')
-            days["5"] = T('friday')
-            days["6"] = T('saturday')
-            days["7"] = T('sunday')
+            days["*"] = T('Daily')
+            days["1"] = T('Monday')
+            days["2"] = T('Tuesday')
+            days["3"] = T('Wednesday')
+            days["4"] = T('Thursday')
+            days["5"] = T('Friday')
+            days["6"] = T('Saturday')
+            days["7"] = T('Sunday')
             return days
 
         if cfg.configlock():
@@ -1713,14 +1714,14 @@ class ConfigScheduling(object):
                 continue
             action = action.strip()
             if action in actions:
-                action = T("sch-" + action)
+                action = Ttemplate("sch-" + action)
             else:
                 try:
                     act, server = action.split()
                 except ValueError:
                     act = ''
                 if act in ('enable_server', 'disable_server'):
-                    action = T("sch-" + act) + ' ' + server
+                    action = Ttemplate("sch-" + act) + ' ' + server
             item = (snum, h, '%02d' % int(m), days.get(day, '**'), action)
             conf['taskinfo'].append(item)
             snum += 1
@@ -1728,7 +1729,7 @@ class ConfigScheduling(object):
 
         actions_lng = {}
         for action in actions:
-            actions_lng[action] = T("sch-" + action)
+            actions_lng[action] = Ttemplate("sch-" + action)
         for server in config.get_servers():
             actions.append(server)
             actions_lng[server] = server
@@ -2065,7 +2066,7 @@ class ConnectionInfo(object):
                 connected = unicoder(server.warning)
 
             if server.request and not server.info:
-                connected = T('server-resolving')
+                connected = T('&nbsp;Resolving address')
             busy.sort()
 
             header['servers'].append((server.host, server.port, connected, busy, server.ssl,
@@ -2073,7 +2074,7 @@ class ConnectionInfo(object):
 
         wlist = []
         for w in sabnzbd.GUIHANDLER.content():
-            w = w.replace('WARNING', Ta('warning')).replace('ERROR', Ta('error'))
+            w = w.replace('WARNING', Ta('WARNING:')).replace('ERROR', Ta('ERROR:'))
             wlist.append(xml_name(w))
         header['warnings'] = wlist
 
@@ -2166,7 +2167,7 @@ def badParameterResponse(msg):
 <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
 </body>
 </html>
-''' % (sabnzbd.__version__, T('error'), T('badParm'), unicoder(msg), T('button-back'))
+''' % (sabnzbd.__version__, T('ERROR:'), T('Incorrect parameter'), unicoder(msg), T('Back'))
 
 def ShowFile(name, path):
     """Return a html page listing a file and a 'back' button
@@ -2192,7 +2193,7 @@ def ShowFile(name, path):
 </pre></code><br/><br/>
 </body>
 </html>
-''' % (name, T('button-back'), name, escape(msg))
+''' % (name, T('Back'), name, escape(msg))
 
 def ShowString(name, string):
     """Return a html page listing a file and a 'back' button
@@ -2216,7 +2217,7 @@ def ShowString(name, string):
            </pre></code><br/><br/>
 </body>
 </html>
-''' % (xml_name(name), T('button-back'), xml_name(name), escape(unicoder(msg)))
+''' % (xml_name(name), T('Back'), xml_name(name), escape(unicoder(msg)))
 
 
 def ShowOK(url):
@@ -2233,7 +2234,7 @@ def ShowOK(url):
            <br/><br/>
 </body>
 </html>
-''' % (escape(url), T('button-back'), T('msg-reAdded@1') % escape(url))
+''' % (escape(url), T('Back'), T('Job "%s" was re-added to the queue') % escape(url))
 
 
 def _make_link(qfeed, job):
@@ -2271,7 +2272,7 @@ def _make_link(qfeed, job):
 
     star = '&nbsp;*' * int(status.endswith('*'))
     if rule < 0:
-        rule = '&nbsp;%s!' % T('msg-duplicate')
+        rule = '&nbsp;%s!' % T('duplicate')
     else:
         rule = '&nbsp;#%s' % str(rule)
 
@@ -2281,7 +2282,7 @@ def _make_link(qfeed, job):
         title = xml_name(title)
 
     return '<a href="rss_download?session=%s&feed=%s&id=%s%s%s%s%s%s">%s</a>&nbsp;&nbsp;&nbsp;%s%s%s<br/>' % \
-           (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('link-download'), title, star, rule)
+           (cfg.api_key() ,qfeed, name, cat, pp, script, prio, nzbname, T('Download'), title, star, rule)
 
 
 
@@ -2362,8 +2363,8 @@ def ShowRssLog(feed, all):
                <br/>
 </body>
 </html>
-''' % (escape(feed), T('button-back'), escape(feed), T('explain-rssStar'), T('rss-matched'), \
-       ''.join(goodStr), T('rss-notMatched'), ''.join(badStr), T('rss-done'), ''.join(doneStr))
+''' % (escape(feed), T('Back'), escape(feed), T('Jobs marked with a \'*\' will not be automatically downloaded.'), T('Matched'), \
+       ''.join(goodStr), T('Not matched'), ''.join(badStr), T('Downloaded'), ''.join(doneStr))
     else:
         return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -2381,7 +2382,7 @@ def ShowRssLog(feed, all):
                <br/>
 </body>
 </html>
-''' % (escape(feed), T('button-back'), escape(feed), T('rss-downloaded'), ''.join(doneStr))
+''' % (escape(feed), T('Back'), escape(feed), T('Downloaded so far'), ''.join(doneStr))
 
 
 
@@ -2423,7 +2424,7 @@ class ConfigEmail(object):
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('error-badValue@2') % (kw, unicoder(msg)))
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)

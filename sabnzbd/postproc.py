@@ -46,7 +46,6 @@ import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
 from sabnzbd.utils import osx
-from sabnzbd.lang import T, Ta
 
 
 #------------------------------------------------------------------------------
@@ -92,7 +91,7 @@ class PostProcessor(Thread):
         try:
             version, history_queue = data
             if POSTPROC_QUEUE_VERSION != version:
-                logging.warning(Ta('warn-badPPQueue@2'), POSTPROC_QUEUE_VERSION, version)
+                logging.warning(Ta('Failed to load postprocessing queue: Wrong version (need:%s, found:%s)'), POSTPROC_QUEUE_VERSION, version)
             if isinstance(history_queue, list):
                 self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.downpath)]
         except:
@@ -121,7 +120,7 @@ class PostProcessor(Thread):
             self.history_queue.remove(nzo)
         except:
             nzo_id = getattr(nzo, 'nzo_id', 'unknown id')
-            logging.error(Ta('error-ppDelNzo'), nzo_id)
+            logging.error(Ta('Failed to remove nzo from postproc queue (id)'), nzo_id)
         self.save()
 
     def stop(self):
@@ -213,7 +212,7 @@ def process_job(nzo):
 
         # if the directory has not been made, no files were assembled
         if not os.path.exists(workdir):
-            emsg = T('warn-OutRetention')
+            emsg = T('Download failed - Out of your server\'s retention?')
             nzo.fail_msg = emsg
             nzo.status = 'Failed'
             # do not run unpacking or parity verification
@@ -280,7 +279,7 @@ def process_job(nzo):
                     unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, (), (), (), ())
                     logging.info("unpack_magic finished on %s", filename)
                 else:
-                    nzo.set_unpack_info('Unpack', T('msg-noPostProc'))
+                    nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
 
             if cfg.safe_postproc():
                 all_ok = all_ok and not unpack_error
@@ -288,7 +287,7 @@ def process_job(nzo):
             if all_ok:
                 ## Move any (left-over) files to destination
                 nzo.status = 'Moving'
-                nzo.set_action_line(T('msg-moving'), '...')
+                nzo.set_action_line(T('Moving'), '...')
                 for root, dirs, files in os.walk(workdir):
                     if not root.endswith(JOB_ADMIN):
                         for file_ in files:
@@ -308,7 +307,7 @@ def process_job(nzo):
                 ## Check if this is an NZB-only download, if so redirect to queue
                 nzb_list = nzb_redirect(tmp_workdir_complete, nzo.pp, script, cat, priority=nzo.priority)
                 if nzb_list:
-                    nzo.set_unpack_info('Download', T('msg-sentToQ@1') % unicoder(nzb_list))
+                    nzo.set_unpack_info('Download', T('Sent %s to queue') % unicoder(nzb_list))
                     try:
                         remove_dir(tmp_workdir_complete)
                     except:
@@ -328,7 +327,7 @@ def process_job(nzo):
                     renamer(tmp_workdir_complete, workdir_complete)
                     nzo.final_name = os.path.basename(workdir_complete)
                 except:
-                    logging.error(Ta('error-ppRename@2'), tmp_workdir_complete, workdir_complete)
+                    logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
                     logging.info("Traceback: ", exc_info = True)
 
             job_result = int(par_error) + int(unpack_error)*2
@@ -347,8 +346,8 @@ def process_job(nzo):
             if all_ok and (not nzb_list) and script_path:
                 #set the current nzo status to "Ext Script...". Used in History
                 nzo.status = 'Running'
-                nzo.set_action_line(T('msg-running'), unicoder(script))
-                nzo.set_unpack_info('Script', T('msg-runScript@1') % unicoder(script), unique=True)
+                nzo.set_action_line(T('Running script'), unicoder(script))
+                nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
                 script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
                                                              msgid, dirname, cat, nzo.group, job_result)
                 script_line = get_last_line(script_log)
@@ -357,7 +356,7 @@ def process_job(nzo):
                 if script_line:
                     nzo.set_unpack_info('Script', script_line, unique=True)
                 else:
-                    nzo.set_unpack_info('Script', T('msg-ranScript@1') % unicoder(script), unique=True)
+                    nzo.set_unpack_info('Script', T('Ran %s') % unicoder(script), unique=True)
             else:
                 script = ""
                 script_line = ""
@@ -378,11 +377,11 @@ def process_job(nzo):
             if script_line:
                 nzo.set_unpack_info('Script',
                                     '%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, urllib.quote(script_output),
-                                     T('link-more')), unique=True)
+                                     T('More')), unique=True)
             else:
                 nzo.set_unpack_info('Script',
                                     '%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(script_output),
-                                    T('link-viewSc')), unique=True)
+                                    T('View script output')), unique=True)
 
         ## Remove newzbin bookmark, if any
         if msgid and all_ok:
@@ -397,10 +396,10 @@ def process_job(nzo):
             nzo.status = 'Failed'
 
     except:
-        logging.error(Ta('error-ppFailed@2'), filename, crash_msg)
+        logging.error(Ta('Post Processing Failed for %s (%s)'), filename, crash_msg)
         if not crash_msg:
             logging.info("Traceback: ", exc_info = True)
-        nzo.fail_msg = T('warn-PostCrash@1') % unicoder(crash_msg)
+        nzo.fail_msg = T('PostProcessing Crashed, see logfile (%s)') % unicoder(crash_msg)
         osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
         nzo.status = 'Failed'
         par_error = True
@@ -427,7 +426,7 @@ def process_job(nzo):
         logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
         sabnzbd.nzbqueue.cleanup_nzo(nzo, keep_basic=not all_ok)
     except:
-        logging.error(Ta('error-ppCleanup@1'), nzo.final_name)
+        logging.error(Ta('Cleanup of %s failed.'), nzo.final_name)
         logging.info("Traceback: ", exc_info = True)
 
     ## Remove download folder
@@ -438,7 +437,7 @@ def process_job(nzo):
                 remove_all(os.path.join(workdir, JOB_ADMIN))
                 remove_dir(workdir)
         except:
-            logging.error(Ta('error-ppDelWorkdir@1'), workdir)
+            logging.error(Ta('Error removing workdir (%s)'), workdir)
             logging.info("Traceback: ", exc_info = True)
 
     return True
@@ -490,11 +489,11 @@ def parring(nzo, workdir):
             for sfv in globber(workdir, '*.sfv'):
                 par_error = par_error or not sfv_check(sfv)
             if par_error:
-                nzo.set_unpack_info('Repair', T('msg-failedSFV@1') % unicoder(os.path.basename(sfv)))
+                nzo.set_unpack_info('Repair', T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv)))
 
         if not sfv:
             logging.info("No par2 sets for %s", filename)
-            nzo.set_unpack_info('Repair', T('msg-noParSets@1') % unicoder(filename))
+            nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
 
     return par_error, re_add
 
@@ -526,14 +525,14 @@ def perm_script(wdir, umask):
             os.chmod(root, umask)
         except:
             if report_errors:
-                logging.error(Ta('error-ppPermissions@1'), root)
+                logging.error(Ta('Cannot change permissions of %s'), root)
                 logging.info("Traceback: ", exc_info = True)
         for name in files:
             try:
                 os.chmod(join(root, name), umask_file)
             except:
                 if report_errors:
-                    logging.error(Ta('error-ppPermissions@1'), join(root, name))
+                    logging.error(Ta('Cannot change permissions of %s'), join(root, name))
                     logging.info("Traceback: ", exc_info = True)
 
 
@@ -600,7 +599,7 @@ def cleanup_list(wdir, skip_nzb):
                     logging.info("Removing unwanted file %s", path)
                     os.remove(path)
                 except:
-                    logging.error(Ta('error-ppDelFailed@1'), path)
+                    logging.error(Ta('Removing %s failed'), path)
                     logging.info("Traceback: ", exc_info = True)
 
 
@@ -671,5 +670,5 @@ def remove_samples(path):
                     logging.info("Removing unwanted sample file %s", path)
                     os.remove(path)
                 except:
-                    logging.error(Ta('error-ppDelFailed@1'), path)
+                    logging.error(Ta('Removing %s failed'), path)
                     logging.info("Traceback: ", exc_info = True)

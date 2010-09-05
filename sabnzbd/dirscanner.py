@@ -35,7 +35,6 @@ import sabnzbd.misc as misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
-from sabnzbd.lang import Ta
 
 
 RE_CAT = re.compile(r'^{{(\w+)}}(.+)') # Category prefix
@@ -118,7 +117,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         try:
             if not keep: os.remove(path)
         except:
-            logging.error(Ta('error-remove@1'), path)
+            logging.error(Ta('Error removing %s'), path)
             logging.info("Traceback: ", exc_info = True)
             status = 1
     else:
@@ -153,7 +152,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         data = f.read()
         f.close()
     except:
-        logging.warning(Ta('warn-noRead@1'), path)
+        logging.warning(Ta('Cannot read %s'), path)
         logging.info("Traceback: ", exc_info = True)
         return -2
 
@@ -181,7 +180,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     try:
         if not keep: os.remove(path)
     except:
-        logging.error(Ta('error-remove@1'), path)
+        logging.error(Ta('Error removing %s'), path)
         logging.info("Traceback: ", exc_info = True)
         return 1
 
@@ -277,7 +276,7 @@ class DirScanner(threading.Thread):
                 files = os.listdir(folder)
             except:
                 if not self.error_reported and not catdir:
-                    logging.error(Ta('error-readWatched@1'), folder)
+                    logging.error(Ta('Cannot read Watched Folder %s'), folder)
                     self.error_reported = True
                 files = []
 
@@ -361,7 +360,7 @@ class DirScanner(threading.Thread):
                     list = os.listdir(dirscan_dir)
                 except:
                     if not self.error_reported:
-                        logging.error(Ta('error-readWatched@1'), dirscan_dir)
+                        logging.error(Ta('Cannot read Watched Folder %s'), dirscan_dir)
                         self.error_reported = True
                     list = []
 

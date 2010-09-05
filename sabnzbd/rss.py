@@ -34,7 +34,6 @@ import sabnzbd.emailer as emailer
 from sabnzbd.encoding import latin1, unicoder
 
 import sabnzbd.utils.feedparser as feedparser
-from sabnzbd.lang import T, Ta
 
 __RSS = None  # Global pointer to RSS-scanner instance
 
@@ -118,7 +117,7 @@ def convert_filter(text):
     try:
         return re.compile(txt, re.I)
     except:
-        logging.error(Ta('error-rssRegex@1'), text)
+        logging.error(Ta('Could not compile regex: %s'), text)
         return None
 
 
@@ -199,9 +198,9 @@ class RSSQueue(object):
         try:
             feeds = config.get_rss()[feed]
         except KeyError:
-            logging.error(Ta('error-rssBadFeed@1'), feed)
+            logging.error(Ta('Incorrect RSS feed description "%s"'), feed)
             logging.info("Traceback: ", exc_info = True)
-            return T('error-rssBadFeed@1') % feed
+            return T('Incorrect RSS feed description "%s"') % feed
 
         uri = feeds.uri()
         defCat = feeds.cat()
@@ -250,13 +249,13 @@ class RSSQueue(object):
             d = feedparser.parse(uri.replace('feed://', 'http://'))
             logging.debug("Done parsing %s", uri)
             if not d:
-                logging.info(Ta('warn-failRSS@1'), uri)
-                return T('warn-failRSS@1') % uri
+                logging.info(Ta('Failed to retrieve RSS from %s'), uri)
+                return T('Failed to retrieve RSS from %s') % uri
 
             entries = d.get('entries')
             if 'bozo_exception' in d and not entries:
-                logging.info(Ta('warn-failRSS@2'), uri, str(d['bozo_exception']))
-                return T('warn-failRSS@2') % (uri, str(d['bozo_exception']))
+                logging.info(Ta('Failed to retrieve RSS from %s: %s'), uri, str(d['bozo_exception']))
+                return T('Failed to retrieve RSS from %s: %s') % (uri, str(d['bozo_exception']))
             if not entries:
                 logging.info('RSS Feed was empty: %s', uri)
                 return ''
@@ -545,7 +544,7 @@ def _get_link(uri, entry):
                 category = ''
         return link, category
     else:
-        logging.warning(Ta('warn-emptyRSS@1'), link)
+        logging.warning(Ta('Empty RSS entry found (%s)'), link)
         return None, ''
 
 

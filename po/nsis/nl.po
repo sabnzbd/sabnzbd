@@ -1,0 +1,67 @@
+#
+# SABnzbd Translation Template file NSIS
+# Copyright (C) 2010 by the SABnzbd Team
+#   team@sabnzbd.org
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SABnzbd-0.6.x\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: shypike@sabnzbd.org\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+
+#: NSIS_Installer.nsi:323
+msgid "Start SABnzbd (hidden)"
+msgstr "Start SABnzbd (verborgen)"
+
+#: NSIS_Installer.nsi:330
+msgid "Show Release Notes"
+msgstr "Toon Vrijgave Bericht (Engels)"
+
+#: NSIS_Installer.nsi:337
+msgid "Support the project, Donate!"
+msgstr "Steun het project, Doneer!"
+
+#: NSIS_Installer.nsi:344
+msgid "Please close \"SABnzbd.exe\" first"
+msgstr "Sluit \"SABnzbd.exe\" eerst af"
+
+#: NSIS_Installer.nsi:351
+msgid "                  >>>> WARNING <<<<\r\n\r\nIf not empty, download your current queue with the old program.\r\nThe new program will ignore your current queue!"
+msgstr "                  >>>> WAARSCHUWING <<<<\r\n\r\nIndien niet leeg, download eerst de gehele huidige wachtrij met het oude programma.\r\nHet nieuwe programma zal je huidige wachtrij negeren!"
+
+#: NSIS_Installer.nsi:358
+msgid "This will uninstall SABnzbd from your system"
+msgstr "Dit verwijdert SABnzbd van je systeem"
+
+#: NSIS_Installer.nsi:365
+msgid "Run at startup"
+msgstr "Opstarten bij systeem start"
+
+#: NSIS_Installer.nsi:372
+msgid "Desktop Icon"
+msgstr "Pictogram op bureaublad"
+
+#: NSIS_Installer.nsi:379
+msgid "NZB File association"
+msgstr "NZB bestanden koppelen aan SABnzbd"
+
+#: NSIS_Installer.nsi:386
+msgid "Delete Program"
+msgstr "Verwijder programma"
+
+#: NSIS_Installer.nsi:393
+msgid "Delete Settings"
+msgstr "Verwijder instellingen"
+
+#: NSIS_Installer.nsi:400
+msgid "Delete Logs"
+msgstr "Verwijder logging"
+
+#: NSIS_Installer.nsi:407
+msgid "Delete Cache"
+msgstr "Verwijder Cache"

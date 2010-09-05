@@ -25,7 +25,8 @@ from Cheetah.Template import Template
 
 import sabnzbd
 from sabnzbd.constants import *
-from sabnzbd.lang import T, list_languages, reset_language
+import sabnzbd.api
+from sabnzbd.lang import list_languages, set_language
 from sabnzbd.utils.servertests import test_nntp_server_dict
 import sabnzbd.interface
 import sabnzbd.config as config
@@ -49,7 +50,7 @@ class Wizard(object):
         info['num'] = ''
         info['number'] = 0
         info['lang'] = cfg.language()
-        info['languages'] = list_languages(sabnzbd.DIR_LANGUAGE)
+        info['languages'] = list_languages()
 
         if not os.path.exists(self.__web_dir):
             # If the wizard folder does not exist, simply load the normal page
@@ -66,9 +67,10 @@ class Wizard(object):
         if language and language != cfg.language():
             cfg.language.set(language)
             reset_language(language)
+            sabnzbd.api.cache_skin_trans()
 
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('wizard-step-one')
+        info['num'] = '&raquo; %s' % T('Step One')
         info['number'] = 1
         info['skin'] = cfg.web_dir().lower()
 
@@ -84,7 +86,7 @@ class Wizard(object):
                 sabnzbd.interface.change_web_dir(kwargs['skin'])
 
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('wizard-step-two')
+        info['num'] = '&raquo; %s' % T('Step Two')
         info['number'] = 2
 
         host = cfg.cherryhost()
@@ -122,7 +124,7 @@ class Wizard(object):
             if not cfg.username() or not cfg.password():
                 sabnzbd.interface.set_auth(cherrypy.config)
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('wizard-step-three')
+        info['num'] = '&raquo; %s' % T('Step Three')
         info['number'] = 3
         info['session'] = cfg.api_key()
 
@@ -158,7 +160,7 @@ class Wizard(object):
             sabnzbd.interface.handle_server(kwargs)
 
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('wizard-step-four')
+        info['num'] = '&raquo; %s' % T('Step Four')
         info['number'] = 4
         info['newzbin_user'] = cfg.newzbin_username()
         info['newzbin_pass'] = cfg.newzbin_password.get_stars()
@@ -184,7 +186,7 @@ class Wizard(object):
         config.save_config()
 
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('wizard-step-five')
+        info['num'] = '&raquo; %s' % T('Step Five')
         info['number'] = 5
         info['helpuri'] = 'http://wiki.sabnzbd.org/'
         info['session'] = cfg.api_key()

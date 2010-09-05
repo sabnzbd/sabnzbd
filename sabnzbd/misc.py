@@ -42,7 +42,6 @@ import sabnzbd.nzbqueue
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, latin1
-from sabnzbd.lang import T, Ta
 
 if sabnzbd.FOUNDATION:
     import Foundation
@@ -304,13 +303,13 @@ def create_real_path(name, loc, path, umask=False):
         if not os.path.exists(my_dir):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error(Ta('error-createDir@1'), my_dir)
+                logging.error(Ta('Cannot create directory %s'), my_dir)
                 return (False, my_dir)
 
         if os.access(my_dir, os.R_OK + os.W_OK):
             return (True, my_dir)
         else:
-            logging.error(Ta('error-accessDir@2'), name, my_dir)
+            logging.error(Ta('%s directory: %s error accessing'), name, my_dir)
             return (False, my_dir)
     else:
         return (False, "")
@@ -330,14 +329,14 @@ def get_user_shellfolders():
     try:
         hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
     except WindowsError:
-        logging.error(Ta('error-regConnect'))
+        logging.error(Ta('Cannot connect to registry hive HKEY_CURRENT_USER.'))
         return values
 
     # Then open the registry key where Windows stores the Shell Folder locations
     try:
         key = _winreg.OpenKey(hive, r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
     except WindowsError:
-        logging.error(Ta('error-regOpen@1'), r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
+        logging.error(Ta('Cannot open registry key "%s".'), r"Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders")
         _winreg.CloseKey(hive)
         return values
 
@@ -364,7 +363,7 @@ def get_user_shellfolders():
         return values
     except WindowsError:
         # On error, return empty dict.
-        logging.error(Ta('error-regSpecial'))
+        logging.error(Ta('Failed to read registry keys for special folders'))
         _winreg.CloseKey(key)
         _winreg.CloseKey(hive)
         return {}
@@ -597,7 +596,7 @@ def panic_port(host, port):
 
 def panic_xport(host, port):
     launch_a_browser(panic_message(PANIC_XPORT, host, port))
-    logging.error(Ta('error-portNoAccess@1'), port)
+    logging.error(Ta('You have no permisson to use port %s'), port)
 
 def panic_queue(name):
     launch_a_browser(panic_message(PANIC_QUEUE, name, 0))
@@ -631,7 +630,7 @@ def launch_a_browser(url, force=False):
         try:
             webbrowser.open(url, 1, 1)
         except:
-            logging.warning(Ta('warn-noBrowser'))
+            logging.warning(Ta('Cannot launch the browser, probably not found'))
             logging.info("Traceback: ", exc_info = True)
 
 
@@ -882,7 +881,7 @@ def create_dirs(dirpath):
     if not os.path.exists(dirpath):
         logging.info('Creating directories: %s', dirpath)
         if not create_all_dirs(dirpath, True):
-            logging.error(Ta('error-makeFile@1'), dirpath)
+            logging.error(Ta('Failed making (%s)'), dirpath)
             logging.info("Traceback: ", exc_info = True)
             return None
     return dirpath
@@ -907,7 +906,7 @@ def move_to_path(path, new_path, unique=True):
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
-                logging.error(Ta('error-moveFile@2'), path, new_path)
+                logging.error(Ta('Failed moving %s to %s'), path, new_path)
                 logging.info("Traceback: ", exc_info = True)
     return new_path
 
@@ -1019,7 +1018,7 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
 
     if content:
         # Bad content
-        msg = T('his-badArchive')
+        msg = T('Unusable NZB file')
     else:
         # Failed fetch
         msg = ' (' + msg + ')'
@@ -1030,7 +1029,7 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
             nzbname = '&nzbname=%s' % urllib.quote(nzbname)
         else:
             nzbname = ''
-        text = T('his-retryURL1@1') + ', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('his-retryURL2') + '</a>'
+        text = T('URL Fetching failed; %s') + ', <a href="./retry?session=%s&url=%s%s%s%s%s">' + T('Try again') + '</a>'
         parms = (msg, cfg.api_key(), urllib.quote(url), pp, cat, script, nzbname)
         nzo.fail_msg = text % parms
     else:
@@ -1101,9 +1100,9 @@ def format_time_string(seconds, days=0):
 
 def s_returner(item, value):
     if value == 1:
-        return T(item)
+        return Tx(item)
     else:
-        return T(item + 's')
+        return Tx(item + 's')
 
 def int_conv(value):
     """Safe conversion to int"""
@@ -1160,7 +1159,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
              TYPE_RSA, serial
     except:
-        logging.warning(Ta('warn-pyopenssl'))
+        logging.warning(Ta('pyopenssl module missing, please install for https access'))
         return False
 
     # Create the CA Certificate
@@ -1179,7 +1178,7 @@ def create_https_certificates(ssl_cert, ssl_key):
         open(ssl_key, 'w').write(crypto.dump_privatekey(crypto.FILETYPE_PEM, pkey))
         open(ssl_cert, 'w').write(crypto.dump_certificate(crypto.FILETYPE_PEM, cert))
     except:
-        logging.error(Ta('error-sslFiles'))
+        logging.error(Ta('Error creating SSL key and certificate'))
         logging.info("Traceback: ", exc_info = True)
         return False
 
@@ -1249,7 +1248,7 @@ def win_hibernate():
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
         time.sleep(10)
     except:
-        logging.error(Ta('error-hibernate'))
+        logging.error(Ta('Failed to hibernate system'))
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -1258,7 +1257,7 @@ def win_standby():
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
         time.sleep(10)
     except:
-        logging.error(Ta('error-standby'))
+        logging.error(Ta('Failed to standby system'))
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -1285,7 +1284,7 @@ def osx_shutdown():
     try:
         subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
     except:
-        logging.error(Ta('error-shutdown'))
+        logging.error(Ta('#error-shutdown#'))
         logging.info("Traceback: ", exc_info = True)
     os._exit(0)
 
@@ -1295,7 +1294,7 @@ def osx_standby():
         subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
         time.sleep(10)
     except:
-        logging.error(Ta('error-standby'))
+        logging.error(Ta('Failed to standby system'))
         logging.info("Traceback: ", exc_info = True)
 
 

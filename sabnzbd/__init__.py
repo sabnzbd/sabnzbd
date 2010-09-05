@@ -31,7 +31,6 @@ import subprocess
 import time
 import cherrypy
 from threading import RLock, Lock, Condition, Thread
-from sabnzbd.lang import T, Ta
 
 #------------------------------------------------------------------------
 # Determine platform flags
@@ -82,6 +81,7 @@ from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
+import sabnzbd.api
 from sabnzbd.decorators import *
 from sabnzbd.constants import *
 
@@ -129,6 +129,20 @@ __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
 
 
+
+################################################################################
+# Table to map 0.5.x style language code to new style
+LANG_MAP = {
+    'de-de' : 'de',
+    'dk-da' : 'da', # Should have been "da-dk"
+    'fr-fr' : 'fr',
+    'nl-du' : 'nl',
+    'no-no' : 'no',
+    'sv-se' : 'sv',
+    'us-en' : 'en'  # Should have been "en-us"
+}
+
+
 ################################################################################
 # Signal Handler                                                               #
 ################################################################################
@@ -138,7 +152,7 @@ def sig_handler(signum = None, frame = None):
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if type(signum) != type(None):
-        logging.warning(Ta('warn-signal@1'), signum)
+        logging.warning(Ta('Signal %s caught, saving and exiting...'), signum)
     try:
         save_state(flag=True)
     finally:
@@ -209,7 +223,9 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     ### Set language files
-    lang.install_language(DIR_LANGUAGE, cfg.language())
+    lang.set_locale_info('SABnzbd', DIR_LANGUAGE)
+    lang.set_language(LANG_MAP.get(cfg.language(), cfg.language()))
+    sabnzbd.api.cache_skin_trans()
 
     ### Check for old queue (when a new queue is not present)
     if not os.path.exists(os.path.join(cfg.cache_dir.get_path(), QUEUE_FILE_NAME)):
@@ -391,13 +407,13 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
 
     if cfg.newzbin_username() and cfg.newzbin_password():
         logging.info('Fetching msgid %s from www.newzbin.com', msgid)
-        msg = T('fetchingNewzbin@1') % msgid
+        msg = T('fetching msgid %s from www.newzbin.com') % msgid
 
         future_nzo = nzbqueue.generate_future(msg, pp, script, cat=cat, url=msgid, priority=priority, nzbname=nzbname)
 
         MSGIDGrabber.do.grab(msgid, future_nzo)
     else:
-        logging.error(Ta('error-fetchNewzbin@1'), msgid)
+        logging.error(Ta('Error Fetching msgid %s from www.newzbin.com - Please make sure your Username and Password are set'), msgid)
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
@@ -407,7 +423,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
     logging.info('Fetching %s', url)
-    msg = T('fetchNZB@1') % url
+    msg = T('Trying to fetch NZB from %s') % url
     future_nzo = nzbqueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
     URLGrabber.do.add(url, future_nzo)
 
@@ -522,7 +538,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             os.write(f, nzbfile.value)
             os.close(f)
         except:
-            logging.error(Ta('error-tempFile@1'), filename)
+            logging.error(Ta('Cannot create temp file for %s'), filename)
             logging.info("Traceback: ", exc_info = True)
 
     if ext.lower() in ('.zip', '.rar'):
@@ -538,7 +554,7 @@ def enable_server(server):
     try:
         config.get_config('servers', server).enable.set(1)
     except:
-        logging.warning(Ta('warn-noServer@1'), server)
+        logging.warning(Ta('Trying to set status of non-existing server %s'), server)
         return
     config.save_config()
     downloader.update_server(server, server)
@@ -549,7 +565,7 @@ def disable_server(server):
     try:
         config.get_config('servers', server).enable.set(0)
     except:
-        logging.warning(Ta('warn-noServer@1'), server)
+        logging.warning(Ta('Trying to set status of non-existing server %s'), server)
         return
     config.save_config()
     downloader.update_server(server, server)
@@ -670,7 +686,7 @@ def keep_awake():
 def CheckFreeSpace():
     if cfg.download_free() and not downloader.paused():
         if misc.diskfree(cfg.download_dir.get_path()) < cfg.download_free.get_float() / GIGI:
-            logging.warning(Ta('warn-noSpace'))
+            logging.warning(Ta('Too little diskspace forcing PAUSE'))
             # Pause downloader, but don't save, since the disk is almost full!
             downloader.pause_downloader(save=False)
             emailer.diskfull()
@@ -695,7 +711,7 @@ def get_new_id(prefix, folder, check_list=None):
             if not check_list or tail not in check_list:
                 return tail
         except:
-            logging.error(Ta('error-failMkstemp'))
+            logging.error(Ta('Failure in tempfile.mkstemp'))
             logging.info("Traceback: ", exc_info = True)
 
 
@@ -714,7 +730,7 @@ def save_data(data, _id, path, do_pickle = True, silent=False):
         _f.flush()
         _f.close()
     except:
-        logging.error(Ta('error-saveX@1'), path)
+        logging.error(Ta('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -740,7 +756,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
         if remove:
             os.remove(path)
     except:
-        logging.error(Ta('error-loading@1'), path)
+        logging.error(Ta('Loading %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
         return None
 
@@ -775,7 +791,7 @@ def save_admin(data, _id, do_pickle=True):
         f.flush()
         f.close()
     except:
-        logging.error(Ta('error-saveX@1'), path)
+        logging.error(Ta('Saving %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
 
 
@@ -804,7 +820,7 @@ def load_admin(_id, remove=False, do_pickle=True):
         if remove:
             os.remove(path)
     except:
-        logging.error(Ta('error-loading@1'), path)
+        logging.error(Ta('Loading %s failed'), path)
         logging.info("Traceback: ", exc_info = True)
         return None
 

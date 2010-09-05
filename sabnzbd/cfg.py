@@ -29,7 +29,6 @@ from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
                            OptionDir, OptionStr, OptionList, no_nonsense, \
                            validate_octal, validate_safedir, validate_dir_exists, \
                            create_api_key, validate_notempty
-from sabnzbd.lang import T
 
 #------------------------------------------------------------------------------
 # Email validation support
@@ -44,7 +43,7 @@ def validate_email(value):
             values = [value]
         for addr in values:
             if not (addr and RE_VAL.match(addr)):
-                return T('error-badEmailAd@1') % addr, None
+                return T('%s is not a valid email address') % addr, None
     return None, value
 
 
@@ -52,7 +51,7 @@ def validate_server(value):
     """ Check if server non-empty"""
     global email_endjob, email_full
     if value == '' and (email_endjob() or email_full()):
-        return T('error-needServer'), None
+        return T('Server address required'), None
     else:
         return None, value
 
@@ -194,7 +193,7 @@ https_cert = OptionDir('misc', 'https_cert', 'server.cert', create=False)
 https_key = OptionDir('misc', 'https_key', 'server.key', create=False)
 enable_https = OptionBool('misc', 'enable_https', False)
 
-language = OptionStr('misc', 'language', 'us-en')
+language = OptionStr('misc', 'language', 'en')
 ssl_type = OptionStr('misc', 'ssl_type', 'v23')
 unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)

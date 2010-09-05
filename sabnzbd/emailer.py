@@ -32,7 +32,6 @@ import sabnzbd
 from sabnzbd.misc import to_units, split_host
 from sabnzbd.encoding import LatinFilter
 import sabnzbd.cfg as cfg
-from sabnzbd.lang import T, Ta
 
 
 ################################################################################
@@ -49,7 +48,7 @@ def send(message):
 
         message = _prepare_message(message)
 
-        failure = T('error-mailSend')
+        failure = T('Failed to send e-mail')
         server, port = split_host(cfg.email_server())
         if not port:
             port = 25
@@ -73,10 +72,10 @@ def send(message):
                     mailconn = smtplib.SMTP(server, port)
                     mailconn.ehlo()
                 except:
-                    logging.error(Ta('error-mailNoConn'))
+                    logging.error(Ta('Failed to connect to mail server'))
                     return failure
             else:
-                logging.error(Ta('error-mailNoConn'))
+                logging.error(Ta('Failed to connect to mail server'))
                 return failure
 
         # TLS support
@@ -89,7 +88,7 @@ def send(message):
                     mailconn.starttls()
                     mailconn.ehlo()
                 except:
-                    logging.error(Ta('error-mailTLS'))
+                    logging.error(Ta('Failed to initiate TLS connection'))
                     return failure
 
         # Authentication
@@ -97,22 +96,22 @@ def send(message):
             try:
                 mailconn.login(cfg.email_account(), cfg.email_pwd())
             except:
-                logging.error(Ta('error-mailAuth'))
+                logging.error(Ta('Failed to authenticate to mail server'))
                 return failure
 
         try:
             mailconn.sendmail(cfg.email_from(), cfg.email_to(), message)
         except:
-            logging.error(Ta('error-mailSend'))
+            logging.error(Ta('Failed to send e-mail'))
             return failure
 
         try:
             mailconn.close()
         except:
-            logging.warning(Ta('warn-noEmailClose'))
+            logging.warning(Ta('Failed to close mail connection'))
 
         logging.info("Notification e-mail succesfully sent")
-        return T('msg-emailOK')
+        return T('Email succeeded')
 
 
 
@@ -136,14 +135,14 @@ def send_with_template(prefix, parm):
         try:
             lst = glob.glob(os.path.join(path, '%s-*.tmpl' % prefix))
         except:
-            logging.error(Ta('error-mailTempl@1'), path)
+            logging.error(Ta('Cannot find email templates in %s'), path)
     else:
-        path = os.path.join(sabnzbd.DIR_PROG, DEF_LANGUAGE)
+        path = os.path.join(sabnzbd.DIR_PROG, DEF_EMAIL_TMPL)
         tpath = os.path.join(path, '%s-%s.tmpl' % (prefix, cfg.language()))
         if os.path.exists(tpath):
             lst = [tpath]
         else:
-            lst = [os.path.join(path, '%s-us-en.tmpl' % prefix)]
+            lst = [os.path.join(path, '%s-en.tmpl' % prefix)]
 
     ret = "No templates found"
     for temp in lst:
@@ -165,7 +164,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     # Translate the stage names
     xstages = {}
     for stage in stages:
-        xstages[T('stage-'+stage.lower())] = stages[stage]
+        xstages[Tx('stage-'+stage.lower())] = stages[stage]
 
     parm = {}
     parm['status'] = status
@@ -199,7 +198,16 @@ def diskfull():
     """ Send email about disk full, no templates """
 
     if cfg.email_full():
-        return send(T('email-full@2') % (cfg.email_to.get_string(), cfg.email_from()))
+        return send(T('''to: %s
+from: %s
+subject: SABnzbd reports Disk Full
+
+Hi,
+
+SABnzbd has stopped downloading, because the disk is almost full.
+Please make room and resume SABnzbd manually.
+
+''') % (cfg.email_to.get_string(), cfg.email_from()))
     else:
         return ""
 
