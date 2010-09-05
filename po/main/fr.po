@@ -311,12 +311,9 @@ msgid "Failed to close database, see log"
 msgstr "Echec de fermeture de base de données, voir log"
 
 #: sabnzbd/database.py:355
-msgid "Invalid stage logging in history for %s (\\<br />)"
-msgstr ""
-
 #: sabnzbd/database.py:373
-msgid "Invalid stage logging in history for %s (;)"
-msgstr "Etape de log incorrect dans l'historique pour %s (;)"
+msgid "Invalid stage logging in history for %s"
+msgstr ""
 
 #: sabnzbd/decoder.py:96
 msgid "Decoding %s failed"

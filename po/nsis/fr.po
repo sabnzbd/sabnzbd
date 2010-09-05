@@ -27,7 +27,7 @@ msgstr "Supportez le projet, faites un don !"
 
 #: NSIS_Installer.nsi:344
 msgid "Please close \"SABnzbd.exe\" first"
-msgstr "Quittez \"SABnzbd.exe\" avant l\'installation, SVP"
+msgstr "Quittez \"SABnzbd.exe\" avant l'installation, SVP"
 
 #: NSIS_Installer.nsi:351
 msgid "                  >>>> WARNING <<<<\r\n\r\nIf not empty, download your current queue with the old program.\r\nThe new program will ignore your current queue!"

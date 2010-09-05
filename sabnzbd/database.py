@@ -352,8 +352,7 @@ def unpack_history_info(item):
         try:
             lines = item['stage_log'].split('\r\n')
         except:
-            logging.error(T('Invalid stage logging in history for %s (\
-\<br />)'), unicoder(item['name']))
+            logging.error(T('Invalid stage logging in history for %s') + ' (\\r\\n)', unicoder(item['name']))
             logging.debug('Lines: %s', item['stage_log'])
             lines = []
         item['stage_log'] = []
@@ -370,7 +369,7 @@ def unpack_history_info(item):
             try:
                 logs = logs.split(';')
             except:
-                logging.error(T('Invalid stage logging in history for %s (;)'), unicoder(item['name']))
+                logging.error(T('Invalid stage logging in history for %s') + ' (;)', unicoder(item['name']))
                 logging.debug('Logs: %s', logs)
                 logs = []
             for log in logs:
