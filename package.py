@@ -285,8 +285,8 @@ data = [ 'README.txt',
          'PKG-INFO',
          'licenses/',
          'po/',
-         'locale/'
-         'email/'
+         'locale/',
+         'email/',
          'interfaces/Classic/',
          'interfaces/smpl/',
          'interfaces/Plush/',
@@ -391,7 +391,7 @@ if target == 'app':
     os.system("tar -czf %s --exclude \".bzr\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
 
     #Create MO files
-    os.system('./make_mo.py')
+    os.system('./tools/make_mo.py')
 
     #Copy src tar.gz to mounted sparseimage
     os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
@@ -427,7 +427,7 @@ elif target in ('binary', 'installer'):
     os.system("unzip -o cherrypy.zip")
 
     # Create MO files
-    os.system('make_mo.py')
+    os.system('tools\\make_mo.py')
 
     import sabnzbd
     options['description'] = 'SABnzbd ' + str(sabnzbd.__version__)
@@ -506,11 +506,12 @@ elif target in ('binary', 'installer'):
         os.system('makensis.exe /v3 /DSAB_PRODUCT=%s /DSAB_FILE=%s NSIS_Installer.nsi' % \
                   (prod, fileIns))
 
-        DeleteFiles(fileBin)
-        os.rename('dist', prod)
-        os.system('zip -9 -r -X %s %s' % (fileBin, prod))
-        time.sleep(1.0)
-        os.rename(prod, 'dist')
+
+    DeleteFiles(fileBin)
+    os.rename('dist', prod)
+    os.system('zip -9 -r -X %s %s' % (fileBin, prod))
+    time.sleep(1.0)
+    os.rename(prod, 'dist')
 
     os.system(BzrRevert)
 
