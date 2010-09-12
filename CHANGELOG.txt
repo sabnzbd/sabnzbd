@@ -1,4 +1,82 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Redesign of the download queue allowing repairs and retries of post-processing
+- pre-queue user script
+- optional email sent when RSS sends jobs to the queue
+- Redesign of the Config-RSS pages (note: "smpl" does not work here)
+- Full Windows Service support
+- Byte counters per server and independent of History database
+- Many bugfixes
+-------------------------------------------------------------------------------
+ 0.5.5RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Add Norwegian translation
+- Remove illegal characters from nzbname parameter in API calls
+- Add INI-only option "api_warnings" to enable/disable warnings
+  about unauthenticated access to the API.
+-------------------------------------------------------------------------------
+ 0.5.4Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Ensure that sabnzbd.ini has no group/world access (Unix, OSX)
+-------------------------------------------------------------------------------
+ 0.5.4RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Support unpacking of rar-files embedded in zip-files
+- Compensate for IPV6 issues of Chrome on OSX
+- Changes in dirscan-speed are now immediately effective
+- Reduce amount of logging
+- On Windows, detect whether sqlite3.dll is missing. If so, panic and
+  complain about lame virus scanner.
+- Add hidden option "queue_complete_pers" to select non-persistence of
+  non-script end-of-queue actions.
+- Restrict square bracket substitution to server names
+- Add hidden option "allow_64bit_tools" to allow or prevent use of 64bit par2 and unrar.
+-------------------------------------------------------------------------------
+ 0.5.3Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Embed nzbmatrix categories in SABnzbd (preventing problem in OSX)
+- Remove leading spaces in user script output display
+- Solve problems with passing filenames with '&' as parameter in user scripts
+- Allow leading empty lines in email templates
+- Prevent oversized logfile when logging fails
+- Remove double header in email (some email server choke on that)
+-------------------------------------------------------------------------------
+ 0.5.3RC2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fixed error in 101 season/episode handling (prevent years like 2010 from matching)
+- Fixed error in saving some email options
+- Accept ".nzb.gz" files coming from an URL fetch.
+- Make sysload support for Linux more universal
+- Restore newzbin support in UI
+- RSS feeds are now listed in alphabetic order
+- Fixed error handling & in names sent to post-processing script (Windows)
+-------------------------------------------------------------------------------
+ 0.5.3RC1 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Support of nzbmatrix categories
+- Support of X-DNZB headers for all indexing sites (allows categories for nzbs.org)
+- Support 101 season/episode notation
+- Use all text after the season/episode element as episode name (don't require '-')
+- Support of categories in RSS feeds
+  (only for compatible feeds, like nzbmatrix.com and nzbs.org)
+- Accumulate all groups from an NZB (for category matching)
+- After reducing connections SABnzbd should retry full amount 10 min later
+  This event was sometimes missed
+- Recursive unpack of archives should be done in nested folders instead of base folder
+- Sort strings with an absolute path were not handled properly
+- Restore compatibility with Python 2.4
+- Several fixes to improve robustness of NZB retrieval from indexers
+- Solved crash in NZB retrieval from indexers when explicit PP value was set
+- Remove newzbin features from UI
+-------------------------------------------------------------------------------
+ 0.5.2 Final by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- API: &nzbname= was ignored for some sites
+- API: Server rename did not work properly
+- Remember end-of-queue action for next end-of-queue
+- Some updates to Danish
+-------------------------------------------------------------------------------
  0.5.2 RC1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fixed: Large queue caused very slow UI and high memory usage

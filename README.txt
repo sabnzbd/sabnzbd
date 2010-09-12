@@ -1,5 +1,5 @@
 *******************************************
-*** This is SABnzbd 0.6.0 Trunk         ***
+*** This is SABnzbd 0.6.0 ALpha 1       ***
 *******************************************
 SABnzbd is an open-source cross-platform binary newsreader.
 It simplifies the process of downloading from Usenet dramatically,
@@ -15,10 +15,24 @@ http://wiki.sabnzbd.org/
 >>> PLEASE ALSO READ THE FILE "ISSUES.txt" <<<
 
 *******************************************
-*** Upgrading from 0.5.0                ***
+*** WARNING ... WARNING                 ***
+*******************************************
+This is Alpha software.
+It works but may contain smaller bugs plus incomplete and
+less fortunate design decisions.
+We released it to get feedback from experienced users.
+
+The organisation of the download queue is different from 0.5.x.
+0.6.x will finish downloading an existing queue, but you
+cannot go back to an older version without losing your queue.
+
+
+*******************************************
+*** Upgrading from 0.5.x                ***
 *******************************************
 Stop SABnzbd.
-Install new version over the old one
+Uninstall current version, keeping the data.
+Install new version
 Start SABnzbd.
 
 
