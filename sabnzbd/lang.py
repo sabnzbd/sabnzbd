@@ -1,4 +1,5 @@
 #!/usr/bin/python -OO
+# -*- coding: utf-8 -*-
 # Copyright 2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -34,7 +35,7 @@ sabnzbd.lang - Language support
 
 
 import gettext, __builtin__
-import glob, os, operator
+import glob, os, operator, locale
 # This module cannot import any application modules!!
 
 __all__ = ['set_locale_info', 'set_language', 'list_languages']
@@ -79,26 +80,109 @@ def list_languages():
 
     lst = []
     for path in glob.glob(os.path.join(_LOCALEDIR, '*')):
-         lng = None
-         language = None
-         for fpath in glob.glob(path + '/LC_MESSAGES/*'):
-             fname = os.path.basename(fpath)
-             if fname.endswith('.mo'):
-                 lng = os.path.basename(path)
-             if fname == 'language.txt':
-                 fp = open(fpath, 'r')
-                 language = fp.readline().strip(' \n').decode('utf-8', 'replace')
-                 fp.close()
-         if lng:
-             if not language:
-                 language = lng
-             lst.append((lng, language))
+        if os.path.isdir(path) and not path.endswith('en'):
+            lngname = os.path.basename(path)
+            lng = locale.normalize(lngname)
+            lng = lng[:lng.find('_')]
+            language = LanguageTable.get(lng, (lng, lng))
+            language = language[1].decode('utf-8').encode('latin-1')
+            lst.append((lng, language))
     if lst:
         lst.append(('en', 'English'))
         return sorted(lst, key=operator.itemgetter(1))
     else:
         return lst
 
+
+LanguageTable = {
+    'aa' : ('Afar', 'Afaraf'),
+    'af' : ('Afrikaans', 'Afrikaans'),
+    'ak' : ('Akan', 'Akan'),
+    'sq' : ('Albanian', 'Shqip'),
+    'an' : ('Aragonese', 'Aragonés'),
+    'ae' : ('Avestan', 'Avesta'),
+    'ay' : ('Aymara', 'Aymararu'),
+    'bm' : ('Bambara', 'Bamanankan'),
+    'eu' : ('Basque', 'Euskara'),
+    'bi' : ('Bislama', 'Bislama'),
+    'bs' : ('Bosnian', 'Bosanskijezik'),
+    'br' : ('Breton', 'Brezhoneg'),
+    'ca' : ('Catalan', 'Català'),
+    'ch' : ('Chamorro', 'Chamoru'),
+    'kw' : ('Cornish', 'Kernewek'),
+    'co' : ('Corsican', 'Corsu'),
+    'hr' : ('Croatian', 'Hrvatski'),
+    'cs' : ('Czech', 'Cesky, ceština'),
+    'da' : ('Danish', 'Dansk'),
+    'nl' : ('Dutch', 'Nederlands'),
+    'en' : ('English', 'English'),
+    'eo' : ('Esperanto', 'Esperanto'),
+    'et' : ('Estonian', 'Eesti'),
+    'fo' : ('Faroese', 'Føroyskt'),
+    'fj' : ('Fijian', 'Vosa Vakaviti'),
+    'fi' : ('Finnish', 'Suomi'),
+    'fr' : ('French', 'Français'),
+    'gl' : ('Galician', 'Galego'),
+    'de' : ('German', 'Deutsch'),
+    'hz' : ('Herero', 'Otjiherero'),
+    'ho' : ('Hiri Motu', 'Hiri Motu'),
+    'hu' : ('Hungarian', 'Magyar'),
+    'id' : ('Indonesian', 'Bahasa Indonesia'),
+    'ga' : ('Irish', 'Gaeilge'),
+    'io' : ('Ido', 'Ido'),
+    'is' : ('Icelandic', 'Íslenska'),
+    'it' : ('Italian', 'Italiano'),
+    'jv' : ('Javanese', 'BasaJawa'),
+    'rw' : ('Kinyarwanda', 'Ikinyarwanda'),
+    'kg' : ('Kongo', 'KiKongo'),
+    'kj' : ('Kwanyama', 'Kuanyama'),
+    'la' : ('Latin', 'Lingua latina'),
+    'lb' : ('Luxembourgish', 'Lëtzebuergesch'),
+    'lg' : ('Luganda', 'Luganda'),
+    'li' : ('Limburgish', 'Limburgs'),
+    'ln' : ('Lingala', 'Lingála'),
+    'lt' : ('Lithuanian', 'Lietuviukalba'),
+    'lv' : ('Latvian', 'Latviešuvaloda'),
+    'gv' : ('Manx', 'Gaelg'),
+    'mg' : ('Malagasy', 'Malagasy fiteny'),
+    'mt' : ('Maltese', 'Malti'),
+    'nb' : ('Norwegian Bokmål', 'Norsk bokmål'),
+    'nn' : ('Norwegian Nynorsk', 'Norsk nynorsk'),
+    'no' : ('Norwegian', 'Norsk'),
+    'oc' : ('Occitan', 'Occitan'),
+    'om' : ('Oromo', 'Afaan Oromoo'),
+    'pl' : ('Polish', 'Polski'),
+    'pt' : ('Portuguese', 'Português'),
+    'rm' : ('Romansh', 'Rumantsch grischun'),
+    'rn' : ('Kirundi', 'kiRundi'),
+    'ro' : ('Romanian', 'Româna'),
+    'sc' : ('Sardinian', 'Sardu'),
+    'se' : ('Northern Sami', 'Davvisámegiella'),
+    'sm' : ('Samoan', 'Gagana fa\'a Samoa'),
+    'gd' : ('Gaelic', 'Gàidhlig'),
+    'sn' : ('Shona', 'Chi Shona'),
+    'sk' : ('Slovak', 'Slovencina'),
+    'sl' : ('Slovene', 'Slovenšcina'),
+    'st' : ('Southern Sotho', 'Sesotho'),
+    'es' : ('Spanish Castilian', 'Español, castellano'),
+    'su' : ('Sundanese', 'Basa Sunda'),
+    'sw' : ('Swahili', 'Kiswahili'),
+    'ss' : ('Swati', 'SiSwati'),
+    'sv' : ('Swedish', 'Svenska'),
+    'tn' : ('Tswana', 'Setswana'),
+    'to' : ('Tonga (Tonga Islands)', 'faka Tonga'),
+    'tr' : ('Turkish', 'Türkçe'),
+    'ts' : ('Tsonga', 'Xitsonga'),
+    'tw' : ('Twi', 'Twi'),
+    'ty' : ('Tahitian', 'Reo Tahiti'),
+    'wa' : ('Walloon', 'Walon'),
+    'cy' : ('Welsh', 'Cymraeg'),
+    'wo' : ('Wolof', 'Wollof'),
+    'fy' : ('Western Frisian', 'Frysk'),
+    'xh' : ('Xhosa', 'isi Xhosa'),
+    'yo' : ('Yoruba', 'Yorùbá'),
+    'zu' : ('Zulu', 'isi Zulu'),
+}
 
 # Setup a safe null-translation
 set_language()

@@ -1,4 +1,5 @@
 #!/usr/bin/python -OO
+# -*- coding: utf-8 -*-
 # Copyright 2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -36,14 +37,94 @@ DOMAIN_N = 'SABnsis'
 LANG_MARKER = 'language.txt'
 NSIS= 'NSIS_Installer.nsi'
 
-LNG_TABLE = { # NSIS requires full English names for the languages
-    'da' : 'DANISH',
-    'de' : 'GERMAN',
-    'fr' : 'FRENCH',
-    'nl' : 'DUTCH',
-    'no' : 'NORSE',
-    'sv' : 'SWEDISH',
-    'en' : ''
+LanguageTable = {
+    'aa' : ('Afar', 'Afaraf'),
+    'af' : ('Afrikaans', 'Afrikaans'),
+    'ak' : ('Akan', 'Akan'),
+    'sq' : ('Albanian', 'Shqip'),
+    'an' : ('Aragonese', 'Aragonés'),
+    'ae' : ('Avestan', 'Avesta'),
+    'ay' : ('Aymara', 'Aymararu'),
+    'bm' : ('Bambara', 'Bamanankan'),
+    'eu' : ('Basque', 'Euskara'),
+    'bi' : ('Bislama', 'Bislama'),
+    'bs' : ('Bosnian', 'Bosanskijezik'),
+    'br' : ('Breton', 'Brezhoneg'),
+    'ca' : ('Catalan', 'Català'),
+    'ch' : ('Chamorro', 'Chamoru'),
+    'kw' : ('Cornish', 'Kernewek'),
+    'co' : ('Corsican', 'Corsu'),
+    'hr' : ('Croatian', 'Hrvatski'),
+    'cs' : ('Czech', 'Cesky, ceština'),
+    'da' : ('Danish', 'Dansk'),
+    'nl' : ('Dutch', 'Nederlands'),
+    'en' : ('English', 'English'),
+    'eo' : ('Esperanto', 'Esperanto'),
+    'et' : ('Estonian', 'Eesti'),
+    'fo' : ('Faroese', 'Føroyskt'),
+    'fj' : ('Fijian', 'Vosa Vakaviti'),
+    'fi' : ('Finnish', 'Suomi'),
+    'fr' : ('French', 'Français'),
+    'gl' : ('Galician', 'Galego'),
+    'de' : ('German', 'Deutsch'),
+    'hz' : ('Herero', 'Otjiherero'),
+    'ho' : ('Hiri Motu', 'Hiri Motu'),
+    'hu' : ('Hungarian', 'Magyar'),
+    'id' : ('Indonesian', 'Bahasa Indonesia'),
+    'ga' : ('Irish', 'Gaeilge'),
+    'io' : ('Ido', 'Ido'),
+    'is' : ('Icelandic', 'Íslenska'),
+    'it' : ('Italian', 'Italiano'),
+    'jv' : ('Javanese', 'BasaJawa'),
+    'rw' : ('Kinyarwanda', 'Ikinyarwanda'),
+    'kg' : ('Kongo', 'KiKongo'),
+    'kj' : ('Kwanyama', 'Kuanyama'),
+    'la' : ('Latin', 'Lingua latina'),
+    'lb' : ('Luxembourgish', 'Lëtzebuergesch'),
+    'lg' : ('Luganda', 'Luganda'),
+    'li' : ('Limburgish', 'Limburgs'),
+    'ln' : ('Lingala', 'Lingála'),
+    'lt' : ('Lithuanian', 'Lietuviukalba'),
+    'lv' : ('Latvian', 'Latviešuvaloda'),
+    'gv' : ('Manx', 'Gaelg'),
+    'mg' : ('Malagasy', 'Malagasy fiteny'),
+    'mt' : ('Maltese', 'Malti'),
+    'nb' : ('Norwegian Bokmål', 'Norsk bokmål'),
+    'nn' : ('Norwegian Nynorsk', 'Norsk nynorsk'),
+    'no' : ('Norwegian', 'Norsk'),
+    'oc' : ('Occitan', 'Occitan'),
+    'om' : ('Oromo', 'Afaan Oromoo'),
+    'pl' : ('Polish', 'Polski'),
+    'pt' : ('Portuguese', 'Português'),
+    'rm' : ('Romansh', 'Rumantsch grischun'),
+    'rn' : ('Kirundi', 'kiRundi'),
+    'ro' : ('Romanian', 'Româna'),
+    'sc' : ('Sardinian', 'Sardu'),
+    'se' : ('Northern Sami', 'Davvisámegiella'),
+    'sm' : ('Samoan', 'Gagana fa\'a Samoa'),
+    'gd' : ('Gaelic', 'Gàidhlig'),
+    'sn' : ('Shona', 'Chi Shona'),
+    'sk' : ('Slovak', 'Slovencina'),
+    'sl' : ('Slovene', 'Slovenšcina'),
+    'st' : ('Southern Sotho', 'Sesotho'),
+    'es' : ('Spanish Castilian', 'Español, castellano'),
+    'su' : ('Sundanese', 'Basa Sunda'),
+    'sw' : ('Swahili', 'Kiswahili'),
+    'ss' : ('Swati', 'SiSwati'),
+    'sv' : ('Swedish', 'Svenska'),
+    'tn' : ('Tswana', 'Setswana'),
+    'to' : ('Tonga (Tonga Islands)', 'faka Tonga'),
+    'tr' : ('Turkish', 'Türkçe'),
+    'ts' : ('Tsonga', 'Xitsonga'),
+    'tw' : ('Twi', 'Twi'),
+    'ty' : ('Tahitian', 'Reo Tahiti'),
+    'wa' : ('Walloon', 'Walon'),
+    'cy' : ('Welsh', 'Cymraeg'),
+    'wo' : ('Wolof', 'Wollof'),
+    'fy' : ('Western Frisian', 'Frysk'),
+    'xh' : ('Xhosa', 'isi Xhosa'),
+    'yo' : ('Yoruba', 'Yorùbá'),
+    'zu' : ('Zulu', 'isi Zulu'),
 }
 
 # Determine location of PyGetText tool
@@ -74,23 +155,6 @@ def process_po_folder(domain, folder):
         mo_file = os.path.join(mo_path, mo_name)
         print 'Compile %s' % mo_file
         os.system('%s -o %s %s' % (TOOL, mo_file, fname))
-
-        # Determine language's pretty name
-        language = ''
-        fp = open(fname, 'r')
-        for line in fp:
-            m = RE_LANG.search(line)
-            if m:
-                language = m.group(1)
-                break
-        fp.close()
-
-        # Create the readable name file
-        if language:
-            mo_file = os.path.join(mo_path, LANG_MARKER)
-            fp = open(mo_file, 'wb')
-            fp.write('%s\n' % language)
-            fp.close()
 
 
 def make_templates():
@@ -145,14 +209,15 @@ def patch_nsis():
                 # Replace silly $\ construction with just a \
                 text = text.replace('$\\"', '"').replace('$\\', '\\')
                 for lcode in languages:
-                    lng = LNG_TABLE.get(lcode)
-                    if lng:
+                    lng = LanguageTable.get(lcode)
+                    if lng and lcode != 'en':
+                        lng = lng[0].upper()
                         trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset='latin-1')
                         # The unicode flag will make _() return Unicode
                         trans.install(unicode=True, names=['lgettext'])
                         trans = lgettext(text)
                         trans = trans.replace('\\', '$\\').replace('"', '$\\"')
-                        line = '%s%s "%s"\n' % (leader, lng, trans)
+                        line = '%s%s} "%s"\n' % (leader, lng, trans)
                         new.append(line)
                     elif lng is None:
                         print 'Warning: unsupported language %s, add to table in this script' % langname

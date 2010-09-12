@@ -96,6 +96,7 @@ msgstr ""
 
 #: SABnzbdDelegate.py:199 sabnzbd/skintext.py:50 sabnzbd/skintext.py:132
 #: sabnzbd/skintext.py:178 sabnzbd/skintext.py:396
+msgctxt "Button"
 msgid "Pause"
 msgstr ""
 
@@ -105,11 +106,13 @@ msgstr ""
 
 #: SABnzbdDelegate.py:215 sabnzbd/skintext.py:49 sabnzbd/skintext.py:133
 #: sabnzbd/skintext.py:177 sabnzbd/skintext.py:395
+msgctxt "Button"
 msgid "Resume"
 msgstr ""
 
 #: SABnzbdDelegate.py:225
 msgid "Get Newzbin Bookmarks"
+msgctxt "Button"
 msgstr ""
 
 #: SABnzbdDelegate.py:238 SABnzbdDelegate.py:573
@@ -126,6 +129,7 @@ msgstr ""
 
 #: SABnzbdDelegate.py:262 sabnzbd/skintext.py:52 sabnzbd/skintext.py:216
 #: sabnzbd/skintext.py:398
+msgctxt "Button"
 msgid "Restart"
 msgstr ""
 
