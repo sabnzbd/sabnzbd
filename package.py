@@ -341,11 +341,14 @@ if target == 'app':
     os.system("rm -rf interfaces/Concept>/dev/null")
     os.system("rm -rf interfaces/iphone>/dev/null")
 
+    #Create MO files
+    os.system('./tools/make_mo.py')
+
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
 
     APP = ['SABnzbd.py']
-    DATA_FILES = ['interfaces', 'locale', 'email', ('',glob.glob("osx/resources/*"))]
+    DATA_FILES = PairList(['interfaces/', 'locale/', 'email/', 'osx/resources/'])
     NZBFILE = dict(
             CFBundleTypeExtensions = [ "nzb","zip","rar" ],
             CFBundleTypeIconFile = 'nzbfile.icns',
@@ -393,9 +396,6 @@ if target == 'app':
 
     #Create src tar.gz
     os.system("tar -czf %s --exclude \".bzr\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
-
-    #Create MO files
-    os.system('./tools/make_mo.py')
 
     #Copy src tar.gz to mounted sparseimage
     os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
