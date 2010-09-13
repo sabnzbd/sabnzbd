@@ -342,7 +342,7 @@ if target == 'app':
     os.system("rm -rf interfaces/iphone>/dev/null")
 
     #Create MO files
-    os.system('./tools/make_mo.py')
+    os.system('python ./tools/make_mo.py')
 
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
