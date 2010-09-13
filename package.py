@@ -41,6 +41,11 @@ except ImportError:
 VERSION_FILE = 'sabnzbd/version.py'
 VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
 
+# Read version number, avoiding import
+fp = open('sabnzbd/version.py')
+exec(fp.read())
+fp.close()
+
 def DeleteFiles(name):
     ''' Delete one file or set of files from wild-card spec '''
     for f in glob.glob(name):
@@ -303,7 +308,7 @@ options = dict(
       url = 'http://sourceforge.net/projects/sabnzbdplus',
       author = 'The SABnzbd-Team',
       author_email = 'team@sabnzbd.org',
-      #description = 'SABnzbd ' + str(sabnzbd.__version__),
+      #description = 'SABnzbd ' + str(__version__),
       scripts = ['SABnzbd.py', 'SABHelper.py'], # One day, add  'setup.py'
       packages = ['sabnzbd', 'sabnzbd.utils'],
       platforms = ['posix'],
@@ -329,8 +334,7 @@ if target == 'app':
     # Unpack cherrypy
     os.system("unzip -o cherrypy.zip")
 
-    import sabnzbd
-    options['description'] = 'SABnzbd ' + str(sabnzbd.__version__)
+    options['description'] = 'SABnzbd ' + str(__version__)
 
     #remove prototype and iphone interfaces
     os.system("rm -rf interfaces/prototype>/dev/null")
@@ -429,8 +433,7 @@ elif target in ('binary', 'installer'):
     # Create MO files
     os.system('tools\\make_mo.py')
 
-    import sabnzbd
-    options['description'] = 'SABnzbd ' + str(sabnzbd.__version__)
+    options['description'] = 'SABnzbd ' + str(__version__)
 
     sys.argv[1] = 'py2exe'
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
