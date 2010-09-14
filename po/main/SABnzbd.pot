@@ -904,6 +904,14 @@ msgstr ""
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr ""
 
+#: sabnzbd/nzbstuff.py:903
+msgid "%s articles were malformed"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py:907
+msgid "%s articles were missing"
+msgstr ""
+
 #: sabnzbd/nzbstuff.py:917
 msgid "Error importing %s"
 msgstr ""

@@ -133,7 +133,7 @@ def _assemble(nzf, path, dupe):
         data = ArticleCache.do.load_article(article)
 
         if not data:
-            logging.warning(Ta('%s missing'), article)
+            logging.info(Ta('%s missing'), article)
         else:
             # yenc data already decoded, flush it out
             if _type == 'yenc':

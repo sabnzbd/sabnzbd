@@ -87,13 +87,15 @@ class Decoder(Thread):
             register = True
 
             if lines:
+                logme = None
                 try:
                     logging.debug("Decoding %s", article)
 
                     data = decode(article, lines)
                     nzf.article_count += 1
                 except IOError, e:
-                    logging.error(Ta('Decoding %s failed'), article)
+                    logme = Ta('Decoding %s failed') % article
+                    logging.info(logme)
                     sabnzbd.downloader.pause_downloader()
 
                     article.fetcher = None
@@ -103,7 +105,8 @@ class Decoder(Thread):
                     register = False
 
                 except CrcError, e:
-                    logging.warning(Ta('CRC Error in %s (%s -> %s)'), article, e.needcrc, e.gotcrc)
+                    logme = Ta('CRC Error in %s (%s -> %s)') % (article, e.needcrc, e.gotcrc)
+                    logging.info(logme)
 
                     data = e.data
 
@@ -111,17 +114,24 @@ class Decoder(Thread):
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
+                            logme = None
 
                 except BadYenc, e:
-                    logging.warning("Badly formed yEnc article in %s", article)
+                    logme = Ta('Badly formed yEnc article in %s') % article
+                    logging.info(logme)
 
                     if cfg.fail_on_crc():
                         new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
+                            logme = None
 
                 except:
-                    logging.error(Ta('Unknown Error while decoding %s'), article)
+                    logme = Ta('Unknown Error while decoding %s') % article
+                    logging.info(logme)
+
+                if logme:
+                    article.nzf.nzo.inc_log('bad_art_log', logme)
 
             else:
                 new_server_found = self.__search_new_server(article)
@@ -166,7 +176,10 @@ class Decoder(Thread):
                 logging.debug('%s => found at least one untested server', article)
 
         else:
-            logging.warning(Ta('%s => missing from all servers, discarding'), article)
+            msg = Ta('%s => missing from all servers, discarding') % article
+            logging.info(msg)
+            article.nzf.nzo.inc_log('missing_art_log', msg)
+
 
         return new_server_found
 #-------------------------------------------------------------------------------

@@ -896,9 +896,27 @@ class NzbObject(TryList):
             #format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
 
-            self.set_unpack_info('Download', T('Downloaded in %s at an average of %sB/s') %
-                                 (complete_time, to_units(avg_bps*1024)), unique=True)
+            msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps*1024))
+            bad = self.nzo_info.get('bad_art_log', [])
+            miss = self.nzo_info.get('missing_art_log', [])
+            if bad:
+                msg2 = ('<br/>' + T('%s articles were malformed')) % len(bad)
+            else:
+                msg2 = ''
+            if miss:
+                msg3 = ('<br/>' + T('%s articles were missing')) % len(miss)
+            else:
+                msg3 = ''
+            msg = ''.join((msg1, msg2, msg3,))
+            self.set_unpack_info('Download', msg, unique=True)
 
+    def inc_log(self, log, txt):
+        """ Append string txt to nzo_info element "log"
+        """
+        try:
+            self.nzo_info[log].append(txt)
+        except:
+            self.nzo_info[log] = [txt]
 
     def get_article(self, server):
         article = None
