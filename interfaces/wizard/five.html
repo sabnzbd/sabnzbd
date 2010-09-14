@@ -9,7 +9,7 @@
 <div id="tips" class="hidden">
 $T('wizard-tip1') <span class="bold">$T('wizard-tip2')</span><br/>
 <!--#if len($urls) > 1#--><!--#set $s = 's'#--><!--#else#--><!--#set $s = ''#--><!--#end if#-->
-<!--#set $tip3 = $T('wizard-tip3@1') % $s#-->
+<!--#set $tip3 = $T('wizard-tip3') % $s#-->
 $tip3:<br/><br/>
 <div class="quoteBlock">
 <!--#set $i = 0#-->
@@ -31,5 +31,5 @@ $T('wizard-tip-wiki') <a href="$helpuri">wiki</a>
     </tr>
 </table>
 </div>
-			
+
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

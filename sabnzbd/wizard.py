@@ -28,6 +28,7 @@ from sabnzbd.constants import *
 import sabnzbd.api
 from sabnzbd.lang import list_languages, set_language
 from sabnzbd.utils.servertests import test_nntp_server_dict
+from sabnzbd.api import Ttemplate
 import sabnzbd.interface
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -64,15 +65,15 @@ class Wizard(object):
     def one(self, **kwargs):
         # Handle special options
         language = kwargs.get('lang')
-        if language and language != cfg.language():
-            cfg.language.set(language)
-            set_language(language)
-            sabnzbd.api.cache_skin_trans()
+        cfg.language.set(language)
+        set_language(language)
+        sabnzbd.api.cache_skin_trans()
 
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step One')
         info['number'] = 1
         info['skin'] = cfg.web_dir().lower()
+        info['T'] = Ttemplate
 
         template = Template(file=os.path.join(self.__web_dir, 'one.html'),
                                 searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
@@ -88,6 +89,7 @@ class Wizard(object):
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step Two')
         info['number'] = 2
+        info['T'] = Ttemplate
 
         host = cfg.cherryhost()
         info['host'] = host
@@ -127,6 +129,7 @@ class Wizard(object):
         info['num'] = '&raquo; %s' % T('Step Three')
         info['number'] = 3
         info['session'] = cfg.api_key()
+        info['T'] = Ttemplate
 
         servers = config.get_servers()
         if not servers:
@@ -167,6 +170,7 @@ class Wizard(object):
         info['newzbin_bookmarks'] = cfg.newzbin_bookmarks()
         info['matrix_user'] = cfg.matrix_username()
         info['matrix_apikey'] = cfg.matrix_apikey()
+        info['T'] = Ttemplate
         template = Template(file=os.path.join(self.__web_dir, 'four.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
@@ -192,6 +196,7 @@ class Wizard(object):
         info['session'] = cfg.api_key()
 
         info['access_url'], info['urls'] = self.get_access_info()
+        info['T'] = Ttemplate
 
         template = Template(file=os.path.join(self.__web_dir, 'five.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
