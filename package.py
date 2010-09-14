@@ -348,7 +348,8 @@ if target == 'app':
     sys.argv[1] = 'py2app'
 
     APP = ['SABnzbd.py']
-    DATA_FILES = PairList(['interfaces/', 'locale/', 'email/', 'osx/resources/'])
+    DATA_FILES = ['interfaces', 'locale', 'email', ('',glob.glob("osx/resources/*"))]
+
     NZBFILE = dict(
             CFBundleTypeExtensions = [ "nzb","zip","rar" ],
             CFBundleTypeIconFile = 'nzbfile.icns',
