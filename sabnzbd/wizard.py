@@ -66,7 +66,7 @@ class Wizard(object):
         language = kwargs.get('lang')
         if language and language != cfg.language():
             cfg.language.set(language)
-            reset_language(language)
+            set_language(language)
             sabnzbd.api.cache_skin_trans()
 
         info = self.info.copy()
