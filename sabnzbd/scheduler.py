@@ -192,7 +192,10 @@ def stop():
     global __SCHED
     if __SCHED:
         logging.debug('Stopping scheduler')
-        __SCHED.stop()
+        try:
+            __SCHED.stop()
+        except IndexError:
+            pass
         del __SCHED
         __SCHED = None
 

@@ -713,7 +713,7 @@ function loadtitle() {
 		d = doSimpleXMLHttpRequest('connections/testmail?session='+session);
 		d.addCallback(function (d)
         {
-            alert("$T('smpl-emailsent')");
+            alert("$T('emailsent')");
         });
 		d.addErrback(handleServerError);
 	}
