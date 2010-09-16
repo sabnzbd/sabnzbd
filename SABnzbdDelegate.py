@@ -235,12 +235,12 @@ class SABnzbdDelegate(NSObject):
         if (debug == 1) : NSLog("[osx] menu 14 newzbin added")
 
         #Complete Folder Item
-        self.completefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Complete Folder			'), 'openFolderAction:', '')
+        self.completefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Complete Folder') + '\t\t\t', 'openFolderAction:', '')
         self.completefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.complete_dir.get_path())
         self.menu.addItem_(self.completefolder_menu_item)
 
         #Incomplete Folder Item
-        self.incompletefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Incomplete Folder		'), 'openFolderAction:', '')
+        self.incompletefolder_menu_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Incomplete Folder') + '\t\t', 'openFolderAction:', '')
         self.incompletefolder_menu_item.setRepresentedObject_(sabnzbd.cfg.download_dir.get_path())
         self.menu.addItem_(self.incompletefolder_menu_item)
 
@@ -570,9 +570,9 @@ class SABnzbdDelegate(NSObject):
 
     def diskspaceUpdate(self):
         try:
-            self.completefolder_menu_item.setTitle_("%s%.2f GB" % (T('Complete Folder			'),diskfree(sabnzbd.cfg.complete_dir.get_path())))
-            self.incompletefolder_menu_item.setTitle_("%s%.2f GB" % (T('Incomplete Folder		'),diskfree(sabnzbd.cfg.download_dir.get_path())))
-        except :
+            self.completefolder_menu_item.setTitle_("%s%.2f GB" % (T('Complete Folder') + '\t\t\t',diskfree(sabnzbd.cfg.complete_dir.get_path())))
+            self.incompletefolder_menu_item.setTitle_("%s%.2f GB" % (T('Incomplete Folder') + '\t\t',diskfree(sabnzbd.cfg.download_dir.get_path())))
+        except:
             logging.info("[osx] diskspaceUpdate Exception %s" % (sys.exc_info()[0]))
 
     def setMenuTitle(self,text):

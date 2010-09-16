@@ -1284,7 +1284,7 @@ def osx_shutdown():
     try:
         subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
     except:
-        logging.error(Ta('#error-shutdown#'))
+        logging.error(Ta('Error while shutting down system'))
         logging.info("Traceback: ", exc_info = True)
     os._exit(0)
 

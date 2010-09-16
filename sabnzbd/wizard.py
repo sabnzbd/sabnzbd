@@ -52,6 +52,7 @@ class Wizard(object):
         info['number'] = 0
         info['lang'] = cfg.language()
         info['languages'] = list_languages()
+        info['T'] = Ttemplate
 
         if not os.path.exists(self.__web_dir):
             # If the wizard folder does not exist, simply load the normal page
