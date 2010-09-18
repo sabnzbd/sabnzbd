@@ -59,12 +59,14 @@ PANIC_OTHER = 5
 PANIC_XPORT = 6
 PANIC_SQLITE = 7
 
+# Check if strings are defined for AM and PM
+HAVE_AMPM = bool(time.strftime('%p', time.localtime()))
 
 #------------------------------------------------------------------------------
 def time_format(format):
     """ Return time-format string adjusted for 12/24 hour clock setting
     """
-    if cfg.ampm():
+    if cfg.ampm() and HAVE_AMPM:
         return format.replace('%H:%M:%S', '%I:%M:%S %p').replace('%H:%M', '%I:%M %p')
     else:
         return format

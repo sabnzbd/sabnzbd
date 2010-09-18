@@ -139,9 +139,11 @@
     <label><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /> <strong>$T('opt-pause_on_post_processing')</strong></label><br>
     $T('explain-pause_on_post_processing')<br>
     <br/>
-    <label><input type="checkbox" name="ampm" value="1" <!--#if $ampm > 0 then "checked=1" else ""#--> /> <strong>$T('opt-ampm')</strong></label><br>
-    $T('explain-ampm')<br>
-    <br/>
+    <!--#if $have_ampm#-->
+        <label><input type="checkbox" name="ampm" value="1" <!--#if $ampm > 0 then "checked=1" else ""#--> /> <strong>$T('opt-ampm')</strong></label><br>
+        $T('explain-ampm')<br>
+        <br/>
+    <!--#end if#-->
     <strong>$T('opt-ignore_samples'):</strong><br>
     $T('explain-ignore_samples')<br>
     <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> $T('igsam-off')

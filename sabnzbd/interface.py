@@ -35,7 +35,7 @@ import sabnzbd.scheduler as scheduler
 from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, to_units, \
-     diskfree, sanitize_foldername, time_format, \
+     diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
      cat_to_opts, int_conv, panic_old_queue, globber
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
@@ -1103,6 +1103,7 @@ class ConfigSwitches(object):
             conf[kw] = config.get_config('misc', kw)()
 
         conf['script_list'] = list_scripts()
+        conf['have_ampm'] = HAVE_AMPM
 
         template = Template(file=os.path.join(self.__web_dir, 'config_switches.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
