@@ -1463,7 +1463,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:175
 msgid "AGE"
-msgstr "År"
+msgstr "Alder"
 
 #: sabnzbd/skintext.py:176
 msgid "Del"
@@ -2260,7 +2260,7 @@ msgstr "Krav"
 
 #: sabnzbd/skintext.py:415
 msgid "RequiresCat"
-msgstr ""
+msgstr "KravKat"
 
 #: sabnzbd/skintext.py:423
 msgid "Email Notification"
