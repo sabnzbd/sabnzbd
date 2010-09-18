@@ -275,7 +275,8 @@ PatchVersion(release)
 
 
 # List of data elements, directories end with a '/'
-data = [ 'README.txt',
+data_files = [
+         'README.txt',
          'INSTALL.txt',
          'GPL2.txt',
          'GPL3.txt',
@@ -313,7 +314,7 @@ options = dict(
       packages = ['sabnzbd', 'sabnzbd.utils'],
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2) or later',
-      data_files = PairList(data)
+      data_files = []
 
 )
 
@@ -434,6 +435,7 @@ elif target in ('binary', 'installer'):
     # Create MO files
     os.system('tools\\make_mo.py')
 
+    options['data_files'] = PairList(data_files)
     options['description'] = 'SABnzbd ' + str(__version__)
 
     sys.argv[1] = 'py2exe'
