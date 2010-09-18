@@ -845,6 +845,19 @@ def split_host(srv):
 
 
 #------------------------------------------------------------------------------
+def check_mount(path):
+    """ Return False if volume isn't mounted on Linux or OSX
+    """
+    if sabnzbd.DARWIN:
+        m = re.search(r'^(/Volumes/[^/]+)/', path, re.I)
+    elif not sabnzbd.WIN32:
+        m = re.search(r'^(/mnt/[^/]+)/', path)
+    else:
+        m = None
+    return (not m) or os.path.exists(m.group(1))
+
+
+#------------------------------------------------------------------------------
 # Locked directory operations
 
 DIR_LOCK = threading.RLock()
@@ -852,12 +865,19 @@ DIR_LOCK = threading.RLock()
 @synchronized(DIR_LOCK)
 def get_unique_path(dirpath, n=0, create_dir=True):
     """ Determine a unique folder or filename """
+
+    if not check_mount(dirpath):
+        return dirpath
+
     path = dirpath
-    if n: path = "%s.%s" % (dirpath, n)
+    if n:
+        path = "%s.%s" % (dirpath, n)
 
     if not os.path.exists(path):
-        if create_dir: create_dirs(path)
-        return path
+        if create_dir:
+            return create_dirs(path)
+        else:
+            return path
     else:
         return get_unique_path(dirpath, n=n+1, create_dir=create_dir)
 

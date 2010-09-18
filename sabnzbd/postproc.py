@@ -403,6 +403,7 @@ def process_job(nzo):
         osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
         nzo.status = 'Failed'
         par_error = True
+        all_ok = False
 
     if all_ok:
         # If the folder only contains one file OR folder, have that as the path
@@ -546,7 +547,6 @@ def cat_to_dir(cat, defdir):
         else:
             return defdir
         ddir = real_path(cfg.complete_dir.get_path(), ddir)
-        ddir = create_dirs(ddir)
         if not ddir:
             ddir = defdir
     return ddir
