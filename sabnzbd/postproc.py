@@ -317,7 +317,7 @@ def process_job(nzo):
 
         script_output = ''
         script_ret = 0
-        if all_ok and not nzb_list:
+        if not nzb_list:
             ## Give destination its final name
             if cfg.folder_rename():
                 if not all_ok:
