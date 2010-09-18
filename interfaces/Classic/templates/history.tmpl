@@ -20,13 +20,14 @@ $T('thisWeek'): $week_size&nbsp;&nbsp;|&nbsp;&nbsp;$T('thisMonth'): $month_size
 </p>
 
 <% import datetime %>
+<% from sabnzbd.misc import time_format %>
 <!--#if $lines#-->
 <table id="historyTable">
     <tr><th></th><th>$T('completed')</th><th>$T('name')</th><th>$T('size')</th><th>$T('status')</th><th></th></tr>
     <!--#set $odd = False#-->
     <!--#for $line in $lines #-->
 <%
-compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%m-%d %H:%M:%S')
+compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime(time_format('%Y-%m-%d %H:%M:%S'))
 %>
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">

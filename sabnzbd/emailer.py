@@ -29,7 +29,7 @@ import time
 import glob
 from sabnzbd.constants import *
 import sabnzbd
-from sabnzbd.misc import to_units, split_host
+from sabnzbd.misc import to_units, split_host, time_format
 from sabnzbd.encoding import LatinFilter
 import sabnzbd.cfg as cfg
 
@@ -127,7 +127,7 @@ def send_with_template(prefix, parm):
 
     parm['to'] = cfg.email_to.get_string()
     parm['from'] = cfg.email_from()
-    parm['date'] = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+    parm['date'] = time.strftime(time_format('%a, %d %b %Y %H:%M:%S +0000'), time.gmtime())
 
     lst = []
     path = cfg.email_dir.get_path()
@@ -177,7 +177,7 @@ def endjob(filename, msgid, cat, status, path, bytes, stages, script, script_out
     parm['script_ret'] = script_ret
     parm['cat'] = cat
     parm['size'] = "%sB" % to_units(bytes)
-    parm['end_time'] = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+    parm['end_time'] = time.strftime(time_format('%Y-%m-%d %H:%M:%S'), time.localtime(time.time()))
 
     return send_with_template('email', parm)
 

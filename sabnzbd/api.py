@@ -40,7 +40,7 @@ from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.json import JsonWriter
 from sabnzbd.misc import loadavg, to_units, diskfree, disktotal, get_ext, \
-                         get_filename, int_conv, globber
+                         get_filename, int_conv, globber, time_format
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -937,7 +937,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
             try:
                 datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
                 #new eta format: 16:00 Fri 07 Feb
-                slot['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
+                slot['eta'] = '%s' % datestart.strftime(time_format('%H:%M %a %d %b'))
             except:
                 datestart = datetime.datetime.now()
                 slot['eta'] = 'unknown'
@@ -1379,7 +1379,7 @@ def build_header(prim):
     try:
         datestart = datetime.datetime.now() + datetime.timedelta(seconds=bytesleft / bytespersec)
         #new eta format: 16:00 Fri 07 Feb
-        header['eta'] = '%s' % datestart.strftime('%H:%M %a %d %b')
+        header['eta'] = '%s' % datestart.strftime(time_format('%H:%M %a %d %b'))
     except:
         datestart = datetime.datetime.now()
         header['eta'] = T('unknown')
@@ -1605,7 +1605,7 @@ def calc_age(date):
 
 def std_time(when):
     # Fri, 16 Nov 2007 16:42:01 GMT +0100
-    item  = time.strftime('%a, %d %b %Y %H:%M:%S', time.localtime(when))
+    item  = time.strftime(time_format('%a, %d %b %Y %H:%M:%S'), time.localtime(when))
     item += " GMT %+05d" % (-time.timezone/36)
     return item
 

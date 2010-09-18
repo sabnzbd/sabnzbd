@@ -178,6 +178,11 @@
 		    <span class="tips">$T('explain-pause_on_post_processing')</span>
  		<br class="clear" />
 
+			<label><span class="label">$T('opt-ampm'):</span>
+		    <input class="radio" type="checkbox" name="ampm" value="1" <!--#if $ampm > 0 then 'checked="1"' else ""#--> /></label>
+		    <span class="tips">$T('explain-ampm')</span>
+ 		<br class="clear" />
+
 			<span class="label">$T('opt-ignore_samples'):</span>
 		    <input class="radio" type="radio" name="ignore_samples" value="0" <!--#if $ignore_samples == 0 then 'checked="1"' else ""#--> /> $T('igsam-off')
 		    <input class="radio" type="radio" name="ignore_samples" value="1" <!--#if $ignore_samples == 1 then 'checked="1"' else ""#--> /> $T('igsam-del')

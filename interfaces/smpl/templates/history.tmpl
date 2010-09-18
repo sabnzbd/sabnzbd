@@ -12,6 +12,7 @@
 </div>
 
 <% import time %>
+<% from sabnzbd.misc import time_format %>
 
 <!--#if $lines#-->
 <table id="historyTable">
@@ -48,7 +49,7 @@
         <td colspan="5">
         <%
 completed = time.localtime(float(line['completed']))
-t = time.strftime("%H:%M:%S on %A %d %B %Y", completed)
+t = time.strftime(time_format("%H:%M:%S on %A %d %B %Y"), completed)
 
         %>
         <div class="left-margin line-height">

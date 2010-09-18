@@ -59,6 +59,17 @@ PANIC_OTHER = 5
 PANIC_XPORT = 6
 PANIC_SQLITE = 7
 
+
+#------------------------------------------------------------------------------
+def time_format(format):
+    """ Return time-format string adjusted for 12/24 hour clock setting
+    """
+    if cfg.ampm():
+        return format.replace('%H:%M:%S', '%I:%M:%S %p').replace('%H:%M', '%I:%M %p')
+    else:
+        return format
+
+#------------------------------------------------------------------------------
 def safe_lower(txt):
     if txt:
         return txt.lower()

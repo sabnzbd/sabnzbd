@@ -35,7 +35,7 @@ import sabnzbd.scheduler as scheduler
 from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, to_units, \
-     diskfree, sanitize_foldername, \
+     diskfree, sanitize_foldername, time_format, \
      cat_to_opts, int_conv, panic_old_queue, globber
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
@@ -861,7 +861,7 @@ class HistoryPage(object):
             history['finish'] = history['noofslots']
         if not history['finish']:
             history['finish'] = history['fetched']
-
+        history['time_format'] = time_format
 
         template = Template(file=os.path.join(self.__web_dir, 'history.tmpl'),
                             filter=FILTER, searchList=[history], compilerSettings=DIRECTIVES)
@@ -1078,7 +1078,7 @@ SWITCH_LIST = \
      'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
      'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
      'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'nice', 'ionice',
-     'dirscan_priority', 'ssl_type', 'pre_script', 'pause_on_pwrar'
+     'dirscan_priority', 'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm'
     )
 
 #------------------------------------------------------------------------------

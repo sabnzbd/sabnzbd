@@ -363,6 +363,8 @@ SKIN_TEXT = {
     'igsam-not' : TT('Do not download'),
     'opt-ssl_type' : TT('SSL type'),
     'explain-ssl_type' : TT('Use V23 unless your provider requires otherwise!'),
+    'opt-ampm' : TT('Use 12 hour clock (AM/PM)'),
+    'explain-ampm' : TT('Show times in AM/PM notation (does not affect scheduler).'),
 
 # Config->Server
     'configServer' : TT('Server configuration'),

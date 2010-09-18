@@ -1,4 +1,5 @@
 <% import datetime %>
+<% from sabnzbd.misc import time_format %>
 <script type="text/javascript">
 	if (typeof( jQuery ) == 'undefined')
 		window.location = "../"; // redirect to main on direct template hit
@@ -29,7 +30,7 @@
 <table width="100%">
     <tr><th>$T('completed')</th><th>$T('name')</th><th>$T('size')</th><th>$T('status')</th></tr>
 <%
-compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime('%Y-%m-%d %H:%M:%S')
+compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime(time_format('%Y-%m-%d %H:%M:%S'))
 %>
         <tr>
         <td>$compl</td>
