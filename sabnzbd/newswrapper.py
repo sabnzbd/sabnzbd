@@ -296,6 +296,8 @@ class NewsWrapper(object):
         self.nntp.sock.sendall(command)
 
     def recv_chunk(self, block=False):
+        """ Receive data, return #bytes, done, skip
+        """
         self.timeout = time.time() + self.server.timeout
         while 1:
             try:
