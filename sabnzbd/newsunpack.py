@@ -548,7 +548,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
     if cfg.unpack_check():
         if reliable_unpack_names() and not RAR_PROBLEM:
-            all_found = True
+            missing = []
             # Loop through and check for the presence of all the files the archive contained
             for path in expected_files:
                 path = unicode2local(path)
@@ -559,13 +559,14 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
                     continue
                 if not os.path.exists(fullpath):
                     # There was a missing file, show a warning
-                    all_found = False
-                    logging.warning(Ta('Missing expected file: %s => unrar error?'), path)
+                    missing.append(path)
+                    logging.info(Ta('Missing expected file: %s => unrar error?'), path)
 
-            if not all_found:
+            if missing:
                 nzo.fail_msg = T('Unpacking failed, an expected file was not unpacked')
                 logging.debug("Expecting files: %s" % expected_files)
-                nzo.set_unpack_info('Unpack', T('Unpacking failed, an expected file was not unpacked'), set=setname)
+                msg = T('Unpacking failed, these file(s) are missing:') + ';' + u';'.join([unicoder(item) for item in missing])
+                nzo.set_unpack_info('Unpack', msg, set=setname)
                 return ((), ())
         else:
             logging.info('Skipping unrar file check due to unreliable file names or old unrar')
