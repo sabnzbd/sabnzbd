@@ -76,7 +76,7 @@ email_account = OptionStr('misc', 'email_account')
 email_pwd     = OptionPassword('misc', 'email_pwd')
 email_endjob  = OptionNumber('misc', 'email_endjob', 0, 0, 2)
 email_full    = OptionBool('misc', 'email_full', False)
-email_dir     = OptionDir('misc', 'email_dir', create=False, validation=validate_dir_exists)
+email_dir     = OptionDir('misc', 'email_dir', create=True)
 email_rss     = OptionBool('misc', 'email_rss', False)
 
 dirscan_pp = OptionNumber('misc', 'dirscan_opts', 3, 0, 3)
@@ -151,12 +151,12 @@ download_dir = OptionDir('misc', 'download_dir', DEF_DOWNLOAD_DIR, validation=va
 download_free = OptionStr('misc', 'download_free')
 complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False, \
                          apply_umask=True, validation=validate_notempty)
-script_dir = OptionDir('misc', 'script_dir', create=False, validation=validate_dir_exists)
+script_dir = OptionDir('misc', 'script_dir', create=True)
 nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
 cache_dir = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
 admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_safedir)
 #log_dir = OptionDir('misc', 'log_dir', 'logs')
-dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
+dirscan_dir = OptionDir('misc', 'dirscan_dir', create=True)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
 SIZE_LIMIT = OptionStr('misc', 'size_limit')
 
