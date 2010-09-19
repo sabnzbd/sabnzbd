@@ -324,7 +324,7 @@ def process_job(nzo):
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
                 try:
-                    renamer(tmp_workdir_complete, workdir_complete)
+                    collapse_folder(tmp_workdir_complete, workdir_complete)
                     nzo.final_name = os.path.basename(workdir_complete)
                 except:
                     logging.error(Ta('Error renaming "%s" to "%s"'), tmp_workdir_complete, workdir_complete)
@@ -672,3 +672,24 @@ def remove_samples(path):
                 except:
                     logging.error(Ta('Removing %s failed'), path)
                     logging.info("Traceback: ", exc_info = True)
+
+
+#------------------------------------------------------------------------------
+def collapse_folder(oldpath, newpath):
+    """ Rename folder, collapsing when there's just a single subfolder
+        oldpath --> newpath OR oldpath/subfolder --> newpath
+    """
+    orgpath = oldpath
+    items = globber(oldpath)
+    if len(items) == 1:
+        folder_path = items[0]
+        folder = os.path.split(folder_path)[1]
+        if os.path.isdir(folder_path) and folder not in ('VIDEO_TS', 'AUDIO_TS'):
+            logging.info('Collapsing %s', os.path.join(newpath, folder))
+            oldpath = folder_path
+
+    renamer(oldpath, newpath)
+    try:
+        remove_dir(orgpath)
+    except:
+        pass
