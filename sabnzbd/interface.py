@@ -177,7 +177,8 @@ def check_apikey(kwargs, nokey=False):
 
     # Don't give a visible warning: these commands are used by some
     # external utilities to detect if username/password is required
-    special = mode in ('get_scripts', 'qstatus')
+    # The cfg item can suppress all visible warnings
+    special = mode in ('get_scripts', 'qstatus') or not cfg.api_warnings.get()
 
     # First check APIKEY, if OK that's sufficient
     if not (cfg.disable_key() or nokey):

@@ -35,6 +35,11 @@
       no_penalties = 1
   See: http://wiki.sabnzbd.org/configure-special
 
+- Some third-party utilties try to probe SABnzbd API in such a way that you will
+  often see warnings about unauthenticated access.
+  If you are sure these probes are harmless, you can suppress the warnings by
+  setting the option "api_warnings" to 0 in the file sabnzbd.ini
+
 - On OSX you may encounter downloaded files with foreign characters.
   The par2 repair may fail when the files were created on a Windows system.
   The problem is caused by the PAR2 utility and we cannot fix this now.
