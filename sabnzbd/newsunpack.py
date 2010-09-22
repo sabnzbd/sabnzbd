@@ -461,6 +461,7 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 
     stup, need_shell, command, creationflags = build_command(command)
 
+    logging.debug("Running unrar %s", command)
     p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
