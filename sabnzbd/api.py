@@ -1006,7 +1006,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
     if slotinfo:
         info['slots'] = slotinfo
     else:
-        info['slots'] = ''
+        info['slots'] = []
         verboseList = []
 
     #Paging of the queue using limit and/or start values
