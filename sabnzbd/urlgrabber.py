@@ -200,7 +200,7 @@ def _matrix_url(url):
         if not _RE_NZBMATRIX_USER.search(url) or not _RE_NZBMATRIX_API.search(url):
             user = urllib.quote_plus(cfg.matrix_username())
             key = urllib.quote_plus(cfg.matrix_apikey())
-            url = '%s://nzbmatrix.com/api-nzb-download.php?id=%s&username=%s&apikey=%s' % \
+            url = '%s://api.nzbmatrix.com/v1.1/download.php?id=%s&username=%s&apikey=%s' % \
                   (_PROTOCOL, matrix_id, user, key)
     return url, matrix_id
 
