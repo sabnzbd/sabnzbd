@@ -209,6 +209,7 @@ def process_job(nzo):
 
         # Get the folder containing the download result
         workdir = nzo.downpath
+        tmp_workdir_complete = None
 
         # if the directory has not been made, no files were assembled
         if not os.path.exists(workdir):
@@ -319,7 +320,7 @@ def process_job(nzo):
         script_ret = 0
         if not nzb_list:
             ## Give destination its final name
-            if cfg.folder_rename():
+            if cfg.folder_rename() and tmp_workdir_complete:
                 if not all_ok:
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)

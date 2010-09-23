@@ -836,7 +836,12 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
                 continue
 
             # And off we go
-            if line.startswith('All files are correct'):
+            if line.startswith('Invalid option specified'):
+                msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.status = 'Failed'
+
+            elif line.startswith('All files are correct'):
                 msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
                 nzo.set_unpack_info('Repair', msg, set=setname)
                 logging.info('Verified in %s, all files correct',
