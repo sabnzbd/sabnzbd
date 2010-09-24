@@ -87,7 +87,7 @@ def list_languages():
             lng = locale.normalize(lngname)
             lng = lng[:lng.find('_')]
             language = LanguageTable.get(lng, (lng, lng))
-            language = language[1].decode('utf-8').encode('latin-1')
+            language = language[1].decode('utf-8')
             lst.append((lng, language))
     if lst:
         lst.append(('en', 'English'))
