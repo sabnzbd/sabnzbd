@@ -311,7 +311,7 @@ options = dict(
       author_email = 'team@sabnzbd.org',
       #description = 'SABnzbd ' + str(__version__),
       scripts = ['SABnzbd.py', 'SABHelper.py'], # One day, add  'setup.py'
-      packages = ['sabnzbd', 'sabnzbd.utils'],
+      packages = ['sabnzbd', 'sabnzbd.utils', 'util'],
       platforms = ['posix'],
       license = 'GNU General Public License 2 (GPL2) or later',
       data_files = []
@@ -343,7 +343,7 @@ if target == 'app':
     os.system("rm -rf interfaces/iphone>/dev/null")
 
     #Create MO files
-    os.system('python ./tools/make_mo.py')
+    os.system('python ./tools/make_mo.py all')
 
     #build SABnzbd.py
     sys.argv[1] = 'py2app'
@@ -433,7 +433,7 @@ elif target in ('binary', 'installer'):
     os.system("unzip -o cherrypy.zip")
 
     # Create MO files
-    os.system('tools\\make_mo.py')
+    os.system('tools\\make_mo.py all')
 
     options['data_files'] = PairList(data_files)
     options['description'] = 'SABnzbd ' + str(__version__)
@@ -530,6 +530,10 @@ else:
     root = os.path.normpath(os.path.abspath(root))
     if not os.path.exists(root):
         os.mkdir(root)
+
+    # Set data files
+    options['data_files'] = PairList(data_files)
+    options['data_files'].append(('tools', ['tools/make_mo.py']))
 
     # Copy the data files
     for set in options['data_files']:

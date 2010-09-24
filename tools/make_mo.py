@@ -159,6 +159,14 @@ def process_po_folder(domain, folder):
             print '\nMissing %s. Please install this package first.' % TOOL
             exit(1)
 
+def remove_mo_files():
+    """ Remove MO files in locale
+    """
+    for root, dirs, files in os.walk(MO_DIR, topdown=False):
+        for f in files:
+            if not f.startswith(DOMAIN):
+                os.remove(os.path.join(root, f))
+
 
 def make_templates():
     """ Create email templates
@@ -234,18 +242,21 @@ def patch_nsis():
     dst.close()
 
 
-print 'Email MO files'
-process_po_folder(DOMAIN_E, POE_DIR)
+if len(sys.argv) > 1 and sys.argv[1] == 'all':
+    print 'Email MO files'
+    process_po_folder(DOMAIN_E, POE_DIR)
 
-print 'NSIS MO file'
-process_po_folder(DOMAIN_N, PON_DIR)
+    print 'NSIS MO file'
+    process_po_folder(DOMAIN_N, PON_DIR)
+
+    print "Create email templates from MO files"
+    make_templates()
+
+    print "Patch NSIS script"
+    patch_nsis()
 
 print 'Main program MO files'
 process_po_folder(DOMAIN, PO_DIR)
 
-print "Create email templates from MO files"
-make_templates()
-
-print "Patch NSIS script"
-patch_nsis()
-
+print "Remove temporary templates"
+remove_mo_files()
