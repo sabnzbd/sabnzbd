@@ -52,9 +52,11 @@ def set_locale_info(domain, localedir):
     _LOCALEDIR = localedir
 
 
-def set_language(language=''):
+def set_language(language=None):
     """ Activate language, empty language will set default texts.
     """
+    if not language: language = ''
+
     # 'codeset' will determine the output of lgettext
     lng = gettext.translation(_DOMAIN, _LOCALEDIR, [language], fallback=True, codeset='latin-1')
 
