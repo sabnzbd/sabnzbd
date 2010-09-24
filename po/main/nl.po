@@ -3165,7 +3165,7 @@ msgstr "Vul hier de gegevens van je primaire Usenet server in."
 
 #: sabnzbd/skintext.py:717
 msgid "In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended."
-msgstr "Om te kunnen downloaded van Usenet, heb je een provider nodig. Je Internet bedrijf heeft misschien een server, maar we bevelen een betaalde server aan."
+msgstr "Om te kunnen downloaden van Usenet, heb je een provider nodig. Je Internet bedrijf heeft misschien een server, maar we bevelen een betaalde server aan."
 
 #: sabnzbd/skintext.py:718
 msgid "Don't have a usenet provider? We recommend trying %s."
