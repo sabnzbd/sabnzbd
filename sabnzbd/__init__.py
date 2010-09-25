@@ -222,9 +222,12 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     ### Set cache limit
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
+    ### Handle language upgrade from 0.5.x to 0.6.x
+    cfg.language.set(LANG_MAP.get(cfg.language(), 'en'))
+
     ### Set language files
     lang.set_locale_info('SABnzbd', DIR_LANGUAGE)
-    lang.set_language(LANG_MAP.get(cfg.language(), cfg.language()))
+    lang.set_language(cfg.language())
     sabnzbd.api.cache_skin_trans()
 
     ### Check for old queue (when a new queue is not present)
