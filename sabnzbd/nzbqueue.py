@@ -115,11 +115,23 @@ class NzbQueue(TryList):
 
     def scan_jobs(self, folders=None):
         """ Scan "incomplete" for mssing folders """
-        if not folders:
-            folders = [nzo.work_name for nzo in self.__nzo_list]
+        # Folders from the download queue
+        if folders:
+            registered = [nzo.work_name for nzo in self.__nzo_list]
+        else:
+            registered = []
+
+        # Retryable folders from History
+        items = sabnzbd.proxy_build_history()[0]
+        registered.extend([os.path.basename(item['path']) for item in items if item['retry']])
+
+        # Repair unregistered folders
         for folder in globber(cfg.download_dir.get_path()):
-            if os.path.basename(folder) not in folders:
+            if os.path.basename(folder) not in registered:
+                logging.info('Repairing job %s', folder)
                 self.repair_job(folder)
+            else:
+                logging.info('Skipping repair for job %s', folder)
 
 
     def repair_job(self, folder, new_nzb=None):
