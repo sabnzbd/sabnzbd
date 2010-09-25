@@ -292,7 +292,7 @@ def daemonize():
 def Bail_Out(browserhost, cherryport, access=False):
     """Abort program because of CherryPy troubles
     """
-    logging.error(Ta('Failed to start web-interface'), Ta('Cannot find web template: %s, trying standard template'))
+    logging.error(Ta('Failed to start web-interface'))
     if access:
         panic_xport(browserhost, cherryport)
     else:
