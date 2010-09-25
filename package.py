@@ -151,7 +151,7 @@ def CreateTar(folder, fname, release):
                 tarinfo = tar.gettarinfo(path, fpath)
                 tarinfo.uid = 0
                 tarinfo.gid = 0
-                if _file in ('SABnzbd.py', 'Sample-PostProc.sh'): # One day add: 'setup.py'
+                if _file in ('SABnzbd.py', 'Sample-PostProc.sh', 'tools/make_mo.py'): # One day add: 'setup.py'
                     tarinfo.mode = 0755
                 else:
                     tarinfo.mode = 0644
