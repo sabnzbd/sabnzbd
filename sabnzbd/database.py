@@ -251,12 +251,15 @@ class HistoryDB(object):
 
 
     def get_script_log(self, nzo_id):
+        data = ''
         t = (nzo_id,)
         if self.execute('SELECT script_log FROM history WHERE nzo_id=?', t):
             f = self.c.fetchone()
-            return zlib.decompress(f['script_log'])
-        else:
-            return ''
+            try:
+                data = zlib.decompress(f['script_log'])
+            except:
+                data = ''
+        return data
 
     def get_name(self, nzo_id):
         t = (nzo_id,)
