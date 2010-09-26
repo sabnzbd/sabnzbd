@@ -779,10 +779,13 @@ def from_units(val):
     else:
         return 0.0
 
-def to_units(val, spaces=0):
+def to_units(val, spaces=0, dec_limit=2):
     """ Convert number to K/M/G/T/P notation
         Add "spaces" if not ending in letter
+        dig_limit==1 show single decimal for M and higher
+        dig_limit==2 show single decimal for G and higher
     """
+    decimals = 0
     val = str(val).strip()
     if val == "-1":
         return val
@@ -797,12 +800,12 @@ def to_units(val, spaces=0):
     unit = TAB_UNITS[n]
     if not unit:
         unit = ' ' * spaces
-    if n > 2:
-        digits = 1
+    if n > dec_limit:
+        decimals = 1
     else:
-        digits = 0
+        decimals = 0
 
-    format = '%%.%sf %%s' % digits
+    format = '%%.%sf %%s' % decimals
     return format % (val, unit)
 
 #------------------------------------------------------------------------------

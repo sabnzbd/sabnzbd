@@ -1065,7 +1065,7 @@ def qstatus_data():
         "paused" : downloader.paused(),
         "pause_int" : scheduler.pause_int(),
         "kbpersec" : BPSMeter.do.get_bps() / KIBI,
-        "speed" : to_units(BPSMeter.do.get_bps()),
+        "speed" : to_units(BPSMeter.do.get_bps(), dec_limit=1),
         "mbleft" : qnfo[QNFO_BYTES_LEFT_FIELD] / MEBI,
         "mb" : qnfo[QNFO_BYTES_FIELD] / MEBI,
         "noofslots" : len(pnfo_list),
@@ -1345,7 +1345,7 @@ def build_header(prim):
     bytes = qnfo[QNFO_BYTES_FIELD]
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
-    header['speed'] = to_units(bytespersec, spaces=1)
+    header['speed'] = to_units(bytespersec, spaces=1, dec_limit=1)
     header['mbleft']   = "%.2f" % (bytesleft / MEBI)
     header['mb']       = "%.2f" % (bytes / MEBI)
     header['sizeleft']   = format_bytes(bytesleft)
