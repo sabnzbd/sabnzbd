@@ -211,14 +211,15 @@ def process_job(nzo):
         workdir = nzo.downpath
         tmp_workdir_complete = None
 
-        # if the directory has not been made, no files were assembled
-        if not os.path.exists(workdir):
+        # if no files are present (except __admin__), fail the job
+        if len(globber(workdir)) < 2:
             emsg = T('Download failed - Out of your server\'s retention?')
             nzo.fail_msg = emsg
             nzo.status = 'Failed'
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
             par_error = unpack_error = True
+            all_ok = False
 
         script = nzo.script
         cat = nzo.cat
@@ -236,7 +237,7 @@ def process_job(nzo):
 
         ## Check if user allows unsafe post-processing
         if cfg.safe_postproc():
-            all_ok = not par_error
+            all_ok = all_ok and not par_error
 
         # Set complete dir to workdir in case we need to abort
         workdir_complete = workdir
