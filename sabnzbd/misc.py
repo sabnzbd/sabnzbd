@@ -721,6 +721,7 @@ def check_latest_version():
         f = open(fn, 'r')
         data = f.read()
         f.close()
+        os.remove(fn)
     except:
         return
 
