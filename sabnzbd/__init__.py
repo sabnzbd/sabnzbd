@@ -702,12 +702,13 @@ IO_LOCK = RLock()
 
 @synchronized(IO_LOCK)
 def get_new_id(prefix, folder, check_list=None):
-    """ Return unique prefixed admin identifier within folder'
+    """ Return unique prefixed admin identifier within folder
+        optionally making sure that id is not in the check_list.
     """
-    while True:
+    for n in xrange(10000):
         try:
             if not os.path.exists(folder):
-                os.mkdir(folder)
+                os.makedirs(folder)
             fd, path = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, folder)
             os.close(fd)
             head, tail = os.path.split(path)
@@ -716,6 +717,8 @@ def get_new_id(prefix, folder, check_list=None):
         except:
             logging.error(Ta('Failure in tempfile.mkstemp'))
             logging.info("Traceback: ", exc_info = True)
+    # Cannot create unique id, crash the process
+    raise IOError
 
 
 @synchronized(IO_LOCK)
