@@ -931,7 +931,9 @@ def getDescriptions(match, name):
     ep_name = ep_name.strip(' _.')
     if ep_name.startswith('-'):
         ep_name = ep_name.strip('- _.')
-    ep_name = ep_name.replace('.', ' ').replace('_', ' ')
+    if '.' in ep_name and ' ' not in ep_name:
+        ep_name = ep_name.replace('.', ' ')
+    ep_name = ep_name.replace('_', ' ')
     ep_name2 = ep_name.replace(" - ", "-").replace(" ", ".")
     ep_name3 = ep_name.replace(" ", "_")
     return ep_name, ep_name2, ep_name3

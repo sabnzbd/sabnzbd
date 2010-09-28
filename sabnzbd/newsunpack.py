@@ -1283,7 +1283,6 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
     values = [1, name, pp, cat, script, priority, None]
     script_path = make_script_path(cfg.pre_script())
     if script_path:
-        name = os.path.splitext(name)[0]
         command = [script_path, name, fix(pp), fix(cat), fix(script), fix(priority), str(size), ' '.join(groups)]
         command.extend(analyse_show(name))
 
