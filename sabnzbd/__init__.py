@@ -136,7 +136,7 @@ LANG_MAP = {
     'de-de' : 'de',
     'dk-da' : 'da', # Should have been "da-dk"
     'fr-fr' : 'fr',
-    'nl-du' : 'nl',
+    'nl-du' : 'nl', # Should have been "du-nl"
     'no-no' : 'no',
     'sv-se' : 'sv',
     'us-en' : 'en'  # Should have been "en-us"
@@ -223,7 +223,7 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     ### Handle language upgrade from 0.5.x to 0.6.x
-    cfg.language.set(LANG_MAP.get(cfg.language(), 'en'))
+    cfg.language.set(LANG_MAP.get(cfg.language(), cfg.language()))
 
     ### Set language files
     lang.set_locale_info('SABnzbd', DIR_LANGUAGE)
