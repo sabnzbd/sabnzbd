@@ -1,4 +1,19 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha3 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Season sort got confused when show title contained a dot
+- Restore newzbin support in Plush
+- Show speeds from MB and higher with one decimal
+- Restore detection of empty downloads
+- Fix crash in post-processor caused by non-plain-ASCII in user script output
+- Proper converion of 0.5.x language codes and skin names
+- A repair scan would pick up folders waiting for retry in History, creating double entries
+- Small fixes
+-------------------------------------------------------------------------------
+ 0.6.0Alpha2 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Proper packaging
+-------------------------------------------------------------------------------
  0.6.0Alpha1 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Redesign of the download queue allowing repairs and retries of post-processing
