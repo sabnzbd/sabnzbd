@@ -242,7 +242,8 @@ def initialize(pause_downloader = False, clean_up = False, evalSched=False, repa
     else:
         # Check crash detection file
         if load_admin(TERM_FLAG_FILE, remove=True):
-            repair = 2
+            # Repair mode 2 is a bit over an over-reaction!
+            pass # repair = 2
 
     # Set crash detection file
     save_admin(1, TERM_FLAG_FILE)

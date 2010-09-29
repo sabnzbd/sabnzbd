@@ -47,7 +47,7 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.database import build_history_info, unpack_history_info
+from sabnzbd.database import build_history_info, unpack_history_info, get_history_handle
 
 
 #------------------------------------------------------------------------------
@@ -1441,7 +1441,12 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     limit -= len(queue)
 
     # Aquire the db instance
-    history_db = cherrypy.thread_data.history_db
+    try:
+        history_db = cherrypy.thread_data.history_db
+    except:
+        # Required for repairs at startup because Cherrypy isn't active yet
+        history_db = get_history_handle()
+
     # Fetch history items
     items, fetched_items, total_items = history_db.fetch_history(start, limit, search)
 
