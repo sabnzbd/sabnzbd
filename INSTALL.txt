@@ -67,6 +67,7 @@ Essential modules for python 2.4 ONLY
 Optional modules
     unrar >= 3.90+          http://www.rarlab.com/rar_add.htm
     unzip >= 5.52           http://www.info-zip.org/
+    gnu gettext             http://www.gnu.org/software/gettext/
 
 Optional modules Windows
     pyopenssl >= 0.10       http://pypi.python.org/pypi/pyOpenSSL
@@ -82,7 +83,11 @@ Embedded modules (only use the included version)
 
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
-Start the program from the commandline:
+If fou want multiple languages, you need to compile the translations.
+Start this from a shell terminal (or command prompt):
+    python tools/make_mo.py
+
+Start this from a shell terminal (or command prompt):
     python SABnzbd.py
 Within 5-10 seconds your web browser will start and show the user interface.
 Use the "Help" button in the web-interface to be directed to the Help Wiki.

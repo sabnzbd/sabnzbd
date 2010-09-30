@@ -243,17 +243,18 @@ def patch_nsis():
 
 
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
-    print 'Email MO files'
-    process_po_folder(DOMAIN_E, POE_DIR)
-
     print 'NSIS MO file'
     process_po_folder(DOMAIN_N, PON_DIR)
 
-    print "Create email templates from MO files"
-    make_templates()
-
     print "Patch NSIS script"
     patch_nsis()
+
+print 'Email MO files'
+process_po_folder(DOMAIN_E, POE_DIR)
+
+print "Create email templates from MO files"
+make_templates()
+
 
 print 'Main program MO files'
 process_po_folder(DOMAIN, PO_DIR)
