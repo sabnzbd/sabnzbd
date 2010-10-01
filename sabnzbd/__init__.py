@@ -595,7 +595,7 @@ def system_hibernate():
     if sabnzbd.WIN32:
         misc.win_hibernate()
     elif DARWIN:
-        misc.osx_shutdown()
+        misc.osx_hibernate()
     else:
         misc.linux_hibernate()
 
