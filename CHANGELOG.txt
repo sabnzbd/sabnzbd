@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha4 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Fix crash after queue repair cycle, which prevented restart
+- end-of-queue hibernate on OSX did shutdown instead of sleep
+-------------------------------------------------------------------------------
  0.6.0Alpha3 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Season sort got confused when show title contained a dot
