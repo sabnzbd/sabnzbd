@@ -72,7 +72,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
 
     filename, cat = name_to_cat(filename, catdir)
 
-    if path.lower().endswith('.zip'):
+    # Check both path and filename for .zip, because the urlgrabber may use odd pathnames
+    if path.lower().endswith('.zip') or filename.lower().endswith('.zip'):
         try:
             zf = zipfile.ZipFile(path)
         except:
