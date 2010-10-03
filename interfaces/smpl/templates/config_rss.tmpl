@@ -275,8 +275,8 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <legend>$T('newFeedURI')</legend>
         <input type="text" size="10" name="feed" value="$feed"/>&nbsp;
         <input type="text" size="104" name="uri" value=""/><br/><br/>
-        <input type="hidden" name="session" value="$session">
-        <input type="submit" value="$T('button-add')"  onclick="javascript:submitconfig('config/rss/add_rss_feed', this,'add_feed','1' )"/>
+        <input type="hidden" name="session" value="$session" />
+        <input type="submit" value="$T('button-add')" onclick="javascript:submitconfig('config/rss/add_rss_feed', this,'add_feed','1' )" />
     </fieldset>
     </form>
     </div>
@@ -294,15 +294,16 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#for $feed in sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-            <td><form action="del_rss_feed" method="get">
-                <input type="hidden" name="session" value="$session">
-                <input type="hidden" value="$feed" name="feed">
-                <input type="submit" value="$T('button-del')"></form>
+            <td><form id="delete_$feed">
+                	<input type="hidden" name="session" value="$session" />
+	                <input type="hidden" value="$feed" name="feed" />
+	                <input type="submit" value="$T('button-del')" onclick="if(confirm('$T('confirm').replace("'","`")')){javascript:submitconfig('config/rss/del_rss_feed', this,'delete_$feed','1' )} else return false;" />
+				</form>
             </td>
             <td><form action="upd_rss_feed" method="post">
-                <input type="hidden" name="session" value="$session">
-                <input type="hidden" value="$feed" name="feed">
-                <input type="hidden" value="1" name="table">
+                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" value="$feed" name="feed" />
+                <input type="hidden" value="1" name="table" />
                 <input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
                 </form>
             </td>
