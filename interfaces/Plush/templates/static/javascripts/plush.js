@@ -537,7 +537,7 @@ jQuery(function($){
 					$("#queue-pagination").pagination( $.plush.queuenoofslots , {
 						current_page: $.plush.queuecurpage,
 						items_per_page: $.plush.queuePerPage,
-						num_display_entries: 8,
+						num_display_entries: 3,
 						num_edge_entries: 1,
 						prev_text: "&laquo; "+$.plush.Tprev, // translation
 						next_text: $.plush.Tnext+" &raquo;", // translation
@@ -828,7 +828,7 @@ jQuery(function($){
 					$("#history-pagination").pagination( $.plush.histnoofslots , {
 						current_page: $.plush.histcurpage,
 						items_per_page: $.plush.histPerPage,
-						num_display_entries: 8,
+						num_display_entries: 3,
 						num_edge_entries: 1,
 						prev_text: "&laquo; "+$.plush.Tprev, // translation
 						next_text: $.plush.Tnext+" &raquo;", // translation
