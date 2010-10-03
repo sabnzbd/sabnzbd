@@ -452,7 +452,7 @@ jQuery(function($){
 			});
 
 			// NZB change priority
-			$('#queue').delegate('.proc_priority','change',function(){
+			$('#queue .proc_priority').live('change',function(){
 				var nzbid = $(this).parent().parent().attr('id');
 				var oldPos = $('#'+nzbid)[0].rowIndex + $.plush.queuecurpage * $.plush.queuePerPage;
 				$.ajax({
@@ -474,7 +474,7 @@ jQuery(function($){
 			});
 			
 			// 3-in-1 change nzb [category + processing + script]
-			$('#queue').delegate('.change_cat, .change_opts, .change_script','change',function(e){
+			$('#queue .change_cat, #queue .change_opts, #queue .change_script').live('change',function(e){
 				var val = $(this).parent().parent().attr('id');
 				var cval = $(this).attr('class').split(" ")[0]; // ignore added "hovering" class
 				$.ajax({
