@@ -270,13 +270,13 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 
 <!--#else#-->
     <div class="EntryBlock">
-    <form action="add_rss_feed" method="post">
+    <form id="add_feed">
     <fieldset class="EntryFieldSet">
     <legend>$T('newFeedURI')</legend>
         <input type="text" size="10" name="feed" value="$feed"/>&nbsp;
         <input type="text" size="104" name="uri" value=""/><br/><br/>
         <input type="hidden" name="session" value="$session">
-        <input type="submit" value="$T('button-add')"/>
+        <input type="submit" value="$T('button-add')"  onclick="javascript:submitconfig('config/rss/add_rss_feed', this,'add_feed','1' )"/>
     </fieldset>
     </form>
     </div>
