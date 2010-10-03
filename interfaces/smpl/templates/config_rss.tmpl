@@ -13,7 +13,11 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#set $feed = $active_feed#-->
     <div class="EntryBlock">
 
+	<p><a href="#" onClick="javascript:lr('config/rss',''); return false;">&laquo; $T('back')</a></p>
+
 <fieldset class="EntryFieldSet">
+	
+	
     <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
     $T('feed') $feed</legend>
     <hr />
@@ -21,8 +25,8 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 
             <input type="text" size="92" name="uri" value="$rss[$feed]['uri']"/>
             <input type="submit" onclick="javascript:if (confirm('$T('confirm').replace("'","`") ')) {submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )}" value="$T('button-delFeed')"/>
-            <input type="submit" onClick="javascript:location='./config/rss/test_rss_feed?feed=$feed&session=$session'" value="$T('button-preFeed')"/>
-            <input type="submit" onClick="javascript:location='./config/rss/download_rss_feed?feed=$feed&session=$session'" value="$T('button-forceFeed')"/>
+            <input type="submit" onClick="javascript:lr('config/rss/test_rss_feed','feed=$feed'); return false;" value="$T('button-preFeed')"/>
+            <input type="submit" onClick="javascript:lr('config/rss/download_rss_feed','feed=$feed'); return false;" value="$T('button-forceFeed')"/>
             <br/><br/>
 
             <!--#if $rss[$feed]['pick_cat']#-->
@@ -212,11 +216,11 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#for $job in $matched#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td><form action="download" method="get">
+        <td><form id="download_$feed">
                 <input type="hidden" name="url" value="$job[0]"/>
                 <input type="hidden" value="$feed" name="feed"/>
-                <input type="hidden" name="session" value="$session">
-                <input type="submit" value="$T('link-download')">
+                <input type="hidden" name="session" value="$session" />
+                <input type="submit" value="$T('link-download')" onclick="javascript:submitconfig('config/rss/download', this,'download_$feed','1' ); return false;" />
             </form>
         </td>
         <td>$job[2]</td>
@@ -239,11 +243,11 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     <!--#for $job in $unmatched#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-        <td><form action="download" method="get">
+        <td><form id="download_$feed">
                 <input type="hidden" name="url" value="$job[0]"/>
                 <input type="hidden" value="$feed" name="feed"/>
-                <input type="hidden" name="session" value="$session">
-                <input type="submit" value="$T('link-download')">
+                <input type="hidden" name="session" value="$session" />
+                <input type="submit" value="$T('link-download')" onclick="javascript:submitconfig('config/rss/download', this,'download_$feed','1' ); return false;" />
             </form>
         </td>
         <td>$job[2]</td>
