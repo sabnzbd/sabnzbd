@@ -130,6 +130,7 @@ class Wizard(object):
         info['num'] = '&raquo; %s' % T('Step Three')
         info['number'] = 3
         info['session'] = cfg.api_key()
+        info['language'] = cfg.language()
         info['T'] = Ttemplate
 
         servers = config.get_servers()
