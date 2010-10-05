@@ -2,25 +2,22 @@
 <script type="text/javascript">
 MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 </script>
-<a href="${helpuri}Configure+RSS+V2" id="help" target="_blank">Help</a><h2>$T('configRSS')</h2>
+<a href="${helpuri}Configure+RSS+V2" id="help" target="_blank">Help</a>
 
-<div class="EntryBlock" id="add_rss_feed">
-<fieldset class="EntryFieldSet">
-<legend>$T('newFeedURI')</legend>
 
-    <input type="text" size="10" name="feed" value="$feed"/>
-    <input type="text" size="80" name="uri" value=""/>
-    <input type="submit" value="$T('button-add')" onclick="javascript:submitconfig('config/rss/add_rss_feed', '','add_rss_feed', '1')"   />
-</fieldset>
-</div>
 
-<p><b>WARNING: Currently, RSS feeds are not supported in this skin.<br/>
-Please use Plush or Classic
-</b></p>
-<p>$T('explain-RSS')</p>
-<!--#for $feed in $rss#-->
+<h3>$T('configRSS')</h3>
+
+<!--#if $active_feed#-->
+
+    <!--#set $feed = $active_feed#-->
+    <div class="EntryBlock">
+
+	<p><a href="#" onClick="javascript:lr('config/rss',''); return false;">&laquo; $T('back')</a></p>
 
 <fieldset class="EntryFieldSet">
+	
+	
     <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
     $T('feed') $feed</legend>
     <hr />
@@ -28,8 +25,8 @@ Please use Plush or Classic
 
             <input type="text" size="92" name="uri" value="$rss[$feed]['uri']"/>
             <input type="submit" onclick="javascript:if (confirm('$T('confirm').replace("'","`") ')) {submitconfig('config/rss/del_rss_feed', '','update_$feed','1' )}" value="$T('button-delFeed')"/>
-            <input type="submit" onClick="javascript:location='./config/rss/test_rss_feed?feed=$feed&session=$session'" value="$T('button-preFeed')"/>
-            <input type="submit" onClick="javascript:location='./config/rss/download_rss_feed?feed=$feed&session=$session'" value="$T('button-forceFeed')"/>
+            <input type="submit" onClick="javascript:lr('config/rss/test_rss_feed','feed=$feed'); return false;" value="$T('button-preFeed')"/>
+            <input type="submit" onClick="javascript:lr('config/rss/download_rss_feed','feed=$feed'); return false;" value="$T('button-forceFeed')"/>
             <br/><br/>
 
             <!--#if $rss[$feed]['pick_cat']#-->
@@ -205,5 +202,121 @@ Please use Plush or Classic
 </tbody>
     </table>
     </fieldset>
-<br /><br /><br />
-<!--#end for#-->
+
+	<br/>
+    <h3>$T('rss-matched')</h3>
+    <table id="catTable">
+        <tr>
+            <th>&nbsp;</th>
+            <th>&nbsp;$T('rss-skip')&nbsp;</th>
+            <th>&nbsp;$T('rss-filter')&nbsp;</th>
+            <th>Title</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $job in $matched#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <td><form id="download_$feed">
+                <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" value="$feed" name="feed"/>
+                <input type="hidden" name="session" value="$session" />
+                <input type="submit" value="$T('link-download')" onclick="javascript:submitconfig('config/rss/download', this,'download_$feed','1' ); return false;" />
+            </form>
+        </td>
+        <td>$job[2]</td>
+        <td>$job[3]</td>
+        <td>$job[1]</td>
+        </tr>
+    <!--#end for#-->
+    </table>
+
+	<br/>
+    <h3>$T('rss-notMatched')</h3>
+    <table id="catTable">
+        <tr>
+            <th>&nbsp;</th>
+            <th>&nbsp;$T('rss-skip')&nbsp;</th>
+            <th>&nbsp;$T('rss-filter')&nbsp;</th>
+            <th>Title</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $job in $unmatched#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <td><form id="download_$feed">
+                <input type="hidden" name="url" value="$job[0]"/>
+                <input type="hidden" value="$feed" name="feed"/>
+                <input type="hidden" name="session" value="$session" />
+                <input type="submit" value="$T('link-download')" onclick="javascript:submitconfig('config/rss/download', this,'download_$feed','1' ); return false;" />
+            </form>
+        </td>
+        <td>$job[2]</td>
+        <td>$job[3]</td>
+        <td>$job[1]</td>
+        </tr>
+    <!--#end for#-->
+    </table>
+
+	<br/>
+    <h3>$T('rss-done')</h3>
+    <table id="catTable">
+        <tr>
+            <th>Title</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $job in $downloaded#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+        <td>$job</td>
+        </tr>
+    <!--#end for#-->
+    </table>
+
+<!--#else#-->
+    <div class="EntryBlock">
+    <form id="add_feed">
+    <fieldset class="EntryFieldSet">
+    <legend>$T('newFeedURI')</legend>
+        <input type="text" size="10" name="feed" value="$feed"/>&nbsp;
+        <input type="text" size="104" name="uri" value=""/><br/><br/>
+        <input type="hidden" name="session" value="$session" />
+        <input type="submit" value="$T('button-add')" onclick="javascript:submitconfig('config/rss/add_rss_feed', this,'add_feed','1' )" />
+    </fieldset>
+    </form>
+    </div>
+
+    <p>$T('explain-RSS')</p>
+
+    <table id="catTable">
+        <tr>
+            <th></th>
+            <th>Enabled</th>
+            <th>$T('feed')</th>
+            <th>URL</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $feed in sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+            <td><form id="delete_$feed">
+                	<input type="hidden" name="session" value="$session" />
+	                <input type="hidden" value="$feed" name="feed" />
+	                <input type="submit" value="$T('button-del')" onclick="if(confirm('$T('confirm').replace("'","`")')){javascript:submitconfig('config/rss/del_rss_feed', this,'delete_$feed','1' )} else return false;" />
+				</form>
+            </td>
+            <td><form id="toggle_$feed">
+                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" value="$feed" name="feed" />
+                <input type="hidden" value="1" name="table" />
+                <input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', this,'toggle_$feed','1' )" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
+                </form>
+            </td>
+            <td><a href="#/config/rss/" onClick="lr('../config/rss/','feed=$rss[$feed]['link']', 0, 0);">$feed</a></td>
+            <td>$rss[$feed]['uri']</td>
+        </tr>
+    <!--#end for#-->
+</table>
+
+<!--#end if#-->
+
+
