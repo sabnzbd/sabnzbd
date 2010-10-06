@@ -137,7 +137,7 @@ LANG_MAP = {
     'dk-da' : 'da', # Should have been "da-dk"
     'fr-fr' : 'fr',
     'nl-du' : 'nl', # Should have been "du-nl"
-    'no-no' : 'no',
+    'no-no' : 'nb', # Norsk Bokmal
     'sv-se' : 'sv',
     'us-en' : 'en'  # Should have been "en-us"
 }
