@@ -655,6 +655,10 @@ def change_queue_complete_action(action, new=True):
     else:
         action = None
 
+    if new:
+        cfg.queue_complete.set(action)
+        config.save_config()
+
     #keep the name of the action for matching the current select in queue.tmpl
     QUEUECOMPLETE = action
 
