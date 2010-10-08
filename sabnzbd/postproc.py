@@ -630,10 +630,10 @@ def nzb_redirect(wdir, pp, script, cat, priority):
             return lst
 
     # Process all NZB files
-    keep = not on_cleanup_list("x.nzb", False)
     for file_ in files:
         if file_.lower().endswith('.nzb'):
-            dirscanner.ProcessSingleFile(file_, os.path.join(wdir, file_), pp, script, cat, priority=priority, keep=keep)
+            dirscanner.ProcessSingleFile(file_, os.path.join(wdir, file_), pp, script, cat,
+                                         priority=priority, keep=False, dup_check=False)
             lst.append(file_)
 
     return lst

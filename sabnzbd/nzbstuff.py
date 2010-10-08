@@ -480,7 +480,8 @@ NzbObjectMapper = (
 class NzbObject(TryList):
     def __init__(self, filename, msgid, pp, script, nzb = None,
                  futuretype = False, cat = None, url=None,
-                 priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None, reuse=False):
+                 priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None,
+                 reuse=False, dup_check=True):
         TryList.__init__(self)
 
         filename = platform_encode(filename)
@@ -600,7 +601,7 @@ class NzbObject(TryList):
         wdir = os.path.join(cfg.download_dir.get_path(), self.work_name)
         adir = os.path.join(wdir, JOB_ADMIN)
 
-        if (not reuse) and nzb and sabnzbd.backup_exists(filename):
+        if (not reuse) and nzb and dup_check and sabnzbd.backup_exists(filename):
             # File already exists and we have no_dupes set
             logging.warning(Ta('Skipping duplicate NZB "%s"'), filename)
             raise TypeError
