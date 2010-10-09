@@ -222,7 +222,7 @@ def patch_nsis():
                 for lcode in languages:
                     lng = LanguageTable.get(lcode)
                     if lng and lcode != 'en':
-                        lng = lng[0].upper()
+                        lng = lng[0].decode('utf-8').encode('latin-1').upper()
                         trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset='latin-1')
                         # The unicode flag will make _() return Unicode
                         trans.install(unicode=True, names=['lgettext'])
