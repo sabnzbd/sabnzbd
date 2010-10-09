@@ -323,6 +323,8 @@ SKIN_TEXT = {
     'explain-pause_on_pwrar' : TT('You\'ll need to set a password and resume the job.'),
     'opt-no_dupes' : TT('Prevent Duplicate Downloads'),
     'explain-no_dupes' : TT('Skip a job if a backed-up .nzb with the same name exists.'),
+    'opt-sfv_check' : TT('Enable SFV-based checks'),
+    'explain-sfv_check' : TT('Do an extra verification based on SFV files.'),
     'opt-dirscan_opts' : TT('Default Post-Processing'),
     'explain-dirscan_opts' : TT('Used when no post-processing is defined by the category.'),
     'opt-dirscan_script' : TT('Default User Script'),

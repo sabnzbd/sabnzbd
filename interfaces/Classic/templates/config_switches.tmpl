@@ -44,6 +44,9 @@
     <label><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /> <strong>$T('opt-no_dupes')</strong></label><br>
     $T('explain-no_dupes')<br>
     <br>
+    <label><input type="checkbox" name="sfv_check" value="1" <!--#if $sfv_check > 0 then "checked=1" else ""#--> /> <strong>$T('opt-sfv_check')</strong></label><br>
+    $T('explain-sfv_check')<br>
+    <br>
     <strong>$T('opt-dirscan_opts'):</strong><br>
     $T('explain-dirscan_opts')<br>
     <input type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then "checked=1" else ""#--> /> $T('none')
