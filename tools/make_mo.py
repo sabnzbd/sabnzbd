@@ -89,8 +89,8 @@ LanguageTable = {
     'gv' : ('Manx', 'Gaelg'),
     'mg' : ('Malagasy', 'Malagasy fiteny'),
     'mt' : ('Maltese', 'Malti'),
-    'nb' : ('Norwegian Bokmål', 'Norsk bokmål'),
-    'nn' : ('Norwegian Nynorsk', 'Norsk nynorsk'),
+    'nb' : ('Norwegian', 'Norsk'),  # Bokmål
+    'nn' : ('Norwegian', 'Norsk'),  # Nynorsk
     'no' : ('Norwegian', 'Norsk'),
     'oc' : ('Occitan', 'Occitan'),
     'om' : ('Oromo', 'Afaan Oromoo'),
