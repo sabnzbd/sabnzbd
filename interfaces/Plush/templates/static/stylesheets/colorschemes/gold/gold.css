@@ -140,6 +140,10 @@ select {
 .clear {
 	clear: both;
 }
+ 
+.float-right {
+	float:right;
+}
 
 .nowrap {
 	white-space: nowrap;
@@ -226,46 +230,53 @@ select {
 
  
 /* sprite-main.png */
-.main_sprite_container { background: url('images/sprite-main.png') no-repeat top right; }
-
 #main_menu ul li a span.sf-sub-indicator { background-position: 0 5px; } 
 #main_menu ul li ul li a span.sf-sub-indicator { background-position: 0 -16px; } 
-.sprite_btm_corner_left { background-position: 0 -34px; } 
-.sprite_btm_corner_right { background-position: 0 -68px; } 
-.sprite_h_purge { background-position: 0 -102px; } 
-.sprite_hv_download { background-position: 0 -131px; } 
-.sprite_hv_error { background-position: 0 -155px; } 
-.sprite_hv_filejoin { background-position: 0 -179px; } 
-.sprite_hv_repair { background-position: 0 -203px; } 
-.sprite_hv_report { background-position: 0 -227px; } 
-.sprite_hv_script { background-position: 0 -251px; } 
-.sprite_hv_star { background-position: 0 -275px; } 
-.sprite_hv_stats { background-position: 0 -299px; } 
-.sprite_hv_unpack { background-position: 0 -323px; } 
-.sprite_progress_done { background-position: 0 -347px; } /* queue.tmpl */
-.sprite_progressbar_bg { background-position: 0 -374px; } 
-.sprite_q_menu_pausefor { background-position: 0 -401px; } 
-.sprite_q_menu_pauseforsfHover { background-position: 0 -430px; } 
-.sprite_q_pause { background-position: 0 -459px; } 
-.sprite_q_pause_on { background-position: 0 -488px; } 
-.sprite_q_queue { background-position: 0 -517px; } 
-.sprite_q_queuesfHover { background-position: 0 -546px; } 
-.sprite_q_stats_complete { background-position: 0 -575px; } 
-.sprite_q_stats_incomplete { background-position: 0 -599px; } 
-.sprite_q_stats_needspace { background-position: 0 -623px; } 
-.sprite_ql_cross { background-position: 0 -647px; } 
-.sprite_ql_cross_on { background-position: 0 -671px; } 
-.sprite_ql_grip_active, .sprite_ql_grip_active_on { background-position: 0 -695px; } 
-.sprite_ql_grip_paused { background-position: 0 -717px; } 
-.sprite_ql_grip_paused_on { background-position: 0 -739px; } 
-.sprite_ql_grip_queued { background-position: 0 -761px; } 
-.sprite_ql_grip_queued_on { background-position: 0 -783px; } 
-.sprite_rounded_area_bg { background-position: 0 -805px; } 
-.sprite_sabnzbdplus_logo { background-position: 0 -835px; } 
-.sprite_sabnzbdplus_plush { background-position: 0 -883px; } 
-.sprite_tile_qh_seperator { background-position: 0 -904px; } 
-.sprite_topleft_queue { background-position: 0 -916px; } 
-.sprite_topright_queue { background-position: right -991px; } /* right */
+
+.main_sprite_container { background: url('images/sprite-main.png') no-repeat top right; }
+
+.sprite_arrow_down{ background-position: 0 0;  } 
+.sprite_arrow_right{ background-position: 0 -19px;  } 
+.sprite_btm_corner_left{ background-position: 0 -38px;  } 
+.sprite_btm_corner_right{ background-position: 0 -74px;  } 
+.sprite_h_purge{ background-position: 0 -110px;  } 
+.sprite_h_search{ background-position: 124px -141px;  } /* 124px */
+.sprite_hv_download{ background-position: 0 -167px;  } 
+.sprite_hv_error{ background-position: 0 -193px;  } 
+.sprite_hv_filejoin{ background-position: 0 -219px;  } 
+.sprite_hv_repair{ background-position: 0 -245px;  } 
+.sprite_hv_report{ background-position: 0 -271px;  } 
+.sprite_hv_script{ background-position: 0 -297px;  } 
+.sprite_hv_star{ background-position: 0 -323px;  } 
+.sprite_hv_stats{ background-position: 0 -349px;  } 
+.sprite_hv_unpack{ background-position: 0 -375px;  } 
+.sprite_progress_done{ background-position: 0 -401px;  }  /* queue.tmpl */
+.sprite_progressbar_bg{ background-position: 0 -430px;  } 
+.sprite_q_menu_pausefor{ background-position: 0 -459px;  } 
+.sprite_q_menu_pauseforsfHover{ background-position: 0 -490px;  } 
+.sprite_q_menu_pausefor_on{ background-position: 0 -521px;  } 
+.sprite_q_pause{ background-position: 0 -552px;  } 
+.sprite_q_pause_on{ background-position: 0 -583px;  } 
+.sprite_q_queue{ background-position: 0 -614px;  } 
+.sprite_q_queuesfHover{ background-position: 0 -645px;  } 
+.sprite_q_queue_on{ background-position: 0 -676px;  } 
+.sprite_q_stats_complete{ background-position: 0 -707px;  } 
+.sprite_q_stats_incomplete{ background-position: 0 -733px;  } 
+.sprite_q_stats_needspace{ background-position: 0 -759px;  } 
+.sprite_ql_cross{ background-position: 0 -785px;  } 
+.sprite_ql_cross_on{ background-position: 0 -811px;  } 
+.sprite_ql_grip_pause{ background-position: 0 -837px;  } 
+.sprite_ql_grip_pause_on{ background-position: 0 -861px;  } 
+.sprite_ql_grip_resume{ background-position: 0 -885px;  } 
+.sprite_ql_grip_resume_on{ background-position: 0 -909px;  } 
+.sprite_rounded_area_bg{ background-position: 0 -933px;  } 
+.sprite_rounded_area_bg_edged{ background-position: 0 -965px;  } 
+.sprite_sabnzbdplus_logo{ background-position: 0 -997px;  } 
+.sprite_sabnzbdplus_plush{ background-position: 0 -1047px;  } 
+.sprite_tile_qh_seperator{ background-position: 0 -1070px;  } 
+.sprite_topleft_queue{ background-position: 0 -1084px;  } 
+.sprite_topright_queue{ background-position: right -1161px;  }  /* right */
+
 
 /* tile-x sprite */
 .tilex_sprite_container { background: url('images/sprite-tilex.png') repeat-x top right; }
@@ -367,16 +378,19 @@ select {
 
 #historySearchBox {
 	color:white;
-	border:1px solid gray;
 	width:120px;
-	margin: 8px 8px 0 0;
+	border:0px;
+	margin: 9px 9px 1px 1px;
 	padding-right:20px;
-	background: url('images/viewmag.png') no-repeat top right;
 	/*background-color: black;*/
 	/*background: url('images/sprite-main.png') no-repeat top right;
 	background-position: 0 -671px;*/
 }
- 
+#historySearchBox:hover,#historySearchBox:focus {
+	border:1px solid gray;
+	margin: 8px 8px 0 0;
+}
+
 #hdr-queue {
 	height: 67px;
 }
@@ -403,9 +417,13 @@ select {
 	position:relative;
 	white-space:nowrap;
 }
+
+.queue-buttons-speed a:hover {
+	text-decoration:none;
+}
 	
 	.queue-buttons ul {
-	  float:left;
+	  	float:left;
 		margin-right:24px;
 	} 	
  
@@ -522,6 +540,11 @@ select {
 		float: right;
 	}
 
+#queue_sort_list {
+	margin-right:-202px;
+	margin-top:28px;
+	width:202px;
+}
  
 /* ---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
@@ -549,22 +572,23 @@ select {
  
 #speed, #time-left {
 	cursor: default;
+	width: 68px; 
 	height: 12px;
 	margin-top: 20px;
 	padding: 3px 0px 7px;
 	text-align: center;
-	width: 68px; 
 }
  
 /* stats next to logo */
 #speed {
 	float: left;
-	margin-right: 36px;
+	margin-left: 24px;
 }
  
 #time-left {
 	float: left;
-	margin-left: 36px;
+	margin-right: 24px;
+	width: 88px; 
 }
  
 #speed p, #time-left p {
@@ -714,20 +738,33 @@ tr:hover .nzb_status_grippie {
 
 
 #multiops_bar {
-	padding:4px;
-	height:22px;
+	height:51px;
 }
 #multiops_title {
 	color: #C0C0C0;
 	font-style: italic;
+}
+#multiops_inputs {
+}
+#multiops_inputs .left {
+	float:left;
 	padding-left: 20px;
 	padding-top:5px;
 }
-#multiops_inputs {
+#multiops_inputs .right{
 	float:right;
+	padding-top:5px;
 }
 #multiops_inputs select {
-	margin:2px;
+  	background: #e5e5e5;
+  	color:#606060;
+  	padding:1px;
+  	margin:0px;
+  	margin-right:3px;
+}
+#multiops_inputs select:hover {
+	background:#fff;
+	color: #000; 
 }
 #multiops_inputs input {
 	color:#000;
@@ -839,7 +876,10 @@ tr:hover .history_added { color: black; }
 	margin-right: 2px;
 	width: 16px;
 }
- 
+.retry-nzbfile-input {
+	border:0;
+	font-size:75%;
+} 
 .hvFaded {
 	opacity: .25;
 	/*-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
@@ -1073,7 +1113,6 @@ tr:hover .history_added { color: black; }
     The following rules are ordered and tabbed in a way that represents the
     order/nesting of the generated HTML, so that the structure easier to understand.
 */
-#colorbox.upper { margin-top:-10%; }
 #cboxOverlay{background-color:#000;}
 #colorbox{}
     #cboxTopLeft{width:21px; height:21px; background:url(images/colorbox-controls.png) -100px 0 no-repeat;}
@@ -1097,6 +1136,10 @@ tr:hover .history_added { color: black; }
         #cboxClose{position:absolute; top:0; right:0; background:url(images/colorbox-controls.png) -25px 0px no-repeat; width:25px; height:25px; text-indent:-9999px;}
         #cboxClose.hover{background-position:-25px -25px;}
 
+
+#plush_options_modal, #add_nzb_modal {
+	padding: 20px 0 0 50px;
+}
 
 
  

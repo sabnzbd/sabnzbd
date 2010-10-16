@@ -2911,7 +2911,7 @@ msgid "Pause for..."
 msgstr ""
 
 #: sabnzbd/skintext.py:629
-msgid "Multi-Operations"
+msgid "Toggle Multi-Operations"
 msgstr ""
 
 #: sabnzbd/skintext.py:630
