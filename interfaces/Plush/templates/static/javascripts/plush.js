@@ -15,7 +15,7 @@ jQuery(function($){
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
-		multiOps:               false, // is multi-operations menu visible in queue
+		multiOps:               $.cookie('multiOps') 		 == 0 ? false : true, // is multi-operations menu visible in queue
 		multiOpsChecks:         null,
 		
 		// ***************************************************************
@@ -103,25 +103,38 @@ jQuery(function($){
 	  		    dropShadows: false,
 			    speed:0, delay:0
 	  		});
+			$('.sprite_q_menu_pausefor').hover(
+				function(){ $(this).addClass('sprite_q_menu_pauseforsfHover'); },
+				function(){ $(this).removeClass('sprite_q_menu_pauseforsfHover'); }
+			);
+			$('.sprite_q_queue').hover(
+				function(){ $(this).addClass('sprite_q_queuesfHover'); },
+				function(){ $(this).removeClass('sprite_q_queuesfHover'); }
+			);
 	
 			// modals
-			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(), innerWidth:"350px", innerHeight:"375px", initialWidth:"350px", initialHeight:"375px", speed:0, opacity:0.7,
-			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
-			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
+			$("#add_nzb").colorbox({ inline:true, href:"#add_nzb_modal", title:$("#add_nzb").text(),
+				innerWidth:"350px", innerHeight:"350px", initialWidth:"350px", initialHeight:"350px", speed:0, opacity:0.7
 			});
-			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(), innerWidth:"275px", innerHeight:"275px", initialWidth:"275px", initialHeight:"275px", speed:0, opacity:0.7,
-			 	onComplete:function(){ $('#colorbox').addClass('upper'); },
-			 	onClosed:function(){ $('#colorbox').removeClass('upper'); },
+			$("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(),
+				innerWidth:"275px", innerHeight:"250px", initialWidth:"275px", initialHeight:"250px", speed:0, opacity:0.7
 			});
 			
 			// Max Speed main menu input -- don't change value on refresh when focused
 			$("#maxSpeed-option").focus(function(){ $.plush.focusedOnSpeedChanger = true; })
  								  .blur(function(){ $.plush.focusedOnSpeedChanger = false; });
-			$("#maxSpeed-option").change( function() {	// works with hitting enter
+			$("#maxSpeed-enable,#maxSpeed-disable").click( function(e) {	// works with hitting enter
+				if ($(e.target).attr('id')=="maxSpeed-disable")
+					$('#maxSpeed-option').val('');
+				var str = $('#maxSpeed-option').val();
+				if (str && str!="")
+					$('.queue-buttons-speed .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
+				else
+					$('.queue-buttons-speed .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
 				$.ajax({
 					type: "POST",
 					url: "tapi",
-					data: {mode:'config', name:'set_speedlimit', value: $(this).val(), apikey: $.plush.apikey}
+					data: {mode:'config', name:'set_speedlimit', value: str, apikey: $.plush.apikey}
 				});
 			});
 			
@@ -169,6 +182,10 @@ jQuery(function($){
 			
 			// Queue "Upon Completion" script
 			$("#onQueueFinish-option").change( function() {
+				if ($(this).val() && $(this).val()!="")
+					$('.sprite_q_queue').addClass('sprite_q_queue_on');
+				else
+					$('.sprite_q_queue').removeClass('sprite_q_queue_on');
 				$.ajax({
 					type: "POST",
 					url: "tapi",
@@ -233,7 +250,10 @@ jQuery(function($){
 					$.plush.multiOpsChecks = new Array();
 					$('<input type="checkbox" class="multiops" />').appendTo('#queue tr td.nzb_status_col');
 				}
+				$.cookie('multiOps', $.plush.multiOps ? 1 : 0, { expires: 365 });
 			});
+			if ($.plush.multiOps)
+				$('#multiops_toggle').trigger('click');
 			
 			// Manual refresh
 			$('#manual_refresh_wrapper').click(function(e){
@@ -307,7 +327,8 @@ jQuery(function($){
 			  }
 			};
 
-			$('body').delegate('#time-left, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+			// static-element tooltips
+			$('body').delegate('#time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
 			  var link = this,
 			      $link = $(this);
 
@@ -354,6 +375,7 @@ jQuery(function($){
 			
 			// Pause/resume toggle (queue)
 			$('#pause_resume').click(function(event) {
+				$('.queue-buttons-pause .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
 				if ( $(event.target).hasClass('sprite_q_pause_on') ) {
 					$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
 					$('#pause_int').html("");
@@ -406,26 +428,19 @@ jQuery(function($){
 			// NZB pause/resume individual toggle
 			$('#queue').delegate('.nzb_status','click',function(event){
 				var pid = $(this).parent().parent().attr('id');
-				if ($(this).hasClass('sprite_ql_grip_queued_on')) {
-					$(this).toggleClass('sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_paused_on');
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'queue', name:'pause', value: pid, apikey: $.plush.apikey}
-					});
-				} else if ($(this).hasClass('sprite_ql_grip_active')) {
-					$(this).toggleClass('sprite_ql_grip_active').toggleClass('sprite_ql_grip_paused_on');
-					$.ajax({
-						type: "POST",
-						url: "tapi",
-						data: {mode:'queue', name:'pause', value: pid, apikey: $.plush.apikey}
-					});
-				} else {
-					$(this).toggleClass('sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_paused_on');
+				if ($(this).hasClass('sprite_ql_grip_resume_on')) {
+					$(this).toggleClass('sprite_ql_grip_resume_on').toggleClass('sprite_ql_grip_pause_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
 						data: {mode:'queue', name:'resume', value: pid, apikey: $.plush.apikey}
+					});
+				} else {
+					$(this).toggleClass('sprite_ql_grip_resume_on').toggleClass('sprite_ql_grip_pause_on');
+					$.ajax({
+						type: "POST",
+						url: "tapi",
+						data: {mode:'queue', name:'pause', value: pid, apikey: $.plush.apikey}
 					});
 				}
 			});
@@ -495,12 +510,12 @@ jQuery(function($){
 			$('#queueTable tr').live('mouseover mouseout', function(event) {
 				if (event.type == 'mouseover') {
 					$(this).find('td .icon_nzb_remove').addClass('sprite_ql_cross');
-					$(this).find('td .sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued_on');
-					$(this).find('td .sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused_on');
+					$(this).find('td .sprite_ql_grip_resume').toggleClass('sprite_ql_grip_resume').toggleClass('sprite_ql_grip_resume_on');
+					$(this).find('td .sprite_ql_grip_pause').toggleClass('sprite_ql_grip_pause').toggleClass('sprite_ql_grip_pause_on');
 				} else {
 					$(this).find('td .icon_nzb_remove').removeClass('sprite_ql_cross');
-					$(this).find('td .sprite_ql_grip_queued_on').toggleClass('sprite_ql_grip_queued').toggleClass('sprite_ql_grip_queued_on');
-					$(this).find('td .sprite_ql_grip_paused_on').toggleClass('sprite_ql_grip_paused').toggleClass('sprite_ql_grip_paused_on');
+					$(this).find('td .sprite_ql_grip_resume_on').toggleClass('sprite_ql_grip_resume').toggleClass('sprite_ql_grip_resume_on');
+					$(this).find('td .sprite_ql_grip_pause_on').toggleClass('sprite_ql_grip_pause').toggleClass('sprite_ql_grip_pause_on');
 				}
 			});
 			$('#queueTable tr td .icon_nzb_remove').live('mouseover mouseout', function(event) {
@@ -769,6 +784,12 @@ jQuery(function($){
 				$.plush.RefreshHistory();
 			});
 			
+			// nzb retry, click 'add nzb' link to show upload form
+			$('#history .retry-nzbfile').live('click',function(){
+				$(this).hide().next('.retry-nzbfile-input').show();
+				return false;
+			});
+			
 			// NZB individual removal
 			$('#history').delegate('.sprite_ql_cross','click', function(event) {
 				if (!$.plush.confirmDeleteHistory || confirm($.plush.Tconfirmation)){
@@ -968,8 +989,13 @@ jQuery(function($){
 		// ***************************************************************
 		//	$.plush.SetQueueSpeedLimit(str) -- called from queue.tmpl
 		SetQueueSpeedLimit : function(str) {
+			$.plush.speedLimit = str;
 			if ($("#maxSpeed-option").val() != str && !$.plush.focusedOnSpeedChanger)
 				$("#maxSpeed-option").val(str);
+			if (str && str!="")
+				$('.queue-buttons-speed .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
+			else
+				$('.queue-buttons-speed .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
 		},
 		
 
@@ -978,6 +1004,10 @@ jQuery(function($){
 		SetQueueFinishAction : function(str) {
 			if ($("#onQueueFinish-option").val() != str)
 				$("#onQueueFinish-option").val(str);
+			if (str && str!="")
+				$('.sprite_q_queue').addClass('sprite_q_queue_on');
+			else
+				$('.sprite_q_queue').removeClass('sprite_q_queue_on');
 		},
 		
 
@@ -993,7 +1023,13 @@ jQuery(function($){
 				$('#pause_resume').removeClass('sprite_q_pause_on').addClass('sprite_q_pause');
 
 			// Pause interval
-			(str == "0") ? $('#pause_int').html("") : $('#pause_int').html(str);
+			if (str && str!="" && str!="0") {
+				$('#pause_int').html(str);
+				$('.queue-buttons-pause .sprite_q_menu_pausefor').addClass('sprite_q_menu_pausefor_on');
+			} else {
+				$('#pause_int').html("")
+				$('.queue-buttons-pause .sprite_q_menu_pausefor').removeClass('sprite_q_menu_pausefor_on');
+			}
 		},
 		
 
@@ -1002,14 +1038,11 @@ jQuery(function($){
 		SetQueueETAStats : function(speed,kbpersec,timeleft,eta) {
 
 			// ETA/speed stats at top of queue
-			if ($.plush.queuenoofslots < 1)
-				$('#stats_speed, #stats_eta').html('&mdash;');
-			else if (kbpersec < 1 && $.plush.paused)
-				$('#stats_speed, #stats_eta').html('&mdash;');
-			else {
-				$('#stats_speed').html(speed+"B/s");
+			if (kbpersec < 1 && $.plush.paused)
+				$('#stats_eta').html('&mdash;');
+			else
 				$('#stats_eta').html(timeleft);
-			}
+			$('#stats_speed').html(speed+"B/s");
 			$('#time-left').attr('title',eta);	// Tooltip on "time left"
 		},
 		

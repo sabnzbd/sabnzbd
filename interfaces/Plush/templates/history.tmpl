@@ -98,19 +98,21 @@ compl = datetime.datetime.fromtimestamp(float(line['completed'])).strftime(time_
                 <div class="icon_history_verbose main_sprite_container sprite_hv_$stage.name.lower()" title='<!--#for $action in $stage.actions#--><!--#echo $action.replace("'","&rsquo;") #--><br><!--#end for#-->'>&nbsp;</div>
             <!--#end if#-->
         <!--#end for#-->
+		<!--#if $line.retry#-->
+			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
+				<input type="hidden" value="$line.nzo_id" name="job" />
+				<input type="hidden" name="session" value="$session" />
+				<input type="submit" value="$T('button-retry')" />
+				<a href="#" class="retry-nzbfile"><small>$T('Plush-addnzb')</small></a>
+				<input type="file" class="retry-nzbfile-input" name="nzbfile" style="display:none" />
+			</form>
+		<!--#end if#-->
         <!--#if $line.action_line#-->
         <h3 class="hvMessageAction">&raquo;&nbsp;$line.action_line&nbsp;</h3>
         <!--#end if#-->
         <!--#if $line.fail_message#-->
         <h3 class="hvMessageFail">&raquo;&nbsp;$line.fail_message&nbsp;</h3>
         <!--#end if#-->
-		<!--#if $line.retry#-->
-			<form action="history/retry_pp" method="post" enctype="multipart/form-data">
-               <input type="file" name="nzbfile">
-			   <input type="hidden" value="$line.nzo_id" name="job">
-               <input type="hidden" name="session" value="$session">
-			<input type="submit" value="$T('button-retry')"></form>
-		<!--#end if#-->
     </td>
 
     <td class="options nowrap">
