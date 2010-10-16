@@ -1218,14 +1218,17 @@ def nzf_cmp_date(nzf1, nzf2):
     return nzf_cmp_name(nzf1, nzf2, name=False)
 
 
+RE_RAR = re.compile(r'(\.rar|\.r\d\d)', re.I)
+
 def nzf_cmp_name(nzf1, nzf2, name=True):
     # The comparison will sort .par2 files to the top of the queue followed by .rar files,
     # they will then be sorted by name.
     name1 = nzf_get_filename(nzf1)
     name2 = nzf_get_filename(nzf2)
 
-    is_par1 = 'vol' in name1 and '.par2' in name1
-    is_par2 = 'vol' in name2 and '.par2' in name2
+    # vol-pars go in front
+    is_par1 = '.vol' in name1 and '.par2' in name1
+    is_par2 = '.vol' in name2 and '.par2' in name2
     if is_par1 and not is_par2:
         return -1
     if is_par2 and not is_par1:
@@ -1234,11 +1237,15 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
     if name:
         # Prioritise .rar files above any other type of file (other than vol-par)
         # Useful for nzb streaming
-        if  '.rar' in name1 and not is_par2 and '.rar' not in name2:
+        m1 = RE_RAR.search(name1)
+        m2 = RE_RAR.search(name2)
+        if  m1 and not (is_par2 or m2):
             return -1
-        elif '.rar' in name2 and not is_par1 and '.rar' not in name1:
+        elif m2 and not (is_par1 or m1):
             return 1
-
+        # Force .rar to come before 'r00'
+        if m1 and m1.group(1) == '.rar': name1 = name1.replace('.rar', '.r//')
+        if m2 and m2.group(1) == '.rar': name2 = name2.replace('.rar', '.r//')
         return cmp(name1, name2)
     else:
         # Do date comparision
