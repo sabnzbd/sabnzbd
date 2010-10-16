@@ -1208,6 +1208,30 @@ def main():
             except:
                 pass
 
+    https_cert = sabnzbd.cfg.https_cert.get_path()
+    https_key = sabnzbd.cfg.https_key.get_path()
+    if enable_https:
+        # If either the HTTPS certificate or key do not exist, make some self-signed ones.
+        if not (https_cert and os.path.exists(https_cert)) or not (https_key and os.path.exists(https_key)):
+            create_https_certificates(https_cert, https_key)
+
+        if not (os.path.exists(https_cert) and os.path.exists(https_key)):
+            logging.warning(Ta('Disabled HTTPS because of missing CERT and KEY files'))
+            enable_https = False
+
+        if enable_https:
+            if https_port:
+                # Prepare an extra server for the HTTP port
+                http_server = _cpwsgi_server.CPWSGIServer()
+                http_server.bind_addr = (cherryhost, cherryport)
+                #secure_server.ssl_certificate = https_cert
+                #secure_server.ssl_private_key = https_key
+                adapter = _cpserver.ServerAdapter(cherrypy.engine, http_server, http_server.bind_addr)
+                adapter.subscribe()
+                cherryport = https_port
+            cherrypy.config.update({'server.ssl_certificate' : https_cert,
+                                    'server.ssl_private_key' : https_key })
+
     cherrypy.config.update({'server.environment': 'production',
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
@@ -1223,24 +1247,6 @@ def main():
                             'error_page.401': sabnzbd.misc.error_page_401
                            })
 
-    https_cert = sabnzbd.cfg.https_cert.get_path()
-    https_key = sabnzbd.cfg.https_key.get_path()
-    if enable_https:
-        # If either the HTTPS certificate or key do not exist, make some self-signed ones.
-        if not (https_cert and os.path.exists(https_cert)) or not (https_key and os.path.exists(https_key)):
-            create_https_certificates(https_cert, https_key)
-
-        if https_port and not (os.path.exists(https_cert) or os.path.exists(https_key)):
-            logging.warning(Ta('Disabled HTTPS because of missing CERT and KEY files'))
-            https_port = False
-
-        if https_port:
-            secure_server = _cpwsgi_server.CPWSGIServer()
-            secure_server.bind_addr = (cherryhost, https_port)
-            secure_server.ssl_certificate = https_cert
-            secure_server.ssl_private_key = https_key
-            adapter = _cpserver.ServerAdapter(cherrypy.engine, secure_server, secure_server.bind_addr)
-            adapter.subscribe()
 
     static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static')}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static')}
@@ -1303,8 +1309,8 @@ def main():
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
     if not autorestarted:
-        if enable_https and https_port:
-            launch_a_browser("https://%s:%s/sabnzbd" % (browserhost, https_port))
+        if enable_https:
+            launch_a_browser("https://%s:%s/sabnzbd" % (browserhost, cherryport))
         else:
             launch_a_browser("http://%s:%s/sabnzbd" % (browserhost, cherryport))
 

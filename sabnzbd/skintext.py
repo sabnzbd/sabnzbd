@@ -243,7 +243,7 @@ SKIN_TEXT = {
     'opt-notInstalled' : TT('not installed'),
     'explain-enable_https' : TT('Enable accessing the interface from a HTTPS address.'),
     'opt-https_port' : TT('HTTPS Port'),
-    'explain-https_port' : TT('Port SABnzbd should listen on for HTTPS communication.'),
+    'explain-https_port' : TT('If empty, the standard port will only listen to HTTPS.'),
     'opt-https_cert' : TT('HTTPS Certificate'),
     'explain-https_cert' : TT('File name or path to HTTPS Certificate.'),
     'opt-https_key' : TT('HTTPS Key'),
