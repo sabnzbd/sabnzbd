@@ -58,6 +58,7 @@ PANIC_FWALL = 4
 PANIC_OTHER = 5
 PANIC_XPORT = 6
 PANIC_SQLITE = 7
+PANIC_HOST = 8
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime('%p', time.localtime()))
@@ -511,6 +512,18 @@ MSG_ILL_PORT = r'''
     If you get this error message again, please try a different number.<br>
 '''
 
+MSG_BAD_HOST = r'''
+    SABnzbd needs a valid host address for its internal web server.<br>
+    You have specified an invalid address.<br>
+    Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>
+    <br>
+    Please restart SABnzbd with a proper host address.<br>
+    <br>
+    %s<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
+    <br>
+'''
+
 MSG_BAD_QUEUE = r'''
     SABnzbd detected saved data from an other SABnzbd version<br>
     but cannot re-use the data of the other program.<br><br>
@@ -583,6 +596,8 @@ def panic_message(panic, a=None, b=None):
             msg = MSG_BAD_FWALL % "<br>"
     elif panic == PANIC_SQLITE:
         msg = MSG_SQLITE
+    elif panic == PANIC_HOST:
+        msg = MSG_BAD_HOST % (os_str, prog_path, 'localhost', b)
     else:
         msg = MSG_OTHER % (a, b)
 
@@ -606,6 +621,9 @@ def panic_fwall(vista):
 
 def panic_port(host, port):
     launch_a_browser(panic_message(PANIC_PORT, host, port))
+
+def panic_host(host, port):
+    launch_a_browser(panic_message(PANIC_HOST, host, port))
 
 def panic_xport(host, port):
     launch_a_browser(panic_message(PANIC_XPORT, host, port))

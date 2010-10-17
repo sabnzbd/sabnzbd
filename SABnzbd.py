@@ -68,7 +68,7 @@ import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import get_user_shellfolders, launch_a_browser, real_path, \
-     check_latest_version, panic_tmpl, panic_port, panic_fwall, panic_sqlite, panic, exit_sab, \
+     check_latest_version, panic_tmpl, panic_port, panic_host, panic_fwall, panic_sqlite, panic, exit_sab, \
      panic_xport, notify, split_host, get_ext, create_https_certificates, \
      windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber
 import sabnzbd.scheduler as scheduler
@@ -289,12 +289,14 @@ def daemonize():
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
 
 #------------------------------------------------------------------------------
-def Bail_Out(browserhost, cherryport, access=False):
+def Bail_Out(browserhost, cherryport, err=''):
     """Abort program because of CherryPy troubles
     """
     logging.error(Ta('Failed to start web-interface'))
-    if access:
+    if '13' in err:
         panic_xport(browserhost, cherryport)
+    elif '49' in err:
+        panic_host(browserhost, cherryport)
     else:
         panic_port(browserhost, cherryport)
     sabnzbd.halt()
@@ -1296,8 +1298,7 @@ def main():
                 exit_sab(2)
         else:
             logging.debug("Failed to start web-interface: ", exc_info = True)
-            # When error 13 occurs, we have no access rights
-            Bail_Out(browserhost, cherryport, '13' in str(error))
+            Bail_Out(browserhost, cherryport, str(error))
     except socket.error, error:
         logging.debug("Failed to start web-interface: ", exc_info = True)
         Bail_Out(browserhost, cherryport, access=True)
