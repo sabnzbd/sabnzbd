@@ -475,13 +475,13 @@ def set_serv_parms(service, args):
 #
 ################################################################################
 def MSG_BAD_NEWS():
-    return Ta(r'''
+    return r'''
     <html>
     <head>
-    <title>Problem with %s %s</title>
+    <title>''' + Ta('Problem with') + ''' %s %s</title>
     </head>
     <body>
-    <h1><font color="#0000FF">Welcome to %s %s</font></h1>
+    <h1><font color="#0000FF"> %s %s</font></h1>
     <p align="center">&nbsp;</p>
     <p align="center"><font size="5">
     <blockquote>
@@ -490,7 +490,7 @@ def MSG_BAD_NEWS():
     <br>%s<br>
     </body>
 </html>
-''')
+'''
 
 def MSG_BAD_FWALL():
     return Ta(r'''
@@ -507,13 +507,13 @@ def MSG_BAD_PORT():
     Port %s on %s was tried , but it is not available.<br>
     Some other software uses the port or SABnzbd is already running.<br>
     <br>
-    Please restart SABnzbd with a different port number.<br>
+    Please restart SABnzbd with a different port number.''') + \
+    '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
-    <br>
-    If you get this error message again, please try a different number.<br>
-''')
+    <br>''' + \
+    Ta(r'If you get this error message again, please try a different number.<br>')
 
 def MSG_ILL_PORT():
     return Ta(r'''
@@ -521,13 +521,13 @@ def MSG_ILL_PORT():
     Port %s on %s was tried , but the account used for SABnzbd has no permission to use it.<br>
     On OSX and Linux systems, normal users must use ports above 1023.<br>
     <br>
-    Please restart SABnzbd with a different port number.<br>
+    Please restart SABnzbd with a different port number.''') + \
+    '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
-    <br>
-    If you get this error message again, please try a different number.<br>
-''')
+    <br>''' + \
+    Ta(r'If you get this error message again, please try a different number.<br>')
 
 def MSG_BAD_HOST():
     return Ta(r'''
@@ -535,12 +535,13 @@ def MSG_BAD_HOST():
     You have specified an invalid address.<br>
     Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>
     <br>
-    Please restart SABnzbd with a proper host address.<br>
+    Please restart SABnzbd with a proper host address.''') + \
+    '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>
-''')
+'''
 
 def MSG_BAD_QUEUE():
     return Ta(r'''
@@ -549,12 +550,13 @@ def MSG_BAD_QUEUE():
     You may want to finish your queue first with the other program.<br><br>
     After that, start this program with the "--clean" option.<br>
     This will erase the current queue and history!<br>
-    SABnzbd read the file "%s".<br>
+    SABnzbd read the file "%s".''') + \
+    '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --clean<br>
     <br>
-''')
+'''
 
 def MSG_BAD_TEMPL():
     return Ta(r'''
@@ -564,20 +566,15 @@ def MSG_BAD_TEMPL():
 ''')
 
 def MSG_OTHER():
-    return Ta(r'''
-    SABnzbd detected a fatal error:<br>
-    %s<br><br>
-    %s<br>
-''')
+    return Ta('SABnzbd detected a fatal error:') + '<br>%s<br><br>%s<br>'
 
 def MSG_OLD_QUEUE():
     return Ta(r'''
     SABnzbd detected a Queue and History from an older (0.4.x) release.<br><br>
     Both queue and history will be ignored and may get lost!<br><br>
     You may choose to stop SABnzbd and finish the queue with the older program.<br><br>
-    Click OK to continue to SABnzbd<br><br>
-    <FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="OK"/></FORM>
-''')
+    Click OK to proceed to SABnzbd''') + \
+    ('''<br><br><FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="%s"/></FORM>''' % Ta('OK'))
 
 def MSG_SQLITE():
     return Ta(r'''
