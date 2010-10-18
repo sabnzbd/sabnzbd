@@ -153,7 +153,7 @@ complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False,
                          apply_umask=True, validation=validate_notempty)
 script_dir = OptionDir('misc', 'script_dir', create=True)
 nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
-cache_dir = OptionDir('misc', 'cache_dir', 'cache', validation=validate_safedir)
+cache_dir = OptionDir('misc', 'cache_dir', 'cache', create=False, validation=validate_safedir)
 admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_safedir)
 #log_dir = OptionDir('misc', 'log_dir', 'logs')
 dirscan_dir = OptionDir('misc', 'dirscan_dir', create=True)
