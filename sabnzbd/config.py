@@ -308,6 +308,7 @@ class OptionPassword(Option):
 
 @synchronized(CONFIG_LOCK)
 def add_to_database(section, keyword, object):
+    """ add object as secion/keyword to INI database """
     global database
     if section not in database:
         database[section] = {}
@@ -316,6 +317,7 @@ def add_to_database(section, keyword, object):
 
 @synchronized(CONFIG_LOCK)
 def delete_from_database(section, keyword):
+    """ Remove section/keyword from INI database """
     global database, CFG, modified
     del database[section][keyword]
     try:
@@ -899,6 +901,8 @@ def validate_notempty(root, value, default):
 
 
 def create_api_key():
+    """ Return a new randomized API_KEY
+    """
     import time
     try:
         from hashlib import md5
@@ -925,7 +929,7 @@ _FIXES = \
 )
 
 def compatibility_fix(cf):
-    # Convert obsolete entries
+    """ Convert obsolete INI entries """
     for item in _FIXES:
         old, new = item
         try:

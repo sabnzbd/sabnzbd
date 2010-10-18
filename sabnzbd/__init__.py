@@ -404,7 +404,8 @@ def guard_pause_on_pp():
         downloader.unidle_downloader()
 
 def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None):
-
+    """ Add NZB based on newzbin report number, attributes optional
+    """
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -421,6 +422,8 @@ def add_msgid(msgid, pp=None, script=None, cat=None, priority=None, nzbname=None
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
+    """ Add NZB based on a URL, attributes optional
+    """
     if 'http' not in url:
         return
     if pp and pp=="-1": pp = None
@@ -433,6 +436,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
 
 
 def save_state(flag=False):
+    """ Save all internal bookkeeping to disk """
     ArticleCache.do.flush_articles()
     nzbqueue.save()
     BPSMeter.do.save()
@@ -445,12 +449,16 @@ def save_state(flag=False):
         load_admin(TERM_FLAG_FILE, remove=True)
 
 def pause_all():
+    """ Pause all activities than cause disk access
+    """
     global PAUSED_ALL
     PAUSED_ALL = True
     sabnzbd.downloader.pause_downloader()
     logging.debug('PAUSED_ALL active')
 
 def unpause_all():
+    """ Resume all activcities
+    """
     global PAUSED_ALL
     PAUSED_ALL = False
     sabnzbd.downloader.resume_downloader()
@@ -509,6 +517,9 @@ def save_compressed(folder, filename, data):
 ################################################################################
 @synchronized_CV
 def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False):
+    """ Add disk-based NZB file, optional attributes,
+        'reuse' flag will suppress duplicate detection
+    """
     if pp and pp=="-1": pp = None
     if script and script.lower()=='default': script = None
     if cat and cat.lower()=='default': cat = None
@@ -555,6 +566,8 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
 ## Unsynchronized methods                                                     ##
 ################################################################################
 def enable_server(server):
+    """ Enable server (scheduler only)
+    """
     try:
         config.get_config('servers', server).enable.set(1)
     except:
@@ -565,7 +578,8 @@ def enable_server(server):
 
 
 def disable_server(server):
-    """ Disable server """
+    """ Disable server (scheduler only)
+    """
     try:
         config.get_config('servers', server).enable.set(0)
     except:
@@ -576,6 +590,8 @@ def disable_server(server):
 
 
 def system_shutdown():
+    """ Shutdown system after halting download and saving bookkeeping
+    """
     logging.info("Performing system shutdown")
 
     Thread(target=halt).start()
@@ -591,6 +607,7 @@ def system_shutdown():
 
 
 def system_hibernate():
+    """ Hibernate system """
     logging.info("Performing system hybernation")
     if sabnzbd.WIN32:
         misc.win_hibernate()
@@ -601,6 +618,7 @@ def system_hibernate():
 
 
 def system_standby():
+    """ Standby system """
     logging.info("Performing system standby")
     if sabnzbd.WIN32:
         misc.win_standby()
@@ -611,6 +629,7 @@ def system_standby():
 
 
 def shutdown_program():
+    """ Stop program after halting and saving """
     logging.info("Performing sabnzbd shutdown")
     Thread(target=halt).start()
     while __INITIALIZED__:
@@ -667,6 +686,7 @@ def change_queue_complete_action(action, new=True):
 
 
 def run_script(script):
+    """ Run a user script (queue complete only) """
     command = os.path.join(cfg.script_dir.get_path(), script)
     stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
     logging.info('Spawning external command %s', command)
@@ -692,6 +712,8 @@ def keep_awake():
 
 
 def CheckFreeSpace():
+    """ Check if enough disk space is free, if not pause downloader and send email
+    """
     if cfg.download_free() and not downloader.paused():
         if misc.diskfree(cfg.download_dir.get_path()) < cfg.download_free.get_float() / GIGI:
             logging.warning(Ta('Too little diskspace forcing PAUSE'))
@@ -728,6 +750,7 @@ def get_new_id(prefix, folder, check_list=None):
 
 @synchronized(IO_LOCK)
 def save_data(data, _id, path, do_pickle = True, silent=False):
+    """ Save data to a diskfile """
     if not silent:
         logging.debug("Saving data for %s in %s", _id, path)
     path = os.path.join(path, _id)
@@ -747,6 +770,7 @@ def save_data(data, _id, path, do_pickle = True, silent=False):
 
 @synchronized(IO_LOCK)
 def load_data(_id, path, remove=True, do_pickle=True, silent=False):
+    """ Read data from disk file """
     path = os.path.join(path, _id)
 
     if not os.path.exists(path):
@@ -776,6 +800,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
 
 @synchronized(IO_LOCK)
 def remove_data(_id, path):
+    """ Remove admin file """
     path = os.path.join(path, _id)
     try:
         if os.path.exists(path):

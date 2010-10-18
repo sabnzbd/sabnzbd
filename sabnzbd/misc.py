@@ -74,6 +74,8 @@ def time_format(format):
 
 #------------------------------------------------------------------------------
 def safe_lower(txt):
+    """ Return lowercased string. Return '' for None
+    """
     if txt:
         return txt.lower()
     else:
@@ -301,6 +303,9 @@ def create_all_dirs(path, umask=False):
 # Real_Path                                                                    #
 ################################################################################
 def real_path(loc, path):
+    """ When 'path' is relative, return normalized join of 'loc' and 'path'
+        When 'path' is absolute, return normalized path
+    """
     if not ((sabnzbd.WIN32 and len(path)>1 and path[0].isalpha() and path[1] == ':') or \
             (path and (path[0] == '/' or path[0] == '\\'))
            ):
@@ -312,6 +317,12 @@ def real_path(loc, path):
 # Create_Real_Path                                                             #
 ################################################################################
 def create_real_path(name, loc, path, umask=False):
+    """ When 'path' is relative, create join of 'loc' and 'path'
+        When 'path' is absolute, create normalized path
+        'name' is used for logging.
+        Optional 'umask' will be applied.
+        Returns ('success', 'full path')
+    """
     if path:
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
@@ -336,6 +347,8 @@ def create_real_path(name, loc, path, umask=False):
 ################################################################################
 
 def get_user_shellfolders():
+    """ Return a dictionary with Windows Special Folders
+    """
     import _winreg
     values = {}
 
@@ -858,6 +871,8 @@ def same_file(a, b):
 
 #------------------------------------------------------------------------------
 def exit_sab(value):
+    """ Leave the program after flushing stderr/stdout
+    """
     sys.stderr.flush()
     sys.stdout.flush()
     sys.exit(value)
@@ -980,6 +995,8 @@ def move_to_path(path, new_path, unique=True):
 
 @synchronized(DIR_LOCK)
 def cleanup_empty_directories(path):
+    """ Remove all empty folders inside (and including) 'path'
+    """
     path = os.path.normpath(path)
     while 1:
         repeat = False
@@ -1119,12 +1136,16 @@ def on_cleanup_list(filename, skip_nzb=False):
     return False
 
 def get_ext(filename):
+    """ Return lowercased file extension
+    """
     try:
         return os.path.splitext(filename)[1].lower()
     except:
         return ''
 
 def get_filename(path):
+    """ Return path without the file extension
+    """
     try:
         return os.path.split(path)[1]
     except:
@@ -1166,13 +1187,16 @@ def format_time_string(seconds, days=0):
 
 
 def s_returner(item, value):
+    """ Return a plural form of 'item', based on 'value' (english only)
+    """
     if value == 1:
         return Tx(item)
     else:
         return Tx(item + 's')
 
 def int_conv(value):
-    """Safe conversion to int"""
+    """ Safe conversion to int (can handle None)
+    """
     try:
         value = int(value)
     except:
@@ -1187,12 +1211,16 @@ try:
     import statvfs
     # posix diskfree
     def diskfree(_dir):
+        """ Return amount of free diskspace in GBytes
+        """
         try:
             s = os.statvfs(_dir)
             return (s[statvfs.F_BAVAIL] * s[statvfs.F_FRSIZE]) / GIGI
         except OSError:
             return 0.0
     def disktotal(_dir):
+        """ Return amount of total diskspace in GBytes
+        """
         try:
             s = os.statvfs(_dir)
             return (s[statvfs.F_BLOCKS] * s[statvfs.F_FRSIZE]) / GIGI
@@ -1207,12 +1235,16 @@ except AttributeError:
         pass
     # windows diskfree
     def diskfree(_dir):
+        """ Return amount of free diskspace in GBytes
+        """
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
             return available / GIGI
         except:
             return 0.0
     def disktotal(_dir):
+        """ Return amount of free diskspace in GBytes
+        """
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
             return disk_size / GIGI
@@ -1221,6 +1253,8 @@ except AttributeError:
 
 
 def create_https_certificates(ssl_cert, ssl_key):
+    """ Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
+    """
     try:
         from OpenSSL import crypto
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
@@ -1311,6 +1345,8 @@ def ip_extract():
 # Power management for Windows
 
 def win_hibernate():
+    """ Hibernate Windows system, returns after wakeup
+    """
     try:
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
         time.sleep(10)
@@ -1320,6 +1356,8 @@ def win_hibernate():
 
 
 def win_standby():
+    """ Standby Windows system, returns after wakeup
+    """
     try:
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
         time.sleep(10)
@@ -1329,6 +1367,8 @@ def win_standby():
 
 
 def win_shutdown():
+    """ Shutdown Windows system, never returns
+    """
     try:
         import win32security
         import win32api
@@ -1348,6 +1388,8 @@ def win_shutdown():
 # Power management for OSX
 
 def osx_shutdown():
+    """ Shutdown OSX system, never returns
+    """
     try:
         subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
     except:
@@ -1357,6 +1399,8 @@ def osx_shutdown():
 
 
 def osx_standby():
+    """ Make OSX system sleep, returns after wakeup
+    """
     try:
         subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
         time.sleep(10)
@@ -1366,6 +1410,8 @@ def osx_standby():
 
 
 def osx_hibernate():
+    """ Make OSX system sleep, returns after wakeup
+    """
     osx_standby()
 
 
@@ -1418,6 +1464,8 @@ def _get_systemproxy(method):
 
 
 def linux_shutdown():
+    """ Make Linux system shutdown, never returns
+    """
     if not HAVE_DBUS: os._exit(0)
 
     proxy, interface = _get_sessionproxy()
@@ -1435,6 +1483,8 @@ def linux_shutdown():
 
 
 def linux_hibernate():
+    """ Make Linux system go into hibernate, returns after wakeup
+    """
     if not HAVE_DBUS: return
 
     proxy, interface = _get_sessionproxy()
@@ -1452,6 +1502,8 @@ def linux_hibernate():
 
 
 def linux_standby():
+    """ Make Linux system go into standby, returns after wakeup
+    """
     if not HAVE_DBUS: return
 
     proxy, interface = _get_sessionproxy()
@@ -1511,7 +1563,8 @@ def remove_dir(path):
 
 
 def remove_all(path, pattern='*'):
-    """ Remove folder its content """
+    """ Remove folder and all its content
+    """
     if os.path.exists(path):
         for f in globber(path, pattern):
             os.remove(f)

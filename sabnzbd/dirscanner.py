@@ -248,14 +248,17 @@ class DirScanner(threading.Thread):
         self.trigger = True
 
     def stop(self):
+        """ Stop the dir scanner """
         self.save()
         logging.info('Dirscanner shutting down')
         self.shutdown = True
 
     def save(self):
+        """ Save dir scanner bookkeeping """
         sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), sabnzbd.SCAN_FILE_NAME)
 
     def run(self):
+        """ Start the scanner """
         logging.info('Dirscanner starting up')
         self.shutdown = False
 
@@ -271,6 +274,7 @@ class DirScanner(threading.Thread):
                 self.scan()
 
     def scan(self):
+        """ Do one scan of the watched folder """
         def run_dir(folder, catdir):
             try:
                 files = os.listdir(folder)
