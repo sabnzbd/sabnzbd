@@ -1144,7 +1144,7 @@ def main():
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
 
-    if not sabnzbd.WIN_SERVICE and not sabnzbd.DARWIN:
+    if not sabnzbd.WIN_SERVICE and not getattr(sys, 'frozen', None) == 'macosx_app':
         signal.signal(signal.SIGINT, sabnzbd.sig_handler)
         signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 

@@ -461,7 +461,8 @@ def set_serv_parms(service, args):
 # including panic messages
 #
 ################################################################################
-MSG_BAD_NEWS = r'''
+def MSG_BAD_NEWS():
+    return Ta(r'''
     <html>
     <head>
     <title>Problem with %s %s</title>
@@ -476,17 +477,19 @@ MSG_BAD_NEWS = r'''
     <br>%s<br>
     </body>
 </html>
-'''
+''')
 
-MSG_BAD_FWALL = r'''
+def MSG_BAD_FWALL():
+    return Ta(r'''
     SABnzbd is not compatible with some software firewalls.<br>
     %s<br>
     Sorry, but we cannot solve this incompatibility right now.<br>
     Please file a complaint at your firewall supplier.<br>
     <br>
-'''
+''')
 
-MSG_BAD_PORT = r'''
+def MSG_BAD_PORT():
+    return Ta(r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
     Port %s on %s was tried , but it is not available.<br>
     Some other software uses the port or SABnzbd is already running.<br>
@@ -497,9 +500,10 @@ MSG_BAD_PORT = r'''
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>
     If you get this error message again, please try a different number.<br>
-'''
+''')
 
-MSG_ILL_PORT = r'''
+def MSG_ILL_PORT():
+    return Ta(r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
     Port %s on %s was tried , but the account used for SABnzbd has no permission to use it.<br>
     On OSX and Linux systems, normal users must use ports above 1023.<br>
@@ -510,9 +514,10 @@ MSG_ILL_PORT = r'''
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>
     If you get this error message again, please try a different number.<br>
-'''
+''')
 
-MSG_BAD_HOST = r'''
+def MSG_BAD_HOST():
+    return Ta(r'''
     SABnzbd needs a valid host address for its internal web server.<br>
     You have specified an invalid address.<br>
     Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>
@@ -522,9 +527,10 @@ MSG_BAD_HOST = r'''
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>
-'''
+''')
 
-MSG_BAD_QUEUE = r'''
+def MSG_BAD_QUEUE():
+    return Ta(r'''
     SABnzbd detected saved data from an other SABnzbd version<br>
     but cannot re-use the data of the other program.<br><br>
     You may want to finish your queue first with the other program.<br><br>
@@ -535,74 +541,78 @@ MSG_BAD_QUEUE = r'''
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --clean<br>
     <br>
-'''
+''')
 
-MSG_BAD_TEMPL = r'''
+def MSG_BAD_TEMPL():
+    return Ta(r'''
     SABnzbd cannot find its web interface files in %s.<br>
     Please install the program again.<br>
     <br>
-'''
+''')
 
-MSG_OTHER = r'''
+def MSG_OTHER():
+    return Ta(r'''
     SABnzbd detected a fatal error:<br>
     %s<br><br>
     %s<br>
-'''
+''')
 
-MSG_OLD_QUEUE = r'''
+def MSG_OLD_QUEUE():
+    return Ta(r'''
     SABnzbd detected a Queue and History from an older (0.4.x) release.<br><br>
     Both queue and history will be ignored and may get lost!<br><br>
     You may choose to stop SABnzbd and finish the queue with the older program.<br><br>
     Click OK to continue to SABnzbd<br><br>
     <FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="OK"/></FORM>
-'''
+''')
 
-MSG_SQLITE = r'''
+def MSG_SQLITE():
+    return Ta(r'''
     SABnzbd detected that the file sqlite3.dll is missing.<br><br>
     Some poorly designed virus-scanners remove this file.<br>
     Please check your virus-scanner, try to re-install SABnzbd and complain to your virus-scanner vendor.<br>
     <br>
-'''
+''')
 
 def panic_message(panic, a=None, b=None):
     """Create the panic message from templates
     """
     if sabnzbd.WIN32:
-        os_str = 'Press Startkey+R and type the line (example):'
+        os_str = Ta('Press Startkey+R and type the line (example):')
         prog_path = '"%s"' % sabnzbd.MY_FULLNAME
     else:
-        os_str = 'Open a Terminal window and type the line (example):'
+        os_str = Ta('Open a Terminal window and type the line (example):')
         prog_path = sabnzbd.MY_FULLNAME
 
     if panic == PANIC_PORT:
         newport = int(b) + 1
         newport = "%s" % newport
-        msg = MSG_BAD_PORT % (b, a, os_str, prog_path, a, newport)
+        msg = MSG_BAD_PORT() % (b, a, os_str, prog_path, a, newport)
     elif panic == PANIC_XPORT:
         if int(b) < 1023:
             newport = 1024
         else:
             newport = int(b) + 1
         newport = "%s" % newport
-        msg = MSG_ILL_PORT % (b, a, os_str, prog_path, a, newport)
+        msg = MSG_ILL_PORT() % (b, a, os_str, prog_path, a, newport)
     elif panic == PANIC_TEMPL:
-        msg = MSG_BAD_TEMPL % a
+        msg = MSG_BAD_TEMPL() % a
     elif panic == PANIC_QUEUE:
-        msg = MSG_BAD_QUEUE % (a, os_str, prog_path)
+        msg = MSG_BAD_QUEUE() % (a, os_str, prog_path)
     elif panic == PANIC_FWALL:
         if a:
-            msg = MSG_BAD_FWALL % "It is likely that you are using ZoneAlarm on Vista.<br>"
+            msg = MSG_BAD_FWALL() % Ta('It is likely that you are using ZoneAlarm on Vista.<br>')
         else:
-            msg = MSG_BAD_FWALL % "<br>"
+            msg = MSG_BAD_FWALL() % "<br>"
     elif panic == PANIC_SQLITE:
-        msg = MSG_SQLITE
+        msg = MSG_SQLITE()
     elif panic == PANIC_HOST:
-        msg = MSG_BAD_HOST % (os_str, prog_path, 'localhost', b)
+        msg = MSG_BAD_HOST() % (os_str, prog_path, 'localhost', b)
     else:
-        msg = MSG_OTHER % (a, b)
+        msg = MSG_OTHER() % (a, b)
 
-    msg = MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__,
-                          msg, 'Program did not start!')
+    msg = MSG_BAD_NEWS() % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__,
+                          msg, Ta('Program did not start!'))
 
     if sabnzbd.WIN_SERVICE:
         sabnzbd.WIN_SERVICE.ErrLogger('Panic exit', msg)
@@ -643,7 +653,7 @@ def panic_old_queue():
     return MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg, '')
 
 def panic(reason, remedy=""):
-    print "\nFatal error:\n  %s\n%s" % (reason, remedy)
+    print "\n%s:\n  %s\n%s" % (Ta('Fatal error'), reason, remedy)
     launch_a_browser(panic_message(PANIC_OTHER, reason, remedy))
 
 
@@ -667,17 +677,19 @@ def launch_a_browser(url, force=False):
 
 def error_page_401(status, message, traceback, version):
     """ Custom handler for 401 error """
+    title = T('Access denied')
+    body = T('Error %s: You need to provide a valid username and password.') % status
     return r'''
 <html>
     <head>
-    <title>Access denied</title>
+    <title>%s</title>
     </head>
     <body>
     <br/><br/>
-    <font color="#0000FF">Error %s: You need to provide a valid username and password.</font>
+    <font color="#0000FF">%s</font>
     </body>
 </html>
-''' % status
+''' % (title, body)
 
 
 
