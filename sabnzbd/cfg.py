@@ -143,6 +143,7 @@ date_categories = OptionStr('misc', 'date_categories', ['tv'])
 
 matrix_username = OptionStr('nzbmatrix', 'username')
 matrix_apikey = OptionStr('nzbmatrix', 'apikey')
+matrix_del_bookmark = OptionBool('nzbmatrix', 'del_bookmark', True)
 
 configlock = OptionBool('misc', 'config_lock', 0)
 

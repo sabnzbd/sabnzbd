@@ -729,9 +729,10 @@ class NzbQueue(TryList):
         lst = []
         for nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
-            url = nzo.url
-            if nzo.futuretype and url.lower().startswith('http'):
-                lst.append((url, nzo))
+            if nzo.future_type:
+                url = nzo.url
+                if nzo.futuretype and url.lower().startswith('http'):
+                    lst.append((url, nzo))
         return lst
 
     def get_msgids(self):
