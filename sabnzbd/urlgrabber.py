@@ -136,7 +136,7 @@ class URLGrabber(Thread):
 
                 if matrix_id:
                     fn, msg, retry = _analyse_matrix(fn, matrix_id)
-                    category = map_matrix(category)
+                    category = _MATRIX_MAP.get(category, category)
                 else:
                     msg = ''
                     retry = True
@@ -260,29 +260,56 @@ def _analyse_matrix(fn, matrix_id):
 
 
 #------------------------------------------------------------------------------
-_MATRIX_MAP = None
-
-def map_matrix(index):
-    """ Translate nzbmatrix category_id to category text """
-
-    if _MATRIX_MAP is None:
-        read_matrix_cats()
-    return _MATRIX_MAP.get(index, index)
-
-
-def read_matrix_cats():
-    """ Read mapping of NzbMatrix categories """
-    global _MATRIX_MAP
-
-    _MATRIX_MAP = {}
-    path = os.path.join(sabnzbd.DIR_PROG, 'nzbmatrix.txt')
-    try:
-        for line in open(path, 'r'):
-            try:
-                number, text = line.split(',', 1)
-                _MATRIX_MAP[number] = text.strip(', \n\r')
-            except ValueError:
-                pass
-    except IOError:
-        logging.warning('Cannot open %s', path)
-
+_MATRIX_MAP = {
+'28' : 'anime.all',
+'20' : 'apps.linux',
+'19' : 'apps.mac',
+'21' : 'apps.other',
+'18' : 'apps.pc',
+'55' : 'apps.phone',
+'52' : 'apps.portable',
+'53' : 'documentaries.hd',
+'9'  : 'documentaries.std',
+'16' : 'games.dreamcast',
+'45' : 'games.ds',
+'46' : 'games.gamecube',
+'17' : 'games.other',
+'10' : 'games.pc',
+'15' : 'games.ps1',
+'11' : 'games.ps2',
+'43' : 'games.ps3',
+'12' : 'games.psp',
+'44' : 'games.wii',
+'51' : 'games.wii vc',
+'13' : 'games.xbox',
+'14' : 'games.xbox360',
+'56' : 'games.xbox360 (other)',
+'54' : 'movies.brrip',
+'2'  : 'movies.divx/xvid',
+'1'  : 'movies.dvd',
+'50' : 'movies.hd (image)',
+'42' : 'movies.hd (x264)',
+'4'  : 'movies.other',
+'3'  : 'movies.svcd/vcd',
+'48' : 'movies.wmv-hd',
+'24' : 'music.dvd',
+'23' : 'music.lossless',
+'22' : 'music.mp3, albums',
+'47' : 'music.mp3, singles',
+'27' : 'music.other',
+'25' : 'music.video',
+'49' : 'other.audio, books',
+'36' : 'other.e-books',
+'33' : 'other.emulation',
+'39' : 'other.extra, pars/fills',
+'37' : 'other.images',
+'38' : 'other.mobile, phone',
+'40' : 'other.other',
+'34' : 'other.ppc/pda',
+'26' : 'other.radio',
+'6'  : 'tv.divx/xvid',
+'5'  : 'tv.dvd',
+'41' : 'tv.hd',
+'8'  : 'tv.other',
+'7'  : 'tv.sport/ent'
+}
