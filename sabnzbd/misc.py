@@ -58,6 +58,7 @@ PANIC_FWALL = 4
 PANIC_OTHER = 5
 PANIC_XPORT = 6
 PANIC_SQLITE = 7
+PANIC_HOST = 8
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime('%p', time.localtime()))
@@ -73,6 +74,8 @@ def time_format(format):
 
 #------------------------------------------------------------------------------
 def safe_lower(txt):
+    """ Return lowercased string. Return '' for None
+    """
     if txt:
         return txt.lower()
     else:
@@ -300,6 +303,9 @@ def create_all_dirs(path, umask=False):
 # Real_Path                                                                    #
 ################################################################################
 def real_path(loc, path):
+    """ When 'path' is relative, return normalized join of 'loc' and 'path'
+        When 'path' is absolute, return normalized path
+    """
     if not ((sabnzbd.WIN32 and len(path)>1 and path[0].isalpha() and path[1] == ':') or \
             (path and (path[0] == '/' or path[0] == '\\'))
            ):
@@ -311,6 +317,12 @@ def real_path(loc, path):
 # Create_Real_Path                                                             #
 ################################################################################
 def create_real_path(name, loc, path, umask=False):
+    """ When 'path' is relative, create join of 'loc' and 'path'
+        When 'path' is absolute, create normalized path
+        'name' is used for logging.
+        Optional 'umask' will be applied.
+        Returns ('success', 'full path')
+    """
     if path:
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
@@ -335,6 +347,8 @@ def create_real_path(name, loc, path, umask=False):
 ################################################################################
 
 def get_user_shellfolders():
+    """ Return a dictionary with Windows Special Folders
+    """
     import _winreg
     values = {}
 
@@ -460,13 +474,14 @@ def set_serv_parms(service, args):
 # including panic messages
 #
 ################################################################################
-MSG_BAD_NEWS = r'''
+def MSG_BAD_NEWS():
+    return r'''
     <html>
     <head>
-    <title>Problem with %s %s</title>
+    <title>''' + Ta('Problem with') + ''' %s %s</title>
     </head>
     <body>
-    <h1><font color="#0000FF">Welcome to %s %s</font></h1>
+    <h1><font color="#0000FF"> %s %s</font></h1>
     <p align="center">&nbsp;</p>
     <p align="center"><font size="5">
     <blockquote>
@@ -477,117 +492,137 @@ MSG_BAD_NEWS = r'''
 </html>
 '''
 
-MSG_BAD_FWALL = r'''
+def MSG_BAD_FWALL():
+    return Ta(r'''
     SABnzbd is not compatible with some software firewalls.<br>
     %s<br>
     Sorry, but we cannot solve this incompatibility right now.<br>
     Please file a complaint at your firewall supplier.<br>
     <br>
-'''
+''')
 
-MSG_BAD_PORT = r'''
+def MSG_BAD_PORT():
+    return Ta(r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
     Port %s on %s was tried , but it is not available.<br>
     Some other software uses the port or SABnzbd is already running.<br>
     <br>
-    Please restart SABnzbd with a different port number.<br>
+    Please restart SABnzbd with a different port number.''') + \
+    '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
-    <br>
-    If you get this error message again, please try a different number.<br>
-'''
+    <br>''' + \
+    Ta(r'If you get this error message again, please try a different number.<br>')
 
-MSG_ILL_PORT = r'''
+def MSG_ILL_PORT():
+    return Ta(r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
     Port %s on %s was tried , but the account used for SABnzbd has no permission to use it.<br>
     On OSX and Linux systems, normal users must use ports above 1023.<br>
     <br>
-    Please restart SABnzbd with a different port number.<br>
+    Please restart SABnzbd with a different port number.''') + \
+    '''<br>
+    <br>
+    %s<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
+    <br>''' + \
+    Ta(r'If you get this error message again, please try a different number.<br>')
+
+def MSG_BAD_HOST():
+    return Ta(r'''
+    SABnzbd needs a valid host address for its internal web server.<br>
+    You have specified an invalid address.<br>
+    Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>
+    <br>
+    Please restart SABnzbd with a proper host address.''') + \
+    '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>
-    If you get this error message again, please try a different number.<br>
 '''
 
-MSG_BAD_QUEUE = r'''
+def MSG_BAD_QUEUE():
+    return Ta(r'''
     SABnzbd detected saved data from an other SABnzbd version<br>
     but cannot re-use the data of the other program.<br><br>
     You may want to finish your queue first with the other program.<br><br>
     After that, start this program with the "--clean" option.<br>
     This will erase the current queue and history!<br>
-    SABnzbd read the file "%s".<br>
+    SABnzbd read the file "%s".''') + \
+    '''<br>
     <br>
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --clean<br>
     <br>
 '''
 
-MSG_BAD_TEMPL = r'''
+def MSG_BAD_TEMPL():
+    return Ta(r'''
     SABnzbd cannot find its web interface files in %s.<br>
     Please install the program again.<br>
     <br>
-'''
+''')
 
-MSG_OTHER = r'''
-    SABnzbd detected a fatal error:<br>
-    %s<br><br>
-    %s<br>
-'''
+def MSG_OTHER():
+    return Ta('SABnzbd detected a fatal error:') + '<br>%s<br><br>%s<br>'
 
-MSG_OLD_QUEUE = r'''
+def MSG_OLD_QUEUE():
+    return Ta(r'''
     SABnzbd detected a Queue and History from an older (0.4.x) release.<br><br>
     Both queue and history will be ignored and may get lost!<br><br>
     You may choose to stop SABnzbd and finish the queue with the older program.<br><br>
-    Click OK to continue to SABnzbd<br><br>
-    <FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="OK"/></FORM>
-'''
+    Click OK to proceed to SABnzbd''') + \
+    ('''<br><br><FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="%s"/></FORM>''' % Ta('OK'))
 
-MSG_SQLITE = r'''
+def MSG_SQLITE():
+    return Ta(r'''
     SABnzbd detected that the file sqlite3.dll is missing.<br><br>
     Some poorly designed virus-scanners remove this file.<br>
     Please check your virus-scanner, try to re-install SABnzbd and complain to your virus-scanner vendor.<br>
     <br>
-'''
+''')
 
 def panic_message(panic, a=None, b=None):
     """Create the panic message from templates
     """
     if sabnzbd.WIN32:
-        os_str = 'Press Startkey+R and type the line (example):'
+        os_str = Ta('Press Startkey+R and type the line (example):')
         prog_path = '"%s"' % sabnzbd.MY_FULLNAME
     else:
-        os_str = 'Open a Terminal window and type the line (example):'
+        os_str = Ta('Open a Terminal window and type the line (example):')
         prog_path = sabnzbd.MY_FULLNAME
 
     if panic == PANIC_PORT:
         newport = int(b) + 1
         newport = "%s" % newport
-        msg = MSG_BAD_PORT % (b, a, os_str, prog_path, a, newport)
+        msg = MSG_BAD_PORT() % (b, a, os_str, prog_path, a, newport)
     elif panic == PANIC_XPORT:
         if int(b) < 1023:
             newport = 1024
         else:
             newport = int(b) + 1
         newport = "%s" % newport
-        msg = MSG_ILL_PORT % (b, a, os_str, prog_path, a, newport)
+        msg = MSG_ILL_PORT() % (b, a, os_str, prog_path, a, newport)
     elif panic == PANIC_TEMPL:
-        msg = MSG_BAD_TEMPL % a
+        msg = MSG_BAD_TEMPL() % a
     elif panic == PANIC_QUEUE:
-        msg = MSG_BAD_QUEUE % (a, os_str, prog_path)
+        msg = MSG_BAD_QUEUE() % (a, os_str, prog_path)
     elif panic == PANIC_FWALL:
         if a:
-            msg = MSG_BAD_FWALL % "It is likely that you are using ZoneAlarm on Vista.<br>"
+            msg = MSG_BAD_FWALL() % Ta('It is likely that you are using ZoneAlarm on Vista.<br>')
         else:
-            msg = MSG_BAD_FWALL % "<br>"
+            msg = MSG_BAD_FWALL() % "<br>"
     elif panic == PANIC_SQLITE:
-        msg = MSG_SQLITE
+        msg = MSG_SQLITE()
+    elif panic == PANIC_HOST:
+        msg = MSG_BAD_HOST() % (os_str, prog_path, 'localhost', b)
     else:
-        msg = MSG_OTHER % (a, b)
+        msg = MSG_OTHER() % (a, b)
 
-    msg = MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__,
-                          msg, 'Program did not start!')
+    msg = MSG_BAD_NEWS() % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__,
+                          msg, Ta('Program did not start!'))
 
     if sabnzbd.WIN_SERVICE:
         sabnzbd.WIN_SERVICE.ErrLogger('Panic exit', msg)
@@ -607,6 +642,9 @@ def panic_fwall(vista):
 def panic_port(host, port):
     launch_a_browser(panic_message(PANIC_PORT, host, port))
 
+def panic_host(host, port):
+    launch_a_browser(panic_message(PANIC_HOST, host, port))
+
 def panic_xport(host, port):
     launch_a_browser(panic_message(PANIC_XPORT, host, port))
     logging.error(Ta('You have no permisson to use port %s'), port)
@@ -625,7 +663,7 @@ def panic_old_queue():
     return MSG_BAD_NEWS % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg, '')
 
 def panic(reason, remedy=""):
-    print "\nFatal error:\n  %s\n%s" % (reason, remedy)
+    print "\n%s:\n  %s\n%s" % (Ta('Fatal error'), reason, remedy)
     launch_a_browser(panic_message(PANIC_OTHER, reason, remedy))
 
 
@@ -649,17 +687,19 @@ def launch_a_browser(url, force=False):
 
 def error_page_401(status, message, traceback, version):
     """ Custom handler for 401 error """
+    title = T('Access denied')
+    body = T('Error %s: You need to provide a valid username and password.') % status
     return r'''
 <html>
     <head>
-    <title>Access denied</title>
+    <title>%s</title>
     </head>
     <body>
     <br/><br/>
-    <font color="#0000FF">Error %s: You need to provide a valid username and password.</font>
+    <font color="#0000FF">%s</font>
     </body>
 </html>
-''' % status
+''' % (title, body)
 
 
 
@@ -828,6 +868,8 @@ def same_file(a, b):
 
 #------------------------------------------------------------------------------
 def exit_sab(value):
+    """ Leave the program after flushing stderr/stdout
+    """
     sys.stderr.flush()
     sys.stdout.flush()
     sys.exit(value)
@@ -950,6 +992,8 @@ def move_to_path(path, new_path, unique=True):
 
 @synchronized(DIR_LOCK)
 def cleanup_empty_directories(path):
+    """ Remove all empty folders inside (and including) 'path'
+    """
     path = os.path.normpath(path)
     while 1:
         repeat = False
@@ -1089,12 +1133,16 @@ def on_cleanup_list(filename, skip_nzb=False):
     return False
 
 def get_ext(filename):
+    """ Return lowercased file extension
+    """
     try:
         return os.path.splitext(filename)[1].lower()
     except:
         return ''
 
 def get_filename(path):
+    """ Return path without the file extension
+    """
     try:
         return os.path.split(path)[1]
     except:
@@ -1136,13 +1184,16 @@ def format_time_string(seconds, days=0):
 
 
 def s_returner(item, value):
+    """ Return a plural form of 'item', based on 'value' (english only)
+    """
     if value == 1:
         return Tx(item)
     else:
         return Tx(item + 's')
 
 def int_conv(value):
-    """Safe conversion to int"""
+    """ Safe conversion to int (can handle None)
+    """
     try:
         value = int(value)
     except:
@@ -1157,12 +1208,16 @@ try:
     import statvfs
     # posix diskfree
     def diskfree(_dir):
+        """ Return amount of free diskspace in GBytes
+        """
         try:
             s = os.statvfs(_dir)
             return (s[statvfs.F_BAVAIL] * s[statvfs.F_FRSIZE]) / GIGI
         except OSError:
             return 0.0
     def disktotal(_dir):
+        """ Return amount of total diskspace in GBytes
+        """
         try:
             s = os.statvfs(_dir)
             return (s[statvfs.F_BLOCKS] * s[statvfs.F_FRSIZE]) / GIGI
@@ -1177,12 +1232,16 @@ except AttributeError:
         pass
     # windows diskfree
     def diskfree(_dir):
+        """ Return amount of free diskspace in GBytes
+        """
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
             return available / GIGI
         except:
             return 0.0
     def disktotal(_dir):
+        """ Return amount of free diskspace in GBytes
+        """
         try:
             available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
             return disk_size / GIGI
@@ -1191,6 +1250,8 @@ except AttributeError:
 
 
 def create_https_certificates(ssl_cert, ssl_key):
+    """ Create self-signed HTTPS certificares and store in paths 'ssl_cert' and 'ssl_key'
+    """
     try:
         from OpenSSL import crypto
         from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
@@ -1281,6 +1342,8 @@ def ip_extract():
 # Power management for Windows
 
 def win_hibernate():
+    """ Hibernate Windows system, returns after wakeup
+    """
     try:
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
         time.sleep(10)
@@ -1290,6 +1353,8 @@ def win_hibernate():
 
 
 def win_standby():
+    """ Standby Windows system, returns after wakeup
+    """
     try:
         subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
         time.sleep(10)
@@ -1299,6 +1364,8 @@ def win_standby():
 
 
 def win_shutdown():
+    """ Shutdown Windows system, never returns
+    """
     try:
         import win32security
         import win32api
@@ -1318,6 +1385,8 @@ def win_shutdown():
 # Power management for OSX
 
 def osx_shutdown():
+    """ Shutdown OSX system, never returns
+    """
     try:
         subprocess.call(['osascript', '-e', 'tell app "System Events" to shut down'])
     except:
@@ -1327,6 +1396,8 @@ def osx_shutdown():
 
 
 def osx_standby():
+    """ Make OSX system sleep, returns after wakeup
+    """
     try:
         subprocess.call(['osascript', '-e','tell app "System Events" to sleep'])
         time.sleep(10)
@@ -1336,6 +1407,8 @@ def osx_standby():
 
 
 def osx_hibernate():
+    """ Make OSX system sleep, returns after wakeup
+    """
     osx_standby()
 
 
@@ -1388,6 +1461,8 @@ def _get_systemproxy(method):
 
 
 def linux_shutdown():
+    """ Make Linux system shutdown, never returns
+    """
     if not HAVE_DBUS: os._exit(0)
 
     proxy, interface = _get_sessionproxy()
@@ -1405,6 +1480,8 @@ def linux_shutdown():
 
 
 def linux_hibernate():
+    """ Make Linux system go into hibernate, returns after wakeup
+    """
     if not HAVE_DBUS: return
 
     proxy, interface = _get_sessionproxy()
@@ -1422,6 +1499,8 @@ def linux_hibernate():
 
 
 def linux_standby():
+    """ Make Linux system go into standby, returns after wakeup
+    """
     if not HAVE_DBUS: return
 
     proxy, interface = _get_sessionproxy()
@@ -1481,7 +1560,8 @@ def remove_dir(path):
 
 
 def remove_all(path, pattern='*'):
-    """ Remove folder its content """
+    """ Remove folder and all its content
+    """
     if os.path.exists(path):
         for f in globber(path, pattern):
             os.remove(f)
@@ -1490,3 +1570,15 @@ def remove_all(path, pattern='*'):
         except:
             pass
 
+
+def clean_folder(path, pattern='*'):
+    """ Remove all files in root of folder, remove folder if empty afterwards """
+    for file in globber(path, pattern):
+        try:
+            os.remove(file)
+        except:
+            pass
+    try:
+        os.rmdir(path)
+    except:
+        pass

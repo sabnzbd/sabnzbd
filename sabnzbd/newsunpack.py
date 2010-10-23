@@ -117,7 +117,8 @@ def find_programs(curdir):
 
 #------------------------------------------------------------------------------
 def external_processing(extern_proc, complete_dir, filename, msgid, nicename, cat, group, status):
-
+    """ Run a user postproc script, return console output and exit value
+    """
     command = [str(extern_proc), str(complete_dir), str(filename), \
                str(nicename), str(msgid), str(cat), str(group), str(status)]
 
@@ -157,6 +158,8 @@ def SimpleRarExtract(rarfile, name):
 
 #------------------------------------------------------------------------------
 def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts, depth=0):
+    """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'
+    """
     if depth > 5:
         logging.warning('Unpack nesting too deep [%s]', nzo.final_name)
         return False, []
@@ -227,6 +230,8 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, joinables, zips, rars, ts
 #------------------------------------------------------------------------------
 
 def match_ts(file):
+    """ Return True if file is a joinable TS file
+    """
     match = TS_RE.search(file)
     if not match:
         return False, '', 0
@@ -240,6 +245,9 @@ def match_ts(file):
     return match, set, num
 
 def file_join(nzo, workdir, workdir_complete, delete, joinables):
+    """ Join and joinable files in 'workdir' to 'workdir_complete' and
+        when succesful, delete originals
+    """
     newfiles = []
     try:
         joinable_sets = {}
@@ -356,6 +364,9 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 #------------------------------------------------------------------------------
 
 def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
+    """ Unpack multiple sets 'rars' of RAR files from 'workdir' to 'workdir_complete.
+        When 'delete' is ste, originals will be deleted.
+    """
     extracted_files = []
 
     rar_sets = {}
@@ -423,6 +434,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, rars):
 
 
 def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
+    """ Unpack single rar set 'rarfile' to 'extraction_path'
+    """
     start = time()
 
     logging.debug("RAR_Extract(): Extractionpath: %s",
@@ -583,6 +596,10 @@ def RAR_Extract(rarfile, numrars, nzo, setname, extraction_path):
 #------------------------------------------------------------------------------
 
 def unzip(nzo, workdir, workdir_complete, delete, zips):
+    """ Unpack multiple sets 'zips' of ZIP files from 'workdir' to 'workdir_complete.
+        When 'delete' is ste, originals will be deleted.
+    """
+
     try:
         i = 0
         unzip_failed = False
@@ -635,6 +652,8 @@ def unzip(nzo, workdir, workdir_complete, delete, zips):
         return True
 
 def ZIP_Extract(zipfile, extraction_path):
+    """ Unzip single zip set 'zipfile' to 'extraction_path'
+    """
     command = ['%s' % ZIP_COMMAND, '-o', '-qq', '-Pnone', '%s' % zipfile,
                '-d%s' % extraction_path]
 
@@ -769,7 +788,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
 
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
-
+    """ Run par2 on par-set """
     retry_classic = False
     used_joinables = []
     #set the current nzo status to "Verifying...". Used in History
@@ -1038,6 +1057,8 @@ def fix_env():
 
 
 def build_command(command):
+    """ Prepare list from running an external program
+    """
     if not sabnzbd.WIN32:
         if IONICE_COMMAND and cfg.ionice().strip():
             lst = cfg.ionice().split()
@@ -1073,6 +1094,8 @@ def build_command(command):
 
 # Sort the various RAR filename formats properly :\
 def rar_sort(a, b):
+    """ Define sort method for rar file names
+    """
     aext = a.split('.')[-1]
     bext = b.split('.')[-1]
 
@@ -1087,6 +1110,8 @@ def rar_sort(a, b):
 
 # Sort the various PAR filename formats properly :\
 def par_sort(a, b):
+    """ Define sort method for par2 file names
+    """
     aext = a.lower().split('.')[-1]
     bext = b.lower().split('.')[-1]
 
@@ -1189,6 +1214,8 @@ def is_new_partype(nzo, setname):
 
 
 def add_s(i):
+    """ Return an "s" when 'i' > 1
+    """
     if i > 1:
         return 's'
     else:

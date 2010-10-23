@@ -245,7 +245,8 @@ except:
 RE_HEADER = re.compile(r'^([^:]+):(.*)')
 
 def _prepare_message(txt):
-    """ Do the proper message encodings
+    """ Apply the proper encoding to all email fields.
+        The body will be Latin-1, the headers will be 'quopri'd when necessary.
     """
     def plain(val):
         """ Return True when val is plain ASCII """

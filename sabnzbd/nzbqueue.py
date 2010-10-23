@@ -38,7 +38,7 @@ from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler
 from sabnzbd.utils import osx
-from sabnzbd.encoding import latin1
+from sabnzbd.encoding import latin1, platform_encode
 
 def DeleteLog(name):
     if name:
@@ -106,34 +106,43 @@ class NzbQueue(TryList):
 
         # Scan for any folders in "incomplete" that are not yet in the queue
         if repair:
-            self.scan_jobs(folders)
+            self.scan_jobs(not folders)
             # Handle any lost future jobs
             for nzo_id in globber(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
                 if nzo_id not in self.__nzo_table:
                     self.add(nzo, save=False)
 
 
-    def scan_jobs(self, folders=None):
-        """ Scan "incomplete" for mssing folders """
+    def scan_jobs(self, all=False, action=True):
+        """ Scan "incomplete" for mssing folders,
+            'all' is True: Include active folders
+            'action' is True, do the recovery action
+            returns list of orphaned folders
+        """
+        result = []
         # Folders from the download queue
-        if folders:
-            registered = [nzo.work_name for nzo in self.__nzo_list]
-        else:
+        if all:
             registered = []
+        else:
+            registered = [nzo.work_name for nzo in self.__nzo_list]
 
         # Retryable folders from History
         items = sabnzbd.proxy_build_history()[0]
-        registered.extend([os.path.basename(item['path']) for item in items if item['retry']])
+        registered.extend([platform_encode(os.path.basename(item['path'])) for item in items if item['retry']])
 
         # Repair unregistered folders
         for folder in globber(cfg.download_dir.get_path()):
             if os.path.basename(folder) not in registered:
-                logging.info('Repairing job %s', folder)
-                self.repair_job(folder)
+                if action:
+                    logging.info('Repairing job %s', folder)
+                    self.repair_job(folder)
+                result.append(os.path.basename(folder))
             else:
-                logging.info('Skipping repair for job %s', folder)
+                if action:
+                    logging.info('Skipping repair for job %s', folder)
+        return result
 
-
+    
     def repair_job(self, folder, new_nzb=None):
         """ Reconstruct admin for a single job folder, optionally with new NZB """
         name = os.path.basename(folder)
@@ -729,9 +738,10 @@ class NzbQueue(TryList):
         lst = []
         for nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
-            url = nzo.url
-            if nzo.futuretype and url.lower().startswith('http'):
-                lst.append((url, nzo))
+            if nzo.futuretype:
+                url = nzo.url
+                if nzo.futuretype and url.lower().startswith('http'):
+                    lst.append((url, nzo))
         return lst
 
     def get_msgids(self):
@@ -1011,6 +1021,6 @@ def repair_job(folder, new_nzb):
 
 @synchronized_CV
 @synchronized(NZBQUEUE_LOCK)
-def scan_jobs(folders=None):
+def scan_jobs(all=False, action=True):
     global __NZBQ
-    if __NZBQ: __NZBQ.scan_jobs(folders)
+    if __NZBQ: return __NZBQ.scan_jobs(all, action)

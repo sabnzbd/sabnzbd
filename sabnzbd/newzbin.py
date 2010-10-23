@@ -67,9 +67,9 @@ def _access_ok():
 
 
 class MSGIDGrabber(Thread):
+    """ Thread for msgid-grabber queue """
     do = None # Link to instance of thread
 
-    """ Thread for msgid-grabber queue """
     def __init__(self):
         Thread.__init__(self)
         self.queue = Queue.Queue()

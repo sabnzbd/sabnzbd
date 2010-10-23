@@ -167,7 +167,6 @@ class RSSQueue(object):
         #           order : order in the RSS feed
 
         self.shutdown = False
-        self.__running = False
 
     def stop(self):
         self.shutdown = True
@@ -388,14 +387,12 @@ class RSSQueue(object):
         return ''
 
 
+    @synchronized(LOCK)
     def run(self):
-        """ Run all the URI's and filters """
-        # Protect against second scheduler call before current
-        # run is completed. Cannot use LOCK, because run_feed
-        # already uses the LOCK.
-
-        if not (self.__running or sabnzbd.PAUSED_ALL):
-            self.__running = True
+        """ Run all the URI's and filters
+        """
+        if not sabnzbd.PAUSED_ALL:
+            logging.info('Starting scheduled RSS read-out')
             active = False
             feeds = config.get_rss()
             for feed in feeds:
@@ -405,13 +402,12 @@ class RSSQueue(object):
                     # Wait 30 seconds, else sites may get irritated
                     for x in xrange(30):
                         if self.shutdown:
-                            self.__running = False
                             return
                         else:
                             time.sleep(1.0)
             if active:
                 self.save()
-            self.__running = False
+            logging.info('Finished scheduled RSS read-out')
 
 
     @synchronized(LOCK)

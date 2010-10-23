@@ -59,6 +59,12 @@ class URLGrabber(Thread):
         """ Add an URL to the URLGrabber queue """
         self.queue.put((url, future_nzo, _RETRIES))
 
+    def rm_bookmark(self, url):
+        """ Add removal request for nzbmatrix bookmark """
+        if 'nzbmatrix.com' in url and cfg.matrix_del_bookmark():
+            url = url.replace('download.php?', 'bookmarks.php?action=remove&')
+            self.queue.put((url, None, _RETRIES))
+
     def stop(self):
         logging.info('URLGrabber shutting down')
         self.shutdown = True
@@ -74,21 +80,26 @@ class URLGrabber(Thread):
                 continue
 
             try:
-                # If nzo entry deleted, give up
-                try:
-                    deleted = future_nzo.deleted
-                except:
-                    deleted = True
-                if deleted:
-                    logging.debug('Dropping URL %s, job entry missing', url)
-                    continue
+                del_bookmark = not future_nzo
+                if future_nzo:
+                    # If nzo entry deleted, give up
+                    try:
+                        deleted = future_nzo.deleted
+                    except:
+                        deleted = True
+                    if deleted:
+                        logging.debug('Dropping URL %s, job entry missing', url)
+                        continue
 
                 # Add nzbmatrix credentials if needed
                 url, matrix_id = _matrix_url(url)
 
                 # _grab_url cannot reside in a function, because the tempfile
                 # would not survive the end of the function
-                logging.info('Grabbing URL %s', url)
+                if del_bookmark:
+                    logging.info('Removing nzbmatrix bookmark %s', matrix_id)
+                else:
+                    logging.info('Grabbing URL %s', url)
                 opener = urllib.FancyURLopener({})
                 opener.prompt_user_passwd = None
                 opener.addheaders = []
@@ -125,7 +136,7 @@ class URLGrabber(Thread):
 
                 if matrix_id:
                     fn, msg, retry = _analyse_matrix(fn, matrix_id)
-                    category = map_matrix(category)
+                    category = _MATRIX_MAP.get(category, category)
                 else:
                     msg = ''
                     retry = True
@@ -138,6 +149,9 @@ class URLGrabber(Thread):
                         self.queue.put((url, future_nzo, retry_count))
                     else:
                         misc.bad_fetch(future_nzo, url, msg, retry=True)
+                    continue
+
+                if del_bookmark:
                     continue
 
                 if not filename:
@@ -154,7 +168,7 @@ class URLGrabber(Thread):
                 # Check if nzb file
                 if os.path.splitext(filename)[1].lower() in ('.nzb', '.gz'):
                     res = dirscanner.ProcessSingleFile(filename, fn, pp=pp, script=script, cat=cat, priority=priority, \
-                                                       nzbname=nzbname, nzo_info=nzo_info)
+                                                       nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url)
                     if res == 0:
                         nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                     elif res == -2:
@@ -166,7 +180,7 @@ class URLGrabber(Thread):
                         misc.bad_fetch(future_nzo, url, retry=True, content=True)
                 # Check if a supported archive
                 else:
-                    if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority) == 0:
+                    if dirscanner.ProcessArchiveFile(filename, fn, pp, script, cat, priority=priority, url=future_nzo.url) == 0:
                         nzbqueue.remove_nzo(future_nzo.nzo_id, add_to_history=False, unload=True)
                     else:
                         # Not a supported filetype, not an nzb (text/html ect)
@@ -176,8 +190,8 @@ class URLGrabber(Thread):
                             pass
                         misc.bad_fetch(future_nzo, url, retry=True, content=True)
             except:
-               logging.error('URLGRABBER CRASHED', exc_info=True)
-               logging.debug("URLGRABBER Traceback: ", exc_info=True)
+                logging.error('URLGRABBER CRASHED', exc_info=True)
+                logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
 
             # Don't pound the website!
@@ -246,29 +260,56 @@ def _analyse_matrix(fn, matrix_id):
 
 
 #------------------------------------------------------------------------------
-_MATRIX_MAP = None
-
-def map_matrix(index):
-    """ Translate nzbmatrix category_id to category text """
-
-    if _MATRIX_MAP is None:
-        read_matrix_cats()
-    return _MATRIX_MAP.get(index, index)
-
-
-def read_matrix_cats():
-    """ Read mapping of NzbMatrix categories """
-    global _MATRIX_MAP
-
-    _MATRIX_MAP = {}
-    path = os.path.join(sabnzbd.DIR_PROG, 'nzbmatrix.txt')
-    try:
-        for line in open(path, 'r'):
-            try:
-                number, text = line.split(',', 1)
-                _MATRIX_MAP[number] = text.strip(', \n\r')
-            except ValueError:
-                pass
-    except IOError:
-        logging.warning('Cannot open %s', path)
-
+_MATRIX_MAP = {
+'28' : 'anime.all',
+'20' : 'apps.linux',
+'19' : 'apps.mac',
+'21' : 'apps.other',
+'18' : 'apps.pc',
+'55' : 'apps.phone',
+'52' : 'apps.portable',
+'53' : 'documentaries.hd',
+'9'  : 'documentaries.std',
+'16' : 'games.dreamcast',
+'45' : 'games.ds',
+'46' : 'games.gamecube',
+'17' : 'games.other',
+'10' : 'games.pc',
+'15' : 'games.ps1',
+'11' : 'games.ps2',
+'43' : 'games.ps3',
+'12' : 'games.psp',
+'44' : 'games.wii',
+'51' : 'games.wii vc',
+'13' : 'games.xbox',
+'14' : 'games.xbox360',
+'56' : 'games.xbox360 (other)',
+'54' : 'movies.brrip',
+'2'  : 'movies.divx/xvid',
+'1'  : 'movies.dvd',
+'50' : 'movies.hd (image)',
+'42' : 'movies.hd (x264)',
+'4'  : 'movies.other',
+'3'  : 'movies.svcd/vcd',
+'48' : 'movies.wmv-hd',
+'24' : 'music.dvd',
+'23' : 'music.lossless',
+'22' : 'music.mp3, albums',
+'47' : 'music.mp3, singles',
+'27' : 'music.other',
+'25' : 'music.video',
+'49' : 'other.audio, books',
+'36' : 'other.e-books',
+'33' : 'other.emulation',
+'39' : 'other.extra, pars/fills',
+'37' : 'other.images',
+'38' : 'other.mobile, phone',
+'40' : 'other.other',
+'34' : 'other.ppc/pda',
+'26' : 'other.radio',
+'6'  : 'tv.divx/xvid',
+'5'  : 'tv.dvd',
+'41' : 'tv.hd',
+'8'  : 'tv.other',
+'7'  : 'tv.sport/ent'
+}
