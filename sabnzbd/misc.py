@@ -1570,3 +1570,15 @@ def remove_all(path, pattern='*'):
         except:
             pass
 
+
+def clean_folder(path, pattern='*'):
+    """ Remove all files in root of folder, remove folder if empty afterwards """
+    for file in globber(path, pattern):
+        try:
+            os.remove(file)
+        except:
+            pass
+    try:
+        os.rmdir(path)
+    except:
+        pass

@@ -530,7 +530,7 @@ def _api_osx_icon(name, output, kwargs):
 
 def _api_rescan(name, output, kwargs):
     """ API: accepts output """
-    nzbqueue.scan_jobs()
+    nzbqueue.scan_jobs(all=False, action=True)
     return report(output)
 
 

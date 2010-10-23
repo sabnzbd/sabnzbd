@@ -36,7 +36,7 @@ from Cheetah.Template import Template
 import sabnzbd.emailer as emailer
 from sabnzbd.misc import real_path, to_units, \
      diskfree, sanitize_foldername, time_format, HAVE_AMPM, \
-     cat_to_opts, int_conv, panic_old_queue, globber
+     cat_to_opts, int_conv, panic_old_queue, globber, clean_folder
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.newzbin import Bookmarks
 from sabnzbd.bpsmeter import BPSMeter
@@ -986,6 +986,8 @@ class ConfigPage(object):
             new[svr] = {}
         conf['servers'] = new
 
+        conf['folders'] = nzbqueue.scan_jobs(all=False, action=False)
+
         template = Template(file=os.path.join(self.__web_dir, 'config.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
@@ -1015,10 +1017,33 @@ class ConfigPage(object):
 
     @cherrypy.expose
     def scan(self, **kwargs):
+        # OBSOLETE: REMOVE WHEN PLUSH AND SKIN HAVE ORPHAN-TABLE
         msg = check_session(kwargs)
         if msg: return msg
         nzbqueue.scan_jobs()
         raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def delete(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        path = kwargs.get('name')
+        if path:
+            path = os.path.join(cfg.download_dir.get_path(), path)
+            clean_folder(os.path.join(path, JOB_ADMIN))
+            clean_folder(path)
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def add(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        path = kwargs.get('name')
+        if path:
+            path = os.path.join(cfg.download_dir.get_path(), path)
+            nzbqueue.repair_job(path, None)
+        raise dcRaiser(self.__root, kwargs)
+
 
 #------------------------------------------------------------------------------
 LIST_DIRPAGE = ( \

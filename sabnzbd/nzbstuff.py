@@ -37,7 +37,7 @@ except ImportError:
 import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-                         get_unique_path, get_admin_path, remove_all, \
+                         get_unique_path, get_admin_path, remove_all, clean_folder, \
                          sanitize_filename, globber, sanitize_foldername
 import sabnzbd.cfg as cfg
 from sabnzbd.trylist import TryList
@@ -1357,16 +1357,3 @@ def set_attrib_file(path, attribs):
     for item in attribs:
         f.write('%s\n' % item)
     f.close()
-
-
-def clean_folder(path, pattern='*'):
-    """ Remove job's admin files and parent if empty """
-    for file in globber(path, pattern):
-        try:
-            os.remove(file)
-        except:
-            pass
-    try:
-        os.rmdir(path)
-    except:
-        pass
