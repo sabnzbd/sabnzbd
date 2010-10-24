@@ -170,6 +170,7 @@ else:
 
 username = OptionStr('misc', 'username')
 password = OptionPassword('misc', 'password')
+login_realm = OptionStr('misc', 'login_realm', 'SABnzbd')
 bandwidth_limit = OptionNumber('misc', 'bandwidth_limit', 0)
 refresh_rate = OptionNumber('misc', 'refresh_rate', 0)
 rss_rate = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)
