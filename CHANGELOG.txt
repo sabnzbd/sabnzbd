@@ -1,4 +1,20 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha5 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Plush now has multi operations for the queue
+- You can now see any orphaned folders in "temporary download folder"
+  and choose to delete or to re-add to the queue (Classic: Config-Main, others: Connections)
+  (This replaces the "Scan" button, which was a blunt instrument)
+- There is now Default category, which provides attributes for all "Default" settings.
+  The default PP, script and priority in Config->Switches are therefor removed.
+- nzbmatrix bookmarks are removed after successful download/post-processing
+  (If you really don't want that, use the INI-only 'del_bookmark' option)
+- NZB chaining now ignores duplicate check.
+  (Chaining is automatic re-queuing of a download containing only NZB(s))
+- Improve sorting of rar files to enable streaming
+- Normally when enabling HTTPS, the HTTP port will still be active.
+  Now you can choose to run HTTPS-only on the standard port.
+  -------------------------------------------------------------------------------
  0.6.0Alpha4 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Fix crash after queue repair cycle, which prevented restart
