@@ -15,7 +15,7 @@ jQuery(function($){
 		confirmDeleteQueue:		$.cookie('confirmDeleteQueue') 	 == 0 ? false : true,		// confirm queue nzb removal
 		confirmDeleteHistory:	$.cookie('confirmDeleteHistory') == 0 ? false : true,		// confirm history nzb removal
 		blockRefresh:			$.cookie('blockRefresh') 		 == 0 ? false : true,		// prevent refreshing when hovering queue
-		multiOps:               $.cookie('multiOps') 		 == 0 ? false : true, // is multi-operations menu visible in queue
+		multiOps:               $.cookie('multiOps') 		 == 1 ? true : false, // is multi-operations menu visible in queue
 		multiOpsChecks:         null,
 		
 		// ***************************************************************
