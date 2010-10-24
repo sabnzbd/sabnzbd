@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -89,39 +89,36 @@ def globber(path, pattern='*'):
 
 #------------------------------------------------------------------------------
 def cat_to_opts(cat, pp=None, script=None, priority=None):
+    """ Derive options from category, if options not already defined.
+        Specified options have priority over category-options.
+        If no valid category is given, special category '*' will supply default values
     """
-        Derive options from category, if option not already defined.
-        Specified options have priority over category-options
-    """
+    def_cat = config.get_categories('*')
+    cat = safe_lower(cat)
+    if cat in ('', 'none', 'default'):
+        cat = '*'
+    try:
+        my_cat = config.get_categories()[cat]
+    except KeyError:
+        my_cat = def_cat
+
     if pp is None:
-        try:
-            pp = config.get_categories()[safe_lower(cat)].pp()
-            # Get the default pp
-            if pp == '':
-                pp = cfg.dirscan_pp()
-            logging.debug('Job gets options %s', pp)
-        except KeyError:
-            pp = cfg.dirscan_pp()
+        pp = my_cat.pp()
+        if pp == '':
+            pp = def_cat.pp()
+        logging.debug('Job gets options %s', pp)
 
     if not script:
-        try:
-            script = config.get_categories()[safe_lower(cat)].script()
-            # Get the default script
-            if script == '' or safe_lower(script) == 'default':
-                script = cfg.dirscan_script()
-            logging.debug('Job gets script %s', script)
-        except KeyError:
-            script = cfg.dirscan_script()
+        script = my_cat.script()
+        if safe_lower(script) in ('', 'default'):
+            script = def_cat.script()
+        logging.debug('Job gets script %s', script)
 
     if priority is None or priority == DEFAULT_PRIORITY:
-        try:
-            priority = config.get_categories()[safe_lower(cat)].priority()
-            # Get the default priority
-            if priority == DEFAULT_PRIORITY:
-                priority = cfg.dirscan_priority()
-            logging.debug('Job gets priority %s', priority)
-        except KeyError:
-            priority = cfg.dirscan_priority()
+        priority = my_cat.priority()
+        if priority == DEFAULT_PRIORITY:
+            priority = def_cat.priority()
+        logging.debug('Job gets priority %s', priority)
 
     return cat, pp, script, priority
 

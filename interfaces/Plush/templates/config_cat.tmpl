@@ -40,12 +40,18 @@
         <td>
 			<input type="hidden" name="session" value="$session">
             <input type="hidden" value="$slot.name" name="name"/>
-            <input type="text" name="newname" value="$slot.name"/>
+			<!--#if $slot.name != '*'#-->
+	            <input type="text" name="newname" value="$slot.name"/>
+            <!--#else#-->
+				<input type="text" name="newname" value="$T('default')" disabled="disabled"/>
+			<!--#end if#-->	
         </td>
         
         <td>
             <select name="pp">
-                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+				<!--#if $slot.name != '*'#-->
+	                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+				<!--#end if#-->	
                 <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-none')</option>
                 <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-repair')</option>
                 <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
@@ -55,7 +61,9 @@
         
         <td>
             <select name="priority">
-                <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
+				<!--#if $slot.name != '*'#-->
+	                <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
+				<!--#end if#-->	
                 <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>$T('pr-force')</option>
                 <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>$T('pr-high')</option>
                 <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
@@ -67,7 +75,9 @@
         <td>
             <select name="script">
             <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+                <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
+	                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+		        <!--#end if#-->
             <!--#end for#-->
             </select>
         </td>
@@ -79,9 +89,9 @@
         
         <td class="lastCol" nowrap>
             
-            <input type="submit" class="Save" value="<!--#if $cur == 1 then $T('button-add') else $T('button-save')#-->"/>
+			<input type="submit" class="Save" value="<!--#if $cur == 2 then $T('button-add') else $T('button-save')#-->"/>
 
-            <!--#if $slot.name#-->
+            <!--#if $slot.name and $slot.name != '*'#-->
             <input type="button" class="Delete" value="$T('button-delCat')" name="$slot.name" />
             <!--#end if#-->
         

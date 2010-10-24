@@ -777,12 +777,24 @@ def define_categories(force=False):
             val = { 'newzbin' : cat, 'dir' : cat }
             ConfigCat(cat.lower(), val)
 
-def get_categories():
+def get_categories(cat=0):
+    """ Return link to categories section.
+        This section will always contain special category '*'
+        When 'cat' is given, a link to that category or to '*' is returned
+    """
     global database
-    try:
-        return database['categories']
-    except:
-        return {}
+    if 'categories' not in database:
+        database['categories'] = {}
+    cats = database['categories']
+    if '*' not in cats:
+        defcat = ConfigCat('*', {'pp' : 3, 'script' : 'None', 'priority' : constants.NORMAL_PRIORITY})
+    if not isinstance(cat, int):
+        try:
+            cats = cats[cat]
+        except KeyError:
+            cats = cats['*']
+    return cats
+
 
 def define_rss():
     """ Define rss-ffeds listed in the Setup file

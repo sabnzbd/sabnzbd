@@ -245,13 +245,11 @@ def process_job(nzo):
 
         if all_ok:
             ## Determine class directory
-            if config.get_categories():
-                complete_dir = cat_to_dir(cat, cfg.complete_dir.get_path())
-            elif cfg.create_group_folders():
+            if cfg.create_group_folders():
                 complete_dir = addPrefixes(cfg.complete_dir.get_path(), nzo.dirprefix)
                 complete_dir = create_dirs(complete_dir)
             else:
-                complete_dir = cfg.complete_dir.get_path()
+                complete_dir = real_path(cfg.complete_dir.get_path(), config.get_categories(cat).dir())
 
             ## TV/Movie/Date Renaming code part 1 - detect and construct paths
             file_sorter = Sorter(cat)
@@ -539,23 +537,6 @@ def perm_script(wdir, umask):
                 if report_errors:
                     logging.error(Ta('Cannot change permissions of %s'), join(root, name))
                     logging.info("Traceback: ", exc_info = True)
-
-
-def cat_to_dir(cat, defdir):
-    """ Lookup destination dir for category """
-    ddir = defdir
-    if cat:
-        item = config.get_config('categories', cat.lower())
-        if item:
-            ddir = item.dir()
-        else:
-            return defdir
-        ddir = real_path(cfg.complete_dir.get_path(), ddir)
-        if not ddir:
-            ddir = defdir
-    return ddir
-
-
 
 
 def addPrefixes(path, dirprefix):

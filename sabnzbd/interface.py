@@ -246,7 +246,7 @@ class MainPage(object):
                 info['newzbinDetails'] = True
 
             info['script_list'] = list_scripts(default=True)
-            info['script'] = cfg.dirscan_script()
+            info['script'] = 'Default'
 
             info['cat'] = 'Default'
             info['cat_list'] = list_cats(True)
@@ -718,14 +718,7 @@ class QueuePage(object):
             if cat == 'None':
                 cat = None
             nzbqueue.change_cat(nzo_id, cat)
-            item = config.get_config('categories', cat)
-            if item:
-                cat, pp, script, priority = cat_to_opts(cat)
-            else:
-                script = cfg.dirscan_script()
-                pp = cfg.dirscan_pp()
-                priority = cfg.dirscan_priority()
-
+            cat, pp, script, priority = cat_to_opts(cat)
             nzbqueue.change_script(nzo_id, script)
             nzbqueue.change_opts(nzo_id, pp)
             nzbqueue.set_priority(nzo_id, priority)
@@ -1099,10 +1092,10 @@ class ConfigDirectories(object):
 SWITCH_LIST = \
     ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
      'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
-     'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
+     'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
      'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
-     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'nice', 'ionice',
-     'dirscan_priority', 'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check'
+     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
+     'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check'
     )
 
 #------------------------------------------------------------------------------
@@ -1475,7 +1468,7 @@ class ConfigRss(object):
         conf['script_list'] = list_scripts(default=True)
         pick_script = conf['script_list'] != []
 
-        conf['cat_list'] = list_cats(default=True)
+        conf['cat_list'] = list_cats(default=False)
         pick_cat = conf['cat_list'] != []
 
         rss = {}
@@ -1922,17 +1915,17 @@ class ConfigCats(object):
         conf['script_list'] = list_scripts(default=True)
 
         categories = config.get_categories()
-        conf['have_cats'] =  categories != {}
+        conf['have_cats'] =  len(categories) > 1
         conf['defdir'] = cfg.complete_dir.get_path()
 
 
         empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'', 'priority':DEFAULT_PRIORITY }
         slotinfo = []
-        slotinfo.append(empty)
-        for cat in sorted(categories):
+        for cat in sorted(categories.keys()):
             slot = categories[cat].get_dict()
             slot['name'] = cat
             slotinfo.append(slot)
+        slotinfo.insert(1, empty)
         conf['slotinfo'] = slotinfo
 
         template = Template(file=os.path.join(self.__web_dir, 'config_cat.tmpl'),
@@ -1953,8 +1946,11 @@ class ConfigCats(object):
         msg = check_session(kwargs)
         if msg: return msg
 
-        newname = kwargs.get('newname', '').strip(' []')
         name = kwargs.get('name')
+        if name == '*':
+            newname = name
+        else:
+            newname = kwargs.get('newname', '').strip(' []')
         if newname:
             if name:
                 config.delete('categories', name)
