@@ -214,7 +214,7 @@ SKIN_TEXT = {
     'confgFile' : TT('Config File'),
     'explain-Restart' : TT('The button below will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
     'button-restart' : TT('Restart'),
-    'explain-orphans' : TT('There are orphaned jobs in the download folder.<br/>You can choose to delete them (including files) or add them back to the queue.'),
+    'explain-orphans' : TT('There are orphaned jobs in the download folder.<br/>You can choose to delete them (including files) or send them back to the queue.'),
     'button-repair' : TT('Repair'),
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
     'version' : TT('Version'),

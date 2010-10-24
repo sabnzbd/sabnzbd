@@ -1009,33 +1009,31 @@ class ConfigPage(object):
             cherrypy.engine.restart()
 
     @cherrypy.expose
-    def scan(self, **kwargs):
-        # OBSOLETE: REMOVE WHEN PLUSH AND SKIN HAVE ORPHAN-TABLE
-        msg = check_session(kwargs)
-        if msg: return msg
-        nzbqueue.scan_jobs()
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
     def delete(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        path = kwargs.get('name')
-        if path:
-            path = os.path.join(cfg.download_dir.get_path(), path)
-            clean_folder(os.path.join(path, JOB_ADMIN))
-            clean_folder(path)
+        orphan_delete(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def add(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        path = kwargs.get('name')
-        if path:
-            path = os.path.join(cfg.download_dir.get_path(), path)
-            nzbqueue.repair_job(path, None)
+        orphan_add(kwargs)
         raise dcRaiser(self.__root, kwargs)
+
+def orphan_delete(kwargs):
+    path = kwargs.get('name')
+    if path:
+        path = os.path.join(cfg.download_dir.get_path(), path)
+        clean_folder(os.path.join(path, JOB_ADMIN))
+        clean_folder(path)
+
+def orphan_add(kwargs):
+    path = kwargs.get('name')
+    if path:
+        path = os.path.join(cfg.download_dir.get_path(), path)
+        nzbqueue.repair_job(path, None)
 
 
 #------------------------------------------------------------------------------
@@ -2050,6 +2048,8 @@ class ConnectionInfo(object):
 
         header['lastmail'] = self.__lastmail
 
+        header['folders'] = nzbqueue.scan_jobs(all=False, action=False)
+
         header['servers'] = []
 
         for server in downloader.servers()[:]:
@@ -2166,6 +2166,20 @@ class ConnectionInfo(object):
         downloader.unblock(kwargs.get('server'))
         # Short sleep so that UI shows new server status
         time.sleep(1.0)
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def delete(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        orphan_delete(kwargs)
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def add(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        orphan_add(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
 

@@ -44,3 +44,49 @@ $T('logging'):
         $warn<br/>
     <!--#end for#-->
 <!--#end if#-->
+
+<!--#if $folders#-->
+<hr/>
+$T('explain-orphans')<br/>
+<br/>
+
+    <table id="catTable">
+        <tr>
+            <th></th>
+            <th></th>
+            <th>$T('name')</th>
+        </tr>
+    <!--#set $odd = False#-->
+    <!--#for $folder in $folders#-->
+        <!--#set $odd = not $odd#-->
+        <tr class="<!--#if $odd then "odd" else "even"#-->">
+
+        <td>
+            <form action="delete" method="get">
+            <input type="hidden" value="$folder" name="name">
+            <input type="hidden" value="$session" name="session">
+            <input type="submit" onclick="this.form.action='connections/delete?session=$session'; this.form.submit(); return false;" value="$T('button-delCat')"/>
+            </form>
+        </td>
+
+        <td>
+            <form action="add" method="get">
+            <input type="hidden" value="$folder" name="name">
+            <input type="hidden" value="$session" name="session">
+            <input type="submit" onclick="this.form.action='connections/add?session=$session'; this.form.submit(); return false;" value="$T('button-add')"/>
+            </form>
+        </td>
+
+        <td>
+        $folder
+        </td>
+
+    <!--#end for#-->
+    </table>
+<br/><hr/><br/>
+<!--#end if#-->
+$T('explain-Repair')<br/>
+<form action="saveGeneral" method="post">
+<input type="submit" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
+</form>
+
