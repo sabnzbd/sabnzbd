@@ -395,16 +395,20 @@ class RSSQueue(object):
             logging.info('Starting scheduled RSS read-out')
             active = False
             feeds = config.get_rss()
-            for feed in feeds:
-                if feeds[feed].enable():
-                    active = True
-                    self.run_feed(feed, download=True, ignoreFirst=True)
-                    # Wait 30 seconds, else sites may get irritated
-                    for x in xrange(30):
-                        if self.shutdown:
-                            return
-                        else:
-                            time.sleep(1.0)
+            for feed in feeds.keys():
+                try:
+                    if feeds[feed].enable.get():
+                        active = True
+                        self.run_feed(feed, download=True, ignoreFirst=True)
+                        # Wait 30 seconds, else sites may get irritated
+                        for x in xrange(30):
+                            if self.shutdown:
+                                return
+                            else:
+                                time.sleep(1.0)
+                except KeyError:
+                    # Feed must have been deleted
+                    pass
             if active:
                 self.save()
             logging.info('Finished scheduled RSS read-out')
