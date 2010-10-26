@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2010-10-24 22:44+CEST\n"
+"POT-Creation-Date: 2010-10-26 21:22+CEST\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -467,62 +467,62 @@ msgstr ""
 msgid "Sunday"
 msgstr ""
 
-#: sabnzbd/interface.py:2090
+#: sabnzbd/interface.py:2093
 msgid "&nbsp;Resolving address"
 msgstr ""
 
-#: sabnzbd/interface.py:2098
+#: sabnzbd/interface.py:2101
 msgid "WARNING:"
 msgstr ""
 
-#: sabnzbd/interface.py:2098 sabnzbd/interface.py:2205
+#: sabnzbd/interface.py:2101 sabnzbd/interface.py:2208
 msgid "ERROR:"
 msgstr ""
 
-#: sabnzbd/interface.py:2205
+#: sabnzbd/interface.py:2208
 msgid "Incorrect parameter"
 msgstr ""
 
-#: sabnzbd/interface.py:2205 sabnzbd/interface.py:2231
-#: sabnzbd/interface.py:2255 sabnzbd/interface.py:2272
-#: sabnzbd/interface.py:2401 sabnzbd/interface.py:2420 sabnzbd/skintext.py:91
+#: sabnzbd/interface.py:2208 sabnzbd/interface.py:2234
+#: sabnzbd/interface.py:2258 sabnzbd/interface.py:2275
+#: sabnzbd/interface.py:2404 sabnzbd/interface.py:2423 sabnzbd/skintext.py:91
 msgid "Back"
 msgstr ""
 
-#: sabnzbd/interface.py:2272
+#: sabnzbd/interface.py:2275
 msgid "Job \"%s\" was re-added to the queue"
 msgstr ""
 
-#: sabnzbd/interface.py:2310
+#: sabnzbd/interface.py:2313
 msgid "duplicate"
 msgstr ""
 
-#: sabnzbd/interface.py:2320 sabnzbd/skintext.py:26 sabnzbd/skintext.py:142
+#: sabnzbd/interface.py:2323 sabnzbd/skintext.py:26 sabnzbd/skintext.py:142
 #: sabnzbd/skintext.py:423 sabnzbd/skintext.py:559
 msgid "Download"
 msgstr ""
 
-#: sabnzbd/interface.py:2401
+#: sabnzbd/interface.py:2404
 msgid "Jobs marked with a '*' will not be automatically downloaded."
 msgstr ""
 
-#: sabnzbd/interface.py:2401 sabnzbd/skintext.py:420
+#: sabnzbd/interface.py:2404 sabnzbd/skintext.py:420
 msgid "Matched"
 msgstr ""
 
-#: sabnzbd/interface.py:2402 sabnzbd/skintext.py:421
+#: sabnzbd/interface.py:2405 sabnzbd/skintext.py:421
 msgid "Not matched"
 msgstr ""
 
-#: sabnzbd/interface.py:2402 sabnzbd/skintext.py:422
+#: sabnzbd/interface.py:2405 sabnzbd/skintext.py:422
 msgid "Downloaded"
 msgstr ""
 
-#: sabnzbd/interface.py:2420
+#: sabnzbd/interface.py:2423
 msgid "Downloaded so far"
 msgstr ""
 
-#: sabnzbd/interface.py:2462
+#: sabnzbd/interface.py:2465
 msgid "Incorrect value for %s: %s"
 msgstr ""
 
@@ -1013,6 +1013,10 @@ msgstr ""
 msgid "Download failed - Out of your server's retention?"
 msgstr ""
 
+#: sabnzbd/postproc.py:260
+msgid "Cannot create final folder %s"
+msgstr ""
+
 #: sabnzbd/postproc.py:282
 msgid "No post-processing because of failed verification"
 msgstr ""
@@ -1054,30 +1058,34 @@ msgid "Post Processing Failed for %s (%s)"
 msgstr ""
 
 #: sabnzbd/postproc.py:404
-msgid "PostProcessing Crashed, see logfile (%s)"
+msgid "see logfile"
 msgstr ""
 
-#: sabnzbd/postproc.py:432
+#: sabnzbd/postproc.py:405
+msgid "PostProcessing was aborted (%s)"
+msgstr ""
+
+#: sabnzbd/postproc.py:433
 msgid "Cleanup of %s failed."
 msgstr ""
 
-#: sabnzbd/postproc.py:443
+#: sabnzbd/postproc.py:444
 msgid "Error removing workdir (%s)"
 msgstr ""
 
-#: sabnzbd/postproc.py:495
+#: sabnzbd/postproc.py:496
 msgid "Some files failed to verify against \"%s\""
 msgstr ""
 
-#: sabnzbd/postproc.py:499
+#: sabnzbd/postproc.py:500
 msgid "[%s] No par2 sets"
 msgstr ""
 
-#: sabnzbd/postproc.py:531 sabnzbd/postproc.py:538
+#: sabnzbd/postproc.py:532 sabnzbd/postproc.py:539
 msgid "Cannot change permissions of %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:587 sabnzbd/postproc.py:658
+#: sabnzbd/postproc.py:588 sabnzbd/postproc.py:659
 msgid "Removing %s failed"
 msgstr ""
 
@@ -1097,7 +1105,7 @@ msgstr ""
 msgid "Failed to retrieve RSS from %s: %s"
 msgstr ""
 
-#: sabnzbd/rss.py:543
+#: sabnzbd/rss.py:547
 msgid "Empty RSS entry found (%s)"
 msgstr ""
 

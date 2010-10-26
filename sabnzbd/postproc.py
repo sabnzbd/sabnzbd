@@ -257,7 +257,7 @@ def process_job(nzo):
 
             workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
             if not os.path.exists(workdir_complete):
-                crash_msg = 'Cannot create final folder %s' % workdir_complete
+                crash_msg = T('Cannot create final folder %s') % unicoder(workdir_complete)
                 raise IOError
 
             if cfg.folder_rename():
@@ -401,7 +401,8 @@ def process_job(nzo):
         logging.error(Ta('Post Processing Failed for %s (%s)'), filename, crash_msg)
         if not crash_msg:
             logging.info("Traceback: ", exc_info = True)
-        nzo.fail_msg = T('PostProcessing Crashed, see logfile (%s)') % unicoder(crash_msg)
+            crash_msg = T('see logfile')
+        nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
         osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
         nzo.status = 'Failed'
         par_error = True
