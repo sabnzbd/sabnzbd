@@ -84,6 +84,12 @@ $T('explain-nzbmatrix')<br/>
             <input type="text" name="matrix_apikey" value="$matrix_apikey">
             <span class="tips">$T('explain-apikey_matrix')</span>
         <br class="clear" />
+
+			<label><span class="label">$T('opt-newzbin_unbookmark'):</span>
+            <input class="radio" type="checkbox" name="matrix_del_bookmark" value="1" <!--#if $matrix_del_bookmark > 0 then "checked=1" else ""#--> />
+            <span class="tips">$T('explain-newzbin_unbookmark')</span></label>
+        <br class="clear" />
+
 </fieldset>
 
 <p>

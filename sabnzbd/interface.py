@@ -1837,6 +1837,7 @@ class ConfigNewzbin(object):
 
         conf['matrix_username'] = cfg.matrix_username()
         conf['matrix_apikey'] = cfg.matrix_apikey()
+        conf['matrix_del_bookmark'] = int(cfg.matrix_del_bookmark())
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1855,6 +1856,7 @@ class ConfigNewzbin(object):
 
         cfg.matrix_username.set(kwargs.get('matrix_username'))
         cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
+        cfg.matrix_del_bookmark.set(kwargs.get('matrix_del_bookmark'))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -1866,6 +1868,7 @@ class ConfigNewzbin(object):
 
         cfg.matrix_username.set(kwargs.get('matrix_username'))
         cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
+        cfg.matrix_del_bookmark.set(kwargs.get('matrix_del_bookmark'))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
