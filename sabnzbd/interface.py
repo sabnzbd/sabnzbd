@@ -54,18 +54,18 @@ from sabnzbd.constants import *
 from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-                        api_handler, build_queue, rss_qstatus, \
-                        retry_job, build_header, get_history_size, build_history, \
-                        format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
+     api_handler, build_queue, rss_qstatus, \
+     retry_job, build_header, get_history_size, build_history, \
+     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
 
 #------------------------------------------------------------------------------
 # Global constants
 
 DIRECTIVES = {
-           'directiveStartToken': '<!--#',
-           'directiveEndToken': '#-->',
-           'prioritizeSearchListOverSelf' : True
-           }
+    'directiveStartToken': '<!--#',
+    'directiveEndToken': '#-->',
+    'prioritizeSearchListOverSelf' : True
+}
 FILTER = LatinFilter
 
 #------------------------------------------------------------------------------
@@ -104,9 +104,9 @@ def Raiser(root, **kwargs):
 
 def queueRaiser(root, kwargs):
     return Raiser(root, start=kwargs.get('start'),
-                        limit=kwargs.get('limit'),
-                        search=kwargs.get('search'),
-                        _dc=kwargs.get('_dc'))
+                  limit=kwargs.get('limit'),
+                  search=kwargs.get('search'),
+                  _dc=kwargs.get('_dc'))
 
 def dcRaiser(root, kwargs):
     return Raiser(root, _dc=kwargs.get('_dc'))
@@ -144,7 +144,7 @@ def set_auth(conf):
     """
     if cfg.username() and cfg.password():
         conf.update({'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : cfg.login_realm(),
-                            'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd})
+                     'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd})
         conf.update({'/api':{'tools.basic_auth.on' : False},
                      '/m/api':{'tools.basic_auth.on' : False},
                      '/sabnzbd/api':{'tools.basic_auth.on' : False},
@@ -837,7 +837,7 @@ class HistoryPage(object):
 
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
-                to_units(grand), to_units(month), to_units(week), to_units(day)
+               to_units(grand), to_units(month), to_units(week), to_units(day)
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search)
 
@@ -1041,7 +1041,7 @@ LIST_DIRPAGE = ( \
     'download_dir', 'download_free', 'complete_dir', 'cache_dir', 'admin_dir',
     'nzb_backup_dir', 'dirscan_dir', 'dirscan_speed', 'script_dir',
     'email_dir', 'permissions', 'log_dir'
-    )
+)
 
 class ConfigDirectories(object):
     def __init__(self, web_dir, root, prim):
@@ -1088,13 +1088,13 @@ class ConfigDirectories(object):
 
 
 SWITCH_LIST = \
-    ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
-     'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
-     'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
-     'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
-     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
-     'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check'
-    )
+            ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
+             'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
+             'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
+             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
+             'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
+             'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check'
+             )
 
 #------------------------------------------------------------------------------
 class ConfigSwitches(object):
@@ -1146,7 +1146,7 @@ GENERAL_LIST = (
     'refresh_rate', 'rss_rate',
     'cache_limit',
     'enable_https', 'https_port', 'https_cert', 'https_key'
-    )
+)
 
 class ConfigGeneral(object):
     def __init__(self, web_dir, root, prim):
@@ -1575,7 +1575,7 @@ class ConfigRss(object):
         cat = ConvertSpecials(kwargs.get('cat'))
 
         cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
-                           platform_encode(kwargs.get('filter_text'))))
+                                                         platform_encode(kwargs.get('filter_text'))))
         config.save_config()
         raise rssRaiser(self.__root, kwargs)
 
@@ -1791,7 +1791,7 @@ class ConfigScheduling(object):
             if action:
                 sched = cfg.schedules()
                 sched.append('%s %s %s %s %s' %
-                                 (minute, hour, dayofweek, action, arguments))
+                             (minute, hour, dayofweek, action, arguments))
                 cfg.schedules.set(sched)
 
         config.save_config()
@@ -1977,7 +1977,7 @@ SORT_LIST = ( \
     'enable_tv_sorting', 'tv_sort_string', 'tv_categories',
     'enable_movie_sorting', 'movie_sort_string', 'movie_sort_extra', 'movie_extra_folder',
     'enable_date_sorting', 'date_sort_string', 'movie_categories', 'date_categories'
-    )
+)
 
 #------------------------------------------------------------------------------
 class ConfigSorting(object):
@@ -2123,8 +2123,8 @@ class ConnectionInfo(object):
         pack['unpack'] = ['action 1', 'action 2']
 
         self.__lastmail = emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
-                                      os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                      str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+                                         os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                         str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2429,7 +2429,7 @@ LIST_EMAIL = (
     'email_endjob', 'email_full',
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
-    )
+)
 
 class ConfigEmail(object):
     def __init__(self, web_dir, root, prim):
