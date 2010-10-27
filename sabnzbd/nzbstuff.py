@@ -22,7 +22,6 @@ sabnzbd.nzbstuff - misc
 import os
 import time
 import re
-import glob
 import logging
 import datetime
 import xml.sax

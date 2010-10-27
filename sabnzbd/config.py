@@ -307,12 +307,12 @@ class OptionPassword(Option):
 
 
 @synchronized(CONFIG_LOCK)
-def add_to_database(section, keyword, object):
+def add_to_database(section, keyword, obj):
     """ add object as secion/keyword to INI database """
     global database
     if section not in database:
         database[section] = {}
-    database[section][keyword] = object
+    database[section][keyword] = obj
 
 
 @synchronized(CONFIG_LOCK)
@@ -637,7 +637,7 @@ def read_config(path):
         # No file found, create default INI file
         try:
             if not sabnzbd.WIN32:
-                prev= os.umask(077)
+                prev = os.umask(077)
             fp = open(path, "w")
             fp.write("__version__=%s\n[misc]\n[logging]\n" % __CONFIG_VERSION)
             fp.close()
@@ -650,7 +650,7 @@ def read_config(path):
         CFG = configobj.ConfigObj(path)
         try:
             if int(CFG['__version__']) > int(__CONFIG_VERSION):
-                return False, "Incorrect version number %s in %s" %(CFG['__version__'], path)
+                return False, "Incorrect version number %s in %s" % (CFG['__version__'], path)
         except KeyError:
             CFG['__version__'] = __CONFIG_VERSION
         except ValueError:
@@ -693,7 +693,7 @@ def save_config(force=False):
         if section in ('servers', 'categories', 'rss'):
             try:
                 CFG[section]
-            except:
+            except KeyError:
                 CFG[section] = {}
             for subsec in database[section]:
                 if section == 'servers':
@@ -702,7 +702,7 @@ def save_config(force=False):
                     subsec_mod = subsec
                 try:
                     CFG[section][subsec_mod]
-                except:
+                except KeyError:
                     CFG[section][subsec_mod] = {}
                 items = database[section][subsec].get_dict()
                 CFG[section][subsec_mod] = items
@@ -712,7 +712,7 @@ def save_config(force=False):
                 sec = sec[-1]
                 try:
                     CFG[sec]
-                except:
+                except KeyError:
                     CFG[sec] = {}
                 value = database[section][option]()
                 if type(value) == type(True):
@@ -754,7 +754,7 @@ def get_servers():
     global database
     try:
         return database['servers']
-    except:
+    except KeyError:
         return {}
 
 
@@ -787,7 +787,7 @@ def get_categories(cat=0):
         database['categories'] = {}
     cats = database['categories']
     if '*' not in cats:
-        defcat = ConfigCat('*', {'pp' : 3, 'script' : 'None', 'priority' : constants.NORMAL_PRIORITY})
+        ConfigCat('*', {'pp' : 3, 'script' : 'None', 'priority' : constants.NORMAL_PRIORITY})
     if not isinstance(cat, int):
         try:
             cats = cats[cat]
@@ -811,7 +811,7 @@ def get_rss():
     global database
     try:
         return database['rss']
-    except:
+    except KeyError:
         return {}
 
 def get_filename():
@@ -833,7 +833,7 @@ def encode_password(pw):
         encPW = __PW_PREFIX
         for c in pw:
             cnum = ord(c)
-            if c == '#' or cnum<33 or cnum>126:
+            if c == '#' or cnum < 33 or cnum > 126:
                 enc = True
             encPW += '%2x' % cnum
         if enc:
@@ -850,7 +850,7 @@ def decode_password(pw, name):
         for n in range(len(__PW_PREFIX), len(pw), 2):
             try:
                 ch = chr( int(pw[n] + pw[n+1], 16) )
-            except:
+            except ValueError:
                 logging.error(Ta('Incorrectly encoded password %s'), name)
                 return ''
             decPW += ch

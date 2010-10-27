@@ -291,8 +291,7 @@ class DirScanner(threading.Thread):
                 if os.path.isdir(path) or path in self.ignored:
                     continue
 
-                root, ext = os.path.splitext(path)
-                ext = ext.lower()
+                ext = os.path.splitext(path)[1].lower()
                 candidate = ext in ('.nzb', '.zip', '.gz', '.rar')
                 if candidate:
                     try:

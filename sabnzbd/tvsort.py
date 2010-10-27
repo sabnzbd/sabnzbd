@@ -661,6 +661,7 @@ class DateSorter(object):
         self.date_type = None
 
         self.date_info = {}
+        self.final_path = ''
 
         # Check if we match the category in init()
         self.match()
@@ -1018,11 +1019,12 @@ def check_regexs(filename, matchers, double=False):
     Returns the MatchObject if a match is made
     This version checks for an additional match
     """
-    '''if double:
-        matcher, extramatchers = matchers
-    else:
-        matcher = matchers
-        extramatchers = []'''
+    #if double:
+    #   matcher, extramatchers = matchers
+    #else:
+    #    matcher = matchers
+    #    extramatchers = []
+
     extras = []
     for expressions in matchers:
         expression, extramatchers = expressions

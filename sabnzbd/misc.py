@@ -31,8 +31,6 @@ import threading
 import subprocess
 import socket
 import time
-import datetime
-from calendar import MONDAY
 import glob
 
 import sabnzbd
@@ -827,14 +825,14 @@ def to_units(val, spaces=0, dec_limit=2):
     val = str(val).strip()
     if val == "-1":
         return val
-    n= 0
+    n = 0
     try:
         val = float(val)
     except:
         return ''
     while (val > 1023.0) and (n < 5):
         val = val / 1024.0
-        n= n+1
+        n = n + 1
     unit = TAB_UNITS[n]
     if not unit:
         unit = ' ' * spaces
@@ -1253,7 +1251,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     """
     try:
         from OpenSSL import crypto
-        from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
+        from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate, \
              TYPE_RSA, serial
     except:
         logging.warning(Ta('pyopenssl module missing, please install for https access'))
@@ -1264,7 +1262,6 @@ def create_https_certificates(ssl_cert, ssl_key):
     careq = createCertRequest(cakey, CN='Certificate Authority')
     cacert = createCertificate(careq, (careq, cakey), serial, (0, 60*60*24*365*10)) # ten years
 
-    fname = 'server'
     cname = 'SABnzbd'
     pkey = createKeyPair(TYPE_RSA, 1024)
     req = createCertRequest(pkey, CN=cname)
@@ -1327,7 +1324,7 @@ def ip_extract():
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              startupinfo=None, creationflags=0)
         output = p.stdout.read()
-        ret = p.wait()
+        p.wait()
         for line in output.split('\n'):
             m = _RE_IP4.search(line)
             if not (m and m.group(2)):
@@ -1372,8 +1369,8 @@ def win_shutdown():
 
         flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
         htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
-        id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
-        newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+        id_ = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
+        newPrivileges = [(id_, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
         win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
         win32api.InitiateSystemShutdown("", "", 30, 1, 0)
     finally:

@@ -288,7 +288,7 @@ def _prepare_message(txt):
     # Prevent double header (because it will be added again by encode_quopri)
     try:
         del msg['Content-Transfer-Encoding']
-    except:
+    except KeyError:
         pass
 
     encode_quopri(msg)

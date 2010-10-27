@@ -28,7 +28,7 @@ from time import time
 import binascii
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicode2local,name_fixer, reliable_unpack_names, unicoder
+from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, name_fixer, reliable_unpack_names, unicoder
 from sabnzbd.utils.rarfile import RarFile, is_rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path
 from sabnzbd.tvsort import SeriesSorter
