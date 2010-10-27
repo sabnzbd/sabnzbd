@@ -1117,13 +1117,15 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
 
 
 def on_cleanup_list(filename, skip_nzb=False):
-    """ Return True if a filename matches the clean-up list """
-
-    if cfg.cleanup_list():
+    """ Return True if a filename matches the clean-up list
+    """
+    lst = cfg.cleanup_list()
+    if lst:
         ext = os.path.splitext(filename)[1].strip().strip('.')
-        if sabnzbd.WIN32: ext = ext.lower()
+        if sabnzbd.WIN32:
+            ext = ext.lower()
 
-        for k in cfg.cleanup_list():
+        for k in lst:
             item = k.strip().strip('.')
             if item == ext and not (skip_nzb and item == 'nzb'):
                 return True

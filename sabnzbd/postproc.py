@@ -383,6 +383,9 @@ def process_job(nzo):
                                     u'%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(script_output),
                                     T('View script output')), unique=True)
 
+        ## Cleanup again, including NZB files
+        cleanup_list(workdir_complete, False)
+
         ## Remove newzbin bookmark, if any
         if msgid and all_ok:
             Bookmarks.do.del_bookmark(msgid)
