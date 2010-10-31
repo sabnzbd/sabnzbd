@@ -142,7 +142,7 @@ class NzbQueue(TryList):
                     logging.info('Skipping repair for job %s', folder)
         return result
 
-    
+
     def repair_job(self, folder, new_nzb=None):
         """ Reconstruct admin for a single job folder, optionally with new NZB """
         name = os.path.basename(folder)
@@ -175,9 +175,9 @@ class NzbQueue(TryList):
             else:
                 nzo_ids.append(nzo.nzo_id)
             if save_nzo is None or nzo is save_nzo:
-               sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
-               if not nzo.futuretype:
-                   nzo.save_attribs()
+                sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
+                if not nzo.futuretype:
+                    nzo.save_attribs()
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -413,7 +413,9 @@ class NzbQueue(TryList):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzo.resume()
+            nzo.reset_all_try_lists()
             logging.debug("Resumed nzo: %s", nzo_id)
+        self.reset_try_list()
 
     @synchronized(NZBQUEUE_LOCK)
     def switch(self, item_id_1, item_id_2):
@@ -623,7 +625,7 @@ class NzbQueue(TryList):
         ''' Check if the queue contains any Forced
         Priority items to download while paused '''
         for nzo in self.__nzo_list:
-            if nzo.priority == TOP_PRIORITY and nzo.status != 'Paused':
+            if nzo.priority == TOP_PRIORITY and nzo.status not in ('Paused', 'Grabbing'):
                 return True
         return False
 
@@ -632,7 +634,7 @@ class NzbQueue(TryList):
         if self.__top_only:
             if self.__nzo_list:
                 for nzo in self.__nzo_list:
-                    if not nzo.status == 'Paused':
+                    if nzo.status not in ('Paused', 'Grabbing'):
                         article = nzo.get_article(server)
                         if article:
                             return article
@@ -640,7 +642,7 @@ class NzbQueue(TryList):
         else:
             for nzo in self.__nzo_list:
                 # Don't try to get an article if server is in try_list of nzo
-                if not nzo.server_in_try_list(server) and nzo.status != 'Paused':
+                if not nzo.server_in_try_list(server) and nzo.status not in ('Paused', 'Grabbing'):
                     article = nzo.get_article(server)
                     if article:
                         return article
