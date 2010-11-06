@@ -189,8 +189,9 @@ def cat_convert(cat):
 # sanitize_filename                                                            #
 ################################################################################
 if sabnzbd.WIN32:
-    CH_ILLEGAL = r'\/<>?*:|"'
-    CH_LEGAL   = r'++{}!@-#`'
+    # the colon should be here too, but we'll handle that separately
+    CH_ILLEGAL = r'\/<>?*|"'
+    CH_LEGAL   = r'++{}!@#`'
 else:
     CH_ILLEGAL = r'/'
     CH_LEGAL   = r'+'
@@ -203,6 +204,14 @@ def sanitize_filename(name):
         return name
     illegal = CH_ILLEGAL
     legal   = CH_LEGAL
+
+    if ':' in name:
+        if sabnzbd.WIN32:
+            # Compensate for the odd way par2 on Windows substitutes a colon character
+            name = name.replace(':', '3A')
+        elif sabnzbd.DARWIN:
+            # Compensate for the foolish way par2 on OSX handles a colon character
+            name = name[name.rfind(':')+1:]
 
     lst = []
     for ch in name.strip():
