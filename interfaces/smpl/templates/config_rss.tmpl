@@ -16,8 +16,8 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
 	<p><a href="#" onClick="javascript:lr('config/rss',''); return false;">&laquo; $T('back')</a></p>
 
 <fieldset class="EntryFieldSet">
-	
-	
+
+
     <legend <!--#if $rss[$feed]['enable'] then 'class="feedEnabled"' else 'class="feedDisabled"'#-->><input type="checkbox" onclick="javascript:submitconfig('config/rss/toggle_rss_feed', '','update_$feed','1' )"  name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
     $T('feed') $feed</legend>
     <hr />
@@ -286,6 +286,20 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
     </div>
 
     <p>$T('explain-RSS')</p>
+
+	<div class="EntryBlock">
+    <form id="save_rate">
+    <fieldset class="EntryFieldSet">
+    <legend>$T('opt-rss_rate')</legend>
+		<input type="text" name="rss_rate" value="$rss_rate">
+        <input type="hidden" name="session" value="$session" />
+        <input type="submit" value="$T('button-save')" onclick="javascript:submitconfig('config/rss/save_rss_rate', this,'save_rate','1' )" />
+		<br/>
+		$T('explain-rss_rate')
+	</fieldset>
+    </form>
+    </div>
+
 
     <table id="catTable">
         <tr>

@@ -61,6 +61,7 @@ def init():
 
     reset_guardian()
     __SCHED = kronos.ThreadedScheduler()
+    rss_planned = False
 
     for schedule in cfg.schedules():
         arguments = []
@@ -112,6 +113,9 @@ def init():
             action = sabnzbd.disable_server
         elif action_name == 'scan_folder':
             action = sabnzbd.dirscanner.dirscan
+        elif action_name == 'rss_scan':
+            action = rss.run_method
+            rss_planned = True
         else:
             logging.warning(Ta('Unknown action: %s'), action_name)
             continue
@@ -126,12 +130,13 @@ def init():
                                   kronos.method.sequential, None, None)
 
     # Set RSS check interval
-    interval = cfg.rss_rate()
-    delay = random.randint(0, interval-1)
-    logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
-    __SCHED.add_interval_task(rss.run_method, "RSS", delay*60, interval*60,
-                                  kronos.method.sequential, None, None)
-    __SCHED.add_single_task(rss.run_method, 'RSS', 15, kronos.method.sequential, None, None)
+    if not rss_planned:
+        interval = cfg.rss_rate()
+        delay = random.randint(0, interval-1)
+        logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
+        __SCHED.add_interval_task(rss.run_method, "RSS", delay*60, interval*60,
+                                      kronos.method.sequential, None, None)
+        __SCHED.add_single_task(rss.run_method, 'RSS', 15, kronos.method.sequential, None, None)
 
     if cfg.version_check():
         # Check for new release, once per week on random time

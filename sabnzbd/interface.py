@@ -1143,8 +1143,7 @@ class ConfigSwitches(object):
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'disable_api_key',
-    'refresh_rate', 'rss_rate',
-    'cache_limit',
+    'refresh_rate', 'cache_limit',
     'enable_https', 'https_port', 'https_cert', 'https_key'
 )
 
@@ -1244,7 +1243,6 @@ class ConfigGeneral(object):
         conf['password'] = cfg.password.get_stars()
         conf['bandwidth_limit'] = cfg.bandwidth_limit()
         conf['refresh_rate'] = cfg.refresh_rate()
-        conf['rss_rate'] = cfg.rss_rate()
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
 
@@ -1469,6 +1467,8 @@ class ConfigRss(object):
         conf['cat_list'] = list_cats(default=False)
         pick_cat = conf['cat_list'] != []
 
+        conf['rss_rate'] = cfg.rss_rate()
+
         rss = {}
         feeds = config.get_rss()
         for feed in feeds:
@@ -1508,6 +1508,13 @@ class ConfigRss(object):
         template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
+
+    @cherrypy.expose
+    def save_rss_rate(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        cfg.rss_rate.set(kwargs.get('rss_rate'))
+        raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def upd_rss_feed(self, **kwargs):
@@ -1688,7 +1695,7 @@ class ConfigRss(object):
 
 #------------------------------------------------------------------------------
 _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
-                  'pause_post', 'resume_post', 'scan_folder')
+                  'pause_post', 'resume_post', 'scan_folder', 'rss_scan')
 
 class ConfigScheduling(object):
     def __init__(self, web_dir, root, prim):

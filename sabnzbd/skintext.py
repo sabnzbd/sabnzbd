@@ -55,6 +55,7 @@ SKIN_TEXT = {
     'sch-pause_post'     : TT('Pause post-processing'),
     'sch-resume_post'    : TT('Resume post-processing'),
     'sch-scan_folder'    : TT('Scan watched folder'),
+    'sch-rss_scan'       : TT('Read RSS feeds'),
 
 # General texts
     'default' : TT('Default'),
@@ -251,7 +252,7 @@ SKIN_TEXT = {
     'opt-refresh_rate' : TT('Queue auto refresh interval:'),
     'explain-refresh_rate' : TT('Refresh interval of the queue web-interface page(sec, 0= none).'),
     'opt-rss_rate' : TT('RSS Checking Interval'),
-    'explain-rss_rate' : TT('Checking interval (in minutes, at least 15).'),
+    'explain-rss_rate' : TT('Checking interval (in minutes, at least 15). Not active when you use the Scheduler!'),
     'opt-bandwidth_limit' : TT('Download Speed Limit'),
     'explain-bandwidth_limit' : TT('Download rate limit (in KB/s - kilobytes per second).'),
     'opt-cache_limitstr' : TT('Article Cache Limit'),
