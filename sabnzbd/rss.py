@@ -387,7 +387,6 @@ class RSSQueue(object):
         return ''
 
 
-    @synchronized(LOCK)
     def run(self):
         """ Run all the URI's and filters
         """
@@ -400,8 +399,8 @@ class RSSQueue(object):
                     if feeds[feed].enable.get():
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
-                        # Wait 30 seconds, else sites may get irritated
-                        for x in xrange(30):
+                        # Wait 15 seconds, else sites may get irritated
+                        for x in xrange(15):
                             if self.shutdown:
                                 return
                             else:
