@@ -291,16 +291,16 @@ class RSSQueue(object):
 
                 newlinks.append(link)
 
-                myCat = defCat
-                myPP = ''
-                myScript = ''
-                #myPriority = 0
-
                 if (link not in jobs) or (jobs[link].get('status', ' ') in ('G', 'B', 'G*', 'B*')):
                     # Match this title against all filters
                     logging.debug('Trying title %s', atitle)
                     result = False
                     for n in xrange(regcount):
+                        myCat = defCat
+                        myPP = ''
+                        myScript = ''
+                        #myPriority = 0
+
                         if notdefault(reCats[n]):
                             myCat = reCats[n]
                         elif category:
