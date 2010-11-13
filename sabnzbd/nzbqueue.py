@@ -54,7 +54,7 @@ class NzbQueue(TryList):
     def __init__(self):
         TryList.__init__(self)
 
-        self.__top_only = cfg.top_only()
+        self.__top_only = False #cfg.top_only()
         self.__top_nzo = None
 
         self.__nzo_list = []
@@ -195,6 +195,7 @@ class NzbQueue(TryList):
     @synchronized(NZBQUEUE_LOCK)
     def insert_future(self, future, filename, msgid, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
         """ Refresh a placeholder nzo with an actual nzo """
+        assert isinstance(future, NzbObject)
         if nzo_info is None:
             nzo_info = {}
         nzo_id = future.nzo_id
@@ -276,6 +277,7 @@ class NzbQueue(TryList):
 
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, save=True):
+        assert isinstance(nzo, NzbObject)
         sabnzbd.QUEUECOMPLETEACTION_GO = False
 
         if not nzo.nzo_id:
@@ -728,12 +730,6 @@ class NzbQueue(TryList):
         nzo.purge_data(keep_basic, del_files)
 
         ArticleCache.do.purge_articles(nzo.saved_articles)
-
-    @synchronized(NZBQUEUE_LOCK)
-    def debug(self):
-        return ([], self.__nzo_list[:],
-                self.__nzo_table.copy(), self.try_list[:])
-
 
     def get_urls(self):
         """ Return list of future-types needing URL """

@@ -22,6 +22,8 @@
 			<br class="clear" />
 		<label class="label">$T('srv-connections'):</label><input type="text" size="25" name="connections" value="$servers[$server]['connections']">
 			<br class="clear" />
+		<label class="label">$T('srv-retention') ($T('days')):</label><input type="text" size="25" name="retention" value="$servers[$server]['retention']">
+			<br class="clear" />
 
 			<label><span class="label">$T('srv-ssl')<!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#-->:</span>
 			<input class="radio" type="checkbox" name="ssl" value="1" <!--#if int($servers[$server]['ssl']) != 0 and int($have_ssl) == 1 then "checked=1" else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#-->/>
@@ -83,6 +85,9 @@
 		<br class="clear" />
 
 			<label class="label">$T('srv-connections'):</label><input type="text" size="25" name="connections">
+		<br class="clear" />
+
+			<label class="label">$T('srv-retention') ($T('days')):</label><input type="text" size="25" name="retention">
 		<br class="clear" />
 
 			<label><span class="label">$T('srv-ssl')<!--#if int($have_ssl) == 0 then $T('opt-notInstalled') else ""#-->:</span>

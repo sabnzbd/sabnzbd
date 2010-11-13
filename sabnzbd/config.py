@@ -344,6 +344,7 @@ class ConfigServer(object):
         self.ssl = OptionBool(name, 'ssl', False, add=False)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
+        self.retention = OptionNumber(name, 'retention', add=False)
 
         self.set_dict(values)
         add_to_database('servers', self.__name, self)
@@ -351,7 +352,7 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('host', 'port', 'timeout', 'username', 'password', 'connections',
-                   'fillserver', 'ssl', 'enable', 'optional'):
+                   'fillserver', 'ssl', 'enable', 'optional', 'retention'):
             try:
                 value = values[kw]
             except KeyError:
@@ -376,6 +377,7 @@ class ConfigServer(object):
         dict['ssl'] = self.ssl()
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
+        dict['retention'] = self.retention()
         return dict
 
     def delete(self):

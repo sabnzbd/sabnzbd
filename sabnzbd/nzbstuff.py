@@ -87,6 +87,7 @@ class Article(TryList):
         if not self.fetcher and not self.server_in_try_list(server):
             self.fetcher = server
             return self
+        return None
 
     def get_art_id(self):
         """ Return unique article storage name, create if needed """
@@ -420,6 +421,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         """ End of the file """
         self.nzo.groups = self.groups
         files = max(1, self.valids)
+        self.nzo.avg_stamp = self.avg_age / files
         self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / files)
         if self.skipped_files:
             logging.warning(Ta('Failed to import %s files from %s'),
@@ -524,6 +526,7 @@ class NzbObject(TryList):
             self.url = ''
         self.groups = []
         self.avg_date = datetime.datetime.fromtimestamp(0.0)
+        self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
         self.dirprefix = []
 
         self.partable = {}          # Holds one parfile-name for each set
@@ -814,6 +817,7 @@ class NzbObject(TryList):
         # Flag files from NZB that already exist as finished
         for nzf in self.files[:]:
             alleged_name = nzf.filename
+            filename = alleged_name
             subject = sanitize_filename(latin1(nzf.subject))
             ready = alleged_name in files
             if not ready:
@@ -923,6 +927,7 @@ class NzbObject(TryList):
         nzf_remove_list = []
 
         for nzf in self.files:
+            assert isinstance(nzf, NzbFile)
             # Don't try to get an article if server is in try_list of nzf
             if not nzf.server_in_try_list(server):
                 if not nzf.import_finished:
@@ -1192,6 +1197,7 @@ class NzbObject(TryList):
                 # Handle new attributes
                 self.__dict__[tup[1]] = None
         self.pp_active = False
+        self.avg_stamp = time.mktime(self.avg_date.timetuple())
         TryList.__init__(self)
 
 

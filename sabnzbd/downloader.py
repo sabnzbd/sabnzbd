@@ -22,7 +22,6 @@ sabnzbd.downloader - download engine
 import time
 import select
 import logging
-import datetime
 from threading import Thread, RLock
 from nntplib import NNTPPermanentError
 import socket
@@ -199,7 +198,7 @@ def active_primaries():
 #------------------------------------------------------------------------------
 class Server(object):
     def __init__(self, id, host, port, timeout, threads, fillserver, ssl, username = None,
-                 password = None, optional=False):
+                 password = None, optional=False, retention=0):
         self.id = id
         self.newid = None
         self.restart = False
@@ -210,6 +209,7 @@ class Server(object):
         self.fillserver = fillserver
         self.ssl = ssl
         self.optional = optional
+        self.retention = retention
 
         self.username = username
         self.password = password
@@ -246,7 +246,7 @@ class Server(object):
 #------------------------------------------------------------------------------
 
 class Downloader(Thread):
-    def __init__(self, paused = False):
+    def __init__(self, paused=False):
         Thread.__init__(self)
 
         logging.debug("Initializing downloader/decoder")
@@ -307,6 +307,7 @@ class Downloader(Thread):
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
+            retention = float(srv.retention() * 24 * 3600) # days ==> seconds
             create = True
 
         if oldserver:
@@ -321,7 +322,7 @@ class Downloader(Thread):
 
         if create and enabled and host and port and threads:
             self.servers.append(Server(newserver, host, port, timeout, threads, fillserver, ssl,
-                                            username, password, optional))
+                                            username, password, optional, retention))
 
         return primary
 
@@ -401,6 +402,7 @@ class Downloader(Thread):
 
         while 1:
             for server in self.servers:
+                assert isinstance(server, Server)
                 for nw in server.busy_threads[:]:
                     if nw.nntp.error_msg or (nw.timeout and time.time() > nw.timeout):
                         if nw.nntp.error_msg:
@@ -424,6 +426,7 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
+                assert isinstance(server, Server)
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
@@ -431,6 +434,7 @@ class Downloader(Thread):
                     continue
 
                 for nw in server.idle_threads[:]:
+                    assert isinstance(nw, NewsWrapper)
                     if nw.timeout:
                         if time.time() < nw.timeout:
                             continue
@@ -450,26 +454,32 @@ class Downloader(Thread):
                     if not article:
                         break
 
+                    if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
+                        # Article too old for the server, treat as missing
+                        if sabnzbd.LOG_ALL:
+                            logging.debug('Article %s too old for %s:%s', article.article, server.host, server.port)
+                        self.decoder.decode(article, None)
+                        break
+
+                    server.idle_threads.remove(nw)
+                    server.busy_threads.append(nw)
+
+                    nw.article = article
+
+                    if nw.connected:
+                        self.__request_article(nw)
                     else:
-                        server.idle_threads.remove(nw)
-                        server.busy_threads.append(nw)
-
-                        nw.article = article
-
-                        if nw.connected:
-                            self.__request_article(nw)
-                        else:
-                            try:
-                                logging.info("%s@%s:%s: Initiating connection",
-                                                  nw.thrdnum, server.host, server.port)
-                                nw.init_connect()
-                                self.write_fds[nw.nntp.sock.fileno()] = nw
-                            except:
-                                logging.error(Ta('Failed to initialize %s@%s:%s'),
-                                                  nw.thrdnum, server.host,
-                                                  server.port)
-                                logging.info("Traceback: ", exc_info = True)
-                                self.__reset_nw(nw, "failed to initialize")
+                        try:
+                            logging.info("%s@%s:%s: Initiating connection",
+                                              nw.thrdnum, server.host, server.port)
+                            nw.init_connect()
+                            self.write_fds[nw.nntp.sock.fileno()] = nw
+                        except:
+                            logging.error(Ta('Failed to initialize %s@%s:%s'),
+                                              nw.thrdnum, server.host,
+                                              server.port)
+                            logging.info("Traceback: ", exc_info = True)
+                            self.__reset_nw(nw, "failed to initialize")
 
             # Exit-point
             if self.shutdown:
