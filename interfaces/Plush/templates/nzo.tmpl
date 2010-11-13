@@ -101,7 +101,7 @@
                         <td><input type="checkbox" name="$file.nzf_id" id="box-$file.nzf_id" <!--#if $file.checked then "checked" else ""#-->></td>
 						<td valign="middle">
 							<div class="main_sprite_container sprite_progressbar_bg">
-								<div class="main_sprite_container sprite_progress_done" style="background-position: -<!--#if $file.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($file.mbleft) / float($file.mb) * 100))#-->px -347px">
+								<div class="main_sprite_container sprite_progress_done" style="background-position: -<!--#if $file.mb == "0.00" then "120" else int(120 - 120.0 / 100.0 * int(100 - float($file.mbleft) / float($file.mb) * 100))#-->px -401px">
 									<div class="totalDownload">$file.mbleft&nbsp;<small>$T('Plush-left')</small></div>
 									<div class="currentDownload">$file.mb&nbsp;<small>$T('MB')</small></div>
 								</div>
