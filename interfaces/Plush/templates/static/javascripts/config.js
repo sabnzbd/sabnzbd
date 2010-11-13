@@ -29,7 +29,7 @@ jQuery(document).ready(function($){
 	}
 	
 	// assume there are jqueryui tabs/buttons
-	$( "#tabs" ).tabs();
+	$( ".tabs" ).tabs();
 	$('.juiButton').button();
 	
     switch(config_pane) {
