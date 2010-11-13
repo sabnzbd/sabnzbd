@@ -20,20 +20,24 @@
 		<!--#end if#-->
 	</ul>
 	<div id="tabs-warnings">
-		<p><a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a></p>
-		<small><ol class="numbered_list">
-		<!--#for $warn in $warnings#-->
-			<li><pre>$warn</pre></li>
-		<!--#end for#-->
-		</ol></small>
+		<!--#if $warnings#-->
+			<p><a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a></p>
+			<small><ol class="numbered_list">
+			<!--#for $warn in $warnings#-->
+				<li><pre>$warn</pre></li>
+			<!--#end for#-->
+			</ol></small>
+		<!--#else#-->
+			<p>$T('none')</p>
+		<!--#end if#-->
 	</div>
 	<div id="tabs-info">
-		<p>$T('confgFile'): configfn</p>
-		<p>$T('version'): $version</p>
-		<p>$T('uptime'): $uptime</p>
-		<p><a href="showlog?session=$session" class="juiButton">$T('link-showLog')</a></p>
-		<p><a href="showweb?session=$session" class="juiButton">$T('link-showWeblog')</a></p>
-		<p>$T('logging'): <select class="xsmall" id="logging_level">
+		<p><strong>$T('confgFile'):</strong> $configfn</p>
+		<p><strong>$T('version'):</strong> $version</p>
+		<p><strong>$T('uptime'):</strong> $uptime</p>
+		<p><a href="showlog?session=$session" class="juiButton">$T('link-showLog')</a>
+		   <a href="showweb?session=$session" class="juiButton">$T('link-showWeblog')</a></p>
+		<p><strong>$T('logging'):</strong> <select class="xsmall" id="logging_level">
 			<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
 			<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
 			<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
@@ -45,14 +49,14 @@
 		<table>
 			<tr><td>
 				<form action="saveGeneral" method="post">
-					<input type="submit" class="juiButton" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
-				</form>
-				</td><td style="padding-left:20px;"><p>$T('explain-Restart')</p></td></tr>
-			<tr><td>
-				<form action="saveGeneral" method="post">
 					<input type="submit" class="juiButton" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
 				</form>
 				</td><td style="padding-left:20px;"><p>$T('explain-Repair')</p></td></tr>
+			<tr><td>
+				<form action="saveGeneral" method="post">
+					<input type="submit" class="juiButton" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
+				</form>
+				</td><td style="padding-left:20px;"><p>$T('explain-Restart')</p></td></tr>
 		</table>
 
 		<!--#if $folders#-->
@@ -72,14 +76,14 @@
 						<form action="delete" method="get">
 						<input type="hidden" value="$folder" name="name">
 						<input type="hidden" value="$session" name="session">
-						<input type="submit" value="$T('button-delCat')">
+						<input type="submit" class="juiButton" style="padding:0px" value="$T('button-delCat')">
 						</form>
 					</td>
 					<td>
 						<form action="add" method="get">
 						<input type="hidden" value="$folder" name="name">
 						<input type="hidden" value="$session" name="session">
-						<input type="submit" value="$T('button-add')">
+						<input type="submit" class="juiButton" style="padding:0px" value="$T('button-add')">
 						</form>
 					</td>
 					<td>$folder</td>

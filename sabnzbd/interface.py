@@ -2059,6 +2059,8 @@ class ConnectionInfo(object):
         header['lastmail'] = self.__lastmail
 
         header['folders'] = nzbqueue.scan_jobs(all=False, action=False)
+        header['configfn'] = config.get_filename()
+
 
         header['servers'] = []
 
