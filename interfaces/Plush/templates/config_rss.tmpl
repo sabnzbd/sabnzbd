@@ -39,7 +39,7 @@
 	                <input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
 	                </form>
 	            </td>
-	            <td><strong><a href="?feed=$rss[$feed]['link']">$feed</a></strong></td>
+	            <td><strong><a href="?feed=$rss[$feed]['link']#tabs-feed">$feed</a></strong></td>
 	            <td>$rss[$feed]['uri']</td>
 	        </tr>
 	    <!--#end for#-->
