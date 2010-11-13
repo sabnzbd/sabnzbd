@@ -2,41 +2,72 @@
 <!--#set global $help_uri="GUI+Connections"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-<div class="center" nowrap><small>
-	$T('version'): $version &sdot; $T('uptime'): $uptime &sdot;
-	<a href="showlog?session=$session">$T('link-showLog')</a> &sdot;
-	<a href="showweb?session=$session">$T('link-showWeblog')</a> &sdot;
-	$T('logging'): <select class="xsmall" id="logging_level">
-		<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
-		<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
-		<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
-	</select>
-	<!--#if int($cache_max)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#-->
 
-	<br/><br/>
-	<table width="100%">
-		<tr>
-			<td>$T('explain-Restart')</td>
-			<td><!--#if $folders#-->$T('explain-orphans')<!--#end if#--></td>
-			<td>$T('explain-Repair')</td>
-		</tr>
-		<tr>
-			<td>
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
+		<li><a href="#tabs-info">$T('info').capitalize()</a></li>
+		<li><a href="#tabs-repair">$T('button-repair')</a></li>
+		<!--#if $lastmail#-->
+			<li><a href="#tabs-lastmail">Last Mail</a></li>
+		<!--#end if#-->
+		<!--#if $servers#-->
+			<!--#set $count=0#-->
+			<!--#for $server in $servers#-->
+				<!--#set $count=$count+1#-->
+				<li><a href="#tabs-server$count">$server[0]:$server[1] ($server[2])</a></li>
+		    <!--#end for#-->
+		<!--#end if#-->
+	</ul>
+	<div id="tabs-warnings">
+		<p><a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a></p>
+		<small><ol class="numbered_list">
+		<!--#for $warn in $warnings#-->
+			<li><pre>$warn</pre></li>
+		<!--#end for#-->
+		</ol></small>
+	</div>
+	<div id="tabs-info">
+		<p>$T('confgFile'): configfn</p>
+		<p>$T('version'): $version</p>
+		<p>$T('uptime'): $uptime</p>
+		<p><a href="showlog?session=$session" class="juiButton">$T('link-showLog')</a></p>
+		<p><a href="showweb?session=$session" class="juiButton">$T('link-showWeblog')</a></p>
+		<p>$T('logging'): <select class="xsmall" id="logging_level">
+			<option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
+			<option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
+			<option value="2" <!--#if $loglevel == "2" then "selected" else ""#-->>$T('log-debug')</option>
+		</select></p>
+		<p><!--#if int($cache_max)#--> &sdot; <!--#set $msg=$T('ft-buffer@2')%($cache_art, $cache_size)#-->$msg<!--#end if#--></p>
+	</div>
+	<div id="tabs-repair">
+
+		<table>
+			<tr><td>
 				<form action="saveGeneral" method="post">
-					<input type="submit" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
+					<input type="submit" class="juiButton" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
 				</form>
-			</td><td><!--#if $folders#-->
-				<table class="catTable">
-					<tr>
-						<th></th>
-						<th></th>
-						<th>$T('name')</th>
-					</tr>
+				</td><td style="padding-left:20px;"><p>$T('explain-Restart')</p></td></tr>
+			<tr><td>
+				<form action="saveGeneral" method="post">
+					<input type="submit" class="juiButton" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
+				</form>
+				</td><td style="padding-left:20px;"><p>$T('explain-Repair')</p></td></tr>
+		</table>
+
+		<!--#if $folders#-->
+			<br/><hr/><br/>
+			<!--#if $folders#-->$T('explain-orphans')<!--#end if#-->
+			<table class="catTable">
+				<tr>
+					<th></th>
+					<th></th>
+					<th>$T('name')</th>
+				</tr>
 				<!--#set $odd = False#-->
 				<!--#for $folder in $folders#-->
 					<!--#set $odd = not $odd#-->
 					<tr class="<!--#if $odd then "odd" else "even"#-->">
-
 					<td>
 						<form action="delete" method="get">
 						<input type="hidden" value="$folder" name="name">
@@ -44,7 +75,6 @@
 						<input type="submit" value="$T('button-delCat')">
 						</form>
 					</td>
-
 					<td>
 						<form action="add" method="get">
 						<input type="hidden" value="$folder" name="name">
@@ -52,67 +82,40 @@
 						<input type="submit" value="$T('button-add')">
 						</form>
 					</td>
-
-					<td>
-					$folder
-					</td>
-
+					<td>$folder</td>
 				<!--#end for#-->
-				</table>
-				<!--#end if#-->
-			</td><td>
-				<form action="saveGeneral" method="post">
-					<input type="submit" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
-				</form>
-			</td>
-		</tr>
-	</table>
+			</table>
+		<!--#end if#-->
+	</div>
 
-</small></div>
-
+	
+	<!--#if $lastmail#-->
+		<div id="tabs-lastmail">
+			<small>$lastmail</small>
+		</div>
+	<!--#end if#-->
 
 
-
-
-<!--#if $servers#-->
-	<!--#for $server in $servers#-->
-	<fieldset class="EntryFieldSet">
-		<legend class="server<!--#if int($server[7]) != 0#-->Backup<!--#else if int($server[8]) != 0#-->Optional<!--#else#-->Enabled<!--#end if#-->">
-			<span class="config_sprite_container <!--#if int($server[4])#-->sprite_config_connections_encrypted<!--#else#-->sprite_config_connections_unencrypted<!--#end if#-->">&nbsp;</span>
-			$server[0]:$server[1]:$server[2]
-        <!--#if not $server[5]#-->
-            <a href="./unblock_server?server=$server[0]:$server[1]&session=$session">($T('server-blocked'))</a>
-            &nbsp;&nbsp;$server[6]
-        <!--#end if#-->
-		</legend>
-		<small><!--#if $server[3]#--><ol class="numbered_list">
-		<!--#for $thrd in $server[3]#-->
-			<li>&rArr; $thrd[1]<br/>&rArr; $thrd[2]<br/>&rArr; $thrd[3]</li>
-		<!--#end for#-->
-		</ol><!--#else#-->$T('none')<!--#end if#--></small>
-	</fieldset>
-    <!--#end for#-->
-<!--#end if#-->
-
-<!--#if $lastmail#-->
-	<fieldset class="EntryFieldSet">
-		<legend class="lastEmail"><span class="config_sprite_container sprite_config_email_account_settings">&nbsp;</span> $T('emailResult')</legend>
-		<small>$lastmail</small>
-	</fieldset>
-<!--#end if#-->
-
-<!--#if $warnings#-->
-	<fieldset class="EntryFieldSet">
-		<legend class="latestWarnings" id="configbox_latest_warnings">
-			<span class="config_sprite_container sprite_config_connections_warnings">&nbsp;</span>
-			$T('lastWarnings') (<a href="clearwarnings?session=$session">$T('clearWarnings')</a>)
-		</legend>
-		<small><ol class="numbered_list">
-		<!--#for $warn in $warnings#-->
-			<li><pre>$warn</pre></li>
-		<!--#end for#-->
-		</ol></small>
-	</fieldset>
-<!--#end if#-->
+	<!--#if $servers#-->
+		<!--#set $count=0#-->
+		<!--#for $server in $servers#-->
+			<!--#set $count=$count+1#-->
+				<div id="tabs-server$count">
+					$T('status'): <!--#if int($server[7]) != 0#--> $T('backup').capitalize()<!--#else if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#-->
+					<br/><br/>
+			        <!--#if not $server[5]#-->
+			            <a href="./unblock_server?server=$server[0]:$server[1]&session=$session">($T('server-blocked'))</a>
+			            &nbsp;&nbsp;$server[6]
+			        <!--#end if#-->
+					<small><!--#if $server[3]#--><ol class="numbered_list">
+					<!--#for $thrd in $server[3]#-->
+						<li>&rArr; $thrd[1]<br/>&rArr; $thrd[2]<br/>&rArr; $thrd[3]</li>
+					<!--#end for#-->
+					</ol><!--#else#-->$T('none')<!--#end if#--></small>
+				</div>
+	    <!--#end for#-->
+	<!--#end if#-->
+	
+</div>
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

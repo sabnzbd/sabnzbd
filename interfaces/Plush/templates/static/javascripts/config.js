@@ -28,8 +28,9 @@ jQuery(document).ready(function($){
 		});
 	}
 	
-	// assume there are jqueryui tabs
+	// assume there are jqueryui tabs/buttons
 	$( "#tabs" ).tabs();
+	$('.juiButton').button();
 	
     switch(config_pane) {
 

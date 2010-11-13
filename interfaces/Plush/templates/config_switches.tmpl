@@ -5,214 +5,200 @@
 <form action="saveSwitches" method="post" name="fullform">
 <input type="hidden" name="session" value="$session">
 
-<div class="EntryBlock">
-<fieldset class="EntryFieldSet">
 
-    <legend><span class="config_sprite_container sprite_config_switches_processing">&nbsp;</span> $T('processingSwitches')</legend>
 
-    <table cellpadding=2>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-quick_check'):</div></td>
-            <td><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-quick_check')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-enable_unrar'):</div></td>
-            <td><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-enable_unrar')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-enable_unzip'):</div></td>
-            <td><input type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-enable_unzip')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-enable_filejoin'):</div></td>
-            <td><input type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-enable_filejoin')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-enable_tsjoin'):</div></td>
-            <td><input type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-ts_join')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-enable_par_cleanup'):</div></td>
-            <td><input type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-enable_par_cleanup')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-fail_on_crc'):</div></td>
-            <td><input type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-fail_on_crc')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-safe_postproc'):</div></td>
-            <td><input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-safe_postproc')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-pause_on_pwrar'):</div></td>
-            <td><input type="checkbox" name="pause_on_pwrar" value="1" <!--#if $pause_on_pwrar > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-pause_on_pwrar')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-no_dupes'):</div></td>
-            <td><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-no_dupes')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-sfv_check'):</div></td>
-            <td><input type="checkbox" name="sfv_check" value="1" <!--#if $sfv_check > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-sfv_check')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight valign=top><div class="tucker">$T('opt-top_only'):</div></td>
-            <td valign=top><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-top_only')</small></td>
-        </tr>
-        <!--#if $nt#-->
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-par2_multicore'):</div></td>
-            <td><input type="checkbox" name="par2_multicore" value="1" <!--#if $par2_multicore > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-par2_multicore')</small></td>
-        </tr>
+<div id="tabs">
+	<ul>
+		<li><a href="#tabs-processingSwitches">$T('processingSwitches')</a></li>
+		<li><a href="#tabs-switches">$T('switches').capitalize()</a></li>
+		<li><a href="#tabs-otherSwitches">$T('otherSwitches')</a></li>
+	</ul>
+
+
+	<div id="tabs-processingSwitches">
+	
+	    <table cellpadding=2>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-quick_check'):</div></td>
+	            <td><input type="checkbox" name="quick_check" value="1" <!--#if $quick_check > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-quick_check')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-enable_unrar'):</div></td>
+	            <td><input type="checkbox" name="enable_unrar" value="1" <!--#if $enable_unrar > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-enable_unrar')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-enable_unzip'):</div></td>
+	            <td><input type="checkbox" name="enable_unzip" value="1" <!--#if $enable_unzip > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-enable_unzip')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-enable_filejoin'):</div></td>
+	            <td><input type="checkbox" name="enable_filejoin" value="1" <!--#if $enable_filejoin > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-enable_filejoin')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-enable_tsjoin'):</div></td>
+	            <td><input type="checkbox" name="enable_tsjoin" value="1" <!--#if $enable_tsjoin > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-ts_join')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-enable_par_cleanup'):</div></td>
+	            <td><input type="checkbox" name="enable_par_cleanup" value="1" <!--#if $enable_par_cleanup > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-enable_par_cleanup')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-fail_on_crc'):</div></td>
+	            <td><input type="checkbox" name="fail_on_crc" value="1" <!--#if $fail_on_crc > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-fail_on_crc')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-safe_postproc'):</div></td>
+	            <td><input type="checkbox" name="safe_postproc" value="1" <!--#if $safe_postproc > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-safe_postproc')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-pause_on_pwrar'):</div></td>
+	            <td><input type="checkbox" name="pause_on_pwrar" value="1" <!--#if $pause_on_pwrar > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-pause_on_pwrar')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-no_dupes'):</div></td>
+	            <td><input type="checkbox" name="no_dupes" value="1" <!--#if $no_dupes > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-no_dupes')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-sfv_check'):</div></td>
+	            <td><input type="checkbox" name="sfv_check" value="1" <!--#if $sfv_check > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-sfv_check')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight valign=top><div class="tucker">$T('opt-top_only'):</div></td>
+	            <td valign=top><input type="checkbox" name="top_only" value="1" <!--#if $top_only > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-top_only')</small></td>
+	        </tr>
+	        <!--#if $nt#-->
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-par2_multicore'):</div></td>
+	            <td><input type="checkbox" name="par2_multicore" value="1" <!--#if $par2_multicore > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-par2_multicore')</small></td>
+	        </tr>
+	        <!--#end if#-->
+	    </table>
+
+	</div>	
+
+
+	<div id="tabs-switches">
+
+        <strong>$T('opt-pre_script'):</strong><br/>
+        <small>$T('explain-pre_script')</small><br/>
+        <select name="pre_script">
+        <!--#for $sc in $script_list#-->
+        <!--#if $sc.lower() == $pre_script.lower()#-->
+            <option value="$sc" selected>$sc</option>
+        <!--#else#-->
+            <option value="$sc">$sc</option>
         <!--#end if#-->
-    </table>
+        <!--#end for#-->
+        </select>
+		<br/><br/>
 
-    <hr/>
+        <strong>$T('opt-par_option'):</strong><br/>
+        <small>$T('explain-par_option')</small><br/>
+        <input type="text" name="par_option" value="$par_option"/>
+		<br/><br/>
 
-    <table id="switchesTable">
-        <tr><td>
-
-            <strong>$T('opt-pre_script'):</strong><br/>
-            <small>$T('explain-pre_script')</small><br/>
-            <select name="pre_script">
-            <!--#for $sc in $script_list#-->
-            <!--#if $sc.lower() == $pre_script.lower()#-->
-                <option value="$sc" selected>$sc</option>
-            <!--#else#-->
-                <option value="$sc">$sc</option>
-            <!--#end if#-->
-            <!--#end for#-->
-            </select>
-
-        </td>
-      </tr>
-      <tr><td colspan="3">&nbsp;</td></tr>
-      <tr>
-	    <td>
-
-            <strong>$T('opt-par_option'):</strong><br/>
-            <small>$T('explain-par_option')</small><br/>
-            <input type="text" name="par_option" value="$par_option"/>
-
-        </td><td>
-
-		    <!--#if $have_nice#-->
+	    <!--#if $have_nice#-->
             <strong>$T('opt-nice'):</strong><br/>
             <small>$T('explain-nice')</small><br/>
             <input type="text" name="nice" value="$nice"/>
-		    <!--#end if#-->
-
-        </td><td>
+			<br/><br/>
+	    <!--#end if#-->
 
 	    <!--#if $have_ionice#-->
             <strong>$T('opt-ionice'):</strong><br/>
             <small>$T('explain-ionice')</small><br/>
             <input type="text" name="ionice" value="$ionice"/>
+			<br/><br/>
 	    <!--#end if#-->
 
-        </td>
-      </tr>
-    </table>
+        <strong>$T('opt-ignore_samples'):</strong><br/>
+        <small>$T('explain-ignore_samples')</small><br/>
+        <select name="ignore_samples">
+            <option value="0" <!--#if $ignore_samples == 0 then "selected" else ""#--> >$T('igsam-off')</option>
+            <option value="1" <!--#if $ignore_samples == 1 then "selected" else ""#--> >$T('igsam-del')</option>
+            <option value="2" <!--#if $ignore_samples == 2 then "selected" else ""#--> >$T('igsam-not')</option>
+        </select>
+		<br/><br/>
 
+        <strong>$T('opt-ssl_type'):</strong><br/>
+        <small>$T('explain-ssl_type')</small><br/>
+        <select name="ssl_type">
+            <option value="v23" <!--#if $ssl_type == "v23" then 'selected' else ''#--> >V23</option>
+            <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected' else ''#--> >V2</option>
+            <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected' else ''#--> >V3</option>
+		</select>
 
-</fieldset>
+	</div>
 
-<fieldset class="EntryFieldSet">
+	
+	<div id="tabs-otherSwitches">
+	
+	
+	    <table cellpadding=2>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-check_new_rel'):</div></td>
+	            <td><input type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-check_new_rel')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-auto_browser'):</div></td>
+	            <td><input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-auto_browser')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-auto_disconnect'):</div></td>
+	            <td><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-auto_disconnect')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-send_group'):</div></td>
+	            <td><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-send_group')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-auto_sort'):</div></td>
+	            <td><input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-auto_sort')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-replace_spaces'):</div></td>
+	            <td><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-replace_spaces')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-replace_illegal'):</div></td>
+	            <td><input type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-replace_illegal')</small></td>
+	        </tr>
+	        <tr>
+	            <td class=alignRight><div class="tucker">$T('opt-pause_on_post_processing'):</div></td>
+	            <td><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></td>
+	            <td><small>$T('explain-pause_on_post_processing')</small></td>
+	        </tr>
+	        <!--#if $have_ampm#-->
+	            <tr>
+	                <td class=alignRight><div class="tucker">$T('opt-ampm'):</div></td>
+	                <td><input type="checkbox" name="ampm" value="1" <!--#if $ampm > 0 then "checked=1" else ""#--> /></td>
+	                <td><small>$T('explain-ampm')</small></td>
+	            </tr>
+	        <!--#end if#-->
+	    </table>
 
-    <legend><span class="config_sprite_container sprite_config_switches_other">&nbsp;</span> $T('otherSwitches')</legend>
+	</div>
 
-    <table cellpadding=2>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-check_new_rel'):</div></td>
-            <td><input type="checkbox" name="check_new_rel" value="1" <!--#if $check_new_rel > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-check_new_rel')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-auto_browser'):</div></td>
-            <td><input type="checkbox" name="auto_browser" value="1" <!--#if $auto_browser > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-auto_browser')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-auto_disconnect'):</div></td>
-            <td><input type="checkbox" name="auto_disconnect" value="1" <!--#if $auto_disconnect > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-auto_disconnect')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-send_group'):</div></td>
-            <td><input type="checkbox" name="send_group" value="1" <!--#if $send_group > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-send_group')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-auto_sort'):</div></td>
-            <td><input type="checkbox" name="auto_sort" value="1" <!--#if $auto_sort > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-auto_sort')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-replace_spaces'):</div></td>
-            <td><input type="checkbox" name="replace_spaces" value="1" <!--#if $replace_spaces > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-replace_spaces')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-replace_illegal'):</div></td>
-            <td><input type="checkbox" name="replace_illegal" value="1" <!--#if $replace_illegal > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-replace_illegal')</small></td>
-        </tr>
-        <tr>
-            <td class=alignRight><div class="tucker">$T('opt-pause_on_post_processing'):</div></td>
-            <td><input type="checkbox" name="pause_on_post_processing" value="1" <!--#if $pause_on_post_processing > 0 then "checked=1" else ""#--> /></td>
-            <td><small>$T('explain-pause_on_post_processing')</small></td>
-        </tr>
-        <!--#if $have_ampm#-->
-            <tr>
-                <td class=alignRight><div class="tucker">$T('opt-ampm'):</div></td>
-                <td><input type="checkbox" name="ampm" value="1" <!--#if $ampm > 0 then "checked=1" else ""#--> /></td>
-                <td><small>$T('explain-ampm')</small></td>
-            </tr>
-        <!--#end if#-->
-    </table>
-
-    <hr/>
-
-    <table cellpadding=8>
-        <tr>
-        <td>
-            <strong>$T('opt-ignore_samples'):</strong><br/>
-            <small>$T('explain-ignore_samples')</small><br/>
-            <select name="ignore_samples">
-                <option value="0" <!--#if $ignore_samples == 0 then "selected" else ""#--> >$T('igsam-off')</option>
-                <option value="1" <!--#if $ignore_samples == 1 then "selected" else ""#--> >$T('igsam-del')</option>
-                <option value="2" <!--#if $ignore_samples == 2 then "selected" else ""#--> >$T('igsam-not')</option>
-            </select>
-        </td>
-        <td>
-        &nbsp; &nbsp; &nbsp;
-        </td>
-        <td>
-            <strong>$T('opt-ssl_type'):</strong><br/>
-            <small>$T('explain-ssl_type')</small><br/>
-            <select name="ssl_type">
-                <option value="v23" <!--#if $ssl_type == "v23" then 'selected' else ''#--> >V23</option>
-                <option value="v2"  <!--#if $ssl_type == "v2"  then 'selected' else ''#--> >V2</option>
-                <option value="v3"  <!--#if $ssl_type == "v3"  then 'selected' else ''#--> >V3</option>
-			</select>
-        </td>
-        </tr>
-    </table>
-
-</fieldset>
 </div>
 
 </form>

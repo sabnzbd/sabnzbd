@@ -1238,10 +1238,12 @@ table.nzoTable {
 	padding: 10px;
 	text-align: left;
 }
+/*
 #config_content a {
   color:#000;
   text-decoration:underline;
 } 
+*/
 #config_content {
 	overflow: auto;
 	width: 100%;

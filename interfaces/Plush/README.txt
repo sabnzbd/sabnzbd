@@ -1,5 +1,5 @@
 
-Plush 3.2 for SABnzbd+ 0.6 | May 15 2010
+Plush for SABnzbd+ 0.6.x | Nov 13 2010
 assembled by pairofdimes - see LICENSE-CC.txt
 
 =======================
