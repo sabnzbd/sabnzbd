@@ -9,9 +9,12 @@
 		<li><a href="#tabs-addServer">$T('addServer')</a></li>
 		<!--#if $servers#-->
 			<!--#set $count=0#-->
-			<!--#for $server in $servers#-->
-				<li><a href="#tabs-server$count">$servers[$server]['host']:$servers[$server]['port']</a></li>
-				<!--#set $count=$count+1#-->
+		<!--#set $slist = $servers.keys()#-->
+		<!--#$slist.sort()#-->
+		<!--#set $cur = 0#-->
+		<!--#for $server in $slist#-->
+			<!--#set $cur = $cur + 1#-->
+				<li><a href="#tabs-server$cur">$servers[$server]['host']:$servers[$server]['port']</a></li>
 		    <!--#end for#-->
 		<!--#end if#-->
 	</ul>
@@ -71,13 +74,11 @@
 
 
 
-	<!--#set $slist = $servers.keys()#-->
-	<!--#$slist.sort()#-->
 	<!--#set $cur = 0#-->
 	<!--#for $server in $slist#-->
+		<!--#set $cur = $cur + 1#-->
 	<div id="tabs-server$cur">
 		
-		<!--#set $cur = $cur + 1#-->
 		
 		<form action="saveServer" method="post" autocomplete="off">
 		<input type="hidden" name="session" value="$session">
