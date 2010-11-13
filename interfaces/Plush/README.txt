@@ -31,6 +31,11 @@ http://jquery.com
 Copyright (c) 2010 John Resig
 See LICENSE-MIT & LICENSE-GPL
 
+jQuery UI
+http://jqueryui.com/about
+Copyright (c) 2010 jQuery UI Team
+See LICENSE-MIT & LICENSE-GPL
+
 Sizzle CSS Selector Engine
 http://sizzlejs.com/
 Copyright (c) 2010 The Dojo Foundation

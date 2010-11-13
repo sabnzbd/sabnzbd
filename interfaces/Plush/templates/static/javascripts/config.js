@@ -28,6 +28,9 @@ jQuery(document).ready(function($){
 		});
 	}
 	
+	// assume there are jqueryui tabs
+	$( "#tabs" ).tabs();
+	
     switch(config_pane) {
 
 		// not a config page, rather queued nzb file listing page
