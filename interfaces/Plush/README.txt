@@ -35,6 +35,7 @@ jQuery UI
 http://jqueryui.com/about
 Copyright (c) 2010 jQuery UI Team
 See LICENSE-MIT & LICENSE-GPL
+(includes files in templates/static/stylesheets/jqueryui/*)
 
 Sizzle CSS Selector Engine
 http://sizzlejs.com/

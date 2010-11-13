@@ -28,9 +28,13 @@ jQuery(document).ready(function($){
 		});
 	}
 	
-	// assume there are jqueryui tabs/buttons
-	$( ".tabs" ).tabs();
+	// jqueryui tabs/buttons
 	$('.juiButton').button();
+	$( ".tabs" ).tabs({
+		cookie: {
+			expires: 1 // store cookie for a day, without, it would be a session cookie
+		}
+	});
 	
     switch(config_pane) {
 
