@@ -1,4 +1,17 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha6 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+Features:
+- Add retention time parameter to servers so that articles too old will not be tried
+- Disable top_only option (interferes with "retention" implementation)
+- Option to automatically remove nzbmatrix bookmark after successful download
+Bugs:
+- Prevent blocking of RSS preview by automatic RSS read-out
+- Windows binary had issues with sending non-english emails
+- Explicit RSS filter attributes (category, script, pp) influenced each other
+  within a feed definition
+- rss_scan is now a scheduable event and will override the rss_rate option.
+-------------------------------------------------------------------------------
  0.6.0Alpha5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Plush now has multi operations for the queue
