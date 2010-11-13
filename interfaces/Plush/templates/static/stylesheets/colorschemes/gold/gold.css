@@ -253,13 +253,13 @@ select {
 .sprite_progress_done{ background-position: 0 -401px;  }  /* queue.tmpl */
 .sprite_progressbar_bg{ background-position: 0 -430px;  } 
 .sprite_q_menu_pausefor{ background-position: 0 -459px;  } 
-.sprite_q_menu_pauseforsfHover{ background-position: 0 -490px;  } 
 .sprite_q_menu_pausefor_on{ background-position: 0 -521px;  } 
 .sprite_q_pause{ background-position: 0 -552px;  } 
 .sprite_q_pause_on{ background-position: 0 -583px;  } 
 .sprite_q_queue{ background-position: 0 -614px;  } 
 .sprite_q_queuesfHover{ background-position: 0 -645px;  } 
 .sprite_q_queue_on{ background-position: 0 -676px;  } 
+.sprite_q_menu_pauseforsfHover{ background-position: 0 -490px;  } 
 .sprite_q_stats_complete{ background-position: 0 -707px;  } 
 .sprite_q_stats_incomplete{ background-position: 0 -733px;  } 
 .sprite_q_stats_needspace{ background-position: 0 -759px;  } 
