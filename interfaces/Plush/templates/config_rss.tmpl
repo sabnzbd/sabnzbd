@@ -9,41 +9,48 @@
 		<li><a href="#tabs-rss">$T('rss').upper()</a></li>
 		<li><a href="#tabs-newFeedURI">$T('newFeedURI')</a></li>
 		<li><a href="#tabs-info">$T('info').capitalize()</a></li>
-		<!--#if $active_feed#--><li><a href="#tabs-feed">$feed</a></li><!--#end if#-->
+		<!--#if $active_feed#--><li><a href="#tabs-feed">$active_feed</a></li><!--#end if#-->
 	</ul>
 	
 
 
 	<div id="tabs-rss">
-
-	    <table class="rssTable">
-	        <tr>
-	            <th></th>
-	            <th>$T('enabled').capitalize()</th>
-	            <th>$T('feed')</th>
-	            <th>URL</th>
-	        </tr>
-	    <!--#set $odd = False#-->
-	    <!--#for $feed in sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#-->
-	        <!--#set $odd = not $odd#-->
-	        <tr class="<!--#if $odd then "odd" else "even"#-->">
-	            <td><form action="del_rss_feed" method="get">
-	                <input type="hidden" name="session" value="$session">
-	                <input type="hidden" value="$feed" name="feed">
-	                <input type="submit" class="juiButton" style="padding:0;" value="$T('button-del')"></form>
-	            </td>
-	            <td><form action="upd_rss_feed" method="post">
-	                <input type="hidden" name="session" value="$session">
-	                <input type="hidden" value="$feed" name="feed">
-	                <input type="hidden" value="1" name="table">
-	                <input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>
-	                </form>
-	            </td>
-	            <td><strong><a href="?feed=$rss[$feed]['link']#tabs-feed">$feed</a></strong></td>
-	            <td>$rss[$feed]['uri']</td>
-	        </tr>
-	    <!--#end for#-->
-		</table>
+	
+		<!--#set $feeds = sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#-->
+		<!--#if $feeds#-->
+	
+		    <table class="rssTable">
+		        <tr>
+		            <th></th>
+		            <th>$T('enabled').capitalize()</th>
+		            <th>$T('feed')</th>
+		            <th>URL</th>
+		        </tr>
+		    <!--#set $odd = False#-->
+		    <!--#for $feed_item in $feeds#-->
+		        <!--#set $odd = not $odd#-->
+		        <tr class="<!--#if $odd then "odd" else "even"#-->">
+		            <td><form action="del_rss_feed" method="get">
+		                <input type="hidden" name="session" value="$session">
+		                <input type="hidden" value="$feed_item" name="feed">
+		                <input type="submit" class="juiButton" style="padding:0;" value="$T('button-del')"></form>
+		            </td>
+		            <td><form action="upd_rss_feed" method="post">
+		                <input type="hidden" name="session" value="$session">
+		                <input type="hidden" value="$feed_item" name="feed">
+		                <input type="hidden" value="1" name="table">
+		                <input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed_item]['enable'] then "CHECKED" else "" #-->/>
+		                </form>
+		            </td>
+		            <td><strong><a href="?feed=$rss[$feed_item]['link']#tabs-feed">$feed_item</a></strong></td>
+		            <td>$rss[$feed_item]['uri']</td>
+		        </tr>
+		    <!--#end for#-->
+			</table>
+			
+		<!--#else#-->
+			<p>$T('none')</p>
+		<!--#end if#-->
 
     </div>
 
@@ -79,7 +86,7 @@
 		<!-- feed sub-tabs -->
 		<div class="tabs">
 			<ul>
-				<li><a href="#tabs-feed-update">$feed</a></li>
+				<li><a href="#tabs-feed-update">$active_feed</a></li>
 				<li><a href="#tabs-feed-filters">$T('filters').capitalize()</a></li>
 				<li><a href="#tabs-feed-matched">$T('rss-matched')</a></li>
 				<li><a href="#tabs-feed-notMatched">$T('rss-notMatched')</a></li>
