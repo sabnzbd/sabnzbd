@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,8 +31,6 @@ import threading
 import subprocess
 import socket
 import time
-import datetime
-from calendar import MONDAY
 import glob
 
 import sabnzbd
@@ -89,39 +87,36 @@ def globber(path, pattern='*'):
 
 #------------------------------------------------------------------------------
 def cat_to_opts(cat, pp=None, script=None, priority=None):
+    """ Derive options from category, if options not already defined.
+        Specified options have priority over category-options.
+        If no valid category is given, special category '*' will supply default values
     """
-        Derive options from category, if option not already defined.
-        Specified options have priority over category-options
-    """
+    def_cat = config.get_categories('*')
+    cat = safe_lower(cat)
+    if cat in ('', 'none', 'default'):
+        cat = '*'
+    try:
+        my_cat = config.get_categories()[cat]
+    except KeyError:
+        my_cat = def_cat
+
     if pp is None:
-        try:
-            pp = config.get_categories()[safe_lower(cat)].pp()
-            # Get the default pp
-            if pp == '':
-                pp = cfg.dirscan_pp()
-            logging.debug('Job gets options %s', pp)
-        except KeyError:
-            pp = cfg.dirscan_pp()
+        pp = my_cat.pp()
+        if pp == '':
+            pp = def_cat.pp()
+        logging.debug('Job gets options %s', pp)
 
     if not script:
-        try:
-            script = config.get_categories()[safe_lower(cat)].script()
-            # Get the default script
-            if script == '' or safe_lower(script) == 'default':
-                script = cfg.dirscan_script()
-            logging.debug('Job gets script %s', script)
-        except KeyError:
-            script = cfg.dirscan_script()
+        script = my_cat.script()
+        if safe_lower(script) in ('', 'default'):
+            script = def_cat.script()
+        logging.debug('Job gets script %s', script)
 
     if priority is None or priority == DEFAULT_PRIORITY:
-        try:
-            priority = config.get_categories()[safe_lower(cat)].priority()
-            # Get the default priority
-            if priority == DEFAULT_PRIORITY:
-                priority = cfg.dirscan_priority()
-            logging.debug('Job gets priority %s', priority)
-        except KeyError:
-            priority = cfg.dirscan_priority()
+        priority = my_cat.priority()
+        if priority == DEFAULT_PRIORITY:
+            priority = def_cat.priority()
+        logging.debug('Job gets priority %s', priority)
 
     return cat, pp, script, priority
 
@@ -194,8 +189,9 @@ def cat_convert(cat):
 # sanitize_filename                                                            #
 ################################################################################
 if sabnzbd.WIN32:
-    CH_ILLEGAL = r'\/<>?*:|"'
-    CH_LEGAL   = r'++{}!@-#`'
+    # the colon should be here too, but we'll handle that separately
+    CH_ILLEGAL = r'\/<>?*|"'
+    CH_LEGAL   = r'++{}!@#`'
 else:
     CH_ILLEGAL = r'/'
     CH_LEGAL   = r'+'
@@ -208,6 +204,14 @@ def sanitize_filename(name):
         return name
     illegal = CH_ILLEGAL
     legal   = CH_LEGAL
+
+    if ':' in name:
+        if sabnzbd.WIN32:
+            # Compensate for the odd way par2 on Windows substitutes a colon character
+            name = name.replace(':', '3A')
+        elif sabnzbd.DARWIN:
+            # Compensate for the foolish way par2 on OSX handles a colon character
+            name = name[name.rfind(':')+1:]
 
     lst = []
     for ch in name.strip():
@@ -830,14 +834,14 @@ def to_units(val, spaces=0, dec_limit=2):
     val = str(val).strip()
     if val == "-1":
         return val
-    n= 0
+    n = 0
     try:
         val = float(val)
     except:
         return ''
     while (val > 1023.0) and (n < 5):
         val = val / 1024.0
-        n= n+1
+        n = n + 1
     unit = TAB_UNITS[n]
     if not unit:
         unit = ' ' * spaces
@@ -1120,13 +1124,15 @@ def bad_fetch(nzo, url, msg='', retry=False, content=False):
 
 
 def on_cleanup_list(filename, skip_nzb=False):
-    """ Return True if a filename matches the clean-up list """
-
-    if cfg.cleanup_list():
+    """ Return True if a filename matches the clean-up list
+    """
+    lst = cfg.cleanup_list()
+    if lst:
         ext = os.path.splitext(filename)[1].strip().strip('.')
-        if sabnzbd.WIN32: ext = ext.lower()
+        if sabnzbd.WIN32:
+            ext = ext.lower()
 
-        for k in cfg.cleanup_list():
+        for k in lst:
             item = k.strip().strip('.')
             if item == ext and not (skip_nzb and item == 'nzb'):
                 return True
@@ -1254,7 +1260,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     """
     try:
         from OpenSSL import crypto
-        from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate,\
+        from sabnzbd.utils.certgen import createKeyPair, createCertRequest, createCertificate, \
              TYPE_RSA, serial
     except:
         logging.warning(Ta('pyopenssl module missing, please install for https access'))
@@ -1265,7 +1271,6 @@ def create_https_certificates(ssl_cert, ssl_key):
     careq = createCertRequest(cakey, CN='Certificate Authority')
     cacert = createCertificate(careq, (careq, cakey), serial, (0, 60*60*24*365*10)) # ten years
 
-    fname = 'server'
     cname = 'SABnzbd'
     pkey = createKeyPair(TYPE_RSA, 1024)
     req = createCertRequest(pkey, CN=cname)
@@ -1328,7 +1333,7 @@ def ip_extract():
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              startupinfo=None, creationflags=0)
         output = p.stdout.read()
-        ret = p.wait()
+        p.wait()
         for line in output.split('\n'):
             m = _RE_IP4.search(line)
             if not (m and m.group(2)):
@@ -1373,8 +1378,8 @@ def win_shutdown():
 
         flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
         htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
-        id = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
-        newPrivileges = [(id, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+        id_ = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
+        newPrivileges = [(id_, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
         win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
         win32api.InitiateSystemShutdown("", "", 30, 1, 0)
     finally:

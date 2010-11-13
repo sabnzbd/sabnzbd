@@ -192,6 +192,23 @@ class LatinFilter(Filter):
         else:
             return unicode(str(val))
 
+class EmailFilter(Filter):
+    """ Make sure Cheetah gets only Unicode strings
+        First try utf-8, then latin1
+    """
+    def filter(self, val, str=str, **kw):
+        if isinstance(val, unicode):
+            return val
+        elif isinstance(val, basestring):
+            try:
+                return val.decode('utf-8')
+            except:
+                return val.decode('latin-1', 'replace')
+        elif val is None:
+            return u''
+        else:
+            return unicode(str(val))
+
 
 ################################################################################
 #

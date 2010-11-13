@@ -291,16 +291,16 @@ class RSSQueue(object):
 
                 newlinks.append(link)
 
-                myCat = defCat
-                myPP = ''
-                myScript = ''
-                #myPriority = 0
-
                 if (link not in jobs) or (jobs[link].get('status', ' ') in ('G', 'B', 'G*', 'B*')):
                     # Match this title against all filters
                     logging.debug('Trying title %s', atitle)
                     result = False
                     for n in xrange(regcount):
+                        myCat = defCat
+                        myPP = ''
+                        myScript = ''
+                        #myPriority = 0
+
                         if notdefault(reCats[n]):
                             myCat = reCats[n]
                         elif category:
@@ -387,7 +387,6 @@ class RSSQueue(object):
         return ''
 
 
-    @synchronized(LOCK)
     def run(self):
         """ Run all the URI's and filters
         """
@@ -395,16 +394,20 @@ class RSSQueue(object):
             logging.info('Starting scheduled RSS read-out')
             active = False
             feeds = config.get_rss()
-            for feed in feeds:
-                if feeds[feed].enable():
-                    active = True
-                    self.run_feed(feed, download=True, ignoreFirst=True)
-                    # Wait 30 seconds, else sites may get irritated
-                    for x in xrange(30):
-                        if self.shutdown:
-                            return
-                        else:
-                            time.sleep(1.0)
+            for feed in feeds.keys():
+                try:
+                    if feeds[feed].enable.get():
+                        active = True
+                        self.run_feed(feed, download=True, ignoreFirst=True)
+                        # Wait 15 seconds, else sites may get irritated
+                        for x in xrange(15):
+                            if self.shutdown:
+                                return
+                            else:
+                                time.sleep(1.0)
+                except KeyError:
+                    # Feed must have been deleted
+                    pass
             if active:
                 self.save()
             logging.info('Finished scheduled RSS read-out')

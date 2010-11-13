@@ -32,23 +32,32 @@ $T('explain-relFolder') $defdir<br/>
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
 
-        <td><!--#if $slot.name#-->
+        <td><!--#if $slot.name and $slot.name != '*'#-->
             <form action="delete" method="get">
             <input type="hidden" value="$slot.name" name="name">
             <input type="hidden" value="$session" name="session">
-            <input type="submit" value="$T('button-delCat')"></form>
+            <input type="submit" value="$T('button-delCat')">
+            </form>
             <!--#end if#-->
         </td>
 
-        <form action="save" method="get">
-        <input type="hidden" value="$slot.name" name="name">
-        <input type="hidden" value="$session" name="session">
-        <td><input type="text" name="newname" value="$slot.name"></td>
+        <td>
+            <form action="save" method="get">
+            <input type="hidden" value="$slot.name" name="name">
+            <input type="hidden" value="$session" name="session">
+            <!--#if $slot.name != '*'#-->
+                <input type="text" name="newname" value="$slot.name">
+            <!--#else#-->
+                $T('default')
+            <!--#end if#-->
+        </td>
 
         <td>
             <select name="pp">
                 <optgroup label="$T('pp')">
-                    <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+                    <!--#if $slot.name != '*'#-->
+                        <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+                    <!--#end if#-->
                     <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-none')</option>
                     <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-repair')</option>
                     <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
@@ -60,7 +69,9 @@ $T('explain-relFolder') $defdir<br/>
         <td>
             <select name="priority">
                 <optgroup label="$T('priority')">
-                    <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
+                    <!--#if $slot.name != '*'#-->
+                        <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
+                    <!--#end if#-->
                     <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>$T('pr-force')</option>
                     <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>$T('pr-high')</option>
                     <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
@@ -74,7 +85,9 @@ $T('explain-relFolder') $defdir<br/>
             <select name="script">
             <optgroup label="$T('script')">
             <!--#for $sc in $script_list#-->
-                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
+                <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
+                    <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
+                <!--#end if#-->
             <!--#end for#-->
             </optgroup>
             </select>

@@ -289,6 +289,18 @@
 
     <p>$T('explain-RSS')</p>
 
+	<form action="save_rss_rate" method="post">
+	<fieldset class="EntryFieldSet">
+		<strong>$T('opt-rss_rate'):</strong><br/>
+		<small>$T('explain-rss_rate')</small><br/>
+		<input type="text" name="rss_rate" value="$rss_rate" size=8 />
+        <input type="hidden" name="session" value="$session"/>
+        <input type="submit" value="$T('button-save')"/>
+	</fieldset>
+	</form>
+
+	<br class="clear" />
+
     <table class="rssTable">
         <tr>
             <th></th>

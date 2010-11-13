@@ -469,7 +469,7 @@ def _api_warnings(name, output, kwargs):
 
 def _api_get_cats(name, output, kwargs):
     """ API: accepts output """
-    return report(output, keyword="categories", data=list_cats())
+    return report(output, keyword="categories", data=list_cats(False))
 
 
 def _api_get_scripts(name, output, kwargs):
@@ -841,7 +841,7 @@ def build_queue(web_dir=None, root=None, verbose=False, prim=True, verboseList=N
     datestart = datetime.datetime.now()
 
     info['script_list'] = list_scripts()
-    info['cat_list'] = list_cats()
+    info['cat_list'] = list_cats(output is None)
 
 
     n = 0
@@ -1633,13 +1633,12 @@ def list_scripts(default=False):
     return lst
 
 
-def list_cats(default=False):
-    """ Return list of categories """
+def list_cats(default=True):
+    """ Return list of categories, when default==False use '*' for Default category """
     lst = sorted(config.get_categories().keys())
-    if lst:
-        lst.insert(0, 'None')
-        if default:
-            lst.insert(0, 'Default')
+    if default:
+        lst.remove('*')
+        lst.insert(0, 'Default')
     return lst
 
 

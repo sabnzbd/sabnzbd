@@ -6,63 +6,75 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.6.x\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: shypike@sabnzbd.org\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-09-27 16:45+0000\n"
+"PO-Revision-Date: 2010-10-01 04:49+0000\n"
+"Last-Translator: Fox Ace <Unknown>\n"
 "Language-Team: FRANCAIS <LL@li.org>\n"
-"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2010-10-09 12:22+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
+"Language: fr\n"
 
-#: NSIS_Installer.nsi:323
+#: NSIS_Installer.nsi:332
 msgid "Start SABnzbd (hidden)"
-msgstr "Lancer SABnzbd (caché)"
+msgstr "Démarrer SABnzbd (caché)"
 
-#: NSIS_Installer.nsi:330
+#: NSIS_Installer.nsi:340
 msgid "Show Release Notes"
 msgstr "Afficher les notes de version"
 
-#: NSIS_Installer.nsi:337
+#: NSIS_Installer.nsi:348
 msgid "Support the project, Donate!"
 msgstr "Supportez le projet, faites un don !"
 
-#: NSIS_Installer.nsi:344
+#: NSIS_Installer.nsi:356
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Quittez \"SABnzbd.exe\" avant l'installation, SVP"
 
-#: NSIS_Installer.nsi:351
-msgid "                  >>>> WARNING <<<<\r\n\r\nIf not empty, download your current queue with the old program.\r\nThe new program will ignore your current queue!"
-msgstr "                  >>>> ATTENTION <<<<\r\n\r\nsi votre file d'attente de téléchargement n'est pas vide, terminez la avec la version précédente du programme.\r\nLa nouvelle version l'ignorera!"
+#: NSIS_Installer.nsi:364
+msgid ""
+"                  >>>> WARNING <<<<\r\n"
+"\r\n"
+"If not empty, download your current queue with the old program.\r\n"
+"The new program will ignore your current queue!"
+msgstr ""
+"                  >>>> ATTENTION <<<<\r\n"
+"\r\n"
+"si votre file d'attente de téléchargement n'est pas vide, terminez la avec "
+"la version précédente du programme.\r\n"
+"La nouvelle version l'ignorera!"
 
-#: NSIS_Installer.nsi:358
+#: NSIS_Installer.nsi:372
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Ceci désinstallera SABnzbd de votre système"
 
-#: NSIS_Installer.nsi:365
+#: NSIS_Installer.nsi:380
 msgid "Run at startup"
 msgstr "Lancer au démarrage"
 
-#: NSIS_Installer.nsi:372
+#: NSIS_Installer.nsi:388
 msgid "Desktop Icon"
 msgstr "Icône sur le Bureau"
 
-#: NSIS_Installer.nsi:379
+#: NSIS_Installer.nsi:396
 msgid "NZB File association"
 msgstr "Association des fichiers NZB"
 
-#: NSIS_Installer.nsi:386
+#: NSIS_Installer.nsi:404
 msgid "Delete Program"
 msgstr "Supprimer le programme"
 
-#: NSIS_Installer.nsi:393
+#: NSIS_Installer.nsi:412
 msgid "Delete Settings"
-msgstr "Supprimer Paramètres"
+msgstr "Supprimer les Paramètres"
 
-#: NSIS_Installer.nsi:400
+#: NSIS_Installer.nsi:420
 msgid "Delete Logs"
 msgstr "Supprimer les logs"
 
-#: NSIS_Installer.nsi:407
+#: NSIS_Installer.nsi:428
 msgid "Delete Cache"
-msgstr "Supprimer le cache"
-
+msgstr "Supprimer le Cache"

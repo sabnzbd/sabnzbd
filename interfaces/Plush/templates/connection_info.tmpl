@@ -17,7 +17,7 @@
 	<table width="100%">
 		<tr>
 			<td>$T('explain-Restart')</td>
-			<td>$T('explain-Scan')</td>
+			<td><!--#if $folders#-->$T('explain-orphans')<!--#end if#--></td>
 			<td>$T('explain-Repair')</td>
 		</tr>
 		<tr>
@@ -25,10 +25,41 @@
 				<form action="saveGeneral" method="post">
 					<input type="submit" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
 				</form>
-			</td><td>
-				<form action="saveGeneral" method="post">
-					<input type="submit" onclick="this.form.action='../config/scan?session=$session'; this.form.submit(); return false;" value="$T('button-scan')"/>
-				</form>
+			</td><td><!--#if $folders#-->
+				<table class="catTable">
+					<tr>
+						<th></th>
+						<th></th>
+						<th>$T('name')</th>
+					</tr>
+				<!--#set $odd = False#-->
+				<!--#for $folder in $folders#-->
+					<!--#set $odd = not $odd#-->
+					<tr class="<!--#if $odd then "odd" else "even"#-->">
+
+					<td>
+						<form action="delete" method="get">
+						<input type="hidden" value="$folder" name="name">
+						<input type="hidden" value="$session" name="session">
+						<input type="submit" value="$T('button-delCat')">
+						</form>
+					</td>
+
+					<td>
+						<form action="add" method="get">
+						<input type="hidden" value="$folder" name="name">
+						<input type="hidden" value="$session" name="session">
+						<input type="submit" value="$T('button-add')">
+						</form>
+					</td>
+
+					<td>
+					$folder
+					</td>
+
+				<!--#end for#-->
+				</table>
+				<!--#end if#-->
 			</td><td>
 				<form action="saveGeneral" method="post">
 					<input type="submit" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
@@ -74,7 +105,7 @@
 	<fieldset class="EntryFieldSet">
 		<legend class="latestWarnings" id="configbox_latest_warnings">
 			<span class="config_sprite_container sprite_config_connections_warnings">&nbsp;</span>
-			$T('lastWarnings') <small>(<a href="clearwarnings?session=$session">$T('clearWarnings')</a>)</small>
+			$T('lastWarnings') (<a href="clearwarnings?session=$session">$T('clearWarnings')</a>)
 		</legend>
 		<small><ol class="numbered_list">
 		<!--#for $warn in $warnings#-->

@@ -66,28 +66,6 @@
 		    <span class="tips">$T('explain-sfv_check')</span></label>
 		<br class="clear" />
 
-		    <span class="label">$T('opt-dirscan_opts'):</span>
-		    <input class="radio" type="radio" name="dirscan_opts" value="0" <!--#if $dirscan_opts == 0 then 'checked="1"' else ""#--> /> $T('none')
-		    <input class="radio" type="radio" name="dirscan_opts" value="1" <!--#if $dirscan_opts == 1 then 'checked="1"' else ""#--> /> $T('pp-repair')
-		    <input class="radio" type="radio" name="dirscan_opts" value="2" <!--#if $dirscan_opts == 2 then 'checked="1"' else ""#--> /> $T('pp-unpack')
-		    <input class="radio" type="radio" name="dirscan_opts" value="3" <!--#if $dirscan_opts == 3 then 'checked="1"' else ""#--> /> $T('pp-delete')
-		    <span class="tips">$T('explain-dirscan_opts')</span>
-		<br class="clear" />
-
-		    <span class="label">$T('opt-dirscan_script'):</span>
-            <select name="dirscan_script" id="dirscan_script" class="select">
-            <!--#for $sc in $script_list#-->
-                <!--#if $sc.lower() == $dirscan_script.lower()#-->
-                    <option value="$sc" selected>$sc</option>
-                <!--#else#-->
-                    <option value="$sc">$sc</option>
-                <!--#end if#-->
-            <!--#end for#-->
-            </select>
-		    <span class="tips">$T('explain-dirscan_script')</span>
-
-		<br class="clear" />
-
 		    <span class="label">$T('opt-pre_script'):</span>
             <select name="pre_script" id="pre_script" class="select">
             <!--#for $sc in $script_list#-->
@@ -99,16 +77,6 @@
             <!--#end for#-->
             </select>
 		    <span class="tips">$T('explain-pre_script')</span>
-		<br class="clear" />
-
-		    <span class="label">$T('opt-dirscan_priority'):</span>
-            <select name="dirscan_priority" id="dirscan_priority" class="select">
-                <option value="2" <!--#if $dirscan_priority == 2 then 'selected' else ''#--> >$T('pr-force')</option>
-                <option value="1" <!--#if $dirscan_priority == 1 then 'selected' else ''#--> >$T('pr-high')</option>
-                <option value="0" <!--#if $dirscan_priority == 0 then 'selected' else ''#--> >$T('pr-normal')</option>
-                <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >$T('pr-low')</option>
-        </select>
-		    <span class="tips">$T('explain-dirscan_priority')</span>
 		<br class="clear" />
 
     <!--#if $nt#-->

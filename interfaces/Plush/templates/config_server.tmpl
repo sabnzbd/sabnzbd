@@ -23,7 +23,8 @@
 
     <table>
     <tr><td class="alignRight"><div class="sucker">#&nbsp;$T('srv-connections'):</div></td><td><input type="text" size="5" name="connections"/></td></tr>
-    <tr><td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>$T('second')</small></td></tr>
+    <tr><td class="alignRight"><div class="sucker">$T('srv-retention'):</div></td><td><input type="text" size="5" name="retention"/>&nbsp;<small>$T('days')</small></td></tr>
+    <tr><td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td><td><input type="text" size="5" name="timeout" value="120">&nbsp;<small>$T('seconds')</small></td></tr>
 
     <tr><td colspan="2">&nbsp;</td></tr>
 
@@ -84,8 +85,12 @@
         <td><input type="text" size="5" name="connections" value="$servers[$server]['connections']"/></td>
     </tr>
     <tr>
+        <td class="alignRight"><div class="sucker">$T('srv-retention'):</div></td>
+        <td><input type="text" size="5" name="retention" value="$servers[$server]['retention']"/>&nbsp;<small>$T('days')</small></td>
+    </tr>
+    <tr>
         <td class="alignRight"><div class="sucker">$T('srv-timeout'):</div></td>
-        <td><input type="text" size="5" name="timeout" value="$servers[$server]['timeout']"/>&nbsp;<small>seconds</small></td>
+        <td><input type="text" size="5" name="timeout" value="$servers[$server]['timeout']"/>&nbsp;<small>$T('seconds')</small></td>
     </tr>
     <tr><td colspan="2">&nbsp;</td></tr>
     <tr>

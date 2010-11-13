@@ -245,13 +245,11 @@ def process_job(nzo):
 
         if all_ok:
             ## Determine class directory
-            if config.get_categories():
-                complete_dir = cat_to_dir(cat, cfg.complete_dir.get_path())
-            elif cfg.create_group_folders():
+            if cfg.create_group_folders():
                 complete_dir = addPrefixes(cfg.complete_dir.get_path(), nzo.dirprefix)
                 complete_dir = create_dirs(complete_dir)
             else:
-                complete_dir = cfg.complete_dir.get_path()
+                complete_dir = real_path(cfg.complete_dir.get_path(), config.get_categories(cat).dir())
 
             ## TV/Movie/Date Renaming code part 1 - detect and construct paths
             file_sorter = Sorter(cat)
@@ -259,7 +257,7 @@ def process_job(nzo):
 
             workdir_complete = get_unique_path(os.path.join(complete_dir, dirname), create_dir=True)
             if not os.path.exists(workdir_complete):
-                crash_msg = 'Cannot create final folder %s' % workdir_complete
+                crash_msg = T('Cannot create final folder %s') % unicoder(workdir_complete)
                 raise IOError
 
             if cfg.folder_rename():
@@ -385,6 +383,9 @@ def process_job(nzo):
                                     u'%s<a href="./scriptlog?name=%s">%s</a>' % (script_ret, urllib.quote(script_output),
                                     T('View script output')), unique=True)
 
+        ## Cleanup again, including NZB files
+        cleanup_list(workdir_complete, False)
+
         ## Remove newzbin bookmark, if any
         if msgid and all_ok:
             Bookmarks.do.del_bookmark(msgid)
@@ -403,7 +404,8 @@ def process_job(nzo):
         logging.error(Ta('Post Processing Failed for %s (%s)'), filename, crash_msg)
         if not crash_msg:
             logging.info("Traceback: ", exc_info = True)
-        nzo.fail_msg = T('PostProcessing Crashed, see logfile (%s)') % unicoder(crash_msg)
+            crash_msg = T('see logfile')
+        nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
         osx.sendGrowlMsg("Download Failed", filename, osx.NOTIFICATION['complete'])
         nzo.status = 'Failed'
         par_error = True
@@ -539,23 +541,6 @@ def perm_script(wdir, umask):
                 if report_errors:
                     logging.error(Ta('Cannot change permissions of %s'), join(root, name))
                     logging.info("Traceback: ", exc_info = True)
-
-
-def cat_to_dir(cat, defdir):
-    """ Lookup destination dir for category """
-    ddir = defdir
-    if cat:
-        item = config.get_config('categories', cat.lower())
-        if item:
-            ddir = item.dir()
-        else:
-            return defdir
-        ddir = real_path(cfg.complete_dir.get_path(), ddir)
-        if not ddir:
-            ddir = defdir
-    return ddir
-
-
 
 
 def addPrefixes(path, dirprefix):

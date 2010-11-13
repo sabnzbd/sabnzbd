@@ -85,42 +85,6 @@
     <table id="switchesTable">
         <tr><td>
 
-            <strong>$T('opt-dirscan_priority'):</strong><br/>
-            <small>$T('explain-dirscan_priority')</small><br/>
-            <select name="dirscan_priority">
-                <option value="2" <!--#if $dirscan_priority == 2 then 'selected' else ''#--> >$T('pr-force')</option>
-                <option value="1" <!--#if $dirscan_priority == 1 then 'selected' else ''#--> >$T('pr-high')</option>
-                <option value="0" <!--#if $dirscan_priority == 0 then 'selected' else ''#--> >$T('pr-normal')</option>
-                <option value="-1" <!--#if $dirscan_priority == -1 then 'selected' else ''#--> >$T('pr-low')</option>
-			</select>
-
-        </td><td>
-
-            <strong>$T('opt-dirscan_opts'):</strong><br/>
-            <small>$T('explain-dirscan_opts')</small><br/>
-            <select name="dirscan_opts">
-                <option value="0" <!--#if $dirscan_opts == 0 then "selected" else ""#--> >$T('pp-none')</option>
-                <option value="1" <!--#if $dirscan_opts == 1 then "selected" else ""#--> >$T('pp-repair')</option>
-                <option value="2" <!--#if $dirscan_opts == 2 then "selected" else ""#--> >$T('pp-unpack')</option>
-                <option value="3" <!--#if $dirscan_opts == 3 then "selected" else ""#--> >$T('pp-delete')</option>
-            </select>
-
-        </td><td>
-
-            <strong>$T('opt-dirscan_script'):</strong><br/>
-            <small>$T('explain-dirscan_script')</small><br/>
-            <select name="dirscan_script">
-            <!--#for $sc in $script_list#-->
-            <!--#if $sc.lower() == $dirscan_script.lower()#-->
-                <option value="$sc" selected>$sc</option>
-            <!--#else#-->
-                <option value="$sc">$sc</option>
-            <!--#end if#-->
-            <!--#end for#-->
-            </select>
-
-        </td><td>
-
             <strong>$T('opt-pre_script'):</strong><br/>
             <small>$T('explain-pre_script')</small><br/>
             <select name="pre_script">

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2009-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,16 +24,15 @@ import urllib
 import logging
 import os
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import get_ext, get_filename
+from sabnzbd.misc import get_ext, get_filename, cat_to_opts
+
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
 
 def upload_file(url, fp):
     """ Function for uploading nzbs to a running sabnzbd instance """
     try:
         fp = urllib.quote_plus(fp)
-        pp = cfg.dirscan_pp()
-        script = cfg.dirscan_script()
-        priority = cfg.dirscan_priority()
+        cat, pp, script, priority = cat_to_opts(None)
         url = '%sapi?mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (url, fp, pp, script, priority)
         username = cfg.username()
         password = cfg.password()
@@ -53,9 +52,7 @@ def add_local(f):
     if os.path.exists(f):
         fn = get_filename(f)
         if fn:
-            pp = cfg.dirscan_pp()
-            script = cfg.dirscan_script()
-            priority = cfg.dirscan_priority()
+            cat, pp, script, priority = cat_to_opts(None)
             if get_ext(fn) in ('.zip','.rar', '.gz'):
                 ProcessArchiveFile(fn, f, pp=pp, script=script, priority=priority, keep=True)
             elif get_ext(fn) in ('.nzb'):

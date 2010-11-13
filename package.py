@@ -329,8 +329,15 @@ if target == 'app':
     os.system("unzip sabnzbd-template.sparseimage.zip")
     os.rename('sabnzbd-template.sparseimage', fileImg)
 
-    #mount sparseimage
-    os.system("hdiutil mount %s" % (fileImg))
+    #mount sparseimage and modify volume label
+    os.system("hdiutil mount %s | grep /Volumes/SABnzbd >mount.log" % (fileImg))
+    fp = open('mount.log', 'r')
+    data = fp.read()
+    fp.close()
+    os.remove('mount.log')
+    m = re.search(r'/dev/(\w+)\s+', data)
+    volume = 'SABnzbd-' + str(__version__)
+    os.system('disktool -n %s %s' % (m.group(1), volume))
 
     # Unpack cherrypy
     os.system("unzip -o cherrypy.zip")
@@ -386,7 +393,7 @@ if target == 'app':
     os.system("find dist/SABnzbd.app -name .bzr | xargs rm -rf")
 
     #copy builded app to mounted sparseimage
-    os.system("cp -r dist/SABnzbd.app /Volumes/SABnzbd/>/dev/null")
+    os.system("cp -r dist/SABnzbd.app /Volumes/%s/>/dev/null" % volume)
 
     #cleanup src dir
     os.system("rm -rf dist/>/dev/null")
@@ -400,7 +407,10 @@ if target == 'app':
     os.system("tar -czf %s --exclude \".bzr\" --exclude \"sab*.zip\" --exclude \"SAB*.tar.gz\" --exclude \"*.sparseimage\" ./>/dev/null" % (fileOSr) )
 
     #Copy src tar.gz to mounted sparseimage
-    os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
+    #os.system("cp %s /Volumes/SABnzbd/Sources/>/dev/null" % (fileOSr))
+
+    # Copy README.txt
+    os.system("cp README.txt /Volumes/%s/" % volume)
 
     #Hide dock icon for the app
     #os.system("defaults write /Volumes/SABnzbd/SABnzbd.app/Contents/Info LSUIElement 1")
@@ -410,14 +420,20 @@ if target == 'app':
     #wait = raw_input ("Arrange Icons in DMG and then press Enter to Finalize")
 
     #Unmount sparseimage
-    os.system("hdiutil eject /Volumes/SABnzbd/>/dev/null")
+    os.system("hdiutil eject /Volumes/%s/>/dev/null" % volume)
+
     os.system("sleep 5")
     #Convert sparseimage to read only compressed dmg
+    if os.path.exists(fileDmg):
+        os.remove(fileDmg)
     os.system("hdiutil convert %s  -format UDBZ -o %s>/dev/null" % (fileImg,fileDmg))
     #Remove sparseimage
     os.system("rm %s>/dev/null" % (fileImg))
 
-    #os.system(BzrRevert)
+    #Make image internet-enabled
+    os.system("hdiutil internet-enable %s" % fileDmg)
+
+
     os.system(BzrRevertApp + "NSIS_Installer.nsi")
     os.system(BzrRevertApp + VERSION_FILEAPP)
     os.system(BzrRevertApp + VERSION_FILE)

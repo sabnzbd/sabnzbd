@@ -79,10 +79,7 @@ email_full    = OptionBool('misc', 'email_full', False)
 email_dir     = OptionDir('misc', 'email_dir', create=True)
 email_rss     = OptionBool('misc', 'email_rss', False)
 
-dirscan_pp = OptionNumber('misc', 'dirscan_opts', 3, 0, 3)
 version_check = OptionBool('misc', 'check_new_rel', True)
-dirscan_script = OptionStr('misc', 'dirscan_script', 'None')
-dirscan_priority = OptionNumber('misc', 'dirscan_priority', NORMAL_PRIORITY)
 autobrowser = OptionBool('misc', 'auto_browser', True)
 replace_illegal = OptionBool('misc', 'replace_illegal', True)
 pre_script = OptionStr('misc', 'pre_script', 'None')
@@ -173,6 +170,7 @@ else:
 
 username = OptionStr('misc', 'username')
 password = OptionPassword('misc', 'password')
+login_realm = OptionStr('misc', 'login_realm', 'SABnzbd')
 bandwidth_limit = OptionNumber('misc', 'bandwidth_limit', 0)
 refresh_rate = OptionNumber('misc', 'refresh_rate', 0)
 rss_rate = OptionNumber('misc', 'rss_rate', 60, 15, 24*60)

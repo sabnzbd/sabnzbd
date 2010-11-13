@@ -281,6 +281,20 @@
 
     <p>$T('explain-RSS')</p>
 
+    <div class="EntryBlock">
+    <form action="save_rss_rate" method="post">
+    <fieldset class="EntryFieldSet">
+        <legend>$T('opt-rss_rate')</legend>
+        <input type="text" name="rss_rate" value="$rss_rate">
+        <input type="hidden" name="session" value="$session">
+        <input type="submit" value="$T('button-save')"/>
+        <br/>
+        $T('explain-rss_rate')
+    </fieldset>
+    </form>
+    </div>
+
+
     <table id="catTable">
         <tr>
             <th></th>

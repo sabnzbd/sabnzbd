@@ -30,7 +30,7 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host, time_format
-from sabnzbd.encoding import LatinFilter
+from sabnzbd.encoding import EmailFilter
 import sabnzbd.cfg as cfg
 
 
@@ -144,13 +144,13 @@ def send_with_template(prefix, parm):
         else:
             lst = [os.path.join(path, '%s-en.tmpl' % prefix)]
 
-    ret = "No templates found"
+    ret = T('No email templates found')
     for temp in lst:
         if os.access(temp, os.R_OK):
             source = _decode_file(temp)
             message = Template(source=source,
                                 searchList=[parm],
-                                filter=LatinFilter,
+                                filter=EmailFilter,
                                 compilerSettings={'directiveStartToken': '<!--#',
                                                   'directiveEndToken': '#-->'})
             ret = send(message.respond())
@@ -288,7 +288,7 @@ def _prepare_message(txt):
     # Prevent double header (because it will be added again by encode_quopri)
     try:
         del msg['Content-Transfer-Encoding']
-    except:
+    except KeyError:
         pass
 
     encode_quopri(msg)

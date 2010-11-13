@@ -54,18 +54,18 @@ from sabnzbd.constants import *
 from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-                        api_handler, build_queue, rss_qstatus, \
-                        retry_job, build_header, get_history_size, build_history, \
-                        format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
+     api_handler, build_queue, rss_qstatus, \
+     retry_job, build_header, get_history_size, build_history, \
+     format_bytes, calc_age, std_time, report, del_hist_job, Ttemplate
 
 #------------------------------------------------------------------------------
 # Global constants
 
 DIRECTIVES = {
-           'directiveStartToken': '<!--#',
-           'directiveEndToken': '#-->',
-           'prioritizeSearchListOverSelf' : True
-           }
+    'directiveStartToken': '<!--#',
+    'directiveEndToken': '#-->',
+    'prioritizeSearchListOverSelf' : True
+}
 FILTER = LatinFilter
 
 #------------------------------------------------------------------------------
@@ -104,9 +104,9 @@ def Raiser(root, **kwargs):
 
 def queueRaiser(root, kwargs):
     return Raiser(root, start=kwargs.get('start'),
-                        limit=kwargs.get('limit'),
-                        search=kwargs.get('search'),
-                        _dc=kwargs.get('_dc'))
+                  limit=kwargs.get('limit'),
+                  search=kwargs.get('search'),
+                  _dc=kwargs.get('_dc'))
 
 def dcRaiser(root, kwargs):
     return Raiser(root, _dc=kwargs.get('_dc'))
@@ -143,8 +143,8 @@ def set_auth(conf):
     """ Set the authentication for CherryPy
     """
     if cfg.username() and cfg.password():
-        conf.update({'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : 'SABnzbd',
-                            'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd})
+        conf.update({'tools.basic_auth.on' : True, 'tools.basic_auth.realm' : cfg.login_realm(),
+                     'tools.basic_auth.users' : get_users, 'tools.basic_auth.encrypt' : encrypt_pwd})
         conf.update({'/api':{'tools.basic_auth.on' : False},
                      '/m/api':{'tools.basic_auth.on' : False},
                      '/sabnzbd/api':{'tools.basic_auth.on' : False},
@@ -246,7 +246,7 @@ class MainPage(object):
                 info['newzbinDetails'] = True
 
             info['script_list'] = list_scripts(default=True)
-            info['script'] = cfg.dirscan_script()
+            info['script'] = 'Default'
 
             info['cat'] = 'Default'
             info['cat_list'] = list_cats(True)
@@ -718,14 +718,7 @@ class QueuePage(object):
             if cat == 'None':
                 cat = None
             nzbqueue.change_cat(nzo_id, cat)
-            item = config.get_config('categories', cat)
-            if item:
-                cat, pp, script, priority = cat_to_opts(cat)
-            else:
-                script = cfg.dirscan_script()
-                pp = cfg.dirscan_pp()
-                priority = cfg.dirscan_priority()
-
+            cat, pp, script, priority = cat_to_opts(cat)
             nzbqueue.change_script(nzo_id, script)
             nzbqueue.change_opts(nzo_id, pp)
             nzbqueue.set_priority(nzo_id, priority)
@@ -844,7 +837,7 @@ class HistoryPage(object):
 
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
-                to_units(grand), to_units(month), to_units(week), to_units(day)
+               to_units(grand), to_units(month), to_units(week), to_units(day)
 
         history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search)
 
@@ -1016,33 +1009,31 @@ class ConfigPage(object):
             cherrypy.engine.restart()
 
     @cherrypy.expose
-    def scan(self, **kwargs):
-        # OBSOLETE: REMOVE WHEN PLUSH AND SKIN HAVE ORPHAN-TABLE
-        msg = check_session(kwargs)
-        if msg: return msg
-        nzbqueue.scan_jobs()
-        raise dcRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
     def delete(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        path = kwargs.get('name')
-        if path:
-            path = os.path.join(cfg.download_dir.get_path(), path)
-            clean_folder(os.path.join(path, JOB_ADMIN))
-            clean_folder(path)
+        orphan_delete(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def add(self, **kwargs):
         msg = check_session(kwargs)
         if msg: return msg
-        path = kwargs.get('name')
-        if path:
-            path = os.path.join(cfg.download_dir.get_path(), path)
-            nzbqueue.repair_job(path, None)
+        orphan_add(kwargs)
         raise dcRaiser(self.__root, kwargs)
+
+def orphan_delete(kwargs):
+    path = kwargs.get('name')
+    if path:
+        path = os.path.join(cfg.download_dir.get_path(), path)
+        clean_folder(os.path.join(path, JOB_ADMIN))
+        clean_folder(path)
+
+def orphan_add(kwargs):
+    path = kwargs.get('name')
+    if path:
+        path = os.path.join(cfg.download_dir.get_path(), path)
+        nzbqueue.repair_job(path, None)
 
 
 #------------------------------------------------------------------------------
@@ -1050,7 +1041,7 @@ LIST_DIRPAGE = ( \
     'download_dir', 'download_free', 'complete_dir', 'cache_dir', 'admin_dir',
     'nzb_backup_dir', 'dirscan_dir', 'dirscan_speed', 'script_dir',
     'email_dir', 'permissions', 'log_dir'
-    )
+)
 
 class ConfigDirectories(object):
     def __init__(self, web_dir, root, prim):
@@ -1097,13 +1088,13 @@ class ConfigDirectories(object):
 
 
 SWITCH_LIST = \
-    ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
-     'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
-     'dirscan_opts', 'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
-     'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
-     'ignore_samples', 'pause_on_post_processing', 'quick_check', 'dirscan_script', 'nice', 'ionice',
-     'dirscan_priority', 'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check'
-    )
+            ('par2_multicore', 'par_option', 'enable_unrar', 'enable_unzip', 'enable_filejoin',
+             'enable_tsjoin', 'send_group', 'fail_on_crc', 'top_only',
+             'enable_par_cleanup', 'auto_sort', 'check_new_rel', 'auto_disconnect',
+             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_illegal', 'auto_browser',
+             'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
+             'ssl_type', 'pre_script', 'pause_on_pwrar', 'ampm', 'sfv_check'
+             )
 
 #------------------------------------------------------------------------------
 class ConfigSwitches(object):
@@ -1152,10 +1143,9 @@ class ConfigSwitches(object):
 #------------------------------------------------------------------------------
 GENERAL_LIST = (
     'host', 'port', 'username', 'password', 'disable_api_key',
-    'refresh_rate', 'rss_rate',
-    'cache_limit',
+    'refresh_rate', 'cache_limit',
     'enable_https', 'https_port', 'https_cert', 'https_key'
-    )
+)
 
 class ConfigGeneral(object):
     def __init__(self, web_dir, root, prim):
@@ -1253,7 +1243,6 @@ class ConfigGeneral(object):
         conf['password'] = cfg.password.get_stars()
         conf['bandwidth_limit'] = cfg.bandwidth_limit()
         conf['refresh_rate'] = cfg.refresh_rate()
-        conf['rss_rate'] = cfg.rss_rate()
         conf['cache_limit'] = cfg.cache_limit()
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
 
@@ -1475,8 +1464,10 @@ class ConfigRss(object):
         conf['script_list'] = list_scripts(default=True)
         pick_script = conf['script_list'] != []
 
-        conf['cat_list'] = list_cats(default=True)
+        conf['cat_list'] = list_cats(default=False)
         pick_cat = conf['cat_list'] != []
+
+        conf['rss_rate'] = cfg.rss_rate()
 
         rss = {}
         feeds = config.get_rss()
@@ -1517,6 +1508,13 @@ class ConfigRss(object):
         template = Template(file=os.path.join(self.__web_dir, 'config_rss.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
         return template.respond()
+
+    @cherrypy.expose
+    def save_rss_rate(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        cfg.rss_rate.set(kwargs.get('rss_rate'))
+        raise rssRaiser(self.__root, kwargs)
 
     @cherrypy.expose
     def upd_rss_feed(self, **kwargs):
@@ -1584,7 +1582,7 @@ class ConfigRss(object):
         cat = ConvertSpecials(kwargs.get('cat'))
 
         cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
-                           platform_encode(kwargs.get('filter_text'))))
+                                                         platform_encode(kwargs.get('filter_text'))))
         config.save_config()
         raise rssRaiser(self.__root, kwargs)
 
@@ -1697,7 +1695,7 @@ class ConfigRss(object):
 
 #------------------------------------------------------------------------------
 _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedlimit',
-                  'pause_post', 'resume_post', 'scan_folder')
+                  'pause_post', 'resume_post', 'scan_folder', 'rss_scan')
 
 class ConfigScheduling(object):
     def __init__(self, web_dir, root, prim):
@@ -1800,7 +1798,7 @@ class ConfigScheduling(object):
             if action:
                 sched = cfg.schedules()
                 sched.append('%s %s %s %s %s' %
-                                 (minute, hour, dayofweek, action, arguments))
+                             (minute, hour, dayofweek, action, arguments))
                 cfg.schedules.set(sched)
 
         config.save_config()
@@ -1846,6 +1844,7 @@ class ConfigNewzbin(object):
 
         conf['matrix_username'] = cfg.matrix_username()
         conf['matrix_apikey'] = cfg.matrix_apikey()
+        conf['matrix_del_bookmark'] = int(cfg.matrix_del_bookmark())
 
         template = Template(file=os.path.join(self.__web_dir, 'config_newzbin.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1864,6 +1863,7 @@ class ConfigNewzbin(object):
 
         cfg.matrix_username.set(kwargs.get('matrix_username'))
         cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
+        cfg.matrix_del_bookmark.set(kwargs.get('matrix_del_bookmark'))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -1875,6 +1875,7 @@ class ConfigNewzbin(object):
 
         cfg.matrix_username.set(kwargs.get('matrix_username'))
         cfg.matrix_apikey.set(kwargs.get('matrix_apikey'))
+        cfg.matrix_del_bookmark.set(kwargs.get('matrix_del_bookmark'))
 
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
@@ -1922,17 +1923,17 @@ class ConfigCats(object):
         conf['script_list'] = list_scripts(default=True)
 
         categories = config.get_categories()
-        conf['have_cats'] =  categories != {}
+        conf['have_cats'] =  len(categories) > 1
         conf['defdir'] = cfg.complete_dir.get_path()
 
 
         empty = { 'name':'', 'pp':'-1', 'script':'', 'dir':'', 'newzbin':'', 'priority':DEFAULT_PRIORITY }
         slotinfo = []
-        slotinfo.append(empty)
-        for cat in sorted(categories):
+        for cat in sorted(categories.keys()):
             slot = categories[cat].get_dict()
             slot['name'] = cat
             slotinfo.append(slot)
+        slotinfo.insert(1, empty)
         conf['slotinfo'] = slotinfo
 
         template = Template(file=os.path.join(self.__web_dir, 'config_cat.tmpl'),
@@ -1953,8 +1954,11 @@ class ConfigCats(object):
         msg = check_session(kwargs)
         if msg: return msg
 
-        newname = kwargs.get('newname', '').strip(' []')
         name = kwargs.get('name')
+        if name == '*':
+            newname = name
+        else:
+            newname = kwargs.get('newname', '').strip(' []')
         if newname:
             if name:
                 config.delete('categories', name)
@@ -1980,7 +1984,7 @@ SORT_LIST = ( \
     'enable_tv_sorting', 'tv_sort_string', 'tv_categories',
     'enable_movie_sorting', 'movie_sort_string', 'movie_sort_extra', 'movie_extra_folder',
     'enable_date_sorting', 'date_sort_string', 'movie_categories', 'date_categories'
-    )
+)
 
 #------------------------------------------------------------------------------
 class ConfigSorting(object):
@@ -2054,6 +2058,8 @@ class ConnectionInfo(object):
 
         header['lastmail'] = self.__lastmail
 
+        header['folders'] = nzbqueue.scan_jobs(all=False, action=False)
+
         header['servers'] = []
 
         for server in downloader.servers()[:]:
@@ -2124,8 +2130,8 @@ class ConnectionInfo(object):
         pack['unpack'] = ['action 1', 'action 2']
 
         self.__lastmail = emailer.endjob('I had a d\xe8ja vu', 123, 'unknown', True,
-                                      os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                      str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
+                                         os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                         str(123*MEBI), pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0)
         raise dcRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -2170,6 +2176,20 @@ class ConnectionInfo(object):
         downloader.unblock(kwargs.get('server'))
         # Short sleep so that UI shows new server status
         time.sleep(1.0)
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def delete(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        orphan_delete(kwargs)
+        raise dcRaiser(self.__root, kwargs)
+
+    @cherrypy.expose
+    def add(self, **kwargs):
+        msg = check_session(kwargs)
+        if msg: return msg
+        orphan_add(kwargs)
         raise dcRaiser(self.__root, kwargs)
 
 
@@ -2416,7 +2436,7 @@ LIST_EMAIL = (
     'email_endjob', 'email_full',
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
-    )
+)
 
 class ConfigEmail(object):
     def __init__(self, web_dir, root, prim):
