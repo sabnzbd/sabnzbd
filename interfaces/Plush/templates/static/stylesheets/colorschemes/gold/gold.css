@@ -768,6 +768,8 @@ tr:hover .nzb_status_grippie {
 }
 #multiops_inputs input {
 	color:#000;
+	border:0;
+	margin-right:2px;
 }
 #multiops_inputs a {
 	cursor:pointer;
