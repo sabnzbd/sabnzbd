@@ -433,14 +433,14 @@ jQuery(function($){
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: {mode:'queue', name:'resume', value: pid, apikey: $.plush.apikey}
+						data: {mode:'queue', name:'pause', value: pid, apikey: $.plush.apikey}
 					});
 				} else {
 					$(this).toggleClass('sprite_ql_grip_resume_on').toggleClass('sprite_ql_grip_pause_on');
 					$.ajax({
 						type: "POST",
 						url: "tapi",
-						data: {mode:'queue', name:'pause', value: pid, apikey: $.plush.apikey}
+						data: {mode:'queue', name:'resume', value: pid, apikey: $.plush.apikey}
 					});
 				}
 			});
