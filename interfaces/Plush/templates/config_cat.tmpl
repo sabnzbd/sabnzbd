@@ -11,18 +11,6 @@
 
 	<div id="tabs-categories">
 		
-		<table class="catTable">
-		    <tr>
-		        <th align="center">$T('category')</th>
-		        <th align="center">$T('mode')</th>
-		        <th align="center">$T('priority')</th>
-		        <!--#if $script_list#--><th align="center">$T('script')</th><!--#end if#-->
-		        <th align="center">$T('catFolderPath')</th>
-		        <th align="center"><!--#if $varExists('newzbinDetails')#--> $T('catNewzbin') / <!--#end if#--> $T('catGroups')</th>
-		        <th>&nbsp;</th>
-		    </tr>
-		</table>
-	    
 	    <!--#set $odd = False#-->
 	    <!--#set $cur = 0#-->
 	    <!--#for $slot in $slotinfo#-->
@@ -32,6 +20,19 @@
 		    <form action="save" method="get">
 		
 			<table class="catTable">
+
+			<!--#if $cur == 1#-->
+			    <tr>
+			        <th align="center">$T('category')</th>
+			        <th align="center">$T('mode')</th>
+			        <th align="center">$T('priority')</th>
+			        <!--#if $script_list#--><th align="center">$T('script')</th><!--#end if#-->
+			        <th align="center">$T('catFolderPath')</th>
+			        <th align="center"><!--#if $varExists('newzbinDetails')#--> $T('catNewzbin') / <!--#end if#--> $T('catGroups')</th>
+			        <th>&nbsp;</th>
+			    </tr>
+			<!--#end if#-->
+
 		    <tr class="<!--#if $odd then "odd" else "even"#-->">
 		        
 		        
@@ -39,9 +40,9 @@
 					<input type="hidden" name="session" value="$session">
 		            <input type="hidden" value="$slot.name" name="name"/>
 					<!--#if $slot.name != '*'#-->
-			            <input type="text" name="newname" value="$slot.name"/>
+			            <input type="text" name="newname" size="10" value="$slot.name"/>
 		            <!--#else#-->
-						<input type="text" name="newname" value="$T('default')" disabled="disabled"/>
+						<input type="text" name="newname" size="10" value="$T('default')" disabled="disabled"/>
 					<!--#end if#-->	
 		        </td>
 		        
@@ -81,9 +82,9 @@
 		        </td>
 		        <!--#end if#-->
 		        
-		        <td><input type="text" size=35 name="dir" value="$slot.dir"/></td>
+		        <td><input type="text" size="20" name="dir" value="$slot.dir"/></td>
 		        
-		        <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"/></td>
+		        <td><input type="text" size="20" name="newzbin" value="$slot.newzbin"/></td>
 		        
 		        <td class="lastCol" nowrap>
 		            

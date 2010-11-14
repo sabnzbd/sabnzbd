@@ -1318,19 +1318,15 @@ fieldset.EntryFieldSet {
   .catTable td select {
     background:#fff;
     padding:3px;
-    width:100%;
   }
   .catTable td input {
-    width:98%;
   }
   .catTable td input.Add,
   .catTable td input.Save{
     font-size:0.8333em;
-    width:75px;
   }
   .catTable td input.Delete {
     font-size:0.8333em;
-    width:26px;  
   }
   .catTable td.lastCol {
 	width:120px;
