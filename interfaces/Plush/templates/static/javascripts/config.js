@@ -35,6 +35,12 @@ jQuery(document).ready(function($){
 			expires: 1 // store cookie for a day, without, it would be a session cookie
 		}
 	});
+	// kludge for jqueryui tabs, clicking for an existing tab doesnt switch to it
+	$('#activeFeedLink').click(function(){
+		// tab-feed focus
+		$( ".tabs:first" ).tabs("select",3)
+		return false;
+	});
 	
     switch(config_pane) {
 
