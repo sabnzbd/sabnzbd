@@ -1126,7 +1126,7 @@ tr:hover .history_added { color: black; }
     #cboxTopCenter{height:21px; background:url(images/colorbox-border.png) 0 0 repeat-x;}
     #cboxBottomCenter{height:21px; background:url(images/colorbox-border.png) 0 -29px repeat-x;}
     #cboxContent{background:#fff;}
-        #cboxLoadedContent{margin-top:28px;font-family: Courier, monospace;}
+        #cboxLoadedContent{margin-top:28px;}
         #cboxLoadedContent a{color:blue;}
         #cboxTitle{position:absolute; top:4px; left:0; text-align:center; width:100%; color:#949494; font-weight:bold;}
         #cboxCurrent{position:absolute; top:4px; left:58px; color:#fff;}
