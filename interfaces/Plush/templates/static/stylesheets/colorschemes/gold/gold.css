@@ -123,7 +123,7 @@ body {
 	padding-bottom: 10px; 
 }
  
-select {
+#page-wrap select {
 	background-color: #E0E0E0;
 	border: 0px;
 	color: #000;
@@ -1230,6 +1230,10 @@ table.nzoTable {
  
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
+#config_content select {
+	background-color: #fff;
+}
+
 #config_container {
 	background: #bbb;
 	font-size: 10pt;
@@ -1315,21 +1319,8 @@ fieldset.EntryFieldSet {
   .catTable th {
     font-weight:bold;
   }
-  .catTable td select {
-    background:#fff;
-    padding:3px;
-  }
-  .catTable td input {
-  }
-  .catTable td input.Add,
-  .catTable td input.Save{
-    font-size:0.8333em;
-  }
-  .catTable td input.Delete {
-    font-size:0.8333em;
-  }
   .catTable td.lastCol {
-	width:120px;
+	width:8%;
   }
 
 .rssTable { border-spacing: 1px; }
