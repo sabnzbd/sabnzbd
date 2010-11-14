@@ -69,8 +69,8 @@ DB_QUEUE_VERSION = 1
 DB_HISTORY_NAME = 'history%s.db' % DB_HISTORY_VERSION
 DB_QUEUE_NAME = 'queue%s.db' % DB_QUEUE_VERSION
 
-DEF_DOWNLOAD_DIR = 'downloads/incomplete'
-DEF_COMPLETE_DIR = 'downloads/complete'
+DEF_DOWNLOAD_DIR = 'Downloads/incomplete'
+DEF_COMPLETE_DIR = 'Downloads/complete'
 DEF_CACHE_DIR    = 'cache'
 DEF_ADMIN_DIR    = 'admin'
 DEF_LOG_DIR      = 'logs'
