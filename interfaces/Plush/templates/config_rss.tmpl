@@ -86,7 +86,7 @@
 		<!-- feed sub-tabs -->
 		<div class="tabs">
 			<ul>
-				<li><a href="#tabs-feed-update">$active_feed</a></li>
+				<li><a href="#tabs-feed-update">$T('feed')</a></li>
 				<li><a href="#tabs-feed-filters">$T('filters').capitalize()</a></li>
 				<li><a href="#tabs-feed-matched">$T('rss-matched')</a></li>
 				<li><a href="#tabs-feed-notMatched">$T('rss-notMatched')</a></li>
@@ -100,7 +100,7 @@
 			    <!--#set $feed = $active_feed#-->
 			    <form action="upd_rss_feed" method="post">
 		
-		            <strong>$T('name'):</strong> $feed<br/>
+		            <!-- <strong>$T('name'):</strong> $feed<br/> -->
 		            <input type="checkbox" onclick="this.form.action='toggle_rss_feed?session=$session';  this.form.submit(); return false;" name="enable" <!--#if $rss[$feed]['enable'] then "CHECKED" else "" #-->/>$T('enabled').capitalize()
 		            <br/><br/>
 		
@@ -147,11 +147,11 @@
 		            <input type="hidden" name="session" value="$session">
 		            <input type="submit" class="juiButton" value="$T('button-save')"/>
 		            
-		            <br/>
+		            <br/><br/>
 		
-		            <input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-delFeed')"/>
-		            <input type="button" class="juiButton" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-preFeed')"/>
-		            <input type="button" class="juiButton" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-forceFeed')"/>
+		            <p><input type="button" class="juiButton" onclick="this.form.action='test_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-preFeed')"/></p>
+		            <p><input type="button" class="juiButton" onclick="this.form.action='download_rss_feed?session=$session&'; this.form.submit(); return false;" value="$T('button-forceFeed')"/></p>
+		            <p><input type="button" class="juiButton" onclick="if (confirm('$T('confirm').replace("'","`") ')) { this.form.action='del_rss_feed?session=$session&';  this.form.submit(); return false;}" value="$T('button-delFeed')"/></p>
 			
 			    </form>
 				
