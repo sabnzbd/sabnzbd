@@ -309,11 +309,20 @@ def create_all_dirs(path, umask=False):
 def real_path(loc, path):
     """ When 'path' is relative, return normalized join of 'loc' and 'path'
         When 'path' is absolute, return normalized path
+        A path starting with ~ will be located in the user's Home folder
     """
-    if not ((sabnzbd.WIN32 and len(path)>1 and path[0].isalpha() and path[1] == ':') or \
-            (path and (path[0] == '/' or path[0] == '\\'))
-           ):
-        path = loc + '/' + path
+    if path:
+        path = path.strip()
+    else:
+        path = ''
+    if path.startswith('~'):
+        path = path.replace('~', sabnzbd.DIR_HOME+'/', 1)
+    if sabnzbd.WIN32:
+        if path[0] not in '/\\' and not (len(path) > 1 and path[0].isalpha() and path[1] == ':'):
+            path = os.path.join(loc, path)
+    elif path[0] != '/':
+        path = os.path.join(loc, path)
+
     return os.path.normpath(os.path.abspath(path))
 
 
