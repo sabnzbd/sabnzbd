@@ -1120,7 +1120,10 @@ def main():
         if vista64:
             suffix = ' (=Vista+ x64)'
             sabnzbd.WIN64 = True
-        logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
+        try:
+            logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
+        except:
+            logging.info('Platform=%s <unknown> Class=%s', suffix, os.name)
     else:
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
