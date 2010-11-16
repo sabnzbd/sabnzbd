@@ -123,7 +123,7 @@ body {
 	padding-bottom: 10px; 
 }
  
-select {
+#page-wrap select {
 	background-color: #E0E0E0;
 	border: 0px;
 	color: #000;
@@ -253,13 +253,13 @@ select {
 .sprite_progress_done{ background-position: 0 -401px;  }  /* queue.tmpl */
 .sprite_progressbar_bg{ background-position: 0 -430px;  } 
 .sprite_q_menu_pausefor{ background-position: 0 -459px;  } 
-.sprite_q_menu_pauseforsfHover{ background-position: 0 -490px;  } 
 .sprite_q_menu_pausefor_on{ background-position: 0 -521px;  } 
 .sprite_q_pause{ background-position: 0 -552px;  } 
 .sprite_q_pause_on{ background-position: 0 -583px;  } 
 .sprite_q_queue{ background-position: 0 -614px;  } 
 .sprite_q_queuesfHover{ background-position: 0 -645px;  } 
 .sprite_q_queue_on{ background-position: 0 -676px;  } 
+.sprite_q_menu_pauseforsfHover{ background-position: 0 -490px;  } 
 .sprite_q_stats_complete{ background-position: 0 -707px;  } 
 .sprite_q_stats_incomplete{ background-position: 0 -733px;  } 
 .sprite_q_stats_needspace{ background-position: 0 -759px;  } 
@@ -1126,7 +1126,7 @@ tr:hover .history_added { color: black; }
     #cboxTopCenter{height:21px; background:url(images/colorbox-border.png) 0 0 repeat-x;}
     #cboxBottomCenter{height:21px; background:url(images/colorbox-border.png) 0 -29px repeat-x;}
     #cboxContent{background:#fff;}
-        #cboxLoadedContent{margin-top:28px;font-family: Courier, monospace;}
+        #cboxLoadedContent{margin-top:28px;}
         #cboxLoadedContent a{color:blue;}
         #cboxTitle{position:absolute; top:4px; left:0; text-align:center; width:100%; color:#949494; font-weight:bold;}
         #cboxCurrent{position:absolute; top:4px; left:58px; color:#fff;}
@@ -1230,6 +1230,10 @@ table.nzoTable {
  
 ------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------------------------------- */
+#config_content select {
+	background-color: #fff;
+}
+
 #config_container {
 	background: #bbb;
 	font-size: 10pt;
@@ -1238,10 +1242,12 @@ table.nzoTable {
 	padding: 10px;
 	text-align: left;
 }
+/*
 #config_content a {
   color:#000;
   text-decoration:underline;
 } 
+*/
 #config_content {
 	overflow: auto;
 	width: 100%;
@@ -1313,25 +1319,8 @@ fieldset.EntryFieldSet {
   .catTable th {
     font-weight:bold;
   }
-  .catTable td select {
-    background:#fff;
-    padding:3px;
-    width:100%;
-  }
-  .catTable td input {
-    width:98%;
-  }
-  .catTable td input.Add,
-  .catTable td input.Save{
-    font-size:0.8333em;
-    width:75px;
-  }
-  .catTable td input.Delete {
-    font-size:0.8333em;
-    width:26px;  
-  }
   .catTable td.lastCol {
-	width:120px;
+	width:8%;
   }
 
 .rssTable { border-spacing: 1px; }

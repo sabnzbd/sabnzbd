@@ -2,106 +2,118 @@
 <!--#set global $help_uri="configure-categories"#-->
 <!--#include $webdir + "/config_inc_header.tmpl"#-->
 
-<div class="center"><small>
-	$T('explain-configCat')&nbsp;&nbsp;|&nbsp;&nbsp;
-	$T('explain-relFolder') <font color=blue>$defdir</font>&nbsp;&nbsp;|&nbsp;&nbsp;
-	<!--#if $varExists('newzbinDetails')#-->
-	    $T('explain-catNewzbin')
-	    <!--#if not $have_cats#-->
-	        <br/><a href="init_newzbin?session=$session">$T('link-initCat')</a>
-	    <!--#end if#-->
-	<!--#end if#-->
-</small></div>
 
-<table class="catTable">
-    <tr>
-        <th align="center">$T('category')</th>
-        <th align="center">$T('mode')</th>
-        <th align="center">$T('priority')</th>
-        <!--#if $script_list#--><th align="center">$T('script')</th><!--#end if#-->
-        <th align="center">$T('catFolderPath')</th>
-        <th align="center"><!--#if $varExists('newzbinDetails')#--> $T('catNewzbin') / <!--#end if#--> $T('catGroups')</th>
-        <th>&nbsp;</th>
-    </tr>
-</table>
-    
-    <!--#set $odd = False#-->
-    <!--#set $cur = 0#-->
-    <!--#for $slot in $slotinfo#-->
-    <!--#set $odd = not $odd#-->
-    <!--#set $cur = $cur+1#-->
+<div class="tabs">
+	<ul>
+		<li><a href="#tabs-categories">$T('cmenu-cat')</a></li>
+		<li><a href="#tabs-info">$T('info').capitalize()</a></li>
+	</ul>
 
-    <form action="save" method="get">
+	<div id="tabs-categories">
+		
+	    <!--#set $odd = False#-->
+	    <!--#set $cur = 0#-->
+	    <!--#for $slot in $slotinfo#-->
+	    <!--#set $odd = not $odd#-->
+	    <!--#set $cur = $cur+1#-->
+		
+		    <form action="save" method="get">
+		
+			<table class="catTable">
 
-	<table class="catTable">
-    <tr class="<!--#if $odd then "odd" else "even"#-->">
-        
-        
-        <td>
-			<input type="hidden" name="session" value="$session">
-            <input type="hidden" value="$slot.name" name="name"/>
-			<!--#if $slot.name != '*'#-->
-	            <input type="text" name="newname" value="$slot.name"/>
-            <!--#else#-->
-				<input type="text" name="newname" value="$T('default')" disabled="disabled"/>
-			<!--#end if#-->	
-        </td>
-        
-        <td>
-            <select name="pp">
-				<!--#if $slot.name != '*'#-->
-	                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
-				<!--#end if#-->	
-                <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-none')</option>
-                <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-repair')</option>
-                <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
-                <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>$T('pp-delete')</option>
-            </select>
-        </td>
-        
-        <td>
-            <select name="priority">
-				<!--#if $slot.name != '*'#-->
-	                <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
-				<!--#end if#-->	
-                <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>$T('pr-force')</option>
-                <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>$T('pr-high')</option>
-                <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
-                <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>$T('pr-low')</option>
-            </select>
-        </td>
-        
-        <!--#if $script_list#-->
-        <td>
-            <select name="script">
-            <!--#for $sc in $script_list#-->
-                <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
-	                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+			<!--#if $cur == 1#-->
+			    <tr>
+			        <th align="center">$T('category')</th>
+			        <th align="center">$T('mode')</th>
+			        <th align="center">$T('priority')</th>
+			        <!--#if $script_list#--><th align="center">$T('script')</th><!--#end if#-->
+			        <th align="center">$T('catFolderPath')</th>
+			        <th align="center"><!--#if $varExists('newzbinDetails')#--> $T('catNewzbin') / <!--#end if#--> $T('catGroups')</th>
+			        <th>&nbsp;</th>
+			    </tr>
+			<!--#end if#-->
+
+		    <tr class="<!--#if $odd then "odd" else "even"#-->" <!--#if $slot.name == '*'#-->style="background-color:gold"<!--#end if#-->>
+		        
+		        
+		        <td>
+					<input type="hidden" name="session" value="$session">
+		            <input type="hidden" value="$slot.name" name="name"/>
+					<!--#if $slot.name != '*'#-->
+			            <input type="text" name="newname" size="10" value="$slot.name"/>
+		            <!--#else#-->
+						<input type="text" name="newname" size="10" value="$T('default')" disabled="disabled"/>
+					<!--#end if#-->	
+		        </td>
+		        
+		        <td>
+		            <select name="pp">
+						<!--#if $slot.name != '*'#-->
+			                <option value=""  <!--#if $slot.pp == ""  then "selected" else ""#-->>$T('default')</option>
+						<!--#end if#-->	
+		                <option value="0" <!--#if $slot.pp == "0" then "selected" else ""#-->>$T('pp-none')</option>
+		                <option value="1" <!--#if $slot.pp == "1" then "selected" else ""#-->>$T('pp-repair')</option>
+		                <option value="2" <!--#if $slot.pp == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
+		                <option value="3" <!--#if $slot.pp == "3" then "selected" else ""#-->>$T('pp-delete')</option>
+		            </select>
+		        </td>
+		        
+		        <td>
+		            <select name="priority">
+						<!--#if $slot.name != '*'#-->
+			                <option value="-100" <!--#if $slot.priority == -100 then 'selected' else ''#-->>$T('default')</option>
+						<!--#end if#-->	
+		                <option value="2" <!--#if $slot.priority == 2 then 'selected' else ''#-->>$T('pr-force')</option>
+		                <option value="1" <!--#if $slot.priority == 1 then 'selected' else ''#-->>$T('pr-high')</option>
+		                <option value="0" <!--#if $slot.priority == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
+		                <option value="-1" <!--#if $slot.priority == -1 then 'selected' else ''#-->>$T('pr-low')</option>
+		            </select>
+		        </td>
+		        
+		        <!--#if $script_list#-->
+		        <td>
+		            <select name="script">
+		            <!--#for $sc in $script_list#-->
+		                <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
+			                <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$sc</option>
+				        <!--#end if#-->
+		            <!--#end for#-->
+		            </select>
+		        </td>
 		        <!--#end if#-->
-            <!--#end for#-->
-            </select>
-        </td>
-        <!--#end if#-->
-        
-        <td><input type="text" size=35 name="dir" value="$slot.dir"/></td>
-        
-        <td><input type="text" size=35 name="newzbin" value="$slot.newzbin"/></td>
-        
-        <td class="lastCol" nowrap>
-            
-			<input type="submit" class="Save" value="<!--#if $cur == 2 then $T('button-add') else $T('button-save')#-->"/>
+		        
+		        <td><input type="text" size="20" name="dir" value="$slot.dir"/></td>
+		        
+		        <td><input type="text" size="20" name="newzbin" value="$slot.newzbin"/></td>
+		        
+		        <td class="lastCol" nowrap>
+		            
+					<input type="submit" class="Save juiButton" style="padding:0px" value="<!--#if $cur == 2 then $T('button-add') else $T('button-save')#-->"/>
+		
+		            <!--#if $slot.name and $slot.name != '*'#-->
+		            <input type="button" class="Delete juiButton" style="padding:0px" value="$T('button-delCat')" name="$slot.name" />
+		            <!--#end if#-->
+		        
+		        </td>
+		        
+		    </tr>
+		    </table>
+		    </form>
+	    <!--#end for#-->
 
-            <!--#if $slot.name and $slot.name != '*'#-->
-            <input type="button" class="Delete" value="$T('button-delCat')" name="$slot.name" />
-            <!--#end if#-->
-        
-        </td>
-        
-    </tr>
-    </table>
-    </form>
-    <!--#end for#-->
-    
-&nbsp;
+	</div>
+
+	<div id="tabs-info">
+		<p>$T('explain-configCat')</p>
+		<p>$T('explain-relFolder') <font color=blue>$defdir</font></p>
+		<!--#if $varExists('newzbinDetails')#-->
+		    <p>$T('explain-catNewzbin')</p>
+		    <!--#if not $have_cats#-->
+		        <p><a href="init_newzbin?session=$session" class="juiButton">$T('link-initCat')</a></p>
+		    <!--#end if#-->
+		<!--#end if#-->
+	</div>
+
+</div>	
 
 <!--#include $webdir + "/config_inc_footer.tmpl"#-->

@@ -1,5 +1,5 @@
 
-Plush 3.2 for SABnzbd+ 0.6 | May 15 2010
+Plush for SABnzbd+ 0.6.x | Nov 13 2010
 assembled by pairofdimes - see LICENSE-CC.txt
 
 =======================
@@ -30,6 +30,12 @@ jQuery
 http://jquery.com
 Copyright (c) 2010 John Resig
 See LICENSE-MIT & LICENSE-GPL
+
+jQuery UI
+http://jqueryui.com/about
+Copyright (c) 2010 jQuery UI Team
+See LICENSE-MIT & LICENSE-GPL
+(includes files in templates/static/stylesheets/jqueryui/*)
 
 Sizzle CSS Selector Engine
 http://sizzlejs.com/

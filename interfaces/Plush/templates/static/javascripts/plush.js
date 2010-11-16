@@ -767,6 +767,12 @@ jQuery(function($){
 			$(document).bind('cbox_complete', function(){
 				if ($('#cboxLoadedContent h3').text()) $('#cboxTitle').text( $('#cboxLoadedContent h3').text() );
 				$('#cboxLoadedContent input[type=button], #cboxLoadedContent h3').hide(); // hide back button, title
+
+				// fixed-width font for user-script log
+				if ($.colorbox.element().hasClass('modal'))
+					$('#cboxLoadedContent').css('font-family','Courier, monospace');
+				else
+					$('#cboxLoadedContent').css('font-family',"'Century Gothic', 'AppleGothic', sans-serif");
 			});
 
 			// Set history per-page preference

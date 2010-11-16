@@ -5,12 +5,17 @@
 <form action="saveDirectories" method="post" name="fullform">
 <input type="hidden" name="session" value="$session">
 
-    <div class="center"><small>$T('explain-folderConfig')</small></div>
 
-    <div class="EntryBlock">
-    <fieldset class="EntryFieldSet">
+<div class="tabs">
+	<ul>
+		<li><a href="#tabs-userFolders">$T('userFolders')</a></li>
+		<li><a href="#tabs-systemFolders">$T('systemFolders')</a></li>
+	</ul>
 
-        <legend><span class="config_sprite_container sprite_config_folders_user">&nbsp;</span> $T('userFolders')</legend>
+
+	<div id="tabs-userFolders">
+
+	    <div class="center"><small>$T('explain-folderConfig')</small></div>
         <strong class="dir_helper">&nbsp;$T('in')&nbsp;"$my_home"&nbsp;</strong>
 
         <br/><br/>
@@ -54,11 +59,12 @@
         <strong>$T('opt-email_dir'):</strong><br/>
         <small>$T('explain-email_dir')</small><br/>
         <input type="text" size="50" name="email_dir" value="$email_dir">
-    </fieldset>
 
-    <fieldset class="EntryFieldSet">
+    </div>
 
-        <legend><span class="config_sprite_container sprite_config_folders_system">&nbsp;</span> $T('systemFolders')</legend>
+	<div id="tabs-systemFolders">
+
+	    <div class="center"><small>$T('explain-folderConfig')</small></div>
         <strong class="dir_helper">&nbsp;$T('in')&nbsp;"$my_lcldata"&nbsp;</strong><br/><br/>
 
         <strong>$T('opt-admin_dir'):</strong><br/>
@@ -74,9 +80,10 @@
         <strong>$T('opt-nzb_backup_dir'):</strong><br/>
         <small>$T('explain-nzb_backup_dir')</small><br/>
         <input type="text" size="50" name="nzb_backup_dir" value="$nzb_backup_dir">
-    </fieldset>
 
     </div>
+
+</div>
 
 </form>
 

@@ -4,143 +4,143 @@
 <form action="saveGeneral" method="post" name="fullform" autocomplete="off">
 <input type="hidden" id="hiddenSession" name="session" value="$session">
 
-<div class="center"><small><i>$T('confgFile'):</i> <font color=blue>$configfn</font></small></div>
 
-<div class="EntryBlock">
-<fieldset class="EntryFieldSet">
 
-    <legend><span class="config_sprite_container sprite_config_general_web_server">&nbsp;</span> $T('webServer')</legend>
 
-    <strong class="manual_restart">&nbsp;$T('restartRequired')&nbsp;</strong><br/><br/>
+<div class="tabs">
+	<ul>
+		<li><a href="#tabs-webServer">$T('webServer')</a></li>
+		<li><a href="#tabs-httpsSupport">$T('httpsSupport')</a></li>
+		<li><a href="#tabs-tuning">$T('tuning')</a></li>
+	</ul>
 
-    <table cellpadding=2>
-    <tr><td>
-    <strong>$T('opt-host'):</strong><br/>
-    <small>$T('explain-host')</small><br/>
-    <input type="text" name="host" value="$host"/>
 
-    </td><td>
-    <strong>$T('opt-port'):</strong><br/>
-    <small>$T('explain-port')</small><br/>
-    <input type="text" name="port" size=8 value="$port"/>
+	<div id="tabs-webServer">
 
-    </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
-    <strong>$T('opt-web_username'):</strong><br/>
-    <small>$T('explain-web_username')</small><br/>
-    <input type="text" name="username" value="$username"/>
+	    <strong class="manual_restart">&nbsp;$T('restartRequired')&nbsp;</strong><br/><br/>
+	
+	    <table cellpadding=2>
+	    <tr><td>
+	    <strong>$T('opt-host'):</strong><br/>
+	    <small>$T('explain-host')</small><br/>
+	    <input type="text" name="host" value="$host"/>
+	
+	    </td><td>
+	    <strong>$T('opt-port'):</strong><br/>
+	    <small>$T('explain-port')</small><br/>
+	    <input type="text" name="port" size=8 value="$port"/>
+	
+	    </td></tr><tr><td colspan=2>&nbsp;</td></tr><tr><td>
+	    <strong>$T('opt-web_username'):</strong><br/>
+	    <small>$T('explain-web_username')</small><br/>
+	    <input type="text" name="username" value="$username"/>
+	
+	    </td><td>
+	    <strong>$T('opt-web_password'):</strong><br/>
+	    <small>$T('explain-web_password')</small><br/>
+	    <input type="password" name="password" value="$password"/>
+	    </td></tr>
+	
+		<tr><td colspan=2>&nbsp;</td></tr>
+	
+		<tr><td>
+	    <strong>$T('opt-web_dir'):</strong><br/>
+	    <small>$T('explain-web_dir')</small><br/>
+	    <select name="web_dir">
+	    <!--#for $webline in $web_list#-->
+	    <!--#if $webline.lower() == $web_dir.lower()#-->
+	        <option value="$webline" selected>$webline</option>
+	    <!--#else#-->
+	        <option value="$webline">$webline</option>
+	    <!--#end if#-->
+	    <!--#end for#-->
+	    </select>
+	
+	    </td><td>
+	    <strong>$T('opt-web_dir2'):</strong><br/>
+	    <small>$T('explain-web_dir2')</small><br/>
+	    <select name="web_dir2">
+	    <!--#for $webline in $web_list2#-->
+	    <!--#if $webline.lower() == $web_dir2.lower()#-->
+	        <option value="$webline" selected>$webline</option>
+	    <!--#else#-->
+	        <option value="$webline">$webline</option>
+	    <!--#end if#-->
+	    <!--#end for#-->
+	    </select>
+	    </td></tr>
+	    </table>
+	
+		<br/><br/>
+	    <strong>$T('opt-language'):</strong><br/>
+	    <small>$T('explain-language')</small><br/>
+	    <select name="language" id="language" class="select">
+	    <!--#for $webline in $lang_list#-->
+	        <!--#if $webline[0].lower() == $language.lower()#-->
+	            <option value="$webline[0]" selected>$webline[1]</option>
+	        <!--#else#-->
+	            <option value="$webline[0]">$webline[1]</option>
+	        <!--#end if#-->
+	    <!--#end for#-->
+	    </select>
+	
+		<br/><br/>
+		<strong>$T('opt-apikey'):</strong><br />
+	    <small>$T('explain-apikey')</small><br/>
+		<input type="text" style="width:250px;border:none;" id="apikey" value="$session">
+		<input type="button" style="float:none;display:inline;" size="40" value="$T('button-apikey')" id="generate_new_apikey">
+	
+		<br/><br/>
+	    <input type="checkbox" name="disable_api_key" value="1" <!--#if $disable_api_key > 0 then 'checked="1"' else ""#-->
+		<strong>$T('opt-disableApikey'):</strong><br />
+	    <small>$T('explain-disableApikey') <a href="${helpuri}cross-site-vulnerability/" target="_blank">$T('explain-disableApikeyWarn')</a></small><br/>
 
-    </td><td>
-    <strong>$T('opt-web_password'):</strong><br/>
-    <small>$T('explain-web_password')</small><br/>
-    <input type="password" name="password" value="$password"/>
-    </td></tr>
+	</div>
+	
 
-	<tr><td colspan=2>&nbsp;</td></tr>
+	<div id="tabs-httpsSupport">
+	
+	    <strong class="manual_restart">&nbsp;$T('restartRequired')&nbsp;</strong><br/><br/>
+	
+	    <input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+	    <strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('opt-notInstalled') else ""#--></strong><br/>
+	    <small>$T('explain-enable_https')</small>
+	
+		<br/><br/>
+	    <strong>$T('opt-https_port'):</strong><br/>
+	    <small>$T('explain-https_port')</small><br/>
+	    <input type="text" name="https_port" size="8" value="$https_port"/>
+	
+		<br/><br/>
+	    <strong>$T('opt-https_cert'):</strong><br/>
+	    <small>$T('explain-https_cert')</small><br/>
+	    <input type="text" name="https_cert" value="$https_cert"/>
+	
+		<br/><br/>
+	    <strong>$T('opt-https_key'):</strong><br/>
+	    <small>$T('explain-https_key')</small><br/>
+	    <input type="text" name="https_key" value="$https_key"/>
 
-	<tr><td>
-    <strong>$T('opt-web_dir'):</strong><br/>
-    <small>$T('explain-web_dir')</small><br/>
-    <select name="web_dir">
-    <!--#for $webline in $web_list#-->
-    <!--#if $webline.lower() == $web_dir.lower()#-->
-        <option value="$webline" selected>$webline</option>
-    <!--#else#-->
-        <option value="$webline">$webline</option>
-    <!--#end if#-->
-    <!--#end for#-->
-    </select>
+	</div>
 
-    </td><td>
-    <strong>$T('opt-web_dir2'):</strong><br/>
-    <small>$T('explain-web_dir2')</small><br/>
-    <select name="web_dir2">
-    <!--#for $webline in $web_list2#-->
-    <!--#if $webline.lower() == $web_dir2.lower()#-->
-        <option value="$webline" selected>$webline</option>
-    <!--#else#-->
-        <option value="$webline">$webline</option>
-    <!--#end if#-->
-    <!--#end for#-->
-    </select>
-    </td></tr>
-    </table>
 
-	<br/><br/>
-    <strong>$T('opt-language'):</strong><br/>
-    <small>$T('explain-language')</small><br/>
-    <select name="language" id="language" class="select">
-    <!--#for $webline in $lang_list#-->
-        <!--#if $webline[0].lower() == $language.lower()#-->
-            <option value="$webline[0]" selected>$webline[1]</option>
-        <!--#else#-->
-            <option value="$webline[0]">$webline[1]</option>
-        <!--#end if#-->
-    <!--#end for#-->
-    </select>
+	<div id="tabs-tuning">
 
-	<br/><br/>
-	<strong>$T('opt-apikey'):</strong><br />
-    <small>$T('explain-apikey')</small><br/>
-	<input type="text" style="width:250px;border:none;" id="apikey" value="$session">
-	<input type="button" style="float:none;display:inline;" size="40" value="$T('button-apikey')" id="generate_new_apikey">
+	    <strong>$T('opt-bandwidth_limit'):</strong><br/>
+	    <small>$T('explain-bandwidth_limit')</small><br/>
+	    <input type="text" name="bandwidth_limit" value="$bandwidth_limit" size=8 />
+	
+	    <br/><br/>
+	    <strong>$T('opt-cache_limitstr'):</strong><br/>
+	    <small>$T('explain-cache_limitstr')</small><br/>
+	    <input type="text" name="cache_limit" value="$cache_limit" size=8 />
+	
+	    <br/><br/>
+	    <strong>$T('opt-cleanup_list'):</strong><br/>
+	    <small>$T('explain-cleanup_list')</small><br/>
+	    <input type="text" name="cleanup_list" value="$cleanup_list" size=40 />
+	</div>
 
-	<br/><br/>
-    <input type="checkbox" name="disable_api_key" value="1" <!--#if $disable_api_key > 0 then 'checked="1"' else ""#-->
-	<strong>$T('opt-disableApikey'):</strong><br />
-    <small>$T('explain-disableApikey') <a href="${helpuri}cross-site-vulnerability/" target="_blank">$T('explain-disableApikeyWarn')</a></small><br/>
-
-</fieldset>
-</div>
-
-<div class="EntryBlock">
-<fieldset class="EntryFieldSet">
-    <legend><span class="config_sprite_container sprite_config_connections_encrypted">&nbsp;</span> $T('httpsSupport')</legend>
-
-    <strong class="manual_restart">&nbsp;$T('restartRequired')&nbsp;</strong><br/><br/>
-
-    <input type="checkbox" name="enable_https" value="1" <!--#if $enable_https > 0 then 'checked="1"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
-    <strong>$T('opt-enable_https')<!--#if int($have_ssl) == 0 then " "+$T('opt-notInstalled') else ""#--></strong><br/>
-    <small>$T('explain-enable_https')</small>
-
-	<br/><br/>
-    <strong>$T('opt-https_port'):</strong><br/>
-    <small>$T('explain-https_port')</small><br/>
-    <input type="text" name="https_port" size="8" value="$https_port"/>
-
-	<br/><br/>
-    <strong>$T('opt-https_cert'):</strong><br/>
-    <small>$T('explain-https_cert')</small><br/>
-    <input type="text" name="https_cert" value="$https_cert"/>
-
-	<br/><br/>
-    <strong>$T('opt-https_key'):</strong><br/>
-    <small>$T('explain-https_key')</small><br/>
-    <input type="text" name="https_key" value="$https_key"/>
-
-</fieldset>
-</div>
-
-<div class="EntryBlock">
-<fieldset class="EntryFieldSet">
-
-    <legend><span class="config_sprite_container sprite_config_general_tuning">&nbsp;</span> $T('tuning')</legend>
-
-    <br/><br/>
-    <strong>$T('opt-bandwidth_limit'):</strong><br/>
-    <small>$T('explain-bandwidth_limit')</small><br/>
-    <input type="text" name="bandwidth_limit" value="$bandwidth_limit" size=8 />
-
-    <br/><br/>
-    <strong>$T('opt-cache_limitstr'):</strong><br/>
-    <small>$T('explain-cache_limitstr')</small><br/>
-    <input type="text" name="cache_limit" value="$cache_limit" size=8 />
-
-    <br/><br/>
-    <strong>$T('opt-cleanup_list'):</strong><br/>
-    <small>$T('explain-cleanup_list')</small><br/>
-    <input type="text" name="cleanup_list" value="$cleanup_list" size=40 />
-
-</fieldset>
 </div>
 
 </form>
