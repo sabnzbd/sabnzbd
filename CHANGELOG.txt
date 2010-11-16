@@ -2,6 +2,7 @@
  0.6.0Alpha6 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 Features:
+- Plush now has tabbed Config pages
 - Add retention time parameter to servers so that articles too old will not be tried
 - Disable top_only option (interferes with "retention" implementation)
 - Option to automatically remove nzbmatrix bookmark after successful download
@@ -11,6 +12,18 @@ Bugs:
 - Explicit RSS filter attributes (category, script, pp) influenced each other
   within a feed definition
 - rss_scan is now a scheduable event and will override the rss_rate option.
+- Improve handling of colon characters in filenames (compensating for par2 issues)
+- NZBs would be left behind, despite ".nzb" being in the cleanup-list
+- When only individually paused jobs are in the queue, unpausing them
+  would not always resume downloading
+- Use nzbmatrix.com's new V1.1 api.
+- Sanitize nzbname parameter coming from API calls (led to problems with some
+  third-party utilities)
+- NZB-chaining should ignore the duplicate NZB check and fix cleanup
+  of "complete" folder after NZB-chaining.
+- Plush did not save end-of-queue action.
+- Zipped NZB files from URLs were not accepted.
+- OSX: The end-of-queue action "Hibernate" shut down the system.
 -------------------------------------------------------------------------------
  0.6.0Alpha5 by The SABnzbd-Team
 -------------------------------------------------------------------------------
