@@ -315,13 +315,16 @@ def real_path(loc, path):
         path = path.strip()
     else:
         path = ''
-    if path.startswith('~'):
-        path = path.replace('~', sabnzbd.DIR_HOME+'/', 1)
-    if sabnzbd.WIN32:
-        if path[0] not in '/\\' and not (len(path) > 1 and path[0].isalpha() and path[1] == ':'):
+    if path:
+        if path.startswith('~'):
+            path = path.replace('~', sabnzbd.DIR_HOME+'/', 1)
+        if sabnzbd.WIN32:
+            if path[0] not in '/\\' and not (len(path) > 1 and path[0].isalpha() and path[1] == ':'):
+                path = os.path.join(loc, path)
+        elif path[0] != '/':
             path = os.path.join(loc, path)
-    elif path[0] != '/':
-        path = os.path.join(loc, path)
+    else:
+        path = loc
 
     return os.path.normpath(os.path.abspath(path))
 
