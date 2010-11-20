@@ -521,7 +521,6 @@ elif target in ('binary', 'installer'):
     rename_file('dist', Win32HelperName, Win32ServiceHelpName)
 
 
-
     ############################
     if target == 'installer':
 
@@ -536,6 +535,13 @@ elif target in ('binary', 'installer'):
     os.rename(prod, 'dist')
 
     os.system(BzrRevert)
+
+    ############################
+    # Check for uncompressed sqlite3.dll
+    if os.path.getsize('dist/lib/sqlite3.dll') < 400000L:
+        print
+        print '>>>> WARNING: compressed version of sqlite3.dll detected, use uncompressed version!!'
+        print
 
 else:
     # Prepare Source distribution package.
