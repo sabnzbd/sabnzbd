@@ -1,76 +1,61 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
 <script type="text/javascript">
-function selectSkin(skin)
-{
-    var elem = document.getElementById(skin);
-    elem.checked = "checked";
-}
+var session = '$session';
+var txtChecking = "$T('srv-testing')";
 </script>
 
-<form action="two" method="post">
-<div class="bigger">
-<h3>$T('wizard-skin')</h3>
-$T('wizard-explain-skin')<br /><br />
-<div class="full-width">
-    <table class="full-width align-center">
-        <tr>
-            <td class="align-center">
-                <div class="skin-select">
-                    <label for="radio_smpl" onclick="javascript:selectSkin('radio_smpl')">
-                        <img src="static/images/smpl-th.png" border="0" />
-                    </label>
-                </div>
-                <br />
-                <a href="static/images/smpl.png" target="_blank">+$T('wizard-zoom')</a>
-           </td>
-            <td class="align-center">
-                <div class="skin-select skin-select-plush">
-                    <label for="radio_plush" onclick="javascript:selectSkin('radio_plush')">
-                        <img src="static/images/plush-th.png" border="0" />
-                    </label>
-                </div>
-                <br />
-                <a href="static/images/plush.png" target="_blank">+$T('wizard-zoom')</a>
-            </td>
-            <td class="align-center">
-                <div class="skin-select">
-                    <label for="radio_classic" onclick="javascript:selectSkin('radio_classic')">
-                        <img src="static/images/classic-th.png" border="0" />
-                    </label>
-                </div>
-                <br />
-                <a href="static/images/classic.png" target="_blank">+$T('wizard-zoom')</a>
-            </td>
-        </tr>
-        <tr>
-            <td class="align-center"><br/><input type="radio" name="skin" id="radio_smpl" value="smpl" <!--#if $skin == 'smpl' then 'checked="checked"' else ''#-->><br /><label for="radio_smpl">smpl</label></td>
-            <td class="align-center"><br/><input type="radio" name="skin" id="radio_plush" value="Plush" <!--#if $skin == 'plush' then 'checked="checked"' else ''#-->><br /><label for="radio_plush">Plush</label></td>
-            <td class="align-center"><br/><input type="radio" name="skin" id="radio_classic" value="Classic" <!--#if $skin == 'classic' then 'checked="checked"' else ''#-->><br /><label for="radio_classic">Classic</label></td>
-        </tr>
-    </table>
+<script type="text/javascript" src="static/javascript/jquery.js"></script>
+<script type="text/javascript" src="static/javascript/checkserver.js"></script>
+<h3>$T('wizard-server')</h3>
+$T('wizard-explain-server')
+<div style="float: right">
+   <iframe frameborder=0 height=375 width=315 src="http://sabnzbd.org/resources/wizard/ad/$language"></iframe>
 </div>
+
+<br /><br class="clear" />
+<form action="./two" method="post" autocomplete="off">
+<div id="serverDetails">
+    <label class="label">$T('srv-host')<span class="required-star">*</span></label><input id="host" class="clearinput text-input-wide" type="text" size="26" name="host" value="$host">
+    <div id="host-tip" class="tips">$T('wizard-example') news.giganews.com</div>
+    <div id="host-error" class="error-text hidden">$T('wizard-server-required')</div>
+    <br class="clear" />
+    <label class="label">$T('srv-port')</label><input id="port" class="text-input-thin" type="text" size="2" name="port" value="$port">
+    <div id="port-tip" class="tips">E.g. 119 or 563 for SSL</div>
+    <div id="port-error" class="error-text hidden">$T('wizard-server-number')</div>
+    <br class="clear" /><br class="clear" />
+    <label class="label">$T('srv-username')</label><input class="validate-text clearinput text-input" type="text" size="12" name="username" value="$username">
+    <br class="clear" />
+    <label class="label">$T('srv-password')</label><input class="validate-text text-input" type="password" size="12" name="password" value="$password">
+    <br class="clear" /><br class="clear" />
+    <label class="label">$T('srv-connections')<span class="required-star">*</span></label><input id="connections" class="text-input-thin" type="text" size="2" name="connections" value="$connections">
+    <div id="connections-tip" class="tips">$T('wizard-server-con-explain') E.g. 8 or 20</div>
+    <div id="connections-error" class="error-text hidden">$T('wizard-server-number')</div>
+    <br class="clear" />
+    <label><span class="label">$T('srv-ssl')</span>
+    <input class="validate-text" class="radio" type="checkbox" name="ssl" value="1" <!--#if $ssl == 1 then 'checked' else ''#-->></label>
+    <div class="tips">$T('wizard-server-ssl-explain')</div>
+    <br class="clear" />
 </div>
-</div>
-<hr />
 <br/>
+<input id="serverTest" type="button" value="$T('wizard-button-testServer')" />
+<div id="serverQuote" class="quoteBlock"><span id="serverResponse">$T('wizard-server-text')</span></div>
+</div>
+<hr /><br/>
 <div class="full-width">
-    <table class="full-width">
-        <tr>
-            <td>
-                <input class="bigbutton" type="button" onclick="document.location ='./'" value="&lsaquo; $T('wizard-previous')"/>
-            </td>
-            <td>
-                <div class="align-center">
-                    <!--#for $step in xrange($steps)#-->
-                       <!--#set $step = $step + 1#-->
-                        <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
-                    <!--#end for#-->
-                </div>
-            </td>
-            <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
-        </tr>
-    </table>
+<table class="full-width">
+    <tr>
+        <td><input class="bigbutton" type="button" onclick="document.location ='./index'" value="&lsaquo; $T('wizard-previous')" /></td>
+        <td>
+            <div class="align-center">
+                <!--#for $step in xrange($steps)#-->
+                   <!--#set $step = $step + 1#-->
+                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
+                <!--#end for#-->
+            </div>
+        </td>
+        <td class="align-right"><input type="hidden" name="session" value="$session"><input id="next-button" class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
+    </tr>
+</table>
 </div>
 </form>
-
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

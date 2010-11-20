@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2009 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2010 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -41,12 +41,12 @@ class Wizard(object):
         self.__web_dir = sabnzbd.WIZARD_DIR
         self.__prim = prim
         self.info = {'webdir': sabnzbd.WIZARD_DIR,
-                     'steps':5, 'version':sabnzbd.__version__,
+                     'steps':4, 'version':sabnzbd.__version__,
                      'T': T}
 
     @cherrypy.expose
     def index(self, **kwargs):
-
+        """ Show the language selection page """
         info = self.info.copy()
         info['num'] = ''
         info['number'] = 0
@@ -64,29 +64,56 @@ class Wizard(object):
 
     @cherrypy.expose
     def one(self, **kwargs):
-        # Handle special options
+        """ Accept language and show server page """
         language = kwargs.get('lang')
         cfg.language.set(language)
         set_language(language)
         sabnzbd.api.cache_skin_trans()
 
+        # Always setup Plush
+        sabnzbd.interface.change_web_dir('Plush - Gold')
+
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step One')
         info['number'] = 1
-        info['skin'] = cfg.web_dir().lower()
+        info['session'] = cfg.api_key()
+        info['language'] = cfg.language()
         info['T'] = Ttemplate
 
+        servers = config.get_servers()
+        if not servers:
+            info['host'] = ''
+            info['port'] = ''
+            info['username'] = ''
+            info['password'] = ''
+            info['connections'] = ''
+            info['ssl'] = 0
+        else:
+            for server in servers:
+                # If there are multiple servers, just use the first enabled one
+                s = servers[server]
+                info['host'] = s.host()
+                info['port'] = s.port()
+                info['username'] = s.username()
+                info['password'] = s.password.get_stars()
+                info['connections'] = s.connections()
+                info['ssl'] = s.ssl()
+                if s.enable():
+                    break
         template = Template(file=os.path.join(self.__web_dir, 'one.html'),
-                                searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
+                            searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
+
 
     @cherrypy.expose
     def two(self, **kwargs):
-        # Save skin setting
+        """ Accept server and show internal web server page """
+        # Save server details
         if kwargs:
-            if 'skin' in kwargs:
-                sabnzbd.interface.change_web_dir(kwargs['skin'])
+            kwargs['enable'] = 1
+            sabnzbd.interface.handle_server(kwargs)
 
+        # Create web server page
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step Two')
         info['number'] = 2
@@ -114,9 +141,10 @@ class Wizard(object):
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 
+
     @cherrypy.expose
     def three(self, **kwargs):
-        # Save access/autobrowser/autostart
+        """ Accept webserver parms and show Indexers page """
         if kwargs:
             if 'access' in kwargs:
                 cfg.cherryhost.set(kwargs['access'])
@@ -126,46 +154,10 @@ class Wizard(object):
             cfg.password.set(kwargs.get('web_pass', ''))
             if not cfg.username() or not cfg.password():
                 sabnzbd.interface.set_auth(cherrypy.config)
+
+        # Create Indexers page
         info = self.info.copy()
         info['num'] = '&raquo; %s' % T('Step Three')
-        info['number'] = 3
-        info['session'] = cfg.api_key()
-        info['language'] = cfg.language()
-        info['T'] = Ttemplate
-
-        servers = config.get_servers()
-        if not servers:
-            info['host'] = ''
-            info['port'] = ''
-            info['username'] = ''
-            info['password'] = ''
-            info['connections'] = ''
-            info['ssl'] = 0
-        else:
-            for server in servers:
-                # If there are multiple servers, just use the first enabled one
-                s = servers[server]
-                info['host'] = s.host()
-                info['port'] = s.port()
-                info['username'] = s.username()
-                info['password'] = s.password.get_stars()
-                info['connections'] = s.connections()
-                info['ssl'] = s.ssl()
-                if s.enable():
-                    break
-        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
-                            searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
-        return template.respond()
-
-    @cherrypy.expose
-    def four(self, **kwargs):
-        # Save server details
-        if kwargs:
-            kwargs['enable'] = 1
-            sabnzbd.interface.handle_server(kwargs)
-
-        info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Four')
         info['number'] = 4
         info['newzbin_user'] = cfg.newzbin_username()
         info['newzbin_pass'] = cfg.newzbin_password.get_stars()
@@ -173,13 +165,13 @@ class Wizard(object):
         info['matrix_user'] = cfg.matrix_username()
         info['matrix_apikey'] = cfg.matrix_apikey()
         info['T'] = Ttemplate
-        template = Template(file=os.path.join(self.__web_dir, 'four.html'),
+        template = Template(file=os.path.join(self.__web_dir, 'three.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 
     @cherrypy.expose
-    def five(self, **kwargs):
-        # Save server details
+    def four(self, **kwargs):
+        """ Accept Indexers and show Restart screen """
         if kwargs:
             if 'newzbin_user' in kwargs and 'newzbin_pass' in kwargs:
                 cfg.newzbin_username.set(kwargs.get('newzbin_user',''))
@@ -191,8 +183,9 @@ class Wizard(object):
 
         config.save_config()
 
+        # Show Restart screen
         info = self.info.copy()
-        info['num'] = '&raquo; %s' % T('Step Five')
+        info['num'] = '&raquo; %s' % T('Step Four')
         info['number'] = 5
         info['helpuri'] = 'http://wiki.sabnzbd.org/'
         info['session'] = cfg.api_key()
@@ -200,7 +193,7 @@ class Wizard(object):
         info['access_url'], info['urls'] = self.get_access_info()
         info['T'] = Ttemplate
 
-        template = Template(file=os.path.join(self.__web_dir, 'five.html'),
+        template = Template(file=os.path.join(self.__web_dir, 'four.html'),
                             searchList=[info], compilerSettings=sabnzbd.interface.DIRECTIVES)
         return template.respond()
 

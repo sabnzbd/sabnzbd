@@ -1,39 +1,35 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
-
-<form action="./five" method="post" autocomplete="off">
-<p>$T('wizard-index-explain')</p>
-<div id="serverDetails">
-<h3><a href="http://newzbin.com" target="_blank">Newzbin.com</a> ($T('wizard-optional'))</h3>
-    <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$newzbin_user" name="newzbin_user">
-    <br class="clear" />
-    <label class="label">$T('srv-password'):</label><input type="password" size="20" value="$newzbin_pass" name="newzbin_pass">
-    <br class="clear" />
-    <input type="checkbox" name="newzbin_bookmarks" id="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks == 1 then 'checked="checked"' else ''#-->> <label for="newzbin_bookmarks">$T('wizard-index-bookmark')</label><br />
-
-
-<h3><a href="http://nzbmatrix.com" target="_blank">NZBMatrix.com</a> ($T('wizard-optional'))</h3>
-    <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$matrix_user" name="matrix_user">
-    <br class="clear" />
-    <label class="label">$T('opt-apikey'):</label><input type="text" size="20" value="$matrix_apikey" name="matrix_apikey">
-</div></div>
-
+<script type="text/javascript" src="static/javascript/jquery.js"></script>
+<script type="text/javascript" src="static/javascript/restart.js"></script>
+<br/><br/>
+<h4 id="restarting" class="align-center">$T('wizard-restarting')</h4>
+<h4 id="complete" class="align-center success hidden">$T('wizard-complete')</h4>
+<br />
+<br/>
+<div id="tips" class="hidden">
+$T('wizard-tip1') <span class="bold">$T('wizard-tip2')</span><br/>
+<!--#if len($urls) > 1#--><!--#set $s = 's'#--><!--#else#--><!--#set $s = ''#--><!--#end if#-->
+<!--#set $tip3 = $T('wizard-tip3') % $s#-->
+$tip3:<br/><br/>
+<div class="quoteBlock">
+<!--#set $i = 0#-->
+<!--#for $url in $urls#-->
+    <!--#set $i = $i+1#-->
+    <a href="$url">$url</a><!--#if $i != len($urls)#--><br /><!--#end if#-->
+<!--#end for#-->
+</div><br/>
+$T('wizard-tip4')
+<br/><br/>
+$T('wizard-tip-wiki') <a href="$helpuri">wiki</a>
+</div>
+</div>
 <hr /><br/>
 <div class="full-width">
 <table class="full-width">
-    <tr>
-        <td><input class="bigbutton" type="button" onclick="document.location ='./three'" value="&lsaquo; $T('wizard-previous')" /></td>
-        <td>
-            <div class="align-center">
-                <!--#for $step in xrange($steps)#-->
-                   <!--#set $step = $step + 1#-->
-                    <span class="<!--#if $step == $number then 'selected' else 'unselected'#-->">$step</span>
-                <!--#end for#-->
-            </div>
-        </td>
-        <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
+    <tr class="align-center">
+        <td><input type="hidden" name="session" id="apikey" value="$session"><input class="bigbutton disabled" type="button" onclick="document.location ='$access_url'" value="$T('wizard-goto')" disabled="disabled"/></td>
     </tr>
 </table>
 </div>
-</form>
 
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

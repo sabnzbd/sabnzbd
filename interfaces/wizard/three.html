@@ -1,45 +1,22 @@
 <!--#include $webdir + "/inc_top.tmpl"#-->
-<script type="text/javascript">
-var session = '$session';
-var txtChecking = "$T('srv-testing')";
-</script>
 
-<script type="text/javascript" src="static/javascript/jquery.js"></script>
-<script type="text/javascript" src="static/javascript/checkserver.js"></script>
-<h3>$T('wizard-server')</h3>
-$T('wizard-explain-server')
-<div style="float: right">
-   <iframe frameborder=0 height=375 width=315 src="http://sabnzbd.org/resources/wizard/ad/$language"></iframe>
-</div>
-
-<br /><br class="clear" />
 <form action="./four" method="post" autocomplete="off">
+<p>$T('wizard-index-explain')</p>
 <div id="serverDetails">
-    <label class="label">$T('srv-host')<span class="required-star">*</span></label><input id="host" class="clearinput text-input-wide" type="text" size="26" name="host" value="$host">
-    <div id="host-tip" class="tips">$T('wizard-example') news.giganews.com</div>
-    <div id="host-error" class="error-text hidden">$T('wizard-server-required')</div>
+<h3><a href="http://newzbin.com" target="_blank">Newzbin.com</a> ($T('wizard-optional'))</h3>
+    <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$newzbin_user" name="newzbin_user">
     <br class="clear" />
-    <label class="label">$T('srv-port')</label><input id="port" class="text-input-thin" type="text" size="2" name="port" value="$port">
-    <div id="port-tip" class="tips">E.g. 119 or 563 for SSL</div>
-    <div id="port-error" class="error-text hidden">$T('wizard-server-number')</div>
-    <br class="clear" /><br class="clear" />
-    <label class="label">$T('srv-username')</label><input class="validate-text clearinput text-input" type="text" size="12" name="username" value="$username">
+    <label class="label">$T('srv-password'):</label><input type="password" size="20" value="$newzbin_pass" name="newzbin_pass">
     <br class="clear" />
-    <label class="label">$T('srv-password')</label><input class="validate-text text-input" type="password" size="12" name="password" value="$password">
-    <br class="clear" /><br class="clear" />
-    <label class="label">$T('srv-connections')<span class="required-star">*</span></label><input id="connections" class="text-input-thin" type="text" size="2" name="connections" value="$connections">
-    <div id="connections-tip" class="tips">$T('wizard-server-con-explain') E.g. 8 or 20</div>
-    <div id="connections-error" class="error-text hidden">$T('wizard-server-number')</div>
+    <input type="checkbox" name="newzbin_bookmarks" id="newzbin_bookmarks" value="1" <!--#if $newzbin_bookmarks == 1 then 'checked="checked"' else ''#-->> <label for="newzbin_bookmarks">$T('wizard-index-bookmark')</label><br />
+
+
+<h3><a href="http://nzbmatrix.com" target="_blank">NZBMatrix.com</a> ($T('wizard-optional'))</h3>
+    <label class="label">$T('srv-username'):</label><input type="text" size="20" value="$matrix_user" name="matrix_user">
     <br class="clear" />
-    <label><span class="label">$T('srv-ssl')</span>
-    <input class="validate-text" class="radio" type="checkbox" name="ssl" value="1" <!--#if $ssl == 1 then 'checked' else ''#-->></label>
-    <div class="tips">$T('wizard-server-ssl-explain')</div>
-    <br class="clear" />
-</div>
-<br/>
-<input id="serverTest" type="button" value="$T('wizard-button-testServer')" />
-<div id="serverQuote" class="quoteBlock"><span id="serverResponse">$T('wizard-server-text')</span></div>
-</div>
+    <label class="label">$T('opt-apikey'):</label><input type="text" size="20" value="$matrix_apikey" name="matrix_apikey">
+</div></div>
+
 <hr /><br/>
 <div class="full-width">
 <table class="full-width">
@@ -53,9 +30,10 @@ $T('wizard-explain-server')
                 <!--#end for#-->
             </div>
         </td>
-        <td class="align-right"><input type="hidden" name="session" value="$session"><input id="next-button" class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
+        <td class="align-right"><input class="bigbutton" type="submit" value="$T('wizard-next') &raquo;" /></td>
     </tr>
 </table>
 </div>
 </form>
+
 <!--#include $webdir + "/inc_bottom.tmpl"#-->

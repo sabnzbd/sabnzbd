@@ -86,6 +86,9 @@ def test_nntp_server(host, port, username=None, password=None, ssl=None):
     except socket.error, e:
         return False, xml_name(str(e))
 
+    except TypeError, e:
+        return False, xml_name(T('Invalid server address.'))
+
     except:
         return False, xml_name(str(sys.exc_info()[1]))
 
