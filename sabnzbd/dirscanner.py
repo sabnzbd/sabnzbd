@@ -37,17 +37,15 @@ import sabnzbd.cfg as cfg
 import sabnzbd.nzbqueue
 
 
-RE_CAT = re.compile(r'^{{(\w+)}}(.+)') # Category prefix
 def name_to_cat(fname, cat=None):
     """
-        Translate Get options associated with the category.
-        Category options have priority over default options.
+        Retrieve category from file name, but only if "cat" is None.
     """
-    if cat is None:
-        m = RE_CAT.search(fname)
-        if m and m.group(1) and m.group(2):
-            cat = m.group(1).lower()
-            fname = m.group(2)
+    if cat is None and fname.startswith('{{'):
+        n = fname.find('}}')
+        if n > 2:
+            cat = fname[2:n].strip()
+            fname = fname[n+2:].strip()
             logging.debug('Job %s has category %s', fname, cat)
 
     return fname, cat
