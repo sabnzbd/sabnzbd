@@ -57,6 +57,7 @@
                     <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>$T('pr-high')</option>
                     <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
                     <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>$T('pr-low')</option>
+                    <option value="-2" <!--#if $rss[$feed]['priority'] == -2 then 'selected' else ''#-->>$T('pr-paused')</option>
                 </optgroup>
             </select>
 
@@ -78,6 +79,7 @@
             <!--#if $rss[$feed]['pick_cat']#--><th>$T('category')</th><!--#end if#-->
             <th>Mode</th>
             <!--#if $rss[$feed]['pick_script']#--><th>$T('script')</th><!--#end if#-->
+			<th>$T('rss-prio')</th>
             <th></th>
         </tr>
 
@@ -120,6 +122,16 @@
             <!--#end for#-->
             </select>
           </td>
+		<td>
+			<select name="priority">
+				<option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>$T('default')</option>
+				<option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>$T('pr-force')</option>
+				<option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>$T('pr-high')</option>
+				<option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
+				<option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>$T('pr-low')</option>
+				<option value="-2" <!--#if $rss[$feed]['priority'] == -2 then 'selected' else ''#-->>$T('pr-paused')</option>
+			</select>
+		</td>
         <!--#end if#-->
         <input type="hidden" value="$rss[$feed]['filtercount']" name="index">
         <input type="hidden" value="$feed" name="feed">
@@ -185,6 +197,16 @@
             </select>
           </td>
         <!--#end if#-->
+		<td>
+            <select name="priority">
+                <option value="-100" <!--#if $filter[5] == "-100" or $filter[4] == "" then 'selected' else ''#-->>$T('default')</option>
+				<option value="2"    <!--#if $filter[5] == "2"    then "selected" else ""#-->>$T('pr-force')</option>
+				<option value="1"    <!--#if $filter[5] == "1"    then "selected" else ""#-->>$T('pr-high')</option>
+				<option value="0"    <!--#if $filter[5] == "0"    then "selected" else ""#-->>$T('pr-normal')</option>
+				<option value="-1"   <!--#if $filter[5] == "-1"   then "selected" else ""#-->>$T('pr-low')</option>
+				<option value="-2"   <!--#if $filter[5] == "-2"   then "selected" else ""#-->>$T('pr-paused')</option>
+            </select>
+		</td>
         <td>
         <input type="hidden" name="index" value="$fnum"/>
         <input type="hidden" name="feed" value="$feed"/>

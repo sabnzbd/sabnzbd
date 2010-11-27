@@ -492,6 +492,8 @@ class OptionFilters(Option):
                     filters.append(val)
                 else:
                     filters.append(listquote.simplelist(val))
+            while len(filters[-1]) < 6:
+                filters[-1].append('')
         if filters:
             self.set(filters)
         return True
@@ -509,7 +511,7 @@ class ConfigRSS(object):
         self.enable = OptionBool(name, 'enable', add=False)
         self.priority = OptionNumber(name, 'priority', constants.DEFAULT_PRIORITY, constants.DEFAULT_PRIORITY, 2, add=False)
         self.filters = OptionFilters(name, 'filters', add=False)
-        self.filters.set([['', '', '', 'A', '*']])
+        self.filters.set([['', '', '', 'A', '*', constants.DEFAULT_PRIORITY]])
 
         self.set_dict(values)
         add_to_database('rss', self.__name, self)
@@ -799,7 +801,7 @@ def get_categories(cat=0):
 
 
 def define_rss():
-    """ Define rss-ffeds listed in the Setup file
+    """ Define rss-feeds listed in the Setup file
         return a list of ConfigRSS instances
     """
     global CFG

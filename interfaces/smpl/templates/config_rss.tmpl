@@ -62,7 +62,8 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
                     <option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>$T('pr-force')</option>
                     <option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>$T('pr-high')</option>
                     <option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
-                    <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>$T('pr-low')</option>>
+                    <option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>$T('pr-low')</option>
+                    <option value="-2" <!--#if $rss[$feed]['priority'] == -2 then 'selected' else ''#-->>$T('pr-paused')</option>
                 </optgroup>
             </select>
             <input type="hidden" name="feed" value="$feed"/>
@@ -84,6 +85,7 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             <!--#if $rss[$feed]['pick_cat']#--> <th>$T('category')</th> <!--#end if#-->
             <th>Mode</th>
             <!--#if $rss[$feed]['pick_script']#--> <th>$T('script')</th> <!--#end if#-->
+			<th>$T('priority')</th>
             <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
         </tr>
     </thead>
@@ -126,6 +128,17 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             <!--#end for#-->
             </select>
           </td>
+		<td>
+			<select name="priority">
+				<option value="-100" <!--#if $rss[$feed]['priority'] == -100 then 'selected' else ''#-->>$T('default')</option>
+				<option value="2" <!--#if $rss[$feed]['priority'] == 2 then 'selected' else ''#-->>$T('pr-force')</option>
+				<option value="1" <!--#if $rss[$feed]['priority'] == 1 then 'selected' else ''#-->>$T('pr-high')</option>
+				<option value="0" <!--#if $rss[$feed]['priority'] == 0 then 'selected' else ''#-->>$T('pr-normal')</option>
+				<option value="-1" <!--#if $rss[$feed]['priority'] == -1 then 'selected' else ''#-->>$T('pr-low')</option>
+				<option value="-2" <!--#if $rss[$feed]['priority'] == -2 then 'selected' else ''#-->>$T('pr-paused')</option>
+			</select>
+		</td>
+
         <!--#end if#-->
         <td>
         <input type="hidden" value="$rss[$feed]['filtercount']" name="index">
@@ -190,6 +203,16 @@ MochiKit.DOM.addLoadEvent(location = "../../#config-rss");
             </select>
           </td>
         <!--#end if#-->
+		<td>
+			<select name="priority">
+				<option value="-100" <!--#if $filter[5] == "-100" then 'selected' else ''#-->>$T('default')</option>
+				<option value="2"    <!--#if $filter[5] == "2"    then "selected" else ""#-->>$T('pr-force')</option>
+				<option value="1"    <!--#if $filter[5] == "1"    then "selected" else ""#-->>$T('pr-high')</option>
+				<option value="0"    <!--#if $filter[5] == "0"    then "selected" else ""#-->>$T('pr-normal')</option>
+				<option value="-1"   <!--#if $filter[5] == "-1"   then "selected" else ""#-->>$T('pr-low')</option>
+				<option value="-2"   <!--#if $filter[5] == "-2"   then "selected" else ""#-->>$T('pr-paused')</option>
+			</select>
+		</td>
         <td>
         <input type="hidden" name="index" value="$fnum"/>
         <input type="hidden" name="feed" value="$feed"/>

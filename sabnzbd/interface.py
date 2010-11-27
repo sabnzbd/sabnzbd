@@ -1464,7 +1464,7 @@ class ConfigRss(object):
         conf['script_list'] = list_scripts(default=True)
         pick_script = conf['script_list'] != []
 
-        conf['cat_list'] = list_cats(default=False)
+        conf['cat_list'] = list_cats(default=True)
         pick_cat = conf['cat_list'] != []
 
         conf['rss_rate'] = cfg.rss_rate()
@@ -1580,9 +1580,10 @@ class ConfigRss(object):
         if IsNone(pp): pp = ''
         script = ConvertSpecials(kwargs.get('script'))
         cat = ConvertSpecials(kwargs.get('cat'))
+        prio = ConvertSpecials(kwargs.get('priority'))
 
         cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'), \
-                                                         platform_encode(kwargs.get('filter_text'))))
+                                                         platform_encode(kwargs.get('filter_text')), prio ))
         config.save_config()
         raise rssRaiser(self.__root, kwargs)
 

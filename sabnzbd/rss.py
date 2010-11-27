@@ -203,27 +203,29 @@ class RSSQueue(object):
 
         uri = feeds.uri()
         defCat = feeds.cat()
-        if defCat == "":
+        if defCat in ('', '*'):
             defCat = None
         defPP = feeds.pp()
         defScript = feeds.script()
-        defPriority = feeds.priority()
+        defPrio = feeds.priority()
 
         # Preparations, convert filters to regex's
         regexes = []
         reTypes = []
         reCats = []
         rePPs = []
+        rePrios = []
         reScripts = []
         for filter in feeds.filters():
             reCat = filter[0]
-            if not reCat:
+            if defCat in ('', '*'):
                 reCat = None
             reCats.append(reCat)
             rePPs.append(filter[1])
             reScripts.append(filter[2])
             reTypes.append(filter[3])
             regexes.append(convert_filter(filter[4]))
+            rePrios.append(filter[5])
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
@@ -282,6 +284,8 @@ class RSSQueue(object):
             else:
                 link = entry
                 category = jobs[link].get('cat', '')
+                if category in ('', '*'):
+                    category = None
                 atitle = latin1(jobs[link].get('title', ''))
                 title = unicoder(atitle)
 
@@ -299,7 +303,7 @@ class RSSQueue(object):
                         myCat = defCat
                         myPP = ''
                         myScript = ''
-                        #myPriority = 0
+                        myPrio = 0
 
                         if notdefault(reCats[n]):
                             myCat = reCats[n]
@@ -315,6 +319,10 @@ class RSSQueue(object):
                             myScript = reScripts[n]
                         elif not (notdefault(reCats[n]) or category):
                             myScript = defScript
+                        if notdefault(rePrios[n]):
+                            myPrio = rePrios[n]
+                        elif not (notdefault(rePrios[n]) or category):
+                            myPrio = defPrio
 
                         if cfg.no_dupes():
                             dup = dup_title(title)
@@ -323,7 +331,7 @@ class RSSQueue(object):
                                 n = dup
                                 break
 
-                        if category and reTypes[n]=='C':
+                        if category and reTypes[n] == 'C':
                             found = re.search(regexes[n], category)
                             if not found:
                                 logging.debug("Filter rejected on rule %d", n)
@@ -331,15 +339,15 @@ class RSSQueue(object):
                                 break
                         else:
                             found = re.search(regexes[n], title)
-                            if reTypes[n]=='M' and not found:
+                            if reTypes[n] == 'M' and not found:
                                 logging.debug("Filter rejected on rule %d", n)
                                 result = False
                                 break
-                            if found and reTypes[n]=='A':
+                            if found and reTypes[n] == 'A':
                                 logging.debug("Filter matched on rule %d", n)
                                 result = True
                                 break
-                            if found and reTypes[n]=='R':
+                            if found and reTypes[n] == 'R':
                                 logging.debug("Filter rejected on rule %d", n)
                                 result = False
                                 break
@@ -353,12 +361,12 @@ class RSSQueue(object):
                         star = first
                     if result:
                         _HandleLink(jobs, link, title, 'G', myCat, myPP, myScript,
-                                    act, star, order, priority=defPriority, rule=str(n))
+                                    act, star, order, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
                         _HandleLink(jobs, link, title, 'B', myCat, myPP, myScript,
-                                    False, star, order, priority=defPriority, rule=str(n))
+                                    False, star, order, priority=myPrio, rule=str(n))
             order += 1
 
         # Send email if wanted and not "forced"
@@ -461,8 +469,8 @@ RE_NEWZBIN = re.compile(r'(newz)(bin|xxx).com/browse/post/(\d+)', re.I)
 def _HandleLink(jobs, link, title, flag, cat, pp, script, download, star, order,
                 priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
-    if script=='': script = None
-    if pp=='': pp = None
+    if script == '': script = None
+    if pp == '': pp = None
 
     jobs[link] = {}
     jobs[link]['order'] = order

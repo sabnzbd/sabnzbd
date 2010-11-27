@@ -693,6 +693,9 @@ class NzbObject(TryList):
             self.pause()
             self.priority = LOW_PRIORITY
 
+        if self.priority == PAUSED_PRIORITY:
+            self.priority = NORMAL_PRIORITY
+            self.pause()
 
         if reuse:
             self.check_existing_files(wdir)
