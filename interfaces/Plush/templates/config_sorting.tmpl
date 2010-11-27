@@ -39,6 +39,7 @@
 	    input = input.replace(/%0e/g,'05');
 	    input = input.replace(/%e/g,'5');
 		input = input.replace(/%fn/g,'$T("sort-File")');
+		input = input.replace(/%dn/g,'$T("sort-Folder")');
 
 	    document.getElementById('previewtv').innerHTML = getOutput(input);
 	}
@@ -184,9 +185,9 @@
 		<li><a href="#tabs-dateSorting">$T('dateSorting')</a></li>
 	</ul>
 
-	
+
 	<div id="tabs-seriesSorting">
-	
+
 	    <input id="complete_dir" type="hidden" value="$complete_dir" />
 	    <input class="radio" type="checkbox" name="enable_tv_sorting" value="1" <!--#if $enable_tv_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('opt-tvsort')</strong>
 	    <br class="clear" /><br/>
@@ -256,13 +257,17 @@
 	            <td>%fn</td>
 	            <td>$T("sort-File")</td>
 	        </tr><tr>
+	            <td align="right"><strong>$T('orgDirname'):</strong></td>
+	            <td>%dn</td>
+	            <td>$T("sort-Folder")</td>
+	        </tr><tr>
 	            <td align="right"><strong>$T('lowercase'):</strong></td>
 	            <td>{$T('TEXT')}</td>
 	            <td>$T('text')</td>
 	        </tr>
 	        </table></small>
 	    </div><br class="clear" /><br class="clear" />
-	
+
 	    <table>
 	    <tr>
 	    	<td align="right"><strong>$T('sortString'):</strong></td>
@@ -283,13 +288,13 @@
 	    	<td><span id="previewtv"></span></td>
 	    </tr>
 	    </table>
-	
+
 	</div>
 
 
 	<div id="tabs-genericSort">
 
-	
+
 	    <input class="radio" type="checkbox" name="enable_movie_sorting" value="1" <!--#if $enable_movie_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('opt-movieSort')</strong>
 	    <br class="clear" />
 	    <input class="radio" type="checkbox" name="movie_extra_folder" id="movie_extra_folder" value="1" <!--#if $movie_extra_folder > 0 then "checked=1" else ""#--> /> <strong>$T('opt-movieExtra')</strong>
@@ -354,7 +359,7 @@
 	        </tr>
 	        </table></small>
 	    </div><br class="clear" /><br class="clear" />
-	
+
 	    <table>
 	    <tr>
 	    	<td align="right"><strong>$T('sortString'):</strong></td>
@@ -384,7 +389,7 @@
 
 
 	<div id="tabs-dateSorting">
-	
+
 	    <input class="radio" type="checkbox" name="enable_date_sorting" value="1" <!--#if $enable_date_sorting > 0 then "checked=1" else ""#--> /> <strong>$T('opt-dateSort')</strong>
 	    <br class="clear" /><br/>
 	    <strong>$T('affectedCat'):</strong><br/>
@@ -455,7 +460,7 @@
 			</tr>
 	        </table></small>
 	    </div><br class="clear" /><br class="clear" />
-	
+
 	    <table>
 	    <tr>
 	    	<td align="right"><strong>$T('sortString'):</strong></td>

@@ -301,6 +301,9 @@ class SeriesSorter(object):
         mapping.append(('%s', self.show_info['season_num']))
         mapping.append(('%0s', self.show_info['season_num_alt']))
 
+        # Original dir name
+        mapping.append(('%dn', self.original_dirname))
+
         # Replace episode names
         if self.show_info['ep_name']:
             mapping.append(('%en', self.show_info['ep_name']))
