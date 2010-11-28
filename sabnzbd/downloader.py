@@ -92,12 +92,12 @@ def alive():
     else:
         return False
 
+#------------------------------------------------------------------------------
+@synchronized_CV
 def check():
     global __DOWNLOADER
     if __DOWNLOADER:
         __DOWNLOADER.check_timers()
-
-#------------------------------------------------------------------------------
 
 @synchronized_CV
 def pause_downloader(save=True):
