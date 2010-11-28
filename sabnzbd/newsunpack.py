@@ -789,6 +789,10 @@ def par2_repair(parfile_nzf, nzo, workdir, setname):
 
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
     """ Run par2 on par-set """
+    if cfg.never_repair():
+        cmd = 'v'
+    else:
+        cmd = 'r'
     retry_classic = False
     used_joinables = []
     #set the current nzo status to "Verifying...". Used in History
@@ -800,12 +804,12 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False):
 
     if (is_new_partype(nzo, setname) and not classic) or not PAR2C_COMMAND:
         if cfg.par_option():
-            command = [str(PAR2_COMMAND), 'r', str(cfg.par_option().strip()), parfile]
+            command = [str(PAR2_COMMAND), cmd, str(cfg.par_option().strip()), parfile]
         else:
-            command = [str(PAR2_COMMAND), 'r', parfile]
+            command = [str(PAR2_COMMAND), cmd, parfile]
         classic = not PAR2C_COMMAND
     else:
-        command = [str(PAR2C_COMMAND), 'r', parfile]
+        command = [str(PAR2C_COMMAND), cmd, parfile]
         classic = True
 
     for joinable in joinables:

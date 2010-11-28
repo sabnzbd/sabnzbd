@@ -89,6 +89,8 @@ enable_unzip = OptionBool('misc', 'enable_unzip', True)
 enable_filejoin = OptionBool('misc', 'enable_filejoin', True)
 enable_tsjoin = OptionBool('misc', 'enable_tsjoin', True)
 enable_par_cleanup = OptionBool('misc', 'enable_par_cleanup', True)
+never_repair = OptionBool('misc', 'never_repair', False)
+
 par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)
 nice = OptionStr('misc', 'nice',  '', validation=no_nonsense)
 ionice = OptionStr('misc', 'ionice',  '', validation=no_nonsense)
