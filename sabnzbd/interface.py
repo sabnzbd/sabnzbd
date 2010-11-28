@@ -1971,15 +1971,6 @@ class ConfigCats(object):
         config.save_config()
         raise dcRaiser(self.__root, kwargs)
 
-    @cherrypy.expose
-    def init_newzbin(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg: return msg
-
-        config.define_categories(force=True)
-        config.save_config()
-        raise dcRaiser(self.__root, kwargs)
-
 
 SORT_LIST = ( \
     'enable_tv_sorting', 'tv_sort_string', 'tv_categories',

@@ -477,12 +477,10 @@ SKIN_TEXT = {
 # Config->Cat
     'configCat' : TT('User-defined categories'),
     'explain-configCat' : TT('Defines post-processing and storage.'),
-    'explain-catNewzbin' : TT('The Newzbin column will map listed Newzbin categories to your own.'),
-    'link-initCat' : TT('Click here to setup newzbin categories.'),
+    'explain-catTags' : TT('Use the "Groups / Indexer tags" column to map groups and tags to your categories.<br/>Wildcards are supported. Use comma\'s to seperate terms.'),
     'explain-relFolder' : TT('Relative folders are based on'),
     'catFolderPath' : TT('Folder/Path'),
-    'catNewzbin' : TT('NewzBin'),
-    'catGroups' : TT('Groups'),
+    'catTags' : TT('Groups / Indexer tags'),
     'button-delCat' : TT('X'),
 
 # Config->Sorting

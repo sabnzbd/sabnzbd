@@ -8,12 +8,7 @@
 
 <h2>$T('configCat')</h2>
 $T('explain-configCat')<br/>
-<!--#if $varExists('newzbinDetails')#-->
-    $T('explain-catNewzbin')<br/>
-    <!--#if not $have_cats#-->
-        <br/><a href="init_newzbin?session=$session">$T('link-initCat')</a><br/><br/>
-    <!--#end if#-->
-<!--#end if#-->
+$T('explain-catTags')<br/>
 $T('explain-relFolder') $defdir<br/>
 <br/>
     <table id="catTable">
@@ -24,7 +19,7 @@ $T('explain-relFolder') $defdir<br/>
             <th>&nbsp;$T('priority')&nbsp;</th>
             <!--#if $script_list#--><th>$T('script')</th><!--#end if#-->
             <th>$T('catFolderPath')</th>
-            <th><!--#if $varExists('newzbinDetails')#--> $T('catNewzbin')/ <!--#end if#--> $T('catGroups')</th>
+            <th>$T('catTags')</th>
             <th></th>
         </tr>
     <!--#set $odd = False#-->

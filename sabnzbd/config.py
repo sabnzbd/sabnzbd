@@ -767,19 +767,12 @@ def define_categories(force=False):
         return a list of ConfigCat instances
     """
     global CFG, categories
-    cats = ['Unknown', 'Anime', 'Apps', 'Books', 'Consoles', 'Emulation', 'Games',
-            'Misc', 'Movies', 'Music', 'PDA', 'Resources', 'TV']
-
     try:
         for cat in CFG['categories']:
             ConfigCat(cat, CFG['categories'][cat])
     except KeyError:
-        force = True
+        pass
 
-    if force:
-        for cat in cats:
-            val = { 'newzbin' : cat, 'dir' : cat }
-            ConfigCat(cat.lower(), val)
 
 def get_categories(cat=0):
     """ Return link to categories section.

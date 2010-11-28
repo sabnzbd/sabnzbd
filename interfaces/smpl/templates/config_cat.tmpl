@@ -1,14 +1,8 @@
 <a href="${helpuri}configure-categories" id="help" target="_blank">Help</a>
 <h3>$T('configCat')</h3>
 <br/>
-$T('explain-configCat').<br/>
-<!--#if $varExists('newzbinDetails')#-->
-    $T('explain-catNewzbin').<br/>
-    <!--#if not $have_cats#-->
-        <br/>
-        <a href="javascript:lr('config/categories/init_newzbin')">$T('link-initCat')</a><br/><br/>
-    <!--#end if#-->
-<!--#end if#-->
+$T('explain-configCat')<br/>
+$T('explain-catTags')<br/>
 <br/>
 $T('explain-relFolder') $defdir<br/>
 <br/>
@@ -21,7 +15,7 @@ $T('explain-relFolder') $defdir<br/>
             <th>$T('priority')</th>
             <!--#if $script_list#--><th>$T('script')</th><!--#end if#-->
             <th>$T('catFolderPath')</th>
-            <th><!--#if $varExists('newzbinDetails') then $T('catNewzbin')+"/" else ""#-->$T('catGroups')</th>
+            <th>$T('catTags')</th>
             <th></th>
         </tr>
     </thead>
