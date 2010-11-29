@@ -100,6 +100,7 @@ try:
     import win32serviceutil, win32evtlogutil, win32event, win32service, pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
     from util.mailslot import MailSlot
+    from util.apireg import get_connection_info, set_connection_info, del_connection_info
 except ImportError:
     class MailSlot:
         pass
@@ -610,7 +611,7 @@ def is_sabnzbd_running(url):
     """
     import urllib2
     try:
-        url = '%sapi?mode=version' % (url)
+        url = '%s&mode=version' % (url)
         s = urllib2.urlopen(url)
         ver = s.read()
         if ver and ver.strip() == sabnzbd.__version__:
@@ -823,6 +824,7 @@ def main():
     vista64 = False
     force_web = False
     repair = 0
+    api_url = None
     re_argv = [sys.argv[0]]
 
     service, sab_opts, serv_opts, upload_nzbs = commandline_handler()
@@ -992,23 +994,36 @@ def main():
         except IOError, error:
             Bail_Out(browserhost, cherryport)
 
+    # Windows instance is reachable through registry
+    url = None
+    if sabnzbd.WIN32:
+        url = get_connection_info()
+        if url and check_for_sabnzbd(url, upload_nzbs):
+            exit_sab(0)
+
     # If an instance of sabnzbd(same version) is already running on this port, launch the browser
     # If another program or sabnzbd version is on this port, try 10 other ports going up in a step of 5
     # If 'Port is not bound' (firewall) do not do anything (let the script further down deal with that).
+
     ## SSL
-    if enable_https and https_port:
+    if enable_https:
+        port = https_port or cherryport
         try:
-            cherrypy.process.servers.check_port(browserhost, https_port)
+            cherrypy.process.servers.check_port(browserhost, port)
         except IOError, error:
             if str(error) == 'Port not bound.':
                 pass
             else:
-                url = 'https://%s:%s/' % (browserhost, https_port)
+                if not url:
+                    url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
                 if not check_for_sabnzbd(url, upload_nzbs):
-                    port = find_free_port(browserhost, https_port)
-                    if port > 0:
-                        sabnzbd.cfg.https_port.set(port)
-                        https_port = port
+                    newport = find_free_port(browserhost, port)
+                    if newport > 0:
+                        sabnzbd.cfg.https_port.set(newport)
+                        if https_port:
+                            https_port = newport
+                        else:
+                            http_port = newport
     ## NonSSL
     try:
         cherrypy.process.servers.check_port(browserhost, cherryport)
@@ -1016,7 +1031,8 @@ def main():
         if str(error) == 'Port not bound.':
             pass
         else:
-            url = 'http://%s:%s/' % (browserhost, cherryport)
+            if not url:
+                url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
             if not check_for_sabnzbd(url, upload_nzbs):
                 port = find_free_port(browserhost, cherryport)
                 if port > 0:
@@ -1326,14 +1342,24 @@ def main():
 
 
     mail = None
-    if sabnzbd.WIN_SERVICE:
-        mail = MailSlot()
-        if mail.connect():
-            logging.info('Connected to the SABHelper service')
-            mail.send('active')
+    if sabnzbd.WIN32:
+        if enable_https:
+            mode = 's'
         else:
-            logging.error('Cannot reach the SABHelper service')
-            mail = None
+            mode = ''
+        api_url = 'http%s://%s:%s/sabnzbd/api?apikey=%s' % (mode, browserhost, cherryport, sabnzbd.cfg.api_key())
+
+        if sabnzbd.WIN_SERVICE:
+            mail = MailSlot()
+            if mail.connect():
+                logging.info('Connected to the SABHelper service')
+                mail.send('api %s' % api_url)
+            else:
+                logging.error('Cannot reach the SABHelper service')
+                mail = None
+        else:
+            # Write URL directly to registry
+            set_connection_info(url)
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0
@@ -1342,6 +1368,8 @@ def main():
             rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
                  sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)
             if rc == win32event.WAIT_OBJECT_0:
+                if mail:
+                    mail.send('stop')
                 sabnzbd.save_state(flag=True)
                 logging.info('Leaving SABnzbd')
                 sabnzbd.SABSTOP = True
@@ -1373,6 +1401,7 @@ def main():
             # Notify guardian
             if sabnzbd.WIN_SERVICE and mail:
                 mail.send('active')
+
         else:
             timer += 1
 
@@ -1415,6 +1444,8 @@ def main():
 
     if sabnzbd.WIN_SERVICE and mail:
         mail.send('stop')
+    if sabnzbd.WIN32:
+        del_connection_info()
     notify("SAB_Shutdown", None)
     osx.sendGrowlMsg('SABnzbd',T('SABnzbd shutdown finished'),osx.NOTIFICATION['startup'])
     logging.info('Leaving SABnzbd')

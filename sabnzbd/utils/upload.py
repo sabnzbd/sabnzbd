@@ -33,14 +33,17 @@ def upload_file(url, fp):
     try:
         fp = urllib.quote_plus(fp)
         cat, pp, script, priority = cat_to_opts(None)
-        url = '%sapi?mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (url, fp, pp, script, priority)
-        username = cfg.username()
-        password = cfg.password()
+        url = '%s&mode=addlocalfile&name=%s&pp=%s&script=%s&priority=%s' % (url, fp, pp, script, priority)
+        # Add local apikey if it wasn't already in the registered URL
         apikey = cfg.api_key()
-        if username and password:
-            url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
-        if apikey:
+        if apikey and 'apikey' not in url:
             url = '%s&apikey=%s' % (url, apikey)
+        else:
+            # Use alternative login method
+            username = cfg.username()
+            password = cfg.password()
+            if username and password:
+                url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
         u = urllib2.urlopen(url)
     except:
         logging.error("Failed to upload file: %s", fp)

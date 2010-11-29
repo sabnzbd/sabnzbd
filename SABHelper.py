@@ -33,6 +33,7 @@ except ImportError:
     sys.exit(1)
 
 from util.mailslot import MailSlot
+from util.apireg import del_connection_info, set_connection_info
 
 #------------------------------------------------------------------------------
 
@@ -62,15 +63,24 @@ def main():
     counter = 0     # Time allowed for SABnzbd to be silent
     while True:
         msg = mail.receive()
-        if msg == 'restart':
-            time.sleep(1.0)
-            counter = 0
-            start_sab()
-        elif msg == 'stop':
-            active = False
-        elif msg == 'active':
-            active = True
-            counter = 0
+        if msg:
+            if msg == 'restart':
+                time.sleep(1.0)
+                counter = 0
+                del_connection_info(user=False)
+                start_sab()
+            elif msg == 'stop':
+                active = False
+                del_connection_info(user=False)
+            elif msg == 'active':
+                active = True
+                counter = 0
+            elif msg.startswith('api '):
+                active = True
+                counter = 0
+                cmd, url = msg.split()
+                if url:
+                    set_connection_info(url.strip(), user=False)
 
         if active:
             counter += 1
@@ -81,6 +91,7 @@ def main():
         rc = win32event.WaitForMultipleObjects((WIN_SERVICE.hWaitStop,
              WIN_SERVICE.overlapped.hEvent), 0, 1000)
         if rc == win32event.WAIT_OBJECT_0:
+            del_connection_info(user=False)
             mail.disconnect()
             return ''
 

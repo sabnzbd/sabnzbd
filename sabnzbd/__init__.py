@@ -156,6 +156,9 @@ def sig_handler(signum = None, frame = None):
     try:
         save_state(flag=True)
     finally:
+        from util.apireg import del_connection_info
+        if sabnzbd.WIN32:
+            del_connection_info()
         SABSTOP = True
         os._exit(0)
 

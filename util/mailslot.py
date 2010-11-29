@@ -45,7 +45,7 @@ class MailSlot(object):
             timeout is the read timeout used for receive calls.
         """
         slot = r'\\.\%s' % MailSlot.slotname
-        self.handle = CreateMailslot(slot, 50, timeout, None)
+        self.handle = CreateMailslot(slot, 0, timeout, None)
 
         return self.handle != -1
 
