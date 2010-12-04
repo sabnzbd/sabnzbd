@@ -492,8 +492,8 @@ class OptionFilters(Option):
                     filters.append(val)
                 else:
                     filters.append(listquote.simplelist(val))
-            while len(filters[-1]) < 6:
-                filters[-1].append('')
+                while len(filters[-1]) < 6:
+                    filters[-1].append('')
         if filters:
             self.set(filters)
         return True
