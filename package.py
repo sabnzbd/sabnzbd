@@ -41,10 +41,8 @@ except ImportError:
 VERSION_FILE = 'sabnzbd/version.py'
 VERSION_FILEAPP = 'osx/resources/InfoPlist.strings'
 
-# Read version number, avoiding import
-fp = open('sabnzbd/version.py')
-exec(fp.read())
-fp.close()
+my_version = 'unknown'
+my_baseline = 'unknown'
 
 def DeleteFiles(name):
     ''' Delete one file or set of files from wild-card spec '''
@@ -75,6 +73,8 @@ def PatchVersion(name):
     """ Patch in the Bazaar baseline number, but only when this is
         an unmodified checkout
     """
+    global my_version, my_baseline
+
     try:
         pipe = subprocess.Popen(BzrVersion, shell=True, stdout=subprocess.PIPE).stdout
         for line in pipe.read().split('\n'):
@@ -99,9 +99,13 @@ def PatchVersion(name):
         print "WARNING: cannot patch " + VERSION_FILE
         return
 
+    my_baseline = bzr
+    my_version = name
+
     regex = re.compile(r'__baseline__\s+=\s+"\w*"')
     text = re.sub(r'__baseline__\s*=\s*"[^"]*"', '__baseline__ = "%s"' % bzr, text)
     text = re.sub(r'__version__\s*=\s*"[^"]*"', '__version__ = "%s"' % name, text)
+
     try:
         ver = open(VERSION_FILE, 'wb')
         ver.write(text)
@@ -309,7 +313,7 @@ options = dict(
       url = 'http://sourceforge.net/projects/sabnzbdplus',
       author = 'The SABnzbd-Team',
       author_email = 'team@sabnzbd.org',
-      #description = 'SABnzbd ' + str(__version__),
+      #description = 'SABnzbd ' + str(my_version),
       scripts = ['SABnzbd.py', 'SABHelper.py'], # One day, add  'setup.py'
       packages = ['sabnzbd', 'sabnzbd.utils', 'util'],
       platforms = ['posix'],
@@ -336,13 +340,13 @@ if target == 'app':
     fp.close()
     os.remove('mount.log')
     m = re.search(r'/dev/(\w+)\s+', data)
-    volume = 'SABnzbd-' + str(__version__)
+    volume = 'SABnzbd-' + str(my_version)
     os.system('disktool -n %s %s' % (m.group(1), volume))
 
     # Unpack cherrypy
     os.system("unzip -o cherrypy.zip")
 
-    options['description'] = 'SABnzbd ' + str(__version__)
+    options['description'] = 'SABnzbd ' + str(my_version)
 
     #remove prototype and iphone interfaces
     os.system("rm -rf interfaces/prototype>/dev/null")
@@ -452,7 +456,7 @@ elif target in ('binary', 'installer'):
     os.system('tools\\make_mo.py all')
 
     options['data_files'] = PairList(data_files)
-    options['description'] = 'SABnzbd ' + str(__version__)
+    options['description'] = 'SABnzbd ' + str(my_version)
 
     sys.argv[1] = 'py2exe'
     program = [ {'script' : 'SABnzbd.py', 'icon_resources' : [(0, "sabnzbd.ico")] } ]
