@@ -1,4 +1,18 @@
 -------------------------------------------------------------------------------
+ 0.6.0Alpha8 by The SABnzbd-Team
+-------------------------------------------------------------------------------
+- Prevent active and waiting post-processing jobs from showing up
+  in the orphans list.
+- Simplified Wizard (No skin selection, Usenet server first)
+- Accept non-alphanumerical characters in {{category}}name.nzb
+- Add priority support to RSS feeds
+- Add 'paused' as an extra priority in RSS feeds
+- Add %dn to Series terms (original job name)
+- Add hidden option "never_repair".
+- The Windows version writes its API URL to the registry
+- Colons were removed from folder names
+- Fix crash when an RSS feed had no filters
+-------------------------------------------------------------------------------
  0.6.0Alpha7 by The SABnzbd-Team
 -------------------------------------------------------------------------------
 - Post-processing would crash on empty category folder
