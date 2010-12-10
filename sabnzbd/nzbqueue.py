@@ -129,7 +129,7 @@ class NzbQueue(TryList):
 
         # Repair unregistered folders
         for folder in globber(cfg.download_dir.get_path()):
-            if os.path.basename(folder) not in registered:
+            if os.path.isdir(folder) and os.path.basename(folder) not in registered:
                 if action:
                     logging.info('Repairing job %s', folder)
                     self.repair_job(folder)
